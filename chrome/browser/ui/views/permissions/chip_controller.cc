@@ -196,25 +196,22 @@ bool ChipController::ShouldWaitForConfirmationToComplete() {
 }
 
 void ChipController::InitializePermissionPrompt(
-    content::WebContents* web_contents,
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
     base::OnceCallback<void()> callback) {
-  DCHECK(delegate);
   if (ShouldWaitForConfirmationToComplete()) {
     delay_prompt_timer_.Start(
         FROM_HERE, collapse_timer_.GetCurrentDelay(),
         base::BindOnce(&ChipController::InitializePermissionPrompt,
-                       weak_factory_.GetWeakPtr(),
-                       base::UnsafeDanglingUntriaged(web_contents), delegate,
+                       weak_factory_.GetWeakPtr(), delegate,
                        std::move(callback)));
     return;
   }
 
-  if (delegate.WasInvalidated()) {
+  ResetPermissionPromptChip();
+
+  if (!delegate) {
     return;
   }
-
-  ResetPermissionPromptChip();
 
   // Here we just initialize the controller with the current request. We might
   // not yet want to display the chip, for example when a prompt bubble without
@@ -229,30 +226,28 @@ void ChipController::InitializePermissionPrompt(
   }
 
   active_chip_permission_request_manager_ =
-      permissions::PermissionRequestManager::FromWebContents(web_contents);
+      permissions::PermissionRequestManager::FromWebContents(
+          delegate->GetAssociatedWebContents());
   active_chip_permission_request_manager_.value()->AddObserver(this);
   observation_.Observe(chip_);
   std::move(callback).Run();
 }
 
 void ChipController::ShowPermissionPrompt(
-    content::WebContents* web_contents,
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate) {
-  DCHECK(delegate);
   if (ShouldWaitForConfirmationToComplete()) {
     delay_prompt_timer_.Start(
         FROM_HERE, collapse_timer_.GetCurrentDelay(),
         base::BindOnce(&ChipController::ShowPermissionPrompt,
-                       weak_factory_.GetWeakPtr(),
-                       base::UnsafeDanglingUntriaged(web_contents), delegate));
+                       weak_factory_.GetWeakPtr(), delegate));
     return;
   }
 
-  if (delegate.WasInvalidated()) {
+  if (!delegate) {
     return;
   }
 
-  InitializePermissionPrompt(web_contents, delegate, base::DoNothing());
+  InitializePermissionPrompt(delegate);
 
   // HaTS surveys may be triggered while a quiet chip is displayed. If that
   // happens, the quiet chip should not collapse anymore, because otherwise a

@@ -45,7 +45,7 @@ PermissionPromptChip::PermissionPromptChip(Browser* browser,
     PreemptivelyResolvePermissionRequest(web_contents, delegate);
 
   chip_controller_ = lbv->chip_controller();
-  chip_controller_->ShowPermissionPrompt(web_contents, delegate->GetWeakPtr());
+  chip_controller_->ShowPermissionPrompt(delegate->GetWeakPtr());
 }
 
 PermissionPromptChip::~PermissionPromptChip() = default;

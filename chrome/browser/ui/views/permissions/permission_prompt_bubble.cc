@@ -22,7 +22,7 @@ PermissionPromptBubble::PermissionPromptBubble(
       base::FeatureList::IsEnabled(permissions::features::kConfirmationChip) &&
       delegate->Requests()[0]->IsConfirmationChipSupported()) {
     lbv->chip_controller()->InitializePermissionPrompt(
-        web_contents, delegate->GetWeakPtr(),
+        delegate->GetWeakPtr(),
         base::BindOnce(&PermissionPromptBubble::ShowBubble,
                        weak_factory_.GetWeakPtr()));
   } else {
@@ -106,8 +106,7 @@ bool PermissionPromptBubble::UpdateAnchor() {
     if (lbv && lbv->IsDrawn() && !lbv->GetWidget()->IsFullscreen() &&
         !lbv->IsEditingOrEmpty()) {
       auto* chip_controller = lbv->chip_controller();
-      chip_controller->InitializePermissionPrompt(
-          web_contents(), delegate()->GetWeakPtr(), base::DoNothing());
+      chip_controller->InitializePermissionPrompt(delegate()->GetWeakPtr());
     }
   }
 
