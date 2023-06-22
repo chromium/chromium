@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/core/html/html_table_row_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -894,11 +895,17 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object,
            parent_for_repair == result->CachedParentObject())
         << "If there is both a previous parent, and a parent supplied for "
            "repair, they must match.";
-  } else {
+  } else if (parent_for_repair) {
     result->SetParent(parent_for_repair);
   }
 
-  DCHECK(!result->IsMissingParent())
+  // If there is no node for the AXObject, then it is an anonymous layout
+  // object (e.g. a pseudo-element or object introduced to match the structure
+  // of content). Such objects can only be created or destroyed via creation of
+  // their parents and recursion via AddPseudoElementChildrenFromLayoutTree.
+  // RepairMissingParent will not be able to restore a missing parent; instead
+  // we should never need to do that.
+  DCHECK(!result->IsMissingParent() || !result->GetNode())
       << "Had AXObject but is missing parent: " << layout_object << " "
       << result->ToString(true, true);
 
@@ -1624,7 +1631,13 @@ void AXObjectCacheImpl::Remove(LayoutObject* layout_object,
     if (IsA<HTMLImageElement>(node)) {
       // If an image is removed, ensure its entire subtree is deleted as there
       // may have been children supplied via a map.
-      RemoveSubtreeWhenSafe(node);
+      if (auto* layout_image = DynamicTo<LayoutImage>(layout_object)) {
+        if (auto* map = layout_image->ImageMap()) {
+          if (map->ImageElement() == node) {
+            RemoveSubtreeWhenSafe(map, false);
+          }
+        }
+      }
     }
 
     Remove(node, notify_parent);
@@ -1710,24 +1723,39 @@ void AXObjectCacheImpl::RemoveIncludedSubtree(AXObject* object,
 }
 
 void AXObjectCacheImpl::ProcessSubtreeRemovals() {
-  for (Node* node : nodes_for_subtree_removal_) {
-    // Do not remove root because it was already removed.
-    RemoveSubtreeWithFlatTraversal(node, /* remove root */ true,
-                                   /* notify_parent */ true);
+  for (auto& node : nodes_for_subtree_removal_) {
+    ProcessSubtreeRemoval(node.first, node.second);
   }
   nodes_for_subtree_removal_.clear();
 }
 
+void AXObjectCacheImpl::ProcessSubtreeRemoval(Node* node, bool remove_root) {
+  if (remove_root) {
+    RemoveSubtreeWithFlatTraversal(node, /* remove root */ true,
+                                   /* notify_parent */ true);
+  } else {
+    for (Node* child_node = LayoutTreeBuilderTraversal::FirstChild(*node);
+         child_node;
+         child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
+      RemoveSubtreeWithFlatTraversal(child_node, /* remove root */ true,
+                                     /* notify_parent */ true);
+    }
+  }
+}
+
 void AXObjectCacheImpl::RemoveSubtreeWhenSafe(Node* node) {
+  RemoveSubtreeWhenSafe(node, true);
+}
+
+void AXObjectCacheImpl::RemoveSubtreeWhenSafe(Node* node, bool remove_root) {
   if (!node || !node->isConnected()) {
     return;
   }
   if (AXObject::CanSafelyUseFlatTreeTraversalNow(node->GetDocument())) {
-    RemoveSubtreeWithFlatTraversal(node, /* remove_root */ true,
-                                   /* notify_parent */ true);
+    ProcessSubtreeRemoval(node, remove_root);
     return;
   }
-  nodes_for_subtree_removal_.push_back(node);
+  nodes_for_subtree_removal_.push_back(std::make_pair(node, remove_root));
 }
 
 void AXObjectCacheImpl::RemoveSubtreeWithFlatTraversal(Node* node,
@@ -2040,6 +2068,30 @@ void AXObjectCacheImpl::StyleChanged(const LayoutObject* layout_object) {
   MarkAXObjectDirty(ax_object);
 }
 
+void AXObjectCacheImpl::TextOffsetsChanged(const LayoutBlockFlow* block_flow) {
+  if (AXObject* obj = Get(block_flow)) {
+    DeferTreeUpdate(&AXObjectCacheImpl::TextOffsetsChangedWithCleanLayout, obj);
+  }
+}
+
+void AXObjectCacheImpl::TextOffsetsChangedWithCleanLayout(Node*,
+                                                          AXObject* obj) {
+  if (!obj || obj->IsDetached()) {
+    return;
+  }
+#if DCHECK_IS_ON()
+  Document* document = obj->GetDocument();
+  DCHECK(document->Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean)
+      << "Unclean document at lifecycle " << document->Lifecycle().ToString();
+#endif  // DCHECK_IS_ON()
+
+  // Text changing for a block flow invalidates all of the
+  // text strings for children, such as via LayoutObject::GetName().
+  if (obj->AccessibilityIsIncludedInTree()) {
+    MarkAXSubtreeDirtyWithCleanLayout(obj);
+  }
+}
+
 void AXObjectCacheImpl::TextChanged(Node* node) {
   if (!node)
     return;
@@ -2328,13 +2380,19 @@ AXObject* AXObjectCacheImpl::InvalidateChildren(AXObject* obj) {
 
   // Clear children of ancestors in order to ensure this detached object is not
   // cached an ancestor's list of children:
-  // Any ancestor up to the first included ancestor can contain the now-detached
-  // child in it's cached children, and therefore must update children.
   AXObject* ancestor = obj;
-  while (ancestor && !ancestor->LastKnownIsIncludedInTreeValue()) {
+  while (ancestor) {
     if (ancestor->NeedsToUpdateChildren() || ancestor->IsDetached())
       return nullptr;  // Processing has already occurred for this ancestor.
     ancestor->SetNeedsToUpdateChildren();
+
+    // Any ancestor up to the first included ancestor can contain the
+    // now-detached child in it's cached children, and therefore must update
+    // children.
+    if (ancestor->LastKnownIsIncludedInTreeValue()) {
+      break;
+    }
+
     ancestor = ancestor->CachedParentObject();
   }
 

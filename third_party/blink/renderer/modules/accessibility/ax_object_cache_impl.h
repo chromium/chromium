@@ -175,6 +175,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void RemoveSubtreeWithFlatTraversal(Node*,
                                       bool remove_root = true,
                                       bool notify_parent = true);
+  void RemoveSubtreeWhenSafe(Node*, bool remove_root);
   void RemoveSubtreeWhenSafe(Node*) override;
 
   // For any ancestor that could contain the passed-in AXObject* in their cached
@@ -192,6 +193,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   // changed.
   void TextChanged(const LayoutObject*) override;
   void TextChangedWithCleanLayout(Node* optional_node, AXObject*);
+
+  void TextOffsetsChanged(const LayoutBlockFlow*) override;
+  void TextOffsetsChangedWithCleanLayout(Node*, AXObject*);
+
   void FocusableChangedWithCleanLayout(Element* element);
   void DocumentTitleChanged() override;
   // Called when a layout tree for a node has just been attached, so we can make
@@ -623,6 +628,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   bool IsMainDocumentDirty() const;
   bool IsPopupDocumentDirty() const;
 
+  void ProcessSubtreeRemoval(Node*, bool remove_root);
+
   HeapHashSet<WeakMember<InspectorAccessibilityAgent>> agents_;
 
   struct AXEventParams final : public GarbageCollected<AXEventParams> {
@@ -894,7 +901,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   HeapHashSet<WeakMember<Node>> nodes_with_spelling_or_grammar_markers_;
 
   // Nodes renoved from flat tree.
-  HeapVector<Member<Node>> nodes_for_subtree_removal_;
+  HeapVector<std::pair<Member<Node>, bool>> nodes_for_subtree_removal_;
 
   // True when layout has changed, and changed locations must be serialized.
   bool need_to_send_location_changes_ = false;
