@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/mac/foundation_util.h"
+#import "base/base_paths.h"
+#import "base/path_service.h"
 #import "base/values.h"
 #import "ios/chrome/browser/autofill/automation/automation_action.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -28,9 +29,8 @@ const char kTestPageUrl[] = "/components/test/data/autofill/"
 - (void)setUp {
   [super setUp];
 
-  NSString* bundlePath = [NSBundle bundleForClass:[self class]].resourcePath;
   self.testServer->ServeFilesFromDirectory(
-      base::mac::NSStringToFilePath(bundlePath));
+      base::PathService::CheckedGet(base::DIR_ASSETS));
   XCTAssertTrue(self.testServer->Start());
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kTestPageUrl)];

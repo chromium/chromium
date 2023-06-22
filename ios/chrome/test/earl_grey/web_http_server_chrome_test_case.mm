@@ -4,7 +4,8 @@
 
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 
-#import "base/mac/foundation_util.h"
+#import "base/base_paths.h"
+#import "base/path_service.h"
 #import "ios/web/public/test/http_server/http_server.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -21,8 +22,7 @@
     return;
   }
 
-  NSString* bundlePath = [NSBundle bundleForClass:[self class]].resourcePath;
-  server.StartOrDie(base::mac::NSStringToFilePath(bundlePath));
+  server.StartOrDie(base::PathService::CheckedGet(base::DIR_ASSETS));
 }
 
 - (void)tearDown {
