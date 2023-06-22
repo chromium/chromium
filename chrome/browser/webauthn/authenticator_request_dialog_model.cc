@@ -421,8 +421,11 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
 #if BUILDFLAG(IS_MAC)
         if (base::FeatureList::IsEnabled(
                 device::kWebAuthnSkipSingleAccountMacOS) &&
-            device::fido::mac::DeviceHasBiometricsAvailable()) {
-          // If we can do Touch ID, jump directly to it.
+            (transport_availability_.user_verification_requirement ==
+                 device::UserVerificationRequirement::kRequired ||
+             device::fido::mac::DeviceHasBiometricsAvailable())) {
+          // If it's not preferable to complete the request by clicking
+          // "Continue" then don't show the account selection sheet.
           HideDialogAndDispatchToPlatformAuthenticator();
         } else
 #endif

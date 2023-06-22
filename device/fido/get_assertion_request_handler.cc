@@ -380,6 +380,8 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
       options_(std::move(options)),
       allow_skipping_pin_touch_(allow_skipping_pin_touch) {
   transport_availability_info().request_type = FidoRequestType::kGetAssertion;
+  transport_availability_info().user_verification_requirement =
+      request_.user_verification;
   transport_availability_info().has_empty_allow_list =
       request_.allow_list.empty();
   transport_availability_info().is_only_hybrid_or_internal =
