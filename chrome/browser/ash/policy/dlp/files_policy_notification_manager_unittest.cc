@@ -14,13 +14,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/trash_io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_test_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
@@ -40,12 +40,10 @@ namespace {
 
 using testing::Field;
 
-// The id of the first notification FPNM shows.
-constexpr char kNotificationId[] = "dlp_files_0";
-
-bool CreateDummyFile(const base::FilePath& path) {
-  return WriteFile(path, "42", sizeof("42")) == sizeof("42");
-}
+using policy::CreateDummyFile;
+using policy::CreateFileSystemURL;
+using policy::GetIOTaskController;
+using policy::kNotificationId;
 
 class IOTaskStatusObserver
     : public file_manager::io_task::IOTaskController::Observer {
@@ -82,10 +80,8 @@ class FilesPolicyNotificationManagerTest : public testing::Test {
         }));
     ash::disks::DiskMountManager::InitializeForTesting(
         new file_manager::FakeDiskMountManager);
-    file_manager::VolumeManager* const volume_manager =
-        file_manager::VolumeManager::Get(profile_);
-    ASSERT_TRUE(volume_manager);
-    io_task_controller_ = volume_manager->io_task_controller();
+
+    io_task_controller_ = GetIOTaskController(profile_);
     ASSERT_TRUE(io_task_controller_);
     fpnm_ = std::make_unique<FilesPolicyNotificationManager>(profile_);
 
@@ -101,36 +97,16 @@ class FilesPolicyNotificationManagerTest : public testing::Test {
     ash::disks::DiskMountManager::Shutdown();
   }
 
-  storage::FileSystemURL CreateFileSystemURL(const std::string& path) {
-    return storage::FileSystemURL::CreateForTest(
-        kTestStorageKey, storage::kFileSystemTypeLocal,
-        base::FilePath::FromUTF8Unsafe(path));
-  }
-
   // Creates and adds a CopyOrMoveIOTask with `task_id` with type
   // `OperationType::kCopy` if `is_copy` is true, and `OperationType::kMove` if
   // false.
   base::FilePath AddCopyOrMoveIOTask(file_manager::io_task::IOTaskId id,
                                      bool is_copy) {
-    base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
-    if (!CreateDummyFile(src_file_path)) {
-      return base::FilePath();
-    }
-    auto src_url = CreateFileSystemURL(src_file_path.value());
-    if (!src_url.is_valid()) {
-      return base::FilePath();
-    }
-    auto dst_url = CreateFileSystemURL(temp_dir_.GetPath().value());
-
-    auto task = std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
+    return policy::AddCopyOrMoveIOTask(
+        profile_, file_system_context_, id,
         is_copy ? file_manager::io_task::OperationType::kCopy
-                : file_manager::io_task::OperationType::kCopy,
-        std::vector<storage::FileSystemURL>({src_url}), dst_url, profile_,
-        file_system_context_);
-
-    io_task_controller_->Add(std::move(task));
-
-    return src_file_path;
+                : file_manager::io_task::OperationType::kMove,
+        temp_dir_.GetPath(), "test1.txt", kTestStorageKey);
   }
 
  protected:
@@ -168,7 +144,7 @@ TEST_F(FilesPolicyNotificationManagerTest, AddTrashTask) {
   file_manager::io_task::IOTaskId task_id = 1;
   base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
   ASSERT_TRUE(CreateDummyFile(src_file_path));
-  auto src_url = CreateFileSystemURL(src_file_path.value());
+  auto src_url = CreateFileSystemURL(kTestStorageKey, src_file_path.value());
   ASSERT_TRUE(src_url.is_valid());
 
   auto task = std::make_unique<file_manager::io_task::TrashIOTask>(
@@ -229,16 +205,8 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningPausesIOTask) {
   io_task_controller_->AddObserver(&observer);
 
   file_manager::io_task::IOTaskId task_id = 1;
-  base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
-  ASSERT_TRUE(CreateDummyFile(src_file_path));
-  auto src_url = CreateFileSystemURL(src_file_path.value());
-  ASSERT_TRUE(src_url.is_valid());
-  auto dst_url = CreateFileSystemURL(temp_dir_.GetPath().value());
-
-  auto task = std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
-      file_manager::io_task::OperationType::kCopy,
-      std::vector<storage::FileSystemURL>({src_url}), dst_url, profile_,
-      file_system_context_);
+  auto dst_url =
+      CreateFileSystemURL(kTestStorageKey, temp_dir_.GetPath().value());
 
   // Task is queued.
   EXPECT_CALL(
@@ -247,7 +215,8 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningPausesIOTask) {
           AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
                 Field(&file_manager::io_task::ProgressStatus::state,
                       file_manager::io_task::State::kQueued))));
-  io_task_controller_->Add(std::move(task));
+  auto src_file_path = AddCopyOrMoveIOTask(task_id, /*is_copy=*/true);
+  ASSERT_FALSE(src_file_path.empty());
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
 
   file_manager::io_task::PauseParams pause_params;
@@ -293,16 +262,8 @@ TEST_F(FilesPolicyNotificationManagerTest, ShowDlpIOBlockedFiles) {
   io_task_controller_->AddObserver(&observer);
 
   file_manager::io_task::IOTaskId task_id = 1;
-  base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
-  ASSERT_TRUE(CreateDummyFile(src_file_path));
-  auto src_url = CreateFileSystemURL(src_file_path.value());
-  ASSERT_TRUE(src_url.is_valid());
-  auto dst_url = CreateFileSystemURL(temp_dir_.GetPath().value());
-
-  auto task = std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
-      file_manager::io_task::OperationType::kCopy,
-      std::vector<storage::FileSystemURL>({src_url}), dst_url, profile_,
-      file_system_context_);
+  auto dst_url =
+      CreateFileSystemURL(kTestStorageKey, temp_dir_.GetPath().value());
 
   // Task is queued.
   EXPECT_CALL(
@@ -311,7 +272,9 @@ TEST_F(FilesPolicyNotificationManagerTest, ShowDlpIOBlockedFiles) {
           AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
                 Field(&file_manager::io_task::ProgressStatus::state,
                       file_manager::io_task::State::kQueued))));
-  io_task_controller_->Add(std::move(task));
+
+  auto src_file_path = AddCopyOrMoveIOTask(task_id, /*is_copy=*/true);
+  ASSERT_FALSE(src_file_path.empty());
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
 
   fpnm_->ShowDlpBlockedFiles(task_id,
@@ -352,16 +315,8 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningCancelled) {
   io_task_controller_->AddObserver(&observer);
 
   file_manager::io_task::IOTaskId task_id = 1;
-  base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
-  ASSERT_TRUE(CreateDummyFile(src_file_path));
-  auto src_url = CreateFileSystemURL(src_file_path.value());
-  ASSERT_TRUE(src_url.is_valid());
-  auto dst_url = CreateFileSystemURL(temp_dir_.GetPath().value());
-
-  auto task = std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
-      file_manager::io_task::OperationType::kCopy,
-      std::vector<storage::FileSystemURL>({src_url}), dst_url, profile_,
-      file_system_context_);
+  auto dst_url =
+      CreateFileSystemURL(kTestStorageKey, temp_dir_.GetPath().value());
 
   // Task is queued.
   EXPECT_CALL(
@@ -370,7 +325,9 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningCancelled) {
           AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
                 Field(&file_manager::io_task::ProgressStatus::state,
                       file_manager::io_task::State::kQueued))));
-  io_task_controller_->Add(std::move(task));
+
+  auto src_file_path = AddCopyOrMoveIOTask(task_id, /*is_copy=*/true);
+  ASSERT_FALSE(src_file_path.empty());
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
 
   file_manager::io_task::PauseParams pause_params;
@@ -415,16 +372,8 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningResumed) {
   io_task_controller_->AddObserver(&observer);
 
   file_manager::io_task::IOTaskId task_id = 1;
-  base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
-  ASSERT_TRUE(CreateDummyFile(src_file_path));
-  auto src_url = CreateFileSystemURL(src_file_path.value());
-  ASSERT_TRUE(src_url.is_valid());
-  auto dst_url = CreateFileSystemURL(temp_dir_.GetPath().value());
-
-  auto task = std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
-      file_manager::io_task::OperationType::kCopy,
-      std::vector<storage::FileSystemURL>({src_url}), dst_url, profile_,
-      file_system_context_);
+  auto dst_url =
+      CreateFileSystemURL(kTestStorageKey, temp_dir_.GetPath().value());
 
   // Task is queued.
   EXPECT_CALL(
@@ -433,7 +382,9 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningResumed) {
           AllOf(Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
                 Field(&file_manager::io_task::ProgressStatus::state,
                       file_manager::io_task::State::kQueued))));
-  io_task_controller_->Add(std::move(task));
+
+  auto src_file_path = AddCopyOrMoveIOTask(task_id, /*is_copy=*/true);
+  ASSERT_FALSE(src_file_path.empty());
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
 
   file_manager::io_task::PauseParams pause_params;
@@ -483,8 +434,9 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Single) {
   status.type = type;
   base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
   ASSERT_FALSE(src_file_path.empty());
-  status.sources.emplace_back(CreateFileSystemURL(src_file_path.value()),
-                              absl::nullopt);
+  status.sources.emplace_back(
+      CreateFileSystemURL(kTestStorageKey, src_file_path.value()),
+      absl::nullopt);
   status.pause_params.policy_params =
       file_manager::io_task::PolicyPauseParams(policy);
 
@@ -512,10 +464,12 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Multi) {
   ASSERT_FALSE(src_file_path_1.empty());
   base::FilePath src_file_path_2 = temp_dir_.GetPath().AppendASCII("test2.txt");
   ASSERT_FALSE(src_file_path_2.empty());
-  status.sources.emplace_back(CreateFileSystemURL(src_file_path_1.value()),
-                              absl::nullopt);
-  status.sources.emplace_back(CreateFileSystemURL(src_file_path_2.value()),
-                              absl::nullopt);
+  status.sources.emplace_back(
+      CreateFileSystemURL(kTestStorageKey, src_file_path_1.value()),
+      absl::nullopt);
+  status.sources.emplace_back(
+      CreateFileSystemURL(kTestStorageKey, src_file_path_2.value()),
+      absl::nullopt);
   status.pause_params.policy_params =
       file_manager::io_task::PolicyPauseParams(policy);
 
@@ -569,8 +523,9 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Single) {
   status.type = type;
   base::FilePath src_file_path = temp_dir_.GetPath().AppendASCII("test1.txt");
   ASSERT_FALSE(src_file_path.empty());
-  status.sources.emplace_back(CreateFileSystemURL(src_file_path.value()),
-                              absl::nullopt);
+  status.sources.emplace_back(
+      CreateFileSystemURL(kTestStorageKey, src_file_path.value()),
+      absl::nullopt);
   status.policy_error = policy;
 
   fpnm_->ShowsFilesPolicyNotification(notification_id, status);
@@ -597,10 +552,12 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Multi) {
   ASSERT_FALSE(src_file_path_1.empty());
   base::FilePath src_file_path_2 = temp_dir_.GetPath().AppendASCII("test2.txt");
   ASSERT_FALSE(src_file_path_2.empty());
-  status.sources.emplace_back(CreateFileSystemURL(src_file_path_1.value()),
-                              absl::nullopt);
-  status.sources.emplace_back(CreateFileSystemURL(src_file_path_2.value()),
-                              absl::nullopt);
+  status.sources.emplace_back(
+      CreateFileSystemURL(kTestStorageKey, src_file_path_1.value()),
+      absl::nullopt);
+  status.sources.emplace_back(
+      CreateFileSystemURL(kTestStorageKey, src_file_path_2.value()),
+      absl::nullopt);
   status.policy_error = policy;
 
   fpnm_->ShowsFilesPolicyNotification(notification_id, status);
@@ -654,10 +611,12 @@ TEST_P(FPNMTimeoutStatusNotification, TimeoutErrorShowsTimeoutNotification) {
   ASSERT_FALSE(src_file_path_1.empty());
   base::FilePath src_file_path_2 = temp_dir_.GetPath().AppendASCII("test2.txt");
   ASSERT_FALSE(src_file_path_2.empty());
-  status.sources.emplace_back(CreateFileSystemURL(src_file_path_1.value()),
-                              absl::nullopt);
-  status.sources.emplace_back(CreateFileSystemURL(src_file_path_2.value()),
-                              absl::nullopt);
+  status.sources.emplace_back(
+      CreateFileSystemURL(kTestStorageKey, src_file_path_1.value()),
+      absl::nullopt);
+  status.sources.emplace_back(
+      CreateFileSystemURL(kTestStorageKey, src_file_path_2.value()),
+      absl::nullopt);
   status.policy_error =
       file_manager::io_task::PolicyErrorType::kDlpWarningTimeout;
 
