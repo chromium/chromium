@@ -588,7 +588,7 @@ public class FeedStream implements Stream {
     private final int mLoadMoreTriggerScrollDistanceDp;
 
     private final Activity mActivity;
-    private long mNativeFeedStream;
+    private final long mNativeFeedStream;
     private final ObserverList<ContentChangedListener> mContentChangedListeners =
             new ObserverList<>();
     private final int mStreamKind;
@@ -747,10 +747,6 @@ public class FeedStream implements Stream {
             mUnreadContentObserver.destroy();
         }
         mReliabilityLoggingBridge.destroy();
-        if (mNativeFeedStream != 0) {
-            FeedStreamJni.get().destroy(mNativeFeedStream);
-            mNativeFeedStream = 0;
-        }
     }
 
     @Override
@@ -1429,7 +1425,6 @@ public class FeedStream implements Stream {
                 long nativeFeedReliabilityLoggingBridge);
         long initWebFeed(FeedStream caller, byte[] webFeedId,
                 long nativeFeedReliabilityLoggingBridge, int entryPoint);
-        void destroy(long feedStreamPtr);
         void reportFeedViewed(long nativeFeedStream, FeedStream caller);
         void reportSliceViewed(long nativeFeedStream, FeedStream caller, String sliceId);
         void reportPageLoaded(long nativeFeedStream, FeedStream caller, boolean inNewTab);

@@ -62,10 +62,6 @@ static jlong JNI_FeedStream_InitWebFeed(
       j_entry_point));
 }
 
-static void JNI_FeedStream_Destroy(JNIEnv* env, jlong feed_stream_ptr) {
-  delete reinterpret_cast<FeedStream*>(feed_stream_ptr);
-}
-
 FeedStream::FeedStream(const JavaRef<jobject>& j_this,
                        jint stream_kind,
                        std::string web_feed_id,
@@ -82,16 +78,14 @@ FeedStream::FeedStream(const JavaRef<jobject>& j_this,
 
   FeedService* service = FeedServiceFactory::GetForBrowserContext(
       ProfileManager::GetLastUsedProfile());
-  if (!service) {
+  if (!service)
     return;
-  }
   feed_stream_api_ = service->GetStream();
 }
 
 FeedStream::~FeedStream() {
-  if (feed_stream_api_) {
+  if (feed_stream_api_)
     feed_stream_api_->DetachSurface(this);
-  }
 }
 
 ReliabilityLoggingBridge& FeedStream::GetReliabilityLoggingBridge() {
@@ -128,9 +122,8 @@ void FeedStream::RemoveDataStoreEntry(base::StringPiece key) {
 void FeedStream::LoadMore(JNIEnv* env,
                           const JavaParamRef<jobject>& obj,
                           const JavaParamRef<jobject>& callback_obj) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   feed_stream_api_->LoadMore(
       *this, base::BindOnce(&base::android::RunBooleanCallbackAndroid,
                             ScopedJavaGlobalRef<jobject>(callback_obj)));
@@ -139,9 +132,8 @@ void FeedStream::LoadMore(JNIEnv* env,
 void FeedStream::ManualRefresh(JNIEnv* env,
                                const JavaParamRef<jobject>& obj,
                                const JavaParamRef<jobject>& callback_obj) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   feed_stream_api_->ManualRefresh(
       GetStreamType(),
       base::BindOnce(&base::android::RunBooleanCallbackAndroid,
@@ -153,9 +145,8 @@ void FeedStream::ProcessThereAndBackAgain(
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jbyteArray>& data,
     const JavaParamRef<jbyteArray>& logging_parameters) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   std::string data_string;
   base::android::JavaByteArrayToString(env, data, &data_string);
   feed_stream_api_->ProcessThereAndBackAgain(
@@ -165,9 +156,8 @@ void FeedStream::ProcessThereAndBackAgain(
 int FeedStream::ExecuteEphemeralChange(JNIEnv* env,
                                        const JavaParamRef<jobject>& obj,
                                        const JavaParamRef<jbyteArray>& data) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return 0;
-  }
   std::string data_string;
   base::android::JavaByteArrayToString(env, data, &data_string);
   return feed_stream_api_
@@ -178,9 +168,8 @@ int FeedStream::ExecuteEphemeralChange(JNIEnv* env,
 void FeedStream::CommitEphemeralChange(JNIEnv* env,
                                        const JavaParamRef<jobject>& obj,
                                        int change_id) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   feed_stream_api_->CommitEphemeralChange(GetStreamType(),
                                           EphemeralChangeId(change_id));
 }
@@ -188,9 +177,8 @@ void FeedStream::CommitEphemeralChange(JNIEnv* env,
 void FeedStream::DiscardEphemeralChange(JNIEnv* env,
                                         const JavaParamRef<jobject>& obj,
                                         int change_id) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   feed_stream_api_->RejectEphemeralChange(GetStreamType(),
                                           EphemeralChangeId(change_id));
 }
@@ -214,9 +202,8 @@ void FeedStream::ReportOpenAction(JNIEnv* env,
                                   const JavaParamRef<jobject>& j_url,
                                   const JavaParamRef<jstring>& slice_id,
                                   int action_type) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
   feed_stream_api_->ReportOpenAction(
       url ? *url : GURL(), GetStreamType(),
@@ -228,9 +215,8 @@ void FeedStream::UpdateUserProfileOnLinkClick(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_url,
     const base::android::JavaParamRef<jlongArray>& entity_mids) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
   std::vector<int64_t> entities_mids_vector;
   base::android::JavaLongArrayToInt64Vector(env, entity_mids,
@@ -241,9 +227,8 @@ void FeedStream::UpdateUserProfileOnLinkClick(
 void FeedStream::ReportSliceViewed(JNIEnv* env,
                                    const JavaParamRef<jobject>& obj,
                                    const JavaParamRef<jstring>& slice_id) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   feed_stream_api_->ReportSliceViewed(
       FeedStreamSurface::GetSurfaceId(), GetStreamType(),
       base::android::ConvertJavaStringToUTF8(env, slice_id));
@@ -252,9 +237,8 @@ void FeedStream::ReportSliceViewed(JNIEnv* env,
 void FeedStream::ReportFeedViewed(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   feed_stream_api_->ReportFeedViewed(GetStreamType(),
                                      FeedStreamSurface::GetSurfaceId());
 }
@@ -262,26 +246,23 @@ void FeedStream::ReportFeedViewed(
 void FeedStream::ReportPageLoaded(JNIEnv* env,
                                   const JavaParamRef<jobject>& obj,
                                   jboolean in_new_tab) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   feed_stream_api_->ReportPageLoaded();
 }
 
 void FeedStream::ReportStreamScrolled(JNIEnv* env,
                                       const JavaParamRef<jobject>& obj,
                                       int distance_dp) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   feed_stream_api_->ReportStreamScrolled(GetStreamType(), distance_dp);
 }
 
 void FeedStream::ReportStreamScrollStart(JNIEnv* env,
                                          const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   feed_stream_api_->ReportStreamScrollStart();
 }
 
@@ -307,9 +288,8 @@ void FeedStream::ReportInfoCardTrackViewStarted(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     int info_card_type) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   feed_stream_api_->ReportInfoCardTrackViewStarted(GetStreamType(),
                                                    info_card_type);
 }
@@ -318,9 +298,8 @@ void FeedStream::ReportInfoCardViewed(JNIEnv* env,
                                       const JavaParamRef<jobject>& obj,
                                       int info_card_type,
                                       int minimum_view_interval_seconds) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   feed_stream_api_->ReportInfoCardViewed(GetStreamType(), info_card_type,
                                          minimum_view_interval_seconds);
 }
@@ -328,9 +307,8 @@ void FeedStream::ReportInfoCardViewed(JNIEnv* env,
 void FeedStream::ReportInfoCardClicked(JNIEnv* env,
                                        const JavaParamRef<jobject>& obj,
                                        int info_card_type) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   feed_stream_api_->ReportInfoCardClicked(GetStreamType(), info_card_type);
 }
 
@@ -338,9 +316,8 @@ void FeedStream::ReportInfoCardDismissedExplicitly(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     int info_card_type) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   feed_stream_api_->ReportInfoCardDismissedExplicitly(GetStreamType(),
                                                       info_card_type);
 }
@@ -348,18 +325,16 @@ void FeedStream::ReportInfoCardDismissedExplicitly(
 void FeedStream::ResetInfoCardStates(JNIEnv* env,
                                      const JavaParamRef<jobject>& obj,
                                      int info_card_type) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   feed_stream_api_->ResetInfoCardStates(GetStreamType(), info_card_type);
 }
 
 void FeedStream::InvalidateContentCacheFor(JNIEnv* env,
                                            const JavaParamRef<jobject>& obj,
                                            jint stream_kind) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   feed_stream_api_->InvalidateContentCacheFor(
       (static_cast<StreamKind>(stream_kind)));
 }
@@ -375,9 +350,8 @@ void FeedStream::ReportContentSliceVisibleTimeForGoodVisits(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     jlong elapsed_ms) {
-  if (!feed_stream_api_) {
+  if (!feed_stream_api_)
     return;
-  }
   feed_stream_api_->ReportContentSliceVisibleTimeForGoodVisits(
       base::Milliseconds(elapsed_ms));
 }
