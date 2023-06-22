@@ -629,6 +629,10 @@ config("default_incremental_linking") {
       # TODO(thakis): /INCREMENTAL is on by default in link.exe, but not in
       # lld.
       ldflags += [ "/OPT:NOREF" ]
+
+      # TODO(crbug.com/1444129): Mixing incrememntal and icf produces an error
+      # in lld-link.
+      ldflags += [ "/OPT:NOICF" ]
     }
   } else {
     ldflags = [ "/INCREMENTAL:NO" ]
