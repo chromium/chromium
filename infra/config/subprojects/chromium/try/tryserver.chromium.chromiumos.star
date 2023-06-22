@@ -56,6 +56,7 @@ try_.orchestrator_builder(
     name = "chromeos-amd64-generic-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     mirrors = ["ci/chromeos-amd64-generic-rel"],
+    check_for_flakiness = True,
     compilator = "chromeos-amd64-generic-rel-compilator",
     experiments = {
         # go/nplus1shardsproposal
@@ -72,6 +73,7 @@ try_.compilator_builder(
     name = "chromeos-amd64-generic-rel-compilator",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     cores = "8|16",
+    check_for_flakiness = True,
     main_list_view = "try",
 )
 
@@ -242,6 +244,7 @@ try_.orchestrator_builder(
     mirrors = [
         "ci/linux-chromeos-rel",
     ],
+    check_for_flakiness = True,
     compilator = "linux-chromeos-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
@@ -259,6 +262,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux-chromeos-rel-compilator",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    check_for_flakiness = True,
     main_list_view = "try",
 )
 
@@ -292,6 +296,7 @@ try_.compilator_builder(
     name = "linux-lacros-rel-compilator",
     branch_selector = branches.selector.CROS_BRANCHES,
     cores = 32,
+    check_for_flakiness = True,
     main_list_view = "try",
 )
 
