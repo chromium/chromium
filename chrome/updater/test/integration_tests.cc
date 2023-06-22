@@ -40,6 +40,7 @@
 #include "chrome/updater/util/unittest_util.h"
 #include "chrome/updater/util/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -438,6 +439,7 @@ class IntegrationTest : public ::testing::Test {
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 #define MAYBE_InstallLowerVersion DISABLED_InstallLowerVersion
 #define MAYBE_OverinstallBroken DISABLED_OverinstallBroken
+#define MAYBE_OverinstallBrokenSameVersion DISABLED_OverinstallBrokenSameVersion
 #define MAYBE_OverinstallWorking DISABLED_OverinstallWorking
 #define MAYBE_SelfUpdateFromOldReal DISABLED_SelfUpdateFromOldReal
 #define MAYBE_UninstallIfUnusedSelfAndOldReal \
@@ -448,7 +450,14 @@ class IntegrationTest : public ::testing::Test {
 #define MAYBE_OverinstallWorking OverinstallWorking
 #define MAYBE_SelfUpdateFromOldReal SelfUpdateFromOldReal
 #define MAYBE_UninstallIfUnusedSelfAndOldReal UninstallIfUnusedSelfAndOldReal
-#endif
+// TODO(crbug.com/1456556): enable OverinstallBrokenSameVersion once it works
+// on non-Windows platforms.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_OverinstallBrokenSameVersion OverinstallBrokenSameVersion
+#else
+#define MAYBE_OverinstallBrokenSameVersion DISABLED_OverinstallBrokenSameVersion
+#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 
 // The project's position is that component builds are not portable outside of
 // the build directory. Therefore, installation of component builds is not
@@ -470,6 +479,22 @@ TEST_F(IntegrationTest, Install) {
   // library separation for the public, private, and legacy interfaces.
   ASSERT_NO_FATAL_FAILURE(ExpectInterfacesRegistered());
 #endif  // BUILDFLAG(IS_WIN)
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+// Tests running the installer when the updater is already installed at the
+// same version. It should have no notable effect.
+TEST_F(IntegrationTest, OverinstallRedundant) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
+
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
+
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
@@ -505,6 +530,26 @@ TEST_F(IntegrationTest, MAYBE_OverinstallBroken) {
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, MAYBE_OverinstallBrokenSameVersion) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  absl::optional<base::FilePath> exe_path =
+      GetUpdaterExecutablePath(GetTestScope());
+  ASSERT_TRUE(exe_path.has_value());
+  ASSERT_NO_FATAL_FAILURE(DeleteFile(*exe_path));
+
+  // Since the existing version is now not working, it should reinstall. This
+  // will ultimately result in no visible change to the prefs file since the
+  // new active version number will be the same as the old one.
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
+
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
