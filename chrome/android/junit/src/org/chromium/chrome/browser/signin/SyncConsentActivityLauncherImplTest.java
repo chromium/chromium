@@ -26,6 +26,7 @@ import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -87,6 +88,7 @@ public class SyncConsentActivityLauncherImplTest {
     }
 
     @Test
+    @DisabledTest(message = "Flaky - crbug/1457280")
     public void testLaunchActivityIfAllowedWhenSigninIsDisabledByPolicy() {
         HistogramWatcher watchSigninDisabledToastShownHistogram =
                 HistogramWatcher.newSingleRecordWatcher("Signin.SyncDisabledNotificationShown",
