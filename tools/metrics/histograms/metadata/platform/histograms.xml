@@ -781,6 +781,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Hibernate.ResumeTime.KernelResume" units="ms"
+    expires_after="2024-06-08">
+  <owner>mka@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-hibernate@google.com</owner>
+  <summary>
+    The time it takes the hibernated kernel to resume/restore after being
+    launched. Reported when hiberman flushes metrics at the completion of
+    resume.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Hibernate.ResumeTime.Total" units="ms"
     expires_after="2024-06-08">
   <owner>mka@chromium.org</owner>
