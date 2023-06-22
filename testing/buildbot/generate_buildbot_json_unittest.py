@@ -1899,15 +1899,8 @@ GPU_TELEMETRY_TEST_OUTPUT_SKYLAB = """\
         ],
         "autotest_name": "chromium_GPU",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "foo_tests",
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       }
@@ -2201,13 +2194,6 @@ ANDROID_WATERFALL_OUTPUT = """\
   "Fake Android M Tester": {
     "gtest_tests": [
       {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "foo_test"
       }
     ]
@@ -4451,13 +4437,6 @@ TEST_QUERY_BOTS_OUTPUT = {
     "gtest_tests": [
       {
         "test": "foo_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": False
-        }
       }
     ]
   },
@@ -4529,14 +4508,7 @@ TEST_QUERY_BOTS_OUTPUT = {
 TEST_QUERY_BOTS_TESTS_OUTPUT = {
   "Fake Android M Tester": [
     {
-      "merge": {
-        "args": [],
-        "script": "//testing/merge_scripts/standard_gtest_merge.py"
-      },
       "test": "foo_test",
-      "swarming": {
-        "can_use_on_swarming_builders": False
-      }
     }
   ],
   "Fake Android L Tester": [
@@ -6536,7 +6508,6 @@ VARIATION_SKYLAB_OUTPUT = """\
         "cros_img": "octopus-release/R89-13655.0.0",
         "name": "tast.basic OCTOPUS_TOT",
         "suite": "tast.basic",
-        "swarming": {},
         "test": "tast.basic",
         "timeout": 3600,
         "variant_id": "OCTOPUS_TOT"
@@ -6547,7 +6518,6 @@ VARIATION_SKYLAB_OUTPUT = """\
         "cros_img": "octopus-release/R88-13597.23.0",
         "name": "tast.basic OCTOPUS_TOT-1",
         "suite": "tast.basic",
-        "swarming": {},
         "test": "tast.basic",
         "timeout": 3600,
         "variant_id": "OCTOPUS_TOT-1"
@@ -6569,7 +6539,6 @@ ENABLED_AND_DISABLED_VARIATION_SKYLAB_OUTPUT = """\
         "cros_img": "octopus-release/R89-13655.0.0",
         "name": "tast.basic OCTOPUS_TOT",
         "suite": "tast.basic",
-        "swarming": {},
         "test": "tast.basic",
         "timeout": 3600,
         "variant_id": "OCTOPUS_TOT"

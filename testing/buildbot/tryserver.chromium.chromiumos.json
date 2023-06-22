@@ -16,7 +16,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",

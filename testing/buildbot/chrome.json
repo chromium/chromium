@@ -1598,7 +1598,6 @@
         "cros_board": "octopus",
         "cros_img": "octopus-release/R110-15249.0.0",
         "name": "chrome_all_tast_tests OCTOPUS_RELEASE_CHROME_FROM_TLS",
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
@@ -1851,7 +1850,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
@@ -1867,7 +1865,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
@@ -1987,7 +1984,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
