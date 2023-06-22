@@ -1,33 +1,34 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_HID_HID_SYSTEM_TRAY_ICON_UNITTEST_H_
-#define CHROME_BROWSER_HID_HID_SYSTEM_TRAY_ICON_UNITTEST_H_
+#ifndef CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_SYSTEM_TRAY_ICON_UNITTEST_H_
+#define CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_SYSTEM_TRAY_ICON_UNITTEST_H_
 
 #include <string>
 #include <tuple>
 
-#include "chrome/browser/hid/hid_connection_tracker.h"
+#include "chrome/browser/device_notifications/device_connection_tracker.h"
+#include "chrome/browser/device_notifications/device_system_tray_icon.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class MockHidConnectionTracker : public HidConnectionTracker {
+class MockDeviceConnectionTracker : public DeviceConnectionTracker {
  public:
-  explicit MockHidConnectionTracker(Profile* profile);
-  ~MockHidConnectionTracker() override;
+  explicit MockDeviceConnectionTracker(Profile* profile);
+  ~MockDeviceConnectionTracker() override;
   MOCK_METHOD(void, ShowContentSettingsExceptions, (), (override));
   MOCK_METHOD(void, ShowSiteSettings, (const url::Origin&), (override));
 };
 
-class HidSystemTrayIconTestBase : public BrowserWithTestWindowTest {
+class DeviceSystemTrayIconTestBase : public BrowserWithTestWindowTest {
  public:
   using OriginItem = std::tuple<url::Origin, int, std::string>;
   using ProfileItem = std::pair<Profile*, std::vector<OriginItem>>;
 
-  HidSystemTrayIconTestBase()
+  DeviceSystemTrayIconTestBase()
       : BrowserWithTestWindowTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
@@ -38,17 +39,27 @@ class HidSystemTrayIconTestBase : public BrowserWithTestWindowTest {
   virtual void CheckIcon(
       const std::vector<ProfileItem>& profile_connection_counts) = 0;
 
-  // Check no hid system tray is being shown.
+  // Check no device system tray is being shown.
   virtual void CheckIconHidden() = 0;
 
+  // Reset the device system tray icon of the testing browser process.
+  virtual void ResetTestingBrowserProcessSystemTrayIcon() = 0;
+
   std::u16string GetExpectedButtonTitleForProfile(Profile* profile);
-  std::u16string GetExpectedTitle(size_t num_origins, size_t num_connections);
 
-  // This is used to inject MockHidConnectionTracker.
-  BrowserContextKeyedServiceFactory::TestingFactory
-  GetHidConnectionTrackerTestingFactory();
+  // Get the expected title for the device system tray icon.
+  virtual std::u16string GetExpectedTitle(size_t num_origins,
+                                          size_t num_connections) = 0;
 
-  // Create a testing profile with MockHidConnectionTracker.
+  // This is used to inject MockDeviceConnectionTracker to the device type's
+  // connection tracker of the `profile`.
+  virtual void SetDeviceConnectionTrackerTestingFactory(Profile* profile) = 0;
+
+  virtual MockDeviceConnectionTracker* GetDeviceConnectionTracker(
+      Profile* profile,
+      bool create) = 0;
+
+  // Create a testing profile with MockDeviceConnectionTracker.
   Profile* CreateTestingProfile(const std::string& profile_name);
 
   // Test the scenario involving multiple profiles including profile
@@ -94,4 +105,4 @@ class HidSystemTrayIconTestBase : public BrowserWithTestWindowTest {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 };
 
-#endif  // CHROME_BROWSER_HID_HID_SYSTEM_TRAY_ICON_UNITTEST_H_
+#endif  // CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_SYSTEM_TRAY_ICON_UNITTEST_H_

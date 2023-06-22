@@ -7031,6 +7031,8 @@ test("unit_tests") {
       "../browser/content_settings/generated_cookie_prefs_unittest.cc",
       "../browser/content_settings/generated_notification_pref_unittest.cc",
       "../browser/device_identity/device_oauth2_token_service_unittest.cc",
+      "../browser/device_notifications/device_system_tray_icon_unittest.cc",
+      "../browser/device_notifications/device_system_tray_icon_unittest.h",
       "../browser/devtools/devtools_file_system_indexer_unittest.cc",
       "../browser/devtools/devtools_file_watcher_unittest.cc",
       "../browser/devtools/devtools_settings_unittest.cc",
@@ -7062,8 +7064,6 @@ test("unit_tests") {
       "../browser/hid/hid_chooser_context_unittest.cc",
       "../browser/hid/hid_connection_tracker_unittest.cc",
       "../browser/hid/hid_policy_allowed_devices_unittest.cc",
-      "../browser/hid/hid_system_tray_icon_unittest.cc",
-      "../browser/hid/hid_system_tray_icon_unittest.h",
       "../browser/importer/profile_writer_unittest.cc",
       "../browser/lifetime/application_lifetime_unittest.cc",
       "../browser/lookalikes/lookalike_url_navigation_throttle_unittest.cc",
@@ -7665,7 +7665,11 @@ test("unit_tests") {
   }
 
   if (!is_android && !is_chromeos) {
-    sources += [ "../browser/hid/hid_status_icon_unittest.cc" ]
+    sources += [
+      "../browser/device_notifications/device_status_icon_unittest.cc",
+      "../browser/device_notifications/device_status_icon_unittest.h",
+      "../browser/hid/hid_status_icon_unittest.cc",
+    ]
   }
 
   if (is_chromeos) {
@@ -7673,6 +7677,8 @@ test("unit_tests") {
       "../browser/apps/intent_helper/metrics/intent_handling_metrics_unittest.cc",
       "../browser/apps/intent_helper/supported_links_infobar_prefs_service_unittest.cc",
       "../browser/certificate_provider/certificate_provider_service_unittest.cc",
+      "../browser/device_notifications/device_pinned_notification_unittest.cc",
+      "../browser/device_notifications/device_pinned_notification_unittest.h",
       "../browser/download/notification/download_item_notification_unittest.cc",
       "../browser/extensions/api/document_scan/document_scan_api_unittest.cc",
       "../browser/hid/hid_pinned_notification_unittest.cc",
