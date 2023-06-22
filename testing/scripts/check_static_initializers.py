@@ -5,6 +5,7 @@
 
 from __future__ import print_function
 
+import copy
 import json
 import os
 import re
@@ -19,14 +20,11 @@ from scripts import common
 # A list of filename regexes that are allowed to have static initializers.
 # If something adds a static initializer, revert it. We don't accept regressions
 # in static initializers.
-_LINUX_SI_ALLOWLIST = {
+_SHARED_LINUX_CROS_SI_ALLOWLIST = {
     'chrome': [
         # Only in coverage builds, not production.
         'InstrProfilingRuntime\\.cpp : ' +
         '_GLOBAL__sub_I_InstrProfilingRuntime\\.cpp',
-
-        # Added by libgcc due to USE_EH_FRAME_REGISTRY.
-        'crtstuff\\.c : frame_dummy',
 
         # TODO(crbug.com/973554): Remove.
         'iostream\\.cpp : _GLOBAL__I_000100',
@@ -38,31 +36,26 @@ _LINUX_SI_ALLOWLIST = {
     ],
     'nacl_helper_bootstrap': [],
 }
+
+# The lists for Linux and ChromeOS are similar, but some Linux-specific entries
+# need to be added below.  If something adds a static initializer, revert it. We
+# don't accept regressions in static initializers.
+_LINUX_SI_ALLOWLIST = copy.deepcopy(_SHARED_LINUX_CROS_SI_ALLOWLIST)
+_LINUX_SI_ALLOWLIST['chrome'].extend([
+    # Added by libgcc due to USE_EH_FRAME_REGISTRY.
+    'crtstuff\\.c : frame_dummy',
+])
+
+# The lists for Linux and ChromeOS are similar, but some ChromeOS-specific
+# entries need to be added below.  If something adds a static initializer,
+# revert it. We don't accept regressions in static initializers.
+_CROS_SI_ALLOWLIST = copy.deepcopy(_SHARED_LINUX_CROS_SI_ALLOWLIST)
+_CROS_SI_ALLOWLIST['chrome'].extend([
+    '.*000100.*',       # libc++ uses init_priority 100 for iostreams.
+])
+
+# `nacl_helper` has the same expectations on Linux and CrOS.
 _LINUX_SI_ALLOWLIST['nacl_helper'] = _LINUX_SI_ALLOWLIST['chrome']
-
-# The lists for Chrome OS are conceptually the same as the Linux ones above.
-# If something adds a static initializer, revert it. We don't accept regressions
-# in static initializers.
-#
-# TODO(lukasza): Deduplicate _CROS_SI_ALLOWLIST and _LINUX_SI_ALLOWLIST
-_CROS_SI_ALLOWLIST = {
-    'chrome': [
-        # Only in coverage builds, not production.
-        'InstrProfilingRuntime\\.cpp : ' +
-        '_GLOBAL__sub_I_InstrProfilingRuntime\\.cpp',
-
-        # TODO(crbug.com/973554): Remove.
-        'iostream\\.cpp : _GLOBAL__I_000100',
-
-        # TODO(crbug.com/1445935): Rust stdlib argv handling.
-        # https://github.com/rust-lang/rust/blob/b08148f6a76010ea3d4e91d61245aa7aac59e4b4/library/std/src/sys/unix/args.rs#L107-L127
-        # https://github.com/rust-lang/rust/issues/111921
-        '.* : std::sys::unix::args::imp::ARGV_INIT_ARRAY::init_wrapper',
-
-        '.*000100.*',       # libc++ uses init_priority 100 for iostreams.
-    ],
-    'nacl_helper_bootstrap': [],
-}
 _CROS_SI_ALLOWLIST['nacl_helper'] = _LINUX_SI_ALLOWLIST['chrome']
 
 # Mac can use this list when a dsym is available, otherwise it will fall back
