@@ -130,6 +130,7 @@ function onBulkPinningProgress(progress) {
       progress.time_spent_listing_items;
   $('bulk-pinning-time-spent-pinning-files').innerText =
       progress.time_spent_pinning_files;
+  $('bulk-pinning-remaining-time').innerText = progress.remaining_time;
 }
 
 function updateStartupArguments(args) {
