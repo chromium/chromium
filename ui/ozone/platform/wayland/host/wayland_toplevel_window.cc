@@ -794,6 +794,12 @@ void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
     NOTIMPLEMENTED_LOG_ONCE();
   }
 }
+
+void WaylandToplevelWindow::SetTopInset(int height) {
+  if (shell_toplevel_) {
+    shell_toplevel_->SetTopInset(height);
+  }
+}
 #endif
 
 void WaylandToplevelWindow::ShowSnapPreview(

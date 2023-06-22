@@ -161,6 +161,7 @@ class WaylandToplevelWindow : public WaylandWindow,
       bool allow_system_drag) override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetImmersiveFullscreenStatus(bool status) override;
+  void SetTopInset(int height) override;
 #endif
   void ShowSnapPreview(WaylandWindowSnapDirection snap,
                        bool allow_haptic_feedback) override;

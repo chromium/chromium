@@ -37,6 +37,7 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetUseImmersiveMode(bool immersive) override;
   bool SupportsTopLevelImmersiveStatus() const override;
+  void SetTopInset(int height) override;
 #endif
   void SetMinimized() override;
   void SurfaceMove(WaylandConnection* connection) override;

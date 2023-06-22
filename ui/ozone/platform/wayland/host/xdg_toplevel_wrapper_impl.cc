@@ -178,6 +178,13 @@ bool XDGToplevelWrapperImpl::SupportsTopLevelImmersiveStatus() const {
   return aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
                                ZAURA_TOPLEVEL_SET_FULLSCREEN_MODE_SINCE_VERSION;
 }
+
+void XDGToplevelWrapperImpl::SetTopInset(int height) {
+  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
+                            ZAURA_TOPLEVEL_SET_TOP_INSET_SINCE_VERSION) {
+    zaura_toplevel_set_top_inset(aura_toplevel_.get(), height);
+  }
+}
 #endif
 
 void XDGToplevelWrapperImpl::UnSetFullscreen() {

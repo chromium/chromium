@@ -32,6 +32,9 @@ class TestZAuraToplevel : public ServerObject {
   const absl::optional<TestRegion>& shape() const { return shape_; }
   void set_shape(const absl::optional<TestRegion>& shape) { shape_ = shape; }
 
+  int top_inset() const { return top_inset_; }
+  void set_top_inset(int top_inset) { top_inset_ = top_inset; }
+
   using AckRotateFocusCallback =
       base::RepeatingCallback<void(uint32_t serial, uint32_t handled)>;
   void set_ack_rotate_focus_callback(const AckRotateFocusCallback cb) {
@@ -43,6 +46,7 @@ class TestZAuraToplevel : public ServerObject {
 
  private:
   absl::optional<TestRegion> shape_;
+  int top_inset_;
   AckRotateFocusCallback ack_rotate_focus_callback_;
 };
 
