@@ -15,6 +15,10 @@ component("types") {
   ]
   deps = [ "//ui/base/dragdrop/mojom" ]
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   if (is_mac) {
     sources += [ "drag_drop_types_mac.mm" ]
     frameworks = [ "AppKit.framework" ]

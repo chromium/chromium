@@ -6,13 +6,16 @@
 
 #import <Cocoa/Cocoa.h>
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace ui {
 
 InputMethodMac::InputMethodMac(ImeKeyEventDispatcher* ime_key_event_dispatcher)
     : InputMethodBase(ime_key_event_dispatcher) {}
 
-InputMethodMac::~InputMethodMac() {
-}
+InputMethodMac::~InputMethodMac() = default;
 
 ui::EventDispatchDetails InputMethodMac::DispatchKeyEvent(ui::KeyEvent* event) {
   // This is used on Mac only to dispatch events post-IME.
@@ -26,7 +29,7 @@ void InputMethodMac::CancelComposition(const TextInputClient* client) {
   if (!IsTextInputClientFocused(client))
     return;
 
-  [[NSTextInputContext currentInputContext] discardMarkedText];
+  [NSTextInputContext.currentInputContext discardMarkedText];
 }
 
 bool InputMethodMac::IsCandidatePopupOpen() const {

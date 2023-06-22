@@ -14,6 +14,10 @@ component("emoji") {
   defines = [ "IS_UI_BASE_EMOJI_IMPL" ]
   public = [ "emoji_panel_helper.h" ]
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   sources = [ "emoji_panel_helper.h" ]
   if (is_mac) {
     sources += [ "emoji_panel_helper_mac.mm" ]

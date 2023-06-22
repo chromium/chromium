@@ -12,6 +12,8 @@ component("mac") {
     "input_method_mac.mm",
   ]
 
+  configs += [ "//build/config/compiler:enable_arc" ]
+
   defines = [ "IS_UI_BASE_IME_MAC_IMPL" ]
 
   public_deps = [ "//ui/base/ime" ]

@@ -6,6 +6,10 @@
 
 #import <AppKit/AppKit.h>
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace ui {
 
 uint64_t DragDropTypes::DragOperationToNSDragOperation(int drag_operation) {
