@@ -4,6 +4,8 @@
 
 package org.chromium.components.page_info;
 
+import static org.chromium.components.content_settings.PrefNames.IN_CONTEXT_COOKIE_CONTROLS_OPENED;
+
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -20,6 +22,7 @@ import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.Collection;
 
@@ -60,6 +63,11 @@ public class PageInfoCookiesController
     }
 
     private void launchSubpage() {
+        // Record a pref on page open if 3PC blocking is enabled.
+        if (getDelegate().cookieControlsShown()) {
+            UserPrefs.get(mMainController.getBrowserContext())
+                    .setBoolean(IN_CONTEXT_COOKIE_CONTROLS_OPENED, true);
+        }
         mMainController.recordAction(PageInfoAction.PAGE_INFO_COOKIES_DIALOG_OPENED);
         mMainController.launchSubpage(this);
     }

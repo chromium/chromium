@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
+import static org.chromium.components.content_settings.PrefNames.IN_CONTEXT_COOKIE_CONTROLS_OPENED;
 import static org.chromium.ui.test.util.ViewUtils.hasBackgroundColor;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -563,6 +564,11 @@ public class PageInfoViewTest {
         onView(withId(R.id.page_info_cookies_row)).perform(click());
         onViewWaiting(allOf(
                 withText(containsString("Cookies and other site data are used")), isDisplayed()));
+        // Verify that the pref was recorded successfully.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assertTrue(UserPrefs.get(Profile.getLastUsedRegularProfile())
+                               .getBoolean(IN_CONTEXT_COOKIE_CONTROLS_OPENED));
+        });
         mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage");
     }
 
