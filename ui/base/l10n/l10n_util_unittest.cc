@@ -519,7 +519,17 @@ TEST_F(L10nUtilTest, GetDisplayNameForLocale) {
               lower_with_null[2] == 0 && lower_with_null[3] == 'b');
 }
 
-TEST_F(L10nUtilTest, GetDisplayNameForCountry) {
+// TODO:(crbug.com/1456465) Re-enable test for iOS
+// In iOS17, NSLocale's internal implementation was modified resulting in
+// redefined behavior for existing functions. As a result,
+// `l10n_util::GetDisplayNameForCountry` no longer produces the same output in
+// iOS17 as previous versions.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_GetDisplayNameForCountry DISABLED_GetDisplayNameForCountry
+#else
+#define MAYBE_GetDisplayNameForCountry GetDisplayNameForCountry
+#endif
+TEST_F(L10nUtilTest, MAYBE_GetDisplayNameForCountry) {
   std::u16string result = l10n_util::GetDisplayNameForCountry("BR", "en");
   EXPECT_EQ(u"Brazil", result);
 
