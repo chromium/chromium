@@ -159,7 +159,7 @@ bool SameEvents(const std::list<google_apis::calendar::CalendarEvent>& a,
   return base::ranges::equal(a, b, [](const auto& a, const auto& b) {
     return a.id() == b.id() &&
            a.start_time().date_time() == b.start_time().date_time() &&
-           a.end_time().date_time() == b.start_time().date_time();
+           a.end_time().date_time() == b.end_time().date_time();
   });
 }
 
