@@ -164,12 +164,6 @@ class BrowserView : public BrowserWindow,
 
   void SetDownloadShelfForTest(DownloadShelf* download_shelf);
 
-  // Initializes (or re-initializes) the status bubble.  We try to only create
-  // the bubble once and re-use it for the life of the browser, but certain
-  // events (such as changing enabling/disabling Aero on Win) can force a need
-  // to change some of the bubble's creation parameters.
-  void InitStatusBubble();
-
   // Returns the constraining bounding box that should be used to lay out the
   // FindBar within. This is _not_ the size of the find bar, just the bounding
   // box it should be laid out within. The coordinate system of the returned

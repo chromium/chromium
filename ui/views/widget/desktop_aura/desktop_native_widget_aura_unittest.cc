@@ -136,30 +136,6 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetNotVisibleOnlyWindowTreeHostShown) {
 }
 #endif
 
-TEST_F(DesktopNativeWidgetAuraTest, DesktopAuraWindowShowFrameless) {
-  Widget widget;
-  Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  widget.Init(std::move(init_params));
-
-  // Make sure that changing frame type doesn't crash when there's no non-client
-  // view.
-  ASSERT_EQ(nullptr, widget.non_client_view());
-  widget.DebugToggleFrameType();
-  widget.Show();
-
-#if BUILDFLAG(IS_WIN)
-  // On Windows also make sure that handling WM_SYSCOMMAND doesn't crash with
-  // custom frame. Frame type needs to be toggled again if Aero Glass is
-  // disabled.
-  if (widget.ShouldUseNativeFrame())
-    widget.DebugToggleFrameType();
-  SendMessage(widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget(),
-              WM_SYSCOMMAND, SC_RESTORE, 0);
-#endif  // BUILDFLAG(IS_WIN)
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(crbug.com/916272): investigate fixing and enabling on Chrome OS.
 #define MAYBE_GlobalCursorState DISABLED_GlobalCursorState

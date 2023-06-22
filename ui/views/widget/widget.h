@@ -922,10 +922,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // (for example, so that they can overhang onto the window title bar).
   bool ShouldWindowContentsBeTransparent() const;
 
-  // Forces the frame into the alternate frame type (custom or native) depending
-  // on its current state.
-  void DebugToggleFrameType();
-
   // Tell the window that something caused the frame type to change.
   void FrameTypeChanged();
 

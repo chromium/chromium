@@ -1209,21 +1209,6 @@ bool Widget::ShouldWindowContentsBeTransparent() const {
                         : false;
 }
 
-void Widget::DebugToggleFrameType() {
-  if (!native_widget_)
-    return;
-
-  if (frame_type_ == FrameType::kDefault) {
-    frame_type_ = ShouldUseNativeFrame() ? FrameType::kForceCustom
-                                         : FrameType::kForceNative;
-  } else {
-    frame_type_ = frame_type_ == FrameType::kForceCustom
-                      ? FrameType::kForceNative
-                      : FrameType::kForceCustom;
-  }
-  FrameTypeChanged();
-}
-
 void Widget::FrameTypeChanged() {
   if (native_widget_)
     native_widget_->FrameTypeChanged();

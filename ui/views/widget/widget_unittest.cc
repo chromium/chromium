@@ -1317,10 +1317,6 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, Deactivate) {
   widget()->Deactivate();
 }
 
-TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, DebugToggleFrameType) {
-  widget()->DebugToggleFrameType();
-}
-
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, DraggedView) {
   widget()->dragged_view();
 }

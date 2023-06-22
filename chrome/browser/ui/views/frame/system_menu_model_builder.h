@@ -47,9 +47,6 @@ class SystemMenuModelBuilder {
   void BuildSystemMenuForBrowserWindow(ui::SimpleMenuModel* model);
   void BuildSystemMenuForAppOrPopupWindow(ui::SimpleMenuModel* model);
 
-  // Adds items for toggling the frame type (if necessary).
-  void AddFrameToggleItems(ui::SimpleMenuModel* model);
-
 #if BUILDFLAG(IS_CHROMEOS)
   // Add the submenu for move to desks.
   void AppendMoveToDesksMenu(ui::SimpleMenuModel* model);
