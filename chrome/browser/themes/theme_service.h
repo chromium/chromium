@@ -192,8 +192,8 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
   virtual BrowserColorScheme GetBrowserColorScheme() const;
 
   // Sets/gets the browser user color preference.
-  void SetUserColor(absl::optional<SkColor> user_color);
-  absl::optional<SkColor> GetUserColor() const;
+  virtual void SetUserColor(absl::optional<SkColor> user_color);
+  virtual absl::optional<SkColor> GetUserColor() const;
 
   // Sets/gets the browser grayscale theme preference.
   void SetIsGrayscale(bool is_grayscale);
