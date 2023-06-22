@@ -897,11 +897,6 @@
       base_feature: "none",
     },
     {
-      name: "CSSInitialPseudo",
-      status: "experimental",
-      base_feature: "none",
-    },
-    {
       name: "CSSLayoutAPI",
       status: "experimental",
       base_feature: "none",
@@ -1091,6 +1086,11 @@
       name: "CSSSpellingGrammarErrors",
       status: "experimental",
       base_feature: "none",
+    },
+    {
+      // https://drafts.csswg.org/css-transitions-2/#defining-before-change-style-the-starting-style-rule
+      name: "CSSStartingStyle",
+      status: "experimental",
     },
     {
       // Explainer: https://drafts.csswg.org/css-values/#round-func

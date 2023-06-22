@@ -4,6 +4,6 @@
 
 [
   Exposed=Window,
-  RuntimeEnabled=CSSInitialPseudo
+  RuntimeEnabled=CSSStartingStyle
 ] interface CSSStartingStyleRule : CSSGroupingRule {
 };

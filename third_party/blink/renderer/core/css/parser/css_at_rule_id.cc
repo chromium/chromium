@@ -92,7 +92,7 @@ CSSAtRuleID CssAtRuleID(StringView name) {
     return CSSAtRuleID::kCSSAtRuleInvalid;
   }
   if (EqualIgnoringASCIICase(name, "starting-style")) {
-    if (RuntimeEnabledFeatures::CSSInitialPseudoEnabled()) {
+    if (RuntimeEnabledFeatures::CSSStartingStyleEnabled()) {
       return CSSAtRuleID::kCSSAtRuleStartingStyle;
     }
     return CSSAtRuleID::kCSSAtRuleInvalid;
