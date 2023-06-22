@@ -85,10 +85,7 @@ std::string GetDataOwner::GetOwningHost<blink::StorageKey>(
   // implementation of the model, but ultimately these storage types may not
   // coexist.
   switch (storage_type_) {
-    case BrowsingDataModel::StorageType::kPartitionedQuotaStorage:
-      return data_key.top_level_site().GetURL().host();
-
-    case BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage:
+    case BrowsingDataModel::StorageType::kQuotaStorage:
     case BrowsingDataModel::StorageType::kSharedStorage:
     case BrowsingDataModel::StorageType::kLocalStorage:
       return data_key.origin().host();
@@ -218,7 +215,7 @@ void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
             helper->GetCompleteCallback()));
   }
 
-  if (types.Has(BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage)) {
+  if (types.Has(BrowsingDataModel::StorageType::kQuotaStorage)) {
     const blink::mojom::StorageType quota_types[] = {
         blink::mojom::StorageType::kTemporary,
         blink::mojom::StorageType::kSyncable};
@@ -338,10 +335,9 @@ void OnQuotaManagedDataLoaded(
     const std::list<BrowsingDataQuotaHelper::QuotaInfo>& quota_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   for (const auto& entry : quota_info) {
-    model->AddBrowsingData(
-        entry.storage_key,
-        BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage,
-        entry.syncable_usage + entry.temporary_usage);
+    model->AddBrowsingData(entry.storage_key,
+                           BrowsingDataModel::StorageType::kQuotaStorage,
+                           entry.syncable_usage + entry.temporary_usage);
   }
   std::move(loaded_callback).Run();
 }

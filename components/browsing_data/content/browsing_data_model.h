@@ -46,11 +46,10 @@ class BrowsingDataModel {
     kLocalStorage,
     kInterestGroup,
     kAttributionReporting,
-    kPartitionedQuotaStorage,  // Not fetched from disk or deleted.
-    kUnpartitionedQuotaStorage,
+    kQuotaStorage,
 
     kFirstType = kTrustTokens,
-    kLastType = kUnpartitionedQuotaStorage,
+    kLastType = kQuotaStorage,
     kExtendedDelegateRange =
         64,  // This is needed to include delegate values when adding delegate
              // browsing data to the model.

@@ -694,7 +694,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
           browsing_data_model.get(),
           {{kTestHost,
             data_key,
-            {{BrowsingDataModel::StorageType::kUnpartitionedQuotaStorage},
+            {{BrowsingDataModel::StorageType::kQuotaStorage},
              /*storage_size=*/0,
              /*cookie_count=*/0}}});
       ASSERT_EQ(browsing_data_model->size(), 1u);
