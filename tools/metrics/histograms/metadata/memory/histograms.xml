@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="VmmSwapVmName">
-  <variant name="ArcVm" summary="ARCVM"/>
+  <variant name="ARCVM" summary="ARCVM"/>
 </variants>
 
 <histogram name="HeapProfiling.AndroidStackUnwinder"
