@@ -81,6 +81,9 @@ class FocusRingBrowserTest : public InProcessBrowserTest {
     platform_suffix = "_win";
 #elif BUILDFLAG(IS_LINUX)
     platform_suffix = "_linux";
+    if (features::IsChromeRefresh2023()) {
+      platform_suffix += "_cr23";
+    }
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
     platform_suffix = "_chromeos";
 #endif
