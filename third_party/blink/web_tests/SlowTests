@@ -885,7 +885,6 @@ crbug.com/1091716 [ Mac11 Release ] svg/as-object/sizing/svg-in-object-placehold
 crbug.com/1091716 [ Mac12 ] svg/as-object/sizing/svg-in-object-placeholder-percentage-percentage-no-intrinsic-ratio.html [ Slow ]
 crbug.com/1091716 [ Release Win ] svg/as-object/sizing/svg-in-object-placeholder-percentage-percentage-no-intrinsic-ratio.html [ Slow ]
 crbug.com/1233743 [ Linux ] svg/filters/feDisplacementMap.svg [ Slow ]
-crbug.com/1233743 [ Mac10.15 Release ] svg/filters/feDisplacementMap.svg [ Slow ]
 crbug.com/1233743 [ Mac11 Release ] svg/filters/feDisplacementMap.svg [ Slow ]
 crbug.com/1233743 [ Mac12 ] svg/filters/feDisplacementMap.svg [ Slow ]
 crbug.com/1233743 [ Release Win ] svg/filters/feDisplacementMap.svg [ Slow ]
