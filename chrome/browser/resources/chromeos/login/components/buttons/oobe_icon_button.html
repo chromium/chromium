@@ -26,7 +26,7 @@ found in the LICENSE file.
     font-size: var(--oobe-button-font-size);
     font-weight: var(--oobe-button-font-weight);
   }
-  :host(.bg-transparent) cr-button {
+  :host-context(body.jelly-enabled):host(.bg-transparent) cr-button {
     background-color: transparent !important;
   }
 </style>
