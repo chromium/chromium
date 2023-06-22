@@ -4,7 +4,9 @@
 
 #include "ui/views/win/pen_id_handler.h"
 
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/hstring_reference.h"
@@ -14,6 +16,76 @@
 namespace views {
 
 namespace {
+
+using ABI::Windows::Devices::Input::IPenDevice;
+using ABI::Windows::Devices::Input::IPenDeviceStatics;
+using ABI::Windows::UI::Input::IPointerPoint;
+using ABI::Windows::UI::Input::IPointerPointProperties;
+using ABI::Windows::UI::Input::IPointerPointStatics;
+using Microsoft::WRL::ComPtr;
+
+#define HID_USAGE_PAGE_DIGITIZER ((UINT)0x0d)
+#define HID_USAGE_ID_TSN ((UINT)0x5b)
+#define HID_USAGE_ID_TVID ((UINT)0x91)
+
+PenIdHandler::GetPenDeviceStatics get_pen_device_statics = nullptr;
+PenIdHandler::GetPointerPointStatics get_pointer_point_statics = nullptr;
+
+class PenIdStatics {
+ public:
+  PenIdStatics() {
+    if (skip_initialization_) {
+      return;
+    }
+    base::win::AssertComInitialized();
+    base::win::RoGetActivationFactory(
+        base::win::HStringReference(
+            RuntimeClass_Windows_Devices_Input_PenDevice)
+            .Get(),
+        IID_PPV_ARGS(&pen_device_statics_));
+
+    base::win::RoGetActivationFactory(
+        base::win::HStringReference(RuntimeClass_Windows_UI_Input_PointerPoint)
+            .Get(),
+        IID_PPV_ARGS(&pointer_point_statics_));
+  }
+
+  static PenIdStatics* GetInstance() {
+    static base::NoDestructor<PenIdStatics> instance;
+    return instance.get();
+  }
+
+  static void SkipInitializationForTesting() {
+    if (skip_initialization_) {
+      return;
+    }
+
+    skip_initialization_ = true;
+
+    // Force PenIdStatics to skip initialization.
+    PenIdStatics::GetInstance();
+
+    // Check that initialization hasn't already occurred.
+    DCHECK_EQ(nullptr, PenIdStatics::GetInstance()->PenDeviceStatics());
+    DCHECK_EQ(nullptr, PenIdStatics::GetInstance()->PointerPointStatics());
+  }
+
+  const ComPtr<IPenDeviceStatics> PenDeviceStatics() {
+    return pen_device_statics_;
+  }
+
+  const ComPtr<IPointerPointStatics> PointerPointStatics() {
+    return pointer_point_statics_;
+  }
+
+ private:
+  ComPtr<IPenDeviceStatics> pen_device_statics_;
+  ComPtr<IPointerPointStatics> pointer_point_statics_;
+  static bool skip_initialization_;
+};
+
+// Declared private in PenIdStatics.
+bool PenIdStatics::skip_initialization_ = false;
 
 bool PenDeviceApiSupported() {
   // PenDevice API only works properly on WIN11 or Win10 post v19044.
@@ -26,44 +98,19 @@ bool PenDeviceApiSupported() {
 
 }  // namespace
 
-using ABI::Windows::Devices::Input::IPenDevice;
-using ABI::Windows::UI::Input::IPointerPoint;
-using ABI::Windows::UI::Input::IPointerPointProperties;
-using Microsoft::WRL::ComPtr;
-
-#define HID_USAGE_PAGE_DIGITIZER ((UINT)0x0d)
-#define HID_USAGE_ID_TSN ((UINT)0x5b)
-#define HID_USAGE_ID_TVID ((UINT)0x91)
-
-PenIdHandler::GetPenDeviceStatics get_pen_device_statics = nullptr;
-PenIdHandler::GetPointerPointStatics get_pointer_point_statics = nullptr;
-
 PenIdHandler::ScopedPenIdStaticsForTesting::ScopedPenIdStaticsForTesting(
     PenIdHandler::GetPenDeviceStatics pen_device_statics,
     PenIdHandler::GetPointerPointStatics pointer_point_statics)
     : pen_device_resetter_(&get_pen_device_statics, pen_device_statics),
       pointer_point_resetter_(&get_pointer_point_statics,
-                              pointer_point_statics) {}
+                              pointer_point_statics) {
+  PenIdStatics::SkipInitializationForTesting();
+}
 PenIdHandler::ScopedPenIdStaticsForTesting::~ScopedPenIdStaticsForTesting() =
     default;
 
 PenIdHandler::PenIdHandler() {
-  base::win::AssertComInitialized();
-  HRESULT hr = base::win::RoGetActivationFactory(
-      base::win::HStringReference(RuntimeClass_Windows_Devices_Input_PenDevice)
-          .Get(),
-      IID_PPV_ARGS(&pen_device_statics_));
-  if (FAILED(hr)) {
-    pen_device_statics_ = nullptr;
-  }
-
-  hr = base::win::RoGetActivationFactory(
-      base::win::HStringReference(RuntimeClass_Windows_UI_Input_PointerPoint)
-          .Get(),
-      IID_PPV_ARGS(&pointer_point_statics_));
-  if (FAILED(hr)) {
-    pointer_point_statics_ = nullptr;
-  }
+  InitPenIdStatics();
 }
 
 PenIdHandler::~PenIdHandler() = default;
@@ -95,15 +142,17 @@ absl::optional<int32_t> PenIdHandler::TryGetPenUniqueId(UINT32 pointer_id) {
 
 absl::optional<std::string> PenIdHandler::TryGetGuid(UINT32 pointer_id) const {
   // Override pen device statics if in a test.
-  const Microsoft::WRL::ComPtr<ABI::Windows::Devices::Input::IPenDeviceStatics>
-      pen_device_statics = get_pen_device_statics ? (*get_pen_device_statics)()
-                                                  : pen_device_statics_;
+  const Microsoft::WRL::ComPtr<IPenDeviceStatics> pen_device_statics =
+      get_pen_device_statics ? (*get_pen_device_statics)()
+                             : PenIdStatics::GetInstance()->PenDeviceStatics();
 
+  // Return absl::nullopt if we are not in a testing environment and the
+  // pen device statics haven't loaded or if statics are null.
   if (!pen_device_statics) {
     return absl::nullopt;
   }
 
-  Microsoft::WRL::ComPtr<ABI::Windows::Devices::Input::IPenDevice> pen_device;
+  Microsoft::WRL::ComPtr<IPenDevice> pen_device;
   HRESULT hr = pen_device_statics->GetFromPointerId(pointer_id, &pen_device);
   // `pen_device` is null if the pen does not support a unique ID.
   if (FAILED(hr) || !pen_device) {
@@ -121,14 +170,13 @@ absl::optional<std::string> PenIdHandler::TryGetGuid(UINT32 pointer_id) const {
 
 PenIdHandler::TransducerId PenIdHandler::TryGetTransducerId(
     UINT32 pointer_id) const {
-  TransducerId transducer_id;
-
   // Override pointer point statics if in a test.
-  const Microsoft::WRL::ComPtr<ABI::Windows::UI::Input::IPointerPointStatics>
-      pointer_point_statics =
-          get_pointer_point_statics ? (*get_pointer_point_statics)()
-                                    : pointer_point_statics_;
+  const Microsoft::WRL::ComPtr<IPointerPointStatics> pointer_point_statics =
+      get_pointer_point_statics
+          ? (*get_pointer_point_statics)()
+          : PenIdStatics::GetInstance()->PointerPointStatics();
 
+  TransducerId transducer_id;
   if (!pointer_point_statics) {
     return transducer_id;
   }
@@ -175,6 +223,24 @@ PenIdHandler::TransducerId PenIdHandler::TryGetTransducerId(
       HID_USAGE_PAGE_DIGITIZER, HID_USAGE_ID_TVID, &transducer_id.tvid);
 
   return transducer_id;
+}
+
+void PenIdHandler::InitPenIdStatics() {
+  static bool initialized = false;
+  if (initialized) {
+    return;
+  }
+
+  initialized = true;
+
+  // Initialize the statics by creating a static instance of PenIdStatics. This
+  // is done in an worker thread to avoid jank during startup. If the statics
+  // are not initialized by the time they are needed, use of
+  // PenIdStatics::GetInstance will be a blocking call until they are
+  // loaded.
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&PenIdStatics::GetInstance)));
 }
 
 }  // namespace views
