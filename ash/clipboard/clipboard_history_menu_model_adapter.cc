@@ -25,6 +25,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
@@ -43,11 +44,77 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
 namespace {
+
+constexpr int kHeaderBetweenChildSpacing = 16;
+
+// Returns whether the given `index` in the menu model's item list corresponds
+// to the menu header.
+bool IsHeaderIndex(size_t index) {
+  // The header, if present, is the menu's first item.
+  return chromeos::features::IsClipboardHistoryRefreshEnabled() && index == 0u;
+}
+
+// Returns whether the given `index` in the menu model's item list corresponds
+// to a clipboard history item.
+bool IsClipboardHistoryItemIndex(size_t index,
+                                 size_t num_clipboard_history_items) {
+  // The header, if present, adds 1 to the expected index of each clipboard
+  // history item in the menu model's item list.
+  return chromeos::features::IsClipboardHistoryRefreshEnabled()
+             ? index > 0 && index <= num_clipboard_history_items
+             : index < num_clipboard_history_items;
+}
+
+// Returns whether the given `index` in the menu model's item list corresponds
+// to the menu footer.
+bool IsFooterIndex(size_t index, size_t num_clipboard_history_items) {
+  // The footer, if present, is the menu's last item. The header, if present,
+  // adds 1 to the footer's expected index.
+  // TODO(http://b/267694412): Check for all possible footer-enabled conditions.
+  return features::IsClipboardHistoryLongpressEnabled() &&
+         (index == chromeos::features::IsClipboardHistoryRefreshEnabled()
+              ? num_clipboard_history_items + 1
+              : num_clipboard_history_items);
+}
+
+// Populates `container` with a menu title and clear-all button to appear at the
+// top of the clipboard history menu.
+void InsertHeaderContent(views::MenuItemView* container) {
+  container->AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetBorder(
+              views::CreateEmptyBorder(ClipboardHistoryViews::kContentsInsets))
+          .SetBetweenChildSpacing(kHeaderBetweenChildSpacing)
+          .AfterBuild(base::BindOnce([](views::BoxLayoutView* header) {
+            const int width =
+                clipboard_history_util::GetPreferredItemViewWidth();
+            header->SetPreferredSize(
+                gfx::Size(width, header->GetHeightForWidth(width)));
+          }))
+          .AddChildren(
+              views::Builder<views::Label>(
+                  bubble_utils::CreateLabel(TypographyToken::kCrosButton1,
+                                            u"[i18n] Clipboard",
+                                            cros_tokens::kCrosSysOnSurface))
+                  .SetID(clipboard_history_util::kMenuTitleViewID)
+                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                  .SetProperty(views::kFlexBehaviorKey,
+                               views::FlexSpecification().WithWeight(1)),
+              views::Builder<views::Label>(
+                  bubble_utils::CreateLabel(TypographyToken::kCrosButton2,
+                                            u"[i18n] Clear all",
+                                            cros_tokens::kCrosSysPrimary))
+                  .SetID(clipboard_history_util::kClearAllButtonViewID))
+          .Build());
+}
 
 // Populates `container` with a separator and a label containing educational
 // content to appear at the bottom of the clipboard history menu.
@@ -180,6 +247,13 @@ void ClipboardHistoryMenuModelAdapter::Run(
 
   const ui::DataTransferEndpoint data_dst(ui::EndpointType::kDefault,
                                           /*notify_if_restricted=*/false);
+
+  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+    // Add a placeholder non-interactive item that will contain the clipboard
+    // history menu's header, consisting of a title and a clear-all button.
+    model_->AddTitle(std::u16string());
+  }
+
   for (const auto& item : items) {
     model_->AddItem(command_id, std::u16string());
     item_snapshots_.emplace(command_id, item);
@@ -188,9 +262,9 @@ void ClipboardHistoryMenuModelAdapter::Run(
 
   if (show_source == crosapi::mojom::ClipboardHistoryControllerShowSource::
                          kControlVLongpress) {
-    // Add placeholder non-interactive item that will contain a separator
-    // (styled differently from the context menu separators) and educational
-    // footer text.
+    // Add a placeholder non-interactive item that will contain the clipboard
+    // history menu's footer, consisting of a separator (styled differently from
+    // the context menu separators) and educational text.
     model_->AddTitle(std::u16string());
   }
 
@@ -498,8 +572,12 @@ views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
   // Margins are managed by `ClipboardHistoryItemView`.
   container->SetMargins(/*top_margin=*/0, /*bottom_margin=*/0);
 
-  size_t num_items = clipboard_history_->GetItems().size();
-  if (index < num_items) {
+  const size_t num_items = clipboard_history_->GetItems().size();
+  if (IsHeaderIndex(index)) {
+    CHECK_EQ(model->GetTypeAt(index), ui::MenuModel::ItemType::TYPE_TITLE);
+    InsertHeaderContent(container);
+  } else if (IsClipboardHistoryItemIndex(index, num_items)) {
+    CHECK_EQ(model->GetTypeAt(index), ui::MenuModel::ItemType::TYPE_COMMAND);
     std::unique_ptr<ClipboardHistoryItemView> item_view =
         ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
             GetItemFromCommandId(command_id).id(), clipboard_history_,
@@ -509,7 +587,7 @@ views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
         std::make_pair(command_id, item_view.get()));
     container->AddChildView(std::move(item_view));
   } else {
-    CHECK_EQ(index, num_items);
+    CHECK(IsFooterIndex(index, num_items));
     CHECK_EQ(model->GetTypeAt(index), ui::MenuModel::ItemType::TYPE_TITLE);
     InsertFooterContent(container);
   }

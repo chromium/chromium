@@ -761,11 +761,25 @@ TEST_F(ClipboardHistoryControllerWithTextfieldTest, PasteClipboardItemById) {
   }
 }
 
+// Base class for tests that exercise clipboard history controller behavior with
+// every possible way of showing the clipboard history menu. The
+// `kClipboardHistoryLongpress` feature is enabled iff the menu is shown via
+// Ctrl+V longpress.
 class ClipboardHistoryControllerShowSourceTest
     : public ClipboardHistoryControllerTest,
       public testing::WithParamInterface<ClipboardHistoryControllerShowSource> {
  public:
+  ClipboardHistoryControllerShowSourceTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kClipboardHistoryLongpress,
+        GetSource() ==
+            ClipboardHistoryControllerShowSource::kControlVLongpress);
+  }
+
   ClipboardHistoryControllerShowSource GetSource() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

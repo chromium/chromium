@@ -1386,55 +1386,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   EXPECT_TRUE(textfield_->GetText().empty());
 }
 
-// Verifies that clicking the clipboard history's menu does nothing and that tab
-// and arrow key traversal pass over the footer.
-IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
-                       FooterNotInteractive) {
-  // Write some things to the clipboard.
-  SetClipboardText("A");
-  SetClipboardText("B");
-
-  // Show the clipboard history menu via the Ctrl+V long-press shortcut so that
-  // the menu's educational footer shows.
-  EXPECT_TRUE(GetClipboardHistoryController()->ShowMenu(
-      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE,
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kControlVLongpress));
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-
-  // Verify that the menu has two clipboard history items and a third item (the
-  // footer).
-  const auto* menu = GetClipboardHistoryController()->context_menu_for_test();
-  EXPECT_EQ(menu->GetMenuItemsCount(), 2u);
-  ASSERT_EQ(menu->GetModelForTest()->GetItemCount(), 3u);
-
-  // Verify that clicking on the footer does nothing.
-  EXPECT_TRUE(textfield_->GetText().empty());
-  const auto* footer = menu->GetMenuItemViewAtForTest(/*index=*/2);
-  GetEventGenerator()->MoveMouseTo(footer->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
-  EXPECT_TRUE(textfield_->GetText().empty());
-
-  // Verify that traversing over the menu with arrow keys skips the footer.
-  const auto* item1 = menu->GetMenuItemViewAtForTest(/*index=*/0);
-  const auto* item2 = menu->GetMenuItemViewAtForTest(/*index=*/1);
-  PressAndRelease(ui::VKEY_DOWN);
-  EXPECT_TRUE(item1->IsSelected());
-  PressAndRelease(ui::VKEY_DOWN);
-  EXPECT_TRUE(item2->IsSelected());
-  PressAndRelease(ui::VKEY_DOWN);
-  EXPECT_TRUE(item1->IsSelected());
-
-  // Verify that traversing over the menu with the Tab key (two presses at a
-  // time for each item's main button and delete button) skips the footer.
-  PressAndRelease(ui::VKEY_TAB);
-  PressAndRelease(ui::VKEY_TAB);
-  EXPECT_TRUE(item2->IsSelected());
-  PressAndRelease(ui::VKEY_TAB);
-  PressAndRelease(ui::VKEY_TAB);
-  EXPECT_TRUE(item1->IsSelected());
-}
-
 class FakeDataTransferPolicyController
     : public ui::DataTransferPolicyController {
  public:
@@ -1740,4 +1691,145 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshAshBrowserTest,
       crosapi::mojom::ClipboardHistoryControllerShowSource::
           kRenderViewContextMenu,
       1);
+}
+
+// Base class used to test features that only exist when the Ctrl+V longpress
+// feature is enabled.
+class ClipboardHistoryLongpressEnabledBrowserTest
+    : public ClipboardHistoryTextfieldBrowserTest {
+ public:
+  ClipboardHistoryLongpressEnabledBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kClipboardHistoryLongpress);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that clicking the clipboard history menu's footer does nothing and
+// that tab and arrow key traversal pass over the footer.
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryLongpressEnabledBrowserTest,
+                       FooterNotInteractive) {
+  // Write some things to the clipboard.
+  SetClipboardText("A");
+  SetClipboardText("B");
+
+  // Show the clipboard history menu via the Ctrl+V long-press shortcut so that
+  // the menu's educational footer shows.
+  EXPECT_TRUE(GetClipboardHistoryController()->ShowMenu(
+      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE,
+      crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kControlVLongpress));
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Verify that the menu has two clipboard history items and a third item (the
+  // footer).
+  const auto* menu = GetClipboardHistoryController()->context_menu_for_test();
+  EXPECT_EQ(menu->GetMenuItemsCount(), 2u);
+  ASSERT_EQ(menu->GetModelForTest()->GetItemCount(), 3u);
+
+  // Verify that clicking on the footer does nothing.
+  EXPECT_TRUE(textfield_->GetText().empty());
+  const auto* footer = menu->GetMenuItemViewAtForTest(/*index=*/2);
+  GetEventGenerator()->MoveMouseTo(footer->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_TRUE(textfield_->GetText().empty());
+
+  // Verify that traversing over the menu with arrow keys skips the footer.
+  const auto* item1 = menu->GetMenuItemViewAtForTest(/*index=*/0);
+  const auto* item2 = menu->GetMenuItemViewAtForTest(/*index=*/1);
+  PressAndRelease(ui::VKEY_DOWN);
+  EXPECT_TRUE(item1->IsSelected());
+  PressAndRelease(ui::VKEY_DOWN);
+  EXPECT_TRUE(item2->IsSelected());
+  PressAndRelease(ui::VKEY_DOWN);
+  EXPECT_TRUE(item1->IsSelected());
+
+  // Verify that traversing over the menu with the Tab key (two presses at a
+  // time for each item's main button and delete button) skips the footer.
+  PressAndRelease(ui::VKEY_TAB);
+  PressAndRelease(ui::VKEY_TAB);
+  EXPECT_TRUE(item2->IsSelected());
+  PressAndRelease(ui::VKEY_TAB);
+  PressAndRelease(ui::VKEY_TAB);
+  EXPECT_TRUE(item1->IsSelected());
+}
+
+// Base class used to test features that only exist when the UI refresh is
+// enabled.
+class ClipboardHistoryRefreshEnabledBrowserTest
+    : public ClipboardHistoryTextfieldBrowserTest {
+ public:
+  ClipboardHistoryRefreshEnabledBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kClipboardHistoryRefresh,
+         chromeos::features::kJelly},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that clicking the clipboard history menu's header does nothing and
+// that tab and arrow key traversal pass over the header.
+// TODO(http://b/267693860): Update this test when the clear-all button works.
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryRefreshEnabledBrowserTest,
+                       HeaderNotInteractive) {
+  // Write some things to the clipboard.
+  SetClipboardText("A");
+  SetClipboardText("B");
+
+  // Show the clipboard history menu and verify that the menu has a header and
+  // two clipboard history items.
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/false);
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+  const auto* const menu =
+      GetClipboardHistoryController()->context_menu_for_test();
+  ASSERT_TRUE(menu);
+  EXPECT_EQ(menu->GetMenuItemsCount(), 2u);
+  ASSERT_EQ(menu->GetModelForTest()->GetItemCount(), 3u);
+
+  EXPECT_TRUE(textfield_->GetText().empty());
+  const auto* const header = menu->GetMenuItemViewAtForTest(/*index=*/0u);
+  ASSERT_TRUE(header);
+
+  // Verify that clicking on the header's title does nothing.
+  const auto* const title =
+      header->GetViewByID(ash::clipboard_history_util::kMenuTitleViewID);
+  ASSERT_TRUE(title);
+  GetEventGenerator()->MoveMouseTo(title->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_TRUE(textfield_->GetText().empty());
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Verify that clicking on the header's clear-all button does nothing.
+  const auto* const clear_all_button =
+      header->GetViewByID(ash::clipboard_history_util::kClearAllButtonViewID);
+  ASSERT_TRUE(clear_all_button);
+  GetEventGenerator()->MoveMouseTo(
+      clear_all_button->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_TRUE(textfield_->GetText().empty());
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Verify that traversing over the menu with arrow keys skips the header.
+  const auto* const item1 = menu->GetMenuItemViewAtForTest(/*index=*/1u);
+  const auto* const item2 = menu->GetMenuItemViewAtForTest(/*index=*/2u);
+  PressAndRelease(ui::VKEY_DOWN);
+  EXPECT_TRUE(item1->IsSelected());
+  PressAndRelease(ui::VKEY_DOWN);
+  EXPECT_TRUE(item2->IsSelected());
+  PressAndRelease(ui::VKEY_DOWN);
+  EXPECT_TRUE(item1->IsSelected());
+
+  // Verify that traversing over the menu with the Tab key (two presses at a
+  // time for each item's main button and delete button) skips the header.
+  PressAndRelease(ui::VKEY_TAB);
+  PressAndRelease(ui::VKEY_TAB);
+  EXPECT_TRUE(item2->IsSelected());
+  PressAndRelease(ui::VKEY_TAB);
+  PressAndRelease(ui::VKEY_TAB);
+  EXPECT_TRUE(item1->IsSelected());
 }

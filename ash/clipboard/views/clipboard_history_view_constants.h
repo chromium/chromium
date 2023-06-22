@@ -40,14 +40,13 @@ constexpr int kImageBackgroundCornerRadius = 12;
 // The radius of the image view's rounded corners when surrounded by a border.
 constexpr int kImageBorderCornerRadius = 4;
 
-// The thickness of the image border.
-
 // The preferred size for an item's icon.
 constexpr gfx::Size kIconSize(20, 20);
 
 // The margins for an item's icon.
 constexpr auto kIconMargins = gfx::Insets::TLBR(0, 0, 0, 12);
 
+// The thickness of the image border.
 constexpr int kImageBorderThickness = 1;
 
 }  // namespace ash::ClipboardHistoryViews
