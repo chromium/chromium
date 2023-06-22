@@ -198,7 +198,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/init/AsyncInitTaskRunnerTest.java",
   "junit/src/org/chromium/chrome/browser/invalidation/ResumableDelayedTaskRunnerTest.java",
   "junit/src/org/chromium/chrome/browser/invalidation/SessionsInvalidationManagerTest.java",
-  "junit/src/org/chromium/chrome/browser/javascript/WebContextFetcherTest.java",
   "junit/src/org/chromium/chrome/browser/media/FullscreenVideoPictureInPictureControllerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/media/ui/MediaNotificationActionsUpdatedTest.java",
   "junit/src/org/chromium/chrome/browser/media/ui/MediaNotificationFaviconTest.java",

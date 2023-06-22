@@ -2711,7 +2711,6 @@ static_library("browser") {
       "android/httpclient/http_client_bridge.cc",
       "android/httpclient/http_client_bridge.h",
       "android/intent_handler.cc",
-      "android/javascript/web_context_fetcher.cc",
       "android/locale/locale_manager.cc",
       "android/locale/locale_manager.h",
       "android/locale/locale_template_url_loader.cc",
