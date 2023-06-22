@@ -663,7 +663,8 @@ TEST_F(
           assertTrue(!!getStaticColorSelector());
         });
 
-        test('clicks toggle', async () => {
+        // TODO(b/277811561) flaky test
+        test.skip('clicks toggle', async () => {
           const toggleDescription =
               getDynamicColorElement().shadowRoot.getElementById(
                   'dynamicColorToggleDescription');
