@@ -7,14 +7,18 @@ source_set("bottom_sheet") {
   sources = [
     "payments_suggestion_bottom_sheet_coordinator.h",
     "payments_suggestion_bottom_sheet_coordinator.mm",
+    "payments_suggestion_bottom_sheet_data.h",
     "payments_suggestion_bottom_sheet_mediator.h",
     "payments_suggestion_bottom_sheet_mediator.mm",
   ]
   deps = [
     ":bottom_sheet_ui",
     "//base",
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
   ]
@@ -23,6 +27,7 @@ source_set("bottom_sheet") {
 source_set("bottom_sheet_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "payments_suggestion_bottom_sheet_consumer.h",
     "payments_suggestion_bottom_sheet_view_controller.h",
     "payments_suggestion_bottom_sheet_view_controller.mm",
   ]

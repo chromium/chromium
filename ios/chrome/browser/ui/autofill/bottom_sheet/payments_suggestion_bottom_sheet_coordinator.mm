@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
 
+#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 
@@ -21,6 +23,10 @@
 @property(nonatomic, strong)
     PaymentsSuggestionBottomSheetViewController* viewController;
 
+// Used to find the CreditCard object and use it to open the credit card details
+// view.
+@property(nonatomic, assign) autofill::PersonalDataManager* personalDataManager;
+
 @end
 
 @implementation PaymentsSuggestionBottomSheetCoordinator
@@ -30,6 +36,14 @@
                                     params:(const autofill::FormActivityParams&)
                                                params {
   self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    ChromeBrowserState* browserState =
+        browser->GetBrowserState()->GetOriginalChromeBrowserState();
+
+    self.personalDataManager =
+        autofill::PersonalDataManagerFactory::GetForBrowserState(
+            browserState->GetOriginalChromeBrowserState());
+  }
   return self;
 }
 
@@ -37,7 +51,8 @@
 
 - (void)start {
   self.mediator = [[PaymentsSuggestionBottomSheetMediator alloc]
-      initWithWebStateList:self.browser->GetWebStateList()];
+      initWithWebStateList:self.browser->GetWebStateList()
+       personalDataManager:self.personalDataManager];
   self.viewController =
       [[PaymentsSuggestionBottomSheetViewController alloc] init];
   [self.baseViewController presentViewController:self.viewController

@@ -5,14 +5,43 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "components/autofill/core/browser/personal_data_manager.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_consumer.h"
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_data.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+// Structure which contains all the required information to display about a
+// credit card.
+@interface PaymentsSuggestionBottomSheetCreditCardInfo
+    : NSObject <PaymentsSuggestionBottomSheetData>
+
+- (instancetype)initWithCreditCard:(const autofill::CreditCard*)creditCard
+                              icon:(UIImage*)icon;
+
+@property(nonatomic, assign) const autofill::CreditCard* creditCard;
+@property(nonatomic, strong) UIImage* icon;
+
+@end
+
+@implementation PaymentsSuggestionBottomSheetCreditCardInfo
+
+- (instancetype)initWithCreditCard:(const autofill::CreditCard*)creditCard
+                              icon:(UIImage*)icon {
+  if (self = [super init]) {
+    _creditCard = creditCard;
+    _icon = icon;
+  }
+  return self;
+}
+
+@end
 
 @interface PaymentsSuggestionBottomSheetMediator () <CRWWebStateObserver,
                                                      WebStateListObserving>
@@ -24,11 +53,17 @@
   raw_ptr<WebStateList> _webStateList;
   std::unique_ptr<web::WebStateObserverBridge> _observer;
   std::unique_ptr<ActiveWebStateObservationForwarder> _forwarder;
+
+  // Personal Data Manager from which we can get Credit Card information.
+  raw_ptr<autofill::PersonalDataManager> _personalDataManager;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList {
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                 personalDataManager:
+                     (autofill::PersonalDataManager*)personalDataManager {
   if (self = [super init]) {
     _webStateList = webStateList;
+    _personalDataManager = personalDataManager;
 
     // Create and register the observers.
     _observer = std::make_unique<web::WebStateObserverBridge>(self);
@@ -42,6 +77,33 @@
   _forwarder = nullptr;
   _observer = nullptr;
   _webStateList = nullptr;
+}
+
+#pragma mark - Accessors
+
+- (void)setConsumer:(id<PaymentsSuggestionBottomSheetConsumer>)consumer {
+  _consumer = consumer;
+
+  if (!_consumer || !_personalDataManager) {
+    return;
+  }
+
+  const auto& creditCards = _personalDataManager->GetCreditCardsToSuggest();
+  if (creditCards.empty()) {
+    return;
+  }
+
+  NSMutableArray<id<PaymentsSuggestionBottomSheetData>>* creditCardData =
+      [[NSMutableArray alloc] initWithCapacity:creditCards.size()];
+  for (const auto* creditCard : creditCards) {
+    CHECK(creditCard);
+    [creditCardData
+        addObject:[[PaymentsSuggestionBottomSheetCreditCardInfo alloc]
+                      initWithCreditCard:creditCard
+                                    icon:nil]];
+  }
+
+  [consumer setCreditCardData:creditCardData];
 }
 
 #pragma mark - WebStateListObserving

@@ -10,4 +10,11 @@
 
 @implementation PaymentsSuggestionBottomSheetViewController
 
+#pragma mark - PaymentsSuggestionBottomSheetConsumer
+
+- (void)setCreditCardData:
+    (NSArray<id<PaymentsSuggestionBottomSheetData>>*)creditCardData {
+  // TODO(crbug.com/1450214): Store credit card data in the view controller
+}
+
 @end
