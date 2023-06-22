@@ -12,7 +12,7 @@ dictionary SecurePaymentConfirmationRequest {
     unsigned long timeout;
     USVString payeeName;
     USVString payeeOrigin;
-    // TODO(crbug.com/1365339): add 'extensions' member.
+    AuthenticationExtensionsClientInputs extensions;
     sequence<USVString> locale;
 
     // Whether or not to show an opt-out flow in the SPC UX.

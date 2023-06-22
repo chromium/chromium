@@ -82,14 +82,16 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
   DCHECK(spec_->IsInitialized());
 
   auto options = blink::mojom::PublicKeyCredentialRequestOptions::New();
-  options->extensions =
-      blink::mojom::AuthenticationExtensionsClientInputs::New();
   options->relying_party_id = effective_relying_party_identity_;
   options->timeout = request_->timeout.has_value()
                          ? request_->timeout.value()
                          : base::Minutes(kDefaultTimeoutMinutes);
   options->user_verification = device::UserVerificationRequirement::kRequired;
   std::vector<device::PublicKeyCredentialDescriptor> credentials;
+  options->extensions =
+      !request_->extensions
+          ? blink::mojom::AuthenticationExtensionsClientInputs::New()
+          : request_->extensions.Clone();
 
   if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationDebug)) {
     options->user_verification =

@@ -170,6 +170,9 @@ struct SecurePaymentConfirmationRequest {
   // The relying party ID that must match the relying party of a credential.
   string rp_id;
 
+  // Webauthn extensions to be set on the credential request.
+  blink.mojom.AuthenticationExtensionsClientInputs? extensions;
+
   // Whether or not to render an 'opt out' experience on the browser-hosted UX,
   // which allows the user to indicate to the RP that they wish to remove any
   // RP-stored information.

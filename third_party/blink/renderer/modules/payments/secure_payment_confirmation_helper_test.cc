@@ -10,6 +10,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_inputs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_credential_instrument.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
@@ -21,11 +24,39 @@ namespace blink {
 
 namespace {
 
+static const uint8_t kPrfInputData[] = {1, 2, 3, 4, 5, 6};
+
+// Expected pseudo-random function (prf) output, sha256sum(
+// "WebAuthn PRF\0\1\2\3\4\5\6").
+static const uint8_t kPrfOutputData[] = {
+    0x36, 0x43, 0xbb, 0x85, 0x29, 0xcd, 0xab, 0x07, 0xe3, 0x2d, 0x2e,
+    0x0d, 0xb9, 0xb7, 0x60, 0x56, 0x39, 0x9a, 0x58, 0x29, 0x02, 0x9c,
+    0xfa, 0x5c, 0xb8, 0x1c, 0x6d, 0x09, 0x30, 0x8c, 0x77, 0x29};
+
 WTF::Vector<uint8_t> CreateVector(const uint8_t* buffer,
                                   const unsigned length) {
   WTF::Vector<uint8_t> vector;
   vector.Append(buffer, length);
   return vector;
+}
+
+static V8UnionArrayBufferOrArrayBufferView* ArrayBufferOrView(
+    const uint8_t* data,
+    size_t size) {
+  DOMArrayBuffer* dom_array = DOMArrayBuffer::Create(data, size);
+  return MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      std::move(dom_array));
+}
+
+static AuthenticationExtensionsPRFInputs* CreatePrfInputs(
+    v8::Isolate* isolate) {
+  AuthenticationExtensionsPRFValues* prf_values =
+      AuthenticationExtensionsPRFValues::Create(isolate);
+  prf_values->setFirst(ArrayBufferOrView(kPrfInputData, sizeof(kPrfInputData)));
+  AuthenticationExtensionsPRFInputs* prf_inputs =
+      AuthenticationExtensionsPRFInputs::Create(isolate);
+  prf_inputs->setEval(prf_values);
+  return prf_inputs;
 }
 
 }  // namespace
@@ -57,6 +88,7 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_Success) {
             "https://bank.example/icon.png");
   EXPECT_EQ(parsed_request->payee_name, "Merchant Shop");
   EXPECT_EQ(parsed_request->rp_id, "bank.example");
+  EXPECT_TRUE(parsed_request->extensions.is_null());
 }
 
 // Test that optional fields are correctly copied to the mojo output.
@@ -344,6 +376,32 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_NotHttpsPayeeOrigin) {
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(ESErrorType::kTypeError,
             scope.GetExceptionState().CodeAs<ESErrorType>());
+}
+
+// Test that extensions are converted while parsing a
+// SecurePaymentConfirmationRequest.
+TEST(SecurePaymentConfirmationHelperTest, Parse_Extensions) {
+  V8TestingScope scope;
+  SecurePaymentConfirmationRequest* request =
+      CreateSecurePaymentConfirmationRequest(scope);
+  AuthenticationExtensionsClientInputs* extensions =
+      AuthenticationExtensionsClientInputs::Create(scope.GetIsolate());
+  extensions->setPrf(CreatePrfInputs(scope.GetIsolate()));
+  request->setExtensions(extensions);
+  ScriptValue script_value(scope.GetIsolate(),
+                           ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(
+                               scope.GetScriptState(), request));
+
+  ::payments::mojom::blink::SecurePaymentConfirmationRequestPtr parsed_request =
+      SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
+          script_value, *scope.GetExecutionContext(),
+          scope.GetExceptionState());
+
+  ASSERT_FALSE(parsed_request->extensions.is_null());
+  WTF::Vector<uint8_t> prf_output_vector =
+      CreateVector(kPrfOutputData, sizeof(kPrfOutputData));
+  ASSERT_EQ(parsed_request->extensions->prf_inputs[0]->first,
+            prf_output_vector);
 }
 
 }  // namespace blink
