@@ -127,7 +127,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   UIScrollView* _magicStackScrollView;
   UIStackView* _magicStack;
   BOOL _shouldShowMagicStack;
-  NSArray<NSNumber*>* _magicStackModuleOrder;
+  NSMutableArray<NSNumber*>* _magicStackModuleOrder;
   NSLayoutConstraint* _magicStackScrollViewWidthAnchor;
   NSArray<SetUpListItemViewData*>* _savedSetUpListItems;
   SetUpListItemView* _setUpListSyncItemView;
@@ -411,7 +411,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 - (void)setMagicStackOrder:(NSArray<NSNumber*>*)order {
   CHECK([order count] > 0);
   _shouldShowMagicStack = YES;
-  _magicStackModuleOrder = order;
+  _magicStackModuleOrder = [order mutableCopy];
 }
 
 - (void)scrollToNextMagicStackModuleForCompletedModule:
@@ -552,6 +552,12 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 }
 
 - (void)hideSetUpListWithAnimations:(ProceduralBlock)animations {
+  if (IsMagicStackEnabled()) {
+    // Remove Modules with animation
+    [self removeSetUpListItemsWithNewModule:nil];
+    return;
+  }
+
   CHECK(self.setUpListView);
   NSInteger index = [self.verticalStackView.arrangedSubviews
       indexOfObject:self.setUpListView];
@@ -597,9 +603,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                        type:ContentSuggestionsModuleType::kSetUpListAllSet
                    delegate:self];
     // Determine which module to swap out.
-    [self replaceModuleAtIndex:
-              [self indexForMagicStackModule:[self currentlyShownModule]]
-                    withModule:allSetModule];
+    [self removeSetUpListItemsWithNewModule:allSetModule];
     return;
   }
   __weak __typeof(self) weakSelf = self;
@@ -755,6 +759,10 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 - (void)seeMoreWasTappedForModuleType:(ContentSuggestionsModuleType)type {
   [self.audience showSetUpListShowMoreMenu];
+}
+
+- (void)neverShowModuleType:(ContentSuggestionsModuleType)type {
+  [self.audience neverShowModuleType:type];
 }
 
 #pragma mark - Private
@@ -994,9 +1002,62 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       NSUInteger)closestPage] intValue];
 }
 
-// Replaces the module at `index` with `newModule` in the Magic Stack.
+// Replaces the currently visible Set Up List module with `newModule` if valid
+// and then removes all other Set Up List modules.
+- (void)removeSetUpListItemsWithNewModule:
+    (MagicStackModuleContainer*)newModule {
+  int index = 0;
+  NSMutableArray* viewIndicesToRemove = [NSMutableArray array];
+  for (NSNumber* moduleType in _magicStackModuleOrder) {
+    ContentSuggestionsModuleType type =
+        (ContentSuggestionsModuleType)[moduleType intValue];
+    switch (type) {
+      case ContentSuggestionsModuleType::kSetUpListSync:
+      case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
+      case ContentSuggestionsModuleType::kSetUpListAutofill:
+        [viewIndicesToRemove addObject:@(index)];
+        break;
+      default:
+        break;
+    }
+    index++;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock removeRemainingModules = ^{
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    // Remove all non-visible modules in reverse order
+    int removedModuleCount = [viewIndicesToRemove count];
+    for (int i = removedModuleCount - 1; i >= 0; i--) {
+      NSUInteger moduleIndex = [viewIndicesToRemove[i] integerValue];
+      UIView* moduleToRemove =
+          [strongSelf->_magicStack arrangedSubviews][moduleIndex];
+      [moduleToRemove removeFromSuperview];
+      [strongSelf->_magicStackModuleOrder removeObjectAtIndex:moduleIndex];
+    }
+  };
+
+  if (newModule) {
+    // Replace currently visible module.
+    NSUInteger moduleIndexToReplace =
+        [self indexForMagicStackModule:[self currentlyShownModule]];
+    [self replaceModuleAtIndex:moduleIndexToReplace
+                    withModule:newModule
+                    completion:removeRemainingModules];
+    [viewIndicesToRemove removeObjectAtIndex:moduleIndexToReplace];
+  } else {
+    removeRemainingModules();
+  }
+}
+
+// Replaces the module at `index` with `newModule` in the Magic Stack, executing
+// `completion` after the completion of the replace animation.
 - (void)replaceModuleAtIndex:(NSUInteger)index
-                  withModule:(MagicStackModuleContainer*)newModule {
+                  withModule:(MagicStackModuleContainer*)newModule
+                  completion:(ProceduralBlock)completion {
   newModule.alpha = 0;
   UIView* moduleToHide = [_magicStack arrangedSubviews][index];
   __weak __typeof(self) weakSelf = self;
@@ -1017,6 +1078,9 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         __typeof(self) strongSelf = weakSelf;
         if (!strongSelf) {
           return;
+        }
+        if (completion) {
+          completion();
         }
         [moduleToHide removeFromSuperview];
         [strongSelf->_magicStack setNeedsLayout];

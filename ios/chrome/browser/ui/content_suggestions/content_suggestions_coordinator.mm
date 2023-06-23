@@ -275,6 +275,19 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
               .window.rootViewController.view safeAreaInsets];
 }
 
+- (void)neverShowModuleType:(ContentSuggestionsModuleType)type {
+  switch (type) {
+    case ContentSuggestionsModuleType::kSetUpListSync:
+    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
+    case ContentSuggestionsModuleType::kSetUpListAutofill:
+    case ContentSuggestionsModuleType::kCompactedSetUpList:
+      [self.contentSuggestionsMediator disableSetUpList];
+      break;
+    default:
+      break;
+  }
+}
+
 #pragma mark - Public methods
 
 - (UIView*)view {
