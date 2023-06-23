@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/mediasession/type_converters.h"
+#include "third_party/blink/renderer/modules/mediasession/media_session_type_converters.h"
 
 namespace mojo {
 

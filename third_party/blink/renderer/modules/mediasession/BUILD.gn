@@ -12,7 +12,7 @@ blink_modules_sources("mediasession") {
     "media_metadata_sanitizer.h",
     "media_session.cc",
     "media_session.h",
-    "type_converters.cc",
-    "type_converters.h",
+    "media_session_type_converters.cc",
+    "media_session_type_converters.h",
   ]
 }

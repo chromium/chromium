@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASESSION_TYPE_CONVERTERS_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASESSION_TYPE_CONVERTERS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASESSION_MEDIA_SESSION_TYPE_CONVERTERS_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASESSION_MEDIA_SESSION_TYPE_CONVERTERS_H_
 
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_position_state.h"
@@ -44,4 +44,4 @@ struct TypeConverter<media_session::mojom::blink::MediaPositionPtr,
 
 }  // namespace mojo
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASESSION_TYPE_CONVERTERS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASESSION_MEDIA_SESSION_TYPE_CONVERTERS_H_

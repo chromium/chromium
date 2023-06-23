@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_hit_test_result.h"
 
-#include "third_party/blink/renderer/modules/xr/type_converters.h"
+#include "third_party/blink/renderer/modules/xr/vr_service_type_converters.h"
 #include "third_party/blink/renderer/modules/xr/xr_hit_test_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_pose.h"
 #include "third_party/blink/renderer/modules/xr/xr_reference_space.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/xr/type_converters.h"
+#include "third_party/blink/renderer/modules/xr/vr_service_type_converters.h"
 
 #include "ui/gfx/geometry/point3_f.h"
 

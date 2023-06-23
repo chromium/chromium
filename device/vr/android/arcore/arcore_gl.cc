@@ -23,7 +23,7 @@
 #include "device/vr/android/arcore/ar_image_transport.h"
 #include "device/vr/android/arcore/arcore.h"
 #include "device/vr/android/arcore/arcore_math_utils.h"
-#include "device/vr/android/arcore/type_converters.h"
+#include "device/vr/android/arcore/vr_service_type_converters.h"
 #include "device/vr/android/web_xr_presentation_state.h"
 #include "device/vr/android/xr_java_coordinator.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"

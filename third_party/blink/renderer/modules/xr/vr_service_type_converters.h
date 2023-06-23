@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_TYPE_CONVERTERS_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_TYPE_CONVERTERS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_VR_SERVICE_TYPE_CONVERTERS_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_VR_SERVICE_TYPE_CONVERTERS_H_
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -29,4 +29,4 @@ struct TypeConverter<blink::HeapVector<blink::Member<blink::DOMPointReadOnly>>,
 
 }  // namespace mojo
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_XR_TYPE_CONVERTERS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_XR_VR_SERVICE_TYPE_CONVERTERS_H_

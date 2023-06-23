@@ -35,8 +35,8 @@ component("arcore") {
     "arcore_shim.cc",
     "arcore_shim.h",
     "scoped_arcore_objects.h",
-    "type_converters.cc",
-    "type_converters.h",
+    "vr_service_type_converters.cc",
+    "vr_service_type_converters.h",
   ]
 
   public_deps = [
