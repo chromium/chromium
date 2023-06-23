@@ -477,6 +477,19 @@ export class BrowsingContextProcessor {
     return {result: {}};
   }
 
+  async process_browsingContext_setViewport(
+    params: BrowsingContext.SetViewportParameters
+  ): Promise<Message.EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    if (!context.isTopLevelContext()) {
+      throw new Message.InvalidArgumentException(
+        'Emulating viewport is only supported on the top-level context'
+      );
+    }
+    await context.setViewport(params.viewport);
+    return {result: {}};
+  }
+
   async process_browsingContext_close(
     commandParams: BrowsingContext.CloseParameters
   ): Promise<Message.EmptyResult> {

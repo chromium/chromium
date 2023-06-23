@@ -248,13 +248,12 @@ export class ChannelProxy {
             // resolver to window property and return the promise.
             // `getEvalInWindowStr` will resolve the promise later.
             return new Promise((resolve) => (w[id] = resolve));
-          } else {
-            // The channelProxy is already created by `getEvalInWindowStr` and
-            // is set into window property. Return it.
-            const channelProxy = w[id];
-            delete w[id];
-            return channelProxy;
           }
+          // The channelProxy is already created by `getEvalInWindowStr` and
+          // is set into window property. Return it.
+          const channelProxy = w[id];
+          delete w[id];
+          return channelProxy;
         }),
         arguments: [{value: this.#id}],
         executionContextId: realm.executionContextId,

@@ -60,6 +60,7 @@ export interface BidiParser {
     params: object
   ): BrowsingContext.CaptureScreenshotParameters;
   parsePrintParams(params: object): BrowsingContext.PrintParameters;
+  parseSetViewportParams(params: object): BrowsingContext.SetViewportParameters;
   parsePerformActionsParams(params: object): Input.PerformActionsParameters;
   parseReleaseActionsParams(params: object): Input.ReleaseActionsParameters;
 }
@@ -126,6 +127,11 @@ class BidiNoOpParser implements BidiParser {
   }
   parseReleaseActionsParams(params: object): Input.ReleaseActionsParameters {
     return params as Input.ReleaseActionsParameters;
+  }
+  parseSetViewportParams(
+    params: object
+  ): BrowsingContext.SetViewportParameters {
+    return params as BrowsingContext.SetViewportParameters;
   }
 }
 
@@ -230,6 +236,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       case 'browsingContext.reload':
         return this.#contextProcessor.process_browsingContext_reload(
           this.#parser.parseReloadParams(commandData.params)
+        );
+      case 'browsingContext.setViewport':
+        return this.#contextProcessor.process_browsingContext_setViewport(
+          this.#parser.parseSetViewportParams(commandData.params)
         );
 
       case 'script.addPreloadScript':

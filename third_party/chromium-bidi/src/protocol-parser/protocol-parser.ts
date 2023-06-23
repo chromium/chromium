@@ -559,6 +559,30 @@ export namespace BrowsingContext {
   ): BrowsingContextTypes.PrintParameters {
     return parseObject(params, PrintParametersSchema);
   }
+
+  // browsingContext.Viewport = {
+  //   width: js-uint,
+  //   height: js-uint,
+  // }
+  const ViewportSchema = zod.object({
+    width: zod.number().int().nonnegative(),
+    height: zod.number().int().nonnegative(),
+  });
+
+  // browsingContext.SetViewportParameters = {
+  //   context: browsingContext.BrowsingContext,
+  //   viewport: emulation.Viewport / null
+  // }
+  const SetViewportActionSchema = zod.object({
+    context: CommonDataTypes.BrowsingContextSchema,
+    viewport: zod.union([zod.null(), ViewportSchema]),
+  });
+
+  export function parseSetViewportParams(
+    params: object
+  ): BrowsingContextTypes.SetViewportParameters {
+    return parseObject(params, SetViewportActionSchema);
+  }
 }
 
 export namespace CDP {

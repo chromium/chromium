@@ -19,6 +19,7 @@
 import type {CommonDataTypes, Script} from '../../../protocol/protocol.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import {ChannelProxy} from '../script/channelProxy.js';
+
 import type {CdpTarget} from './cdpTarget.js';
 
 type CdpPreloadScript = {

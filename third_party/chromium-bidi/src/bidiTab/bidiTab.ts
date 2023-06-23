@@ -334,6 +334,11 @@ class BidiParserImpl implements BidiParser {
   parseReleaseActionsParams(params: object): Input.ReleaseActionsParameters {
     return Parser.Input.parseReleaseActionsParams(params);
   }
+  parseSetViewportParams(
+    params: object
+  ): BrowsingContext.SetViewportParameters {
+    return Parser.BrowsingContext.parseSetViewportParams(params);
+  }
 }
 
 // Needed to filter out info related to BiDi target.

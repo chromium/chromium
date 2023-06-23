@@ -622,6 +622,25 @@ export class BrowsingContextImpl {
     return {result: {}};
   }
 
+  async setViewport(viewport: BrowsingContext.Viewport | null) {
+    if (viewport === null) {
+      await this.#cdpTarget.cdpClient.sendCommand(
+        'Emulation.clearDeviceMetricsOverride'
+      );
+    } else {
+      await this.#cdpTarget.cdpClient.sendCommand(
+        'Emulation.setDeviceMetricsOverride',
+        {
+          width: viewport.width,
+          height: viewport.height,
+          deviceScaleFactor: 0,
+          mobile: false,
+          dontSetVisibleSize: true,
+        }
+      );
+    }
+  }
+
   async captureScreenshot(): Promise<BrowsingContext.CaptureScreenshotResult> {
     // XXX: Focus the original tab after the screenshot is taken.
     // This is needed because the screenshot gets blocked until the active tab gets focus.

@@ -817,7 +817,8 @@ export namespace BrowsingContext {
     | GetTreeCommand
     | NavigateCommand
     | PrintCommand
-    | ReloadCommand;
+    | ReloadCommand
+    | SetViewportCommand;
   export type Result =
     | CaptureScreenshotResult
     | CreateResult
@@ -977,6 +978,21 @@ export namespace BrowsingContext {
     result: {
       data: string;
     };
+  };
+
+  export type Viewport = {
+    width: number;
+    height: number;
+  };
+
+  export type SetViewportCommand = {
+    method: 'browsingContext.setViewport';
+    params: SetViewportParameters;
+  };
+
+  export type SetViewportParameters = {
+    context: CommonDataTypes.BrowsingContext;
+    viewport: Viewport | null;
   };
 
   export type LoadEvent = EventResponse<EventNames.LoadEvent, NavigationInfo>;
