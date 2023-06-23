@@ -18,6 +18,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
@@ -413,6 +414,28 @@ void TapDoneButtonOnInfobarModal() {
     TapDoneButtonOnInfobarModal();
     [[EarlGrey selectElementWithMatcher:CameraBadge(/*accepted=*/NO)]
         assertWithMatcher:grey_sufficientlyVisible()];
+  }
+}
+
+// Tests that permissions infobar banner is correctly dismissed when the
+// incognito browser is killed.
+- (void)testDismissPermissionsWhenIncognitoKilled {
+  if (@available(iOS 15.0, *)) {
+    GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+    [ChromeEarlGrey openNewIncognitoTab];
+    [ChromeEarlGrey
+        loadURL:self.testServer->GetURL("/permissions/camera_only.html")];
+    [self checkAndTapAlertContainingPermissions:
+              l10n_util::GetNSString(
+                  IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_CAMERA)
+                                    shouldAllow:YES];
+    [self waitUntilInfobarBannerVisibleOrTimeout:YES];
+
+    // Kill the incognito browser while the banner is still presented.
+    [ChromeEarlGreyUI openTabGrid];
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                            TabGridCloseButtonForCellAtIndex(0)]
+        performAction:grey_tap()];
   }
 }
 
