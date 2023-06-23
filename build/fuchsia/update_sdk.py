@@ -108,6 +108,13 @@ def main():
     DownloadAndUnpackFromCloudStorage(_GetTarballPath(gcs_tarball_prefix),
                                       SDK_ROOT)
 
+  # Build rules (e.g. fidl_library()) depend on updates to the top-level
+  # manifest to spot when to rebuild for an SDK update. Ensure that ninja
+  # sees that the SDK manifest has changed, regardless of the mtime set by
+  # the download & unpack steps above, by setting mtime to now.
+  # See crbug.com/1457463
+  os.utime(os.path.join(SDK_ROOT, 'meta', 'manifest.json'), None)
+
   root_dir = os.path.dirname(os.path.realpath(__file__))
   build_def_cmd = [
       os.path.join(root_dir, 'gen_build_defs.py'),
