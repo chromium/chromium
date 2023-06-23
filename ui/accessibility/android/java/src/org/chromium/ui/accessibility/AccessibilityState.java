@@ -213,8 +213,20 @@ public class AccessibilityState {
         return sState.isScreenReaderEnabled;
     }
 
+    /**
+     * True when touch exploration is enabled. Since a client can call this after observers are
+     * registered, but before the State has been queried for the first time, we allow for an early
+     * return. This is a lighter weight query than the other State booleans, which require manual
+     * calculation and heuristics. In this case we return the value directly from
+     * AccessibilityManager.
+     *
+     * @return true if touch exploration is enabled.
+     */
     public static boolean isTouchExplorationEnabled() {
-        if (!sInitialized) updateAccessibilityServices();
+        if (!sInitialized) {
+            fetchAccessibilityManager();
+            return sAccessibilityManager.isTouchExplorationEnabled();
+        }
         return sState.isTouchExplorationEnabled;
     }
 
@@ -223,8 +235,20 @@ public class AccessibilityState {
         return sState.isPerformGesturesEnabled;
     }
 
+    /**
+     * True when at least one accessibility service is enabled on the system. Since a client can
+     * call this after observers are registered, but before the State has been queried for the first
+     * time, we allow for an early return. This is a lighter weight query than the other State
+     * booleans, which require manual calculation and heuristics. In this case we return the value
+     * directly from AccessibilityManager.
+     *
+     * @return true if any service is enabled.
+     */
     public static boolean isAnyAccessibilityServiceEnabled() {
-        if (!sInitialized) updateAccessibilityServices();
+        if (!sInitialized) {
+            fetchAccessibilityManager();
+            return sAccessibilityManager.isEnabled();
+        }
         return sState.isAnyAccessibilityServiceEnabled;
     }
 
@@ -301,9 +325,19 @@ public class AccessibilityState {
         }
     }
 
+    private static void fetchAccessibilityManager() {
+        if (sAccessibilityManager != null) return;
+
+        // This instance is valid for the entire lifecycle of the app.
+        sAccessibilityManager =
+                (AccessibilityManager) ContextUtils.getApplicationContext().getSystemService(
+                        Context.ACCESSIBILITY_SERVICE);
+    }
+
     static void updateAccessibilityServices() {
         if (!sInitialized) {
             sState = new State(false, false, false, false, false, false, false, false);
+            fetchAccessibilityManager();
         }
         sInitialized = true;
         sEventTypeMask = 0;
@@ -326,11 +360,6 @@ public class AccessibilityState {
 
         boolean isAnyAccessibilityServiceEnabled = false;
         boolean isAccessibilityToolPresent = false;
-
-        Context context = ContextUtils.getApplicationContext();
-        sAccessibilityManager =
-                (AccessibilityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.ACCESSIBILITY_SERVICE);
 
         // Get the list of currently running accessibility services.
         List<AccessibilityServiceInfo> services =
@@ -376,6 +405,8 @@ public class AccessibilityState {
                 runningServiceNames.add(serviceId);
             }
         }
+
+        Context context = ContextUtils.getApplicationContext();
 
         // Update the user password show/speak preferences.
         int textShowPasswordSetting = Settings.System.getInt(
@@ -652,6 +683,7 @@ public class AccessibilityState {
         contentResolver.unregisterContentObserver(sAnimationDurationScaleObserver);
         sState = null;
         sInitialized = false;
+        sAccessibilityManager = null;
     }
 
     private static void processServicesChange() {
