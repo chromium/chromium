@@ -399,6 +399,7 @@
 <translation id="1864927262126810325">Крыніца: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Канфігурацыяй проксі зададзена выкарыстоўваць фіксаваныя проксі-серверы, а не URL-адрас сцэнарыя .pac.</translation>
 <translation id="1871284979644508959">Абавязковае поле</translation>
+<translation id="1871739799120352748">Высокая цана</translation>
 <translation id="1873899211667975540">Рок-музыка</translation>
 <translation id="1874224422119691492">Наладзіць выкарыстанне блакіроўкі экрана для ўводу пароляў можна ў раздзеле "<ph name="SETTINGS" />"</translation>
 <translation id="1875025161375567525">Фоталаток</translation>
@@ -442,6 +443,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">Сайт <ph name="URL" /> запытвае дазволу захоўваць вялікі аб'ём даных на лакальным камп'ютары</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{і яшчэ 1}one{і яшчэ #}few{і яшчэ #}many{і яшчэ #}other{і яшчэ #}}</translation>
+<translation id="2001469757375372617">Адбылася памылка. Змяненне не было захавана.</translation>
 <translation id="2003709556000175978">Скіньце свой пароль</translation>
 <translation id="2003775180883135320">Чатыры дзіркі зверху</translation>
 <translation id="2009942480257059311">Кнопка "Стварыць падзею". Каб хутка стварыць новую падзею ў Google Календары, націсніце яе.</translation>
@@ -499,6 +501,7 @@
 <translation id="2118132148597630479">Канверт C5</translation>
 <translation id="2119505898009119320">Каму выдадзена: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Дзірка знізу справа</translation>
+<translation id="2122214041802369259">Высокая цана</translation>
 <translation id="2122719317867821810">Гэта палітыка працуе належным чынам, але перавызначае канфліктуючае значэнне, зададзенае з іншай крыніцы.</translation>
 <translation id="2126374524350484896">Пераўтваральнік PDF:</translation>
 <translation id="2130448033692577677">Зададзеныя вамі шаблоны могуць не прымяніцца, бо палітыка DnsOverHttpsMode не вызначана.</translation>
@@ -859,6 +862,7 @@
 <translation id="3054512251683174387">Chrome аўтаматычна выдаляе тэмы, дададзеныя больш чым 4 тыдні таму назад. Па меры прагляду сайтаў у інтэрнэце пэўныя тэмы могуць з'яўляцца ў спісе зноў, але вы можаце забараніць браўзеру Chrome абагульваць іх з сайтамі. Даведайцеся больш пра кіраванне прыватнасцю ў рэкламе ў Chrome.</translation>
 <translation id="3061707000357573562">Сэрвіс выпраўленняў</translation>
 <translation id="306573536155379004">Гульня пачалася.</translation>
+<translation id="3067505415088964188">Нізкая цана</translation>
 <translation id="3068991664510324412">Камп'ютары і відэагульні</translation>
 <translation id="3080254622891793721">Графіка</translation>
 <translation id="3081538120861307764">Для ацэнкі эфектыўнасці рэкламы сайты абагульваюць адзін з адным даныя пэўных тыпаў (напрыклад, пра час сутак, калі вам паказвалася пэўная рэкламная аб'ява).</translation>
@@ -2073,6 +2077,7 @@
 <translation id="5967592137238574583">Рэдагаваць кантактныя звесткі</translation>
 <translation id="5967867314010545767">Выдаліць з гісторыі</translation>
 <translation id="5968022600320704045">Няма вынікаў пошуку</translation>
+<translation id="5969199813874624822">Захаваць і ўключыць адсочванне цаны</translation>
 <translation id="5974052231147553524">Шосты рулон</translation>
 <translation id="5975083100439434680">Паменшыць</translation>
 <translation id="5979084224081478209">Праверыць паролі</translation>
@@ -3398,6 +3403,7 @@
 <translation id="9141013498910525015">Кіраваць адрасамі</translation>
 <translation id="9144951720726881238">Заканчэнне тэрміну дзеяння:</translation>
 <translation id="9148507642005240123">&amp;Адрабіць змену</translation>
+<translation id="9148599396704355100">Нізкая цана</translation>
 <translation id="9150045010208374699">Выкарыстоўваць камеру</translation>
 <translation id="9150685862434908345">Адміністратар можа аддалена змяняць налады браўзера. Сама прылада таксама можа знаходзіцца пад знешнім кіраваннем. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Абноўлена</translation>

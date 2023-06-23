@@ -61,6 +61,7 @@
 <translation id="1283039547216852943">വികസിപ്പിക്കാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="1289059016768036948">Google Account-ലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങളോട് ആവശ്യപ്പെടും</translation>
 <translation id="1291207594882862231">ചരിത്രവും കുക്കികളും സൈറ്റ് വിവരവും കാഷെയും മായ്‌ക്കുക...</translation>
+<translation id="1293898515599432175">Chrome <ph name="CHROME_CHANNEL" /> എന്നതിനുള്ള Google Password Manager-ൽ നിന്ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ ഇല്ലാതാക്കും. ഇപ്പോൾ ഡൗൺലോഡ് ചെയ്ത, പാസ്‌വേഡുകളുടെ ഫയൽ നിങ്ങൾ നിലനിർത്തും.</translation>
 <translation id="129553762522093515">സമീപകാലത്ത് അടച്ചവ</translation>
 <translation id="1298077576058087471">60% വരെ ഡാറ്റ ലാഭിക്കൂ, ഇന്നത്തെ വാർത്തകൾ വായിക്കൂ</translation>
 <translation id="1303339473099049190">പാസ്‌വേഡ് കണ്ടെത്താനായില്ല. അക്ഷരത്തെറ്റ് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -510,6 +511,7 @@
 <translation id="3795154175078851242">ലിങ്കിനൊപ്പം ചിത്രം പകർത്തുക</translation>
 <translation id="3810838688059735925">വീഡിയോ</translation>
 <translation id="3810973564298564668">നിയന്ത്രിക്കൂ</translation>
+<translation id="381861209280417772">പാസ്‌വേഡുകൾ ഇല്ലാതാക്കുക</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ഡൗൺലോഡുകൾ ഇല്ലാതാക്കി</translation>
 <translation id="3819183753496523827">നിങ്ങൾ ഓഫ്‌ലൈനാണ്. നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3830886834687455630">നിങ്ങളുടെ പാസ്‌വേഡുകൾ പരിശോധിക്കാൻ Google Play സേവനങ്ങൾ അപ്ഡേറ്റ് ചെയ്യുക</translation>
@@ -594,6 +596,7 @@
 <translation id="4249955472157341256">ഏറ്റവും പുതിയത് അനുസരിച്ച് അടുക്കുക</translation>
 <translation id="4250229828105606438">സ്‌ക്രീൻഷോട്ട്</translation>
 <translation id="4256782883801055595">ഓപ്പൺ സോഴ്‌സ് ലൈസൻസുകൾ</translation>
+<translation id="4257230861809842349">Google Password Manager-ൽ നിന്ന് പാസ്‌വേഡുകൾ ഇല്ലാതാക്കണോ?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />എന്തൊക്കെ ഡാറ്റ ഉപയോഗിക്കുന്നു:<ph name="END_BOLD" /> ഈ ഉപകരണത്തിൽ Chrome ഉപയോഗിച്ച് നിങ്ങൾ സന്ദർശിച്ച സൈറ്റുകളുടെ റെക്കോർഡ് ആയ നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം.</translation>
 <translation id="4269820728363426813">ലിങ്ക് വിലാസം പകർത്തുക</translation>
 <translation id="4283102315569707115">ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റുകൾ ഡിഫോൾട്ടായി അഭ്യർത്ഥിക്കണോ?</translation>

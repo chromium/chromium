@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">&amp;Додати до словника</translation>
 <translation id="1018656279737460067">Скасовано</translation>
 <translation id="1022489261739821355">Показано паролі, збережені у <ph name="BEGIN_LINK" />вашому обліковому записі Google<ph name="END_LINK" /></translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Вашим пристроєм керує домен <ph name="DOMAIN" />. Адміністратори мають доступ до даних у всіх профілях на цьому пристрої.</translation>
 <translation id="1024734233509995696">Ця вкладка використовує вашу камеру чи мікрофон</translation>
 <translation id="1026655690966755180">Додати порт</translation>
@@ -78,6 +79,7 @@
 <translation id="1061130374843955397">Вас вітає пристрій <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">Створити QR-код для цього посилання</translation>
 <translation id="1061904396131502319">Невдовзі час зробити перерву</translation>
+<translation id="10619348099955377">Копіювати відображувану назву</translation>
 <translation id="1062407476771304334">Замінити</translation>
 <translation id="1062628064301375934">Допоможіть нам розробити технології для кращої конфіденційності в мережі</translation>
 <translation id="1066964438793906105">Сканувати на наявність зловмисного програмного забезпечення</translation>
@@ -583,6 +585,7 @@
 <translation id="1481537595330271162">Не вдалося змінити розмір диска</translation>
 <translation id="1482626744466814421">Додати цю вкладку до закладок…</translation>
 <translation id="1482772681918035149">змінити паролі</translation>
+<translation id="1483431819520123112">Відображувану назву скопійовано в буфер обміну</translation>
 <translation id="1483493594462132177">Надіслати</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Сайт використовує Bluetooth</translation>
@@ -970,6 +973,7 @@
 <translation id="1784707308176068866">Запускати у фоновому режимі, коли про це просить партнерський рідний додаток</translation>
 <translation id="1784849162047402014">На диску пристрою мало вільного місця</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Цей додаток буде видалено разом із додатком <ph name="APP_NAME" />:}one{Ці додатки буде видалено разом із додатком <ph name="APP_NAME" />:}few{Ці додатки буде видалено разом із додатком <ph name="APP_NAME" />:}many{Ці додатки буде видалено разом із додатком <ph name="APP_NAME" />:}other{Ці додатки буде видалено разом із додатком <ph name="APP_NAME" />:}}</translation>
+<translation id="1786290960428378411">Запит на читання й зміну сайту</translation>
 <translation id="1787350673646245458">Зображення користувача</translation>
 <translation id="1790976235243700817">Скасувати доступ</translation>
 <translation id="1792619191750875668">Розширений дисплей</translation>
@@ -1302,6 +1306,7 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Натисніть, щоб установити розширення}one{Натисніть, щоб установити ці розширення}few{Натисніть, щоб установити ці розширення}many{Натисніть, щоб установити ці розширення}other{Натисніть, щоб установити ці розширення}}</translation>
 <translation id="2073496667646280609">Можливо, на пристрої або в місці, вибраному для резервних копій, недостатньо вільної пам’яті. Спробуйте видалити непотрібні файли або виберіть інше місце.</translation>
 <translation id="2073505299004274893">Максимальна кількість символів – <ph name="CHARACTER_LIMIT" /></translation>
+<translation id="2075088158103027942">Перейти до підписок</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% заряду акумулятора</translation>
 <translation id="2076269580855484719">Сховати цей плагін</translation>
 <translation id="2076672359661571384">Середній (рекомендовано)</translation>
@@ -1914,7 +1919,7 @@
 <translation id="2541706104884128042">Налаштовано новий час сну</translation>
 <translation id="2542050502251273923">Налаштовує рівень налагодження менеджера й інших сервісів з'єднання з мережею за допомогою ff_debug.</translation>
 <translation id="2544352060595557290">Цю вкладку</translation>
-<translation id="2546283357679194313">Файли cookie та дані із сайтів</translation>
+<translation id="2546283357679194313">Файли cookie й дані із сайтів</translation>
 <translation id="2546302722632337735">Не дозволяти сайтам використовувати ідентифікатори, щоб відтворювати захищений контент</translation>
 <translation id="2546991196809436099">Щоб збільшити елементи на екрані, наблизьте область. Щоб увімкнути або вимкнути лупу, натисніть клавішу пошуку + Ctrl + M.</translation>
 <translation id="2548347166720081527">Дозволено: <ph name="PERMISSION" /></translation>
@@ -2124,6 +2129,7 @@
 <translation id="2731700343119398978">Зачекайте...</translation>
 <translation id="2731971182069536520">Під час наступного перезапуску пристрою адміністратор виконає одноразове оновлення, що призведе до видалення локальних даних.</translation>
 <translation id="2732134891301408122">Додатковий контент <ph name="CURRENT_ELEMENT" /> з <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733992589856193783">Ви створили ключ доступу для цього сайту. Увійдіть за допомогою мобільного пристрою.</translation>
 <translation id="27349076983469322">Світлий фон</translation>
 <translation id="2735712963799620190">Графік</translation>
 <translation id="2737363922397526254">Згорнути...</translation>
@@ -3112,6 +3118,7 @@
 <translation id="3610241585790874201">Сайту заборонено зберігати дані на вашому пристрої</translation>
 <translation id="3610369246614755442">Вентилятор док-станції несправний</translation>
 <translation id="3610961622607302617">Змінити пароль для веб-сайту <ph name="WEBSITE" /></translation>
+<translation id="3611634011145829814">Перейти на сторінку підписок</translation>
 <translation id="3611658447322220736">Нещодавно закриті сайти можуть завершувати надсилання й отримання даних</translation>
 <translation id="3612673635130633812">Завантажило розширення &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Показати "<ph name="FOLDER_NAME" />"</translation>
@@ -3502,6 +3509,7 @@
 <translation id="3919145445993746351">Щоб користуватися розширеннями на всіх комп’ютерах, увімкніть синхронізацію</translation>
 <translation id="3919229493046408863">Вимкнути сповіщення, якщо буде знайдено пристрої поблизу</translation>
 <translation id="3919262972282962508">Старі версії додатків Chrome не відкриватимуться на пристроях Mac після грудня 2022 року. Щоб оновити додаток або вилучити його, зв’яжіться з адміністратором.</translation>
+<translation id="3919376399641777316">Використовує обсяг пам’яті на Google Диску</translation>
 <translation id="3919798653937160644">Сторінки, які ви переглядаєте в цьому вікні, не записуватимуться в історію веб-перегляду, а також не залишать на комп'ютері інших слідів (на зразок файлів cookie), коли ви закриєте всі вікна, відкриті в гостьовому режимі. Однак завантажені файли зберігатимуться.</translation>
 <translation id="3920504717067627103">Політика сертифікатів</translation>
 <translation id="3920909973552939961">Заборонено встановлювати обробники платежів</translation>
@@ -3652,6 +3660,7 @@
 <translation id="4044612648082411741">Введіть пароль сертифіката</translation>
 <translation id="4044708573046946214">Пароль розблокування екрана</translation>
 <translation id="404493185430269859">Пошукова система за умовчанням</translation>
+<translation id="4044964245574571633">Використовує сховище Microsoft OneDrive</translation>
 <translation id="4045196801416070837">Звуки на пристрої</translation>
 <translation id="4046013316139505482">Зазначені розширення не можуть переглядати та змінювати інформацію на цьому сайті.</translation>
 <translation id="4046123991198612571">Наступна композиція</translation>
@@ -3690,6 +3699,7 @@
 <translation id="4084682180776658562">Закладка</translation>
 <translation id="4084835346725913160">Закрити вкладку "<ph name="TAB_NAME" />"</translation>
 <translation id="4085298594534903246">На цій сторінці JavaScript заблоковано.</translation>
+<translation id="4085620044235559093">Виберіть додаток, щоб відкрити файли <ph name="FILE_TYPE" /></translation>
 <translation id="4087089424473531098">Створено таке розширення:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -3796,6 +3806,7 @@
 <translation id="4176463684765177261">Вимкнено</translation>
 <translation id="4176864026061939326">Цим пристроєм керує адміністратор. Він просить створити новий профіль для облікового запису <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4177501066905053472">Теми оголошень</translation>
+<translation id="4178220097446335546">Щоб вилучити цю підписку й пов’язані з нею мережі, перейдіть на сторінку підписки Passpoint.</translation>
 <translation id="4180788401304023883">Видалити сертифікат Центру сертифікації "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Мови</translation>
@@ -3948,6 +3959,7 @@
 <translation id="4316850752623536204">Веб-сайт розробника</translation>
 <translation id="4317733381297736564">Покупки в додатку</translation>
 <translation id="4317820549299924617">Не підтверджено</translation>
+<translation id="4319441675152393296">Натисніть значок цього розширення, щоб воно могло переглядати й змінювати сайт <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Немає з’єднання з Інтернетом</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197">Показати файл "<ph name="FILE_NAME" />" у програмі Finder</translation>
@@ -4444,6 +4456,7 @@
 <translation id="4742970037960872810">Зняти виділення</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Дізнайтеся, як оновити додатки<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">Перейти на сайт</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Увімкнути звук на сайті}one{Увімкнути звук на сайтах}few{Увімкнути звук на сайтах}many{Увімкнути звук на сайтах}other{Увімкнути звук на сайтах}}</translation>
 <translation id="474609389162964566">Активуйте Асистента командою "Ok Google"</translation>
 <translation id="4746351372139058112">Повідомлення</translation>
@@ -4633,6 +4646,7 @@
 <translation id="4899052647152077033">Інвертовані кольори</translation>
 <translation id="4899696330053002588">Містить рекламу</translation>
 <translation id="489985760463306091">Щоб завершити видалення шкідливого програмного забезпечення, перезавантажте комп’ютер</translation>
+<translation id="490031510406860025">Заборонено на цьому сайті</translation>
 <translation id="4900392736118574277">Стартову сторінку змінено на <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Гц – з накладанням</translation>
 <translation id="4900652253009739885">Не вдається видалити призначення єдиного перемикача, призначеного дії "Вибрати". Щоб <ph name="RESPONSE" />, натисніть будь-яку клавішу.</translation>
@@ -7373,6 +7387,7 @@
 <translation id="7299515639584427954">Змінити додаток за умовчанням для підтримуваних посилань?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">Ви можете запитати "Ok Google, що це за пісня?" або "Ok Google, що в мене на екрані?"</translation>
+<translation id="7301812050652048720">Ключ доступу видалено</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Цей додаток може перешкоджати нормальній роботі Chrome.}one{Ці додатки можуть перешкоджати нормальній роботі Chrome.}few{Ці додатки можуть перешкоджати нормальній роботі Chrome.}many{Ці додатки можуть перешкоджати нормальній роботі Chrome.}other{Ці додатки можуть перешкоджати нормальній роботі Chrome.}}</translation>
 <translation id="7303281435234579599">На жаль, сталася помилка. Не вдалося налаштувати демо-режим.</translation>
 <translation id="7303900363563182677">Цьому сайту заборонено переглядати тексти й зображення в буфері обміну</translation>
@@ -7534,6 +7549,7 @@
 <translation id="7432200167665670017">Ваш адміністратор заблокував розширення "<ph name="EXTENSION_NAME" />" – Ідентифікатор додатка <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Щоб далі використовувати <ph name="DEVICE_TYPE" />, вставте розумну картку</translation>
 <translation id="7433957986129316853">Залишити</translation>
+<translation id="7434100547946193426">Інші додатки</translation>
 <translation id="7434509671034404296">Для розробників</translation>
 <translation id="7434757724413878233">Прискорення миші</translation>
 <translation id="7434969625063495310">Не вдалося додати сервер для друку. Перевірте його налаштування й повторіть спробу.</translation>
@@ -7915,6 +7931,7 @@
 <translation id="7744192722284567281">Знайдено в порушеннях безпеки даних</translation>
 <translation id="7744649840067671761">Щоб призначити новий перемикач або клавішу клавіатури, натисніть їх.
 Щоб видалити для цієї дії вже призначений перемикач або клавішу, натисніть їх.</translation>
+<translation id="7745677556280361868">Вилучити цю мережу на сторінці підписки Passpoint?</translation>
 <translation id="7746045113967198252">Збільшуйте або зменшуйте об’єкти на екрані, зокрема текст. Ви також можете зробити це пізніше в розділі "Налаштування &gt; Пристрій &gt; Дисплеї".</translation>
 <translation id="7746739418892731373">Ви бачите найкращі фото й відео з бібліотеки Google Фото. На сторінці <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> можна вибрати, що відображатиметься в цьому розділі.
         <ph name="BREAK" />
@@ -8128,6 +8145,7 @@
 <translation id="7920363873148656176">Сайт <ph name="ORIGIN" /> може переглядати файл "<ph name="FILENAME" />"</translation>
 <translation id="7920482456679570420">Додайте слова, які потрібно пропускати під час перевірки орфографії</translation>
 <translation id="7921347341284348270">Ви не можете переглядати сповіщення зі свого телефона в цьому керованому обліковому записі. Спробуйте скористатись іншим обліковим записом. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
+<translation id="7921901223958867679">Це розширення може переглядати й змінювати сайт <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 розширення</translation>
 <translation id="7922935920104868876">Показувати деталі про блокування сторонніх файлів cookie в анонімному режимі</translation>
 <translation id="7923564237306226146">Linux оновлено</translation>
@@ -9663,6 +9681,7 @@
 <translation id="930551443325541578">Повторно вводити символи й діакритичні знаки</translation>
 <translation id="930893132043726269">Є роумінг</translation>
 <translation id="930991362911221750">Дозволити додатку <ph name="APP_NAME" /> переглядати цю вкладку?</translation>
+<translation id="931273044114601262">Дозволено на цьому сайті</translation>
 <translation id="93140074055951850">Додатки Android зупинено</translation>
 <translation id="932327136139879170">Домашня сторінка</translation>
 <translation id="932508678520956232">Не вдалося ініціювати друк.</translation>

@@ -18,6 +18,7 @@
 <translation id="1838412507805038478">Chromium підтвердив, що сертифікат цьому веб-сайту надала компанія <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">У Chromium є функції, які допомагають керувати інтернет-даними та швидкістю завантаження веб-сторінок.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
+<translation id="1847960401032164406">Карти в Chromium</translation>
 <translation id="1867772173333403444">4. Виберіть Chromium</translation>
 <translation id="2006345422933397527">Веб-переглядачу Chromium не вдалося перевірити наявність оновлень. Переконайтеся, що є інтернет-з'єднання.</translation>
 <translation id="2052320862053429062">Chromium періодично зіставляє ваші паролі зі списками, які були опубліковані онлайн. Під час цього ваші паролі й імена користувачів шифруються, тож їх ніхто не може прочитати, навіть Google.</translation>
@@ -41,6 +42,7 @@
 <translation id="2942241131342758843">Зробіть Chromium веб-переглядачем за умовчанням, щоб відкривати посилання, шукати інформацію через віджети й автоматично заповнювати паролі в інших додатках</translation>
 <translation id="2977470724722393594">У вас остання версія Chromium</translation>
 <translation id="3102849287235003384">Щоб вийти з облікового запису Google на всіх веб-сайтах, <ph name="BEGIN_LINK" />вийдіть із Chromium<ph name="END_LINK" />.</translation>
+<translation id="3115956258722352278">Зробити Chromium веб-переглядачем за умовчанням?</translation>
 <translation id="3256316712990552818">Скопійовано в Chromium</translation>
 <translation id="3344973607274501920">Chromium не вдалося перевірити паролі. Переконайтеся, що є інтернет-з'єднання.</translation>
 <translation id="3472200483164753384">Не підтримується в Chromium Canary</translation>
@@ -69,6 +71,7 @@
 <translation id="4999538639245140991">Оскільки ви виходите з облікового запису, зареєстрованого в домені <ph name="SIGNOUT_MANAGED_DOMAIN" />, ваші дані Chromium буде видалено з цього пристрою. Вони залишаться в обліковому записі Google.</translation>
 <translation id="5048795749726991615">Щоб легко використовувати збережені паролі в інших додатках, застосовуйте функцію автозаповнення в Chromium</translation>
 <translation id="5171868502429358653">Увійдіть у Chromium</translation>
+<translation id="5224044903258607400">Натисніть "Переглянути на Картах Google у Chromium"</translation>
 <translation id="5224391634244552924">Немає збережених паролів. Chromium зможе перевірити ваші паролі, коли ви їх збережете.</translation>
 <translation id="5308226104666789935">Chromium не може перевірити наявність оновлень</translation>
 <translation id="5396916991083608703">Зробити Chromium веб-переглядачем за умовчанням?</translation>

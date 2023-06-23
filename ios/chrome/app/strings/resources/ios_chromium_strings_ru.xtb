@@ -18,6 +18,7 @@
 <translation id="1838412507805038478">Данные Chromium подтверждают, что сертификат сайта выпущен компанией <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">В Chromium можно устанавливать параметры обработки данных в Интернете и скорости загрузки веб-страниц.
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="1847960401032164406">Карты в Chromium</translation>
 <translation id="1867772173333403444">4. Выберите Chromium.</translation>
 <translation id="2006345422933397527">Браузеру Chromium не удалось проверить наличие обновлений. Убедитесь, что устройство подключено к Интернету.</translation>
 <translation id="2052320862053429062">Время от времени Chromium проверяет, есть ли ваши пароли в списках, опубликованных в интернете. При этом имена пользователей и сами пароли зашифрованы и никому не видны, даже сотрудникам Google.</translation>
@@ -41,6 +42,7 @@
 <translation id="2942241131342758843">Сделайте Chromium браузером по умолчанию, чтобы открывать ссылки, выполнять поиск прямо из виджетов и автозаполнять пароли в других приложениях.</translation>
 <translation id="2977470724722393594">Вы используете последнюю версию Chromium</translation>
 <translation id="3102849287235003384">Чтобы выйти из аккаунта Google на всех сайтах, <ph name="BEGIN_LINK" />выйдите из Chromium<ph name="END_LINK" />.</translation>
+<translation id="3115956258722352278">Сделать Chromium браузером по умолчанию?</translation>
 <translation id="3256316712990552818">Скопировано в Chromium</translation>
 <translation id="3344973607274501920">Не удается проверить пароли в браузере Chromium. Проверьте подключение к Интернету.</translation>
 <translation id="3472200483164753384">Проверка не поддерживается в Chromium Canary.</translation>
@@ -69,6 +71,7 @@
 <translation id="4999538639245140991">Вы выходите из аккаунта, которым управляет администратор домена <ph name="SIGNOUT_MANAGED_DOMAIN" />. Обратите внимание, что данные Chromium будут удалены с устройства, но останутся в вашем аккаунте Google.</translation>
 <translation id="5048795749726991615">Чтобы легко вводить сохраненные пароли в других приложениях, укажите значение Chromium для параметра "Автозаполнение".</translation>
 <translation id="5171868502429358653">Вход в Chromium</translation>
+<translation id="5224044903258607400">Нажмите "Посмотреть на Google Картах в Chromium".</translation>
 <translation id="5224391634244552924">Сохраненных паролей нет. Чтобы браузер Chromium мог проверять пароли, сохраните их.</translation>
 <translation id="5308226104666789935">Браузеру Chromium не удалось проверить наличие обновлений</translation>
 <translation id="5396916991083608703">Сделать Chromium браузером по умолчанию?</translation>

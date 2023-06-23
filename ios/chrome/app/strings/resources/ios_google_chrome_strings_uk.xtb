@@ -50,6 +50,7 @@
 <translation id="3503014945441706099">Увімкніть Безпечний перегляд із розширеним захистом і для цього профілю Chrome</translation>
 <translation id="3522659714780527202">Щоб переглядати свої вкладки Chrome на будь-якому пристрої, увімкніть синхронізацію</translation>
 <translation id="3533694711092285624">Немає збережених паролів. Chrome зможе перевірити ваші паролі, коли ви їх збережете.</translation>
+<translation id="3611867725106943284">Натисніть "Переглянути на Картах Google у Chrome"</translation>
 <translation id="3655656110921623717">Це означає, що Chrome щоразу буде запитувати мобільний сайт.</translation>
 <translation id="3720541637541300822">Блокувати анонімні вкладки після закриття Chrome</translation>
 <translation id="3827545470516145620">Ви ввімкнули стандартний режим безпеки на цьому пристрої</translation>
@@ -68,6 +69,7 @@
 <translation id="4636900170638246267">Увійдіть в облікові записи цього сайту та Chrome.</translation>
 <translation id="4698415050768537821">Chrome не вдалося перевірити всі паролі. Повторіть спробу завтра або <ph name="BEGIN_LINK" />перевірте паролі в обліковому записі Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Щоб покращити додаток, Chrome надсилає в Google дані про використання та збої. <ph name="BEGIN_LINK" />Керувати<ph name="END_LINK" /></translation>
+<translation id="4830799082179398588">Зробити Chrome веб-переглядачем за умовчанням?</translation>
 <translation id="484033449593719797">Не підтримується в бета-версії Chrome</translation>
 <translation id="4840404732697892756">Google Менеджер паролів зможе перевірити ваші паролі, коли ви ввійдете в обліковий запис Google.</translation>
 <translation id="5030102366287574140">Chrome може захищати вас від порушень безпеки даних, ненадійних веб-сайтів тощо.</translation>
@@ -114,6 +116,7 @@
 <translation id="7261678641327190792">Chrome не може перевірити паролі</translation>
 <translation id="7272930098487145294">Щоб зберегти зображення, натисніть "Налаштування" та дозвольте Chrome додавати фотографії</translation>
 <translation id="7275945473750112644">Ваш обліковий запис зареєстровано в домені <ph name="HOSTED_DOMAIN" />, тож дані Chrome буде видалено з цього пристрою</translation>
+<translation id="7394108421562933108">Карти в Chrome</translation>
 <translation id="7400722733683201933">Про Google Chrome</translation>
 <translation id="7501046334262221972">Щоб зробити Chrome веб-переглядачем за умовчанням, відкрийте налаштування, натисніть "Веб-переглядач за умовчанням" і виберіть Chrome.</translation>
 <translation id="756809126120519699">Дані Chrome видалено</translation>

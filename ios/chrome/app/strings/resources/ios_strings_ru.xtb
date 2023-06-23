@@ -72,6 +72,7 @@
 <translation id="1358214951266274152">Открыть скопированную ссылку</translation>
 <translation id="1360432990279830238">Выйти и отключить синхронизацию?</translation>
 <translation id="1363028406613469049">Трек</translation>
+<translation id="1365106417372288489">Устройство iPhone было недавно восстановлено, поэтому браузер по умолчанию мог измениться.</translation>
 <translation id="1375321115329958930">Сохраненные пароли</translation>
 <translation id="1377255359165588604">Ошибка синхронизации.</translation>
 <translation id="1377321085342047638">Номер карты</translation>
@@ -89,6 +90,7 @@
 <translation id="1492417797159476138">Вы уже сохранили это имя пользователя для данного сайта.</translation>
 <translation id="1497590942294823549">Меню → Менеджер паролей</translation>
 <translation id="1498283581832036924">Данные аккаунта для сайта <ph name="WEBSITE" /> удалены не будут.</translation>
+<translation id="1501820324067650154">Чтобы узнать, как добраться до места, нажмите "Проложить маршрут".</translation>
 <translation id="1506063256525392513">Это нужно, чтобы делать снимки, загружать фотографии и сканировать QR-коды.</translation>
 <translation id="1509486075633541495">Войдите в аккаунт</translation>
 <translation id="1509960214886564027">Многие функции на сайтах могут работать некорректно</translation>
@@ -147,6 +149,7 @@
 <translation id="1872096359983322073">Вспышка</translation>
 <translation id="1883255238294161206">Свернуть список</translation>
 <translation id="1894023287452300670">Отслеживайте цены здесь</translation>
+<translation id="189531189292803889">Устройство iPad было недавно восстановлено, поэтому браузер по умолчанию мог измениться.</translation>
 <translation id="1910975740091000991">Chrome для iOS</translation>
 <translation id="1911619930368729126">Загрузить на Google Диск</translation>
 <translation id="1923342640370224680">Последний час</translation>
@@ -175,6 +178,7 @@
 <translation id="2073572773299281212">Последние действия: <ph name="DAYS" /> дн. назад</translation>
 <translation id="2074131957428911366">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Отмена</translation>
+<translation id="2080409463824088391">Открыть в приложении…</translation>
 <translation id="2080769225927880590">Войдите с действительным аккаунтом</translation>
 <translation id="2103075008456228677">Открыть history.google.com</translation>
 <translation id="21133533946938348">Закрепить вкладку</translation>
@@ -314,6 +318,7 @@
 <translation id="2931440415625410757">Показать инструкции</translation>
 <translation id="2932085390869194046">Сгенерировать пароль…</translation>
 <translation id="2932765531295814441">Добавляйте пароли вручную</translation>
+<translation id="2952246431280799028">Нажмите на адрес и удерживайте.</translation>
 <translation id="2952278131021475699">Поиск через Объектив</translation>
 <translation id="2952581218264071393">1. Откройте настройки Chrome.</translation>
 <translation id="2958718410589002129">Пароли</translation>
@@ -1037,6 +1042,7 @@
 <translation id="750493650310597496">Закладки не выбраны</translation>
 <translation id="7508728395076009983">Чтобы закреплять вкладки инкогнито, настройте Touch ID, Face ID или код доступа.</translation>
 <translation id="7514365320538308">Скачать</translation>
+<translation id="7524055474074101597">Получайте доступ к паролям и другим данным в приложениях.</translation>
 <translation id="7531345132340165516">Текущий сайт</translation>
 <translation id="7537586195939242955">Не удалось внести данные в Passbook.</translation>
 <translation id="754655535278952384">Проверено <ph name="TIME" /></translation>
@@ -1260,6 +1266,7 @@
 <translation id="891282356902782456">Пароль сохранен только на этом устройстве. Чтобы он синхронизировался с другими устройствами, добавьте его в аккаунт Google (<ph name="EMAIL" />).</translation>
 <translation id="891658175948553296">Выделите текст на сайте.</translation>
 <translation id="8917490105272468696">Включить функцию</translation>
+<translation id="8926984231484284953">Просматривайте места на карте и маршруты, нажимая на адреса с веб-страниц.</translation>
 <translation id="8928133177108699615">Версия для компьютера</translation>
 <translation id="8934982071228289624">Чтобы сохранить этот пароль в аккаунте, задайте код-пароль на устройстве.</translation>
 <translation id="8940809892068499052">Вкладки инкогнито из других приложений</translation>

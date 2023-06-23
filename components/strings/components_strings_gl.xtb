@@ -399,6 +399,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">O proxy está configurado para utilizar servidores proxy fixos, non un URL de script .pac.</translation>
 <translation id="1871284979644508959">O campo é obrigatorio</translation>
+<translation id="1871739799120352748">Prezo alto</translation>
 <translation id="1873899211667975540">Música rock</translation>
 <translation id="1874224422119691492">Podes cambiar o uso do bloqueo de pantalla para completar contrasinais en <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Bandexa de foto</translation>
@@ -442,6 +443,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">O URL <ph name="URL" /> quere almacenar un gran volume de datos de forma permanente no teu ordenador local</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{e 1 máis}other{e # máis}}</translation>
+<translation id="2001469757375372617">Produciuse un erro. Non se gardou o cambio.</translation>
 <translation id="2003709556000175978">Restablecer o teu contrasinal agora</translation>
 <translation id="2003775180883135320">Catro perforacións na parte superior</translation>
 <translation id="2009942480257059311">Botón para crear un evento. Actívao para crear rapidamente un evento en Google Calendar</translation>
@@ -499,6 +501,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2118132148597630479">Sobre C5</translation>
 <translation id="2119505898009119320">Emitida para: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Perforación na parte inferior dereita</translation>
+<translation id="2122214041802369259">Prezo alto</translation>
 <translation id="2122719317867821810">Esta política funciona segundo o previsto, pero anula un valor en conflito que está definido noutro lugar.</translation>
 <translation id="2126374524350484896">Produtor do PDF:</translation>
 <translation id="2130448033692577677">Os modelos que especificaches poden non aplicarse debido a que non se definiu a política DnsOverHttpsMode.</translation>
@@ -859,6 +862,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3054512251683174387">Chrome elimina automaticamente os temas que leven máis de 4 semanas na lista. Algúns poderían aparecer outra vez na lista ao seguires navegando. Tamén podes bloquear os temas que non queiras que Chrome comparta cos sitios. Máis información sobre como xestionar a privacidade nos anuncios en Chrome.</translation>
 <translation id="3061707000357573562">Servizo de parche</translation>
 <translation id="306573536155379004">Comezou a partida.</translation>
+<translation id="3067505415088964188">Prezo baixo</translation>
 <translation id="3068991664510324412">Videoxogos</translation>
 <translation id="3080254622891793721">Libro gráfico</translation>
 <translation id="3081538120861307764">Para medir o rendemento dun anuncio, compártense datos entre os sitios (por exemplo, a hora do día na que se che mostrou un anuncio).</translation>
@@ -2074,6 +2078,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5967592137238574583">Edita a información de contacto</translation>
 <translation id="5967867314010545767">Eliminar do historial</translation>
 <translation id="5968022600320704045">Non hai resultados da busca</translation>
+<translation id="5969199813874624822">Gardar e facer seguimento do prezo</translation>
 <translation id="5974052231147553524">Sexto rolo</translation>
 <translation id="5975083100439434680">Afastar</translation>
 <translation id="5979084224081478209">Comprobar contrasinais</translation>
@@ -3398,6 +3403,7 @@ Detalles adicionais:
 <translation id="9141013498910525015">Xestionar enderezos</translation>
 <translation id="9144951720726881238">Data de vencemento:</translation>
 <translation id="9148507642005240123">&amp;Desfacer modificación</translation>
+<translation id="9148599396704355100">Prezo baixo</translation>
 <translation id="9150045010208374699">Utilizar a túa cámara</translation>
 <translation id="9150685862434908345">O teu administrador pode cambiar a configuración do navegador de forma remota. A actividade deste dispositivo tamén se pode xestionar fóra de Chrome. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Actualizado</translation>
