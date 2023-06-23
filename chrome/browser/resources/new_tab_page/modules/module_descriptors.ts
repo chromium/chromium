@@ -11,9 +11,6 @@ import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 
 import {chromeCartDescriptor} from './cart/module.js';
 import {driveDescriptor} from './drive/module.js';
-// <if expr="not is_official_build">
-import {dummyV2Descriptor, dummyV2Descriptor02, dummyV2Descriptor03, dummyV2Descriptor04, dummyV2Descriptor05, dummyV2Descriptor06, dummyV2Descriptor07, dummyV2Descriptor08, dummyV2Descriptor09, dummyV2Descriptor10, dummyV2Descriptor11, dummyV2Descriptor12} from './v2/dummy/module.js';
-// </if>
 import {feedDescriptor} from './feed/module.js';
 import {HistoryClustersProxyImpl} from './history_clusters/history_clusters_proxy.js';
 import {historyClustersDescriptor} from './history_clusters/module.js';
@@ -22,6 +19,9 @@ import {ModuleRegistry} from './module_registry.js';
 import {photosDescriptor} from './photos/module.js';
 import {recipeTasksDescriptor} from './recipes/module.js';
 import {driveDescriptor as driveV2Descriptor} from './v2/drive/module.js';
+// <if expr="not is_official_build">
+import {dummyV2Descriptor} from './v2/dummy/module.js';
+// </if>
 import {historyClustersDescriptor as historyClustersV2Descriptor} from './v2/history_clusters/module.js';
 
 const modulesRedesignedEnabled: boolean =
@@ -40,17 +40,6 @@ descriptors.push(
 // <if expr="not is_official_build">
 if (modulesRedesignedEnabled) {
   descriptors.push(dummyV2Descriptor);
-  descriptors.push(dummyV2Descriptor02);
-  descriptors.push(dummyV2Descriptor03);
-  descriptors.push(dummyV2Descriptor04);
-  descriptors.push(dummyV2Descriptor05);
-  descriptors.push(dummyV2Descriptor06);
-  descriptors.push(dummyV2Descriptor07);
-  descriptors.push(dummyV2Descriptor08);
-  descriptors.push(dummyV2Descriptor09);
-  descriptors.push(dummyV2Descriptor10);
-  descriptors.push(dummyV2Descriptor11);
-  descriptors.push(dummyV2Descriptor12);
 }
 // </if>
 

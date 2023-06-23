@@ -13,6 +13,11 @@
     justify-content: center;
   }
 
+  :host([format='narrow']) .tile-item,
+  :host([format='narrow']) img {
+    width: 120px;
+  }
+
   .tile-item {
     color: var(--color-new-tab-page-primary-foreground);
     height: 120px;
@@ -33,7 +38,7 @@
 </ntp-module-header>
 <div id="moduleContent">
   <cr-grid id="tiles" columns="2">
-    <template id="tileList" is="dom-repeat" items="[[tiles]]">
+    <template is="dom-repeat" items="[[tiles]]">
       <div class="tile-item" title="[[item.label]]">
         <img is="cr-auto-img" auto-src="[[item.imageUrl]]"></img>
         <span>[[item.value]]</span>
