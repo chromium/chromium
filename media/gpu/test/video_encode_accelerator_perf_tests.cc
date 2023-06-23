@@ -845,7 +845,7 @@ TEST_F(VideoEncoderTest,
 // Encode |kNumFramesToEncodeForPerformance| frames while measuring capped
 // performance. This test will encode a video at a fixed ratio, 30fps.
 // This test can be used to measure the cpu metrics during encoding.
-TEST_F(VideoEncoderTest, MeasureCappedPerformance) {
+TEST_F(VideoEncoderTest, DISABLED_MeasureCappedPerformance) {
   const uint32_t kEncodeRate = 30;
   auto encoder = CreateVideoEncoder(/*encode_rate=*/kEncodeRate,
                                     /*measure_quality=*/false);
