@@ -282,10 +282,10 @@ void HeadlessRequestContextManager::ConfigureNetworkContextParamsInternal(
   }
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDiskCacheDir)) {
-    context_params->http_cache_directory =
+    context_params->file_paths->http_cache_directory =
         command_line->GetSwitchValuePath(switches::kDiskCacheDir);
   } else if (!user_data_path_.empty()) {
-    context_params->http_cache_directory =
+    context_params->file_paths->http_cache_directory =
         user_data_path_.Append(FILE_PATH_LITERAL("Cache"));
   }
   if (proxy_config_) {

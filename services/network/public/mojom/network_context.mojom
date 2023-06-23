@@ -216,6 +216,17 @@ struct CTPolicy {
 };
 
 struct NetworkContextFilePaths {
+  // Points to the shared dictionary directory containing the sqlite database
+  // file named "db" for metadata and the disk cache directory named "cache".
+  // This field is used only when `shared_dictionary_enabled` field is set to
+  // true. If this field is empty, shared dictionaries will be stored in-memory
+  // only.
+  TransferableDirectory? shared_dictionary_directory;
+
+  // Points to the HTTP cache directory. Ignored if the cache is disabled.
+  // If null and the cache is enabled, an in-memory database is used.
+  TransferableDirectory? http_cache_directory;
+
   // Points to a path that contains all the network service files and databases
   // as listed below. If this network context is running inside a sandboxed
   // network service, then this path should contain no other sensitive data
@@ -361,9 +372,6 @@ struct NetworkContextParams {
   // Maximum size of the HTTP cache. 0 means to use the default size.
   // Ignored if the cache is disabled.
   int32 http_cache_max_size = 0;
-  // Points to the HTTP cache directory. Ignored if the cache is disabled.
-  // If null and the cache is enabled, an in-memory database is used.
-  TransferableDirectory? http_cache_directory;
 
   // A factory to broker file operations needed for the HTTP cache on some
   // platforms (depending on the sandboxing mechanism the platform provides).
@@ -549,13 +557,6 @@ struct NetworkContextParams {
   // This feature is under construction. TODO(crbug.com/1413922): Update this
   // comment when we finish the implementation.
   bool shared_dictionary_enabled = false;
-
-  // Points to the shared dictionary directory containing the sqlite database
-  // file named "db" for metadata and the disk cache directory named "cache".
-  // This field is used only when `shared_dictionary_enabled` field is set to
-  // true. If this field is empty, shared dictionaries will be stored in-memory
-  // only.
-  TransferableDirectory? shared_dictionary_directory;
 
   // Maximum size of the shared dictionary cache. If this value is 0, the max
   // size will be propagated via SetSharedDictionaryCacheMaxSize message.

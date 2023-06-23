@@ -51,6 +51,7 @@ void AddCookiesToURLResponseHead(const std::vector<std::string>& cookies,
 
 mojom::NetworkContextParamsPtr CreateNetworkContextParamsForTesting() {
   mojom::NetworkContextParamsPtr params = mojom::NetworkContextParams::New();
+  params->file_paths = mojom::NetworkContextFilePaths::New();
 #if BUILDFLAG(IS_WIN) && DCHECK_IS_ON()
   // For unit tests, no need to verify that permissions on the files are
   // correct, as this testing is done in integration tests.

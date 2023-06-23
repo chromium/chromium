@@ -105,6 +105,7 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory() {
       prefetch_service_->GetPrefetchServiceDelegate();
 
   auto context_params = network::mojom::NetworkContextParams::New();
+  context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
   context_params->user_agent =
       GetReducedUserAgent(base::CommandLine::ForCurrentProcess()->HasSwitch(
                               switches::kUseMobileUserAgent),
@@ -120,7 +121,7 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory() {
   }
 
   context_params->http_cache_enabled = true;
-  CHECK(!context_params->http_cache_directory);
+  CHECK(!context_params->file_paths->http_cache_directory);
 
   if (prefetch_type_.IsProxyRequiredWhenCrossOrigin() &&
       !prefetch_type_.IsProxyBypassedForTesting()) {

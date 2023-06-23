@@ -487,19 +487,20 @@ NetworkContext::NetworkContext(
 
 #if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
   if (params_->file_paths) {
+    if (params_->file_paths->http_cache_directory) {
+      EnsureMounted(&*params_->file_paths->http_cache_directory);
+    }
+    if (params_->file_paths->shared_dictionary_directory) {
+      EnsureMounted(&*params_->file_paths->shared_dictionary_directory);
+    }
     EnsureMounted(&params_->file_paths->data_directory);
-  }
-  if (params_->http_cache_directory) {
-    EnsureMounted(&*params_->http_cache_directory);
-  }
-  if (params_->shared_dictionary_directory) {
-    EnsureMounted(&*params_->shared_dictionary_directory);
   }
 #endif  // BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
 
   if (params_->shared_dictionary_enabled) {
-    if (params_->shared_dictionary_directory &&
-        !params_->shared_dictionary_directory->path().empty()) {
+    if (params_->file_paths &&
+        params_->file_paths->shared_dictionary_directory &&
+        !params_->file_paths->shared_dictionary_directory->path().empty()) {
 #if BUILDFLAG(IS_ANDROID)
       app_status_listeners_.push_back(
           std::make_unique<NetworkContextApplicationStatusListener>());
@@ -507,9 +508,9 @@ NetworkContext::NetworkContext(
       // TODO(crbug.com/1413922): Set `file_operations_factory` to support
       // sandboxed network service on Android.
       shared_dictionary_manager_ = SharedDictionaryManager::CreateOnDisk(
-          params_->shared_dictionary_directory->path().Append(
+          params_->file_paths->shared_dictionary_directory->path().Append(
               FILE_PATH_LITERAL("db")),
-          params_->shared_dictionary_directory->path().Append(
+          params_->file_paths->shared_dictionary_directory->path().Append(
               FILE_PATH_LITERAL("cache")),
           params_->shared_dictionary_cache_max_size,
           shared_dictionary::kDictionaryMaxCountPerNetworkContext,
@@ -2413,11 +2414,15 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   } else {
     net::URLRequestContextBuilder::HttpCacheParams cache_params;
     cache_params.max_size = params_->http_cache_max_size;
-    if (!params_->http_cache_directory) {
+    // Checking both to see if there are any file paths at all, and if there is
+    // specifically an http_cache_directory filepath in order to avoid a
+    // potential nullptr dereference if we just checked that
+    // `params_->file_paths->http_cache_directory' existed.
+    if (!params_->file_paths || !params_->file_paths->http_cache_directory) {
       cache_params.type =
           net::URLRequestContextBuilder::HttpCacheParams::IN_MEMORY;
     } else {
-      cache_params.path = params_->http_cache_directory->path();
+      cache_params.path = params_->file_paths->http_cache_directory->path();
       cache_params.type = network_session_configurator::ChooseCacheType();
       if (params_->http_cache_file_operations_factory) {
         cache_params.file_operations_factory =

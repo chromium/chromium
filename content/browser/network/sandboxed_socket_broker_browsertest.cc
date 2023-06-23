@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(SandboxedSocketBrokerBrowserTest,
   network_context_params->cert_verifier_params = GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
   network_context_params->http_cache_enabled = true;
-  network_context_params->http_cache_directory =
+  network_context_params->file_paths->http_cache_directory =
       shell()
           ->web_contents()
           ->GetBrowserContext()
