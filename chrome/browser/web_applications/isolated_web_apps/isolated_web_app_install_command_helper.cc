@@ -68,11 +68,12 @@ IsolatedWebAppInstallCommandHelper::CreateDefaultResponseReaderFactory(
 
 IsolatedWebAppInstallCommandHelper::IsolatedWebAppInstallCommandHelper(
     IsolatedWebAppUrlInfo url_info,
+    std::unique_ptr<WebAppDataRetriever> data_retriever,
     std::unique_ptr<IsolatedWebAppResponseReaderFactory>
         response_reader_factory)
     : url_info_(std::move(url_info)),
-      response_reader_factory_(std::move(response_reader_factory)),
-      data_retriever_(std::make_unique<WebAppDataRetriever>()) {}
+      data_retriever_(std::move(data_retriever)),
+      response_reader_factory_(std::move(response_reader_factory)) {}
 
 IsolatedWebAppInstallCommandHelper::~IsolatedWebAppInstallCommandHelper() =
     default;
@@ -355,11 +356,6 @@ void IsolatedWebAppInstallCommandHelper::OnRetrieveIcons(
   PopulateOtherIcons(&install_info, icons_map);
 
   std::move(callback).Run(std::move(install_info));
-}
-
-void IsolatedWebAppInstallCommandHelper::SetDataRetrieverForTesting(
-    std::unique_ptr<WebAppDataRetriever> data_retriever) {
-  data_retriever_ = std::move(data_retriever);
 }
 
 IsolatedWebAppInstallCommandHelper::ManifestAndUrl::ManifestAndUrl(

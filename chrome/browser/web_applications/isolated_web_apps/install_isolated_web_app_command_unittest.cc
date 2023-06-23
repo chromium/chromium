@@ -208,6 +208,9 @@ class FakeResponseReaderFactory : public IsolatedWebAppResponseReaderFactory {
   base::expected<void, UnusableSwbnFileError> bundle_status_;
 };
 
+// TODO(b/288395295): Refactor this test to use `FakeWebContentsManager` and
+// `provider()->command_scheduler().InstallIsolatedWebApp(...)` instead of
+// constructing the `InstallIsolatedWebAppCommand` manually.
 class InstallIsolatedWebAppCommandTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -308,13 +311,13 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
       location = CreateDevProxyLocation();
     }
 
+    if (data_retriever == nullptr) {
+      data_retriever = CreateDefaultDataRetriever(url_info.origin().GetURL());
+    }
+
     auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
-        url_info,
+        url_info, std::move(data_retriever),
         std::make_unique<FakeResponseReaderFactory>(std::move(bundle_status)));
-    command_helper->SetDataRetrieverForTesting(
-        data_retriever != nullptr
-            ? std::move(data_retriever)
-            : CreateDefaultDataRetriever(url_info.origin().GetURL()));
 
     return std::make_unique<InstallIsolatedWebAppCommand>(
         url_info, location.value(), expected_version, std::move(web_contents),
