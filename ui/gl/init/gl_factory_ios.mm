@@ -54,8 +54,9 @@ scoped_refptr<GLSurface> CreateViewGLSurface(GLDisplay* display,
   switch (GetGLImplementation()) {
     case kGLImplementationEGLANGLE:
       if (window != gfx::kNullAcceleratedWidget) {
+        UIView* view = (__bridge id)window;
         return InitializeGLSurface(new NativeViewGLSurfaceEGL(
-            display->GetAs<gl::GLDisplayEGL>(), window.layer, nullptr));
+            display->GetAs<gl::GLDisplayEGL>(), view.layer, nullptr));
       } else {
         return InitializeGLSurface(new GLSurfaceStub());
       }

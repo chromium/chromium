@@ -74,12 +74,10 @@ enum class CursorType;
 struct IAccessible;
 #elif BUILDFLAG(IS_IOS)
 #ifdef __OBJC__
-struct objc_object;
 @class UIImage;
-@class UIView;
 #else
+struct objc_object;
 class UIImage;
-class UIView;
 #endif  // __OBJC__
 #elif BUILDFLAG(IS_MAC)
 #ifdef __OBJC__
@@ -245,14 +243,14 @@ using NativeViewId = intptr_t;
 using AcceleratedWidget = HWND;
 constexpr AcceleratedWidget kNullAcceleratedWidget = nullptr;
 #elif BUILDFLAG(IS_IOS)
-using AcceleratedWidget = UIView*;
+using AcceleratedWidget = uint64_t;  // A UIView*.
 constexpr AcceleratedWidget kNullAcceleratedWidget = 0;
 #elif BUILDFLAG(IS_MAC)
 using AcceleratedWidget = uint64_t;
 constexpr AcceleratedWidget kNullAcceleratedWidget = 0;
 #elif BUILDFLAG(IS_ANDROID)
 using AcceleratedWidget = ANativeWindow*;
-constexpr AcceleratedWidget kNullAcceleratedWidget = 0;
+constexpr AcceleratedWidget kNullAcceleratedWidget = nullptr;
 #elif BUILDFLAG(IS_OZONE)
 using AcceleratedWidget = uint32_t;
 constexpr AcceleratedWidget kNullAcceleratedWidget = 0;
