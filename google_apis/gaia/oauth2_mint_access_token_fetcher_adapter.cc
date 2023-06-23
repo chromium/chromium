@@ -38,8 +38,7 @@ void OAuth2MintAccessTokenFetcherAdapter::Start(
     const std::string& client_secret,
     const std::vector<std::string>& scopes) {
   auto params = OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
-      client_id,
-      std::vector<const base::StringPiece>(scopes.begin(), scopes.end()),
+      client_id, std::vector<base::StringPiece>(scopes.begin(), scopes.end()),
       client_version_, client_channel_, device_id_);
   if (mint_token_flow_factory_for_testing_) {
     mint_token_flow_ =
