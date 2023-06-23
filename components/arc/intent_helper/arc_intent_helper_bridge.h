@@ -31,7 +31,6 @@ namespace arc {
 
 class AdaptiveIconDelegate;
 class ArcBridgeService;
-class ArcSettingsAppDelegate;
 class ControlCameraAppDelegate;
 class IntentFilter;
 class OpenUrlDelegate;
@@ -48,6 +47,10 @@ class ArcIntentHelperBridge : public KeyedService,
     // Resets ARC; this wipes all user data, stops ARC, then
     // re-enables ARC.
     virtual void ResetArc() = 0;
+
+    // Handles Android settings to sync GeoLocation information.
+    virtual void HandleUpdateAndroidSettings(mojom::AndroidSetting setting,
+                                             bool is_enabled) = 0;
   };
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
@@ -71,9 +74,6 @@ class ArcIntentHelperBridge : public KeyedService,
 
   // Sets the Delegate instance.
   void SetDelegate(std::unique_ptr<Delegate> delegate);
-
-  void SetArcSettingsAppDelegate(
-      std::unique_ptr<ArcSettingsAppDelegate> delegate);
 
   ArcIntentHelperBridge(content::BrowserContext* context,
                         ArcBridgeService* bridge_service);
@@ -172,7 +172,6 @@ class ArcIntentHelperBridge : public KeyedService,
   const std::set<std::string> allowed_arc_schemes_;
 
   std::unique_ptr<Delegate> delegate_;
-  std::unique_ptr<ArcSettingsAppDelegate> arc_settings_app_delegate_;
 
   base::WeakPtrFactory<ArcIntentHelperBridge> weak_ptr_factory_{this};
 };

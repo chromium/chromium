@@ -70,8 +70,7 @@
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_manager.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_instance_throttle.h"
 #include "chrome/browser/ash/arc/intent_helper/arc_settings_service.h"
-#include "chrome/browser/ash/arc/intent_helper/chrome_arc_settings_app_delegate.h"
-#include "chrome/browser/ash/arc/intent_helper/factory_reset_delegate.h"
+#include "chrome/browser/ash/arc/intent_helper/chrome_arc_intent_helper_delegate.h"
 #include "chrome/browser/ash/arc/keymaster/arc_keymaster_bridge.h"
 #include "chrome/browser/ash/arc/kiosk/arc_kiosk_bridge.h"
 #include "chrome/browser/ash/arc/metrics/arc_metrics_service_proxy.h"
@@ -254,9 +253,8 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcInstanceThrottle::GetForBrowserContext(profile);
   {
     auto* intent_helper = ArcIntentHelperBridge::GetForBrowserContext(profile);
-    intent_helper->SetDelegate(std::make_unique<FactoryResetDelegate>());
-    intent_helper->SetArcSettingsAppDelegate(
-        std::make_unique<ChromeArcSettingsAppDelegate>(profile));
+    intent_helper->SetDelegate(
+        std::make_unique<ChromeArcIntentHelperDelegate>(profile));
     arc_icon_cache_delegate_provider_ =
         std::make_unique<ArcIconCacheDelegateProvider>(intent_helper);
   }

@@ -22,7 +22,6 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
-#include "components/arc/intent_helper/arc_settings_app_delegate.h"
 #include "components/arc/intent_helper/control_camera_app_delegate.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
@@ -134,11 +133,6 @@ void ArcIntentHelperBridge::SetControlCameraAppDelegate(
 
 void ArcIntentHelperBridge::SetDelegate(std::unique_ptr<Delegate> delegate) {
   delegate_ = std::move(delegate);
-}
-
-void ArcIntentHelperBridge::SetArcSettingsAppDelegate(
-    std::unique_ptr<ArcSettingsAppDelegate> delegate) {
-  arc_settings_app_delegate_ = std::move(delegate);
 }
 
 ArcIntentHelperBridge::ArcIntentHelperBridge(content::BrowserContext* context,
@@ -414,11 +408,11 @@ void ArcIntentHelperBridge::SendNewCaptureBroadcast(bool is_video,
 void ArcIntentHelperBridge::OnAndroidSettingChange(
     arc::mojom::AndroidSetting setting,
     bool is_enabled) {
-  if (!arc_settings_app_delegate_) {
+  if (!delegate_) {
     LOG(ERROR) << "Unable to set value as ARC app delegate is null.";
     return;
   }
-  arc_settings_app_delegate_->HandleUpdateAndroidSettings(setting, is_enabled);
+  delegate_->HandleUpdateAndroidSettings(setting, is_enabled);
 }
 
 // static

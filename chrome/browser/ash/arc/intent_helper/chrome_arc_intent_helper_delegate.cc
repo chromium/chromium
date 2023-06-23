@@ -2,24 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/intent_helper/chrome_arc_settings_app_delegate.h"
+#include "chrome/browser/ash/arc/intent_helper/chrome_arc_intent_helper_delegate.h"
+
+#include <string>
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/logging.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 
-#include <string>
-
 namespace arc {
 
-ChromeArcSettingsAppDelegate::ChromeArcSettingsAppDelegate(Profile* profile)
+ChromeArcIntentHelperDelegate::ChromeArcIntentHelperDelegate(Profile* profile)
     : profile_(profile) {}
 
-ChromeArcSettingsAppDelegate::~ChromeArcSettingsAppDelegate() = default;
+ChromeArcIntentHelperDelegate::~ChromeArcIntentHelperDelegate() = default;
 
-void ChromeArcSettingsAppDelegate::HandleUpdateAndroidSettings(
+void ChromeArcIntentHelperDelegate::ResetArc() {
+  ArcSessionManager::Get()->RequestArcDataRemoval();
+  ArcSessionManager::Get()->StopAndEnableArc();
+}
+
+void ChromeArcIntentHelperDelegate::HandleUpdateAndroidSettings(
     mojom::AndroidSetting setting,
     bool is_enabled) {
   switch (setting) {
@@ -51,16 +57,17 @@ void ChromeArcSettingsAppDelegate::HandleUpdateAndroidSettings(
   NOTREACHED() << "Unknown Android Setting: " << setting;
 }
 
-void ChromeArcSettingsAppDelegate::UpdateLocationSettings(bool is_enabled) {
-  DCHECK(profile_);
+void ChromeArcIntentHelperDelegate::UpdateLocationSettings(bool is_enabled) {
+  CHECK(profile_);
   VLOG(1) << "UpdateLocation toggle called with value: " << is_enabled;
   profile_->GetPrefs()->SetBoolean(ash::prefs::kUserGeolocationAllowed,
                                    is_enabled);
 }
 
-bool ChromeArcSettingsAppDelegate::IsInitialLocationSettingsSyncRequired() {
-  DCHECK(profile_);
+bool ChromeArcIntentHelperDelegate::IsInitialLocationSettingsSyncRequired() {
+  CHECK(profile_);
   return profile_->GetPrefs()->GetBoolean(
       prefs::kArcInitialLocationSettingSyncRequired);
 }
+
 }  // namespace arc
