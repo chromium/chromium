@@ -14,7 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
@@ -163,7 +163,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   void MaybeBindDeferredReceivers(int64_t navigation_id, bool due_to_timeout);
 
   // Owns `this`.
-  raw_ptr<AttributionManager> attribution_manager_;
+  const raw_ref<AttributionManager> attribution_manager_;
 
   mojo::ReceiverSet<blink::mojom::AttributionDataHost, RegistrationContext>
       receivers_;

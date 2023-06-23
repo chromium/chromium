@@ -15,7 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -244,8 +244,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                         const OsRegistration&,
                         bool success);
 
-  // Never null.
-  const raw_ptr<StoragePartitionImpl> storage_partition_;
+  const raw_ref<StoragePartitionImpl> storage_partition_;
 
   // Holds pending sources and triggers in the order they were received by the
   // browser. For the time being, they must be processed in this order in order

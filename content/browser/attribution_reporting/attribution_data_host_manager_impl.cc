@@ -21,6 +21,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "base/functional/overloaded.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -370,9 +371,8 @@ struct AttributionDataHostManagerImpl::RegistrarAndHeader {
 
 AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
     AttributionManager* attribution_manager)
-    : attribution_manager_(attribution_manager) {
-  DCHECK(attribution_manager_);
-
+    : attribution_manager_(
+          raw_ref<AttributionManager>::from_ptr(attribution_manager)) {
   receivers_.set_disconnect_handler(base::BindRepeating(
       &AttributionDataHostManagerImpl::OnReceiverDisconnected,
       base::Unretained(this)));

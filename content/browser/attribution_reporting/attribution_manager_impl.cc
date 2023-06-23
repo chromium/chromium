@@ -364,15 +364,14 @@ std::unique_ptr<AttributionStorageDelegate> MakeStorageDelegate() {
 }
 
 bool IsOperationAllowed(
-    StoragePartitionImpl* storage_partition,
+    StoragePartitionImpl& storage_partition,
     ContentBrowserClient::AttributionReportingOperation operation,
     content::RenderFrameHost* rfh,
     const url::Origin* source_origin,
     const url::Origin* destination_origin,
     const url::Origin* reporting_origin) {
-  DCHECK(storage_partition);
   return GetContentClient()->browser()->IsAttributionReportingOperationAllowed(
-      storage_partition->browser_context(), operation, rfh, source_origin,
+      storage_partition.browser_context(), operation, rfh, source_origin,
       destination_origin, reporting_origin);
 }
 
@@ -434,7 +433,7 @@ bool AttributionManagerImpl::IsReportAllowed(
       },
       report.data());
   return IsOperationAllowed(
-      storage_partition_.get(),
+      *storage_partition_,
       ContentBrowserClient::AttributionReportingOperation::kReport,
       /*rfh=*/nullptr, &**source_origin,
       &*report.attribution_info().context_origin,
@@ -496,7 +495,8 @@ AttributionManagerImpl::AttributionManagerImpl(
     std::unique_ptr<AttributionReportSender> report_sender,
     std::unique_ptr<AttributionOsLevelManager> os_level_manager,
     scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner)
-    : storage_partition_(storage_partition),
+    : storage_partition_(
+          raw_ref<StoragePartitionImpl>::from_ptr(storage_partition)),
       max_pending_events_(max_pending_events),
       storage_task_runner_(std::move(storage_task_runner)),
       attribution_storage_(base::SequenceBound<AttributionStorageSql>(
@@ -516,7 +516,6 @@ AttributionManagerImpl::AttributionManagerImpl(
       cookie_checker_(std::move(cookie_checker)),
       report_sender_(std::move(report_sender)),
       os_level_manager_(std::move(os_level_manager)) {
-  DCHECK(storage_partition_);
   DCHECK_GT(max_pending_events_, 0u);
   DCHECK(storage_task_runner_);
   DCHECK(cookie_checker_);
@@ -561,7 +560,7 @@ void AttributionManagerImpl::HandleSource(
     StorableSource source,
     GlobalRenderFrameHostId render_frame_id) {
   bool allowed = IsOperationAllowed(
-      storage_partition_.get(),
+      *storage_partition_,
       ContentBrowserClient::AttributionReportingOperation::kSource,
       RenderFrameHost::FromID(render_frame_id),
       &*source.common_info().source_origin(),
@@ -618,7 +617,7 @@ void AttributionManagerImpl::HandleTrigger(
     AttributionTrigger trigger,
     GlobalRenderFrameHostId render_frame_id) {
   bool allowed = IsOperationAllowed(
-      storage_partition_.get(),
+      *storage_partition_,
       ContentBrowserClient::AttributionReportingOperation::kTrigger,
       RenderFrameHost::FromID(render_frame_id),
       /*source_origin=*/nullptr, &*trigger.destination_origin(),
@@ -1245,7 +1244,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     return;
   }
 
-  if (!IsOperationAllowed(storage_partition_.get(),
+  if (!IsOperationAllowed(*storage_partition_,
                           ContentBrowserClient::AttributionReportingOperation::
                               kSourceVerboseDebugReport,
                           /*rfh=*/nullptr,
@@ -1272,7 +1271,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     return;
   }
 
-  if (!IsOperationAllowed(storage_partition_.get(),
+  if (!IsOperationAllowed(*storage_partition_,
                           ContentBrowserClient::AttributionReportingOperation::
                               kTriggerVerboseDebugReport,
                           /*rfh=*/nullptr,
@@ -1329,7 +1328,7 @@ void AttributionManagerImpl::HandleOsRegistration(
       break;
   }
 
-  if (!IsOperationAllowed(storage_partition_.get(), operation,
+  if (!IsOperationAllowed(*storage_partition_, operation,
                           RenderFrameHost::FromID(render_frame_id),
                           source_origin, destination_origin,
                           /*reporting_origin=*/&registration_origin)) {

@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/overloaded.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"

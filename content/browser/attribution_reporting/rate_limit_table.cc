@@ -9,7 +9,9 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -31,8 +33,7 @@
 namespace content {
 
 RateLimitTable::RateLimitTable(const AttributionStorageDelegate* delegate)
-    : delegate_(delegate) {
-  DCHECK(delegate_);
+    : delegate_(raw_ref<const AttributionStorageDelegate>::from_ptr(delegate)) {
 }
 
 RateLimitTable::~RateLimitTable() {

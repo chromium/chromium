@@ -19,7 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
 #include "base/json/json_reader.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -249,10 +249,10 @@ class AttributionEventHandler : public AttributionObserver {
                           FakeCookieChecker* fake_cookie_checker,
                           AttributionReportJsonConverter json_converter)
       : manager_(std::move(manager)),
-        fake_cookie_checker_(fake_cookie_checker),
+        fake_cookie_checker_(
+            raw_ref<FakeCookieChecker>::from_ptr(fake_cookie_checker)),
         json_converter_(json_converter) {
     DCHECK(manager_);
-    DCHECK(fake_cookie_checker_);
 
     manager_->AddObserver(this);
   }
@@ -353,7 +353,7 @@ class AttributionEventHandler : public AttributionObserver {
   }
 
   const std::unique_ptr<AttributionManagerImpl> manager_;
-  const raw_ptr<FakeCookieChecker> fake_cookie_checker_;
+  const raw_ref<FakeCookieChecker> fake_cookie_checker_;
 
   const AttributionReportJsonConverter json_converter_;
 

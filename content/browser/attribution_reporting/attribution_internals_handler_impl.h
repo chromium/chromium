@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTERNALS_HANDLER_IMPL_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTERNALS_HANDLER_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -89,7 +89,7 @@ class AttributionInternalsHandlerImpl
 
   void OnObserverDisconnected();
 
-  raw_ptr<WebUI> web_ui_;
+  const raw_ref<WebUI> web_ui_;
 
   mojo::Remote<attribution_internals::mojom::Observer> observer_;
 

@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
@@ -56,6 +55,8 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::SuitableOrigin;
+
 // Auxiliary data that lives alongside a NavigationHandle, tracking
 // whether the navigation is "insecurely tainted" i.e. has seen an
 // insecure hop in its path. This should only be present for navigations which
@@ -94,32 +95,6 @@ class InsecureTaintTracker
   bool had_any_secure_attempts_ = false;
 };
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(InsecureTaintTracker);
-
-using ::attribution_reporting::SuitableOrigin;
-
-// Abstraction that wraps an iterator to a map. When this goes out of the scope,
-// the underlying iterator is erased from the map. This is useful for control
-// flows where map cleanup needs to occur regardless of additional early exit
-// logic.
-template <typename Map>
-class ScopedMapDeleter {
- public:
-  ScopedMapDeleter(Map* map, const typename Map::key_type& key)
-      : map_(map), it_(map_->find(key)) {}
-  ~ScopedMapDeleter() {
-    if (*this) {
-      map_->erase(it_);
-    }
-  }
-
-  typename Map::iterator* get() { return &it_; }
-
-  explicit operator bool() const { return it_ != map_->end(); }
-
- private:
-  raw_ptr<Map> map_;
-  typename Map::iterator it_;
-};
 
 }  // namespace
 
@@ -247,11 +222,9 @@ void AttributionHost::DidRedirectNavigation(
 }
 
 void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
-  ScopedMapDeleter<NavigationInfoMap> navigation_source_origin_it(
-      &navigation_info_map_, navigation_handle->GetNavigationId());
-
   NotifyNavigationRegistrationData(navigation_handle,
                                    /*is_final_response=*/true);
+  navigation_info_map_.erase(navigation_handle->GetNavigationId());
 }
 
 void AttributionHost::NotifyNavigationRegistrationData(
