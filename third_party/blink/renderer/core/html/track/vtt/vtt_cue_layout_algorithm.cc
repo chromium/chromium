@@ -121,7 +121,7 @@ LayoutUnit VttCueLayoutAlgorithm::ComputeInitialPositionAdjustment(
   // 8. Vertical Growing Left: Decrease position by the width of the
   // bounding box of the boxes in boxes, then increase position by step.
   if (cue_box.HasFlippedBlocksWritingMode()) {
-    position -= cue_box.FrameRect().Width();
+    position -= cue_box.Size().Width();
     position += step_;
   }
 

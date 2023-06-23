@@ -395,7 +395,7 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
 
 static WTF::TextStream& operator<<(WTF::TextStream& ts,
                                    const LayoutSVGRoot& root) {
-  ts << " " << root.FrameRect();
+  ts << " " << PhysicalRect(root.PhysicalLocation(), root.Size());
   WriteStyle(ts, root);
   return ts;
 }

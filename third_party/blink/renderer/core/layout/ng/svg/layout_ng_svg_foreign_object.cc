@@ -56,6 +56,11 @@ gfx::RectF LayoutNGSVGForeignObject::DecoratedBoundingBox() const {
 
 gfx::RectF LayoutNGSVGForeignObject::VisualRectInLocalSVGCoordinates() const {
   NOT_DESTROYED();
+  if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
+    PhysicalOffset offset = PhysicalLocation();
+    LayoutSize size = Size();
+    return gfx::RectF(offset.left, offset.top, size.Width(), size.Height());
+  }
   return gfx::RectF(FrameRect());
 }
 
@@ -105,7 +110,7 @@ void LayoutNGSVGForeignObject::UpdateLayout() {
         foreign->CalculateTransform(SVGElement::kIncludeMotionTransform);
   }
 
-  LayoutRect old_frame_rect = FrameRect();
+  PhysicalRect old_frame_rect(PhysicalLocation(), Size());
 
   // Resolve the viewport in the local coordinate space - this does not include
   // zoom.
@@ -147,7 +152,8 @@ void LayoutNGSVGForeignObject::UpdateLayout() {
   NGBlockNode(this).Layout(builder.ToConstraintSpace());
 
   DCHECK(!NeedsLayout() || ChildLayoutBlockedByDisplayLock());
-  const bool bounds_changed = old_frame_rect != FrameRect();
+  const bool bounds_changed =
+      old_frame_rect != PhysicalRect(PhysicalLocation(), Size());
 
   // Invalidate all resources of this client if our reference box changed.
   if (EverHadLayout() && bounds_changed)

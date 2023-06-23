@@ -402,7 +402,11 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
     LayoutBox* thumb = thumb_element ? thumb_element->GetLayoutBox() : nullptr;
     LayoutBox* input_box = input->GetLayoutBox();
     if (thumb) {
-      gfx::Rect thumb_rect = ToPixelSnappedRect(thumb->FrameRect());
+      gfx::Rect thumb_rect =
+          RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
+              ? ToPixelSnappedRect(
+                    PhysicalRect(thumb->PhysicalLocation(), thumb->Size()))
+              : ToPixelSnappedRect(thumb->FrameRect());
       extra_params.slider.thumb_x = thumb_rect.x() +
                                     input_box->PaddingLeft().ToInt() +
                                     input_box->BorderLeft().ToInt();
