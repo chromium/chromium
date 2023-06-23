@@ -498,6 +498,7 @@ source_set("tflite_kernels") {
     "src/tensorflow/lite/kernels/pooling.cc",
     "src/tensorflow/lite/kernels/pow.cc",
     "src/tensorflow/lite/kernels/quantize.cc",
+    "src/tensorflow/lite/kernels/random_ops.cc",
     "src/tensorflow/lite/kernels/range.cc",
     "src/tensorflow/lite/kernels/rank.cc",
     "src/tensorflow/lite/kernels/read_variable.cc",
