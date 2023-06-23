@@ -12,6 +12,7 @@
 #import "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
+#import "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
 #import "components/segmentation_platform/embedder/default_model/password_manager_user_segment.h"
 #import "components/segmentation_platform/embedder/default_model/search_user_model.h"
 #import "components/segmentation_platform/embedder/default_model/shopping_user_model.h"
@@ -120,6 +121,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
     configs.emplace_back(DeviceSwitcherModel::GetConfig());
   }
 
+  configs.emplace_back(LowUserEngagementModel::GetConfig());
   configs.emplace_back(TabResumptionRanker::GetConfig());
   configs.emplace_back(PasswordManagerUserModel::GetConfig());
   configs.emplace_back(ShoppingUserModel::GetConfig());
