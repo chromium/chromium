@@ -373,8 +373,6 @@ component("gl") {
       ]
     }
 
-    deps += [ "//components/metal_util:metal_util_types" ]
-
     defines += [ "GL_SILENCE_DEPRECATION" ]
   }
   if (is_ios) {
@@ -391,8 +389,6 @@ component("gl") {
       "CoreFoundation.framework",
       "IOSurface.framework",
     ]
-
-    deps += [ "//components/metal_util:metal_util_types" ]
   }
   if (is_android) {
     defines += [

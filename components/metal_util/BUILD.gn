@@ -6,10 +6,6 @@ assert(is_apple)
 
 import("//testing/test.gni")
 
-source_set("metal_util_types") {
-  sources = [ "types.h" ]
-}
-
 component("metal_util") {
   output_name = "metal"
 
@@ -22,8 +18,6 @@ component("metal_util") {
     "hdr_copier_layer.mm",
     "metal_util_export.h",
   ]
-
-  public_deps = [ ":metal_util_types" ]
 
   deps = [
     "//base",

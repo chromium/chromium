@@ -6,6 +6,7 @@
 
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/scoped_policy.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/viz/common/gpu/metal_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -683,32 +684,20 @@ void DawnIOSurfaceRepresentation::EndAccess() {
 ////////////////////////////////////////////////////////////////////////////////
 // SharedEventAndSignalValue
 
-SharedEventAndSignalValue::SharedEventAndSignalValue(id shared_event,
-                                                     uint64_t signaled_value)
-    : shared_event_(shared_event), signaled_value_(signaled_value) {
-  if (@available(macOS 10.14, *)) {
-    if (shared_event_) {
-      [static_cast<id<MTLSharedEvent>>(shared_event_) retain];
-    }
-  }
+SharedEventAndSignalValue::SharedEventAndSignalValue(
+    id<MTLSharedEvent> shared_event,
+    uint64_t signaled_value)
+    : signaled_value_(signaled_value) {
+  shared_event_.reset(shared_event, base::scoped_policy::RETAIN);
 }
 
-SharedEventAndSignalValue::~SharedEventAndSignalValue() {
-  if (@available(macOS 10.14, *)) {
-    if (shared_event_) {
-      [static_cast<id<MTLSharedEvent>>(shared_event_) release];
-    }
-  }
-  shared_event_ = nil;
-}
+SharedEventAndSignalValue::~SharedEventAndSignalValue() = default;
 
 bool SharedEventAndSignalValue::HasCompleted() const {
-  if (@available(macOS 10.14, *)) {
-    if (shared_event_) {
-      return [static_cast<id<MTLSharedEvent>>(shared_event_) signaledValue] >=
-             signaled_value_;
-    }
+  if (shared_event_) {
+    return shared_event_.get().signaledValue >= signaled_value_;
   }
+
   return true;
 }
 
@@ -830,7 +819,7 @@ void IOSurfaceImageBacking::SetReleaseFence(gfx::GpuFenceHandle release_fence) {
 }
 
 void IOSurfaceImageBacking::AddSharedEventAndSignalValue(
-    id shared_event,
+    id<MTLSharedEvent> shared_event,
     uint64_t signal_value) {
   shared_events_and_signal_values_.push_back(
       std::make_unique<SharedEventAndSignalValue>(shared_event, signal_value));
@@ -1289,7 +1278,7 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
               gl::GLDisplayEGL::GetDisplayForCurrentContext();
           CHECK(display);
           CHECK(display->GetDisplay() == egl_state->egl_display_);
-          metal::MTLSharedEventPtr shared_event = nullptr;
+          id<MTLSharedEvent> shared_event = nil;
           uint64_t signal_value = 0;
           if (display->CreateMetalSharedEvent(&shared_event, &signal_value)) {
             AddSharedEventAndSignalValue(shared_event, signal_value);

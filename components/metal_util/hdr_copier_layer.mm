@@ -12,6 +12,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/memory/scoped_policy.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/metal_util/device.h"
@@ -233,7 +234,8 @@ API_AVAILABLE(macos(10.15))
 @implementation HDRCopierLayer
 - (id)init {
   if (self = [super init]) {
-    base::scoped_nsprotocol<id<MTLDevice>> device(metal::CreateDefaultDevice());
+    base::scoped_nsprotocol<id<MTLDevice>> device(metal::GetDefaultDevice(),
+                                                  base::scoped_policy::RETAIN);
     if (@available(macOS 10.11, iOS 16.0, *)) {
       [self setWantsExtendedDynamicRangeContent:YES];
     }
