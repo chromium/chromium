@@ -16,6 +16,7 @@
 #import "components/reading_list/core/fake_reading_list_model_storage.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/sync/base/storage_type.h"
+#import "components/sync/test/test_sync_service.h"
 #import "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
@@ -57,6 +58,7 @@ class ReadingListMediatorTest
         std::move(storage), syncer::StorageType::kUnspecified, &clock_);
     // Complete the initial model load from storage.
     storage_ptr->TriggerLoadCompletion();
+    sync_service_ = std::make_unique<syncer::TestSyncService>();
 
     EXPECT_CALL(mock_favicon_service_,
                 GetLargestRawFaviconForPageURL(_, _, _, _, _))
@@ -101,6 +103,7 @@ class ReadingListMediatorTest
     favicon_loader.reset(new FaviconLoader(large_icon_service_.get()));
     mediator_ = [[ReadingListMediator alloc]
           initWithModel:model_.get()
+            syncService:sync_service_.get()
           faviconLoader:favicon_loader.get()
         listItemFactory:[[ReadingListListItemFactory alloc] init]];
   }
@@ -113,6 +116,7 @@ class ReadingListMediatorTest
  protected:
   testing::StrictMock<favicon::MockFaviconService> mock_favicon_service_;
   std::unique_ptr<ReadingListModelImpl> model_;
+  std::unique_ptr<syncer::TestSyncService> sync_service_;
   ReadingListMediator* mediator_;
   base::SimpleTestClock clock_;
   GURL no_title_entry_url_;
