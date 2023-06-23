@@ -689,9 +689,7 @@ AX_TEST_F(
 AX_TEST_F(
     'SelectToSpeakNavigationControlTest', 'ChangeSpeedWhilePlaying',
     async function() {
-      chrome.settingsPrivate.setPref(
-          'settings.tts.speech_rate', 1.2,
-          '' /* unused, see crbug.com/866161 */, () => {});
+      chrome.settingsPrivate.setPref('settings.tts.speech_rate', 1.2);
       const bodyHtml = `
       <p id="p1">Paragraph 1</p>'
     `;
@@ -731,9 +729,7 @@ AX_TEST_F(
 AX_TEST_F(
     'SelectToSpeakNavigationControlTest', 'RetainsSpeedChange',
     async function() {
-      chrome.settingsPrivate.setPref(
-          'settings.tts.speech_rate', 1.0,
-          '' /* unused, see crbug.com/866161 */, () => {});
+      chrome.settingsPrivate.setPref('settings.tts.speech_rate', 1.0);
       const bodyHtml = `
     <p id="p1">Paragraph 1</p>'
   `;
@@ -756,9 +752,7 @@ AX_TEST_F(
 AX_TEST_F(
     'SelectToSpeakNavigationControlTest', 'ChangeSpeedWhilePaused',
     async function() {
-      chrome.settingsPrivate.setPref(
-          'settings.tts.speech_rate', 1.2,
-          '' /* unused, see crbug.com/866161 */, () => {});
+      chrome.settingsPrivate.setPref('settings.tts.speech_rate', 1.2);
       const bodyHtml = `
       <p id="p1">Paragraph 1</p>'
     `;
