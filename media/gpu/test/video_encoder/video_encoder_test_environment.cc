@@ -125,6 +125,7 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     absl::optional<uint32_t> encode_bitrate,
     Bitrate::Mode bitrate_mode,
     bool reverse,
+    bool read_all_frames_in_video,
     const FrameOutputConfig& frame_output_config,
     const std::vector<base::test::FeatureRef>& enabled_features,
     const std::vector<base::test::FeatureRef>& disabled_features) {
@@ -133,7 +134,7 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     return nullptr;
   }
   auto video = RawVideo::Create(video_path, video_metadata_path,
-                                /*read_all_frames=*/false);
+                                read_all_frames_in_video);
   if (!video) {
     LOG(ERROR) << "Failed to prepare input source for " << video_path;
     return nullptr;

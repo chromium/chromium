@@ -31,13 +31,8 @@ class RawVideo;
 // for the entire test run.
 class VideoEncoderTestEnvironment : public VideoTestEnvironment {
  public:
-  // VideoEncoderTest uses at most 60 frames in the given video file.
-  // This limitation is required as a long video stream might not fit in
-  // a device's memory or the number of allocatable handles in the system.
-  // TODO(hiroh): Streams frames from disk so we can avoid this limitation when
-  // encoding long video streams.
-  static constexpr size_t kMaxReadFrames = 60;
-
+  // |read_all_frames_in_video| is weather we read all the frames in
+  // |video_path|. If it is false, it reads up to RawVideo::kLimitedReadFrames.
   static VideoEncoderTestEnvironment* Create(
       const base::FilePath& video_path,
       const base::FilePath& video_metadata_path,
@@ -49,6 +44,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       absl::optional<uint32_t> output_bitrate,
       Bitrate::Mode bitrate_mode,
       bool reverse,
+      bool read_all_frames_in_video,
       const FrameOutputConfig& frame_output_config = FrameOutputConfig(),
       const std::vector<base::test::FeatureRef>& enabled_features = {},
       const std::vector<base::test::FeatureRef>& disabled_features = {});

@@ -876,8 +876,8 @@ int main(int argc, char** argv) {
       media::test::VideoEncoderTestEnvironment::Create(
           video_path, video_metadata_path, enable_bitstream_validator,
           output_folder, codec, svc_mode, output_bitstream, output_bitrate,
-          bitrate_mode, reverse, frame_output_config,
-          /*enabled_features=*/{}, disabled_features);
+          bitrate_mode, reverse, /*read_all_frames_in_video=*/false,
+          frame_output_config, /*enabled_features=*/{}, disabled_features);
 
   if (!test_environment)
     return EXIT_FAILURE;
