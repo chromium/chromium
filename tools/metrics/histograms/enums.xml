@@ -1380,10 +1380,10 @@ Unknown properties are collapsed to zero. -->
 <enum name="ActionInSuggestType">
   <summary>The type of Omnibox Action in Suggest.</summary>
   <int value="0" label="Unknown"/>
+  <int value="1" label="Call"/>
   <int value="2" label="Directions"/>
-  <int value="3" label="Call"/>
-  <int value="6" label="Website"/>
-  <int value="20" label="Reviews"/>
+  <int value="3" label="Website"/>
+  <int value="4" label="Reviews"/>
 </enum>
 
 <enum name="ActionUponResourceRequest">
