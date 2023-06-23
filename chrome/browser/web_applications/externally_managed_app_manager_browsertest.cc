@@ -51,18 +51,17 @@ class ExternallyManagedAppManagerBrowserTest
     WebAppControllerBrowserTest::SetUpOnMainThread();
     // Allow different origins to be handled by the embedded_test_server.
     host_resolver()->AddRule("*", "127.0.0.1");
-    test::WaitUntilReady(WebAppProvider::GetForTest(profile()));
+    test::WaitUntilWebAppProviderAndSubsystemsReady(provider());
   }
 
   Profile* profile() { return browser()->profile(); }
 
-  WebAppRegistrar& registrar() {
-    return WebAppProvider::GetForTest(profile())->registrar_unsafe();
-  }
+  WebAppRegistrar& registrar() { return provider()->registrar_unsafe(); }
+
+  WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 
   ExternallyManagedAppManager& externally_managed_app_manager() {
-    return WebAppProvider::GetForTest(profile())
-        ->externally_managed_app_manager();
+    return provider()->externally_managed_app_manager();
   }
 
   void InstallApp(ExternalInstallOptions install_options) {
@@ -240,9 +239,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   EXPECT_EQ(1u + kGeneratedSizes.size(), downloaded_sizes.size());
   EXPECT_TRUE(downloaded_sizes.find(kIconSize) != downloaded_sizes.end());
   EXPECT_EQ(kIconColor,
-            IconManagerReadAppIconPixel(
-                WebAppProvider::GetForTest(profile())->icon_manager(),
-                app_id.value(), kIconSize, 0, 0));
+            IconManagerReadAppIconPixel(provider()->icon_manager(),
+                                        app_id.value(), kIconSize, 0, 0));
 }
 
 // This RequestHandler returns HTTP_NOT_FOUND the first time a URL containing
@@ -306,9 +304,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   EXPECT_EQ(1u + kGeneratedSizes.size(), downloaded_sizes.size());
   EXPECT_TRUE(downloaded_sizes.find(kIconSize) != downloaded_sizes.end());
   EXPECT_EQ(kIconColor,
-            IconManagerReadAppIconPixel(
-                WebAppProvider::GetForTest(profile())->icon_manager(),
-                app_id.value(), kIconSize, 0, 0));
+            IconManagerReadAppIconPixel(provider()->icon_manager(),
+                                        app_id.value(), kIconSize, 0, 0));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -323,9 +320,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
 
   // Start an installation but don't wait for it to finish.
-  WebAppProvider::GetForTest(profile())
-      ->externally_managed_app_manager()
-      .Install(std::move(install_options), base::DoNothing());
+  provider()->externally_managed_app_manager().Install(
+      std::move(install_options), base::DoNothing());
 
   // The browser should shutdown cleanly even if there is a pending
   // installation.
@@ -558,9 +554,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   }
 }
 
-// TODO(crbug.com/1452018): Re-enable the test when the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
-                       DISABLED_CannotFetchManifest) {
+                       CannotFetchManifest) {
   // With a flaky network connection, clients may request an app whose manifest
   // cannot currently be retrieved. The app display mode is then assumed to be
   // 'browser'.
