@@ -18,8 +18,6 @@
 #include "extensions/common/constants.h"
 
 namespace {
-// TODO(neis): Unify this function with the similar one in
-// render_view_context_menu.cc.
 crosapi::mojom::OpenUrlParams::WindowOpenDisposition GetDispositionForLacros(
     WindowOpenDisposition disposition) {
   switch (disposition) {

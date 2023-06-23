@@ -281,11 +281,11 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
-#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/ash/url_handler.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
@@ -743,25 +743,6 @@ Browser* FindNormalBrowser(const Profile* profile) {
   }
   return nullptr;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-ash::NewWindowDelegate::Disposition GetDispositionForLacros(
-    WindowOpenDisposition disposition) {
-  switch (disposition) {
-    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-      return ash::NewWindowDelegate::Disposition::kNewForegroundTab;
-    case WindowOpenDisposition::NEW_WINDOW:
-      return ash::NewWindowDelegate::Disposition::kNewWindow;
-    case WindowOpenDisposition::OFF_THE_RECORD:
-      return ash::NewWindowDelegate::Disposition::kOffTheRecord;
-    case WindowOpenDisposition::SWITCH_TO_TAB:
-      return ash::NewWindowDelegate::Disposition::kSwitchToTab;
-    default:
-      // Others are currently not supported.
-      return ash::NewWindowDelegate::Disposition::kNewForegroundTab;
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -2801,10 +2782,7 @@ void RenderViewContextMenu::OpenURLWithExtraHeaders(
     const std::string& extra_headers,
     bool started_from_context_menu) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
-    ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-        url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-        GetDispositionForLacros(disposition));
+  if (ash::TryOpenUrl(params_.link_url, disposition)) {
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2856,11 +2834,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       WindowOpenDisposition new_tab_disposition =
           WindowOpenDisposition::NEW_BACKGROUND_TAB;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
-        ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-            params_.link_url,
-            ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-            GetDispositionForLacros(new_tab_disposition));
+      if (ash::TryOpenUrl(params_.link_url, new_tab_disposition)) {
         break;
       }
 #endif
