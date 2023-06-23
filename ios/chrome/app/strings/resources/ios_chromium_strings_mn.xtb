@@ -42,9 +42,11 @@
 <translation id="2942241131342758843">Холбооснуудыг нээх, жижиг хэрэгслүүдээс хайх, бусад аппад нууц үгнүүдийг автоматаар бөглөхийн тулд Chromium-г өгөгдмөлөөр ашиглана уу</translation>
 <translation id="2977470724722393594">Chromium-г шинэчилсэн байна</translation>
 <translation id="3102849287235003384">Бүх вебсайт дээр Google Бүртгэлээсээ гарахын тулд <ph name="BEGIN_LINK" />Chromium-с гарна уу<ph name="END_LINK" />.</translation>
+<translation id="3115956258722352278">Chromium-г таны өгөгдмөл хөтөч болгох уу?</translation>
 <translation id="3256316712990552818">Chromium руу хуулсан</translation>
 <translation id="3344973607274501920">Chromium таны нууц үгнүүдийг шалгаж чадсангүй. Интернэт холболтоо шалгаж үзнэ үү.</translation>
 <translation id="3472200483164753384">Chromium Канар дээр дэмжихгүй</translation>
+<translation id="3478750326643748149">“Chromium-г бүрэн ашиглах”-ыг нуух</translation>
 <translation id="3567399274263440288">Chromium-г бүрэн ашиглахын тулд Chromium-д Google Бүртгэлээрээ нэвтэрнэ үү.</translation>
 <translation id="3639997914391704523">Chromium нь таныг Google Бүртгэлээрээ нэвтрэх үед таны нууц үгнүүдийг шалгах боломжтой.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> энэ төхөөрөмж дээр Chromium-г ашиглаж байсан бөгөөд хавчуурга, нууц үг болон бусад тохиргоог үлдээсэн.</translation>
@@ -78,6 +80,7 @@
 <translation id="5521125884468363740">Та Chromium-г хаанаас ч ашигласан табуудаа харахын тулд нэвтрээд, синк хийхийг асаана уу</translation>
 <translation id="5522297504975449419">Chromium-н зарим онцлог цаашид боломжгүй болно.</translation>
 <translation id="5573014823074921752">Chromium-н зөвлөгөө. Табын бусад сонголтыг харахын тулд дэлгэцийнхээ доод эсвэл дээд хэсэгт байрлах самбараас Табыг харуулах товчлуурыг удаан дарна уу.</translation>
+<translation id="5688047395118852662">Энэ карт танд Chromium-г хэрхэн бүрэн ашиглах талаар зөвлөмжүүдийг харуулна.</translation>
 <translation id="5700709190537129682">Chromium таны нууц үгнүүдийг шалгах боломжгүй байна</translation>
 <translation id="5777187867430702742">Chromium-н хуудас</translation>
 <translation id="5925698807555796756">“Таныг Chromium-г хаах үед нууцлалтай табыг түгжих”-ийг асаана уу.</translation>

@@ -79,6 +79,7 @@
 <translation id="1061130374843955397">Damos-lhe as boas-vindas ao seu dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">Criar código QR para este link</translation>
 <translation id="1061904396131502319">Está quase na altura de fazer uma pausa</translation>
+<translation id="10619348099955377">Copiar nome a apresentar</translation>
 <translation id="1062407476771304334">Substituir</translation>
 <translation id="1062628064301375934">Ajude-nos a criar uma Web mais privada</translation>
 <translation id="1066964438793906105">Analisar quanto à existência de software malicioso</translation>
@@ -578,6 +579,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1481537595330271162">Ocorreu um erro ao redimensionar o disco.</translation>
 <translation id="1482626744466814421">Adicionar este separador aos marcadores…</translation>
 <translation id="1482772681918035149">editar palavras-passe</translation>
+<translation id="1483431819520123112">Nome a apresentar copiado para a área de transferência</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">O site está a utilizar o Bluetooth.</translation>
@@ -957,6 +959,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1784707308176068866">Execução em segundo plano quando solicitado por uma app nativa cooperante</translation>
 <translation id="1784849162047402014">O dispositivo tem pouco espaço em disco</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{A desinstalação da app "<ph name="APP_NAME" />" também vai desinstalar esta app:}other{A desinstalação da app "<ph name="APP_NAME" />" também vai desinstalar estas apps:}}</translation>
+<translation id="1786290960428378411">A pedir para ler e alterar</translation>
 <translation id="1787350673646245458">Imagem do utilizador</translation>
 <translation id="1790976235243700817">Remover acesso</translation>
 <translation id="1791662854739702043">Instalado</translation>
@@ -1289,6 +1292,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Clique para instalar a extensão.}other{Clique para instalar estas extensões.}}</translation>
 <translation id="2073496667646280609">Pode não ter espaço de armazenamento livre suficiente no dispositivo ou localização de cópia de segurança selecionada. Experimente libertar espaço ou escolher uma localização diferente.</translation>
 <translation id="2073505299004274893">Utilize <ph name="CHARACTER_LIMIT" /> carateres ou menos.</translation>
+<translation id="2075088158103027942">Aceder à subscrição</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="2076269580855484719">Ocultar este plug-in</translation>
 <translation id="2076672359661571384">Médio (recomendado)</translation>
@@ -2108,6 +2112,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2731700343119398978">Aguarde...</translation>
 <translation id="2731971182069536520">Da próxima vez que reiniciar o dispositivo, o administrador irá efetuar uma atualização única que elimina os seus dados locais.</translation>
 <translation id="2732134891301408122">Conteúdo adicional <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733992589856193783">Criou uma chave de acesso para este site. Precisa do seu dispositivo móvel para iniciar sessão.</translation>
 <translation id="27349076983469322">Fundo claro</translation>
 <translation id="2735712963799620190">Programação</translation>
 <translation id="2737363922397526254">Reduzir...</translation>
@@ -3101,6 +3106,7 @@ Pretende pará-lo?</translation>
 <translation id="3610241585790874201">Sem autorização para guardar dados no seu dispositivo</translation>
 <translation id="3610369246614755442">A ventoinha da estação de carregamento necessita de manutenção</translation>
 <translation id="3610961622607302617">Altere a palavra-passe de <ph name="WEBSITE" /></translation>
+<translation id="3611634011145829814">Aceder à página da subscrição</translation>
 <translation id="3611658447322220736">Os sites fechados recentemente podem concluir o envio e a receção de dados</translation>
 <translation id="3612673635130633812">Transferido por &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Mostrar <ph name="FOLDER_NAME" /></translation>
@@ -3789,6 +3795,7 @@ Pretende pará-lo?</translation>
 <translation id="4176463684765177261">Desativado</translation>
 <translation id="4176864026061939326">Este dispositivo é gerido. O administrador do dispositivo requer um novo perfil para a conta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4177501066905053472">Tópicos de anúncios</translation>
+<translation id="4178220097446335546">Para esquecer esta subscrição e as redes associadas, aceda à página da subscrição do Passpoint para remover a subscrição.</translation>
 <translation id="4180788401304023883">Eliminar o certificado "<ph name="CERTIFICATE_NAME" />" da autoridade de certificação?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Idiomas</translation>
@@ -3941,6 +3948,7 @@ Pretende pará-lo?</translation>
 <translation id="4316850752623536204">Website para programadores</translation>
 <translation id="4317733381297736564">Compras na app</translation>
 <translation id="4317820549299924617">Não foi possível efetuar a validação</translation>
+<translation id="4319441675152393296">Clique no ícone desta extensão para ler e alterar <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Sem ligação à Internet</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197">Mostrar <ph name="FILE_NAME" /> no Finder</translation>
@@ -4627,6 +4635,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4899052647152077033">Inverter cores</translation>
 <translation id="4899696330053002588">Contém anúncios</translation>
 <translation id="489985760463306091">Para concluir a remoção de software prejudicial, reinicie o computador</translation>
+<translation id="490031510406860025">Não permitido neste site</translation>
 <translation id="4900392736118574277">A sua página inicial foi alterada para <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – entrelaçado</translation>
 <translation id="4900652253009739885">Não é possível remover o único interruptor atribuído a "Selecionar". Prima qualquer tecla para <ph name="RESPONSE" />.</translation>
@@ -7368,6 +7377,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7299515639584427954">Pretende alterar a app predefinida para os links suportados?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">Pode perguntar "OK Google, que música é esta?" ou "OK Google, o que está no meu ecrã?"</translation>
+<translation id="7301812050652048720">Chave de acesso eliminada</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Esta aplicação pode impedir o funcionamento correto do Chrome.}other{Estas aplicações podem impedir o funcionamento correto do Chrome.}}</translation>
 <translation id="7303281435234579599">Ups! Ocorreu um erro ao configurar o modo de demonstração.</translation>
 <translation id="7303900363563182677">Este site foi impedido de ver o texto e as imagens copiados para a área de transferência.</translation>
@@ -7912,6 +7922,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7744192722284567281">Encontrada numa violação de dados</translation>
 <translation id="7744649840067671761">Prima um novo interruptor ou uma tecla do teclado para iniciar a atribuição.
 Prima uma tecla ou um interruptor atribuído para remover a atribuição.</translation>
+<translation id="7745677556280361868">Remover esta rede na página da subscrição do Passpoint?</translation>
 <translation id="7746045113967198252">Aumente ou diminua o tamanho dos itens no ecrã, incluindo texto. Também pode encontrar estas opções mais tarde em Definições &gt; Dispositivo &gt; Ecrãs.</translation>
 <translation id="7746739418892731373">Está a ver destaques de fotos e vídeos da sua biblioteca do Google Fotos. Pode controlar o que é apresentado nos seus destaques em <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.
         <ph name="BREAK" />
@@ -8125,6 +8136,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7920363873148656176"><ph name="ORIGIN" /> pode ver <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Adicione palavras que pretende que a verificação ortográfica ignore.</translation>
 <translation id="7921347341284348270">Não pode ver as notificações do telemóvel nesta conta gerida. Tente novamente com uma conta diferente. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="7921901223958867679">Esta extensão pode ler e alterar <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 extensão</translation>
 <translation id="7922935920104868876">Mostrar detalhes sobre como bloquear cookies de terceiros na Navegação anónima</translation>
 <translation id="7923564237306226146">Atualização do Linux concluída</translation>
@@ -9659,6 +9671,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="930551443325541578">Repetir teclas e acentos</translation>
 <translation id="930893132043726269">Está atualmente em roaming</translation>
 <translation id="930991362911221750">Permitir que app <ph name="APP_NAME" /> veja este separador?</translation>
+<translation id="931273044114601262">Permitido neste site</translation>
 <translation id="93140074055951850">As apps Android foram paradas</translation>
 <translation id="932327136139879170">Página inicial</translation>
 <translation id="932508678520956232">Não foi possível iniciar a impressão.</translation>

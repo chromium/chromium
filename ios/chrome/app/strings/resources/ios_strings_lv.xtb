@@ -88,6 +88,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chrome datus sa
 <translation id="1492417797159476138">Jūs jau saglabājāt šo lietotājvārdu šai vietnei</translation>
 <translation id="1497590942294823549">Izvēlne → Paroļu pārvaldnieks</translation>
 <translation id="1498283581832036924">Jūsu <ph name="WEBSITE" /> konts netiks dzēsts.</translation>
+<translation id="1501820324067650154">Lai skatītu maršruta iespējas, pieskarieties vienumam “Saņemt norādes”.</translation>
 <translation id="1506063256525392513">Varat uzņemt un augšupielādēt fotoattēlus, kā arī skenēt kvadrātkodus</translation>
 <translation id="1509486075633541495">Pierakstieties tīmekļa vietnē</translation>
 <translation id="1509960214886564027">Daudzās vietnēs funkcijas var nedarboties</translation>
@@ -175,6 +176,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chrome datus sa
 <translation id="2073572773299281212">Aktīvs pirms <ph name="DAYS" /> dienām</translation>
 <translation id="2074131957428911366">Jūs jebkurā laikā <ph name="BEGIN_LINK" />iestatījumos<ph name="END_LINK" /> varat izvēlēties, ko sinhronizēt.</translation>
 <translation id="2079545284768500474">Atsaukt</translation>
+<translation id="2080409463824088391">Atvērt lietotnē…</translation>
 <translation id="2080769225927880590">Pierakstieties derīgā kontā</translation>
 <translation id="2103075008456228677">Atvērt history.google.com</translation>
 <translation id="21133533946938348">Piespraust cilni</translation>
@@ -312,6 +314,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="2931440415625410757">Rādīt norādījumus</translation>
 <translation id="2932085390869194046">Ieteikt paroli...</translation>
 <translation id="2932765531295814441">Manuāla paroļu pievienošana</translation>
+<translation id="2952246431280799028">Pieskarieties adresei un turiet to.</translation>
 <translation id="2952278131021475699">Meklēšana ar Lens kameru</translation>
 <translation id="2952581218264071393">1. Atveriet pārlūka Chrome iestatījumus.</translation>
 <translation id="2956733177489514605">Pierakstieties savā Google kontā, lai sinhronizētu paroles un citus datus.</translation>
@@ -1251,6 +1254,7 @@ Jūsu dati tika šifrēti, izmantojot jūsu ieejas frāzi, šādā datumā: <ph 
 <translation id="891282356902782456">Šī parole ir saglabāta tikai šajā ierīcē. Lai paroli izmantotu citās ierīcēs, saglabājiet to savā Google kontā (<ph name="EMAIL" />).</translation>
 <translation id="891658175948553296">Izceliet tekstu vietnē.</translation>
 <translation id="8917490105272468696">Jā, piekrītu</translation>
+<translation id="8926984231484284953">Tīmekļa lapās varat izmantot adreses, lai iegūtu vietējo informāciju un norādes.</translation>
 <translation id="8928133177108699615">Vietne datoriem</translation>
 <translation id="8934982071228289624">Lai varētu saglabāt šo paroli savā kontā, vispirms ierīcē ir jāiestata piekļuves kods.</translation>
 <translation id="894191600409472540">Izveidojiet drošas paroles</translation>

@@ -79,6 +79,7 @@
 <translation id="1061130374843955397">Өөрийн <ph name="DEVICE_TYPE" />-д тавтай морилно уу</translation>
 <translation id="1061373870045429865">Энэ холбоосонд QR код үүсгэх</translation>
 <translation id="1061904396131502319">Завсарлах цаг ойртож байна</translation>
+<translation id="10619348099955377">Дэлгэцийн нэрийг хуулах</translation>
 <translation id="1062407476771304334">Солих</translation>
 <translation id="1062628064301375934">Бидэнд илүү хувийн веб бүтээхэд тусална уу</translation>
 <translation id="1066964438793906105">Хортой программ байгаа эсэхийг скан хийх</translation>
@@ -581,6 +582,7 @@
 <translation id="1481537595330271162">Дискийн хэмжээг өөрчлөхөд алдаа гарлаа</translation>
 <translation id="1482626744466814421">Энэ табыг тэмдэглэх...</translation>
 <translation id="1482772681918035149">нууц үгийг засах</translation>
+<translation id="1483431819520123112">Дэлгэцийн нэрийг түр санах ойд хуулсан</translation>
 <translation id="1483493594462132177">Илгээх</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Сайт Bluetooth-г ашиглаж байна</translation>
@@ -964,6 +966,7 @@
 <translation id="1784707308176068866">Хамтарч буй суурин аппаас хүсэлт тавьсан үед цаана ажиллуулах</translation>
 <translation id="1784849162047402014">Төхөөрөмжийн дискний багтаамж бага байна</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{"<ph name="APP_NAME" />"-г устгах нь мөн энэ аппыг устгана:}other{"<ph name="APP_NAME" />"-г устгах нь мөн эдгээр аппыг устгана:}}</translation>
+<translation id="1786290960428378411">Унших болон өөрчлөх хүсэлт гаргаж байна</translation>
 <translation id="1787350673646245458">Хэрэглэгчийн зураг</translation>
 <translation id="1790976235243700817">Хандалтын эрхийг хасах</translation>
 <translation id="1791662854739702043">Суулгасан</translation>
@@ -1297,6 +1300,7 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Өргөтгөлийг суулгахын тулд товшино уу}other{Эдгээр өргөтгөлийг суулгахын тулд товшино уу}}</translation>
 <translation id="2073496667646280609">Таны төхөөрөмж эсвэл сонгосон нөөцлөлтийн байршилд хангалттай сул хадгалах сан байхгүй байж магадгүй. Сул зай гаргах эсвэл өөр байршил сонгож үзнэ үү.</translation>
 <translation id="2073505299004274893"><ph name="CHARACTER_LIMIT" /> эсвэл үүнээс цөөн тэмдэгт ашиглана уу</translation>
+<translation id="2075088158103027942">Захиалга руу очих</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% батарей</translation>
 <translation id="2076269580855484719">Энэ нэмэлт өргөтгөлийг нуух</translation>
 <translation id="2076672359661571384">Дунд (санал болгосон)</translation>
@@ -2118,6 +2122,7 @@
 <translation id="2731700343119398978">Түр хүлээнэ үү ...</translation>
 <translation id="2731971182069536520">Та дараагийн удаа төхөөрөмжөө дахин эхлүүлэхэд таны админ таны дотоод өгөгдлийг устгах нэг удаагийн шинэчлэлт хийнэ.</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" />-с <ph name="CURRENT_ELEMENT" /> нэмэлт контент</translation>
+<translation id="2733992589856193783">Та энэ сайтад нэвтрэх түлхүүр үүсгэсэн. Танд нэвтрэхэд мобайл төхөөрөмж тань шаардагатай.</translation>
 <translation id="27349076983469322">Цайвар дэвсгэр</translation>
 <translation id="2735712963799620190">Хуваарь</translation>
 <translation id="2737363922397526254">Гэмтэлтэй байна ...</translation>
@@ -3105,6 +3110,7 @@
 <translation id="3610241585790874201">Таны төхөөрөмжид өгөгдөл хадгалахыг зөвшөөрөөгүй</translation>
 <translation id="3610369246614755442">Холбогчийн сэнсийг үйлчилгээнд хамруулах хэрэгтэй</translation>
 <translation id="3610961622607302617"><ph name="WEBSITE" />-н нууц үгийг өөрчлөх</translation>
+<translation id="3611634011145829814">Захиалгын хуудас руу очих</translation>
 <translation id="3611658447322220736">Саяхан хаасан сайтууд өгөгдөл илгээх болон хүлээн авахаа дуусгах боломжтой</translation>
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; татсан</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" />-ыг харуулах</translation>
@@ -3791,6 +3797,7 @@
 <translation id="4176463684765177261">Хаасан</translation>
 <translation id="4176864026061939326">Энэ төхөөрөмжийг удирддаг. Таны төхөөрөмжийн администратор <ph name="USER_EMAIL_ADDRESS" /> бүртгэлд шинэ профайл шаардаж байна</translation>
 <translation id="4177501066905053472">Зарын сэдвүүд</translation>
+<translation id="4178220097446335546">Энэ захиалга болон үүнтэй холбоотой сүлжээнүүдийг мартахын тулд Passpoint-н захиалгын хуудас руу очоод захиалгыг хасна уу.</translation>
 <translation id="4180788401304023883">Гэрчилгээг устгах уу "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Хэл</translation>
@@ -3943,6 +3950,7 @@
 <translation id="4316850752623536204">Хөгжүүлэгчийн вебсайт</translation>
 <translation id="4317733381297736564">Аппын худалдан авалт</translation>
 <translation id="4317820549299924617">Баталгаажуулалт амжилтгүй боллоо</translation>
+<translation id="4319441675152393296"><ph name="HOST" />-г унших болон өөрчлөхийн тулд энэ өргөтгөлийн дүрс тэмдгийг товшино уу</translation>
 <translation id="4320177379694898372">Интернетийн холболтгүй байна</translation>
 <translation id="4321179778687042513">Ctrl</translation>
 <translation id="432160826079505197"><ph name="FILE_NAME" />-г Finder-т харуулах</translation>
@@ -4629,6 +4637,7 @@
 <translation id="4899052647152077033">Урвуу өнгө</translation>
 <translation id="4899696330053002588">Зар агуулсан</translation>
 <translation id="489985760463306091">Аюултай программыг устгаж дуусгахын тулд компьютерээ дахин эхлүүлнэ үү</translation>
+<translation id="490031510406860025">Энэ сайтад зөвшөөрөөгүй</translation>
 <translation id="4900392736118574277">Таны эхлүүлэх хуудсыг <ph name="URL" /> болгож өөрчилсөн.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Гц - сүлжилдсэн</translation>
 <translation id="4900652253009739885">“Сонгох” үйлдэлд оноосон цорын ганц сэлгүүрийг хасах боломжгүй. <ph name="RESPONSE" />-н тулд дурын товч дээр дарна уу.</translation>
@@ -7366,6 +7375,7 @@
 <translation id="7299515639584427954">Тусламж дэмжлэгийн холбоосын өгөгдмөл аппыг өөрчлөх үү?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">Та “Ok Google, энэ ямар дуу вэ?” эсвэл “Ok Google, миний дэлгэц дээр юу байна вэ?” гэж асууж болно</translation>
+<translation id="7301812050652048720">Нэвтрэх түлхүүрийг устгасан</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Энэ апп Chrome-г хэвийн ажиллахад саад болж байж болзошгүй.}other{Эдгээр апп Chrome-г хэвийн ажиллахад саад болж байж болзошгүй.}}</translation>
 <translation id="7303281435234579599">Уучлаарай, демо горимыг тохируулах явцад алдаа гарлаа.</translation>
 <translation id="7303900363563182677">Энэ сайтыг түр санах ойд хуулсан текст, зураг харахыг хориглосон</translation>
@@ -7910,6 +7920,7 @@
 <translation id="7744192722284567281">Өгөгдлийн зөрчилд олдсон</translation>
 <translation id="7744649840067671761">Оноолтыг эхлүүлэхийн тулд шинэ сэлгүүр эсвэл гарын товч дээр дарна уу.
 Оноолтыг хасахын тулд оноосон сэлгүүр эсвэл товч дээр дарна уу.</translation>
+<translation id="7745677556280361868">Passpoint-н захиалгын хуудаснаас энэ сүлжээг хасах уу?</translation>
 <translation id="7746045113967198252">Текстийг оруулаад дэлгэцийнхээ зүйлсийг томруулж эсвэл жижгэрүүлээрэй. Та мөн үүнийг дараа нь Тохиргоо &gt; Төхөөрөмж &gt; Дэлгэцүүдээс олох боломжтой.</translation>
 <translation id="7746739418892731373">Та Google Зургийн сангийнхаа зураг болон видеоны онцлох мөчүүдийг харж байна. Та <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> дээрээс онцлох мөчүүддээ юу харуулахыг хянах боломжтой.
         <ph name="BREAK" />
@@ -8122,6 +8133,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" /> нь <ph name="FILENAME" />-г үзэх боломжтой</translation>
 <translation id="7920482456679570420">Зөв бичгийн алдааг нь шалгахгүй байхыг хүсэж буй үгнүүдээ нэмнэ үү</translation>
 <translation id="7921347341284348270">Та энэ тохиргоо хийгдсэн бүртгэл дээр утасныхаа мэдэгдлийг харах боломжгүй. Өөр бүртгэлээр дахин оролдоно уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
+<translation id="7921901223958867679">Энэ өргөтгөл <ph name="HOST" />-г унших болон өөрчлөх боломжтой</translation>
 <translation id="7922606348470480702">1 өргөтгөл</translation>
 <translation id="7922935920104868876">Нууцлалтай горимд гуравдагч талын күүкиг блоклох талаарх дэлгэрэнгүйг харуулах</translation>
 <translation id="7923564237306226146">Linux-г сайжруулж дууслаа</translation>
@@ -9650,6 +9662,7 @@
 <translation id="930551443325541578">Товчийн давтагдсан даралт болон өргөлтийн тэмдгүүд</translation>
 <translation id="930893132043726269">Одоогоор роуминг хийж байна</translation>
 <translation id="930991362911221750"><ph name="APP_NAME" />-д энэ табыг харахыг зөвшөөрөх үү?</translation>
+<translation id="931273044114601262">Энэ сайтад зөвшөөрсөн</translation>
 <translation id="93140074055951850">Android аппууд зогссон</translation>
 <translation id="932327136139879170">Нүүр хуудас</translation>
 <translation id="932508678520956232">Хэвлэлтийг эхлүүлж чадсангүй.</translation>

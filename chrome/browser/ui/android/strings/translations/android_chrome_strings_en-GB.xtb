@@ -61,6 +61,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1283039547216852943">Tap to expand</translation>
 <translation id="1289059016768036948">You’ll be asked to sign in to your Google Account</translation>
 <translation id="1291207594882862231">Clear history, cookies, site data, cache…</translation>
+<translation id="1293898515599432175">Your passwords will be deleted from Google Password Manager for Chrome <ph name="CHROME_CHANNEL" />. You will keep the passwords file you just downloaded.</translation>
 <translation id="129553762522093515">Recently closed</translation>
 <translation id="1298077576058087471">Save up to 60% data, read today's news</translation>
 <translation id="1303339473099049190">Can’t find that password. Check your spelling and try again.</translation>
@@ -510,6 +511,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3795154175078851242">Copy image with link</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Manage</translation>
+<translation id="381861209280417772">Delete passwords</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> downloads deleted</translation>
 <translation id="3819183753496523827">You're offline. Check your Internet connection and try again.</translation>
 <translation id="3830886834687455630">Update Google Play services to check your passwords</translation>
@@ -594,6 +596,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="4249955472157341256">Sort by Latest</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4256782883801055595">Open-source licences</translation>
+<translation id="4257230861809842349">Delete passwords from Google Password Manager?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />What data is used:<ph name="END_BOLD" /> Your browsing history, a record of sites that you’ve visited using Chrome on this device.</translation>
 <translation id="4269820728363426813">Copy link address</translation>
 <translation id="4283102315569707115">Request desktop sites by default?</translation>

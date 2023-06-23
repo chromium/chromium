@@ -2557,7 +2557,7 @@
 <translation id="3088325635286126843">重新命名(&amp;R)…</translation>
 <translation id="3089137131053189723">已清除搜尋</translation>
 <translation id="3089941350495701096">閱讀清單(&amp;R)</translation>
-<translation id="3089948625237571254">複製視訊畫面頁框(&amp;O)</translation>
+<translation id="3089948625237571254">複製影片頁框(&amp;O)</translation>
 <translation id="3090227230165225418">朗讀下載通知</translation>
 <translation id="3090589793601454425">不要移動</translation>
 <translation id="3090819949319990166">無法將外部 crx 檔案複製到 <ph name="TEMP_CRX_FILE" />。</translation>
@@ -3063,7 +3063,7 @@
 <translation id="3559262020195162408">無法在裝置上安裝政策。</translation>
 <translation id="3559533181353831840">大約剩餘 <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">拼字檢查(&amp;S)</translation>
-<translation id="3561201631376780358">開啟側邊面板可查看所有書籤</translation>
+<translation id="3561201631376780358">開啟側面板即可查看所有書籤</translation>
 <translation id="3562423906127931518">此程序可能需時幾分鐘。正在設定 Linux 容器。</translation>
 <translation id="3562655211539199254">查看最近透過手機開啟的 Chrome 分頁</translation>
 <translation id="3563432852173030730">無法下載 Kiosk 應用程式。</translation>
@@ -4931,7 +4931,7 @@
 <translation id="5173668317844998239">新增及刪除安全密鑰上儲存的指紋</translation>
 <translation id="5174169235862638850">密碼已複製到剪貼簿</translation>
 <translation id="5175379009094579629">裝置名稱無效。請輸入有效的裝置名稱並再試一次。</translation>
-<translation id="5176787661653201403">複製視訊畫面頁框(&amp;O)</translation>
+<translation id="5176787661653201403">複製影片頁框(&amp;O)</translation>
 <translation id="5177479852722101802">繼續封鎖存取相機和麥克風</translation>
 <translation id="5177549709747445269">您正在使用流動數據</translation>
 <translation id="5178667623289523808">尋找上一個項目</translation>
@@ -5384,7 +5384,7 @@
 <translation id="5571066253365925590">藍牙已啟用</translation>
 <translation id="5571092938913434726">全域媒體控制項</translation>
 <translation id="5571832155627049070">自訂你的設定檔</translation>
-<translation id="5572166921642484567">選擇色彩配置模式</translation>
+<translation id="5572166921642484567">揀選色彩配置模式</translation>
 <translation id="5572252023412311448">顯示 <ph name="SITE_GROUP" /> 嘅網站詳情</translation>
 <translation id="5572648434713976849">您會在網址列取得更貼近需求的建議</translation>
 <translation id="557506220935336383">查看其他網站的擴充程式權限</translation>

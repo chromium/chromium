@@ -1273,6 +1273,7 @@
 <translation id="6597278316891651699">ক্যামেরাটি নিচে বাঁদিকের কোণে স্ন্যাপ করা হয়েছে। সিস্টেমের সারফেসে ছবির কিছুটা ঢাকা পড়ছে।</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="6612802754306526077">স্ক্রিন রেকর্ডিং মোড বেছে নেওয়া হয়েছে</translation>
+<translation id="6613765291890844037"><ph name="STORAGE_TOTAL_SIZE" />-এর মধ্যে | <ph name="STORAGE_IN_USE_SIZE" /> স্টোরেজ ব্যবহার হচ্ছে</translation>
 <translation id="6614169507485700968">গোপনীয়তা স্ক্রিন চালু করা আছে</translation>
 <translation id="6625718907317144388">ভিউ সংক্রান্ত নিরাপত্তা চালু থাকার জন্য <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" />-এর এবং অন্যান্য বিজ্ঞপ্তি লুকানো আছে</translation>
 <translation id="6627638273713273709">সার্চ+Shift+K</translation>

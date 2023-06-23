@@ -61,6 +61,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="1283039547216852943">Toque para expandir</translation>
 <translation id="1289059016768036948">Será necessário fazer login na sua Conta do Google</translation>
 <translation id="1291207594882862231">Limpar histórico, cookies, dados do site, cache…</translation>
+<translation id="1293898515599432175">Suas senhas serão excluídas do Gerenciador de senhas do Google para o Chrome <ph name="CHROME_CHANNEL" />. Elas vão estar no arquivo de senhas que você acabou de transferir por download.</translation>
 <translation id="129553762522093515">Fechadas recentemente</translation>
 <translation id="1298077576058087471">Economize até 60% de dados enquanto lê as notícias de hoje</translation>
 <translation id="1303339473099049190">Não foi possível encontrar essa senha. Verifique a ortografia e tente novamente.</translation>
@@ -510,6 +511,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="3795154175078851242">Copiar imagem com link</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3810973564298564668">Gerenciar</translation>
+<translation id="381861209280417772">Excluir senhas</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> downloads excluídos</translation>
 <translation id="3819183753496523827">Você está off-line. Verifique sua conexão de Internet e tente novamente.</translation>
 <translation id="3830886834687455630">Atualize o Google Play Services para verificar suas senhas</translation>
@@ -594,6 +596,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="4249955472157341256">Ordenar por mais recentes</translation>
 <translation id="4250229828105606438">Captura de tela</translation>
 <translation id="4256782883801055595">Licenças de código aberto</translation>
+<translation id="4257230861809842349">Excluir senhas do Gerenciador de senhas do Google?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Quais dados são usados<ph name="END_BOLD" />: seu histórico de navegação, um registro de sites visitados usando o Chrome neste dispositivo.</translation>
 <translation id="4269820728363426813">Copiar endereço do link</translation>
 <translation id="4283102315569707115">Solicitar sites para computador por padrão?</translation>

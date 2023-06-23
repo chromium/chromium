@@ -73,6 +73,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1358214951266274152">Consulter le lien copié</translation>
 <translation id="1360432990279830238">Se déconnecter et arrêter la synchronisation ?</translation>
 <translation id="1363028406613469049">Titre</translation>
+<translation id="1365106417372288489">Votre iPhone a été restauré récemment, ce qui a peut-être modifié votre navigateur par défaut.</translation>
 <translation id="1375321115329958930">Mots de passe enregistrés</translation>
 <translation id="1377255359165588604">La synchronisation s'est arrêtée.</translation>
 <translation id="1377321085342047638">Numéro de carte</translation>
@@ -149,6 +150,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1872096359983322073">Lampe torche</translation>
 <translation id="1883255238294161206">Réduire la liste</translation>
 <translation id="1894023287452300670">Effectuez le suivi du prix ici</translation>
+<translation id="189531189292803889">Votre iPad a été restauré récemment, ce qui a peut-être modifié votre navigateur par défaut.</translation>
 <translation id="1910975740091000991">Chrome pour iOS</translation>
 <translation id="1911619930368729126">Importer dans Google Drive</translation>
 <translation id="1923342640370224680">Heure précédente</translation>
@@ -1048,6 +1050,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="750493650310597496">Aucun favori sélectionné.</translation>
 <translation id="7508728395076009983">Pour verrouiller vos onglets de navigation privée, configurez Touch ID, Face ID ou un code secret.</translation>
 <translation id="7514365320538308">Télécharger</translation>
+<translation id="7524055474074101597">Accédez à vos mots de passe et plus encore depuis vos différentes applis.</translation>
 <translation id="7531345132340165516">Site actuel</translation>
 <translation id="7537586195939242955">Impossible d'installer votre Pass dans Passbook actuellement.</translation>
 <translation id="754655535278952384">Vérifié <ph name="TIME" /></translation>

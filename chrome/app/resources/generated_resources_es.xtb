@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">&amp;Añadir al diccionario</translation>
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1022489261739821355">Mostrando contraseñas de tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /></translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609"><ph name="DOMAIN" /> gestiona tu dispositivo. Los administradores pueden acceder a los datos de cualquier perfil de este dispositivo.</translation>
 <translation id="1024734233509995696">Esta pestaña está usando tu cámara o tu micrófono</translation>
 <translation id="1026655690966755180">Añadir puerto</translation>
@@ -3490,6 +3491,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3919145445993746351">Para obtener las extensiones en todos tus ordenadores, activa la sincronización</translation>
 <translation id="3919229493046408863">Desactivar notificación cuando haya dispositivos cerca</translation>
 <translation id="3919262972282962508">Las versiones antiguas de las aplicaciones de Chrome no se abrirán en dispositivos Mac después de diciembre del 2022. Ponte en contacto con tu administrador para que actualice esta aplicación a una versión nueva o para que la quite.</translation>
+<translation id="3919376399641777316">Usa el almacenamiento de Google Drive</translation>
 <translation id="3919798653937160644">Las páginas que aparezcan en esta ventana no se mostrarán en el historial del navegador y no dejarán otros rastros, como cookies, en el ordenador después de cerrar todas las ventanas abiertas de la sesión de invitado. No obstante, se conservará cualquier archivo que descargues.</translation>
 <translation id="3920504717067627103">Políticas de certificados</translation>
 <translation id="3920909973552939961">No puede instalar controladores de pago</translation>
@@ -3640,6 +3642,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4044612648082411741">Introduce la contraseña del certificado</translation>
 <translation id="4044708573046946214">Contraseña de bloqueo de pantalla</translation>
 <translation id="404493185430269859">Motor de búsqueda predeterminado</translation>
+<translation id="4044964245574571633">Usa el almacenamiento de Microsoft OneDrive</translation>
 <translation id="4045196801416070837">Sonidos del dispositivo</translation>
 <translation id="4046013316139505482">Estas extensiones no necesitan ver ni cambiar información en este sitio web.</translation>
 <translation id="4046123991198612571">Pista siguiente</translation>
@@ -3678,6 +3681,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4084682180776658562">Añadir a marcadores</translation>
 <translation id="4084835346725913160">Cerrar <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">Se ha bloqueado JavaScript en esta página.</translation>
+<translation id="4085620044235559093">Elige una aplicación para abrir los archivos <ph name="FILE_TYPE" /></translation>
 <translation id="4087089424473531098">Se ha creado la extensión:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4431,6 +4435,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4742970037960872810">Eliminar resaltado</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Cómo actualizar aplicaciones<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">Ir al sitio</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Activar sonido del sitio}other{Activar sonido de los sitios}}</translation>
 <translation id="474609389162964566">Accede al Asistente diciendo "Hey Google"</translation>
 <translation id="4746351372139058112">Mensajes</translation>
@@ -7523,6 +7528,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7432200167665670017">Tu administrador ha bloqueado <ph name="EXTENSION_NAME" />. ID de aplicación: <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Introduce la tarjeta inteligente para seguir usando tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Conservar</translation>
+<translation id="7434100547946193426">Otras aplicaciones</translation>
 <translation id="7434509671034404296">Opciones para desarrolladores</translation>
 <translation id="7434757724413878233">Aceleración del ratón</translation>
 <translation id="7434969625063495310">No se ha podido añadir el servidor de impresión. Revisa la configuración del servidor y vuelve a intentarlo.</translation>

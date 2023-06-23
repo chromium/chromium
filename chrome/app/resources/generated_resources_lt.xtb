@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">&amp;Įterpti į žodyną</translation>
 <translation id="1018656279737460067">Atšaukta</translation>
 <translation id="1022489261739821355">Rodomi <ph name="BEGIN_LINK" />„Google“ paskyros<ph name="END_LINK" /> slaptažodžiai</translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Įrenginį tvarko <ph name="DOMAIN" />. Administratoriai gali pasiekti duomenis bet kuriame profilyje šiame įrenginyje.</translation>
 <translation id="1024734233509995696">Šiame skirtuke naudojama vaizdo kamera arba mikrofonas</translation>
 <translation id="1026655690966755180">Pridėti prievadą</translation>
@@ -3507,6 +3508,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3919145445993746351">Jei norite naudoti plėtinius visuose kompiuteriuose, įjunkite sinchronizavimą</translation>
 <translation id="3919229493046408863">Išjungti pranešimus, kai įrenginiai yra netoliese</translation>
 <translation id="3919262972282962508">Senų versijų „Chrome“ programos nebus atidaromos „Mac“ įrenginiuose po 2022 m. gruodžio mėn. Susisiekite su administratoriumi, kad atnaujintų į naują versiją, arba pašalinkite šią programą.</translation>
+<translation id="3919376399641777316">Naudojama „Google“ disko saugykla</translation>
 <translation id="3919798653937160644">Puslapiai, kuriuos peržiūrite šiame lange, nerodomi naršyklės istorijoje. Kai uždarysite visus svečio langus, kompiuteryje neliks ir kitų jų pėdsakų, pvz., slapukų, tačiau atsisiųsti failai bus išsaugoti.</translation>
 <translation id="3920504717067627103">Sertifikato politika</translation>
 <translation id="3920909973552939961">Neleidžiama įdiegti mokėjimų doroklių</translation>
@@ -3657,6 +3659,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4044612648082411741">Įveskite sertifikato slaptažodį</translation>
 <translation id="4044708573046946214">Ekrano užrakto slaptažodis</translation>
 <translation id="404493185430269859">Numatytasis paieškos variklis</translation>
+<translation id="4044964245574571633">Naudojama „Microsoft OneDrive“ saugykla</translation>
 <translation id="4045196801416070837">Įrenginio garsai</translation>
 <translation id="4046013316139505482">Šiems plėtiniams nereikia peržiūrėti ir keisti informacijos šioje svetainėje.</translation>
 <translation id="4046123991198612571">Kitas takelis</translation>
@@ -3695,6 +3698,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4084682180776658562">Žymė</translation>
 <translation id="4084835346725913160">Uždaryti „<ph name="TAB_NAME" />“</translation>
 <translation id="4085298594534903246">Šiame puslapyje „JavaScript“ buvo užblokuota.</translation>
+<translation id="4085620044235559093">Pasirinkite programą, kurią naudodami atidarysite „<ph name="FILE_TYPE" />“ failus</translation>
 <translation id="4087089424473531098">Sukurtas plėtinys:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4451,6 +4455,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4742970037960872810">Pašalinti paryškinimą</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Sužinokite, kaip atnaujinti programas<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">Eiti į svetainę</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Įjungti svetainės garsą}one{Įjungti svetainių garsą}few{Įjungti svetainių garsą}many{Įjungti svetainių garsą}other{Įjungti svetainių garsą}}</translation>
 <translation id="474609389162964566">Galimybė pasiekti Padėjėją pasakius „Ok Google“</translation>
 <translation id="4746351372139058112">Pranešimai</translation>
@@ -7548,6 +7553,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7432200167665670017">Jūsų administratorius užblokavo „<ph name="EXTENSION_NAME" />“ – programos ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Įdėkite išmaniąją kortelę, kad galėtumėte toliau naudoti „<ph name="DEVICE_TYPE" />“ įrenginį</translation>
 <translation id="7433957986129316853">Palikti</translation>
+<translation id="7434100547946193426">Kitos programos</translation>
 <translation id="7434509671034404296">Vykdymo programa</translation>
 <translation id="7434757724413878233">Pelės spartinimas</translation>
 <translation id="7434969625063495310">Nepavyko pridėti spausdinimo serverio. Patikrinkite serverio konfigūraciją ir bandykite dar kartą.</translation>

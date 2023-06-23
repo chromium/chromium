@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">&amp;Sözlüğe ekle</translation>
 <translation id="1018656279737460067">İptal Edildi</translation>
 <translation id="1022489261739821355"><ph name="BEGIN_LINK" />Google Hesabınızdaki<ph name="END_LINK" /> şifreler gösteriliyor</translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Cihazınız <ph name="DOMAIN" /> tarafından yönetiliyor. Yöneticiler bu cihazda tüm profillerdeki verilere erişebilir.</translation>
 <translation id="1024734233509995696">Bu sekme kameranızı ve/veya mikrofonunuzu kullanıyor</translation>
 <translation id="1026655690966755180">Bağlantı Noktası Ekle</translation>
@@ -3479,6 +3480,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3919145445993746351">Uzantıları tüm bilgisayarlarınızda almak için senkronizasyonu açın</translation>
 <translation id="3919229493046408863">Cihazlar yakındayken bildirimi kapatın</translation>
 <translation id="3919262972282962508">Chrome Uygulamalarının eski sürümleri Aralık 2022'den sonra Mac cihazlarda açılmayacaktır. Yeni sürüme güncellemek veya bu uygulamayı kaldırmak için yöneticinizle iletişime geçin.</translation>
+<translation id="3919376399641777316">Google Drive depolama alanını kullanır</translation>
 <translation id="3919798653937160644">Bu pencerede görüntülediğiniz sayfalar, tarama geçmişinde görünmez ve açık olan tüm Misafir pencerelerini kapattığınızda bilgisayarda çerez gibi başka izler bırakmaz. Ancak indirdiğiniz dosyalar saklanır.</translation>
 <translation id="3920504717067627103">Sertifika Politikaları</translation>
 <translation id="3920909973552939961">Ödeme işleyici yüklemesine izin verilmeyen siteler</translation>
@@ -3629,6 +3631,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4044612648082411741">Sertifika şifrenizi girin</translation>
 <translation id="4044708573046946214">Ekran kilidi şifresi</translation>
 <translation id="404493185430269859">Varsayılan arama motoru</translation>
+<translation id="4044964245574571633">Microsoft OneDrive depolama alanını kullanır</translation>
 <translation id="4045196801416070837">Cihaz sesleri</translation>
 <translation id="4046013316139505482">Bu uzantıların bu sitedeki bilgileri görmesi ve değiştirmesi gerekmiyor.</translation>
 <translation id="4046123991198612571">Sonraki parça</translation>
@@ -3667,6 +3670,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4084682180776658562">Yer İşareti</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> sekmesini kapat</translation>
 <translation id="4085298594534903246">Bu sayfadaki JavaScript engellendi.</translation>
+<translation id="4085620044235559093"><ph name="FILE_TYPE" /> dosyalarını açmak için bir uygulama seçin</translation>
 <translation id="4087089424473531098">Şu uzantı oluşturuldu:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4418,6 +4422,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4742970037960872810">Vurgulamayı kaldır</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Uygulamaların nasıl güncelleneceğini öğrenin<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">Siteye git</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Sitenin sesini aç}other{Sitelerin sesini aç}}</translation>
 <translation id="474609389162964566">Asistanınıza "Ok Google" diyerek erişin</translation>
 <translation id="4746351372139058112">Mesajlar</translation>
@@ -7495,6 +7500,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7432200167665670017">Yöneticiniz "<ph name="EXTENSION_NAME" />" uzantısını engelledi. Uygulama Kimliği <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> cihazınızı kullanmaya devam etmek için akıllı kartı takın</translation>
 <translation id="7433957986129316853">Değişiklikleri koru</translation>
+<translation id="7434100547946193426">Diğer uygulamalar</translation>
 <translation id="7434509671034404296">Geliştirici</translation>
 <translation id="7434757724413878233">Fare hızlandırması</translation>
 <translation id="7434969625063495310">Yazdırma sunucusu eklenemedi. Lütfen sunucunun yapılandırmasını kontrol edip tekrar deneyin.</translation>

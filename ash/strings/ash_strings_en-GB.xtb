@@ -1278,6 +1278,7 @@ New install</translation>
 <translation id="6597278316891651699">Camera snapped to the bottom-left corner. Conflict with system surface.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="6612802754306526077">Screen recording mode selected</translation>
+<translation id="6613765291890844037">Storage <ph name="STORAGE_IN_USE_SIZE" /> in use | <ph name="STORAGE_TOTAL_SIZE" /> total</translation>
 <translation id="6614169507485700968">Privacy screen is on</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> and other notifications are hidden because viewing protection is on</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>

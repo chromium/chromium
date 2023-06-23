@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">Даступныя прылады</translation>
 <translation id="1550523713251050646">Націсніце, каб убачыць дадатковыя параметры</translation>
 <translation id="1555130319947370107">Сіні</translation>
+<translation id="1557622599341396706">Паказаць назву працоўнага стала</translation>
 <translation id="1576511610858879060">На вашым Chromebook або прыладзе з Bluetooth выкарыстоўваецца старая версія Bluetooth. Для лепшай якасці гуку скарыстайце іншую крыніцу ўваходу.</translation>
 <translation id="1576623706766186887">Паменшыць маштаб пры ўключанай лупе</translation>
 <translation id="1586324912145647027">Перайсці да аднаго з працоўных сталоў (1-8)</translation>
@@ -987,6 +988,7 @@
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5319712128756744240">Спалучыць новую прыладу</translation>
 <translation id="5322611492012084517">Не ўдалося знайсці тэлефон</translation>
+<translation id="5323994101633366939">Схаваць назву працоўнага стала</translation>
 <translation id="5327248766486351172">Імя</translation>
 <translation id="5329548388331921293">Ідзе падключэнне...</translation>
 <translation id="5331975486040154427">Прылада USB-C (задні порт злева)</translation>
@@ -1169,6 +1171,7 @@
 <translation id="6103838137565245112">сістэма</translation>
 <translation id="6114505516289286752">Спампаваны файлы для распазнавання маўлення на наступнай мове: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Карэкцыя колераў</translation>
 <translation id="6121838516699723042">Пацвердзіце спампоўванне файла <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Памочнік Google недаступны ў гасцявым сеансе.</translation>
 <translation id="6129953537138746214">Прабел</translation>
@@ -1637,6 +1640,7 @@
 <translation id="8247998213073982446">Праграма (<ph name="APP_NAME" />)</translation>
 <translation id="8255234195843591763">Скіньце налады прылады, каб атрымаць абнаўленні</translation>
 <translation id="8261506727792406068">Выдаліць</translation>
+<translation id="8262312463845990408">Уключыць/выключыць прайграванне</translation>
 <translation id="8270450402312105425">{0,plural, =1{Вярніцеся да ранейшай версіі АС на працягу гадзіны}one{Вярніцеся да ранейшай версіі АС на працягу # гадзіны}few{Вярніцеся да ранейшай версіі АС на працягу # гадзін}many{Вярніцеся да ранейшай версіі АС на працягу # гадзін}other{Вярніцеся да ранейшай версіі АС на працягу # гадзіны}}</translation>
 <translation id="8277261673056602147">Вылучыць тэкст на экране</translation>
 <translation id="8284362522226889623">Правядзіце па сэнсарнай панэлі чатырма пальцамі ўлева, каб перайсці на папярэдні працоўны стол</translation>

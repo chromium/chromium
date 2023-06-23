@@ -2104,6 +2104,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2727744317940422214">Si è verificato un problema. Invia un feedback con #bruschetta nella descrizione. Il codice di errore è <ph name="ERROR" />. Pulizia non riuscita, potrebbe essere necessario procedere manualmente.</translation>
 <translation id="2729314457178420145">Cancella anche i dati di navigazione (<ph name="URL" />) che potrebbero farti uscire dall'account su Google.com. <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">Chrome sta trovando nuovi modi per ridurre il monitoraggio e migliorare la sicurezza durante la navigazione. Chrome inoltre <ph name="ESTIMATE_INTERESTS_LINK" /> e ti consente di gestirli. Dopodiché i siti che visiti possono chiedere a Chrome di conoscere i tuoi interessi per mostrarti annunci.</translation>
+<translation id="2729577602370119849">Accedi alle stampanti e gestiscile facilmente</translation>
 <translation id="2730029791981212295">Backup di app e file Linux</translation>
 <translation id="2730901670247399077">Suggerimenti di emoji</translation>
 <translation id="273093730430620027">Questa pagina sta accedendo alla webcam.</translation>
@@ -2425,6 +2426,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2996286169319737844">I dati vengono criptati con la tua passphrase di sincronizzazione. Non sono inclusi i metodi di pagamento e gli indirizzi di Google Pay.</translation>
 <translation id="2996722619877761919">Lato lungo</translation>
 <translation id="2996932914629936323">Consente di cancellare la cronologia da tutti i dispositivi sincronizzati</translation>
+<translation id="2998097899774209901">On • Questa estensione viola le norme del Chrome Web Store</translation>
 <translation id="2998267783395280091">Rete trovata</translation>
 <translation id="3000378525979847272">Autorizzazioni consentite: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Audio in formato mono</translation>
@@ -2457,6 +2459,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3012631534724231212">(iframe)</translation>
 <translation id="3012804260437125868">Solo connessioni stesso sito protette</translation>
 <translation id="3012917896646559015">Contatta immediatamente il produttore dell'hardware per inviare il computer a un centro di riparazione.</translation>
+<translation id="3013652227108802944">Off • Questa estensione viola le norme del Chrome Web Store</translation>
 <translation id="3014717196148502230">Chrome precarica ancora più pagine che è probabile che visiterai, in modo che vengano caricate più rapidamente quando lo farai.</translation>
 <translation id="301525898020410885">La lingua viene impostata dall'organizzazione</translation>
 <translation id="3015639418649705390">Riavvia ora</translation>
@@ -2524,6 +2527,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3072775339180057696">Vuoi consentire al sito di visualizzare il file <ph name="FILE_NAME" />?</translation>
 <translation id="3074499504015191586">Traduci pagina intera</translation>
 <translation id="3075144191779656260">Tocca il sensore di impronte digitali sul lato sinistro di <ph name="DEVICE_TYPE" />. I dati relativi alla tua impronta vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3075740753681485522">Off • Questa estensione contiene malware</translation>
 <translation id="3075874217500066906">È necessario riavviare per iniziare la procedura di Powerwash. Dopo il riavvio ti verrà chiesto di confermare di voler procedere.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Salva solo su questo dispositivo</translation>
@@ -2686,6 +2690,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3243017971870859287">Lettura dei numeri di serie del dispositivo ChromeOS Flex e dei componenti</translation>
 <translation id="324366796737464147">Cancellazione del rumore</translation>
 <translation id="3244294424315804309">Continua a tenere l'audio disattivato</translation>
+<translation id="3247649647204519958">Qui puoi visualizzare e gestire le autorizzazioni delle estensioni per il sito in cui ti trovi</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Errore di rete</translation>
 <translation id="3248902735035392926">La sicurezza è importante. Prenditi un attimo per <ph name="BEGIN_LINK" />controllare ora le tue estensioni<ph name="END_LINK" /></translation>
 <translation id="3249323165366527554">Registrati e accedi più velocemente quando la password viene salvata automaticamente in <ph name="GOOGLE_PASSWORD_MANAGER" /> per <ph name="EMAIL" />.</translation>
@@ -2778,6 +2783,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3320271870899888245">Impossibile collegarsi a OneDrive. Riprova.</translation>
 <translation id="3320630259304269485">Impostazioni di Navigazione sicura (protezione da siti pericolosi) e altre impostazioni di sicurezza</translation>
 <translation id="3321460131042519426">Attiva ritorno a capo automatico</translation>
+<translation id="3321494112580110651">Non vedi la stampante?</translation>
 <translation id="3323521181261657960">Premio! Hai più tempo di utilizzo</translation>
 <translation id="3323577066981719144">Le modifiche che apporti qui vengono applicate soltanto al browser Chrome. Per apportare modifiche alle impostazioni del browser Lacros, aprilo e vai alle impostazioni.</translation>
 <translation id="3325804108816646710">Ricerca di profili disponibili in corso…</translation>
@@ -3638,6 +3644,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Esci dalla pagina}other{Esci dalle pagine}}</translation>
 <translation id="4042941173059740150">Continua su <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Dimensioni cursore</translation>
+<translation id="4043620984511647481">Aggiungi manualmente stampante</translation>
 <translation id="4044612648082411741">Inserisci la password del certificato</translation>
 <translation id="4044708573046946214">Password del blocco schermo</translation>
 <translation id="404493185430269859">Motore di ricerca predefinito</translation>
@@ -4468,6 +4475,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="477647109558161443">Crea un collegamento sul desktop</translation>
 <translation id="4776594120007763294">Per aggiungere una pagina da leggere in un secondo momento, fai clic sul pulsante</translation>
 <translation id="4777458362738635055">Altri utenti del dispositivo possono usare questa rete</translation>
+<translation id="4777813841994368231">On • La pubblicazione di questa estensione è stata annullata dallo sviluppatore</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Configura server dei nomi di rete</translation>
 <translation id="4778653490315793244">Nessun contenuto da mostrare</translation>
@@ -6384,6 +6392,7 @@ Puoi inviarlo a Google per verificare se non è sicuro. In genere l'analisi rich
 <translation id="6453191633103419909">Qualità di proiezione schede/schermo</translation>
 <translation id="6453921811609336127">Per passare al metodo di immissione successivo, premi <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Maiusc<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Spazio<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Su siti specifici</translation>
+<translation id="6455521402703088376">Off • La pubblicazione di questa estensione è stata annullata dallo sviluppatore</translation>
 <translation id="6455894534188563617">&amp;Nuova cartella</translation>
 <translation id="645705751491738698">Continua a bloccare JavaScript</translation>
 <translation id="6458347417133445570">Mostra dettagli sull'accettazione di tutti i cookie</translation>
@@ -6592,6 +6601,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6633126565486451781">Questo file potrebbe essere stato letto o modificato perché il sito non usa una connessione protetta</translation>
 <translation id="6635362468090274700">Nessuno può condividere contenuti con te finché non ti rendi visibile.<ph name="BR" /><ph name="BR" />Per renderti visibile temporaneamente, apri l'area di stato e attiva la funzionalità Visibilità nelle vicinanze.</translation>
 <translation id="6635674640674343739">Impossibile stabilire una connessione di rete. Controlla la connessione di rete e riprova.</translation>
+<translation id="663569763553406962">Scopri quali estensioni possono leggere o modificare un sito</translation>
 <translation id="6635944431854494329">Il proprietario può controllare questa funzionalità dalla sezione Impostazioni &gt; Avanzate &gt; Invia automaticamente a Google dati di diagnostica e utilizzo.</translation>
 <translation id="6636623428211296678">Esamina altre impostazioni qui sotto oppure termina ora</translation>
 <translation id="6639554308659482635">Memoria SQLite</translation>
@@ -6837,6 +6847,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6833996806551876956">Prova di Privacy Sandbox</translation>
 <translation id="6835712061486505758">Crea un hotspot Wi-Fi per fornire internet ad altri dispositivi. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Connettiti a Internet per aggiornare il tuo <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6836688241291438278">Assicurati che la tua stampante sia collegata alla stessa rete Wi-Fi a cui è collegato Chromebook oppure usa un cavo USB. Scopri di più sulla compatibilità.</translation>
 <translation id="6839225236531462745">Errore di eliminazione del certificato</translation>
 <translation id="6839916869147598086">L'accesso è stato modificato</translation>
 <translation id="6840155290835956714">Chiedi prima di inviare</translation>
@@ -8559,6 +8570,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8275080796245127762">Chiama dal tuo dispositivo</translation>
 <translation id="8275339871947079271">Sposta la tua password nel tuo Account Google per accedervi in sicurezza quando esegui l'accesso</translation>
 <translation id="8276560076771292512">Svuota la cache e ricarica manualmente</translation>
+<translation id="828180235270931531">Altre stampanti disponibili</translation>
 <translation id="8281886186245836920">Salta</translation>
 <translation id="8284279544186306258">tutti i siti <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Sottotitoli</translation>
@@ -9300,6 +9312,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8931076093143205651">Invia dati diagnostici e sull'utilizzo. Contribuisci a migliorare la tua esperienza Android tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Tali dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Questa impostazione è applicata dal proprietario. Il proprietario potrebbe decidere di inviare a Google dati di diagnostica e utilizzo relativi a questo dispositivo. Se hai attivato l'impostazione Attività web e app aggiuntiva, queste informazioni potrebbero essere salvate nel tuo Account Google.</translation>
 <translation id="8931475688782629595">Gestisci i dati da sincronizzare</translation>
+<translation id="8931713990831679796">Queste stampanti sono collegate e pronte all'uso. Salvale sul tuo profilo per accedere più facilmente.</translation>
 <translation id="8932654652795262306">Dettagli tethering istantaneo</translation>
 <translation id="893298445929867520">Carrelli nascosti. Torneranno visibili quando apporterai delle modifiche.</translation>
 <translation id="8933960630081805351">Mo&amp;stra nel Finder</translation>

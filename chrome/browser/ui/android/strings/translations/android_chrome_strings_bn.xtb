@@ -61,6 +61,7 @@
 <translation id="1283039547216852943">প্রসারিত করতে আলতো চাপুন</translation>
 <translation id="1289059016768036948">আপনার Google অ্যাকাউন্টে সাইন-ইন করার জন্য আপনাকে বলা হবে</translation>
 <translation id="1291207594882862231">ইতিহাস, কুকিজ, সাইট ডেটা, ক্যাশে সাফ করে...</translation>
+<translation id="1293898515599432175">Chrome <ph name="CHROME_CHANNEL" />-এর জন্য Google Password Manager থেকে আপনার পাসওয়ার্ড মুছে ফেলা হবে। এই মাত্র ডাউনলোড করা পাসওয়ার্ড ফাইল আপনি রেখে দেবেন।</translation>
 <translation id="129553762522093515">সম্প্রতি বন্ধ হয়েছে</translation>
 <translation id="1298077576058087471">সর্বাধিক ৬০ শতাংশ ডেটা সাশ্রয় করুন, আজকের খবর পড়ুন</translation>
 <translation id="1303339473099049190">ওই পাসওয়ার্ডটি খুঁজে পাওয়া যায়নি। বানান পরীক্ষা করে আবার চেষ্টা করে দেখুন।</translation>
@@ -510,6 +511,7 @@
 <translation id="3795154175078851242">লিঙ্ক সহ ছবি কপি করুন</translation>
 <translation id="3810838688059735925">ভিডিও</translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
+<translation id="381861209280417772">পাসওয়ার্ড মুছে দিন</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" />টি ডাউনলোড মোছা হয়েছে</translation>
 <translation id="3819183753496523827">আপনি অফলাইন আছেন। ইন্টারনেট কানেকশন ঠিক আছে কিনা দেখে আবার চেষ্টা করুন।</translation>
 <translation id="3830886834687455630">আপনার পাসওয়ার্ড চেক করতে Google Play পরিষেবা আপডেট করুন</translation>
@@ -596,6 +598,7 @@
 <translation id="4249955472157341256">লেটেস্ট অনুযায়ী সাজান</translation>
 <translation id="4250229828105606438">স্ক্রিনশট</translation>
 <translation id="4256782883801055595">ওপেন সোর্স লাইসেন্স</translation>
+<translation id="4257230861809842349">Google Password Manager থেকে পাসওয়ার্ড মুছে ফেলবেন?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />কোন ডেটা ব্যবহার করা হয়:<ph name="END_BOLD" /> আপনার ব্রাউজিং ইতিহাস, এই ডিভাইসে Chrome ব্যবহার করে আপনি যে সাইটগুলি ভিজিট করেছেন তার একটি রেকর্ড।</translation>
 <translation id="4269820728363426813">লিঙ্ক অ্যাড্রেস কপি করুন</translation>
 <translation id="4283102315569707115">ডিফল্ট হিসেবে ডেস্কটপ সাইট দেখানোর অনুরোধ করবেন?</translation>

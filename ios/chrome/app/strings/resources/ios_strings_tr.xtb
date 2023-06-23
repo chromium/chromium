@@ -89,6 +89,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="1492417797159476138">Bu site için bu kullanıcı adını zaten kaydettiniz</translation>
 <translation id="1497590942294823549">Menü → Şifre Yöneticisi</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" /> hesabınız silinmeyecek.</translation>
+<translation id="1501820324067650154">Rota seçenekleri için "Yol Tarifi Al"a dokunun</translation>
 <translation id="1506063256525392513">Bu şekilde, fotoğraf çekip yükleyebilir, QR kodlarını tarayabilirsiniz</translation>
 <translation id="1509486075633541495">Web sitesinde oturum açın</translation>
 <translation id="1509960214886564027">Birçok sitedeki özellikler çalışmayabilir</translation>
@@ -175,6 +176,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="2073572773299281212"><ph name="DAYS" /> Gün Önce Etkindi</translation>
 <translation id="2074131957428911366">Neyin senkronize edileceğini istediğiniz zaman <ph name="BEGIN_LINK" />ayarlardan<ph name="END_LINK" /> seçebilirsiniz.</translation>
 <translation id="2079545284768500474">Geri al</translation>
+<translation id="2080409463824088391">Uygulamada aç…</translation>
 <translation id="2080769225927880590">Geçerli Bir Hesapla Oturum Açın</translation>
 <translation id="2103075008456228677">history.google.com'u aç</translation>
 <translation id="21133533946938348">Sekmeyi İğnele</translation>
@@ -314,6 +316,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="2931440415625410757">Talimatları göster</translation>
 <translation id="2932085390869194046">Şifre Öner...</translation>
 <translation id="2932765531295814441">Şifreleri Manuel Olarak Ekleyin</translation>
+<translation id="2952246431280799028">Bir adrese dokunup basılı tutun.</translation>
 <translation id="2952278131021475699">Lens Kamera ile Arama</translation>
 <translation id="2952581218264071393">1. Chrome Ayarlarını açın</translation>
 <translation id="2958718410589002129">Şifreler</translation>
@@ -1260,6 +1263,7 @@ Verileriniz <ph name="TIME" /> tarihinde parolanızla şifrelendi. Chrome verile
 <translation id="891282356902782456">Bu şifre yalnızca bu cihaza kaydedilir. Diğer cihazlarınızda kullanmak için Google Hesabınıza (<ph name="EMAIL" />) kaydedin.</translation>
 <translation id="891658175948553296">Bir Sitedeki Metni Vurgulayın</translation>
 <translation id="8917490105272468696">Evet</translation>
+<translation id="8926984231484284953">Yerel bilgileri ve yol tariflerini görmek için web sayfalarındaki adresleri kullanın.</translation>
 <translation id="8928133177108699615">Masaüstü</translation>
 <translation id="8934982071228289624">Bu şifreyi hesabınıza kaydetmek için öncelikle cihazınızda bir şifre kodu ayarlamanız gerekir.</translation>
 <translation id="8940809892068499052">Diğer uygulamalardaki bağlantıları gizli sekmede açın</translation>

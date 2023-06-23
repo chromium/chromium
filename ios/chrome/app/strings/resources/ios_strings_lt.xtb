@@ -91,6 +91,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="1492417797159476138">Jau išsaugojote šį naudotojo vardą šioje svetainėje</translation>
 <translation id="1497590942294823549">Meniu → Slaptažodžių tvarkyklė</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" /> paskyra nebus ištrinta.</translation>
+<translation id="1501820324067650154">Norėdami pamatyti maršruto parinktis, palieskite „Gauti nuorodų“</translation>
 <translation id="1506063256525392513">Galite fotografuoti ir įkelti nuotraukas bei nuskaityti QR kodus</translation>
 <translation id="1509486075633541495">Prisijungti prie svetainės</translation>
 <translation id="1509960214886564027">Funkcijos gali neveikti daugybėje svetainių.</translation>
@@ -179,6 +180,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="2073572773299281212">Aktyvus prieš <ph name="DAYS" /> d.</translation>
 <translation id="2074131957428911366">Bet kada galite pasirinkti, ką norite sinchronizuoti, skiltyje <ph name="BEGIN_LINK" />„Nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
+<translation id="2080409463824088391">Atidaryti programoje…</translation>
 <translation id="2080769225927880590">Prisijungimas naudojant galiojančią paskyrą</translation>
 <translation id="2103075008456228677">Atidaryti history.google.com</translation>
 <translation id="21133533946938348">Pažymėti skirtuką</translation>
@@ -318,6 +320,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="2931440415625410757">Rodyti instrukcijas</translation>
 <translation id="2932085390869194046">Siūlyti slaptažodį...</translation>
 <translation id="2932765531295814441">Slaptažodžių pridėjimas neautomatiškai</translation>
+<translation id="2952246431280799028">Palieskite ir palaikykite adresą.</translation>
 <translation id="2952278131021475699">„Lens“ fotoaparato paieška</translation>
 <translation id="2952581218264071393">1. Atidarykite „Chrome“ nustatymus</translation>
 <translation id="2956733177489514605">Prisijunkite naudodami „Google“ paskyrą, kad sinchronizuotumėte slaptažodžius ir kt.</translation>
@@ -1272,6 +1275,7 @@ Duomenys užšifruoti naudojant slaptafrazę <ph name="TIME" />. Įveskite ją, 
 <translation id="891282356902782456">Šis slaptažodis saugomas tik šiame įrenginyje. Jei norite jį naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje (<ph name="EMAIL" />).</translation>
 <translation id="891658175948553296">Paryškinkite tekstą svetainėje</translation>
 <translation id="8917490105272468696">Taip, sutinku</translation>
+<translation id="8926984231484284953">Naudokite adresus tinklalapiuose, kad gautumėte vietinės informacijos ir nuorodų.</translation>
 <translation id="8928133177108699615">Stalinio kompiuterio</translation>
 <translation id="8934982071228289624">Jei norite išsaugoti šį slaptažodį paskyroje, pirmiausia turite nustatyti slaptažodį įrenginyje.</translation>
 <translation id="8940809892068499052">Atidarykite inkognito skirtukus iš kitų programų</translation>

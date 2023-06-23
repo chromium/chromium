@@ -73,6 +73,7 @@
 <translation id="1358214951266274152">Перейти за скопійованим посиланням</translation>
 <translation id="1360432990279830238">Вийти й вимкнути синхронізацію?</translation>
 <translation id="1363028406613469049">Композиція</translation>
+<translation id="1365106417372288489">Ваш пристрій iPhone нещодавно було відновлено, тому веб-переглядач за умовчанням міг змінитися.</translation>
 <translation id="1375321115329958930">Збережені паролі</translation>
 <translation id="1377255359165588604">Синхронізація перестала працювати.</translation>
 <translation id="1377321085342047638">Номер картки</translation>
@@ -90,6 +91,7 @@
 <translation id="1492417797159476138">Ви вже зберегли це ім'я користувача для цього сайту</translation>
 <translation id="1497590942294823549">Меню → Менеджер паролів</translation>
 <translation id="1498283581832036924">Ваш обліковий запис на веб-сайті <ph name="WEBSITE" /> не буде видалено.</translation>
+<translation id="1501820324067650154">Щоб переглянути варіанти маршруту, натисніть "Прокласти маршрут"</translation>
 <translation id="1506063256525392513">Так ви зможете робити й завантажувати фотографії, а також сканувати QR-коди</translation>
 <translation id="1509486075633541495">Увійдіть в обліковий запис на веб-сайті</translation>
 <translation id="1509960214886564027">Функції на багатьох сайтах можуть не працювати</translation>
@@ -148,6 +150,7 @@
 <translation id="1872096359983322073">Ліхтарик</translation>
 <translation id="1883255238294161206">Згорнути список</translation>
 <translation id="1894023287452300670">Відстежуйте ціну тут</translation>
+<translation id="189531189292803889">Ваш пристрій iPad нещодавно було відновлено, тому веб-переглядач за умовчанням міг змінитися.</translation>
 <translation id="1910975740091000991">Chrome для iOS</translation>
 <translation id="1911619930368729126">Завантажити на Google Диск</translation>
 <translation id="1923342640370224680">Остання година</translation>
@@ -177,6 +180,7 @@
 <translation id="2073572773299281212">У мережі <ph name="DAYS" /> дн. тому</translation>
 <translation id="2074131957428911366">Ви можете будь-коли вибрати дані для синхронізації в <ph name="BEGIN_LINK" />налаштуваннях<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Відмінити</translation>
+<translation id="2080409463824088391">Відкрити в додатку…</translation>
 <translation id="2080769225927880590">Увійдіть у дійсний обліковий запис</translation>
 <translation id="2103075008456228677">Відкрити history.google.com</translation>
 <translation id="21133533946938348">Закріпити вкладку</translation>
@@ -316,6 +320,7 @@
 <translation id="2931440415625410757">Показати вказівки</translation>
 <translation id="2932085390869194046">Запропонувати пароль…</translation>
 <translation id="2932765531295814441">Додайте паролі вручну</translation>
+<translation id="2952246431280799028">Натисніть і утримуйте адресу.</translation>
 <translation id="2952278131021475699">Пошук за допомогою Об’єктива</translation>
 <translation id="2952581218264071393">1. Відкрийте налаштування Chrome</translation>
 <translation id="2956733177489514605">Увійдіть в обліковий запис Google, щоб синхронізувати паролі тощо.</translation>
@@ -1044,6 +1049,7 @@
 <translation id="750493650310597496">Вибрано 0</translation>
 <translation id="7508728395076009983">Щоб закріпляти анонімні вкладки, налаштуйте Touch ID, Face ID або код доступу.</translation>
 <translation id="7514365320538308">Завантажити</translation>
+<translation id="7524055474074101597">Отримуйте доступ до паролів тощо в додатках.</translation>
 <translation id="7531345132340165516">Поточний сайт</translation>
 <translation id="7537586195939242955">Не вдалося внести дані в Passbook.</translation>
 <translation id="754655535278952384">Перевірено <ph name="TIME" /></translation>
@@ -1269,6 +1275,7 @@
 <translation id="891282356902782456">Цей пароль зберігається лише на поточному пристрої. Щоб використовувати пароль на інших пристроях, збережіть його у своєму обліковому записі Google (<ph name="EMAIL" />).</translation>
 <translation id="891658175948553296">Виділіть текст на сайті</translation>
 <translation id="8917490105272468696">Так</translation>
+<translation id="8926984231484284953">Використовуйте адреси на веб-сторінках, щоб отримувати місцеву інформацію і прокладати маршрути.</translation>
 <translation id="8928133177108699615">Режим робочого столу</translation>
 <translation id="8934982071228289624">Щоб зберегти цей пароль в обліковому записі, спершу вам потрібно налаштувати код доступу на своєму пристрої.</translation>
 <translation id="8940809892068499052">Відкривайте анонімні вкладки з інших додатків</translation>

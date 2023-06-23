@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">ৱালপেপাৰ সলনি কৰক</translation>
 <translation id="360565022852130722">ৱাই-ফাই নেটৱৰ্কটো দুৰ্বল প্ৰট’কল WEP 802.1xৰ দ্বাৰা সুৰক্ষিত</translation>
 <translation id="3606583719724308068">HTTPS ৱেবছাইটলৈ অধিক বিলম্বতা</translation>
+<translation id="3607216139080387279">স্ক্ৰীন ছেভাৰ দেখুৱাওক</translation>
 <translation id="361575905210396100">আপোনাৰ মতামতৰ বাবে ধন্যবাদ</translation>
 <translation id="3632579075709132555">গোপনীয়তাৰ স্ক্ৰীন ট’গল কৰা</translation>
 <translation id="3639846061339007994">ওপৰলৈ</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> টা পৰ্যালোচনা)</translation>
 <translation id="3748026146096797577">সংযোগ কৰা হোৱা নাই</translation>
 <translation id="3749289110408117711">ফাইলৰ নাম</translation>
+<translation id="3766934827878963937">১ ঘণ্টাৰ বাবে</translation>
 <translation id="3771294271822695279">ভিডিঅ’ ফাইল</translation>
 <translation id="3784455785234192852">লক আছে</translation>
 <translation id="380097101658023925">rgb নিয়ন্ত্ৰণসমূহ</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">কীব’ৰ্ড ডিমিং</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> পৰীক্ষাটো বাতিল কৰা হৈছে</translation>
 <translation id="631063167932043783">Explore এপ্‌</translation>
+<translation id="6318437367327684789">চিৰদিনৰ বাবে</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />ত ফাৰ্মৱেৰ আপডে’ট কৰক</translation>
 <translation id="6321407676395378991">স্ক্ৰীন ছেভাৰ অন কৰক</translation>
 <translation id="6325525973963619867">বিফল হৈছে</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">একেটা PDFত একাধিক পৃষ্ঠা ছেভ কৰক</translation>
 <translation id="9137526406337347448">Google সেৱা</translation>
 <translation id="9138630967333032450">লেফ্ট শ্বিফ্ট</translation>
+<translation id="9143347780818904997"><ph name="MINUTES" /> মিনিটৰ বাবে</translation>
 <translation id="9149391708638971077">মেম’ৰি পৰীক্ষা চলাওক</translation>
 <translation id="9161276708550942948">স্পেচ</translation>
 <translation id="9173638680043580060">এক মিনিটতকৈ কম সময় বাকী আছে</translation>

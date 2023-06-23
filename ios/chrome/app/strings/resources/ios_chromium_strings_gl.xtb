@@ -18,6 +18,7 @@
 <translation id="1838412507805038478">Chromium verificou que <ph name="ISSUER" /> emitiu o certificado deste sitio web.</translation>
 <translation id="1843424232666537147">Chromium inclúe funcións que che axudan a xestionar os teus datos de Internet e a rapidez coa que podes cargar páxinas web.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="1847960401032164406">Maps en Chromium</translation>
 <translation id="1867772173333403444">4. Selecciona Chromium</translation>
 <translation id="2006345422933397527">Chromium non puido buscar actualizacións. Verifica a conexión a Internet.</translation>
 <translation id="2052320862053429062">Chromium comproba periodicamente se os teus contrasinais aparecen nas listas que se publican en liña. Cando o fai, os teus contrasinais e os teus nomes de usuario encríptanse, polo que ninguén pode lelos, nin sequera Google.</translation>
@@ -69,6 +70,7 @@
 <translation id="4999538639245140991">Dado que estás pechando sesión nunha conta xestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, eliminaranse os teus datos de Chromium deste dispositivo, pero conservaranse na túa Conta de Google.</translation>
 <translation id="5048795749726991615">Usa Chromium para autocompletar facilmente noutras aplicacións os teus contrasinais gardados</translation>
 <translation id="5171868502429358653">Inicia sesión en Chromium</translation>
+<translation id="5224044903258607400">Toca Ver con Google Maps en Chromium</translation>
 <translation id="5224391634244552924">Non hai contrasinais gardados. Chromium pode comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="5308226104666789935">Chromium non puido buscar actualizacións</translation>
 <translation id="5396916991083608703">Queres definir Chromium como navegador predeterminado?</translation>

@@ -2105,6 +2105,7 @@
 <translation id="2727744317940422214">‏معذرت، کچھ غلط ہو گیا۔ براہ کرم تفصیل میں bruschetta# کے ساتھ تاثرات درج کریں۔ خرابی کا کوڈ <ph name="ERROR" /> ہے۔ صاف کرنے کا عمل ناکام ہو گیا، آپ کو دستی طور پر ایسا کرنا ہوگا۔</translation>
 <translation id="2729314457178420145">‏براؤزنگ ڈیٹا (<ph name="URL" />) بھی صاف کریں جس سے آپ Google.com سے سائن آؤٹ ہو سکتے ہیں۔ <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">‏Chrome براؤز کرتے وقت ٹریکنگ کو کم کرنے اور آپ کو مزید محفوظ رکھنے کے نئے طریقے تلاش کر رہا ہے۔ Chrome آپ کی <ph name="ESTIMATE_INTERESTS_LINK" /> بھی لگاتا ہے اور آپ کو ان کا نظم کرنے کا اہل بناتا ہے۔ پھر، آپ کی ملاحظہ کردہ سائٹس آپ کو اشتہارات دکھانے کی خاطر آپ کی دلچسپیوں کے لیے Chrome سے پوچھ سکتی ہیں۔</translation>
+<translation id="2729577602370119849">پرنٹرز تک آسانی سے رسائی حاصل کریں اور ان کا نظم کریں</translation>
 <translation id="2730029791981212295">‏Linux ایپس اور فائلز کا بیک اپ لیا جا رہا ہے</translation>
 <translation id="2730901670247399077">ایموجی کی تجاویز</translation>
 <translation id="273093730430620027">یہ صفحہ آپ کے کیمرا تک رسائی حاصل کر رہا ہے۔</translation>
@@ -2425,6 +2426,7 @@
 <translation id="2996286169319737844">‏آپ کے پاس فریز کے ساتھ ڈیٹا کی مرموزکاری کی جاتی ہے۔ اس میں Google Pay سے ادائیگی کے طریقے اور پتے شامل نہیں ہوتے ہیں۔</translation>
 <translation id="2996722619877761919">طویل کنارہ پر فلپ کریں</translation>
 <translation id="2996932914629936323">مطابقت پذیر کردہ تمام آلات سے سرگزشت صاف ہو جاتی ہے</translation>
+<translation id="2998097899774209901">‏آن ہے • اس ایکسٹینشن سے Chrome ویب اسٹور کی پالیسی کی خلاف ورزی ہوتی ہے</translation>
 <translation id="2998267783395280091">نیٹ ورک ملا</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> کی اجازت دی گئی</translation>
 <translation id="3000461861112256445">مونو آڈیو</translation>
@@ -2457,6 +2459,7 @@
 <translation id="3012631534724231212">(iframe)</translation>
 <translation id="3012804260437125868">صرف اس جیسی سائٹ کے کنکشنز کو محفوظ کریں</translation>
 <translation id="3012917896646559015">اپنا کمپیوٹر کسی مرمتی سہولت میں بھیجنے کیلئے براہ کرم فوری طور پر اپنے ہارڈ ویئر مینوفیکچرر سے رابطہ کریں۔</translation>
+<translation id="3013652227108802944">‏آف ہے • اس ایکسٹینشن سے Chrome ویب اسٹور کی پالیسی کی خلاف ورزی ہوتی ہے</translation>
 <translation id="3014717196148502230">‏Chrome اور بھی زیادہ صفحات کو پیشگی لوڈ کرتا ہے جن کا آپ ممکنہ طور پر ملاحظہ کر سکتے ہیں، تاکہ وہ آپ کے ملاحظہ کرتے وقت مزید تیزی سے لوڈ ہو سکیں۔</translation>
 <translation id="301525898020410885">زبان آپ کی تنظیم کے ذریعے سیٹ کی جاتی ہے</translation>
 <translation id="3015639418649705390">ابھی دوبارہ شروع کریں</translation>
@@ -2524,6 +2527,7 @@
 <translation id="3072775339180057696">سائٹ کو <ph name="FILE_NAME" /> دیکھنے دیں؟</translation>
 <translation id="3074499504015191586">مکمل صفحے کا ترجمہ کریں</translation>
 <translation id="3075144191779656260">اپنے <ph name="DEVICE_TYPE" /> کے بائیں ہاتھ کی طرف موجود فنگر پرنٹ سینسر کو ٹچ کریں۔ آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
+<translation id="3075740753681485522">آف ہے • اس ایکسٹینشن میں میلویئر شامل ہے</translation>
 <translation id="3075874217500066906">‏Powerwash کارروائی شروع کرنے کیلئے ایک بار دوبارہ شروع کرنا درکار ہے۔ دوبارہ شروع کرنے کے بعد آپ سے یہ توثیق کرنے کیلئے پوچھا جائے گا کہ آپ جاری رکھنا چاہتے ہیں۔</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">صرف اس آلے پر محفوظ کریں</translation>
@@ -2686,6 +2690,7 @@
 <translation id="3243017971870859287">‏ChromeOS Flex آلہ اور جزو کے نمبر شمار پڑھیں</translation>
 <translation id="324366796737464147">شور کو کم کرنا</translation>
 <translation id="3244294424315804309">آواز بند کرنا جاری رکھیں</translation>
+<translation id="3247649647204519958">یہاں سے، آپ جس سائٹ پر ہیں اس کے لیے ایکسٹینشن کی اجازتیں دیکھ اور ان کا نظم کر سکتے ہیں</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - نیٹ ورک کی خرابی</translation>
 <translation id="3248902735035392926">حفاظتی معاملات۔ کچھ وقت نکالیں اور ابھی <ph name="BEGIN_LINK" />اپنی ایکسٹینشنز کو چیک کریں<ph name="END_LINK" /></translation>
 <translation id="3249323165366527554">جب آپ کے <ph name="EMAIL" /> کا پاس ورڈ <ph name="GOOGLE_PASSWORD_MANAGER" /> میں خودکار طور پر محفوظ ہو جائے تو سائن اپ کریں اور نسبتًا تیزی سے سائن ان کریں۔</translation>
@@ -2778,6 +2783,7 @@
 <translation id="3320271870899888245">‏OneDrive سے منسلک نہیں ہو سکتا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="3320630259304269485">محفوظ براؤزنگ (خطرناک سائٹس سے تحفظ) اور سیکیورٹی کی دیگر ترتیبات</translation>
 <translation id="3321460131042519426">الفاظ ملفوف کرنے فعال کریں</translation>
+<translation id="3321494112580110651">آپ کا پرنٹر دکھائی نہیں دے رہا؟</translation>
 <translation id="3323521181261657960">بونس! آپ کو اسکرین کا مزید وقت ملا</translation>
 <translation id="3323577066981719144">‏آپ یہاں جو تبدیلیاں کرتے ہیں وہ صرف Chrome براؤزر پر لاگو ہوتی ہیں۔ اپنے Lacros Chrome براؤزر کی ترتیبات میں تبدیلیاں کرنے کے لیے، Lacros Chrome براؤزر کھولیں اور ترتیبات پر جائیں۔</translation>
 <translation id="3325804108816646710">دستیاب پروفائلز کو تلاش کیا جا رہا ہے...</translation>
@@ -3638,6 +3644,7 @@
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{صفحہ سے باہر نکلیں}other{صفحات سے باہر نکلیں}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> کو جاری رکھیں</translation>
 <translation id="4043267180218562935">کرسر کا سائز</translation>
+<translation id="4043620984511647481">پرنٹر دستی طور پر شامل کریں</translation>
 <translation id="4044612648082411741">اپنا سرٹیفکیٹ پاس ورڈ درج کریں</translation>
 <translation id="4044708573046946214">اسکرین لاک کا پاس ورڈ</translation>
 <translation id="404493185430269859">ڈیفالٹ سرچ انجن</translation>
@@ -4466,6 +4473,7 @@
 <translation id="477647109558161443">ڈیسک ٹاپ شارٹ کٹ بنائیں</translation>
 <translation id="4776594120007763294">بعد میں پڑھنے کی خاطر صفحہ شامل کرنے کے لیے، بٹن پر کلک کریں</translation>
 <translation id="4777458362738635055">اس آلہ کے دیگر صارفین یہ نیٹ ورک استعمال کر سکتے ہيں</translation>
+<translation id="4777813841994368231">آن ہے • اس ایکسٹینشن کی اشاعت اس کے ڈویلپر نے ختم کی تھی</translation>
 <translation id="4777825441726637019">‏Play اسٹور</translation>
 <translation id="4777943778632837590">نیٹ ورک کے نام کے سرورز کو کنفیگر کریں</translation>
 <translation id="4778653490315793244">دکھانے کے لیے ابھی تک کچھ نہیں ہے</translation>
@@ -6376,6 +6384,7 @@
 <translation id="6453191633103419909">ٹیب/اسکرین پروجیکشن کوالٹی</translation>
 <translation id="6453921811609336127">‏اندراج کے اگلے طریقے پر سوئچ کرنے کیلئے <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> دبائیں۔</translation>
 <translation id="6455264371803474013">مخصوص سائٹس پر</translation>
+<translation id="6455521402703088376">آف ہے • اس ایکسٹینشن کی اشاعت اس کے ڈویلپر نے ختم کی تھی</translation>
 <translation id="6455894534188563617">&amp;نیا فولڈر</translation>
 <translation id="645705751491738698">‏JavaScript کو مسدود کرنا جاری رکھیں</translation>
 <translation id="6458347417133445570">تمام کوکیز کی اجازت دینے کے بارے میں تفصیلات دکھائیں</translation>
@@ -6584,6 +6593,7 @@
 <translation id="6633126565486451781">ہو سکتا ہے یہ فائل پڑھی گئی ہو یا اس میں ترمیم کی گئی ہو کیونکہ یہ سائٹ محفوظ کنکشن استعمال نہیں کر رہی ہے</translation>
 <translation id="6635362468090274700">جب تک آپ خود کو مرئی نہیں بنائیں گے، تب تک کوئی بھی آپ کے ساتھ اشتراک نہیں کر سکتا۔<ph name="BR" /><ph name="BR" />خود کو عارضی طور پر مرئی بنانے کیلئے، اسٹیٹس ایریا کھولیں، پھر قریبی آلات کی مرئیت کا انتخاب کریں۔</translation>
 <translation id="6635674640674343739">نیٹ ورک کنکشن قائم نہیں کیا جا سکتا۔ اپنا نیٹ ورک کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
+<translation id="663569763553406962">دیکھیں کہ کون سی ایکسٹینشنز کسی سائٹ کو پڑھ یا انہیں تبدیل کر سکتی ہیں</translation>
 <translation id="6635944431854494329">‏مالک ترتیبات &gt; اعلی &gt; Google کو خودکار طور پر ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجیں سے اس خصوصیت کو کنٹرول کر سکتا ہے۔</translation>
 <translation id="6636623428211296678">ذیل میں مزید ترتیبات دریافت کریں یا ابھی مکمل کریں</translation>
 <translation id="6639554308659482635">‏SQLite میموری</translation>
@@ -6828,6 +6838,7 @@
 <translation id="6833996806551876956">رازداری سینڈ باکس کا ٹرائل</translation>
 <translation id="6835712061486505758">‏دیگر آلات کو انٹرنیٹ فراہم کرنے کے لیے Wi‑Fi ہاٹ اسپاٹ تخلیق کریں۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">براہ کرم اپنا <ph name="DEVICE_TYPE" /> اپ ڈیٹ کرنے کیلئے انٹرنیٹ سے منسلک ہوں۔</translation>
+<translation id="6836688241291438278">‏یقینی بنائیں کہ آپ کا پرنٹر اسی Wi-Fi نیٹ ورک سے منسلک ہے جس سے آپ کا Chromebook منسلک ہے یا USB کیبل استعمال کریں۔ موافقت کے بارے میں مزید جانیں۔</translation>
 <translation id="6839225236531462745">سرٹیفکیٹ حذف کرنے میں خرابی</translation>
 <translation id="6839916869147598086">سائن ان تبدیل ہو چکا ہے</translation>
 <translation id="6840155290835956714">بھیجنے سے پہلے پوچھیں</translation>
@@ -8543,6 +8554,7 @@
 <translation id="8275080796245127762">اپنے آلہ سے کال کریں</translation>
 <translation id="8275339871947079271">‏اپنے پاس ورڈ کو اپنے Google اکاؤنٹ میں منتقل کریں تاکہ آپ جہاں بھی سائن ان ہوں وہاں اس تک محفوظ طریقے سے رسائی حاصل کر سکیں</translation>
 <translation id="8276560076771292512">خالی کیش اور ہارڈ ری لوڈ</translation>
+<translation id="828180235270931531">دیگر دستیاب پرنٹرز</translation>
 <translation id="8281886186245836920">نظر انداز کریں</translation>
 <translation id="8284279544186306258">سبھی <ph name="WEBSITE_1" /> سائٹس</translation>
 <translation id="8284326494547611709">کیپشنز</translation>
@@ -9283,6 +9295,7 @@
 <translation id="8930622219860340959">وائرلیس</translation>
 <translation id="8931076093143205651">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ Google کو خودکار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا بھیج کر اپنا Android تجربہ بہتر بنانے میں مدد کریں۔ اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اس ترتیب کو مالک نافذ کرتا ہے۔ مالک Google کو اس آلہ کیلئے ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجنے کا انتخاب کر سکتا ہے۔ اگر آپ کی ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو آپ کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔</translation>
 <translation id="8931475688782629595">جو آپ سِنک کرتے ہیں اس کا نظم کریں</translation>
+<translation id="8931713990831679796">یہ پرنٹرز منسلک ہیں اور استعمال کے لیے تیار ہیں۔ آسان رسائی کے لیے اپنی پروفائل میں محفوظ کریں۔</translation>
 <translation id="8932654652795262306">فوری ٹیدرنگ کی تفصیلات</translation>
 <translation id="893298445929867520">کارٹس چھپا دئے گئے۔ آپ کے تبدیلیاں کرنے پر وہ دوبارہ دکھائی دیں گے۔</translation>
 <translation id="8933960630081805351">تلاش کنندہ میں &amp;دکھائیں</translation>

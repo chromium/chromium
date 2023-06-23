@@ -61,6 +61,7 @@
 <translation id="1283039547216852943">বিস্তাৰ কৰিবলৈ টিপক</translation>
 <translation id="1289059016768036948">আপোনাক আপোনাৰ Google একাউণ্টত ছাইন ইন কৰিবলৈ কোৱা হ’ব</translation>
 <translation id="1291207594882862231">সন্ধান ইতিহাস, কুকি, ছাইটৰ ডেটা, কেশ্ব মচক…</translation>
+<translation id="1293898515599432175">Chrome <ph name="CHROME_CHANNEL" />ৰ বাবে আপোনাৰ পাছৱৰ্ডসমূহ Google Password Managerৰ পৰা মচি পেলোৱা হ’ব। আপুনি এইমাত্ৰ ডাউনল’ড কৰা পাছৱৰ্ড ফাইলটো ৰাখিব।</translation>
 <translation id="129553762522093515">শেহতীয়াকৈ বন্ধ কৰা</translation>
 <translation id="1298077576058087471">৬০% পৰ্যন্ত ডেটা ৰাহি কৰক, আজিৰ বাতৰি পঢ়ক</translation>
 <translation id="1303339473099049190">সেই পাছৱর্ডটো বিচাৰিব নোৱাৰি। আপোনাৰ বানান পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
@@ -510,6 +511,7 @@
 <translation id="3795154175078851242">লিংকৰ সৈতে প্ৰতিচ্ছবি প্ৰতিলিপি কৰক</translation>
 <translation id="3810838688059735925">ভিডিঅ’</translation>
 <translation id="3810973564298564668">পৰিচালনা কৰক</translation>
+<translation id="381861209280417772">পাছৱৰ্ডসমূহ মচক</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" />টা ডাউনল'ড মচা হ'ল</translation>
 <translation id="3819183753496523827">আপুনি অফলাইন হৈ আছে। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3830886834687455630">আপোনাৰ পাছৱৰ্ডসমূহ পৰীক্ষা কৰিবলৈ Google Play সেৱাসমূহ আপডে’ট কৰক</translation>
@@ -594,6 +596,7 @@
 <translation id="4249955472157341256">শেহতীয়া অনুসৰি সজাওক</translation>
 <translation id="4250229828105606438">স্ক্রীণশ্বট</translation>
 <translation id="4256782883801055595">মুক্ত উত্‍সৰ অনুজ্ঞাপত্ৰ</translation>
+<translation id="4257230861809842349">Google Password Managerৰ পৰা পাছৱৰ্ডসমূহ মচিবনে?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />কি ডেটা ব্যৱহাৰ কৰা হয়:<ph name="END_BOLD" /> আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস, আপুনি এই ডিভাইচটোত Chrome ব্যৱহাৰ কৰি চোৱা ছাইটৰ ৰেকৰ্ড।</translation>
 <translation id="4269820728363426813">লিংকৰ ঠিকনাটো প্ৰতিলিপি কৰক</translation>
 <translation id="4283102315569707115">ডিফ’ল্ট হিচাপে ডেস্কটপৰ ছাইটৰ বাবে অনুৰোধ কৰিবনে?</translation>

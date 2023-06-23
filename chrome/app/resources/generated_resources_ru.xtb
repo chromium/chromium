@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">&amp;Добавить в словарь</translation>
 <translation id="1018656279737460067">Отменено</translation>
 <translation id="1022489261739821355">Пароли из вашего <ph name="BEGIN_LINK" />аккаунта Google<ph name="END_LINK" /></translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Ваше устройство находится под управлением домена <ph name="DOMAIN" />. Администраторы имеют доступ к данным всех профилей на этом устройстве.</translation>
 <translation id="1024734233509995696">На этой вкладке используется камера или микрофон</translation>
 <translation id="1026655690966755180">Добавить порт</translation>
@@ -78,6 +79,7 @@
 <translation id="1061130374843955397">Добро пожаловать в мир <ph name="DEVICE_TYPE" />!</translation>
 <translation id="1061373870045429865">Создать QR-код для этой ссылки</translation>
 <translation id="1061904396131502319">Скоро перерыв</translation>
+<translation id="10619348099955377">Скопировать отображаемое название</translation>
 <translation id="1062407476771304334">Заменить</translation>
 <translation id="1062628064301375934">Помогите нам обеспечивать конфиденциальность в интернете</translation>
 <translation id="1066964438793906105">Сканирование на наличие вредоносного ПО</translation>
@@ -580,6 +582,7 @@
 <translation id="1481537595330271162">При изменении размера диска произошла ошибка.</translation>
 <translation id="1482626744466814421">Добавить страницу в закладки...</translation>
 <translation id="1482772681918035149">изменить пароли</translation>
+<translation id="1483431819520123112">Отображаемое название скопировано в буфер обмена</translation>
 <translation id="1483493594462132177">Отправить</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Сайт использует устройство Bluetooth</translation>
@@ -957,6 +960,7 @@
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 заметка}one{# заметка}few{# заметки}many{# заметок}other{# заметки}}</translation>
 <translation id="1784707308176068866">Запускать в фоновом режиме по запросу соответствующего нативного приложения</translation>
 <translation id="1784849162047402014">Свободное пространство заканчивается</translation>
+<translation id="1786290960428378411">Запрос на чтение и изменение</translation>
 <translation id="1787350673646245458">Фото профиля</translation>
 <translation id="1790976235243700817">Запретить доступ</translation>
 <translation id="1791662854739702043">Установлено</translation>
@@ -1289,6 +1293,7 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Нажмите, чтобы установить его.}one{Нажмите, чтобы установить их.}few{Нажмите, чтобы установить их.}many{Нажмите, чтобы установить их.}other{Нажмите, чтобы установить их.}}</translation>
 <translation id="2073496667646280609">Возможно, на диске или выбранном устройстве недостаточно места. Удалите ненужные файлы или сохраните резервные копии на другом устройстве.</translation>
 <translation id="2073505299004274893">Макс. количество символов: <ph name="CHARACTER_LIMIT" />.</translation>
+<translation id="2075088158103027942">Открыть страницу подписки</translation>
 <translation id="2075474481720804517">Батарея заряжена на <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2076269580855484719">Скрыть подключаемый модуль</translation>
 <translation id="2076672359661571384">Средний (рекомендуется)</translation>
@@ -2108,6 +2113,7 @@
 <translation id="2731700343119398978">Подождите…</translation>
 <translation id="2731971182069536520">Когда вы перезапустите устройство, администратор выполнит разовое обновление, которое удалит ваши локальные файлы.</translation>
 <translation id="2732134891301408122">Дополнительный контент на карточке <ph name="CURRENT_ELEMENT" /> из <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733992589856193783">Вы создали ключ доступа для этого сайта. Чтобы войти, используйте мобильное устройство.</translation>
 <translation id="27349076983469322">Светлый фон</translation>
 <translation id="2735712963799620190">Расписание</translation>
 <translation id="2737363922397526254">Свернуть...</translation>
@@ -3097,6 +3103,7 @@
 <translation id="3610241585790874201">Запрещено сохранять данные на устройстве</translation>
 <translation id="3610369246614755442">Вентилятору док-станции необходимо техническое обслуживание</translation>
 <translation id="3610961622607302617">Изменить пароль для <ph name="WEBSITE" /></translation>
+<translation id="3611634011145829814">Открыть страницу подписки</translation>
 <translation id="3611658447322220736">Разрешить недавно закрытым сайтам завершать отправку и получение данных</translation>
 <translation id="3612673635130633812">Скачано с помощью расширения &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Показать папку "<ph name="FOLDER_NAME" />"</translation>
@@ -3487,6 +3494,7 @@
 <translation id="3919145445993746351">Чтобы автоматически установить расширения на всех своих компьютерах, включите синхронизацию.</translation>
 <translation id="3919229493046408863">Отключить уведомления об устройствах поблизости</translation>
 <translation id="3919262972282962508">Старые версии приложений Chrome перестанут работать на устройствах с macOS после декабря 2022 года. Удалите это приложение или обратитесь к администратору, чтобы обновить его.</translation>
+<translation id="3919376399641777316">Используется пространство на Google Диске</translation>
 <translation id="3919798653937160644">Страницы, открытые в этом окне, не сохранятся в истории браузера и не оставят на компьютере следов, таких как файлы cookie. После того как вы закроете все окна, открытые в гостевом режиме, будут сохранены только скачанные вами файлы.</translation>
 <translation id="3920504717067627103">Политики сертификатов</translation>
 <translation id="3920909973552939961">Запретить сайтам устанавливать обработчики платежей</translation>
@@ -3638,6 +3646,7 @@
 <translation id="4044612648082411741">Введите пароль сертификата</translation>
 <translation id="4044708573046946214">Пароль для блокировки экрана</translation>
 <translation id="404493185430269859">Поисковая система по умолчанию</translation>
+<translation id="4044964245574571633">Используется хранилище Microsoft OneDrive</translation>
 <translation id="4045196801416070837">Звуки устройства</translation>
 <translation id="4046013316139505482">Расширения, которым не требуется право на просмотр и изменение информации на этом сайте</translation>
 <translation id="4046123991198612571">Следующий трек</translation>
@@ -3676,6 +3685,7 @@
 <translation id="4084682180776658562">Закладка</translation>
 <translation id="4084835346725913160">Закрыть вкладку "<ph name="TAB_NAME" />"</translation>
 <translation id="4085298594534903246">На этой странице произошло блокирование JavaScript.</translation>
+<translation id="4085620044235559093">Выберите, в каком приложении открывать файлы в формате <ph name="FILE_TYPE" /></translation>
 <translation id="4087089424473531098">Создано расширение:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -3782,6 +3792,7 @@
 <translation id="4176463684765177261">Отключено</translation>
 <translation id="4176864026061939326">Это управляемое устройство. Его администратор требует создать новый профиль для аккаунта <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4177501066905053472">Темы рекламы</translation>
+<translation id="4178220097446335546">Чтобы удалить подписку и связанные сети, перейдите на страницу подписки Passpoint.</translation>
 <translation id="4180788401304023883">Удалить сертификат "<ph name="CERTIFICATE_NAME" />" Центра сертификации?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Языки</translation>
@@ -3934,6 +3945,7 @@
 <translation id="4316850752623536204">Сайт разработчика</translation>
 <translation id="4317733381297736564">Есть платный контент</translation>
 <translation id="4317820549299924617">Не удалось выполнить верификацию</translation>
+<translation id="4319441675152393296">Нажмите на значок расширения, чтобы разрешить чтение и изменение данных <ph name="HOST" />.</translation>
 <translation id="4320177379694898372">Нет подключения к Интернету</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197">Показать файл "<ph name="FILE_NAME" />" в Finder</translation>
@@ -4427,6 +4439,7 @@
 <translation id="4742970037960872810">Снять выделение</translation>
 <translation id="4743260470722568160">Подробнее о том, <ph name="BEGIN_LINK" />как обновлять приложения<ph name="END_LINK" />…</translation>
 <translation id="4744268813103118742">Перейти на сайт</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Включить звук на сайте}one{Включить звук на сайтах}few{Включить звук на сайтах}many{Включить звук на сайтах}other{Включить звук на сайтах}}</translation>
 <translation id="474609389162964566">Вызывайте Ассистента командой "Окей, Google"</translation>
 <translation id="4746351372139058112">Сообщения</translation>
@@ -4617,6 +4630,7 @@
 <translation id="4899052647152077033">Обратные цвета</translation>
 <translation id="4899696330053002588">Есть реклама</translation>
 <translation id="489985760463306091">Чтобы завершить удаление вредоносного ПО, перезагрузите компьютер</translation>
+<translation id="490031510406860025">Запрещено на этом сайте</translation>
 <translation id="4900392736118574277">Стартовая страница изменена на <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Гц – чересстрочная развертка</translation>
 <translation id="4900652253009739885">Нельзя отменить назначение единственного переключателя для действия "Выбрать". Нажмите любую клавишу, чтобы <ph name="RESPONSE" />.</translation>
@@ -7350,6 +7364,7 @@
 <translation id="7299515639584427954">Изменить приложение по умолчанию для поддерживаемых ссылок?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">Вы можете спросить "Окей, Google, что это за песня?" или "Окей, Google, что у меня на экране?".</translation>
+<translation id="7301812050652048720">Ключ доступа удален.</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Это приложение может помешать работе Google Chrome.}one{Эти приложения могут помешать работе Google Chrome.}few{Эти приложения могут помешать работе Google Chrome.}many{Эти приложения могут помешать работе Google Chrome.}other{Эти приложения могут помешать работе Google Chrome.}}</translation>
 <translation id="7303281435234579599">Не удалось настроить демонстрационный режим.</translation>
 <translation id="7303900363563182677">У этого сайта нет доступа к тексту и изображениям, скопированным в буфер обмена</translation>
@@ -7511,6 +7526,7 @@
 <translation id="7432200167665670017">Администратор заблокировал приложение "<ph name="EXTENSION_NAME" />" (идентификатор: <ph name="EXTENSION_ID" />)</translation>
 <translation id="7433708794692032816">Не вынимайте смарт-карту, чтобы и дальше использовать <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Оставить так</translation>
+<translation id="7434100547946193426">Другие приложения</translation>
 <translation id="7434509671034404296">Разработчикам</translation>
 <translation id="7434757724413878233">Ускорение мыши</translation>
 <translation id="7434969625063495310">Не удалось добавить сервер печати. Проверьте его настройки и повторите попытку.</translation>
@@ -7891,6 +7907,7 @@
 <translation id="7744192722284567281">Раскрыт при утечке данных</translation>
 <translation id="7744649840067671761">Нажмите на новый переключатель или клавишу, чтобы назначить их для действия.
 Нажмите на уже заданный переключатель или клавишу, чтобы отменить назначение.</translation>
+<translation id="7745677556280361868">Удалить эту сеть на странице подписки Passpoint?</translation>
 <translation id="7746045113967198252">Увеличьте или уменьшите размер текста и элементов на экране. Это также можно сделать, выбрав "Настройки &gt; Устройство &gt; Дисплеи".</translation>
 <translation id="7746739418892731373">Это фото и видео с лучшими моментами из вашей библиотеки Google Фото. Управлять ими можно на странице <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.
         <ph name="BREAK" />
@@ -8103,6 +8120,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" /> может просматривать файл "<ph name="FILENAME" />".</translation>
 <translation id="7920482456679570420">Добавьте ниже слова, правописание которых не нужно проверять.</translation>
 <translation id="7921347341284348270">Вы не можете просматривать уведомления с телефона в этом управляемом аккаунте. Повторите попытку, используя другой аккаунт. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
+<translation id="7921901223958867679">Это расширение может читать и изменять данные <ph name="HOST" />.</translation>
 <translation id="7922606348470480702">1 расширение</translation>
 <translation id="7922935920104868876">Подробнее о блокировке сторонних файлов cookie в режиме инкогнито</translation>
 <translation id="7923564237306226146">Обновление Linux завершено</translation>
@@ -9636,6 +9654,7 @@
 <translation id="930551443325541578">Повтор ввода и диакритические знаки</translation>
 <translation id="930893132043726269">Сейчас в роуминге</translation>
 <translation id="930991362911221750">Предоставить приложению "<ph name="APP_NAME" />" доступ к этой вкладке?</translation>
+<translation id="931273044114601262">Разрешено на этом сайте</translation>
 <translation id="93140074055951850">Работа приложений Android остановлена</translation>
 <translation id="932327136139879170">Главная страница</translation>
 <translation id="932508678520956232">Не удалось начать печать.</translation>
