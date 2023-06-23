@@ -5503,20 +5503,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Shelf.NavigationButtonsInTabletMode.ReasonShown"
-    enum="ReasonToShowShelfNavigationButtons" expires_after="2022-01-09">
-  <owner>tbarzic@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    The reason shelf navigation buttons are shown in tablet mode. The buttons
-    are shown when the device is in tablet mode only if certain accessibility
-    settings are enabled. This histogram records which accessibility setting
-    caused the buttons to be shown. Shown when navigation buttons visibility
-    changes in tablet mode, and only if HideShelfControlsInTabletMode feature is
-    enabled.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Shelf.NumberOfItems" units="Icons"
     expires_after="2023-11-19">
   <owner>anasalazar@chromium.org</owner>
