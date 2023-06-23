@@ -1412,6 +1412,24 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_LABELS_FROM_GOOGLE" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable getting image descriptions from Google.">
     Get image descriptions from Google
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable color correction.">
+    Color correction
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT1" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable color correction.">
+    Color filters
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT2" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable color correction.">
+    Color blindness
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT3" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable color correction. One common type of color vision deficiency that can be helped by color correction is protanopia, and color correction filters include a protanopia filter.">
+    Protanomaly
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT4" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable color correction. One common type of color vision deficiency that can be helped by color correction is deuteranopia, and color correction filters include a deuteranopia filter.">
+    Deuteranomaly
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT5" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable color correction. One common type of color vision deficiency that can be helped by color correction is tritanopia, and color correction filters include a tritanopia filter.">
+    Tritanomaly
+  </message>
 
   <!-- Reset section. -->
   <message name="IDS_OS_SETTINGS_TAG_RESET" desc="Text for search result item which, when clicked, navigates the user to reset settings.">

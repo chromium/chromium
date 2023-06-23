@@ -420,6 +420,23 @@ GetA11yFullscreenMagnifierFocusFollowingSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetA11yColorCorrectionSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION,
+       mojom::kDisplayAndMagnificationSubpagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kColorCorrectionEnabled},
+       {IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT1,
+        IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT2,
+        IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT3,
+        IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT4,
+        IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT5}},
+  });
+  return *tags;
+}
+
 bool IsLiveCaptionEnabled() {
   return captions::IsLiveCaptionFeatureSupported();
 }
@@ -1359,6 +1376,11 @@ void AccessibilitySection::UpdateSearchTags() {
   } else {
     updater.RemoveSearchTags(
         GetA11yFullscreenMagnifierFocusFollowingSearchConcepts());
+  }
+
+  if (::features::
+          AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
+    updater.AddSearchTags(GetA11yColorCorrectionSearchConcepts());
   }
 
   if (!pref_service_->GetBoolean(prefs::kAccessibilitySwitchAccessEnabled)) {
