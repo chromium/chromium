@@ -790,7 +790,7 @@ void HTMLDocumentParser::SchedulePumpTokenizer(bool from_finish_append) {
   }
   base::TimeDelta delay = base::Milliseconds(0);
   if (RuntimeEnabledFeatures::HTMLParserYieldAndDelayOftenForTestingEnabled()) {
-    delay = base::Milliseconds(1000);
+    delay = base::Milliseconds(10);
   }
   loading_task_runner_->PostDelayedTask(
       FROM_HERE,
