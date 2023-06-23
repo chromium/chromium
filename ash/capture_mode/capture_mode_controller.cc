@@ -786,7 +786,8 @@ void CaptureModeController::CaptureScreenshotsOfAllDisplays() {
   CaptureInstantScreenshot(
       CaptureModeEntryType::kCaptureAllDisplays, CaptureModeSource::kFullscreen,
       base::BindOnce(&CaptureModeController::PerformScreenshotsOfAllDisplays,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), BehaviorType::kDefault),
+      BehaviorType::kDefault);
 }
 
 void CaptureModeController::CaptureScreenshotOfGivenWindow(
@@ -794,7 +795,9 @@ void CaptureModeController::CaptureScreenshotOfGivenWindow(
   CaptureInstantScreenshot(
       CaptureModeEntryType::kCaptureGivenWindow, CaptureModeSource::kWindow,
       base::BindOnce(&CaptureModeController::PerformScreenshotOfGivenWindow,
-                     weak_ptr_factory_.GetWeakPtr(), given_window));
+                     weak_ptr_factory_.GetWeakPtr(), given_window,
+                     BehaviorType::kGameDashboard),
+      BehaviorType::kGameDashboard);
 }
 
 void CaptureModeController::PerformCapture() {
@@ -2008,7 +2011,8 @@ void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
 void CaptureModeController::CaptureInstantScreenshot(
     CaptureModeEntryType entry_type,
     CaptureModeSource source,
-    base::OnceClosure instant_screenshot_callback) {
+    base::OnceClosure instant_screenshot_callback,
+    BehaviorType behavior_type) {
   if (pending_dlp_check_) {
     return;
   }
@@ -2022,13 +2026,14 @@ void CaptureModeController::CaptureInstantScreenshot(
   delegate_->CheckCaptureModeInitRestrictionByDlp(base::BindOnce(
       &CaptureModeController::OnDlpRestrictionCheckedAtCaptureScreenshot,
       weak_ptr_factory_.GetWeakPtr(), entry_type, source,
-      std::move(instant_screenshot_callback)));
+      std::move(instant_screenshot_callback), behavior_type));
 }
 
 void CaptureModeController::OnDlpRestrictionCheckedAtCaptureScreenshot(
     CaptureModeEntryType entry_type,
     CaptureModeSource source,
     base::OnceClosure instant_screenshot_callback,
+    BehaviorType behavior_type,
     bool proceed) {
   pending_dlp_check_ = false;
   if (!proceed) {
@@ -2052,10 +2057,11 @@ void CaptureModeController::OnDlpRestrictionCheckedAtCaptureScreenshot(
       // The values of `recording_type_` and `GetEffectiveAudioRecordingMode()`
       // will be ignored, since the type is `kImage`.
       recording_type_, GetEffectiveAudioRecordingMode(),
-      GetBehavior(BehaviorType::kDefault));
+      GetBehavior(behavior_type));
 }
 
-void CaptureModeController::PerformScreenshotsOfAllDisplays() {
+void CaptureModeController::PerformScreenshotsOfAllDisplays(
+    BehaviorType behavior_type) {
   // Get a vector of RootWindowControllers with primary root window at first.
   const std::vector<RootWindowController*> controllers =
       RootWindowController::root_window_controllers();
@@ -2071,19 +2077,19 @@ void CaptureModeController::PerformScreenshotsOfAllDisplays() {
                  controllers.size() == 1
                      ? BuildImagePath()
                      : BuildImagePathForDisplay(display_index),
-                 GetBehavior(BehaviorType::kDefault));
+                 GetBehavior(behavior_type));
     ++display_index;
   }
 }
 
 void CaptureModeController::PerformScreenshotOfGivenWindow(
-    aura::Window* given_window) {
+    aura::Window* given_window,
+    BehaviorType behavior_type) {
   const CaptureParams capture_params{given_window,
                                      gfx::Rect(given_window->bounds().size())};
   // TODO(michelefan): Add behavior type as an input parameter, if this API is
   // used for other entry types in future.
-  CaptureImage(capture_params, BuildImagePath(),
-               GetBehavior(BehaviorType::kGameDashboard));
+  CaptureImage(capture_params, BuildImagePath(), GetBehavior(behavior_type));
 }
 
 CaptureModeSaveToLocation CaptureModeController::GetSaveToOption(

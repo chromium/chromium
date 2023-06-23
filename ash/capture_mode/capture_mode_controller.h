@@ -529,23 +529,26 @@ class ASH_EXPORT CaptureModeController
   // screenshot.
   void CaptureInstantScreenshot(CaptureModeEntryType entry_type,
                                 CaptureModeSource source,
-                                base::OnceClosure instant_screenshot_callback);
+                                base::OnceClosure instant_screenshot_callback,
+                                BehaviorType behavior_type);
   // Bound to a callback that will be called by DLP manager to let the user know
   // whether screen capture should `proceed` or abort due to some restricted
   // contents on the screen. Invokes the `instant_screenshot_callback` and
-  // records the metrics if `proceed` is true and screen capture is allowed by
-  // the enterprise policy.
+  // records the metrics for the given `behavior_type` if `proceed` is true and
+  // screen capture is allowed by the enterprise policy.
   void OnDlpRestrictionCheckedAtCaptureScreenshot(
       CaptureModeEntryType entry_type,
       CaptureModeSource source,
       base::OnceClosure instant_screenshot_callback,
+      BehaviorType behavior_type,
       bool proceed);
 
   // Takes screenshots of all the available displays and saves them to disk.
-  void PerformScreenshotsOfAllDisplays();
+  void PerformScreenshotsOfAllDisplays(BehaviorType behavior_type);
 
   // Takes a screenshot of the `given_window` and save it to disk.
-  void PerformScreenshotOfGivenWindow(aura::Window* given_window);
+  void PerformScreenshotOfGivenWindow(aura::Window* given_window,
+                                      BehaviorType behavior_type);
 
   // Gets the corresponding `SaveLocation` enum value on the given `path`.
   CaptureModeSaveToLocation GetSaveToOption(const base::FilePath& path);

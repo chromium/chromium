@@ -7160,12 +7160,6 @@ TEST_P(CaptureModeHistogramTest, ScreenshotConfigurationHistogram) {
   controller->PerformCapture();
   histogram_tester.ExpectBucketCount(
       histogram_name, CaptureModeConfiguration::kWindowScreenshot, 1);
-
-  // Perform an instant window capture with `CaptureScreenshotOfGivenWindow`
-  // API.
-  controller->CaptureScreenshotOfGivenWindow(window.get());
-  histogram_tester.ExpectBucketCount(
-      histogram_name, CaptureModeConfiguration::kWindowScreenshot, 2);
 }
 
 TEST_P(CaptureModeHistogramTest, VideoRecordingAudioVideoMetrics) {

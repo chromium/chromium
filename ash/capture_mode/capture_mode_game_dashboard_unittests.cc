@@ -499,19 +499,13 @@ TEST_P(GameDashboardCaptureModeHistogramTest,
        GameCaptureConfigurationHistogram) {
   constexpr char kCaptureConfigurationBase[] = "CaptureConfiguration";
   CaptureModeTestApi test_api;
-
-  // TODO(michelefan): Add metric test for `kImage` capture configuration for
-  // game dashboard capture mode once the default and game capture behaviors for
-  // taking instant screenshot APIs are separated.
   const std::string histogram_name =
       BuildHistogramName(kCaptureConfigurationBase,
                          test_api.GetBehavior(BehaviorType::kGameDashboard),
                          /*append_ui_mode_suffix=*/true);
   histogram_tester_.ExpectBucketCount(
-      histogram_name,
-      GetConfiguration(CaptureModeType::kVideo, CaptureModeSource::kWindow,
-                       RecordingType::kWebM),
-      0);
+      histogram_name, CaptureModeConfiguration::kWindowRecording, 0);
+
   auto* controller = StartGameCaptureModeSession();
   StartVideoRecordingImmediately();
   EXPECT_TRUE(controller->is_recording_in_progress());
@@ -519,10 +513,23 @@ TEST_P(GameDashboardCaptureModeHistogramTest,
   WaitForCaptureFileToBeSaved();
   EXPECT_FALSE(controller->is_recording_in_progress());
   histogram_tester_.ExpectBucketCount(
-      histogram_name,
-      GetConfiguration(CaptureModeType::kVideo, CaptureModeSource::kWindow,
-                       RecordingType::kWebM),
-      1);
+      histogram_name, CaptureModeConfiguration::kWindowRecording, 1);
+}
+
+TEST_P(GameDashboardCaptureModeHistogramTest,
+       GameCaptureConfigurationHistogramForInstantScreenshot) {
+  constexpr char kCaptureConfigurationBase[] = "CaptureConfiguration";
+  CaptureModeTestApi test_api;
+  const std::string histogram_name =
+      BuildHistogramName(kCaptureConfigurationBase,
+                         test_api.GetBehavior(BehaviorType::kGameDashboard),
+                         /*append_ui_mode_suffix=*/true);
+  histogram_tester_.ExpectBucketCount(
+      histogram_name, CaptureModeConfiguration::kWindowScreenshot, 0);
+
+  CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(game_window());
+  histogram_tester_.ExpectBucketCount(
+      histogram_name, CaptureModeConfiguration::kWindowScreenshot, 1);
 }
 
 TEST_P(GameDashboardCaptureModeHistogramTest,
