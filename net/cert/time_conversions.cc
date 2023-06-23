@@ -15,7 +15,7 @@ namespace net {
 bool EncodeTimeAsGeneralizedTime(const base::Time& time,
                                  der::GeneralizedTime* generalized_time) {
   return der::EncodePosixTimeAsGeneralizedTime(
-      (time - base::Time::UnixEpoch()).InSeconds(), generalized_time);
+      (time - base::Time::UnixEpoch()).InSecondsFloored(), generalized_time);
 }
 
 bool GeneralizedTimeToTime(const der::GeneralizedTime& generalized,
