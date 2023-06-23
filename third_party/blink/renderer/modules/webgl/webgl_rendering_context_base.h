@@ -1093,6 +1093,10 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   // DrawingBuffer. In this situation, we need to blit to a single sampled
   // buffer for reading, during which the bindings could be changed and need to
   // be recovered.
+  //
+  // It is possible for the binding operation to fail, in which case
+  // the context will have been lost. Users must check the Succeeded()
+  // status before proceeding.
   class ScopedDrawingBufferBinder {
     STACK_ALLOCATED();
 
@@ -1100,21 +1104,27 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     ScopedDrawingBufferBinder(DrawingBuffer* drawing_buffer,
                               WebGLFramebuffer* framebuffer_binding)
         : drawing_buffer_(drawing_buffer),
-          read_framebuffer_binding_(framebuffer_binding) {
+          read_framebuffer_binding_(framebuffer_binding),
+          succeeded_(true) {
       // Commit DrawingBuffer if needed (e.g., for multisampling)
       if (!read_framebuffer_binding_ && drawing_buffer_)
-        drawing_buffer_->ResolveAndBindForReadAndDraw();
+        succeeded_ = drawing_buffer_->ResolveAndBindForReadAndDraw();
     }
+
+    // Users must check this before proceeding with their logic.
+    [[nodiscard]] bool Succeeded() { return succeeded_; }
 
     ~ScopedDrawingBufferBinder() {
       // Restore DrawingBuffer if needed
-      if (!read_framebuffer_binding_ && drawing_buffer_)
+      if (!read_framebuffer_binding_ && drawing_buffer_ && succeeded_) {
         drawing_buffer_->RestoreFramebufferBindings();
+      }
     }
 
    private:
     DrawingBuffer* drawing_buffer_;
     WebGLFramebuffer* read_framebuffer_binding_;
+    bool succeeded_;
   };
 
   // Errors raised by synthesizeGLError() while the context is lost.
