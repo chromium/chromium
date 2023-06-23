@@ -22,7 +22,7 @@ class CrossUserSharingPublicPrivateKeyPair {
   static CrossUserSharingPublicPrivateKeyPair GenerateNewKeyPair();
   // Initialize the Public-private key-pair using |private_key|.
   static absl::optional<CrossUserSharingPublicPrivateKeyPair> CreateByImport(
-      base::span<uint8_t> private_key);
+      base::span<const uint8_t> private_key);
 
   CrossUserSharingPublicPrivateKeyPair(
       const CrossUserSharingPublicPrivateKeyPair& other) = delete;
@@ -43,7 +43,7 @@ class CrossUserSharingPublicPrivateKeyPair {
  private:
   CrossUserSharingPublicPrivateKeyPair();
   explicit CrossUserSharingPublicPrivateKeyPair(
-      base::span<uint8_t> private_key);
+      base::span<const uint8_t> private_key);
 
   uint8_t private_key_[X25519_PRIVATE_KEY_LEN];
   uint8_t public_key_[X25519_PUBLIC_VALUE_LEN];

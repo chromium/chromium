@@ -38,7 +38,7 @@ CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair() {
 // static
 absl::optional<CrossUserSharingPublicPrivateKeyPair>
 CrossUserSharingPublicPrivateKeyPair::CreateByImport(
-    base::span<uint8_t> private_key) {
+    base::span<const uint8_t> private_key) {
   if (private_key.size() != X25519_PRIVATE_KEY_LEN) {
     return {};
   }
@@ -46,7 +46,7 @@ CrossUserSharingPublicPrivateKeyPair::CreateByImport(
 }
 
 CrossUserSharingPublicPrivateKeyPair::CrossUserSharingPublicPrivateKeyPair(
-    base::span<uint8_t> private_key) {
+    base::span<const uint8_t> private_key) {
   CHECK_EQ(static_cast<size_t>(X25519_PRIVATE_KEY_LEN), private_key.size());
 
   std::copy(private_key.begin(), private_key.end(), private_key_);

@@ -240,6 +240,7 @@ source_set("unit_tests") {
     "model/sync_data_unittest.cc",
     "model/sync_error_unittest.cc",
     "model/syncable_service_based_bridge_unittest.cc",
+    "nigori/cross_user_sharing_keys_unittest.cc",
     "nigori/cryptographer_impl_unittest.cc",
     "nigori/keystore_keys_cryptographer_unittest.cc",
     "nigori/nigori_key_bag_unittest.cc",

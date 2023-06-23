@@ -114,6 +114,8 @@ TEST(CryptographerImplTest, ShouldSerializeToAndFromProto) {
       "password1", KeyDerivationParams::CreateForPbkdf2());
   const std::string key_name2 = original_cryptographer->EmplaceKey(
       "password2", KeyDerivationParams::CreateForPbkdf2());
+  original_cryptographer->EmplaceKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
 
   original_cryptographer->SelectDefaultEncryptionKey(key_name1);
   sync_pb::EncryptedData encrypted1;
@@ -128,6 +130,7 @@ TEST(CryptographerImplTest, ShouldSerializeToAndFromProto) {
       CryptographerImpl::FromProto(original_cryptographer->ToProto());
   ASSERT_THAT(restored_cryptographer, NotNull());
   EXPECT_TRUE(restored_cryptographer->CanEncrypt());
+  EXPECT_TRUE(restored_cryptographer->HasKeyPair(0));
 
   std::string decrypted;
   EXPECT_TRUE(restored_cryptographer->DecryptToString(encrypted1, &decrypted));
