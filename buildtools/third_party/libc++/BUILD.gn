@@ -92,8 +92,7 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/memory.cpp",
     "trunk/src/mutex.cpp",
     "trunk/src/mutex_destructor.cpp",
-    "trunk/src/new_handler.cpp",
-    "trunk/src/new_helpers.cpp",
+    "trunk/src/new.cpp",
     "trunk/src/optional.cpp",
     "trunk/src/random.cpp",
     "trunk/src/random_shuffle.cpp",
@@ -114,25 +113,12 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/verbose_abort.cpp",
   ]
 
-  if (is_apple || (!is_asan && !is_tsan && !is_msan)) {
-    # In {a,t,m}san configurations, operator new and operator delete will be
-    # provided by the sanitizer runtime library.  Since libc++ defines these
-    # symbols with weak linkage, and the *san runtime uses strong linkage, it
-    # should technically be OK to include this file, but it's removed to be
-    # explicit.
-    sources += [ "trunk/src/new.cpp" ]
-  }
-
   if (is_linux) {
     # These sources are necessary for the Centipede fuzzer,
     # which currently only needs to run on Linux.
     sources += [
-      "trunk/src/filesystem/directory_entry.cpp",
       "trunk/src/filesystem/directory_iterator.cpp",
-      "trunk/src/filesystem/filesystem_clock.cpp",
-      "trunk/src/filesystem/filesystem_error.cpp",
       "trunk/src/filesystem/operations.cpp",
-      "trunk/src/filesystem/path.cpp",
     ]
   }
 
@@ -216,6 +202,13 @@ target(_libcxx_target_type, "libc++") {
         "_LIBCPP_OVERRIDABLE_FUNC_VIS=__attribute__((__visibility__(\"default\")))",
       ]
     }
+  }
+  if (!is_apple && (is_asan || is_tsan || is_msan)) {
+    # In {a,t,m}san configurations, operator new and operator delete will be
+    # provided by the sanitizer runtime library.  Since libc++ defines these
+    # symbols with weak linkage, and the *san runtime uses strong linkage, it
+    # should technically be OK to omit this, but it's added to be explicit.
+    defines += [ "_LIBCPP_DISABLE_NEW_DELETE_DEFINITIONS" ]
   }
 
   if (!is_win) {
