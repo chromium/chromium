@@ -308,6 +308,75 @@ TEST_F(PageSpecificContentSettingsTest, AllowedContent) {
   ASSERT_TRUE(content_settings->IsContentBlocked(ContentSettingsType::COOKIES));
 }
 
+TEST_F(PageSpecificContentSettingsTest, InterestGroupJoin) {
+  NavigateAndCommit(GURL("http://google.com"));
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+
+  ASSERT_FALSE(
+      content_settings->IsContentAllowed(ContentSettingsType::COOKIES));
+  ASSERT_FALSE(
+      content_settings->IsContentBlocked(ContentSettingsType::COOKIES));
+
+  // Check that a blocking an interest join does not result in a blocked cookie
+  // report.
+  auto api_origin = url::Origin::Create(GURL("https://embedded.com"));
+  content_settings->OnInterestGroupJoined(api_origin,
+                                          /*blocked_by_policy=*/true);
+
+  ASSERT_FALSE(
+      content_settings->IsContentAllowed(ContentSettingsType::COOKIES));
+  ASSERT_FALSE(
+      content_settings->IsContentBlocked(ContentSettingsType::COOKIES));
+
+  // But that a successful join results in cookie access.
+  content_settings->OnInterestGroupJoined(api_origin,
+                                          /*blocked_by_policy=*/false);
+  ASSERT_TRUE(content_settings->IsContentAllowed(ContentSettingsType::COOKIES));
+  ASSERT_FALSE(
+      content_settings->IsContentBlocked(ContentSettingsType::COOKIES));
+}
+
+TEST_F(PageSpecificContentSettingsTest, BrowsingDataAccessed) {
+  NavigateAndCommit(GURL("http://google.com"));
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+
+  ASSERT_FALSE(
+      content_settings->IsContentAllowed(ContentSettingsType::COOKIES));
+  ASSERT_FALSE(
+      content_settings->IsContentBlocked(ContentSettingsType::COOKIES));
+
+  // Only some browsing data types should be reported as blocked cookies.
+  auto origin = url::Origin::Create(GURL("https://embedded.com"));
+  content_settings->OnBrowsingDataAccessed(
+      origin, BrowsingDataModel::StorageType::kTrustTokens,
+      /*blocked=*/true);
+
+  ASSERT_FALSE(
+      content_settings->IsContentAllowed(ContentSettingsType::COOKIES));
+  ASSERT_FALSE(
+      content_settings->IsContentBlocked(ContentSettingsType::COOKIES));
+
+  auto storage_key = blink::StorageKey::CreateFirstParty(origin);
+  content_settings->OnBrowsingDataAccessed(
+      storage_key, BrowsingDataModel::StorageType::kLocalStorage,
+      /*blocked=*/true);
+
+  ASSERT_FALSE(
+      content_settings->IsContentAllowed(ContentSettingsType::COOKIES));
+  ASSERT_TRUE(content_settings->IsContentBlocked(ContentSettingsType::COOKIES));
+
+  // But allowed accesses should be reported.
+  content_settings->OnBrowsingDataAccessed(
+      origin, BrowsingDataModel::StorageType::kTrustTokens,
+      /*blocked=*/false);
+  ASSERT_TRUE(content_settings->IsContentAllowed(ContentSettingsType::COOKIES));
+  ASSERT_TRUE(content_settings->IsContentBlocked(ContentSettingsType::COOKIES));
+}
+
 TEST_F(PageSpecificContentSettingsTest, EmptyCookieList) {
   NavigateAndCommit(GURL("http://google.com"));
   PageSpecificContentSettings* content_settings =

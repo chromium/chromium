@@ -968,12 +968,14 @@ void PageSpecificContentSettings::OnInterestGroupJoined(
     const url::Origin& api_origin,
     bool blocked_by_policy) {
   if (blocked_by_policy) {
+    // TODO(crbug.com/1456641): Report the COOKIES content setting type as
+    // having been blocked when the UI is updated to better reflect site data.
     blocked_interest_group_api_.push_back(api_origin);
-    OnContentBlocked(ContentSettingsType::COOKIES);
   } else {
     allowed_interest_group_api_.push_back(api_origin);
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
+
   MaybeUpdateParent(&PageSpecificContentSettings::OnInterestGroupJoined,
                     api_origin, blocked_by_policy);
 
@@ -997,25 +999,8 @@ void PageSpecificContentSettings::OnTopicAccessed(
 void PageSpecificContentSettings::OnTrustTokenAccessed(
     const url::Origin& api_origin,
     bool blocked) {
-  // The size isn't relevant here and won't be displayed in the UI.
-  const int kTrustTokenSize = 0;
-  auto& model =
-      blocked ? blocked_browsing_data_model_ : allowed_browsing_data_model_;
-  model->AddBrowsingData(api_origin,
-                         BrowsingDataModel::StorageType::kTrustTokens,
-                         kTrustTokenSize);
-  if (blocked) {
-    OnContentBlocked(ContentSettingsType::COOKIES);
-  } else {
-    OnContentAllowed(ContentSettingsType::COOKIES);
-  }
-  MaybeUpdateParent(&PageSpecificContentSettings::OnTrustTokenAccessed,
-                    api_origin, blocked);
-
-  AccessDetails access_details{SiteDataType::kTrustToken, AccessType::kUnknown,
-                               api_origin.GetURL(), blocked, nullptr};
-
-  MaybeNotifySiteDataObservers(access_details);
+  OnBrowsingDataAccessed(api_origin,
+                         BrowsingDataModel::StorageType::kTrustTokens, blocked);
 }
 
 void PageSpecificContentSettings::OnBrowsingDataAccessed(
@@ -1027,8 +1012,22 @@ void PageSpecificContentSettings::OnBrowsingDataAccessed(
 
   // The size isn't relevant here and won't be displayed in the UI.
   model->AddBrowsingData(data_key, storage_type, /*storage_size=*/0);
+
   if (blocked) {
-    OnContentBlocked(ContentSettingsType::COOKIES);
+    // TODO(crbug.com/1456641): When the COOKIES content setting Omnibox entry
+    // correctly reflects site data, stop ignoring these types.
+    constexpr base::EnumSet<BrowsingDataModel::StorageType,
+                            BrowsingDataModel::StorageType::kFirstType,
+                            BrowsingDataModel::StorageType::kLastType>
+        ignored_types_for_block = {
+            BrowsingDataModel::StorageType::kTrustTokens,
+            BrowsingDataModel::StorageType::kSharedStorage,
+            BrowsingDataModel::StorageType::kInterestGroup,
+            BrowsingDataModel::StorageType::kAttributionReporting,
+        };
+    if (!ignored_types_for_block.Has(storage_type)) {
+      OnContentBlocked(ContentSettingsType::COOKIES);
+    }
   } else {
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
