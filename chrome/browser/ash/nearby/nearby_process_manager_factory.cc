@@ -31,7 +31,8 @@ NearbyProcessManager* NearbyProcessManagerFactory::GetForProfile(
 bool NearbyProcessManagerFactory::CanBeLaunchedForProfile(Profile* profile) {
   // We allow NearbyProcessManager to be used with the signin profile since it
   // is required for OOBE Quick Start.
-  if (ProfileHelper::IsSigninProfile(profile)) {
+  if (ProfileHelper::IsSigninProfile(profile) &&
+      features::IsOobeQuickStartEnabled()) {
     return true;
   }
 
