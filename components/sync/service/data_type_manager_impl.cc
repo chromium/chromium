@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/protocol/model_type_state_helper.h"
@@ -163,6 +164,14 @@ void DataTypeManagerImpl::Configure(ModelTypeSet preferred_types,
 void DataTypeManagerImpl::DataTypePreconditionChanged(ModelType type) {
   if (!UpdatePreconditionError(type)) {
     // Nothing changed.
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncAvoidReconfigurationIfAlreadyStopping) &&
+      state_ == STOPPING) {
+    // Configuration should not be set while stopping.
+    LOG(ERROR) << "Precondition changed while stopping.";
     return;
   }
 
