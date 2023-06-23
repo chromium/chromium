@@ -893,7 +893,7 @@ void RemoveDuplicatesAndLimitTotalLength(ButtonTitleList* result) {
     if (total_length > kMaxLengthForAllButtonTitles) {
       int new_length =
           title.first.length() - (total_length - kMaxLengthForAllButtonTitles);
-      title.first = title.first.substr(0, new_length);
+      title.first = std::move(title.first).substr(0, new_length);
     }
     unique_titles.push_back(std::move(title));
 
@@ -1762,7 +1762,7 @@ bool OwnedOrUnownedFormToFormData(
     // it is set to kUnknown.
     base::UmaHistogramEnumeration("Autofill.LabelInference.InferredLabelSource",
                                   field.label_source);
-    field.label = field.label.substr(0, kMaxStringLength);
+    field.label = std::move(field.label).substr(0, kMaxStringLength);
 
     if (optional_field && *form_control_element == control_element) {
       *optional_field = field;
