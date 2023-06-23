@@ -648,9 +648,13 @@ const FeatureEntry::FeatureVariation
 
 const FeatureEntry::FeatureParam kIOSEditMenuPartialTranslateNoIncognito[] = {
     {kIOSEditMenuPartialTranslateNoIncognitoParam, "true"}};
+const FeatureEntry::FeatureParam kIOSEditMenuPartialTranslateWithIncognito[] = {
+    {kIOSEditMenuPartialTranslateNoIncognitoParam, "false"}};
 const FeatureEntry::FeatureVariation kIOSEditMenuPartialTranslateVariations[] =
     {{"Disable on incognito", kIOSEditMenuPartialTranslateNoIncognito,
-      std::size(kIOSEditMenuPartialTranslateNoIncognito), nullptr}};
+      std::size(kIOSEditMenuPartialTranslateNoIncognito), nullptr},
+     {"Enable on incognito", kIOSEditMenuPartialTranslateWithIncognito,
+      std::size(kIOSEditMenuPartialTranslateWithIncognito), nullptr}};
 
 const FeatureEntry::FeatureParam kAddToHomeScreenDisableIncognito[] = {
     {kAddToHomeScreenDisableIncognitoParam, "true"}};
