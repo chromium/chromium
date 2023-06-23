@@ -13,6 +13,7 @@ import {ShoppingListApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome
 import {SpEmptyStateElement} from 'chrome://bookmarks-side-panel.top-chrome/shared/sp_empty_state.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -255,7 +256,8 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
   test('SetsExpandedDescription', () => {
     const menu =
-        powerBookmarksList.shadowRoot!.querySelector('cr-action-menu')!;
+        powerBookmarksList.shadowRoot!.querySelector<CrActionMenuElement>(
+            '#editMenu')!;
     menu.showAt(powerBookmarksList);
     const visualViewButton: HTMLElement = menu.querySelector('#visualView')!;
     visualViewButton.click();
@@ -273,7 +275,8 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
   test('SetsExpandedSearchResultDescription', () => {
     const menu =
-        powerBookmarksList.shadowRoot!.querySelector('cr-action-menu')!;
+        powerBookmarksList.shadowRoot!.querySelector<CrActionMenuElement>(
+            '#editMenu')!;
     menu.showAt(powerBookmarksList);
     const visualViewButton: HTMLElement = menu.querySelector('#visualView')!;
     visualViewButton.click();
@@ -299,7 +302,8 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
   test('ShowsFolderImages', () => {
     const menu =
-        powerBookmarksList.shadowRoot!.querySelector('cr-action-menu')!;
+        powerBookmarksList.shadowRoot!.querySelector<CrActionMenuElement>(
+            '#editMenu')!;
     menu.showAt(powerBookmarksList);
     const visualViewButton: HTMLElement = menu.querySelector('#visualView')!;
     visualViewButton.click();
