@@ -223,18 +223,48 @@ def set_up_config(path_finder, chromedriver_server):
     json.dump(config, f)
 
 
-def run_test(path, path_finder, port, skipped_tests=[]):
-  abs_path = os.path.abspath(path)
-  external_path = path_finder.strip_web_tests_path(abs_path)
-  subtests = SubtestResultRecorder(external_path, port)
+class WebDriverTestRunner:
+  def __init__(self, path_finder: PathFinder, port, options):
+    self._path_finder, self._port = path_finder, port
+    self._options = options
+    self._chromedriver_server = None
 
-  skip_test_flag = ['--deselect=' +
-                    skipped_test for skipped_test in skipped_tests]
-  pytest_args = [path] + skip_test_flag + \
-      ['--rootdir=' + path_finder.web_tests_dir()]
+  def stop(self):
+    if self._chromedriver_server:
+      self._chromedriver_server.Kill()
+      self._chromedriver_server = None
 
-  pytest.main(pytest_args, plugins=[subtests])
-  return subtests.result
+  def _ensure_server_running(self):
+    if self._chromedriver_server and not self._chromedriver_server.IsRunning():
+      self.stop()
+    if not self._chromedriver_server:
+      # Due to occasional timeout in starting ChromeDriver, retry once when
+      # needed.
+      try:
+        self._chromedriver_server = server.Server(self._options.chromedriver,
+                                                  self._options.log_path)
+      except RuntimeError:
+        _log.warning('Error starting ChromeDriver, retrying...')
+        self._chromedriver_server = server.Server(self._options.chromedriver,
+                                                  self._options.log_path)
+      if not self._chromedriver_server.IsRunning():
+        raise RuntimeError('ChromeDriver is not running')
+      set_up_config(self._path_finder, self._chromedriver_server)
+
+  def run_test(self, path, skipped_tests=[]):
+    self._ensure_server_running()
+    abs_path = os.path.abspath(path)
+    external_path = self._path_finder.strip_web_tests_path(abs_path)
+    subtests = SubtestResultRecorder(external_path, self._port)
+
+    skip_test_flag = ['--deselect=' +
+                      skipped_test for skipped_test in skipped_tests]
+    pytest_args = [path] + skip_test_flag + \
+        ['--rootdir=' + self._path_finder.web_tests_dir()]
+
+    pytest.main(pytest_args, plugins=[subtests])
+    return subtests.result
+
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
@@ -316,18 +346,8 @@ if __name__ == '__main__':
     parser.error('Path given by --chromedriver is invalid.\n' +
                  'Please run "%s --help" for help' % __file__)
 
-  # Due to occasional timeout in starting ChromeDriver, retry once when needed.
-  try:
-    chromedriver_server = server.Server(options.chromedriver, options.log_path)
-  except RuntimeError as e:
-    _log.warn('Error starting ChromeDriver, retrying...')
-    chromedriver_server = server.Server(options.chromedriver, options.log_path)
-
-  if not chromedriver_server.IsRunning():
-    _log.error('ChromeDriver is not running.')
-    sys.exit(1)
-
-  set_up_config(path_finder, chromedriver_server)
+  runner = WebDriverTestRunner(path_finder, port, options)
+  exit_code = 0
   start_time = time.time()
 
   sys.path.insert(0, WEBDRIVER_CLIENT_ABS_PATH)
@@ -336,10 +356,10 @@ if __name__ == '__main__':
       filtered_tests = prepare_filtered_tests(
           options.isolated_script_test_filter, path_finder, test_shard, port)
       for filter_test in filtered_tests:
-        test_results += run_test(filter_test, path_finder, port)
+        test_results += runner.run_test(filter_test)
 
     elif os.path.isfile(test_path):
-      test_results += run_test(test_path, path_finder, port, skipped_tests)
+      test_results += runner.run_test(test_path, skipped_tests)
     elif os.path.isdir(test_path):
       for root, dirnames, filenames in os.walk(test_path):
         for filename in filenames:
@@ -350,20 +370,23 @@ if __name__ == '__main__':
 
           if not test_shard.is_matched_test(os.path.abspath(test_file)):
             continue
-          test_results += run_test(test_file, path_finder, port, skipped_tests)
+          test_results += runner.run_test(test_file, skipped_tests)
     else:
       _log.error('%s is not a file nor directory.' % test_path)
       sys.exit(1)
-  except KeyboardInterrupt as e:
-    _log.error(e)
+  except KeyboardInterrupt as error:
+    _log.error(error)
+    exit_code = exit_codes.INTERRUPTED_EXIT_STATUS
+  except RuntimeError as error:
+    _log.error(error)
+    exit_code = exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
   finally:
-    chromedriver_server.Kill()
+    runner.stop()
     port.stop_wptserve()
 
-  exit_code = 0
   if options.isolated_script_test_output:
     output = {
-      'interrupted': False,
+      'interrupted': exit_code == exit_codes.INTERRUPTED_EXIT_STATUS,
       'num_failures_by_type': { },
       'path_delimiter': '.',
       'seconds_since_epoch': start_time,
