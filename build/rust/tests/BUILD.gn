@@ -69,12 +69,6 @@ group("deps") {
         # `//build/rust/run_rs_bindings_from_cc.py`.
         #"test_rs_bindings_from_cc:test_rs_bindings_from_cc_unittests",
       ]
-      if ((!is_win || !is_component_build) && !is_mac) {
-        # TODO(crbug.com/1442273): The shared library unittest EXE ends up
-        # requiring the DLL to run, even though it does not use the DLL.
-        deps +=
-            [ "test_rust_shared_library:test_rust_shared_library_unittests" ]
-      }
     }
 
     # Dylibs should only be built in component builds. We turn on flags which
@@ -86,6 +80,13 @@ group("deps") {
         deps += [
           "test_cpp_including_rust:test_cpp_including_rust_dylib_unittests",
         ]
+
+        # TODO(crbug.com/1442273): The shared library unittest EXE ends up
+        # requiring the DLL to run, even though it does not use the DLL.
+        if (!is_mac) {
+          deps +=
+              [ "test_rust_shared_library:test_rust_shared_library_unittests" ]
+        }
       }
     }
 

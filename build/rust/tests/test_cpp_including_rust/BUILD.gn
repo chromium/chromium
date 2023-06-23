@@ -22,14 +22,16 @@ test("test_cpp_including_rust_unittests") {
   ]
 }
 
-test("test_cpp_including_rust_dylib_unittests") {
-  sources = [ "shared_unittests.cc" ]
-  deps = [
-    "//base",
-    "//base/allocator:buildflags",
-    "//base/test:run_all_unittests",
-    "//build/rust/tests/test_rust_shared_library",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
+if (is_component_build) {
+  test("test_cpp_including_rust_dylib_unittests") {
+    sources = [ "shared_unittests.cc" ]
+    deps = [
+      "//base",
+      "//base/allocator:buildflags",
+      "//base/test:run_all_unittests",
+      "//build/rust/tests/test_rust_shared_library",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
 }

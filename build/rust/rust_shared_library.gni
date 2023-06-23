@@ -4,21 +4,25 @@
 
 import("//build/rust/rust_target.gni")
 
-# Defines a shared_library containing just Rust code. Has the same variables
-# available as a rust_static_library. See rust_static_library.gni for
-# documentation.
-template("rust_shared_library") {
-  rust_target(target_name) {
-    forward_variables_from(invoker,
-                           "*",
-                           TESTONLY_AND_VISIBILITY + [ "configs" ])
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-    shared_library_configs = invoker.configs
-    target_type = "shared_library"
-    crate_type = "cdylib"
+# Rust dylibs should not be built outside of component builds. Non-component
+# builds use build configurations that conflict with the linking of dylibs.
+if (is_component_build) {
+  # Defines a shared_library containing just Rust code. Has the same variables
+  # available as a rust_static_library. See rust_static_library.gni for
+  # documentation.
+  template("rust_shared_library") {
+    rust_target(target_name) {
+      forward_variables_from(invoker,
+                             "*",
+                             TESTONLY_AND_VISIBILITY + [ "configs" ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      shared_library_configs = invoker.configs
+      target_type = "shared_library"
+      crate_type = "cdylib"
+    }
   }
-}
 
-set_defaults("rust_shared_library") {
-  configs = default_shared_library_configs
+  set_defaults("rust_shared_library") {
+    configs = default_shared_library_configs
+  }
 }
