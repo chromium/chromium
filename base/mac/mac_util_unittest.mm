@@ -95,6 +95,60 @@ TEST_F(MacUtilTest, TestGetAppBundlePath) {
   }
 }
 
+TEST_F(MacUtilTest, TestGetInnermostAppBundlePath) {
+  FilePath out;
+
+  // Make sure it doesn't crash.
+  out = GetInnermostAppBundlePath(FilePath());
+  EXPECT_TRUE(out.empty());
+
+  // Some more invalid inputs.
+  const char* const invalid_inputs[] = {
+      "/",
+      "/foo",
+      "foo",
+      "/foo/bar.",
+      "foo/bar.",
+      "/foo/bar./bazquux",
+      "foo/bar./bazquux",
+      "foo/.app",
+      "//foo",
+  };
+  for (size_t i = 0; i < std::size(invalid_inputs); i++) {
+    SCOPED_TRACE(testing::Message()
+                 << "case #" << i << ", input: " << invalid_inputs[i]);
+    out = GetInnermostAppBundlePath(FilePath(invalid_inputs[i]));
+    EXPECT_TRUE(out.empty());
+  }
+
+  // Some valid inputs; this and |expected_outputs| should be in sync.
+  struct {
+    const char* in;
+    const char* expected_out;
+  } valid_inputs[] = {
+      {"FooBar.app/", "FooBar.app"},
+      {"/FooBar.app", "/FooBar.app"},
+      {"/FooBar.app/", "/FooBar.app"},
+      {"//FooBar.app", "//FooBar.app"},
+      {"/Foo/Bar.app", "/Foo/Bar.app"},
+      {"/Foo/Bar.app/", "/Foo/Bar.app"},
+      {"/F/B.app", "/F/B.app"},
+      {"/F/B.app/", "/F/B.app"},
+      {"/Foo/Bar.app/baz", "/Foo/Bar.app"},
+      {"/Foo/Bar.app/baz/", "/Foo/Bar.app"},
+      {"/Foo/Bar.app/baz/quux.app/quuux", "/Foo/Bar.app/baz/quux.app"},
+      {"/Applications/Google Foo.app/bar/Foo Helper.app/quux/Foo Helper",
+       "/Applications/Google Foo.app/bar/Foo Helper.app"},
+  };
+  for (size_t i = 0; i < std::size(valid_inputs); i++) {
+    SCOPED_TRACE(testing::Message()
+                 << "case #" << i << ", input " << valid_inputs[i].in);
+    out = GetInnermostAppBundlePath(FilePath(valid_inputs[i].in));
+    EXPECT_FALSE(out.empty());
+    EXPECT_STREQ(valid_inputs[i].expected_out, out.value().c_str());
+  }
+}
+
 TEST_F(MacUtilTest, IsOSEllipsis) {
   int32_t major, minor, bugfix;
   base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);

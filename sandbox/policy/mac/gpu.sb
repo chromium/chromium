@@ -14,6 +14,7 @@
 
 (allow ipc-posix-shm)
 
+(define helper-bundle-id "HELPER_BUNDLE_ID")
 (define disable-metal-shader-cache "DISABLE_METAL_SHADER_CACHE")
 
 ; Allow communication between the GPU process and the UI server.
@@ -134,16 +135,20 @@
 
 ; Metal shader compilation may be offloaded to a helper process that needs
 ; access to the user cache directory in order to cache its work to disk.
+; If this sandbox is applied to an executable that is not within an app bundle,
+; such as in a unit test, the helper-bundle-id parameter will not be set and
+; issuing sandbox extensions to the Metal cache directories will not be allowed.
 ; crbug.com/1453813
-(let ((helper-bundle-cache-dir
-       (string-append (param darwin-user-cache-dir)
-                      "/" (param bundle-id) ".helper")))
-  (allow file-issue-extension
-    (require-all
-      (extension-class "com.apple.app-sandbox.read-write")
-      (require-any
-        (subpath (string-append helper-bundle-cache-dir "/com.apple.metalfe"))
-        (subpath (string-append helper-bundle-cache-dir "/com.apple.gpuarchiver"))))))
+(if (param helper-bundle-id)
+  (let ((helper-bundle-cache-dir
+        (string-append (param darwin-user-cache-dir)
+                        "/" (param helper-bundle-id))))
+    (allow file-issue-extension
+      (require-all
+        (extension-class "com.apple.app-sandbox.read-write")
+        (require-any
+          (subpath (string-append helper-bundle-cache-dir "/com.apple.metalfe"))
+          (subpath (string-append helper-bundle-cache-dir "/com.apple.gpuarchiver")))))))
 
 (if (param-true? filter-syscalls-debug)
   (when (defined? 'syscall-unix)

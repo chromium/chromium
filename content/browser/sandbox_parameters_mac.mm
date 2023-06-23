@@ -20,6 +20,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
+#include "content/browser/mac_helpers.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -209,6 +210,23 @@ void SetupGpuSandboxParameters(sandbox::SandboxCompiler* compiler,
       sandbox::policy::kParamDisableMetalShaderCache,
       command_line.HasSwitch(
           sandbox::policy::switches::kDisableMetalShaderCache)));
+
+  base::FilePath helper_bundle_path =
+      base::mac::GetInnermostAppBundlePath(command_line.GetProgram());
+
+  // The helper may not be contained in an app bundle for unit tests.
+  // In that case `kParamHelperBundleId` will remain unset.
+  if (!helper_bundle_path.empty()) {
+    @autoreleasepool {
+      NSBundle* helper_bundle = [NSBundle
+          bundleWithPath:base::SysUTF8ToNSString(helper_bundle_path.value())];
+      CHECK(helper_bundle);
+
+      CHECK(compiler->SetParameter(
+          sandbox::policy::kParamHelperBundleId,
+          base::SysNSStringToUTF8(helper_bundle.bundleIdentifier)));
+    }
+  }
 }
 
 }  // namespace

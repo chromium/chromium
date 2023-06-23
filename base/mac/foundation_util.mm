@@ -11,12 +11,15 @@
 #include <vector>
 
 #include "base/apple/bundle_locations.h"
+#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -202,6 +205,51 @@ FilePath GetAppBundlePath(const FilePath& exec_name) {
   }
 
   return FilePath();
+}
+
+// Takes a path to an (executable) binary and tries to provide the path to an
+// application bundle containing it. It takes the innermost bundle that it can
+// find (so for "/Foo/Bar.app/.../Baz.app/..." it produces
+// "/Foo/Bar.app/.../Baz.app").
+//   |exec_name| - path to the binary
+//   returns - path to the application bundle, or empty on error
+FilePath GetInnermostAppBundlePath(const FilePath& exec_name) {
+  static constexpr char kExt[] = ".app";
+  static constexpr size_t kExtLength = std::size(kExt) - 1;
+
+  // Split the path into components.
+  std::vector<std::string> components = exec_name.GetComponents();
+
+  // It's an error if we don't get any components.
+  if (components.empty()) {
+    return FilePath();
+  }
+
+  auto app = base::ranges::find_if(
+      Reversed(components), [](const std::string& component) -> bool {
+        return component.size() > kExtLength && EndsWith(component, kExt);
+      });
+
+  if (app == components.rend()) {
+    return FilePath();
+  }
+
+  // Remove all path components after the final ".app" extension.
+  components.erase(app.base(), components.end());
+
+  std::string bundle_path;
+  for (const std::string& component : components) {
+    // Don't prepend a slash if this is the first component or if the
+    // previous component ended with a slash, which can happen when dealing
+    // with an absolute path.
+    if (!bundle_path.empty() && bundle_path.back() != '/') {
+      bundle_path += '/';
+    }
+
+    bundle_path += component;
+  }
+
+  return FilePath(bundle_path);
 }
 
 #define TYPE_NAME_FOR_CF_TYPE_DEFN(TypeCF) \
