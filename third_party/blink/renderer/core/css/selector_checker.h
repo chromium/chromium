@@ -105,6 +105,26 @@ class CORE_EXPORT SelectorChecker {
   SelectorChecker(const SelectorChecker&) = delete;
   SelectorChecker& operator=(const SelectorChecker&) = delete;
 
+  // When matching certain selectors (e.g :hover), we sometimes want to mark the
+  // relevant element(s) as being affected by that selector to aid some
+  // invalidation process later. We also typically need a distinction between
+  // elements that are affected themselves and elements that are *related* to
+  // affected elements (e.g. has an affected ancestor or sibling). The impact of
+  // a given SelectorCheckingContext tells us which invalidation flags to set.
+  enum class Impact {
+    // Invalidation
+    // flags on to the element itself should be set.
+    kSubject = 0b01,
+    // Ancestors or previous siblings
+    // should have their invalidation flags set.
+    kNonSubject = 0b10,
+    // Invalidation flags should be set as if both subject and non-subjects are
+    // impacted. This can be used defensively in situations where we don't know
+    // the full impact of a given selector at the time that selector is
+    // evaluated, e.g. '@scope (:hover) { ... }'.
+    kBoth = 0b11
+  };
+
   // Wraps the current element and a CSSSelector and stores some other state of
   // the selector matching process.
   struct SelectorCheckingContext {
@@ -133,6 +153,7 @@ class CORE_EXPORT SelectorChecker {
 
     AtomicString* pseudo_argument = nullptr;
     PseudoId pseudo_id = kPseudoIdNone;
+    Impact impact = Impact::kSubject;
 
     bool is_sub_selector = false;
     bool in_rightmost_compound = true;

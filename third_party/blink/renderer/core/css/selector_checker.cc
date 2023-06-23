@@ -207,6 +207,21 @@ static bool ShouldMatchHoverOrActive(
   return false;
 }
 
+static bool Impacts(const SelectorChecker::SelectorCheckingContext& context,
+                    SelectorChecker::Impact impact) {
+  return static_cast<int>(context.impact) & static_cast<int>(impact);
+}
+
+static bool ImpactsSubject(
+    const SelectorChecker::SelectorCheckingContext& context) {
+  return Impacts(context, SelectorChecker::Impact::kSubject);
+}
+
+static bool ImpactsNonSubject(
+    const SelectorChecker::SelectorCheckingContext& context) {
+  return Impacts(context, SelectorChecker::Impact::kNonSubject);
+}
+
 static bool IsFirstChild(const Element& element) {
   return !ElementTraversal::PreviousSibling(element);
 }
@@ -376,6 +391,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
   }
 
   next_context.in_rightmost_compound = false;
+  next_context.impact = Impact::kNonSubject;
   next_context.is_sub_selector = false;
   next_context.previous_element = context.element;
   next_context.pseudo_id = kPseudoIdNone;
@@ -1526,11 +1542,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return element.IsLink() && context.match_visited;
     case CSSSelector::kPseudoDrag:
       if (mode_ == kResolvingStyle) {
-        if (!context.in_rightmost_compound) {
+        if (ImpactsNonSubject(context)) {
           element.SetChildrenOrSiblingsAffectedByDrag();
         }
       }
-      if (context.in_rightmost_compound) {
+      if (ImpactsSubject(context)) {
         result.SetFlag(MatchFlag::kAffectedByDrag);
       }
       return element.IsDragged();
@@ -1539,7 +1555,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
           element.SetAncestorsOrSiblingsAffectedByFocusInHas();
         } else {
-          if (!context.in_rightmost_compound) {
+          if (ImpactsNonSubject(context)) {
             element.SetChildrenOrSiblingsAffectedByFocus();
           }
         }
@@ -1550,7 +1566,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
           element.SetAncestorsOrSiblingsAffectedByFocusVisibleInHas();
         } else {
-          if (!context.in_rightmost_compound) {
+          if (ImpactsNonSubject(context)) {
             element.SetChildrenOrSiblingsAffectedByFocusVisible();
           }
         }
@@ -1560,11 +1576,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
           element.SetAncestorsOrSiblingsAffectedByFocusInHas();
-        } else if (!context.in_rightmost_compound) {
+        } else if (ImpactsNonSubject(context)) {
           element.SetChildrenOrSiblingsAffectedByFocusWithin();
         }
       }
-      if (context.in_rightmost_compound) {
+      if (ImpactsSubject(context)) {
         result.SetFlag(MatchFlag::kAffectedByFocusWithin);
       }
       probe::ForcePseudoState(&element, CSSSelector::kPseudoFocusWithin,
@@ -1577,11 +1593,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
           element.SetAncestorsOrSiblingsAffectedByHoverInHas();
-        } else if (!context.in_rightmost_compound) {
+        } else if (ImpactsNonSubject(context)) {
           element.SetChildrenOrSiblingsAffectedByHover();
         }
       }
-      if (context.in_rightmost_compound) {
+      if (ImpactsSubject(context)) {
         result.SetFlag(MatchFlag::kAffectedByHover);
       }
       if (!ShouldMatchHoverOrActive(context)) {
@@ -1597,11 +1613,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
           element.SetAncestorsOrSiblingsAffectedByActiveInHas();
-        } else if (!context.in_rightmost_compound) {
+        } else if (ImpactsNonSubject(context)) {
           element.SetChildrenOrSiblingsAffectedByActive();
         }
       }
-      if (context.in_rightmost_compound) {
+      if (ImpactsSubject(context)) {
         result.SetFlag(MatchFlag::kAffectedByActive);
       }
       if (!ShouldMatchHoverOrActive(context)) {
@@ -1859,9 +1875,10 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         // of a :has() anchor element, we may need to invalidate the subject
         // element of the style rule containing the :has() pseudo class because
         // the mutation can affect the state of the :has().
-        if (context.in_rightmost_compound) {
+        if (ImpactsSubject(context)) {
           element.SetAffectedBySubjectHas();
-        } else {
+        }
+        if (ImpactsNonSubject(context)) {
           element.SetAffectedByNonSubjectHas();
         }
 
@@ -2082,6 +2099,7 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
     }
 
     host_context.in_rightmost_compound = false;
+    host_context.impact = Impact::kNonSubject;
     next_element = FlatTreeTraversal::ParentElement(*next_element);
   } while (next_element);
 

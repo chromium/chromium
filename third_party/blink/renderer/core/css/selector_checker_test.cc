@@ -292,6 +292,313 @@ TEST_P(MatchFlagsTest, All) {
   EXPECT_EQ(Bits(param.expected), Bits(result.flags));
 }
 
+class ImpactTest : public PageTestBase {
+ public:
+  void SetUp() override {
+    PageTestBase::SetUp();
+
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <div id=outer>
+        <div id=middle>
+          <div id=inner>
+            <div></div>
+          </div>
+        </div>
+      </div>
+    )HTML");
+    UpdateAllLifecyclePhasesForTest();
+  }
+
+  Element& Outer() const { return *GetDocument().getElementById("outer"); }
+  Element& Middle() const { return *GetDocument().getElementById("middle"); }
+  Element& Inner() const { return *GetDocument().getElementById("inner"); }
+
+  using Impact = SelectorChecker::Impact;
+
+  MatchFlags Match(String selector, Element& element, Impact impact) {
+    CSSSelectorList* selector_list =
+        css_test_helpers::ParseSelectorList(selector);
+    DCHECK(selector_list);
+    DCHECK(selector_list->HasOneSelector());
+
+    SelectorChecker checker(SelectorChecker::kResolvingStyle);
+    SelectorChecker::SelectorCheckingContext context(&element);
+    context.selector = selector_list->First();
+    context.impact = impact;
+
+    SelectorChecker::MatchResult result;
+    checker.Match(context, result);
+
+    return result.flags;
+  }
+};
+
+// :hover
+
+TEST_F(ImpactTest, HoverSubjectOnly) {
+  MatchFlags flags = Match("#inner:hover", Inner(), Impact::kSubject);
+  EXPECT_EQ(Hover(), flags);
+  EXPECT_FALSE(Inner().ChildrenOrSiblingsAffectedByHover());
+  EXPECT_FALSE(Middle().ChildrenOrSiblingsAffectedByHover());
+  EXPECT_FALSE(Outer().ChildrenOrSiblingsAffectedByHover());
+}
+
+TEST_F(ImpactTest, HoverNonSubjectOnly) {
+  MatchFlags flags = Match("#inner:hover", Inner(), Impact::kNonSubject);
+  EXPECT_EQ(0u, flags);
+  EXPECT_TRUE(Inner().ChildrenOrSiblingsAffectedByHover());
+  EXPECT_FALSE(Middle().ChildrenOrSiblingsAffectedByHover());
+  EXPECT_FALSE(Outer().ChildrenOrSiblingsAffectedByHover());
+}
+
+TEST_F(ImpactTest, HoverBoth) {
+  MatchFlags flags = Match("#inner:hover", Inner(), Impact::kBoth);
+  EXPECT_EQ(Hover(), flags);
+  EXPECT_TRUE(Inner().ChildrenOrSiblingsAffectedByHover());
+  EXPECT_FALSE(Middle().ChildrenOrSiblingsAffectedByHover());
+  EXPECT_FALSE(Outer().ChildrenOrSiblingsAffectedByHover());
+}
+
+TEST_F(ImpactTest, HoverDescendantCombinatorSubject) {
+  MatchFlags flags = Match(":hover #inner", Inner(), Impact::kSubject);
+  EXPECT_EQ(0u, flags);
+  EXPECT_FALSE(Inner().ChildrenOrSiblingsAffectedByHover());
+  EXPECT_TRUE(Middle().ChildrenOrSiblingsAffectedByHover());
+  EXPECT_TRUE(Outer().ChildrenOrSiblingsAffectedByHover());
+}
+
+// :-webkit-drag
+
+TEST_F(ImpactTest, DragSubjectOnly) {
+  MatchFlags flags = Match("#inner:-webkit-drag", Inner(), Impact::kSubject);
+  EXPECT_EQ(Drag(), flags);
+  EXPECT_FALSE(Inner().ChildrenOrSiblingsAffectedByDrag());
+  EXPECT_FALSE(Middle().ChildrenOrSiblingsAffectedByDrag());
+  EXPECT_FALSE(Outer().ChildrenOrSiblingsAffectedByDrag());
+}
+
+TEST_F(ImpactTest, DragNonSubjectOnly) {
+  MatchFlags flags = Match("#inner:-webkit-drag", Inner(), Impact::kNonSubject);
+  EXPECT_EQ(0u, flags);
+  EXPECT_TRUE(Inner().ChildrenOrSiblingsAffectedByDrag());
+  EXPECT_FALSE(Middle().ChildrenOrSiblingsAffectedByDrag());
+  EXPECT_FALSE(Outer().ChildrenOrSiblingsAffectedByDrag());
+}
+
+TEST_F(ImpactTest, DragBoth) {
+  MatchFlags flags = Match("#inner:-webkit-drag", Inner(), Impact::kBoth);
+  EXPECT_EQ(Drag(), flags);
+  EXPECT_TRUE(Inner().ChildrenOrSiblingsAffectedByDrag());
+  EXPECT_FALSE(Middle().ChildrenOrSiblingsAffectedByDrag());
+  EXPECT_FALSE(Outer().ChildrenOrSiblingsAffectedByDrag());
+}
+
+TEST_F(ImpactTest, DragDescendantCombinatorSubject) {
+  MatchFlags flags = Match(":-webkit-drag #inner", Inner(), Impact::kSubject);
+  EXPECT_EQ(0u, flags);
+  EXPECT_FALSE(Inner().ChildrenOrSiblingsAffectedByDrag());
+  EXPECT_TRUE(Middle().ChildrenOrSiblingsAffectedByDrag());
+  EXPECT_TRUE(Outer().ChildrenOrSiblingsAffectedByDrag());
+}
+
+// :focus-within
+
+TEST_F(ImpactTest, FocusWithinSubjectOnly) {
+  MatchFlags flags = Match("#inner:focus-within", Inner(), Impact::kSubject);
+  EXPECT_EQ(FocusWithin(), flags);
+  EXPECT_FALSE(Inner().ChildrenOrSiblingsAffectedByFocusWithin());
+  EXPECT_FALSE(Middle().ChildrenOrSiblingsAffectedByFocusWithin());
+  EXPECT_FALSE(Outer().ChildrenOrSiblingsAffectedByFocusWithin());
+}
+
+TEST_F(ImpactTest, FocusWithinNonSubjectOnly) {
+  MatchFlags flags = Match("#inner:focus-within", Inner(), Impact::kNonSubject);
+  EXPECT_EQ(0u, flags);
+  EXPECT_TRUE(Inner().ChildrenOrSiblingsAffectedByFocusWithin());
+  EXPECT_FALSE(Middle().ChildrenOrSiblingsAffectedByFocusWithin());
+  EXPECT_FALSE(Outer().ChildrenOrSiblingsAffectedByFocusWithin());
+}
+
+TEST_F(ImpactTest, FocusWithinBoth) {
+  MatchFlags flags = Match("#inner:focus-within", Inner(), Impact::kBoth);
+  EXPECT_EQ(FocusWithin(), flags);
+  EXPECT_TRUE(Inner().ChildrenOrSiblingsAffectedByFocusWithin());
+  EXPECT_FALSE(Middle().ChildrenOrSiblingsAffectedByFocusWithin());
+  EXPECT_FALSE(Outer().ChildrenOrSiblingsAffectedByFocusWithin());
+}
+
+TEST_F(ImpactTest, FocusWithinDescendantCombinatorSubject) {
+  MatchFlags flags = Match(":focus-within #inner", Inner(), Impact::kSubject);
+  EXPECT_EQ(0u, flags);
+  EXPECT_FALSE(Inner().ChildrenOrSiblingsAffectedByFocusWithin());
+  EXPECT_TRUE(Middle().ChildrenOrSiblingsAffectedByFocusWithin());
+  EXPECT_TRUE(Outer().ChildrenOrSiblingsAffectedByFocusWithin());
+}
+
+// :active
+
+TEST_F(ImpactTest, ActiveSubjectOnly) {
+  MatchFlags flags = Match("#inner:active", Inner(), Impact::kSubject);
+  EXPECT_EQ(Active(), flags);
+  EXPECT_FALSE(Inner().ChildrenOrSiblingsAffectedByActive());
+  EXPECT_FALSE(Middle().ChildrenOrSiblingsAffectedByActive());
+  EXPECT_FALSE(Outer().ChildrenOrSiblingsAffectedByActive());
+}
+
+TEST_F(ImpactTest, ActiveNonSubjectOnly) {
+  MatchFlags flags = Match("#inner:active", Inner(), Impact::kNonSubject);
+  EXPECT_EQ(0u, flags);
+  EXPECT_TRUE(Inner().ChildrenOrSiblingsAffectedByActive());
+  EXPECT_FALSE(Middle().ChildrenOrSiblingsAffectedByActive());
+  EXPECT_FALSE(Outer().ChildrenOrSiblingsAffectedByActive());
+}
+
+TEST_F(ImpactTest, ActiveBoth) {
+  MatchFlags flags = Match("#inner:active", Inner(), Impact::kBoth);
+  EXPECT_EQ(Active(), flags);
+  EXPECT_TRUE(Inner().ChildrenOrSiblingsAffectedByActive());
+  EXPECT_FALSE(Middle().ChildrenOrSiblingsAffectedByActive());
+  EXPECT_FALSE(Outer().ChildrenOrSiblingsAffectedByActive());
+}
+
+TEST_F(ImpactTest, ActiveDescendantCombinatorSubject) {
+  MatchFlags flags = Match(":active #inner", Inner(), Impact::kSubject);
+  EXPECT_EQ(0u, flags);
+  EXPECT_FALSE(Inner().ChildrenOrSiblingsAffectedByActive());
+  EXPECT_TRUE(Middle().ChildrenOrSiblingsAffectedByActive());
+  EXPECT_TRUE(Outer().ChildrenOrSiblingsAffectedByActive());
+}
+
+// :focus-visible
+
+TEST_F(ImpactTest, FocusVisibleSubjectOnly) {
+  // Note that :focus-visible does not set any flags for Impact::kSubject.
+  // (There is no corresponding MatchFlag).
+  Match("#inner:focus-visible", Inner(), Impact::kSubject);
+  EXPECT_FALSE(Inner().ChildrenOrSiblingsAffectedByFocusVisible());
+  EXPECT_FALSE(Middle().ChildrenOrSiblingsAffectedByFocusVisible());
+  EXPECT_FALSE(Outer().ChildrenOrSiblingsAffectedByFocusVisible());
+}
+
+TEST_F(ImpactTest, FocusVisibleNonSubjectOnly) {
+  Match("#inner:focus-visible", Inner(), Impact::kNonSubject);
+  EXPECT_TRUE(Inner().ChildrenOrSiblingsAffectedByFocusVisible());
+  EXPECT_FALSE(Middle().ChildrenOrSiblingsAffectedByFocusVisible());
+  EXPECT_FALSE(Outer().ChildrenOrSiblingsAffectedByFocusVisible());
+}
+
+TEST_F(ImpactTest, FocusVisibleBoth) {
+  Match("#inner:focus-visible", Inner(), Impact::kBoth);
+  EXPECT_TRUE(Inner().ChildrenOrSiblingsAffectedByFocusVisible());
+  EXPECT_FALSE(Middle().ChildrenOrSiblingsAffectedByFocusVisible());
+  EXPECT_FALSE(Outer().ChildrenOrSiblingsAffectedByFocusVisible());
+}
+
+TEST_F(ImpactTest, FocusVisibleDescendantCombinatorSubject) {
+  Match(":focus-visible #inner", Inner(), Impact::kSubject);
+  EXPECT_FALSE(Inner().ChildrenOrSiblingsAffectedByFocusVisible());
+  EXPECT_TRUE(Middle().ChildrenOrSiblingsAffectedByFocusVisible());
+  EXPECT_TRUE(Outer().ChildrenOrSiblingsAffectedByFocusVisible());
+}
+
+// :has()
+
+TEST_F(ImpactTest, HasSubjectOnly) {
+  Match("#inner:has(.foo)", Inner(), Impact::kSubject);
+
+  EXPECT_TRUE(Inner().AffectedBySubjectHas());
+  EXPECT_FALSE(Middle().AffectedBySubjectHas());
+  EXPECT_FALSE(Outer().AffectedBySubjectHas());
+
+  EXPECT_FALSE(Inner().AffectedByNonSubjectHas());
+  EXPECT_FALSE(Middle().AffectedByNonSubjectHas());
+  EXPECT_FALSE(Outer().AffectedByNonSubjectHas());
+}
+
+TEST_F(ImpactTest, HasNonSubjectOnly) {
+  Match("#inner:has(.foo)", Inner(), Impact::kNonSubject);
+
+  EXPECT_FALSE(Inner().AffectedBySubjectHas());
+  EXPECT_FALSE(Middle().AffectedBySubjectHas());
+  EXPECT_FALSE(Outer().AffectedBySubjectHas());
+
+  EXPECT_TRUE(Inner().AffectedByNonSubjectHas());
+  EXPECT_FALSE(Middle().AffectedByNonSubjectHas());
+  EXPECT_FALSE(Outer().AffectedByNonSubjectHas());
+}
+
+TEST_F(ImpactTest, HasBoth) {
+  Match("#inner:has(.foo)", Inner(), Impact::kBoth);
+
+  EXPECT_TRUE(Inner().AffectedBySubjectHas());
+  EXPECT_FALSE(Middle().AffectedBySubjectHas());
+  EXPECT_FALSE(Outer().AffectedBySubjectHas());
+
+  EXPECT_TRUE(Inner().AffectedByNonSubjectHas());
+  EXPECT_FALSE(Middle().AffectedByNonSubjectHas());
+  EXPECT_FALSE(Outer().AffectedByNonSubjectHas());
+}
+
+TEST_F(ImpactTest, HasDescendantCombinatorSubject) {
+  Match(":has(.foo) #inner", Inner(), Impact::kSubject);
+
+  EXPECT_FALSE(Inner().AffectedBySubjectHas());
+  EXPECT_FALSE(Middle().AffectedBySubjectHas());
+  EXPECT_FALSE(Outer().AffectedBySubjectHas());
+
+  EXPECT_FALSE(Inner().AffectedByNonSubjectHas());
+  EXPECT_TRUE(Middle().AffectedByNonSubjectHas());
+  EXPECT_TRUE(Outer().AffectedByNonSubjectHas());
+}
+
+TEST_F(ImpactTest, HasDescendantCombinatorBoth) {
+  Match(":has(.foo) #inner", Inner(), Impact::kBoth);
+
+  EXPECT_FALSE(Inner().AffectedBySubjectHas());
+  EXPECT_FALSE(Middle().AffectedBySubjectHas());
+  EXPECT_FALSE(Outer().AffectedBySubjectHas());
+
+  EXPECT_FALSE(Inner().AffectedByNonSubjectHas());
+  EXPECT_TRUE(Middle().AffectedByNonSubjectHas());
+  EXPECT_TRUE(Outer().AffectedByNonSubjectHas());
+}
+
+TEST_F(ImpactTest, HasSubjectAndDescendantCombinatorBoth) {
+  Match(":has(.foo) #inner:has(div)", Inner(), Impact::kBoth);
+
+  EXPECT_TRUE(Inner().AffectedBySubjectHas());
+  EXPECT_FALSE(Middle().AffectedBySubjectHas());
+  EXPECT_FALSE(Outer().AffectedBySubjectHas());
+
+  EXPECT_TRUE(Inner().AffectedByNonSubjectHas());
+  EXPECT_TRUE(Middle().AffectedByNonSubjectHas());
+  EXPECT_TRUE(Outer().AffectedByNonSubjectHas());
+}
+
+TEST_F(ImpactTest, HasDescendantCombinatorWithinIsBoth) {
+  Match("#inner:is(:has(.foo) *)", Inner(), Impact::kBoth);
+
+  EXPECT_FALSE(Inner().AffectedBySubjectHas());
+  EXPECT_FALSE(Middle().AffectedBySubjectHas());
+  EXPECT_FALSE(Outer().AffectedBySubjectHas());
+
+  EXPECT_FALSE(Inner().AffectedByNonSubjectHas());
+  EXPECT_TRUE(Middle().AffectedByNonSubjectHas());
+  EXPECT_TRUE(Outer().AffectedByNonSubjectHas());
+}
+
+TEST_F(ImpactTest, HasDescendantCombinatorWithIsBoth) {
+  Match(":is(:has(.foo) #middle) #inner", Inner(), Impact::kBoth);
+
+  EXPECT_FALSE(Inner().AffectedBySubjectHas());
+  EXPECT_FALSE(Middle().AffectedBySubjectHas());
+  EXPECT_FALSE(Outer().AffectedBySubjectHas());
+
+  EXPECT_FALSE(Inner().AffectedByNonSubjectHas());
+  EXPECT_FALSE(Middle().AffectedByNonSubjectHas());
+  EXPECT_TRUE(Outer().AffectedByNonSubjectHas());
+}
+
 // Cases involving :host are special, because we need to call SelectorChecker
 // with a non-nullptr scope node.
 
