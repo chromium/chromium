@@ -24,7 +24,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-18.04",
+              "os": "Ubuntu-22.04|Ubuntu-18.04",
               "pool": "chrome.tests.finch"
             }
           ],
@@ -66,7 +66,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-18.04",
+              "os": "Ubuntu-22.04|Ubuntu-18.04",
               "pool": "chrome.tests.finch"
             }
           ],
@@ -111,7 +111,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-18.04",
+              "os": "Ubuntu-22.04|Ubuntu-18.04",
               "pool": "chrome.tests.finch"
             }
           ],
@@ -177,7 +177,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "os": "Ubuntu-18.04",
+              "os": "Ubuntu-22.04|Ubuntu-18.04",
               "pool": "chrome.tests.finch"
             }
           ],

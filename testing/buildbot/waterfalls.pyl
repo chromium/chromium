@@ -6534,7 +6534,7 @@
       'android-nougat-x86-finch-smoke-chrome': {
         'mixins': [
           'chrome-finch-swarming-pool',
-          'linux-bionic',
+          'linux-jammy-or-bionic',
           'nougat-x86-emulator',
         ],
         'test_suites': {
@@ -6566,7 +6566,7 @@
       'linux-finch-smoke-chrome': {
         'mixins': [
           'chrome-finch-swarming-pool',
-          'linux-bionic',
+          'linux-jammy-or-bionic',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_finch_smoke_tests',
