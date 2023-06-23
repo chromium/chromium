@@ -25,18 +25,15 @@
 
 namespace {
 const char kTestEmail[] = "test@gmail.com";
+const char kTestEmail1[] = "test1@gmail.com";
+const char kTestEmail2[] = "test2@gmail.com";
 }  // namespace
 
 class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
  protected:
   IOSFamilyLinkUserMetricsProviderTest() {
-    TestChromeBrowserState::Builder builder;
-    builder.AddTestingFactory(
-        IdentityManagerFactory::GetInstance(),
-        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
-                                BuildIdentityManagerForTests));
-    browser_state_manager_ =
-        std::make_unique<TestChromeBrowserStateManager>(builder.Build());
+    browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
+        BuildTestBrowserState());
     TestingApplicationContext::GetGlobal()->SetChromeBrowserStateManager(
         browser_state_manager_.get());
   }
@@ -45,17 +42,14 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
     return &metrics_provider_;
   }
 
-  ChromeBrowserState* browser_state() {
-    return browser_state_manager_->GetLastUsedBrowserState();
+  ios::ChromeBrowserStateManager* browser_state_manager() {
+    return browser_state_manager_.get();
   }
 
-  // Signs the user into `email` as the primary Chrome account and sets the
-  // given parental control capabilities on this account.
-  void SignIn(const std::string& email,
+  void SignIn(ChromeBrowserState* browser_state,
+              const std::string& email,
               bool is_subject_to_parental_controls,
               bool is_opted_in_to_parental_supervision) {
-    ChromeBrowserState* browser_state =
-        browser_state_manager_->GetLastUsedBrowserState();
     AccountInfo account = signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForBrowserState(browser_state), email,
         signin::ConsentLevel::kSignin);
@@ -69,9 +63,34 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
         IdentityManagerFactory::GetForBrowserState(browser_state), account);
   }
 
+  // Signs the user into `email` as the primary Chrome account and sets the
+  // given parental control capabilities on this account.
+  void SignIn(const std::string& email,
+              bool is_subject_to_parental_controls,
+              bool is_opted_in_to_parental_supervision) {
+    SignIn(browser_state_manager()->GetLastUsedBrowserState(), email,
+           is_subject_to_parental_controls,
+           is_opted_in_to_parental_supervision);
+  }
+
+  // Adds a pre-configured test browser state to the manager.
+  void AddTestBrowserState(const base::FilePath& path) {
+    std::unique_ptr<ChromeBrowserState> browser_state = BuildTestBrowserState();
+    browser_state_manager_->AddBrowserState(std::move(browser_state), path);
+  }
+
  private:
+  std::unique_ptr<TestChromeBrowserState> BuildTestBrowserState() {
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
+    return builder.Build();
+  }
+
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<ios::ChromeBrowserStateManager> browser_state_manager_;
+  std::unique_ptr<TestChromeBrowserStateManager> browser_state_manager_;
 
   IOSFamilyLinkUserMetricsProvider metrics_provider_;
 };
@@ -79,8 +98,9 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
 TEST_F(IOSFamilyLinkUserMetricsProviderTest,
        ProfileWithUnknownCapabilitiesDoesNotOutputHistogram) {
   AccountInfo account = signin::MakePrimaryAccountAvailable(
-      IdentityManagerFactory::GetForBrowserState(browser_state()), kTestEmail,
-      signin::ConsentLevel::kSignin);
+      IdentityManagerFactory::GetForBrowserState(
+          browser_state_manager()->GetLastUsedBrowserState()),
+      kTestEmail, signin::ConsentLevel::kSignin);
   // Does not set account capabilities, default is unknown.
 
   base::HistogramTester histogram_tester;
@@ -136,4 +156,64 @@ TEST_F(IOSFamilyLinkUserMetricsProviderTest,
       supervised_user::kFamilyLinkUserLogSegmentHistogramName,
       supervised_user::LogSegment::kUnsupervised,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(IOSFamilyLinkUserMetricsProviderTest,
+       ProfilesWithMixedSupervisedUsersLoggedAsMixedProfile) {
+  // Profile with supervision set by user
+  SignIn(kTestEmail,
+         /*is_subject_to_parental_controls=*/true,
+         /*is_opted_in_to_parental_supervision=*/false);
+  // Profile with supervision set by policy
+  const base::FilePath profile_path = base::FilePath("fake/profile/default");
+  AddTestBrowserState(profile_path);
+  SignIn(browser_state_manager()->GetBrowserState(profile_path), kTestEmail1,
+         /*is_subject_to_parental_controls=*/true,
+         /*is_opted_in_to_parental_supervision=*/true);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
+      supervised_user::LogSegment::kMixedProfile,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(IOSFamilyLinkUserMetricsProviderTest,
+       ProfilesWithMixedSupervisedAndAdultUsersLoggedAsMixedProfile) {
+  // Adult profile
+  SignIn(kTestEmail,
+         /*is_subject_to_parental_controls=*/false,
+         /*is_opted_in_to_parental_supervision=*/false);
+
+  // Profile with supervision set by user
+  const base::FilePath profile_path = base::FilePath("fake/profile/default");
+  AddTestBrowserState(profile_path);
+  SignIn(browser_state_manager()->GetBrowserState(profile_path), kTestEmail1,
+         /*is_subject_to_parental_controls=*/true,
+         /*is_opted_in_to_parental_supervision=*/false);
+
+  // Profile with supervision set by policy
+  const base::FilePath profile_path2 = base::FilePath("fake/profile2/default");
+  AddTestBrowserState(profile_path2);
+  SignIn(browser_state_manager()->GetBrowserState(profile_path2), kTestEmail2,
+         /*is_subject_to_parental_controls=*/true,
+         /*is_opted_in_to_parental_supervision=*/true);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
+      supervised_user::LogSegment::kMixedProfile,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(IOSFamilyLinkUserMetricsProviderTest,
+       NoProfilesAddedShouldNotLogHistogram) {
+  // Add no profiles
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectTotalCount(
+      supervised_user::kFamilyLinkUserLogSegmentHistogramName,
+      /*expected_count=*/0);
 }

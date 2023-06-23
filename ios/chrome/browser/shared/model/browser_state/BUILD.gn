@@ -78,6 +78,7 @@ source_set("test_support") {
     "//components/user_prefs",
     "//components/webdata_services",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/browser_state:constants",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/policy:policy",
     "//ios/chrome/browser/prefs",

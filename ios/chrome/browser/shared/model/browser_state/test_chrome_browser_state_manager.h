@@ -31,13 +31,21 @@ class TestChromeBrowserStateManager : public ios::ChromeBrowserStateManager {
   BrowserStateInfoCache* GetBrowserStateInfoCache() override;
   std::vector<ChromeBrowserState*> GetLoadedBrowserStates() override;
 
+  // Adds a browser state to the list of browsers to track.
+  void AddBrowserState(std::unique_ptr<ChromeBrowserState>,
+                       const base::FilePath& path);
+
  private:
   TestChromeBrowserStateManager(
       std::unique_ptr<ChromeBrowserState> browser_state,
       const base::FilePath& user_data_dir);
 
+  // The path of the browser state associated with this manager as defined in
+  // the constructor.
+  base::FilePath last_used_browser_state_path_;
+
   IOSChromeScopedTestingLocalState local_state_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::map<base::FilePath, std::unique_ptr<ChromeBrowserState>> browser_states_;
   BrowserStateInfoCache browser_state_info_cache_;
 };
 
