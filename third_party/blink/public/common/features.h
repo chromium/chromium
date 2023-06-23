@@ -373,10 +373,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
 // See https://crbug.com/1393246.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExtendScriptResourceLifetime);
 
-// If enabled, some paint property updates (e.g., transform changes) will be
-// applied directly instead of using the property tree builder.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFastPathPaintPropertyUpdates);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFencedFrames);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFileHandlingIcons);

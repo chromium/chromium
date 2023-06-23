@@ -3455,9 +3455,6 @@ void PaintPropertyTreeBuilder::UpdateForChildren() {
 
 bool PaintPropertyTreeBuilder::ScheduleDeferredTransformNodeUpdate(
     LayoutObject& object) {
-  if (!base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates))
-    return false;
-
   if (CanDoDeferredTransformNodeUpdate(object)) {
     object.GetFrameView()->AddPendingTransformUpdate(object);
     return true;
@@ -3467,8 +3464,6 @@ bool PaintPropertyTreeBuilder::ScheduleDeferredTransformNodeUpdate(
 
 bool PaintPropertyTreeBuilder::ScheduleDeferredOpacityNodeUpdate(
     LayoutObject& object) {
-  if (!base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates))
-    return false;
   if (CanDoDeferredOpacityNodeUpdate(object)) {
     object.GetFrameView()->AddPendingOpacityUpdate(object);
     return true;

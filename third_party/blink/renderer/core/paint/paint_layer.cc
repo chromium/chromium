@@ -489,11 +489,10 @@ void PaintLayer::UpdateDescendantDependentFlags() {
         MarkAncestorChainForFlagsUpdate(kDoesNotNeedDescendantDependentUpdate);
       }
     }
-    if (base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates)) {
-      GetLayoutObject().InvalidateIntersectionObserverCachedRects();
-      GetLayoutObject().GetFrameView()->SetIntersectionObservationState(
-          LocalFrameView::kDesired);
-    }
+    GetLayoutObject().InvalidateIntersectionObserverCachedRects();
+    GetLayoutObject().GetFrameView()->SetIntersectionObservationState(
+        LocalFrameView::kDesired);
+
     needs_visual_overflow_recalc_ = false;
   }
 
@@ -706,16 +705,14 @@ void PaintLayer::SetNeedsVisualOverflowRecalc() {
   // mark this as needing a descendant dependent flags update, which will
   // cause a paint property update if needed (see:
   // PaintLayer::UpdateDescendantDependentFlags).
-  if (base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates))
-    SetNeedsDescendantDependentFlagsUpdate();
-  else
-    MarkAncestorChainForFlagsUpdate();
+  SetNeedsDescendantDependentFlagsUpdate();
 }
 
 bool PaintLayer::HasNonIsolatedDescendantWithBlendMode() const {
   DCHECK(!needs_descendant_dependent_flags_update_);
-  if (has_non_isolated_descendant_with_blend_mode_)
+  if (has_non_isolated_descendant_with_blend_mode_) {
     return true;
+  }
   if (GetLayoutObject().IsSVGRoot()) {
     return To<LayoutSVGRoot>(GetLayoutObject())
         .HasNonIsolatedBlendingDescendants();
