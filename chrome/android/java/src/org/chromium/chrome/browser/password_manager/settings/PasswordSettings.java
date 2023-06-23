@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningCoordin
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
@@ -408,8 +409,8 @@ public class PasswordSettings extends PreferenceFragmentCompat
                         ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
             PasswordMigrationWarningCoordinator passwordMigrationWarningCoordinator =
                     new PasswordMigrationWarningCoordinator(getContext(), mProfile,
-                            mBottomSheetController, new SettingsLauncherImpl(),
-                            ManageSyncSettings.class);
+                            mBottomSheetController, SyncConsentActivityLauncherImpl.get(),
+                            new SettingsLauncherImpl(), ManageSyncSettings.class);
             passwordMigrationWarningCoordinator.showWarning();
         }
     }
