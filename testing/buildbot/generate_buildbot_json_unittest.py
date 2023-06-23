@@ -1720,12 +1720,11 @@ GN_ISOLATE_MAP_USING_IMPLICIT_NAME="""\
 class UnitTest(TestCase):
   def test_base_generator(self):
     # Only needed for complete code coverage.
-    self.assertRaises(NotImplementedError,
-                      generate_buildbot_json.BaseGenerator(None).generate,
-                      None, None, None, None)
-    self.assertRaises(NotImplementedError,
-                      generate_buildbot_json.BaseGenerator(None).sort,
-                      None)
+    with self.assertRaises(NotImplementedError):
+      generate_buildbot_json.BaseGenerator(None).generate(
+          None, None, None, None)
+    with self.assertRaises(NotImplementedError):
+      generate_buildbot_json.BaseGenerator(None).sort(None)
 
   def test_good_test_suites_are_ok(self):
     fbb = FakeBBGen(self.args, FOO_GTESTS_WATERFALL, FOO_TEST_SUITE,
@@ -4885,30 +4884,27 @@ class SwarmingTests(TestCase):
     fbb = FakeBBGen(self.args, NO_DIMENSIONS_GTESTS_WATERFALL, MAC_TEST_SUITE,
                     MAC_LUCI_MILO_CFG)
     fbb.check_input_file_consistency(verbose=True)
-    self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
-                           'os must be specified for all swarmed tests',
-                           fbb.check_output_file_consistency,
-                           verbose=True)
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'os must be specified for all swarmed tests'):
+      fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
   def test_builder_with_no_os_dimension_fails(self):
     fbb = FakeBBGen(self.args, NO_OS_GTESTS_WATERFALL, MAC_TEST_SUITE,
                     MAC_LUCI_MILO_CFG)
     fbb.check_input_file_consistency(verbose=True)
-    self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
-                           'os must be specified for all swarmed tests',
-                           fbb.check_output_file_consistency,
-                           verbose=True)
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'os must be specified for all swarmed tests'):
+      fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
   def test_mac_builder_with_no_cpu_dimension_in_isolated_script_fails(self):
     fbb = FakeBBGen(self.args, MAC_ISOLATED_SCRIPTS_WATERFALL, MAC_TEST_SUITE,
                     MAC_LUCI_MILO_CFG)
     fbb.check_input_file_consistency(verbose=True)
-    self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
-                           'cpu must be specified for mac',
-                           fbb.check_output_file_consistency,
-                           verbose=True)
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                'cpu must be specified for mac'):
+      fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
 
