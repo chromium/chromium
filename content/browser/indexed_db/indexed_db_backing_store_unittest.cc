@@ -1589,8 +1589,7 @@ TEST_F(IndexedDBBackingStoreTest, CreateDatabase) {
         {
           IndexedDBDatabaseMetadata database;
           bool found;
-          leveldb::Status s = metadata_coding.ReadMetadataForDatabaseName(
-              backing_store()->db(), backing_store()->origin_identifier(),
+          leveldb::Status s = backing_store()->ReadMetadataForDatabaseName(
               database_name, &database, &found);
           EXPECT_TRUE(s.ok());
           EXPECT_TRUE(found);
@@ -1651,8 +1650,7 @@ TEST_F(IndexedDBBackingStoreTest, GetDatabaseNames) {
   EXPECT_GT(db2.id, db1.id);
 
   std::vector<std::u16string> names;
-  s = metadata_coding.ReadDatabaseNames(
-      backing_store()->db(), backing_store()->origin_identifier(), &names);
+  s = backing_store()->GetDatabaseNames(&names);
   EXPECT_TRUE(s.ok());
   ASSERT_EQ(1U, names.size());
   EXPECT_EQ(db1_name, names[0]);

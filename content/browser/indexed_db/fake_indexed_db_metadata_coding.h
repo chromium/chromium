@@ -35,17 +35,6 @@ class FakeIndexedDBMetadataCoding : public IndexedDBMetadataCoding {
 
   ~FakeIndexedDBMetadataCoding() override;
 
-  leveldb::Status ReadDatabaseNames(
-      TransactionalLevelDBDatabase* db,
-      const std::string& origin_identifier,
-      std::vector<std::u16string>* names) override;
-
-  leveldb::Status ReadMetadataForDatabaseName(
-      TransactionalLevelDBDatabase* db,
-      const std::string& origin_identifier,
-      const std::u16string& name,
-      blink::IndexedDBDatabaseMetadata* metadata,
-      bool* found) override;
   leveldb::Status CreateDatabase(
       TransactionalLevelDBDatabase* database,
       const std::string& origin_identifier,

@@ -74,6 +74,11 @@ class IndexedDBFakeBackingStore : public IndexedDBBackingStore {
       RecordIdentifier* found_record_identifier,
       bool* found) override;
 
+  leveldb::Status ReadMetadataForDatabaseName(
+      const std::u16string& name,
+      blink::IndexedDBDatabaseMetadata* metadata,
+      bool* found) override;
+
   leveldb::Status ClearIndex(Transaction*,
                              int64_t database_id,
                              int64_t object_store_id,

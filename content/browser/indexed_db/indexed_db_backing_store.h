@@ -502,6 +502,20 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
       bool* exists);
 
+  // Fill in the provided list with existing database names.
+  [[nodiscard]] leveldb::Status GetDatabaseNames(
+      std::vector<std::u16string>* names);
+  // Fill in the provided list with existing database names and versions.
+  [[nodiscard]] leveldb::Status GetDatabaseNamesAndVersions(
+      std::vector<blink::mojom::IDBNameAndVersionPtr>* names_and_versions);
+  // Reads in metadata for the database and all object stores & indices.
+  // Note: the database name is not populated in |metadata|. Virtual for
+  // testing.
+  [[nodiscard]] virtual leveldb::Status ReadMetadataForDatabaseName(
+      const std::u16string& name,
+      blink::IndexedDBDatabaseMetadata* metadata,
+      bool* found);
+
   // Public for IndexedDBActiveBlobRegistry::MarkBlobInactive.
   virtual void ReportBlobUnused(int64_t database_id, int64_t blob_number);
 
@@ -591,22 +605,19 @@ class CONTENT_EXPORT IndexedDBBackingStore {
  protected:
   friend class IndexedDBBucketState;
 
-  leveldb::Status AnyDatabaseContainsBlobs(
-      TransactionalLevelDBDatabase* database,
-      bool* blobs_exist);
+  leveldb::Status AnyDatabaseContainsBlobs(bool* blobs_exist);
 
   // A helper function for V4 schema migration.
   // It iterates through all blob files.  It will add to the db entry both the
   // size and modified date for the blob based on the written file.  If any blob
   // file in the db is missing on disk, it will return an inconsistency status.
   leveldb::Status UpgradeBlobEntriesToV4(
-      TransactionalLevelDBDatabase* database,
       LevelDBWriteBatch* write_batch,
       std::vector<base::FilePath>* empty_blobs_to_delete);
   // A helper function for V5 schema miration.
   // Iterates through all blob files on disk and validates they exist,
   // returning an internal inconsistency corruption error if any are missing.
-  leveldb::Status ValidateBlobFiles(TransactionalLevelDBDatabase* database);
+  leveldb::Status ValidateBlobFiles();
 
   // TODO(dmurph): Move this completely to IndexedDBMetadataFactory.
   leveldb::Status GetCompleteMetadata(

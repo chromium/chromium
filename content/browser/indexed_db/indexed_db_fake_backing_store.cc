@@ -125,6 +125,13 @@ leveldb::Status IndexedDBFakeBackingStore::KeyExistsInObjectStore(
   return leveldb::Status::OK();
 }
 
+leveldb::Status IndexedDBFakeBackingStore::ReadMetadataForDatabaseName(
+    const std::u16string& name,
+    blink::IndexedDBDatabaseMetadata* metadata,
+    bool* found) {
+  return leveldb::Status::OK();
+}
+
 leveldb::Status IndexedDBFakeBackingStore::ClearIndex(Transaction*,
                                                       int64_t database_id,
                                                       int64_t object_store_id,

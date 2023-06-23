@@ -19,22 +19,6 @@ namespace content {
 FakeIndexedDBMetadataCoding::FakeIndexedDBMetadataCoding() {}
 FakeIndexedDBMetadataCoding::~FakeIndexedDBMetadataCoding() {}
 
-leveldb::Status FakeIndexedDBMetadataCoding::ReadDatabaseNames(
-    TransactionalLevelDBDatabase* db,
-    const std::string& origin_identifier,
-    std::vector<std::u16string>* names) {
-  return Status::OK();
-}
-
-leveldb::Status FakeIndexedDBMetadataCoding::ReadMetadataForDatabaseName(
-    TransactionalLevelDBDatabase* db,
-    const std::string& origin_identifier,
-    const std::u16string& name,
-    IndexedDBDatabaseMetadata* metadata,
-    bool* found) {
-  return Status::OK();
-}
-
 leveldb::Status FakeIndexedDBMetadataCoding::CreateDatabase(
     TransactionalLevelDBDatabase* database,
     const std::string& origin_identifier,

@@ -220,11 +220,8 @@ void IndexedDBFactory::GetDatabaseInfo(
     return;
   }
   IndexedDBBucketState* factory = bucket_state_handle.bucket_state();
-
-  IndexedDBMetadataCoding metadata_coding;
-  s = metadata_coding.ReadDatabaseNamesAndVersions(
-      factory->backing_store_->db(),
-      factory->backing_store_->origin_identifier(), &names_and_versions);
+  s = factory->backing_store()->GetDatabaseNamesAndVersions(
+      &names_and_versions);
   if (!s.ok()) {
     error = IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
                                    "Internal error opening backing store for "
@@ -341,13 +338,8 @@ void IndexedDBFactory::DeleteDatabase(
     return;
   }
 
-  // TODO(dmurph): Get rid of on-demand metadata loading, and store metadata
-  // in-memory in the backing store.
-  IndexedDBMetadataCoding metadata_coding;
   std::vector<std::u16string> names;
-  s = metadata_coding.ReadDatabaseNames(
-      factory->backing_store()->db(),
-      factory->backing_store()->origin_identifier(), &names);
+  s = factory->backing_store()->GetDatabaseNames(&names);
   if (!s.ok()) {
     error = IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
                                    "Internal error opening backing store for "

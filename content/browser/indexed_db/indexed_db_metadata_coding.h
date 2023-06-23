@@ -40,37 +40,6 @@ class CONTENT_EXPORT IndexedDBMetadataCoding {
 
   virtual ~IndexedDBMetadataCoding();
 
-  // Reads the list of database names for the given origin.
-  virtual leveldb::Status ReadDatabaseNames(
-      TransactionalLevelDBDatabase* db,
-      const std::string& origin_identifier,
-      std::vector<std::u16string>* names);
-  virtual leveldb::Status ReadDatabaseNames(
-      TransactionalLevelDBTransaction* transaction,
-      const std::string& origin_identifier,
-      std::vector<std::u16string>* names);
-
-  // Reads in the list of database names and versions for the given origin.
-  virtual leveldb::Status ReadDatabaseNamesAndVersions(
-      TransactionalLevelDBDatabase* db,
-      const std::string& origin_identifier,
-      std::vector<blink::mojom::IDBNameAndVersionPtr>* names_and_versions);
-
-  // Reads in metadata for the database and all object stores & indices.
-  // Note: the database name is not populated in |metadata|.
-  virtual leveldb::Status ReadMetadataForDatabaseName(
-      TransactionalLevelDBDatabase* db,
-      const std::string& origin_identifier,
-      const std::u16string& name,
-      blink::IndexedDBDatabaseMetadata* metadata,
-      bool* found);
-  virtual leveldb::Status ReadMetadataForDatabaseName(
-      TransactionalLevelDBTransaction* transaction,
-      const std::string& origin_identifier,
-      const std::u16string& name,
-      blink::IndexedDBDatabaseMetadata* metadata,
-      bool* found);
-
   // Creates a new database metadata entry and writes it to disk.
   virtual leveldb::Status CreateDatabase(
       TransactionalLevelDBDatabase* database,
