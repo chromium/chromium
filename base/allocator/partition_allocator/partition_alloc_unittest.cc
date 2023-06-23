@@ -264,7 +264,7 @@ const std::vector<PartitionAllocTestParam> GetPartitionAllocTestParams() {
     !BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
   ref_count_sizes.push_back(4);
 #endif
-  // Using MTE increases extras size without increasing
+  // Using MTE or Mac13 workaroud increases extras size without increasing
   // sizeof(PartitionRefCount), so we don't have to exclude it here, as long as
   // ExtraAllocSize() accounts for it.
 
@@ -464,6 +464,11 @@ class PartitionAllocTest
       if (!ref_count_size) {
         ref_count_size = kPartitionRefCountSizeAdjustment;
       }
+#if BUILDFLAG(IS_MAC)
+      if (internal::base::mac::IsOS13()) {
+        ref_count_size = internal::base::bits::AlignUp(ref_count_size, 8);
+      }
+#endif  // BUILDFLAG(IS_MAC)
 #if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
       if (allocator.root()->IsMemoryTaggingEnabled()) {
         ref_count_size = partition_alloc::internal::base::bits::AlignUp(
