@@ -28,21 +28,6 @@ def _GetTestingEnv(input_api):
   return testing_env
 
 
-def CheckTestingUnittests(input_api, output_api):
-  """Runs unittests in the testing/ directory."""
-  # Can skip these since they're long-running and already run in swarming.
-  swarmed_unit_tests = [
-      'test_env_unittest.py',
-      'xvfb_unittest.py',
-  ]
-  return input_api.canned_checks.RunUnitTestsInDirectory(
-      input_api,
-      output_api,
-      '.',
-      [r'^.+_unittest\.py$'],
-      files_to_skip=swarmed_unit_tests)
-
-
 def CheckFlakeSuppressorCommonUnittests(input_api, output_api):
   """Runs unittests in the testing/flake_suppressor_common/ directory."""
   return input_api.canned_checks.RunUnitTestsInDirectory(
