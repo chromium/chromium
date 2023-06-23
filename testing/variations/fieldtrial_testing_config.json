@@ -3195,6 +3195,21 @@
             ]
         }
     ],
+    "ClankFeedSyntheticCapabilities": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FeedSyntheticCapabilities"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionModelOptimizationGuide": [
         {
             "platforms": [
