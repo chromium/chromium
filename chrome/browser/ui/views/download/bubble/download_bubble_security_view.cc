@@ -37,6 +37,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/window/dialog_client_view.h"
 
 namespace {
 constexpr int kCheckboxHeight = 32;
@@ -162,6 +163,7 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
       GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
 
   styled_label_->SetText(ui_info.warning_summary);
+
   // The label defaults to a single line, which would force the dialog wider;
   // instead give it a width that's the minimum we want it to have. Then the
   // Layout will stretch it back out into any additional space available.
@@ -178,15 +180,10 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
   if (model_->GetDangerType() == download::DownloadDangerType::
                                      DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING &&
       base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX)) {
-    size_t link_offset;
     std::u16string link_text = l10n_util::GetStringUTF16(
         IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK);
-    std::u16string link_label_text = l10n_util::GetStringFUTF16(
-        IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK_WRAPPER, link_text,
-        &link_offset);
-    deep_scanning_link_->SetText(link_label_text);
-
-    gfx::Range link_range(link_offset, link_offset + link_text.length());
+    deep_scanning_link_->SetText(link_text);
+    gfx::Range link_range(0, link_text.length());
     views::StyledLabel::RangeStyleInfo link_style =
         views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
             &DownloadBubbleUIController::ProcessDownloadButtonPress,
@@ -202,6 +199,9 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
 
 void DownloadBubbleSecurityView::UpdateSecondaryIconAndText() {
   DownloadUIModel::BubbleUIInfo& ui_info = download_row_view_->ui_info();
+
+  secondary_icon_->SetVisible(!ui_info.warning_secondary_text.empty());
+  secondary_styled_label_->SetVisible(!ui_info.warning_secondary_text.empty());
 
   if (ui_info.warning_secondary_text.empty()) {
     return;
@@ -491,10 +491,16 @@ void DownloadBubbleSecurityView::UpdateSecurityView(
   model_ =
       DownloadItemModel::Wrap(download_row_view_->model()->GetDownloadItem());
   did_log_action_ = false;
+
+  // Subtle: Some of the security subpage views (like the prompt for deep
+  // scanning) use buttons that are too wide for a small dialog. Our multiline
+  // labels need to know the width of the bubble in order to size themselves
+  // appropriately (see `GetMinimumLabelWidth`). This means that we must update
+  // the buttons before the primary or secondary text.
+  UpdateButtons();
   UpdateHeader();
   UpdateIconAndText();
   UpdateSecondaryIconAndText();
-  UpdateButtons();
   UpdateProgressBar();
   base::UmaHistogramEnumeration(kSubpageActionHistogram,
                                 DownloadBubbleSubpageAction::kShown);
@@ -550,8 +556,8 @@ int DownloadBubbleSecurityView::GetMinimumLabelWidth() const {
   const int side_margin = GetLayoutInsets(DOWNLOAD_ROW).width();
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-  const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+  const int bubble_width = ChromeLayoutProvider::Get()->GetSnappedDialogWidth(
+      bubble_delegate_->GetDialogClientView()->GetMinimumSize().width());
   return bubble_width - side_margin - GetLayoutConstant(DOWNLOAD_ICON_SIZE) -
          GetLayoutInsets(DOWNLOAD_ICON).width() - icon_label_spacing;
 }

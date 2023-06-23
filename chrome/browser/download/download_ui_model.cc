@@ -1222,27 +1222,28 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CONTINUE),
               DownloadCommands::Command::KEEP, kColorDownloadItemTextWarning);
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
-      ui_info =
-          DownloadUIModel::BubbleUIInfo()
-              .AddSubpageSummary(l10n_util::GetStringUTF16(
-                  IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT))
-              .AddIconAndColor(
-                  features::IsChromeRefresh2023()
-                      ? vector_icons::kNotSecureWarningChromeRefreshIcon
-                      : vector_icons::kNotSecureWarningIcon,
-                  kColorDownloadItemIconWarning)
-              .AddSecondaryTextColor(kColorDownloadItemTextWarning);
+      ui_info = DownloadUIModel::BubbleUIInfo()
+                    .AddIconAndColor(
+                        features::IsChromeRefresh2023()
+                            ? vector_icons::kNotSecureWarningChromeRefreshIcon
+                            : vector_icons::kNotSecureWarningIcon,
+                        kColorDownloadItemIconWarning)
+                    .AddSecondaryTextColor(kColorDownloadItemTextWarning);
       if (base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX)) {
         ui_info
+            .AddSubpageSummary(l10n_util::GetStringUTF16(
+                IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT_UPDATED))
             .AddPrimarySubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SCAN_UPDATED),
                 DownloadCommands::Command::DEEP_SCAN)
             .AddSecondarySubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_UPDATED),
                 DownloadCommands::Command::BYPASS_DEEP_SCANNING,
-                ui::kColorButtonForeground);
+                kColorDownloadItemTextWarning);
       } else {
         ui_info.AddPrimaryButton(DownloadCommands::Command::DEEP_SCAN)
+            .AddSubpageSummary(l10n_util::GetStringUTF16(
+                IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT))
             .AddPrimarySubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SCAN),
                 DownloadCommands::Command::DEEP_SCAN)
