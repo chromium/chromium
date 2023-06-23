@@ -28,7 +28,7 @@ class FetchManifestAndInstallCommandTest : public WebAppControllerBrowserTest {
   WebAppInstallDialogCallback CreateDialogCallback(bool accept = true) {
     return base::BindOnce(
         [](bool accept, content::WebContents* initiator_web_contents,
-           std::unique_ptr<WebAppInstallInfo> web_app_info,
+           std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
            WebAppInstallationAcceptanceCallback acceptance_callback) {
           std::move(acceptance_callback).Run(accept, std::move(web_app_info));
         },

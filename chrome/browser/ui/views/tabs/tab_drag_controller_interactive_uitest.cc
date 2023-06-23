@@ -2753,7 +2753,7 @@ class DetachToBrowserTabDragControllerTestWithTabbedWebApp
   }
 
   web_app::AppId InstallMockApp(bool add_home_tab) {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = GURL("https://www.example.com");
     web_app_info->title = u"A tabbed web app";
     web_app_info->user_display_mode =

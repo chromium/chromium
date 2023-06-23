@@ -122,7 +122,7 @@ class IntentChipButtonBrowserTest
   // Installs a web app on the same host as InstallTestWebApp(), but with "/" as
   // a scope, so it overlaps with all URLs in the test app scope.
   void InstallOverlappingApp() {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     const char* app_host = GetAppUrlHost();
     web_app_info->start_url = https_server().GetURL(app_host, "/");
     web_app_info->scope = https_server().GetURL(app_host, "/");

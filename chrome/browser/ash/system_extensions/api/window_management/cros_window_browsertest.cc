@@ -258,7 +258,7 @@ class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
 
     // Install a web app with `browser` display mode, so that it launched
     // in a tab in regular browser window.
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->user_display_mode = web_app::mojom::UserDisplayMode::kBrowser;
     const web_app::AppId app_id = web_app::test::InstallWebApp(

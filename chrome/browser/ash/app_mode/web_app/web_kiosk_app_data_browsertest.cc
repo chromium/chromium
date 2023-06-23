@@ -51,7 +51,7 @@ base::FilePath GetFullPathToImage(bool valid) {
   return test_data_dir.Append(valid ? kIconPath : kIconBadPath);
 }
 
-void PopulateIcon(WebAppInstallInfo* web_app_info,
+void PopulateIcon(web_app::WebAppInstallInfo* web_app_info,
                   const std::string& icon_url_str) {
   IconsMap icons_map;
   const GURL icon_url(icon_url_str);
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, LaunchableUrl) {
   EXPECT_EQ(app_data.GetLaunchableUrl(), GURL(kAppUrl));
 
   // `start_url` is treated as launchable URL if the app has been installed.
-  WebAppInstallInfo app_info;
+  web_app::WebAppInstallInfo app_info;
   app_info.start_url = GURL(kStartUrl);
   app_data.UpdateFromWebAppInfo(app_info);
   app_data.LoadFromCache();
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest,
   EXPECT_EQ(app_data.GetLaunchableUrl(), GURL(kAppUrl));
   EXPECT_TRUE(app_data.icon().isNull());
 
-  WebAppInstallInfo app_info;
+  web_app::WebAppInstallInfo app_info;
   app_info.start_url = GURL(kStartUrl);
   app_info.title = kAppTitle16;
   PopulateIcon(&app_info, kIconExampleUrl1);

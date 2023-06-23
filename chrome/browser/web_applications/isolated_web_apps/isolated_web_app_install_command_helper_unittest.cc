@@ -598,7 +598,7 @@ TEST_P(InstallIsolatedWebAppCommandHelperInvalidVersionTest,
       std::move(manifest),
       CreateDefaultManifestURL(url_info.origin().GetURL()));
 
-  base::expected<WebAppInstallInfo, std::string> result =
+  base::expected<web_app::WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
           /*expected_version=*/absl::nullopt, std::move(manifest_and_url));
   EXPECT_THAT(result, IsUnexpectedValue(HasSubstr(GetParam().error)));
@@ -629,7 +629,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
       url_info, CreateDefaultDataRetriever(url_info.origin().GetURL()),
       /*response_reader_factory=*/nullptr);
 
-  base::expected<WebAppInstallInfo, std::string> result =
+  base::expected<web_app::WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
           base::Version("99.99.99"),
           IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
@@ -647,7 +647,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
       url_info, CreateDefaultDataRetriever(url_info.origin().GetURL()),
       /*response_reader_factory=*/nullptr);
 
-  base::expected<WebAppInstallInfo, std::string> result =
+  base::expected<web_app::WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
           /*expected_version=*/absl::nullopt,
           IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
@@ -667,7 +667,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
       CreateDefaultManifest(url_info.origin().GetURL());
   manifest->id = url_info.origin().GetURL().Resolve("/test-manifest-id");
 
-  base::expected<WebAppInstallInfo, std::string> result =
+  base::expected<web_app::WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
           /*expected_version=*/absl::nullopt,
           IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
@@ -688,7 +688,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
       CreateDefaultManifest(url_info.origin().GetURL());
   manifest->scope = url_info.origin().GetURL().Resolve("/scope");
 
-  base::expected<WebAppInstallInfo, std::string> result =
+  base::expected<web_app::WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
           /*expected_version=*/absl::nullopt,
           IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
@@ -709,13 +709,13 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
       CreateDefaultManifest(url_info.origin().GetURL());
   manifest->scope = url_info.origin().GetURL().Resolve("/");
 
-  base::expected<WebAppInstallInfo, std::string> result =
+  base::expected<web_app::WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
           /*expected_version=*/absl::nullopt,
           IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
               std::move(manifest),
               CreateDefaultManifestURL(url_info.origin().GetURL())));
-  EXPECT_THAT(result, IsExpectedValue(Field(&WebAppInstallInfo::scope,
+  EXPECT_THAT(result, IsExpectedValue(Field(&web_app::WebAppInstallInfo::scope,
                                             Eq(url_info.origin().GetURL()))));
 }
 
@@ -731,7 +731,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
   manifest->name = absl::nullopt;
   manifest->short_name = absl::nullopt;
 
-  base::expected<WebAppInstallInfo, std::string> result =
+  base::expected<web_app::WebAppInstallInfo, std::string> result =
       command_helper->ValidateManifestAndCreateInstallInfo(
           /*expected_version=*/absl::nullopt,
           IsolatedWebAppInstallCommandHelper::ManifestAndUrl(
@@ -811,7 +811,9 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
                          CreateDefaultManifestURL(kSomeTestApplicationUrl)));
   ASSERT_THAT(install_info.has_value(), IsTrue());
 
-  base::test::TestFuture<base::expected<WebAppInstallInfo, std::string>> future;
+  base::test::TestFuture<
+      base::expected<web_app::WebAppInstallInfo, std::string>>
+      future;
   command_helper->RetrieveIconsAndPopulateInstallInfo(
       std::move(*install_info), web_contents(), future.GetCallback());
   auto result = future.Take();
@@ -819,7 +821,7 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
 
   std::map<SquareSizePx, SkBitmap> icon_bitmaps = result->icon_bitmaps.any;
   EXPECT_THAT(result, IsExpectedValue(Field(
-                          &WebAppInstallInfo::icon_bitmaps,
+                          &web_app::WebAppInstallInfo::icon_bitmaps,
                           Field(&IconBitmaps::any,
                                 Each(Pair(_, ResultOf(
                                                  "bitmap.color.at.0.0",
@@ -831,7 +833,7 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
   EXPECT_THAT(
       result,
       IsExpectedValue(Field(
-          "manifest_icons", &WebAppInstallInfo::manifest_icons,
+          "manifest_icons", &web_app::WebAppInstallInfo::manifest_icons,
           UnorderedElementsAre(Field(&apps::IconInfo::url, Eq(img_url))))));
 }
 
@@ -865,7 +867,9 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
                          CreateDefaultManifestURL(kSomeTestApplicationUrl)));
   ASSERT_THAT(install_info.has_value(), IsTrue());
 
-  base::test::TestFuture<base::expected<WebAppInstallInfo, std::string>> future;
+  base::test::TestFuture<
+      base::expected<web_app::WebAppInstallInfo, std::string>>
+      future;
   command_helper->RetrieveIconsAndPopulateInstallInfo(
       std::move(*install_info), web_contents(), future.GetCallback());
   auto result = future.Take();

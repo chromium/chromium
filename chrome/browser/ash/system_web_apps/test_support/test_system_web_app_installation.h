@@ -36,7 +36,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
                                        const GURL&,
                                        const apps::AppLaunchParams&)>;
 
-  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
+  std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
 
   std::vector<std::string> GetAppIdsToUninstallAndReplace() const override;
   gfx::Size GetMinimumWindowSize() const override;

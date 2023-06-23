@@ -21,13 +21,13 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #endif
 
-struct WebAppInstallInfo;
-
 namespace content {
 class WebContents;
 }  // namespace content
 
 namespace web_app {
+
+struct WebAppInstallInfo;
 
 // |app_id| may be empty on failure.
 using OnceInstallCallback =

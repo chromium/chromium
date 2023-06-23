@@ -12,14 +12,17 @@
 #include "ui/gfx/geometry/rect.h"
 
 class Browser;
+
+namespace web_app {
 struct WebAppInstallInfo;
+}  // namespace web_app
 
 class FirmwareUpdateSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit FirmwareUpdateSystemAppDelegate(Profile* profile);
 
   // ash::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
+  std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldAllowMaximize() const override;
   bool ShouldAllowResize() const override;
   bool ShouldShowInLauncher() const override;
@@ -28,7 +31,7 @@ class FirmwareUpdateSystemAppDelegate : public ash::SystemWebAppDelegate {
 };
 
 // Returns a WebAppInstallInfo used to install the app.
-std::unique_ptr<WebAppInstallInfo>
+std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForFirmwareUpdateSystemWebApp();
 
 gfx::Rect GetDefaultBoundsForFirmwareUpdateApp(Browser*);

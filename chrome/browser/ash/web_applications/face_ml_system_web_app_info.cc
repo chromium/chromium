@@ -23,9 +23,9 @@ namespace {
 constexpr gfx::Size DEFAULT_SIZE(800, 600);
 }  // namespace
 
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFaceMLApp() {
-  std::unique_ptr<WebAppInstallInfo> info =
-      std::make_unique<WebAppInstallInfo>();
+std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForFaceMLApp() {
+  std::unique_ptr<web_app::WebAppInstallInfo> info =
+      std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIFaceMLAppURL);
   info->scope = GURL(ash::kChromeUIFaceMLAppURL);
   // TODO(b/239374316): Convert the title to a localized string
@@ -57,8 +57,8 @@ FaceMLSystemAppDelegate::FaceMLSystemAppDelegate(Profile* profile)
                                 GURL(ash::kChromeUIFaceMLAppURL),
                                 profile) {}
 
-std::unique_ptr<WebAppInstallInfo> FaceMLSystemAppDelegate::GetWebAppInfo()
-    const {
+std::unique_ptr<web_app::WebAppInstallInfo>
+FaceMLSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForFaceMLApp();
 }
 

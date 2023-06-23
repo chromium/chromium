@@ -14,9 +14,9 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/constants/chromeos_features.h"
 
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForDemoModeApp() {
-  std::unique_ptr<WebAppInstallInfo> info =
-      std::make_unique<WebAppInstallInfo>();
+std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForDemoModeApp() {
+  std::unique_ptr<web_app::WebAppInstallInfo> info =
+      std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUntrustedUIDemoModeAppIndexURL);
   info->scope = GURL(ash::kChromeUntrustedUIDemoModeAppURL);
   // TODO(b/185608502): Convert the title to a localized string
@@ -39,8 +39,8 @@ DemoModeSystemAppDelegate::DemoModeSystemAppDelegate(Profile* profile)
                                 GURL(ash::kChromeUntrustedUIDemoModeAppURL),
                                 profile) {}
 
-std::unique_ptr<WebAppInstallInfo> DemoModeSystemAppDelegate::GetWebAppInfo()
-    const {
+std::unique_ptr<web_app::WebAppInstallInfo>
+DemoModeSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForDemoModeApp();
 }
 

@@ -140,10 +140,11 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
   // If provided |web_app_info| is a nullptr, it will read icons data from disk,
   // otherwise it will use (SkBitmaps) from |web_app_info|.
   // virtual for testing
-  virtual void InstallOsHooks(const AppId& app_id,
-                              InstallOsHooksCallback callback,
-                              std::unique_ptr<WebAppInstallInfo> web_app_info,
-                              InstallOsHooksOptions options);
+  virtual void InstallOsHooks(
+      const AppId& app_id,
+      InstallOsHooksCallback callback,
+      std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
+      InstallOsHooksOptions options);
 
   // Uninstall specific OS hooks for the web app.
   // Used when removing specific hooks resulting from an app setting change.
@@ -166,7 +167,7 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       const AppId& app_id,
       base::StringPiece old_name,
       FileHandlerUpdateAction file_handlers_need_os_update,
-      const WebAppInstallInfo& web_app_info,
+      const web_app::WebAppInstallInfo& web_app_info,
       UpdateOsHooksCallback callback);
 
   // Proxy calls for WebAppShortcutManager.
@@ -301,9 +302,10 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
   virtual void UnregisterWebAppOsUninstallation(const AppId& app_id);
 
   // Update:
-  virtual void UpdateShortcutsMenu(const AppId& app_id,
-                                   const WebAppInstallInfo& web_app_info,
-                                   ResultCallback callback);
+  virtual void UpdateShortcutsMenu(
+      const AppId& app_id,
+      const web_app::WebAppInstallInfo& web_app_info,
+      ResultCallback callback);
   // Utility methods:
   virtual std::unique_ptr<ShortcutInfo> BuildShortcutInfo(const AppId& app_id);
 
@@ -342,11 +344,12 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       size_t index,
       base::OnceClosure final_callback);
 
-  void OnShortcutsCreated(const AppId& app_id,
-                          std::unique_ptr<WebAppInstallInfo> web_app_info,
-                          InstallOsHooksOptions options,
-                          scoped_refptr<OsHooksBarrier> barrier,
-                          bool shortcuts_created);
+  void OnShortcutsCreated(
+      const AppId& app_id,
+      std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
+      InstallOsHooksOptions options,
+      scoped_refptr<OsHooksBarrier> barrier,
+      bool shortcuts_created);
 
   void OnShortcutsDeleted(const AppId& app_id,
                           ResultCallback callback,

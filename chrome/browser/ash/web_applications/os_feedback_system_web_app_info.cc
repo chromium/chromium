@@ -43,8 +43,9 @@ bool IsUserFeedbackAllowed(Profile* profile) {
 
 }  // namespace
 
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForOSFeedbackSystemWebApp() {
-  auto info = std::make_unique<WebAppInstallInfo>();
+std::unique_ptr<web_app::WebAppInstallInfo>
+CreateWebAppInfoForOSFeedbackSystemWebApp() {
+  auto info = std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIOSFeedbackUrl);
   info->scope = GURL(ash::kChromeUIOSFeedbackUrl);
   info->title = l10n_util::GetStringUTF16(IDS_FEEDBACK_REPORT_APP_TITLE);
@@ -77,8 +78,8 @@ OSFeedbackAppDelegate::OSFeedbackAppDelegate(Profile* profile)
 
 OSFeedbackAppDelegate::~OSFeedbackAppDelegate() = default;
 
-std::unique_ptr<WebAppInstallInfo> OSFeedbackAppDelegate::GetWebAppInfo()
-    const {
+std::unique_ptr<web_app::WebAppInstallInfo>
+OSFeedbackAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForOSFeedbackSystemWebApp();
 }
 

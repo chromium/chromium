@@ -16,10 +16,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-std::unique_ptr<WebAppInstallInfo>
+std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp() {
-  std::unique_ptr<WebAppInstallInfo> info =
-      std::make_unique<WebAppInstallInfo>();
+  std::unique_ptr<web_app::WebAppInstallInfo> info =
+      std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIConnectivityDiagnosticsUrl);
   info->scope = GURL(ash::kChromeUIConnectivityDiagnosticsUrl);
   info->title = l10n_util::GetStringUTF16(IDS_CONNECTIVITY_DIAGNOSTICS_TITLE);
@@ -44,7 +44,7 @@ ConnectivityDiagnosticsSystemAppDelegate::
                                 GURL(ash::kChromeUIConnectivityDiagnosticsUrl),
                                 profile) {}
 
-std::unique_ptr<WebAppInstallInfo>
+std::unique_ptr<web_app::WebAppInstallInfo>
 ConnectivityDiagnosticsSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp();
 }

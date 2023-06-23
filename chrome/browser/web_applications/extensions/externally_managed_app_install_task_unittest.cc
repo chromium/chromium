@@ -131,7 +131,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
         GetAppIdForUrl(app_url), code};
   }
 
-  const std::vector<WebAppInstallInfo>& web_app_info_list() {
+  const std::vector<web_app::WebAppInstallInfo>& web_app_info_list() {
     return web_app_info_list_;
   }
 
@@ -146,7 +146,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
   size_t num_reparent_tab_calls() const { return num_reparent_tab_calls_; }
 
   // WebAppInstallFinalizer
-  void FinalizeInstall(const WebAppInstallInfo& web_app_info,
+  void FinalizeInstall(const web_app::WebAppInstallInfo& web_app_info,
                        const FinalizeOptions& options,
                        InstallFinalizedCallback callback) override {
     DCHECK(
@@ -180,7 +180,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
         }));
   }
 
-  void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
+  void FinalizeUpdate(const web_app::WebAppInstallInfo& web_app_info,
                       InstallFinalizedCallback callback) override {
     NOTREACHED();
   }
@@ -244,7 +244,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
  private:
   raw_ptr<WebAppRegistrarMutable> registrar_ = nullptr;
 
-  std::vector<WebAppInstallInfo> web_app_info_list_;
+  std::vector<web_app::WebAppInstallInfo> web_app_info_list_;
   std::vector<FinalizeOptions> finalize_options_list_;
   std::vector<GURL> uninstall_external_web_app_urls_;
 
@@ -310,7 +310,7 @@ class ExternallyManagedAppInstallTaskTest
 
   FakeDataRetriever* data_retriever() { return data_retriever_; }
 
-  const WebAppInstallInfo& web_app_info() {
+  const web_app::WebAppInstallInfo& web_app_info() {
     DCHECK_EQ(1u, install_finalizer_->web_app_info_list().size());
     return install_finalizer_->web_app_info_list().at(0);
   }
@@ -333,7 +333,7 @@ class ExternallyManagedAppInstallTaskTest
 
     if (!mock_empty_web_app_info)
       data_retriever_->SetRendererWebAppInstallInfo(
-          std::make_unique<WebAppInstallInfo>());
+          std::make_unique<web_app::WebAppInstallInfo>());
 
     data_retriever_->SetManifest(
         std::move(manifest), webapps::InstallableStatusCode::NO_ERROR_DETECTED);
@@ -522,7 +522,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholder) {
   EXPECT_EQ(1u, finalizer()->finalize_options_list().size());
   EXPECT_EQ(webapps::WebappInstallSource::EXTERNAL_POLICY,
             finalize_options().install_surface);
-  const WebAppInstallInfo& web_app_info =
+  const web_app::WebAppInstallInfo& web_app_info =
       finalizer()->web_app_info_list().at(0);
 
   EXPECT_EQ(base::UTF8ToUTF16(kWebAppUrl.spec()), web_app_info.title);
@@ -695,7 +695,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderCustomName) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
 
-  const WebAppInstallInfo& web_app_info =
+  const web_app::WebAppInstallInfo& web_app_info =
       finalizer()->web_app_info_list().at(0);
 
   EXPECT_EQ(base::UTF8ToUTF16(kCustomName), web_app_info.title);
@@ -803,7 +803,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
                                  ExternalInstallSource::kSystemInstalled);
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindLambdaForTesting([&kWebAppUrl]() {
-    auto info = std::make_unique<WebAppInstallInfo>();
+    auto info = std::make_unique<web_app::WebAppInstallInfo>();
     info->start_url = kWebAppUrl;
     info->scope = kWebAppUrl.GetWithoutFilename();
     info->title = u"Foo Web App";
@@ -845,7 +845,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoFails) {
                                  ExternalInstallSource::kSystemInstalled);
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindLambdaForTesting([&kWebAppUrl]() {
-    auto info = std::make_unique<WebAppInstallInfo>();
+    auto info = std::make_unique<web_app::WebAppInstallInfo>();
     info->start_url = kWebAppUrl;
     info->scope = kWebAppUrl.GetWithoutFilename();
     info->title = u"Foo Web App";

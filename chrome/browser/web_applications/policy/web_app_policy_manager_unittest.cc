@@ -425,8 +425,8 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
   }
 
   void InstallPwa(const std::string& url) {
-    std::unique_ptr<WebAppInstallInfo> web_app_info =
-        std::make_unique<WebAppInstallInfo>(
+    std::unique_ptr<web_app::WebAppInstallInfo> web_app_info =
+        std::make_unique<web_app::WebAppInstallInfo>(
             GenerateManifestIdFromStartUrlOnly(GURL(url)));
     web_app_info->start_url = GURL(url);
     web_app::test::InstallWebApp(profile(), std::move(web_app_info));

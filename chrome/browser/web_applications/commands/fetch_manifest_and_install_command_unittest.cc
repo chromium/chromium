@@ -132,7 +132,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
     return base::BindOnce(
         [](bool accept, mojom::UserDisplayMode user_display_mode,
            content::WebContents* initiator_web_contents,
-           std::unique_ptr<WebAppInstallInfo> web_app_info,
+           std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
            WebAppInstallationAcceptanceCallback acceptance_callback) {
           web_app_info->user_display_mode = user_display_mode;
           std::move(acceptance_callback).Run(accept, std::move(web_app_info));
@@ -309,7 +309,7 @@ TEST_F(FetchManifestAndInstallCommandTest, Shutdown) {
   base::RunLoop dialog_runloop;
   auto dialog_callback = base::BindLambdaForTesting(
       [&](content::WebContents* initiator_web_contents,
-          std::unique_ptr<WebAppInstallInfo> web_app_info,
+          std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
           WebAppInstallationAcceptanceCallback acceptance_callback) {
         std::move(acceptance_callback).Run(true, std::move(web_app_info));
         dialog_runloop.Quit();

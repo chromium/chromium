@@ -10,14 +10,16 @@
 #include "base/containers/flat_map.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 
+namespace web_app {
 struct WebAppInstallInfo;
+}  // namespace web_app
 
 class MediaSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit MediaSystemAppDelegate(Profile* profile);
 
   // ash::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
+  std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldCaptureNavigations() const override;
   bool ShouldShowInSearch() const override;
@@ -34,7 +36,7 @@ class MediaSystemAppDelegate : public ash::SystemWebAppDelegate {
 };
 
 // Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp();
+std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForMediaWebApp();
 
 // Returns a snapshot of the product-specific data that is attached to HaTS for
 // the MediaApp.

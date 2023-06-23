@@ -9,14 +9,17 @@
 #include "ui/gfx/geometry/rect.h"
 
 class Browser;
+
+namespace web_app {
 struct WebAppInstallInfo;
+}  // namespace web_app
 
 class EcheSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit EcheSystemAppDelegate(Profile* profile);
 
   // ash::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
+  std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldShowInSearch() const override;
@@ -31,6 +34,6 @@ class EcheSystemAppDelegate : public ash::SystemWebAppDelegate {
 };
 
 // Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForEcheApp();
+std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForEcheApp();
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_ECHE_APP_INFO_H_

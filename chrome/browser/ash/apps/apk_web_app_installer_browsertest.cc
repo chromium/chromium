@@ -60,8 +60,9 @@ const char kAppTitle1[] = "Test";
 const char kAppUrl1[] = "https://www.test.app";
 const char kAppScope1[] = "https://www.test.app/";
 
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInstallInfo(const GURL& url) {
-  auto web_app_install_info = std::make_unique<WebAppInstallInfo>();
+std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInstallInfo(
+    const GURL& url) {
+  auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_install_info->start_url = url;
   web_app_install_info->title = u"App Title";
   web_app_install_info->theme_color = SK_ColorBLUE;
@@ -676,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
   service->SetArcAppListPrefsForTesting(arc_app_list_prefs_);
 
   // Install the Web App as if the user installs it.
-  std::unique_ptr<WebAppInstallInfo> web_app_install_info =
+  std::unique_ptr<web_app::WebAppInstallInfo> web_app_install_info =
       CreateWebAppInstallInfo(GURL(kAppUrl));
 
   web_app::AppId app_id = web_app::test::InstallWebApp(
@@ -760,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
   EXPECT_FALSE(web_app->IsSynced());
 
   // Install the Web App as if the user installs it.
-  std::unique_ptr<WebAppInstallInfo> web_app_install_info =
+  std::unique_ptr<web_app::WebAppInstallInfo> web_app_install_info =
       CreateWebAppInstallInfo(GURL(kAppUrl));
 
   web_app::AppId web_app_id = web_app::test::InstallWebApp(

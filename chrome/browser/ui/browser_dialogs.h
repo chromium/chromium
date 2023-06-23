@@ -29,7 +29,6 @@ class Browser;
 class GURL;
 class LoginHandler;
 class Profile;
-struct WebAppInstallInfo;
 
 namespace base {
 class FilePath;
@@ -78,6 +77,10 @@ namespace webapps {
 class MlInstallOperationTracker;
 struct Screenshot;
 }  // namespace webapps
+
+namespace web_app {
+struct WebAppInstallInfo;
+}  // namespace web_app
 
 namespace chrome {
 
@@ -153,7 +156,7 @@ void ShowBluetoothDevicePairConfirmDialog(
 // WebAppInstallInfo parameter contains the information about the app,
 // possibly modified by the user.
 using AppInstallationAcceptanceCallback =
-    base::OnceCallback<void(bool, std::unique_ptr<WebAppInstallInfo>)>;
+    base::OnceCallback<void(bool, std::unique_ptr<web_app::WebAppInstallInfo>)>;
 
 // Shows the Web App install bubble.
 //
@@ -162,7 +165,7 @@ using AppInstallationAcceptanceCallback =
 // (for a Desktop PWA), or the current url (when creating a shortcut app).
 void ShowWebAppInstallDialog(
     content::WebContents* web_contents,
-    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     AppInstallationAcceptanceCallback callback);
 
@@ -234,7 +237,7 @@ enum class PwaInProductHelpState {
 // shown.
 void ShowPWAInstallBubble(
     content::WebContents* web_contents,
-    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     AppInstallationAcceptanceCallback callback,
     PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
@@ -244,7 +247,7 @@ void ShowPWAInstallBubble(
 // confirm or cancel install in this dialog.
 void ShowWebAppDetailedInstallDialog(
     content::WebContents* web_contents,
-    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     AppInstallationAcceptanceCallback callback,
     const std::vector<webapps::Screenshot>& screenshots,

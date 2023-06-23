@@ -26,8 +26,9 @@ constexpr gfx::Size CAMERA_WINDOW_DEFAULT_SIZE(kChromeCameraAppDefaultWidth,
                                                    32);
 }
 
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForCameraSystemWebApp() {
-  auto info = std::make_unique<WebAppInstallInfo>();
+std::unique_ptr<web_app::WebAppInstallInfo>
+CreateWebAppInfoForCameraSystemWebApp() {
+  auto info = std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUICameraAppMainURL);
   info->scope = GURL(ash::kChromeUICameraAppScopeURL);
 
@@ -64,8 +65,8 @@ CameraSystemAppDelegate::CameraSystemAppDelegate(Profile* profile)
                                 GURL("chrome://camera-app/views/main.html"),
                                 profile) {}
 
-std::unique_ptr<WebAppInstallInfo> CameraSystemAppDelegate::GetWebAppInfo()
-    const {
+std::unique_ptr<web_app::WebAppInstallInfo>
+CameraSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForCameraSystemWebApp();
 }
 

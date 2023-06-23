@@ -18,7 +18,10 @@
 
 class PrefRegistrySimple;
 class Profile;
+
+namespace web_app {
 struct WebAppInstallInfo;
+}  // namespace web_app
 
 namespace ash {
 
@@ -57,7 +60,7 @@ class WebKioskAppManager : public KioskAppManagerBase {
 
   // Updates app by the data obtained during installation.
   void UpdateAppByAccountId(const AccountId& account_id,
-                            const WebAppInstallInfo& app_info);
+                            const web_app::WebAppInstallInfo& app_info);
 
   // Updates app by title, start_url and icon_bitmaps.
   void UpdateAppByAccountId(const AccountId& account_id,

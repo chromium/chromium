@@ -31,10 +31,10 @@ PersonalizationSystemAppDelegate::PersonalizationSystemAppDelegate(
           GURL(ash::personalization_app::kChromeUIPersonalizationAppURL),
           profile) {}
 
-std::unique_ptr<WebAppInstallInfo>
+std::unique_ptr<web_app::WebAppInstallInfo>
 PersonalizationSystemAppDelegate::GetWebAppInfo() const {
-  std::unique_ptr<WebAppInstallInfo> info =
-      std::make_unique<WebAppInstallInfo>();
+  std::unique_ptr<web_app::WebAppInstallInfo> info =
+      std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url =
       GURL(ash::personalization_app::kChromeUIPersonalizationAppURL);
   info->scope = GURL(ash::personalization_app::kChromeUIPersonalizationAppURL);

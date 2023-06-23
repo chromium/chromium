@@ -174,6 +174,8 @@ struct WebAppShortcutsMenuItemInfo {
   IconSizes downloaded_icon_sizes{};
 };
 
+namespace web_app {
+
 // Structure used when installing a web page as an app.
 struct WebAppInstallInfo {
   enum MobileCapable {
@@ -379,6 +381,8 @@ struct WebAppInstallInfo {
   // Used this method in Clone() method. Use Clone() to deep copy explicitly.
   WebAppInstallInfo(const WebAppInstallInfo& other);
 };
+
+}  // namespace web_app
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2);
 

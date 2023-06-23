@@ -93,7 +93,7 @@ const char16_t kAppTitle[] = u"app";
 std::unique_ptr<web_app::WebAppDataRetriever> CreateDataRetrieverWithData(
     const GURL& url) {
   auto data_retriever = std::make_unique<web_app::FakeDataRetriever>();
-  auto info = std::make_unique<WebAppInstallInfo>();
+  auto info = std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = url;
   info->title = kAppTitle;
   data_retriever->SetRendererWebAppInstallInfo(std::move(info));
@@ -167,7 +167,7 @@ class WebKioskAppLauncherTest : public BrowserWithTestWindowTest {
     app_manager_->AddAppForTesting(account_id_, GURL(kAppInstallUrl));
 
     if (installed) {
-      WebAppInstallInfo info;
+      web_app::WebAppInstallInfo info;
       info.start_url = GURL(kAppLaunchUrl);
       info.title = kAppTitle;
       app_manager_->UpdateAppByAccountId(account_id_, info);

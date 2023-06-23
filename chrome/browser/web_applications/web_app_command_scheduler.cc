@@ -119,7 +119,8 @@ void WebAppCommandScheduler::FetchManifestAndInstall(
 void WebAppCommandScheduler::FetchInstallInfoFromInstallUrl(
     ManifestId manifest_id,
     GURL install_url,
-    base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback) {
+    base::OnceCallback<void(std::unique_ptr<web_app::WebAppInstallInfo>)>
+        callback) {
   if (IsShuttingDown()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), nullptr));
@@ -132,7 +133,7 @@ void WebAppCommandScheduler::FetchInstallInfoFromInstallUrl(
 }
 
 void WebAppCommandScheduler::InstallFromInfo(
-    std::unique_ptr<WebAppInstallInfo> install_info,
+    std::unique_ptr<web_app::WebAppInstallInfo> install_info,
     bool overwrite_existing_manifest_fields,
     webapps::WebappInstallSource install_surface,
     OnceInstallCallback install_callback,
@@ -154,7 +155,7 @@ void WebAppCommandScheduler::InstallFromInfo(
 }
 
 void WebAppCommandScheduler::InstallFromInfoWithParams(
-    std::unique_ptr<WebAppInstallInfo> install_info,
+    std::unique_ptr<web_app::WebAppInstallInfo> install_info,
     bool overwrite_existing_manifest_fields,
     webapps::WebappInstallSource install_surface,
     OnceInstallCallback install_callback,
@@ -177,7 +178,7 @@ void WebAppCommandScheduler::InstallFromInfoWithParams(
 }
 
 void WebAppCommandScheduler::InstallFromInfoWithParams(
-    std::unique_ptr<WebAppInstallInfo> install_info,
+    std::unique_ptr<web_app::WebAppInstallInfo> install_info,
     bool overwrite_existing_manifest_fields,
     webapps::WebappInstallSource install_surface,
     base::OnceCallback<void(const AppId& app_id,
@@ -298,7 +299,7 @@ void WebAppCommandScheduler::ScheduleManifestUpdateCheck(
 void WebAppCommandScheduler::ScheduleManifestUpdateFinalize(
     const GURL& url,
     const AppId& app_id,
-    WebAppInstallInfo install_info,
+    web_app::WebAppInstallInfo install_info,
     std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
     ManifestWriteCallback callback,

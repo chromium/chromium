@@ -54,9 +54,10 @@ GURL AppUrl2() {
   return GURL(content::GetWebUIURL("system-app2"));
 }
 
-std::unique_ptr<WebAppInstallInfo> GetWebAppInstallInfo(const GURL& url) {
-  std::unique_ptr<WebAppInstallInfo> info =
-      std::make_unique<WebAppInstallInfo>();
+std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInstallInfo(
+    const GURL& url) {
+  std::unique_ptr<web_app::WebAppInstallInfo> info =
+      std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = url;
   info->scope = url.GetWithoutFilename();
   info->title = u"Web App";

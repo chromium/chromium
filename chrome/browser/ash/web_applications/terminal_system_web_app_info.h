@@ -11,15 +11,18 @@
 #include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
-struct WebAppInstallInfo;
 class Browser;
+
+namespace web_app {
+struct WebAppInstallInfo;
+}  // namespace web_app
 
 class TerminalSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit TerminalSystemAppDelegate(Profile* profile);
 
   // ash::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
+  std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   Browser* GetWindowForLaunch(Profile* profile, const GURL& url) const override;
   bool ShouldShowNewWindowMenuOption() const override;
   bool ShouldShowInLauncher() const override;
@@ -37,7 +40,8 @@ class TerminalSystemAppDelegate : public ash::SystemWebAppDelegate {
 };
 
 // Returns a WebAppInstallInfo used to install the app.
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForTerminalSystemWebApp();
+std::unique_ptr<web_app::WebAppInstallInfo>
+CreateWebAppInfoForTerminalSystemWebApp();
 
 // Returns the default bounds.
 gfx::Rect GetDefaultBoundsForTerminal(Browser* browser);

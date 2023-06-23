@@ -11,14 +11,17 @@
 #include "ui/gfx/geometry/size.h"
 
 class Browser;
+
+namespace web_app {
 struct WebAppInstallInfo;
+}  // namespace web_app
 
 class PersonalizationSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit PersonalizationSystemAppDelegate(Profile* profile);
 
   // ash::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
+  std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   gfx::Size GetMinimumWindowSize() const override;
   gfx::Rect GetDefaultBounds(Browser* browser) const override;
   bool ShouldCaptureNavigations() const override;
@@ -29,6 +32,7 @@ class PersonalizationSystemAppDelegate : public ash::SystemWebAppDelegate {
 };
 
 // Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForPersonalizationApp();
+std::unique_ptr<web_app::WebAppInstallInfo>
+CreateWebAppInfoForPersonalizationApp();
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_SYSTEM_APP_DELEGATE_H_

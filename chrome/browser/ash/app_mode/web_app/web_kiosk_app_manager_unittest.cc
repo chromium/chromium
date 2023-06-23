@@ -291,7 +291,7 @@ TEST_F(WebKioskAppManagerTest, ShouldNotUpdateAppInfoForNonKioskApps) {
 
 TEST_F(WebKioskAppManagerTest, ShouldNotUpdateAppInfoForPlaceholders) {
   // Install app as placeholder.
-  auto app_info = std::make_unique<WebAppInstallInfo>();
+  auto app_info = std::make_unique<web_app::WebAppInstallInfo>();
   app_info->start_url = GURL(kAppLaunchUrl);
   app_info->scope = GURL(kAppInstallUrl);
   app_info->title = u"placeholder_title";

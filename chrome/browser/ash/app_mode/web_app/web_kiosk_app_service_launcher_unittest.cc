@@ -174,7 +174,7 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
     CreateWebAppWithManifest();
     InstallAppInternal(/*install_app_as_placeholder=*/false);
 
-    WebAppInstallInfo info;
+    web_app::WebAppInstallInfo info;
     info.start_url = GURL(kAppLaunchUrl);
     info.title = kAppTitle;
     app_manager_->UpdateAppByAccountId(account_id_, info);

@@ -70,7 +70,7 @@ class WebKioskTest : public WebKioskBaseTest {
 
   void MakeAppAlreadyInstalled() {
     if (!base::FeatureList::IsEnabled(::features::kKioskEnableAppService)) {
-      WebAppInstallInfo info;
+      web_app::WebAppInstallInfo info;
       info.start_url = GURL(kAppLaunchUrl);
       info.title = kAppTitle;
       WebKioskAppManager::Get()->UpdateAppByAccountId(account_id(), info);

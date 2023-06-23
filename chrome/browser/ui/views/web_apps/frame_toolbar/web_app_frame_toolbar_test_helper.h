@@ -12,7 +12,6 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 
-struct WebAppInstallInfo;
 class Browser;
 class BrowserNonClientFrameView;
 class BrowserView;
@@ -31,6 +30,10 @@ namespace views {
 class View;
 }  // namespace views
 
+namespace web_app {
+struct WebAppInstallInfo;
+}  // namespace web_app
+
 // Mixin for setting up and launching a web app in a browser test.
 class WebAppFrameToolbarTestHelper {
  public:
@@ -44,7 +47,7 @@ class WebAppFrameToolbarTestHelper {
                                         const GURL& start_url);
   web_app::AppId InstallAndLaunchCustomWebApp(
       Browser* browser,
-      std::unique_ptr<WebAppInstallInfo> web_app_info,
+      std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
       const GURL& start_url);
 
   GURL LoadWindowControlsOverlayTestPageWithDataAndGetURL(

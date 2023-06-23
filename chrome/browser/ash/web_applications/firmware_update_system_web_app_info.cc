@@ -45,9 +45,9 @@ SkColor GetDarkModeBackgroundColor() {
 }  // namespace
 
 // TODO(michaelcheco): Update to correct icon.
-std::unique_ptr<WebAppInstallInfo>
+std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForFirmwareUpdateSystemWebApp() {
-  auto info = std::make_unique<WebAppInstallInfo>();
+  auto info = std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIFirmwareUpdateAppURL);
   info->scope = GURL(ash::kChromeUIFirmwareUpdateAppURL);
   info->title = l10n_util::GetStringUTF16(IDS_ASH_FIRMWARE_UPDATE_APP_TITLE);
@@ -85,7 +85,7 @@ FirmwareUpdateSystemAppDelegate::FirmwareUpdateSystemAppDelegate(
                                 GURL(ash::kChromeUIFirmwareUpdateAppURL),
                                 profile) {}
 
-std::unique_ptr<WebAppInstallInfo>
+std::unique_ptr<web_app::WebAppInstallInfo>
 FirmwareUpdateSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForFirmwareUpdateSystemWebApp();
 }

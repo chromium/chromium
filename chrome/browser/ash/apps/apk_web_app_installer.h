@@ -84,7 +84,7 @@ class ApkWebAppInstaller {
   bool has_web_app_install_info() const {
     return web_app_install_info_ != nullptr;
   }
-  const WebAppInstallInfo& web_app_install_info() const {
+  const web_app::WebAppInstallInfo& web_app_install_info() const {
     return *web_app_install_info_;
   }
 
@@ -98,7 +98,7 @@ class ApkWebAppInstaller {
   InstallFinishCallback callback_;
   base::WeakPtr<Owner> weak_owner_;
 
-  std::unique_ptr<WebAppInstallInfo> web_app_install_info_;
+  std::unique_ptr<web_app::WebAppInstallInfo> web_app_install_info_;
 };
 
 }  // namespace ash

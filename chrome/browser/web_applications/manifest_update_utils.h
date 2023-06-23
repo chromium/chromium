@@ -140,7 +140,7 @@ ManifestDataChanges GetManifestDataChanges(
     const WebApp& existing_web_app,
     const IconBitmaps* existing_app_icon_bitmaps,
     const ShortcutsMenuIconBitmaps* existing_shortcuts_menu_icon_bitmaps,
-    const WebAppInstallInfo& new_install_info);
+    const web_app::WebAppInstallInfo& new_install_info);
 
 absl::optional<AppIconIdentityChange> CompareIdentityIconBitmaps(
     const IconBitmaps& existing_app_icon_bitmaps,

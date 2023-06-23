@@ -209,7 +209,7 @@ class CustomTabBarViewBrowserTest
   }
 
   void InstallPWA(const GURL& start_url) {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->user_display_mode =
@@ -218,7 +218,7 @@ class CustomTabBarViewBrowserTest
   }
 
   void InstallBookmark(const GURL& start_url) {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.DeprecatedGetOriginAsURL();
     web_app_info->user_display_mode =
@@ -234,7 +234,7 @@ class CustomTabBarViewBrowserTest
       nullptr;
 
  private:
-  void Install(std::unique_ptr<WebAppInstallInfo> web_app_info) {
+  void Install(std::unique_ptr<web_app::WebAppInstallInfo> web_app_info) {
     const GURL start_url = web_app_info->start_url;
     web_app::AppId app_id = InstallWebApp(std::move(web_app_info));
 

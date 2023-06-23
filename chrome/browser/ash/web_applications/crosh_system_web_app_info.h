@@ -11,14 +11,16 @@
 #include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace web_app {
 struct WebAppInstallInfo;
+}  // namespace web_app
 
 class CroshSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit CroshSystemAppDelegate(Profile* profile);
 
   // ash::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
+  std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldShowInLauncher() const override;
   Browser* GetWindowForLaunch(Profile* profile, const GURL& url) const override;
   bool ShouldShowInSearch() const override;
@@ -27,6 +29,7 @@ class CroshSystemAppDelegate : public ash::SystemWebAppDelegate {
 };
 
 // Returns a WebAppInstallInfo used to install the app.
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForCroshSystemWebApp();
+std::unique_ptr<web_app::WebAppInstallInfo>
+CreateWebAppInfoForCroshSystemWebApp();
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_CROSH_SYSTEM_WEB_APP_INFO_H_

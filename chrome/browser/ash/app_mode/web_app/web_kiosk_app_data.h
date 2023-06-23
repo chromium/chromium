@@ -17,7 +17,9 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
+namespace web_app {
 struct WebAppInstallInfo;
+}  // namespace web_app
 
 namespace ash {
 
@@ -58,7 +60,7 @@ class WebKioskAppData : public KioskAppDataBase {
   // update.
   void SetStatus(Status status, bool notify = true);
 
-  void UpdateFromWebAppInfo(const WebAppInstallInfo& app_info);
+  void UpdateFromWebAppInfo(const web_app::WebAppInstallInfo& app_info);
 
   void UpdateAppInfo(const std::string& title,
                      const GURL& start_url,

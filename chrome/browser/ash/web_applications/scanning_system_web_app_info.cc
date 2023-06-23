@@ -16,9 +16,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForScanningSystemWebApp() {
-  std::unique_ptr<WebAppInstallInfo> info =
-      std::make_unique<WebAppInstallInfo>();
+std::unique_ptr<web_app::WebAppInstallInfo>
+CreateWebAppInfoForScanningSystemWebApp() {
+  std::unique_ptr<web_app::WebAppInstallInfo> info =
+      std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIScanningAppUrl);
   info->scope = GURL(ash::kChromeUIScanningAppUrl);
   info->title = l10n_util::GetStringUTF16(IDS_SCANNING_APP_TITLE);
@@ -52,8 +53,8 @@ ScanningSystemAppDelegate::ScanningSystemAppDelegate(Profile* profile)
                                 GURL("chrome://scanning"),
                                 profile) {}
 
-std::unique_ptr<WebAppInstallInfo> ScanningSystemAppDelegate::GetWebAppInfo()
-    const {
+std::unique_ptr<web_app::WebAppInstallInfo>
+ScanningSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForScanningSystemWebApp();
 }
 

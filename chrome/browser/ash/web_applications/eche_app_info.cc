@@ -24,9 +24,9 @@ constexpr gfx::Size kMinimumEcheSize(240, 240);
 
 }  // namespace
 
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForEcheApp() {
-  std::unique_ptr<WebAppInstallInfo> info =
-      std::make_unique<WebAppInstallInfo>();
+std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForEcheApp() {
+  std::unique_ptr<web_app::WebAppInstallInfo> info =
+      std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = GURL(ash::eche_app::kChromeUIEcheAppURL);
   info->scope = GURL(ash::eche_app::kChromeUIEcheAppURL);
   // |title| should come from a resource string, but this is the Eche app, and
@@ -49,8 +49,8 @@ EcheSystemAppDelegate::EcheSystemAppDelegate(Profile* profile)
                                 GURL("chrome://eche-app"),
                                 profile) {}
 
-std::unique_ptr<WebAppInstallInfo> EcheSystemAppDelegate::GetWebAppInfo()
-    const {
+std::unique_ptr<web_app::WebAppInstallInfo>
+EcheSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForEcheApp();
 }
 bool EcheSystemAppDelegate::ShouldCaptureNavigations() const {

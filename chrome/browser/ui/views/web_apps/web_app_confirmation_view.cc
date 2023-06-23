@@ -79,7 +79,7 @@ std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
 WebAppConfirmationView::~WebAppConfirmationView() {}
 
 WebAppConfirmationView::WebAppConfirmationView(
-    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     chrome::AppInstallationAcceptanceCallback callback)
     : web_app_info_(std::move(web_app_info)),
@@ -262,7 +262,7 @@ namespace chrome {
 
 void ShowWebAppInstallDialog(
     content::WebContents* web_contents,
-    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     AppInstallationAcceptanceCallback callback) {
   CHECK(web_app_info);

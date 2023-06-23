@@ -248,6 +248,8 @@ base::Value WebAppShortcutsMenuItemInfo::AsDebugValue() const {
 
 // WebAppInstallInfo
 
+namespace web_app {
+
 // static
 WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
     const GURL& document_url,
@@ -292,6 +294,8 @@ WebAppInstallInfo::~WebAppInstallInfo() = default;
 WebAppInstallInfo WebAppInstallInfo::Clone() const {
   return WebAppInstallInfo(*this);
 }
+
+}  // namespace web_app
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2) {
   return std::tie(icon_sizes1.any, icon_sizes1.maskable,

@@ -33,7 +33,7 @@ class WebAppConfirmationView : public views::DialogDelegateView,
  public:
   METADATA_HEADER(WebAppConfirmationView);
   WebAppConfirmationView(
-      std::unique_ptr<WebAppInstallInfo> web_app_info,
+      std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
       chrome::AppInstallationAcceptanceCallback callback);
   WebAppConfirmationView(const WebAppConfirmationView&) = delete;
@@ -59,7 +59,7 @@ class WebAppConfirmationView : public views::DialogDelegateView,
 
   // The WebAppInstallInfo that the user is editing.
   // Cleared when the dialog completes (Accept/WindowClosing).
-  std::unique_ptr<WebAppInstallInfo> web_app_info_;
+  std::unique_ptr<web_app::WebAppInstallInfo> web_app_info_;
 
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker_;
 

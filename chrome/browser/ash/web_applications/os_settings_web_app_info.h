@@ -13,14 +13,16 @@
 #include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace web_app {
 struct WebAppInstallInfo;
+}  // namespace web_app
 
 class OSSettingsSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit OSSettingsSystemAppDelegate(Profile* profile);
 
   // ash::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
+  std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
   gfx::Size GetMinimumWindowSize() const override;
   std::vector<std::string> GetAppIdsToUninstallAndReplace() const override;
@@ -29,6 +31,7 @@ class OSSettingsSystemAppDelegate : public ash::SystemWebAppDelegate {
 };
 
 // Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForOSSettingsSystemWebApp();
+std::unique_ptr<web_app::WebAppInstallInfo>
+CreateWebAppInfoForOSSettingsSystemWebApp();
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_OS_SETTINGS_WEB_APP_INFO_H_

@@ -157,14 +157,14 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
           next_step_callback);
 
   void ValidateManifestAndCreateInstallInfo(
-      base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
+      base::OnceCallback<void(web_app::WebAppInstallInfo)> next_step_callback,
       IsolatedWebAppInstallCommandHelper::ManifestAndUrl manifest_and_url);
 
   void RetrieveIconsAndPopulateInstallInfo(
-      base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
-      WebAppInstallInfo install_info);
+      base::OnceCallback<void(web_app::WebAppInstallInfo)> next_step_callback,
+      web_app::WebAppInstallInfo install_info);
 
-  void FinalizeInstall(WebAppInstallInfo info);
+  void FinalizeInstall(web_app::WebAppInstallInfo info);
   void OnFinalizeInstall(const AppId& unused_app_id,
                          webapps::InstallResultCode install_result_code,
                          OsHooksErrors unused_os_hooks_errors);

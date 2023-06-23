@@ -119,7 +119,7 @@ void WebAppProviderBridgeLacros::WebAppInstalledInArcImpl(
     Profile* profile) {
   DCHECK(profile);
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  auto install_info = std::make_unique<WebAppInstallInfo>();
+  auto install_info = std::make_unique<web_app::WebAppInstallInfo>();
   install_info->title = arc_install_info->title;
   install_info->start_url = arc_install_info->start_url;
   install_info->display_mode = blink::mojom::DisplayMode::kStandalone;

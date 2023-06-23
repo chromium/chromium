@@ -85,7 +85,7 @@ void ApkWebAppInstaller::Start(const std::string& package_name,
   }
 
   DCHECK(!web_app_install_info_);
-  web_app_install_info_ = std::make_unique<WebAppInstallInfo>();
+  web_app_install_info_ = std::make_unique<web_app::WebAppInstallInfo>();
 
   web_app_install_info_->title = base::UTF8ToUTF16(web_app_info->title);
 
@@ -173,7 +173,7 @@ void ApkWebAppInstaller::DoInstall() {
   if (web_app::IsWebAppsCrosapiEnabled()) {
     GURL start_url = web_app_install_info_->start_url;
 
-    std::unique_ptr<WebAppInstallInfo> web_app_install_info =
+    std::unique_ptr<web_app::WebAppInstallInfo> web_app_install_info =
         std::move(web_app_install_info_);
     auto arc_install_info = crosapi::mojom::ArcWebAppInstallInfo::New();
     arc_install_info->title = std::move(web_app_install_info->title);

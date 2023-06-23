@@ -10,14 +10,16 @@
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 
+namespace web_app {
 struct WebAppInstallInfo;
+}  // namespace web_app
 
 class FileManagerSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit FileManagerSystemAppDelegate(Profile* profile);
 
   // ash::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
+  std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
   Browser* GetWindowForLaunch(Profile* profile, const GURL& url) const override;
   bool ShouldShowNewWindowMenuOption() const override;
@@ -26,6 +28,6 @@ class FileManagerSystemAppDelegate : public ash::SystemWebAppDelegate {
 };
 
 // Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFileManager();
+std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForFileManager();
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_FILE_MANAGER_WEB_APP_INFO_H_

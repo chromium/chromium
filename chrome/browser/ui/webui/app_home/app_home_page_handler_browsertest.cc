@@ -141,8 +141,9 @@ class TestAppHomePageHandler : public AppHomePageHandler {
   base::OnceClosure run_on_os_login_mode_changed_handle_;
 };
 
-std::unique_ptr<WebAppInstallInfo> BuildWebAppInfo(std::string test_app_name) {
-  auto app_info = std::make_unique<WebAppInstallInfo>();
+std::unique_ptr<web_app::WebAppInstallInfo> BuildWebAppInfo(
+    std::string test_app_name) {
+  auto app_info = std::make_unique<web_app::WebAppInstallInfo>();
   app_info->start_url = GURL(kTestAppUrl);
   app_info->scope = GURL(kTestAppUrl);
   app_info->title = base::UTF8ToUTF16(base::StringPiece(test_app_name));

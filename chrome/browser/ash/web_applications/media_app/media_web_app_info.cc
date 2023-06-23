@@ -234,9 +234,9 @@ MediaSystemAppDelegate::MediaSystemAppDelegate(Profile* profile)
   PhotosExperienceSurveyTrigger::Register(profile);
 }
 
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
-  std::unique_ptr<WebAppInstallInfo> info =
-      std::make_unique<WebAppInstallInfo>();
+std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
+  std::unique_ptr<web_app::WebAppInstallInfo> info =
+      std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIMediaAppURL);
   info->scope = GURL(ash::kChromeUIMediaAppURL);
 
@@ -311,8 +311,8 @@ void SetPhotosExperienceSurveyTriggerAppIdForTesting(const char* app_id) {
   PhotosExperienceSurveyTrigger::google_photos_app_id = app_id;
 }
 
-std::unique_ptr<WebAppInstallInfo> MediaSystemAppDelegate::GetWebAppInfo()
-    const {
+std::unique_ptr<web_app::WebAppInstallInfo>
+MediaSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForMediaWebApp();
 }
 

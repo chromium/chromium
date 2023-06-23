@@ -101,8 +101,8 @@ UnittestingSystemAppDelegate::UnittestingSystemAppDelegate(
 
 UnittestingSystemAppDelegate::~UnittestingSystemAppDelegate() = default;
 
-std::unique_ptr<WebAppInstallInfo> UnittestingSystemAppDelegate::GetWebAppInfo()
-    const {
+std::unique_ptr<web_app::WebAppInstallInfo>
+UnittestingSystemAppDelegate::GetWebAppInfo() const {
   return info_factory_.Run();
 }
 
@@ -340,8 +340,9 @@ TestSystemWebAppInstallation::TestSystemWebAppInstallation() {
 
 TestSystemWebAppInstallation::~TestSystemWebAppInstallation() = default;
 
-std::unique_ptr<WebAppInstallInfo> GenerateWebAppInstallInfoForTestApp() {
-  auto info = std::make_unique<WebAppInstallInfo>();
+std::unique_ptr<web_app::WebAppInstallInfo>
+GenerateWebAppInstallInfoForTestApp() {
+  auto info = std::make_unique<web_app::WebAppInstallInfo>();
   // the pwa.html is arguably wrong, but the manifest version uses it
   // incorrectly as well, and it's a lot of work to fix it. App ids are
   // generated from this, and it's important to keep it stable across the
@@ -356,7 +357,7 @@ std::unique_ptr<WebAppInstallInfo> GenerateWebAppInstallInfoForTestApp() {
   return info;
 }
 
-std::unique_ptr<WebAppInstallInfo>
+std::unique_ptr<web_app::WebAppInstallInfo>
 GenerateWebAppInstallInfoForTestAppUntrusted() {
   auto info = GenerateWebAppInstallInfoForTestApp();
   info->start_url = GURL("chrome-untrusted://test-system-app/pwa.html");
@@ -371,7 +372,8 @@ SkBitmap CreateIcon(int size) {
   return bitmap;
 }
 
-std::unique_ptr<WebAppInstallInfo> GenerateWebAppInstallInfoWithValidIcons() {
+std::unique_ptr<web_app::WebAppInstallInfo>
+GenerateWebAppInstallInfoWithValidIcons() {
   auto info = GenerateWebAppInstallInfoForTestApp();
   info->manifest_icons.emplace_back(info->start_url.Resolve("test.png"),
                                     web_app::icon_size::k256);
@@ -532,7 +534,7 @@ TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation() {
       std::make_unique<UnittestingSystemAppDelegate>(
           SystemWebAppType::SETTINGS, "Initiating App", kInitiatingAppUrl,
           base::BindLambdaForTesting([]() {
-            auto info = std::make_unique<WebAppInstallInfo>();
+            auto info = std::make_unique<web_app::WebAppInstallInfo>();
             // the pwa.html is arguably wrong, but the manifest
             // version uses it incorrectly as well, and it's a lot of
             // work to fix it. App ids are generated from this, and
@@ -667,7 +669,7 @@ TestSystemWebAppInstallation::SetUpAppWithShortcuts() {
           SystemWebAppType::SHORTCUT_CUSTOMIZATION, "Shortcuts",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindLambdaForTesting([]() {
-            std::unique_ptr<WebAppInstallInfo> info =
+            std::unique_ptr<web_app::WebAppInstallInfo> info =
                 GenerateWebAppInstallInfoForTestApp();
             info->title = u"Shortcuts";
             {
@@ -730,7 +732,7 @@ CreateSystemAppDelegateWithWindowConfig(
     SystemWebAppWindowConfig window_config) {
   auto* delegate = new UnittestingSystemAppDelegate(
       type, "Test App", app_url, base::BindLambdaForTesting([=]() {
-        auto info = std::make_unique<WebAppInstallInfo>();
+        auto info = std::make_unique<web_app::WebAppInstallInfo>();
         info->start_url = app_url;
         info->scope = app_url.DeprecatedGetOriginAsURL();
         info->title = u"Test System App";

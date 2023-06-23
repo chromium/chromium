@@ -22,9 +22,9 @@ ProjectorSystemWebAppDelegate::ProjectorSystemWebAppDelegate(Profile* profile)
 
 ProjectorSystemWebAppDelegate::~ProjectorSystemWebAppDelegate() = default;
 
-std::unique_ptr<WebAppInstallInfo>
+std::unique_ptr<web_app::WebAppInstallInfo>
 ProjectorSystemWebAppDelegate::GetWebAppInfo() const {
-  auto info = std::make_unique<WebAppInstallInfo>();
+  auto info = std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIUntrustedProjectorUrl);
   info->scope = GURL(ash::kChromeUIUntrustedProjectorUrl);
 

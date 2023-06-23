@@ -18,10 +18,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-std::unique_ptr<WebAppInstallInfo>
+std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForDiagnosticsSystemWebApp() {
-  std::unique_ptr<WebAppInstallInfo> info =
-      std::make_unique<WebAppInstallInfo>();
+  std::unique_ptr<web_app::WebAppInstallInfo> info =
+      std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIDiagnosticsAppUrl);
   info->scope = GURL(ash::kChromeUIDiagnosticsAppUrl);
 
@@ -48,8 +48,8 @@ DiagnosticsSystemAppDelegate::DiagnosticsSystemAppDelegate(Profile* profile)
                                 GURL("chrome://diagnostics"),
                                 profile) {}
 
-std::unique_ptr<WebAppInstallInfo> DiagnosticsSystemAppDelegate::GetWebAppInfo()
-    const {
+std::unique_ptr<web_app::WebAppInstallInfo>
+DiagnosticsSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForDiagnosticsSystemWebApp();
 }
 

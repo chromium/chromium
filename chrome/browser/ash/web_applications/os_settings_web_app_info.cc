@@ -18,9 +18,10 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForOSSettingsSystemWebApp() {
-  std::unique_ptr<WebAppInstallInfo> info =
-      std::make_unique<WebAppInstallInfo>();
+std::unique_ptr<web_app::WebAppInstallInfo>
+CreateWebAppInfoForOSSettingsSystemWebApp() {
+  std::unique_ptr<web_app::WebAppInstallInfo> info =
+      std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = GURL(chrome::kChromeUIOSSettingsURL);
   info->scope = GURL(chrome::kChromeUIOSSettingsURL);
   info->title = l10n_util::GetStringUTF16(IDS_SETTINGS_SETTINGS);
@@ -48,8 +49,8 @@ OSSettingsSystemAppDelegate::OSSettingsSystemAppDelegate(Profile* profile)
                                 GURL(chrome::kChromeUISettingsURL),
                                 profile) {}
 
-std::unique_ptr<WebAppInstallInfo> OSSettingsSystemAppDelegate::GetWebAppInfo()
-    const {
+std::unique_ptr<web_app::WebAppInstallInfo>
+OSSettingsSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForOSSettingsSystemWebApp();
 }
 

@@ -313,7 +313,7 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
   std::string CreateWebApp(const std::string& app_name) {
     const GURL kAppUrl(kUrl);
 
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->title = base::UTF8ToUTF16(app_name);
     web_app_info->start_url = kAppUrl;
     web_app_info->scope = kAppUrl;

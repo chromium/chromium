@@ -184,7 +184,7 @@ class WebAppsUninstallDialogViewBrowserTest
   }
 
   void CreateApp() {
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = GetAppURL();
     web_app_info->scope = GetAppURL().GetWithoutFilename();
 
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest,
     std::u16string sub_app_name = u"Sub App " + base::UTF8ToUTF16(app_name);
     sub_apps_expected.emplace(sub_app_name);
 
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url =
         https_server_.GetURL("app.com", "/sub-app-" + app_name);
     web_app_info->parent_app_id = app_id_;

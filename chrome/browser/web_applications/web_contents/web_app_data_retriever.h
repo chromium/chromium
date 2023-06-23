@@ -23,7 +23,6 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class GURL;
-struct WebAppInstallInfo;
 
 namespace content {
 class WebContents;
@@ -34,6 +33,8 @@ struct InstallableData;
 }
 
 namespace web_app {
+
+struct WebAppInstallInfo;
 
 enum class IconsDownloadedResult;
 

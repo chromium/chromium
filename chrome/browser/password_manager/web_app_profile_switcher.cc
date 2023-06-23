@@ -24,8 +24,9 @@
 
 namespace {
 
-WebAppInstallInfo MakeInstallInfoFromApp(const web_app::WebApp* web_app) {
-  WebAppInstallInfo install_info;
+web_app::WebAppInstallInfo MakeInstallInfoFromApp(
+    const web_app::WebApp* web_app) {
+  web_app::WebAppInstallInfo install_info;
   install_info.title = base::UTF8ToUTF16(web_app->untranslated_name());
   install_info.description =
       base::UTF8ToUTF16(web_app->untranslated_description());
@@ -127,8 +128,8 @@ void WebAppProfileSwitcher::InstallAndLaunchWebApp(IconBitmaps icon_bitmaps) {
   const web_app::WebApp* web_app =
       active_profile_provider->registrar_unsafe().GetAppById(app_id_);
   DCHECK(web_app);
-  auto install_info =
-      std::make_unique<WebAppInstallInfo>(MakeInstallInfoFromApp(web_app));
+  auto install_info = std::make_unique<web_app::WebAppInstallInfo>(
+      MakeInstallInfoFromApp(web_app));
   install_info->icon_bitmaps = std::move(icon_bitmaps);
 
   web_app::WebAppInstallParams install_params;

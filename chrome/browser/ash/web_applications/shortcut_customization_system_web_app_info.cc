@@ -16,9 +16,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 
-std::unique_ptr<WebAppInstallInfo>
+std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForShortcutCustomizationSystemWebApp() {
-  auto info = std::make_unique<WebAppInstallInfo>();
+  auto info = std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIShortcutCustomizationAppURL);
   info->scope = GURL(ash::kChromeUIShortcutCustomizationAppURL);
   info->title =
@@ -47,7 +47,7 @@ ShortcutCustomizationSystemAppDelegate::ShortcutCustomizationSystemAppDelegate(
                                 GURL(ash::kChromeUIShortcutCustomizationAppURL),
                                 profile) {}
 
-std::unique_ptr<WebAppInstallInfo>
+std::unique_ptr<web_app::WebAppInstallInfo>
 ShortcutCustomizationSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForShortcutCustomizationSystemWebApp();
 }

@@ -1930,7 +1930,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 web_app::AppId InstallPWAWithName(Profile* profile,
                                   const GURL& start_url,
                                   const std::string& app_name) {
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
+  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->user_display_mode =
@@ -2156,7 +2156,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
 
 #if !BUILDFLAG(IS_CHROMEOS)
 web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
+  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->user_display_mode =
@@ -2369,8 +2369,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
 
   // Install web app set to open as a tab.
   {
-    std::unique_ptr<WebAppInstallInfo> info =
-        std::make_unique<WebAppInstallInfo>();
+    std::unique_ptr<web_app::WebAppInstallInfo> info =
+        std::make_unique<web_app::WebAppInstallInfo>();
     info->start_url = GURL(kStartUrl);
     info->title = kAppName;
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
@@ -2736,8 +2736,8 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
   web_app::AppId InstallWebAppWithProtocolHandlers(
       const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers,
       const std::vector<apps::FileHandler>& file_handlers = {}) {
-    std::unique_ptr<WebAppInstallInfo> info =
-        std::make_unique<WebAppInstallInfo>();
+    std::unique_ptr<web_app::WebAppInstallInfo> info =
+        std::make_unique<web_app::WebAppInstallInfo>();
     info->start_url = GURL(kStartUrl);
     info->title = kAppName;
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;

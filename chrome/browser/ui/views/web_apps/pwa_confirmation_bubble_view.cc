@@ -60,7 +60,7 @@ bool g_dont_close_on_deactivate = false;
 
 // Returns an ImageView containing the app icon.
 std::unique_ptr<views::ImageView> CreateIconView(
-    const WebAppInstallInfo& web_app_info) {
+    const web_app::WebAppInstallInfo& web_app_info) {
   constexpr int kIconSize = 48;
   gfx::ImageSkia image(std::make_unique<WebAppInfoImageSource>(
                            kIconSize, web_app_info.icon_bitmaps.any),
@@ -100,7 +100,7 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
     views::View* anchor_view,
     content::WebContents* web_contents,
     PageActionIconView* highlight_icon_button,
-    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     chrome::AppInstallationAcceptanceCallback callback,
     chrome::PwaInProductHelpState iph_state,
@@ -313,7 +313,7 @@ namespace chrome {
 
 void ShowPWAInstallBubble(
     content::WebContents* web_contents,
-    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     AppInstallationAcceptanceCallback callback,
     PwaInProductHelpState iph_state) {

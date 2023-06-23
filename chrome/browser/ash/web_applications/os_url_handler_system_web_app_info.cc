@@ -36,9 +36,9 @@ OsUrlHandlerSystemWebAppDelegate::OsUrlHandlerSystemWebAppDelegate(
 
 OsUrlHandlerSystemWebAppDelegate::~OsUrlHandlerSystemWebAppDelegate() = default;
 
-std::unique_ptr<WebAppInstallInfo>
+std::unique_ptr<web_app::WebAppInstallInfo>
 OsUrlHandlerSystemWebAppDelegate::GetWebAppInfo() const {
-  auto info = std::make_unique<WebAppInstallInfo>();
+  auto info = std::make_unique<web_app::WebAppInstallInfo>();
   info->start_url = GURL(chrome::kChromeUIOsUrlAppURL);
   info->scope = GURL(chrome::kChromeUIOsUrlAppURL);
   info->title = l10n_util::GetStringUTF16(IDS_OS_URL_HANDLER_APP_NAME);

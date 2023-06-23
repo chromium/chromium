@@ -23,11 +23,11 @@
 class Browser;
 class BrowserWindow;
 class Profile;
-struct WebAppInstallInfo;
 
 namespace web_app {
 class WebAppUrlLoader;
 class WebAppDataRetriever;
+struct WebAppInstallInfo;
 }  // namespace web_app
 
 namespace ash {
@@ -78,8 +78,8 @@ class WebKioskAppLauncher : public KioskAppLauncher,
 
   // Callback method triggered after web application and its icon are
   // obtained from `WebKioskAppManager`.
-  void OnAppDataObtained(
-      absl::variant<WebAppInstallInfo, webapps::InstallResultCode> result);
+  void OnAppDataObtained(absl::variant<web_app::WebAppInstallInfo,
+                                       webapps::InstallResultCode> result);
 
   // Callback method triggered after the lacros-chrome window is created.
   void OnLacrosWindowCreated(crosapi::mojom::CreationResult result);

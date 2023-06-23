@@ -125,12 +125,12 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
     return app_id;
   }
 
-  AppId InstallApp(const WebAppInstallInfo& info, Profile* profile) {
+  AppId InstallApp(const web_app::WebAppInstallInfo& info, Profile* profile) {
     return InstallApp(info, profile,
                       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   }
 
-  AppId InstallApp(const WebAppInstallInfo& info,
+  AppId InstallApp(const web_app::WebAppInstallInfo& info,
                    Profile* profile,
                    webapps::WebappInstallSource source) {
     DCHECK(info.start_url.is_valid());
@@ -139,7 +139,7 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
     AppId app_id;
     auto* provider = WebAppProvider::GetForTest(profile);
     provider->scheduler().InstallFromInfo(
-        std::make_unique<WebAppInstallInfo>(info.Clone()),
+        std::make_unique<web_app::WebAppInstallInfo>(info.Clone()),
         /*overwrite_existing_manifest_fields=*/true, source,
         base::BindLambdaForTesting(
             [&run_loop, &app_id](const AppId& new_app_id,
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
                        SyncDoubleInstallationDifferentNames) {
   ASSERT_TRUE(SetupClients());
-  WebAppInstallInfo info;
+  web_app::WebAppInstallInfo info;
   info.title = u"Test name";
   info.start_url = GURL("http://www.chromium.org/path");
 
@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
 
-  WebAppInstallInfo info;
+  web_app::WebAppInstallInfo info;
   info.title = u"Test name";
   info.start_url = GURL("http://www.chromium.org/path");
   info.user_display_mode = mojom::UserDisplayMode::kStandalone;

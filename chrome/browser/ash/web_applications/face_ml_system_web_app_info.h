@@ -10,14 +10,16 @@
 #include "chrome/browser/profiles/profile.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace web_app {
 struct WebAppInstallInfo;
+}  // namespace web_app
 
 class FaceMLSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit FaceMLSystemAppDelegate(Profile* profile);
 
   // ash::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
+  std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   gfx::Rect GetDefaultBounds(Browser*) const override;
   bool IsAppEnabled() const override;
   bool ShouldCaptureNavigations() const override;
@@ -25,6 +27,6 @@ class FaceMLSystemAppDelegate : public ash::SystemWebAppDelegate {
 };
 
 // Return a WebAppInstallInfo used to install the app.
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFaceMLApp();
+std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForFaceMLApp();
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_FACE_ML_SYSTEM_WEB_APP_INFO_H_

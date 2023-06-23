@@ -315,7 +315,7 @@ namespace chrome {
 
 void ShowWebAppDetailedInstallDialog(
     content::WebContents* web_contents,
-    std::unique_ptr<WebAppInstallInfo> install_info,
+    std::unique_ptr<web_app::WebAppInstallInfo> install_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     chrome::AppInstallationAcceptanceCallback callback,
     const std::vector<webapps::Screenshot>& screenshots,
@@ -386,7 +386,7 @@ namespace web_app {
 
 WebAppDetailedInstallDialogDelegate::WebAppDetailedInstallDialogDelegate(
     content::WebContents* web_contents,
-    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     chrome::AppInstallationAcceptanceCallback callback,
     chrome::PwaInProductHelpState iph_state,

@@ -45,7 +45,7 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
       views::View* anchor_view,
       content::WebContents* web_contents,
       PageActionIconView* highlight_icon_button,
-      std::unique_ptr<WebAppInstallInfo> web_app_info,
+      std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
       chrome::AppInstallationAcceptanceCallback callback,
       chrome::PwaInProductHelpState iph_state,
@@ -77,7 +77,7 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
                                 views::Widget* widget) const override;
  private:
   raw_ptr<PageActionIconView> highlight_icon_button_ = nullptr;
-  std::unique_ptr<WebAppInstallInfo> web_app_info_;
+  std::unique_ptr<web_app::WebAppInstallInfo> web_app_info_;
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker_;
   chrome::AppInstallationAcceptanceCallback callback_;
 

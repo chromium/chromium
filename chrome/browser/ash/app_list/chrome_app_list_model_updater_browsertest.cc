@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterTest,
                        PRE_SessionRestartDoesntOverrideDefaultAppListPosition) {
   // Simluate installation of an app pinned to shelf by default:
   // App with web_app::kGmailAppId ID.
-  auto gmail_info = std::make_unique<WebAppInstallInfo>();
+  auto gmail_info = std::make_unique<web_app::WebAppInstallInfo>();
   gmail_info->start_url =
       GURL("https://mail.google.com/mail/?usp=installed_webapp");
   gmail_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterTest,
 
   // Simluate installation of an app pinned to shelf by default after initial
   // sync data is merged: app with web_app::kMessagesAppId ID.
-  auto messages_info = std::make_unique<WebAppInstallInfo>();
+  auto messages_info = std::make_unique<web_app::WebAppInstallInfo>();
   messages_info->start_url = GURL("https://messages.google.com/web/");
   messages_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
   web_app::test::InstallWebApp(profile(), std::move(messages_info));
