@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL sending 50 messages of size 65536 with backpressure applied should not hang promise_test: Unhandled rejection with value: object "SecurityError: Failed to construct 'WebSocket': An insecure WebSocket connection may not be initiated from a page loaded over HTTPS."
-Harness: the test ran to completion.
-
