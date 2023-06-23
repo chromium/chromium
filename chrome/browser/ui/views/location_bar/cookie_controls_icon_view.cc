@@ -98,7 +98,7 @@ void CookieControlsIconView::OnStatefulBounceCountChanged(int bounce_count) {
 void CookieControlsIconView::OnStatusChanged(
     CookieControlsStatus status,
     CookieControlsEnforcement enforcement,
-    absl::optional<base::Time> expiration) {
+    base::Time expiration) {
   // TODO(1446230): Implement OnStatusChanged.
 }
 

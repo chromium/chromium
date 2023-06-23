@@ -15,7 +15,6 @@
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -63,7 +62,7 @@ class CookieControlsController
   struct Status {
     CookieControlsStatus status;
     CookieControlsEnforcement enforcement;
-    absl::optional<base::Time> expiration;
+    base::Time expiration;
   };
 
   // The observed WebContents changes during the lifetime of the

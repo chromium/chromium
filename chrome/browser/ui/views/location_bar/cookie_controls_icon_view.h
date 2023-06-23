@@ -40,7 +40,7 @@ class CookieControlsIconView
   // CookieControlsObserver:
   void OnStatusChanged(CookieControlsStatus status,
                        CookieControlsEnforcement enforcement,
-                       absl::optional<base::Time> expiration) override;
+                       base::Time expiration) override;
   void OnSitesCountChanged(int allowed_sites, int blocked_sites) override;
   void OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel level) override;

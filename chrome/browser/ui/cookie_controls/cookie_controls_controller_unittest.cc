@@ -42,9 +42,7 @@ class MockCookieControlsObserver
  public:
   MOCK_METHOD(void,
               OnStatusChanged,
-              (CookieControlsStatus,
-               CookieControlsEnforcement,
-               absl::optional<base::Time>));
+              (CookieControlsStatus, CookieControlsEnforcement, base::Time));
   MOCK_METHOD(void, OnSitesCountChanged, (int, int));
   MOCK_METHOD(void,
               OnBreakageConfidenceLevelChanged,
@@ -330,9 +328,7 @@ class CookieControlsUserBypassTest : public CookieControlsTest {
 
   MockCookieControlsObserver* mock() { return &mock_; }
 
-  absl::optional<base::Time> zero_expiration() const { return base::Time(); }
-
-  absl::optional<base::Time> null_expiration() const { return absl::nullopt; }
+  base::Time zero_expiration() const { return base::Time(); }
 
  private:
   MockCookieControlsObserver mock_;
@@ -406,7 +402,7 @@ TEST_F(CookieControlsUserBypassTest, NewTabPage) {
   EXPECT_CALL(*mock(),
               OnStatusChanged(CookieControlsStatus::kDisabled,
                               CookieControlsEnforcement::kNoEnforcement,
-                              null_expiration()));
+                              zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
   cookie_controls()->Update(web_contents());
 }
@@ -425,7 +421,7 @@ TEST_F(CookieControlsUserBypassTest, PreferenceDisabled) {
   EXPECT_CALL(*mock(),
               OnStatusChanged(CookieControlsStatus::kDisabled,
                               CookieControlsEnforcement::kNoEnforcement,
-                              null_expiration()));
+                              zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,

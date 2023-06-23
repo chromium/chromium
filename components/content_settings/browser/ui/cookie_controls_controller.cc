@@ -84,17 +84,15 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
 
 CookieControlsController::Status CookieControlsController::GetStatus(
     content::WebContents* web_contents) {
-  // TODO(crbug.com/1446230): Return base::Time() instead of absl::nullopt to be
-  // consistent with the expiration value stored for permanent content settings.
   if (!cookie_settings_->ShouldBlockThirdPartyCookies()) {
     return {CookieControlsStatus::kDisabled,
-            CookieControlsEnforcement::kNoEnforcement, absl::nullopt};
+            CookieControlsEnforcement::kNoEnforcement, base::Time()};
   }
   const GURL& url = web_contents->GetLastCommittedURL();
   if (url.SchemeIs(content::kChromeUIScheme) ||
       url.SchemeIs(kExtensionScheme)) {
     return {CookieControlsStatus::kDisabled,
-            CookieControlsEnforcement::kNoEnforcement, absl::nullopt};
+            CookieControlsEnforcement::kNoEnforcement, base::Time()};
   }
 
   SettingSource source;
