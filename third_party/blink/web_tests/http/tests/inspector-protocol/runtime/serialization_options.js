@@ -71,6 +71,6 @@
       expression,
       serializationOptions
     })
-    testRunner.log(evalResult.result.result.deepSerializedValue);
+    testRunner.log(evalResult?.result?.result?.deepSerializedValue ?? evalResult);
   }
 })

@@ -38,11 +38,44 @@
 
   async function testExpression(expression) {
     await test(expression);
+    await test(expression, { UNKNOWN_PARAMETER_NAME: 'SOME_VALUE' });
+    await test(expression, { maxNodeDepth: 'STRING_INSTEAD_OF_INT' });
+    await test(expression, { INVALID_PARAMETER_TYPE: {} });
+    await test(expression, { maxNodeDepth:0 });
+    await test(expression, { maxNodeDepth:1 });
+    await test(expression, { maxNodeDepth:99 });
+    await test(expression, {
+      maxNodeDepth: 99,
+      includeShadowTree: "none"
+    }
+    );
+    await test(expression, {
+      maxNodeDepth:99 ,
+      includeShadowTree:"open"
+    });
+    await test(expression, {
+      includeShadowTree: "all"
+    }    );
+    await test(expression, {
+      maxNodeDepth: 0,
+      includeShadowTree: "all"
+
+    }    );
+    await test(expression, {
+      maxNodeDepth: 1,
+      includeShadowTree: "all"
+
+    });
+    await test(expression, {
+      maxNodeDepth: 99,
+      includeShadowTree: "all"
+    });
   }
 
-  async function test(expression) {
+  async function test(expression, additionalParameters) {
     const serializationOptions = {
-      serialization: "deep"
+      serialization: "deep",
+        additionalParameters
     }
     testRunner.log(`Testing '${expression}' with ${JSON.stringify(serializationOptions)}`);
 

@@ -52,6 +52,6 @@
       expression: expression,
       generateWebDriverValue: true,
     })
-    testRunner.log(evalResult.result.result.webDriverValue);
+    testRunner.log(evalResult.result?.result?.webDriverValue ?? evalResult);
   }
 })
