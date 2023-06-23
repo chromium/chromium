@@ -213,7 +213,7 @@ SavedDeskItemView* GetItemViewFromSavedDeskGrid(size_t grid_item_index) {
   return item_view;
 }
 
-views::Button* GetZeroStateLibraryButton() {
+const views::Button* GetZeroStateLibraryButton() {
   const auto* overview_grid = GetPrimaryOverviewGrid();
   if (!overview_grid)
     return nullptr;
@@ -223,7 +223,7 @@ views::Button* GetZeroStateLibraryButton() {
   return desks_bar_view ? desks_bar_view->zero_state_library_button() : nullptr;
 }
 
-views::Button* GetExpandedStateLibraryButton() {
+const views::Button* GetExpandedStateLibraryButton() {
   const auto* overview_grid = GetPrimaryOverviewGrid();
   if (!overview_grid)
     return nullptr;
@@ -235,31 +235,31 @@ views::Button* GetExpandedStateLibraryButton() {
              : nullptr;
 }
 
-views::Button* GetSaveDeskAsTemplateButton() {
+const views::Button* GetSaveDeskAsTemplateButton() {
   const auto* overview_grid = GetPrimaryOverviewGrid();
   if (!overview_grid)
     return nullptr;
   return overview_grid->GetSaveDeskAsTemplateButton();
 }
 
-views::Button* GetSaveDeskForLaterButton() {
+const views::Button* GetSaveDeskForLaterButton() {
   const auto* overview_grid = GetPrimaryOverviewGrid();
   return overview_grid ? overview_grid->GetSaveDeskForLaterButton() : nullptr;
 }
 
-views::Button* GetSavedDeskItemButton(int index) {
+const views::Button* GetSavedDeskItemButton(int index) {
   auto* item = GetItemViewFromSavedDeskGrid(index);
   return item ? static_cast<views::Button*>(item) : nullptr;
 }
 
-views::Button* GetSavedDeskItemDeleteButton(int index) {
+const views::Button* GetSavedDeskItemDeleteButton(int index) {
   auto* item = GetItemViewFromSavedDeskGrid(index);
   return item ? const_cast<IconButton*>(
                     SavedDeskItemViewTestApi(item).delete_button())
               : nullptr;
 }
 
-views::Button* GetSavedDeskDialogAcceptButton() {
+const views::Button* GetSavedDeskDialogAcceptButton() {
   const views::Widget* dialog_widget =
       saved_desk_util::GetSavedDeskDialogController()->dialog_widget();
   if (!dialog_widget)
