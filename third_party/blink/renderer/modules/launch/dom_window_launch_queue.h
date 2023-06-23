@@ -25,7 +25,7 @@ class DOMWindowLaunchQueue final
  public:
   static const char kSupplementName[];
 
-  explicit DOMWindowLaunchQueue();
+  explicit DOMWindowLaunchQueue(LocalDOMWindow& window);
 
   // IDL Interface.
   static Member<LaunchQueue> launchQueue(LocalDOMWindow&);
