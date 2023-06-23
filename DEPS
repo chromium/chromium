@@ -1268,7 +1268,7 @@ deps = {
     Var('chromium_git') + '/chromium/dom-distiller/dist.git' + '@' + '199de96b345ada7c6e7e6ba3d2fa7a6911b8767d',
 
   'src/third_party/eigen3/src':
-    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '7d7576f3262fa15c34d5575637bd8d7ff4a83f16',
+    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '969c31eefcdfaab11da763bea3f7502086673ab0',
 
   'src/third_party/emoji-metadata/src': {
     'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '045f146fca682a836e01cd265171312bfb300e06',
@@ -1296,7 +1296,7 @@ deps = {
     Var('chromium_git') + '/chromium/deps/flac.git' + '@' + '689da3a7ed50af7448c3f1961d1791c7c1d9c85c',
 
   'src/third_party/flatbuffers/src':
-    Var('chromium_git') + '/external/github.com/google/flatbuffers.git' + '@' + '13fc75cb6b7b44793f3f5b4ba025ff403d012c9f',
+    Var('chromium_git') + '/external/github.com/google/flatbuffers.git' + '@' + '28861d1d7d5ec6ce34d4bbdc10bec4aace341167',
 
   # Used for embedded builds. CrOS & Linux use the system version.
   'src/third_party/fontconfig/src': {
@@ -1808,7 +1808,7 @@ deps = {
   },
 
   'src/third_party/ruy/src':
-    Var('chromium_git') + '/external/github.com/google/ruy.git' + '@' + 'caa244343de289f913c505100e6a463d46c174de',
+    Var('chromium_git') + '/external/github.com/google/ruy.git' + '@' + 'da1f78712f7afd5ad4273562b429866601d74cfb',
 
   'src/third_party/skia':
     Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
@@ -1862,7 +1862,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + 'f3e12f6b28647da499edb69794745f14869f0df9',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '20c894625213655853ad07cb2b7b394299c0a582',
 
   'src/third_party/turbine': {
       'packages': [

@@ -84,6 +84,7 @@ source_set("tflite_public_headers") {
   public = [
     "src/tensorflow/lite/allocation.h",
     "src/tensorflow/lite/arena_planner.h",
+    "src/tensorflow/lite/array.h",
     "src/tensorflow/lite/c/builtin_op_data.h",
     "src/tensorflow/lite/context.h",
     "src/tensorflow/lite/context_util.h",
@@ -583,6 +584,7 @@ static_library("tflite_standalone") {
     "src/tensorflow/lite/acceleration/configuration/proto_to_flatbuffer.h",
     "src/tensorflow/lite/allocation.cc",
     "src/tensorflow/lite/arena_planner.cc",
+    "src/tensorflow/lite/array.cc",
     "src/tensorflow/lite/builtin_ops.h",
     "src/tensorflow/lite/c/common_internal.cc",
     "src/tensorflow/lite/c/common_internal.h",
@@ -756,6 +758,7 @@ static_library("tflite") {
     "src/tensorflow/lite/acceleration/configuration/proto_to_flatbuffer.h",
     "src/tensorflow/lite/allocation.cc",
     "src/tensorflow/lite/arena_planner.cc",
+    "src/tensorflow/lite/array.cc",
     "src/tensorflow/lite/builtin_ops.h",
     "src/tensorflow/lite/c/common_internal.cc",
     "src/tensorflow/lite/c/common_internal.h",

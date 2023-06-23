@@ -9,11 +9,20 @@ config("flatbuffers_config") {
   include_dirs = [
     "src/include",
     "src/src",
+    "src",
+    "generated",
   ]
 
   # Required to prevent static initialization of locale
   # in util.cpp
   defines = [ "FLATBUFFERS_LOCALE_INDEPENDENT=0" ]
+
+  if (is_clang) {
+    cflags = [
+      "-Wno-constant-conversion",
+      "-Wno-shorten-64-to-32",
+    ]
+  }
 }
 
 # The part of FlatBuffers that Chrome is interested in.
@@ -95,10 +104,9 @@ source_set("compiler_files") {
     "src/src/idl_gen_json_schema.h",
     "src/src/idl_gen_kotlin.cpp",
     "src/src/idl_gen_kotlin.h",
+    "src/src/idl_gen_kotlin_kmp.cpp",
     "src/src/idl_gen_lobster.cpp",
     "src/src/idl_gen_lobster.h",
-    "src/src/idl_gen_lua.cpp",
-    "src/src/idl_gen_lua.h",
     "src/src/idl_gen_php.cpp",
     "src/src/idl_gen_php.h",
     "src/src/idl_gen_python.cpp",
@@ -186,6 +194,8 @@ source_set("flatbuffers_test_files") {
 
 test("flatbuffers_unittests") {
   sources = [
+    "src/tests/64bit/offset64_test.cpp",
+    "src/tests/64bit/offset64_test.h",
     "src/tests/alignment_test.cpp",
     "src/tests/alignment_test.h",
     "src/tests/evolution_test.cpp",
