@@ -35,8 +35,6 @@ class NigoriKeyBag {
 
   NigoriKeyBag& operator=(NigoriKeyBag&&) = default;
 
-  void CopyFrom(const NigoriKeyBag& other);
-
   // Serialization to proto.
   sync_pb::NigoriKeyBag ToProto() const;
 

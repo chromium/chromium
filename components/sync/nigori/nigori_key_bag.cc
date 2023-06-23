@@ -93,11 +93,6 @@ NigoriKeyBag::NigoriKeyBag(NigoriKeyBag&& other) = default;
 
 NigoriKeyBag::~NigoriKeyBag() = default;
 
-void NigoriKeyBag::CopyFrom(const NigoriKeyBag& other) {
-  nigori_map_.clear();
-  AddAllUnknownKeysFrom(other);
-}
-
 sync_pb::NigoriKeyBag NigoriKeyBag::ToProto() const {
   sync_pb::NigoriKeyBag output;
   for (const auto& [key_name, nigori] : nigori_map_) {
