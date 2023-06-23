@@ -459,7 +459,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   primary_label_->SetMultiLine(true);
   primary_label_->SetAllowCharacterBreak(true);
   if (features::IsChromeRefresh2023()) {
-    primary_label_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
+    primary_label_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
   }
 
   main_button_holder_ = AddChildView(std::make_unique<views::FlexLayoutView>());

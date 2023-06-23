@@ -147,55 +147,90 @@ ui::ResourceBundle::FontDetails TypographyProvider::GetFontDetails(
           style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(16);
       details.weight = gfx::Font::Weight::NORMAL;
       break;
-    case style::STYLE_BODY_1_EMPHASIS:
+    case style::STYLE_BODY_1_MEDIUM:
       details.size_delta =
           style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(16);
       details.weight = gfx::Font::Weight::MEDIUM;
+      break;
+    case style::STYLE_BODY_1_BOLD:
+      details.size_delta =
+          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(16);
+      details.weight = gfx::Font::Weight::BOLD;
       break;
     case style::STYLE_BODY_2:
       details.size_delta =
           style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
       details.weight = gfx::Font::Weight::NORMAL;
       break;
-    case style::STYLE_BODY_2_EMPHASIS:
+    case style::STYLE_BODY_2_MEDIUM:
       details.size_delta =
           style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
       details.weight = gfx::Font::Weight::MEDIUM;
+      break;
+    case style::STYLE_BODY_2_BOLD:
+      details.size_delta =
+          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
+      details.weight = gfx::Font::Weight::BOLD;
       break;
     case style::STYLE_BODY_3:
       details.size_delta =
           style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(13);
       details.weight = gfx::Font::Weight::NORMAL;
       break;
-    case style::STYLE_BODY_3_EMPHASIS:
+    case style::STYLE_BODY_3_MEDIUM:
       details.size_delta =
           style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(13);
       details.weight = gfx::Font::Weight::MEDIUM;
+      break;
+    case style::STYLE_BODY_3_BOLD:
+      details.size_delta =
+          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(13);
+      details.weight = gfx::Font::Weight::BOLD;
       break;
     case style::STYLE_BODY_4:
       details.size_delta =
           style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(12);
       details.weight = gfx::Font::Weight::NORMAL;
       break;
-    case style::STYLE_BODY_4_EMPHASIS:
+    case style::STYLE_BODY_4_MEDIUM:
       details.size_delta =
           style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(12);
       details.weight = gfx::Font::Weight::MEDIUM;
+      break;
+    case style::STYLE_BODY_4_BOLD:
+      details.size_delta =
+          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(12);
+      details.weight = gfx::Font::Weight::BOLD;
       break;
     case style::STYLE_BODY_5:
       details.size_delta =
           style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(11);
       details.weight = gfx::Font::Weight::NORMAL;
       break;
-    case style::STYLE_BODY_5_EMPHASIS:
+    case style::STYLE_BODY_5_MEDIUM:
       details.size_delta =
           style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(11);
       details.weight = gfx::Font::Weight::MEDIUM;
+      break;
+    case style::STYLE_BODY_5_BOLD:
+      details.size_delta =
+          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(11);
+      details.weight = gfx::Font::Weight::BOLD;
       break;
     case style::STYLE_CAPTION:
       details.size_delta =
           style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(9);
       details.weight = gfx::Font::Weight::NORMAL;
+      break;
+    case style::STYLE_CAPTION_MEDIUM:
+      details.size_delta =
+          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(9);
+      details.weight = gfx::Font::Weight::MEDIUM;
+      break;
+    case style::STYLE_CAPTION_BOLD:
+      details.size_delta =
+          style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(9);
+      details.weight = gfx::Font::Weight::BOLD;
       break;
   }
 
@@ -253,21 +288,16 @@ ui::ColorId TypographyProvider::GetColorId(int context, int style) const {
 
 int TypographyProvider::GetLineHeight(int context, int style) const {
   constexpr auto line_heights = base::MakeFixedFlatMap<int, int>({
-      {style::STYLE_HEADLINE_1, 32},
-      {style::STYLE_HEADLINE_2, 24},
-      {style::STYLE_HEADLINE_3, 24},
-      {style::STYLE_HEADLINE_4, 24},
-      {style::STYLE_HEADLINE_5, 20},
-      {style::STYLE_BODY_1, 24},
-      {style::STYLE_BODY_1_EMPHASIS, 24},
-      {style::STYLE_BODY_2, 20},
-      {style::STYLE_BODY_2_EMPHASIS, 20},
-      {style::STYLE_BODY_3, 20},
-      {style::STYLE_BODY_3_EMPHASIS, 20},
-      {style::STYLE_BODY_4, 16},
-      {style::STYLE_BODY_4_EMPHASIS, 16},
-      {style::STYLE_BODY_5, 16},
-      {style::STYLE_BODY_5_EMPHASIS, 16},
+      {style::STYLE_HEADLINE_1, 32},    {style::STYLE_HEADLINE_2, 24},
+      {style::STYLE_HEADLINE_3, 24},    {style::STYLE_HEADLINE_4, 24},
+      {style::STYLE_HEADLINE_5, 20},    {style::STYLE_BODY_1, 24},
+      {style::STYLE_BODY_1_MEDIUM, 24}, {style::STYLE_BODY_1_BOLD, 24},
+      {style::STYLE_BODY_2, 20},        {style::STYLE_BODY_2_MEDIUM, 20},
+      {style::STYLE_BODY_2_BOLD, 20},   {style::STYLE_BODY_3, 20},
+      {style::STYLE_BODY_3_MEDIUM, 20}, {style::STYLE_BODY_3_BOLD, 20},
+      {style::STYLE_BODY_4, 16},        {style::STYLE_BODY_4_MEDIUM, 16},
+      {style::STYLE_BODY_4_BOLD, 16},   {style::STYLE_BODY_5, 16},
+      {style::STYLE_BODY_5_MEDIUM, 16}, {style::STYLE_BODY_5_BOLD, 16},
       {style::STYLE_CAPTION, 12},
   });
 

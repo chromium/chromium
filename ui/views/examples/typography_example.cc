@@ -91,10 +91,15 @@ void TypographyExample::CreateExampleView(View* container) {
           .AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStart,
                      TableLayout::kFixedSize, TableLayout::ColumnSize::kFixed,
                      220, 0)
+          .AddPaddingColumn(TableLayout::kFixedSize, 4)
+          .AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStart,
+                     TableLayout::kFixedSize, TableLayout::ColumnSize::kFixed,
+                     220, 0)
           .AddRows(9, TableLayout::kFixedSize, 0)
           .AddChildren(
               Builder<View>(), Builder<Label>().SetText(u"Regular"),
-              Builder<Label>().SetText(u"Emphasis"),
+              Builder<Label>().SetText(u"Medium"),
+              Builder<Label>().SetText(u"Bold"),
               Builder<Label>().SetText(u"Body1"),
               Builder<Label>()
                   .SetText(body_text)
@@ -105,7 +110,12 @@ void TypographyExample::CreateExampleView(View* container) {
                   .SetText(body_text)
                   .SetMultiLine(true)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                  .SetTextStyle(style::STYLE_BODY_1_EMPHASIS),
+                  .SetTextStyle(style::STYLE_BODY_1_MEDIUM),
+              Builder<Label>()
+                  .SetText(body_text)
+                  .SetMultiLine(true)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetTextStyle(style::STYLE_BODY_1_BOLD),
               Builder<Label>().SetText(u"Body2"),
               Builder<Label>()
                   .SetText(body_text)
@@ -116,7 +126,12 @@ void TypographyExample::CreateExampleView(View* container) {
                   .SetText(body_text)
                   .SetMultiLine(true)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                  .SetTextStyle(style::STYLE_BODY_2_EMPHASIS),
+                  .SetTextStyle(style::STYLE_BODY_2_MEDIUM),
+              Builder<Label>()
+                  .SetText(body_text)
+                  .SetMultiLine(true)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetTextStyle(style::STYLE_BODY_2_BOLD),
               Builder<Label>().SetText(u"Body3"),
               Builder<Label>()
                   .SetText(body_text)
@@ -127,7 +142,12 @@ void TypographyExample::CreateExampleView(View* container) {
                   .SetText(body_text)
                   .SetMultiLine(true)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                  .SetTextStyle(style::STYLE_BODY_3_EMPHASIS),
+                  .SetTextStyle(style::STYLE_BODY_3_MEDIUM),
+              Builder<Label>()
+                  .SetText(body_text)
+                  .SetMultiLine(true)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetTextStyle(style::STYLE_BODY_3_BOLD),
               Builder<Label>().SetText(u"Body4"),
               Builder<Label>()
                   .SetText(body_text)
@@ -138,7 +158,12 @@ void TypographyExample::CreateExampleView(View* container) {
                   .SetText(body_text)
                   .SetMultiLine(true)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                  .SetTextStyle(style::STYLE_BODY_4_EMPHASIS),
+                  .SetTextStyle(style::STYLE_BODY_4_MEDIUM),
+              Builder<Label>()
+                  .SetText(body_text)
+                  .SetMultiLine(true)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetTextStyle(style::STYLE_BODY_4_BOLD),
               Builder<Label>().SetText(u"Body5"),
               Builder<Label>()
                   .SetText(body_text)
@@ -149,13 +174,28 @@ void TypographyExample::CreateExampleView(View* container) {
                   .SetText(body_text)
                   .SetMultiLine(true)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                  .SetTextStyle(style::STYLE_BODY_5_EMPHASIS),
+                  .SetTextStyle(style::STYLE_BODY_5_MEDIUM),
+              Builder<Label>()
+                  .SetText(body_text)
+                  .SetMultiLine(true)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetTextStyle(style::STYLE_BODY_5_BOLD),
               Builder<Label>().SetText(u"Caption"),
               Builder<Label>()
                   .SetText(body_text)
                   .SetMultiLine(true)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                  .SetTextStyle(style::STYLE_CAPTION))
+                  .SetTextStyle(style::STYLE_CAPTION),
+              Builder<Label>()
+                  .SetText(body_text)
+                  .SetMultiLine(true)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetTextStyle(style::STYLE_CAPTION_MEDIUM),
+              Builder<Label>()
+                  .SetText(body_text)
+                  .SetMultiLine(true)
+                  .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+                  .SetTextStyle(style::STYLE_CAPTION_BOLD))
           .Build();
 
   auto wrapper = std::make_unique<BoxLayoutView>();

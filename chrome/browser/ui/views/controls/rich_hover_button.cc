@@ -107,7 +107,7 @@ RichHoverButton::RichHoverButton(
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetCanProcessEventsWithinSubtree(false);
   if (features::IsChromeRefresh2023()) {
-    title_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
+    title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
   }
 
   auto secondary_label = std::make_unique<views::Label>(
