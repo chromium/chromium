@@ -3811,7 +3811,7 @@
   {
     "name": "enable-webusb-device-detection",
     "owners": [ "reillyg", "deviceapi-team@google.com" ],
-    "expiry_milestone": 116
+    "expiry_milestone": 128
   },
   {
     "name": "enable-webview-tag-mparch-behavior",
