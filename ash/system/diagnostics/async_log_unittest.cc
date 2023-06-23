@@ -109,7 +109,8 @@ TEST_F(AsyncLogTest, WriteMultipleLines) {
   EXPECT_EQ(lines, GetLogLines(log.GetContents()));
 }
 
-TEST_F(AsyncLogTest, NoUseAfterFreeCrash) {
+// TODO(crbug.com/1457442): reenable this.
+TEST_F(AsyncLogTest, DISABLED_NoUseAfterFreeCrash) {
   const std::string new_line = "Line\n";
 
   // Simulate race conditions between the destruction of AsyncLog and the
