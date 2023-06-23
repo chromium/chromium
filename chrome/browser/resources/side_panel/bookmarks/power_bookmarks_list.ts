@@ -848,6 +848,10 @@ export class PowerBookmarksListElement extends PolymerElement {
         (this.shouldHideHeader_() && this.shownBookmarks_.length === 0);
   }
 
+  private shouldHideFilterChips_(): boolean {
+    return this.guestMode_ || this.labels_.length === 0;
+  }
+
   private shouldHideHeader_(): boolean {
     return this.hasActiveLabels_() || !!this.searchQuery_;
   }

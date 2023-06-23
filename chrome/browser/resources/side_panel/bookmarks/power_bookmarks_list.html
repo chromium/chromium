@@ -48,7 +48,6 @@
 
   :host-context([chrome-refresh-2023]) cr-toolbar-search-field {
     margin: var(--sp-body-padding);
-    margin-block-end: 0;
   }
 
   hr {
@@ -140,7 +139,7 @@
   }
 
   :host-context([chrome-refresh-2023]) .label-row {
-    margin: var(--sp-card-gap) var(--sp-body-padding);
+    margin: 4px var(--sp-body-padding) var(--sp-card-gap);
   }
 
   cr-toolbar-selection-overlay {
@@ -188,7 +187,8 @@
       disabled="[[editing_]]" hidden="[[guestMode_]]"
       on-blur="onSearchBlurred_">
   </cr-toolbar-search-field>
-  <div class="label-row" hidden="[[guestMode_]]"
+  <div class="label-row"
+      hidden="[[shouldHideFilterChips_(guestMode_, labels_)]]"
       header-hidden$="[[shouldHideHeader_(
           labels_.*, searchQuery_, shownBookmarks_)]]">
     <template is="dom-repeat" items="[[labels_]]">
