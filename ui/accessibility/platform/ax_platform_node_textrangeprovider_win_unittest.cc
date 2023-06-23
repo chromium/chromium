@@ -17,6 +17,8 @@
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
+#include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
+
 using Microsoft::WRL::ComPtr;
 
 namespace ui {
@@ -899,7 +901,7 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
 };
 
 class MockAXPlatformNodeTextRangeProviderWin
-    : public CComObjectRootEx<CComMultiThreadModel>,
+    : public SequenceAffineComObjectRoot,
       public ITextRangeProvider {
  public:
   BEGIN_COM_MAP(MockAXPlatformNodeTextRangeProviderWin)

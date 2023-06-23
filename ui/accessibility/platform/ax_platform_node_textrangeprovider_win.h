@@ -16,11 +16,12 @@
 #include "ui/accessibility/ax_position.h"
 #include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
+#include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
 
 namespace ui {
 class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
     "3071e40d-a10d-45ff-a59f-6e8e1138e2c1")) AXPlatformNodeTextRangeProviderWin
-    : public CComObjectRootEx<CComMultiThreadModel>,
+    : public SequenceAffineComObjectRoot,
       public ITextRangeProvider {
  public:
   BEGIN_COM_MAP(AXPlatformNodeTextRangeProviderWin)

@@ -27,6 +27,7 @@
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
 #include "ui/accessibility/platform/ichromeaccessible.h"
+#include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
 #include "ui/gfx/range/range.h"
 
 // This nonstandard GUID is taken directly from the Mozilla sources
@@ -372,10 +373,9 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   ~WinAccessibilityAPIUsageScopedUIAEventsNotifier();
 };
 
-// TODO(nektar): Remove multithread superclass since we don't support it.
 class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
     uuid("26f5641a-246d-457b-a96d-07f3fae6acf2")) AXPlatformNodeWin
-    : public CComObjectRootEx<CComMultiThreadModel>,
+    : public SequenceAffineComObjectRoot,
       public IDispatchImpl<IAccessible2_4,
                            &IID_IAccessible2_4,
                            &LIBID_IAccessible2Lib>,

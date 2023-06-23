@@ -31,6 +31,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
+#include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 #include "ui/base/win/atl_module.h"
 
@@ -7720,7 +7721,7 @@ TEST_F(AXPlatformNodeWinTest, SanitizeStringAttributeForIA2) {
 //
 
 class TestIChromeAccessibleDelegate
-    : public CComObjectRootEx<CComMultiThreadModel>,
+    : public SequenceAffineComObjectRoot,
       public IDispatchImpl<IChromeAccessibleDelegate> {
   using IDispatchImpl::Invoke;
 
