@@ -1696,6 +1696,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PdfOcr.MostDetectedLanguageInOcrData"
+    enum="LocaleCodeISO639" expires_after="2024-06-01">
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the language that is detected most in each OCR data when a PDF
+    accessibility tree receives the OCR data from the OCR model.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.PdfOcr.PDFImages" enum="PdfOcrRequestStatus"
     expires_after="2024-06-01">
   <owner>kyungjunlee@google.com</owner>
@@ -1707,6 +1717,17 @@ chromium-metrics-reviews@google.com.
     This metric helps to measure whether the OCR model manages to respond to all
     requests successfully or whether the user closes a PDF without waiting for
     OCR process to be done.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.PdfOcr.UserAcceptLanguage"
+    enum="LocaleCodeISO639" expires_after="2024-06-01">
+  <owner>kyungjunlee@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records user accept languages when PDF OCR first runs for the always mode
+    after user login; or whenever the user uses the once mode to extract text
+    from a PDF file.
   </summary>
 </histogram>
 

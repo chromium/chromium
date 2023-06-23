@@ -1,6 +1,7 @@
 include_rules = [
   "+content/public/renderer",
   "+content/public/test",
+  "+components/language/core/common/language_util.h",
   "+components/printing/renderer/print_render_frame_helper.h",
   "+components/services/screen_ai",
   "+components/strings/grit/components_strings.h",
