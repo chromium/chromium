@@ -156,6 +156,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreCredential.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateBridgeImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessReauthenticationHelper.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordListObserver.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordReauthenticationFragment.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/ReauthenticationManager.java",
   ]

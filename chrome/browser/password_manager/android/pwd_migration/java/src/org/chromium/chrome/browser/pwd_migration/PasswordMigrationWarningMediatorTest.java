@@ -17,6 +17,8 @@ import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarning
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.VISIBLE;
 
+import androidx.fragment.app.FragmentManager;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -87,7 +89,8 @@ public class PasswordMigrationWarningMediatorTest {
 
     private PasswordMigrationWarningMediator mMediator;
     private PropertyModel mModel;
-
+    @Mock
+    private FragmentManager mFragmentManager;
     @Mock
     private BottomSheetController mBottomSheetController;
     @Mock
@@ -112,7 +115,8 @@ public class PasswordMigrationWarningMediatorTest {
         mMediator = new PasswordMigrationWarningMediator(mProfile, mOptionsHandler);
         mModel = PasswordMigrationWarningProperties.createDefaultModel(
                 mMediator::onDismissed, mMediator);
-        mMediator.initialize(mModel);
+        mMediator.initializeModel(mModel);
+
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         SyncServiceFactory.overrideForTests(mSyncService);
     }
@@ -174,14 +178,14 @@ public class PasswordMigrationWarningMediatorTest {
     @Test
     public void testOnNextDismissesTheSheet() {
         mModel.set(VISIBLE, true);
-        mMediator.onNext(MigrationOption.SYNC_PASSWORDS);
+        mMediator.onNext(MigrationOption.SYNC_PASSWORDS, mFragmentManager);
         assertFalse(mModel.get(VISIBLE));
     }
 
     @Test
     public void testOnNextSelectedSyncNoConsent() {
         when(mSyncService.isSyncFeatureEnabled()).thenReturn(false);
-        mMediator.onNext(MigrationOption.SYNC_PASSWORDS);
+        mMediator.onNext(MigrationOption.SYNC_PASSWORDS, mFragmentManager);
         verify(mOptionsHandler).startSyncConsentFlow();
     }
 
@@ -189,8 +193,15 @@ public class PasswordMigrationWarningMediatorTest {
     public void testOnNextSelectedSyncWithConsentButPasswordsDisabled() {
         when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncService.getSelectedTypes()).thenReturn(Collections.EMPTY_SET);
-        mMediator.onNext(MigrationOption.SYNC_PASSWORDS);
+        mMediator.onNext(MigrationOption.SYNC_PASSWORDS, mFragmentManager);
         verify(mOptionsHandler).openSyncSettings();
+    }
+
+    @Test
+    public void testOnNextWithExportingSelectedStartsTheExportFlow() {
+        mMediator.onNext(MigrationOption.EXPORT_AND_DELETE, mFragmentManager);
+
+        verify(mOptionsHandler).startExportFlow(mFragmentManager);
     }
 
     @Test

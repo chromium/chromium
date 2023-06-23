@@ -25,6 +25,7 @@ android_library("java") {
     "//components/sync/android:sync_java",
     "//components/user_prefs/android:java",
     "//components/version_info/android:version_constants_java",
+    "//third_party/android_deps/utils:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
@@ -33,6 +34,7 @@ android_library("java") {
   ]
 
   sources = [
+    "java/src/org/chromium/chrome/browser/pwd_migration/ExportFlowInterface.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningCoordinator.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningIntroFragment.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningMediator.java",
@@ -69,6 +71,7 @@ robolectric_library("junit") {
     "//components/signin/public/android:signin_java_test_support",
     "//components/sync/android:sync_java",
     "//components/user_prefs/android:java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/espresso:espresso_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit:junit",

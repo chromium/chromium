@@ -70,9 +70,9 @@ import java.util.Locale;
  * to view saved passwords (just the username and URL), and to delete saved passwords.
  */
 public class PasswordSettings extends PreferenceFragmentCompat
-        implements PasswordManagerHandler.PasswordListObserver,
-                   Preference.OnPreferenceClickListener, SyncService.SyncStateChangedListener,
-                   FragmentHelpAndFeedbackLauncher, ProfileDependentSetting {
+        implements PasswordListObserver, Preference.OnPreferenceClickListener,
+                   SyncService.SyncStateChangedListener, FragmentHelpAndFeedbackLauncher,
+                   ProfileDependentSetting {
     @IntDef({TrustedVaultBannerState.NOT_SHOWN, TrustedVaultBannerState.OFFER_OPT_IN,
             TrustedVaultBannerState.OPTED_IN})
     @Retention(RetentionPolicy.SOURCE)
@@ -410,7 +410,10 @@ public class PasswordSettings extends PreferenceFragmentCompat
             PasswordMigrationWarningCoordinator passwordMigrationWarningCoordinator =
                     new PasswordMigrationWarningCoordinator(getContext(), mProfile,
                             mBottomSheetController, SyncConsentActivityLauncherImpl.get(),
-                            new SettingsLauncherImpl(), ManageSyncSettings.class);
+                            new SettingsLauncherImpl(), ManageSyncSettings.class, new ExportFlow(),
+                            (PasswordListObserver observer)
+                                    -> PasswordManagerHandlerProvider.getInstance().addObserver(
+                                            observer));
             passwordMigrationWarningCoordinator.showWarning();
         }
     }

@@ -10,8 +10,8 @@ import android.widget.Button;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.MigrationOption;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 
@@ -23,21 +23,27 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
  */
 public class PasswordMigrationWarningOptionsFragment extends Fragment {
     private Context mContext;
-    private Callback<Integer> mNextCallback;
+    private PasswordMigrationWarningOnClickHandler mOnClickHandler;
     private Runnable mCancelCallback;
     private String mChannelString;
     private RadioButtonWithDescription mSignInOrSyncButton;
     private RadioButtonWithDescription mPasswordExportButton;
     private String mAccountDisplayName;
+    private FragmentManager mFragmentManager;
+    private Runnable mOnResumeExportFlowCallback;
 
-    public PasswordMigrationWarningOptionsFragment(Context context, Callback<Integer> nextCallback,
-            Runnable cancelCallback, String channelString, String accountDisplayName) {
+    public PasswordMigrationWarningOptionsFragment(Context context,
+            PasswordMigrationWarningOnClickHandler onClickHandler, Runnable cancelCallback,
+            String channelString, String accountDisplayName, FragmentManager fragmentManager,
+            Runnable onResumeExportFlowCallback) {
         super(R.layout.pwd_migration_warning_options);
         mContext = context;
-        mNextCallback = nextCallback;
+        mOnClickHandler = onClickHandler;
         mCancelCallback = cancelCallback;
         mChannelString = channelString;
         mAccountDisplayName = accountDisplayName;
+        mFragmentManager = fragmentManager;
+        mOnResumeExportFlowCallback = onResumeExportFlowCallback;
     }
 
     @Override
@@ -61,9 +67,15 @@ public class PasswordMigrationWarningOptionsFragment extends Fragment {
 
     private void handleOptionSelected() {
         if (mSignInOrSyncButton.isChecked()) {
-            mNextCallback.onResult(MigrationOption.SYNC_PASSWORDS);
+            mOnClickHandler.onNext(MigrationOption.SYNC_PASSWORDS, mFragmentManager);
         } else if (mPasswordExportButton.isChecked()) {
-            mNextCallback.onResult(MigrationOption.EXPORT_AND_DELETE);
+            mOnClickHandler.onNext(MigrationOption.EXPORT_AND_DELETE, mFragmentManager);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mOnResumeExportFlowCallback.run();
     }
 }

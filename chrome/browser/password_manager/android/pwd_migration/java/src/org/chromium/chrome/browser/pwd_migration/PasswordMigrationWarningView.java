@@ -38,8 +38,9 @@ class PasswordMigrationWarningView implements BottomSheetContent {
     private final RelativeLayout mContentView;
     private Context mContext;
     private String mAccountDisplayName;
-
     private @ScreenType int mScreenType = ScreenType.NONE;
+
+    private Runnable mOnResumeExportFlowCallback;
 
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
         @Override
@@ -79,9 +80,11 @@ class PasswordMigrationWarningView implements BottomSheetContent {
         }
     };
 
-    PasswordMigrationWarningView(Context context, BottomSheetController bottomSheetController) {
+    PasswordMigrationWarningView(Context context, BottomSheetController bottomSheetController,
+            Runnable onResumeExportFlowCallback) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
+        mOnResumeExportFlowCallback = onResumeExportFlowCallback;
         mContentView = (RelativeLayout) LayoutInflater.from(context).inflate(
                 R.layout.pwd_migration_warning, null);
         ImageView sheetHeaderImage =
@@ -134,10 +137,11 @@ class PasswordMigrationWarningView implements BottomSheetContent {
                     .commit();
         } else if (mScreenType == ScreenType.OPTIONS_SCREEN) {
             PasswordMigrationWarningOptionsFragment optionsFragment =
-                    new PasswordMigrationWarningOptionsFragment(mContext, mOnClickHandler::onNext,
+                    new PasswordMigrationWarningOptionsFragment(mContext, mOnClickHandler,
                             ()
                                     -> mOnClickHandler.onCancel(mBottomSheetController),
-                            getChannelString(), mAccountDisplayName);
+                            getChannelString(), mAccountDisplayName, mFragmentManager,
+                            mOnResumeExportFlowCallback);
             mFragmentManager.beginTransaction()
                     .setReorderingAllowed(true)
                     .replace(R.id.fragment_container_view, optionsFragment)

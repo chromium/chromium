@@ -6,7 +6,11 @@ package org.chromium.chrome.browser.password_manager;
 
 import android.content.Context;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.password_manager.settings.ExportFlow;
+import org.chromium.chrome.browser.password_manager.settings.PasswordListObserver;
+import org.chromium.chrome.browser.password_manager.settings.PasswordManagerHandlerProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningCoordinator;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -25,10 +29,15 @@ class PasswordMigrationWarningBridge {
         if (bottomSheetController == null) return;
         Context context = windowAndroid.getContext().get();
         if (context == null) return;
+        // The export flow won't work unless the sheet is started with an Activity as a Context.
+        if (ContextUtils.activityFromContext(context) == null) return;
         PasswordMigrationWarningCoordinator passwordMigrationWarningCoordinator =
                 new PasswordMigrationWarningCoordinator(context, profile, bottomSheetController,
                         SyncConsentActivityLauncherImpl.get(), new SettingsLauncherImpl(),
-                        ManageSyncSettings.class);
+                        ManageSyncSettings.class, new ExportFlow(),
+                        (PasswordListObserver observer)
+                                -> PasswordManagerHandlerProvider.getInstance().addObserver(
+                                        observer));
         passwordMigrationWarningCoordinator.showWarning();
     }
 }
