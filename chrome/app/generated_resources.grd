@@ -5596,6 +5596,10 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
         Activate the extension
       </message>
 
+      <message name="IDS_EXTENSIONS_SUPERVISED_USER_PARENTAL_PERMISSION_FAILURE" desc="The error information displayed in extra details if the parent permission request flow fails unexpectedly when a supervised user attempts to install or enable an extension. Note that this does not include the case where a parent fails to enter their password.">
+        Parent permission request failed.
+      </message>
+
       <message name="IDS_EXTENSION_PACK_DIALOG_HEADING" desc="The heading of the pack extension dialog.">
         Select the root directory of the extension to pack. To update an extension, also select the private key file to reuse.
       </message>
