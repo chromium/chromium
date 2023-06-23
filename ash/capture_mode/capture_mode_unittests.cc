@@ -1067,14 +1067,14 @@ TEST_F(CaptureModeTest, MultiDisplayCaptureBarInitialLocation) {
   UpdateDisplay("800x700,801+0-800x700");
 
   auto* event_generator = GetEventGenerator();
-  MoveMouseToAndUpdateCursorDisplay(gfx::Point(1000, 500), event_generator);
+  event_generator->MoveMouseTo(gfx::Point(1000, 500));
 
   auto* controller = StartImageRegionCapture();
   EXPECT_TRUE(gfx::Rect(801, 0, 800, 800)
                   .Contains(GetCaptureModeBarView()->GetBoundsInScreen()));
   controller->Stop();
 
-  MoveMouseToAndUpdateCursorDisplay(gfx::Point(100, 500), event_generator);
+  event_generator->MoveMouseTo(gfx::Point(100, 500));
   StartImageRegionCapture();
   EXPECT_TRUE(gfx::Rect(800, 800).Contains(
       GetCaptureModeBarView()->GetBoundsInScreen()));
@@ -1085,7 +1085,7 @@ TEST_F(CaptureModeTest, DisplayRemoval) {
   UpdateDisplay("800x700,801+0-800x700");
 
   // Start capture mode on the secondary display.
-  MoveMouseToAndUpdateCursorDisplay(gfx::Point(1000, 500), GetEventGenerator());
+  GetEventGenerator()->MoveMouseTo(gfx::Point(1000, 500));
   auto* controller = StartImageRegionCapture();
   auto* session = controller->capture_mode_session();
   EXPECT_TRUE(gfx::Rect(801, 0, 800, 800)
@@ -1154,7 +1154,7 @@ TEST_F(CaptureModeTest, MultiDisplayFullscreenOrWindowSourceRootWindow) {
   ASSERT_EQ(2u, Shell::GetAllRootWindows().size());
 
   auto* event_generator = GetEventGenerator();
-  MoveMouseToAndUpdateCursorDisplay(gfx::Point(100, 500), event_generator);
+  event_generator->MoveMouseTo(gfx::Point(100, 500));
 
   for (auto source :
        {CaptureModeSource::kFullscreen, CaptureModeSource::kWindow}) {
@@ -1165,10 +1165,10 @@ TEST_F(CaptureModeTest, MultiDisplayFullscreenOrWindowSourceRootWindow) {
     auto* session = controller->capture_mode_session();
     EXPECT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
 
-    MoveMouseToAndUpdateCursorDisplay(gfx::Point(1000, 500), event_generator);
+    event_generator->MoveMouseTo(gfx::Point(1000, 500));
     EXPECT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
 
-    MoveMouseToAndUpdateCursorDisplay(gfx::Point(100, 500), event_generator);
+    event_generator->MoveMouseTo(gfx::Point(100, 500));
     EXPECT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
 
     controller->Stop();
@@ -1182,7 +1182,7 @@ TEST_F(CaptureModeTest, MultiDisplayRegionSourceRootWindow) {
   ASSERT_EQ(2u, Shell::GetAllRootWindows().size());
 
   auto* event_generator = GetEventGenerator();
-  MoveMouseToAndUpdateCursorDisplay(gfx::Point(100, 500), event_generator);
+  event_generator->MoveMouseTo(gfx::Point(100, 500));
 
   auto* controller = StartImageRegionCapture();
   auto* session = controller->capture_mode_session();
@@ -1190,7 +1190,7 @@ TEST_F(CaptureModeTest, MultiDisplayRegionSourceRootWindow) {
 
   // Tests that moving the mouse to the secondary display does not change the
   // root.
-  MoveMouseToAndUpdateCursorDisplay(gfx::Point(1000, 500), event_generator);
+  event_generator->MoveMouseTo(gfx::Point(1000, 500));
   EXPECT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
 
   // Tests that pressing the mouse changes the root. The capture bar stays on
@@ -1246,7 +1246,7 @@ TEST_F(CaptureModeTest, RegionCursorStates) {
 
   for (auto test_case : kRegionTestCases) {
     SCOPED_TRACE(test_case.scoped_trace);
-    MoveMouseToAndUpdateCursorDisplay(test_case.point, event_generator);
+    event_generator->MoveMouseTo(test_case.point);
     const CursorType original_cursor_type = cursor_manager->GetCursor().type();
     EXPECT_FALSE(cursor_manager->IsCursorLocked());
     auto* controller = StartImageRegionCapture();
@@ -3065,8 +3065,7 @@ TEST_P(CaptureModeHdcpTest, ProtectedWindowInMultiDisplay) {
   // Move the cursor to the secondary display before starting the session to
   // make sure the session starts on that display.
   auto* event_generator = GetEventGenerator();
-  MoveMouseToAndUpdateCursorDisplay(roots[1]->GetBoundsInScreen().CenterPoint(),
-                                    event_generator);
+  event_generator->MoveMouseTo(roots[1]->GetBoundsInScreen().CenterPoint());
   StartSessionForVideo();
   // Also, make sure the selected region is in the secondary display.
   auto* controller = CaptureModeController::Get();
@@ -3147,8 +3146,7 @@ TEST_F(CaptureModeTest, DetachDisplayWhileWindowRecording) {
   StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
 
   auto* event_generator = GetEventGenerator();
-  MoveMouseToAndUpdateCursorDisplay(window->GetBoundsInScreen().CenterPoint(),
-                                    event_generator);
+  event_generator->MoveMouseTo(window->GetBoundsInScreen().CenterPoint());
   auto* controller = CaptureModeController::Get();
   StartVideoRecordingImmediately();
   EXPECT_TRUE(controller->is_recording_in_progress());
@@ -3248,8 +3246,7 @@ TEST_F(CaptureModeTest, ClosingDisplayBeingFullscreenRecorded) {
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
 
   auto* event_generator = GetEventGenerator();
-  MoveMouseToAndUpdateCursorDisplay(roots[1]->GetBoundsInScreen().CenterPoint(),
-                                    event_generator);
+  event_generator->MoveMouseTo(roots[1]->GetBoundsInScreen().CenterPoint());
   auto* controller = CaptureModeController::Get();
   StartVideoRecordingImmediately();
   EXPECT_TRUE(controller->is_recording_in_progress());
@@ -3598,7 +3595,7 @@ TEST_F(CaptureModeTest, ReenterOnSmallerDisplay) {
   // that fits the primary display but would be too big for the secondary
   // display.
   auto* event_generator = GetEventGenerator();
-  MoveMouseToAndUpdateCursorDisplay(gfx::Point(700, 300), event_generator);
+  event_generator->MoveMouseTo(gfx::Point(700, 300));
   auto* controller = StartImageRegionCapture();
   SelectRegion(gfx::Rect(1200, 400));
   EXPECT_EQ(gfx::Rect(1200, 400), controller->user_capture_region());
@@ -3606,7 +3603,7 @@ TEST_F(CaptureModeTest, ReenterOnSmallerDisplay) {
 
   // Make the secondary display the targeted display. Test that the region has
   // shrunk to fit the display.
-  MoveMouseToAndUpdateCursorDisplay(gfx::Point(1500, 300), event_generator);
+  event_generator->MoveMouseTo(gfx::Point(1500, 300));
   StartImageRegionCapture();
   EXPECT_EQ(gfx::Rect(700, 400), controller->user_capture_region());
 }
@@ -5705,7 +5702,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
   UpdateDisplay("800x700,801+0-800x700");
   const gfx::Point point_in_second_display = gfx::Point(1000, 500);
   auto* event_generator = GetEventGenerator();
-  MoveMouseToAndUpdateCursorDisplay(point_in_second_display, event_generator);
+  event_generator->MoveMouseTo(point_in_second_display);
   window()->SetBoundsInScreen(
       gfx::Rect(900, 0, 600, 500),
       display::Screen::GetScreen()->GetDisplayNearestWindow(
@@ -6237,7 +6234,7 @@ TEST_F(CaptureModeSettingsTest, NudgeChangesRootWithBar) {
   UpdateDisplay("800x700,801+0-800x700");
 
   auto* event_generator = GetEventGenerator();
-  MoveMouseToAndUpdateCursorDisplay(gfx::Point(100, 500), event_generator);
+  event_generator->MoveMouseTo(gfx::Point(100, 500));
 
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
                                          CaptureModeType::kImage);
@@ -6250,7 +6247,7 @@ TEST_F(CaptureModeSettingsTest, NudgeChangesRootWithBar) {
                 ->GetRootWindow(),
             session->current_root());
 
-  MoveMouseToAndUpdateCursorDisplay(gfx::Point(1000, 500), event_generator);
+  event_generator->MoveMouseTo(gfx::Point(1000, 500));
   EXPECT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
   EXPECT_EQ(capture_toast_controller->capture_toast_widget()
                 ->GetNativeWindow()
@@ -6262,7 +6259,7 @@ TEST_F(CaptureModeSettingsTest, NudgeBehaviorWhenSelectingRegion) {
   UpdateDisplay("800x700,801+0-800x700");
 
   auto* event_generator = GetEventGenerator();
-  MoveMouseToAndUpdateCursorDisplay(gfx::Point(100, 500), event_generator);
+  event_generator->MoveMouseTo(gfx::Point(100, 500));
 
   auto* controller = StartImageRegionCapture();
   auto* session = controller->capture_mode_session();
@@ -6271,7 +6268,7 @@ TEST_F(CaptureModeSettingsTest, NudgeBehaviorWhenSelectingRegion) {
   // Nudge hides while selecting a region, but doesn't change roots until the
   // region change is committed.
   auto* nudge_controller = GetUserNudgeController();
-  MoveMouseToAndUpdateCursorDisplay(gfx::Point(1000, 500), event_generator);
+  event_generator->MoveMouseTo(gfx::Point(1000, 500));
   event_generator->PressLeftButton();
   EXPECT_FALSE(nudge_controller->is_visible());
   event_generator->MoveMouseBy(50, 60);

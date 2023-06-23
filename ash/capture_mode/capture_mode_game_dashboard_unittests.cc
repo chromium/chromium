@@ -426,8 +426,7 @@ TEST_F(GameDashboardCaptureModeTest, MultiDisplay) {
   VerifyCaptureBarPosition();
   // The current root window should not change if moving the cursor to a
   // different display as the game window.
-  MoveMouseToAndUpdateCursorDisplay(displays[1].bounds().CenterPoint(),
-                                    event_generator);
+  event_generator->MoveMouseTo(displays[1].bounds().CenterPoint());
   EXPECT_EQ(Shell::GetAllRootWindows()[0],
             capture_mode_session->current_root());
 
@@ -443,8 +442,7 @@ TEST_F(GameDashboardCaptureModeTest, MultiDisplay) {
   VerifyCaptureBarPosition();
   // The current root window should not change if moving the cursor to a
   // different display as the game window.
-  MoveMouseToAndUpdateCursorDisplay(displays[0].bounds().CenterPoint(),
-                                    event_generator);
+  event_generator->MoveMouseTo(displays[0].bounds().CenterPoint());
   EXPECT_EQ(Shell::GetAllRootWindows()[1],
             capture_mode_session->current_root());
 

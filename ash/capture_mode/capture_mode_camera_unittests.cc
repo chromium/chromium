@@ -1111,7 +1111,7 @@ TEST_F(CaptureModeCameraTest, MultiDisplayCameraPreviewWidgetBounds) {
 
   const gfx::Point point_in_second_display = gfx::Point(1000, 500);
   auto* event_generator = GetEventGenerator();
-  MoveMouseToAndUpdateCursorDisplay(point_in_second_display, event_generator);
+  event_generator->MoveMouseTo(point_in_second_display);
 
   // Start the capture session in the second display.
   auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
@@ -1129,14 +1129,14 @@ TEST_F(CaptureModeCameraTest, MultiDisplayCameraPreviewWidgetBounds) {
 
   // Move the capture session to the primary display should move the camera
   // preview to the primary display as well.
-  MoveMouseToAndUpdateCursorDisplay(gfx::Point(10, 20), event_generator);
+  event_generator->MoveMouseTo(gfx::Point(10, 20));
   EXPECT_TRUE(gfx::Rect(0, 0, 800, 700)
                   .Contains(preview_widget->GetWindowBoundsInScreen()));
 
   // Move back to the second display, switch to `kRegion` and set the capture
   // region. The camera preview should be moved back to the second display and
   // inside the capture region.
-  MoveMouseToAndUpdateCursorDisplay(point_in_second_display, event_generator);
+  event_generator->MoveMouseTo(point_in_second_display);
   controller->SetSource(CaptureModeSource::kRegion);
   // The capture region set through `controller` is in root coordinate.
   const gfx::Rect capture_region(100, 0, 400, 550);
@@ -3258,7 +3258,7 @@ TEST_P(CaptureModeCameraPreviewTest, CameraPreviewDragToSnapOnMultipleDisplay) {
 
   const gfx::Point point_in_second_display = gfx::Point(1000, 500);
   auto* event_generator = GetEventGenerator();
-  MoveMouseToAndUpdateCursorDisplay(point_in_second_display, event_generator);
+  event_generator->MoveMouseTo(point_in_second_display);
 
   // Start capture mode on the second display.
   StartCaptureSessionWithParam();
@@ -3514,7 +3514,7 @@ TEST_P(CaptureModeCameraPreviewTest, MultiDisplayResize) {
   // Put the cursor in the secondary display, and expect the session root to be
   // there.
   auto* event_generator = GetEventGenerator();
-  MoveMouseToAndUpdateCursorDisplay(gfx::Point(900, 500), event_generator);
+  event_generator->MoveMouseTo(gfx::Point(900, 500));
   StartCaptureSessionWithParam();
   auto* controller = CaptureModeController::Get();
   auto* session = controller->capture_mode_session();
