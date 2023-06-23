@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.C
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
@@ -136,7 +137,7 @@ class AccountSelectionMediator {
 
                 // TODO(crbug.com/1430240): Update SheetType and focus views for accessibility
                 // according to SheetType instead of number of accounts.
-                boolean isSingleAccountChooser = mAccounts.size() == 1;
+                boolean isSingleAccountChooser = mAccounts != null && mAccounts.size() == 1;
                 View focusView = continueButton != null && continueButton.isShown()
                                 && !isSingleAccountChooser
                         ? continueButton
@@ -219,6 +220,8 @@ class AccountSelectionMediator {
                 return SheetType.VERIFYING;
             case VERIFY_AUTO_REAUTHN:
                 return SheetType.AUTO_REAUTHN;
+            case SIGN_IN_TO_IDP_STATIC:
+                return SheetType.SIGN_IN_TO_IDP_STATIC;
         }
         assert false; // NOTREACHED
         return SheetType.ACCOUNT_SELECTION;
@@ -227,6 +230,7 @@ class AccountSelectionMediator {
     private void updateAccounts(
             String idpForDisplay, List<Account> accounts, boolean areAccountsClickable) {
         mSheetAccountItems.clear();
+        if (accounts == null) return;
 
         for (Account account : accounts) {
             final PropertyModel model = createAccountItem(account, areAccountsClickable);
@@ -293,6 +297,40 @@ class AccountSelectionMediator {
         }
     }
 
+    void showFailureDialog(String topFrameForDisplay, String iframeForDisplay, String idpForDisplay,
+            IdentityProviderMetadata idpMetadata, String rpContext) {
+        if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
+            // Use placeholder icon so that the header text wrapping does not change when the icon
+            // is fetched.
+            mBrandIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+            Canvas brandIconCanvas = new Canvas(mBrandIcon);
+            brandIconCanvas.drawColor(Color.TRANSPARENT);
+        }
+        mTopFrameForDisplay = topFrameForDisplay;
+        mIframeForDisplay = iframeForDisplay;
+        mIdpForDisplay = idpForDisplay;
+        mIdpMetadata = idpMetadata;
+        mRpContext = rpContext;
+        mHeaderType = HeaderProperties.HeaderType.SIGN_IN_TO_IDP_STATIC;
+        updateSheet(/*accounts=*/null, /*areAccountsClickable=*/false);
+        setComponentShowTime(SystemClock.elapsedRealtime());
+        if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
+            int brandIconIdealSize = AccountSelectionBridge.getBrandIconIdealSize();
+            ImageFetcher.Params params =
+                    ImageFetcher.Params.createNoResizing(new GURL(idpMetadata.getBrandIconUrl()),
+                            ImageFetcher.WEB_ID_ACCOUNT_SELECTION_UMA_CLIENT_NAME,
+                            brandIconIdealSize, brandIconIdealSize);
+
+            mImageFetcher.fetchImage(params, bitmap -> {
+                if (bitmap != null && bitmap.getWidth() == bitmap.getHeight()
+                        && bitmap.getWidth() >= AccountSelectionBridge.getBrandIconMinimumSize()) {
+                    mBrandIcon = bitmap;
+                    updateHeader();
+                }
+            });
+        }
+    }
+
     @VisibleForTesting
     void setComponentShowTime(long componentShowTime) {
         mComponentShowTime = componentShowTime;
@@ -337,12 +375,22 @@ class AccountSelectionMediator {
             onAccountSelected(mSelectedAccount);
         }
 
+        if (mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC) {
+            assert !isDataSharingConsentVisible;
+            assert mSelectedAccount == null;
+            isContinueButtonVisible = true;
+        }
+
         mModel.set(ItemProperties.CONTINUE_BUTTON,
                 isContinueButtonVisible ? createContinueBtnItem(mSelectedAccount, mIdpMetadata)
                                         : null);
         mModel.set(ItemProperties.DATA_SHARING_CONSENT,
                 isDataSharingConsentVisible
                         ? createDataSharingConsentItem(mIdpForDisplay, mClientMetadata)
+                        : null);
+        mModel.set(ItemProperties.IDP_SIGNIN,
+                mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC
+                        ? createIdpSignInItem(mIdpForDisplay)
                         : null);
 
         mBottomSheetContent.computeAndUpdateAccountListHeight();
@@ -410,6 +458,9 @@ class AccountSelectionMediator {
 
     void onClickAccountSelected(Account selectedAccount) {
         if (!shouldInputBeProcessed()) return;
+        // TODO(crbug.com/1456368): implement continue button for sign in to IDP case.
+        if (selectedAccount == null) return;
+
         onAccountSelected(selectedAccount);
     }
 
@@ -444,6 +495,7 @@ class AccountSelectionMediator {
 
     private PropertyModel createContinueBtnItem(
             Account account, IdentityProviderMetadata idpMetadata) {
+        assert account != null || mHeaderType == HeaderProperties.HeaderType.SIGN_IN_TO_IDP_STATIC;
         return new PropertyModel.Builder(ContinueButtonProperties.ALL_KEYS)
                 .with(ContinueButtonProperties.IDP_METADATA, idpMetadata)
                 .with(ContinueButtonProperties.ACCOUNT, account)
@@ -468,6 +520,12 @@ class AccountSelectionMediator {
 
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                 .with(DataSharingConsentProperties.PROPERTIES, properties)
+                .build();
+    }
+
+    private PropertyModel createIdpSignInItem(String idpForDisplay) {
+        return new PropertyModel.Builder(IdpSignInProperties.ALL_KEYS)
+                .with(IdpSignInProperties.IDP_FOR_DISPLAY, idpForDisplay)
                 .build();
     }
 }

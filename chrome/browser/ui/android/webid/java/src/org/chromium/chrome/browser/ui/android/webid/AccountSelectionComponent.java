@@ -53,6 +53,21 @@ public interface AccountSelectionComponent {
             ClientIdMetadata clientMetadata, boolean isAutoReauthn, String rpContext);
 
     /**
+     * Displays a dialog telling the user that they can sign in to an IDP for the purpose of
+     * federated login when the IDP sign-in status is signin but no accounts are received from the
+     * fetch.
+     *
+     * @param topFrameForDisplay is the formatted RP top frame URL to display in the FedCM prompt.
+     * @param iframeForDisplay is the formatted RP iframe URL to display in the FedCM prompt.
+     * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
+     * @param idpMetadata is the metadata of the IDP.
+     * @param rpContext is a {@link String} representing the desired text to be used in the title of
+     *         the FedCM prompt: "signin", "continue", etc.
+     */
+    void showFailureDialog(String topFrameForDisplay, String iframeForDisplay, String idpForDisplay,
+            IdentityProviderMetadata idpMetadata, String rpContext);
+
+    /**
      * Closes the outstanding bottom sheet.
      */
     void close();

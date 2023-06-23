@@ -123,6 +123,13 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
     }
 
     @Override
+    public void showFailureDialog(String topFrameForDisplay, String iframeForDisplay,
+            String idpForDisplay, IdentityProviderMetadata idpMetadata, String rpContext) {
+        mMediator.showFailureDialog(
+                topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext);
+    }
+
+    @Override
     public void close() {
         mMediator.close();
     }

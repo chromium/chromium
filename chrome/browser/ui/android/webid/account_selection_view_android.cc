@@ -183,7 +183,22 @@ void AccountSelectionViewAndroid::ShowFailureDialog(
     const std::string& idp_for_display,
     const blink::mojom::RpContext& rp_context,
     const content::IdentityProviderMetadata& idp_metadata) {
-  // TODO(crbug.com/1357790): add support on Android.
+  if (!RecreateJavaObject()) {
+    // It's possible that the constructor cannot access the bottom sheet clank
+    // component. That case may be temporary but we can't let users in a
+    // waiting state so report that AccountSelectionView is dismissed instead.
+    delegate_->OnDismiss(DismissReason::kOther);
+    return;
+  }
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> idp_metadata_obj =
+      ConvertToJavaIdentityProviderMetadata(env, idp_metadata);
+  Java_AccountSelectionBridge_showFailureDialog(
+      env, java_object_internal_,
+      ConvertUTF8ToJavaString(env, top_frame_for_display),
+      ConvertUTF8ToJavaString(env, iframe_for_display.value_or("")),
+      ConvertUTF8ToJavaString(env, idp_for_display), idp_metadata_obj,
+      ConvertRpContextToJavaString(env, rp_context));
 }
 
 std::string AccountSelectionViewAndroid::GetTitle() const {

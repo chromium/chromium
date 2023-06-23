@@ -205,6 +205,21 @@ public class AccountSelectionIntegrationTest {
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
     }
 
+    @Test
+    @MediumTest
+    public void testFailureDialogBackDismissesAndCallsCallback() {
+        runOnUiThreadBlocking(() -> {
+            mAccountSelection.showFailureDialog(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
+                    TEST_ETLD_PLUS_ONE_2, IDP_METADATA, "signin" /* rpContext */);
+        });
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+
+        Espresso.pressBack();
+
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        verify(mMockBridge, never()).onAccountSelected(any(), any());
+    }
+
     public static <T> T waitForEvent(T mock) {
         return verify(mock,
                 timeout(ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));

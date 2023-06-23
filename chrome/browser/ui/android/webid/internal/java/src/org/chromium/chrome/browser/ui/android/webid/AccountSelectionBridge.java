@@ -82,6 +82,8 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * @param iframeForDisplay is the formatted RP iframe URL to display in the FedCM prompt.
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param accounts is the list of accounts to be shown.
+     * @param idpMetadata is the metadata of the IDP.
+     * @param clientIdMetadata is the metadata of the RP.
      * @param isAutoReauthn represents whether this is an auto re-authn flow.
      * @param rpContext is a {@link String} representing the desired text to be used in the title of
      *         the FedCM prompt: "signin", "continue", etc.
@@ -93,6 +95,24 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
         assert accounts != null && accounts.length > 0;
         mAccountSelectionComponent.showAccounts(topFrameForDisplay, iframeForDisplay, idpForDisplay,
                 Arrays.asList(accounts), idpMetadata, clientIdMetadata, isAutoReauthn, rpContext);
+    }
+
+    /**
+     * Shows a bottomsheet prompting the user to sign in to an IDP for the purpose of federated
+     * login when the IDP sign-in status is signin but no accounts are received from the fetch.
+     *
+     * @param topFrameForDisplay is the formatted RP top frame URL to display in the FedCM prompt.
+     * @param iframeForDisplay is the formatted RP iframe URL to display in the FedCM prompt.
+     * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
+     * @param idpMetadata is the metadata of the IDP.
+     * @param rpContext is a {@link String} representing the desired text to be used in the title of
+     *         the FedCM prompt: "signin", "continue", etc.
+     */
+    @CalledByNative
+    private void showFailureDialog(String topFrameForDisplay, String iframeForDisplay,
+            String idpForDisplay, IdentityProviderMetadata idpMetadata, String rpContext) {
+        mAccountSelectionComponent.showFailureDialog(
+                topFrameForDisplay, iframeForDisplay, idpForDisplay, idpMetadata, rpContext);
     }
 
     @CalledByNative

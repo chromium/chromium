@@ -57,7 +57,7 @@ class AccountSelectionProperties {
      * sheet.
      */
     static class HeaderProperties {
-        public enum HeaderType { SIGN_IN, VERIFY, VERIFY_AUTO_REAUTHN }
+        public enum HeaderType { SIGN_IN, VERIFY, VERIFY_AUTO_REAUTHN, SIGN_IN_TO_IDP_STATIC }
         static final ReadableObjectPropertyKey<Runnable> CLOSE_ON_CLICK_LISTENER =
                 new ReadableObjectPropertyKey<>("close_on_click_listener");
         static final ReadableObjectPropertyKey<String> IDP_FOR_DISPLAY =
@@ -118,6 +118,19 @@ class AccountSelectionProperties {
     }
 
     /**
+     * Properties defined here reflect the state of the IDP sign in text in the AccountSelection
+     * sheet.
+     */
+    static class IdpSignInProperties {
+        static final ReadableObjectPropertyKey<String> IDP_FOR_DISPLAY =
+                new ReadableObjectPropertyKey<>("idp_for_display");
+
+        static final PropertyKey[] ALL_KEYS = {IDP_FOR_DISPLAY};
+
+        private IdpSignInProperties() {}
+    }
+
+    /**
      * Properties defined here reflect sections in the FedCM bottom sheet.
      */
     static class ItemProperties {
@@ -127,8 +140,11 @@ class AccountSelectionProperties {
                 new WritableObjectPropertyKey<>("data_sharing_consent");
         static final WritableObjectPropertyKey<PropertyModel> HEADER =
                 new WritableObjectPropertyKey<>("header");
+        static final WritableObjectPropertyKey<PropertyModel> IDP_SIGNIN =
+                new WritableObjectPropertyKey<>("idp_signin");
 
-        static final PropertyKey[] ALL_KEYS = {CONTINUE_BUTTON, DATA_SHARING_CONSENT, HEADER};
+        static final PropertyKey[] ALL_KEYS = {
+                CONTINUE_BUTTON, DATA_SHARING_CONSENT, HEADER, IDP_SIGNIN};
 
         private ItemProperties() {}
     }
