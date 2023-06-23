@@ -39,13 +39,21 @@
 
   h1 {
     color: var(--cros-text-color-primary);
-    font-family: 'Google Sans', Roboto, sans-serif;
     font-size: 28px;
     font-weight: normal;
     line-height: 28px;
     margin: 0;
     padding-top: 40px;
     text-align: var(--multidevice-setup-text-alignment);
+  }
+
+  :host-context(body.jelly-enabled) h1 {
+    font-family: var(--cros-font-family-google-sans);
+  }
+
+  /* TODO(b/279667779): Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)) h1 {
+    font-family: 'Google Sans', Roboto, sans-serif;
   }
 
   #message-container {
@@ -55,6 +63,11 @@
     overflow-wrap: break-word;
     padding-top: 16px;
     text-align: var(--multidevice-setup-text-alignment);
+  }
+
+  :host-context(body.jelly-enabled) #message-container {
+    font: var(--cros-body-1-font);
+    font-family: var(--cros-font-family-google-sans);
   }
 
   #main-container {

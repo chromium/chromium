@@ -11,6 +11,12 @@
     color: var(--cros-text-color-secondary);
   }
 
+  :host-context(body.jelly-enabled) #singleDeviceName,
+                                    .offline-device-name {
+    font: var(--cros-body-2-font);
+    font-family: var(--cros-font-family-google-sans);
+  }
+
   #animation-container {
     padding-top: 16px;
   }
@@ -62,6 +68,11 @@
   #feature-details-container {
     color: var(--cros-text-color-primary);
     padding-top: 40px;
+  }
+
+  :host-context(body.jelly-enabled) #feature-details-container {
+    font: var(--cros-body-1-font);
+    font-family: var(--cros-font-family-google-sans);
   }
 
   .feature-detail:not(:last-child) {

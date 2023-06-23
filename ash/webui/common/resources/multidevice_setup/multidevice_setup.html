@@ -18,6 +18,10 @@
     margin: auto;
   }
 
+  :host-context(body.jelly-enabled) #container {
+    font-family: var(--cros-font-family-google-sans);
+  }
+
   iron-pages {
     height: 100%;
     overflow: var(--iron-pages-overflow, visible);
