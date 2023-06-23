@@ -84,6 +84,10 @@ class WaylandScreen : public PlatformScreen {
 
   void DumpState(std::ostream& out) const;
 
+  // True if the internal representations for output objects is consistent for
+  // the screen.
+  bool VerifyOutputStateConsistentForTesting() const;
+
  protected:
   // Suspends or un-suspends the platform-specific screensaver, and returns
   // whether the operation was successful. Can be called more than once with the

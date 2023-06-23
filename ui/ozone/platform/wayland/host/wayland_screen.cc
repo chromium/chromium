@@ -144,9 +144,8 @@ void WaylandScreen::OnOutputRemoved(WaylandOutput::Id output_id) {
   if (iter == display_id_map_.end()) {
     return;
   }
-  int64_t display_id = iter->second;
-  display_id_map_.erase(iter);
 
+  int64_t display_id = iter->second;
   if (display_id == GetPrimaryDisplay().id()) {
     // First, set a new primary display as required by the |display_list_|. It's
     // safe to set any of the displays to be a primary one. Once the output is
@@ -162,6 +161,13 @@ void WaylandScreen::OnOutputRemoved(WaylandOutput::Id output_id) {
       }
     }
   }
+
+  // The `display_id_map_` and the `display_list_` must be updated at the same
+  // time to ensure internal display state is consistent. Code may otherwise
+  // draw different conclusions on the availability of a display depending on
+  // which of these structures are queried (see crbug.com/1408304).
+  display_id_map_.erase(iter);
+
   auto it = display_list_.FindDisplayById(display_id);
   if (it != display_list_.displays().end())
     display_list_.RemoveDisplay(display_id);
@@ -527,6 +533,25 @@ display::TabletState WaylandScreen::GetTabletState() const {
   return tablet_state_;
 }
 #endif
+
+bool WaylandScreen::VerifyOutputStateConsistentForTesting() const {
+  // The number of displays tracked by the display_list_ and the display_id_map_
+  // should match.
+  const auto& displays = display_list_.displays();
+  if (display_id_map_.size() != displays.size()) {
+    return false;
+  }
+
+  // Both the display_list_ and the display_id_map_ should be tracking the same
+  // displays.
+  for (const auto& pair : display_id_map_) {
+    if (base::ranges::find(displays, pair.second, &display::Display::id) ==
+        displays.end()) {
+      return false;
+    }
+  }
+  return true;
+}
 
 void WaylandScreen::DumpState(std::ostream& out) const {
   out << "WaylandScreen:" << std::endl;
