@@ -72,6 +72,7 @@ def _RunHistogramChecks(input_api, output_api, histogram_name):
   finally:
     sys.path = original_sys_path
 
+
 def _CheckUnwantedDependencies(input_api, output_api):
   problems = []
   for f in input_api.AffectedFiles():
@@ -90,6 +91,7 @@ def _CheckUnwantedDependencies(input_api, output_api):
       'chrome/browser cannot depend on blink/public/web interfaces. ' +
       'Use blink/public/common instead.',
       items=problems)]
+
 
 def _CheckNoInteractiveUiTestLibInNonInteractiveUiTest(input_api, output_api):
   """Makes sure that ui_controls related API are used only in
@@ -123,11 +125,37 @@ def _CheckNoInteractiveUiTestLibInNonInteractiveUiTest(input_api, output_api):
   if not problems:
     return []
 
-  warning_msg ="""
+  WARNING_MSG ="""
   ui_controls API can be used only in interactive_ui_tests.
   If the test is in the interactive_ui_tests, please consider renaming
   to xxx_interactive_uitest.cc"""
-  return [output_api.PresubmitPromptWarning(warning_msg, items=problems)]
+  return [output_api.PresubmitPromptWarning(WARNING_MSG, items=problems)]
+
+
+def _CheckForUselessExterns(input_api, output_api):
+  """Makes sure developers don't copy "extern const char kFoo[]" from
+  foo.h to foo.cc.
+  """
+  problems = []
+  BAD_PATTERN = input_api.re.compile(r'^extern const')
+
+  def FileFilter(affected_file):
+    """Check only a particular list of files"""
+    return input_api.FilterSourceFile(
+        affected_file,
+        files_to_check=[r'chrome[/\\]browser[/\\]flag_descriptions\.cc']);
+
+  for f in input_api.AffectedFiles(include_deletes=False,
+                                   file_filter=FileFilter):
+    for _, line in f.ChangedContents():
+      if BAD_PATTERN.search(line):
+        problems.append(f)
+
+  if not problems:
+    return []
+
+  WARNING_MSG ="""Do not write "extern const char" in these .cc files:"""
+  return [output_api.PresubmitPromptWarning(WARNING_MSG, items=problems)]
 
 
 def _CommonChecks(input_api, output_api):
@@ -141,6 +169,7 @@ def _CommonChecks(input_api, output_api):
                  "BadMessageReasonChrome"))
   results.extend(_CheckNoInteractiveUiTestLibInNonInteractiveUiTest(
       input_api, output_api))
+  results.extend(_CheckForUselessExterns(input_api, output_api))
   return results
 
 def CheckChangeOnUpload(input_api, output_api):
