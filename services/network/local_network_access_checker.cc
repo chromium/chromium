@@ -126,11 +126,6 @@ Result LocalNetworkAccessChecker::Check(
   base::UmaHistogramEnumeration("Security.PrivateNetworkAccess.CheckResult",
                                 result);
 
-  if (transport_info.type == net::TransportType::kCached) {
-    base::UmaHistogramEnumeration(
-        "Security.PrivateNetworkAccess.CachedResourceCheckResult", result);
-  }
-
   response_address_space_ = resource_address_space;
   return result;
 }

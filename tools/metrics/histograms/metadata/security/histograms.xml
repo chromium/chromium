@@ -364,17 +364,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Security.PrivateNetworkAccess.CachedResourceCheckResult"
-    enum="PrivateNetworkAccessCheckResult" expires_after="2023-07-09">
-  <owner>titouan@chromium.org</owner>
-  <owner>clamy@chromium.org</owner>
-  <owner>mkwst@chromium.org</owner>
-  <summary>
-    Same as `Security.PrivateNetworkAccess.CheckResult`, but only recorded when
-    the resource is loaded from the HTTP cache.
-  </summary>
-</histogram>
-
 <histogram name="Security.PrivateNetworkAccess.CheckResult"
     enum="PrivateNetworkAccessCheckResult" expires_after="2023-10-22">
   <owner>titouan@chromium.org</owner>
@@ -384,20 +373,6 @@ chromium-metrics-reviews@google.com.
     Result of the Private Network Access Check on a new connection. Recorded
     once per call to network::URLLoader::OnConnected(), which may be more than
     once per URL request.
-  </summary>
-</histogram>
-
-<histogram
-    name="Security.PrivateNetworkAccess.MismatchedAddressSpacesDuringRequest"
-    enum="Boolean" expires_after="2023-07-09">
-  <owner>titouan@chromium.org</owner>
-  <owner>clamy@chromium.org</owner>
-  <owner>mkwst@chromium.org</owner>
-  <summary>
-    Recorded once per network::URLLoader instantiation. True if the request
-    connected multiple times to different transports (e.g. for a
-    partially-cached range request) and not all the computed IP address spaces
-    were the same.
   </summary>
 </histogram>
 
