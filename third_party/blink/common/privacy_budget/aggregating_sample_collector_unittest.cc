@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -89,6 +90,8 @@ TEST_F(AggregatingSampleCollectorTest, NoImmediatePassthrough) {
 }
 
 TEST_F(AggregatingSampleCollectorTest, MergesDuplicates) {
+  base::HistogramTester histogram_tester;
+
   std::vector<IdentifiableSample> samples = {{kTestSurface1, kTestValue1}};
 
   // The same set of samples are recorded repeatedly against different sources.
@@ -117,6 +120,10 @@ TEST_F(AggregatingSampleCollectorTest, MergesDuplicates) {
               base::flat_map<uint64_t, int64_t>{
                   {kTestSurface1.ToUkmMetricHash(),
                    kTestValue1.ToUkmMetricValue()}}))));
+
+  histogram_tester.ExpectBucketCount(
+      "PrivacyBudget.Identifiability.RecordedSample",
+      PrivacyBudgetRecordedSample::kAccepted, 2);
 }
 
 TEST_F(AggregatingSampleCollectorTest, DoesNotCountDuplicates) {
@@ -161,6 +168,9 @@ TEST_F(AggregatingSampleCollectorTest, TooManySurfaces) {
   // Reporting kMaxTrackedSurfaces distinct surfaces should cause the tracker to
   // saturate. After this point, metrics aren't recorded. Only using one source
   // to not conflate source limits with surface limits.
+
+  base::HistogramTester histogram_tester;
+
   unsigned i = 0;
   for (; i < AggregatingSampleCollector::kMaxTrackedSurfaces; ++i) {
     collector()->Record(recorder(), kTestSource1,
@@ -180,12 +190,22 @@ TEST_F(AggregatingSampleCollectorTest, TooManySurfaces) {
   collector()->Flush(recorder());
   // Nothing get recorded.
   EXPECT_EQ(0u, recorder()->entries_count());
+
+  histogram_tester.ExpectBucketCount(
+      "PrivacyBudget.Identifiability.RecordedSample",
+      PrivacyBudgetRecordedSample::kAccepted,
+      AggregatingSampleCollector::kMaxTrackedSurfaces);
+  histogram_tester.ExpectBucketCount(
+      "PrivacyBudget.Identifiability.RecordedSample",
+      PrivacyBudgetRecordedSample::kDroppedMaxTrackedSurfaces, 1);
 }
 
 TEST_F(AggregatingSampleCollectorTest, TooManySources) {
   // Reporting surfaces for kMaxTrackedSources distinct sources should cause the
   // tracker to saturate. After this point, metrics aren't recorded. Only using
   // one surface to not conflate source limits with surface limits.
+
+  base::HistogramTester histogram_tester;
 
   // Start with 1 because 0 is an invalid source id for UKM.
   unsigned i = 1;
@@ -212,9 +232,19 @@ TEST_F(AggregatingSampleCollectorTest, TooManySources) {
   collector()->Flush(recorder());
   EXPECT_EQ(1u, recorder()->entries_count());
   EXPECT_EQ(1u, recorder()->entries()[0]->metrics.size());
+
+  histogram_tester.ExpectBucketCount(
+      "PrivacyBudget.Identifiability.RecordedSample",
+      PrivacyBudgetRecordedSample::kAccepted,
+      AggregatingSampleCollector::kMaxTrackedSources + 1);
+  histogram_tester.ExpectBucketCount(
+      "PrivacyBudget.Identifiability.RecordedSample",
+      PrivacyBudgetRecordedSample::kDroppedMaxTrackedSources, 1);
 }
 
 TEST_F(AggregatingSampleCollectorTest, TooManySamplesPerSurface) {
+  base::HistogramTester histogram_tester;
+
   unsigned i = 0;
   // These values are recorded against a single surface and a single source.
   // Once saturated it won't accept any more values.
@@ -251,6 +281,14 @@ TEST_F(AggregatingSampleCollectorTest, TooManySamplesPerSurface) {
   collector()->Flush(recorder());
   EXPECT_EQ(1u, recorder()->entries_count());
   EXPECT_EQ(1u, recorder()->entries()[0]->metrics.size());
+
+  histogram_tester.ExpectBucketCount(
+      "PrivacyBudget.Identifiability.RecordedSample",
+      PrivacyBudgetRecordedSample::kAccepted,
+      AggregatingSampleCollector::kMaxTrackedSamplesPerSurfacePerSourceId + 2);
+  histogram_tester.ExpectBucketCount(
+      "PrivacyBudget.Identifiability.RecordedSample",
+      PrivacyBudgetRecordedSample::kDroppedMaxTrackedPerSurfacePerSource, 1);
 }
 
 TEST_F(AggregatingSampleCollectorTest, TooManyUnsentMetrics) {

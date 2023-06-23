@@ -107,6 +107,16 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="PrivacyBudget.Identifiability.RecordedSample"
+    enum="PrivacyBudgetRecordedSample" expires_after="2024-05-17">
+  <owner>antoniosartori@chromium.org</owner>
+  <owner>mkwst@chromium.org</owner>
+  <summary>
+    Indicates whether a sample collected in the renderer was accepted or dropped
+    by the AggregatingSampleCollector.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
