@@ -653,7 +653,7 @@
     },
     {
       name: "CompositeScrollAfterPaint",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CompressionDictionaryTransport",
