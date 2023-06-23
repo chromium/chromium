@@ -238,62 +238,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Assistant.VoiceSearch.AgsaVersion{Timing}" units="Version"
-    expires_after="2023-07-05">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    (Android only) Reports the current Agsa version on the device. The version
-    is reported as described in GSAState#parseAgsaMajorMinorVersionAsInteger.
-
-    This is reported {Timing}.
-  </summary>
-  <token key="Timing" variants="UserEligibilityTiming"/>
-</histogram>
-
-<histogram name="Assistant.VoiceSearch.ConsentOutcome"
-    enum="AssistantConsentOutcome" expires_after="2023-07-05">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    (Android only) Reports the outcome of the consent dialog shown for the
-    assistant.
-  </summary>
-</histogram>
-
-<histogram name="Assistant.VoiceSearch.UserEligibility.FailureReason{Timing}"
-    enum="EligibilityFailureReason" expires_after="2023-07-05">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    (Android only) Reports why users failed the eligibility check for the
-    feature.
-
-    Before M90, this histogram only reported the FailureReason which failed the
-    eligibility check. If a client failed for multiple reasons, some would be
-    ignored.
-
-    From M90 onwards, this will report all FailureReasons that effect
-    eligibility.
-
-    This is reported {Timing}.
-  </summary>
-  <token key="Timing" variants="UserEligibilityTiming"/>
-</histogram>
-
-<histogram name="Assistant.VoiceSearch.UserEligibility{Timing}"
-    enum="BooleanEligible" expires_after="2023-07-05">
-  <owner>basiaz@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    (Android only) Reports user eligibility for Assistant voice search. This is
-    reported even when the feature is disabled.
-
-    This is reported {Timing}.
-  </summary>
-  <token key="Timing" variants="UserEligibilityTiming"/>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

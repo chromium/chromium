@@ -5198,20 +5198,6 @@ others/histograms.xml -->
   <int value="7" label="kBackInLauncherDeprecated"/>
 </enum>
 
-<enum name="AssistantConsentOutcome">
-  <int value="0" label="ACCEPTED-VIA-UI"/>
-  <int value="1" label="ACCEPTED-VIA-SETTINGS"/>
-  <int value="2" label="REJECTED-VIA-UI"/>
-  <int value="3" label="REJECTED-VIA-SETTINGS"/>
-  <int value="4" label="REJECTED-VIA-DISMISS"/>
-  <int value="5" label="REJECTED-VIA-BACK-BUTTON-PRESS-DEPRECATED"/>
-  <int value="6" label="REJECTED-VIA-SCRIM-TAP-DEPRECATED"/>
-  <int value="7" label="CANCELED-VIA-BACK-BUTTON-PRESS-DEPRECATED"/>
-  <int value="8" label="CANCELED-VIA-SCRIM-TAP-DEPRECATED"/>
-  <int value="9" label="CANCELED-VIA-UI"/>
-  <int value="10" label="NON-USER-CANCEL"/>
-</enum>
-
 <enum name="AssistantEntryPoint">
   <int value="0" label="kUnspecified"/>
   <int value="1" label="kDeepLink"/>
@@ -31917,21 +31903,6 @@ Called by update_document_policy_enum.py.-->
   <int value="16" label="ANGLE OpenGL ES EGL"/>
   <int value="17" label="ANGLE Metal"/>
   <int value="18" label="ANGLE Metal NULL"/>
-</enum>
-
-<enum name="EligibilityFailureReason">
-  <int value="0" label="AGSA_CANT_HANDLE_INTENT"/>
-  <int value="1" label="AGSA_VERSION_BELOW_MINIMUM"/>
-  <int value="2" label="AGSA_DOESNT_SUPPORT_VOICE_SEARCH_CHECK_NOT_COMPLETE"/>
-  <int value="3" label="AGSA_DOESNT_SUPPORT_VOICE_SEARCH"/>
-  <int value="4" label="CHROME_NOT_GOOGLE_SIGNED"/>
-  <int value="5" label="AGSA_NOT_GOOGLE_SIGNED"/>
-  <int value="6" label="ACCOUNT_MISMATCH"/>
-  <int value="7" label="NON_GOOGLE_SEARCH_ENGINE"/>
-  <int value="8" label="NO_CHROME_ACCOUNT"/>
-  <int value="9" label="LOW_END_DEVICE"/>
-  <int value="10" label="MULTIPLE_ACCOUNTS_ON_DEVICE"/>
-  <int value="11" label="AGSA_NOT_INSTALLED"/>
 </enum>
 
 <enum name="EmbeddedWorkerStartingPhase">
