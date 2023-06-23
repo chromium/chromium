@@ -8,14 +8,17 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/string_split.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace privacy_sandbox {
 
@@ -23,6 +26,41 @@ namespace {
 
 // Global PrivacySandboxAttestations instance for testing.
 PrivacySandboxAttestations* g_test_instance = nullptr;
+
+// Helper function that checks if enrollment overrides are set from the
+// chrome://flags entry.
+bool IsOverriddenByFlags(const net::SchemefulSite& site) {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+
+  if (!command_line.HasSwitch(
+          privacy_sandbox::kPrivacySandboxEnrollmentOverrides)) {
+    return false;
+  }
+
+  std::string origins_str = command_line.GetSwitchValueASCII(
+      privacy_sandbox::kPrivacySandboxEnrollmentOverrides);
+
+  std::vector<std::string> overrides_list = base::SplitString(
+      origins_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  for (std::string override_str : overrides_list) {
+    if (override_str.empty()) {
+      continue;
+    }
+
+    GURL override_url(override_str);
+    if (!override_url.is_valid()) {
+      continue;
+    }
+
+    if (net::SchemefulSite(override_url) == site) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 }  // namespace
 
@@ -98,7 +136,7 @@ void PrivacySandboxAttestations::AddOverride(const net::SchemefulSite& site) {
 
 bool PrivacySandboxAttestations::IsOverridden(
     const net::SchemefulSite& site) const {
-  return base::Contains(overridden_sites_, site);
+  return IsOverriddenByFlags(site) || base::Contains(overridden_sites_, site);
 }
 
 void PrivacySandboxAttestations::SetAttestationsForTesting(

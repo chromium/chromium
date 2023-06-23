@@ -7,6 +7,7 @@
 #include "base/json/values_util.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/browsing_topics/test_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -2084,6 +2085,59 @@ TEST_F(PrivacySandboxAttestationsTest, SetOverrideFromDevtools) {
   EXPECT_TRUE(privacy_sandbox_settings()->IsEventReportingDestinationAttested(
       url::Origin::Create(GURL("https://embedded.com")),
       privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kProtectedAudience));
+}
+
+TEST_F(PrivacySandboxAttestationsTest, SetOverrideFromFlags) {
+  static const struct TestCase {
+    std::string name;
+    std::string flags;
+    GURL report_url;
+    bool expected;
+  } kTestCases[] = {
+      {"Basic", "https://embedded.com", GURL("https://embedded.com"), true},
+      {"Empty", "", GURL("https://embedded.com"), false},
+      {"Different", "https://other.com", GURL("https://embedded.com"), false},
+      {"Multiple", "https://other.com, https://embedded.com",
+       GURL("https://embedded.com"), true},
+      {"Invalid", "embedded.com", GURL("https://embedded.com"), false},
+      {"Extra Comma", "https://a.com,,https://embedded.com",
+       GURL("https://embedded.com"), true},
+      {"www", "https://www.embedded.com", GURL("https://embedded.com"), true},
+  };
+  privacy_sandbox_test_util::SetupTestState(
+      prefs(), host_content_settings_map(),
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
+  base::test::ScopedCommandLine scoped_command_line;
+
+  for (const auto& test : kTestCases) {
+    // Reset the overrides flags from the previous test loop.
+    scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
+        privacy_sandbox::kPrivacySandboxEnrollmentOverrides);
+
+    // Event reporting for Protected Audience should not be allowed at first.
+    EXPECT_FALSE(
+        privacy_sandbox_settings()->IsEventReportingDestinationAttested(
+            url::Origin::Create(test.report_url),
+            privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                kProtectedAudience));
+
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        privacy_sandbox::kPrivacySandboxEnrollmentOverrides, test.flags);
+
+    // Check reporting for Protected Audience after setting the flag.
+    EXPECT_EQ(privacy_sandbox_settings()->IsEventReportingDestinationAttested(
+                  url::Origin::Create(test.report_url),
+                  privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                      kProtectedAudience),
+              test.expected)
+        << test.name;
+  }
 }
 
 }  // namespace privacy_sandbox
