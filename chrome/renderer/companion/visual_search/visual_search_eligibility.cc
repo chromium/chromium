@@ -21,7 +21,7 @@ constexpr int kMaxNumStored = 200;
 // Return true if p1 should be sorted before p2.
 bool SortDesc(const std::pair<std::string, double>& p1,
               const std::pair<std::string, double>& p2) {
-  return p1.second >= p2.second;
+  return p1.second > p2.second;
 }
 }  // namespace
 
