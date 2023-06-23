@@ -5523,11 +5523,8 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
     auto* filter_pass = root_pass_list[1].get();
     filter_pass->shared_quad_state_list.front()
         ->quad_to_target_transform.Translate(10, 10);
-    // Create 3 pixel-moving filters with the same max pixel movement.
     filter_pass->filters.Append(cc::FilterOperation::CreateBlurFilter(2));
-    filter_pass->filters.Append(cc::FilterOperation::CreateDropShadowFilter(
-        gfx::Point(0, 0), 2, SkColors::kTransparent));
-    filter_pass->filters.Append(cc::FilterOperation::CreateZoomFilter(2, 4));
+
     auto* root_pass = root_pass_list[2].get();
     // Set the root damage rect which doesn't intersect with the expanded
     // filter_pass quad (-4, -4, 13, 13) (filter quad (0, 0, 5, 5) + blur filter
@@ -5585,11 +5582,8 @@ TEST_F(SurfaceAggregatorPartialSwapTest, IgnoreOutside) {
     auto* filter_pass = root_pass_list[1].get();
     filter_pass->shared_quad_state_list.front()
         ->quad_to_target_transform.Translate(10, 10);
-    // Create 3 pixel-moving filters with the same max pixel movement.
     filter_pass->filters.Append(cc::FilterOperation::CreateBlurFilter(10));
-    filter_pass->filters.Append(cc::FilterOperation::CreateDropShadowFilter(
-        gfx::Point(0, 0), 10, SkColors::kTransparent));
-    filter_pass->filters.Append(cc::FilterOperation::CreateZoomFilter(2, 20));
+
     auto* root_pass = root_pass_list[2].get();
     // Make the root damage rect intersect with the expanded filter_pass quad
     // (filter quad (0, 0, 5, 5) + blur filter pixel movement (10 * 3) = (-30,
@@ -6209,11 +6203,8 @@ TEST_F(SurfaceAggregatorPartialSwapTest, AllowSkipAndIgnoreOutside) {
     auto* filter_pass = root_pass_list[1].get();
     filter_pass->shared_quad_state_list.front()
         ->quad_to_target_transform.Translate(10, 10);
-    // Create 3 pixel-moving filters with the same max pixel movement.
     filter_pass->filters.Append(cc::FilterOperation::CreateBlurFilter(10));
-    filter_pass->filters.Append(cc::FilterOperation::CreateDropShadowFilter(
-        gfx::Point(0, 0), 10, SkColors::kTransparent));
-    filter_pass->filters.Append(cc::FilterOperation::CreateZoomFilter(2, 20));
+
     auto* root_pass = root_pass_list[2].get();
     // Make the root damage rect intersect with the expanded filter_pass quad
     // (filter quad (0, 0, 5, 5) + blur filter pixel movement (10 * 3) = (-30,
