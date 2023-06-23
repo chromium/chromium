@@ -3482,9 +3482,6 @@ extern const char kHelpAppLauncherSearchDescription[];
 extern const char kHelpAppWelcomeTipsName[];
 extern const char kHelpAppWelcomeTipsDescription[];
 
-extern const char kHotspotName[];
-extern const char kHotspotDescription[];
-
 extern const char kDiacriticsOnPhysicalKeyboardLongpressName[];
 extern const char kDiacriticsOnPhysicalKeyboardLongpressDescription[];
 
@@ -3502,6 +3499,9 @@ extern const char kHoldingSpaceRefreshDescription[];
 
 extern const char kHoldingSpaceSuggestionsName[];
 extern const char kHoldingSpaceSuggestionsDescription[];
+
+extern const char kHotspotName[];
+extern const char kHotspotDescription[];
 
 extern const char kImeAssistEmojiEnhancedName[];
 extern const char kImeAssistEmojiEnhancedDescription[];
