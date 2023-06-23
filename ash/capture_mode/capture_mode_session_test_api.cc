@@ -35,6 +35,10 @@ CaptureLabelView* CaptureModeSessionTestApi::GetCaptureLabelView() {
   return session_->capture_label_view_;
 }
 
+views::Label* CaptureModeSessionTestApi::GetCaptureLabelInternalView() {
+  return GetCaptureLabelView()->label_;
+}
+
 RecordingTypeMenuView* CaptureModeSessionTestApi::GetRecordingTypeMenuView() {
   auto* widget = GetRecordingTypeMenuWidget();
   DCHECK(widget);

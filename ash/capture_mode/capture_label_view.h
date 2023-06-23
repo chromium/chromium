@@ -84,6 +84,8 @@ class ASH_EXPORT CaptureLabelView : public views::View,
   void AnimationProgressed(const gfx::Animation* animation) override;
 
  private:
+  friend class CaptureModeSessionTestApi;
+
   // Fades in and out the given `counter_value` (e.g. "3", "2", or "1") as it
   // performs a step in the count down animation.
   void FadeInAndOutCounter(int counter_value);

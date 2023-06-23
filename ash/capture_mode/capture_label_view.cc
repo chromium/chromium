@@ -230,7 +230,10 @@ void CaptureLabelView::UpdateIconAndText() {
                      : IDS_ASH_SCREEN_CAPTURE_LABEL_FULLSCREEN_VIDEO_RECORD_CLAMSHELL));
       break;
     case CaptureModeSource::kWindow: {
-      if (in_tablet_mode) {
+      // If the bar is anchored to the window, then we already have a pre-
+      // selected game window for the game dashboard, and there is no need to
+      // show the label.
+      if (in_tablet_mode && !capture_mode_session_->IsBarAnchoredToWindow()) {
         text = l10n_util::GetStringUTF16(
             is_capturing_image
                 ? IDS_ASH_SCREEN_CAPTURE_LABEL_WINDOW_IMAGE_CAPTURE

@@ -885,6 +885,11 @@ bool CaptureModeSession::IsInCountDownAnimation() const {
   return capture_label_view_->IsInCountDownAnimation();
 }
 
+bool CaptureModeSession::IsBarAnchoredToWindow() const {
+  return capture_window_observer_ &&
+         capture_window_observer_->bar_anchored_to_window();
+}
+
 void CaptureModeSession::OnCaptureFolderMayHaveChanged() {
   if (!capture_mode_settings_widget_)
     return;

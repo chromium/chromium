@@ -460,6 +460,19 @@ TEST_F(GameDashboardCaptureModeTest, MultiDisplay) {
   VerifyCaptureBarPosition();
 }
 
+TEST_F(GameDashboardCaptureModeTest, NoLabelInTabletMode) {
+  auto* controller = StartGameCaptureModeSession();
+
+  CaptureModeSession* session = controller->capture_mode_session();
+  ASSERT_EQ(game_window(), session->GetSelectedWindow());
+
+  SwitchToTabletMode();
+
+  views::Label* label_internal_view =
+      CaptureModeSessionTestApi(session).GetCaptureLabelInternalView();
+  EXPECT_FALSE(label_internal_view->GetVisible());
+}
+
 // -----------------------------------------------------------------------------
 // GameDashboardCaptureModeHistogramTest:
 // Test fixture to verify game dashboard initiated screen capture histograms

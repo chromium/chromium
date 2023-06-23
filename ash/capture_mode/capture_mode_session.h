@@ -174,6 +174,10 @@ class ASH_EXPORT CaptureModeSession
   // Returns true if we are currently in video recording countdown animation.
   bool IsInCountDownAnimation() const;
 
+  // Returns true if `capture_window_observer_` exists and the capture bar is
+  // anchored to a pre-selected window.
+  bool IsBarAnchoredToWindow() const;
+
   // Called when the capture folder may have changed to update the set of menu
   // options in the settings menu and resize it so that it fits its potentially
   // new contents.

@@ -8,6 +8,10 @@
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "base/memory/raw_ptr.h"
 
+namespace views {
+class Label;
+}  // namespace views
+
 namespace ash {
 
 class CaptureLabelView;
@@ -33,6 +37,8 @@ class CaptureModeSessionTestApi {
   CaptureModeSettingsView* GetCaptureModeSettingsView();
 
   CaptureLabelView* GetCaptureLabelView();
+
+  views::Label* GetCaptureLabelInternalView();
 
   RecordingTypeMenuView* GetRecordingTypeMenuView();
 
