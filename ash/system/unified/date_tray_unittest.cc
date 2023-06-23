@@ -223,12 +223,7 @@ TEST_P(DateTrayTest, ShowTasksComboModel) {
     PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
 
     // Verify the number of items in task_items_container_view()->children().
-    EXPECT_EQ(GetGlanceableTrayBubble()
-                  ->GetTasksView()
-                  ->task_items_container_view()
-                  ->children()
-                  .size(),
-              3u);
+    EXPECT_EQ(tasks_view->task_items_container_view()->children().size(), 3u);
   }
 }
 

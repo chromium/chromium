@@ -8,8 +8,10 @@
 #include "ash/ash_export.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/list_model.h"
 #include "ui/views/controls/button/image_button.h"
@@ -20,6 +22,7 @@ namespace views {
 class Combobox;
 class ImageButton;
 class ImageView;
+class Label;
 }  // namespace views
 
 namespace ash {
@@ -35,14 +38,17 @@ class TasksComboboxModel;
 // | +-----------------------------------------------------------+ |
 // | |'task_items_container_view_'                               | |
 // | +-----------------------------------------------------------+ |
+// | +-----------------------------------------------------------+ |
+// | |'tasks_footer_view_'                                       | |
+// | +-----------------------------------------------------------+ |
 // +---------------------------------------------------------------+
 //
-// +---------------------------------------------------------------------------+
-// |`tasks_header_view_`                                                       |
-// |+---------------+ +-------------------------+ +----------+ +-------------+||
-// ||task_icon_view_| |task_list_combo_box_view_| |separator_| |action_button_||
-// |+---------------+ +-------------------------+ +----------+ +-------------+||
-// +---------------------------------------------------------------------------+
+// +----------------------------------------------+
+// |`tasks_header_view_`                          |
+// |+---------------+ +-------------------------+ |
+// ||task_icon_view_| |task_list_combo_box_view_| |
+// |+---------------+ +-------------------------+ |
+// +----------------------------------------------+
 //
 // +----------------------------------------------------------------+
 // |'task_items_container_view_'                                    |
@@ -53,6 +59,13 @@ class TasksComboboxModel;
 // | |GlanceablesTaskView                                         | |
 // | +----------------------------------------------------------- + |
 // +----------------------------------------------------------------+
+//
+// +--------------------------------------------------------------+
+// |'tasks_footer_view_'                                          |
+// | +-----------------------+ +-------------+ +----------------+ |
+// | |`tasks_bubble_details_`| |`separator_` | |`action_button_`| |
+// | +-----------------------+ +-------------+ +----------------+ |
+// +--------------------------------------------------------------+
 
 class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
  public:
@@ -72,6 +85,7 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
   views::FlexLayoutView* task_items_container_view() const {
     return task_items_container_view_;
   }
+
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize() const override;
@@ -93,11 +107,16 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
   // Model for the combobox used to change the active task list.
   std::unique_ptr<TasksComboboxModel> tasks_combobox_model_;
 
+  // Tracks the number of tasks show. Used for sizing.
+  int num_tasks_shown_ = 0;
+
   // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_header_view_ = nullptr;
   raw_ptr<views::ImageView, ExperimentalAsh> task_icon_view_ = nullptr;
   raw_ptr<views::Combobox, ExperimentalAsh> task_list_combo_box_view_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> button_container_ = nullptr;
+  raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_footer_view_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> tasks_bubble_details_ = nullptr;
   raw_ptr<views::View, ExperimentalAsh> separator_ = nullptr;
   raw_ptr<views::ImageButton, ExperimentalAsh> action_button_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> task_items_container_view_ =

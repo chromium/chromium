@@ -21,7 +21,7 @@
 namespace {
 
 constexpr int kIconSize = 20;
-constexpr int kTaskHeight = 30;
+constexpr int kTaskHeight = 48;
 constexpr int kTaskWidth = 332;
 
 views::Label* SetupLabel(views::FlexLayoutView* parent) {
