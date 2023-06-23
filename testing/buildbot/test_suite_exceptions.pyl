@@ -1441,6 +1441,7 @@
         'args': [
           # This bot sets symbol_level=2, which doesn't fit inside a normal VM.
           '--strip-chrome',
+          '--tast-shard-method=hash',
         ],
       },
       'chromeos-betty-pi-arc-chrome': {

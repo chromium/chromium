@@ -81,7 +81,8 @@
         "args": [
           "--tast-retries=1",
           "--magic-vm-cache=magic_cros_vm_cache",
-          "--strip-chrome"
+          "--strip-chrome",
+          "--tast-shard-method=hash"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
