@@ -124,10 +124,8 @@ using signin_metrics::PromoAction;
           << base::SysNSStringToUTF8([self description]);
       userEmail = base::SysUTF8ToNSString(primaryAccount.email);
       break;
-    case AddAccountSigninIntent::kAddSecondaryAccount:
-      DUMP_WILL_BE_CHECK(primaryAccount.IsEmpty())
-          << base::SysNSStringToUTF8([self description]);
-      // No default value for `userEmail`.
+    case AddAccountSigninIntent::kAddNewAccount:
+      // The user wants to add a new account, don't pre-fill any email.
       break;
     case AddAccountSigninIntent::kSigninAndSyncReauth:
       DUMP_WILL_BE_CHECK(primaryAccount.IsEmpty())
@@ -218,7 +216,7 @@ using signin_metrics::PromoAction;
     case AddAccountSigninIntent::kSigninAndSyncReauth:
       [self presentUserConsentWithIdentity:identity];
       break;
-    case AddAccountSigninIntent::kAddSecondaryAccount:
+    case AddAccountSigninIntent::kAddNewAccount:
     case AddAccountSigninIntent::kPrimaryAccountReauth:
       [self addAccountDoneWithSigninResult:signinResult identity:identity];
       break;
