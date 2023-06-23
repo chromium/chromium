@@ -322,7 +322,7 @@ class TestTetherSortDelegate : public NetworkStateHandler::TetherSortDelegate {
                     static_cast<const NetworkState*>(second.get());
 
                 // Sort by reverse-alphabetical order of GUIDs.
-                return first_network->guid() >= second_network->guid();
+                return first_network->guid() > second_network->guid();
               });
   }
 };
