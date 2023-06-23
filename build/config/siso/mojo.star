@@ -110,14 +110,7 @@ def __step_rules():
             "remote": True,
             "timeout": "2m",
             "output_local": True,
-            "platform": {
-                # mojo_bindings_generators.py will run faster on n2-highmem-8
-                # than n2-custom-2-3840
-                # e.g.
-                #  n2-highmem-8: exec: 880.202978ms
-                #  n2-custom-2-3840: exec: 2.42808488s
-                "gceMachineType": "n2-highmem-8",
-            },
+            "platform_ref": "mojo",
         },
         {
             "name": "mojo/mojom_parser",
