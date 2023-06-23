@@ -113,4 +113,8 @@ bool IsBeta() {
   return ash::features::IsArcInputOverlayBetaEnabled();
 }
 
+bool IsGameDashboardFlagOn() {
+  return ash::features::IsGameDashboardEnabled();
+}
+
 }  // namespace arc::input_overlay

@@ -38,22 +38,6 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   GameDashboardContextTest& operator=(const GameDashboardContextTest&) = delete;
   ~GameDashboardContextTest() override = default;
 
-  void SetUp() override {
-    GameDashboardTestBase::SetUp();
-    game_window_ = CreateAppWindow(TestGameDashboardDelegate::kGameAppId,
-                                   AppType::ARC_APP, gfx::Rect(0, 0, 400, 200));
-    game_context_ = GameDashboardController::Get()->GetGameDashboardContext(
-        game_window_.get());
-    DCHECK(game_context_);
-  }
-
-  void SetUpGeForceNowApp() {
-    game_window_->SetProperty(
-        kAppIDKey, static_cast<std::string>(extension_misc::kGeForceNowAppId));
-    game_window_->SetProperty(aura::client::kAppType,
-                              static_cast<int>(AppType::NON_APP));
-  }
-
   void TearDown() override {
     game_window_.reset();
     GameDashboardTestBase::TearDown();
@@ -75,17 +59,51 @@ class GameDashboardContextTest : public GameDashboardTestBase {
         tile_view_id);
   }
 
+  // If `is_arc_window` is true, this function creates the window as an ARC
+  // game window. Otherwise, it creates the window as a GeForceNow window.
+  void CreateGameWindow(bool is_arc_window) {
+    ASSERT_FALSE(game_window_);
+    game_window_ =
+        CreateAppWindow((is_arc_window ? TestGameDashboardDelegate::kGameAppId
+                                       : extension_misc::kGeForceNowAppId),
+                        (is_arc_window ? AppType::ARC_APP : AppType::NON_APP),
+                        gfx::Rect(0, 0, 400, 200));
+    game_context_ = GameDashboardController::Get()->GetGameDashboardContext(
+        game_window_.get());
+    DCHECK(game_context_);
+  }
+
  protected:
   std::unique_ptr<aura::Window> game_window_;
-  raw_ptr<const GameDashboardContext, ExperimentalAsh> game_context_;
-  const gfx::Rect game_window_bounds_ = gfx::Rect(0, 0, 400, 200);
+  raw_ptr<GameDashboardContext, ExperimentalAsh> game_context_;
+};
+
+// -----------------------------------------------------------------------------
+// GameTypeGameDashboardContextTest:
+// Test fixture to test both ARC and GeForceNow game window depending on the
+// test param (true for ARC game window, false for GeForceNow window).
+class GameTypeGameDashboardContextTest
+    : public GameDashboardContextTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  GameTypeGameDashboardContextTest() = default;
+  ~GameTypeGameDashboardContextTest() override = default;
+
+  // GameDashboardContextTest:
+  void SetUp() override {
+    GameDashboardContextTest::SetUp();
+    CreateGameWindow(IsArcGame());
+  }
+
+ protected:
+  bool IsArcGame() const { return GetParam(); }
 };
 
 // Tests
 // -----------------------------------------------------------------------
 // Verifies the initial location of the main menu button widget relative to the
 // game window.
-TEST_F(GameDashboardContextTest, MainMenuButtonWidget_InitialLocation) {
+TEST_P(GameTypeGameDashboardContextTest, MainMenuButtonWidget_InitialLocation) {
   auto* frame_header = chromeos::FrameHeader::Get(
       views::Widget::GetWidgetForNativeWindow(game_window_.get()));
   const gfx::Point expected_button_center_point(
@@ -97,7 +115,7 @@ TEST_F(GameDashboardContextTest, MainMenuButtonWidget_InitialLocation) {
 
 // Verifies the main menu button widget bounds are updated, relative to the
 // game window.
-TEST_F(GameDashboardContextTest,
+TEST_P(GameTypeGameDashboardContextTest,
        MainMenuButtonWidget_MoveWindowAndVerifyLocation) {
   const gfx::Vector2d move_vector = gfx::Vector2d(100, 200);
   const gfx::Rect expected_widget_location =
@@ -111,9 +129,18 @@ TEST_F(GameDashboardContextTest,
 }
 
 // Verifies clicking the main menu button will open the main menu widget.
-TEST_F(GameDashboardContextTest, OpenMainMenuButtonWidget) {
+TEST_P(GameTypeGameDashboardContextTest, OpenMainMenuButtonWidget) {
   // Verifies the initial state.
   EXPECT_FALSE(GetMainMenuDialogWidget());
+
+  if (IsArcGame()) {
+    // Main menu button is not enabled util the Game Controls state is known.
+    EXPECT_FALSE(GetMainMenuButtonWidget()->GetContentsView()->GetEnabled());
+    LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
+    EXPECT_FALSE(GetMainMenuDialogWidget());
+    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
+                              ArcGameControlsFlag::kKnown);
+  }
 
   // Opens main menu dialog.
   LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
@@ -124,7 +151,12 @@ TEST_F(GameDashboardContextTest, OpenMainMenuButtonWidget) {
 
 // Verifies clicking the main menu button will close the main menu widget if
 // it's already open.
-TEST_F(GameDashboardContextTest, CloseMainMenuButtonWidget) {
+TEST_P(GameTypeGameDashboardContextTest, CloseMainMenuButtonWidget) {
+  if (IsArcGame()) {
+    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
+                              ArcGameControlsFlag::kKnown);
+  }
+
   // Opens the main menu widget and Verifies the initial state.
   LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
   EXPECT_TRUE(GetMainMenuDialogWidget());
@@ -136,8 +168,14 @@ TEST_F(GameDashboardContextTest, CloseMainMenuButtonWidget) {
   EXPECT_FALSE(GetMainMenuDialogWidget());
 }
 
-// Verifies the main menu shows all items allowed for ARC games.
-TEST_F(GameDashboardContextTest, MainMenuDialogWidget_ARCGame) {
+// Verifies the main menu shows all items allowed.
+TEST_P(GameTypeGameDashboardContextTest,
+       MainMenuDialogWidget_AvailabelFeatures) {
+  if (IsArcGame()) {
+    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
+                              ArcGameControlsFlag::kKnown);
+  }
+
   // Open the main menu.
   LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
   ASSERT_TRUE(GetMainMenuDialogWidget());
@@ -145,43 +183,33 @@ TEST_F(GameDashboardContextTest, MainMenuDialogWidget_ARCGame) {
   // Verify whether each element available in the main menu is available as
   // expected.
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
-  // TODO(b/273641402): Update Game Controls visibility once implemented.
-  EXPECT_FALSE(GetMainMenuViewById(VIEW_ID_GD_CONTROLS_TILE));
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_RECORD_GAME_TILE));
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_SCREENSHOT_TILE));
-  EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_SCREEN_SIZE_TILE));
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_FEEDBACK_BUTTON));
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_HELP_BUTTON));
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_GENERAL_SETTINGS_BUTTON));
-}
-
-// Verifies the main menu doesn't show items only allowed for ARC games on
-// non-ARC apps.
-TEST_F(GameDashboardContextTest, MainMenuDialogWidget_NonARCGame) {
-  // Override the default `game_window_` to reflect GeForce Now and open the
-  // main menu.
-  SetUpGeForceNowApp();
-  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
-  ASSERT_TRUE(GetMainMenuDialogWidget());
-
-  // Verify whether each element available in the main menu is available as
-  // expected.
-  EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
-  EXPECT_FALSE(GetMainMenuViewById(VIEW_ID_GD_CONTROLS_TILE));
-  EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_RECORD_GAME_TILE));
-  EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_SCREENSHOT_TILE));
-  EXPECT_FALSE(GetMainMenuViewById(VIEW_ID_GD_SCREEN_SIZE_TILE));
-  EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_FEEDBACK_BUTTON));
-  EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_HELP_BUTTON));
-  EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_GENERAL_SETTINGS_BUTTON));
+  if (IsArcGame()) {
+    // TODO(b/273641402): Update Game Controls visibility once implemented.
+    EXPECT_FALSE(GetMainMenuViewById(VIEW_ID_GD_CONTROLS_TILE));
+    EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_SCREEN_SIZE_TILE));
+  } else {
+    EXPECT_FALSE(GetMainMenuViewById(VIEW_ID_GD_CONTROLS_TILE));
+    EXPECT_FALSE(GetMainMenuViewById(VIEW_ID_GD_SCREEN_SIZE_TILE));
+  }
 }
 
 // Verifies the main menu doesn't show the record game tile, when the feature is
 // disabled.
-TEST_F(GameDashboardContextTest, MainMenuDialogWidget_RecordGameDisabled) {
+TEST_P(GameTypeGameDashboardContextTest,
+       MainMenuDialogWidget_RecordGameDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       {features::kFeatureManagementGameDashboardRecordGame});
+
+  if (IsArcGame()) {
+    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
+                              ArcGameControlsFlag::kKnown);
+  }
 
   // Open the main menu.
   LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
@@ -191,7 +219,12 @@ TEST_F(GameDashboardContextTest, MainMenuDialogWidget_RecordGameDisabled) {
   EXPECT_FALSE(GetMainMenuViewById(VIEW_ID_GD_RECORD_GAME_TILE));
 }
 
-TEST_F(GameDashboardContextTest, TakeScreenshot) {
+TEST_P(GameTypeGameDashboardContextTest, TakeScreenshot) {
+  if (IsArcGame()) {
+    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
+                              ArcGameControlsFlag::kKnown);
+  }
+
   // Retrieve the screenshot button and verify the initial state.
   LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
   FeatureTile* screenshot_tile = static_cast<FeatureTile*>(
@@ -207,7 +240,11 @@ TEST_F(GameDashboardContextTest, TakeScreenshot) {
 }
 
 // Verifies the main menu record game tile can video record the game window.
-TEST_F(GameDashboardContextTest, ScreenCaptureFromMainMenu) {
+TEST_P(GameTypeGameDashboardContextTest, ScreenCaptureFromMainMenu) {
+  if (IsArcGame()) {
+    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
+                              ArcGameControlsFlag::kKnown);
+  }
   // Retrieve the video record tile and verify the initial state.
   LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
   FeatureTile* record_game_tile = static_cast<FeatureTile*>(
@@ -228,4 +265,9 @@ TEST_F(GameDashboardContextTest, ScreenCaptureFromMainMenu) {
   CaptureModeTestApi().StopVideoRecording();
   EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GameTypeGameDashboardContextTest,
+                         ::testing::Bool());
+
 }  // namespace ash

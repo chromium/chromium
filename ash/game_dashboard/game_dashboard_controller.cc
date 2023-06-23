@@ -9,6 +9,7 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
+#include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/window_properties.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -73,6 +74,10 @@ void GameDashboardController::OnWindowPropertyChanged(aura::Window* window,
                                                       intptr_t old) {
   if (key == kAppIDKey) {
     RefreshWindowTracking(window);
+  }
+
+  if (key == kArcGameControlsFlagsKey) {
+    RefreshMainMenuButton(window);
   }
 }
 
@@ -139,6 +144,7 @@ void GameDashboardController::RefreshWindowTracking(aura::Window* window) {
       auto& context = game_window_contexts_[window];
       if (!context) {
         context = std::make_unique<GameDashboardContext>(window);
+        RefreshMainMenuButton(window);
       }
     }
   }
@@ -151,6 +157,19 @@ void GameDashboardController::RefreshWindowTracking(aura::Window* window) {
     window_observations_.AddObservation(window);
   } else {
     window_observations_.RemoveObservation(window);
+  }
+}
+
+void GameDashboardController::RefreshMainMenuButton(aura::Window* window) {
+  if (!IsArcWindow(window)) {
+    return;
+  }
+
+  auto it = game_window_contexts_.find(window);
+  if (it != game_window_contexts_.end()) {
+    it->second->SetMainMenuButtonEnabled(game_dashboard_utils::IsFlagSet(
+        window->GetProperty(kArcGameControlsFlagsKey),
+        ArcGameControlsFlag::kKnown));
   }
 }
 

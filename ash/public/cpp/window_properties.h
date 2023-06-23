@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <string>
 
+#include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "ui/base/class_property.h"
@@ -40,6 +41,10 @@ enum class ResizeShadowType;
 // A property key to store the app ID for the window's associated app.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<std::string*>* const
     kAppIDKey;
+
+// A property key to store the ARC Game Controls status.
+ASH_PUBLIC_EXPORT extern const aura::WindowProperty<ArcGameControlsFlag>* const
+    kArcGameControlsFlagsKey;
 
 // A property key to store the ARC package name for a window's associated
 // ARC app.

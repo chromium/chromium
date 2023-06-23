@@ -81,6 +81,9 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   // game or not.
   void RefreshWindowTracking(aura::Window* window);
 
+  // Updates the main menu button state for a game window.
+  void RefreshMainMenuButton(aura::Window* window);
+
   std::map<aura::Window*, std::unique_ptr<GameDashboardContext>>
       game_window_contexts_;
 

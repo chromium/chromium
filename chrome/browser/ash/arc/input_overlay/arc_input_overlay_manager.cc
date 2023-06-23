@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/input_overlay/input_overlay_resources_util.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/shell_surface_base.h"
@@ -554,6 +555,16 @@ void ArcInputOverlayManager::RemoveDisplayOverlayController() {
 void ArcInputOverlayManager::ResetForPendingTouchInjector(
     std::unique_ptr<TouchInjector> touch_injector) {
   auto* window = touch_injector->window();
+
+  // If `window` is destroyed, it will be removed from `loading_data_window_` by
+  // OnWindowDestroying(). So it is safe to call Window class functions after
+  // checking `loading_data_window_`.
+  if ((IsGameDashboardFlagOn() || IsBeta()) &&
+      loading_data_windows_.contains(window) && !window->is_destroying()) {
+    // GIO status is known here and GIO is not available.
+    window->SetProperty(ash::kArcGameControlsFlagsKey,
+                        ash::ArcGameControlsFlag::kKnown);
+  }
   loading_data_windows_.erase(window);
   touch_injector.reset();
   RemoveWindowObservation(window);
@@ -568,6 +579,8 @@ void ArcInputOverlayManager::OnLoadingFinished(
     ResetForPendingTouchInjector(std::move(touch_injector));
     return;
   }
+
+  touch_injector->UpdateFlags();
 
   // Record the menu state when there is at least one action.
   if (!touch_injector->actions().empty()) {

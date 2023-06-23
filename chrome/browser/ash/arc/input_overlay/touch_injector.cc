@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_util.h"
+#include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/utility/transformer_util.h"
 #include "base/containers/flat_set.h"
@@ -211,6 +212,19 @@ void TouchInjector::ParseActions(const base::Value::Dict& root) {
     std::move(parsed_actions.begin(), parsed_actions.end(),
               std::back_inserter(actions_));
   }
+}
+
+void TouchInjector::UpdateFlags() {
+  if (!IsBeta() && !IsGameDashboardFlagOn()) {
+    return;
+  }
+
+  ash::ArcGameControlsFlag flags = static_cast<ash::ArcGameControlsFlag>(
+      ash::ArcGameControlsFlag::kKnown | ash::ArcGameControlsFlag::kAvailable |
+      (actions_.empty() ? ash::ArcGameControlsFlag::kEmpty : 0) |
+      (touch_injector_enable_ ? ash::ArcGameControlsFlag::kEnabled : 0) |
+      (input_mapping_visible_ ? ash::ArcGameControlsFlag::kHint : 0));
+  window_->SetProperty(ash::kArcGameControlsFlagsKey, flags);
 }
 
 void TouchInjector::NotifyTextInputState(bool active) {

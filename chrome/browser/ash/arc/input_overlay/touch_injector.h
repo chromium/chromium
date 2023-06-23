@@ -71,6 +71,8 @@ class TouchInjector : public ui::EventRewriter {
   //   ]
   // }
   void ParseActions(const base::Value::Dict& root);
+  // Update the flags after loading data finished.
+  void UpdateFlags();
   // Notify the EventRewriter whether the text input is focused or not.
   void NotifyTextInputState(bool active);
   // Register the EventRewriter.

@@ -44,6 +44,13 @@ void GameDashboardContext::OnWindowBoundsChanged() {
   UpdateMainMenuButtonWidgetBounds();
 }
 
+void GameDashboardContext::SetMainMenuButtonEnabled(bool enable) {
+  DCHECK(main_menu_button_widget_);
+  auto* contents_view = main_menu_button_widget_->GetContentsView();
+  DCHECK(contents_view);
+  contents_view->SetEnabled(enable);
+}
+
 void GameDashboardContext::ToggleMainMenu() {
   if (!main_menu_widget_) {
     auto menu_delegate = std::make_unique<GameDashboardMainMenuView>(

@@ -29,6 +29,9 @@ class GameDashboardContext {
   // Called by `GameDashboardController` when the game window bounds change.
   void OnWindowBoundsChanged();
 
+  // Sets whether the main menu button is enabled/clickable.
+  void SetMainMenuButtonEnabled(bool enable);
+
   // Toggles the main menu, called only by the accelerator, or hides the menu
   // if it is already shown.
   void ToggleMainMenu();

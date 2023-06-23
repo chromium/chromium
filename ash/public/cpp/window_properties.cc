@@ -19,12 +19,17 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, bool*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, float*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, SkRegion*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT,
+                                       ash::ArcGameControlsFlag)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT,
                                        ash::ArcResizeLockType)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_PUBLIC_EXPORT, ash::ResizeShadowType)
 
 namespace ash {
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kAppIDKey, nullptr)
+DEFINE_UI_CLASS_PROPERTY_KEY(ArcGameControlsFlag,
+                             kArcGameControlsFlagsKey,
+                             static_cast<ArcGameControlsFlag>(0))
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kArcPackageNameKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(ArcResizeLockType,
                              kArcResizeLockTypeKey,
