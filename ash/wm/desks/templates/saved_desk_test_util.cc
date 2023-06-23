@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
-#include "base/memory/raw_ref.h"
 
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
@@ -17,7 +16,9 @@
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/test/bind.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
@@ -220,7 +221,16 @@ const views::Button* GetZeroStateLibraryButton() {
 
   // May be null in tablet mode.
   const auto* desks_bar_view = overview_grid->desks_bar_view();
-  return desks_bar_view ? desks_bar_view->zero_state_library_button() : nullptr;
+  if (!desks_bar_view) {
+    return nullptr;
+  }
+
+  // In post-Jellyroll, we only have the one library button so always return it
+  // for tests.
+  return !chromeos::features::IsJellyrollEnabled()
+             ? static_cast<views::Button*>(
+                   desks_bar_view->zero_state_library_button())
+             : desks_bar_view->library_button();
 }
 
 const views::Button* GetExpandedStateLibraryButton() {
@@ -230,9 +240,17 @@ const views::Button* GetExpandedStateLibraryButton() {
 
   // May be null in tablet mode.
   const auto* desks_bar_view = overview_grid->desks_bar_view();
-  return desks_bar_view
-             ? desks_bar_view->expanded_state_library_button()->GetInnerButton()
-             : nullptr;
+  if (!desks_bar_view) {
+    return nullptr;
+  }
+
+  // In post-Jellyroll, we only have the one library button so always return it
+  // for tests.
+  return !chromeos::features::IsJellyrollEnabled()
+             ? static_cast<views::Button*>(
+                   desks_bar_view->expanded_state_library_button()
+                       ->GetInnerButton())
+             : desks_bar_view->library_button();
 }
 
 const views::Button* GetSaveDeskAsTemplateButton() {
