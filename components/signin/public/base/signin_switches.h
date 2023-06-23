@@ -40,6 +40,11 @@ BASE_DECLARE_FEATURE(kForceDisableExtendedSyncPromos);
 BASE_DECLARE_FEATURE(kForceStartupSigninPromo);
 #endif
 
+#if BUILDFLAG(IS_IOS)
+// Experiment to test whether it's possible to finch FRE screen on iOS.
+BASE_DECLARE_FEATURE(kFinchIosFre);
+#endif
+
 BASE_DECLARE_FEATURE(kTangibleSync);
 
 }  // namespace switches

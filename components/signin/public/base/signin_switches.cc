@@ -53,6 +53,10 @@ BASE_FEATURE(kForceStartupSigninPromo,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kFinchIosFre, "FinchIosFre", base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Enables a new version of the sync confirmation UI.
 BASE_FEATURE(kTangibleSync,
              "TangibleSync",
