@@ -682,8 +682,7 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
 
   auto instance = std::make_unique<dawn::native::Instance>(
       reinterpret_cast<const WGPUInstanceDescriptor*>(&instance_desc));
-  instance->DiscoverDefaultPhysicalDevices();
-  std::vector<dawn::native::Adapter> adapters = instance->GetAdapters();
+  std::vector<dawn::native::Adapter> adapters = instance->EnumerateAdapters();
 
   for (dawn::native::Adapter& adapter : adapters) {
     wgpu::AdapterProperties properties;
