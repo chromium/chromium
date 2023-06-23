@@ -157,6 +157,8 @@ const char kChromeUIPasswordManagerInternalsHost[] =
 const char kChromeUIPasswordManagerURL[] = "chrome://password-manager";
 const char kChromeUIPasswordManagerCheckupURL[] =
     "chrome://password-manager/checkup?start=true";
+const char kChromeUIPasswordManagerSettingsURL[] =
+    "chrome://password-manager/settings";
 const char kChromeUIPerformanceSettingsURL[] = "chrome://settings/performance";
 const char kChromeUIPolicyHost[] = "policy";
 const char kChromeUIPolicyURL[] = "chrome://policy/";

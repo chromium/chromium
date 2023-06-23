@@ -106,7 +106,8 @@
   <template is="dom-if" if="[[hasPasswordsToExport_]]" restamp>
     <passwords-exporter></passwords-exporter>
   </template>
-  <template is="dom-if" if="[[canAddShortcut_]]">
+  <template is="dom-if" if="[[canAddShortcut_]]"
+      on-dom-change="onShortcutBannerDomChanged_" restamp>
     <cr-link-row id="addShortcutBanner" class="cr-row settings-cr-link-row"
         on-click="onAddShortcutClick_" label="$i18n{addShortcut}"
         sub-label="$i18n{addShortcutDescription}" role-description="button">

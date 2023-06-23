@@ -10,6 +10,11 @@
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/tutorial_registry.h"
 
+const char kSidePanelCustomizeChromeTutorialId[] =
+    "Side Panel Customize Chrome Tutorial";
+const char kTabGroupTutorialId[] = "Tab Group Tutorial";
+const char kPasswordManagerTutorialId[] = "Password Manager Tutorial";
+
 UserEducationService::UserEducationService()
     : tutorial_service_(&tutorial_registry_, &help_bubble_factory_registry_) {}
 
