@@ -11,11 +11,13 @@ build_webui("build") {
 
   static_files = [ "shopping_insights.html" ]
 
-  non_web_component_files = [ "shopping_insights.ts" ]
+  web_component_files = [ "app.ts" ]
 
   ts_composite = true
   ts_deps = [
     "../shared:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

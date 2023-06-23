@@ -32,6 +32,7 @@ suite('SidePanelShoppingListTest', () => {
       bookmarkId: BigInt(3),
       info: {
         title: 'Product Foo',
+        clusterTitle: 'Product Cluster Foo',
         domain: 'foo.com',
         imageUrl: {url: 'chrome://resources/images/error.svg'},
         productUrl: {url: 'https://foo.com/product'},
@@ -43,6 +44,7 @@ suite('SidePanelShoppingListTest', () => {
       bookmarkId: BigInt(4),
       info: {
         title: 'Product bar',
+        clusterTitle: 'Product Cluster bar',
         domain: 'bar.com',
         imageUrl: {url: ''},
         productUrl: {url: 'https://foo.com/product'},
@@ -284,6 +286,7 @@ suite('SidePanelShoppingListTest', () => {
       bookmarkId: BigInt(5),
       info: {
         title: 'Product Baz',
+        clusterTitle: 'Product Cluster Baz',
         domain: 'baz.com',
         imageUrl: {url: 'https://baz.com/image'},
         productUrl: {url: 'https://baz.com/product'},
@@ -351,6 +354,7 @@ suite('SidePanelShoppingListTest', () => {
       bookmarkId: BigInt(3),
       info: {
         title: 'Product Baz',
+        clusterTitle: 'Product Cluster Baz',
         domain: 'baz.com',
         imageUrl: {url: 'chrome://resources/images/error.svg'},
         productUrl: {url: 'https://baz.com/product'},

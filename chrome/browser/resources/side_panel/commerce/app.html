@@ -1,0 +1,46 @@
+<style include="cr-hidden-style cr-icons">
+  .section {
+    flex-direction: column;
+    display: flex;
+    padding: 16px;
+  }
+
+  .panel-title {
+    color: var(--cr-primary-text-color);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .panel-subtitle {
+    color: var(--cr-primary-text-color);
+    margin: 4px 0;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>
+
+<div id="insightsContainer">
+  <div class="section" id="titleSection">
+    <div class="panel-title">[[productInfo.clusterTitle]]</div>
+    <div hidden="[[!priceInsightsInfo.typicalLowPrice.length]]"
+        class="panel-subtitle">[[getRangeDescription_(priceInsightsInfo)]]</div>
+    <template is="dom-if"
+        if="[[!priceInsightsInfo.typicalLowPrice.length]]" restamp>
+      <div>
+        <div hidden="[[!priceInsightsInfo.hasMultipleCatalogs]]"
+            class="panel-subtitle">[[priceInsightsInfo.catalogAttributes]]</div>
+        <!-- TODO(b:283465961): Add buying options button -->
+      </div>
+    </template>
+  </div>
+</div>

@@ -53,6 +53,7 @@ class MockDelegate : public ShoppingListHandler::Delegate {
   ~MockDelegate() override = default;
 
   MOCK_METHOD(absl::optional<GURL>, GetCurrentTabUrl, (), (override));
+  MOCK_METHOD(void, ShowInsightsSidePanelUI, (), (override));
 
   void SetCurrentTabUrl(const GURL& url) {
     ON_CALL(*this, GetCurrentTabUrl)
@@ -350,12 +351,14 @@ TEST_F(ShoppingListHandlerTest,
   absl::optional<commerce::ProductInfo> info;
   info.emplace();
   info->title = "example_title";
+  info->product_cluster_title = "example_cluster_title";
   shopping_service_->SetResponseForGetProductInfoForUrl(info);
 
   handler_->GetProductInfoForCurrentUrl(base::BindOnce(
       [](base::RunLoop* run_loop,
          shopping_list::mojom::ProductInfoPtr product_info) {
         ASSERT_EQ("example_title", product_info->title);
+        ASSERT_EQ("example_cluster_title", product_info->cluster_title);
         run_loop->Quit();
       },
       &run_loop));
@@ -377,11 +380,54 @@ TEST_F(ShoppingListHandlerTest,
       [](base::RunLoop* run_loop,
          shopping_list::mojom::ProductInfoPtr product_info) {
         ASSERT_EQ("", product_info->title);
+        ASSERT_EQ("", product_info->cluster_title);
         run_loop->Quit();
       },
       &run_loop));
 
   run_loop.Run();
+}
+
+TEST_F(ShoppingListHandlerTest, TestGetPriceInsightsInfoForCurrentUrl) {
+  base::RunLoop run_loop;
+
+  absl::optional<commerce::PriceInsightsInfo> info;
+  info.emplace();
+  info->product_cluster_id = 123;
+  info->currency_code = "usd";
+  info->typical_low_price_micros = 1230000;
+  info->typical_high_price_micros = 2340000;
+  info->catalog_attributes = "Unlocked, 4GB";
+  info->jackpot_url = GURL("http://example.com/jackpot");
+  info->price_bucket = PriceBucket::kHighPrice;
+  info->has_multiple_catalogs = true;
+
+  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(info);
+
+  handler_->GetPriceInsightsInfoForCurrentUrl(base::BindOnce(
+      [](base::RunLoop* run_loop,
+         shopping_list::mojom::PriceInsightsInfoPtr info) {
+        ASSERT_EQ(123, info->cluster_id);
+        ASSERT_EQ("$1.23", info->typical_low_price);
+        ASSERT_EQ("$2.34", info->typical_high_price);
+        ASSERT_EQ("Unlocked, 4GB", info->catalog_attributes);
+        ASSERT_EQ("http://example.com/jackpot", info->jackpot.spec());
+        ASSERT_EQ(shopping_list::mojom::PriceInsightsInfo::PriceBucket::kHigh,
+                  info->bucket);
+        ASSERT_EQ(true, info->has_multiple_catalogs);
+        run_loop->Quit();
+      },
+      &run_loop));
+
+  run_loop.Run();
+}
+
+TEST_F(ShoppingListHandlerTest, TestShowInsightsSidePanelUI) {
+  auto delegate = std::make_unique<MockDelegate>();
+  EXPECT_CALL(*delegate, ShowInsightsSidePanelUI).Times(1);
+
+  handler_->SetDelegateForTesting(std::move(delegate));
+  handler_->ShowInsightsSidePanelUI();
 }
 
 class ShoppingListHandlerFeatureDisableTest : public testing::Test {

@@ -45,6 +45,7 @@ MockShoppingService::MockShoppingService()
   SetGetAllShoppingBookmarksValue(
       std::vector<const bookmarks::BookmarkNode*>());
   SetIsPriceInsightsEligible(true);
+  SetResponseForGetPriceInsightsInfoForUrl(absl::nullopt);
 }
 
 MockShoppingService::~MockShoppingService() = default;

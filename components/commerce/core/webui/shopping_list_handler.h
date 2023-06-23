@@ -29,12 +29,14 @@ class BookmarkNode;
 namespace feature_engagement {
 class Tracker;
 }  // namespace feature_engagement
-
 namespace commerce {
 
 class ShoppingService;
+struct PriceInsightsInfo;
 struct ProductInfo;
 
+// TODO(b:283833590): Rename this class since it serves for all shopping
+// features now.
 class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
                             public SubscriptionsObserver {
  public:
@@ -48,6 +50,8 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
     virtual ~Delegate() = default;
 
     virtual absl::optional<GURL> GetCurrentTabUrl() = 0;
+
+    virtual void ShowInsightsSidePanelUI() = 0;
   };
 
   ShoppingListHandler(
@@ -72,6 +76,9 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
   void UntrackPriceForBookmark(int64_t bookmark_id) override;
   void GetProductInfoForCurrentUrl(
       GetProductInfoForCurrentUrlCallback callback) override;
+  void GetPriceInsightsInfoForCurrentUrl(
+      GetPriceInsightsInfoForCurrentUrlCallback callback) override;
+  void ShowInsightsSidePanelUI() override;
 
   // SubscriptionsObserver
   void OnSubscribe(const CommerceSubscription& subscription,
@@ -84,6 +91,8 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
       bookmarks::BookmarkModel& model,
       const std::vector<const bookmarks::BookmarkNode*>& bookmarks,
       const std::string& locale);
+
+  void SetDelegateForTesting(std::unique_ptr<Delegate> delegate);
 
  private:
   void onPriceTrackResult(int64_t bookmark_id,
@@ -102,6 +111,11 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
       GetProductInfoForCurrentUrlCallback callback,
       const GURL& url,
       const absl::optional<ProductInfo>& info);
+
+  void OnFetchPriceInsightsInfoForCurrentUrl(
+      GetPriceInsightsInfoForCurrentUrlCallback callback,
+      const GURL& url,
+      const absl::optional<PriceInsightsInfo>& info);
 
   mojo::Remote<shopping_list::mojom::Page> remote_page_;
   mojo::Receiver<shopping_list::mojom::ShoppingListHandler> receiver_;
