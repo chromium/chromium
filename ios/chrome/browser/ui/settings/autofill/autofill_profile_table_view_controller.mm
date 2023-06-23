@@ -381,10 +381,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
   }
 
-  const std::vector<autofill::AutofillProfile*> autofillProfiles =
-      _personalDataManager->GetProfilesForSettings();
-  [self showAddressProfileDetailsPageForProfile:*autofillProfiles[indexPath
-                                                                      .item]];
+  AutofillProfileItem* item = base::mac::ObjCCastStrict<AutofillProfileItem>(
+      [self.tableViewModel itemAtIndexPath:indexPath]);
+  [self showAddressProfileDetailsPageForProfile:_personalDataManager
+                                                    ->GetProfileByGUID(
+                                                        item.GUID)];
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
@@ -751,11 +752,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)showAddressProfileDetailsPageForProfile:
-    (const autofill::AutofillProfile&)profile {
+    (autofill::AutofillProfile*)profile {
   self.autofillProfileEditCoordinator = [[AutofillProfileEditCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser
-                               profile:profile];
+                               profile:*profile];
   self.autofillProfileEditCoordinator.delegate = self;
   [self.autofillProfileEditCoordinator start];
 }
