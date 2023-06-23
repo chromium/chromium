@@ -7,6 +7,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 class Profile;
 class ProfileAttributesEntry;
