@@ -72,7 +72,6 @@ source_set("browser_tests_filters") {
     "//testing/buildbot/filters/mac.mac12-arm64-rel.browser_tests.filter",
     "//testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter",
     "//testing/buildbot/filters/pixel_tests.filter",
-    "//testing/buildbot/filters/release_ready/linux64-rel-ready.browser_tests.p0.filter",
     "//testing/buildbot/filters/webrtc_functional.browser_tests.filter",
     "//testing/buildbot/filters/win.win-rel-cft.browser_tests.filter",
   ]
