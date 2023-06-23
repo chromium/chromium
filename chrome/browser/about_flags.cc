@@ -6033,13 +6033,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"revoke-notifications-permission-if-disabled-on-app-level",
-     flag_descriptions::kRevokeNotificationsPermissionIfDisabledOnAppLevelName,
-     flag_descriptions::
-         kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         features::kRevokeNotificationsPermissionIfDisabledOnAppLevel)},
     {"app-menu-mobile-site-option",
      flag_descriptions::kAppMenuMobileSiteOptionName,
      flag_descriptions::kAppMenuMobileSiteOptionDescription, kOsAndroid,
@@ -8132,16 +8125,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableExperimentalCookieFeaturesName,
      flag_descriptions::kEnableExperimentalCookieFeaturesDescription, kOsAll,
      MULTI_VALUE_TYPE(kEnableExperimentalCookieFeaturesChoices)},
-
-    {"permission-chip", flag_descriptions::kPermissionChipName,
-     flag_descriptions::kPermissionChipDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(permissions::features::kPermissionChip)},
-    {"permission-quiet-chip", flag_descriptions::kPermissionQuietChipName,
-     flag_descriptions::kPermissionQuietChipDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(permissions::features::kPermissionQuietChip)},
-    {"fail-fast-quiet-chip", flag_descriptions::kFailFastQuietChipName,
-     flag_descriptions::kFailFastQuietChipDescription, kOsAll,
-     FEATURE_VALUE_TYPE(permissions::features::kFailFastQuietChip)},
 
     {"canvas-2d-layers", flag_descriptions::kCanvas2DLayersName,
      flag_descriptions::kCanvas2DLayersDescription, kOsAll,

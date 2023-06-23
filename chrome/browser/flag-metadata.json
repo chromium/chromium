@@ -3981,11 +3981,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "fail-fast-quiet-chip",
-    "owners": [ "elklm", "//components/permissions/PERMISSIONS_OWNERS"],
-    "expiry_milestone": 115
-  },
-  {
     "name": "fast-checkout",
     "owners": [ "vizcay@google.com", "bwolfgang@google.com", "jkeitel@google.com" ],
     "expiry_milestone": 118
@@ -6310,19 +6305,6 @@
     "expiry_milestone": 118
   },
   {
-    "name": "permission-chip",
-    "owners": [
-      "elklm",
-      "//components/permissions/PERMISSIONS_OWNERS"
-    ],
-    "expiry_milestone": 115
-  },
-  {
-    "name": "permission-quiet-chip",
-    "owners": [ "elklm", "engedy"],
-    "expiry_milestone": 110
-  },
-  {
     "name": "permission-storage-access-api",
     "owners": [ "dullweber", "fsenra@google.com"],
     "expiry_milestone": 118
@@ -6789,11 +6771,6 @@
     "name": "revamped-password-management-bubble",
     "owners": [ "mamir", "derinel@google.com" ],
     "expiry_milestone": 117
-  },
-  {
-    "name": "revoke-notifications-permission-if-disabled-on-app-level",
-    "owners": [ "elklm", "//components/permissions/PERMISSIONS_OWNERS" ],
-    "expiry_milestone": 115
   },
   {
     "name": "rounded-display",
