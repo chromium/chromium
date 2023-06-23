@@ -22,7 +22,7 @@ from typing import Dict, Iterator, List, Optional, Tuple
 
 _TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve().parents[2]
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
-    sys.path.append(str(_TOOLS_ANDROID_PATH))
+    sys.path.insert(0, str(_TOOLS_ANDROID_PATH))
 from python_utils import git_metadata_utils, subprocess_utils
 
 _SRC_PATH = git_metadata_utils.get_chromium_src_path()
