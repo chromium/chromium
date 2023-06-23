@@ -55,9 +55,9 @@ namespace blink {
 // By default, the destruction of a WebPrivatePtr<> must happen on the same
 // thread that created it, but can optionally be allowed to happen on
 // another thread.
-enum WebPrivatePtrDestruction {
-  kWebPrivatePtrDestructionSameThread,
-  kWebPrivatePtrDestructionCrossThread,
+enum class WebPrivatePtrDestruction {
+  kSameThread,
+  kCrossThread,
 };
 
 // The WebPrivatePtr<> holds by default a strong reference to its Blink object,
@@ -81,46 +81,45 @@ constexpr size_t kMaxWebPrivatePtrSize =
     sizeof(cppgc::Persistent<internal::DummyGarbageCollected>);
 
 #if INSIDE_BLINK
-enum LifetimeManagementType {
-  kRefCountedLifetime,
-  kGarbageCollectedLifetime,
-};
 
-template <typename T>
-struct LifetimeOf {
- private:
-  // Covers GarbageCollected and GarbageCollectedMixin.
-  static const bool kIsGarbageCollected = WTF::IsGarbageCollectedType<T>::value;
-
- public:
-  static const LifetimeManagementType value =
-      !kIsGarbageCollected ? kRefCountedLifetime : kGarbageCollectedLifetime;
+enum class LifetimeManagementType {
+  kRefCounted,
+  kGarbageCollected,
 };
 
 template <typename T,
-          WebPrivatePtrDestruction crossThreadDestruction,
-          WebPrivatePtrStrength strongOrWeak,
-          LifetimeManagementType lifetime>
+          WebPrivatePtrDestruction,
+          WebPrivatePtrStrength,
+          LifetimeManagementType =
+              WTF::IsGarbageCollectedType<T>::value
+                  ? LifetimeManagementType::kGarbageCollected
+                  : LifetimeManagementType::kRefCounted>
 class PtrStorageImpl;
 
 template <typename T,
-          WebPrivatePtrDestruction crossThreadDestruction,
-          WebPrivatePtrStrength strongOrWeak>
+          WebPrivatePtrDestruction PtrDestruction,
+          WebPrivatePtrStrength PtrStrength>
 class PtrStorageImpl<T,
-                     crossThreadDestruction,
-                     strongOrWeak,
-                     kRefCountedLifetime> {
+                     PtrDestruction,
+                     PtrStrength,
+                     LifetimeManagementType::kRefCounted> {
  public:
-  typedef scoped_refptr<T> BlinkPtrType;
+  using BlinkPtrType = scoped_refptr<T>;
+
+  template <typename U>
+  void Construct(U&& value, const PersistentLocation& loc) {
+    ptr_ = nullptr;
+    Assign(std::forward<U>(value));
+  }
 
   void Assign(BlinkPtrType&& val) {
     static_assert(
-        crossThreadDestruction == kWebPrivatePtrDestructionSameThread ||
+        PtrDestruction == WebPrivatePtrDestruction::kSameThread ||
             WTF::IsSubclassOfTemplate<T, WTF::ThreadSafeRefCounted>::value,
         "Cross thread destructible class must derive from "
         "ThreadSafeRefCounted<>");
     static_assert(
-        strongOrWeak == WebPrivatePtrStrength::kNormal,
+        PtrStrength == WebPrivatePtrStrength::kNormal,
         "Ref-counted classes do not support weak WebPrivatePtr<> references");
     Release();
     if (val)
@@ -157,69 +156,50 @@ class PtrStorageImpl<T,
   };
 };
 
+// Translates WebPrivatePtrDestruction and WebPrivatePtrStrength to the
+// appropriate blink Persistent type.
 template <typename T, WebPrivatePtrDestruction, WebPrivatePtrStrength>
-struct WebPrivatePtrPersistentStorageType {
- public:
-  using Type = Persistent<T>;
-  static Type Create() { return Type(); }
-};
+struct WebPrivatePtrPersistentStorageType;
 
-template <typename T>
-struct WebPrivatePtrPersistentStorageType<T,
-                                          kWebPrivatePtrDestructionSameThread,
-                                          WebPrivatePtrStrength::kWeak> {
- public:
-  using Type = WeakPersistent<T>;
-  static Type Create() { return Type(); }
-};
+#define TRAIT_TO_TYPE_LIST(V)                        \
+  V(kSameThread, kNormal, Persistent<T>)             \
+  V(kSameThread, kWeak, WeakPersistent<T>)           \
+  V(kCrossThread, kNormal, CrossThreadPersistent<T>) \
+  V(kCrossThread, kWeak, CrossThreadWeakPersistent<T>)
 
-template <typename T>
-struct WebPrivatePtrPersistentStorageType<T,
-                                          kWebPrivatePtrDestructionCrossThread,
-                                          WebPrivatePtrStrength::kNormal> {
- public:
-  using Type = CrossThreadPersistent<T>;
-  static Type Create() { return Type(); }
-};
+#define DEFINE_TYPE_SPECIALIZATION(PtrDestruction, PtrStrengh, ReferenceType) \
+  template <typename T>                                                       \
+  struct WebPrivatePtrPersistentStorageType<                                  \
+      T, WebPrivatePtrDestruction::PtrDestruction,                            \
+      WebPrivatePtrStrength::PtrStrengh> {                                    \
+    using Type = ReferenceType;                                               \
+  };
 
-template <typename T>
-struct WebPrivatePtrPersistentStorageType<T,
-                                          kWebPrivatePtrDestructionCrossThread,
-                                          WebPrivatePtrStrength::kWeak> {
- public:
-  using Type = CrossThreadWeakPersistent<T>;
-  static Type Create() { return Type(); }
-};
+TRAIT_TO_TYPE_LIST(DEFINE_TYPE_SPECIALIZATION)
+#undef DEFINE_TYPE_TRAIT
+#undef TRAIT_TO_TYPE_LIST
 
 template <typename T,
-          WebPrivatePtrDestruction crossThreadDestruction,
-          WebPrivatePtrStrength strongOrWeak>
+          WebPrivatePtrDestruction PtrDestruction,
+          WebPrivatePtrStrength PtrStrength>
 class PtrStorageImpl<T,
-                     crossThreadDestruction,
-                     strongOrWeak,
-                     kGarbageCollectedLifetime> {
+                     PtrDestruction,
+                     PtrStrength,
+                     LifetimeManagementType::kGarbageCollected> {
  public:
-  using PersistentStorage =
-      WebPrivatePtrPersistentStorageType<T,
-                                         crossThreadDestruction,
-                                         strongOrWeak>;
-  using BlinkPtrType = typename PersistentStorage::Type;
-
-  void Assign(T* val) {
-    if (!val) {
-      Release();
-      return;
-    }
-
-    handle_ = val;
-  }
+  using BlinkPtrType =
+      typename WebPrivatePtrPersistentStorageType<T,
+                                                  PtrDestruction,
+                                                  PtrStrength>::Type;
 
   template <typename U>
-  void Assign(U* val) {
-    Assign(static_cast<T*>(val));
+  void Construct(U&& value, const PersistentLocation& loc) {
+    new (&handle_) BlinkPtrType(std::forward<U>(value), loc);
   }
 
-  void Assign(const PtrStorageImpl& other) { Assign(other.Get()); }
+  void Assign(T* val) { handle_ = val; }
+
+  void Assign(const PtrStorageImpl& other) { handle_ = other.handle_; }
 
   T* Get() const { return handle_.Get(); }
 
@@ -234,12 +214,9 @@ class PtrStorageImpl<T,
 };
 
 template <typename T,
-          WebPrivatePtrDestruction crossThreadDestruction,
-          WebPrivatePtrStrength strongOrWeak>
-class PtrStorage : public PtrStorageImpl<T,
-                                         crossThreadDestruction,
-                                         strongOrWeak,
-                                         LifetimeOf<T>::value> {
+          WebPrivatePtrDestruction PtrDestruction,
+          WebPrivatePtrStrength PrStrength>
+class PtrStorage final : public PtrStorageImpl<T, PtrDestruction, PrStrength> {
  public:
   static PtrStorage& FromSlot(void** slot) {
     return *reinterpret_cast<PtrStorage*>(slot);
@@ -249,16 +226,18 @@ class PtrStorage : public PtrStorageImpl<T,
     return *reinterpret_cast<const PtrStorage*>(slot);
   }
 
- private:
   // Prevent construction via normal means.
   PtrStorage() = delete;
   PtrStorage(const PtrStorage&) = delete;
 };
 #endif
 
-// This class is an implementation detail of the Blink API. It exists to help
-// simplify the implementation of Blink interfaces that merely wrap a reference
-// counted WebCore class.
+//
+// WebPrivatePtr is an opaque reference to a Blink-internal class that can keep
+// an object alive over the Blink API boundary. The object referred to can be
+// reference counted or garbage collected. The pointer must be set and cleared
+// from within Blink. Outside of Blink, WebPrivatePtr only allows constructing
+// an empty reference and checking for an empty reference.
 //
 // A typical implementation of a class which uses WebPrivatePtr might look like
 // this:
@@ -293,12 +272,16 @@ class PtrStorage : public PtrStorageImpl<T,
 //    void WebFoo::Assign(const WebFoo& other) { ... }
 //
 template <typename T,
-          WebPrivatePtrDestruction crossThreadDestruction =
-              kWebPrivatePtrDestructionSameThread,
-          WebPrivatePtrStrength strongOrWeak = WebPrivatePtrStrength::kNormal>
-class WebPrivatePtr {
+          WebPrivatePtrDestruction PtrDestruction =
+              WebPrivatePtrDestruction::kSameThread,
+          WebPrivatePtrStrength PtrStrength = WebPrivatePtrStrength::kNormal>
+class WebPrivatePtr final {
  public:
+  // This constructor may be used outside of Blink to construct empty pointers.
+  // Since it is used on the API and T may refer to a forward-declared internal
+  // type, we cannot refer to Storage() from its body.
   WebPrivatePtr() { memset(&storage_, 0, sizeof(storage_)); }
+
   ~WebPrivatePtr() {
     // We don't destruct the object pointed by storage_ here because we don't
     // want to expose destructors of core classes to embedders. We should
@@ -307,29 +290,16 @@ class WebPrivatePtr {
     DCHECK(IsNull());
   }
 
+  // Disable the copy constructor; classes that contain a WebPrivatePtr
+  // should implement their copy constructor using assign().
+  WebPrivatePtr(const WebPrivatePtr&) = delete;
+
   bool IsNull() const { return !*reinterpret_cast<void* const*>(&storage_); }
+
   explicit operator bool() const { return !IsNull(); }
 
 #if INSIDE_BLINK
-  template <typename U>
-  WebPrivatePtr(U&& ptr) : WebPrivatePtr() {
-    Storage().Assign(std::forward<U>(ptr));
-  }
-
   void Reset() { Storage().Release(); }
-
-  WebPrivatePtr& operator=(const WebPrivatePtr& other) {
-    Storage().Assign(other.Storage());
-    return *this;
-  }
-
-  // TODO(bikineev,1249550): Implement normal move ops for better performance.
-
-  template <typename U>
-  WebPrivatePtr& operator=(U&& ptr) {
-    Storage().Assign(std::forward<U>(ptr));
-    return *this;
-  }
 
   T* Get() const { return Storage().Get(); }
 
@@ -342,11 +312,36 @@ class WebPrivatePtr {
     DCHECK(!IsNull());
     return Get();
   }
-#endif
+
+  template <typename U>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  WebPrivatePtr(U&& ptr,
+                const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE) {
+    Storage().Construct(std::forward<U>(ptr), loc);
+  }
+
+  template <typename U>
+  WebPrivatePtr& operator=(U&& ptr) {
+    Storage().Assign(std::forward<U>(ptr));
+    return *this;
+  }
+
+  WebPrivatePtr& operator=(const WebPrivatePtr& other) {
+    Storage().Assign(other.Storage());
+    return *this;
+  }
+
+#else   // !INSIDE_BLINK
+  // Disable the assignment operator; we define it above for when
+  // INSIDE_BLINK is set, but we need to make sure that it is not
+  // used outside there; the compiler-provided version won't handle reference
+  // counting properly.
+  WebPrivatePtr& operator=(const WebPrivatePtr& other) = delete;
+#endif  // !INSIDE_BLINK
 
  private:
 #if INSIDE_BLINK
-  using PtrStorageType = PtrStorage<T, crossThreadDestruction, strongOrWeak>;
+  using PtrStorageType = PtrStorage<T, PtrDestruction, PtrStrength>;
 
   PtrStorageType& Storage() {
     static_assert(sizeof(WebPrivatePtr) == sizeof(PtrStorageType),
@@ -356,18 +351,7 @@ class WebPrivatePtr {
   const PtrStorageType& Storage() const {
     return const_cast<WebPrivatePtr*>(this)->Storage();
   }
-#endif
-
-#if !INSIDE_BLINK
-  // Disable the assignment operator; we define it above for when
-  // INSIDE_BLINK is set, but we need to make sure that it is not
-  // used outside there; the compiler-provided version won't handle reference
-  // counting properly.
-  WebPrivatePtr& operator=(const WebPrivatePtr& other) = delete;
-#endif
-  // Disable the copy constructor; classes that contain a WebPrivatePtr
-  // should implement their copy constructor using assign().
-  WebPrivatePtr(const WebPrivatePtr&) = delete;
+#endif  // INSIDE_BLINK
 
   std::aligned_storage_t<kMaxWebPrivatePtrSize, alignof(uintptr_t)> storage_;
 };

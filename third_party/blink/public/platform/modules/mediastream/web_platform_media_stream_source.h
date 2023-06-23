@@ -102,7 +102,7 @@ class BLINK_PLATFORM_EXPORT WebPlatformMediaStreamSource {
   MediaStreamDevice device_;
   SourceStoppedCallback stop_callback_;
   WebPrivatePtr<MediaStreamSource,
-                kWebPrivatePtrDestructionSameThread,
+                WebPrivatePtrDestruction::kSameThread,
                 WebPrivatePtrStrength::kWeak>
       owner_;
 
