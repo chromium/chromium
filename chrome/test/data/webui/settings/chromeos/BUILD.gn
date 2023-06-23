@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
+import("//chrome/browser/resources/ash/settings/os_settings.gni")
 import("//chrome/test/data/webui/build_webui_tests.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
@@ -278,7 +278,7 @@ build_webui_tests("build") {
 
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
-    "//chrome/browser/resources/settings/chromeos:build_ts",
+    "//chrome/browser/resources/ash/settings:build_ts",
     "//chrome/test/data/webui/chromeos:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/app_management:build_ts",
@@ -291,10 +291,10 @@ build_webui_tests("build") {
     # CrOS Settings browser tests should only import from one of the paths
     # below, so that tests work both in optimize_webui=true/false modes.
     "chrome://os-settings/os_settings.js|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/settings/chromeos/tsc/os_settings.d.ts",
+            "$root_gen_dir/chrome/browser/resources/ash/settings/tsc/os_settings.d.ts",
             target_gen_dir),
     "chrome://os-settings/lazy_load.js|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/settings/chromeos/tsc/lazy_load.d.ts",
+            "$root_gen_dir/chrome/browser/resources/ash/settings/tsc/lazy_load.d.ts",
             target_gen_dir),
     "chrome://webui-test/chromeos/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",

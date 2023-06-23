@@ -1,4 +1,28 @@
-# TODO(b/283986054) Remove reference to old OWNERS file and update this file's
-# contents once the code is moved to this directory.
+# For changes to specific OS Settings sections in subfolders, prefer have
+# subfolder OWNERS review.
 
-file://chrome/browser/resources/settings/chromeos/OWNERS
+# For changes to general OS Settings app, framework/infra changes, or anything
+# that does not have a more specific OWNERS, please select a "main" reviewer,
+# if none available, please select a "backup" reviewer.
+
+# Main reviewers
+wesokuhara@google.com
+xiaohuic@chromium.org
+
+# Backup reviewers
+cowmoo@google.com
+
+# Subdir OWNERS can approve global changes related to their subdir.
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/ash/settings/crostini_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/ash/settings/device_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/ash/settings/guest_os/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/ash/settings/internet_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/ash/settings/keyboard_shortcut_banner/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/ash/settings/multidevice_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/ash/settings/nearby_share_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/ash/settings/os_apps_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/ash/settings/os_apps_page/app_notifications_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/ash/settings/os_bluetooth_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/ash/settings/os_files_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/ash/settings/os_languages_page/OWNERS
+per-file lazy_load.ts,os_settings.gni,os_settings.ts,os_settings_icons.html=file://chrome/browser/resources/ash/settings/os_printing_page/OWNERS

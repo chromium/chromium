@@ -2,9 +2,9 @@ file://chrome/browser/resources/ash/settings/OWNERS
 
 per-file account_manager_*=file://chromeos/ash/components/account_manager/OWNERS
 per-file apps_section*=file://chrome/browser/ui/webui/app_management/OWNERS
-per-file device_*=file://chrome/browser/resources/settings/chromeos/device_page/OWNERS
+per-file device_*=file://chrome/browser/resources/ash/settings/device_page/OWNERS
 per-file files_section*=file://ui/file_manager/OWNERS
 per-file kerberos_*=file://chrome/browser/ash/kerberos/OWNERS
-per-file languages_section*=file://chrome/browser/resources/settings/chromeos/os_languages_page/OWNERS
+per-file languages_section*=file://chrome/browser/resources/ash/settings/os_languages_page/OWNERS
 per-file multidevice_handler*=file://chromeos/ash/components/multidevice/OWNERS
-per-file printing_*,cups_*=file://chrome/browser/resources/settings/chromeos/os_printing_page/OWNERS
+per-file printing_*,cups_*=file://chrome/browser/resources/ash/settings/os_printing_page/OWNERS

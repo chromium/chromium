@@ -74,10 +74,10 @@ group("resources") {
 
   if (is_chromeos_ash) {
     public_deps += [
+      "ash/settings:resources",
       "chromeos:resources",
       "nearby_internals:resources",
       "nearby_share:resources",
-      "settings/chromeos:resources",
     ]
   }
 
