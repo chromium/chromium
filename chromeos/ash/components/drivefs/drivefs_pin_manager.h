@@ -458,8 +458,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   // Should the feature use `OnItemProgress`, if false it will fall back to
   // `OnSyncingStatusUpdate`.
-  bool should_use_on_item_progress_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      true;
+  bool use_on_item_progress_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
 
   // `spaced` daemon client.
   raw_ptr<ash::SpacedClient, ExperimentalAsh> spaced_

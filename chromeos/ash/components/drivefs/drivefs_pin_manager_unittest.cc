@@ -1645,7 +1645,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingStatusUpdate) {
   manager.progress_.stage = Stage::kSyncing;
   manager.progress_.bytes_to_pin = 30000;
   manager.progress_.required_space = 32768;
-  manager.should_use_on_item_progress_ = false;
+  manager.use_on_item_progress_ = false;
 
   const Id id1 = Id(549);
   const Path path1 = Path("Path 1");
@@ -1807,7 +1807,7 @@ TEST_F(DriveFsPinManagerTest, OnItemProgress) {
   PinManager manager(profile_path_, mount_path_, &drivefs_);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
-  manager.should_use_on_item_progress_ = true;
+  manager.use_on_item_progress_ = true;
   manager.progress_.bytes_to_pin = 30000;
   manager.progress_.required_space = 32768;
   manager.progress_.stage = Stage::kSyncing;

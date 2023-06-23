@@ -1269,7 +1269,7 @@ void PinManager::OnFilePinned(const Id id,
 void PinManager::OnSyncingStatusUpdate(const mojom::SyncingStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (should_use_on_item_progress_) {
+  if (use_on_item_progress_) {
     return;
   }
 
@@ -1350,7 +1350,7 @@ bool PinManager::OnSyncingEvent(mojom::ItemEvent& event) {
 void PinManager::OnItemProgress(const mojom::ProgressEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!should_use_on_item_progress_) {
+  if (!use_on_item_progress_) {
     return;
   }
 
