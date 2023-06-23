@@ -123,13 +123,6 @@ enum class Microsoft365Availability {
   kMaxValue = kODFS,
 };
 
-std::vector<ProvidedFileSystemInfo> GetODFSFileSystems(Profile* profile) {
-  Service* service = Service::Get(profile);
-  ProviderId provider_id = ProviderId::CreateFromExtensionId(
-      file_manager::file_tasks::GetODFSExtensionId(profile));
-  return service->GetProvidedFileSystemInfoList(provider_id);
-}
-
 // Open a hosted MS Office file e.g. .docx, from a url hosted in
 // DriveFS. Check the file was successfully uploaded to DriveFS.
 void OpenUploadedDriveUrl(const GURL& url) {
@@ -688,14 +681,12 @@ absl::optional<ODFSFileSystemAndPath> AndroidOneDriveUrlToODFS(
   }
 
   // Get the ODFS mount path.
-  std::vector<ProvidedFileSystemInfo> odfs_file_system_infos =
-      GetODFSFileSystems(profile);
-  if (odfs_file_system_infos.size() != 1u) {
-    LOG(ERROR) << "One and only one filesystem should be mounted for the ODFS "
-                  "extension";
+  absl::optional<ProvidedFileSystemInfo> odfs_file_system_info =
+      GetODFSInfo(profile);
+  if (!odfs_file_system_info.has_value()) {
     return absl::nullopt;
   }
-  base::FilePath odfs_path = odfs_file_system_infos[0].mount_path();
+  base::FilePath odfs_path = odfs_file_system_info->mount_path();
 
   // Find the relative path from Android OneDrive Url.
   std::string authority;
@@ -1187,7 +1178,7 @@ void CloudUploadDialog::RequestODFSMount(
 
 bool CloudUploadDialog::IsODFSMounted(Profile* profile) {
   // Assume any file system mounted by ODFS is the correct one.
-  return !GetODFSFileSystems(profile).empty();
+  return GetODFSInfo(profile).has_value();
 }
 
 bool CloudUploadDialog::IsOfficeWebAppInstalled(Profile* profile) {

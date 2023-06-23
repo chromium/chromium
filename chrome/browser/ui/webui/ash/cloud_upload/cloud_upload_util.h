@@ -95,6 +95,15 @@ SourceType GetSourceType(Profile* profile,
     Profile* profile,
     const storage::FileSystemURL& source_path);
 
+// Get information of the currently provided ODFS. Expect there to be exactly
+// one ODFS.
+absl::optional<file_system_provider::ProvidedFileSystemInfo> GetODFSInfo(
+    Profile* profile);
+
+// Get currently provided ODFS.
+absl::optional<file_system_provider::ProvidedFileSystemInterface*> GetODFS(
+    Profile* profile);
+
 // Get ODFS metadata as actions by doing a special GetActions request (for the
 // root directory) and return the actions to |OnODFSMetadataActions| which will
 // be converted to |ODFSMetadata| and passed to |callback|.

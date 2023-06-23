@@ -70,44 +70,22 @@ OneDrivePageHandler::~OneDrivePageHandler() {
 
 void OneDrivePageHandler::GetUserEmailAddress(
     GetUserEmailAddressCallback callback) {
-  file_system_provider::Service* service =
-      file_system_provider::Service::Get(profile_);
-  file_system_provider::ProviderId provider_id =
-      file_system_provider::ProviderId::CreateFromExtensionId(
-          file_manager::file_tasks::GetODFSExtensionId(profile_));
-  std::vector<file_system_provider::ProvidedFileSystemInfo>
-      odfs_file_system_infos =
-          service->GetProvidedFileSystemInfoList(provider_id);
-  if (odfs_file_system_infos.size() == 0) {
-    // ODFS is not mounted.
+  absl::optional<file_system_provider::ProvidedFileSystemInterface*>
+      file_system = cloud_upload::GetODFS(profile_);
+  if (!file_system.has_value()) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
-  if (odfs_file_system_infos.size() != 1u) {
-    LOG(ERROR) << "One and only one filesystem should be mounted for the ODFS "
-                  "extension";
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-  auto* file_system = service->GetProvidedFileSystem(
-      provider_id, odfs_file_system_infos[0].file_system_id());
   cloud_upload::GetODFSMetadata(
-      file_system, base::BindOnce(&OnGetEmailAddress, std::move(callback)));
+      file_system.value(),
+      base::BindOnce(&OnGetEmailAddress, std::move(callback)));
 }
 
 void OneDrivePageHandler::ConnectToOneDrive(
     ConnectToOneDriveCallback callback) {
-  file_system_provider::Service* service =
-      file_system_provider::Service::Get(profile_);
-  // First check if OneDrive is already mounted.
-  CHECK(service);
-  file_system_provider::ProviderId provider_id =
-      file_system_provider::ProviderId::CreateFromExtensionId(
-          file_manager::file_tasks::GetODFSExtensionId(profile_));
-  std::vector<file_system_provider::ProvidedFileSystemInfo>
-      odfs_file_system_infos =
-          service->GetProvidedFileSystemInfoList(provider_id);
-  if (odfs_file_system_infos.size() > 0) {
+  absl::optional<file_system_provider::ProvidedFileSystemInfo>
+      odfs_file_system_info = cloud_upload::GetODFSInfo(profile_);
+  if (odfs_file_system_info.has_value()) {
     // ODFS is already mounted.
     std::move(callback).Run(false);
     return;

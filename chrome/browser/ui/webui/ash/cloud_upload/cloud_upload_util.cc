@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/volume.h"
@@ -20,7 +21,10 @@ namespace {
 
 using file_system_provider::Action;
 using file_system_provider::Actions;
+using file_system_provider::ProvidedFileSystemInfo;
 using file_system_provider::ProvidedFileSystemInterface;
+using file_system_provider::ProviderId;
+using file_system_provider::Service;
 
 }  // namespace
 
@@ -91,6 +95,38 @@ file_manager::io_task::OperationType GetOperationTypeForUpload(
   return source_type == SourceType::LOCAL
              ? file_manager::io_task::OperationType::kMove
              : file_manager::io_task::OperationType::kCopy;
+}
+
+absl::optional<ProvidedFileSystemInfo> GetODFSInfo(Profile* profile) {
+  Service* service = Service::Get(profile);
+  ProviderId provider_id = ProviderId::CreateFromExtensionId(
+      file_manager::file_tasks::GetODFSExtensionId(profile));
+  auto odfs_infos = service->GetProvidedFileSystemInfoList(provider_id);
+
+  if (odfs_infos.size() == 0) {
+    LOG(ERROR) << "ODFS is not mounted";
+    return absl::nullopt;
+  }
+  if (odfs_infos.size() > 1u) {
+    LOG(ERROR) << "One and only one filesystem should be mounted for the ODFS "
+                  "extension";
+    return absl::nullopt;
+  }
+
+  return odfs_infos[0];
+}
+
+absl::optional<ProvidedFileSystemInterface*> GetODFS(Profile* profile) {
+  Service* service = Service::Get(profile);
+  ProviderId provider_id = ProviderId::CreateFromExtensionId(
+      file_manager::file_tasks::GetODFSExtensionId(profile));
+  auto odfs_info = GetODFSInfo(profile);
+  if (!odfs_info.has_value()) {
+    return absl::nullopt;
+  }
+  auto* file_system =
+      service->GetProvidedFileSystem(provider_id, odfs_info->file_system_id());
+  return file_system;
 }
 
 // Convert |actions| to |ODFSMetadata| and pass the result to |callback|.
