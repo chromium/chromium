@@ -8,12 +8,14 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -276,13 +278,16 @@ TEST_F(SessionControllerClientImplTest, MultiProfileDisallowedByUserPolicy) {
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 
-  browser_manager_->StartRunning();
-  EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_LACROS_RUNNING,
-            SessionControllerClientImpl::GetAddUserSessionPolicy());
-
-  browser_manager_->StopRunning();
-  EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
-            SessionControllerClientImpl::GetAddUserSessionPolicy());
+  {
+    // It should be disabled if Lacros is enabled.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly},
+        {});
+    EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_LACROS_ENABLED,
+              SessionControllerClientImpl::GetAddUserSessionPolicy());
+  }
 
   user_profile->GetPrefs()->SetString(
       prefs::kMultiProfileUserBehavior,

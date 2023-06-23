@@ -423,8 +423,8 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_POWER_OFF" desc="The label used for the button in the status tray to turn off the device.">
         Power off
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_MESSAGE_NOT_ALLOWED_LACROS" desc="The error message multiple signin is prevented because Lacros is running.">
-        Signing in a second user is not supported while the Lacros browser is running. Please use a second browser profile in Lacros instead or close Lacros and try again.
+      <message name="IDS_ASH_STATUS_TRAY_MESSAGE_NOT_ALLOWED_LACROS" desc="The error message multiple signin is prevented because Lacros is enabled.">
+        Signing in a second user is not supported if Lacros is enabled. Please use a second browser profile in Lacros instead or disable Lacros and try again.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_SIGN_IN_ANOTHER_ACCOUNT" desc="The string for the button which lets the user add another account to the current session.">
         Sign in another user...

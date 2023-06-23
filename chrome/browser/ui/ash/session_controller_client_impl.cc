@@ -265,7 +265,10 @@ void SessionControllerClientImpl::ShowMultiProfileLogin() {
   DCHECK(!UserManager::Get()->GetUsersAllowedForMultiProfile().empty());
 
   // Lacros and multiprofile are mutually exclusive.
-  DCHECK(!crosapi::BrowserManager::Get()->IsRunningOrWillRun());
+  const auto* primary_user = UserManager::Get()->GetPrimaryUser();
+  DCHECK(primary_user);
+  DCHECK(!crosapi::browser_util::IsLacrosEnabledForMigration(
+      primary_user, crosapi::browser_util::PolicyInitState::kAfterInit));
 
   // Don't show the dialog if any logged-in user in the multi-profile session
   // dismissed it.
@@ -331,9 +334,11 @@ bool SessionControllerClientImpl::IsMultiProfileAvailable() {
       ash::SessionTerminationManager::Get()->IsLockedToSingleUser()) {
     return false;
   }
-  // Multiprofile mode is not allowed when Lacros is running.
-  if (crosapi::BrowserManager::Get() &&
-      crosapi::BrowserManager::Get()->IsRunningOrWillRun()) {
+  // Multiprofile mode is not allowed if Lacros is enabled.
+  const auto* primary_user = UserManager::Get()->GetPrimaryUser();
+  if (primary_user &&
+      crosapi::browser_util::IsLacrosEnabledForMigration(
+          primary_user, crosapi::browser_util::PolicyInitState::kAfterInit)) {
     return false;
   }
   size_t users_logged_in = UserManager::Get()->GetLoggedInUsers().size();
@@ -410,17 +415,12 @@ SessionControllerClientImpl::GetAddUserSessionPolicy() {
     return ash::AddUserSessionPolicy::ERROR_MAXIMUM_USERS_REACHED;
   }
 
-  // Multiprofile mode is not allowed when Lacros is running.
-  if (crosapi::BrowserManager::Get()) {
-    // If Lacros is the primary browser then it's functionally always running.
-    if (crosapi::BrowserManager::Get()->IsRunningOrWillRun() ||
-        crosapi::browser_util::IsLacrosPrimaryBrowser()) {
-      return ash::AddUserSessionPolicy::ERROR_LACROS_RUNNING;
+  const auto* primary_user = user_manager->GetPrimaryUser();
+  if (primary_user) {
+    if (crosapi::browser_util::IsLacrosEnabledForMigration(
+            primary_user, crosapi::browser_util::PolicyInitState::kAfterInit)) {
+      return ash::AddUserSessionPolicy::ERROR_LACROS_ENABLED;
     }
-  } else {
-    // If multiprofile is queried while browser manager is not set,
-    // we want to make sure that this is done before any user logs in.
-    DCHECK(user_manager->GetLoggedInUsers().empty());
   }
 
   return ash::AddUserSessionPolicy::ALLOWED;

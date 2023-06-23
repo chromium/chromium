@@ -356,7 +356,7 @@ UserChooserView::UserChooserView(
       AddChildView(CreateAddUserErrorView(l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_MESSAGE_NOT_ALLOWED_PRIMARY_USER)));
       break;
-    case AddUserSessionPolicy::ERROR_LACROS_RUNNING:
+    case AddUserSessionPolicy::ERROR_LACROS_ENABLED:
       AddChildView(CreateAddUserErrorView(l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_MESSAGE_NOT_ALLOWED_LACROS)));
       break;
