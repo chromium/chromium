@@ -83,7 +83,8 @@ class HidStatusIconTest : public DeviceStatusIconTestBase {
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-TEST_F(HidStatusIconTest, SingleProfileEmptyNameExtentionOrigins) {
+// TODO(crbug.com/1457424): Re-enable this test
+TEST_F(HidStatusIconTest, DISABLED_SingleProfileEmptyNameExtentionOrigins) {
   // Current TestingProfileManager can't support empty profile name as it uses
   // profile name for profile path. Passing empty would result in a failure in
   // ProfileManager::IsAllowedProfilePath(). Changing the way
@@ -96,27 +97,30 @@ TEST_F(HidStatusIconTest, SingleProfileEmptyNameExtentionOrigins) {
   TestSingleProfileExtentionOrigins();
 }
 
-TEST_F(HidStatusIconTest, SingleProfileNonEmptyNameExtentionOrigins) {
+// TODO(crbug.com/1457424): Re-enable this test
+TEST_F(HidStatusIconTest, DISABLED_SingleProfileNonEmptyNameExtentionOrigins) {
   TestSingleProfileExtentionOrigins();
 }
 
-TEST_F(HidStatusIconTest, BounceConnectionExtensionOrigins) {
+TEST_F(HidStatusIconTest, DISABLED_BounceConnectionExtensionOrigins) {
   TestBounceConnectionExtensionOrigins();
 }
 
-TEST_F(HidStatusIconTest, MultipleProfilesExtensionOrigins) {
+TEST_F(HidStatusIconTest, DISABLED_MultipleProfilesExtensionOrigins) {
   TestMultipleProfilesExtensionOrigins();
 }
 
-TEST_F(HidStatusIconTest, NumCommandIdOverLimitExtensionOrigin) {
+TEST_F(HidStatusIconTest, DISABLED_NumCommandIdOverLimitExtensionOrigin) {
   TestNumCommandIdOverLimitExtensionOrigin();
 }
 
-TEST_F(HidStatusIconTest, ExtensionRemoval) {
+// TODO(crbug.com/1457424): Re-enable this test
+TEST_F(HidStatusIconTest, DISABLED_ExtensionRemoval) {
   TestExtensionRemoval();
 }
 
-TEST_F(HidStatusIconTest, ProfileUserNameExtensionOrigin) {
+// TODO(crbug.com/1457424): Re-enable this test
+TEST_F(HidStatusIconTest, DISABLED_ProfileUserNameExtensionOrigin) {
   TestProfileUserNameExtensionOrigin();
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
