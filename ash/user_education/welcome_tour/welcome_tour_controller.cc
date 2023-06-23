@@ -5,6 +5,7 @@
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/ash_element_identifiers.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"

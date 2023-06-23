@@ -10305,6 +10305,7 @@ if (!is_android) {
       }
       if (is_chromeos_ash) {
         sources += [
+          "../browser/ui/ash/app_list/app_list_interactive_uitest.cc",
           "../browser/ui/ash/user_education/welcome_tour/welcome_tour_interactive_uitest.cc",
           "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc",
           "//ash/drag_drop/drag_drop_interactive_uitest.cc",

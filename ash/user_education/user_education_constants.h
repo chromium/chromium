@@ -22,9 +22,6 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kExploreAppElementId);
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kHoldingSpaceTrayElementId);
 
-// Uniquely identifies the `HomeButton` for user education.
-DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kHomeButtonElementId);
-
 // Uniquely identifies the `SearchBoxView` for user education.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kSearchBoxViewElementId);
 
