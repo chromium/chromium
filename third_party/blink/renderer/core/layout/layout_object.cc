@@ -1598,7 +1598,7 @@ void LayoutObject::InvalidateIntersectionObserverCachedRects() {
   }
 }
 
-static inline bool NGKeepInvalidatingBeyond(LayoutObject* o) {
+static inline bool ShouldInvalidateBeyond(LayoutObject* o) {
   // Because LayoutNG does not work on individual inline objects, we can't
   // use a dirty width on an inline as a signal that it is safe to stop --
   // inlines never get marked as clean. Instead, we need to keep going to the
@@ -1609,6 +1609,17 @@ static inline bool NGKeepInvalidatingBeyond(LayoutObject* o) {
   // LayoutNG.
   if (o->IsLayoutInline() || o->IsText() || o->IsLayoutFlowThread())
     return true;
+
+  // Invalidate past any subgrids. NOTE: we do this in both axes as we don't
+  // know what writing-mode the root grid is in.
+  if (o->IsLayoutNGGrid()) {
+    const auto& style = o->StyleRef();
+    if (style.GridTemplateColumns().IsSubgriddedAxis() ||
+        style.GridTemplateRows().IsSubgriddedAxis()) {
+      return true;
+    }
+  }
+
   return false;
 }
 
@@ -1629,7 +1640,7 @@ inline void LayoutObject::InvalidateContainerIntrinsicLogicalWidths() {
 
   LayoutObject* o = IntrinsicContainer(this);
   while (o &&
-         (!o->IntrinsicLogicalWidthsDirty() || NGKeepInvalidatingBeyond(o))) {
+         (!o->IntrinsicLogicalWidthsDirty() || ShouldInvalidateBeyond(o))) {
     // Don't invalidate the outermost object of an unrooted subtree. That object
     // will be invalidated when the subtree is added to the document.
     LayoutObject* container = IntrinsicContainer(o);
