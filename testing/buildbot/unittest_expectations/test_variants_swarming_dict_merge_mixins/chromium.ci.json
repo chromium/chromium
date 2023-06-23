@@ -20,7 +20,6 @@
         "variant_id": "args"
       },
       {
-        "args": [],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -39,7 +38,6 @@
         "variant_id": "mixins"
       },
       {
-        "args": [],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },

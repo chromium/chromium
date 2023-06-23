@@ -54,7 +54,6 @@
         "variant_id": "8086:3e9b"
       },
       {
-        "args": [],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -78,7 +77,6 @@
         "variant_id": "1002:67ef"
       },
       {
-        "args": [],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },

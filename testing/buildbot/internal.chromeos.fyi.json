@@ -1164,7 +1164,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "brya",
         "cros_img": "brya-release/R117-15511.0.0",
@@ -1178,7 +1177,6 @@
         "variant_id": "BRYA_RELEASE_LKGM"
       },
       {
-        "args": [],
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "brya",
         "cros_img": "brya-release/R117-15511.0.0",
@@ -1202,7 +1200,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R117-15511.0.0",
@@ -1225,7 +1222,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "kevin",
         "cros_img": "kevin-release/R117-15511.0.0",
@@ -1248,7 +1244,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "octopus",
         "cros_img": "octopus-release/R117-15511.0.0",
@@ -1271,7 +1266,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "trogdor",
         "cros_img": "trogdor-release/R117-15511.0.0",
@@ -1294,7 +1288,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "volteer",
         "cros_img": "volteer-release/R117-15511.0.0",
@@ -1315,7 +1308,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "cros_board": "octopus",
         "cros_img": "octopus-release/R117-15511.0.0",
         "name": "lacros_fyi_tast_tests OCTOPUS_RELEASE_LKGM",
@@ -1326,7 +1318,6 @@
         "variant_id": "OCTOPUS_RELEASE_LKGM"
       },
       {
-        "args": [],
         "cros_board": "octopus",
         "cros_img": "octopus-release/R116-15501.0.0",
         "name": "lacros_fyi_tast_tests OCTOPUS_RELEASE_DEV",
@@ -1337,7 +1328,6 @@
         "variant_id": "OCTOPUS_RELEASE_DEV"
       },
       {
-        "args": [],
         "cros_board": "octopus",
         "cros_img": "octopus-release/R115-15474.21.0",
         "name": "lacros_fyi_tast_tests OCTOPUS_RELEASE_BETA",
@@ -1348,7 +1338,6 @@
         "variant_id": "OCTOPUS_RELEASE_BETA"
       },
       {
-        "args": [],
         "cros_board": "octopus",
         "cros_img": "octopus-release/R114-15437.57.0",
         "name": "lacros_fyi_tast_tests OCTOPUS_RELEASE_STABLE",
@@ -1359,7 +1348,6 @@
         "variant_id": "OCTOPUS_RELEASE_STABLE"
       },
       {
-        "args": [],
         "cros_board": "octopus",
         "cros_img": "octopus-release/R117-15511.0.0",
         "name": "ozone_unittests OCTOPUS_RELEASE_LKGM",
@@ -1369,7 +1357,6 @@
         "variant_id": "OCTOPUS_RELEASE_LKGM"
       },
       {
-        "args": [],
         "cros_board": "octopus",
         "cros_img": "octopus-release/R116-15501.0.0",
         "name": "ozone_unittests OCTOPUS_RELEASE_DEV",
@@ -1379,7 +1366,6 @@
         "variant_id": "OCTOPUS_RELEASE_DEV"
       },
       {
-        "args": [],
         "cros_board": "octopus",
         "cros_img": "octopus-release/R115-15474.21.0",
         "name": "ozone_unittests OCTOPUS_RELEASE_BETA",
@@ -1389,7 +1375,6 @@
         "variant_id": "OCTOPUS_RELEASE_BETA"
       },
       {
-        "args": [],
         "cros_board": "octopus",
         "cros_img": "octopus-release/R114-15437.57.0",
         "name": "ozone_unittests OCTOPUS_RELEASE_STABLE",
@@ -1406,7 +1391,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "cros_board": "hana",
         "cros_img": "hana-release/R117-15511.0.0",
         "name": "lacros_all_tast_tests HANA_RELEASE_LKGM",
@@ -1417,7 +1401,6 @@
         "variant_id": "HANA_RELEASE_LKGM"
       },
       {
-        "args": [],
         "cros_board": "hana",
         "cros_img": "hana-release/R116-15501.0.0",
         "name": "lacros_all_tast_tests HANA_RELEASE_DEV",
@@ -1428,7 +1411,6 @@
         "variant_id": "HANA_RELEASE_DEV"
       },
       {
-        "args": [],
         "cros_board": "hana",
         "cros_img": "hana-release/R115-15474.21.0",
         "name": "lacros_all_tast_tests HANA_RELEASE_BETA",
@@ -1439,7 +1421,6 @@
         "variant_id": "HANA_RELEASE_BETA"
       },
       {
-        "args": [],
         "cros_board": "hana",
         "cros_img": "hana-release/R114-15437.57.0",
         "name": "lacros_all_tast_tests HANA_RELEASE_STABLE",
@@ -1450,7 +1431,6 @@
         "variant_id": "HANA_RELEASE_STABLE"
       },
       {
-        "args": [],
         "cros_board": "strongbad",
         "cros_img": "strongbad-release/R117-15511.0.0",
         "name": "lacros_all_tast_tests STRONGBAD_RELEASE_LKGM",
@@ -1461,7 +1441,6 @@
         "variant_id": "STRONGBAD_RELEASE_LKGM"
       },
       {
-        "args": [],
         "cros_board": "strongbad",
         "cros_img": "strongbad-release/R116-15501.0.0",
         "name": "lacros_all_tast_tests strongbad_RELEASE_DEV",
@@ -1472,7 +1451,6 @@
         "variant_id": "strongbad_RELEASE_DEV"
       },
       {
-        "args": [],
         "cros_board": "strongbad",
         "cros_img": "strongbad-release/R115-15474.21.0",
         "name": "lacros_all_tast_tests STRONGBAD_RELEASE_BETA",
@@ -1483,7 +1461,6 @@
         "variant_id": "STRONGBAD_RELEASE_BETA"
       },
       {
-        "args": [],
         "cros_board": "strongbad",
         "cros_img": "strongbad-release/R114-15437.57.0",
         "name": "lacros_all_tast_tests STRONGBAD_RELEASE_STABLE",
@@ -1494,7 +1471,6 @@
         "variant_id": "STRONGBAD_RELEASE_STABLE"
       },
       {
-        "args": [],
         "cros_board": "hana",
         "cros_img": "hana-release/R117-15511.0.0",
         "name": "ozone_unittests HANA_RELEASE_LKGM",
@@ -1504,7 +1480,6 @@
         "variant_id": "HANA_RELEASE_LKGM"
       },
       {
-        "args": [],
         "cros_board": "hana",
         "cros_img": "hana-release/R116-15501.0.0",
         "name": "ozone_unittests HANA_RELEASE_DEV",
@@ -1514,7 +1489,6 @@
         "variant_id": "HANA_RELEASE_DEV"
       },
       {
-        "args": [],
         "cros_board": "hana",
         "cros_img": "hana-release/R115-15474.21.0",
         "name": "ozone_unittests HANA_RELEASE_BETA",
@@ -1524,7 +1498,6 @@
         "variant_id": "HANA_RELEASE_BETA"
       },
       {
-        "args": [],
         "cros_board": "hana",
         "cros_img": "hana-release/R114-15437.57.0",
         "name": "ozone_unittests HANA_RELEASE_STABLE",
@@ -1534,7 +1507,6 @@
         "variant_id": "HANA_RELEASE_STABLE"
       },
       {
-        "args": [],
         "cros_board": "strongbad",
         "cros_img": "strongbad-release/R117-15511.0.0",
         "name": "ozone_unittests STRONGBAD_RELEASE_LKGM",
@@ -1544,7 +1516,6 @@
         "variant_id": "STRONGBAD_RELEASE_LKGM"
       },
       {
-        "args": [],
         "cros_board": "strongbad",
         "cros_img": "strongbad-release/R116-15501.0.0",
         "name": "ozone_unittests strongbad_RELEASE_DEV",
@@ -1554,7 +1525,6 @@
         "variant_id": "strongbad_RELEASE_DEV"
       },
       {
-        "args": [],
         "cros_board": "strongbad",
         "cros_img": "strongbad-release/R115-15474.21.0",
         "name": "ozone_unittests STRONGBAD_RELEASE_BETA",
@@ -1564,7 +1534,6 @@
         "variant_id": "STRONGBAD_RELEASE_BETA"
       },
       {
-        "args": [],
         "cros_board": "strongbad",
         "cros_img": "strongbad-release/R114-15437.57.0",
         "name": "ozone_unittests STRONGBAD_RELEASE_STABLE",
@@ -1574,7 +1543,6 @@
         "variant_id": "STRONGBAD_RELEASE_STABLE"
       },
       {
-        "args": [],
         "cros_board": "hana",
         "cros_img": "hana-release/R117-15511.0.0",
         "name": "viz_unittests HANA_RELEASE_LKGM",
@@ -1584,7 +1552,6 @@
         "variant_id": "HANA_RELEASE_LKGM"
       },
       {
-        "args": [],
         "cros_board": "hana",
         "cros_img": "hana-release/R116-15501.0.0",
         "name": "viz_unittests HANA_RELEASE_DEV",
@@ -1594,7 +1561,6 @@
         "variant_id": "HANA_RELEASE_DEV"
       },
       {
-        "args": [],
         "cros_board": "hana",
         "cros_img": "hana-release/R115-15474.21.0",
         "name": "viz_unittests HANA_RELEASE_BETA",
@@ -1604,7 +1570,6 @@
         "variant_id": "HANA_RELEASE_BETA"
       },
       {
-        "args": [],
         "cros_board": "hana",
         "cros_img": "hana-release/R114-15437.57.0",
         "name": "viz_unittests HANA_RELEASE_STABLE",
@@ -1614,7 +1579,6 @@
         "variant_id": "HANA_RELEASE_STABLE"
       },
       {
-        "args": [],
         "cros_board": "strongbad",
         "cros_img": "strongbad-release/R117-15511.0.0",
         "name": "viz_unittests STRONGBAD_RELEASE_LKGM",
@@ -1624,7 +1588,6 @@
         "variant_id": "STRONGBAD_RELEASE_LKGM"
       },
       {
-        "args": [],
         "cros_board": "strongbad",
         "cros_img": "strongbad-release/R116-15501.0.0",
         "name": "viz_unittests strongbad_RELEASE_DEV",
@@ -1634,7 +1597,6 @@
         "variant_id": "strongbad_RELEASE_DEV"
       },
       {
-        "args": [],
         "cros_board": "strongbad",
         "cros_img": "strongbad-release/R115-15474.21.0",
         "name": "viz_unittests STRONGBAD_RELEASE_BETA",
@@ -1644,7 +1606,6 @@
         "variant_id": "STRONGBAD_RELEASE_BETA"
       },
       {
-        "args": [],
         "cros_board": "strongbad",
         "cros_img": "strongbad-release/R114-15437.57.0",
         "name": "viz_unittests STRONGBAD_RELEASE_STABLE",

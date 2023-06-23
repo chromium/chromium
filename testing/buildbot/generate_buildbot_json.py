@@ -744,6 +744,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         if d.get('os') == 'Android' and not d.get('device_os_type'):
           d['device_os_type'] = 'userdebug'
     self.replace_test_args(test, test_name, tester_name)
+    if 'args' in test and not test['args']:
+      test.pop('args')
 
     return test
 

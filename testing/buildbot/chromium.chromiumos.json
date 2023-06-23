@@ -1479,7 +1479,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
         "cros_img": "volteer-public/R117-15511.0.0",
@@ -1500,7 +1499,6 @@
         "variant_id": "VOLTEER_PUBLIC_LKGM"
       },
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
         "cros_img": "volteer-public/R116-15501.0.0",
@@ -1521,7 +1519,6 @@
         "variant_id": "VOLTEER_PUBLIC_DEV"
       },
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
         "cros_img": "volteer-public/R115-15474.21.0",
@@ -1542,7 +1539,6 @@
         "variant_id": "VOLTEER_PUBLIC_BETA"
       },
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
         "cros_img": "volteer-public/R114-15437.57.0",
@@ -1575,7 +1571,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-public/R117-15511.0.0",
@@ -1605,7 +1600,6 @@
     ],
     "skylab_tests": [
       {
-        "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin64-public/R117-15511.0.0",

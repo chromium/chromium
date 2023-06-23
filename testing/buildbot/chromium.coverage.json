@@ -8719,7 +8719,6 @@
   "chromeos-js-code-coverage": {
     "gtest_tests": [
       {
-        "args": [],
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -23136,7 +23135,6 @@
   "linux-js-code-coverage": {
     "gtest_tests": [
       {
-        "args": [],
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
