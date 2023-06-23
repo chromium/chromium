@@ -68,10 +68,10 @@ content::WebUIDataSource* CreateAndAddFlagsUIHTMLSource(Profile* profile) {
   source->EnableReplaceI18nInJS();
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources 'self';");
+      "script-src chrome://resources 'self' 'unsafe-eval';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types static-types;");
+      "trusted-types jstemplate static-types;");
   source->AddString(flags_ui::kVersion,
                     std::string(version_info::GetVersionNumber()));
 
