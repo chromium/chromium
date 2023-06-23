@@ -484,9 +484,8 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
           // can revert back to the (slightly better-looking) default
           // DIALOG_SHADOW following the 2023 refresh. The old pre-refresh
           // value is preserved just for consistency.
-          base::FeatureList::IsEnabled(features::kChromeRefresh2023)
-              ? views::BubbleBorder::DIALOG_SHADOW
-              : views::BubbleBorder::STANDARD_SHADOW
+          features::IsChromeRefresh2023() ? views::BubbleBorder::DIALOG_SHADOW
+                                          : views::BubbleBorder::STANDARD_SHADOW
 #endif
           ),
       delegate_(delegate) {

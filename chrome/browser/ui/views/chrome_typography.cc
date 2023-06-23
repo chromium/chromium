@@ -100,7 +100,7 @@ void ApplyCommonFontStyles(int context,
     case CONTEXT_IPH_BUBBLE_TITLE:
       details.size_delta =
           views::style::GetFontSizeDeltaIgnoringUserOrLocaleSettings(18);
-      if (base::FeatureList::IsEnabled(features::kChromeRefresh2023)) {
+      if (features::IsChromeRefresh2023()) {
         details.weight = gfx::Font::Weight::MEDIUM;
       }
       break;
