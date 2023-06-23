@@ -17,6 +17,7 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
   mixer[kColorSidePanelContentBackground] = {ui::kColorSysBaseContainer};
   mixer[kColorSidePanelEntryIcon] = {ui::kColorSysPrimary};
   mixer[kColorSidePanelEntryTitle] = {ui::kColorSysOnSurface};
+  mixer[kColorSidePanelContentAreaSeparator] = {ui::kColorSysBaseContainer};
 
   // After ChromeRefresh2023 roll out these three should be moved to replace
   // their colors in c/b/ui/color/chrome_color_mixer.cc. For now they need a
