@@ -34,6 +34,35 @@
 #include "ui/native_theme/test_native_theme.h"
 #include "ui/views/views_delegate.h"
 
+namespace {
+
+ui::ColorProviderKey::SchemeVariant GetSchemeVariant(
+    ThemeService::BrowserColorVariant color_variant) {
+  using BCV = ThemeService::BrowserColorVariant;
+  using SV = ui::ColorProviderKey::SchemeVariant;
+  static constexpr auto kSchemeVariantMap = base::MakeFixedFlatMap<BCV, SV>({
+      {BCV::kTonalSpot, SV::kTonalSpot},
+      {BCV::kNeutral, SV::kNeutral},
+      {BCV::kVibrant, SV::kVibrant},
+      {BCV::kExpressive, SV::kExpressive},
+  });
+  return kSchemeVariantMap.at(color_variant);
+}
+
+SkColor GetColorForSchemeVariant(
+    ui::ColorProviderManager::SchemeVariant scheme_variant) {
+  using SV = ui::ColorProviderKey::SchemeVariant;
+  static constexpr auto kColorMap = base::MakeFixedFlatMap<SV, SkColor>({
+      {SV::kTonalSpot, SkColorSetRGB(20, 20, 20)},
+      {SV::kNeutral, SkColorSetRGB(30, 30, 30)},
+      {SV::kVibrant, SkColorSetRGB(40, 40, 40)},
+      {SV::kExpressive, SkColorSetRGB(50, 50, 50)},
+  });
+  return kColorMap.at(scheme_variant);
+}
+
+}  // namespace
+
 class BrowserFrameBoundsChecker : public ChromeViewsDelegate {
  public:
   BrowserFrameBoundsChecker() {}
@@ -130,6 +159,12 @@ class BrowserFrameColorProviderTest : public BrowserFrameTest,
     // Used to track is_grayscale.
     mixer[ui::kColorSysTertiary] = {key.is_grayscale ? kGrayColor
                                                      : kTransparentColor};
+
+    // Used to track scheme_variant.
+    mixer[ui::kColorSysSurface] = {
+        key.scheme_variant
+            ? GetColorForSchemeVariant(key.scheme_variant.value())
+            : kTransparentColor};
   }
 
   // Sets the `kBrowserColorScheme` pref for the `profile`.
@@ -146,6 +181,12 @@ class BrowserFrameColorProviderTest : public BrowserFrameTest,
   // Sets the `kGrayscaleThemeEnabled` pref for the `profile`.
   void SetIsGrayscale(Profile* profile, bool is_grayscale) {
     GetThemeService(profile)->SetIsGrayscale(is_grayscale);
+  }
+
+  // Sets the `kBrowserColorVariant` pref for the `profile`.
+  void SetBrowserColorVariant(Profile* profile,
+                              ThemeService::BrowserColorVariant color_variant) {
+    GetThemeService(profile)->SetBrowserColorVariant(color_variant);
   }
 
   BrowserFrame* GetBrowserFrame(Browser* browser) {
@@ -341,6 +382,30 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
   EXPECT_EQ(kTransparentColor,
             incognito_browser_frame->GetColorProvider()->GetColor(
                 ui::kColorSysTertiary));
+}
+
+// Verifies the BrowserFrame's ColorProviderKey tracks the kBrowserColorVariant
+// pref.
+IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
+                       BrowserFrameTracksBrowserColorVariant) {
+  using BCV = ThemeService::BrowserColorVariant;
+
+  // Set the scheme_variant pref to kSystem. The browser should honor this pref.
+  views::Widget* browser_frame = GetBrowserFrame(browser());
+  SetBrowserColorVariant(profile(), BCV::kSystem);
+  browser_frame->GetNativeTheme()->set_scheme_variant(absl::nullopt);
+  EXPECT_EQ(kTransparentColor,
+            browser_frame->GetColorProvider()->GetColor(ui::kColorSysSurface));
+
+  // The browser should honor the browser overrides of the scheme variant pref
+  // when set.
+  for (BCV color_variant :
+       {BCV::kTonalSpot, BCV::kNeutral, BCV::kVibrant, BCV::kExpressive}) {
+    SetBrowserColorVariant(profile(), color_variant);
+    EXPECT_EQ(
+        GetColorForSchemeVariant(GetSchemeVariant(color_variant)),
+        browser_frame->GetColorProvider()->GetColor(ui::kColorSysSurface));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All, BrowserFrameColorProviderTest, testing::Bool());

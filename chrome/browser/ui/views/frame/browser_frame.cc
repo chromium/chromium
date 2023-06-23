@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
@@ -34,6 +35,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "ui/base/hit_test.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -68,6 +70,19 @@ bool IsUsingLinuxSystemTheme(Profile* profile) {
 #else
   return false;
 #endif
+}
+
+ui::ColorProviderKey::SchemeVariant GetSchemeVariant(
+    ThemeService::BrowserColorVariant color_variant) {
+  using BCV = ThemeService::BrowserColorVariant;
+  using SV = ui::ColorProviderKey::SchemeVariant;
+  static constexpr auto kSchemeVariantMap = base::MakeFixedFlatMap<BCV, SV>({
+      {BCV::kTonalSpot, SV::kTonalSpot},
+      {BCV::kNeutral, SV::kNeutral},
+      {BCV::kVibrant, SV::kVibrant},
+      {BCV::kExpressive, SV::kExpressive},
+  });
+  return kSchemeVariantMap.at(color_variant);
 }
 
 }  // namespace
@@ -459,6 +474,15 @@ ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
     }
   }();
 
+  // scheme_variant.
+  const auto* theme_service =
+      ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile());
+  ThemeService::BrowserColorVariant color_variant =
+      theme_service->GetBrowserColorVariant();
+  if (color_variant != ThemeService::BrowserColorVariant::kSystem) {
+    key.scheme_variant = GetSchemeVariant(color_variant);
+  }
+
   // frame_type.
   key.frame_type = UseCustomFrame() ? ui::ColorProviderKey::FrameType::kChromium
                                     : ui::ColorProviderKey::FrameType::kNative;
@@ -468,8 +492,6 @@ ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
   key.app_controller = app_controller;
 
   // is_grayscale.
-  const auto* theme_service =
-      ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile());
   key.is_grayscale =
       !IsIncognitoBrowser() && theme_service && theme_service->GetIsGrayscale();
 
