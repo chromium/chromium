@@ -357,7 +357,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
   }
   if (!AutofillTable::FromWebDatabase(db)->UpdateAutofillProfile(profile)) {
     ReportResult(Result::kUpdateAutofillProfile_WriteFailure);
-    return WebDatabase::COMMIT_NEEDED;
+    return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
   // Send GUID-based notification.
