@@ -788,6 +788,8 @@ source_set("browser") {
     "devtools/forwarding_agent_host.h",
     "devtools/frame_auto_attacher.cc",
     "devtools/frame_auto_attacher.h",
+    "devtools/mojom_devtools_agent_host.cc",
+    "devtools/mojom_devtools_agent_host.h",
     "devtools/network_service_devtools_observer.cc",
     "devtools/network_service_devtools_observer.h",
     "devtools/protocol/audits_handler.cc",

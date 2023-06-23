@@ -250,6 +250,7 @@ source_set("browser_sources") {
     "mhtml_generation_result.cc",
     "mhtml_generation_result.h",
     "mojo_binder_policy_map.h",
+    "mojom_devtools_agent_host_delegate.h",
     "native_web_keyboard_event.h",
     "navigation_controller.cc",
     "navigation_controller.h",
