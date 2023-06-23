@@ -67,7 +67,7 @@
             <array>
             <string>IDS_IOS_WHATS_NEW_APP_SETTINGS</string>
             <string>IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_STEP_2</string>
-            <string>IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_STEP_2</string>
+            <string>IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_STEP_3</string>
             </array>
             <key>HasPrimaryAction</key>
             <true/>
