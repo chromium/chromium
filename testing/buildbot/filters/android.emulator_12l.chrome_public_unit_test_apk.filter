@@ -17,8 +17,3 @@
 
 # crbug.com/1431321
 -org.chromium.ui.resources.dynamics.HardwareDrawTest.testStartBitmapCapture_raceCondition
-
-# crbug.com/1457215
--org.chromium.chrome.browser.back_press.BackPressManagerTest.testFailedHandlers
--org.chromium.chrome.browser.back_press.BackPressManagerTest.testFallbackCallback
--org.chromium.chrome.browser.back_press.BackPressManagerTest.testMultipleHandlers

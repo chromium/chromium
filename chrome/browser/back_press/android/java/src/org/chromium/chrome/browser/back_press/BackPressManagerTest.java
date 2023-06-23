@@ -17,6 +17,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@DisabledTest(message = "crbug.com/1457507")
 public class BackPressManagerTest {
     @Rule
     public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
