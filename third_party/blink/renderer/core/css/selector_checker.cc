@@ -2430,6 +2430,13 @@ bool SelectorChecker::MatchesWithScope(Element& element,
                                        const ContainerNode* scope) const {
   SelectorCheckingContext context(&element);
   context.scope = scope;
+  // We are matching this selector list with the intent of storing the result
+  // in a cache (StyleScopeFrame). The :scope pseudo-class which triggered
+  // this call to MatchesWithScope, is either part of the subject compound
+  // or *not* part of the subject compound, but subsequent cache hits which
+  // return this result may have the opposite subject/non-subject position.
+  // Therefore we're using Impact::kBoth, to ensure sufficient invalidation.
+  context.impact = Impact::kBoth;
   for (context.selector = &selector_list; context.selector;
        context.selector = CSSSelectorList::Next(*context.selector)) {
     SelectorChecker::MatchResult ignore_result;
