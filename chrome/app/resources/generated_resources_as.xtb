@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">অভিধানত &amp;যোগ কৰক</translation>
 <translation id="1018656279737460067">বাতিল কৰা হ’ল</translation>
 <translation id="1022489261739821355">আপোনাৰ <ph name="BEGIN_LINK" /> Google একাউণ্ট<ph name="END_LINK" />ৰ পৰা পাছৱৰ্ডসমূহ দেখুওৱা হৈছে</translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">আপোনাৰ ডিভাইচটো <ph name="DOMAIN" />এ পৰিচালনা কৰে। প্ৰশাসকে এই ডিভাইচটোত থকা যিকোনো প্ৰ’ফাইলত ডেটা এক্সেছ কৰিব পাৰে।</translation>
 <translation id="1024734233509995696">এই টেবটোৱে আপোনাৰ কেমেৰা অথবা মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে</translation>
 <translation id="1026655690966755180">প’ৰ্ট যোগ কৰক</translation>
@@ -3497,6 +3498,7 @@
 <translation id="3919145445993746351">আপোনাৰ সকলো কম্পিউটাৰতে নিজৰ এক্সটেনশ্বনসমূহ পাবলৈ ছিংক অন কৰক</translation>
 <translation id="3919229493046408863">আশে-পাশে ডিভাইচ থাকিলে জাননী পোৱাৰ সুবিধাটো অফ কৰক</translation>
 <translation id="3919262972282962508">২০২২ চনৰ ডিচেম্বৰৰ পাছত Mac ডিভাইচসমূহত Chrome এপৰ পুৰণি সংস্কৰণসমূহ খোল নাখাব। এটা নতুন সংস্কৰণলৈ আপডে’ট কৰিবলৈ অথবা এই এপ্‌টো আঁতৰাবলৈ আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
+<translation id="3919376399641777316">Google Driveৰ ষ্ট’ৰেজ ব্যৱহাৰ কৰে</translation>
 <translation id="3919798653937160644">আপুনি এই ৱিণ্ড’খনত চোৱা পৃষ্ঠাসমূহ ব্ৰাউজাৰৰ ইতিহাসত দেখা পোৱা নাযাব আৰু আপুনি খোলা থকা অতিথিৰ আটাইবোৰ ৱিণ্ড’ বন্ধ কৰাৰ পাছত সেইসমূহে কম্পিউটাৰত কুকিৰ দৰে অন্য কোনো ট্ৰে’চ নেৰে। অৱশ্যে, আপুনি ডাউনল’ড কৰা আটাইবোৰ ফাইল সংৰক্ষণ কৰা হ’ব।</translation>
 <translation id="3920504717067627103">প্ৰমাণপত্ৰৰ নীতিসমূহ</translation>
 <translation id="3920909973552939961">পৰিশোধ নিয়ন্ত্ৰক ইনষ্টল কৰাৰ অনুমতি নাই</translation>
@@ -3646,6 +3648,7 @@
 <translation id="4044612648082411741">আপোনাৰ প্ৰমাণপত্ৰৰ পাছৱৰ্ডটো দিয়ক</translation>
 <translation id="4044708573046946214">স্ক্ৰীন লকৰ পাছৱৰ্ড</translation>
 <translation id="404493185430269859">সন্ধানৰ ডিফ’ল্ট ইঞ্জিন</translation>
+<translation id="4044964245574571633">Microsoft OneDriveৰ ষ্ট’ৰেজ ব্যৱহাৰ কৰে</translation>
 <translation id="4045196801416070837">ডিভাইচৰ ধ্বনি</translation>
 <translation id="4046013316139505482">এই এক্সটেনশ্বনসমূহে এই ছাইটটোত তথ্য চোৱা আৰু সলনি কৰাৰ আৱশ্যক নাই।</translation>
 <translation id="4046123991198612571">পৰৱৰ্তী ট্ৰেক</translation>
@@ -3684,6 +3687,7 @@
 <translation id="4084682180776658562">বুকমাৰ্ক কৰক</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> বন্ধ কৰক</translation>
 <translation id="4085298594534903246">এই পৃষ্ঠাটোত JavaScript অৱৰোধ কৰা হৈছে।</translation>
+<translation id="4085620044235559093"><ph name="FILE_TYPE" /> ফাইল খুলিবলৈ এটা এপ্ বাছনি কৰক</translation>
 <translation id="4087089424473531098">এক্সটেনশ্বনটো সৃষ্টি কৰা হ’ল:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4438,6 +4442,7 @@
 <translation id="4742970037960872810">হাইলাইট আঁতৰাওক</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />এপ্লিকেশ্বনসমূহ কেনেদৰে আপডে’ট কৰে সেয়া জানক<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">ছাইটটোলৈ যাওক</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{ছাইট আনমিউট কৰক}one{ছাইটসমূহ আনমিউট কৰক}other{ছাইটসমূহ আনমিউট কৰক}}</translation>
 <translation id="474609389162964566">"Hey Google" বুলি কৈ আপোনাৰ Assistant এক্সেছ কৰক</translation>
 <translation id="4746351372139058112">Messages</translation>
@@ -7528,6 +7533,7 @@
 <translation id="7432200167665670017">আপোনাৰ প্ৰশাসকে "<ph name="EXTENSION_NAME" />" অৱৰোধ কৰিছে - এপৰ আইডি <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">আপোনাৰ <ph name="DEVICE_TYPE" /> ব্যৱহাৰ কৰি থাকিবলৈ স্মাৰ্ট কাৰ্ড ভৰাওক</translation>
 <translation id="7433957986129316853">এয়া ৰাখক</translation>
+<translation id="7434100547946193426">অন্য এপ্</translation>
 <translation id="7434509671034404296">বিকাশকৰ্তা</translation>
 <translation id="7434757724413878233">মাউছৰ এক্সিলাৰেশ্বন</translation>
 <translation id="7434969625063495310">প্ৰিণ্ট ছার্ভাৰটো যোগ দিব পৰা নগ’ল। অনুগ্ৰহ কৰি ছার্ভাৰটোৰ কনফিগাৰেশ্বন পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>

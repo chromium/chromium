@@ -930,6 +930,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="504465286040788597">Prejšnji odstavek</translation>
 <translation id="5045550434625856497">Nepravilno geslo</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">Prejeli boste obvestilo, če govorite med izklopljenim zvokom. Zvok nikoli ne zapusti naprave.</translation>
 <translation id="5078796286268621944">Napačen PIN</translation>
 <translation id="5083553833479578423">Odklenite več funkcij Pomočnika.</translation>
 <translation id="5092436659250499817">Vklop/izklop osvetlitve tipkovnice</translation>
@@ -960,6 +961,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5207949376430453814">Označitev kazalke v besedilu</translation>
 <translation id="5208059991603368177">Vklopljeno</translation>
 <translation id="5216991270656129561">Izklopljeno do <ph name="TIME" /></translation>
+<translation id="5221423477036820198">S telefonskim središčem lahko hitro pošiljate sporočila v telefonu ali odgovarjate nanje.</translation>
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5229343007215035173">Vklop/izklop zaslona za zasebnost</translation>
 <translation id="5234764350956374838">Opusti</translation>
@@ -1694,6 +1696,7 @@ Nova namestitev</translation>
 <translation id="8513108775083588393">Samodej. zasuk</translation>
 <translation id="851458219935658693">Prikaz oken na trenutnem namizju, izbran je izbirni gumb</translation>
 <translation id="8517041960877371778">Akumulator naprave <ph name="DEVICE_TYPE" /> se morda ne bo polnil, medtem ko je naprava vklopljena.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Vhod za mikrofon nadzira aplikacija <ph name="APP_NAME" />}one{Vhod za mikrofon nadzira # aplikacija}two{Vhod za mikrofon nadzirata # aplikaciji}few{Vhod za mikrofon nadzirajo # aplikacije}other{Vhod za mikrofon nadzira # aplikacij}}</translation>
 <translation id="8535393432370007982">Razveljavi način razvrščanja po barvi</translation>
 <translation id="8541078764854166027">Kadriranje</translation>
 <translation id="8542053257095774575">Ni shranjenih namizij ali predlogov</translation>

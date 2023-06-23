@@ -301,6 +301,19 @@ Entretanto, os padrões de correspondência de origem para esta política não p
 <translation id="1272798957154751008">Ativar a migração de dispositivos Chromad no gerenciamento de nuvem.</translation>
 <translation id="1274997165432133392">Cookies e outros dados do site</translation>
 <translation id="1277411517984768103">Permitir que a <ph name="BOREALIS_NAME" /> seja executada para um usuário</translation>
+<translation id="1280005879732594593">Esta política configura se o <ph name="PRODUCT_NAME" /> vai oferecer o Kyber, um algoritmo de contrato de chave pós-quântico, em TLS. Isso permite que os servidores de suporte protejam o tráfego do usuário de ser descriptografado posteriormente por computadores quânticos.
+
+Se esta política for ativada, o <ph name="PRODUCT_NAME" /> vai oferecer o Kyber nas conexões TLS. As conexões TLS serão protegidas com o contrato de chave Kyber ao se comunicar com servidores compatíveis que selecionam o Kyber durante o handshake de TLS.
+
+Se esta política for desativada, o <ph name="PRODUCT_NAME" /> não vai oferecer o Kyber nas conexões TLS. O tráfego do usuário não será protegido contra computadores quânticos.
+
+Se esta política não for definida, o <ph name="PRODUCT_NAME" /> vai seguir o processo de lançamento padrão para oferecer o Kyber.
+
+A oferta do Kyber é compatível com versões anteriores. Os servidores TLS existentes e o middleware de rede devem ignorar a nova opção e continuar selecionando as opções anteriores.
+
+No entanto, os dispositivos que não implementam corretamente o TLS podem não funcionar corretamente quando a nova opção for oferecida. Por exemplo, eles podem se desconectar em resposta a opções não reconhecidas ou mensagens maiores resultantes. Esses dispositivos não estão prontos para o estágio pós-quântico e interferem na transição pós-quântica da empresa. Se encontrados, os administradores precisam entrar em contato com o fornecedor para que seja feita uma correção.
+
+Essa é uma medida temporária e será removida em versões futuras do <ph name="PRODUCT_NAME" />. Ela pode ser ativada para permitir que você teste problemas e pode ser desativada enquanto os problemas são resolvidos.</translation>
 <translation id="1285819498003746288">A API Event.path não vai estar disponível.</translation>
 <translation id="1290722184971934486">Se a política for definida como <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (valor 2), por padrão, a permissão a sites para gerenciamento de janelas será automaticamente negada. Isso vai limitar a capacidade dos sites de acessar informações sobre as telas do dispositivo e de usar essas informações para abrir e posicionar janelas ou solicitar a tela cheia em casos específicos.
 
@@ -1432,6 +1445,7 @@ No quiosque do <ph name="PRODUCT_OS_NAME" />, essa política não oferece a opç
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="2299220924812062390">Especifica uma lista de plug-ins ativados</translation>
+<translation id="2299815818824242485">Não permitir pesquisas por proxy com maior proteção</translation>
 <translation id="2303795211377219696">Ativar o preenchimento automático para cartões de crédito</translation>
 <translation id="2304009805995145854">Desde o <ph name="PRODUCT_NAME" /> 67, o isolamento de sites é ativado por padrão em todas as plataformas para computador, obrigando cada site a executar um processo próprio. Um site é um esquema + eTLD+1 (por exemplo, https://example.com). Se a política for ativada, esse comportamento não mudará. Ela apenas evita que usuários possam escolher outra opção (por exemplo, desativar o isolamento de sites em chrome://flags). Desde o <ph name="PRODUCT_NAME" /> 76, desativar esta política ou deixá-la sem definição não desativa o isolamento de sites, mas permite que os usuários escolham outra opção.
 
@@ -1847,6 +1861,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Se a política for definida como "Desativada" e as conexões de saída UDP forem filtradas pelo firewall, a máquina permitirá apenas conexões de máquinas clientes na rede local.</translation>
 <translation id="2714756912981510828">Ativar a detecção de vazamento de senhas</translation>
+<translation id="2716071441112588786">Permitir pesquisas por proxy com maior proteção</translation>
 <translation id="2716623398185506073">Se a política for definida como "Ativada", as estatísticas de hardware e os identificadores relacionados ao uso de energia dos dispositivos registrados serão informados.
 
       Se a política for definida como "Desativada" ou não for definida, as estatísticas de energia dos dispositivos registrados não serão informadas.</translation>
@@ -2919,6 +2934,22 @@ Não deixe a política sempre ativada, especialmente em implantações de produ�
 <translation id="3591584750136265240">Configura o comportamento de autenticação de login</translation>
 <translation id="3593905652755912452">O comportamento antigo para envio de eventos em controles de formulário desativados vai ser usado.</translation>
 <translation id="3596112486106491038">Ativar o acesso à linha de comando de máquinas virtuais</translation>
+<translation id="3596651403637948128">Isso controla se o modo de proteção padrão da Navegação segura pode
+enviar hashes parciais do URL ao Google por um proxy via HTTP Oblivious
+para determinar se o URL é seguro.
+
+O proxy permite que os navegadores façam o upload de hashes parciais de URLs para o Google
+anonimamente. Ele também permite que os navegadores façam uploads com maior frequência para
+melhorar a qualidade da proteção da Navegação segura.
+
+Esta política será ignorada se a Navegação segura estiver desativada ou definida como
+o modo de proteção avançada.
+
+Se a política for definida como ativada ou não for definida, as pesquisas por
+proxy com maior proteção poderão ser usadas.
+
+Se a política for definida como desativada, as pesquisas por proxy com maior proteção não
+serão permitidas. Os URLs serão enviados ao Google diretamente e com uma frequência muito menor.</translation>
 <translation id="3603469950773500315">Ative as mitigações de verificação de <ph name="CORS" /> na nova implementação de <ph name="CORS" />, permitindo que as extensões mantenham um comportamento compatível e permitindo que o <ph name="PRODUCT_NAME" /> envie cabeçalhos especificados sem verificações de <ph name="CORS" />.
 
       Se esta lista for definida como vazia, o <ph name="PRODUCT_NAME" /> tentará executar extensões de maneiras compatíveis e não introduzirá mudanças de <ph name="API" /> para o <ph name="PRODUCT_NAME" /> 79, conforme explicado em <ph name="WEB_REQUEST_API_MANUAL" />.
@@ -3493,6 +3524,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Se você definir a política, ela não poderá ser mudada pelos usuários. Se a política for deixada sem definição, o teclado na tela ficará inicialmente desativado, mas ele poderá ser ativado pelos usuários a qualquer momento.</translation>
 <translation id="412697421478384751">Permitir que os usuários definam PINs fracos para a tela de bloqueio</translation>
+<translation id="4132809439883883106">Usar o valor padrão para o contrato de chave Kyber pós-quântico ativado para TLS</translation>
 <translation id="4136603825567209889">Ativar relatórios sobre informações de identificação do usuário</translation>
 <translation id="4138655880188755661">Limite de tempo</translation>
 <translation id="4140646780789794190">Desativar o compartilhamento de dados de diagnósticos com o PluginVm</translation>
@@ -4041,6 +4073,7 @@ essas APIs.</translation>
       Se a política não for definida, não haverá seleção automática para nenhum site.</translation>
 <translation id="4611983465824842867">Não mostrar avisos nem desativar o preenchimento automático em formulários não seguros</translation>
 <translation id="4615003180013429835">Modo de análise da lista de sites</translation>
+<translation id="4616706248182656871">Desativar o contrato de chave Kyber pós-quântico ativado para TLS</translation>
 <translation id="4617338332148204752">Ignorar a verificação de metatags em <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Recurso NewBaseUrlInheritanceBehavior disponível</translation>
 <translation id="4624006912948309924">A definição da política estabelece quais identificadores de aplicativo do <ph name="PRODUCT_OS_NAME" /> são mostrados como apps fixados na barra de acesso rápido, e eles não podem ser editados pelos usuários.
@@ -4749,6 +4782,11 @@ Observação: esta política não se aplica a HSTS Upgrades.</translation>
 <translation id="5345910753471481870">Não mostrar o botão do Google Lens na caixa de pesquisa da página "Nova guia".</translation>
 <translation id="5346587320074666194">Bloquear acesso a sensores nesses sites</translation>
 <translation id="534836255587440809">Desativar o clique automático na tela de login</translation>
+<translation id="5348658899015174540">A API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> permite que aplicativos da Web capturem várias superfícies ao mesmo tempo.
+      Esta política desbloqueia a propriedade <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> para aplicativos da Web em origens definidas.
+      Se a propriedade <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> for definida em uma solicitação <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, todas as superfícies de tela serão capturadas automaticamente sem precisar de permissão explícita do usuário.
+      Se a política não for definida, a propriedade <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> não ficará disponível para nenhum aplicativo da Web.
+Para melhorar a privacidade, a partir da versão 116 do <ph name="PRODUCT_NAME" />, esta política não vai mais oferecer suporte para atualização dinâmica. O usuário poderá ter certeza de que nenhuma outra página será capaz de capturar as telas após o login, caso isso não possa ser feito no início da sessão.</translation>
 <translation id="5361708558735884308">A definição da política concede acesso aos URLs listados, como exceções à <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulte a descrição da política para saber o formato das entradas dessa lista. Por exemplo, se a <ph name="URL_BLOCKLIST_POLICY_NAME" /> for definida como "*", todas as solicitações serão bloqueadas, e você poderá usar a política para permitir o acesso a uma lista de URLs limitada. Ela pode servir para abrir exceções para alguns esquemas, subdomínios de outros domínios, portas ou caminhos específicos usando o formato especificado em https://support.google.com/chrome/a?p=url_blocklist_filter_format. O filtro mais específico determina se um URL vai ser bloqueado ou permitido. A política <ph name="URL_ALLOWLIST_POLICY_NAME" /> tem precedência sobre a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Esta política tem um limite de 1.000 entradas.
 
 Ela também permite que o navegador invoque automaticamente aplicativos externos registrados como gerenciadores de protocolo para os protocolos listados, como "tel:" ou "ssh:".
@@ -5873,6 +5911,28 @@ Confira mais detalhes em https://developer.chrome.com/blog/immutable-document-do
       Os URLs que usam um esquema dessa lista não serão carregados, e não será possível navegar até eles.
 
       Se esta política não for definida ou a lista estiver vazia, será possível acessar todos os esquemas no <ph name="PRODUCT_NAME" />.</translation>
+<translation id="6338831500376286321">Defina o nível de acesso à geolocalização do dispositivo para o
+sistema <ph name="PRODUCT_OS_NAME" />, que entra
+em vigor antes de um usuário fazer login. Após o login, os usuários podem controlar o
+nível de acesso à geolocalização pela configuração individual.
+
+Se a política for definida como <ph name="ALLOW" /> ou deixada sem definição, o acesso à
+geolocalização na tela de login será permitido para os dispositivos gerenciados. Se um valor inválido da política for enviado,
+o acesso voltará para
+<ph name="DISALLOW" />. Para dispositivos não gerenciados, o valor é sempre
+<ph name="ALLOW" />.
+
+AVISO: tenha cuidado ao mudar essa configuração, porque ela pode corromper outras políticas
+que envolvem a geolocalização
+(como <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />).
+Se essa política for definida como <ph name="DISALLOW" />, as opções
+<ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" />
+e
+<ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />
+da política
+<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />
+vão falhar e usar, na tela de <ph name="LOG_IN" />, apenas a
+resolução de localização baseada no <ph name="IP" />.</translation>
 <translation id="6338982178236723271">Enviar informações do sistema</translation>
 <translation id="6339355882150329269">Não considerar o usuário como inativo durante a reprodução de vídeos</translation>
 <translation id="6352714113109004581">Se a política for definida, é possível configurar uma lista de padrões de URL que especifica quais sites podem pedir que o usuário conceda permissão de acesso ao dispositivo HID.
@@ -7100,6 +7160,7 @@ Isso substitui a política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NA
 <translation id="7421230730436851224">Nunca colocar o processo de áudio no sandbox</translation>
 <translation id="7421483919690710988">Define o tamanho do cache de disco de mídia em bytes</translation>
 <translation id="7424751532654212117">Lista de exceções à lista de plug-ins desativados</translation>
+<translation id="7425076578809444474">Ativar o acordo de chave pós-quântico ativado para TLS</translation>
 <translation id="7426112309807051726">Especifica se a otimização <ph name="TLS_FALSE_START" /> deve ser desativada. Por razões históricas, essa política é chamada de DisableSSLRecordSplitting.
 
       Se a política não for configurada ou se for definida como "false", <ph name="TLS_FALSE_START" /> será ativada. Se for definida como "true", <ph name="TLS_FALSE_START" /> será desativada.</translation>
@@ -7109,6 +7170,7 @@ Isso substitui a política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NA
 <translation id="7434202861148928348">Configurar os nomes de domínio obrigatórios para clientes de acesso remoto</translation>
 <translation id="7436939516497076240">Desativar a exibição de páginas de resultados do mecanismo de pesquisa padrão em um painel lateral do navegador.</translation>
 <translation id="7443356543619955157">Se a política for definida, será possível aplicar a configuração de rede para todos os usuários de um dispositivo <ph name="PRODUCT_OS_NAME" />. A configuração de rede é uma string formatada em JSON, conforme definido pelo formato Open Network Configuration.</translation>
+<translation id="7446978687387327623">Permitir verificações em tempo real com o proxy da Navegação segura</translation>
 <translation id="7448430478749155471">Ativa o recurso "Selecionar para ouvir" na tela de login</translation>
 <translation id="7456922722153109956">Esta política controla a visibilidade do aviso abaixo da caixa de pesquisa na página "Nova guia".
 
@@ -8362,6 +8424,7 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
           Quando esta política não é definida, um período padrão é usado.
 
           O valor da política precisa ser especificado em milissegundos.</translation>
+<translation id="859316804517480666">Ativar o contrato de chave Kyber pós-quântico ativado para TLS</translation>
 <translation id="859579553230883285">Desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> de anúncios sugeridos pelo site para os usuários.</translation>
 <translation id="8597758693275075382">Strings OEM da SMBIOS a serem transmitidas para a VM durante a instalação. O padrão é a lista vazia.</translation>
 <translation id="8598786284856179541">Ativar relatórios sobre informações de versão</translation>

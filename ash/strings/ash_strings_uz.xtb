@@ -1696,6 +1696,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8513108775083588393">Avto-burilish</translation>
 <translation id="851458219935658693">Joriy ish stoli oynalarini chiqarish, radio tugma tanlandi</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> qurilmasi yoniqligida uni quvvatlab bo‘lmaydi.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofon kirishini <ph name="APP_NAME" /> boshqaradi}other{Mikrofon kirishini # ta ilova boshqaradi}}</translation>
 <translation id="8535393432370007982">Rangi asosida saralanishini bekor qilish</translation>
 <translation id="8541078764854166027">Kamerani freymlash</translation>
 <translation id="8542053257095774575">Saqlangan ish stoli yoki andozalar topilmadi</translation>

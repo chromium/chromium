@@ -55,6 +55,11 @@
       Se non viene configurato, per impostazione predefinita, la funzionalità non è consentita per gli utenti gestiti, ma può essere utilizzata dagli altri utenti.</translation>
 <translation id="1035860095382451169">Attiva l'icona lucchetto nella omnibox per le connessioni sicure</translation>
 <translation id="1037470927044831850">Consenti ai siti di richiedere all'utente la condivisione di un video stream del suo schermo</translation>
+<translation id="1038049732032297658">Consente di attivare o disattivare la funzionalità di correzione automatica sulla tastiera fisica.
+
+Se questo criterio viene attivato o se non viene configurato, la funzionalità di correzione automatica sulla tastiera fisica sarà consentita.
+
+Se viene disattivato, la funzionalità di correzione automatica sulla tastiera fisica non sarà consentita.</translation>
 <translation id="1038725366103635282">Consenti il rilevamento condivisioni NetBIOS</translation>
 <translation id="1040446814317236570">Attiva la rimozione per gli URL PAC (https://)</translation>
 <translation id="1041719059374171202">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che non possono eseguire JavaScript.
@@ -189,6 +194,7 @@ Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph
       * Precedente, è consentito solo il tipo RC4. RC4 non è un tipo di crittografia sicuro. Dovrebbe essere utilizzato solo in circostanze molto specifiche. Se possibile, riconfigura il server perché possa supportare la crittografia AES.
 
       Consulta anche https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_client_encryption_types.</translation>
+<translation id="1173493742686115032">Attiva <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> in tutte le pagine web</translation>
 <translation id="1177567780207290133">La configurazione del criterio consente di controllare il filtro di URL di SafeSites, che utilizza l'API Google Safe Search per classificare gli URL come pornografici o meno.
 
       Se il criterio viene impostato su:
@@ -366,11 +372,11 @@ Questo sostituisce il criterio <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY
 <translation id="1340053691042184658">Impedisci gli accessi come ospite al browser</translation>
 <translation id="1342918903685430097">Configura la versione minima di <ph name="PRODUCT_OS_NAME" /> consentita per il dispositivo.</translation>
 <translation id="1343128241903870688">Disattiva i report sulle informazioni relative alle app del dispositivo</translation>
-<translation id="1347198119056266798">Questa norma è obsoleta, al suo posto usa <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> e <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Questa norma viene ignorata se sono impostate le norme <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> o la norma (obsoleta) <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" />.
+<translation id="1347198119056266798">Questo criterio è deprecato, al suo posto usa <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> e <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Questo criterio viene ignorato se è impostato il criterio <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> o <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> (deprecato).
 
-      Forza l'esecuzione delle query in Ricerca Google con l'opzione SafeSearch attiva e impedisce agli utenti di modificare questa impostazione. Questa impostazione forza anche il livello medio della Modalità con restrizioni su YouTube.
+      Forza l'esecuzione delle query nella Ricerca Google con l'opzione SafeSearch attiva e impedisce agli utenti di modificare questa impostazione. Questa impostazione forza anche la modalità Restrizione moderata su YouTube.
 
-      Se attivi questa impostazione, la funzione SafeSearch della Ricerca Google e il livello medio della Modalità con restrizioni su YouTube saranno sempre attivi.
+      Se attivi questa impostazione, la funzione SafeSearch della Ricerca Google e la modalità Restrizione moderata su YouTube saranno sempre attive.
 
       Se disattivi questa impostazione o non imposti un valore, la funzione SafeSearch della Ricerca Google e la Modalità con restrizioni di YouTube non verranno applicate.</translation>
 <translation id="134745581157553029">Se il criterio "DeviceArcDataSnapshotHours" viene configurato, viene attivato il meccanismo di creazione di istantanee dei dati ARC. L'aggiornamento delle istantanee dei dati ARC può essere avviato automaticamente durante gli intervalli di tempo definiti. Quando inizia un intervallo, l'aggiornamento delle istantanee dei dati ARC è necessario e non ci sono utenti che hanno eseguito l'accesso, questa procedura di aggiornamento viene avviata senza informare l'utente. Se è attiva la sessione utente, nell'UI viene mostrata la notifica, che deve essere accettata per poter riavviare il dispositivo e avviare la procedura di aggiornamento delle istantanee dei dati ARC. Nota: durante questa procedura non è possibile usare il dispositivo.</translation>
@@ -1301,7 +1307,7 @@ Il criterio <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> separato può essere utiliz
 <translation id="2175353308236295184">Oggetto di configurazione JSON specifico dell'app con una serie di coppie chiave-valore, ad esempio '"managedConfiguration": { "key1": value1, "key2": value2 }'. Le chiavi sono definite nel file manifest dell'app.</translation>
 <translation id="2176115444876446233">Gli utenti non possono raccogliere dati di rilevamento del rendimento a livello di sistema.</translation>
 <translation id="2177696016354404697">Disattiva sempre la Schermata privata</translation>
-<translation id="2178899310296064282">Imponi almeno il Livello medio della Modalità con restrizioni su YouTube</translation>
+<translation id="2178899310296064282">Applica almeno la modalità Restrizione moderata su YouTube</translation>
 <translation id="2180958780733364832">Controlla l'uso della modalità headless</translation>
 <translation id="2182291258410176649">L'utente decide se abilitare il backup e il ripristino</translation>
 <translation id="219297066914002620">Indica a <ph name="PRODUCT_OS_NAME" /> di attivare o disattivare gli strumenti della console di gestione delle macchine virtuali.
@@ -2515,6 +2521,7 @@ Se un'estensione specificata in questo criterio non viene installata, la navigaz
 <translation id="3258380413685430793">Esegui tutti i contenuti di <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="3261592499545947104">Il numero di secondi prima della scadenza di un certificato in cui attivare il rinnovo.</translation>
 <translation id="3262080895269946462">Consenti la disattivazione per impostazione predefinita di WebSQL nei contesti di terze parti.</translation>
+<translation id="326341982850521928">Attiva la correzione del colore</translation>
 <translation id="3263892501786842604">Consenti la visualizzazione del pulsante <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nella casella di ricerca della pagina Nuova scheda, se supportato.</translation>
 <translation id="3264793472749429012">Codifiche del provider di ricerca predefinito</translation>
 <translation id="3269198556438453775">Impedisci le connessioni di assistenza da remoto da parte degli amministratori aziendali a questa macchina</translation>
@@ -2610,6 +2617,11 @@ Se un'estensione specificata in questo criterio non viene installata, la navigaz
       Per un elenco di varianti che possono essere utilizzate, vai all'indirizzo https://support.google.com/chrome/a?p=Supported_directory_variables.
 
       Se il criterio non viene configurato, viene utilizzato il percorso del profilo predefinito e l'utente può ignorarlo con il flag della riga di comando "--user-data-dir".</translation>
+<translation id="3379368498958498146">Attiva o disattiva la funzionalità di scrittura predittiva sulla tastiera fisica.
+
+Se questo criterio viene attivato o se non viene configurato, la funzionalità di scrittura predittiva sulla tastiera fisica sarà consentita.
+
+Se viene disattivato, la funzionalità di scrittura predittiva sulla tastiera fisica non sarà consentita.</translation>
 <translation id="3380801667330555918">Modifica la configurazione precompilata per i ticket Kerberos</translation>
 <translation id="338149029069528354">Non cancellare i dati utente locali</translation>
 <translation id="3381968327636295719">Utilizza il browser host per impostazione predefinita</translation>
@@ -4522,9 +4534,9 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 <translation id="5189360528842591274">Consenti solo la connessione con i servizi Bluetooth nell'elenco</translation>
 <translation id="5190426551516379357">La configurazione del criterio applica un livello minimo della Modalità con restrizioni su YouTube e impedisce agli utenti di scegliere un livello meno restrittivo della modalità. Se il criterio viene impostato su:
 
-      * Livello massimo, su YouTube sarà sempre attivo questo livello della Modalità con restrizioni.
+      * Restrizione massima, su YouTube sarà sempre attiva questa modalità.
 
-      * Livello medio, l'utente può scegliere solo questo livello della Modalità con restrizioni e il livello massimo su YouTube, ma non può disattivare questa modalità.
+      * Restrizione moderata, l'utente può scegliere solo le modalità Restrizione moderata e Restrizione massima su YouTube, ma non può disattivare la Modalità con restrizioni.
 
       * Off, o se il valore non viene configurato, la Modalità con restrizioni su YouTube non viene applicata da Chrome. I criteri esterni, come quelli di YouTube, potrebbero applicare comunque la Modalità con restrizioni.</translation>
 <translation id="5191476996923842491">Comportamento predefinito per l'impostazione della funzione setTimeout().</translation>
@@ -4699,6 +4711,7 @@ Nota: questo criterio non viene applicato agli upgrade a HSTS.</translation>
       Se la proprietà <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> viene definita in una richiesta <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, tutte le schermate vengono acquisite automaticamente senza chiedere esplicitamente l'autorizzazione dell'utente.
       Se il criterio non viene configurato, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> non è disponibile per alcuna applicazione web.
 Per migliorare la privacy, a partire dalla versione 116 di <ph name="PRODUCT_NAME" />, questo criterio non supporterà più l'aggiornamento dinamico. Pertanto, l'utente potrà assicurarsi che dopo l'accesso le altre pagine non saranno in grado di acquisire le schermate, se non era già stato consentito all'inizio della sessione.</translation>
+<translation id="5361167871898066799">Controlla la funzionalità di correzione automatica sulla tastiera fisica</translation>
 <translation id="5361708558735884308">La configurazione del criterio consente di fornire l'accesso agli URL elencati, sotto forma di eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Leggi la descrizione del criterio per conoscere il formato delle voci di questo elenco. Ad esempio, se imposti il criterio <ph name="URL_BLOCKLIST_POLICY_NAME" /> su *, tutte le richieste verranno bloccate e puoi utilizzare questo criterio per consentire l'accesso a un elenco limitato di URL. Utilizzalo per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici utilizzando il formato specificato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Il filtro più specifico consente di determinare se un URL è bloccato o consentito. Il criterio <ph name="URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza sul criterio <ph name="URL_BLOCKLIST_POLICY_NAME" />. Per questo criterio è possibile definire al massimo 1000 voci.
 
 Questo criterio consente anche di attivare la chiamata automatica da parte del browser di applicazioni esterne registrate come gestori di protocollo per i protocolli elencati come "tel:" o "ssh:".
@@ -5890,6 +5903,7 @@ Per <ph name="PRODUCT_NAME" />, questo criterio viene applicato soltanto se la m
 Per maggiori informazioni sulle tecnologie precedenti, visita la pagina all'indirizzo https://chromestatus.com/features.</translation>
 <translation id="640827304541402854">Viene disattivato l'attraversamento firewall da host di accesso remoto</translation>
 <translation id="6412352702230183710">Consenti solo host di messaggi nativi a livello di sistema</translation>
+<translation id="6416506846917150119">Disattiva la scrittura predittiva sulla tastiera fisica durante la digitazione da parte degli utenti</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
 <translation id="6422575351619065453">In modalità kiosk, consente di controllare se visualizzare o meno il menu Accessibilità mobile.
 
@@ -5960,13 +5974,13 @@ Vedi anche il criterio <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
           Se questo criterio viene disattivato, gli utenti non possono aggiungere account Kerberos. Gli account possono essere aggiunti solo tramite il criterio "Configura account Kerberos". Si tratta di una soluzione efficace per bloccare gli account.</translation>
 <translation id="6491139795995924304">Consenti Bluetooth sul dispositivo</translation>
 <translation id="6491305972928809525">Non mostrare il menu Accessibilità mobile in modalità kiosk</translation>
-<translation id="6491872498385040936">Questa norma è obsoleta. È possibile utilizzare la norma <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />, che sostituisce questa norma e consente un perfezionamento più preciso.
+<translation id="6491872498385040936">Questo criterio è deprecato. È possibile utilizzare il criterio <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />, che sostituisce questo criterior e consente un perfezionamento più preciso.
 
-      Consente di imporre il livello medio della Modalità con restrizioni di YouTube e di impedire agli utenti di modificare l'impostazione.
+      Forza la modalità Restrizione moderata di YouTube e impedisce agli utenti di modificare l'impostazione.
 
-      Se questa impostazione viene attivata, verrà sempre applicato almeno il livello medio della Modalità con restrizioni su YouTube.
+      Se questa impostazione viene attivata, verrà sempre applicata almeno la modalità Restrizione moderata di YouTube.
 
-      Se questa impostazione viene disattivata o non viene impostato alcun valore, la Modalità con restrizioni su YouTube non verrà applicata da <ph name="PRODUCT_NAME" />. La Modalità con restrizioni potrebbe essere comunque applicata da norme esterne, ad esempio dalle norme di YouTube.</translation>
+      Se questa impostazione viene disattivata o non viene impostato alcun valore, la Modalità con restrizioni su YouTube non verrà applicata da <ph name="PRODUCT_NAME" />. La Modalità con restrizioni potrebbe essere comunque applicata da criteri esterni, ad esempio dalle norme di YouTube.</translation>
 <translation id="6492177700737407141">Gli utenti registrati al programma di protezione avanzata riceveranno solo le protezioni per i consumatori standard</translation>
 <translation id="6492737559291967859">Questo criterio consente di specificare la lingua da utilizzare per <ph name="PRODUCT_NAME" />.
 
@@ -6442,7 +6456,7 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
 <translation id="6857240169209507953">È vietata l'esecuzione di <ph name="BOREALIS_NAME" /> su un dispositivo</translation>
 <translation id="6857372417233723544">Se il criterio viene impostato, viene attivato il layout Hindi Inscript su <ph name="PRODUCT_OS_NAME" />.
 Se viene impostato su False o se non viene configurato, il layout non è disponibile. È necessario riavviare per applicare il criterio.</translation>
-<translation id="685769593149966548">Imponi il livello massimo della Modalità con restrizioni per YouTube</translation>
+<translation id="685769593149966548">Applica la modalità Restrizione massima per YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versioni successive</translation>
 <translation id="6881447940489194100">Hash SHA-256 esadecimale codificato dei dati.</translation>
 <translation id="68818134518270542">La configurazione del criterio consente di specificare le app che gli utenti possono attivare come app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
@@ -6718,6 +6732,7 @@ Se il criterio viene impostato, l'elenco dei valori predefiniti viene esteso con
 <translation id="7122626777103192518">Se il criterio viene impostato su Vero, viene attivata la condivisione di testo/file dalle app Android alle app web supportate, utilizzando il sistema di condivisione di Android integrato.
       Se attivato, questo invierà a Google i metadati per le app web installate per generare e installare un'app Android compatibile.
       Se il criterio viene impostato su Falso, la funzionalità viene disattivata.</translation>
+<translation id="7123271473727774529">Attiva la funzione di accessibilità di correzione del colore</translation>
 <translation id="7126716959063786004">Consenti di terminare i processi in Task Manager</translation>
 <translation id="7126928806195745404">Impostazioni JavaScript</translation>
 <translation id="7127980134843952133">Cronologia download</translation>
@@ -6922,6 +6937,17 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="731208205557053914">Segnala informazioni sui VPD</translation>
 <translation id="7313672174502374994">L'hash SHA-256 dell'immagine di sfondo.</translation>
 <translation id="7322825363493984512">La password per l'autenticazione dei servizi di sistema per il proxy web remoto.</translation>
+<translation id="7323773727263636287">Attiva la funzione di accessibilità di correzione del colore.
+
+          Questa funzione consente agli utenti di regolare le impostazioni di correzione del colore sui loro dispositivi <ph name="PRODUCT_OS_NAME" /> gestiti, il che potrebbe semplificare la percezione dei colori sullo schermo da parte degli utenti affetti da discromatopsia.
+
+          Se questo criterio viene attivato, la correzione del colore sarà sempre attiva. Gli utenti dovranno accedere alle Impostazioni per scegliere le opzioni specifiche di correzione del colore (ad esempio il filtro Deuteranomalia/Protanomalia/Tritanomalia/Scala di grigi e la relativa intensità). Le impostazioni di correzione del colore vengono mostrate all'utente al primo utilizzo.
+
+          Se questo criterio viene disattivato, la correzione del colore sarà sempre disattivata.
+
+          Se imposti questo criterio, gli utenti non potranno modificarlo o eseguirne l'override.
+
+          Se questo criterio non viene configurato, la funzione di correzione del colore è inizialmente disattivata, ma può essere attivata dall'utente in qualsiasi momento.</translation>
 <translation id="7323855063560306712">Consente di impostare un elenco di pattern URL per i siti che specifica i siti a cui l'autorizzazione per la gestione delle finestre viene automaticamente negata. Ciò limiterà la capacità dei siti di vedere le informazioni sulle schermate del dispositivo e di utilizzare quelle informazioni per aprire e posizionare finestre oppure per richiedere lo schermo intero su schermate specifiche.
 
 Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti. Questo criterio ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.
@@ -7592,6 +7618,7 @@ Questo criterio aziendale consente agli amministratori di stabilire se gli utent
 <translation id="7976157349247117979">Nome della destinazione di <ph name="PRODUCT_NAME" /></translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7986473886676689183">Attiva la generazione di report Android</translation>
+<translation id="7990280274626154329">Attiva <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
 <translation id="7991022023019679916">Tieni presente che questo criterio è obsoleto e verrà rimosso nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa il criterio <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Consente di specificare il periodo di tempo senza input utente trascorso il quale lo schermo viene disattivato quando viene usata la corrente alternata.
@@ -7656,6 +7683,7 @@ In questo tipo di scenari non è garantita la corretta migrazione dei dati.
 <translation id="8028814157747157754">Attiva il provider di ricerca predefinito e consenti agli utenti di modificare l'elenco dei provider di ricerca</translation>
 <translation id="8029201909194194377">Durata massima della sessione consentita per le connessioni di accesso remoto</translation>
 <translation id="8035570672225663428">Consenti al modello di ricarica adattiva di sospendere la procedura di ricarica per prolungare la durata della batteria</translation>
+<translation id="8038007682032315784">Disattiva <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> in tutte le pagine web</translation>
 <translation id="8044493735196713914">Indicazione modalità di avvio dispositivo</translation>
 <translation id="8044720778481009876">Destinazioni <ph name="CLOUD_PRINT_NAME" /> e "Salva su Google Drive" (deprecate)</translation>
 <translation id="80453040817068401">Rendi disponibile il browser <ph name="LACROS_NAME" /></translation>
@@ -7695,6 +7723,7 @@ In questo tipo di scenari non è garantita la corretta migrazione dei dati.
 <translation id="8080200590486938727">Disattiva la ricerca dei plug-in</translation>
 <translation id="8089200718228084417">Attiva stampa Privet deprecata</translation>
 <translation id="8091982561085048989">Un flag booleano che indica se deve essere usato o meno IPP Everywhere per configurare la stampante. Questo flag è supportato su <ph name="PRODUCT_OS_NAME" /> 76 e versioni successive.</translation>
+<translation id="8094095107731619070">Attiva la correzione automatica sulla tastiera fisica durante la digitazione da parte degli utenti</translation>
 <translation id="8099880303030573137">Ritardo inattività in caso di utilizzo della batteria</translation>
 <translation id="8101381354936029836">Gruppo atomico di criteri:</translation>
 <translation id="8102854005031553638">Il visualizzatore PDF utilizza il renderer AGG.</translation>
@@ -7992,6 +8021,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8330437518362176921">Utilizza solo l'URL di aggiornamento fornito dal criterio durante il download e l'aggiornamento delle app di Chrome Kiosk</translation>
 <translation id="8331479227794770304">Attiva tasti permanenti</translation>
 <translation id="8332822245414537447">Disattiva il controllo dell'utilizzo delle chiavi RSA</translation>
+<translation id="8334685561819743286">Disattiva la correzione automatica sulla tastiera fisica durante la digitazione da parte degli utenti</translation>
 <translation id="8337114537412769126">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> consente di specificare i parametri durante la ricerca di suggerimenti con POST. Si tratta di coppie di tipo nome-valore separate da virgole. Se un valore è il parametro di un modello, ad esempio <ph name="SEARCH_TERM_MARKER" />, viene sostituito con i dati dei termini di ricerca reali.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> non viene configurato, le richieste di ricerca di suggerimenti vengono inviate utilizzando il metodo Get.</translation>
@@ -8073,6 +8103,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8427466947904008809">Consenti a CRD di eseguire richieste API WebAuthn trasferite al proxy da un host remoto.</translation>
 <translation id="8428295225823548121">Attiva i report sulle informazioni relative alla memoria del dispositivo</translation>
 <translation id="8428635849021776523">Disattiva la generazione di report Android</translation>
+<translation id="8429593528367808164">Attiva la scrittura predittiva sulla tastiera fisica durante la digitazione da parte degli utenti</translation>
 <translation id="8433186206711564395">Impostazioni di rete</translation>
 <translation id="8433769814000220721">Attiva contenuti suggeriti</translation>
 <translation id="843609873781525167">Se il criterio è impostato su True, all'avvio <ph name="PRODUCT_NAME" /> verifica sempre di essere il browser predefinito e, se possibile, si registra automaticamente. Se il criterio è impostato su False, <ph name="PRODUCT_NAME" /> non verifica mai di essere il browser predefinito e disattiva i controlli degli utenti per questa opzione.
@@ -8517,6 +8548,9 @@ Se il criterio non viene configurato o se viene disattivato, i dati dell'utente 
       Gli utenti possono attivare una finestra di dialogo per l'importazione e la casella di controllo dei preferiti verrà selezionata o deselezionata in modo che corrisponda al valore del criterio.</translation>
 <translation id="8858642179038618439">Forza la Modalità di protezione di YouTube</translation>
 <translation id="8860342862142842017">Disattiva l'applicazione di Certificate Transparency per un elenco di hash subjectPublicKeyInfo</translation>
+<translation id="8860474826929590628">Se questo criterio viene attivato o se non viene configurato, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> è consentito in tutte le pagine web.
+
+Se viene disattivato, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> non è disponibile in nessuna pagina web.</translation>
 <translation id="8860894781631833477">Gli utenti possono configurare il canale di rilascio di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8864975621965365890">Consente di eliminare il messaggio di richiesta di turndown che compare quando un sito viene visualizzato da <ph name="PRODUCT_FRAME_NAME" />.</translation>
 <translation id="8865404058177794289">Utilizza l'impostazione predefinita per il controllo dell'utilizzo delle chiavi RSA</translation>
@@ -8638,6 +8672,7 @@ Il campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> consente di specificare se un'app w
 (Dalla versione 115) Il campo <ph name="PREVENT_CLOSE_FIELD" /> consente di specificare se impedire o meno la chiusura di un'app web in qualsiasi modo (ad esempio da parte dell'utente, da Task Manager, da API web). Questo comportamento può essere attivato solo se il criterio <ph name="RUN_ON_OS_LOGIN_FIELD" /> è impostato su <ph name="RUN_WINDOWED" />. Se l'app era già in esecuzione, questa proprietà diventa effettiva solo dopo il suo riavvio. Se questo campo non viene definito, gli utenti potranno chiudere le app.</translation>
 <translation id="8970205333161758602">Eliminazione del messaggio di richiesta di turndown di <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8973579598359969188">Scegli se è possibile o meno mostrare la richiesta di <ph name="PRIVACY_SANDBOX_NAME" /> ai tuoi utenti</translation>
+<translation id="8974457039656761249">Controlla la funzionalità di scrittura predittiva sulla tastiera fisica</translation>
 <translation id="8974588819713914715">Questo criterio è stato deprecato e non è supportato. Utilizza il criterio <ph name="URL_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="8976248126101463034">Consenti l'autenticazione Gnubby per gli host di accesso remoto</translation>
 <translation id="8976531594979650914">Usa stampante di sistema come predefinita</translation>
@@ -8987,4 +9022,5 @@ Se <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> viene attivato, <ph 
       Se questo criterio viene attivato, i siti sono esposti ad alcuni tipi di attacchi cross-site e gli utenti possono essere monitorati tra i siti anche senza i cookie tramite l'aggiunta di voci alla cache di autenticazione HTTP usando credenziali incorporate negli URL.
 
       Questo criterio è stato ideato per dare la possibilità alle aziende che dipendono dal comportamento precedente di aggiornare le proprie procedure di accesso e verrà rimosso in futuro.</translation>
+<translation id="999340611001666174">Disattiva la correzione del colore</translation>
 </translationbundle>

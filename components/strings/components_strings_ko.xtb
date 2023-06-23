@@ -399,6 +399,7 @@
 <translation id="1864927262126810325">출처: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">프록시가 .pac 스크립트 URL이 아닌 고정 프록시 서버를 사용하도록 설정됩니다.</translation>
 <translation id="1871284979644508959">필수 입력란</translation>
+<translation id="1871739799120352748">가격이 비쌈</translation>
 <translation id="1873899211667975540">록 음악</translation>
 <translation id="1874224422119691492"><ph name="SETTINGS" />에서 비밀번호를 입력할 때 화면 잠금을 사용할지를 변경할 수 있습니다.</translation>
 <translation id="1875025161375567525">사진 트레이</translation>
@@ -442,6 +443,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" />에서 로컬 컴퓨터에 대용량 데이터를 영구 저장하려고 합니다</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{외 1개}other{외 #개}}</translation>
+<translation id="2001469757375372617">문제가 발생했습니다. 변경사항이 저장되지 않았습니다.</translation>
 <translation id="2003709556000175978">지금 비밀번호 재설정</translation>
 <translation id="2003775180883135320">상단 4공 펀칭</translation>
 <translation id="2009942480257059311">일정 만들기 버튼, Google Calendar에서 새 일정을 빠르게 만들려면 활성화하세요.</translation>
@@ -499,6 +501,7 @@
 <translation id="2118132148597630479">봉투 C5</translation>
 <translation id="2119505898009119320">발급 대상: <ph name="ORGANIZATION" />[<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">오른쪽 하단 펀칭</translation>
+<translation id="2122214041802369259">가격이 비쌈</translation>
 <translation id="2122719317867821810">이 정책은 정상 작동 중이나 다른 곳에 충돌하는 값이 설정되어 있어 이 정책에 의해 재정의되었습니다.</translation>
 <translation id="2126374524350484896">PDF 변환 프로그램:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode 정책이 설정되지 않았기 때문에 지정한 템플릿이 적용되지 않을 수 있습니다.</translation>
@@ -856,8 +859,10 @@
 <translation id="3041612393474885105">인증서 정보</translation>
 <translation id="305162504811187366">타임스탬프, 호스트, 클라이언트 세션 ID를 포함한 Chrome 원격 데스크톱 기록</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> 가격 <ph name="PRICE_DROP" /> 인하</translation>
+<translation id="3054512251683174387">Chrome은 4주 이상 된 주제를 자동 삭제합니다. 인터넷 사용에 따라 특정 주제가 목록에 다시 표시될 수 있습니다. 또는 사용자가 Chrome에서 사이트와 공유하지 않았으면 하는 주제를 차단할 수 있습니다. Chrome에서 광고 개인 정보 보호 관리에 대해 자세히 알아보세요.</translation>
 <translation id="3061707000357573562">서비스 패치</translation>
 <translation id="306573536155379004">게임이 시작되었습니다.</translation>
+<translation id="3067505415088964188">가격이 저렴함</translation>
 <translation id="3068991664510324412">컴퓨터 및 비디오 게임</translation>
 <translation id="3080254622891793721">그래픽</translation>
 <translation id="3081538120861307764">광고 실적을 측정하기 위해 광고가 표시된 시간과 같이 제한된 유형의 데이터가 사이트 간에 공유됩니다.</translation>
@@ -2073,6 +2078,7 @@
 <translation id="5967592137238574583">연락처 정보 수정</translation>
 <translation id="5967867314010545767">기록에서 삭제</translation>
 <translation id="5968022600320704045">검색결과 없음</translation>
+<translation id="5969199813874624822">가격 저장 및 추적</translation>
 <translation id="5974052231147553524">6번째 롤</translation>
 <translation id="5975083100439434680">축소</translation>
 <translation id="5979084224081478209">비밀번호 확인</translation>
@@ -3396,6 +3402,7 @@
 <translation id="9141013498910525015">주소 관리</translation>
 <translation id="9144951720726881238">유효기간:</translation>
 <translation id="9148507642005240123">수정 실행 취소(&amp;U)</translation>
+<translation id="9148599396704355100">가격이 저렴함</translation>
 <translation id="9150045010208374699">카메라 사용</translation>
 <translation id="9150685862434908345">관리자가 원격으로 브라우저 설정을 변경할 수 있습니다. 이 기기의 활동은 Chrome 외부에서도 관리할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">업데이트됨</translation>

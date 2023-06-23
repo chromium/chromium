@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">&amp;அகராதியுடன் சேர்</translation>
 <translation id="1018656279737460067">ரத்து செய்யப்பட்டது</translation>
 <translation id="1022489261739821355">உங்கள் <ph name="BEGIN_LINK" />Google கணக்கிலுள்ள<ph name="END_LINK" /> கடவுச்சொற்களைக் காட்டுகிறது</translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">உங்கள் சாதனத்தை <ph name="DOMAIN" /> நிர்வகிக்கிறது. இந்தச் சாதனத்தில் உள்ள எந்தவொரு சுயவிவரத் தரவையும் நிர்வாகிகளால் அணுக முடியும்.</translation>
 <translation id="1024734233509995696">இந்தப் பக்கம் உங்கள் கேமரா அல்லது மைக்ரோஃபோனைப் பயன்படுத்துகிறது</translation>
 <translation id="1026655690966755180">போர்ட்டை சேர்</translation>
@@ -3499,6 +3500,7 @@
 <translation id="3919145445993746351">உங்கள் அனைத்துக் கணிணிகளிலும் நீட்டிப்புகளைப் பெற, ஒத்திசைவை இயக்கவும்</translation>
 <translation id="3919229493046408863">சாதனங்கள் அருகில் இருக்கும்போது அறிவிப்பை முடக்கு</translation>
 <translation id="3919262972282962508">டிசம்பர் 2022க்குப் பிறகு Mac சாதனங்களில் Chrome ஆப்ஸின் பழைய பதிப்புகள் இயங்காது. புதிய பதிப்பைப் பெறவோ இந்த ஆப்ஸை அகற்றவோ உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
+<translation id="3919376399641777316">Google Drive சேமிப்பிடத்தைப் பயன்படுத்தும்</translation>
 <translation id="3919798653937160644">இந்தச் சாளரத்தில் நீங்கள் பார்க்கும் பக்கங்கள் உலாவியின் இதுவரையான செயல்பாடுகளில் தோன்றாது. திறக்கப்பட்டிருக்கும் கெஸ்ட் சாளரங்கள் அனைத்தையும் மூடியபிறகு அவை குக்கீகள் போன்ற பிற தடங்களைக் கம்ப்யூட்டரில் விட்டுச் செல்லாது. இருப்பினும், நீங்கள் பதிவிறக்கிய ஃபைல்கள்  அனைத்தும் பாதுகாக்கப்படும்.</translation>
 <translation id="3920504717067627103">சான்றிதழ் கொள்கைகள்</translation>
 <translation id="3920909973552939961">பேமெண்ட் ஹேண்ட்லர்களை நிறுவ அனுமதி இல்லாத தளங்கள்</translation>
@@ -3649,6 +3651,7 @@
 <translation id="4044612648082411741">சான்றிதழ் கடவுச்சொல்லை உள்ளிடவும்</translation>
 <translation id="4044708573046946214">திரைப் பூட்டின் கடவுச்சொல்</translation>
 <translation id="404493185430269859">இயல்பு தேடல் இன்ஜின்</translation>
+<translation id="4044964245574571633">Microsoft OneDrive சேமிப்பிடத்தைப் பயன்படுத்தும்</translation>
 <translation id="4045196801416070837">சாதன ஒலிகள்</translation>
 <translation id="4046013316139505482">இந்தத் தளத்திலுள்ள தகவல்களை இந்த நீட்டிப்புகள் பார்க்கவும் மாற்றவும் தேவையில்லை.</translation>
 <translation id="4046123991198612571">அடுத்த டிராக்</translation>
@@ -3687,6 +3690,7 @@
 <translation id="4084682180776658562">புக்மார்க்</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" />ஐ மூடு</translation>
 <translation id="4085298594534903246">இந்தப் பக்கத்தில் JavaScript ஆனது தடுக்கப்பட்டுள்ளது.</translation>
+<translation id="4085620044235559093"><ph name="FILE_TYPE" /> ஃபைல்களைத் திறக்க ஓர் ஆப்ஸைத் தேர்வுசெய்யுங்கள்</translation>
 <translation id="4087089424473531098">இந்த நீட்டிப்பு உருவாக்கப்பட்டது:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4441,6 +4445,7 @@
 <translation id="4742970037960872810">ஹைலைட்டை அகற்று</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />பயன்பாடுகளைப் புதுப்பிப்பது எப்படி என்பதை அறிக<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">தளத்திற்குச் செல்</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{தளத்தின் ஒலியை இயக்கு}other{தளங்களின் ஒலியை இயக்கு}}</translation>
 <translation id="474609389162964566">"Ok Google" எனக் கூறி Assistantடை அணுகுங்கள்</translation>
 <translation id="4746351372139058112">மெசேஜ்கள்</translation>
@@ -7530,6 +7535,7 @@
 <translation id="7432200167665670017">"<ph name="EXTENSION_NAME" />" நீட்டிப்பை உங்கள் நிர்வாகி தடுத்துள்ளார் - ஆப்ஸ் ஐடி <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> சாதனத்தைத் தொடர்ந்து பயன்படுத்த ஸ்மார்ட் கார்டைச் செருகுங்கள்</translation>
 <translation id="7433957986129316853">ரத்துசெய்ய வேண்டாம்</translation>
+<translation id="7434100547946193426">பிற ஆப்ஸ்</translation>
 <translation id="7434509671034404296">டெவெலப்பர்</translation>
 <translation id="7434757724413878233">மவுஸ் ஆக்ஸிலரேஷன்</translation>
 <translation id="7434969625063495310">பிரிண்ட் சேவையகத்தைச் சேர்க்க முடியவில்லை. உங்கள் சேவையகத்தின் உள்ளமைவைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும்.</translation>

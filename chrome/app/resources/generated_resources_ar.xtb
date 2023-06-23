@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">إ&amp;ضافة التعبير إلى القاموس</translation>
 <translation id="1018656279737460067">تم الإلغاء</translation>
 <translation id="1022489261739821355">‏عرض كلمات المرور من <ph name="BEGIN_LINK" />حسابك على Google<ph name="END_LINK" /></translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">تتم إدارة جهازك من خلال <ph name="DOMAIN" />. يمكن للمشرفين الوصول إلى البيانات في أي ملف شخصي على هذا الجهاز.</translation>
 <translation id="1024734233509995696">تستخدم علامة التبويب هذه الكاميرا أو الميكروفون.</translation>
 <translation id="1026655690966755180">إضافة منفذ</translation>
@@ -1215,7 +1216,7 @@
 <translation id="1999315477791571194">‏سيتم الحفظ في "مدير كلمات المرور في Google" الخاص بالحساب <ph name="SEPARATOR" /> <ph name="ACCOUNT" />.</translation>
 <translation id="2002109485265116295">الوقت الفعلي</translation>
 <translation id="2003130567827682533">‏لتفعيل بيانات "<ph name="NAME" />"، يمكنك أولاً الاتصال بشبكة Wi-Fi.</translation>
-<translation id="2004697686368036666">قد لا تعمل ميزات بعض المواقع الإلكترونية.</translation>
+<translation id="2004697686368036666">قد لا تعمل ميزات بعض المواقع الإلكترونية</translation>
 <translation id="2005199804247617997">الملفات الشخصية الأخرى</translation>
 <translation id="2006638907958895361">فتح الرابط في <ph name="APP" /></translation>
 <translation id="2007404777272201486">الإبلاغ عن مشكلة...</translation>
@@ -3026,7 +3027,7 @@
 <translation id="3541823293333232175">تم تخصيص المفتاح.</translation>
 <translation id="3543393733900874979">تعذّر التحديث (خطأ: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">‏توقيع X9.62 ECDSA باستخدام SHA-512</translation>
-<translation id="3544058026430919413">يمكن للشركة تحديد مجموعة مواقع إلكترونية يمكنها استخدام ملفات تعريف الارتباط لمشاركة نشاطك في المجموعة. يتم إيقاف هذا الإعداد في "وضع التصفّح المتخفي".</translation>
+<translation id="3544058026430919413">يمكن للشركات تحديد مجموعة مواقع إلكترونية يمكنها استخدام ملفات تعريف الارتباط لمشاركة نشاطك في المجموعة. يكون هذا الإعداد غير مفعّل في "وضع التصفّح المتخفي".</translation>
 <translation id="3544879808695557954">اسم المستخدم (اختياري)</translation>
 <translation id="3547954654003013442">إعدادات الخادم الوكيل</translation>
 <translation id="3548162552723420559">ضبط لون الشاشة ليتناسب مع البيئة المحيطة</translation>
@@ -3488,6 +3489,7 @@
 <translation id="3919145445993746351">للحصول على الإضافات على جميع أجهزة الكمبيوتر، يُرجى تفعيل المزامنة</translation>
 <translation id="3919229493046408863">إيقاف الإشعارات عندما تكون الأجهزة قريبة</translation>
 <translation id="3919262972282962508">‏لن تُفتَح الإصدارات القديمة من تطبيقات Chrome على الأجهزة التي تعمل بنظام التشغيل Mac بعد كانون الأول (ديسمبر) 2022. يمكنك التواصل مع المشرف للتحديث إلى إصدار جديد من هذا التطبيق أو إزالته.</translation>
+<translation id="3919376399641777316">‏يتم استخدام مساحة التخزين في Google Drive.</translation>
 <translation id="3919798653937160644">لن تظهر في سجلّ المتصفّح الصفحات التي تعرضها في هذه النافذة، ولن تترك أي آثار أخرى في الكمبيوتر، مثل ملفات تعريف الارتباط، بعد إغلاق جميع النوافذ المفتوحة في وضع الضيف، علمًا أنه سيتم الاحتفاظ بأي ملفات يتم تنزيلها.</translation>
 <translation id="3920504717067627103">سياسات الشهادة</translation>
 <translation id="3920909973552939961">المواقع الإلكترونية التي لا يُسمح لها بتثبيت معالجات الدفع</translation>
@@ -3635,6 +3637,7 @@
 <translation id="4044612648082411741">إدخال كلمة المرور للشهادة</translation>
 <translation id="4044708573046946214">كلمة مرور قفل الشاشة</translation>
 <translation id="404493185430269859">محرك البحث التلقائي</translation>
+<translation id="4044964245574571633">‏يتم استخدام مساحة التخزين في Microsoft OneDrive.</translation>
 <translation id="4045196801416070837">أصوات الجهاز</translation>
 <translation id="4046013316139505482">لا يمكن لهذه الإضافات الوصول إلى معلومات هذا الموقع الإلكتروني أو تغييرها.</translation>
 <translation id="4046123991198612571">المقطع الصوتي التالي</translation>
@@ -3673,6 +3676,7 @@
 <translation id="4084682180776658562">إشارة</translation>
 <translation id="4084835346725913160">غلق <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">‏تم منع تشغيل JavaScript في هذه الصفحة.</translation>
+<translation id="4085620044235559093">اختَر تطبيقًا لفتح ملفات <ph name="FILE_TYPE" />.</translation>
 <translation id="4087089424473531098">تم إنشاء الإضافة:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4424,6 +4428,7 @@
 <translation id="4742970037960872810">إزالة التمييز</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />التعرّف على كيفية تحديث التطبيقات<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">زيارة الموقع الإلكتروني</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{إعادة صوت الموقع الإلكتروني}zero{إعادة صوت المواقع الإلكترونية}two{إعادة صوت الموقعَين الإلكترونيين}few{إعادة صوت المواقع الإلكترونية}many{إعادة صوت المواقع الإلكترونية}other{إعادة صوت المواقع الإلكترونية}}</translation>
 <translation id="474609389162964566">‏الوصول إلى "مساعد Google" من خلال قول Ok Google</translation>
 <translation id="4746351372139058112">الرسائل</translation>
@@ -5484,6 +5489,7 @@
 <translation id="5684661240348539843">معرّف الأصول</translation>
 <translation id="5684950556880280580">تم تغيير كلمة المرور</translation>
 <translation id="5687326903064479980">المنطقة الزمنية</translation>
+<translation id="5687606994963670306">‏يحذف Chrome تلقائيًا المواقع الإلكترونية التي يمر أكثر من 30 يومًا على إضافتها إلى قائمة "المواقع الإلكترونية التي تقترح الإعلانات". وقد يظهر في القائمة مجددًا أي موقع إلكتروني تكرِّر زيارته. يمكنك أيضًا منع موقع إلكتروني معيّن من اقتراح إعلانات لك. مزيد من المعلومات حول <ph name="BEGIN_LINK" />إدارة الخصوصية في عرض الإعلانات في Chrome<ph name="END_LINK" /></translation>
 <translation id="5687935527303996204">احرص على توصيل جهازك بمصدر للطاقة، ولا توقِف تشغيله، لأنّ التثبيت قد يستغرق مدة تصل إلى 20 دقيقة. وسيتم إيقاف تشغيل جهازك تلقائيًا عند اكتمال التثبيت.</translation>
 <translation id="5689516760719285838">الموقع الجغرافي</translation>
 <translation id="5689531695336322499">‏يبدو أنّه سبق وأن تم إعداد ميزة Voice Match من قِبل <ph name="SUPERVISED_USER_NAME" /> في خدمة "مساعد Google" على جهاز آخر. أمّا بالنسبة إلى التسجيلات الصوتية السابقة، فقد تم استخدامها لإنشاء نموذج صوتي على هذا الجهاز.</translation>
@@ -7322,6 +7328,7 @@
 <translation id="7273110280511444812">تم آخر توصيل في <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> حتى الاكتمال</translation>
 <translation id="727595954130325265">التسوّق الآن</translation>
+<translation id="7276100255011548441">‏يحذف Chrome تلقائيًا المواضيع التي يمرّ أكثر من 4 أسابيع على إضافتها إلى قائمة "مواضيع الإعلانات". ومع استمرارك في التصفّح، قد يُضاف موضوع إلى القائمة مجددًا. يمكنك أيضًا حظر المواضيع التي لا تريد أن يشاركها Chrome مع المواقع الإلكترونية. مزيد من المعلومات حول <ph name="BEGIN_LINK" />إدارة الخصوصية في عرض الإعلانات في Chrome<ph name="END_LINK" /></translation>
 <translation id="727952162645687754">خطأ في التنزيل</translation>
 <translation id="7280649757394340890">إعدادات الصوت في ميزة تحويل النص إلى كلام</translation>
 <translation id="7280877790564589615">تمّ طلب إذن</translation>
@@ -7507,6 +7514,7 @@
 <translation id="7432200167665670017">حظَر المشرف الإضافة "<ph name="EXTENSION_NAME" />"، رقم تعريف التطبيق <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">أدخِل بطاقة ذكية للاستمرار في استخدام الجهاز <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">تجاهل</translation>
+<translation id="7434100547946193426">تطبيقات أخرى</translation>
 <translation id="7434509671034404296">المطوِّر</translation>
 <translation id="7434757724413878233">تسريع الماوس</translation>
 <translation id="7434969625063495310">تعذّر العثور على خادم الطباعة. يُرجى التحقّق من إعدادات الخادم وإعادة المحاولة.</translation>
@@ -8814,6 +8822,7 @@
 <translation id="8534656636775144800">عفوًا،  حدث خطأ ما أثناء محاولة الانضمام إلى النطاق. يُرجى إعادة المحاولة.</translation>
 <translation id="8535005006684281994">‏عنوان URL لتجديد شهادة Netscape</translation>
 <translation id="8536713137312218707">الأوامر السريعة</translation>
+<translation id="8536810348276651776">‏يؤدي هذا الخيار إلى تسجيل خروجك من معظم المواقع الإلكترونية. ستظل مُسجلاً الدخول إلى حسابك على Google لكي تسري إعدادات Family Link لمتصفِّح Chrome.</translation>
 <translation id="8536956381488731905">إصدار صوت عند الضغط على مفتاح</translation>
 <translation id="8539727552378197395">‏لا (HttpOnly)</translation>
 <translation id="8539766201049804895">ترقية</translation>

@@ -140,6 +140,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1550406609415860283">Dostępne urządzenia</translation>
 <translation id="1550523713251050646">Kliknij, by wyświetlić więcej opcji</translation>
 <translation id="1555130319947370107">Niebieski</translation>
+<translation id="1557622599341396706">Pokaż nazwę biurka</translation>
 <translation id="1576511610858879060">Na Twoim Chromebooku lub urządzeniu Bluetooth funkcja Bluetooth jest dostępna w starszej wersji. Aby uzyskać lepszą jakość dźwięku, użyj innego źródła sygnału.</translation>
 <translation id="1576623706766186887">Pomniejsz, gdy lupa jest włączona</translation>
 <translation id="1586324912145647027">Przejdź do biurka z zakresu od 1 do 8</translation>
@@ -989,6 +990,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5319712128756744240">Sparuj nowe urządzenie</translation>
 <translation id="5322611492012084517">Nie udało się znaleźć telefonu</translation>
+<translation id="5323994101633366939">Ukryj nazwę biurka</translation>
 <translation id="5327248766486351172">Nazwa</translation>
 <translation id="5329548388331921293">Łączę…</translation>
 <translation id="5331975486040154427">Urządzenie USB-C (tylny port na lewym boku)</translation>
@@ -1171,6 +1173,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6114505516289286752">Pliki z mową w języku: <ph name="LANGUAGE" /> zostały pobrane</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Korekcja kolorów</translation>
 <translation id="6121838516699723042">Potwierdź pobieranie pliku <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asystent Google jest niedostępny w sesji gościa.</translation>
 <translation id="6129953537138746214">Spacja</translation>
@@ -1638,6 +1641,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplikacja</translation>
 <translation id="8255234195843591763">Zresetuj, aby zaktualizować</translation>
 <translation id="8261506727792406068">Usuń</translation>
+<translation id="8262312463845990408">Włącz lub wyłącz odtwarzanie</translation>
 <translation id="8270450402312105425">{0,plural, =1{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu 1 godziny}few{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godzin}many{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godzin}other{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # godziny}}</translation>
 <translation id="8277261673056602147">Zaznacz tekst na ekranie</translation>
 <translation id="8284362522226889623">Aby przełączyć się na poprzednie biurko, przesuń 4 palcami w lewo</translation>

@@ -38,6 +38,7 @@
 <translation id="1176932207622159128">Зургийг хадгалж чадахгүй байна</translation>
 <translation id="1177414119866731261">Chrome-н цэсийг нээнэ үү</translation>
 <translation id="1181037720776840403">Хасах</translation>
+<translation id="1200396280085622191">Мессеж болон бусад аппад холбооснуудыг товших бүрдээ Chrome-г ашиглана уу.</translation>
 <translation id="1207113853726624428">Шинэ хайлт</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Одоо нуух</translation>
@@ -162,6 +163,7 @@
 <translation id="1974060860693918893">Боловсронгуй</translation>
 <translation id="1980417445547898121">{count,plural, =1{Энэ iPhone дээрх бусад төхөөрөмжөөсөө саяхан идэвхтэй байсан {count} табаа аваарай}other{Энэ iPhone дээрх бусад төхөөрөмжөөсөө саяхан идэвхтэй байсан {count} табаа аваарай}}</translation>
 <translation id="1981118202195772574">Мобайл</translation>
+<translation id="1987779152850321833">Chrome-г бүрэн ашиглахын тулд доорх санал болгосон үйлдлүүдийг гүйцэтгэнэ үү.</translation>
 <translation id="1989112275319619282">Хөтлөх</translation>
 <translation id="1990820278544963435">Олох</translation>
 <translation id="199425419756152024">Нууц үгийг харах</translation>
@@ -319,6 +321,7 @@
 <translation id="2952246431280799028">Хаягийг удаан дарна уу.</translation>
 <translation id="2952278131021475699">Lens-н Камерын хайлт</translation>
 <translation id="2952581218264071393">1. Chrome-н тохиргоог нээнэ үү</translation>
+<translation id="2956733177489514605">Нууц үгнүүд болон бусад зүйлээ синк хийхийн тулд Google Бүртгэлдээ нэвтэрнэ үү.</translation>
 <translation id="2958718410589002129">Нууц үг</translation>
 <translation id="2961210776189273067">Цол хэргэм</translation>
 <translation id="2964349545761222050">Гуравдагч талын күүкиг блоклох</translation>
@@ -340,6 +343,7 @@
 Хэрэв боломжтой бол хайлтын түүхээ устгахын тулд хайлтын системийн зааварчилгаагаа харна уу.</translation>
 <translation id="3080525922482950719">Та хуудаснуудыг дараа, эсвэл офлайнаар уншихаар хадгалж болно</translation>
 <translation id="3081338492074632642">Таны хадгалж буй нууц үг <ph name="WEBSITE" />-н нууц үгтэй тохирч байгаа эсэхийг шалгана уу</translation>
+<translation id="309672519329227863">Бусад аппаас Chrome-н нууц үгнүүд болон бусад зүйлдээ хандаарай.</translation>
 <translation id="3112556859945124369">Тэмдэглэх...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Та юу синк хийх боломжтойгоо хараарай<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Түүх болон бусад</translation>
@@ -517,6 +521,7 @@
 <translation id="4277990410970811858">Аюулгүй үзэх</translation>
 <translation id="4281844954008187215">Үйлчилгээний нөхцөл</translation>
 <translation id="4293080268407233932">Хайх</translation>
+<translation id="4302248187517737842">Ямар ч хэрэглэгчийн нэр байхгүй ••••••••</translation>
 <translation id="4304713468139749426">Нууц үгний менежер</translation>
 <translation id="430793432425771671">Бүгдийг синк хийх</translation>
 <translation id="4309403553630140242">Дэлгэрэнгүй мэдээлэл авахын тулд хоёр товшино уу</translation>
@@ -695,6 +700,7 @@
 <translation id="5478327362747197944">Веб хуудасны огноог товшсоноор Календарийн үйл явдлууд шууд үүсгээрэй.</translation>
 <translation id="5489208564673669003">Бүх сайтын күүкийг удирдахын тулд <ph name="BEGIN_LINK" />Күүкиний тохиргоог<ph name="END_LINK" /> харна уу.</translation>
 <translation id="5490005495580364134">Бүх күүкиг блоклох (Зөвлөдөггүй)</translation>
+<translation id="5511959326926949696">Таны хөтчид зориулсан нэмэлт дээд зэргийн хамгаалалт. Үүнийг зөвхөн та маш нарийн төвөгтэй кибер халдлагын бай болсон гэж үзэж байвал ашиглах хэрэгтэй.</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> цагийн өмнө</translation>
 <translation id="5520466080178053306">Нууц үгний менежер дээр товшоод нэмэх дээр товшино уу</translation>
 <translation id="5525095647255982834">Энэ табыг өөр төхөөрөмж рүү илгээхийн тулд тэндээс Chrome-д нэвтэрнэ үү.</translation>
@@ -811,6 +817,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6149061208933997199">Нууц үг ашиглах</translation>
 <translation id="6152406514676263192">Таны сонирхолд тулгуурласан хамгийн хамааралтай контент харахын тулд синк хийнэ үү.</translation>
 <translation id="6159839020698489198">заавал биш</translation>
+<translation id="6166946945007577435">Очихыг хүссэн газарт тань аваачихад туслах шинэ цэс.</translation>
 <translation id="6170450281939467187">Орчуулж чадсангүй</translation>
 <translation id="6173499589275053515">Таны <ph name="EMAIL" /> Google Бүртгэлд нууц үг хадгалсан</translation>
 <translation id="6177442314419606057">Chrome-с хайх</translation>
@@ -1047,6 +1054,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7554645225856321710">Бүгдийг хаах</translation>
 <translation id="7554791636758816595">Шинэ таб</translation>
 <translation id="7561196759112975576">Үргэлж</translation>
+<translation id="7582857256643797524">Энэ тохиргоог таны төхөөрөмжид идэвхжүүлсэн</translation>
 <translation id="7583004045319035904">Нууцлалтай табуудынхаа түгжээг тайлахын тулд <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-г ашиглана уу.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />-ийг хэзээ ч бүү хөрвүүл</translation>
 <translation id="7603852183842204213">Мэдээллийн цонхнуудыг хориглосон байна (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
@@ -1173,6 +1181,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8319076807703933069">Шинэ хайлт</translation>
 <translation id="8323906514956095947">Табын бусад сонголтыг харахын тулд удаан дарна уу</translation>
 <translation id="8328777765163860529">Бүгдийг хаах</translation>
+<translation id="8331621926962374866">Chrome Түгжих горимд байх үед тодорхой веб технологиудыг блоклодог бөгөөд энэ нь зарим вебсайтыг илүү удаан ачаалах эсвэл зохих ёсоор ажиллахгүй байхад хүргэж магадгүй.</translation>
 <translation id="8343993175958086504">Зүйлсээ хуулбарлаж, дурын төхөөрөмж дээр ашиглана уу.</translation>
 <translation id="834783239627985533">Хамгийн их зочилсон сайтууд</translation>
 <translation id="8378714024927312812">Танай байгууллагаас удирддаг</translation>
@@ -1323,9 +1332,11 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="952704832371081537">Цуцлах</translation>
 <translation id="953008885340860025">Chrome-с гарсан</translation>
 <translation id="959066944189734975">Та <ph name="CHANNEL_NAME" />-г дагаж байна</translation>
+<translation id="97300214378190234">Бусад аппад холбооснуудыг товших бүрдээ Chrome-г ашиглана уу.</translation>
 <translation id="973493300226275298">Онлайн дэлгүүрүүдэд бүтээгдэхүүний үнэ хянана уу. Үнэ буурсан үед та сэрэмжлүүлэг авна.</translation>
 <translation id="981498610235328462">Танай байгууллага таныг зөвхөн тодорхой бүртгэлүүдэд нэвтрэхийг зөвшөөрнө. Зөвшөөрөөгүй бүртгэлүүдийг нуусан.</translation>
 <translation id="984509647832111802">Синк хийх ажиллахгүй байна.</translation>
+<translation id="984879470761322682">Chrome-д Түгжих горимыг идэвхгүй болгохын тулд үүнийг төхөөрөмждөө унтраана уу.</translation>
 <translation id="988141524645182168">Бусад төхөөрөмжүүд</translation>
 <translation id="989988560359834682">Хаягийг засварлах</translation>
 <translation id="994757059139821576">Нийтлэлийн зөвлөмж</translation>

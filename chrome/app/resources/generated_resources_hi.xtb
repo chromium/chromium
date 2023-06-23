@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">शब्दकोश में &amp;जोड़ें</translation>
 <translation id="1018656279737460067">रद्द</translation>
 <translation id="1022489261739821355">आपके <ph name="BEGIN_LINK" />Google खाते<ph name="END_LINK" /> के पासवर्ड दिखाए जा रहे हैं</translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">आपके डिवाइस को <ph name="DOMAIN" /> मैनेज करता है. एडमिन इस डिवाइस पर मौजूद किसी भी प्रोफ़ाइल का डेटा ऐक्सेस कर सकते हैं.</translation>
 <translation id="1024734233509995696">यह टैब आपके कैमरे या माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
 <translation id="1026655690966755180">पोर्ट जोड़ें</translation>
@@ -3498,6 +3499,7 @@
 <translation id="3919145445993746351">अपने सभी कंप्यूटर पर अपने एक्सटेंशन पाने के लिए, सिंक चालू करें</translation>
 <translation id="3919229493046408863">डिवाइसों के आस-पास होने पर सूचना मिलने की सुविधा बंद करें</translation>
 <translation id="3919262972282962508">दिसंबर 2022 के बाद, 'Chrome ऐप्स' के पुराने वर्शन, Mac डिवाइसों पर नहीं खुलेंगे. नए वर्शन पर अपडेट करने या इस ऐप्लिकेशन को हटाने के लिए, अपने एडमिन से संपर्क करें.</translation>
+<translation id="3919376399641777316">Google Drive के स्टोरेज का इस्तेमाल किया जाता है</translation>
 <translation id="3919798653937160644">जब आप अपने कंप्यूटर पर सभी मेहमान विंडो बंद कर देंगे, तो इस विंडो में देखे गए पेजों की जानकारी आपके ब्राउज़र इतिहास में सेव नहीं होगी. साथ ही, इन पेजों से जुड़ा किसी भी तरह का डेटा मिट जाएगा, जैसे कि कुकी. हालांकि, आपकी डाउनलोड की गई सभी फ़ाइलें सेव रहेंगी.</translation>
 <translation id="3920504717067627103">प्रमाणपत्र नीतियां</translation>
 <translation id="3920909973552939961">पेमेंट हैंडलर इंस्टॉल करनी की अनुमति नहीं है</translation>
@@ -3647,6 +3649,7 @@
 <translation id="4044612648082411741">अपना प्रमाणपत्र पासवर्ड डालें</translation>
 <translation id="4044708573046946214">स्क्रीन लॉक का पासवर्ड</translation>
 <translation id="404493185430269859">डिफ़ॉल्ट सर्च इंजन</translation>
+<translation id="4044964245574571633">Microsoft OneDrive स्टोरेज का इस्तेमाल किया जाता है</translation>
 <translation id="4045196801416070837">डिवाइस की आवाज़</translation>
 <translation id="4046013316139505482">इन एक्सटेंशन को साइट की जानकारी देखने या बदलने की ज़रूरत नहीं होती है.</translation>
 <translation id="4046123991198612571">अगला ट्रैक</translation>
@@ -3685,6 +3688,7 @@
 <translation id="4084682180776658562">बुकमार्क</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> बंद करें</translation>
 <translation id="4085298594534903246">इस पेज पर JavaScript को अवरोधित कर दिया गया था.</translation>
+<translation id="4085620044235559093"><ph name="FILE_TYPE" /> फ़ाइलों को खोलने के लिए, कोई ऐप्लिकेशन चुनें</translation>
 <translation id="4087089424473531098">एक्सटेंशमन बनाया गया:
 
 <ph name="EXTENSION_FILE" />￼</translation>
@@ -4437,6 +4441,7 @@
 <translation id="4742970037960872810">हाइलाइट हटाएं</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ऐप्लिकेशन अपडेट करने का तरीका जानें<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">साइट पर जाएं</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{साइट अनम्यूट करें}one{साइटें अनम्यूट करें}other{साइटें अनम्यूट करें}}</translation>
 <translation id="474609389162964566">अपनी Assistant को "Ok Google" बोलकर ऐक्सेस करें</translation>
 <translation id="4746351372139058112">मैसेज</translation>
@@ -5497,6 +5502,7 @@
 <translation id="5684661240348539843">एसेट पहचानकर्ता</translation>
 <translation id="5684950556880280580">आपका पासवर्ड अपडेट हो गया है</translation>
 <translation id="5687326903064479980">समय क्षेत्र</translation>
+<translation id="5687606994963670306">Chrome उन साइटों को सूची से अपने-आप मिटा देता है जिन्हें आपने 30 दिन पहले विज़िट किया था. किसी साइट को फिर से विज़िट करने पर, उसे सूची में दोबारा शामिल किया जा सकता है. इसके अलावा, साइट को विज्ञापनों का सुझाव देने से रोका जा सकता है. <ph name="BEGIN_LINK" />Chrome में विज्ञापन देखने वाले की निजता बनाए रखने<ph name="END_LINK" /> के बारे में ज़्यादा जानें.</translation>
 <translation id="5687935527303996204">पक्का करें कि आपका डिवाइस प्लग-इन हो और उसे बंद न करें. इंस्टॉल करने में 20 मिनट लग सकते हैं. इंस्टॉल करने के बाद, आपका डिवाइस अपने-आप शट डाउन हो जाएगा.</translation>
 <translation id="5689516760719285838">जगह की जानकारी</translation>
 <translation id="5689531695336322499">ऐसा लगता है कि <ph name="SUPERVISED_USER_NAME" /> ने पहले से ही किसी दूसरे डिवाइस पर, Assistant के साथ वॉइस मैच की सुविधा को सेट अप कर लिया है. इस डिवाइस पर आवाज़ का नमूना बनाने के लिए, इन पुरानी रिकॉर्डिंग का इस्तेमाल किया गया है.</translation>
@@ -7328,6 +7334,7 @@
 <translation id="7273110280511444812">पिछली बार <ph name="DATE" /> को अनुलग्न किया गया</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - पूरा होने में <ph name="TIME" /> बचा</translation>
 <translation id="727595954130325265">अभी खरीदें</translation>
+<translation id="7276100255011548441">Chrome, सूची से उन विषयों को अपने-आप मिटा देता है जो चार हफ़्ते से ज़्यादा पुराने हैं. हालांकि, ब्राउज़ करते समय, विषयों की सूची में कोई पुराना विषय फिर से दिख सकता है. इसके अलावा, आपके पास उन विषयों को ब्लॉक करने का भी विकल्प होता है जिन्हें आपको Chrome की सूची में शामिल नहीं करवाना है. <ph name="BEGIN_LINK" />Chrome में विज्ञापन देखने वाले की निजता बनाए रखने<ph name="END_LINK" /> के बारे में ज़्यादा जानें.</translation>
 <translation id="727952162645687754">डाउनलोड गड़बड़ी</translation>
 <translation id="7280649757394340890">लिखाई को बोली में बदलने की आवाज़ की सेटिंग</translation>
 <translation id="7280877790564589615">अनुमति का अनुरोध किया गया</translation>
@@ -7513,6 +7520,7 @@
 <translation id="7432200167665670017">आपके एडमिन ने "<ph name="EXTENSION_NAME" />" को ब्लॉक कर दिया है - ऐप्लिकेशन का आईडी <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> का इस्तेमाल जारी रखने के लिए स्मार्ट कार्ड डालें</translation>
 <translation id="7433957986129316853">इसे बनाए रखें</translation>
+<translation id="7434100547946193426">दूसरे ऐप्लिकेशन</translation>
 <translation id="7434509671034404296">डेवलपर</translation>
 <translation id="7434757724413878233">माउस की रफ़्तार बढ़ाना</translation>
 <translation id="7434969625063495310">प्रिंट सर्वर नहीं जोड़ा जा सका. कृपया सर्वर का कॉन्फ़िगरेशन जांचें और फिर से कोशिश करें.</translation>
@@ -8818,6 +8826,7 @@
 <translation id="8534656636775144800">ओह!  डोमेन में शामिल होने की कोशिश करते समय कोई गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
 <translation id="8535005006684281994">Netscape प्रमाणपत्र नवीनीकरण यूआरएल</translation>
 <translation id="8536713137312218707">फटाफट निर्देश</translation>
+<translation id="8536810348276651776">आपको ज़्यादातर साइटों से साइन आउट कर देता है. आप अपने Google खाते में साइन इन रहेंगे/रहेंगी, ताकि Chrome के लिए आपकी Family Link सेटिंग लागू हो सकें.</translation>
 <translation id="8536956381488731905">बटन दबाने पर आवाज़</translation>
 <translation id="8539727552378197395">नहीं (केवल Http)</translation>
 <translation id="8539766201049804895">बेहतर बनाएं</translation>

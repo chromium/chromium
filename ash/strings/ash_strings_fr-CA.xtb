@@ -1362,7 +1362,7 @@ Nouvelle installation</translation>
 <translation id="7026338066939101231">Diminuer</translation>
 <translation id="7029814467594812963">Fermer la session</translation>
 <translation id="7032161822340700104">Vous pouvez utiliser jusqu'à six modèles. Retirez un modèle pour en enregistrer un nouveau.</translation>
-<translation id="7034025838182392395"><ph name="APP_NAME" /> souhaite utiliser l'<ph name="DEVICE_NAME" />. Mettez votre <ph name="DEVICE_NAME" /> en fonction à l'aide de l'interrupteur.</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> souhaite utiliser votre <ph name="DEVICE_NAME" />. Mettez votre <ph name="DEVICE_NAME" /> en fonction à l'aide de l'interrupteur.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistant Google</translation>
 <translation id="7042322267639375032">Réduire la zone de notifications</translation>
 <translation id="7045033600005038336">Remplacer le modèle?</translation>
@@ -1475,7 +1475,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7579778809502851308">Capture d'écran</translation>
 <translation id="7593891976182323525">Recherche ou Majuscule</translation>
 <translation id="7600875258240007829">Afficher toutes les notifications</translation>
-<translation id="7601417191446344542">Activer la sourdine?</translation>
+<translation id="7601417191446344542">Activer le rappel de son désactivé?</translation>
 <translation id="7607002721634913082">Interrompu</translation>
 <translation id="7609951632080598826">Vue de l'agenda, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Caméra reconnectée.</translation>

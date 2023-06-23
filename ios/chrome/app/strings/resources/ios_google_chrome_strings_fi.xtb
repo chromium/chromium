@@ -50,6 +50,7 @@
 <translation id="3503014945441706099">Lisää Parannettu selaussuoja myös tälle Chrome-profiilille</translation>
 <translation id="3522659714780527202">Laita synkronointi päälle, niin voit nähdä Chrome-välilehtesi missä tahansa</translation>
 <translation id="3533694711092285624">Ei tallennettuja salasanoja. Chrome voi tarkistaa salasanasi, kun tallennat niitä.</translation>
+<translation id="3611867725106943284">Valitse "Katso Google Mapsin avulla Chromessa"</translation>
 <translation id="3655656110921623717">Tämä tarkoittaa, että Chrome pyytää aina mobiilisivustoa.</translation>
 <translation id="3720541637541300822">Lukitse incognito-välilehdet, kun suljet Chromen</translation>
 <translation id="3827545470516145620">Tällä laitteella on perustason suojaus</translation>
@@ -68,6 +69,7 @@
 <translation id="4636900170638246267">Kirjaudu tälle sivustolle ja Chromeen.</translation>
 <translation id="4698415050768537821">Chrome ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna tai <ph name="BEGIN_LINK" />tarkista salasanat Google-tililtä<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Chrome lähettää käyttö- ja kaatumisdataa Googlelle sovelluksen kehittämiseksi. <ph name="BEGIN_LINK" />Muokkaa<ph name="END_LINK" /></translation>
+<translation id="4830799082179398588">Tehdäänkö Chromesta oletusselain?</translation>
 <translation id="484033449593719797">Ei tueta Chrome Betassa</translation>
 <translation id="4840404732697892756">Google Salasanat voi tarkistaa salasanasi, kun kirjaudut sisään Google-tililläsi.</translation>
 <translation id="5030102366287574140">Chrome voi auttaa suojaamaan sinua esim. tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta.</translation>
@@ -114,6 +116,7 @@
 <translation id="7261678641327190792">Chrome ei voi tarkistaa salasanojasi</translation>
 <translation id="7272930098487145294">Anna Chromen lisätä uusia kuvia valitsemalla Asetukset, niin voit tallentaa kuvia.</translation>
 <translation id="7275945473750112644"><ph name="HOSTED_DOMAIN" /> ylläpitää tiliäsi, joten Chrome-datasi poistetaan tältä laitteelta</translation>
+<translation id="7394108421562933108">Maps Chromessa</translation>
 <translation id="7400722733683201933">Tietoja Google Chromesta</translation>
 <translation id="7501046334262221972">Voit tehdä Chromesta oletusselaimesi avaamalla Asetukset ja valitsemalla Oletusselainsovellus ja sitten Chrome.</translation>
 <translation id="756809126120519699">Chrome-tiedot tyhjennetty</translation>

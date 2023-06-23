@@ -79,6 +79,7 @@
 <translation id="1061130374843955397">మీ <ph name="DEVICE_TYPE" />కు స్వాగతం</translation>
 <translation id="1061373870045429865">ఈ లింక్ కోసం QR కోడ్‌ను క్రియేట్ చేయండి</translation>
 <translation id="1061904396131502319">దాదాపు విరామ సమయం</translation>
+<translation id="10619348099955377">డిస్‌ప్లే పేరును కాపీ చేయండి</translation>
 <translation id="1062407476771304334">భర్తీ చేయి</translation>
 <translation id="1062628064301375934">మరింత ప్రైవేట్‌గా ఉండే వెబ్ అనుభవాన్ని క్రియేట్ చేయడంలో మాకు సహాయపడండి</translation>
 <translation id="1066964438793906105">మాల్‌వేర్ ఉందో, లేదో తెలుసుకోవడానికి స్కాన్ చేయండి</translation>
@@ -581,6 +582,7 @@
 <translation id="1481537595330271162">డిస్క్ పరిమాణాన్ని మార్చడంలో ఎర్రర్ ఏర్పడింది</translation>
 <translation id="1482626744466814421">ఈ ట్యాబ్‌ను బుక్‌మార్క్ చేయండి...</translation>
 <translation id="1482772681918035149">పాస్‌వర్డ్‌లను ఎడిట్ చేయండి</translation>
+<translation id="1483431819520123112">డిస్‌ప్లే పేరు క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది</translation>
 <translation id="1483493594462132177">పంపు</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">బ్లూటూత్‌ను సైట్ ఉపయోగిస్తోంది</translation>
@@ -966,6 +968,7 @@
 <translation id="1784707308176068866">సహకారం అందించే నేటివ్ అప్లికేషన్ రిక్వెస్ట్ చేసినప్పుడు బ్యాక్‌గ్రౌండ్‌లో అమలు అవుతుంది</translation>
 <translation id="1784849162047402014">పరికరంలో ఖాళీ స్టోరేజ్‌ స్థలం తక్కువగా ఉంది</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{"<ph name="APP_NAME" />"ను అన్‌ఇన్‌స్టాల్ చేయడం వలన ఈ యాప్ కూడా అన్‌ఇన్‌స్టాల్ అవుతుంది:}other{"<ph name="APP_NAME" />"ను అన్‌ఇన్‌స్టాల్ చేయడం వలన ఈ యాప్‌లు కూడా అన్‌ఇన్‌స్టాల్ అవుతాయి:}}</translation>
+<translation id="1786290960428378411">చదవమని &amp; మార్చమని రిక్వెస్ట్ చేయడం</translation>
 <translation id="1787350673646245458">యూజర్ చిత్రం</translation>
 <translation id="1790976235243700817">యాక్సెస్‌ను తీసివేయండి</translation>
 <translation id="1792619191750875668">విస్తారిత డిస్‌ప్లే</translation>
@@ -1298,6 +1301,7 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{ఎక్స్‌టెన్షన్‌ను ఇన్‌స్టాల్ చేయడానికి క్లిక్ చేయండి}other{ఈ ఎక్స్‌టెన్షన్‌లను ఇన్‌స్టాల్ చేయడానికి క్లిక్ చేయండి}}</translation>
 <translation id="2073496667646280609">మీ పరికరంలో లేదా ఎంచుకున్న బ్యాకప్ లొకేషన్‌లో ఖాళీగా ఉన్న స్టోరేజ్ తగినంత ఉండకపోవచ్చు. స్పేస్‌ను ఖాళీ చేయడానికి ట్రై చేయండి లేదా బ్యాకప్ చేయడానికి వేరే లొకేషన్‌ను ఎంచుకోండి.</translation>
 <translation id="2073505299004274893"><ph name="CHARACTER_LIMIT" /> లేదా అంతకంటే తక్కువ అక్షరాలను ఉపయోగించండి</translation>
+<translation id="2075088158103027942">సబ్‌స్క్రిప్షన్‌కు వెళ్లండి</translation>
 <translation id="2075474481720804517">బ్యాటరీ <ph name="BATTERY_PERCENTAGE" />% ఉంది</translation>
 <translation id="2076269580855484719">ఈ ప్లగ్ఇన్‌ను దాచు</translation>
 <translation id="2076672359661571384">మధ్యస్థం (సిఫార్సు చేయబడింది)</translation>
@@ -2120,6 +2124,7 @@
 <translation id="2731700343119398978">దయచేసి వేచి ఉండండి...</translation>
 <translation id="2731971182069536520">మీరు మీ పరికరాన్ని పునఃప్రారంభించే తర్వాతిసారి, మీ నిర్వాహకుడు వ‌న్‌-టైమ్ అప్‌డేట్‌ను అమలు చేస్తారు, దీని వలన మీ స్థానిక డేటా తొలగించబడుతుంది.</translation>
 <translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" />లో <ph name="CURRENT_ELEMENT" />వ అదనపు కంటెంట్</translation>
+<translation id="2733992589856193783">మీరు ఈ సైట్ కోసం పాస్-కీని క్రియేట్ చేశారు. మీరు మొబైల్ పరికరంతో సైన్ ఇన్ చేయాలి.</translation>
 <translation id="27349076983469322">తేలికపాటి నేపథ్యం</translation>
 <translation id="2735712963799620190">షెడ్యూల్</translation>
 <translation id="2737363922397526254">కుదించు...</translation>
@@ -3108,6 +3113,7 @@
 <translation id="3610241585790874201">మీ పరికరంలో డేటాను సేవ్ చేయడానికి సైట్‌కు అనుమతి లేదు</translation>
 <translation id="3610369246614755442">డాక్ ఫ్యాన్‌కు సర్వీస్ అవసరం</translation>
 <translation id="3610961622607302617"><ph name="WEBSITE" /> కోసం పాస్‌వర్డ్‌ను మార్చండి</translation>
+<translation id="3611634011145829814">సబ్‌స్క్రిప్షన్ పేజీకి వెళ్లండి</translation>
 <translation id="3611658447322220736">ఇటీవల మూసివేసిన సైట్‌లు డేటాను పంపడాన్ని, అందుకోవడాన్ని పూర్తి చేయగలవు</translation>
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; ద్వారా డౌన్‌లోడ్ చేయబడింది</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" />ని చూపు</translation>
@@ -3795,6 +3801,7 @@
 <translation id="4176463684765177261">ఆపివేయబడింది</translation>
 <translation id="4176864026061939326">ఈ పరికరం మేనేజ్ చేయబడుతోంది. <ph name="USER_EMAIL_ADDRESS" /> ఖాతా కోసం మీ పరికర అడ్మినిస్ట్రేటర్‌కు ఒక కొత్త ప్రొఫైల్ అవసరం</translation>
 <translation id="4177501066905053472">యాడ్ టాపిక్‌లు</translation>
+<translation id="4178220097446335546">ఈ సబ్‌స్క్రిప్షన్‌ను, దానికి అనుబంధించి ఉన్న నెట్‌వర్క్‌లను విస్మరించడానికి, Passpoint సబ్‌స్క్రిప్షన్ పేజీకి వెళ్లి, సబ్‌స్క్రిప్షన్‌ను తీసివేయండి.</translation>
 <translation id="4180788401304023883">CA ప్రమాణపత్రం "<ph name="CERTIFICATE_NAME" />"ను తొలగించాలా?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">భాషలు</translation>
@@ -3947,6 +3954,7 @@
 <translation id="4316850752623536204">డెవలపర్ వెబ్‌సైట్</translation>
 <translation id="4317733381297736564">యాప్‌లో కొనుగోళ్లు</translation>
 <translation id="4317820549299924617">వెరిఫికేషన్ విజయవంతం కాలేదు</translation>
+<translation id="4319441675152393296"><ph name="HOST" />‌ను చదవడానికి, మార్చడానికి ఈ ఎక్స్‌టెన్షన్ చిహ్నంపై క్లిక్ చేయండి</translation>
 <translation id="4320177379694898372">ఇంటర్నెట్ కనెక్షన్ లేదు</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197">ఫైండర్‌లో <ph name="FILE_NAME" />‌ను చూడండి</translation>
@@ -4633,6 +4641,7 @@
 <translation id="4899052647152077033">కలర్ మార్పిడి</translation>
 <translation id="4899696330053002588">యాడ్‌లను కలిగి ఉంది</translation>
 <translation id="489985760463306091">హానికరమైన సాఫ్ట్‌వేర్ తొలగింపును పూర్తి చేసేందుకు, మీ కంప్యూటర్‌ను పునఃప్రారంభించాలి</translation>
+<translation id="490031510406860025">ఈ సైట్‌లో అనుమతి లేదు</translation>
 <translation id="4900392736118574277">మా ప్రారంభ పేజీ <ph name="URL" />కి మార్చబడింది.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - ఇంటర్లేస్ చేయబడింది</translation>
 <translation id="4900652253009739885">'ఎంచుకోండి'కి అసైన్ చేయబడిన ఆ స్విచ్‌ను మాత్రం తీసివేయడం సాధ్యపడలేదు. <ph name="RESPONSE" /> కోసం ఏదైనా కీని నొక్కండి.</translation>
@@ -7370,6 +7379,7 @@
 <translation id="7299515639584427954">సపోర్ట్ చేయబడిన లింక్‌ల కోసం ఆటోమేటిక్ యాప్‌ను మార్చాలా?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">"Ok Google, ఇది ఏ పాట?" లేదా "Ok Google, నా స్క్రీన్‌పై ఏముంది?" అని మీరు అడగవచ్చు</translation>
+<translation id="7301812050652048720">పాస్-కీ తొలగించబడింది</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Chrome సరిగ్గా పని చేయకుండా ఈ అప్లికేషన్ నివారించవచ్చు.}other{Chrome సరిగ్గా పని చేయకుండా ఈ అప్లికేషన్‌లు నివారించవచ్చు.}}</translation>
 <translation id="7303281435234579599">అయ్యో! డెమో మోడ్‌ని సెటప్ చేస్తున్నప్పుడు ఏదో తప్పు జరిగింది.</translation>
 <translation id="7303900363563182677">క్లిప్‌బోర్డ్‌కు కాపీ చేసిన వచనం మరియు చిత్రాలను చూడనీయకుండా ఈ సైట్ బ్లాక్ చేయబడింది</translation>
@@ -7914,6 +7924,7 @@
 <translation id="7744192722284567281">డేటా ఉల్లంఘనలో కనుగొనబడింది</translation>
 <translation id="7744649840067671761">అసైన్‌మెంట్‌ను ప్రారంభించడానికి కొత్త స్విచ్‌ను లేదా కీబోర్డ్ కీని నొక్కండి.
 అసైన్‌మెంట్‌ను తీసివేయడానికి అసైన్ చేయబడిన స్విచ్‌ను లేదా కీని నొక్కండి.</translation>
+<translation id="7745677556280361868">Passpoint సబ్‌స్క్రిప్షన్ పేజీలో ఈ నెట్‌వర్క్‌ను తీసివేయాలా?</translation>
 <translation id="7746045113967198252">టెక్స్ట్‌తో సహా మీ స్క్రీన్‌పై ఉన్న ఐటెమ్‌లను, పెద్దగా లేదా చిన్నగా చేయండి. మీరు దీనిని తర్వాత కూడా సెట్టింగ్‌లు &gt; పరికరం &gt; డిస్‌ప్లేలు అనే ఆప్షన్‌లో కనుగొనవచ్చు.</translation>
 <translation id="7746739418892731373">మీ Google Photos లైబ్రరీ నుండి మీకు ఫోటో, వీడియో హైలైట్‌లు కనిపిస్తున్నాయి. మీ హైలైట్‌లలో ఏం కనిపించాలి అనే దానిని మీరు <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> లో కంట్రోల్ చేయవచ్చు.
         <ph name="BREAK" />
@@ -8126,6 +8137,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" />ను చూడగలదు</translation>
 <translation id="7920482456679570420">మీరు వేటికి స్పెల్ చెక్‌ను స్కిప్ చేయాలనుకుంటారో ఆ పదాలను జోడించండి</translation>
 <translation id="7921347341284348270">మీరు ఈ మేనేజ్ చేయబడే ఖాతాలో మీ ఫోన్ నోటిఫికేషన్‌లను చూడలేరు. వేరే ఖాతాతో మళ్లీ ట్రై చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
+<translation id="7921901223958867679">ఈ ఎక్స్‌టెన్షన్ <ph name="HOST" />‌ను చదవగలదు, మార్చగలదు</translation>
 <translation id="7922606348470480702">1 ఎక్స్‌టెన్షన్</translation>
 <translation id="7922935920104868876">అజ్ఞాత మోడ్‌లో థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయడం గురించి వివరాలను చూపు</translation>
 <translation id="7923564237306226146">Linux అప్‌గ్రేడ్ పూర్తయింది</translation>
@@ -9655,6 +9667,7 @@
 <translation id="930551443325541578">కీలను, యాక్సెంట్ మార్క్‌లను రిపీట్ చేయండి</translation>
 <translation id="930893132043726269">ప్రస్తుతం రోమింగ్‌లో ఉంది</translation>
 <translation id="930991362911221750">ఈ ట్యాబ్‌ను చూడటానికి <ph name="APP_NAME" />‌ను అనుమతించాలా?</translation>
+<translation id="931273044114601262">ఈ సైట్‌లో అనుమతి ఉంది</translation>
 <translation id="93140074055951850">Android యాప్‌లు ఆపివేయబడ్డాయి</translation>
 <translation id="932327136139879170">హోమ్</translation>
 <translation id="932508678520956232">ముద్రించడాన్ని ప్రారంభించడం సాధ్యం కాలేదు.</translation>

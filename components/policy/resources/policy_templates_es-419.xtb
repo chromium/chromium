@@ -439,6 +439,11 @@ Esto reemplaza la política <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NA
       Si habilitas esta política o no la estableces, el navegador decidirá qué algoritmo GREASE de usuario-agente usar. Si inhabilitas la política, se utilizará el algoritmo GREASE de usuario-agente anterior.
       Esta política es una medida temporal y se eliminará en versiones futuras.</translation>
 <translation id="142346659686073702">Permitir que los usuarios no afiliados usen Crostini</translation>
+<translation id="1423900783955065155">Esta política controla si una página con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se puede almacenar en la memoria caché atrás/adelante. Es posible que el sitio web que establece este encabezado no espere que la página se restablezca desde la memoria caché atrás/adelante, ya que cierta información sensible podría seguir apareciendo después del restablecimiento, incluso si ya no se puede acceder a ella.
+
+Si habilitas la política o no la estableces, es posible que se restablezca la página con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> de la memoria caché atrás/adelante, a menos que se active el desalojo de la caché (p. ej., cuando hay un cambio de cookies solo HTTP en el sitio).
+
+Si inhabilitas la política, la página con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> no se almacenará en la memoria caché atrás/adelante.</translation>
 <translation id="1425551776320718592">Impide que los usuarios de este dispositivo apliquen la transferencia de ADB y fuerza la opción de Powerwash, lo que puede provocar una vulnerabilidad en la seguridad del dispositivo</translation>
 <translation id="1426170570389588560">Establece el período en días para almacenar los metadatos de los trabajos de impresión</translation>
 <translation id="1426410128494586442">Sí</translation>
@@ -2236,6 +2241,7 @@ El usuario puede establecer la imagen de avatar de cualquiera de estas opciones 
 <translation id="305106159605171619">Se inhabilita la reducción de usuario-agente, y las pruebas de campo o de origen no la habilitan</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3063302084011279315">Inhabilitar Screencast</translation>
+<translation id="3063307261083019730">No permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se almacenen en la memoria caché atrás/adelante</translation>
 <translation id="3064530882228745118">Usar la búsqueda de CNAME durante la autenticación de Kerberos</translation>
 <translation id="3066446511111537292">Permite que los usuarios afiliados de este dispositivo apliquen la transferencia de ADB</translation>
 <translation id="3067462824622454143">Permitir que los usuarios decidan si el dispositivo debe bloquearse cuando se suspende o se cierra la tapa</translation>
@@ -5462,6 +5468,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="603768430528561926">Si habilitas la política o no la estableces, los usuarios de dispositivos empresariales podrán canjear ofertas a través del registro en <ph name="PRODUCT_OS_NAME" />.
 
       Si la inhabilitas, los usuarios no podrán canjear esas ofertas.</translation>
+<translation id="6042407236638640864">Permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> ingresen a la memoria caché atrás/adelante</translation>
 <translation id="6042629184389251062">No permitir la recopilación de métricas con URL</translation>
 <translation id="6046615715547751255">No permitir los controles de informes detallados</translation>
 <translation id="6048199181629830227">Habilita la administración de carga fuera del horario de mayor consumo</translation>
@@ -7829,6 +7836,7 @@ Esta política no tendrá ningún efecto si estableces la política <ph name="SC
 
       Si se habilita la configuración o no se establece, los sitios web estarán autorizados a verificar que el usuario tenga formas de pago guardadas.</translation>
 <translation id="8118665053362250806">Configurar el tamaño de caché de disco de medios</translation>
+<translation id="8123648898339555150">Permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se almacenen en la memoria caché atrás/adelante</translation>
 <translation id="8124468781472887384">Política de acceso para la configuración de las impresoras asociadas a dispositivos</translation>
 <translation id="8128192446158421884">Las URL donde se puede aplicar AutoOpenFileTypes</translation>
 <translation id="8131046602440880289">Permitir las voces de texto a voz de la red mejorada cuando se utiliza Seleccionar para pronunciar</translation>

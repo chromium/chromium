@@ -11,6 +11,7 @@
 <translation id="1511320244449497906">Du er logget ind og synkroniserer dine data med en konto, der administreres af <ph name="DOMAIN" />, hvor kontoens administrator nu kan konfigurere brugerpolitikker, der er specifikke for den pågældende konto, og som kan ændre Chromes adfærd.</translation>
 <translation id="1554731936187952550">Du har Chromes stærkeste beskyttelse mod skadelige websites</translation>
 <translation id="1682483655351012182">Synkroniser dine Chrome-data</translation>
+<translation id="1733654336159102143">Lås dine inkognitofaner, når du forlader Chrome eller skifter til en anden app.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Brug automatisk Chrome, når du trykker på links i beskeder, dokumenter og andre apps.</translation>
 <translation id="1917964099031477364">Denne konto og data, som ikke er gemt, fjernes fra Chrome og andre Google-apps på denne enhed.</translation>
@@ -34,6 +35,7 @@
 <translation id="2695886661449553974">Chrome kunne ikke søge efter opdateringer. Prøv igen senere.</translation>
 <translation id="2732745070297234559">Chrome kunne ikke tjekke alle adgangskoder. Prøv igen i morgen.</translation>
 <translation id="2736805085127235148">Chrome-notifikationer er i øjeblikket deaktiveret i enhedsindstillingerne.</translation>
+<translation id="2754286486056173475">Opret kalenderbegivenheder i Chrome</translation>
 <translation id="2767464022270041271">Der er ingen gemte adgangskoder. Google Adgangskodeadministrator kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="2840432500933227975">Åbn Chrome-indstillingerne i iOS, tryk på "Standardbrowserapp", og vælg Chrome.</translation>
 <translation id="2869959624320573933">Log ind i Chrome</translation>
@@ -48,6 +50,7 @@
 <translation id="3503014945441706099">Få også Udvidet beskyttet browsing til denne Chrome-profil</translation>
 <translation id="3522659714780527202">Aktivér synkronisering for at se dine faner på alle de enheder, hvor du bruger Chrome</translation>
 <translation id="3533694711092285624">Der er ingen gemte adgangskoder. Chrome kan tjekke dine adgangskoder, når du gemmer dem.</translation>
+<translation id="3611867725106943284">Tryk på "Se med Google Maps i Chrome"</translation>
 <translation id="3655656110921623717">Det betyder, at Chrome anmoder om mobilwebsitet hver gang.</translation>
 <translation id="3720541637541300822">Lås inkognitofaner, når du lukker Chrome</translation>
 <translation id="3827545470516145620">Du får standardbeskyttelse på denne enhed</translation>
@@ -66,6 +69,7 @@
 <translation id="4636900170638246267">Log ind på dette website og Chrome.</translation>
 <translation id="4698415050768537821">Chrome kunne ikke tjekke alle adgangskoder. Prøv igen i morgen, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Chrome sender data om brug og nedbrud til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
+<translation id="4830799082179398588">Vil du gøre Chrome til din standardbrowser?</translation>
 <translation id="484033449593719797">Understøttes ikke i Chrome Beta</translation>
 <translation id="4840404732697892756">Google Adgangskodeadministrator kan tjekke dine adgangskoder, når du logger ind med din Google-konto.</translation>
 <translation id="5030102366287574140">Chrome kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere.</translation>
@@ -99,6 +103,7 @@
 <translation id="6676840375528380067">Vil du rydde dine Chrome-data på denne enhed?</translation>
 <translation id="6709398533399187136">Din adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden. Google Adgangskodeadministrator anbefaler, at du ændrer det nu.</translation>
 <translation id="6822673484890854830">Chrome kunne ikke tjekke alle adgangskoder. Prøv igen senere.</translation>
+<translation id="6896070677477855330">Aktivér "Lås inkognitofaner, når du lukker Chrome".</translation>
 <translation id="6964931465519938134">Du kan nu bruge Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="6975725306479268850">Vælg Chrome for Autofyld</translation>
 <translation id="7059914902409643750">Tilpas Chrome</translation>
@@ -111,6 +116,7 @@
 <translation id="7261678641327190792">Chrome kan ikke tjekke dine adgangskoder</translation>
 <translation id="7272930098487145294">Hvis du vil gemme billeder, kan du trykke på Indstillinger for at give Chrome tilladelse til at tilføje billeder</translation>
 <translation id="7275945473750112644">Da din konto administreres af <ph name="HOSTED_DOMAIN" />, bliver dine Chrome-data ryddet fra denne enhed</translation>
+<translation id="7394108421562933108">Maps i Chrome</translation>
 <translation id="7400722733683201933">Om Google Chrome</translation>
 <translation id="7501046334262221972">Du kan gøre Chrome til din standardbrowser ved at åbne Indstillinger. Tryk på Standardbrowserapp, og vælg derefter Chrome.</translation>
 <translation id="756809126120519699">Chrome-dataene blev ryddet</translation>
@@ -140,6 +146,7 @@
 <translation id="8765470054473112089">Når du indtaster noget i adresselinjen eller søgefeltet, sender Chrome det, du skriver, til din standardsøgemaskine for at få bedre forslag. Dette er deaktiveret i inkognitotilstand.</translation>
 <translation id="8772179140489533211">Viser anmodninger om at logge ind i Chrome.</translation>
 <translation id="8788269841521769222">Du behøver ikke at huske denne adgangskode. Den gemmes i Googles Adgangskodeadministrator for <ph name="EMAIL" /></translation>
+<translation id="880967149107462122">Gå til Chrome-indstillinger</translation>
 <translation id="8857676124663337448">Google Adgangskodeadministrator kunne ikke tjekke alle adgangskoder. Prøv igen i morgen.</translation>
 <translation id="8897749957032330183">Adgangskoder gemmes i Google Adgangskodeadministrator på denne enhed.</translation>
 <translation id="8969290730818637510">Ved aktivering:

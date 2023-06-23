@@ -18,6 +18,7 @@
 <translation id="1838412507805038478">Chromium-მა დაადასტურა, რომ ამ ვებსაიტის სერტიფიკატის გამცემია <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium-ის ფუნქციების საშუალებით შეგიძლიათ მართოთ ინტერნეტ-მონაცემები და ვებგვერდების ჩატვირთვის სისწრაფე.
 <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
+<translation id="1847960401032164406">რუკები Chromium-ში</translation>
 <translation id="1867772173333403444">4. აირჩიეთ Chromium</translation>
 <translation id="2006345422933397527">Chromium-მა ვერ შეამოწმა განახლებები. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="2052320862053429062">Chromium პერიოდულად შეამოწმებს თქვენს პაროლებს ვებში გამოქვეყნებულ სიებში. აღნიშნული ქმედებისას თქვენი პაროლები და მომხმარებლის სახელები დაშიფრული იქნება, რაც ნიშნავს, რომ მათ ვერავინ (მათ შორის, ვერც Google) წაიკითხავს.</translation>
@@ -41,6 +42,7 @@
 <translation id="2942241131342758843">გამოიყენეთ Chromium ნაგულისხმევ ბრაუზერად, რომ გახსნათ ბმულები, მოიძიოთ ვიჯეტებიდან და ავტომატურად შეავსოთ პაროლები სხვა აპებში</translation>
 <translation id="2977470724722393594">Chromium განახლებულია</translation>
 <translation id="3102849287235003384">თქვენი Google ანგარიშიდან ყველა ვებსაიტზე რომ გამოხვიდეთ, <ph name="BEGIN_LINK" />გადით Chromium-იდან<ph name="END_LINK" />.</translation>
+<translation id="3115956258722352278">გსურთ, დააყენოთ Chromium თქვენს ნაგულისხმევ ბრაუზერად?</translation>
 <translation id="3256316712990552818">დაკოპირდა Chromium-ში</translation>
 <translation id="3344973607274501920">Chromium-მა ვერ შეამოწმა თქვენი პაროლები. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="3472200483164753384">მხარდაუჭერელია Chromium Canary-ში</translation>
@@ -69,6 +71,7 @@
 <translation id="4999538639245140991">ვინაიდან თქვენ გადიხართ ანგარიშიდან, რომელსაც მართავს <ph name="SIGNOUT_MANAGED_DOMAIN" />, ამ მოწყობილობიდან წაიშლება თქვენი Chromium მონაცემები, თუმცა ისინი შენარჩუნდება თქვენს Google ანგარიშში.</translation>
 <translation id="5048795749726991615">თქვენი შენახული პაროლებით თქვენს სხვა აპებში მარტივად რომ ისარგებლოთ, გამოიყენეთ Chromium ავტომატური შევსებისთვის</translation>
 <translation id="5171868502429358653">შედით Chromium-ში</translation>
+<translation id="5224044903258607400">შეხებით აირჩიეთ „Google Maps-ით ნახვა Chromium-ში“</translation>
 <translation id="5224391634244552924">შენახული პაროლები არ არის. პაროლების შემოწმებას Chromium შეძლებს მათი შენახვის შემდეგ.</translation>
 <translation id="5308226104666789935">Chromium ვერ ახერხებს განახლებების შემოწმებას</translation>
 <translation id="5396916991083608703">გსურთ, ნაგულისხმევად დააყენოთ Chromium?</translation>

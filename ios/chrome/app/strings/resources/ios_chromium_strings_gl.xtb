@@ -14,6 +14,7 @@
 <translation id="1617663976202781617">Datos da sincronización de Chromium</translation>
 <translation id="1722370509450468186">O contrasinal gardarase na túa Conta (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Borráronse os datos de Chromium</translation>
+<translation id="1758508597843173586">Bloquea o modo de incógnito ao saír de Chromium ou cambiar de aplicación.</translation>
 <translation id="1838412507805038478">Chromium verificou que <ph name="ISSUER" /> emitiu o certificado deste sitio web.</translation>
 <translation id="1843424232666537147">Chromium inclúe funcións que che axudan a xestionar os teus datos de Internet e a rapidez coa que podes cargar páxinas web.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -57,6 +58,7 @@
 <translation id="452436063477828504">Asegúrate de poder usar sempre os datos de Chromium na túa Conta de Google</translation>
 <translation id="4555020257205549924">Se esta función está activada, Chromium utilizará o Tradutor de Google para ofrecer a tradución de páxinas escritas noutros idiomas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Xa podes utilizar Chromium sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
+<translation id="4625550158881452646">Crear eventos do calendario en Chromium</translation>
 <translation id="4633738821577273991">Activa tamén neste perfil de Chromium a función Navegación segura mellorada</translation>
 <translation id="4654936625574199632">Para contribuír a mellorar a aplicación, Chromium envíalle a Google datos de uso e de fallos. <ph name="BEGIN_LINK" />Xestionar<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activar escáner de Chromium</translation>
@@ -76,6 +78,7 @@
 <translation id="5573014823074921752">Consello sobre Chromium: Para ver máis opcións relacionadas coas pestanas, mantén premido o botón Mostrar pestanas. Atoparalo na barra de ferramentas, situada na parte inferior ou superior da pantalla.</translation>
 <translation id="5700709190537129682">Chromium non puido comprobar os teus contrasinais</translation>
 <translation id="5777187867430702742">Páxina de Chromium</translation>
+<translation id="5925698807555796756">Activa Bloquear pestanas do modo de incógnito ao pechar Chromium.</translation>
 <translation id="5945387852661427312">Estás iniciando sesión cunha conta xestionada por <ph name="DOMAIN" /> e proporcionándolle ao seu administrador o control dos teus datos de Chromium, que quedarán ligados permanentemente a esta conta. Se pechas sesión en Chromium, eliminaranse os teus datos deste dispositivo, pero seguirán almacenados na túa conta de Google.</translation>
 <translation id="5983312940147103417">Mellora Chromium</translation>
 <translation id="6062449165341879460">A túa organización (<ph name="DOMAIN" />) terá acceso aos teus datos de Chromium, así como aos marcadores, ao historial, aos contrasinais e a outras opcións de configuración que almacenes nesta conta. Cando peches sesión, os datos borraranse deste dispositivo.  Non obstante, permanecerán almacenados na túa Conta de Google xestionada e estarán dispoñibles para a túa organización. Esta tamén pode definir políticas de usuario específicas para esa conta que poden modificar o comportamento de Chromium.</translation>
@@ -120,6 +123,7 @@
 <translation id="7980860476903281594">Chromium comparte a localización cos sitios que queiras.</translation>
 <translation id="8013573822802650211">Para ver as túas pestanas desde calquera dispositivo no que utilices Chromium, inicia sesión en todos eles</translation>
 <translation id="8073677936375100957">Queres borrar os teus datos de Chromium deste dispositivo?</translation>
+<translation id="8164086860209325020">Ir á configuración de Chromium</translation>
 <translation id="8240981428553046115">Chromium non puido buscar actualizacións. Téntao máis tarde.</translation>
 <translation id="8409374867500149834">Contas coa máxima seguranza de Chromium contra sitios web daniños</translation>
 <translation id="858114650497379505">Podes utilizar os contrasinais que gardaches no xestor de contrasinais noutras aplicacións do teu iPhone.</translation>

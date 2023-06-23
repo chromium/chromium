@@ -140,6 +140,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1550406609415860283">Tiltæk tæki</translation>
 <translation id="1550523713251050646">Smelltu til að sjá fleiri valkosti</translation>
 <translation id="1555130319947370107">Blár</translation>
+<translation id="1557622599341396706">Sýna heiti skrifborðs</translation>
 <translation id="1576511610858879060">Chromebook eða Bluetooth-tækið þitt er að nota eldri útgáfu af Bluetooth. Notaðu annað inntak fyrir betri hljómgæði.</translation>
 <translation id="1576623706766186887">Minnka þegar kveikt er á stækkunargleri</translation>
 <translation id="1586324912145647027">Opna skrifborð 1 til 8</translation>
@@ -929,6 +930,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="504465286040788597">Fyrri málsgrein</translation>
 <translation id="5045550434625856497">Rangt aðgangsorð</translation>
 <translation id="5062496344832867502">vinnsluminni</translation>
+<translation id="5068762093486106012">Þú færð tilkynningu ef þú talar á meðan slökkt er á hljóðinu. Ekkert hljóð er sent úr tækinu.</translation>
 <translation id="5078796286268621944">Rangt PIN-númer</translation>
 <translation id="5083553833479578423">Opnaðu fyrir fleiri eiginleika hjálparans.</translation>
 <translation id="5092436659250499817">Kveikja/slökkva á baklýsingu lyklaborðs</translation>
@@ -959,6 +961,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5207949376430453814">Auðkenna textainnskotsmerki</translation>
 <translation id="5208059991603368177">Kveikt</translation>
 <translation id="5216991270656129561">Slökkt til kl. <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Notaðu símstöð til að senda og svara skilaboðum símans á fljótlegan hátt.</translation>
 <translation id="5222676887888702881">Skrá út</translation>
 <translation id="5229343007215035173">Kveikja/slökkva á persónuverndarskjá</translation>
 <translation id="5234764350956374838">Hunsa</translation>
@@ -987,6 +990,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5319712128756744240">Para nýtt tæki</translation>
 <translation id="5322611492012084517">Síminn þinn finnst ekki</translation>
+<translation id="5323994101633366939">Fela heiti skrifborðs</translation>
 <translation id="5327248766486351172">Heiti</translation>
 <translation id="5329548388331921293">Tengist...</translation>
 <translation id="5331975486040154427">USB-C tæki (tengi vinstra megin að aftan)</translation>
@@ -1169,6 +1173,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="6103838137565245112">kerfi</translation>
 <translation id="6114505516289286752">Talskrár sóttar fyrir: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Litaleiðrétting</translation>
 <translation id="6121838516699723042">Staðfesta niðurhal <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google hjálparinn er ekki í boði í gestalotu.</translation>
 <translation id="6129953537138746214">Bil</translation>
@@ -1637,6 +1642,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8247998213073982446"><ph name="APP_NAME" />, forrit</translation>
 <translation id="8255234195843591763">Endurstilltu til að uppfæra</translation>
 <translation id="8261506727792406068">Eyða</translation>
+<translation id="8262312463845990408">Slökkva/kveikja á spilun</translation>
 <translation id="8270450402312105425">{0,plural, =1{Færa verður tækið í fyrri útgáfu innan klukkustundar}one{Færa verður tækið í fyrri útgáfu innan # klukkustundar}other{Færa verður tækið í fyrri útgáfu innan # klukkustunda}}</translation>
 <translation id="8277261673056602147">Yfirstrika texta á skjánum</translation>
 <translation id="8284362522226889623">Strjúktu til vinstri með fjórum fingrum til að skipta yfir í fyrra skrifborð.</translation>

@@ -407,7 +407,7 @@
 <translation id="4289849978083912975">スライドショー</translation>
 <translation id="4297501883039923494">停止 - 不明なエラー</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 件の画像</translation>
-<translation id="4311195029067684288">100%</translation>
+<translation id="4311195029067684288">フル</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> キーを押しました</translation>
 <translation id="435692326371619097">ネットワークの APN 設定を管理します。APN は、モバイル ネットワークとインターネットの間の接続を確立します。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">すべてのショートカットをリセットする</translation>
@@ -498,7 +498,7 @@
 <translation id="4930320165497208503">接続を設定または更新するには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] に移動します。</translation>
 <translation id="4932733599132424254">日付</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> のファームウェアがバージョン <ph name="VERSION" /> に更新されました</translation>
-<translation id="4971925105143343452">一部</translation>
+<translation id="4971925105143343452">分割（大小）</translation>
 <translation id="4972592110715526173">モード変更</translation>
 <translation id="498186245079027698">スキャナを確認して、もう一度お試しください。デバイスにスキャンしたファイルを保存するのに十分な容量があるかどうかも確認してください。</translation>
 <translation id="4985509611418653372">実行</translation>
@@ -830,7 +830,7 @@
 <translation id="763165478673169849">前回のリセット時間</translation>
 <translation id="7633068090678117093">背景画像</translation>
 <translation id="7648838807254605802">HTTPS レイテンシが高くなっています</translation>
-<translation id="765159867434478292">分割</translation>
+<translation id="765159867434478292">分割（均等）</translation>
 <translation id="7656388927906093505">デバイスの種類はマウスです。</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7665800271478495366">アバターを変更</translation>

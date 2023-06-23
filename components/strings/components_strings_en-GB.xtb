@@ -430,6 +430,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1870473978371099486">Private Tutoring Services</translation>
 <translation id="1871208020102129563">Proxy is set to use fixed proxy servers, not a .pac script URL.</translation>
 <translation id="1871284979644508959">Required field</translation>
+<translation id="1871739799120352748">Price is high</translation>
 <translation id="1873899211667975540">Rock music</translation>
 <translation id="1874224422119691492">You can change whether you use your screen lock for filling in passwords in <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Photo tray</translation>
@@ -474,6 +475,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> wants to permanently store large data on your local computer</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{and 1 more}other{and # more}}</translation>
+<translation id="2001469757375372617">Something went wrong. Your change wasn't saved.</translation>
 <translation id="2003709556000175978">Reset your password now</translation>
 <translation id="2003775180883135320">Quad punch top</translation>
 <translation id="2009942480257059311">Create event button, activate to quickly create a new event in Google Calendar</translation>
@@ -533,6 +535,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2118132148597630479">Envelope C5</translation>
 <translation id="2119505898009119320">Issued to: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Punch bottom right</translation>
+<translation id="2122214041802369259">Price is high</translation>
 <translation id="2122719317867821810">This policy is working as intended but a conflicting value is set elsewhere and is overridden by this policy.</translation>
 <translation id="2126374524350484896">PDF producer:</translation>
 <translation id="2130448033692577677">The templates that you've specified may not be applied due to the DnsOverHttpsMode policy not being set.</translation>
@@ -921,6 +924,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3054512251683174387">Chrome auto-deletes topics that are older than four weeks. As you keep browsing, a topic might reappear on the list. Or you can block topics that you don't want Chrome to share with sites. Learn more about managing your ad privacy in Chrome.</translation>
 <translation id="3061707000357573562">Patch Service</translation>
 <translation id="306573536155379004">Game started.</translation>
+<translation id="3067505415088964188">Price is low</translation>
 <translation id="3068991664510324412">Computer and video games</translation>
 <translation id="3080254622891793721">Graphic</translation>
 <translation id="3081538120861307764">To measure the performance of an ad, limited types of data are shared between sites, such as the time of day an ad was shown to you.</translation>
@@ -2230,6 +2234,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5967592137238574583">Edit Contact Info</translation>
 <translation id="5967867314010545767">Remove from history</translation>
 <translation id="5968022600320704045">No search results</translation>
+<translation id="5969199813874624822">Save and Track price</translation>
 <translation id="5974052231147553524">Sixth roll</translation>
 <translation id="5975083100439434680">Zoom out</translation>
 <translation id="5979084224081478209">Check passwords</translation>
@@ -3668,6 +3673,7 @@ Additional details:
 <translation id="9141013498910525015">Manage addresses</translation>
 <translation id="9144951720726881238">Expiry date:</translation>
 <translation id="9148507642005240123">&amp;Undo edit</translation>
+<translation id="9148599396704355100">Price is low</translation>
 <translation id="9150045010208374699">Use your camera</translation>
 <translation id="9150685862434908345">Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Updated</translation>

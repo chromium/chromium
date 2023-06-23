@@ -18,6 +18,7 @@
 <translation id="1838412507805038478">Chromium s-a asigurat că certificatul acestui site a fost emis de <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium are funcții care te ajută să gestionezi datele de internet și viteza cu care poți să încarci paginile web.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="1847960401032164406">Maps în Chromium</translation>
 <translation id="1867772173333403444">4. Selectează Chromium.</translation>
 <translation id="2006345422933397527">Chromium nu a putut căuta actualizări. Verifică-ți conexiunea la internet.</translation>
 <translation id="2052320862053429062">Chromium compară periodic parolele tale cu cele din listele publicate online. Când face acest lucru, parolele și numele tale de utilizator sunt criptate, astfel încât să nu fie descifrate de nimeni, nici măcar de Google.</translation>
@@ -41,6 +42,7 @@
 <translation id="2942241131342758843">Folosește Chromium în mod prestabilit ca să deschizi linkuri, să cauți din widgeturi și să completezi automat parolele în alte aplicații</translation>
 <translation id="2977470724722393594">Chromium este actualizat</translation>
 <translation id="3102849287235003384">Pentru a te deconecta de la Contul Google pe toate site-urile, <ph name="BEGIN_LINK" />deconectează-te de la Chromium<ph name="END_LINK" />.</translation>
+<translation id="3115956258722352278">Setezi Chromium ca browser prestabilit?</translation>
 <translation id="3256316712990552818">Copiat în Chromium</translation>
 <translation id="3344973607274501920">Chromium nu a putut verifica parolele. Verifică-ți conexiunea la internet.</translation>
 <translation id="3472200483164753384">Nu se acceptă în Chromium Canary</translation>
@@ -69,6 +71,7 @@
 <translation id="4999538639245140991">Deoarece te deconectezi de la un cont gestionat de <ph name="SIGNOUT_MANAGED_DOMAIN" />, datele tale Chromium de pe acest dispozitiv vor fi șterse. Datele tale vor rămâne în Contul Google.</translation>
 <translation id="5048795749726991615">Pentru a accesa cu ușurință parolele salvate în alte aplicații, folosește Chromium pentru completare automată</translation>
 <translation id="5171868502429358653">Conectează-te la Chromium</translation>
+<translation id="5224044903258607400">Atinge Vezi pe Google Maps în Chromium</translation>
 <translation id="5224391634244552924">Nu există parole salvate. Chromium îți poate verifica parolele dacă le salvezi.</translation>
 <translation id="5308226104666789935">Chromium nu poate căuta actualizări.</translation>
 <translation id="5396916991083608703">Setezi Chromium ca browser prestabilit?</translation>

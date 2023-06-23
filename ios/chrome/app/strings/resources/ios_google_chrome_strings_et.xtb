@@ -50,6 +50,7 @@
 <translation id="3503014945441706099">Hankige ka sellele Chrome'i profiilile täiustatud ohutu sirvimise funktsioon</translation>
 <translation id="3522659714780527202">Selleks et näha vahelehti kõikjalt, kus Chrome'i kasutate, lülitage sisse sünkroonimine</translation>
 <translation id="3533694711092285624">Salvestatud paroole ei ole. Chrome saab teie paroole kontrollida, kui olete need salvestanud.</translation>
+<translation id="3611867725106943284">Puudutage valikut „Kuva Google Mapsi abil Chrome'is“</translation>
 <translation id="3655656110921623717">See tähendab, et Chrome taotleb iga kord mobiilisaiti.</translation>
 <translation id="3720541637541300822">Chrome'i sulgemisel inkognito vahelehtede lukustamine</translation>
 <translation id="3827545470516145620">Saate selles seadmes standardse turvakaitse</translation>
@@ -68,6 +69,7 @@
 <translation id="4636900170638246267">Logige sellele saidile ja Chrome'i sisse.</translation>
 <translation id="4698415050768537821">Chrome'il ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti või <ph name="BEGIN_LINK" />kontrollige oma Google'i kontol paroole<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Rakenduse täiustamiseks saadab Chrome Google'ile kasutus- ja krahhiandmeid. <ph name="BEGIN_LINK" />Haldamine<ph name="END_LINK" /></translation>
+<translation id="4830799082179398588">Kas soovite Chrome'i vaikebrauseriks määrata?</translation>
 <translation id="484033449593719797">Ei toetata Chrome'i beetaversioonis</translation>
 <translation id="4840404732697892756">Google'i paroolihaldur saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga.</translation>
 <translation id="5030102366287574140">Chrome aitab teid kaitsta andmetega seotud rikkumiste, ebaturvaliste veebisaitide ja muu eest.</translation>
@@ -114,6 +116,7 @@
 <translation id="7261678641327190792">Chrome'ile ei õnnestu teie paroole kontrollida</translation>
 <translation id="7272930098487145294">Piltide salvestamiseks puudutage valikut Seaded, et lubada Chrome'il fotode lisamine</translation>
 <translation id="7275945473750112644">Teie kontot haldab <ph name="HOSTED_DOMAIN" />, seega kustutatakse teie Chrome'i andmed sellest seadmest</translation>
+<translation id="7394108421562933108">Maps Chrome'is</translation>
 <translation id="7400722733683201933">Google Chrome'i kohta</translation>
 <translation id="7501046334262221972">Chrome'i vaikebrauseriks määramiseks avage jaotis Seaded. Puudutage valikut Vaikebrauserirakendus ja seejärel valige Chrome.</translation>
 <translation id="756809126120519699">Chrome'i andmed kustutati</translation>

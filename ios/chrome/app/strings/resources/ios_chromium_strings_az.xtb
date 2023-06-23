@@ -18,6 +18,7 @@
 <translation id="1838412507805038478">Chromium təsdiq edir ki, <ph name="ISSUER" /> bu veb saytı sertifikatlaşdırıb.</translation>
 <translation id="1843424232666537147">Chromium 'un funksiyaları internet datanızı idarə etməyə və veb səhifələri tez yükləməyə kömək edir.
 <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
+<translation id="1847960401032164406">Chromium Xəritə</translation>
 <translation id="1867772173333403444">4. Chromium seçin</translation>
 <translation id="2006345422933397527">Chromium güncəlləmələri yoxlaya bilmədi. İnternet bağlantınızı yoxlayın.</translation>
 <translation id="2052320862053429062">Chromium müntəzəm olaraq onlayn yayımlanan siyahılar əsasında parollarınızı yoxlayır. Bunu edərkən, parollar və istifadəçi adları şifrələnir ki, Google daxil olmaqla, heç kim onları oxuya bilməsin.</translation>
@@ -70,6 +71,7 @@
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> tərəfindən idarə edilən hesabdan çıxdığınıza görə Chromium datası bu cihazdan silinəcək. Datanız Google Hesabında qalacaq.</translation>
 <translation id="5048795749726991615">Yadda saxlanmış parollarınızı digər tətbiqlərinizdə asanlıqla əldə etmək üçün Avtomatik Doldurma üçün Chromium istifadə edin</translation>
 <translation id="5171868502429358653">Chromium'a daxil olun</translation>
+<translation id="5224044903258607400">"Chromium-da Google Xəritə ilə baxın" üzərinə toxunun</translation>
 <translation id="5224391634244552924">Yadda saxlanmış parol yoxdur. Parollarınızı yadda saxladıqda Chromium onları yoxlaya bilər.</translation>
 <translation id="5308226104666789935">Chromium güncəlləmələri yoxlaya bilmir</translation>
 <translation id="5396916991083608703">Chromium defolt olaraq ayarlansın?</translation>

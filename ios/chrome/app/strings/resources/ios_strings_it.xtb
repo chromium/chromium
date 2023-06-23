@@ -38,6 +38,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="1176932207622159128">Impossibile salvare l'immagine</translation>
 <translation id="1177414119866731261">Apri il menu Chrome</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
+<translation id="1200396280085622191">Utilizza Chrome ogni volta che tocchi i link in messaggi e altre app.</translation>
 <translation id="1207113853726624428">Nuova ricerca</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Nascondi per ora</translation>
@@ -164,6 +165,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="1974060860693918893">Avanzate</translation>
 <translation id="1980417445547898121">{count,plural, =1{Scarica la tua scheda attiva di recente ({count}) dall'altro dispositivo su questo iPhone}other{Scarica le tue schede attive di recente ({count}) dall'altro dispositivo su questo iPhone}}</translation>
 <translation id="1981118202195772574">Dispositivo mobile</translation>
+<translation id="1987779152850321833">Completa le azioni suggerite di seguito per usare al meglio Chrome.</translation>
 <translation id="1989112275319619282">Esplora</translation>
 <translation id="1990820278544963435">Trova</translation>
 <translation id="199425419756152024">Visualizza password</translation>
@@ -321,6 +323,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2952246431280799028">Tocca e tieni premuto un indirizzo</translation>
 <translation id="2952278131021475699">Ricerca con la fotocamera di Lens</translation>
 <translation id="2952581218264071393">1. Apri le Impostazioni di Chrome</translation>
+<translation id="2956733177489514605">Accedi con il tuo Account Google per sincronizzare le password e altri dati.</translation>
 <translation id="2958718410589002129">Password</translation>
 <translation id="2961210776189273067">Titolo</translation>
 <translation id="2964349545761222050">Blocca cookie di terze parti</translation>
@@ -342,6 +345,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia delle ricerche, se possibile.</translation>
 <translation id="3080525922482950719">Puoi salvare le pagine da leggere in un secondo momento o quando sei offline</translation>
 <translation id="3081338492074632642">Assicurati che la password che stai salvando corrisponda a quella di <ph name="WEBSITE" /></translation>
+<translation id="309672519329227863">Accedi alle tue password di Chrome e ad altri dati in altre app.</translation>
 <translation id="3112556859945124369">Segna come…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Scopri cosa puoi sincronizzare<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Cronologia e altro ancora</translation>
@@ -434,6 +438,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3656645960301737801">Completa l'evento e salva</translation>
 <translation id="3661160521073045932">Profilo di configurazione disponibile</translation>
 <translation id="3670030362669914947">Numero</translation>
+<translation id="368329460027487650">Account disconnesso. Consente di aprire le opzioni per accedere.</translation>
 <translation id="3700134753671613714">Accedi per visualizzare i tuoi Preferiti su tutti i tuoi dispositivi.</translation>
 <translation id="3709582977625132201">Contrassegna come da leggere</translation>
 <translation id="371230970611282515">Prevede e ti avvisa quando stanno per verificarsi eventi pericolosi.</translation>
@@ -519,6 +524,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4277990410970811858">Navigazione sicura</translation>
 <translation id="4281844954008187215">Termini di servizio</translation>
 <translation id="4293080268407233932">Ricerca</translation>
+<translation id="4302248187517737842">Nessun nome utente ••••••••</translation>
 <translation id="4304713468139749426">Gestione password</translation>
 <translation id="430793432425771671">Sincronizza tutto</translation>
 <translation id="4309403553630140242">Tocca due volte per ulteriori informazioni</translation>
@@ -661,6 +667,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5190835502935405962">Barra dei preferiti</translation>
 <translation id="519530786644929958">Download non riuscito. Impossibile riprovare.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5209674813563615506">Apri una nuova scheda</translation>
 <translation id="5211488077761630279">Vuoi consentire a "<ph name="SITE_NAME" />" di usare <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Contribuisci a migliorare la sicurezza sul Web per tutti</translation>
 <translation id="5221339005270097309">Controllo delle password…</translation>
@@ -697,6 +704,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5478327362747197944">Crea direttamente eventi nel calendario facendo clic su una data in una pagina web.</translation>
 <translation id="5489208564673669003">Per gestire i cookie per tutti i siti, vedi le <ph name="BEGIN_LINK" />Impostazioni dei cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blocca tutti i cookie (opzione non consigliata)</translation>
+<translation id="5511959326926949696">Protezione estrema facoltativa per il tuo browser. Dovresti usarla soltanto se ritieni che potresti essere vittima di un attacco informatico molto sofisticato.</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> h fa</translation>
 <translation id="5520466080178053306">Tocca Gestore delle password, quindi Aggiungi</translation>
 <translation id="5525095647255982834">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su quel dispositivo.</translation>
@@ -813,6 +821,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="6149061208933997199">Utilizza password</translation>
 <translation id="6152406514676263192">Sincronizza i contenuti più pertinenti in base ai tuoi interessi.</translation>
 <translation id="6159839020698489198">facoltativo</translation>
+<translation id="6166946945007577435">Nuovo menu per aiutarti a raggiungere la destinazione desiderata.</translation>
 <translation id="6170450281939467187">Traduzione non riuscita</translation>
 <translation id="6173499589275053515">Password salvata nel tuo Account Google: <ph name="EMAIL" /></translation>
 <translation id="6177442314419606057">Cerca in Chrome</translation>
@@ -934,6 +943,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6684906340059221832">Stai monitorando i prezzi</translation>
 <translation id="6710079714193676716">Gestito dalla tua organizzazione. Alcune funzionalità potrebbero non essere disponibili. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="672735642903863329">Trova i preferiti, le password e altri dati su tutti i dispositivi.</translation>
 <translation id="6730682669179532099">Impossibile esportare le password</translation>
 <translation id="6732087373923685049">fotocamera</translation>
 <translation id="6748108480210050150">Da</translation>
@@ -1050,6 +1060,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7554645225856321710">Chiudi tutte</translation>
 <translation id="7554791636758816595">Nuova scheda</translation>
 <translation id="7561196759112975576">Sempre</translation>
+<translation id="7582857256643797524">Questa impostazione è attiva sul tuo dispositivo</translation>
 <translation id="7583004045319035904">Utilizza <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> per sbloccare le schede di navigazione in incognito.</translation>
 <translation id="7600965453749440009">Non tradurre mai <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Popup bloccati (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
@@ -1176,6 +1187,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8319076807703933069">Nuova ricerca</translation>
 <translation id="8323906514956095947">Tocca e tieni premuto per vedere maggiori opzioni sulla scheda</translation>
 <translation id="8328777765163860529">Chiudi tutte</translation>
+<translation id="8331621926962374866">Quando Chrome è in Modalità di blocco, alcune tecnologie web sono bloccate e per questo motivo alcuni siti web potrebbero caricarsi più lentamente o non funzionare correttamente.</translation>
 <translation id="8343993175958086504">Esegui il backup dei tuoi dati e usali su qualsiasi dispositivo.</translation>
 <translation id="834783239627985533">Siti più visitati</translation>
 <translation id="8378714024927312812">Gestito dalla tua organizzazione</translation>
@@ -1326,9 +1338,11 @@ I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" 
 <translation id="952704832371081537">Annulla</translation>
 <translation id="953008885340860025">Chrome è disconnesso</translation>
 <translation id="959066944189734975">Stai seguendo <ph name="CHANNEL_NAME" /></translation>
+<translation id="97300214378190234">Utilizza Chrome ogni volta che tocchi i link in altre app.</translation>
 <translation id="973493300226275298">Monitora il prezzo di un prodotto nei negozi online. Riceverai avvisi quando il prezzo cala.</translation>
 <translation id="981498610235328462">La tua organizzazione ti consente di accedere solo con determinati account. Gli account non consentiti vengono nascosti.</translation>
 <translation id="984509647832111802">La sincronizzazione non funziona.</translation>
+<translation id="984879470761322682">Per disattivare la Modalità di blocco in Chrome, disattivala sul tuo dispositivo.</translation>
 <translation id="988141524645182168">Altri dispositivi</translation>
 <translation id="989988560359834682">Modifica indirizzo</translation>
 <translation id="994757059139821576">Suggerimenti di articoli</translation>

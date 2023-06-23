@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">อุปกรณ์ที่ใช้ได้</translation>
 <translation id="1550523713251050646">คลิกเพื่อดูตัวเลือกเพิ่มเติม</translation>
 <translation id="1555130319947370107">สีน้ำเงิน</translation>
+<translation id="1557622599341396706">แสดงชื่อเดสก์</translation>
 <translation id="1576511610858879060">Chromebook หรืออุปกรณ์บลูทูธของคุณกำลังใช้บลูทูธเวอร์ชันเก่า โปรดใช้แหล่งที่มาของอินพุตอื่นเพื่อคุณภาพเสียงที่ดียิ่งขึ้น</translation>
 <translation id="1576623706766186887">ซูมออกเมื่อแว่นขยายเปิดอยู่</translation>
 <translation id="1586324912145647027">ไปที่เดสก์ 1 ถึง 8</translation>
@@ -983,6 +984,7 @@
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5319712128756744240">จับคู่อุปกรณ์ใหม่</translation>
 <translation id="5322611492012084517">ไม่พบโทรศัพท์</translation>
+<translation id="5323994101633366939">ซ่อนชื่อเดสก์</translation>
 <translation id="5327248766486351172">ชื่อ</translation>
 <translation id="5329548388331921293">กำลังเชื่อมต่อ...</translation>
 <translation id="5331975486040154427">อุปกรณ์ USB-C (พอร์ตด้านหลังซ้าย)</translation>
@@ -1165,6 +1167,7 @@
 <translation id="6103838137565245112">ระบบ</translation>
 <translation id="6114505516289286752">ดาวน์โหลดไฟล์คำพูดภาษา<ph name="LANGUAGE" />แล้ว</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" /> <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">การแก้สี</translation>
 <translation id="6121838516699723042">ยืนยันการดาวน์โหลด <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">ใช้ Google Assistant ในเซสชันผู้เยี่ยมชมไม่ได้</translation>
 <translation id="6129953537138746214">ช่องว่าง</translation>
@@ -1633,6 +1636,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />, แอป</translation>
 <translation id="8255234195843591763">รีเซ็ตเพื่ออัปเดต</translation>
 <translation id="8261506727792406068">ลบ</translation>
+<translation id="8262312463845990408">สลับการเล่น</translation>
 <translation id="8270450402312105425">{0,plural, =1{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 ชั่วโมง}other{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # ชั่วโมง}}</translation>
 <translation id="8277261673056602147">ไฮไลต์ข้อความในหน้าจอ</translation>
 <translation id="8284362522226889623">ใช้ 4 นิ้วเลื่อนไปทางซ้ายเพื่อเปลี่ยนไปใช้เดสก์ก่อนหน้า</translation>
@@ -1804,7 +1808,7 @@
 <translation id="9077515519330855811">การควบคุมสื่อ กำลังเล่น <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">จัดกล้องพอดีกับมุมซ้ายบนแล้ว</translation>
-<translation id="9080132581049224423">เลื่อนขึ้นเพื่อไปที่หน้าแรก</translation>
+<translation id="9080132581049224423">ปัดขึ้นเพื่อไปที่หน้าแรก</translation>
 <translation id="9080206825613744995">ใช้ไมโครโฟนอยู่</translation>
 <translation id="9084606467167974638">เปลี่ยนตำแหน่งเมนู</translation>
 <translation id="9085962983642906571">แบตเตอรี่จะคงไว้ที่ระดับ 80% ในระหว่างเสียบปลั๊กอยู่เพื่อยืดอายุการใช้งานแบตเตอรี่</translation>

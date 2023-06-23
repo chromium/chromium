@@ -18,6 +18,7 @@
 <translation id="1838412507805038478">Gwnaeth Chromium ddilysu bod <ph name="ISSUER" /> wedi cyhoeddi tystysgrif y wefan hon.</translation>
 <translation id="1843424232666537147">Mae gan Chromium nodweddion sy'n eich helpu i reoli'ch data rhyngrwyd a pha mor gyflym rydych yn gallu llwytho tudalennau gwe.
 <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
+<translation id="1847960401032164406">Maps yn Chromium</translation>
 <translation id="1867772173333403444">4. Dewiswch Chromium</translation>
 <translation id="2006345422933397527">Ni allai Chromium wirio am ddiweddariadau. Rhowch gynnig ar wirio'ch cysylltiad rhyngrwyd.</translation>
 <translation id="2052320862053429062">Mae Chromium o bryd i'w gilydd yn gwirio'ch cyfrineiriau yn erbyn rhestrau sydd wedi'u cyhoeddi ar-lein. Wrth wneud hyn, mae eich cyfrineiriau a'ch enwau defnyddiwr wedi'u hamgryptio, felly ni all unrhyw un, gan gynnwys Google, eu darllen.</translation>
@@ -41,6 +42,7 @@
 <translation id="2942241131342758843">Defnyddiwch Chromium i agor dolenni, chwilio o declynnau, ac awtolenwi cyfrineiriau mewn apiau eraill</translation>
 <translation id="2977470724722393594">Mae Chromium yn gyfoes</translation>
 <translation id="3102849287235003384">I allgofnodi o'ch Cyfrif Google ar bob gwefan, <ph name="BEGIN_LINK" />allgofnodwch o Chromium<ph name="END_LINK" />.</translation>
+<translation id="3115956258722352278">Gwneud Chromium yn borwr diofyn i chi?</translation>
 <translation id="3256316712990552818">Copïwyd i Chromium</translation>
 <translation id="3344973607274501920">Ni all Chromium wirio'ch cyfrineiriau. Rhowch gynnig ar wirio'ch cysylltiad rhyngrwyd.</translation>
 <translation id="3472200483164753384">Ni chefnogir ar Chromium Canary</translation>
@@ -69,6 +71,7 @@
 <translation id="4999538639245140991">Oherwydd eich bod yn allgofnodi o gyfrif a reolir gan <ph name="SIGNOUT_MANAGED_DOMAIN" />, bydd eich data Chromium yn cael eu dileu o'r ddyfais hon. Bydd eich data yn aros yn eich Cyfrif Google.</translation>
 <translation id="5048795749726991615">I gael eich cyfrineiriau sydd wedi eu cadw yn eich apiau eraill, defnyddiwch Chromium ar gyfer Awtolenwi</translation>
 <translation id="5171868502429358653">Mewngofnodi i Chromium</translation>
+<translation id="5224044903258607400">Tapio 'Gweld gyda Google Maps ar Chromium'</translation>
 <translation id="5224391634244552924">Nid oes unrhyw gyfrineiriau sydd wedi'u cadw. Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn eu cadw.</translation>
 <translation id="5308226104666789935">Ni all Chromium wirio am ddiweddariadau</translation>
 <translation id="5396916991083608703">Gosod Chromium fel y porwr diofyn?</translation>
