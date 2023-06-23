@@ -100,6 +100,12 @@ TabbedWebAppNavigationThrottle::WillStartRequest() {
 
   // Navigations to the home tab URL should open in the home tab.
   if (!navigating_from_home_tab && navigation_url_is_home_url) {
+    // target=_blank links to the home tab cause a blank tab to be opened. We
+    // should close it.
+    if (browser->tab_strip_model()->count() > 1 &&
+        !web_contents->GetLastCommittedURL().is_valid()) {
+      web_contents->ClosePage();
+    }
     return FocusHomeTab();
   }
 

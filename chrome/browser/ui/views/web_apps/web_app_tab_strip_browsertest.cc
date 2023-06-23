@@ -536,6 +536,24 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NavigationThrottle) {
   EXPECT_EQ(tab_strip->count(), 3);
   EXPECT_EQ(tab_strip->active_index(), 0);
   EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+
+// TODO(crbug.com/1417525): Fix this test on Windows.
+#if !BUILDFLAG(IS_WIN)
+  // Navigate to a home tab URL via a target=_blank link.
+  content::TestNavigationObserver nav_observer(
+      tab_strip->GetActiveWebContents(), 1);
+  ASSERT_TRUE(ExecJs(
+      tab_strip->GetActiveWebContents(),
+      "document.getElementById('test-link-with-blank-target').click();"));
+  nav_observer.Wait();
+
+  // Expect no new tab was opened, and the home tab is focused.
+  EXPECT_EQ(tab_strip->count(), 3);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+  EXPECT_EQ(tab_strip->GetActiveWebContents()->GetVisibleURL(),
+            embedded_test_server()->GetURL(
+                "/web_apps/tab_strip_customizations.html"));
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, OpenInChrome) {
