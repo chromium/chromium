@@ -48,11 +48,14 @@ def _run_fuzzer_target(args):
       print(
           "Command %s exited with non-zero return code, failing on iteration %d"
           % (cmd, i))
-      print("Return code: " + str(e.returncode))
-      print("**** FULL FUZZING OUTPUT BELOW ***")
-      print(e.output)
-      print(e.stderr)
-      print("*** FULL FUZZING OUTPUT ABOVE ***")
+      if type(e) == subprocess.TimeoutExpired:
+        print("Timed out after %d seconds" % e.timeout)
+      else:
+        print("Return code: " + str(e.returncode))
+        print("**** FULL FUZZING OUTPUT BELOW ***")
+        print(e.output)
+        print(e.stderr)
+        print("*** FULL FUZZING OUTPUT ABOVE ***")
   if not os.path.isfile(target_profraw):
     failed_targets.append(target)
     return
