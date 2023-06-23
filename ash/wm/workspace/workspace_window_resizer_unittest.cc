@@ -2229,47 +2229,6 @@ TEST_F(WorkspaceWindowResizerTest, FlingRestoreSize) {
   EXPECT_EQ(snapped_bounds, touch_resize_window_->bounds());
 }
 
-// Tests that fling to maximize does not crash or DCHECK if the window's restore
-// bounds is on another display.
-TEST_F(WorkspaceWindowResizerTest,
-       FlingMaximizeRestoreBoundsOnDifferentDisplay) {
-  UpdateDisplay("800x600,500x400");
-
-  // Prepare `touch_resize_window_` in the 2nd display.
-  gfx::Size window_size(300, 300);
-  InitTouchResizeWindow(gfx::Rect(gfx::Point(800, 100), window_size),
-                        HTCAPTION);
-
-  // Speculatively simulate how a window could get a restore bounds in another
-  // display. What actually happens in the field is still a mystery.
-  // 1. Maximize to set a restore bounds in the 2nd display.
-  auto* window_state = WindowState::Get(touch_resize_window_.get());
-  window_state->Maximize();
-  ASSERT_TRUE(window_state->IsMaximized());
-
-  // 2. SetBoundsInScreen to move the window to the primary display.
-  touch_resize_window_->SetBoundsInScreen(
-      gfx::Rect(100, 100, 300, 30),
-      display::Screen::GetScreen()->GetPrimaryDisplay());
-
-  // Ensures that the restore bounds is not in the same display of window.
-  gfx::Rect restore_bounds = window_state->GetRestoreBoundsInScreen();
-  ASSERT_FALSE(
-      touch_resize_window_->GetRootWindow()->GetBoundsInScreen().Contains(
-          restore_bounds));
-
-  // Fling up.
-  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
-                                     touch_resize_window_.get());
-  generator.GestureScrollSequence(gfx::Point(250, 110), gfx::Point(250, 10),
-                                  base::Milliseconds(10), 10);
-  ASSERT_TRUE(window_state->IsMaximized());
-
-  // No crash, no DCHECK, and the window stays in the primary display.
-  EXPECT_TRUE(
-      Shell::GetPrimaryRootWindow()->Contains(touch_resize_window_.get()));
-}
-
 using MultiDisplayWorkspaceWindowResizerTest = AshTestBase;
 
 // Makes sure that window drag magnetism still works when a window is dragged
