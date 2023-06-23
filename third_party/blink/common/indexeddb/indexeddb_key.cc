@@ -20,7 +20,7 @@ std::string string_to_hex(const std::string& input) {
   for (size_t i = 0; i < len; ++i) {
     const unsigned char c = input[i];
     output.push_back(lut[c >> 4]);
-    output.push_back(lut[c & 0xFF]);
+    output.push_back(lut[c & 0xF]);
   }
   return output;
 }

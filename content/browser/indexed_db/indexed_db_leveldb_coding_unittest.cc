@@ -788,6 +788,138 @@ TEST(IndexedDBLevelDBCodingTest, ExtractAndCompareIDBKeys) {
   }
 }
 
+TEST(IndexedDBLevelDBCodingTest, EncodeAndCompareIDBKeysWithSentinels) {
+  std::vector<IndexedDBKey> keys = {
+      IndexedDBKey(-15, blink::mojom::IDBKeyType::Number),
+      IndexedDBKey(-10, blink::mojom::IDBKeyType::Number),
+      IndexedDBKey(0, blink::mojom::IDBKeyType::Number),
+      IndexedDBKey(3.14, blink::mojom::IDBKeyType::Number),
+      IndexedDBKey(42, blink::mojom::IDBKeyType::Number),
+
+      IndexedDBKey(0, blink::mojom::IDBKeyType::Date),
+      IndexedDBKey(100, blink::mojom::IDBKeyType::Date),
+      IndexedDBKey(100000, blink::mojom::IDBKeyType::Date),
+
+      IndexedDBKey(u""),
+      IndexedDBKey(u"a"),
+      IndexedDBKey(u"b"),
+      IndexedDBKey(u"baaa"),
+      IndexedDBKey(u"baab"),
+      IndexedDBKey(u"c"),
+
+      IndexedDBKey(std::string()),
+      IndexedDBKey(std::string("\x01")),
+      IndexedDBKey(std::string("\x01\x01")),
+      IndexedDBKey(std::string("\x01\x02")),
+      IndexedDBKey(std::string("\x02")),
+      IndexedDBKey(std::string("\x02\x01")),
+      IndexedDBKey(std::string("\x02\x02")),
+      IndexedDBKey(std::string("\xff")),
+
+      CreateArrayIDBKey(),
+
+      CreateArrayIDBKey(IndexedDBKey(0, blink::mojom::IDBKeyType::Number)),
+
+      CreateArrayIDBKey(IndexedDBKey(0, blink::mojom::IDBKeyType::Number),
+                        IndexedDBKey(3.14, blink::mojom::IDBKeyType::Number)),
+
+      CreateArrayIDBKey(IndexedDBKey(0, blink::mojom::IDBKeyType::Date)),
+
+      CreateArrayIDBKey(IndexedDBKey(0, blink::mojom::IDBKeyType::Date),
+                        IndexedDBKey(0, blink::mojom::IDBKeyType::Date)),
+      CreateArrayIDBKey(IndexedDBKey(u"")),
+      CreateArrayIDBKey(IndexedDBKey(u""), IndexedDBKey(u"a")),
+      CreateArrayIDBKey(CreateArrayIDBKey()),
+      CreateArrayIDBKey(CreateArrayIDBKey(), CreateArrayIDBKey()),
+      CreateArrayIDBKey(CreateArrayIDBKey(CreateArrayIDBKey())),
+      CreateArrayIDBKey(
+          CreateArrayIDBKey(CreateArrayIDBKey(CreateArrayIDBKey()))),
+  };
+
+  for (size_t i = 0; i < keys.size() - 1; ++i) {
+    const IndexedDBKey& key_a = keys[i];
+    const IndexedDBKey& key_b = keys[i + 1];
+
+    SCOPED_TRACE(testing::Message() << "Comparing keys " << key_a.DebugString()
+                                    << " and " << key_b.DebugString());
+
+    EXPECT_TRUE(key_a.IsLessThan(key_b));
+
+    std::string encoded_a;
+    EncodeSortableIDBKey(key_a, &encoded_a);
+    EXPECT_TRUE(encoded_a.size());
+    std::string encoded_b;
+    EncodeSortableIDBKey(key_b, &encoded_b);
+    EXPECT_TRUE(encoded_b.size());
+
+    auto sqlite_compare = [](const std::string& a, const std::string& b) {
+      return std::memcmp(a.c_str(), b.c_str(),
+                         std::min(a.length(), b.length()));
+    };
+
+    EXPECT_LT(sqlite_compare(encoded_a, encoded_b), 0);
+    EXPECT_GT(sqlite_compare(encoded_b, encoded_a), 0);
+    EXPECT_EQ(sqlite_compare(encoded_a, encoded_a), 0);
+    EXPECT_EQ(sqlite_compare(encoded_b, encoded_b), 0);
+  }
+}
+
+// Verify that encoded doubles compare in the same order as C++ double
+// arithmetic.
+TEST(IndexedDBLevelDBCodingTest, EncodeSortableDoubles) {
+  std::vector<double> values = {
+      0.0,
+      -0.0,
+      1.0,
+      -1.0,
+
+      std::numeric_limits<double>::infinity(),
+      -std::numeric_limits<double>::infinity(),
+      std::numeric_limits<double>::lowest(),
+      std::numeric_limits<double>::max(),
+
+      std::numeric_limits<double>::min(),
+      -std::numeric_limits<double>::min(),
+      std::numeric_limits<double>::min() * 10,
+      -std::numeric_limits<double>::min() * 10,
+
+      std::numeric_limits<double>::denorm_min(),
+      -std::numeric_limits<double>::denorm_min(),
+      std::numeric_limits<double>::denorm_min() * 10,
+      -std::numeric_limits<double>::denorm_min() * 10,
+  };
+
+  for (double value_a : values) {
+    for (double value_b : values) {
+      SCOPED_TRACE(testing::Message()
+                   << "Comparing " << value_a << " and " << value_b);
+
+      std::string encoded_a;
+      EncodeSortableIDBKey(
+          IndexedDBKey(value_a, blink::mojom::IDBKeyType::Number), &encoded_a);
+      EXPECT_TRUE(encoded_a.size());
+      std::string encoded_b;
+      EncodeSortableIDBKey(
+          IndexedDBKey(value_b, blink::mojom::IDBKeyType::Number), &encoded_b);
+      EXPECT_TRUE(encoded_b.size());
+      EXPECT_EQ(encoded_a.size(), encoded_b.size());
+
+      auto sqlite_compare = [](const std::string& a, const std::string& b) {
+        return std::memcmp(a.c_str(), b.c_str(),
+                           std::min(a.length(), b.length()));
+      };
+
+      if (value_a < value_b) {
+        EXPECT_LT(sqlite_compare(encoded_a, encoded_b), 0);
+      } else if (value_a == value_b) {
+        EXPECT_EQ(sqlite_compare(encoded_a, encoded_b), 0);
+      } else {
+        EXPECT_GT(sqlite_compare(encoded_a, encoded_b), 0);
+      }
+    }
+  }
+}
+
 TEST(IndexedDBLevelDBCodingTest, ComparisonTest) {
   std::vector<std::string> keys = {
       SchemaVersionKey::Encode(),

@@ -58,6 +58,14 @@ CONTENT_EXPORT void EncodeBinary(base::span<const uint8_t> value,
 CONTENT_EXPORT void EncodeDouble(double value, std::string* into);
 CONTENT_EXPORT void EncodeIDBKey(const blink::IndexedDBKey& value,
                                  std::string* into);
+// This function creates a byte stream that can be directly compared to other
+// byte streams on a byte-by-byte basis and retain semantic ordering. This
+// enables the value to be stored as a SQLite blob without a specialized
+// collation operation. Unlike `EncodeIDBKey`, which makes use of length bytes,
+// this operation re-encodes variable-length values in a way that supports
+// sentinels.
+CONTENT_EXPORT void EncodeSortableIDBKey(const blink::IndexedDBKey& value,
+                                         std::string* into);
 CONTENT_EXPORT void EncodeIDBKeyPath(const blink::IndexedDBKeyPath& value,
                                      std::string* into);
 CONTENT_EXPORT void EncodeBlobJournal(const BlobJournalType& journal,
