@@ -72,6 +72,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="1358214951266274152">Visitar o link que você copiou</translation>
 <translation id="1360432990279830238">Sair e desativar a sincronização?</translation>
 <translation id="1363028406613469049">Rastrear</translation>
+<translation id="1365106417372288489">Seu iPhone foi restaurado recentemente. Isso pode ter mudado seu navegador padrão.</translation>
 <translation id="1375321115329958930">Senhas salvas</translation>
 <translation id="1377255359165588604">A sincronização parou de funcionar.</translation>
 <translation id="1377321085342047638">Número do cartão</translation>
@@ -148,6 +149,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1883255238294161206">Recolher lista</translation>
 <translation id="1894023287452300670">Monitore o preço aqui</translation>
+<translation id="189531189292803889">Seu iPad foi restaurado recentemente. Isso pode ter mudado seu navegador padrão.</translation>
 <translation id="1910975740091000991">Chrome para iOS</translation>
 <translation id="1911619930368729126">Enviar para o Google Drive</translation>
 <translation id="1923342640370224680">Última hora</translation>
@@ -1040,6 +1042,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="750493650310597496">0 selecionados</translation>
 <translation id="7508728395076009983">Para bloquear suas guias anônimas, configure o Touch ID, o Face ID ou uma senha.</translation>
 <translation id="7514365320538308">Fazer o download</translation>
+<translation id="7524055474074101597">Acesse suas senhas e muito mais em apps.</translation>
 <translation id="7531345132340165516">Site atual</translation>
 <translation id="7537586195939242955">Impossível instalar senha no livro de senhas no momento.</translation>
 <translation id="754655535278952384">Verificada <ph name="TIME" /></translation>

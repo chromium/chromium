@@ -140,6 +140,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1550406609415860283">Seadmed on saadaval</translation>
 <translation id="1550523713251050646">Klõpsake lisavalikute nägemiseks</translation>
 <translation id="1555130319947370107">Sinine</translation>
+<translation id="1557622599341396706">Kuva töölaua nimi</translation>
 <translation id="1576511610858879060">Teie Chromebook või Bluetooth-seade kasutab Bluetoothi vanemat versiooni. Parema helikvaliteedi huvides kasutage muud sisendi allikat.</translation>
 <translation id="1576623706766186887">Suumi välja, kui luup on sisse lülitatud</translation>
 <translation id="1586324912145647027">Töölaua 1–8 kuvamine</translation>
@@ -930,6 +931,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="504465286040788597">Eelmine lõik</translation>
 <translation id="5045550434625856497">Vale salasõna</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">Teid teavitatakse, kui räägite vaigistatuna. Heli ei saadeta kunagi teie seadmest välja.</translation>
 <translation id="5078796286268621944">Vale PIN-kood</translation>
 <translation id="5083553833479578423">Avage rohkem assistendi funktsioone.</translation>
 <translation id="5092436659250499817">Lülita klaviatuuri taustavalgus sisse/välja</translation>
@@ -960,6 +962,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5207949376430453814">Tekstisisestusmärgi esiletõstmine</translation>
 <translation id="5208059991603368177">Sees</translation>
 <translation id="5216991270656129561">Välja lülitatud kuni <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Kasutage Phone Hubi, et telefoniga kiiresti sõnumeid saata või neile vastata.</translation>
 <translation id="5222676887888702881">Logi välja</translation>
 <translation id="5229343007215035173">Lülita privaatne kuva sisse/välja</translation>
 <translation id="5234764350956374838">Loobu</translation>
@@ -988,6 +991,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5317780077021120954">Salvesta</translation>
 <translation id="5319712128756744240">Uue seadme sidumine</translation>
 <translation id="5322611492012084517">Teie telefoni ei õnnestu leida</translation>
+<translation id="5323994101633366939">Peida töölaua nimi</translation>
 <translation id="5327248766486351172">Nimi</translation>
 <translation id="5329548388331921293">Ühendamine …</translation>
 <translation id="5331975486040154427">C-tüüpi USB-seade (tagumine vasakpoolne port)</translation>
@@ -1170,6 +1174,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6103838137565245112">süsteem</translation>
 <translation id="6114505516289286752">Kõnefailid <ph name="LANGUAGE" /> keeles laaditi alla</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Värvide korrigeerimine</translation>
 <translation id="6121838516699723042">Allalaadimise kinnitamine (<ph name="FILENAME" />)</translation>
 <translation id="612734058257491180">Google'i assistent ei ole külastajaseansis saadaval.</translation>
 <translation id="6129953537138746214">Tühik</translation>
@@ -1638,6 +1643,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8247998213073982446">Rakendus, <ph name="APP_NAME" /></translation>
 <translation id="8255234195843591763">Värskendamiseks taaskäivitage</translation>
 <translation id="8261506727792406068">Kustuta</translation>
+<translation id="8262312463845990408">Taasesituse käivitamine/peatamine</translation>
 <translation id="8270450402312105425">{0,plural, =1{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega üks tund}other{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega # tundi}}</translation>
 <translation id="8277261673056602147">Tõstke tekst oma ekraanikuval esile</translation>
 <translation id="8284362522226889623">Eelmisele töölauale lülitumiseks pühkige nelja sõrmega vasakule</translation>

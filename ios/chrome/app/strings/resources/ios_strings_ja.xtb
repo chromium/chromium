@@ -52,7 +52,7 @@
 <translation id="1258491128795710625">最新情報</translation>
 <translation id="1264156759663453185">選択したテキストは部分的な翻訳には大きすぎます。</translation>
 <translation id="1265739287306757398">詳細</translation>
-<translation id="1272079795634619415">中止</translation>
+<translation id="1272079795634619415">停止</translation>
 <translation id="1275718070701477396">選択中</translation>
 <translation id="1279024913354609713">許可しない</translation>
 <translation id="1281818060020671000">データの管理</translation>
@@ -90,6 +90,7 @@
 <translation id="1492417797159476138">このユーザー名はこのサイトですでに保存されています</translation>
 <translation id="1497590942294823549">メニュー → パスワード マネージャー</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" /> のアカウントは削除されません。</translation>
+<translation id="1501820324067650154">経路オプションを表示するには、[ルート検索] をタップします</translation>
 <translation id="1506063256525392513">写真を撮影してアップロードしたり、QR コードをスキャンしたりできます</translation>
 <translation id="1509486075633541495">ウェブサイトにログイン</translation>
 <translation id="1509960214886564027">多くサイトで機能を使用できなくなる可能性があります</translation>
@@ -176,6 +177,7 @@
 <translation id="2073572773299281212">最終同期: <ph name="DAYS" /> 日前</translation>
 <translation id="2074131957428911366">同期する項目はいつでも [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で選択できます。</translation>
 <translation id="2079545284768500474">元に戻す</translation>
+<translation id="2080409463824088391">アプリで開く…</translation>
 <translation id="2080769225927880590">有効なアカウントでログインしてください</translation>
 <translation id="2103075008456228677">history.google.com を開く</translation>
 <translation id="21133533946938348">タブを固定</translation>
@@ -315,6 +317,7 @@
 <translation id="2931440415625410757">手順を表示</translation>
 <translation id="2932085390869194046">パスワードを自動生成...</translation>
 <translation id="2932765531295814441">パスワードを手動で追加</translation>
+<translation id="2952246431280799028">住所を長押しします。</translation>
 <translation id="2952278131021475699">レンズでカメラ検索</translation>
 <translation id="2952581218264071393">1. Chrome の設定を開く</translation>
 <translation id="2958718410589002129">パスワード</translation>
@@ -1264,6 +1267,7 @@
 <translation id="891282356902782456">このパスワードは、このデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（<ph name="EMAIL" />）に保存してください。</translation>
 <translation id="891658175948553296">サイトのテキストをハイライト表示します</translation>
 <translation id="8917490105272468696">オンにする</translation>
+<translation id="8926984231484284953">ウェブページ上の住所を使用してローカル情報や経路を確認できます。</translation>
 <translation id="8928133177108699615">デスクトップ</translation>
 <translation id="8934982071228289624">このパスワードをアカウントに保存するには、まずデバイスにパスコードを設定する必要があります。</translation>
 <translation id="8940809892068499052">他のアプリからシークレット タブを開く</translation>

@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">Fon rasmini almashtirish</translation>
 <translation id="360565022852130722">WiFi tarmoq zaif WEP 802.1x protokoli bilan himoyalangan</translation>
 <translation id="3606583719724308068">HTTPS saytlarga ulanishda yuqori kechikish</translation>
+<translation id="3607216139080387279">Ekran lavhasini chiqarish</translation>
 <translation id="361575905210396100">Fikr-mulohazangiz uchun rahmat</translation>
 <translation id="3632579075709132555">Maxfiylik ekrani tugmasi</translation>
 <translation id="3639846061339007994">tepasiga</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ta sharh)</translation>
 <translation id="3748026146096797577">Ulanilmagan</translation>
 <translation id="3749289110408117711">Fayl nomi</translation>
+<translation id="3766934827878963937">1 soat</translation>
 <translation id="3771294271822695279">Video fayllar</translation>
 <translation id="3784455785234192852">Qulflash</translation>
 <translation id="380097101658023925">rgb boshqaruvi</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">klaviatura xiraligi</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> sinovi bekor qilindi</translation>
 <translation id="631063167932043783">Ilovani varaqlash</translation>
+<translation id="6318437367327684789">har doim</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> mikrodasturini yangilang</translation>
 <translation id="6321407676395378991">Ekran lavhasini yoqish</translation>
 <translation id="6325525973963619867">Amalga oshmadi</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">Bir nechta sahifani bitta PDFga saqlash</translation>
 <translation id="9137526406337347448">Google xizmatlari</translation>
 <translation id="9138630967333032450">Chap shift</translation>
+<translation id="9143347780818904997"><ph name="MINUTES" /> daqiqa</translation>
 <translation id="9149391708638971077">Xotirani tekshirish</translation>
 <translation id="9161276708550942948">probel</translation>
 <translation id="9173638680043580060">Bir daqiqadan kamroq vaqt qoldi</translation>

@@ -920,6 +920,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3041612393474885105">Sertifikat haqida ma’lumot</translation>
 <translation id="305162504811187366">Chrome Remote Desktop tarixi, vaqt belgisi, hostlar va mijoz seansi identifikatorlari</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> narxlari <ph name="PRICE_DROP" /> ga tushdi</translation>
+<translation id="3054512251683174387">Chrome 4 haftadan eskirgan mavzularni avtomatik oʻchiradi. Takroriy tashriflar asosida mavzu roʻyxatga qayta kiritilishi mumkin. Yoki Chrome saytlarga ulashmasligi uchun istalgan mavzularni bloklash mumkin. Chrome brauzerida reklamada maxfiylikni boshqarish haqida batafsil.</translation>
 <translation id="3061707000357573562">Xizmatni tuzatish</translation>
 <translation id="306573536155379004">Oʻyin boshlandi.</translation>
 <translation id="3067505415088964188">Narx past</translation>
@@ -3274,6 +3275,7 @@ Batafsil axborot:
 <translation id="8246482227229072868">Uzuklar</translation>
 <translation id="8249296373107784235">Bekor qilish</translation>
 <translation id="8249463483885748674">Standartlashtirilgan va kirish imtihonlari</translation>
+<translation id="824968735947741546"><ph name="SOURCE" /> tilidan (avtomatik aniqlangan) <ph name="TARGET" /> tiliga tarjima qilinmoqda</translation>
 <translation id="8250094606476360498">Hozir bu manzil mazkur qurilmada saqlangan. Boshqa Google xizmatlarida ishlatish uchun manzilni Google hisobiga (<ph name="ACCOUNT" />) saqlang.</translation>
 <translation id="8252991034201168845">Qulaylik sozlamalari boshqarish tugmasi, ChromeOS sozlamalari orqali qulaylik vositalarini moslashtirish uchun Enter tugmasini bosing</translation>
 <translation id="8253091569723639551">To‘lov manzilini kiriting</translation>

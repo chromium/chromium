@@ -63,6 +63,7 @@
 <translation id="1291506870746876680">Οι άδειες για τον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> θα απενεργοποιηθούν μόλις αποχωρήσετε από τον ιστότοπο.</translation>
 <translation id="1305822519689023679">Για να βεβαιωθείτε ότι θα μπορείτε να χρησιμοποιείτε πάντα τους κωδικούς πρόσβασης στον Λογαριασμό σας Google, επαληθεύστε την ταυτότητά σας.</translation>
 <translation id="1312721752506309252">Η Βελτιωμένη προστασία είναι ενεργή</translation>
+<translation id="1316466854070752597">Εμφάνιση όλων των ανοικτών καρτελών</translation>
 <translation id="1321993286294231467">Σφάλμα κατά την αποθήκευση εικόνας.</translation>
 <translation id="1322735045095424339">Ο οργανισμός σας απαιτεί τη χρήση της κατάστασης ανώνυμης περιήγησης</translation>
 <translation id="1323735185997015385">Διαγραφή</translation>
@@ -73,6 +74,7 @@
 <translation id="1358214951266274152">Μετάβαση στον σύνδεσμο που αντιγράψατε</translation>
 <translation id="1360432990279830238">Αποσύνδεση και απενεργοπ. συγχρονισμού;</translation>
 <translation id="1363028406613469049">Κομμάτι</translation>
+<translation id="1365106417372288489">Έγινε πρόσφατα επαναφορά του iPhone, κάτι που μπορεί να άλλαξε το προεπιλεγμένο πρόγραμμα περιήγησης.</translation>
 <translation id="1375321115329958930">Αποθηκευμένοι κωδικοί πρόσβασης</translation>
 <translation id="1377255359165588604">Ο συγχρονισμός σταμάτησε να λειτουργεί.</translation>
 <translation id="1377321085342047638">Αρ.κάρτας</translation>
@@ -149,6 +151,7 @@
 <translation id="1872096359983322073">Φακός</translation>
 <translation id="1883255238294161206">Σύμπτυξη λίστας</translation>
 <translation id="1894023287452300670">Παρακολούθηση τιμής εδώ</translation>
+<translation id="189531189292803889">Έγινε πρόσφατα επαναφορά του iPad, κάτι που μπορεί να άλλαξε το προεπιλεγμένο πρόγραμμα περιήγησης.</translation>
 <translation id="1910975740091000991">Chrome για iOS</translation>
 <translation id="1911619930368729126">Μεταφόρ.στο Google Drive</translation>
 <translation id="1923342640370224680">Τελευταία ώρα</translation>
@@ -436,6 +439,7 @@
 <translation id="3656645960301737801">Ολοκληρώστε και αποθηκεύστε το συμβάν</translation>
 <translation id="3661160521073045932">Διαθέσιμο προφίλ διαμόρφωσης</translation>
 <translation id="3670030362669914947">Αριθμός</translation>
+<translation id="368329460027487650">Αποσυνδεθήκατε. Ανοίγει επιλογές για σύνδεση.</translation>
 <translation id="3700134753671613714">Συνδεθείτε για να μεταφέρετε τους σελιδοδείκτες σας σε όλες τις συσκευές σας</translation>
 <translation id="3709582977625132201">Επισήμανση ως μη αναγνωσμένη</translation>
 <translation id="371230970611282515">Προβλέπει και σας προειδοποιεί για επικίνδυνα συμβάντα προτού αυτά συμβούν.</translation>
@@ -664,6 +668,7 @@
 <translation id="5190835502935405962">Γραμμή σελιδοδεικτών</translation>
 <translation id="519530786644929958">Η λήψη απέτυχε και δεν μπορεί να επαναληφθεί.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5209674813563615506">Άνοιγμα νέας καρτέλας</translation>
 <translation id="5211488077761630279">Να επιτρέπεται στον ιστότοπο <ph name="SITE_NAME" /> να χρησιμοποιεί τη συσκευή <ph name="PERMISSION" />;</translation>
 <translation id="5219295696240154694">Συμβάλετε στη βελτίωση της Ασφάλειας στον Ιστό για όλους</translation>
 <translation id="5221339005270097309">Έλεγχος κωδ. πρόσβασης…</translation>
@@ -940,6 +945,7 @@
 <translation id="6684906340059221832">Γίνεται παρακολούθηση τιμών</translation>
 <translation id="6710079714193676716">Διαχειριζόμενο από τον οργανισμό σας. Ορισμένες λειτουργίες ενδέχεται να μην είναι διαθέσιμες. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="672735642903863329">Μεταφέρετε τους σελιδοδείκτες, τους κωδικούς πρόσβασης και πολλά άλλα σε όλες τις συσκευές σας.</translation>
 <translation id="6730682669179532099">Δεν είναι δυνατή η εξαγωγή κωδικών πρόσβασης</translation>
 <translation id="6732087373923685049">κάμερα</translation>
 <translation id="6748108480210050150">Από</translation>
@@ -1048,6 +1054,7 @@
 <translation id="750493650310597496">0 στοιχεία επιλεγμένα</translation>
 <translation id="7508728395076009983">Για να κλειδώσετε τις καρτέλες ανώνυμης περιήγησης, ρυθμίστε το Touch ID, το Face ID ή έναν κωδικό πρόσβασης.</translation>
 <translation id="7514365320538308">Λήψη</translation>
+<translation id="7524055474074101597">Αποκτήστε πρόσβαση στους κωδικούς πρόσβασής σας και σε πολλές άλλες εφαρμογές.</translation>
 <translation id="7531345132340165516">Τρέχων ιστότοπος</translation>
 <translation id="7537586195939242955">Δεν είναι δυνατή η εγκατάσταση του πάσου σας στο Passbook.</translation>
 <translation id="754655535278952384">Έγινε έλεγχος <ph name="TIME" /></translation>

@@ -399,6 +399,7 @@
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" />-с</translation>
 <translation id="1871208020102129563">Төлөөлөх сервер нь a .pac script URL биш харин тухайлан сонгосон төлөөлөх сервер ашиглах тохиргоотой байдаг.</translation>
 <translation id="1871284979644508959">Заавал бөглөх хэсэг</translation>
+<translation id="1871739799120352748">Үнэ өндөр байна</translation>
 <translation id="1873899211667975540">Рок хөгжим</translation>
 <translation id="1874224422119691492">Та нууц үг бөглөхөд дэлгэцийн түгжээгээ ашиглахаа болих эсэхээ <ph name="SETTINGS" />-д өөрчлөх боломжтой</translation>
 <translation id="1875025161375567525">Зургийн тавиур</translation>
@@ -442,6 +443,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> таны дотоод компьютерт том хэмжээний өгөгдлийг бүрмөсөн хадгалах хүсэлтэй байна</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{болон 1 бусад}other{болон # бусад}}</translation>
+<translation id="2001469757375372617">Ямар нэг алдаа гарлаа. Таны өөрчлөлтийг хадгалаагүй.</translation>
 <translation id="2003709556000175978">Нууц үгээ одоо шинэчлэх</translation>
 <translation id="2003775180883135320">Дээд буланд дөрвөн нүх цоолох</translation>
 <translation id="2009942480257059311">Үйл явдал үүсгэх товчлуур, Google Календарьт шинэ үйл явдал шуурхай үүсгэхийн тулд идэвхжүүлнэ үү</translation>
@@ -499,6 +501,7 @@
 <translation id="2118132148597630479">Дугтуй C5</translation>
 <translation id="2119505898009119320"><ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />] руу олгосон</translation>
 <translation id="2119867082804433120">Баруун доод буланд нэг нүх цоолох</translation>
+<translation id="2122214041802369259">Үнэ өндөр байна</translation>
 <translation id="2122719317867821810">Энэ бодлого нь хэвийн ажиллаж байгаа хэдий ч зөрчилтэй утгыг өөр газар тохируулсан бөгөөд энэ бодлогоор дарсан байна.</translation>
 <translation id="2126374524350484896">PDF бүтээгч:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode удирдамжийг тохируулаагүй байгаа учраас таны тодорхойлсон загваруудыг хэрэгжүүлэхгүй байж болзошгүй.</translation>
@@ -859,6 +862,7 @@
 <translation id="3054512251683174387">Chrome нь 4 долоо хоногоос дээш удсан сэдвүүдийг автоматаар устгадаг. Таныг үргэлжлүүлэн үзэх явцад ямар нэг сэдэв жагсаалтад дахин гарч ирж магадгүй. Эсвэл та Chrome-г сайтуудтай хуваалцахыг хүсэхгүй байгаа сэдвүүдээ блоклож болно. Зарын нууцлалаа Chrome-д удирдах талаар нэмэлт мэдээлэл авна уу.</translation>
 <translation id="3061707000357573562">Patch үйлчилгээ</translation>
 <translation id="306573536155379004">Тоглоом эхэллээ.</translation>
+<translation id="3067505415088964188">Үнэ хямд байна</translation>
 <translation id="3068991664510324412">Компьютер, видео тоглоом</translation>
 <translation id="3080254622891793721">График</translation>
 <translation id="3081538120861307764">Зарын гүйцэтгэлийг хэмжихийн тулд танд зар харуулсан өдрийн цаг гэх мэт хязгаарлагдмал төрлийн өгөгдлийг сайтуудын хооронд хуваалцдаг.</translation>
@@ -2075,6 +2079,7 @@
 <translation id="5967592137238574583">Харилцагчийн мэдээллийг засах</translation>
 <translation id="5967867314010545767">Түүхэн хэсгээс устгах</translation>
 <translation id="5968022600320704045">Хайлтын илэрц байхгүй</translation>
+<translation id="5969199813874624822">Үнийг хадгалж, хянах</translation>
 <translation id="5974052231147553524">Зургаа дахь хуйлмал</translation>
 <translation id="5975083100439434680">Багасгаж харах</translation>
 <translation id="5979084224081478209">Нууц үгийг шалгах</translation>
@@ -3398,6 +3403,7 @@
 <translation id="9141013498910525015">Хаяг удирдах</translation>
 <translation id="9144951720726881238">Хүчинтэй хугацаа:</translation>
 <translation id="9148507642005240123">&amp; Засварлах үйлдлийг буцаах</translation>
+<translation id="9148599396704355100">Үнэ хямд байна</translation>
 <translation id="9150045010208374699">Та камераа ашиглана уу</translation>
 <translation id="9150685862434908345">Таны администратор таны хөтчийн тохируулгыг алсаас өөрчилж болно. Энэ төхөөрөмж дээрх үйл ажиллагааг мөн Chrome-с гадуур удирддаг байж болзошгүй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Шинэчилсэн</translation>

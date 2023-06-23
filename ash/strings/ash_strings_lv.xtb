@@ -140,6 +140,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1550406609415860283">Ir pieejamas ierīces</translation>
 <translation id="1550523713251050646">Noklikšķiniet, lai skatītu citas iespējas.</translation>
 <translation id="1555130319947370107">Zila</translation>
+<translation id="1557622599341396706">Rādīt darbvietas nosaukumu</translation>
 <translation id="1576511610858879060">Jūsu Chromebook datorā vai Bluetooth ierīcē tiek izmantota vecāka Bluetooth versija. Labākai audio kvalitātei izmantojiet citu ieejas avotu.</translation>
 <translation id="1576623706766186887">Tālināt, kad ieslēgta lupa</translation>
 <translation id="1586324912145647027">Pāriet uz pirmo no astoņām darbvirsmām</translation>
@@ -929,6 +930,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="504465286040788597">Iepriekšējā rindkopa</translation>
 <translation id="5045550434625856497">Nepareiza parole</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">Ja runāsiet, kad ir izslēgts mikrofons, tiks parādīts paziņojums. Jūsu audio vienmēr atrodas tikai jūsu ierīcē.</translation>
 <translation id="5078796286268621944">Nepareizs PIN</translation>
 <translation id="5083553833479578423">Piekļūstiet citām Asistenta funkcijām</translation>
 <translation id="5092436659250499817">Ieslēgt/izslēgt tastatūras fona apgaismojumu</translation>
@@ -959,6 +961,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5207949376430453814">Izcelt teksta ievietošanas punktu</translation>
 <translation id="5208059991603368177">Ieslēgts</translation>
 <translation id="5216991270656129561">Izslēgts līdz plkst. <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Varat ātri nosūtīt tālruņa ziņojumus vai atbildēt uz tiem, izmantojot funkciju Tālruņa centrmezgls.</translation>
 <translation id="5222676887888702881">Izrakstīties</translation>
 <translation id="5229343007215035173">Ieslēgt/izslēgt konfidencialitātes ekrānu</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
@@ -987,6 +990,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5317780077021120954">Saglabāt</translation>
 <translation id="5319712128756744240">Savienot pārī ar jaunu ierīci</translation>
 <translation id="5322611492012084517">Nevar atrast jūsu tālruni</translation>
+<translation id="5323994101633366939">Slēpt darbvietas nosaukumu</translation>
 <translation id="5327248766486351172">Nosaukums</translation>
 <translation id="5329548388331921293">Notiek savienojuma izveide…</translation>
 <translation id="5331975486040154427">USB-C ierīce (pieslēgvieta kreisajā pusē aizmugurē)</translation>
@@ -1169,6 +1173,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="6103838137565245112">sistēma</translation>
 <translation id="6114505516289286752">Lejupielādēti runas faili šādā valodā: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
+<translation id="6119972796024789243">Krāsu korekcija</translation>
 <translation id="6121838516699723042">Faila <ph name="FILENAME" /> lejupielādes apstiprināšana</translation>
 <translation id="612734058257491180">Google asistents nav pieejams viesa sesijā.</translation>
 <translation id="6129953537138746214">Atstarpe</translation>
@@ -1637,6 +1642,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8247998213073982446"><ph name="APP_NAME" />, lietotne</translation>
 <translation id="8255234195843591763">Lai atjauninātu, restartējiet ierīci</translation>
 <translation id="8261506727792406068">Dzēst</translation>
+<translation id="8262312463845990408">Pārslēgt atskaņošanu</translation>
 <translation id="8270450402312105425">{0,plural, =1{Atjaunojiet ierīcē iepriekšējo versiju pēc vienas stundas}zero{Atjaunojiet ierīcē iepriekšējo versiju pēc # stundām}one{Atjaunojiet ierīcē iepriekšējo versiju pēc # stundas}other{Atjaunojiet ierīcē iepriekšējo versiju pēc # stundām}}</translation>
 <translation id="8277261673056602147">Ekrānā atzīmējiet tekstu</translation>
 <translation id="8284362522226889623">Lai pārslēgtos uz iepriekšējo darbvietu, ar četriem pirkstiem velciet pa kreisi</translation>
@@ -1690,6 +1696,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8513108775083588393">Pagriezt aut.</translation>
 <translation id="851458219935658693">Atlasīta poga “Rādīt pašreizējās darbvietas logus”</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ierīce, iespējams, netiks uzlādēta, kamēr tā būs ieslēgta.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofona ievadi kontrolē lietotne <ph name="APP_NAME" />}zero{Mikrofona ievadi kontrolē # lietotnes}one{Mikrofona ievadi kontrolē # lietotne}other{Mikrofona ievadi kontrolē # lietotnes}}</translation>
 <translation id="8535393432370007982">Atsaukt kārtošanu pēc krāsas</translation>
 <translation id="8541078764854166027">Kadrēšana</translation>
 <translation id="8542053257095774575">Nav saglabātu darbvietu vai veidņu</translation>

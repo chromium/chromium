@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">사용 가능한 기기</translation>
 <translation id="1550523713251050646">더 많은 옵션을 확인하려면 클릭하세요.</translation>
 <translation id="1555130319947370107">파란색</translation>
+<translation id="1557622599341396706">데스크 이름 표시</translation>
 <translation id="1576511610858879060">Chromebook 또는 블루투스 기기에서 이전 버전의 블루투스를 사용하고 있습니다. 더 나은 오디오 품질을 위해 다른 입력 소스를 사용하세요.</translation>
 <translation id="1576623706766186887">돋보기 사용 설정 시 축소</translation>
 <translation id="1586324912145647027">데스크 1에서 8로 이동</translation>
@@ -987,6 +988,7 @@
 <translation id="5317780077021120954">저장</translation>
 <translation id="5319712128756744240">새 기기와 페어링</translation>
 <translation id="5322611492012084517">휴대전화를 찾을 수 없음</translation>
+<translation id="5323994101633366939">데스크 이름 숨기기</translation>
 <translation id="5327248766486351172">이름</translation>
 <translation id="5329548388331921293">연결 중...</translation>
 <translation id="5331975486040154427">USB-C 기기(좌측 후면 포트)</translation>
@@ -1169,6 +1171,7 @@
 <translation id="6103838137565245112">시스템</translation>
 <translation id="6114505516289286752">음성 파일 <ph name="LANGUAGE" />개 다운로드됨</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />, <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">색상 보정</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> 다운로드 확인</translation>
 <translation id="612734058257491180">게스트 세션에서는 Google 어시스턴트를 사용할 수 없습니다.</translation>
 <translation id="6129953537138746214">Space</translation>
@@ -1637,6 +1640,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />, 앱</translation>
 <translation id="8255234195843591763">재설정하여 업데이트</translation>
 <translation id="8261506727792406068">삭제</translation>
+<translation id="8262312463845990408">재생/일시중지 전환</translation>
 <translation id="8270450402312105425">{0,plural, =1{1시간 이내에 기기를 이전 버전으로 되돌리세요}other{#시간 이내에 기기를 이전 버전으로 되돌리세요}}</translation>
 <translation id="8277261673056602147">화면에서 텍스트 강조표시</translation>
 <translation id="8284362522226889623">이전 데스크로 전환하려면 네 손가락을 사용해 왼쪽으로 스와이프하세요.</translation>
@@ -1690,6 +1694,7 @@
 <translation id="8513108775083588393">자동 회전</translation>
 <translation id="851458219935658693">현재 데스크의 창 표시, 라디오 버튼 선택됨</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" />이(가) 켜져 있는 동안에는 충전되지 않을 수 있습니다.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{마이크 입력은 <ph name="APP_NAME" />에 의해 제어됨}other{마이크 입력은 앱 #개에 의해 제어됨}}</translation>
 <translation id="8535393432370007982">색상별 정렬 순서 실행취소</translation>
 <translation id="8541078764854166027">카메라 프레이밍</translation>
 <translation id="8542053257095774575">저장된 데스크 또는 템플릿 없음</translation>

@@ -72,6 +72,7 @@
 <translation id="1358214951266274152">Besoek skakel wat jy gekopieer het</translation>
 <translation id="1360432990279830238">Meld af en skakel sinkronisasie af?</translation>
 <translation id="1363028406613469049">Snit</translation>
+<translation id="1365106417372288489">Jou iPhone is onlangs teruggestel, wat dalk jou verstekblaaier kon verander het.</translation>
 <translation id="1375321115329958930">Gestoorde wagwoorde</translation>
 <translation id="1377255359165588604">Sinkronisering het ophou werk.</translation>
 <translation id="1377321085342047638">Kaartnommer</translation>
@@ -89,6 +90,7 @@
 <translation id="1492417797159476138">Jy het hierdie gebruikernaam reeds vir hierdie werf gestoor</translation>
 <translation id="1497590942294823549">Kieslys → Wagwoordbestuuder</translation>
 <translation id="1498283581832036924">Jou <ph name="WEBSITE" />-rekening sal nie uitgevee word nie.</translation>
+<translation id="1501820324067650154">Tik op “Kry rigtingaanwysings” vir roete-opsies</translation>
 <translation id="1506063256525392513">Dit maak dit vir jou moontlik om foto's te neem en op te laai, asook om QR-kodes te skandeer.</translation>
 <translation id="1509486075633541495">Meld by webwerf aan</translation>
 <translation id="1509960214886564027">Kenmerke op baie werwe kan breek</translation>
@@ -147,6 +149,7 @@
 <translation id="1872096359983322073">Flits</translation>
 <translation id="1883255238294161206">Vou lys in</translation>
 <translation id="1894023287452300670">Spoor prys hier na</translation>
+<translation id="189531189292803889">Jou iPad is onlangs teruggestel, wat dalk jou verstekblaaier kon verander het.</translation>
 <translation id="1910975740091000991">Chrome vir iOS</translation>
 <translation id="1911619930368729126">Laai op na Google Drive</translation>
 <translation id="1923342640370224680">Afgelope uur</translation>
@@ -175,6 +178,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> dae gelede aktief</translation>
 <translation id="2074131957428911366">Jy kan altyd in <ph name="BEGIN_LINK" />instellings<ph name="END_LINK" /> kies wat om te sinkroniseer.</translation>
 <translation id="2079545284768500474">Ontdoen</translation>
+<translation id="2080409463824088391">Maak in app oop …</translation>
 <translation id="2080769225927880590">Meld met 'n geldige rekening aan</translation>
 <translation id="2103075008456228677">Maak history.google.com oop</translation>
 <translation id="21133533946938348">Speld oortjie vas</translation>
@@ -314,6 +318,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="2931440415625410757">Wys instruksies</translation>
 <translation id="2932085390869194046">Stel wagwoord voor …</translation>
 <translation id="2932765531295814441">Voeg wagwoorde handmatig by</translation>
+<translation id="2952246431280799028">Raak en hou ’n adres.</translation>
 <translation id="2952278131021475699">Lens-kamerasoektog</translation>
 <translation id="2952581218264071393">1. Maak Chrome-instellings oop</translation>
 <translation id="2958718410589002129">Wagwoorde</translation>
@@ -1037,6 +1042,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="750493650310597496">0 gekies</translation>
 <translation id="7508728395076009983">Stel Raak-ID, Gesig-ID of 'n wagkode op om jou Incognito-oortjies te sluit.</translation>
 <translation id="7514365320538308">Laai af</translation>
+<translation id="7524055474074101597">Kry toegang tot jou wagwoorde en meer van alle apps af.</translation>
 <translation id="7531345132340165516">Huidige werf</translation>
 <translation id="7537586195939242955">Jammer, jou Pass kan nie tans na Passbook geïnstalleer word nie.</translation>
 <translation id="754655535278952384"><ph name="TIME" /> nagegaan</translation>
@@ -1260,6 +1266,7 @@ Jou data is op <ph name="TIME" /> met jou wagfrase geënkripteer. Voer dit in om
 <translation id="891282356902782456">Hierdie wagwoord word net op hierdie toestel gestoor. Stoor dit in jou Google-rekening, <ph name="EMAIL" />, om dit op jou ander toestelle te gebruik.</translation>
 <translation id="891658175948553296">Merk teks op ’n werf</translation>
 <translation id="8917490105272468696">Ja, ek is in</translation>
+<translation id="8926984231484284953">Gebruik adresse op webbladsye om plaaslike inligting en rigtingaanwysings te kry.</translation>
 <translation id="8928133177108699615">Rekenaar</translation>
 <translation id="8934982071228289624">Om hierdie wagwoord in jou rekening te stoor, moet jy eers ’n wagkode op jou toestel stel.</translation>
 <translation id="8940809892068499052">Maak Incognito-oortjies uit ander apps oop</translation>

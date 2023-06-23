@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">Cambiare sfondo</translation>
 <translation id="360565022852130722">la rete Wi-Fi è protetta con un protocollo WEP 802.1x inefficace</translation>
 <translation id="3606583719724308068">Alta latenza a siti web HTTPS</translation>
+<translation id="3607216139080387279">Mostra salvaschermo</translation>
 <translation id="361575905210396100">Grazie per il tuo feedback</translation>
 <translation id="3632579075709132555">Attivazione/disattivazione della Schermata privata</translation>
 <translation id="3639846061339007994">in alto</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioni)</translation>
 <translation id="3748026146096797577">Non connesso</translation>
 <translation id="3749289110408117711">Nome file</translation>
+<translation id="3766934827878963937">per 1 ora</translation>
 <translation id="3771294271822695279">File video</translation>
 <translation id="3784455785234192852">Blocca</translation>
 <translation id="380097101658023925">Controlli RGB</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">Oscuramento della tastiera</translation>
 <translation id="6302401976930124515">Il test <ph name="TEST_NAME" /> è stato annullato</translation>
 <translation id="631063167932043783">App Esplora</translation>
+<translation id="6318437367327684789">per sempre</translation>
 <translation id="6319207335391420837">Aggiorna il firmware su <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Attiva salvaschermo</translation>
 <translation id="6325525973963619867">Non riuscito</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">Salva più pagine in un unico PDF</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Maiusc sinistro</translation>
+<translation id="9143347780818904997">per <ph name="MINUTES" /> minuti</translation>
 <translation id="9149391708638971077">Esegui test memoria</translation>
 <translation id="9161276708550942948">spazio</translation>
 <translation id="9173638680043580060">Manca meno di un minuto</translation>

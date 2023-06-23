@@ -399,6 +399,7 @@
 <translation id="1864927262126810325">來自 <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Proxy 設定為使用固定的 Proxy 伺服器，而非 .pac 指令碼網址。</translation>
 <translation id="1871284979644508959">必填欄位</translation>
+<translation id="1871739799120352748">價格偏高</translation>
 <translation id="1873899211667975540">搖滾音樂</translation>
 <translation id="1874224422119691492">你可以在 <ph name="SETTINGS" /> 中變更是否要使用螢幕鎖定功能填入密碼</translation>
 <translation id="1875025161375567525">相片匣</translation>
@@ -442,6 +443,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> 要求在你的本機電腦上永久儲存大量資料</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{以及另外 1 個應用程式}other{以及另外 # 個應用程式}}</translation>
+<translation id="2001469757375372617">發生錯誤，系統未儲存你的變更。</translation>
 <translation id="2003709556000175978">立即重設你的密碼</translation>
 <translation id="2003775180883135320">四孔 (頂端)</translation>
 <translation id="2009942480257059311">「建立活動」按鈕，啟動後即可在 Google 日曆中快速建立新活動</translation>
@@ -499,6 +501,7 @@
 <translation id="2118132148597630479">Envelope C5</translation>
 <translation id="2119505898009119320">核發對象：<ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">打孔 (右下方)</translation>
+<translation id="2122214041802369259">價格偏高</translation>
 <translation id="2122719317867821810">這項政策運作正常，但與其他地方設定的值有所衝突，並已覆寫該值。</translation>
 <translation id="2126374524350484896">PDF 轉換工具：</translation>
 <translation id="2130448033692577677">你並未設定 DnsOverHttpsMode 政策，因此系統無法套用你指定的範本。</translation>
@@ -859,6 +862,7 @@
 <translation id="3054512251683174387">Chrome 會自動刪除 4 週前的主題，隨著你持續瀏覽內容，清單中可能會再次出現特定主題。你也可以封鎖不希望 Chrome 提供給網站的主題。進一步瞭解如何在 Chrome 中管理廣告隱私權。</translation>
 <translation id="3061707000357573562">修補服務</translation>
 <translation id="306573536155379004">已啟動遊戲。</translation>
+<translation id="3067505415088964188">價格較低</translation>
 <translation id="3068991664510324412">電腦與電玩遊戲</translation>
 <translation id="3080254622891793721">圖片</translation>
 <translation id="3081538120861307764">為評估廣告成效，網站之間僅會分享特定類型的資料，例如在一天中向使用者放送廣告的時段。</translation>
@@ -2073,6 +2077,7 @@
 <translation id="5967592137238574583">編輯聯絡資訊</translation>
 <translation id="5967867314010545767">從歷史記錄中移除</translation>
 <translation id="5968022600320704045">找不到相符的搜尋結果</translation>
+<translation id="5969199813874624822">儲存並追蹤價格</translation>
 <translation id="5974052231147553524">第六卷</translation>
 <translation id="5975083100439434680">縮小</translation>
 <translation id="5979084224081478209">檢查密碼</translation>
@@ -3397,6 +3402,7 @@
 <translation id="9141013498910525015">管理地址</translation>
 <translation id="9144951720726881238">到期日：</translation>
 <translation id="9148507642005240123">復原編輯(&amp;U)</translation>
+<translation id="9148599396704355100">價格較低</translation>
 <translation id="9150045010208374699">使用你的相機</translation>
 <translation id="9150685862434908345">你的系統管理員可以遠端變更瀏覽器設定。這部裝置上的活動也可以透過 Chrome 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">已更新</translation>
@@ -3405,7 +3411,7 @@
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">造訪的網站也會根據你的網站活動判斷你喜歡的內容。舉例來說，如果你造訪的網站販售長跑慢跑鞋，該網站可能會判定你的興趣是跑馬拉松。</translation>
 <translation id="9166851138617700776">進一步瞭解網站建議廣告和廣告評估</translation>
-<translation id="9168814207360376865">允許網站檢查付款方式是否已成功儲存</translation>
+<translation id="9168814207360376865">允許網站檢查是否有已儲存的付款方式</translation>
 <translation id="9169664750068251925">永遠禁止在這個網站執行</translation>
 <translation id="9169931577761441333">將 <ph name="APP_NAME" /> 新增至主畫面</translation>
 <translation id="9170848237812810038">取消(&amp;U)</translation>

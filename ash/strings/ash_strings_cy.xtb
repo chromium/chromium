@@ -140,6 +140,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1550406609415860283">Dyfeisiau ar gael</translation>
 <translation id="1550523713251050646">Cliciwch am ragor o ddewisiadau</translation>
 <translation id="1555130319947370107">Glas</translation>
+<translation id="1557622599341396706">Dangos enw desg</translation>
 <translation id="1576511610858879060">Mae eich dyfais Chromebook neu Bluetooth yn defnyddio fersiwn hŷn o Bluetooth. Defnyddiwch ffynhonnell fewnbwn arall ar gyfer gwell ansawdd sain.</translation>
 <translation id="1576623706766186887">Pellhau pan fydd chwyddwydr ymlaen</translation>
 <translation id="1586324912145647027">Ewch i ddesg 1 i 8</translation>
@@ -929,6 +930,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="504465286040788597">Paragraff blaenorol</translation>
 <translation id="5045550434625856497">Cyfrinair anghywir</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">Byddwch yn cael gwybod os byddwch yn siarad tra byddwch wedi'ch distewi. Nid yw sain byth yn gadael eich dyfais.</translation>
 <translation id="5078796286268621944">PIN anghywir</translation>
 <translation id="5083553833479578423">Datgloi rhagor o nodweddion Assistant.</translation>
 <translation id="5092436659250499817">Troi lliw ôl-olau'r bysellfwrdd ymlaen/ei ddiffodd</translation>
@@ -959,6 +961,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5207949376430453814">Amlygu caret testun</translation>
 <translation id="5208059991603368177">Ymlaen</translation>
 <translation id="5216991270656129561">Wedi'i ddiffodd tan <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Anfonwch neu atebwch negeseuon eich ffôn yn gyflym gan ddefnyddio Phone Hub.</translation>
 <translation id="5222676887888702881">Allgofnodi</translation>
 <translation id="5229343007215035173">Troi'r sgrîn preifatrwydd ymlaen/ei ddiffodd</translation>
 <translation id="5234764350956374838">Diystyru</translation>
@@ -987,6 +990,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5317780077021120954">Cadw</translation>
 <translation id="5319712128756744240">Paru dyfais newydd</translation>
 <translation id="5322611492012084517">Methu â dod o hyd i'ch ffôn</translation>
+<translation id="5323994101633366939">Cuddio enw desg</translation>
 <translation id="5327248766486351172">Enw</translation>
 <translation id="5329548388331921293">Wrthi'n cysylltu...</translation>
 <translation id="5331975486040154427">Dyfais USB-C (porth chwith ar y cefn)</translation>
@@ -1169,6 +1173,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6114505516289286752">Wedi lawrlwytho ffeiliau lleferydd <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Cywirwr lliw</translation>
 <translation id="6121838516699723042">Cadarnhau lawrlwytho <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Nid yw Google Assistant ar gael mewn sesiwn westai.</translation>
 <translation id="6129953537138746214">Bwlch</translation>
@@ -1637,6 +1642,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Ap</translation>
 <translation id="8255234195843591763">Ailosod i ddiweddaru</translation>
 <translation id="8261506727792406068">Dileu</translation>
+<translation id="8262312463845990408">Toglo chwarae yn ôl</translation>
 <translation id="8270450402312105425">{0,plural, =1{Newid dyfais i'r fersiwn flaenorol o fewn awr}zero{Newid dyfais i'r fersiwn flaenorol o fewn # awr}two{Newid dyfais i'r fersiwn flaenorol o fewn # awr}few{Newid dyfais i'r fersiwn flaenorol o fewn # awr}many{Newid dyfais i'r fersiwn flaenorol o fewn # awr}other{Newid dyfais i'r fersiwn flaenorol o fewn # awr}}</translation>
 <translation id="8277261673056602147">Amlygu testun ar eich sgrîn</translation>
 <translation id="8284362522226889623">Sweipiwch i'r chwith gyda phedwar bys i newid i'r ddesg flaenorol</translation>

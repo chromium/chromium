@@ -929,6 +929,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="504465286040788597">Forrige afsnit</translation>
 <translation id="5045550434625856497">Ugyldig adgangskode</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">Du får besked, hvis du taler, mens mikrofonen er slået fra. Lyden forlader aldrig din enhed.</translation>
 <translation id="5078796286268621944">Forkert pinkode</translation>
 <translation id="5083553833479578423">Få adgang til endnu flere Assistent-funktioner.</translation>
 <translation id="5092436659250499817">Slå tastaturets baggrundslys til/fra</translation>
@@ -959,6 +960,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5207949376430453814">Fremhæv tekstmarkør</translation>
 <translation id="5208059991603368177">Til</translation>
 <translation id="5216991270656129561">Deaktiveret indtil <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Du kan hurtigt sende eller besvare beskeder fra din telefon ved hjælp af Telefonstyring.</translation>
 <translation id="5222676887888702881">Log ud</translation>
 <translation id="5229343007215035173">Slå privatlivsfilter til/fra</translation>
 <translation id="5234764350956374838">Luk</translation>
@@ -1479,7 +1481,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7579778809502851308">Screenshot</translation>
 <translation id="7593891976182323525">Søg eller Shift</translation>
 <translation id="7600875258240007829">Se alle notifikationer</translation>
-<translation id="7601417191446344542">Vil du aktivere påmindelse om at slå mikrofonen fra?</translation>
+<translation id="7601417191446344542">Vil du aktivere påmindelse om at slå mikrofonen til?</translation>
 <translation id="7607002721634913082">Sat på pause</translation>
 <translation id="7609951632080598826">Kalendervisning, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Der blev oprettet forbindelse til kameraet igen.</translation>

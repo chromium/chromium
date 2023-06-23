@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">有可用的裝置</translation>
 <translation id="1550523713251050646">點擊即可取得更多選項</translation>
 <translation id="1555130319947370107">藍色</translation>
+<translation id="1557622599341396706">顯示桌面名稱</translation>
 <translation id="1576511610858879060">Chromebook 或藍牙裝置正使用較舊版本的藍牙。如要提高音效品質，請使用其他輸入來源。</translation>
 <translation id="1576623706766186887">放大鏡開啟時縮小畫面</translation>
 <translation id="1586324912145647027">前往桌面 1 至 8</translation>
@@ -986,6 +987,7 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319712128756744240">配對新裝置</translation>
 <translation id="5322611492012084517">找不到手機</translation>
+<translation id="5323994101633366939">隱藏桌面名稱</translation>
 <translation id="5327248766486351172">名稱</translation>
 <translation id="5329548388331921293">正在連線…</translation>
 <translation id="5331975486040154427">USB-C 裝置 (左側後方連接埠)</translation>
@@ -1168,6 +1170,7 @@
 <translation id="6103838137565245112">系統</translation>
 <translation id="6114505516289286752">已下載<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">色彩校正</translation>
 <translation id="6121838516699723042">確認下載 <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">「Google 助理」不適用於訪客工作階段。</translation>
 <translation id="6129953537138746214">空格</translation>
@@ -1635,6 +1638,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />，應用程式</translation>
 <translation id="8255234195843591763">重設以更新</translation>
 <translation id="8261506727792406068">刪除</translation>
+<translation id="8262312463845990408">切換播放</translation>
 <translation id="8270450402312105425">{0,plural, =1{在 1 小時內將裝置回復為先前的版本}other{在 # 小時內將裝置回復為先前的版本}}</translation>
 <translation id="8277261673056602147">突顯畫面上的文字</translation>
 <translation id="8284362522226889623">請用四隻手指向左滑動以切換至上一個桌面</translation>
@@ -1688,7 +1692,7 @@
 <translation id="8513108775083588393">自動旋轉</translation>
 <translation id="851458219935658693">顯示目前桌面嘅視窗，揀咗圓形按鈕</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在開啟時可能無法充電。</translation>
-<translation id="852060496139946719">{NUM_APPS,plural, =1{麥克風輸入來源由「<ph name="APP_NAME" />」控制}other{麥克風輸入來源由 # 個應用程式控制}}</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{麥克風輸入由「<ph name="APP_NAME" />」控制}other{麥克風輸入由 # 個應用程式控制}}</translation>
 <translation id="8535393432370007982">根據顏色復原排列次序</translation>
 <translation id="8541078764854166027">相機取景功能</translation>
 <translation id="8542053257095774575">沒有已儲存的桌面或範本</translation>

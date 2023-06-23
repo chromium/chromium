@@ -407,7 +407,7 @@
 <translation id="4289849978083912975">Diaesitys</translation>
 <translation id="4297501883039923494">Pysähtynyt – Tuntematon virhe</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kuvaa</translation>
-<translation id="4311195029067684288">Täynnä</translation>
+<translation id="4311195029067684288">Täysi</translation>
 <translation id="4333390807948134856">Näppäintä painetaan: <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Muuta verkon APN-asetuksia. APN:t luovat yhteyden mobiiliverkkon ja internetin välille. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">Nollaa kaikki pikakomennot</translation>
@@ -830,7 +830,7 @@
 <translation id="763165478673169849">Edellinen nollausaika</translation>
 <translation id="7633068090678117093">Taustakuva</translation>
 <translation id="7648838807254605802">Suuri HTTPS-viive</translation>
-<translation id="765159867434478292">Jaa</translation>
+<translation id="765159867434478292">Jaettu</translation>
 <translation id="7656388927906093505">Laite on hiiri.</translation>
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7665800271478495366">Vaihda avatar</translation>

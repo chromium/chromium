@@ -430,6 +430,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1870473978371099486">Korepetycje i prywatne lekcje</translation>
 <translation id="1871208020102129563">Proxy skonfigurowano do używania stałych serwerów proxy, a nie URL-a skryptu PAC.</translation>
 <translation id="1871284979644508959">Pole wymagane</translation>
+<translation id="1871739799120352748">Cena jest wysoka</translation>
 <translation id="1873899211667975540">Muzyka rockowa</translation>
 <translation id="1874224422119691492">Jeśli chcesz włączyć lub wyłączyć opcję używania blokady ekranu do wypełniania haseł, otwórz <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Taca na zdjęcia</translation>
@@ -474,6 +475,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> chce na stałe przechowywać dużą ilość danych na Twoim komputerze</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{i jeszcze 1}few{i jeszcze #}many{i jeszcze #}other{i jeszcze #}}</translation>
+<translation id="2001469757375372617">Coś poszło nie tak. Zmiana nie została zapisana.</translation>
 <translation id="2003709556000175978">Zresetuj teraz swoje hasło</translation>
 <translation id="2003775180883135320">Cztery otwory u góry</translation>
 <translation id="2009942480257059311">Przycisk Utwórz wydarzenie; aktywuj, aby szybko utworzyć nowe wydarzenie w Kalendarzu Google</translation>
@@ -533,6 +535,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2118132148597630479">Koperta C5</translation>
 <translation id="2119505898009119320">Wystawiony dla: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Otwór w prawym dolnym rogu</translation>
+<translation id="2122214041802369259">Cena jest wysoka</translation>
 <translation id="2122719317867821810">Ta zasada działa w oczekiwany sposób, ale zastąpiła pewną sprzeczną wartość, którą ustawiono w innym miejscu.</translation>
 <translation id="2126374524350484896">Źródło pliku PDF:</translation>
 <translation id="2130448033692577677">Nie można zastosować wybranych szablonów, bo nie została skonfigurowana zasada DnsOverHttpsMode.</translation>
@@ -921,6 +924,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3054512251683174387">Chrome automatycznie usuwa tematy starsze niż 4 tygodnie. Podczas dalszego przeglądania temat może pojawić się ponownie na liście. Możesz też zablokować tematy, których Chrome ma nie udostępniać witrynom. Dowiedz się więcej o zarządzaniu prywatnością w reklamach w Chrome.</translation>
 <translation id="3061707000357573562">Zastosowanie poprawki do usługi</translation>
 <translation id="306573536155379004">Gra się rozpoczęła.</translation>
+<translation id="3067505415088964188">Cena jest niska</translation>
 <translation id="3068991664510324412">Gry komputerowe i wideo</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3081538120861307764">Na potrzeby pomiaru skuteczności reklam pewne typy danych są udostępniane przez witryny, np. pora dnia, o której reklama została Ci wyświetlona.</translation>
@@ -2230,6 +2234,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5967592137238574583">Edytuj dane kontaktowe</translation>
 <translation id="5967867314010545767">Usuń z historii</translation>
 <translation id="5968022600320704045">Brak wyników wyszukiwania</translation>
+<translation id="5969199813874624822">Zapisz i obserwuj cenę</translation>
 <translation id="5974052231147553524">Rolka 6</translation>
 <translation id="5975083100439434680">Pomniejsz</translation>
 <translation id="5979084224081478209">Sprawdź hasła</translation>
@@ -3276,6 +3281,7 @@ Dodatkowe informacje:
 <translation id="8246482227229072868">Obrączki i pierścionki</translation>
 <translation id="8249296373107784235">Przerwij</translation>
 <translation id="8249463483885748674">Testy wstępne i standaryzowane</translation>
+<translation id="824968735947741546">Tłumaczę z języka: <ph name="SOURCE" /> (wykrytego automatycznie) na <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Ten adres jest obecnie zapisany na tym urządzeniu. Aby używać go w różnych usługach Google, zapisz go na swoim koncie Google <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Przycisk zarządzania ustawieniami ułatwień dostępu; aby spersonalizować narzędzia ułatwień dostępu w ustawieniach Chrome OS, naciśnij Enter</translation>
 <translation id="8253091569723639551">Wymagany jest adres rozliczeniowy</translation>
@@ -3668,6 +3674,7 @@ Dodatkowe informacje:
 <translation id="9141013498910525015">Zarządzaj adresami</translation>
 <translation id="9144951720726881238">Data wygaśnięcia:</translation>
 <translation id="9148507642005240123">&amp;Cofnij edycję</translation>
+<translation id="9148599396704355100">Cena jest niska</translation>
 <translation id="9150045010208374699">Korzystanie z Twojej kamery</translation>
 <translation id="9150685862434908345">Administrator może zdalnie zmienić konfigurację przeglądarki. Aktywność na tym urządzeniu może być zarządzana również poza Chrome. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Zaktualizowano</translation>

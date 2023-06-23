@@ -140,6 +140,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1550406609415860283">Apparaten beschikbaar</translation>
 <translation id="1550523713251050646">Klik voor meer opties</translation>
 <translation id="1555130319947370107">Blauw</translation>
+<translation id="1557622599341396706">Bureaunaam tonen</translation>
 <translation id="1576511610858879060">Je Chromebook of bluetooth-apparaat gebruikt een oudere versie van bluetooth. Gebruik een andere invoerbron voor een betere audiokwaliteit.</translation>
 <translation id="1576623706766186887">Uitzoomen als vergrootglas aanstaat</translation>
 <translation id="1586324912145647027">Naar bureau 1 tot en met 8 gaan</translation>
@@ -989,6 +990,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5319712128756744240">Nieuw apparaat koppelen</translation>
 <translation id="5322611492012084517">Kan je telefoon niet vinden</translation>
+<translation id="5323994101633366939">Bureaunaam verbergen</translation>
 <translation id="5327248766486351172">Naam</translation>
 <translation id="5329548388331921293">Verbinden...</translation>
 <translation id="5331975486040154427">USB-C-apparaat (poort links aan de achterkant)</translation>
@@ -1171,6 +1173,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="6103838137565245112">systeem</translation>
 <translation id="6114505516289286752">Spraakbestanden in het <ph name="LANGUAGE" /> gedownload</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
+<translation id="6119972796024789243">Kleurcorrectie</translation>
 <translation id="6121838516699723042">Downloaden van <ph name="FILENAME" /> bevestigen</translation>
 <translation id="612734058257491180">De Google Assistent is niet beschikbaar in een gastsessie.</translation>
 <translation id="6129953537138746214">Spatie</translation>
@@ -1368,7 +1371,7 @@ Nieuwe installatie</translation>
 <translation id="7026338066939101231">Lager</translation>
 <translation id="7029814467594812963">Sessie sluiten</translation>
 <translation id="7032161822340700104">Er zijn maar 6 templates toegestaan. Verwijder een template om een nieuwe op te slaan.</translation>
-<translation id="7034025838182392395"><ph name="APP_NAME" /> wil de <ph name="DEVICE_NAME" /> gebruiken. Zet de fysieke <ph name="DEVICE_NAME" />schakelaar van je apparaat aan.</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> wil de <ph name="DEVICE_NAME" /> gebruiken. Zet de fysieke schakelaar van de <ph name="DEVICE_NAME" /> van je apparaat aan.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
 <translation id="7042322267639375032">Statusgedeelte samenvouwen</translation>
 <translation id="7045033600005038336">Template vervangen?</translation>
@@ -1478,7 +1481,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7579778809502851308">Schermopname</translation>
 <translation id="7593891976182323525">Zoeken of Shift</translation>
 <translation id="7600875258240007829">Alle meldingen bekijken</translation>
-<translation id="7601417191446344542">Porren voor dempen aanzetten?</translation>
+<translation id="7601417191446344542">Porren voor gedempt aanzetten?</translation>
 <translation id="7607002721634913082">Onderbroken</translation>
 <translation id="7609951632080598826">Agendaweergave, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Camera opnieuw verbonden.</translation>
@@ -1622,7 +1625,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8185090165691050712">Menu aan-/uitzetten om het formaat van de vergrendelde modus aan te passen</translation>
 <translation id="8192202700944119416">Meldingen zijn verborgen.</translation>
 <translation id="8196787716797768628">Met gebaren kun je snel schakelen tussen apps en je Chromebook gebruiken in de tabletmodus.</translation>
-<translation id="8198456017687137612">Tabblad casten</translation>
+<translation id="8198456017687137612">Tabblad wordt gecast</translation>
 <translation id="8200772114523450471">Doorgaan</translation>
 <translation id="8203795194971602413">Klik met rechtermuisknop</translation>
 <translation id="8209010265547628927">Resetten</translation>
@@ -1636,6 +1639,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
 <translation id="8255234195843591763">Reset om te updaten</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
+<translation id="8262312463845990408">Afspelen aan-/uitzetten</translation>
 <translation id="8270450402312105425">{0,plural, =1{Zet het apparaat binnen een uur terug naar een oudere versie}other{Zet het apparaat binnen # uur terug naar een oudere versie}}</translation>
 <translation id="8277261673056602147">Tekst op je scherm markeren</translation>
 <translation id="8284362522226889623">Swipe met 4 vingers naar links om naar het vorige bureau te schakelen</translation>

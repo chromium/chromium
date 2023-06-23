@@ -140,6 +140,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1550406609415860283">Verfügbare Geräte</translation>
 <translation id="1550523713251050646">Für weitere Optionen klicken</translation>
 <translation id="1555130319947370107">Blau</translation>
+<translation id="1557622599341396706">Desktopnamen anzeigen</translation>
 <translation id="1576511610858879060">Auf deinem Chromebook oder Bluetooth-Gerät wird eine ältere Bluetooth-Version genutzt. Verwende für eine bessere Audioqualität eine andere Eingabequelle.</translation>
 <translation id="1576623706766186887">Herauszoomen, wenn die Lupe aktiviert ist</translation>
 <translation id="1586324912145647027">Zu Desktop 1–8 wechseln</translation>
@@ -507,7 +508,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3291862315280588024">An den Anfang des vorherigen Worts</translation>
 <translation id="3294437725009624529">Gast</translation>
 <translation id="3298690094479023523">Deine PIN oder dein Passwort konnte noch immer nicht bestätigt werden. Versuche es noch einmal.</translation>
-<translation id="3300193645498960160">Du wirst benachrichtigt, wenn du zu sprechen anfängst, während das Mikrofon stummgeschaltet ist. Das Audio verbleibt dabei auf deinem Gerät.</translation>
+<translation id="3300193645498960160">Du wirst benachrichtigt, wenn du zu sprechen anfängst, während das Mikrofon stummgeschaltet ist. Von deinem Gerät wird kein Audio gesendet.</translation>
 <translation id="3307642347673023554">Zum Laptopmodus gewechselt</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kann sich später weiterhin anmelden.</translation>
 <translation id="3321628682574733415">Falscher Elterncode</translation>
@@ -986,6 +987,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5319712128756744240">Neues Gerät koppeln</translation>
 <translation id="5322611492012084517">Dein Smartphone wurde nicht gefunden</translation>
+<translation id="5323994101633366939">Desktopnamen ausblenden</translation>
 <translation id="5327248766486351172">Name</translation>
 <translation id="5329548388331921293">Wird verbunden…</translation>
 <translation id="5331975486040154427">USB-C-Gerät (Port hinten links)</translation>
@@ -1168,6 +1170,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6103838137565245112">System</translation>
 <translation id="6114505516289286752">Sprachdateien auf <ph name="LANGUAGE" /> heruntergeladen</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
+<translation id="6119972796024789243">Farbkorrektur</translation>
 <translation id="6121838516699723042">Download bestätigen: <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">In Gastsitzungen ist Google Assistant nicht verfügbar.</translation>
 <translation id="6129953537138746214">Leertaste</translation>
@@ -1636,6 +1639,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8247998213073982446"><ph name="APP_NAME" />, App</translation>
 <translation id="8255234195843591763">Zurücksetzen, um Update zu erhalten</translation>
 <translation id="8261506727792406068">Löschen</translation>
+<translation id="8262312463845990408">Wiedergabe aktivieren/deaktivieren</translation>
 <translation id="8270450402312105425">{0,plural, =1{Gerät innerhalb von einer Stunde auf eine frühere Version zurücksetzen}other{Gerät innerhalb von # Stunden auf eine frühere Version zurücksetzen}}</translation>
 <translation id="8277261673056602147">Text auf dem Bildschirm markieren</translation>
 <translation id="8284362522226889623">Wische mit vier Fingern nach links, um zum vorigen Desktop zu wechseln</translation>

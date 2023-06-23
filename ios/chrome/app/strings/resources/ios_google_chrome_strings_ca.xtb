@@ -11,6 +11,7 @@
 <translation id="1511320244449497906">Tens la sessió iniciada i sincronitzes les teves dades amb un compte gestionat per <ph name="DOMAIN" />. L'administrador d'aquest compte ara pot definir polítiques dels usuaris específiques del compte que poden canviar el comportament de Chrome.</translation>
 <translation id="1554731936187952550">Tens la seguretat més efectiva de Chrome contra llocs web perillosos</translation>
 <translation id="1682483655351012182">Sincronitza les dades de Chrome</translation>
+<translation id="1733654336159102143">Bloqueja el mode d'incògnit quan surtis de Chrome o quan canviïs d'aplicació.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Utilitza Chrome automàticament quan toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="1917964099031477364">Aquest compte i totes les dades que no s'hagin desat se suprimiran de Chrome i de la resta d'aplicacions de Google instal·lades en aquest dispositiu.</translation>
@@ -34,6 +35,7 @@
 <translation id="2695886661449553974">Chrome no ha pogut cercar actualitzacions. Torna-ho a provar més tard.</translation>
 <translation id="2732745070297234559">Chrome no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
 <translation id="2736805085127235148">En aquests moments, les notificacions de Chrome estan desactivades a la configuració del dispositiu.</translation>
+<translation id="2754286486056173475">Crea esdeveniments del calendari a Chrome</translation>
 <translation id="2767464022270041271">No hi ha cap contrasenya desada. El gestor de contrasenyes de Google pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="2840432500933227975">Obre la configuració de Chrome a iOS, toca Aplicació de navegador predeterminada i selecciona Chrome.</translation>
 <translation id="2869959624320573933">Inicia la sessió a Chrome</translation>
@@ -99,6 +101,7 @@
 <translation id="6676840375528380067">Vols esborrar les dades de Chrome del dispositiu?</translation>
 <translation id="6709398533399187136">La teva contrasenya ha quedat exposada en una violació de les dades. El gestor de contrasenyes de Google recomana que la canviïs ara.</translation>
 <translation id="6822673484890854830">Chrome no ha pogut comprovar totes les contrasenyes. Torna-ho a provar més tard.</translation>
+<translation id="6896070677477855330">Activa l'opció Bloqueja les pestanyes d'incògnit després de tancar Chrome.</translation>
 <translation id="6964931465519938134">Ara pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="6975725306479268850">Tria Chrome a Emplenament automàtic</translation>
 <translation id="7059914902409643750">Personalitza Chrome</translation>
@@ -140,6 +143,7 @@
 <translation id="8765470054473112089">Quan escrius a la barra d'adreces o al quadre de cerca, Chrome envia el que escrius al teu motor de cerca predeterminat per obtenir millors suggeriments. Aquesta opció està desactivada en el mode d'incògnit.</translation>
 <translation id="8772179140489533211">Mostra sol·licituds per iniciar la sessió a Chrome.</translation>
 <translation id="8788269841521769222">No caldrà que recordis aquesta contrasenya. Es desarà al gestor de contrasenyes de Google per a <ph name="EMAIL" /></translation>
+<translation id="880967149107462122">Ves a la configuració de Chrome</translation>
 <translation id="8857676124663337448">El gestor de contrasenyes de Google no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
 <translation id="8897749957032330183">Les contrasenyes es desen al gestor de contrasenyes de Google en aquest dispositiu.</translation>
 <translation id="8969290730818637510">Quan aquesta opció està activada:

@@ -140,6 +140,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1550406609415860283">Dispositivi disponibili</translation>
 <translation id="1550523713251050646">Fai clic per visualizzare altre opzioni</translation>
 <translation id="1555130319947370107">Blu</translation>
+<translation id="1557622599341396706">Mostra nome scrivania</translation>
 <translation id="1576511610858879060">Il tuo Chromebook o dispositivo Bluetooth sta utilizzando una versione precedente di Bluetooth. Utilizza un'altra sorgente di ingresso per migliorare la qualità audio.</translation>
 <translation id="1576623706766186887">Diminuisci lo zoom quando la lente d'ingrandimento è attiva</translation>
 <translation id="1586324912145647027">Vai alla scrivania 1 di 8</translation>
@@ -986,6 +987,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5319712128756744240">Accoppia nuovo dispositivo</translation>
 <translation id="5322611492012084517">Impossibile trovare il telefono</translation>
+<translation id="5323994101633366939">Nascondi nome scrivania</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5329548388331921293">Connessione…</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (porta posteriore sinistra)</translation>
@@ -1168,6 +1170,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">File di contenuti vocali scaricati per questa la lingua: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Correzione del colore</translation>
 <translation id="6121838516699723042">Conferma download <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistente Google non è disponibile in una sessione Ospite.</translation>
 <translation id="6129953537138746214">Spazio</translation>
@@ -1272,6 +1275,7 @@ Nuova installazione</translation>
 <translation id="6597278316891651699">Fotocamera allineata all'angolo in basso a sinistra. Conflitto con la piattaforma di sistema.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />, gestita dall'amministratore</translation>
 <translation id="6612802754306526077">Modalità Registrazione dello schermo selezionata</translation>
+<translation id="6613765291890844037">Spazio di archiviazione: <ph name="STORAGE_IN_USE_SIZE" /> in uso | <ph name="STORAGE_TOTAL_SIZE" /> totali</translation>
 <translation id="6614169507485700968">Schermata sulla privacy attiva</translation>
 <translation id="6625718907317144388">Le notifiche di <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> e altre app sono nascoste perché è attiva la visualizzazione protetta</translation>
 <translation id="6627638273713273709">Tasto per la ricerca + MAIUSC + K</translation>
@@ -1636,6 +1640,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
 <translation id="8255234195843591763">Reimposta per aggiornare</translation>
 <translation id="8261506727792406068">Elimina</translation>
+<translation id="8262312463845990408">Attiva/disattiva riproduzione</translation>
 <translation id="8270450402312105425">{0,plural, =1{Ripristina la versione precedente del dispositivo entro un'ora}other{Ripristina la versione precedente del dispositivo entro # ore}}</translation>
 <translation id="8277261673056602147">Evidenzia il testo sullo schermo</translation>
 <translation id="8284362522226889623">Scorri verso sinistra con quattro dita per passare alla scrivania precedente</translation>

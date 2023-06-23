@@ -72,7 +72,7 @@
 <translation id="1267032506238418139">ショートカットの変更</translation>
 <translation id="1269405891096105529">ゲストモードでは周辺機器を使用できません</translation>
 <translation id="1270290102613614947">画面キーボードは無効です</translation>
-<translation id="1272079795634619415">中止</translation>
+<translation id="1272079795634619415">停止</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" />を充電中</translation>
 <translation id="1276975447697633661">ファイルを選択して <ph name="KEY" /> キーを押す</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" />（<ph name="ANNOTATION" />）</translation>
@@ -101,7 +101,7 @@
 <translation id="1360788414852622716">プロファイルを無効にしています。この処理には数分かかることがあります。</translation>
 <translation id="1364382257761975320">Chromebook のロックを解除するには、指紋認証を使用します</translation>
 <translation id="1365866993922957110">自動で更新する</translation>
-<translation id="1372545819342940910">後で使用するためにデスクを保存</translation>
+<translation id="1372545819342940910">デスクを保存して後で使用</translation>
 <translation id="1383597849754832576">読み上げファイルをダウンロードできません。しばらくしてからもう一度お試しください。</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1391102559483454063">オン</translation>

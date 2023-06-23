@@ -2091,6 +2091,7 @@
 <translation id="2727744317940422214">抱歉，出了点问题。请在说明中提交反馈并附上 #bruschetta。错误代码为 <ph name="ERROR" />。清理失败，您可能需要手动清理。</translation>
 <translation id="2729314457178420145">一并清除浏览数据 (<ph name="URL" />)，这可能会使您在 Google.com 上退出帐号。<ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">Chrome 正在寻找新方法来减少跟踪，让您在浏览时更安全。Chrome 还会<ph name="ESTIMATE_INTERESTS_LINK" />，并允许您管理它们。然后，您访问的网站可请求 Chrome 提供您的兴趣以据之向您展示广告。</translation>
+<translation id="2729577602370119849">轻松访问和管理打印机</translation>
 <translation id="2730029791981212295">正在备份 Linux 应用和文件</translation>
 <translation id="2730901670247399077">表情符号建议</translation>
 <translation id="273093730430620027">此网页正在使用您的摄像头。</translation>
@@ -2410,6 +2411,7 @@
 <translation id="2996286169319737844">数据已使用您的同步密码加密。这并不包括 Google Pay 中的付款方式和地址。</translation>
 <translation id="2996722619877761919">长边翻转</translation>
 <translation id="2996932914629936323">会从所有已同步的设备中清除历史记录</translation>
+<translation id="2998097899774209901">已开启 • 此扩展程序违反了 Chrome 应用商店政策</translation>
 <translation id="2998267783395280091">找到网络了</translation>
 <translation id="3000378525979847272">授予了“<ph name="PERMISSION_1" />”和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="3000461861112256445">单声道音频</translation>
@@ -2442,6 +2444,7 @@
 <translation id="3012631534724231212">(iframe)</translation>
 <translation id="3012804260437125868">仅限同一网站的安全连接</translation>
 <translation id="3012917896646559015">请立即与您的硬件制造商联系，将您的计算机送至维修机构。</translation>
+<translation id="3013652227108802944">已关闭 • 此扩展程序违反了 Chrome 应用商店政策</translation>
 <translation id="3014717196148502230">Chrome 会预加载您可能会访问的更多网页，以便提高这些网页在您访问时的加载速度。</translation>
 <translation id="301525898020410885">语言由贵单位设置</translation>
 <translation id="3015639418649705390">立即重新启动</translation>
@@ -2509,6 +2512,7 @@
 <translation id="3072775339180057696">允许此网站查看“<ph name="FILE_NAME" />”？</translation>
 <translation id="3074499504015191586">翻译整页内容</translation>
 <translation id="3075144191779656260">轻触 <ph name="DEVICE_TYPE" /> 左侧的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
+<translation id="3075740753681485522">已关闭 • 此扩展程序包含恶意软件</translation>
 <translation id="3075874217500066906">必须重启才能开始 Powerwash 操作。重启后，系统将提示您确认是否要继续。</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">仅保存到此设备上</translation>
@@ -2671,6 +2675,7 @@
 <translation id="3243017971870859287">读取 ChromeOS Flex 设备序列号和组件序列号</translation>
 <translation id="324366796737464147">降噪</translation>
 <translation id="3244294424315804309">继续保持静音</translation>
+<translation id="3247649647204519958">在此处，您可以查看和管理针对您所在网站的扩展程序权限</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 网络错误</translation>
 <translation id="3248902735035392926">安全至上。请花点时间<ph name="BEGIN_LINK" />立即检查一下您的扩展程序<ph name="END_LINK" />吧</translation>
 <translation id="3249323165366527554">当您的密码自动保存到 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />之后，您便可更快速地注册和登录。</translation>
@@ -2763,6 +2768,7 @@
 <translation id="3320271870899888245">无法连接到 OneDrive。请重试。</translation>
 <translation id="3320630259304269485">安全浏览（保护您免受危险网站的侵害）和其他安全设置</translation>
 <translation id="3321460131042519426">启用自动换行</translation>
+<translation id="3321494112580110651">找不到您的打印机？</translation>
 <translation id="3323521181261657960">恭喜！您获得了更多的设备使用时间</translation>
 <translation id="3323577066981719144">您在此处所做的更改仅会应用到 Chrome 浏览器。若要更改您的 Lacros Chrome 浏览器设置，请打开 Lacros Chrome 浏览器，然后转到“设置”。</translation>
 <translation id="3325804108816646710">正在查找可用的配置文件…</translation>
@@ -3621,6 +3627,7 @@
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{退出网页}other{退出网页}}</translation>
 <translation id="4042941173059740150">继续通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">光标大小</translation>
+<translation id="4043620984511647481">手动添加打印机</translation>
 <translation id="4044612648082411741">输入您的证书密码</translation>
 <translation id="4044708573046946214">屏幕锁定密码</translation>
 <translation id="404493185430269859">默认搜索引擎</translation>
@@ -4445,6 +4452,7 @@
 <translation id="477647109558161443">创建桌面快捷方式</translation>
 <translation id="4776594120007763294">如需添加某个页面以供日后阅读，请点击此按钮</translation>
 <translation id="4777458362738635055">此设备的其他用户可以使用该网络</translation>
+<translation id="4777813841994368231">已开启 • 此扩展程序已被其开发者取消发布</translation>
 <translation id="4777825441726637019">Play 商店</translation>
 <translation id="4777943778632837590">配置网络域名服务器</translation>
 <translation id="4778653490315793244">尚无可显示的内容</translation>
@@ -6352,6 +6360,7 @@
 <translation id="6453191633103419909">标签页/屏幕投影品质</translation>
 <translation id="6453921811609336127">若要切换到下一种输入法，请按 <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />空格键<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">在特定网站上</translation>
+<translation id="6455521402703088376">已关闭 • 此扩展程序已被其开发者取消发布</translation>
 <translation id="6455894534188563617">新建文件夹(&amp;N)</translation>
 <translation id="645705751491738698">继续拦截 JavaScript</translation>
 <translation id="6458347417133445570">显示允许所有 Cookie 的有关详情</translation>
@@ -6560,6 +6569,7 @@
 <translation id="6633126565486451781">此文件可能已被读取或修改，因为该网站未使用安全连接</translation>
 <translation id="6635362468090274700">任何人都无法与您分享内容，除非您将自己设为可见。<ph name="BR" /><ph name="BR" />若要将自己设为暂时可见，请打开状态区，然后开启“附近分享”的高可见度模式。</translation>
 <translation id="6635674640674343739">无法建立网络连接。请检查您的网络连接状况，然后重试。</translation>
+<translation id="663569763553406962">查看哪些扩展程序可以读取或更改网站</translation>
 <translation id="6635944431854494329">所有者可以通过“设置”&gt;“高级”&gt;“自动向 Google 发送诊断数据和使用情况数据”来控制这项功能。</translation>
 <translation id="6636623428211296678">探索下方的更多设置，或立即结束</translation>
 <translation id="6639554308659482635">SQLite 使用的内存</translation>
@@ -6804,6 +6814,7 @@
 <translation id="6833996806551876956">隐私沙盒试用</translation>
 <translation id="6835712061486505758">创建 WLAN 热点，以便向其他设备提供互联网连接。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">请连接到互联网，以便更新您的<ph name="DEVICE_TYPE" />。</translation>
+<translation id="6836688241291438278">请确保您的打印机与 Chromebook 连接到同一 Wi-Fi 网络，或者使用 USB 线。详细了解兼容性。</translation>
 <translation id="6839225236531462745">证书删除错误</translation>
 <translation id="6839916869147598086">登录发生变化</translation>
 <translation id="6840155290835956714">发送前先询问</translation>
@@ -8517,6 +8528,7 @@
 <translation id="8275080796245127762">通过您的设备拨打电话</translation>
 <translation id="8275339871947079271">将您的密码移至 Google 帐号后，无论您从哪部设备登录，都能安全地访问这个密码</translation>
 <translation id="8276560076771292512">清空缓存并硬性重新加载</translation>
+<translation id="828180235270931531">其他可用打印机</translation>
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8284279544186306258">所有<ph name="WEBSITE_1" />网站</translation>
 <translation id="8284326494547611709">字幕</translation>
@@ -9257,6 +9269,7 @@
 <translation id="8930622219860340959">无线</translation>
 <translation id="8931076093143205651">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您的 Android 使用体验。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项设置是由此设备的所有者强制指定的。此设备的所有者可以选择向 Google 发送此设备的诊断数据和使用情况数据。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 帐号中。</translation>
 <translation id="8931475688782629595">管理您的同步数据</translation>
+<translation id="8931713990831679796">这些打印机已连接妥当，可以使用了。不妨将它们保存到您的个人资料中，以便更轻松地访问。</translation>
 <translation id="8932654652795262306">“即时网络共享”的网络详细信息</translation>
 <translation id="893298445929867520">购物车已隐藏。当您做出更改时，它们会再次现身。</translation>
 <translation id="8933960630081805351">在 Finder 中显示(&amp;S)</translation>

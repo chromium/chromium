@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">Háttérkép megváltoztatása</translation>
 <translation id="360565022852130722">A Wi-Fi-hálózat gyenge protokollal (WEP 802.1x) van biztosítva</translation>
 <translation id="3606583719724308068">Hosszú a várakozási idő a HTTPS-protokollt használó webhelyekhez való csatlakozáskor</translation>
+<translation id="3607216139080387279">Képernyővédő megjelenítése</translation>
 <translation id="361575905210396100">Köszönjük visszajelzését!</translation>
 <translation id="3632579075709132555">Az Adatvédelmi képernyő kapcsolója</translation>
 <translation id="3639846061339007994">felső</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> vélemény)</translation>
 <translation id="3748026146096797577">Nincs kapcsolódva</translation>
 <translation id="3749289110408117711">Fájlnév</translation>
+<translation id="3766934827878963937">1 óráig</translation>
 <translation id="3771294271822695279">Videofájlok</translation>
 <translation id="3784455785234192852">Zárolás</translation>
 <translation id="380097101658023925">rgb-vezérlők</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">billentyűzet elsötétítése</translation>
 <translation id="6302401976930124515">Teszt (<ph name="TEST_NAME" />) megszakítva</translation>
 <translation id="631063167932043783">Felfedezés alkalmazás</translation>
+<translation id="6318437367327684789">a végtelenségig</translation>
 <translation id="6319207335391420837">Firmware telepítése a következőre: <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Képernyővédő bekapcsolása</translation>
 <translation id="6325525973963619867">Nem sikerült</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">Több oldal mentése egy PDF-be</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Bal oldali Shift</translation>
+<translation id="9143347780818904997"><ph name="MINUTES" /> percig</translation>
 <translation id="9149391708638971077">Memóriateszt futtatása</translation>
 <translation id="9161276708550942948">szóköz</translation>
 <translation id="9173638680043580060">Kevesebb mint 1 perc van hátra</translation>
