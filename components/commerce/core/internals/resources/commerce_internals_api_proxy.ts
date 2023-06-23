@@ -31,6 +31,10 @@ export class CommerceInternalsApiProxy {
     return this.handler.getShoppingListEligibleDetails();
   }
 
+  resetPriceTrackingEmailPref(): void {
+    this.handler.resetPriceTrackingEmailPref();
+  }
+
   getCallbackRouter(): CommerceInternalsPageCallbackRouter {
     return this.callbackRouter;
   }

@@ -40,6 +40,10 @@ interface CommerceInternalsHandler {
   GetIsShoppingListEligible() => (bool eligible);
   // Returns the ShoppingListEligibleDetail.
   GetShoppingListEligibleDetails() =>(ShoppingListEligibleDetail detail);
+  // Resets the user preference for receiving price tracking emails so that the
+  // default value is used (e.g. no value is stored). This helps test UI flows
+  // that depend on that preference not being set.
+  ResetPriceTrackingEmailPref();
 };
 
 // WebUI-side handler for requests from the browser.
