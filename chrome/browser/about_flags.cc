@@ -499,23 +499,23 @@ const FeatureEntry::FeatureVariation kCCTRealTimeEngagementSignalsVariations[] =
       std::size(kCCTRealTimeEngagementSignalsParamFakeValues), nullptr}};
 
 const FeatureEntry::FeatureParam
-    kCCTRealTimeEngagementSignalsAlternativeImplParam100[] = {
-        {"time_can_update_after_end", "100"}  // 100ms
+    kCCTRealTimeEngagementSignalsAlternativeImplParam300[] = {
+        {"time_can_update_after_end", "300"}  // 300ms
 };
 const FeatureEntry::FeatureParam
-    kCCTRealTimeEngagementSignalsAlternativeImplParam25[] = {
-        {"time_can_update_after_end", "25"}  // 25ms
+    kCCTRealTimeEngagementSignalsAlternativeImplParam100[] = {
+        {"time_can_update_after_end", "100"}  // 100ms
 };
 
 const FeatureEntry::FeatureVariation
     kCCTRealTimeEngagementSignalsAlternativeImplVariations[] = {
+        {"Allow 300ms for scroll updates after scroll-end",
+         kCCTRealTimeEngagementSignalsAlternativeImplParam300,
+         std::size(kCCTRealTimeEngagementSignalsAlternativeImplParam300),
+         nullptr},
         {"Allow 100ms for scroll updates after scroll-end",
          kCCTRealTimeEngagementSignalsAlternativeImplParam100,
          std::size(kCCTRealTimeEngagementSignalsAlternativeImplParam100),
-         nullptr},
-        {"Allow 25ms for scroll updates after scroll-end",
-         kCCTRealTimeEngagementSignalsAlternativeImplParam25,
-         std::size(kCCTRealTimeEngagementSignalsAlternativeImplParam25),
          nullptr}};
 
 const FeatureEntry::Choice kReaderModeHeuristicsChoices[] = {

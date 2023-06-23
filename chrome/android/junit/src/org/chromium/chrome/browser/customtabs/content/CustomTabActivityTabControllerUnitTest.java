@@ -232,9 +232,10 @@ public class CustomTabActivityTabControllerUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
-    @Features.DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
-    public void attachEngagementSignalObserver() {
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS,
+            ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
+    public void
+    attachEngagementSignalObserver() {
         when(env.connection.isDynamicFeatureEnabled(anyString())).thenReturn(true);
         when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(true);
         env.reachNativeInit(mTabController);
@@ -252,7 +253,7 @@ public class CustomTabActivityTabControllerUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void disableUsageAndCrashReporting_BeforeInit() {
         when(env.connection.isDynamicFeatureEnabled(anyString())).thenReturn(true);
         when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(false);
@@ -262,7 +263,7 @@ public class CustomTabActivityTabControllerUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
+    @Features.EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
     public void disableUsageAndCrashReporting_AfterInit() {
         when(env.connection.isDynamicFeatureEnabled(anyString())).thenReturn(true);
         when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(true);

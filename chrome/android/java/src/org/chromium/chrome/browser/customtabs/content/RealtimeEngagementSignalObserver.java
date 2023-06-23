@@ -63,7 +63,9 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     // Feature param for the time after the scroll-end a scroll update is allowed.
     @VisibleForTesting
     protected static final String TIME_CAN_UPDATE_AFTER_END = "time_can_update_after_end";
-    private static final int DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS = 100;
+    // This value was chosen based on experiment data. 300ms covers about 98% of the scrolls while
+    // trying to increase coverage further would require an unreasonably high threshold.
+    private static final int DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS = 300;
 
     private static final String TIME_SCROLL_UPDATE_RECEIVED_AFTER_SCROLL_END =
             "CustomTabs.TimeScrollUpdateReceivedAfterScrollEnd";
