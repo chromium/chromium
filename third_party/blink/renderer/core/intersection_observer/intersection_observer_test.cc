@@ -1746,4 +1746,37 @@ TEST_P(IntersectionObserverTest, TargetMarginPercentResolvesAgainstRoot) {
   EXPECT_EQ(target_margin_delegate->EntryCount(), 1);
   EXPECT_TRUE(target_margin_delegate->LastEntry()->isIntersecting());
 }
+
+TEST_P(IntersectionObserverTest, InlineRoot) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <span id="root">
+      <div id="target" style="display: inline-block">TARGET</div>
+    </span>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Element* root = GetDocument().getElementById("root");
+  ASSERT_TRUE(root);
+  IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+  observer_init->setRoot(MakeGarbageCollected<V8UnionDocumentOrElement>(root));
+  DummyExceptionStateForTesting exception_state;
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+  IntersectionObserver* observer = IntersectionObserver::Create(
+      observer_init, *observer_delegate, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  Element* target = GetDocument().getElementById("target");
+  ASSERT_TRUE(target);
+  observer->observe(target, exception_state);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(observer_delegate->CallCount(), 1);
+  EXPECT_EQ(observer_delegate->EntryCount(), 1);
+  // TODO(crbug.com/1456208): Support inline root.
+  EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+}
+
 }  // namespace blink

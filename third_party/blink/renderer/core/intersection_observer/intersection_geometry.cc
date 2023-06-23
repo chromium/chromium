@@ -171,8 +171,10 @@ static const unsigned kConstructorFlagsMask =
 IntersectionGeometry::RootGeometry::RootGeometry(const LayoutObject* root,
                                                  const Vector<Length>& margin) {
   if (!root || !root->GetNode() || !root->GetNode()->isConnected() ||
-      !root->IsBox())
+      // TODO(crbug.com/1456208): Support inline root.
+      !root->IsBox()) {
     return;
+  }
   zoom = root->StyleRef().EffectiveZoom();
   local_root_rect = InitializeRootRect(root, margin);
   TransformState transform_state(TransformState::kApplyTransformDirection);
@@ -555,6 +557,9 @@ bool IntersectionGeometry::ClipToRoot(const LayoutObject* root,
                                       PhysicalRect& unclipped_intersection_rect,
                                       PhysicalRect& intersection_rect,
                                       CachedRects* cached_rects) {
+  if (!root->IsBox()) {
+    return false;
+  }
   // Map and clip rect into root element coordinates.
   // TODO(szager): the writing mode flipping needs a test.
   const LayoutBox* local_ancestor = nullptr;
