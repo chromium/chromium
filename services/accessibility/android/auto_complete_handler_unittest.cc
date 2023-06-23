@@ -38,10 +38,18 @@ using AXWindowIntListProperty = mojom::AccessibilityWindowIntListProperty;
 class AutoCompleteHandlerTest : public testing::Test,
                                 public AXTreeSourceAndroid::Delegate {
  public:
+  class TestSerializationDelegate
+      : public AXTreeSourceAndroid::SerializationDelegate {
+    // AXTreeSourceAndroid::SerializationDelegate overrides.
+    void PopulateBounds(const AccessibilityInfoDataWrapper& node,
+                        ui::AXNodeData& out_data) const override {}
+  };
   class TestAXTreeSourceAndroid : public AXTreeSourceAndroid {
    public:
     explicit TestAXTreeSourceAndroid(AXTreeSourceAndroid::Delegate* delegate)
-        : AXTreeSourceAndroid(delegate, /*window=*/nullptr) {}
+        : AXTreeSourceAndroid(delegate,
+                              std::make_unique<TestSerializationDelegate>(),
+                              /*window=*/nullptr) {}
 
     // AXTreeSourceAndroid overrides.
     AccessibilityInfoDataWrapper* GetFromId(int32_t id) const override {

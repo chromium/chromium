@@ -3,7 +3,6 @@ include_rules = [
   "+ash/public/cpp/app_types_util.h",
   "+ash/test/ash_test_base.h",
   "+chrome/grit/generated_resources.h",
-  "+components/exo",
   "+extensions/browser/api/automation_internal/automation_event_router.h",
   "+ui/accessibility",
   "+ui/aura",

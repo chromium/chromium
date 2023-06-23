@@ -6,7 +6,6 @@ source_set("android_lib") {
   public_deps = [
     "//ash/public/cpp:cpp",
     "//chrome/app:generated_resources_grit",
-    "//components/exo",
     "//extensions/browser/api/automation_internal:automation_internal",
     "//services/accessibility/android/public/mojom",
   ]
@@ -26,8 +25,6 @@ source_set("android_lib") {
     "ax_tree_source_android.h",
     "drawer_layout_handler.cc",
     "drawer_layout_handler.h",
-    "geometry_util.cc",
-    "geometry_util.h",
   ]
 }
 
@@ -53,15 +50,13 @@ source_set("tests") {
     ":test_support",
     "//ash:test_support",
     "//base/test:test_support",
-    "//components/exo:test_support",
     "//testing/gtest",
   ]
 
   sources = [
-    "accessibility_info_data_wrapper_unittest.cc",
     "accessibility_node_info_data_wrapper_unittest.cc",
     "auto_complete_handler_unittest.cc",
-    "ax_tree_source_arc_unittest.cc",
+    "ax_tree_source_android_unittest.cc",
     "drawer_layout_handler_unittest.cc",
   ]
 }

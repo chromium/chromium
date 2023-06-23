@@ -18,6 +18,7 @@
 #include "services/accessibility/android/test/android_accessibility_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
 
 namespace ax::android {
@@ -33,10 +34,19 @@ using AXWindowInfoData = mojom::AccessibilityWindowInfoData;
 class DrawerLayoutHandlerTest : public testing::Test,
                                 public AXTreeSourceAndroid::Delegate {
  public:
+  class TestSerializationDelegate
+      : public AXTreeSourceAndroid::SerializationDelegate {
+    // AXTreeSourceAndroid::SerializationDelegate overrides.
+    void PopulateBounds(const AccessibilityInfoDataWrapper& node,
+                        ui::AXNodeData& out_data) const override {}
+  };
+
   class TestAXTreeSourceAndroid : public AXTreeSourceAndroid {
    public:
     explicit TestAXTreeSourceAndroid(AXTreeSourceAndroid::Delegate* delegate)
-        : AXTreeSourceAndroid(delegate, /*window=*/nullptr) {}
+        : AXTreeSourceAndroid(delegate,
+                              std::make_unique<TestSerializationDelegate>(),
+                              /*window=*/nullptr) {}
 
     // AXTreeSourceAndroid overrides.
     AccessibilityInfoDataWrapper* GetFromId(int32_t id) const override {

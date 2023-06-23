@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_ACCESSIBILITY_ANDROID_GEOMETRY_UTIL_H_
-#define SERVICES_ACCESSIBILITY_ANDROID_GEOMETRY_UTIL_H_
-
-#include "services/accessibility/android/geometry_util.h"
+#include "chrome/browser/ash/arc/accessibility/geometry_util.h"
 
 #include "components/exo/wm_helper.h"
 #include "ui/aura/window.h"
@@ -14,7 +11,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/widget/widget.h"
 
-namespace ax::android {
+namespace arc {
 gfx::RectF ScaleAndroidPxToChromePx(const gfx::Rect& android_bounds,
                                     aura::Window* window) {
   DCHECK(exo::WMHelper::HasInstance());
@@ -44,6 +41,4 @@ int GetChromeWindowHeightOffsetInDip(aura::Window* window) {
 
   return widget->non_client_view()->frame_view()->GetBoundsForClientView().y();
 }
-}  // namespace ax::android
-
-#endif  // CHROME_BROWSER_CHROMEOS_ARC_ACCESSIBILITY_GEOMETRY_UTIL_H_
+}  // namespace arc

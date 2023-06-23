@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/dcheck_is_on.h"
 #include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
@@ -32,15 +33,22 @@ using AXWindowBooleanProperty = mojom::AccessibilityWindowBooleanProperty;
 using AXWindowInfoData = mojom::AccessibilityWindowInfoData;
 using AXWindowIntListProperty = mojom::AccessibilityWindowIntListProperty;
 
-// TODO(hirokisato): Enable AXTreeArcSerializer's |crash_on_error| once
+// TODO(hirokisato): Enable AXTreeAndroidSerializer's |crash_on_error| once
 // Android becomes able to send reliable trees.
-AXTreeSourceAndroid::AXTreeSourceAndroid(Delegate* delegate,
-                                         aura::Window* window)
-    : current_tree_serializer_(new AXTreeArcSerializer(this, DCHECK_IS_ON())),
+AXTreeSourceAndroid::AXTreeSourceAndroid(
+    Delegate* delegate,
+    std::unique_ptr<SerializationDelegate> serialization_delegate,
+    aura::Window* window)
+    : current_tree_serializer_(
+          new AXTreeAndroidSerializer(this, DCHECK_IS_ON())),
       is_notification_(false),
       is_input_method_window_(false),
       window_(window),
-      delegate_(delegate) {}
+      delegate_(delegate),
+      serialization_delegate_(std::move(serialization_delegate)) {
+  CHECK(serialization_delegate_);
+  serialization_delegate_->BindTree(this);
+}
 
 AXTreeSourceAndroid::~AXTreeSourceAndroid() {
   Reset();
@@ -517,7 +525,7 @@ void AXTreeSourceAndroid::Reset() {
   tree_map_.clear();
   parent_map_.clear();
   computed_bounds_.clear();
-  current_tree_serializer_ = std::make_unique<AXTreeArcSerializer>(this);
+  current_tree_serializer_ = std::make_unique<AXTreeAndroidSerializer>(this);
   root_id_.reset();
   window_id_.reset();
   android_focused_id_.reset();

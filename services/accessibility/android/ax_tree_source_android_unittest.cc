@@ -4,6 +4,7 @@
 
 #include "services/accessibility/android/ax_tree_source_android.h"
 
+#include <memory>
 #include <utility>
 
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
@@ -97,10 +98,25 @@ class MockAutomationEventRouter
 class AXTreeSourceAndroidTest : public testing::Test,
                                 public AXTreeSourceAndroid::Delegate {
  public:
+  class TestSerializationDelegate
+      : public AXTreeSourceAndroid::SerializationDelegate {
+    // AXTreeSourceAndroid::SerializationDelegate overrides.
+    void PopulateBounds(const AccessibilityInfoDataWrapper& node,
+                        ui::AXNodeData& out_data) const override {
+      gfx::RectF& out_bounds_px = out_data.relative_bounds.bounds;
+      gfx::Rect info_data_bounds = node.GetBounds();
+      out_bounds_px.SetRect(info_data_bounds.x(), info_data_bounds.y(),
+                            info_data_bounds.width(),
+                            info_data_bounds.height());
+    }
+  };
+
   AXTreeSourceAndroidTest()
       : router_(std::make_unique<MockAutomationEventRouter>()),
-        tree_source_(
-            std::make_unique<AXTreeSourceAndroid>(this, /*window=*/nullptr)) {
+        tree_source_(std::make_unique<AXTreeSourceAndroid>(
+            this,
+            std::make_unique<TestSerializationDelegate>(),
+            /*window=*/nullptr)) {
     tree_source_->set_automation_event_router_for_test(router_.get());
   }
 

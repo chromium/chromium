@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_tree_tracker.h"
 
+#include <memory>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
+#include "chrome/browser/ash/arc/accessibility/arc_serialization_delegate.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
 #include "components/exo/input_method_surface.h"
@@ -815,7 +817,8 @@ ax::android::AXTreeSourceAndroid* ArcAccessibilityTreeTracker::CreateFromKey(
     TreeKey key,
     aura::Window* window) {
   auto tree = std::make_unique<ax::android::AXTreeSourceAndroid>(
-      tree_source_delegate_, window);
+      tree_source_delegate_, std::make_unique<ArcSerializationDelegate>(),
+      window);
   auto [itr, inserted] = trees_.try_emplace(std::move(key), std::move(tree));
   DCHECK(inserted);
   return itr->second.get();

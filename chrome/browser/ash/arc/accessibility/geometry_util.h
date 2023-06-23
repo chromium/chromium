@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_ACCESSIBILITY_ANDROID_GEOMETRY_UTIL_H_
-#define SERVICES_ACCESSIBILITY_ANDROID_GEOMETRY_UTIL_H_
+#ifndef CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_GEOMETRY_UTIL_H_
+#define CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_GEOMETRY_UTIL_H_
 
 namespace gfx {
 class Rect;
@@ -14,7 +14,7 @@ namespace aura {
 class Window;
 }
 
-namespace ax::android {
+namespace arc {
 // Given a rect in Android pixels, returns a scaled rectangle in Chrome pixels.
 // This only scales the given bounds.
 gfx::RectF ScaleAndroidPxToChromePx(const gfx::Rect& android_bounds,
@@ -23,6 +23,6 @@ gfx::RectF ScaleAndroidPxToChromePx(const gfx::Rect& android_bounds,
 // Returns an difference of y coordinate in DIP between Android internal bounds
 // and what Chrome actually renders in the screen.
 int GetChromeWindowHeightOffsetInDip(aura::Window* window);
-}  // namespace ax::android
+}  // namespace arc
 
 #endif

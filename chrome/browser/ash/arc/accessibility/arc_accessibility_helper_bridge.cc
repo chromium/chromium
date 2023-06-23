@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
+#include "chrome/browser/ash/arc/accessibility/geometry_util.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
@@ -30,12 +31,13 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/event_router.h"
+#include "services/accessibility/android/accessibility_info_data_wrapper.h"
 #include "services/accessibility/android/android_accessibility_util.h"
-#include "services/accessibility/android/geometry_util.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom-shared.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -99,8 +101,7 @@ void DispatchFocusChange(
       node_data->bounds_in_screen,
       1.0f / exo::WMHelper::GetInstance()->GetDeviceScaleFactorForWindow(
                  active_window));
-  bounds_in_screen.Offset(
-      0, ax::android::GetChromeWindowHeightOffsetInDip(active_window));
+  bounds_in_screen.Offset(0, GetChromeWindowHeightOffsetInDip(active_window));
 
   const display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestView(active_window);
@@ -526,7 +527,7 @@ ArcAccessibilityHelperBridge::OnGetTextLocationDataResultInternal(
     return absl::nullopt;
 
   const gfx::RectF& rect_f =
-      ax::android::ScaleAndroidPxToChromePx(result_rect.value(), window);
+      ScaleAndroidPxToChromePx(result_rect.value(), window);
 
   return gfx::ToEnclosingRect(rect_f);
 }
