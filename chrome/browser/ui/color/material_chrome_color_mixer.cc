@@ -209,4 +209,5 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbarTextDefault] = {ui::kColorSysOnSurfaceSecondary};
   mixer[kColorToolbarTextDisabled] = {kColorToolbarTextDisabledDefault};
   mixer[kColorToolbarTextDisabledDefault] = {ui::kColorSysStateDisabled};
+  mixer[kColorWebAuthnIconColor] = {ui::kColorSysPrimary};
 }

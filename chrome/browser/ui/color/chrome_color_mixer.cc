@@ -739,6 +739,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
                                            ui::kColorFrameInactive);
   mixer[kColorWebAuthnBackArrowButtonIcon] = {ui::kColorIcon};
   mixer[kColorWebAuthnBackArrowButtonIconDisabled] = {ui::kColorIconDisabled};
+  mixer[kColorWebAuthnIconColor] = {ui::kColorAccent};
   mixer[kColorWebAuthnPinTextfieldBottomBorder] =
       PickGoogleColor(ui::kColorAccent, ui::kColorDialogBackground,
                       color_utils::kMinimumVisibleContrastRatio);

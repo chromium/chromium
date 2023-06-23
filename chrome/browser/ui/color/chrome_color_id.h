@@ -584,6 +584,7 @@
   /* WebAuthn colors. */ \
   E_CPONLY(kColorWebAuthnBackArrowButtonIcon) \
   E_CPONLY(kColorWebAuthnBackArrowButtonIconDisabled) \
+  E_CPONLY(kColorWebAuthnIconColor) \
   E_CPONLY(kColorWebAuthnPinTextfieldBottomBorder) \
   E_CPONLY(kColorWebAuthnProgressRingBackground) \
   E_CPONLY(kColorWebAuthnProgressRingForeground) \

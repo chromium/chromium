@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -37,7 +38,7 @@ AccountHoverListModel::AccountHoverListModel(
     items_.emplace_back(
         NameTokenForDisplay(cred.user.name.value_or("")), u"",
         ui::ImageModel::FromVectorIcon(vector_icons::kPasskeyIcon,
-                                       ui::kColorAccent, kIconSize));
+                                       kColorWebAuthnIconColor, kIconSize));
   }
 }
 

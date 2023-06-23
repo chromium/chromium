@@ -105,6 +105,9 @@ WebAuthnHoverButton::WebAuthnHoverButton(
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetProperty(views::kTableColAndRowSpanKey,
                       gfx::Size(/*width=*/1, title_row_span));
+  if (features::IsChromeRefresh2023()) {
+    title_->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
+  }
 
   if (secondary_icon) {
     secondary_icon_view_ =
