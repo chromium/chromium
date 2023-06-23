@@ -11,6 +11,8 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -74,6 +76,12 @@ class UnifiedBrightnessViewTest : public AshTestBase {
   }
 
   views::Slider* slider() { return unified_brightness_view_->slider(); }
+
+  views::Button* more_button() {
+    return static_cast<UnifiedBrightnessView*>(
+               controller()->unified_brightness_view_)
+        ->more_button();
+  }
 
   const gfx::VectorIcon& GetIcon(float level) {
     return unified_brightness_view_->GetBrightnessIconForLevel(level);
@@ -172,6 +180,38 @@ TEST_F(UnifiedBrightnessViewTest, SliderIcon) {
                    UnifiedBrightnessView::kBrightnessLevelIcons[2]->name);
     }
   }
+}
+
+// Tests that the `UnifiedBrightnessView` `more_button` is not enabled if and
+// only if there is a trusted pinned window.
+TEST_F(UnifiedBrightnessViewTest, MoreButton) {
+  // At the start of the test, the system tray containing the brightness view is
+  // already shown. Since there is no pinned window, the `more_button` should
+  // not be disabled.
+  EXPECT_TRUE(more_button()->GetEnabled());
+
+  // Close the bubble so the brightness view can be recreated.
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
+
+  // Create and trusted pin a window.
+  std::unique_ptr<aura::Window> window(CreateTestWindow());
+  wm::ActivateWindow(window.get());
+  window_util::PinWindow(window.get(), /*trusted=*/true);
+
+  // Open the bubble and check that the new brightness view more button is in
+  // the correct state.
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  EXPECT_FALSE(more_button()->GetEnabled());
+
+  // Close the bubble so the brightness view can be recreated.
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
+
+  // Unpin the window
+  WindowState::Get(window.get())->Restore();
+
+  // Make sure the more button is not disabled.
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  EXPECT_TRUE(more_button()->GetEnabled());
 }
 
 }  // namespace ash
