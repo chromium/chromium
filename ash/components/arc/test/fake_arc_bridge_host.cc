@@ -45,7 +45,6 @@
 #include "ash/components/arc/mojom/privacy_items.mojom.h"
 #include "ash/components/arc/mojom/process.mojom.h"
 #include "ash/components/arc/mojom/property.mojom.h"
-#include "ash/components/arc/mojom/rotation_lock.mojom.h"
 #include "ash/components/arc/mojom/screen_capture.mojom.h"
 #include "ash/components/arc/mojom/sharesheet.mojom.h"
 #include "ash/components/arc/mojom/storage_manager.mojom.h"
@@ -212,9 +211,6 @@ void FakeArcBridgeHost::OnProcessInstanceReady(
 
 void FakeArcBridgeHost::OnPropertyInstanceReady(
     mojo::PendingRemote<mojom::PropertyInstance> property_remote) {}
-
-void FakeArcBridgeHost::OnRotationLockInstanceReady(
-    mojo::PendingRemote<mojom::RotationLockInstance> rotation_lock_remote) {}
 
 void FakeArcBridgeHost::OnScreenCaptureInstanceReady(
     mojo::PendingRemote<mojom::ScreenCaptureInstance> screen_capture_remote) {}

@@ -48,7 +48,6 @@ import "ash/components/arc/mojom/print_spooler.mojom";
 import "ash/components/arc/mojom/privacy_items.mojom";
 import "ash/components/arc/mojom/process.mojom";
 import "ash/components/arc/mojom/property.mojom";
-import "ash/components/arc/mojom/rotation_lock.mojom";
 import "ash/components/arc/mojom/screen_capture.mojom";
 import "ash/components/arc/mojom/sharesheet.mojom";
 import "ash/components/arc/mojom/storage_manager.mojom";
@@ -66,7 +65,7 @@ import "ash/components/arc/mojom/webapk.mojom";
 import "chromeos/components/payments/mojom/payment_app.mojom";
 
 // Next MinVersion: 66
-// Deprecated method IDs: 101, 105, 121, 132, 136, 153, 154, 160
+// Deprecated method IDs: 101, 105, 121, 132, 136, 137, 153, 154, 160
 // Next method ID: 171
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
@@ -251,10 +250,6 @@ interface ArcBridgeHost {
   // Notifies Chrome that the PropertyInstance interface is ready.
   [MinVersion=42] OnPropertyInstanceReady@147(
       pending_remote<PropertyInstance> instance_remote);
-
-  // Notifies Chrome that the RotationLockInstance interface is ready.
-  [MinVersion=32] OnRotationLockInstanceReady@137(
-      pending_remote<RotationLockInstance> instance_remote);
 
   // Notifies Chrome that the ScreenCaptureInstance interface is ready.
   [MinVersion=35] OnScreenCaptureInstanceReady@140(
