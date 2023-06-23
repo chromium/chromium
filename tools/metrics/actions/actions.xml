@@ -8920,6 +8920,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Extensions.Menu.SitePermissionsPageOpened">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user opened an extension's site permissions page in the extensions menu.
+    This is recorded for both keyboard and mouse activations.
+  </description>
+</action>
+
 <action name="Extensions.NtpPromoClicked">
   <owner>archanasimha@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>

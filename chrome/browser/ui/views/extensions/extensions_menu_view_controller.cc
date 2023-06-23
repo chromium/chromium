@@ -341,6 +341,9 @@ void ExtensionsMenuViewController::OpenSitePermissionsPage(
                             GetActiveWebContents());
 
   SwitchToPage(std::move(site_permissions_page));
+
+  base::RecordAction(
+      base::UserMetricsAction("Extensions.Menu.SitePermissionsPageOpened"));
 }
 
 void ExtensionsMenuViewController::CloseBubble() {
