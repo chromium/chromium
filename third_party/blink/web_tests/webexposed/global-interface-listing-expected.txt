@@ -12468,6 +12468,7 @@ namespace console
     method getScreenDetails
     method getSelection
     method matchMedia
+    method minimize
     method moveBy
     method moveTo
     method open

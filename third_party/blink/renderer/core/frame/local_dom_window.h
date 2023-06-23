@@ -535,6 +535,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   bool HadActivationlessPaymentRequest() const;
   void SetHadActivationlessPaymentRequest();
 
+  void minimize();
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,

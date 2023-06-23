@@ -1290,6 +1290,10 @@
       base_feature: "none",
     },
     {
+      name: "DesktopPWAsAdditionalWindowingControls",
+      status: "test",
+    },
+    {
       name: "DesktopPWAsSubApps",
       status: "test",
     },

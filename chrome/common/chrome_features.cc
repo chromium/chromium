@@ -258,11 +258,6 @@ BASE_FEATURE(kPWAsDefaultOfflinePage,
              "PWAsDefaultOfflinePage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// API that allows PWAs manually minimizing, maximizing and restoring windows.
-BASE_FEATURE(kDesktopPWAsAdditionalWindowingControls,
-             "DesktopPWAsAdditionalWindowingControls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When installing default installed PWAs, we wait for service workers
 // to cache resources.
 BASE_FEATURE(kDesktopPWAsCacheDuringDefaultInstall,
