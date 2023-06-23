@@ -31,8 +31,6 @@ source_set("web_applications") {
     "commands/install_from_sync_command.h",
     "commands/install_placeholder_command.cc",
     "commands/install_placeholder_command.h",
-    "commands/install_preloaded_verified_app_command.cc",
-    "commands/install_preloaded_verified_app_command.h",
     "commands/manifest_update_check_command.cc",
     "commands/manifest_update_check_command.h",
     "commands/manifest_update_finalize_command.cc",
@@ -286,6 +284,8 @@ source_set("web_applications") {
     sources += [
       "chromeos_web_app_experiments.cc",
       "chromeos_web_app_experiments.h",
+      "commands/install_preloaded_verified_app_command.cc",
+      "commands/install_preloaded_verified_app_command.h",
       "isolated_web_apps/isolated_web_app_downloader.cc",
       "isolated_web_apps/isolated_web_app_downloader.h",
       "isolated_web_apps/policy/isolated_web_app_external_install_options.cc",
@@ -811,7 +811,6 @@ source_set("web_applications_browser_tests") {
     "commands/fetch_manifest_and_install_command_browsertest.cc",
     "commands/install_from_info_command_browsertest.cc",
     "commands/install_from_sync_command_browsertest.cc",
-    "commands/install_preloaded_verified_app_command_browsertest.cc",
     "commands/navigate_and_trigger_install_dialog_command_browsertest.cc",
     "commands/update_protocol_handler_approval_command_browsertest.cc",
     "externally_managed_app_manager_browsertest.cc",
@@ -834,6 +833,11 @@ source_set("web_applications_browser_tests") {
     "web_app_pref_migration_browsertest.cc",
     "web_contents/web_app_url_loader_browsertest.cc",
   ]
+
+  if (is_chromeos) {
+    sources +=
+        [ "commands/install_preloaded_verified_app_command_browsertest.cc" ]
+  }
 
   if (is_linux) {
     sources += [
