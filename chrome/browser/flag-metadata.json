@@ -2026,6 +2026,11 @@
     "expiry_milestone": 118
   },
   {
+    "name": "enable-borderless-printing",
+    "owners": [ "bryancain@chromium.org", "project-bolton-eng@google.com" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "enable-browser-lockdown-mode",
     "owners": [ "joemerramos", "ajuma", "bling-flags@google.com" ],
     "expiry_milestone": 130

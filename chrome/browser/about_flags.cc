@@ -6742,6 +6742,14 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(IS_CHROMEOS)
+    {"enable-borderless-printing",
+     flag_descriptions::kEnableBorderlessPrintingName,
+     flag_descriptions::kEnableBorderlessPrintingDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(printing::features::kEnableBorderlessPrinting)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_MAC)
     {"cups-ipp-printing-backend",
      flag_descriptions::kCupsIppPrintingBackendName,

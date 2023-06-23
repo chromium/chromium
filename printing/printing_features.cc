@@ -14,6 +14,13 @@
 namespace printing {
 namespace features {
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Enable support for borderless printing and media type.
+BASE_FEATURE(kEnableBorderlessPrinting,
+             "EnableBorderlessPrinting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_MAC)
 // Use the CUPS IPP printing backend instead of the original CUPS backend that
 // calls the deprecated PPD API.

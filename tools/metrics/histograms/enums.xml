@@ -60086,6 +60086,7 @@ from previous Chrome versions.
   <int value="-1939003674" label="NetworkServiceInProcess:disabled"/>
   <int value="-1938263248" label="enable-extension-info-dialog"/>
   <int value="-1937756352" label="LensEnableImageTranslate:disabled"/>
+  <int value="-1937288656" label="EnableBorderlessPrinting:enabled"/>
   <int value="-1937145719" label="EnableWebAppUninstallFromOsSettings:enabled"/>
   <int value="-1937077699" label="http-form-warning"/>
   <int value="-1937038119" label="FullRestoreForLacros:disabled"/>
@@ -65340,6 +65341,7 @@ from previous Chrome versions.
   <int value="782167080" label="enable-new-qp-input-view"/>
   <int value="783270752" label="AndroidHistoryManager:enabled"/>
   <int value="783443490" label="ArcInputOverlayBeta:enabled"/>
+  <int value="784856302" label="EnableBorderlessPrinting:disabled"/>
   <int value="785273919" label="CompositingBasedThrottling:disabled"/>
   <int value="785795587" label="AndroidAppIntegrationSafeSearch:enabled"/>
   <int value="786070201"

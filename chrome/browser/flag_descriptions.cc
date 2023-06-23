@@ -6885,6 +6885,11 @@ const char kDisableOfficeEditingComponentAppDescription[] =
     "handlers won't be registered, making it possible to install another "
     "version for testing.";
 
+const char kEnableBorderlessPrintingName[] = "Borderless printing";
+const char kEnableBorderlessPrintingDescription[] =
+    "Enable borderless printing and paper type selection in the print preview "
+    "dialog.";
+
 const char kKioskEnableAppServiceName[] = "Enable App Service in Kiosk.";
 const char kKioskEnableAppServiceDescription[] =
     "Uses App Service to install web apps and launch both Chrome apps and web "

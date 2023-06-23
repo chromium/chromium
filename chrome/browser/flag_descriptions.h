@@ -3950,6 +3950,9 @@ extern const char kDisableIdleSocketsCloseOnMemoryPressureDescription[];
 extern const char kDisableOfficeEditingComponentAppName[];
 extern const char kDisableOfficeEditingComponentAppDescription[];
 
+extern const char kEnableBorderlessPrintingName[];
+extern const char kEnableBorderlessPrintingDescription[];
+
 extern const char kKioskEnableAppServiceName[];
 extern const char kKioskEnableAppServiceDescription[];
 
