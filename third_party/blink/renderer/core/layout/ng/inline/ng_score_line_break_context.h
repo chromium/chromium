@@ -14,7 +14,7 @@
 namespace blink {
 
 // The maximum number of lines for the balancing and the optimal line breaking.
-constexpr wtf_size_t kMaxLinesForBalance = 10;
+constexpr wtf_size_t kMaxLinesForBalance = 6;
 constexpr wtf_size_t kMaxLinesForOptimal = 4;
 
 using NGLineBreakPoints = Vector<NGLineBreakPoint, kMaxLinesForBalance>;

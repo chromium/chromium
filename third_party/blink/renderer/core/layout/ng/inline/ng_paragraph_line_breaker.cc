@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_score_line_break_context.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
 namespace blink {
@@ -18,7 +19,11 @@ namespace blink {
 namespace {
 
 // Max number of lines to balance.
-static constexpr wtf_size_t kMaxLinesToBalance = 4;
+wtf_size_t MaxLinesToBisectForBalance() {
+  return RuntimeEnabledFeatures::CSSTextWrapBalanceByScoreEnabled()
+             ? kMaxLinesForBalance
+             : 4;
+}
 
 struct LineBreakResult {
   LayoutUnit width;
@@ -73,7 +78,7 @@ struct LineBreakResults {
       }
       break_token_ = line_info.BreakToken();
       lines_.push_back(LineBreakResult{line_info.Width()});
-      DCHECK_LE(lines_.size(), kMaxLinesToBalance);
+      DCHECK_LE(lines_.size(), MaxLinesToBisectForBalance());
       if (!break_token_ ||
           (stop_at && break_token_->Start() >= stop_at->Start())) {
         return Status::kFinished;
@@ -113,7 +118,7 @@ struct LineBreakResults {
  private:
   const NGInlineNode node_;
   const NGConstraintSpace& space_;
-  Vector<LineBreakResult, kMaxLinesToBalance> lines_;
+  Vector<LineBreakResult, kMaxLinesForBalance> lines_;
   const NGInlineBreakToken* break_token_ = nullptr;
 };
 
@@ -169,9 +174,10 @@ NGParagraphLineBreaker::AttemptParagraphBalancingCore(
   const ComputedStyle& block_style = node.Style();
   const LayoutUnit available_width = line_opportunity.AvailableInlineSize();
   LineBreakResults normal_lines(node, space);
+  const wtf_size_t max_lines = MaxLinesToBisectForBalance();
   const int lines_until_clamp = space.LinesUntilClamp().value_or(0);
   if (lines_until_clamp > 0 &&
-      static_cast<unsigned>(lines_until_clamp) <= kMaxLinesToBalance) {
+      static_cast<unsigned>(lines_until_clamp) <= max_lines) {
     if (lines_until_clamp == 1) {
       return absl::nullopt;  // Balancing not needed for single line paragraphs.
     }
@@ -183,26 +189,26 @@ NGParagraphLineBreaker::AttemptParagraphBalancingCore(
     }
   } else {
     // Estimate the number of lines to see if the text is too long to balance.
-    // Because this is an estimate, allow it to be `kMaxLinesToBalance * 2`.
+    // Because this is an estimate, allow it to be `max_lines * 2`.
     const NGInlineItemsData& items_data = node.ItemsData(
         /* use_first_line_style */ false);
     const wtf_size_t estimated_num_lines = EstimateNumLines(
         items_data.text_content, block_style.GetFont().PrimaryFont(),
         line_opportunity.AvailableInlineSize());
-    if (estimated_num_lines > kMaxLinesToBalance * 2) {
+    if (estimated_num_lines > max_lines * 2) {
       return absl::nullopt;
     }
 
     const LineBreakResults::Status status =
-        normal_lines.BreakLines(available_width, kMaxLinesToBalance);
+        normal_lines.BreakLines(available_width, max_lines);
     if (status != LineBreakResults::Status::kFinished) {
-      // Abort if not applicable or `kMaxLinesToBalance` exceeded.
+      // Abort if not applicable or `max_lines` exceeded.
       return absl::nullopt;
     }
     DCHECK(!normal_lines.BreakToken());
   }
   const wtf_size_t num_lines = normal_lines.Size();
-  DCHECK_LE(num_lines, kMaxLinesToBalance);
+  DCHECK_LE(num_lines, max_lines);
   if (num_lines <= 1) {
     return absl::nullopt;  // Balancing not needed for single line paragraphs.
   }
