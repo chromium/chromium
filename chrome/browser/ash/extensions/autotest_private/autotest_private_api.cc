@@ -224,6 +224,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
@@ -6750,6 +6751,27 @@ AutotestPrivateIsFeatureEnabledFunction::Run() {
   }
   bool enabled = base::FeatureList::IsEnabled(**it);
   return RespondNow(WithArguments(enabled));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateGetCurrentInputMethodDescriptorFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateGetCurrentInputMethodDescriptorFunction::
+    AutotestPrivateGetCurrentInputMethodDescriptorFunction() = default;
+
+AutotestPrivateGetCurrentInputMethodDescriptorFunction::
+    ~AutotestPrivateGetCurrentInputMethodDescriptorFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateGetCurrentInputMethodDescriptorFunction::Run() {
+  auto* manager = ash::input_method::InputMethodManager::Get();
+  ash::input_method::InputMethodDescriptor descriptor =
+      manager->GetActiveIMEState()->GetCurrentInputMethod();
+
+  base::Value::Dict dict;
+  dict.Set("keyboardLayout", descriptor.keyboard_layout());
+  return RespondNow(WithArguments(std::move(dict)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

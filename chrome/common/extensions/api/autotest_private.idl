@@ -819,6 +819,16 @@ namespace autotestPrivate {
 
   callback IsFeatureEnabledCallback = void(boolean enabled);
 
+  // Response data for <code>getCurrentInputMethodDescriptor</code>.
+  // Add more fields from ash/input_method/InputMethodDescriptor as needed.
+  dictionary GetCurrentInputMethodDescriptorData {
+    DOMString keyboardLayout;
+  };
+
+  // Response callback for current input method keyboard layout.
+  callback GetCurrentInputMethodDescriptorCallback = void
+      (GetCurrentInputMethodDescriptorData data);
+
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
     static void initializeEvents();
@@ -1581,6 +1591,10 @@ namespace autotestPrivate {
     // a Chrome uprev into ChromeOS changed the default feature state.
     [supportsPromises] static void isFeatureEnabled(
       DOMString feature_name, IsFeatureEnabledCallback callback);
+
+    // Returns keyboard layout used for current input method.
+    [supportsPromises] static void getCurrentInputMethodDescriptor(
+        GetCurrentInputMethodDescriptorCallback callback);
   };
 
   interface Events {
