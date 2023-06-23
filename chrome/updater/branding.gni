@@ -21,7 +21,7 @@ if (is_chrome_branded) {
   updater_company_short_name = "Google"
   updater_company_short_name_uppercase = "GOOGLE"
   updater_copyright =
-      "Copyright 2020 The Chromium Authors. All rights reserved."
+      "Copyright 2020 The Chromium Authors"
   updater_product_full_name = "GoogleUpdater"
   mac_team_identifier = "EQHXZ8M8AV"
   updater_appid = "{44fc7fe2-65ce-487c-93f4-edee46eeaaab}"
@@ -107,7 +107,7 @@ if (is_chrome_branded) {
   updater_company_short_name = "Chromium"
   updater_company_short_name_uppercase = "CHROMIUM"
   updater_copyright =
-      "Copyright 2020 The Chromium Authors. All rights reserved."
+      "Copyright 2020 The Chromium Authors"
   updater_product_full_name = "ChromiumUpdater"
   mac_team_identifier = "PLACEHOLDER"
   updater_appid = "{6e8ffa8f-e7e2-4000-9884-589283c27015}"

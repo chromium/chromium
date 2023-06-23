@@ -1197,7 +1197,7 @@ const HeapSnapshotLoader = (function (exports) {
 
   const ls = x => x;
 
-  // Copyright 2020 The Chromium Authors. All rights reserved.
+  // Copyright 2020 The Chromium Authors
   // Use of this source code is governed by a BSD-style license that can be
   // found in the LICENSE file.
 
@@ -3026,7 +3026,7 @@ const HeapSnapshotLoader = (function (exports) {
     ['ttf', 'font/opentype'], ['otf', 'font/opentype'], ['ttc', 'font/opentype'], ['woff', 'application/font-woff']
   ]);
 
-  // Copyright 2020 The Chromium Authors. All rights reserved.
+  // Copyright 2020 The Chromium Authors
   // Use of this source code is governed by a BSD-style license that can be
   // found in the LICENSE file.
 

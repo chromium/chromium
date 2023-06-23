@@ -349,7 +349,7 @@ def DoParseHeaderFile(path):
 
 def GenerateOutput(source_path, enum_definition):
   template = Template("""
-// Copyright ${YEAR} The Chromium Authors. All rights reserved.
+// Copyright ${YEAR} The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
