@@ -135,7 +135,8 @@ base::FilePath HyphenationDictionaryDir() {
 scoped_refptr<SharedBuffer> ReadFromFile(const String& path) {
   base::FilePath file_path = blink::WebStringToFilePath(path);
   std::string buffer;
-  base::ReadFileToString(file_path, &buffer);
+  CHECK(base::ReadFileToString(file_path, &buffer))
+      << "Failed to read " << path;
   return SharedBuffer::Create(buffer.data(), buffer.size());
 }
 

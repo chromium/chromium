@@ -80,6 +80,11 @@ class MHTMLArchiveTest : public testing::Test {
     AddResource(url, mime, ReadFile(file_name));
   }
 
+  // Adds a resource as an empty file.
+  void AddResource(const char* url, const char* mime) {
+    AddResource(url, mime, SharedBuffer::Create());
+  }
+
   void AddTestMainResource() {
     AddResource("http://www.test.com", "text/html", "css_test_page.html");
   }
@@ -92,20 +97,14 @@ class MHTMLArchiveTest : public testing::Test {
                 "import_style_from_link.css");
     AddResource("http://www.test.com/import_styles.css", "text/css",
                 "import_styles.css");
-    AddResource("http://www.test.com/red_background.png", "image/png",
-                "red_background.png");
-    AddResource("http://www.test.com/orange_background.png", "image/png",
-                "orange_background.png");
-    AddResource("http://www.test.com/yellow_background.png", "image/png",
-                "yellow_background.png");
-    AddResource("http://www.test.com/green_background.png", "image/png",
-                "green_background.png");
-    AddResource("http://www.test.com/blue_background.png", "image/png",
-                "blue_background.png");
-    AddResource("http://www.test.com/purple_background.png", "image/png",
-                "purple_background.png");
-    AddResource("http://www.test.com/ul-dot.png", "image/png", "ul-dot.png");
-    AddResource("http://www.test.com/ol-dot.png", "image/png", "ol-dot.png");
+    AddResource("http://www.test.com/red_background.png", "image/png");
+    AddResource("http://www.test.com/orange_background.png", "image/png");
+    AddResource("http://www.test.com/yellow_background.png", "image/png");
+    AddResource("http://www.test.com/green_background.png", "image/png");
+    AddResource("http://www.test.com/blue_background.png", "image/png");
+    AddResource("http://www.test.com/purple_background.png", "image/png");
+    AddResource("http://www.test.com/ul-dot.png", "image/png");
+    AddResource("http://www.test.com/ol-dot.png", "image/png");
   }
 
   HashMap<String, String> ExtractHeaders(LineReader& line_reader) {
