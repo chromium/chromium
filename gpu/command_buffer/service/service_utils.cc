@@ -234,13 +234,6 @@ VulkanImplementationName ParseVulkanImplementationName(
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // LACROS doesn't support Vulkan right now, to avoid LACROS picking up Linux
-  // finch, kNone is returned for LACROS.
-  // TODO(https://crbug.com/1155622): When LACROS is separated from Linux finch
-  // config.
-  return VulkanImplementationName::kNone;
-#else
   if (command_line->HasSwitch(switches::kUseVulkan)) {
     auto value = command_line->GetSwitchValueASCII(switches::kUseVulkan);
     if (value.empty() || value == switches::kVulkanImplementationNameNative) {
@@ -262,7 +255,6 @@ VulkanImplementationName ParseVulkanImplementationName(
 
   // GrContext is not going to use Vulkan.
   return VulkanImplementationName::kNone;
-#endif
 }
 
 WebGPUAdapterName ParseWebGPUAdapterName(
