@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
@@ -158,13 +157,12 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // requested by this page.
   int number_prefetch_request_attempted_{0};
 
-  // The number of eager prefetch requests (from this page) that have completed.
-  // An 'eager' prefetch is a prefetch whose eagerness is kEager.
-  size_t number_eager_prefetches_completed_{0};
+  // A list of eager prefetch requests (from this page) that have completed
+  // (oldest to newest).
+  std::vector<base::WeakPtr<PrefetchContainer>> completed_eager_prefetches_;
   // A list of non-eager prefetch requests (from this page) that have completed
   // (oldest to newest).
-  base::circular_deque<base::WeakPtr<PrefetchContainer>>
-      completed_non_eager_prefetches_;
+  std::vector<base::WeakPtr<PrefetchContainer>> completed_non_eager_prefetches_;
 
   // Metrics related to the prefetches requested by this page load.
   PrefetchReferringPageMetrics referring_page_metrics_;
