@@ -70,18 +70,16 @@ void* RemaskPointerInternal(void* ptr);
 // Increments the tag of the memory range ptr. Useful for provable revocations
 // (e.g. free). Returns the pointer with the new tag. Ensures that the entire
 // range is set to the same tag.
-// TODO(bartekn): Remove the T* variant.
-// TODO(bartekn): Consider removing the return value.
-template <typename T>
-PA_ALWAYS_INLINE T* TagMemoryRangeIncrement(T* ptr, size_t size) {
+PA_ALWAYS_INLINE void* TagMemoryRangeIncrement(void* ptr, size_t size) {
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
-  return reinterpret_cast<T*>(TagMemoryRangeIncrementInternal(ptr, size));
+  return TagMemoryRangeIncrementInternal(ptr, size);
 #else
   return ptr;
 #endif
 }
-PA_ALWAYS_INLINE void* TagMemoryRangeIncrement(uintptr_t ptr, size_t size) {
-  return TagMemoryRangeIncrement(reinterpret_cast<void*>(ptr), size);
+
+PA_ALWAYS_INLINE void* TagMemoryRangeIncrement(uintptr_t address, size_t size) {
+  return TagMemoryRangeIncrement(reinterpret_cast<void*>(address), size);
 }
 
 // Randomly changes the tag of the ptr memory range. Useful for initial random
