@@ -38,6 +38,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_task_environment.h"
@@ -622,13 +623,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB),
             CookieBundleWithContent("cross-site=b.test"));
 
-  // TODO(https://crbug.com/1441133): We should either make sure there is way to
-  // let developer check whether they need to call rSA(), or no prompt is shown
-  // when 3p cookie is allowed.
-  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  // TODO(https://crbug.com/1441133): No prompt should be shown when 3p cookie
+  // is allowed.
   EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
 }
 
@@ -835,7 +835,10 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
-  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  // TODO(https://crbug.com/1441133): requestStorageAccess() should be rejected
+  // when 3p cookie is blocked by user explicitly.
+  EXPECT_TRUE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
 }
@@ -857,9 +860,11 @@ IN_PROC_BROWSER_TEST_F(
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
-
+  // TODO(https://crbug.com/1441133): requestStorageAccess() should be rejected
+  // when 3p cookie is blocked by user explicitly.
   EXPECT_TRUE(
-      storage::test::RequestAndCheckStorageAccessForFrame(GetNestedFrame()));
+      content::ExecJs(GetNestedFrame(), "document.requestStorageAccess()"));
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
 
   EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostB), NoCookies());
 }
@@ -883,9 +888,11 @@ IN_PROC_BROWSER_TEST_F(
 
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
-
+  // TODO(https://crbug.com/1441133): requestStorageAccess() should be rejected
+  // when 3p cookie is blocked by user explicitly.
   EXPECT_TRUE(
-      storage::test::RequestAndCheckStorageAccessForFrame(GetNestedFrame()));
+      content::ExecJs(GetNestedFrame(), "document.requestStorageAccess()"));
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
 
   EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostC), NoCookies());
 }
@@ -1533,7 +1540,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest, MultiTabTest) {
   storage::test::ExpectCrossTabInfoForFrame(GetFrame(), false);
   storage::test::SetCrossTabInfoForFrame(GetFrame());
   storage::test::ExpectCrossTabInfoForFrame(GetFrame(), true);
-  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   // Create a second tab to test communication between tabs.
   NavigateToNewTabWithFrame(kHostA);
@@ -1545,7 +1552,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest, MultiTabTest) {
           permissions::PermissionRequestManager::ACCEPT_ALL);
 
   storage::test::ExpectCrossTabInfoForFrame(GetFrame(), true);
-  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   SetBlockThirdPartyCookies(true);
 
@@ -1879,6 +1886,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIEnterprisePolicyBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                        EnsureOnePromptDenialSuffices) {
+  SetBlockThirdPartyCookies(true);
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
@@ -1912,6 +1920,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                        DismissalAllowsFuturePrompts) {
+  SetBlockThirdPartyCookies(true);
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
@@ -2095,5 +2104,51 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
   EXPECT_EQ(ReadCookies(GetFrame(), kHostA), CookieBundle("cross-site=a.test"));
 }
+
+// Tests to verify that whether 3p cookie is already accessible is checked in
+// hasStorageAccess.
+class StorageAccessAPIWith3PCEnabledBrowserTest
+    : public StorageAccessAPIBaseBrowserTest {
+ public:
+  StorageAccessAPIWith3PCEnabledBrowserTest()
+      : StorageAccessAPIBaseBrowserTest(/*is_storage_partitioned=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
+                       AllowedWhenUnblocked) {
+  SetBlockThirdPartyCookies(false);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB),
+            CookieBundleWithContent("cross-site=b.test"));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIWith3PCEnabledBrowserTest,
+                       AllowedByUserBypass) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB), NoCookiesWithContent());
+
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  // Enable UserBypass on hostA as top-level.
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetCookieSettingForUserBypass(GetURL(kHostA));
+
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostB),
+            CookieBundleWithContent("cross-site=b.test"));
+}
+
+// TODO(crbug.com/1448957): Add test cases of 3PC enabled by other mechanisms.
 
 }  // namespace
