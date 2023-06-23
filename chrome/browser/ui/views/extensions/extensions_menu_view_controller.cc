@@ -358,41 +358,61 @@ void ExtensionsMenuViewController::OnExtensionToggleSelected(
   content::WebContents* web_contents = GetActiveWebContents();
   CHECK(CanUserCustomizeExtensionSiteAccess(*extension, *browser_->profile(),
                                             *toolbar_model_, *web_contents));
-
-  // Toggling the button off removes site access.
   SitePermissionsHelper permissions_helper(browser_->profile());
-  if (!is_on) {
-    // TODO(crbug.com/1433399): Clear tab permissions for extension.
-    permissions_helper.UpdateSiteAccess(
-        *extension, web_contents, PermissionsManager::UserSiteAccess::kOnClick);
-    return;
-  }
-
-  // Toggling the button on grants site access. Note that extension should
-  // currently have "on click" access.
   auto* permissions_manager = PermissionsManager::Get(browser_->profile());
-  DCHECK_EQ(permissions_manager->GetUserSiteAccess(
-                *GetExtension(browser_, extension_id),
-                GetActiveWebContents()->GetLastCommittedURL()),
-            PermissionsManager::UserSiteAccess::kOnClick);
+  auto current_site_access = permissions_manager->GetUserSiteAccess(
+      *GetExtension(browser_, extension_id),
+      GetActiveWebContents()->GetLastCommittedURL());
 
-  // If user can select "on site" access (that means the extension requested
-  // access to that site), then we update site access to "on site".
-  if (permissions_manager->CanUserSelectSiteAccess(
-          *extension, web_contents->GetLastCommittedURL(),
-          PermissionsManager::UserSiteAccess::kOnSite)) {
+  // Update site access to "on site" when extension is toggled on and extension
+  // requested access to that site (which is true if the user can select "on
+  // site" access).
+  if (is_on && permissions_manager->CanUserSelectSiteAccess(
+                   *extension, web_contents->GetLastCommittedURL(),
+                   PermissionsManager::UserSiteAccess::kOnSite)) {
+    DCHECK_EQ(current_site_access,
+              PermissionsManager::UserSiteAccess::kOnClick);
     permissions_helper.UpdateSiteAccess(
         *extension, web_contents, PermissionsManager::UserSiteAccess::kOnSite);
     return;
   }
 
-  // Otherwise just grant one-time tab permissions.
-  extensions::ExtensionActionRunner* action_runner =
-      extensions::ExtensionActionRunner::GetForWebContents(web_contents);
-  if (!action_runner) {
+  // Grant one-time access when extension is toggled on and the extension can't
+  // be set to always on for the given site (e.g. extensions with activeTab).
+  if (is_on) {
+    DCHECK(!permissions_manager->CanUserSelectSiteAccess(
+        *extension, web_contents->GetLastCommittedURL(),
+        PermissionsManager::UserSiteAccess::kOnSite));
+    extensions::ExtensionActionRunner* action_runner =
+        extensions::ExtensionActionRunner::GetForWebContents(web_contents);
+    if (!action_runner) {
+      return;
+    }
+    action_runner->GrantTabPermissions({extension});
     return;
   }
-  action_runner->GrantTabPermissions({extension});
+
+  // Clear tab permissions when extension is toggled off and the site access is
+  // "on click". This happens when the extension was granted tab permissions
+  // without changing its site access.
+  if (current_site_access == PermissionsManager::UserSiteAccess::kOnClick) {
+    extensions::TabHelper::FromWebContents(web_contents)
+        ->active_tab_permission_granter()
+        ->ClearActiveExtensionAndNotify(extension_id);
+
+    auto* action_runner =
+        extensions::ExtensionActionRunner::GetForWebContents(web_contents);
+    if (!action_runner) {
+      return;
+    }
+    action_runner->ShowReloadPageBubbleWithReloadPageCallback(extension_id);
+    return;
+  }
+
+  // Update site access to "on click" when extension is toggled off.
+  DCHECK_NE(current_site_access, PermissionsManager::UserSiteAccess::kOnClick);
+  permissions_helper.UpdateSiteAccess(
+      *extension, web_contents, PermissionsManager::UserSiteAccess::kOnClick);
 }
 
 void ExtensionsMenuViewController::OnReloadPageButtonClicked() {
