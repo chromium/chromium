@@ -83,30 +83,16 @@ inline bool UseV4L2Codec() {
 #endif
 }
 
-inline bool UseLibV4L2() {
-#if BUILDFLAG(USE_V4L2_CODEC)
-  return media::V4L2Device::UseLibV4L2();
-#else
-  return false;
-#endif
-}
-
 #if BUILDFLAG(IS_CHROMEOS) && defined(__aarch64__)
 static const char kLibGlesPath[] = "/usr/lib64/libGLESv2.so.2";
 static const char kLibEglPath[] = "/usr/lib64/libEGL.so.1";
 static const char kLibMaliPath[] = "/usr/lib64/libmali.so";
 static const char kLibTegraPath[] = "/usr/lib64/libtegrav4l2.so";
-static const char kLibV4l2Path[] = "/usr/lib64/libv4l2.so";
-static const char kLibV4lEncPluginPath[] =
-    "/usr/lib64/libv4l/plugins/libv4l-encplugin.so";
 #else
 static const char kLibGlesPath[] = "/usr/lib/libGLESv2.so.2";
 static const char kLibEglPath[] = "/usr/lib/libEGL.so.1";
 static const char kLibMaliPath[] = "/usr/lib/libmali.so";
 static const char kLibTegraPath[] = "/usr/lib/libtegrav4l2.so";
-static const char kLibV4l2Path[] = "/usr/lib/libv4l2.so";
-static const char kLibV4lEncPluginPath[] =
-    "/usr/lib/libv4l/plugins/libv4l-encplugin.so";
 #endif
 
 constexpr int dlopen_flag = RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE;
@@ -628,26 +614,6 @@ void LoadVulkanLibraries() {
   dlopen("libGLX_nvidia.so.0", dlopen_flag);
 }
 
-bool IsAcceleratedVideoEnabled(
-    const sandbox::policy::SandboxSeccompBPF::Options& options) {
-  return options.accelerated_video_encode_enabled ||
-         options.accelerated_video_decode_enabled;
-}
-
-void LoadV4L2Libraries(
-    const sandbox::policy::SandboxSeccompBPF::Options& options) {
-  DCHECK(UseV4L2Codec());
-
-  if (IsAcceleratedVideoEnabled(options) && UseLibV4L2()) {
-    dlopen(kLibV4l2Path, dlopen_flag);
-
-    if (options.accelerated_video_encode_enabled) {
-      // This is a device-specific encoder plugin.
-      dlopen(kLibV4lEncPluginPath, dlopen_flag);
-    }
-  }
-}
-
 void LoadChromecastV4L2Libraries() {
   for (const char* path : kAllowedChromecastPaths) {
     const std::string library_path(std::string(path) +
@@ -664,8 +630,6 @@ bool LoadLibrariesForGpu(
     LoadArmGpuLibraries();
   }
   if (IsChromeOS()) {
-    if (UseV4L2Codec())
-      LoadV4L2Libraries(options);
     if (options.use_amd_specific_policies) {
       if (!LoadAmdGpuLibraries())
         return false;

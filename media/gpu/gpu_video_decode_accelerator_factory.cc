@@ -21,9 +21,8 @@
 #endif
 #if BUILDFLAG(USE_V4L2_CODEC) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))
-#include "media/gpu/v4l2/v4l2_device.h"
-#include "media/gpu/v4l2/legacy/v4l2_slice_video_decode_accelerator.h"
 #include "media/gpu/v4l2/legacy/v4l2_video_decode_accelerator.h"
+#include "media/gpu/v4l2/v4l2_device.h"
 #include "ui/gl/gl_surface_egl.h"
 #endif
 
@@ -50,9 +49,6 @@ gpu::VideoDecodeAcceleratorCapabilities GetDecoderCapabilitiesInternal(
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))
   GpuVideoAcceleratorUtil::InsertUniqueDecodeProfiles(
       V4L2VideoDecodeAccelerator::GetSupportedProfiles(),
-      &capabilities.supported_profiles);
-  GpuVideoAcceleratorUtil::InsertUniqueDecodeProfiles(
-      V4L2SliceVideoDecodeAccelerator::GetSupportedProfiles(),
       &capabilities.supported_profiles);
 #endif
 #elif BUILDFLAG(IS_APPLE)
@@ -126,7 +122,6 @@ GpuVideoDecodeAcceleratorFactory::CreateVDA(
 #if BUILDFLAG(USE_V4L2_CODEC) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))
     &GpuVideoDecodeAcceleratorFactory::CreateV4L2VDA,
-    &GpuVideoDecodeAcceleratorFactory::CreateV4L2SliceVDA,
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -158,21 +153,6 @@ GpuVideoDecodeAcceleratorFactory::CreateV4L2VDA(
     decoder.reset(new V4L2VideoDecodeAccelerator(
         gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
         gl_client_.get_context, gl_client_.make_context_current, device));
-  }
-  return decoder;
-}
-
-std::unique_ptr<VideoDecodeAccelerator>
-GpuVideoDecodeAcceleratorFactory::CreateV4L2SliceVDA(
-    const gpu::GpuDriverBugWorkarounds& /*workarounds*/,
-    const gpu::GpuPreferences& /*gpu_preferences*/,
-    MediaLog* /*media_log*/) const {
-  std::unique_ptr<VideoDecodeAccelerator> decoder;
-  scoped_refptr<V4L2Device> device = V4L2Device::Create();
-  if (device.get()) {
-    decoder.reset(new V4L2SliceVideoDecodeAccelerator(
-        device, gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(),
-        gl_client_.bind_image, gl_client_.make_context_current));
   }
   return decoder;
 }

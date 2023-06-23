@@ -35,32 +35,9 @@
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "ui/gl/egl_util.h"
 
-// Auto-generated for dlopen libv4l2 libraries
-#include "media/gpu/v4l2/v4l2_stubs.h"
-#include "third_party/v4l-utils/lib/include/libv4l2.h"
-
-using media_gpu_v4l2::InitializeStubs;
-using media_gpu_v4l2::kModuleV4l2;
-using media_gpu_v4l2::StubPathMap;
-
 namespace media {
 
 namespace {
-
-bool LibV4L2Exists() {
-#if BUILDFLAG(USE_LIBV4L2)
-  return true;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (access(V4L2Device::kLibV4l2Path, F_OK) == 0) {
-    return true;
-  }
-  PLOG_IF(FATAL, errno != ENOENT)
-      << "access() failed for a reason other than ENOENT";
-  return false;
-#else
-  return false;
-#endif
-}
 
 uint32_t V4L2PixFmtToDrmFormat(uint32_t format) {
   switch (format) {
@@ -145,13 +122,7 @@ void V4L2Device::OnQueueDestroyed(v4l2_buf_type buf_type) {
 // static
 scoped_refptr<V4L2Device> V4L2Device::Create() {
   DVLOGF(3);
-
-  scoped_refptr<V4L2Device> device = new V4L2Device();
-  if (device->Initialize())
-    return device;
-
-  VLOGF(1) << "Failed to create a V4L2Device";
-  return nullptr;
+  return new V4L2Device();
 }
 
 bool V4L2Device::Open(Type type, uint32_t v4l2_pixfmt) {
@@ -351,19 +322,8 @@ gfx::Size V4L2Device::AllocatedSizeFromV4L2Format(
   return coded_size;
 }
 
-// static
-bool V4L2Device::UseLibV4L2() {
-  static const bool use_libv4l2 = LibV4L2Exists();
-  return use_libv4l2;
-}
-
 int V4L2Device::Ioctl(int request, void* arg) {
   DCHECK(device_fd_.is_valid());
-
-  if (use_libv4l2_) {
-    return HANDLE_EINTR(v4l2_ioctl(device_fd_.get(), request, arg));
-  }
-
   return HANDLE_EINTR(ioctl(device_fd_.get(), request, arg));
 }
 
@@ -431,17 +391,6 @@ bool V4L2Device::ClearDevicePollInterrupt() {
       return false;
     }
   }
-  return true;
-}
-
-bool V4L2Device::Initialize() {
-  DVLOGF(3);
-  static bool v4l2_functions_initialized = PostSandboxInitialization();
-  if (!v4l2_functions_initialized) {
-    VLOGF(1) << "Failed to initialize LIBV4L2 libs";
-    return false;
-  }
-
   return true;
 }
 
@@ -950,43 +899,16 @@ bool V4L2Device::SetGOPLength(uint32_t gop_length) {
   return true;
 }
 
-// static
-bool V4L2Device::PostSandboxInitialization() {
-  if (V4L2Device::UseLibV4L2()) {
-    StubPathMap paths;
-    paths[kModuleV4l2].push_back(V4L2Device::kLibV4l2Path);
-
-    return InitializeStubs(paths);
-  } else {
-    return true;
-  }
-}
-
 bool V4L2Device::OpenDevicePath(const std::string& path, Type type) {
   DCHECK(!device_fd_.is_valid());
 
   device_fd_.reset(
       HANDLE_EINTR(open(path.c_str(), O_RDWR | O_NONBLOCK | O_CLOEXEC)));
-  if (!device_fd_.is_valid()) {
-    return false;
-  }
-
-  if (V4L2Device::UseLibV4L2()) {
-    if (type == Type::kEncoder &&
-        HANDLE_EINTR(v4l2_fd_open(device_fd_.get(), V4L2_DISABLE_CONVERSION)) !=
-            -1) {
-      DVLOGF(3) << "Using libv4l2 for " << path;
-      use_libv4l2_ = true;
-    }
-  }
-  return true;
+  return device_fd_.is_valid();
 }
 
 void V4L2Device::CloseDevice() {
   DVLOGF(3);
-  if (use_libv4l2_ && device_fd_.is_valid()) {
-    v4l2_close(device_fd_.release());
-  }
   device_fd_.reset();
 }
 

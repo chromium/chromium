@@ -113,17 +113,6 @@ class MEDIA_GPU_EXPORT V4L2Device
     kJpegEncoder,
   };
 
-  inline static constexpr char kLibV4l2Path[] =
-#if defined(__aarch64__)
-      "/usr/lib64/libv4l2.so";
-#else
-      "/usr/lib/libv4l2.so";
-#endif
-
-  // Returns true iff libv4l2 should be used to interact with the V4L2 driver.
-  // This method is thread-safe.
-  static bool UseLibV4L2();
-
   // Create and initialize an appropriate V4L2Device instance for the current
   // platform, or return nullptr if not available.
   static scoped_refptr<V4L2Device> Create();
@@ -269,10 +258,6 @@ class MEDIA_GPU_EXPORT V4L2Device
   // by each device node.
   using Devices = std::vector<std::pair<std::string, std::vector<uint32_t>>>;
 
-  // Lazily initialize static data after sandbox is enabled.  Return false on
-  // init failure.
-  static bool PostSandboxInitialization();
-
   V4L2Device();
   ~V4L2Device();
 
@@ -280,11 +265,6 @@ class MEDIA_GPU_EXPORT V4L2Device
       const std::vector<uint32_t>& pixelformats);
 
   VideoEncodeAccelerator::SupportedProfiles EnumerateSupportedEncodeProfiles();
-
-  // Perform platform-specific initialization of the device instance.
-  // Return true on success, false on error or if the particular implementation
-  // is not available.
-  [[nodiscard]] bool Initialize();
 
   // Open device node for |path| as a device of |type|.
   bool OpenDevicePath(const std::string& path, Type type);
@@ -329,9 +309,6 @@ class MEDIA_GPU_EXPORT V4L2Device
   // eventfd fd to signal device poll thread when its poll() should be
   // interrupted.
   base::ScopedFD device_poll_interrupt_fd_;
-
-  // Use libv4l2 when operating |device_fd_|.
-  bool use_libv4l2_ = false;
 
   // Associates a v4l2_buf_type to its queue.
   base::flat_map<enum v4l2_buf_type, V4L2Queue*> queues_;

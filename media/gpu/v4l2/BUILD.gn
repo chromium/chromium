@@ -9,23 +9,13 @@ import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 import("//testing/test.gni")
 import("//third_party/libgav1/options.gni")
-import("//tools/generate_stubs/rules.gni")
 import("//ui/gl/features.gni")
 
 assert(use_v4l2_codec)
 
-generate_stubs("libv4l2_stubs") {
-  extra_header = "v4l2_stub_header.fragment"
-  sigs = [ "v4l2.sig" ]
-  output_name = "v4l2_stubs"
-  deps = [ "//base" ]
-}
-
 source_set("v4l2") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
-    "legacy/v4l2_slice_video_decode_accelerator.cc",
-    "legacy/v4l2_slice_video_decode_accelerator.h",
     "legacy/v4l2_stateful_workaround.cc",
     "legacy/v4l2_stateful_workaround.h",
     "legacy/v4l2_video_decode_accelerator.cc",
@@ -97,7 +87,6 @@ source_set("v4l2") {
   public_deps = [ "//ui/gl" ]
 
   deps = [
-    ":libv4l2_stubs",
     ":v4l2_status",
     "//base",
     "//gpu/command_buffer/service:gles2",
