@@ -44,7 +44,6 @@ component("touch_selection") {
     deps += [
       "//skia:skia",
       "//ui/aura",
-      "//ui/aura_extra",
       "//ui/compositor:compositor",
       "//ui/gfx:gfx",
       "//ui/resources",

@@ -6,6 +6,8 @@
 #define UI_TOUCH_SELECTION_TOUCH_HANDLE_DRAWABLE_AURA_H_
 
 #include "base/memory/raw_ptr.h"
+#include "ui/compositor/layer_delegate.h"
+#include "ui/gfx/image/image.h"
 #include "ui/touch_selection/touch_handle.h"
 #include "ui/touch_selection/touch_handle_orientation.h"
 #include "ui/touch_selection/ui_touch_selection_export.h"
@@ -14,14 +16,11 @@ namespace aura {
 class Window;
 }
 
-namespace aura_extra {
-class ImageWindowDelegate;
-}
-
 namespace ui {
 
 class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
-    : public TouchHandleDrawable {
+    : public TouchHandleDrawable,
+      public ui::LayerDelegate {
  public:
   explicit TouchHandleDrawableAura(aura::Window* parent);
 
@@ -45,11 +44,13 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
   gfx::RectF GetVisibleBounds() const override;
   float GetDrawableHorizontalPaddingRatio() const override;
 
+  // ui::LayerDelegate:
+  void OnPaintLayer(const ui::PaintContext& context) override;
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override {}
+
   std::unique_ptr<aura::Window> window_;
-  // `window_delegate_` self destroys when`OnWindowDestroyed()` is invoked
-  // during the destruction of `window_`. It must be declared last and cleared
-  // first to avoid holding a ptr to freed memory.
-  raw_ptr<aura_extra::ImageWindowDelegate> window_delegate_;
+
   bool enabled_;
   float alpha_;
   ui::TouchHandleOrientation orientation_;
@@ -60,6 +61,8 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
 
   // Window bounds relative to the focal position.
   gfx::RectF relative_bounds_;
+
+  gfx::Image handle_image_;
 };
 
 }  // namespace ui

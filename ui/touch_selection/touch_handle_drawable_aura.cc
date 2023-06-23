@@ -6,14 +6,15 @@
 
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
-#include "ui/aura_extra/image_window_delegate.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/paint_recorder.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/image/image.h"
 #include "ui/resources/grit/ui_resources.h"
 
 namespace ui {
@@ -58,24 +59,19 @@ bool IsNearlyZero(float value) {
 }  // namespace
 
 TouchHandleDrawableAura::TouchHandleDrawableAura(aura::Window* parent)
-    : window_(
-          std::make_unique<aura::Window>(new aura_extra::ImageWindowDelegate)),
-      window_delegate_(
-          static_cast<aura_extra::ImageWindowDelegate*>(window_->delegate())),
+    : window_(std::make_unique<aura::Window>(/*delegate=*/nullptr)),
       enabled_(false),
       alpha_(0),
       orientation_(TouchHandleOrientation::UNDEFINED) {
-  window_delegate_->set_image_offset(gfx::Vector2d(kSelectionHandlePadding,
-                                                   kSelectionHandlePadding));
   window_->SetTransparent(true);
   window_->Init(LAYER_TEXTURED);
   window_->set_owned_by_parent(false);
   window_->SetEventTargetingPolicy(aura::EventTargetingPolicy::kNone);
+  window_->layer()->set_delegate(this);
   parent->AddChild(window_.get());
 }
 
-TouchHandleDrawableAura::~TouchHandleDrawableAura() {
-}
+TouchHandleDrawableAura::~TouchHandleDrawableAura() = default;
 
 void TouchHandleDrawableAura::UpdateBounds() {
   gfx::RectF new_bounds = relative_bounds_;
@@ -102,26 +98,25 @@ void TouchHandleDrawableAura::SetOrientation(TouchHandleOrientation orientation,
                                              bool mirror_vertical,
                                              bool mirror_horizontal) {
   // TODO(AviD): Implement adaptive handle orientation logic for Aura
-  DCHECK(window_delegate_);
   DCHECK(!mirror_vertical);
   DCHECK(!mirror_horizontal);
 
   if (orientation_ == orientation)
     return;
   orientation_ = orientation;
-  gfx::Image* image = GetHandleImage(orientation);
-  window_delegate_->SetImage(*image);
+  handle_image_ = *GetHandleImage(orientation);
 
   // Calculate the relative bounds.
-  gfx::Size image_size = image->Size();
-  int window_width = image_size.width() + 2 * kSelectionHandlePadding;
-  int window_height = image_size.height() + 2 * kSelectionHandlePadding;
+  const gfx::Size image_size = handle_image_.Size();
+  const int window_width = image_size.width() + 2 * kSelectionHandlePadding;
+  const int window_height = image_size.height() + 2 * kSelectionHandlePadding;
   relative_bounds_ =
       gfx::RectF(-kSelectionHandlePadding,
                  kSelectionHandleVerticalVisualOffset - kSelectionHandlePadding,
                  window_width, window_height);
-  gfx::Rect paint_bounds(relative_bounds_.x(), relative_bounds_.y(),
-                         relative_bounds_.width(), relative_bounds_.height());
+  const gfx::Rect paint_bounds(relative_bounds_.x(), relative_bounds_.y(),
+                               relative_bounds_.width(),
+                               relative_bounds_.height());
   window_->SchedulePaintInRect(paint_bounds);
   UpdateBounds();
 }
@@ -155,6 +150,15 @@ gfx::RectF TouchHandleDrawableAura::GetVisibleBounds() const {
 float TouchHandleDrawableAura::GetDrawableHorizontalPaddingRatio() const {
   // Aura does not have any transparent padding for its handle drawable.
   return 0.0f;
+}
+
+void TouchHandleDrawableAura::OnPaintLayer(const ui::PaintContext& context) {
+  ui::PaintRecorder recorder(context, window_->bounds().size());
+  if (!handle_image_.IsEmpty()) {
+    recorder.canvas()->DrawImageInt(handle_image_.AsImageSkia(),
+                                    kSelectionHandlePadding,
+                                    kSelectionHandlePadding);
+  }
 }
 
 }  // namespace ui
