@@ -1696,7 +1696,8 @@ TEST_F(V4LocalDatabaseManagerTest, SyncedLists) {
 
 #if BUILDFLAG(IS_IOS)
   std::vector<ListIdentifier> expected_lists{
-      GetUrlSocEngId(), GetUrlMalwareId(), GetUrlBillingId(),
+      GetUrlSocEngId(),       GetUrlMalwareId(),
+      GetUrlUwsId(),          GetUrlBillingId(),
       GetUrlCsdAllowlistId(), GetUrlHighConfidenceAllowlistId()};
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::vector<ListIdentifier> expected_lists{GetUrlSocEngId(),

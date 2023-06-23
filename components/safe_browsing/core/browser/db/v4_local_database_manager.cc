@@ -98,7 +98,7 @@ ListInfos GetListInfos() {
                SB_THREAT_TYPE_URL_PHISHING),
       ListInfo(kSyncAlways, "UrlMalware.store", GetUrlMalwareId(),
                SB_THREAT_TYPE_URL_MALWARE),
-      ListInfo(kSyncOnDesktopBuilds, "UrlUws.store", GetUrlUwsId(),
+      ListInfo(kSyncAlways, "UrlUws.store", GetUrlUwsId(),
                SB_THREAT_TYPE_URL_UNWANTED),
       ListInfo(kSyncOnDesktopBuilds, "UrlMalBin.store", GetUrlMalBinId(),
                SB_THREAT_TYPE_URL_BINARY_MALWARE),
