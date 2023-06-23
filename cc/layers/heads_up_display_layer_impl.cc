@@ -735,7 +735,7 @@ SkRect HeadsUpDisplayLayerImpl::DrawFrameThroughputDisplay(
   SkPath good_path;
   SkPath dropped_path;
   SkPath partial_path;
-  for (auto it = --dropped_frame_counter->end(); it; --it) {
+  for (auto it = dropped_frame_counter->End(); it; --it) {
     const auto state = **it;
     int x = graph_bounds.left() + it.index();
     SkPath& path = state == DroppedFrameCounter::kFrameStateDropped

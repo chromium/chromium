@@ -143,7 +143,7 @@ DroppedFrameCounter::~DroppedFrameCounter() = default;
 
 uint32_t DroppedFrameCounter::GetAverageThroughput() const {
   size_t good_frames = 0;
-  for (auto it = --end(); it; --it) {
+  for (auto it = End(); it; --it) {
     if (**it == kFrameStateComplete || **it == kFrameStatePartial)
       ++good_frames;
   }
