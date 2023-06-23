@@ -13,6 +13,10 @@
 #include "content/public/test/test_utils.h"
 #include "ui/base/mojom/attributed_string.mojom.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 
 TextInputTestLocalFrame::TextInputTestLocalFrame() = default;

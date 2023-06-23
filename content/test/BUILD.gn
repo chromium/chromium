@@ -693,6 +693,10 @@ static_library("test_support") {
     ]
   }
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   if (is_mac) {
     sources += [
       "../browser/renderer_host/test_render_widget_host_view_mac_factory.h",
