@@ -40,13 +40,6 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
         class_id != WrapperTypeInfo::kObjectClassId)
       return true;
 
-    const v8::TracedReference<v8::Object>& traced =
-        handle.template As<v8::Object>();
-    if (ToWrapperTypeInfo(traced)->IsActiveScriptWrappable() &&
-        ToScriptWrappable(traced)->HasPendingActivity()) {
-      return true;
-    }
-
     return false;
   }
 
