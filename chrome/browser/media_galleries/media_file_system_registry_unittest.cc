@@ -418,7 +418,7 @@ namespace {
 
 bool MediaFileSystemInfoComparator(const MediaFileSystemInfo& a,
                                    const MediaFileSystemInfo& b) {
-  CHECK_NE(a.name, b.name);  // Name must be unique.
+  CHECK(&a == &b || a.name != b.name);  // Name must be unique.
   return a.name < b.name;
 }
 
