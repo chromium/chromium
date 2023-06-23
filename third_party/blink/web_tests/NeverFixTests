@@ -975,6 +975,10 @@ crbug.com/966283 external/wpt/css/css-overflow/clip-003.html [ Skip ]
 # run_web_tests.py; see https://crbug.com/359838.
 http/tests/ManualTests/* [ Skip ]
 
+# Tests skipped in automation because they require manual interaction with system
+# dialogs. Run these tests by opening the files manually in a browser.
+printing/manual/* [ Skip ]
+
 # Fails in debug mode, because in debug mode we recompute visual rects after
 # changes to subpixel offsets of composited layers to detect under-invalidation
 # in testing, whereas otherwise we do not do so if the composited layer has a

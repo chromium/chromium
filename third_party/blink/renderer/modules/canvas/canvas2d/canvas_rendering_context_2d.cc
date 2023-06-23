@@ -1077,9 +1077,21 @@ void CanvasRenderingContext2D::DrawTextInternal(
         TextRun text_run(text, direction, bidi_override);
         text_run.SetNormalizeSpace(true);
         TextRunPaintInfo text_run_paint_info(text_run);
+        // Font::DrawType::kGlyphsAndClusters is required for printing to PDF,
+        // otherwise the character to glyph mapping will not be reversible,
+        // which prevents text data from being extracted from PDF files or
+        // from the print preview. This is only needed in vector printing mode
+        // (i.e. when rendering inside the beforeprint event listener),
+        // because in all other cases the canvas is just a rectangle of pixels.
+        // Note: Test coverage for this is assured by manual (non-automated)
+        // web test printing/manual/canvas2d-vector-text.html
+        // That test should be run manually against CLs that touch this code.
+        Font::DrawType draw_type = canvas()->IsPrinting()
+                                       ? Font::DrawType::kGlyphsAndClusters
+                                       : Font::DrawType::kGlyphsOnly;
         this->AccessFont().DrawBidiText(c, text_run_paint_info, location,
                                         Font::kUseFallbackIfFontNotReady,
-                                        *flags);
+                                        *flags, draw_type);
       },
       [](const SkIRect& rect)  // overdraw test lambda
       { return false; },

@@ -1012,6 +1012,10 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
 
     // display list rendering: we replay the last full PaintRecord, if Canvas
     // has been redraw since beforeprint happened.
+
+    // Note: Test coverage for this is assured by manual (non-automated)
+    // web test printing/manual/canvas2d-vector-text.html
+    // That test should be run manually against CLs that touch this code.
     if (IsPrinting() && IsRenderingContext2D() && canvas2d_bridge_) {
       canvas2d_bridge_->FlushRecording(
           CanvasResourceProvider::FlushReason::kPrinting);
