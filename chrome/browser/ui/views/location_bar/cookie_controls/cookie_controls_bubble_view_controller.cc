@@ -5,10 +5,14 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.h"
 
 CookieControlsBubbleViewController::CookieControlsBubbleViewController(
+    CookieControlsBubbleView* bubble_view,
     content_settings::CookieControlsController* controller)
-    : controller_(controller->AsWeakPtr()) {
+    : bubble_view_(bubble_view), controller_(controller->AsWeakPtr()) {
   controller_observation_.Observe(controller);
 }
+
+CookieControlsBubbleViewController::~CookieControlsBubbleViewController() =
+    default;
 
 void CookieControlsBubbleViewController::OnStatusChanged(
     CookieControlsStatus status,

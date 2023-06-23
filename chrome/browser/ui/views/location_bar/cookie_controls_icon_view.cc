@@ -153,7 +153,8 @@ void CookieControlsIconView::OnExecuting(
     PageActionIconView::ExecuteSource source) {
   if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
     bubble_coordinator_->ShowBubble(
-        delegate()->GetWebContentsForPageActionIconView(), controller_.get());
+        this, delegate()->GetWebContentsForPageActionIconView(),
+        controller_.get());
   } else {
     OldCookieControlsBubbleView::ShowBubble(
         this, this, delegate()->GetWebContentsForPageActionIconView(),
@@ -162,8 +163,11 @@ void CookieControlsIconView::OnExecuting(
 }
 
 views::BubbleDialogDelegate* CookieControlsIconView::GetBubble() const {
-  // TODO(crbug.com/1446230): Return new bubble when ready.
-  return OldCookieControlsBubbleView::GetCookieBubble();
+  if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
+    return bubble_coordinator_->GetBubble();
+  } else {
+    return OldCookieControlsBubbleView::GetCookieBubble();
+  }
 }
 
 const gfx::VectorIcon& CookieControlsIconView::GetVectorIcon() const {

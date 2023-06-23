@@ -4924,6 +4924,8 @@ static_library("ui") {
       "views/location_bar/content_setting_image_view.h",
       "views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.cc",
       "views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h",
+      "views/location_bar/cookie_controls/cookie_controls_bubble_view.cc",
+      "views/location_bar/cookie_controls/cookie_controls_bubble_view.h",
       "views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.cc",
       "views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.h",
       "views/location_bar/cookie_controls_icon_view.cc",

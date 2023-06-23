@@ -19,12 +19,31 @@ CookieControlsBubbleCoordinator::CookieControlsBubbleCoordinator(
 CookieControlsBubbleCoordinator::~CookieControlsBubbleCoordinator() = default;
 
 void CookieControlsBubbleCoordinator::ShowBubble(
+    views::Button* highlighted_button,
     content::WebContents* web_contents,
     content_settings::CookieControlsController* controller) {
-  // TODO(crbug.com/1446230): Add ShowBubble logic.
+  if (bubble_view_ != nullptr) {
+    return;
+  }
+  auto bubble_view =
+      std::make_unique<CookieControlsBubbleView>(anchor_view_, web_contents);
+  bubble_view_ = bubble_view.get();
+  bubble_view_->View::AddObserver(this);
+
+  view_controller_ = std::make_unique<CookieControlsBubbleViewController>(
+      bubble_view_, controller);
+
+  views::Widget* const widget =
+      views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
+  widget->Show();
+}
+
+CookieControlsBubbleView* CookieControlsBubbleCoordinator::GetBubble() {
+  return bubble_view_;
 }
 
 void CookieControlsBubbleCoordinator::OnViewIsDeleting(
     views::View* observed_view) {
-  // TODO(crbug.com/1446230): Add OnViewIsDeleting logic.
+  bubble_view_ = nullptr;
+  view_controller_ = nullptr;
 }
