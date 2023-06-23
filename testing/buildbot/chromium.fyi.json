@@ -36880,7 +36880,6 @@
           "--enable-features=ChromeRefresh2023",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.linux.cr23_browser_tests.filter"
         ],
-        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -36944,7 +36943,6 @@
           "--enable-features=ChromeRefresh2023",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.linux.cr23_interactive_ui_tests.filter"
         ],
-        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -37007,7 +37005,6 @@
           "--enable-features=ChromeRefresh2023",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.linux.cr23_views_unittests.filter"
         ],
-        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -43790,7 +43787,6 @@
           "--enable-features=ChromeRefresh2023",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter"
         ],
-        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -43855,7 +43851,6 @@
           "--enable-features=ChromeRefresh2023",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter"
         ],
-        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -43918,7 +43913,6 @@
           "--enable-features=ChromeRefresh2023",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_views_unittests.filter"
         ],
-        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -46267,7 +46261,6 @@
           "--enable-features=ChromeRefresh2023",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter"
         ],
-        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -46331,7 +46324,6 @@
           "--enable-features=ChromeRefresh2023",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter"
         ],
-        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -46393,7 +46385,6 @@
           "--enable-features=ChromeRefresh2023",
           "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.win.cr23_views_unittests.filter"
         ],
-        "experiment_percentage": 1,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },

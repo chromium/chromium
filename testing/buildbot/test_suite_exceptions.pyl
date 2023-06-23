@@ -2289,36 +2289,42 @@
     ],
   },
   'cr23_browser_tests': {
-    'cr23-linux-rel': {
-      'experiment_percentage': None,
-    },
-    'cr23-mac-rel': {
-      'experiment_percentage': None,
-    },
-    'cr23-win-rel': {
-      'experiment_percentage': None,
-    },
+    'modifications': {
+      'linux-cr23-rel': {
+        'experiment_percentage': None,
+      },
+      'mac-cr23-rel': {
+        'experiment_percentage': None,
+      },
+      'win-cr23-rel': {
+        'experiment_percentage': None,
+      },
+    }
   },
   'cr23_interactive_ui_tests': {
-    'cr23-linux-rel': {
-      'experiment_percentage': None,
-    },
-    'cr23-mac-rel': {
-      'experiment_percentage': None,
-    },
-    'cr23-win-rel': {
-      'experiment_percentage': None,
+    'modifications': {
+      'linux-cr23-rel': {
+        'experiment_percentage': None,
+      },
+      'mac-cr23-rel': {
+        'experiment_percentage': None,
+      },
+      'win-cr23-rel': {
+        'experiment_percentage': None,
+      },
     },
   },
   'cr23_views_unittests': {
-    'cr23-linux-rel': {
-      'experiment_percentage': None,
-    },
-    'cr23-mac-rel': {
-      'experiment_percentage': None,
-    },
-    'cr23-win-rel': {
-      'experiment_percentage': None,
+    'modifications': {
+      'linux-cr23-rel': {
+        'experiment_percentage': None,
+      },
+      'mac-cr23-rel': {
+        'experiment_percentage': None,
+      },
+      'win-cr23-rel': {
+        'experiment_percentage': None,
+      },
     },
   },
   'crashpad_tests': {
