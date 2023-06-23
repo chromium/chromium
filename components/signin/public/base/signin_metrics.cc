@@ -644,6 +644,7 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
     case AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
     case AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
     case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
+    case AccessPoint::ACCESS_POINT_SETTINGS:
     case AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
       break;
 
@@ -651,7 +652,6 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
     case AccessPoint::ACCESS_POINT_START_PAGE:
     case AccessPoint::ACCESS_POINT_NTP_LINK:
     case AccessPoint::ACCESS_POINT_MENU:
-    case AccessPoint::ACCESS_POINT_SETTINGS:
     case AccessPoint::ACCESS_POINT_SUPERVISED_USER:
     case AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
     case AccessPoint::ACCESS_POINT_EXTENSIONS:

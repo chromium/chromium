@@ -432,6 +432,7 @@ source_set("eg2_tests") {
     "//build:branding_buildflags",
     "//components/policy:generated",
     "//components/strings",
+    "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
     "//ios/chrome/browser/policy:policy_util",

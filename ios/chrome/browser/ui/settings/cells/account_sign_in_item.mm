@@ -4,12 +4,15 @@
 
 #import "ios/chrome/browser/ui/settings/cells/account_sign_in_item.h"
 
+#import "components/sync/base/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -34,11 +37,21 @@
 - (void)configureCell:(SettingsImageDetailTextCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
-  cell.textLabel.text = l10n_util::GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
   cell.detailTextLabel.text = self.detailText;
   cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  cell.image = CircularImageFromImage(ios::provider::GetSigninDefaultAvatar(),
-                                      kAccountProfilePhotoDimension);
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    cell.textLabel.text =
+        l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE);
+    cell.image = DefaultSymbolTemplateWithPointSize(
+        kPersonCropCircleSymbol, kAccountProfilePhotoDimension);
+    [cell setImageViewTintColor:[UIColor colorNamed:kBlue600Color]];
+  } else {
+    cell.textLabel.text =
+        l10n_util::GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
+    cell.image = CircularImageFromImage(ios::provider::GetSigninDefaultAvatar(),
+                                        kAccountProfilePhotoDimension);
+  }
 }
 
 @end

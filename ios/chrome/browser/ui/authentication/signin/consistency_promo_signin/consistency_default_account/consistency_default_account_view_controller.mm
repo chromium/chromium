@@ -51,6 +51,9 @@ NSString* GetPromoLabelString(signin_metrics::AccessPoint accessPoint) {
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
       return l10n_util::GetNSString(
           IDS_IOS_IDENTITY_DISC_SIGNED_OUT_PROMO_LABEL);
+    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
+      // No text.
+      return nil;
     default:
       // Nothing prevents instantiating ConsistencyDefaultAccountViewController
       // with an arbitrary entry point, API-wise. In doubt, no label is a good,

@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/feature_list.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -589,9 +590,17 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       authService->GetServiceStatus();
   // If sign-in is disabled by policy there should not be a sign-in promo.
   if ((authServiceStatus ==
-       AuthenticationService::ServiceStatus::SigninDisabledByPolicy) ||
-      ([self isSyncDisabledByPolicy] &&
-       !authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin))) {
+       AuthenticationService::ServiceStatus::SigninDisabledByPolicy)) {
+    item = [self signinDisabledByPolicyTextItem];
+  } else if ([self isSyncDisabledByPolicy] &&
+             !authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
+             !base::FeatureList::IsEnabled(
+                 syncer::kReplaceSyncPromosWithSignInPromos)) {
+    // When kReplaceSyncPromosWithSignInPromos is disabled, the normal item
+    // opens the sync screen, and that shouldn't happen with the SyncDisabled
+    // policy. Show the "disabled by enterprise" item instead.
+    // Note when the same flag is enabled, the normal item leads to the sign-in
+    // screen, which is allowed with SyncDisabled.
     item = [self signinDisabledByPolicyTextItem];
   } else if (self.shouldDisplaySyncPromo) {
     // Create the sign-in promo mediator if it doesn't exist.
@@ -707,7 +716,13 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   signInTextItem.accessibilityIdentifier = kSettingsSignInCellId;
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(_browserState);
-  if (!HasManagedSyncDataType(syncService)) {
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    // TODO(crbug.com/1447012): Make detailText private when the feature is
+    // launched.
+    signInTextItem.detailText =
+        l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGNED_OUT_PROMO_LABEL);
+  } else if (!HasManagedSyncDataType(syncService)) {
     signInTextItem.detailText =
         l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE);
   } else {
@@ -1951,8 +1966,14 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   DCHECK(!self.isSigninInProgress);
   self.isSigninInProgress = YES;
   __weak __typeof(self) weakSelf = self;
+  // TODO(crbug.com/1447012): Show the SSO screen directly if there are no
+  // device-level accounts.
+  AuthenticationOperation operation =
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? AuthenticationOperationSigninOnly
+          : AuthenticationOperationSigninAndSync;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperationSigninAndSync
+      initWithOperation:operation
                identity:identity
             accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
             promoAction:promoAction
