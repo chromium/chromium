@@ -9,9 +9,9 @@
 
 namespace ui {
 
-// Starting on macOS 10.15, the ability to screen capture is restricted and
-// requires a permission authorization. This function returns `true` if screen
-// capture permission was already granted by the user and `false` if it was not.
+// The ability to screen capture is restricted and requires a permission
+// authorization. This function returns `true` if screen capture permission was
+// already granted by the user and `false` if it was not.
 COMPONENT_EXPORT(UI_BASE) bool IsScreenCaptureAllowed();
 
 // Explicitly request from the user permission to capture the screen. Returns

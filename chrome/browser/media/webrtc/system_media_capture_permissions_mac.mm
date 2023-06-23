@@ -50,28 +50,19 @@ class MediaAuthorizationWrapperImpl final : public MediaAuthorizationWrapper {
   ~MediaAuthorizationWrapperImpl() override = default;
 
   NSInteger AuthorizationStatusForMediaType(AVMediaType media_type) override {
-    if (@available(macOS 10.14, *)) {
-      return [AVCaptureDevice authorizationStatusForMediaType:media_type];
-    } else {
-      CHECK(false);
-      return 0;
-    }
+    return [AVCaptureDevice authorizationStatusForMediaType:media_type];
   }
 
   void RequestAccessForMediaType(AVMediaType media_type,
                                  base::OnceClosure callback) override {
-    if (@available(macOS 10.14, *)) {
-      __block base::OnceClosure block_callback = std::move(callback);
-      __block scoped_refptr<base::SequencedTaskRunner> requesting_thread =
-          base::SequencedTaskRunner::GetCurrentDefault();
-      [AVCaptureDevice requestAccessForMediaType:media_type
-                               completionHandler:^(BOOL granted) {
-                                 requesting_thread->PostTask(
-                                     FROM_HERE, std::move(block_callback));
-                               }];
-    } else {
-      CHECK(false);
-    }
+    __block base::OnceClosure block_callback = std::move(callback);
+    __block scoped_refptr<base::SequencedTaskRunner> requesting_thread =
+        base::SequencedTaskRunner::GetCurrentDefault();
+    [AVCaptureDevice requestAccessForMediaType:media_type
+                             completionHandler:^(BOOL granted) {
+                               requesting_thread->PostTask(
+                                   FROM_HERE, std::move(block_callback));
+                             }];
   }
 };
 
@@ -85,37 +76,28 @@ MediaAuthorizationWrapper& GetMediaAuthorizationWrapper() {
 }
 
 NSInteger MediaAuthorizationStatus(AVMediaType media_type) {
-  if (@available(macOS 10.14, *)) {
-    return GetMediaAuthorizationWrapper().AuthorizationStatusForMediaType(
-        media_type);
-  }
-
-  CHECK(false);
-  return 0;
+  return GetMediaAuthorizationWrapper().AuthorizationStatusForMediaType(
+      media_type);
 }
 
 SystemPermission CheckSystemMediaCapturePermission(AVMediaType media_type) {
-  if (UsingFakeMediaDevices())
+  if (UsingFakeMediaDevices()) {
     return SystemPermission::kAllowed;
-
-  if (@available(macOS 10.14, *)) {
-    NSInteger auth_status = MediaAuthorizationStatus(media_type);
-    switch (auth_status) {
-      case AVAuthorizationStatusNotDetermined:
-        return SystemPermission::kNotDetermined;
-      case AVAuthorizationStatusRestricted:
-        return SystemPermission::kRestricted;
-      case AVAuthorizationStatusDenied:
-        return SystemPermission::kDenied;
-      case AVAuthorizationStatusAuthorized:
-        return SystemPermission::kAllowed;
-      default:
-        NOTREACHED_NORETURN();
-    }
   }
 
-  // On pre-10.14, there are no system permissions, so we return allowed.
-  return SystemPermission::kAllowed;
+  NSInteger auth_status = MediaAuthorizationStatus(media_type);
+  switch (auth_status) {
+    case AVAuthorizationStatusNotDetermined:
+      return SystemPermission::kNotDetermined;
+    case AVAuthorizationStatusRestricted:
+      return SystemPermission::kRestricted;
+    case AVAuthorizationStatusDenied:
+      return SystemPermission::kDenied;
+    case AVAuthorizationStatusAuthorized:
+      return SystemPermission::kAllowed;
+    default:
+      NOTREACHED_NORETURN();
+  }
 }
 
 void RequestSystemMediaCapturePermission(AVMediaType media_type,
@@ -126,20 +108,14 @@ void RequestSystemMediaCapturePermission(AVMediaType media_type,
     return;
   }
 
-  if (@available(macOS 10.14, *)) {
-    GetMediaAuthorizationWrapper().RequestAccessForMediaType(
-        media_type, std::move(callback));
-  } else {
-    CHECK(false);
-  }
+  GetMediaAuthorizationWrapper().RequestAccessForMediaType(media_type,
+                                                           std::move(callback));
 }
 
 bool IsScreenCaptureAllowed() {
-  if (@available(macOS 10.15, *)) {
-    if (!base::FeatureList::IsEnabled(
-            features::kMacSystemScreenCapturePermissionCheck)) {
-      return true;
-    }
+  if (!base::FeatureList::IsEnabled(
+          features::kMacSystemScreenCapturePermissionCheck)) {
+    return true;
   }
 
   bool allowed = ui::IsScreenCaptureAllowed();
@@ -162,11 +138,11 @@ SystemPermission CheckSystemScreenCapturePermission() {
                                   : SystemPermission::kDenied;
 }
 
-void RequestSystemAudioCapturePermisson(base::OnceClosure callback) {
+void RequestSystemAudioCapturePermission(base::OnceClosure callback) {
   RequestSystemMediaCapturePermission(AVMediaTypeAudio, std::move(callback));
 }
 
-void RequestSystemVideoCapturePermisson(base::OnceClosure callback) {
+void RequestSystemVideoCapturePermission(base::OnceClosure callback) {
   RequestSystemMediaCapturePermission(AVMediaTypeVideo, std::move(callback));
 }
 

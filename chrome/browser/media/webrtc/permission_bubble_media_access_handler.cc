@@ -397,7 +397,7 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
       if (system_audio_permission == SystemPermission::kNotDetermined) {
         // Using WeakPtr since callback can come at any time and we might be
         // destroyed.
-        system_media_permissions::RequestSystemAudioCapturePermisson(
+        system_media_permissions::RequestSystemAudioCapturePermission(
             base::BindOnce(&PermissionBubbleMediaAccessHandler::
                                OnAccessRequestResponseForBinding,
                            weak_factory_.GetWeakPtr(), web_contents, request_id,
@@ -424,7 +424,7 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
       if (system_video_permission == SystemPermission::kNotDetermined) {
         // Using WeakPtr since callback can come at any time and we might be
         // destroyed.
-        system_media_permissions::RequestSystemVideoCapturePermisson(
+        system_media_permissions::RequestSystemVideoCapturePermission(
             base::BindOnce(&PermissionBubbleMediaAccessHandler::
                                OnAccessRequestResponseForBinding,
                            weak_factory_.GetWeakPtr(), web_contents, request_id,
