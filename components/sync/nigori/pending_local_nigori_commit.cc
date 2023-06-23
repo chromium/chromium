@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
@@ -109,7 +108,7 @@ class CustomPassphraseSetter : public PendingLocalNigoriCommit {
                                       /*encrypt_everything=*/true);
     observer->OnPassphraseAccepted();
 
-    UMA_HISTOGRAM_BOOLEAN("Sync.CustomEncryption", true);
+    base::UmaHistogramBoolean("Sync.CustomEncryption", true);
   }
 
   void OnFailure(SyncEncryptionHandler::Observer* observer) override {}
