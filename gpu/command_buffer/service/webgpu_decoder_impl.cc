@@ -1737,6 +1737,8 @@ error::Error WebGPUDecoderImpl::HandleDawnCommands(
     const volatile void* cmd_data) {
   const volatile webgpu::cmds::DawnCommands& c =
       *static_cast<const volatile webgpu::cmds::DawnCommands*>(cmd_data);
+  uint32_t trace_id_high = static_cast<uint32_t>(c.trace_id_high);
+  uint32_t trace_id_low = static_cast<uint32_t>(c.trace_id_low);
   uint32_t size = static_cast<uint32_t>(c.size);
   uint32_t commands_shm_id = static_cast<uint32_t>(c.commands_shm_id);
   uint32_t commands_shm_offset = static_cast<uint32_t>(c.commands_shm_offset);
@@ -1747,10 +1749,10 @@ error::Error WebGPUDecoderImpl::HandleDawnCommands(
     return error::kOutOfBounds;
   }
 
-  TRACE_EVENT_WITH_FLOW0(
-      TRACE_DISABLED_BY_DEFAULT("gpu.dawn"), "DawnCommands",
-      (static_cast<uint64_t>(commands_shm_id) << 32) + commands_shm_offset,
-      TRACE_EVENT_FLAG_FLOW_IN);
+  uint64_t trace_id =
+      (static_cast<uint64_t>(trace_id_high) << 32) + trace_id_low;
+  TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"), "DawnCommands",
+                         trace_id, TRACE_EVENT_FLAG_FLOW_IN);
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
                "WebGPUDecoderImpl::HandleDawnCommands", "bytes", size);

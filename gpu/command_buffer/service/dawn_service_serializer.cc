@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/dawn_service_serializer.h"
 
+#include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/common/webgpu_cmd_format.h"
 #include "gpu/command_buffer/service/decoder_client.h"
@@ -77,10 +78,18 @@ bool DawnServiceSerializer::Flush() {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
                  "DawnServiceSerializer::Flush", "bytes", put_offset_);
 
-    static uint32_t return_trace_id = 0;
-    TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
-                           "DawnReturnCommands", return_trace_id++,
-                           TRACE_EVENT_FLAG_FLOW_OUT);
+    bool is_tracing = false;
+    TRACE_EVENT_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
+                                       &is_tracing);
+    if (is_tracing) {
+      uint64_t trace_id = base::RandUint64();
+      TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
+                             "DawnReturnCommands", trace_id,
+                             TRACE_EVENT_FLAG_FLOW_OUT);
+      cmds::DawnReturnCommandsInfoHeader* header =
+          reinterpret_cast<cmds::DawnReturnCommandsInfoHeader*>(&buffer_[0]);
+      header->return_data_header.trace_id = trace_id;
+    }
 
     client_->HandleReturnData(base::make_span(buffer_.data(), put_offset_));
     put_offset_ = kDawnReturnCmdsOffset;
