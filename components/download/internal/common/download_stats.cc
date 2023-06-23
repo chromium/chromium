@@ -630,10 +630,6 @@ void RecordDownloadHttpResponseCode(int response_code,
   }
 }
 
-void RecordInProgressDBCount(InProgressDBCountTypes type) {
-  UMA_HISTOGRAM_ENUMERATION("Download.InProgressDB.Counts", type);
-}
-
 void RecordInputStreamReadError(MojoResult mojo_result) {
   InputStreamReadError error = InputStreamReadError::kUnknown;
   switch (mojo_result) {

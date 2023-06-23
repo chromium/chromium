@@ -198,12 +198,10 @@ void DownloadDBCache::OnDownloadDBInitialized(
     InitializeCallback callback,
     bool success) {
   if (success) {
-    RecordInProgressDBCount(kInitializationSucceededCount);
     download_db_->LoadEntries(
         base::BindOnce(&DownloadDBCache::OnDownloadDBEntriesLoaded,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
-    RecordInProgressDBCount(kInitializationFailedCount);
     std::move(callback).Run(false,
                             std::make_unique<std::vector<DownloadDBEntry>>());
   }
@@ -214,7 +212,6 @@ void DownloadDBCache::OnDownloadDBEntriesLoaded(
     bool success,
     std::unique_ptr<std::vector<DownloadDBEntry>> entries) {
   initialized_ = success;
-  RecordInProgressDBCount(success ? kLoadSucceededCount : kLoadFailedCount);
   for (auto& entry : *entries) {
     // If the entry is from the metadata cache migration, just remove it from
     // DB as the data is not being cleaned up properly.

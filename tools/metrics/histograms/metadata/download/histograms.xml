@@ -459,14 +459,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.InProgressDB.Counts"
-    enum="DownloadInProgressDBCountType" expires_after="M83">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Various individual counts related to in-progress download DB.
-  </summary>
-</histogram>
-
 <histogram name="Download.InputStreamReadError"
     enum="DownloadInputStreamReadErrorType" expires_after="2023-11-12">
   <owner>qinmin@chromium.org</owner>
