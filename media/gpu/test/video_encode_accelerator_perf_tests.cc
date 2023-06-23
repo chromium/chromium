@@ -804,6 +804,44 @@ TEST_F(VideoEncoderTest, MeasureUncappedPerformance) {
   EXPECT_EQ(encoder->GetFrameReleasedCount(), kNumFramesToEncodeForPerformance);
 }
 
+// TODO(b/211783279) The |performance_evaluator_| only keeps track of the last
+// created encoder. We should instead keep track of multiple evaluators, and
+// then decide how to aggregate/report those metrics.
+TEST_F(VideoEncoderTest,
+       MeasureUncappedPerformance_MultipleConcurrentEncoders) {
+  // Run two encoders for larger resolutions to avoid creating shared memory
+  // buffers during the test on lower end devices.
+  constexpr gfx::Size k1080p(1920, 1080);
+  const size_t kMinSupportedConcurrentEncoders =
+      g_env->Video()->Resolution().GetArea() >= k1080p.GetArea() ? 2 : 3;
+
+  std::vector<std::unique_ptr<VideoEncoder>> encoders(
+      kMinSupportedConcurrentEncoders);
+  for (size_t i = 0; i < kMinSupportedConcurrentEncoders; ++i) {
+    encoders[i] = CreateVideoEncoder(/*encode_rate=*/absl::nullopt,
+                                     /*measure_quality=*/false);
+    encoders[i]->SetEventWaitTimeout(kPerfEventTimeout);
+  }
+
+  performance_evaluator_->StartMeasuring();
+
+  for (auto&& encoder : encoders) {
+    encoder->Encode();
+  }
+
+  for (auto&& encoder : encoders) {
+    EXPECT_TRUE(encoder->WaitForFlushDone());
+    EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
+    EXPECT_EQ(encoder->GetFrameReleasedCount(),
+              kNumFramesToEncodeForPerformance);
+  }
+
+  performance_evaluator_->StopMeasuring();
+  auto metrics = performance_evaluator_->Metrics();
+  metrics.WriteToConsole();
+  metrics.WriteToFile();
+}
+
 // Encode |kNumFramesToEncodeForPerformance| frames while measuring capped
 // performance. This test will encode a video at a fixed ratio, 30fps.
 // This test can be used to measure the cpu metrics during encoding.
@@ -859,43 +897,6 @@ TEST_F(VideoEncoderTest, MeasureProducedBitstreamQuality) {
 
     metrics.Output(target_bitrate, actual_bitrate);
   }
-}
-
-// TODO(b/211783279) The |performance_evaluator_| only keeps track of the last
-// created encoder. We should instead keep track of multiple evaluators, and
-// then decide how to aggregate/report those metrics.
-TEST_F(VideoEncoderTest,
-       MeasureUncappedPerformance_MultipleConcurrentEncoders) {
-  // Run two encoders for larger resolutions to avoid creating shared memory
-  // buffers during the test on lower end devices.
-  constexpr gfx::Size k1080p(1920, 1080);
-  const size_t kMinSupportedConcurrentEncoders =
-      g_env->Video()->Resolution().GetArea() >= k1080p.GetArea() ? 2 : 3;
-
-  std::vector<std::unique_ptr<VideoEncoder>> encoders(
-      kMinSupportedConcurrentEncoders);
-  for (size_t i = 0; i < kMinSupportedConcurrentEncoders; ++i) {
-    encoders[i] = CreateVideoEncoder(/*encode_rate=*/absl::nullopt,
-                                     /*measure_quality=*/false);
-    encoders[i]->SetEventWaitTimeout(kPerfEventTimeout);
-  }
-
-  performance_evaluator_->StartMeasuring();
-
-  for (auto&& encoder : encoders)
-    encoder->Encode();
-
-  for (auto&& encoder : encoders) {
-    EXPECT_TRUE(encoder->WaitForFlushDone());
-    EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
-    EXPECT_EQ(encoder->GetFrameReleasedCount(),
-              kNumFramesToEncodeForPerformance);
-  }
-
-  performance_evaluator_->StopMeasuring();
-  auto metrics = performance_evaluator_->Metrics();
-  metrics.WriteToConsole();
-  metrics.WriteToFile();
 }
 }  // namespace test
 }  // namespace media
