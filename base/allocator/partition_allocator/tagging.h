@@ -56,8 +56,8 @@ void ChangeMemoryTaggingModeForAllThreadsPerProcess(TagViolationReportingMode);
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 TagViolationReportingMode GetMemoryTaggingModeForCurrentThread();
 
-// These forward-defined functions do not really exist in tagging.cc, they're resolved
-// by the dynamic linker to MTE-capable versions on the right hardware.
+// These forward-defined functions do not really exist in tagging.cc, they're
+// resolved by the dynamic linker to MTE-capable versions on the right hardware.
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void* TagMemoryRangeIncrementInternal(void* ptr, size_t size);
