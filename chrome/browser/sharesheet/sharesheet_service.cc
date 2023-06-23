@@ -115,7 +115,7 @@ void SharesheetService::ShowNearbyShareBubbleForArc(
     LaunchSource source,
     DeliveredCallback delivered_callback,
     CloseCallback close_callback,
-    ActionCleanupCallback action_cleanup_callback) {
+    ActionCleanupCallback cleanup_callback) {
   DCHECK(intent);
   DCHECK(intent->IsShareIntent());
 
@@ -126,8 +126,7 @@ void SharesheetService::ShowNearbyShareBubbleForArc(
     std::move(delivered_callback).Run(SharesheetResult::kCancel);
     return;
   }
-  share_action->SetActionCleanupCallbackForArc(
-      std::move(action_cleanup_callback));
+  share_action->SetActionCleanupCallbackForArc(std::move(cleanup_callback));
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
 
   if (!native_window) {
