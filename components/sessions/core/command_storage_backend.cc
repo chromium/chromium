@@ -666,9 +666,6 @@ void CommandStorageBackend::InitIfNecessary() {
   inited_ = true;
   base::CreateDirectory(GetSessionDirName(type_, supplied_path_));
 
-  // Log the initial state of all session files in the directory.
-  LogSessionFiles();
-
   // TODO(sky): this is expensive. See if it can be delayed.
   last_session_info_ = FindLastSessionFile();
 
@@ -906,27 +903,6 @@ bool CommandStorageBackend::CanUseFileForLastSession(
   const SessionFileReader::MarkerStatus status =
       SessionFileReader::GetMarkerStatus(path, initial_decryption_key_);
   return !status.supports_marker || status.has_marker;
-}
-
-void CommandStorageBackend::LogSessionFiles() {
-  if (VLOG_IS_ON(1)) {
-    VLOG(1) << "Current session files:";
-    for (const SessionInfo& session :
-         GetSessionFilesSortedByReverseTimestamp()) {
-      int64_t file_size;
-      if (!base::GetFileSize(session.path, &file_size)) {
-        VLOG(1) << "Unable to compute file size for: " << session.path;
-        continue;
-      }
-      const SessionFileReader::MarkerStatus status =
-          SessionFileReader::GetMarkerStatus(session.path,
-                                             initial_decryption_key_);
-      VLOG(1) << "\nfile = " << session.path
-              << "\nsupports_marker = " << status.supports_marker
-              << "\nhas_marker = " << status.has_marker
-              << "\nsize_bytes = " << file_size;
-    }
-  }
 }
 
 }  // namespace sessions

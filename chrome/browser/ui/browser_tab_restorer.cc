@@ -17,12 +17,6 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 
-// TODO(crbug.com/1424800): Remove once the restore issue has been resolved.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#undef ENABLED_VLOG_LEVEL
-#define ENABLED_VLOG_LEVEL 1
-#endif
-
 namespace chrome {
 namespace {
 
@@ -85,8 +79,6 @@ BrowserTabRestorer::BrowserTabRestorer(Browser* browser)
   BrowserList::AddObserver(this);
   browser_->profile()->SetUserData(kBrowserTabRestorerKey,
                                    base::WrapUnique(this));
-  VLOG(1) << "BrowserTabRestorer::BrowserTabRestorer, loading tabs from last "
-             "session.";
   tab_restore_service_->LoadTabsFromLastSession();
 }
 

@@ -34,12 +34,6 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 
-// TODO(crbug.com/1424800): Remove once the restore issue has been resolved.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#undef ENABLED_VLOG_LEVEL
-#define ENABLED_VLOG_LEVEL 1
-#endif
-
 #undef LoadBitmap
 
 namespace sessions {
@@ -760,8 +754,6 @@ void TabRestoreServiceImpl::PersistenceDelegate::LoadTabsFromLastSession() {
   // Request the tabs closed in the last session. If the last session crashed,
   // this won't contain the tabs/window that were open at the point of the
   // crash (the call to GetLastSession above requests those).
-  VLOG(1) << "PersistenceDelegate::LoadTabsFromLastSession, getting tab "
-             "restore commands.";
   command_storage_manager_->GetLastSessionCommands(
       base::BindOnce(&PersistenceDelegate::OnGotLastSessionCommands,
                      weak_factory_.GetWeakPtr()));

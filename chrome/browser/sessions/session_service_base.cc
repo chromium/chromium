@@ -47,12 +47,6 @@
 #include "chrome/browser/app_controller_mac.h"
 #endif
 
-// TODO(crbug.com/1424800): Remove once the restore issue has been resolved.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#undef ENABLED_VLOG_LEVEL
-#define ENABLED_VLOG_LEVEL 1
-#endif
-
 using base::Time;
 using content::NavigationEntry;
 using content::WebContents;
@@ -327,8 +321,6 @@ void SessionServiceBase::GetLastSession(
     sessions::GetLastSessionCallback callback) {
   // OnGotSessionCommands maps the SessionCommands to browser state, then run
   // the callback.
-  VLOG(1) << "SessionServiceBase::GetLastSession, getting session restore "
-             "commands.";
   return command_storage_manager_->GetLastSessionCommands(
       base::BindOnce(&SessionServiceBase::OnGotSessionCommands,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
