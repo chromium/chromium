@@ -23,28 +23,20 @@ dictionary AuctionAdConfig {
   [ImplementedAs=trustedScoringSignalsUrlDeprecated]
   USVString trustedScoringSignalsUrl;
   sequence<USVString> interestGroupBuyers;
-  any auctionSignals;
-  any sellerSignals;
+  Promise<any> auctionSignals;
+  Promise<any> sellerSignals;
 
-  // Really (USVString or Promise<USVString>) directFromSellerSignals;
-  any directFromSellerSignals;
+  Promise<USVString> directFromSellerSignals;
 
   unsigned long long sellerTimeout;
   unsigned short sellerExperimentGroupId;
 
-  // Really (record<USVString, any> or Promise<record<USVString, any>>)
-  any perBuyerSignals;
-
-  // Really (record<USVString, unsigned long long> or
-  //         Promise<record<USVString, unsigned long long>>)
-  any perBuyerTimeouts;
-  any perBuyerCumulativeTimeouts;
+  Promise<record<USVString, any>> perBuyerSignals;
+  Promise<record<USVString, unsigned long long>> perBuyerTimeouts;
+  Promise<record<USVString, unsigned long long>> perBuyerCumulativeTimeouts;
 
   USVString sellerCurrency;
-
-  // Really (record<USVString, USVString> or
-  //         Promise<record<USVString, USVString>>)
-  any perBuyerCurrencies;
+  Promise<record<USVString, USVString>> perBuyerCurrencies;
 
   record<USVString, unsigned short> perBuyerGroupLimits;
   record<USVString, unsigned short> perBuyerExperimentGroupIds;
@@ -62,6 +54,5 @@ dictionary AuctionAdConfig {
   sequence<AuctionAdConfig> componentAuctions;
   AbortSignal? signal;
 
-  // Really (boolean or Promise<boolean>)
-  any resolveToConfig;
+  Promise<boolean> resolveToConfig;
 };
