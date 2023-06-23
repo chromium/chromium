@@ -2206,6 +2206,20 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Sandboxing.SecCompCoverage" units="%"
+    expires_after="2024-01-31">
+  <owner>enlightened@chromium.org</owner>
+  <owner>chromeos-hardening@google.com</owner>
+  <summary>
+    Records the percentage of processes on the system that are covered by
+    SecComp. A process is considered covered by SecComp if the Seccomp: line in
+    /proc/self/status is anything other than 0.
+
+    SecComp coverage for the system is sent once per boot and only when a user
+    is logged in.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Secagentd.Bootmode.Cros" enum="SecagentdBootmodeCros"
     expires_after="2023-12-04">
   <owner>rborzello@google.com</owner>
