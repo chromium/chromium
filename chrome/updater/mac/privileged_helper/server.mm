@@ -27,12 +27,10 @@
 namespace updater {
 
 namespace {
-int kServerKeepAliveSeconds = 1;
+constexpr int kServerKeepAliveSeconds = 1;
 }
 
-PrivilegedHelperServer::PrivilegedHelperServer()
-    : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-      service_(base::MakeRefCounted<PrivilegedHelperService>()) {}
+PrivilegedHelperServer::PrivilegedHelperServer() = default;
 PrivilegedHelperServer::~PrivilegedHelperServer() = default;
 
 int PrivilegedHelperServer::Initialize() {

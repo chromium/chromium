@@ -101,14 +101,14 @@ class AppServer : public App {
   // Uninstalls the updater if it doesn't manage any apps, aside from itself.
   void MaybeUninstall();
 
+  scoped_refptr<ExternalConstants> external_constants_ =
+      CreateExternalConstants();
   base::OnceClosure first_task_;
-  scoped_refptr<ExternalConstants> external_constants_;
   scoped_refptr<UpdaterPrefs> prefs_;
   scoped_refptr<Configurator> config_;
   base::RepeatingTimer hang_timer_;
 
-  // If true, this version of the updater should uninstall itself during
-  // shutdown.
+  // If true, this version of the updater uninstalls itself during shutdown.
   bool uninstall_self_ = false;
 
   // The number of times the server has started, as read from global prefs.

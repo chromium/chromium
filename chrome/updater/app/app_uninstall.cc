@@ -133,7 +133,6 @@ class AppUninstall : public App {
  private:
   ~AppUninstall() override = default;
   [[nodiscard]] int Initialize() override;
-  void Uninitialize() override;
   void FirstTaskRun() override;
 
   void UninstallAll(int reason);
@@ -159,10 +158,6 @@ int AppUninstall::Initialize() {
                                                  CreateExternalConstants());
   }
   return kErrorOk;
-}
-
-void AppUninstall::Uninitialize() {
-  global_prefs_ = nullptr;
 }
 
 void AppUninstall::UninstallAll(int reason) {

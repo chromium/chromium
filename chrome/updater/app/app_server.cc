@@ -20,6 +20,7 @@
 #include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service.h"
@@ -42,8 +43,7 @@ bool IsInternalService() {
              kServerServiceSwitch) == kServerUpdateServiceInternalSwitchValue;
 }
 
-AppServer::AppServer() : external_constants_(CreateExternalConstants()) {}
-
+AppServer::AppServer() = default;
 AppServer::~AppServer() = default;
 
 int AppServer::Initialize() {

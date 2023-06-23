@@ -31,7 +31,6 @@ class AppUninstallSelf : public App {
  private:
   ~AppUninstallSelf() override = default;
   [[nodiscard]] int Initialize() override;
-  void Uninitialize() override;
   void FirstTaskRun() override;
 
   void UninstallAll();
@@ -45,8 +44,6 @@ int AppUninstallSelf::Initialize() {
       ScopedLock::Create(kSetupMutex, updater_scope(), kWaitForSetupLock);
   return kErrorOk;
 }
-
-void AppUninstallSelf::Uninitialize() {}
 
 void AppUninstallSelf::FirstTaskRun() {
   if (WrongUser(updater_scope())) {

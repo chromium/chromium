@@ -19,7 +19,6 @@ class AppUpdate : public App {
  private:
   ~AppUpdate() override = default;
   [[nodiscard]] int Initialize() override;
-  void Uninitialize() override;
   void FirstTaskRun() override;
 
   void SetupDone(int result);
@@ -33,8 +32,6 @@ int AppUpdate::Initialize() {
       ScopedLock::Create(kSetupMutex, updater_scope(), kWaitForSetupLock);
   return kErrorOk;
 }
-
-void AppUpdate::Uninitialize() {}
 
 void AppUpdate::FirstTaskRun() {
   if (WrongUser(updater_scope())) {
