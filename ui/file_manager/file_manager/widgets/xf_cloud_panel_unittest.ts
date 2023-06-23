@@ -6,7 +6,7 @@ import {assertEquals, assertNotEquals} from 'chrome://webui-test/chromeos/chai_a
 
 import {waitUntil} from '../common/js/test_error_reporting.js';
 
-import {CloudPanelType, XfCloudPanel} from './xf_cloud_panel.js';
+import {XfCloudPanel} from './xf_cloud_panel.js';
 
 /**
  * Creates new <xf-cloud-panel> for each test.
@@ -53,6 +53,59 @@ async function waitForStyles(
 }
 
 /**
+ * The different type of selectors that appear.
+ */
+enum PanelSelector {
+  PREPARING = '#preparing-state',
+  PROGRESSING = '#progress-state',
+  FINISHED = '#progress-finished',
+  OFFLINE = '#progress-offline',
+  NOT_ENOUGH_SPACE = '#progress-not-enough-space',
+}
+
+/**
+ * Helper to wait for a panel type to be visible and all the other types to be
+ * hidden.
+ */
+async function waitForVisiblePanel(selector: PanelSelector): Promise<void> {
+  const element = getCloudPanelElement();
+
+  const progressStateElement =
+      await getElement<HTMLDivElement>(element.shadowRoot!, '#progress-state');
+  const progressFinishedElement = await getElement<HTMLDivElement>(
+      element.shadowRoot!, '#progress-finished');
+  const progressOfflineElement = await getElement<HTMLDivElement>(
+      element.shadowRoot!, '#progress-offline');
+  const progressNotEnoughSpaceElement = await getElement<HTMLDivElement>(
+      element.shadowRoot!, '#progress-not-enough-space');
+  const progressPreparingElement = await getElement<HTMLDivElement>(
+      element.shadowRoot!, '#progress-preparing');
+
+  /**
+   * Some stages use flexbox to center or vertically align their items, others
+   * use a normal block display.
+   */
+  const displayValue = (type: PanelSelector, success: string = 'block') => {
+    return (type === selector) ? success : 'none';
+  };
+
+  await waitForStyles(
+      progressStateElement, 'display', displayValue(PanelSelector.PROGRESSING));
+  await waitForStyles(
+      progressFinishedElement, 'display',
+      displayValue(PanelSelector.FINISHED, 'flex'));
+  await waitForStyles(
+      progressOfflineElement, 'display',
+      displayValue(PanelSelector.OFFLINE, 'flex'));
+  await waitForStyles(
+      progressNotEnoughSpaceElement, 'display',
+      displayValue(PanelSelector.NOT_ENOUGH_SPACE, 'flex'));
+  await waitForStyles(
+      progressPreparingElement, 'display',
+      displayValue(PanelSelector.PREPARING, 'flex'));
+}
+
+/**
  * Helper to get an element parented at `root` asynchronously.
  */
 async function getElement<T extends HTMLElement>(
@@ -81,21 +134,19 @@ async function getProgressBar(): Promise<HTMLProgressElement> {
 }
 
 /**
- * Tests that the initial `<xf-cloud-panel>` element only has the Google Drive
- * settings link and the progress state is not visible.
+ * Tests that the initial `<xf-cloud-panel>` element defaults to the preparing
+ * state until both items and percentage are set.
  */
-export async function testInitialElementOnlyHasLink(done: () => void) {
+export async function testInitialElementIsInPreparingState(done: () => void) {
   const element = getCloudPanelElement();
 
   // Expect neither `items` nor `progress` to be set on `<xf-cloud-panel>`.
   assertEquals(element.getAttribute('items'), null);
   assertEquals(element.getAttribute('percentage'), null);
 
-  // Ensure the the container of progress state should have display none (as a
-  // result of the absence of `items` and `progress` attributes above).
-  const progressStateElement =
-      await getElement<HTMLDivElement>(element.shadowRoot!, '#progress-state');
-  await waitForStyles(progressStateElement, 'display', 'none');
+  // When no items or percentage is set on the element, it should show in a
+  // preparing state.
+  await waitForVisiblePanel(PanelSelector.PREPARING);
 
   done();
 }
@@ -106,20 +157,19 @@ export async function testInitialElementOnlyHasLink(done: () => void) {
  */
 export async function testProgressStateUpdatesProgressBar(done: () => void) {
   const element = getCloudPanelElement();
-  const progressStateElement =
-      await getElement<HTMLDivElement>(element.shadowRoot!, '#progress-state');
 
-  // The initial progress state should not show until the type is updated.
+  // The initial progress state should default to preparing.
   assertEquals(element.getAttribute('items'), null);
   assertEquals(element.getAttribute('percentage'), null);
-  await waitForStyles(progressStateElement, 'display', 'none');
+  await waitForVisiblePanel(PanelSelector.PREPARING);
+
   // Update the items and progress
   element.setAttribute('items', '3');
   element.setAttribute('percentage', '12');
 
   // Wait for the progress bar to update and the #progress-state div to show.
   const progress = await getProgressBar();
-  await waitForStyles(progressStateElement, 'display', 'block');
+  await waitForVisiblePanel(PanelSelector.PROGRESSING);
   await waitForAttributeValue(progress, 'value', '12');
   done();
 }
@@ -155,30 +205,24 @@ export async function testWhenGoogleDriveSettingsIsClickedEventIsEmitted(
 export async function testWhenPercentage100OnlyDoneStateShows(
     done: () => void) {
   const element = getCloudPanelElement();
-  const progressStateElement =
-      await getElement<HTMLDivElement>(element.shadowRoot!, '#progress-state');
-  const progressFinishedElement = await getElement<HTMLDivElement>(
-      element.shadowRoot!, '#progress-finished');
 
-  // When no attributes have been set, no div should be visible.
-  await waitForStyles(progressStateElement, 'display', 'none');
-  await waitForStyles(progressFinishedElement, 'display', 'none');
+  // When no attributes have been set, should default to preparing.
+  await waitForVisiblePanel(PanelSelector.PREPARING);
 
   // Update the items to 3 and total percentage to 50%.
   element.setAttribute('items', '3');
   element.setAttribute('percentage', '50');
 
   // Ensure the progressStateElement is showing but the finished element is not.
-  await waitForStyles(progressStateElement, 'display', 'block');
-  await waitForStyles(progressFinishedElement, 'display', 'none');
+  await waitForVisiblePanel(PanelSelector.PROGRESSING);
 
   // Update the total percentage to 100%.
   element.setAttribute('percentage', '100');
 
   // Ensure the progressState is not showing but the finished element is
   // showing.
-  await waitForStyles(progressStateElement, 'display', 'none');
-  await waitForStyles(progressFinishedElement, 'display', 'flex');
+  await waitForVisiblePanel(PanelSelector.FINISHED);
+
   done();
 }
 
@@ -189,34 +233,23 @@ export async function testWhenPercentage100OnlyDoneStateShows(
 export async function testWhenOfflineTypeAttributeInUseOtherStatesHidden(
     done: () => void) {
   const element = getCloudPanelElement();
-  const progressStateElement =
-      await getElement<HTMLDivElement>(element.shadowRoot!, '#progress-state');
-  const progressFinishedElement = await getElement<HTMLDivElement>(
-      element.shadowRoot!, '#progress-finished');
-  const progressOfflineElement = await getElement<HTMLDivElement>(
-      element.shadowRoot!, '#progress-offline');
 
-  // When no attributes have been set, no div should be visible.
-  await waitForStyles(progressStateElement, 'display', 'none');
-  await waitForStyles(progressFinishedElement, 'display', 'none');
-  await waitForStyles(progressOfflineElement, 'display', 'none');
+  // When no attributes have been set, should default to preparing.
+  await waitForVisiblePanel(PanelSelector.PREPARING);
 
   // Update the items to 3 and total percentage to 50%.
   element.setAttribute('items', '3');
   element.setAttribute('percentage', '50');
 
   // Ensure only the in progress element is visible.
-  await waitForStyles(progressStateElement, 'display', 'block');
-  await waitForStyles(progressFinishedElement, 'display', 'none');
-  await waitForStyles(progressOfflineElement, 'display', 'none');
+  await waitForVisiblePanel(PanelSelector.PROGRESSING);
 
   // Update the type to be offline.
   element.setAttribute('type', 'offline');
 
   // Ensure the only visible div is the offline one.
-  await waitForStyles(progressStateElement, 'display', 'none');
-  await waitForStyles(progressFinishedElement, 'display', 'none');
-  await waitForStyles(progressOfflineElement, 'display', 'flex');
+  await waitForVisiblePanel(PanelSelector.OFFLINE);
+
   done();
 }
 
@@ -227,48 +260,22 @@ export async function testWhenOfflineTypeAttributeInUseOtherStatesHidden(
 export async function testWhenNotEnoughSpaceTypeAttributeInUseOtherStatesHidden(
     done: () => void) {
   const element = getCloudPanelElement();
-  const progressStateElement =
-      await getElement<HTMLDivElement>(element.shadowRoot!, '#progress-state');
-  const progressFinishedElement = await getElement<HTMLDivElement>(
-      element.shadowRoot!, '#progress-finished');
-  const progressOfflineElement = await getElement<HTMLDivElement>(
-      element.shadowRoot!, '#progress-offline');
-  const progressNotEnoughSpaceElement = await getElement<HTMLDivElement>(
-      element.shadowRoot!, '#progress-not-enough-space');
 
-  // When no attributes have been set, no div should be visible.
-  await waitForStyles(progressStateElement, 'display', 'none');
-  await waitForStyles(progressFinishedElement, 'display', 'none');
-  await waitForStyles(progressOfflineElement, 'display', 'none');
-  await waitForStyles(progressNotEnoughSpaceElement, 'display', 'none');
+  // When no attributes have been set, should default to preparing.
+  await waitForVisiblePanel(PanelSelector.PREPARING);
 
   // Update the items to 3 and total percentage to 50%.
   element.setAttribute('items', '3');
   element.setAttribute('percentage', '50');
 
   // Ensure only the in progress element is visible.
-  await waitForStyles(progressStateElement, 'display', 'block');
-  await waitForStyles(progressFinishedElement, 'display', 'none');
-  await waitForStyles(progressOfflineElement, 'display', 'none');
-  await waitForStyles(progressNotEnoughSpaceElement, 'display', 'none');
-
-  // Update the type to be offline.
-  element.setAttribute('type', 'offline');
-
-  // Ensure the only visible div is the offline one.
-  await waitForStyles(progressStateElement, 'display', 'none');
-  await waitForStyles(progressFinishedElement, 'display', 'none');
-  await waitForStyles(progressOfflineElement, 'display', 'flex');
-  await waitForStyles(progressNotEnoughSpaceElement, 'display', 'none');
+  await waitForVisiblePanel(PanelSelector.PROGRESSING);
 
   // Update the type to be not_enough_space.
   element.setAttribute('type', 'not_enough_space');
 
   // Ensure the only visible div is the not_enough_space one.
-  await waitForStyles(progressStateElement, 'display', 'none');
-  await waitForStyles(progressFinishedElement, 'display', 'none');
-  await waitForStyles(progressOfflineElement, 'display', 'none');
-  await waitForStyles(progressNotEnoughSpaceElement, 'display', 'flex');
+  await waitForVisiblePanel(PanelSelector.NOT_ENOUGH_SPACE);
 
   done();
 }
@@ -286,7 +293,7 @@ export async function testOnlyAcceptedTypesUpdateTypeProperty(
 
   // Setting it to a valid value should update the underlying type.
   element.setAttribute('type', 'not_enough_space');
-  await waitForAttributeValue(element, 'type', CloudPanelType.NOT_ENOUGH_SPACE);
+  await waitForVisiblePanel(PanelSelector.NOT_ENOUGH_SPACE);
 
   // Setting it to some random value will update the HTML elements type
   // attribute but the actual elements `type` property will get set to null as
@@ -294,6 +301,41 @@ export async function testOnlyAcceptedTypesUpdateTypeProperty(
   element.setAttribute('type', 'non-existant-type');
   await waitForAttributeValue(element, 'type', 'non-existant-type');
   assertEquals(element.type, null);
+
+  done();
+}
+
+/**
+ * Test that when percentage is 0, the progress is shown instead of preparing.
+ */
+export async function testVariousCombinationsOfAttributes(done: () => void) {
+  const element = getCloudPanelElement();
+
+  // Setting the items to 1 but no percentage should show the preparing state.
+  element.setAttribute('items', '1');
+  await waitForVisiblePanel(PanelSelector.PREPARING);
+
+  // Only setting the percentage attribute should stay in preparing.
+  element.removeAttribute('items');
+  element.setAttribute('percentage', '0');
+  await waitForAttributeValue(element, 'percentage', '0');
+  await waitForVisiblePanel(PanelSelector.PREPARING);
+
+  // When percentage is 0 and items is 1, the preparing should disappear and the
+  // progress should show.
+  element.setAttribute('items', '1');
+  element.setAttribute('percentage', '0');
+  await waitForVisiblePanel(PanelSelector.PROGRESSING);
+
+  // When no items are set but the percentage is 100, the panel should be
+  // finished.
+  element.setAttribute('items', '0');
+  element.setAttribute('percentage', '100');
+  await waitForVisiblePanel(PanelSelector.FINISHED);
+
+  // The type attribute should take precendence over progressing.
+  element.setAttribute('type', 'offline');
+  await waitForVisiblePanel(PanelSelector.OFFLINE);
 
   done();
 }

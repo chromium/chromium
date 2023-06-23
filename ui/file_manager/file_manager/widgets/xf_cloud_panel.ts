@@ -253,7 +253,6 @@ function getCSS() {
 
     :host(:not([items][percentage])) #progress-state,
     :host([percentage="100"]) #progress-state,
-    :host([percentage="0"]) #progress-state,
     :host([type]) #progress-state {
       display: none;
     }
@@ -263,7 +262,7 @@ function getCSS() {
       display: none;
     }
 
-    :host(:not([items][percentage="0"])) #progress-preparing,
+    :host([percentage][items]) #progress-preparing,
     :host([type]) #progress-preparing {
       display: none;
     }

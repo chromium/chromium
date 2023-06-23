@@ -129,7 +129,10 @@ export class CloudPanelContainer {
         '100' :
         (bulkPinProgress.pinnedBytes / bulkPinProgress.bytesToPin * 100)
             .toFixed(0);
-    this.panel_.setAttribute('percentage', String(percentage));
+    if ((bulkPinProgress.filesToPin > 0 && bulkPinProgress.pinnedBytes > 0) ||
+        (bulkPinProgress.filesToPin === 0)) {
+      this.panel_.setAttribute('percentage', String(percentage));
+    }
     this.panel_.setAttribute(
         'seconds', String(bulkPinProgress.remainingSeconds));
     this.increaseUpdates_();
