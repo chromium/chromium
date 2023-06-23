@@ -16,13 +16,6 @@ import subprocess
 FUZZ_RETRIES = 3
 
 
-def _run_fuzz_command(cmd):
-  try:
-    subprocess.check_call(cmd, env=env, timeout=1800)
-  except subprocess.CalledProcessError as e:
-    print("Command %s exited with non-zero return code" % cmd)
-
-
 def _run_fuzzer_target(args):
   """ Runs a given fuzzer target. Designed to be called in parallel.
 
@@ -42,12 +35,24 @@ def _run_fuzzer_target(args):
   failed_targets = args[4]
   target_profraw = os.path.join(reportdir, target + ".profraw")
   target_profdata = os.path.join(reportdir, target + ".profdata")
-  for _ in range(FUZZ_RETRIES):
+  for i in range(FUZZ_RETRIES):
+    print("Trying command %s" % str(cmd))
     try:
-      subprocess.check_call(cmd, env=env, timeout=1800)
+      subprocess.run(cmd,
+                     env=env,
+                     timeout=1800,
+                     capture_output=True,
+                     check=True)
       break
-    except subprocess.CalledProcessError:
-      print("Command %s exited with non-zero return code")
+    except Exception as e:
+      print(
+          "Command %s exited with non-zero return code, failing on iteration %d"
+          % (cmd, i))
+      print("Return code: " + str(e.returncode))
+      print("**** FULL FUZZING OUTPUT BELOW ***")
+      print(e.output)
+      print(e.stderr)
+      print("*** FULL FUZZING OUTPUT ABOVE ***")
   if not os.path.isfile(target_profraw):
     failed_targets.append(target)
     return
