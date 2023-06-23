@@ -138,13 +138,13 @@ void MojoVideoEncodeAcceleratorService::Initialize(
 
 void MojoVideoEncodeAcceleratorService::Encode(
     const scoped_refptr<VideoFrame>& frame,
-    bool force_keyframe,
+    const media::VideoEncoder::EncodeOptions& options,
     EncodeCallback callback) {
   DVLOG(2) << __func__ << " tstamp=" << frame->timestamp();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT2("media", "MojoVideoEncodeAcceleratorService::Encode",
                "timestamp", frame->timestamp().InMilliseconds(), "keyframe",
-               force_keyframe);
+               options.key_frame);
   if (!encoder_) {
     DLOG(ERROR) << __func__ << " Failed to encode, the encoder is invalid";
     std::move(callback).Run();
@@ -168,7 +168,7 @@ void MojoVideoEncodeAcceleratorService::Encode(
 
   frame->AddDestructionObserver(
       base::BindPostTaskToCurrentDefault(std::move(callback)));
-  encoder_->Encode(frame, force_keyframe);
+  encoder_->Encode(frame, options);
 }
 
 void MojoVideoEncodeAcceleratorService::UseOutputBitstreamBuffer(

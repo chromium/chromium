@@ -453,6 +453,10 @@ mojom("mojom") {
           cpp = "::media::VideoEncodeAccelerator::Error"
         },
         {
+          mojom = "media.mojom.VideoEncodeOptions"
+          cpp = "::media::VideoEncoder::EncodeOptions"
+        },
+        {
           mojom = "media.mojom.VideoEncodeAcceleratorConfig"
           cpp = "::media::VideoEncodeAccelerator::Config"
         },

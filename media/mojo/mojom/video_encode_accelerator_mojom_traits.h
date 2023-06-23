@@ -9,6 +9,7 @@
 #include "media/base/bitrate.h"
 #include "media/base/ipc/media_param_traits.h"
 #include "media/base/video_bitrate_allocation.h"
+#include "media/base/video_encoder.h"
 #include "media/mojo/mojom/media_types.mojom-shared.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom-shared.h"
 #include "media/video/video_encode_accelerator.h"
@@ -116,6 +117,23 @@ class StructTraits<media::mojom::VideoBitrateAllocationDataView,
 
   static bool Read(media::mojom::VideoBitrateAllocationDataView data,
                    media::VideoBitrateAllocation* out_bitrate_allocation);
+};
+
+template <>
+class StructTraits<media::mojom::VideoEncodeOptionsDataView,
+                   media::VideoEncoder::EncodeOptions> {
+ public:
+  static bool force_keyframe(
+      const media::VideoEncoder::EncodeOptions& options) {
+    return options.key_frame;
+  }
+
+  static int32_t quantizer(const media::VideoEncoder::EncodeOptions& options) {
+    return options.quantizer.value_or(-1);
+  }
+
+  static bool Read(media::mojom::VideoEncodeOptionsDataView data,
+                   media::VideoEncoder::EncodeOptions* out_options);
 };
 
 template <>

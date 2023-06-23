@@ -159,6 +159,22 @@ bool StructTraits<media::mojom::VideoBitrateAllocationDataView,
 }
 
 // static
+bool StructTraits<media::mojom::VideoEncodeOptionsDataView,
+                  media::VideoEncoder::EncodeOptions>::
+    Read(media::mojom::VideoEncodeOptionsDataView data,
+         media::VideoEncoder::EncodeOptions* out_options) {
+  out_options->key_frame = data.force_keyframe();
+  int32_t quantizer = data.quantizer();
+  if (quantizer < 0) {
+    out_options->quantizer.reset();
+  } else {
+    out_options->quantizer = data.quantizer();
+  }
+
+  return true;
+}
+
+// static
 bool UnionTraits<media::mojom::CodecMetadataDataView,
                  media::BitstreamBufferMetadata>::
     Read(media::mojom::CodecMetadataDataView data,

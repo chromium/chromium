@@ -44,6 +44,8 @@ class MojoVideoEncodeAccelerator : public VideoEncodeAccelerator {
                   Client* client,
                   std::unique_ptr<MediaLog> media_log = nullptr) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
+  void Encode(scoped_refptr<VideoFrame> frame,
+              const VideoEncoder::EncodeOptions&) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(const Bitrate& bitrate,
                                        uint32_t framerate_num) override;

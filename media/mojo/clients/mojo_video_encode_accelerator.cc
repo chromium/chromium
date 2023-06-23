@@ -159,6 +159,14 @@ bool MojoVideoEncodeAccelerator::Initialize(
 
 void MojoVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
                                         bool force_keyframe) {
+  media::VideoEncoder::EncodeOptions options;
+  options.key_frame = force_keyframe;
+  Encode(std::move(frame), options);
+}
+
+void MojoVideoEncodeAccelerator::Encode(
+    scoped_refptr<VideoFrame> frame,
+    const VideoEncoder::EncodeOptions& options) {
   TRACE_EVENT1("media", "MojoVideoEncodeAccelerator::Encode", "timestamp",
                frame->timestamp());
   DVLOG(2) << __func__ << " tstamp=" << frame->timestamp();
@@ -181,7 +189,7 @@ void MojoVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  vea_->Encode(frame, force_keyframe, base::DoNothingWithBoundArgs(frame));
+  vea_->Encode(frame, options, base::DoNothingWithBoundArgs(frame));
 }
 
 void MojoVideoEncodeAccelerator::UseOutputBitstreamBuffer(
