@@ -1467,8 +1467,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-            ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<study"})
-    @DisabledTest(message = "https://crbug.com/1130212")
+            ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     public void testCloseTabViaCloseButton(boolean isStartSurfaceRefactorEnabled) throws Exception {
         // clang-format on
         mActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
@@ -1486,7 +1485,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
-            ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<study"})
+            ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @DisabledTest(message = "Flaky - https://crbug.com/1124041, crbug.com/1061178")
     public void testSwipeToDismiss_GTS(boolean isStartSurfaceRefactorEnabled) {
         // clang-format on
