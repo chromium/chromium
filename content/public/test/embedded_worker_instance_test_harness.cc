@@ -84,6 +84,15 @@ void EmbeddedWorkerInstanceTestHarness::BindHidServiceToWorker(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+void EmbeddedWorkerInstanceTestHarness::BindUsbServiceToWorker(
+    const GURL& origin,
+    mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
+  EmbeddedWorkerInstance* worker =
+      worker_version_->GetEmbeddedWorkerForTesting();
+  EXPECT_NE(worker, nullptr);
+  worker->BindUsbService(url::Origin::Create(origin), std::move(receiver));
+}
+
 EmbeddedWorkerInstanceTestHarness::EmbeddedWorkerInstanceTestHarness(
     std::unique_ptr<BrowserTaskEnvironment> task_environment)
     : task_environment_(std::move(task_environment)) {}
