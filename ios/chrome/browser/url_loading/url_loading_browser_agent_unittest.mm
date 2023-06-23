@@ -42,7 +42,7 @@
 
 @implementation URLLoadingTestDelegate
 
-#pragma mark - URLLoadingBrowserAgentDelegate
+#pragma mark - URLLoadingDelegate
 
 - (void)animateOpenBackgroundTabFromParams:(const UrlLoadParams&)params
                                 completion:(void (^)())completion {

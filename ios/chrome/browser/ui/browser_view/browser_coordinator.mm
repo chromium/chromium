@@ -2113,7 +2113,7 @@ enum class ToolbarKind {
   return textZoomCoordinator;
 }
 
-#pragma mark - URLLoadingServiceDelegate
+#pragma mark - URLLoadingDelegate
 
 - (void)animateOpenBackgroundTabFromParams:(const UrlLoadParams&)params
                                 completion:(void (^)())completion {
