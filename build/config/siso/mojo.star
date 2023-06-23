@@ -137,9 +137,7 @@ def __step_rules():
             "remote": True,
             "input_root_absolute_path": True,
             "output_local": True,
-            "platform": {
-                "gceMachineType": "n2-highmem-8",
-            },
+            "platform_ref": "mojo",
         },
     ]
 

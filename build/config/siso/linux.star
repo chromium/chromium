@@ -36,6 +36,19 @@ def __step_config(ctx, step_config):
         "default": {
             "OSFamily": "Linux",
             "container-image": "docker://gcr.io/chops-private-images-prod/rbe/siso-chromium/linux@sha256:d4fcda628ebcdb3dd79b166619c56da08d5d7bd43d1a7b1f69734904cc7a1bb2",
+            "label:action_default": "1",
+        },
+
+        "mojo": {
+            "OSFamily": "Linux",
+            "container-image": "docker://gcr.io/chops-private-images-prod/rbe/siso-chromium/linux@sha256:d4fcda628ebcdb3dd79b166619c56da08d5d7bd43d1a7b1f69734904cc7a1bb2",
+            # action_mojo pool uses n2-highmem-8 machine as of 2023 Jun and
+            # mojo_bindings_generators.py will run faster on n2-highmem-8 than
+            # n2-custom-2-3840
+            # e.g.
+            #  n2-highmem-8: exec: 880.202978ms
+            #  n2-custom-2-3840: exec: 2.42808488s
+            "label:action_mojo": "1",
         },
     }
 
