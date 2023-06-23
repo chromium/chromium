@@ -67,6 +67,8 @@ void ReplaceSharedElementWithRenderPass(
   gfx::Transform transform = GetViewTransitionTransform(
       shared_element_quad.rect, shared_pass_output_rect);
   copied_quad_state->quad_to_target_transform.PreConcat(transform);
+  copied_quad_state->quad_layer_rect = shared_pass_output_rect;
+  copied_quad_state->visible_quad_layer_rect = shared_pass_output_rect;
 
   shared_element_content_pass->transform_to_root_target =
       copied_quad_state->quad_to_target_transform;
@@ -76,12 +78,10 @@ void ReplaceSharedElementWithRenderPass(
   auto* render_pass_quad =
       target_render_pass
           ->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
-  gfx::RectF tex_coord_rect(gfx::SizeF(shared_element_quad.rect.size()));
-  tex_coord_rect.Offset(-shared_pass_output_rect.x(),
-                        -shared_pass_output_rect.y());
+  gfx::RectF tex_coord_rect(gfx::Rect(shared_pass_output_rect.size()));
   render_pass_quad->SetNew(
       /*shared_quad_state=*/copied_quad_state,
-      /*rect=*/shared_element_quad.rect,
+      /*rect=*/shared_pass_output_rect,
       /*visible_rect=*/shared_pass_output_rect,
       /*render_pass_id=*/pass_id,
       /*mask_resource_id=*/kInvalidResourceId,
