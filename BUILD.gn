@@ -1630,6 +1630,7 @@ if (!is_ios && !is_cronet_build) {
       "//third_party/blink/web_tests/VirtualTestSuites",
       "//third_party/blink/web_tests/W3CImportExpectations",
       "//third_party/blink/web_tests/SmokeTests/SingleThreadedTests",
+      "//third_party/blink/web_tests/paint/invalidation/repaint-overlay/",
       "//third_party/catapult/common/py_utils/",
       "//third_party/catapult/devil/",
       "//third_party/catapult/dependency_manager/",
