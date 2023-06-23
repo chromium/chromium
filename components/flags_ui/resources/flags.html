@@ -96,30 +96,16 @@
     <div id="tabpanels">
       <div id="tab-content-available" class="tab-content selected"
           role="tabpanel" aria-labelledby="tab-available" aria-hidden="false">
-      </div>
-      <div id="tab-content-available-template" class="template hidden">
         <!-- Non default experiments. -->
-        <div jsselect="supportedFeatures"
-            jsvalues="id:internal_name; class: is_default ? 'hidden' : 'experiment'"
-            jsdisplay="!is_default">
-          <flags-experiment jsvalues=".data:$this"></flags-experiment>
-        </div>
+        <div id="non-default-experiments"></div>
         <!-- Experiments with default settings. -->
-        <div class="experiment" jsselect="supportedFeatures"
-            jsvalues="id:internal_name; class: is_default ? 'experiment' : 'hidden'"
-            jsdisplay="is_default">
-          <flags-experiment jsvalues=".data:$this"></flags-experiment>
-        </div>
+        <div id="default-experiments"></div>
         <div class="no-match hidden" role="alert">$i18n{no-results}</div>
       </div>
 <if expr="not is_ios">
       <div id="tab-content-unavailable" class="tab-content"
           role="tabpanel" aria-labelledby="tab-unavailable" aria-hidden="false">
-        <div class="experiment"
-            jsselect="unsupportedFeatures"
-            jsvalues="id:internal_name">
-          <flags-experiment jsvalues=".data:$this" unsupported></flags-experiment>
-        </div>
+        <div id="unavailable-experiments"></div>
         <div class="no-match hidden" role="alert">
           $i18n{no-results}
         </div>

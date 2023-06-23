@@ -78,7 +78,7 @@ void ToggleEnableDropdown(content::WebContents* contents,
       contents,
       base::StringPrintf("var k = document.getElementById('%s');"
                          "var s = "
-                         "k.querySelector('flags-experiment').shadowRoot."
+                         "k.shadowRoot."
                          "querySelector('.experiment-enable-disable');"
                          "s.focus();"
                          "s.selectedIndex = %d;"
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, FormRestore) {
       contents,
       base::StringPrintf("var k = document.getElementById('%s');"
                          "var s = "
-                         "k.querySelector('flags-experiment').shadowRoot."
+                         "k.shadowRoot."
                          "querySelector('.experiment-enable-disable');"
                          "delete s.internal_name;"
                          "const e = document.createEvent('HTMLEvents');"
