@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class Profile;
 
@@ -81,6 +82,9 @@ class GlanceablesKeyedService : public KeyedService {
 
   // Instance of the `GlanceablesTasksClient` interface implementation.
   std::unique_ptr<GlanceablesTasksClientImpl> tasks_client_;
+
+  // The registrar used to watch prefs changes.
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 }  // namespace ash

@@ -1581,6 +1581,10 @@ const char kAshLoginSessionStartedIsFirstSession[] =
 const char kInputForceRespectUiGainsEnabled[] =
     "ash.input_force_respect_ui_gains_enabled";
 
+// A boolean pref indicating whether the glanceables feature is allowed to be
+// used for managed device.
+const char kGlanceablesEnabled[] = "ash.glanceables_enabled";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

@@ -4,11 +4,14 @@
 
 #include "ash/glanceables/glanceables_v2_controller.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/check.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
 
@@ -20,6 +23,12 @@ GlanceablesV2Controller::GlanceablesV2Controller() {
 GlanceablesV2Controller::~GlanceablesV2Controller() {
   DCHECK(SessionController::Get());
   SessionController::Get()->RemoveObserver(this);
+}
+
+// static
+void GlanceablesV2Controller::RegisterUserProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kGlanceablesEnabled, true);
 }
 
 void GlanceablesV2Controller::OnActiveUserSessionChanged(

@@ -11,6 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 
+class PrefRegistrySimple;
+
 namespace ash {
 
 class GlanceablesClassroomClient;
@@ -32,6 +34,9 @@ class ASH_EXPORT GlanceablesV2Controller : public SessionObserver {
   GlanceablesV2Controller(const GlanceablesV2Controller&) = delete;
   GlanceablesV2Controller& operator=(const GlanceablesV2Controller&) = delete;
   ~GlanceablesV2Controller() override;
+
+  // Registers syncable user profile prefs with the specified `registry`.
+  static void RegisterUserProfilePrefs(PrefRegistrySimple* registry);
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;

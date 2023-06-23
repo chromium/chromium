@@ -743,6 +743,9 @@ extern const char kAshLoginSessionStartedTime[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAshLoginSessionStartedIsFirstSession[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kGlanceablesEnabled[];
 }  // namespace prefs
 }  // namespace ash
 
