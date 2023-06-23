@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -37,8 +36,7 @@ class SharedWebContentsWithAppLockDescription;
 // just checks limited criteria needed to successfully install the app:
 // - The manifest must be valid JSON
 // - The manifest must have a valid start URL and name/short_name
-// - The manifest must have a valid icon from an allowlisted host (see
-// `host_allowlist` parameter).
+// - The manifest must have a valid icon from an allowlisted host
 //
 // Installation will fail if any of these criteria are not met, or if icons fail
 // to download (that is, placeholder icons will never be generated).
@@ -58,9 +56,6 @@ class InstallPreloadedVerifiedAppCommand
   // `manifest_contents`: JSON string of a web app manifest to install.
   // `expected_id`: Expected hashed App ID for the installed app. If the ID does
   // not match, installation will abort with an error.
-  // `host_allowlist`: Allowlist of hosts which icon data can be downloaded
-  // from. Icon URLs whose host does not exactly match a host from this set are
-  // ignored.
   // `callback`: Called when installation completes.
   InstallPreloadedVerifiedAppCommand(
       webapps::WebappInstallSource install_source,
@@ -68,7 +63,6 @@ class InstallPreloadedVerifiedAppCommand
       GURL manifest_url,
       std::string manifest_contents,
       AppId expected_id,
-      base::flat_set<std::string> host_allowlist,
       OnceInstallCallback callback);
 
   ~InstallPreloadedVerifiedAppCommand() override;
@@ -97,7 +91,6 @@ class InstallPreloadedVerifiedAppCommand
   GURL manifest_url_;
   std::string manifest_contents_;
   AppId expected_id_;
-  base::flat_set<std::string> host_allowlist_;
   OnceInstallCallback install_callback_;
 
   // SharedWebContentsLock is held while parsing the manifest.
