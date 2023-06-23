@@ -5,5 +5,6 @@ include_rules = [
   "-android_webview/glue",
   "-android_webview/java",
   "+android_webview/java/src/org/chromium/android_webview/common",
+  "+components/permissions",
   "-android_webview/support_library",
 ]

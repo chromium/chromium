@@ -17,6 +17,7 @@ import org.chromium.components.metrics.AndroidMetricsFeatures;
 import org.chromium.components.metrics.MetricsFeatures;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.network_session_configurator.NetworkSessionSwitches;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.variations.VariationsSwitches;
 import org.chromium.components.viz.common.VizFeatures;
 import org.chromium.content_public.common.ContentFeatures;
@@ -450,6 +451,10 @@ public final class ProductionSupportedFlagList {
                     "Report frame metrics to Google, if metrics reporting has been enabled."),
             Flag.baseFeature(AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND,
                     "Clear the draw functor after some time in background."),
+            Flag.baseFeature(PermissionsAndroidFeatureList.BLOCK_MIDI_BY_DEFAULT,
+                    "This flag won't block MIDI by default in WebView. In fact "
+                            + "it makes sure the changes made to do so in "
+                            + "Chromium won't affect WebView."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
