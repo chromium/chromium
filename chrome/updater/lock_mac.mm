@@ -45,6 +45,7 @@ constexpr base::TimeDelta kLockPollingInterval = base::Seconds(3);
 // right cannot be acquired for any reason, returns an invalid right instead.
 base::mac::ScopedMachReceiveRight TryAcquireReceive(
     const std::string& service_name) {
+  VLOG(2) << __func__;
   base::mac::ScopedMachReceiveRight target_right;
   kern_return_t check_in_result = bootstrap_check_in(
       bootstrap_port, service_name.c_str(),

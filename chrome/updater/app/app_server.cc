@@ -52,6 +52,7 @@ int AppServer::Initialize() {
 }
 
 base::OnceClosure AppServer::ModeCheck() {
+  VLOG(2) << __func__;
   scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(updater_scope());
   if (!global_prefs) {
     return base::BindOnce(&AppServer::Shutdown, this,
