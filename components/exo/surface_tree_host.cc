@@ -322,10 +322,13 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
       std::move(presentation_callbacks);
 
   root_surface_->AppendSurfaceHierarchyContentsToFrame(
-      gfx::PointF(root_surface_origin_), GetScaleFactor(),
-      client_submits_surfaces_in_pixel_coordinates(),
+      gfx::PointF(root_surface_origin_),
       layer_tree_frame_sink_holder_->NeedsFullDamageForNextFrame(),
-      layer_tree_frame_sink_holder_->resource_manager(), &frame);
+      layer_tree_frame_sink_holder_->resource_manager(),
+      client_submits_surfaces_in_pixel_coordinates()
+          ? absl::nullopt
+          : absl::make_optional(GetScaleFactor()),
+      &frame);
 
   std::vector<GLbyte*> sync_tokens;
   // We track previously verified tokens and set them to be verified to avoid

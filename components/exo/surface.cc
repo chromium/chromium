@@ -1148,10 +1148,9 @@ void Surface::AppendSurfaceHierarchyCallbacks(
 
 void Surface::AppendSurfaceHierarchyContentsToFrame(
     const gfx::PointF& origin,
-    float device_scale_factor,
-    bool client_submits_in_pixel_coords,
     bool needs_full_damage,
     FrameSinkResourceManager* resource_manager,
+    absl::optional<float> device_scale_factor,
     viz::CompositorFrame* frame) {
   // The top most sub-surface is at the front of the RenderPass's quad_list,
   // so we need composite sub-surface in reversed order.
@@ -1160,10 +1159,8 @@ void Surface::AppendSurfaceHierarchyContentsToFrame(
     // Synchronsouly commit all pending state of the sub-surface and its
     // decendents.
     sub_surface->AppendSurfaceHierarchyContentsToFrame(
-        origin + sub_surface_entry.second.OffsetFromOrigin(),
-
-        device_scale_factor, client_submits_in_pixel_coords, needs_full_damage,
-        resource_manager, frame);
+        origin + sub_surface_entry.second.OffsetFromOrigin(), needs_full_damage,
+        resource_manager, device_scale_factor, frame);
   }
 
   // Update the resource, or if not required, ensure we call the buffer release
@@ -1175,9 +1172,7 @@ void Surface::AppendSurfaceHierarchyContentsToFrame(
         std::move(state_.per_commit_explicit_release_callback_));
   }
 
-  AppendContentsToFrame(origin, device_scale_factor,
-                        client_submits_in_pixel_coords, needs_full_damage,
-                        frame);
+  AppendContentsToFrame(origin, needs_full_damage, device_scale_factor, frame);
 }
 
 bool Surface::IsSynchronized() const {
@@ -1449,9 +1444,8 @@ static viz::SharedQuadState* AppendOrCreateSharedQuadState(
 }
 
 void Surface::AppendContentsToFrame(const gfx::PointF& origin,
-                                    float device_scale_factor,
-                                    bool client_submits_in_pixel_coords,
                                     bool needs_full_damage,
+                                    absl::optional<float> device_scale_factor,
                                     viz::CompositorFrame* frame) {
   const std::unique_ptr<viz::CompositorRenderPass>& render_pass =
       frame->render_pass_list.back();
@@ -1471,16 +1465,16 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
     damage_rect += origin.OffsetFromOrigin();
     damage_rect.Intersect(output_rect);
 
-    if (!client_submits_in_pixel_coords) {
-      if (device_scale_factor <= 1) {
+    if (device_scale_factor.has_value()) {
+      if (device_scale_factor.value() <= 1) {
         damage_rect =
-            gfx::ConvertRectToPixels(damage_rect, device_scale_factor);
+            gfx::ConvertRectToPixels(damage_rect, device_scale_factor.value());
       } else {
         // The damage will eventually be rescaled by 1/device_scale_factor.
         // Since that scale factor is <1, taking the enclosed rect here means
         // that that rescaled RectF is <1px smaller than |damage_rect| in each
         // dimension, which makes the enclosing rect equal to |damage_rect|.
-        damage_rect.Scale(device_scale_factor);
+        damage_rect.Scale(device_scale_factor.value());
       }
     }
   }
@@ -1540,9 +1534,9 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
           scale, origin.OffsetFromOrigin() + translate));
   viewport_to_target_transform.PostConcat(state_.surface_transform);
 
-  if (!client_submits_in_pixel_coords) {
+  if (device_scale_factor.has_value()) {
     // Convert from DPs to pixels.
-    viewport_to_target_transform.PostScale(device_scale_factor);
+    viewport_to_target_transform.PostScale(device_scale_factor.value());
   }
 
   gfx::Transform quad_to_target_transform(buffer_transform_);

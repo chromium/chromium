@@ -315,10 +315,9 @@ class Surface final : public ui::PropertyHandler {
   // This will append contents for surface and its descendants to frame.
   void AppendSurfaceHierarchyContentsToFrame(
       const gfx::PointF& origin,
-      float device_scale_factor,
-      bool client_submits_in_pixel_coords,
       bool needs_full_damage,
       FrameSinkResourceManager* resource_manager,
+      absl::optional<float> device_scale_factor,
       viz::CompositorFrame* frame);
 
   // Returns true if surface is in synchronized mode.
@@ -609,9 +608,8 @@ class Surface final : public ui::PropertyHandler {
   // Puts the current surface into a draw quad, and appends the draw quads into
   // the |frame|.
   void AppendContentsToFrame(const gfx::PointF& origin,
-                             float device_scale_factor,
-                             bool client_submits_in_pixel_coords,
                              bool needs_full_damage,
+                             absl::optional<float> device_scale_factor,
                              viz::CompositorFrame* frame);
 
   // Update surface content size base on current buffer size.
