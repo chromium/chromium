@@ -429,7 +429,7 @@ bool KURL::HasFragmentIdentifier() const {
 
 String KURL::BaseAsString() const {
   // FIXME: There is probably a more efficient way to do this?
-  return string_.Left(PathAfterLastSlash());
+  return string_.GetString().Left(PathAfterLastSlash());
 }
 
 String KURL::Query() const {
@@ -925,25 +925,18 @@ void KURL::Init(const KURL& base,
                                      charset_converter, &output, &parsed_);
   }
 
-  // AtomicString::fromUTF8 will re-hash the raw output and check the
+  // Constructing an AtomicString will re-hash the raw output and check the
   // AtomicStringTable (addWithTranslator) for the string. This can be very
   // expensive for large URLs. However, since many URLs are generated from
-  // existing AtomicStrings (which already have their hashes computed), this
-  // fast path is used if the input string is already canonicalized.
-  //
-  // Because this optimization does not apply to non-AtomicStrings, explicitly
-  // check that the input is Atomic before moving forward with it. If we mark
-  // non-Atomic input as Atomic here, we will render the (const) input string
-  // thread unsafe.
-  //
-  // TODO(dcheng): It is unclear if the above statement is still true given the
-  // work to make refcounting thread safe.
-  if (!relative.IsNull() && relative.Impl()->IsAtomic() &&
+  // existing AtomicStrings (which already have their hashes computed), the fast
+  // path can often avoid this work.
+  if (!relative.IsNull() &&
       StringView(output.data(), static_cast<unsigned>(output.length())) ==
           relative) {
-    string_ = relative;
+    string_ = AtomicString(relative.Impl());
   } else {
-    string_ = AtomicString::FromUTF8(output.data(), output.length());
+    string_ =
+        AtomicString(reinterpret_cast<LChar*>(output.data()), output.length());
   }
 
   InitProtocolMetadata();
@@ -967,9 +960,9 @@ void KURL::InitInnerURL() {
     return;
   }
   if (url::Parsed* inner_parsed = parsed_.inner_parsed()) {
-    inner_url_ = std::make_unique<KURL>(
-        string_.Substring(inner_parsed->scheme.begin,
-                          inner_parsed->Length() - inner_parsed->scheme.begin));
+    inner_url_ = std::make_unique<KURL>(string_.GetString().Substring(
+        inner_parsed->scheme.begin,
+        inner_parsed->Length() - inner_parsed->scheme.begin));
   } else {
     inner_url_.reset();
   }
@@ -998,12 +991,12 @@ void KURL::InitProtocolMetadata() {
 
 void KURL::AssertStringSpecIsASCII() {
   // //url canonicalizes to 7-bit ASCII, using punycode and percent-escapes.
-  // This means that even though KURL initialization often uses `FromUTF8()`, it
-  // is still safe to use the `url::Parsed' object from the canonicalization
-  // step, despite the fact that `url::Parsed` stores byte offsets: since it's
-  // all ASCII, there is a 1:1 mapping between the UTF-8 indices and UTF-16
-  // indices.
-  DCHECK(string_.ContainsOnlyASCIIOrEmpty());
+  // This means that even though KURL itself might sometimes contain 16-bit
+  // strings, it is still safe to reuse the `url::Parsed' object from the
+  // canonicalization step: the byte offsets in `url::Parsed` will still be
+  // valid for a 16-bit ASCII string, since there is a 1:1 mapping between the
+  // UTF-8 indices and UTF-16 indices.
+  DCHECK(string_.GetString().ContainsOnlyASCIIOrEmpty());
 
   // It is not possible to check that `string_` is 8-bit here. There are some
   // instances where `string_` reuses an already-canonicalized `AtomicString`
@@ -1062,7 +1055,8 @@ void KURL::ReplaceComponents(const url::Replacements<CHAR>& replacements,
   if (replacements_valid || !preserve_validity) {
     is_valid_ = replacements_valid;
     parsed_ = new_parsed;
-    string_ = AtomicString::FromUTF8(output.data(), output.length());
+    string_ =
+        AtomicString(reinterpret_cast<LChar*>(output.data()), output.length());
     InitProtocolMetadata();
     AssertStringSpecIsASCII();
   }

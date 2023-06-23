@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
@@ -50,17 +50,12 @@
 // const ref, since the size of the parsed structure and related metadata is
 // non-trivial.
 //
-// In fact, for the majority of KURLs (i.e. those not copied across threads),
-// the backing string is an AtomicString, meaning that it is stored in the
-// thread-local AtomicString table, allowing optimizations like fast comparison.
-// See platform/wtf/text/AtomicString.h for information on the performance
-// characteristics of AtomicStrings.
-//
 // KURL also has a few other optimizations, including:
-//  - Cached bit for whether the KURL is http/https
-//  - Internal reference to the URL protocol (scheme) to avoid String allocation
-//    for the callers that require it. Common protocols like http and https are
-//    stored as static strings which can be shared across threads.
+// - Fast comparisons since the string spec is stored as an AtomicString.
+// - Cached bit for whether the KURL is http/https
+// - Internal reference to the URL protocol (scheme) to avoid String allocation
+//   for the callers that require it. Common protocols like http and https are
+//   stored as shared static strings.
 namespace WTF {
 class TextEncoding;
 }
@@ -269,7 +264,7 @@ class PLATFORM_EXPORT KURL {
   String protocol_;
 
   url::Parsed parsed_;
-  String string_;
+  AtomicString string_;
   std::unique_ptr<KURL> inner_url_;
 };
 
