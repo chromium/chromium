@@ -1,6 +1,15 @@
 <style include="shortcut-customization-shared">
-  :host-context(body.jelly-enabled) #addIcon {
-    --iron-icon-fill-color: var(--cros-sys-on_primary_container);
+  :host-context(body.jelly-enabled) #addIcon,
+  :host-context(body.jelly-enabled) #restoreDefault {
+    background: var(--cros-sys-primary_container);
+    color: var(--cros-sys-on_primary_container);
+    font: var(--cros-button-2-font);
+  }
+
+  :host-context(body.jelly-enabled) #doneButton {
+    background: var(--cros-sys-primary);
+    color: var(--cros-sys-on_primary);
+    font: var(--cros-button-2-font);
   }
 
   #acceleratorViewList {
@@ -9,7 +18,6 @@
   }
 
   #addIcon {
-    --iron-icon-fill-color: #1A73E8;
     padding-top: 11px;
   }
 
@@ -42,7 +50,6 @@
     border-radius: 16px;
     display: flex;
     flex-direction: column;
-    height: 216px;
     justify-content: space-between;
     margin-left: 32px;
     margin-right: 32px;
@@ -54,6 +61,8 @@
     --cr-dialog-title-slot-padding-end: 32px;
     --cr-dialog-title-slot-padding-start: 32px;
     --cr-dialog-title-slot-padding-top: 32px;
+    color: var(--cros-text-color-primary);
+    font: var(--cros-display-7-font);
   }
 
   [slot='button-container'] {

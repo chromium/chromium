@@ -38,7 +38,9 @@
 }
 
 :host-context(body.jelly-enabled) cr-dialog::part(dialog) {
+  background-color: var(--cros-bg-color-elevation-3);
   border-radius: 20px;
+  box-shadow: var(--cros-elevation-3-shadow);
 }
 
 iron-icon[icon='shortcut-customization:lock'] {
