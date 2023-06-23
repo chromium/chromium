@@ -59,7 +59,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.v
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabStripFaviconCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.waitForThumbnailsToFetch;
-import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_SINGLE_ENABLED_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createTabStateFile;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -1449,9 +1448,6 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @DisableIf.Device(type = UiDisableIf.TABLET)
-    @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-    @CommandLineFlags.
-    Add({"force-fieldtrials=Study/Group", START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testDialogSetup_WithStartSurface() throws Exception {
         // Create a tab group with 2 tabs.
         finishActivity(sActivityTestRule.getActivity());
@@ -1483,67 +1479,6 @@ public class TabGridDialogTest {
                        withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         CriteriaHelper.pollUiThread(() -> isDialogShowing(sActivityTestRule.getActivity()));
-        verifyShowingDialog(cta, 2, null);
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/hide_switch_when_no_incognito_tabs/false"})
-    @DisableIf.Device(type = UiDisableIf.TABLET)
-    @DisabledTest(message = "crbug.com/1119899, crbug.com/1131545")
-    // clang-format off
-    public void testUndoClosureInDialog_WithStartSurface() throws Exception {
-        // clang-format on
-        // Create a tab group with 2 tabs.
-        finishActivity(sActivityTestRule.getActivity());
-        createThumbnailBitmapAndWriteToFile(0);
-        createThumbnailBitmapAndWriteToFile(1);
-        TabAttributeCache.setRootIdForTesting(0, 0);
-        TabAttributeCache.setRootIdForTesting(1, 0);
-        createTabStateFile(new int[] {0, 1});
-
-        // Restart Chrome and make sure tab strip is showing.
-        sActivityTestRule.startMainActivityFromLauncher();
-        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-        CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
-        CriteriaHelper.pollUiThread(
-                () -> cta.getBrowserControlsManager().getBottomControlOffset() == 0);
-        waitForView(allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
-
-        // Test undo closure in dialog from tab strip.
-        openDialogFromStripAndVerify(cta, 2, null);
-        closeFirstTabInDialog();
-        verifyShowingDialog(cta, 1, null);
-        verifyDialogUndoBarAndClick();
-        verifyShowingDialog(cta, 2, null);
-        clickScrimToExitDialog(cta);
-        verifyTabStripFaviconCount(cta, 2);
-
-        // Test undo closure in dialog from StartSurface tab switcher.
-        enterTabSwitcher(cta);
-        onView(allOf(withParent(withId(getTabSwitcherParentId(sActivityTestRule.getActivity()))),
-                       withId(R.id.tab_list_view)))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
-        CriteriaHelper.pollUiThread(() -> isDialogShowing(cta));
-        verifyShowingDialog(cta, 2, null);
-        closeFirstTabInDialog();
-        verifyShowingDialog(cta, 1, null);
-        verifyDialogUndoBarAndClick();
-        verifyShowingDialog(cta, 2, null);
-
-        // Test undo closure in dialog from StartSurface home page.
-        clickScrimToExitDialog(cta);
-        onView(withId(R.id.new_tab_button)).perform(click());
-        onView(allOf(withParent(withId(R.id.tab_switcher_module_container)),
-                       withId(R.id.tab_list_view)))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
-        CriteriaHelper.pollUiThread(() -> isDialogShowing(cta));
-        verifyShowingDialog(cta, 2, null);
-        closeFirstTabInDialog();
-        verifyShowingDialog(cta, 1, null);
-        verifyDialogUndoBarAndClick();
         verifyShowingDialog(cta, 2, null);
     }
 
