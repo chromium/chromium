@@ -137,6 +137,9 @@ class PLATFORM_EXPORT CanvasResource
   // The bounds for this resource.
   virtual gfx::Size Size() const = 0;
 
+  // Whether this is origin top-left or bottom-left image.
+  virtual bool IsOriginTopLeft() const { return true; }
+
   // The mailbox which can be used to reference this resource in GPU commands.
   // The sync mode indicates how the sync token for the resource should be
   // prepared.
@@ -345,6 +348,7 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   bool SupportsAcceleratedCompositing() const override { return true; }
   bool IsValid() const final;
   gfx::Size Size() const final { return size_; }
+  bool IsOriginTopLeft() const final { return is_origin_top_left_; }
   scoped_refptr<StaticBitmapImage> Bitmap() final;
   void Transfer() final;
 
@@ -504,6 +508,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
   void Abandon() final;
   gfx::Size Size() const final { return size_; }
+  bool IsOriginTopLeft() const final { return is_origin_top_left_; }
   void TakeSkImage(sk_sp<SkImage> image) final;
   void NotifyResourceLost() override { resource_is_lost_ = true; }
 

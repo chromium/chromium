@@ -105,10 +105,10 @@ void OffscreenCanvas::Commit(scoped_refptr<CanvasResource>&& canvas_resource,
 
   base::TimeTicks commit_start_time = base::TimeTicks::Now();
   current_frame_damage_rect_.join(damage_rect);
+  const bool needs_vertical_flip = !canvas_resource->IsOriginTopLeft();
   GetOrCreateResourceDispatcher()->DispatchFrameSync(
       std::move(canvas_resource), commit_start_time, current_frame_damage_rect_,
-      !RenderingContext()->IsOriginTopLeft() /* needs_vertical_flip */,
-      IsOpaque());
+      needs_vertical_flip, IsOpaque());
   current_frame_damage_rect_ = SkIRect::MakeEmpty();
 }
 
@@ -457,12 +457,13 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
       GetRenderingContextSkColorInfo());
   const cc::PaintFlags::FilterQuality filter_quality = FilterQuality();
   if (use_shared_image) {
+    constexpr bool kIsOriginTopLeft = true;
     provider = CanvasResourceProvider::CreateSharedImageProvider(
         resource_info, filter_quality,
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         SharedGpuContext::ContextProviderWrapper(),
-        can_use_gpu ? RasterMode::kGPU : RasterMode::kCPU,
-        false /*is_origin_top_left*/, shared_image_usage_flags);
+        can_use_gpu ? RasterMode::kGPU : RasterMode::kCPU, kIsOriginTopLeft,
+        shared_image_usage_flags);
   } else if (HasPlaceholderCanvas()) {
     // using the software compositor
     base::WeakPtr<CanvasResourceDispatcher> dispatcher_weakptr =
@@ -543,10 +544,10 @@ bool OffscreenCanvas::PushFrame(scoped_refptr<CanvasResource>&& canvas_resource,
   if (current_frame_damage_rect_.isEmpty() || !canvas_resource)
     return false;
   const base::TimeTicks commit_start_time = base::TimeTicks::Now();
+  const bool needs_vertical_flip = !canvas_resource->IsOriginTopLeft();
   GetOrCreateResourceDispatcher()->DispatchFrame(
       std::move(canvas_resource), commit_start_time, current_frame_damage_rect_,
-      !RenderingContext()->IsOriginTopLeft() /* needs_vertical_flip */,
-      IsOpaque());
+      needs_vertical_flip, IsOpaque());
   current_frame_damage_rect_ = SkIRect::MakeEmpty();
   return true;
 }

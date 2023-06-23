@@ -241,19 +241,20 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
                         GetRenderingContextSkColorInfo());
   const bool use_gpu =
       hint == RasterModeHint::kPreferGPU && ShouldAccelerate2dContext();
+  constexpr auto kShouldInitialize =
+      CanvasResourceProvider::ShouldInitialize::kCallClear;
   // It is important to not use the context's IsOriginTopLeft() here
   // because that denotes the current state and could change after the
   // new resource provider is created e.g. due to switching between
   // unaccelerated and accelerated modes during tab switching.
-  const bool is_origin_top_left = !use_gpu || LowLatencyEnabled();
+  constexpr bool kIsOriginTopLeft = true;
   if (use_gpu && LowLatencyEnabled()) {
     // If we can use the gpu and low latency is enabled, we will try to use a
     // SwapChain if possible.
     provider = CanvasResourceProvider::CreateSwapChainProvider(
-        resource_info, FilterQuality(),
-        CanvasResourceProvider::ShouldInitialize::kCallClear,
+        resource_info, FilterQuality(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), dispatcher,
-        is_origin_top_left);
+        kIsOriginTopLeft);
     // If SwapChain failed or it was not possible, we will try a SharedImage
     // with a set of flags trying to add Usage Display and Usage Scanout and
     // Concurrent Read and Write if possible.
@@ -267,31 +268,29 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
       }
       provider = CanvasResourceProvider::CreateSharedImageProvider(
-          resource_info, FilterQuality(),
-          CanvasResourceProvider::ShouldInitialize::kCallClear,
+          resource_info, FilterQuality(), kShouldInitialize,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-          is_origin_top_left, shared_image_usage_flags);
+          kIsOriginTopLeft, shared_image_usage_flags);
     }
   } else if (use_gpu) {
     // First try to be optimized for displaying on screen. In the case we are
     // hardware compositing, we also try to enable the usage of the image as
     // scanout buffer (overlay)
     uint32_t shared_image_usage_flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-    if (RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled())
+    if (RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    }
     provider = CanvasResourceProvider::CreateSharedImageProvider(
-        resource_info, FilterQuality(),
-        CanvasResourceProvider::ShouldInitialize::kCallClear,
+        resource_info, FilterQuality(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-        is_origin_top_left, shared_image_usage_flags);
+        kIsOriginTopLeft, shared_image_usage_flags);
   } else if (RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
     const uint32_t shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     provider = CanvasResourceProvider::CreateSharedImageProvider(
-        resource_info, FilterQuality(),
-        CanvasResourceProvider::ShouldInitialize::kCallClear,
+        resource_info, FilterQuality(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kCPU,
-        is_origin_top_left, shared_image_usage_flags);
+        kIsOriginTopLeft, shared_image_usage_flags);
   }
 
   // If either of the other modes failed and / or it was not possible to do, we
@@ -299,13 +298,11 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
   // provider.
   if (!provider) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-        resource_info, FilterQuality(),
-        CanvasResourceProvider::ShouldInitialize::kCallClear, dispatcher);
+        resource_info, FilterQuality(), kShouldInitialize, dispatcher);
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        resource_info, FilterQuality(),
-        CanvasResourceProvider::ShouldInitialize::kCallClear);
+        resource_info, FilterQuality(), kShouldInitialize);
   }
 
   ReplaceResourceProvider(std::move(provider));

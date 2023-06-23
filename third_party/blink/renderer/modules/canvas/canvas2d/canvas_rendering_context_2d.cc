@@ -175,9 +175,8 @@ bool CanvasRenderingContext2D::IsAccelerated() const {
 }
 
 bool CanvasRenderingContext2D::IsOriginTopLeft() const {
-  // Accelerated 2D contexts have the origin of coordinates on the bottom left,
-  // except if they are used for low latency mode (front buffer rendering).
-  return !IsAccelerated() || canvas()->LowLatencyEnabled();
+  // Use top-left origin since Skia Graphite won't support bottom-left origin.
+  return true;
 }
 
 bool CanvasRenderingContext2D::IsComposited() const {
