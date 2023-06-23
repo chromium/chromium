@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUkmRecorder;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
+import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder.WebApkUserTheme;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -29,6 +30,7 @@ import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.WebApkSplashscreenMetrics;
+import org.chromium.ui.util.ColorUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -106,7 +108,12 @@ public class WebApkActivityLifecycleUmaTracker
     public void onPostInflationStartup() {}
 
     @Override
-    public void onResumeWithNative() {}
+    public void onResumeWithNative() {
+        @WebApkUserTheme
+        int themeSetting = (ColorUtils.inNightMode(mActivity)) ? WebApkUserTheme.DARK_THEME
+                                                               : WebApkUserTheme.LIGHT_THEME;
+        WebApkUmaRecorder.recordUserThemeWhenLaunch(themeSetting);
+    }
 
     @Override
     public void onPauseWithNative() {

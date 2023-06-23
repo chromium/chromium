@@ -111140,6 +111140,11 @@ others/histograms.xml -->
   <int value="3" label="Dismiss to open a newly installed WebAPK"/>
 </enum>
 
+<enum name="WebApkUserTheme">
+  <int value="0" label="Light Theme"/>
+  <int value="1" label="Dark Theme"/>
+</enum>
+
 <enum name="WebAppCreateShortcutIconLinuxResult">
   <summary>Result for creating shortcut icon on Linux</summary>
   <int value="0" label="Success"/>

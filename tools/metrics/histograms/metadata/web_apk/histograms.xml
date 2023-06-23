@@ -177,12 +177,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApk.Install.UserTheme" enum="WebApkUserTheme"
+    expires_after="2024-01-01">
+  <owner>johnwes@google.com</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records whether a user is using light theme or dark theme when installing a
+    WebAPK.
+  </summary>
+</histogram>
+
 <histogram name="WebApk.Launch.NetworkError" enum="NetErrorCodes"
     expires_after="2023-12-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
     Records the error codes when a WebAPK is launched with network failures.
+  </summary>
+</histogram>
+
+<histogram name="WebApk.Launch.UserTheme" enum="WebApkUserTheme"
+    expires_after="2024-01-01">
+  <owner>johnwes@google.com</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records whether a user is using light theme or dark theme when launching a
+    WebAPK.
   </summary>
 </histogram>
 
