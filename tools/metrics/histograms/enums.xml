@@ -51316,6 +51316,31 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="0" label="kClick"/>
 </enum>
 
+<enum name="HoldingSpaceFileSystemType">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kTemporary"/>
+  <int value="2" label="kPersistent"/>
+  <int value="3" label="kIsolated"/>
+  <int value="4" label="kExternal"/>
+  <int value="5" label="kTest"/>
+  <int value="6" label="kLocal"/>
+  <int value="7" label="kRestrictedLocal"/>
+  <int value="8" label="kDragged"/>
+  <int value="9" label="kLocalMedia"/>
+  <int value="10" label="kDeviceMedia"/>
+  <int value="11" label="kSyncable"/>
+  <int value="12" label="kSyncableForInternalSync"/>
+  <int value="13" label="kLocalForPlatformApp"/>
+  <int value="14" label="kForTransientFile"/>
+  <int value="15" label="kProvided"/>
+  <int value="16" label="kDeviceMediaAsFileStorage"/>
+  <int value="17" label="kArcContent"/>
+  <int value="18" label="kArcDocumentsProvider"/>
+  <int value="19" label="kDriveFs"/>
+  <int value="20" label="kSmbFs"/>
+  <int value="21" label="kFuseBox"/>
+</enum>
+
 <enum name="HoldingSpaceItemAction">
   <int value="0" label="kCopy"/>
   <int value="1" label="kDrag"/>

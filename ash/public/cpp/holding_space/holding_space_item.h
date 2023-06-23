@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
@@ -229,6 +230,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   const HoldingSpaceImage& image() const { return *image_; }
 
+  const HoldingSpaceFile& file() const { return file_; }
+
   const base::FilePath& file_path() const { return file_path_; }
 
   const GURL& file_system_url() const { return file_system_url_; }
@@ -255,9 +258,14 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // The holding space item ID assigned to the item.
   std::string id_;
 
+  // The file that backs the item.
+  HoldingSpaceFile file_;
+
+  // TODO(http://b/288471183): Move to `HoldingSpaceFile`.
   // The file path by which the item is backed.
   base::FilePath file_path_;
 
+  // TODO(http://b/288471183): Move to `HoldingSpaceFile`.
   // The file system URL of the file that backs the item.
   GURL file_system_url_;
 

@@ -149,6 +149,17 @@ chromium-metrics-reviews@google.com.
   <token key="action" variants="HoldingSpaceItemAction"/>
 </histogram>
 
+<histogram name="HoldingSpace.Item.Action.{action}.FileSystemType"
+    enum="HoldingSpaceFileSystemType" expires_after="2023-08-08">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the file system type of an item in holding space UI for which an
+    action was taken at the moment the action is performed. {action}
+  </summary>
+  <token key="action" variants="HoldingSpaceItemAction"/>
+</histogram>
+
 <histogram name="HoldingSpace.Item.Count.{type}" units="items"
     expires_after="2023-08-08">
   <owner>dmblack@google.com</owner>

@@ -73,7 +73,8 @@ HoldingSpaceItem::~HoldingSpaceItem() {
 }
 
 bool HoldingSpaceItem::operator==(const HoldingSpaceItem& rhs) const {
-  return type_ == rhs.type_ && id_ == rhs.id_ && file_path_ == rhs.file_path_ &&
+  return type_ == rhs.type_ && id_ == rhs.id_ && file_ == rhs.file_ &&
+         file_path_ == rhs.file_path_ &&
          file_system_url_ == rhs.file_system_url_ && text_ == rhs.text_ &&
          secondary_text_ == rhs.secondary_text_ &&
          secondary_text_color_id_ == rhs.secondary_text_color_id_ &&
@@ -408,6 +409,7 @@ HoldingSpaceItem::HoldingSpaceItem(Type type,
                                    const HoldingSpaceProgress& progress)
     : type_(type),
       id_(id),
+      file_(HoldingSpaceFile::FileSystemType::kUnknown),
       file_path_(file_path),
       file_system_url_(file_system_url),
       image_(std::move(image)),
