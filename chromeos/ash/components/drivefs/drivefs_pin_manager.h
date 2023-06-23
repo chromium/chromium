@@ -205,9 +205,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
    public:
     // Called when the setup progresses.
     virtual void OnProgress(const Progress& progress) {}
-
-    // Called when the PinManager is getting deleted.
-    virtual void OnDrop() {}
   };
 
   void AddObserver(Observer* const observer) {

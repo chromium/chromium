@@ -639,9 +639,6 @@ PinManager::~PinManager() {
   DCHECK(!InProgress(progress_.stage))
       << "Pin manager is " << Quote(progress_.stage);
 
-  for (Observer& observer : observers_) {
-    observer.OnDrop();
-  }
   observers_.Clear();
 }
 

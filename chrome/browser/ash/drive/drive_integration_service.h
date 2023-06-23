@@ -171,8 +171,9 @@ class DriveIntegrationService : public KeyedService,
   bool IsSharedDrive(const base::FilePath& local_path) const;
 
   // Adds and removes the observer.
-  void AddObserver(DriveIntegrationServiceObserver* observer);
-  void RemoveObserver(DriveIntegrationServiceObserver* observer);
+  using Observer = DriveIntegrationServiceObserver;
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // MountObserver implementation.
   void OnMounted(const base::FilePath& mount_path) override;
@@ -467,7 +468,7 @@ class DriveIntegrationService : public KeyedService,
   std::unique_ptr<internal::ResourceMetadataStorage, util::DestroyHelper>
       metadata_storage_;
 
-  base::ObserverList<DriveIntegrationServiceObserver> observers_;
+  base::ObserverList<Observer> observers_;
 
   std::unique_ptr<DriveFsHolder> drivefs_holder_;
   std::unique_ptr<PreferenceWatcher> preference_watcher_;
