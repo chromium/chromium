@@ -108,9 +108,9 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
                          /*allow_import_rules=*/true);
     }
     if (*sheet_dict.FindString("type") == "user") {
-      engine.InjectSheet("", sheet, WebCssOrigin::kUser);
+      engine.InjectSheet(g_empty_atom, sheet, WebCssOrigin::kUser);
     } else {
-      engine.InjectSheet("", sheet, WebCssOrigin::kAuthor);
+      engine.InjectSheet(g_empty_atom, sheet, WebCssOrigin::kAuthor);
     }
     ++num_sheets;
     num_bytes += sheet_dict.FindString("text")->size();
