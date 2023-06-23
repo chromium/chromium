@@ -12,6 +12,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/contexts/geolocation_permission_context.h"
 #include "components/permissions/contexts/midi_permission_context.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -38,6 +39,10 @@
 class PermissionContextBasePermissionsPolicyTest
     : public ChromeRenderViewHostTestHarness {
  public:
+  void EnableBlockMidiByDefault() {
+    feature_list_.InitAndEnableFeature(
+        permissions::features::kBlockMidiByDefault);
+  }
   PermissionContextBasePermissionsPolicyTest()
       : last_request_result_(CONTENT_SETTING_DEFAULT) {}
 
@@ -140,6 +145,7 @@ class PermissionContextBasePermissionsPolicyTest
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   void RequestPermissionForFrameFinished(ContentSetting setting) {
     last_request_result_ = setting;
   }
@@ -177,6 +183,20 @@ TEST_F(PermissionContextBasePermissionsPolicyTest, DefaultPolicy) {
   EXPECT_EQ(CONTENT_SETTING_ASK, GetPermissionForFrame(&notifications, parent));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             GetPermissionForFrame(&notifications, child));
+}
+
+TEST_F(PermissionContextBasePermissionsPolicyTest,
+       DefaultPolicyBlockMidiByDefault) {
+  EnableBlockMidiByDefault();
+
+  content::RenderFrameHost* parent = GetMainRFH(kOrigin1);
+  content::RenderFrameHost* child = AddChildRFH(parent, kOrigin2);
+
+  // Midi is disallowed by default in the top level frame and blocked in
+  // subframes.
+  permissions::MidiPermissionContext midi(profile());
+  EXPECT_EQ(CONTENT_SETTING_ASK, GetPermissionForFrame(&midi, parent));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetPermissionForFrame(&midi, child));
 }
 
 TEST_F(PermissionContextBasePermissionsPolicyTest, DisabledTopLevelFrame) {
@@ -221,6 +241,20 @@ TEST_F(PermissionContextBasePermissionsPolicyTest, EnabledForChildFrame) {
             GetPermissionForFrame(geolocation.get(), parent));
   EXPECT_EQ(CONTENT_SETTING_ASK,
             GetPermissionForFrame(geolocation.get(), child));
+}
+
+TEST_F(PermissionContextBasePermissionsPolicyTest,
+       EnabledForChildFrameBlockMidiByDefault) {
+  EnableBlockMidiByDefault();
+
+  content::RenderFrameHost* parent = GetMainRFH(kOrigin1);
+
+  // Enable midi for the child frame.
+  content::RenderFrameHost* child = AddChildRFH(
+      parent, kOrigin2, blink::mojom::PermissionsPolicyFeature::kMidiFeature);
+  permissions::MidiPermissionContext midi(profile());
+  EXPECT_EQ(CONTENT_SETTING_ASK, GetPermissionForFrame(&midi, parent));
+  EXPECT_EQ(CONTENT_SETTING_ASK, GetPermissionForFrame(&midi, child));
 }
 
 TEST_F(PermissionContextBasePermissionsPolicyTest, RequestPermission) {

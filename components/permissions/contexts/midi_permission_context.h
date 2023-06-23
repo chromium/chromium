@@ -26,6 +26,10 @@ class MidiPermissionContext : public PermissionContextBase {
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
+  // PermissionContextBase:
+  void UpdateTabContext(const PermissionRequestID& id,
+                        const GURL& requesting_frame,
+                        bool allowed) override;
 };
 
 }  // namespace permissions
