@@ -409,6 +409,9 @@ base::Value::List GetSafeBrowsingPoliciesList(PrefService* prefs) {
       prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy));
   preferences_list.Append(
       prefs::kSafeBrowsingExtensionProtectionAllowedByPolicy);
+  preferences_list.Append(
+      prefs->GetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy));
+  preferences_list.Append(prefs::kHashPrefixRealTimeChecksAllowedByPolicy);
   return preferences_list;
 }
 

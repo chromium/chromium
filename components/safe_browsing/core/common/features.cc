@@ -358,6 +358,8 @@ constexpr struct {
     {&kExtensionTelemetryReportHostsContactedViaWebSocket, true},
     {&kExtensionTelemetryTabsExecuteScriptSignal, true},
     {&kFileTypePoliciesTag, true},
+    {&kHashPrefixRealTimeLookups, true},
+    {&kHashRealTimeOverOhttp, true},
     {&kLogAccountEnhancedProtectionStateInProtegoPings, true},
     {&kMmapSafeBrowsingDatabase, true},
     {&kNestedArchives, true},
@@ -404,6 +406,10 @@ base::Value::List GetFeatureStatusList() {
   param_list.Append(base::GetFieldTrialParamValueByFeature(
       kFileTypePoliciesTag, kFileTypePoliciesTagParamName));
   param_list.Append(kFileTypePoliciesTag.name);
+  param_list.Append(kHashPrefixRealTimeLookupsRelayUrl.Get());
+  param_list.Append(kHashPrefixRealTimeLookupsRelayUrl.name);
+  param_list.Append(kHashRealTimeOverOhttpRelayUrl.Get());
+  param_list.Append(kHashRealTimeOverOhttpRelayUrl.name);
 
   return param_list;
 }
