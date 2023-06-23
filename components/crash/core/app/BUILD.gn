@@ -12,6 +12,15 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
+static_library("url_constants") {
+  sources = [
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  deps = [ "//build:branding_buildflags" ]
+}
+
 source_set("lib") {
   visibility = [
     ":*",
@@ -24,8 +33,8 @@ source_set("lib") {
   ]
 
   deps = [
+    ":url_constants",
     "//base",
-    "//build:branding_buildflags",
   ]
 }
 
