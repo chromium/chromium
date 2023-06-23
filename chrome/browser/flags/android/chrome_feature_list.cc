@@ -78,6 +78,7 @@ namespace {
 // this array may either refer to features defined in the header of this file or
 // in other locations in the code base (e.g. chrome/, components/, etc).
 const base::Feature* const kFeaturesExposedToJava[] = {
+    &autofill::features::kAutofillAccountProfileStorage,
     &autofill::features::kAutofillAddressProfileSavePromptNicknameSupport,
     &autofill::features::kAutofillEnableRankingFormulaAddressProfiles,
     &autofill::features::kAutofillEnableRankingFormulaCreditCards,
@@ -393,8 +394,10 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kIdentityStatusConsistency,
     &switches::kForceDisableExtendedSyncPromos,
     &switches::kTangibleSync,
-    &syncer::kSyncEnableHistoryDataType,
     &syncer::kSyncAndroidLimitNTPPromoImpressions,
+    &syncer::kSyncEnableContactInfoDataType,
+    &syncer::kSyncEnableContactInfoDataTypeInTransportMode,
+    &syncer::kSyncEnableHistoryDataType,
     &subresource_filter::kSafeBrowsingSubresourceFilter,
     &thumbnail::kThumbnailCacheRefactor,
     &webapps::features::kInstallableAmbientBadgeInfoBar,
