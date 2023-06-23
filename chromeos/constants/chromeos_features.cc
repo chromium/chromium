@@ -150,7 +150,7 @@ bool IsRoundedWindowsEnabled() {
          base::FeatureList::IsEnabled(kJelly);
 }
 
-int RoundedWindowsRadiusInDip() {
+int RoundedWindowsRadius() {
   if (!IsRoundedWindowsEnabled()) {
     return 0;
   }
