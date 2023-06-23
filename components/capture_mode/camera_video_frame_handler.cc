@@ -546,11 +546,10 @@ void CameraVideoFrameHandler::StartHandlingFrames() {
   active_ = true;
 }
 
-void CameraVideoFrameHandler::Suspend(
-    base::OnceClosure suspend_complete_callback) {
+void CameraVideoFrameHandler::Close(base::OnceClosure close_complete_callback) {
   active_ = false;
-  camera_video_stream_subsciption_remote_->Suspend(
-      std::move(suspend_complete_callback));
+  camera_video_stream_subsciption_remote_->Close(
+      std::move(close_complete_callback));
 }
 
 void CameraVideoFrameHandler::OnCaptureConfigurationChanged() {}

@@ -95,21 +95,21 @@ class CAPTURE_MODE_EXPORT CameraVideoFrameHandler
   // Activates the subscription so we start receiving video frames.
   void StartHandlingFrames();
 
-  // Suspends the camera video stream subscription and immediately rejects any
+  // Closes the camera video stream subscription and immediately rejects any
   // new frames received at `OnFrameReadyInBuffer()`. The callback is invoked
-  // once the mojo call to suspend the subscription is complete, at which point
-  // it is guaranteed that no more frames will be pushed to
-  //`OnFrameReadyInBuffer()` or `OnFrameDropped()`. Other calls, such as
-  //`OnNewBuffer()` and `OnBufferRetired()` will continue to be received.
+  // once the mojo call to close the subscription is complete, at which point
+  // it is guaranteed that no more calls will be made to the
+  // `VideoFrameHandler`.
   //
   // The intended usage of this method is for the caller to guarantee that the
-  // instance of `VideoFrameHandler` lives until the `Suspend()` call is
-  // complete by binding it to the `suspend_complete_callback`. This ensures
-  // that any buffers allocated between calling `Suspend()` and having the mojo
+  // instance of `VideoFrameHandler` lives until the `Close()` call is
+  // complete by binding it to the `close_complete_callback`. This ensures
+  // that any buffers allocated between calling `Close()` and having the mojo
   // serviced can be appropriately released. If the caller doesn't take this
-  // step and just deletes the `VideoFrameHandler` then it's possible buffers to
-  // be allocated and held in limbo until the video stream is stopped.
-  void Suspend(base::OnceClosure suspend_complete_callback);
+  // step and just deletes the `VideoFrameHandler` then it's possible for
+  // buffers to be allocated and held in limbo until the video stream is
+  // stopped.
+  void Close(base::OnceClosure close_complete_callback);
 
   // video_capture::mojom::VideoFrameHandler:
   void OnCaptureConfigurationChanged() override;
