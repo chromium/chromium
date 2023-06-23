@@ -4,12 +4,28 @@
 
 source_set("toolbars") {
   sources = [
+    "tab_grid_toolbars_coordinator.h",
+    "tab_grid_toolbars_coordinator.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":toolbars_ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/ui/menu",
+  ]
+}
+
+source_set("toolbars_ui") {
+  sources = [
     "tab_grid_bottom_toolbar.h",
     "tab_grid_bottom_toolbar.mm",
     "tab_grid_new_tab_button.h",
     "tab_grid_new_tab_button.mm",
     "tab_grid_page_control.h",
     "tab_grid_page_control.mm",
+    "tab_grid_toolbars_action_wrangler.h",
+    "tab_grid_toolbars_commands_wrangler.h",
+    "tab_grid_toolbars_delegate_wrangler.h",
     "tab_grid_toolbars_utils.h",
     "tab_grid_toolbars_utils.mm",
     "tab_grid_top_toolbar.h",

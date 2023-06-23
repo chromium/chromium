@@ -240,6 +240,8 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
            selector:@selector(accessibilityBoldTextStatusDidChange)
                name:UIAccessibilityBoldTextStatusDidChangeNotification
              object:nil];
+
+    [self setupViews];
   }
   return self;
 }
@@ -409,13 +411,6 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 
 - (CGSize)intrinsicContentSize {
   return CGSizeMake(kOverallWidth, kOverallHeight);
-}
-
-- (void)willMoveToSuperview:(UIView*)newSuperview {
-  // The first time this moves to a superview, perform the view setup.
-  if (newSuperview && self.subviews.count == 0) {
-    [self setupViews];
-  }
 }
 
 - (void)layoutSubviews {

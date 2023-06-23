@@ -51,6 +51,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_new_tab_button.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_commands_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -122,8 +123,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                      RecentTabsTableViewControllerUIDelegate,
                                      SuggestedActionsDelegate,
                                      UIGestureRecognizerDelegate,
-                                     UIScrollViewAccessibilityDelegate,
-                                     UISearchBarDelegate>
+                                     UIScrollViewAccessibilityDelegate>
 // Whether the view is visible. Bookkeeping is based on
 // `-contentWillAppearAnimated:` and
 // `-contentWillDisappearAnimated methods. Note that the `Did` methods are not
@@ -148,8 +148,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @property(nonatomic, weak) UIView* scrollContentView;
 // Scrim view to be presented when the search box in focused with no text.
 @property(nonatomic, strong) UIControl* scrimView;
-@property(nonatomic, weak) TabGridTopToolbar* topToolbar;
-@property(nonatomic, weak) TabGridBottomToolbar* bottomToolbar;
 @property(nonatomic, assign) TabGridConfiguration configuration;
 // Setting the current page doesn't scroll the scroll view; use
 // -scrollToPage:animated: for that.
@@ -292,7 +290,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self setupSearchUI];
   [self setupTopToolbar];
   [self setupBottomToolbar];
-  [self setupEditButton];
 
   if (IsPinnedTabsEnabled()) {
     [self setupPinnedTabsViewController];
@@ -983,6 +980,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
+#pragma mark - TabGridToolbarsDelegateWrangler
+
+- (BOOL)isCurrentGridEmpty {
+  return [self gridViewControllerForPage:self.currentPage].gridEmpty;
+}
+
 #pragma mark - Private
 
 // Records the idle page status for the current `currentPage`.
@@ -1284,7 +1287,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self.pinnedTabsViewController pinnedTabsAvailable:pinnedTabsAvailable];
   }
   [self updateToolbarsAppearance];
-  [self setupEditButton];
+  [self.toolbarCommandsWrangler updateToolbarButtons];
   // Make sure the current page becomes the first responder, so that it can
   // register and handle key commands.
   [self.currentPageViewController becomeFirstResponder];
@@ -1571,63 +1574,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-- (void)setupEditButton API_AVAILABLE(ios(14.0)) {
-  ActionFactory* actionFactory = [[ActionFactory alloc]
-      initWithScenario:MenuScenarioHistogram::kTabGridEdit];
-  __weak TabGridViewController* weakSelf = self;
-  NSMutableArray<UIMenuElement*>* menuElements =
-      [@[ [actionFactory actionToCloseAllTabsWithBlock:^{
-        [weakSelf closeAllButtonTapped:nil];
-      }] ] mutableCopy];
-  // Disable the "Select All" option from the edit button when there is no tabs
-  // in the regular tab grid. "Close All" can still be called if there is
-  // element in inactive tabs.
-  BOOL disabledSelectAll = self.currentPage == TabGridPageRegularTabs &&
-                           self.regularTabsViewController.isGridEmpty;
-  if (!disabledSelectAll) {
-    [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
-                    [weakSelf selectTabsButtonTapped:nil];
-                  }]];
-  }
-
-  UIMenu* menu = [UIMenu menuWithChildren:menuElements];
-  [self.topToolbar setEditButtonMenu:menu];
-  [self.bottomToolbar setEditButtonMenu:menu];
-}
-
 // Adds the top toolbar and sets constraints.
 - (void)setupTopToolbar {
-  // In iOS 13+, constraints break if the UIToolbar is initialized with a null
-  // or zero rect frame. An arbitrary non-zero frame fixes this issue.
-  TabGridTopToolbar* topToolbar =
-      [[TabGridTopToolbar alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
-  self.topToolbar = topToolbar;
-  topToolbar.translatesAutoresizingMaskIntoConstraints = NO;
+  UIView* topToolbar = self.topToolbar;
+  CHECK(topToolbar);
+
   [self.view addSubview:topToolbar];
-
-  // Sets the leadingButton title during initialization allows the actionSheet
-  // to be correctly anchored. See: crbug.com/1140982.
-  [topToolbar setCloseAllButtonTarget:self
-                               action:@selector(closeAllButtonTapped:)];
-  [topToolbar setDoneButtonTarget:self action:@selector(doneButtonTapped:)];
-  [topToolbar setNewTabButtonTarget:self action:@selector(newTabButtonTapped:)];
-  [topToolbar setSelectAllButtonTarget:self
-                                action:@selector(selectAllButtonTapped:)];
-  [topToolbar setSearchButtonTarget:self action:@selector(searchButtonTapped:)];
-  [topToolbar setCancelSearchButtonTarget:self
-                                   action:@selector(cancelSearchButtonTapped:)];
-  [topToolbar setSearchBarDelegate:self];
-
-  // Configure and initialize the page control.
-  [topToolbar.pageControl addTarget:self
-                             action:@selector(pageControlChangedValue:)
-                   forControlEvents:UIControlEventValueChanged];
-  [topToolbar.pageControl addTarget:self
-                             action:@selector(pageControlChangedPageByDrag:)
-                   forControlEvents:TabGridPageChangeByDragEvent];
-  [topToolbar.pageControl addTarget:self
-                             action:@selector(pageControlChangedPageByTap:)
-                   forControlEvents:TabGridPageChangeByTapEvent];
 
   [NSLayoutConstraint activateConstraints:@[
     [topToolbar.topAnchor
@@ -1639,10 +1591,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Adds the bottom toolbar and sets constraints.
 - (void)setupBottomToolbar {
-  TabGridBottomToolbar* bottomToolbar = [[TabGridBottomToolbar alloc] init];
-  self.bottomToolbar = bottomToolbar;
-  bottomToolbar.translatesAutoresizingMaskIntoConstraints = NO;
+  UIView* bottomToolbar = self.bottomToolbar;
+  CHECK(bottomToolbar);
+
   [self.view addSubview:bottomToolbar];
+
   [NSLayoutConstraint activateConstraints:@[
     [bottomToolbar.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
     [bottomToolbar.leadingAnchor
@@ -1650,17 +1603,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [bottomToolbar.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
   ]];
-
-  [bottomToolbar setCloseAllButtonTarget:self
-                                  action:@selector(closeAllButtonTapped:)];
-  [bottomToolbar setDoneButtonTarget:self action:@selector(doneButtonTapped:)];
-
-  [bottomToolbar setNewTabButtonTarget:self
-                                action:@selector(newTabButtonTapped:)];
-  [bottomToolbar setCloseTabsButtonTarget:self
-                                   action:@selector(closeSelectedTabs:)];
-  [bottomToolbar setShareTabsButtonTarget:self
-                                   action:@selector(shareSelectedTabs:)];
 
   [self.layoutGuideCenter referenceView:bottomToolbar
                               underName:kTabGridBottomToolbarGuide];
@@ -2608,7 +2550,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     crash_keys::SetIncognitoTabCount(count);
     [self handleTabCountChangeWithTabCount:count];
   }
-  [self setupEditButton];
+  [self.toolbarCommandsWrangler updateToolbarButtons];
 }
 
 - (void)gridViewController:(GridViewController*)gridViewController
@@ -2717,7 +2659,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   NOTREACHED();
 }
 
-#pragma mark - Control actions
+#pragma mark - TabGridToolbarsActionWrangler
 
 - (void)doneButtonTapped:(id)sender {
   // Tapping Done when in selection mode, should only return back to the normal
@@ -2784,54 +2726,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       NOTREACHED() << "It is invalid to call close all tabs on remote tabs.";
       break;
   }
-}
-
-- (void)handleCloseAllButtonForRegularTabsWithAnchor:(UIBarButtonItem*)anchor {
-  DCHECK_EQ(self.undoCloseAllAvailable,
-            (self.regularTabsViewController.gridEmpty &&
-             self.regularTabsViewController.inactiveGridEmpty));
-
-  if (self.undoCloseAllAvailable) {
-    [self undoCloseAllItemsForRegularTabs];
-  } else {
-    [self saveAndCloseAllItemsForRegularTabs];
-  }
-}
-
-- (void)undoCloseAllItemsForRegularTabs {
-  GridViewController* regularViewController =
-      [self gridViewControllerForPage:TabGridPageRegularTabs];
-
-  [regularViewController willUndoCloseAll];
-
-  // This was saved as a stack: first save the inactive tabs, then the active
-  // tabs. So undo in the reverse order: first undo the active tabs, then the
-  // inactive tabs.
-  [self.regularTabsDelegate undoCloseAllItems];
-  [self.inactiveTabsDelegate undoCloseAllItems];
-
-  [regularViewController didUndoCloseAll];
-
-  self.undoCloseAllAvailable = NO;
-  [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
-}
-
-- (void)saveAndCloseAllItemsForRegularTabs {
-  GridViewController* regularViewController =
-      [self gridViewControllerForPage:TabGridPageRegularTabs];
-
-  [regularViewController willCloseAll];
-
-  // This was saved as a stack: first save the inactive tabs, then the active
-  // tabs. So undo in the reverse order: first undo the active tabs, then the
-  // inactive tabs.
-  [self.inactiveTabsDelegate saveAndCloseAllItems];
-  [self.regularTabsDelegate saveAndCloseAllItems];
-
-  [regularViewController didCloseAll];
-
-  self.undoCloseAllAvailable = YES;
-  [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
 }
 
 - (void)searchButtonTapped:(id)sender {
@@ -2980,6 +2874,56 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                        withInteration:TabSwitcherPageChangeInteraction::
                                           kControlTap];
   }
+}
+
+#pragma mark - Control helpers
+
+- (void)handleCloseAllButtonForRegularTabsWithAnchor:(UIBarButtonItem*)anchor {
+  DCHECK_EQ(self.undoCloseAllAvailable,
+            (self.regularTabsViewController.gridEmpty &&
+             self.regularTabsViewController.inactiveGridEmpty));
+
+  if (self.undoCloseAllAvailable) {
+    [self undoCloseAllItemsForRegularTabs];
+  } else {
+    [self saveAndCloseAllItemsForRegularTabs];
+  }
+}
+
+- (void)undoCloseAllItemsForRegularTabs {
+  GridViewController* regularViewController =
+      [self gridViewControllerForPage:TabGridPageRegularTabs];
+
+  [regularViewController willUndoCloseAll];
+
+  // This was saved as a stack: first save the inactive tabs, then the active
+  // tabs. So undo in the reverse order: first undo the active tabs, then the
+  // inactive tabs.
+  [self.regularTabsDelegate undoCloseAllItems];
+  [self.inactiveTabsDelegate undoCloseAllItems];
+
+  [regularViewController didUndoCloseAll];
+
+  self.undoCloseAllAvailable = NO;
+  [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
+}
+
+- (void)saveAndCloseAllItemsForRegularTabs {
+  GridViewController* regularViewController =
+      [self gridViewControllerForPage:TabGridPageRegularTabs];
+
+  [regularViewController willCloseAll];
+
+  // This was saved as a stack: first save the inactive tabs, then the active
+  // tabs. So undo in the reverse order: first undo the active tabs, then the
+  // inactive tabs.
+  [self.inactiveTabsDelegate saveAndCloseAllItems];
+  [self.regularTabsDelegate saveAndCloseAllItems];
+
+  [regularViewController didCloseAll];
+
+  self.undoCloseAllAvailable = YES;
+  [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
 }
 
 #pragma mark - DisabledTabViewControllerDelegate

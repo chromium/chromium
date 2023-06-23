@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -39,8 +41,7 @@ class TabGridFakeWebStateListDelegate : public FakeWebStateListDelegate {
 class TabGridViewControllerTest : public PlatformTest {
  protected:
   TabGridViewControllerTest() {
-    view_controller_ = [[TabGridViewController alloc]
-        initWithPageConfiguration:TabGridPageConfiguration::kAllPagesEnabled];
+    InitializeViewController(TabGridPageConfiguration::kAllPagesEnabled);
 
     browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(
@@ -55,6 +56,15 @@ class TabGridViewControllerTest : public PlatformTest {
   bool CanPerform(NSString* action, id sender) {
     return [view_controller_ canPerformAction:NSSelectorFromString(action)
                                    withSender:sender];
+  }
+
+  void InitializeViewController(TabGridPageConfiguration configuration) {
+    view_controller_ =
+        [[TabGridViewController alloc] initWithPageConfiguration:configuration];
+    view_controller_.topToolbar =
+        [[TabGridTopToolbar alloc] initWithFrame:CGRectZero];
+    view_controller_.bottomToolbar =
+        [[TabGridBottomToolbar alloc] initWithFrame:CGRectZero];
   }
 
   // Checks that `view_controller_` can perform the `action`. The sender is set
@@ -148,8 +158,7 @@ TEST_F(TabGridViewControllerTest, Metrics) {
 // * the key command find is available when the tab grid is currently visible,
 // * the key command associated title is correct.
 TEST_F(TabGridViewControllerTest, ValidateCommand_find) {
-  view_controller_ = [[TabGridViewController alloc]
-      initWithPageConfiguration:TabGridPageConfiguration::kIncognitoPageOnly];
+  InitializeViewController(TabGridPageConfiguration::kIncognitoPageOnly);
   EXPECT_FALSE(CanPerform(@"keyCommand_find"));
 
   [view_controller_ contentWillAppearAnimated:NO];
@@ -172,8 +181,7 @@ TEST_F(TabGridViewControllerTest, ValidateCommand_find) {
 
 // Checks when Close All and Undo keyboard shortcuts are possible.
 TEST_F(TabGridViewControllerTest, CanPerform_CloseAllAndUndo) {
-  view_controller_ = [[TabGridViewController alloc]
-      initWithPageConfiguration:TabGridPageConfiguration::kIncognitoPageOnly];
+  InitializeViewController(TabGridPageConfiguration::kIncognitoPageOnly);
   EXPECT_FALSE(CanPerform(@"keyCommand_closeAll"));
   EXPECT_FALSE(CanPerform(@"keyCommand_undo"));
 

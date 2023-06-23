@@ -40,15 +40,15 @@
   UIView* _scrolledBackgroundView;
 }
 
-#pragma mark - UIView
-
-- (void)willMoveToSuperview:(UIView*)newSuperview {
-  [super willMoveToSuperview:newSuperview];
-  // The first time this moves to a superview, perform the view setup.
-  if (newSuperview && self.subviews.count == 0) {
+- (instancetype)initWithFrame:(CGRect)frame {
+  self = [super initWithFrame:frame];
+  if (self) {
     [self setupViews];
   }
+  return self;
 }
+
+#pragma mark - UIView
 
 - (void)didMoveToSuperview {
   if (_scrolledBackgroundView) {

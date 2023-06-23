@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_action_wrangler.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_delegate_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation_layout_providing.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
@@ -27,10 +29,13 @@ class GURL;
 @protocol PopupMenuCommands;
 @protocol RecentTabsConsumer;
 @class RecentTabsTableViewController;
+@class TabGridBottomToolbar;
 @protocol TabCollectionCommands;
 @protocol TabCollectionConsumer;
 @protocol TabCollectionDragDropHandler;
 @protocol TabContextMenuProvider;
+@protocol TabGridToolbarsCommandsWrangler;
+@class TabGridTopToolbar;
 @class TabGridViewController;
 @protocol ThumbStripCommands;
 @protocol ViewControllerTraitCollectionObserver;
@@ -99,7 +104,10 @@ enum class TabGridPageConfiguration {
                         KeyCommandActions,
                         LayoutSwitcherProvider,
                         TabGridPaging,
+                        TabGridToolbarsActionWrangler,
+                        TabGridToolbarsDelegateWrangler,
                         ThumbStripSupporting,
+                        UISearchBarDelegate,
                         ViewRevealingAnimatee>
 
 @property(nonatomic, weak) id<ApplicationCommands> handler;
@@ -178,6 +186,15 @@ enum class TabGridPageConfiguration {
 
 // The layout guide center to use to refer to the bottom toolbar.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+
+// Top and bottom toolbars. Those must be set before -viewDidLoad is called.
+@property(nonatomic, strong) TabGridTopToolbar* topToolbar;
+@property(nonatomic, strong) TabGridBottomToolbar* bottomToolbar;
+
+// Temporary handler for sending commands to the toolbar.
+// TODO(crbug.com/1456659): Remove this.
+@property(nonatomic, weak) id<TabGridToolbarsCommandsWrangler>
+    toolbarCommandsWrangler;
 
 // Init with tab grid view configuration, which decides which sub view
 // controller should be added.

@@ -65,6 +65,14 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   UIView* _scrolledBackgroundView;
 }
 
+- (instancetype)initWithFrame:(CGRect)frame {
+  self = [super initWithFrame:frame];
+  if (self) {
+    [self setupViews];
+  }
+  return self;
+}
+
 - (UIBarButtonItem*)anchorItem {
   return _leadingButton;
 }
@@ -247,14 +255,6 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
 - (CGSize)intrinsicContentSize {
   return CGSizeMake(UIViewNoIntrinsicMetric, kTabGridTopToolbarHeight);
-}
-
-- (void)willMoveToSuperview:(UIView*)newSuperview {
-  [super willMoveToSuperview:newSuperview];
-  // The first time this moves to a superview, perform the view setup.
-  if (newSuperview && self.subviews.count == 0) {
-    [self setupViews];
-  }
 }
 
 - (void)didMoveToSuperview {
