@@ -25,9 +25,15 @@ OmniboxController::OmniboxController(OmniboxView* view,
       autocomplete_controller_(std::make_unique<AutocompleteController>(
           client_->CreateAutocompleteProviderClient(),
           AutocompleteClassifier::DefaultOmniboxProviders())) {
-  // Observe `autocomplete_controller_` and have`AutocompleteControllerEmitter`
-  // observe it too.
-  autocomplete_controller_->AddObserver(this);
+  // Directly observe omnibox's `AutocompleteController` instance - i.e., when
+  // `view` is provided in the constructor. In the case of realbox - i.e., when
+  // `view` is not provided in the constructor - `RealboxHandler` directly
+  // observes the `AutocompleteController` instance itself.
+  if (view) {
+    autocomplete_controller_->AddObserver(this);
+  }
+
+  // Register the `AutocompleteController` with `AutocompleteControllerEmitter`.
   if (auto* emitter = client_->GetAutocompleteControllerEmitter()) {
     autocomplete_controller_->AddObserver(emitter);
   }
