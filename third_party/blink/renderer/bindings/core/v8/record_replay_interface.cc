@@ -3302,7 +3302,6 @@ const char* gDevtoolsIframeSetupScript = R""""(
               try {
                 const newLocation = iframe.contentWindow.location.href
                 if (newLocation !== oldLocation) {
-                  iframeSrcObserver.disconnect()
                   addDevtoolsToIframe(iframe)
                   return
                 }
