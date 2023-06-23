@@ -409,10 +409,6 @@ class RealboxOmniboxClient : public OmniboxClient {
   bool IsUsingFakeHttpsForHttpsUpgradeTesting() const override;
   gfx::Image GetSizedIcon(const gfx::VectorIcon& vector_icon_type,
                           SkColor vector_icon_color) const override;
-  void OnResultChanged(const AutocompleteResult& result,
-                       bool default_match_changed,
-                       bool should_preload,
-                       const BitmapFetchedCallback& on_bitmap_fetched) override;
   gfx::Image GetFaviconForPageUrl(
       const GURL& page_url,
       FaviconFetchedCallback on_favicon_fetched) override;
@@ -501,19 +497,6 @@ gfx::Image RealboxOmniboxClient::GetSizedIcon(
     const gfx::VectorIcon& vector_icon_type,
     SkColor vector_icon_color) const {
   return gfx::Image();
-}
-
-void RealboxOmniboxClient::OnResultChanged(
-    const AutocompleteResult& result,
-    bool default_match_changed,
-    bool should_preload,
-    const BitmapFetchedCallback& on_bitmap_fetched) {
-  if (should_preload) {
-    if (SearchPrefetchService* search_prefetch_service =
-            SearchPrefetchServiceFactory::GetForProfile(profile_)) {
-      search_prefetch_service->OnResultChanged(web_contents_, result);
-    }
-  }
 }
 
 gfx::Image RealboxOmniboxClient::GetFaviconForPageUrl(
@@ -952,6 +935,20 @@ void RealboxHandler::OnResultChanged(AutocompleteController* controller,
       autocomplete_controller()->result(),
       BookmarkModelFactory::GetForBrowserContext(profile_),
       profile_->GetPrefs()));
+
+  // The owned OmniboxController does not observe the AutocompleteController.
+  // Notify the prerender here to start preloading if the results are ready.
+  // TODO(crbug.com/1396174): Make the owned OmniboxController observe the
+  //  AutocompleteController and move this logic to the RealboxOmniboxClient.
+  if (owned_controller_) {
+    if (autocomplete_controller()->done()) {
+      if (SearchPrefetchService* search_prefetch_service =
+              SearchPrefetchServiceFactory::GetForProfile(profile_)) {
+        search_prefetch_service->OnResultChanged(
+            web_contents_, autocomplete_controller()->result());
+      }
+    }
+  }
 }
 
 void RealboxHandler::SelectMatchAtLine(size_t old_line, size_t new_line) {
