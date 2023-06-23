@@ -36,10 +36,10 @@ class MockUsbDelegate : public UsbDelegate {
 
   // Simulates opening the USB device chooser dialog and selecting an item. The
   // chooser automatically selects the item returned by RunChooserInternal,
-  // which may be mocked. Returns `nullptr`. `filters` is ignored.
+  // which may be mocked. Returns `nullptr`. `options` is ignored.
   std::unique_ptr<UsbChooser> RunChooser(
       RenderFrameHost& frame,
-      std::vector<device::mojom::UsbDeviceFilterPtr> filters,
+      blink::mojom::WebUsbRequestDeviceOptionsPtr options,
       blink::mojom::WebUsbService::GetPermissionCallback callback) override;
 
   void AddObserver(BrowserContext* browser_context,

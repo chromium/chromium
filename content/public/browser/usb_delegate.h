@@ -57,7 +57,7 @@ class CONTENT_EXPORT UsbDelegate {
   // below returned false.
   virtual std::unique_ptr<UsbChooser> RunChooser(
       RenderFrameHost& frame,
-      std::vector<device::mojom::UsbDeviceFilterPtr> filters,
+      blink::mojom::WebUsbRequestDeviceOptionsPtr options,
       blink::mojom::WebUsbService::GetPermissionCallback callback) = 0;
 
   // Returns whether `origin` in `browser_context` has permission to request

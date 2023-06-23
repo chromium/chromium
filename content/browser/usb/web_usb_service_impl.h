@@ -60,9 +60,8 @@ class CONTENT_EXPORT WebUsbServiceImpl : public blink::mojom::WebUsbService,
   void GetDevice(
       const std::string& guid,
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver) override;
-  void GetPermission(
-      std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
-      GetPermissionCallback callback) override;
+  void GetPermission(blink::mojom::WebUsbRequestDeviceOptionsPtr options,
+                     GetPermissionCallback callback) override;
   void ForgetDevice(const std::string& guid,
                     ForgetDeviceCallback callback) override;
   void SetClient(

@@ -152,16 +152,16 @@ class TestUsbDelegate : public ChromeUsbDelegate {
 
   std::unique_ptr<content::UsbChooser> RunChooser(
       content::RenderFrameHost& frame,
-      std::vector<device::mojom::UsbDeviceFilterPtr> filters,
+      blink::mojom::WebUsbRequestDeviceOptionsPtr options,
       blink::mojom::WebUsbService::GetPermissionCallback callback) override {
     if (use_fake_chooser_) {
       auto chooser = std::make_unique<FakeUsbChooser>();
       chooser->ShowChooser(
           &frame, std::make_unique<UsbChooserController>(
-                      &frame, std::move(filters), std::move(callback)));
+                      &frame, std::move(options), std::move(callback)));
       return chooser;
     } else {
-      return ChromeUsbDelegate::RunChooser(frame, std::move(filters),
+      return ChromeUsbDelegate::RunChooser(frame, std::move(options),
                                            std::move(callback));
     }
   }

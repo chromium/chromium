@@ -53,9 +53,9 @@ class DocumentHelper : public DocumentService<blink::mojom::WebUsbService> {
     service_->GetDevice(guid, std::move(device_receiver));
   }
   void GetPermission(
-      std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
+      blink::mojom::WebUsbRequestDeviceOptionsPtr options,
       blink::mojom::WebUsbService::GetPermissionCallback callback) override {
-    service_->GetPermission(std::move(device_filters), std::move(callback));
+    service_->GetPermission(std::move(options), std::move(callback));
   }
   void ForgetDevice(
       const std::string& guid,
@@ -290,7 +290,7 @@ void WebUsbServiceImpl::GetDevice(
 }
 
 void WebUsbServiceImpl::GetPermission(
-    std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
+    blink::mojom::WebUsbRequestDeviceOptionsPtr options,
     GetPermissionCallback callback) {
   auto* delegate = GetContentClient()->browser()->GetUsbDelegate();
   if (!delegate ||
@@ -299,8 +299,8 @@ void WebUsbServiceImpl::GetPermission(
     return;
   }
 
-  usb_chooser_ = delegate->RunChooser(
-      *render_frame_host_, std::move(device_filters), std::move(callback));
+  usb_chooser_ = delegate->RunChooser(*render_frame_host_, std::move(options),
+                                      std::move(callback));
 }
 
 void WebUsbServiceImpl::ForgetDevice(const std::string& guid,

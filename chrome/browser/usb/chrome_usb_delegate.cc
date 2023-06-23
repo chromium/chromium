@@ -245,10 +245,10 @@ void ChromeUsbDelegate::AdjustProtectedInterfaceClasses(
 
 std::unique_ptr<UsbChooser> ChromeUsbDelegate::RunChooser(
     content::RenderFrameHost& frame,
-    std::vector<device::mojom::UsbDeviceFilterPtr> filters,
+    blink::mojom::WebUsbRequestDeviceOptionsPtr options,
     blink::mojom::WebUsbService::GetPermissionCallback callback) {
   auto controller = std::make_unique<UsbChooserController>(
-      &frame, std::move(filters), std::move(callback));
+      &frame, std::move(options), std::move(callback));
   return WebUsbChooser::Create(&frame, std::move(controller));
 }
 

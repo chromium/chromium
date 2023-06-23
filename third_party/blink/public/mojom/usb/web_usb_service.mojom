@@ -8,6 +8,11 @@ import "services/device/public/mojom/usb_device.mojom";
 import "services/device/public/mojom/usb_enumeration_options.mojom";
 import "services/device/public/mojom/usb_manager_client.mojom";
 
+struct WebUsbRequestDeviceOptions {
+  array<device.mojom.UsbDeviceFilter> filters;
+  array<device.mojom.UsbDeviceFilter> exclusion_filters;
+};
+
 // This is a parallel interface with UsbDeviceManager aimed to handle extra work
 // such as permission checking, chooser showing, etc. in browser.
 // WebUsbServiceImpl in //chrome/browser/usb will implement this interface, and
@@ -22,11 +27,12 @@ interface WebUsbService {
 
   // Get permission from user to use a device.
   //
-  // |device_filters| filters the available devices and the filtered
-  // devices will be listed for user to grant permission.
+  // A chooser dialog is displayed with a list of connected devices. The
+  // list is filtered to contain only the ones that match |options->filters|
+  // and exclude |options->exclusion_filters|.
   //
   // |result| is the device that user grants permission to use.
-  GetPermission(array<device.mojom.UsbDeviceFilter> device_filters)
+  GetPermission(WebUsbRequestDeviceOptions options)
       => (device.mojom.UsbDeviceInfo? result);
 
   // Attempts to revoke the permission to the device by guid.
