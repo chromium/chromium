@@ -18,6 +18,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/gfx/geometry/size.h"
@@ -71,10 +72,6 @@ const char kUserActionConfirmOrUploadToGoogleDrive[] =
     "confirm-or-upload-google-drive";
 const char kUserActionConfirmOrUploadToOneDrive[] =
     "confirm-or-upload-onedrive";
-
-// Custom action ids passed from ODFS.
-const char kOneDriveUrlActionId[] = "HIDDEN_ONEDRIVE_URL";
-const char kUserEmailActionId[] = "HIDDEN_ONEDRIVE_USER_EMAIL";
 
 // Either OneDrive for the Office PWA or Drive for Drive Web editing.
 enum class CloudProvider {
@@ -160,9 +157,10 @@ class CloudOpenTask : public BrowserListObserver,
   void OpenAlreadyHostedDriveUrls();
   void OpenODFSUrls();
   void OpenAndroidOneDriveUrlsIfAccountMatchedODFS();
-  void CheckEmailAndOpenURLs(const std::string& android_onedrive_email,
-                             const file_system_provider::Actions& actions,
-                             base::File::Error result);
+  void CheckEmailAndOpenURLs(
+      const std::string& android_onedrive_email,
+      base::expected<cloud_upload::ODFSMetadata, base::File::Error>
+          metadata_or_error);
 
   bool ShouldShowConfirmationDialog();
   void ConfirmMoveOrStartUpload();

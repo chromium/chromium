@@ -37,7 +37,6 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-shared.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
-#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -675,11 +674,9 @@ void CloudOpenTask::OpenAndroidOneDriveUrlsIfAccountMatchedODFS() {
     LOG(ERROR) << "Android OneDrive Url cannot be converted to ODFS";
     return;
   }
-  // TODO(b/288022200): Query '/' instead to get user email.
-  fs_and_path->file_system->GetActions(
-      {fs_and_path->file_path_within_odfs},
-      base::BindOnce(&CloudOpenTask::CheckEmailAndOpenURLs, this,
-                     android_onedrive_email.value()));
+  GetODFSMetadata(fs_and_path->file_system,
+                  base::BindOnce(&CloudOpenTask::CheckEmailAndOpenURLs, this,
+                                 android_onedrive_email.value()));
 }
 
 absl::optional<ODFSFileSystemAndPath> AndroidOneDriveUrlToODFS(
@@ -737,24 +734,23 @@ absl::optional<ODFSFileSystemAndPath> AndroidOneDriveUrlToODFS(
 
 void CloudOpenTask::CheckEmailAndOpenURLs(
     const std::string& android_onedrive_email,
-    const file_system_provider::Actions& actions,
-    base::File::Error result) {
-  if (result != base::File::Error::FILE_OK) {
-    LOG(ERROR) << "Failed to get actions: " << result;
+    base::expected<cloud_upload::ODFSMetadata, base::File::Error>
+        metadata_or_error) {
+  if (!metadata_or_error.has_value()) {
+    LOG(ERROR) << "Failed to get user email: " << metadata_or_error.error();
+    return;
+  }
+  if (metadata_or_error->user_email.empty()) {
+    LOG(ERROR) << "User email is empty";
     return;
   }
   // Query whether the account logged into Android OneDrive is the
   // same as ODFS.
-  for (const file_system_provider::Action& action : actions) {
-    if (action.id == kUserEmailActionId) {
-      if (android_onedrive_email == action.title) {
-        OpenAndroidOneDriveUrls(profile_, file_urls_);
-      } else {
-        LOG(ERROR) << "Email accounts associated with ODFS and "
-                      "Android OneDrive don't match.";
-      }
-      return;
-    }
+  if (android_onedrive_email == metadata_or_error->user_email) {
+    OpenAndroidOneDriveUrls(profile_, file_urls_);
+  } else {
+    LOG(ERROR) << "Email accounts associated with ODFS and "
+                  "Android OneDrive don't match.";
   }
 }
 

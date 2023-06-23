@@ -1294,8 +1294,9 @@ IN_PROC_BROWSER_TEST_F(DriveTest, FileNotInDriveOpensSetUpDialog) {
 
 // TODO(cassycc): move this class to a more appropriate spot
 // Fake provided file system implementation specific to the `OneDriveTest`.
-// Overrides the `GetActions` method so the `kOneDriveUrlActionId` and
-// `kUserEmailActionId` actions are hardcoded to return for the test file.
+// Overrides the `GetActions` method so the `kOneDriveUrlActionId` action is
+// hardcoded to return for the test file. ODFS metadata actions, e.g.
+// `kUserEmailActionId`, are hardcoded to return for the root directory.
 class FakeProvidedFileSystemOneDrive
     : public ash::file_system_provider::FakeProvidedFileSystem {
  public:
@@ -1309,13 +1310,17 @@ class FakeProvidedFileSystemOneDrive
       const std::vector<base::FilePath>& entry_paths,
       GetActionsCallback callback) override {
     ash::file_system_provider::Actions actions;
-    for (auto& path : entry_paths) {
-      if (path == test_path_custom_actions_) {
-        actions.push_back(
-            {ash::cloud_upload::kOneDriveUrlActionId, kODFSSampleUrl});
-        actions.push_back(
-            {ash::cloud_upload::kUserEmailActionId, kSampleUserEmail1});
-        break;
+    if (entry_paths.size() == 1 &&
+        entry_paths[0].value() == ash::cloud_upload::kODFSMetadataQueryPath) {
+      actions.push_back(
+          {ash::cloud_upload::kUserEmailActionId, kSampleUserEmail1});
+    } else {
+      for (auto& path : entry_paths) {
+        if (path == test_path_custom_actions_) {
+          actions.push_back(
+              {ash::cloud_upload::kOneDriveUrlActionId, kODFSSampleUrl});
+          break;
+        }
       }
     }
     std::move(callback).Run(actions, base::File::FILE_OK);

@@ -4,16 +4,25 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/volume.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace ash::cloud_upload {
+namespace {
+
+using file_system_provider::Action;
+using file_system_provider::Actions;
+using file_system_provider::ProvidedFileSystemInterface;
+
+}  // namespace
 
 storage::FileSystemURL FilePathToFileSystemURL(
     Profile* profile,
@@ -82,6 +91,35 @@ file_manager::io_task::OperationType GetOperationTypeForUpload(
   return source_type == SourceType::LOCAL
              ? file_manager::io_task::OperationType::kMove
              : file_manager::io_task::OperationType::kCopy;
+}
+
+// Convert |actions| to |ODFSMetadata| and pass the result to |callback|.
+// The action id's for the metadata are HIDDEN_ONEDRIVE_USER_EMAIL and
+// HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED.
+void OnODFSMetadataActions(GetODFSMetadataCallback callback,
+                           const Actions& actions,
+                           base::File::Error result) {
+  if (result != base::File::Error::FILE_OK) {
+    LOG(ERROR) << "Failed to get actions: " << result;
+    std::move(callback).Run(base::unexpected(result));
+    return;
+  }
+  ODFSMetadata metadata;
+  for (const Action& action : actions) {
+    if (action.id == kReauthenticationRequiredId) {
+      metadata.reauthentication_required = action.title == "true";
+    } else if (action.id == kUserEmailActionId) {
+      metadata.user_email = action.title;
+    }
+  }
+  std::move(callback).Run(metadata);
+}
+
+void GetODFSMetadata(ProvidedFileSystemInterface* file_system,
+                     GetODFSMetadataCallback callback) {
+  file_system->GetActions(
+      {base::FilePath(cloud_upload::kODFSMetadataQueryPath)},
+      base::BindOnce(&OnODFSMetadataActions, std::move(callback)));
 }
 
 }  // namespace ash::cloud_upload

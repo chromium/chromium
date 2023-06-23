@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/platform_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -16,6 +17,15 @@
 class Profile;
 
 namespace ash::cloud_upload {
+
+struct ODFSMetadata {
+  bool reauthentication_required = false;
+  std::string user_email;
+};
+
+typedef base::OnceCallback<void(
+    base::expected<ODFSMetadata, base::File::Error> metadata_or_error)>
+    GetODFSMetadataCallback;
 
 // Type of the source location from which a given file is being uploaded.
 enum class SourceType {
@@ -47,6 +57,15 @@ enum class OfficeFilesUploadResult {
   kMaxValue = kCloudError,
 };
 
+// Query actions for this path to get ODFS Metadata.
+const char kODFSMetadataQueryPath[] = "/";
+
+// Custom action ids passed from ODFS.
+const char kOneDriveUrlActionId[] = "HIDDEN_ONEDRIVE_URL";
+const char kUserEmailActionId[] = "HIDDEN_ONEDRIVE_USER_EMAIL";
+const char kReauthenticationRequiredId[] =
+    "HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED";
+
 // TODO(b/254586358): i18n these strings.
 const char kGenericErrorMessage[] = "Something went wrong. Try again.";
 const char kReauthenticationRequiredMessage[] =
@@ -75,6 +94,13 @@ SourceType GetSourceType(Profile* profile,
 ::file_manager::io_task::OperationType GetOperationTypeForUpload(
     Profile* profile,
     const storage::FileSystemURL& source_path);
+
+// Get ODFS metadata as actions by doing a special GetActions request (for the
+// root directory) and return the actions to |OnODFSMetadataActions| which will
+// be converted to |ODFSMetadata| and passed to |callback|.
+void GetODFSMetadata(
+    file_system_provider::ProvidedFileSystemInterface* file_system,
+    GetODFSMetadataCallback callback);
 
 }  // namespace ash::cloud_upload
 

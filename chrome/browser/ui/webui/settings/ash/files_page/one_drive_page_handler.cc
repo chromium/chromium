@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/settings/ash/files_page/mojom/one_drive_handler.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -22,20 +23,19 @@ namespace ash::settings {
 namespace {
 void OnGetEmailAddress(
     OneDrivePageHandler::GetUserEmailAddressCallback callback,
-    const ash::file_system_provider::Actions& actions,
-    base::File::Error result) {
-  if (result != base::File::Error::FILE_OK) {
-    LOG(ERROR) << "Failed to get actions: " << result;
+    base::expected<cloud_upload::ODFSMetadata, base::File::Error>
+        metadata_or_error) {
+  if (!metadata_or_error.has_value()) {
+    LOG(ERROR) << "Failed to get user email: " << metadata_or_error.error();
     std::move(callback).Run(absl::nullopt);
     return;
   }
-  for (const file_system_provider::Action& action : actions) {
-    if (action.id == cloud_upload::kUserEmailActionId) {
-      std::move(callback).Run(action.title);
-      return;
-    }
+  if (metadata_or_error->user_email.empty()) {
+    LOG(ERROR) << "User email is empty";
+    std::move(callback).Run(absl::nullopt);
+    return;
   }
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(metadata_or_error->user_email);
 }
 
 void OnShowItemInFolder(
@@ -91,9 +91,8 @@ void OneDrivePageHandler::GetUserEmailAddress(
   }
   auto* file_system = service->GetProvidedFileSystem(
       provider_id, odfs_file_system_infos[0].file_system_id());
-  file_system->GetActions(
-      {base::FilePath("/")},
-      base::BindOnce(&OnGetEmailAddress, std::move(callback)));
+  cloud_upload::GetODFSMetadata(
+      file_system, base::BindOnce(&OnGetEmailAddress, std::move(callback)));
 }
 
 void OneDrivePageHandler::ConnectToOneDrive(
