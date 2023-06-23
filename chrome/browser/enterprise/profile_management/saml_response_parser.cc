@@ -97,10 +97,9 @@ const std::string* GetAttributeValue(const base::Value::Dict& dict,
 
 }  // namespace
 
-SAMLResponseParser::SAMLResponseParser(
-    std::vector<std::string>&& attributes,
-    const std::string& body,
-    base::OnceCallback<void(base::flat_map<std::string, std::string>)> callback)
+SAMLResponseParser::SAMLResponseParser(std::vector<std::string>&& attributes,
+                                       const std::string& body,
+                                       ResponseParserCallback callback)
     : attributes_(std::move(attributes)), callback_(std::move(callback)) {
   data_decoder::DataDecoder::ParseXmlIsolated(
       body,

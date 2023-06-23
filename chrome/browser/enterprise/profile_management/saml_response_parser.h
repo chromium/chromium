@@ -20,13 +20,13 @@ namespace profile_management {
 // body of a web page.
 class SAMLResponseParser {
  public:
+  using ResponseParserCallback =
+      base::OnceCallback<void(const base::flat_map<std::string, std::string>&)>;
   // Decode SAML response from web request `body` and retrieve `attributes` from
   // the response. Invoke `callback` with a map the attributes values.
-  SAMLResponseParser(
-      std::vector<std::string>&& attributes,
-      const std::string& body,
-      base::OnceCallback<void(base::flat_map<std::string, std::string>)>
-          callback);
+  SAMLResponseParser(std::vector<std::string>&& attributes,
+                     const std::string& body,
+                     ResponseParserCallback callback);
   SAMLResponseParser(const SAMLResponseParser&) = delete;
   SAMLResponseParser& operator=(const SAMLResponseParser&) = delete;
   ~SAMLResponseParser();
@@ -38,7 +38,7 @@ class SAMLResponseParser {
       data_decoder::DataDecoder::ValueOrError value_or_error);
 
   std::vector<std::string> attributes_;
-  base::OnceCallback<void(base::flat_map<std::string, std::string>)> callback_;
+  ResponseParserCallback callback_;
   base::WeakPtrFactory<SAMLResponseParser> weak_ptr_factory_{this};
 };
 

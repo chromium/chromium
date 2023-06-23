@@ -80,7 +80,7 @@ TEST_F(SAMLResponseParserTest, RetrievesNoAttributesWithEmptyResponse) {
       response,
       base::BindLambdaForTesting(
           [&attributes,
-           &loop](base::flat_map<std::string, std::string> result) {
+           &loop](const base::flat_map<std::string, std::string>& result) {
             attributes = std::move(result);
             loop.Quit();
           }));
@@ -99,7 +99,7 @@ TEST_F(SAMLResponseParserTest, RetrievesNoAttributesWithEmptySAMLResponse) {
       response,
       base::BindLambdaForTesting(
           [&attributes,
-           &loop](base::flat_map<std::string, std::string> result) {
+           &loop](const base::flat_map<std::string, std::string>& result) {
             attributes = std::move(result);
             loop.Quit();
           }));
@@ -121,7 +121,7 @@ TEST_F(SAMLResponseParserTest, RetrievesSpecifiedAttributesWithValidResponse) {
       response,
       base::BindLambdaForTesting(
           [&attributes,
-           &loop](base::flat_map<std::string, std::string> result) {
+           &loop](const base::flat_map<std::string, std::string>& result) {
             attributes = std::move(result);
             loop.Quit();
           }));
