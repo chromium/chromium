@@ -749,10 +749,8 @@ class SkiaReadbackPixelTestNV12WithBlit
   }
 
   CopyOutputResult::Format RequestFormat() const {
-    // TODO(crbug.com/1429004): Implement necessary support in
-    // CopyOutputRequest() and pass NV12_MULTIPLANE when |use_multiplanar_si_|
-    // is true.
-    return CopyOutputResult::Format::NV12_PLANES;
+    return use_multiplanar_si_ ? CopyOutputResult::Format::NV12_MULTIPLANE
+                               : CopyOutputResult::Format::NV12_PLANES;
   }
 
   void SetUp() override {
@@ -770,6 +768,8 @@ class SkiaReadbackPixelTestNV12WithBlit
     return populates_gpu_memory_buffer_;
   }
 
+  bool use_multiplanar_si() const { return use_multiplanar_si_; }
+
  private:
   bool should_scale_by_half_ = false;
   LetterboxingBehavior letterboxing_behavior_;
@@ -779,6 +779,10 @@ class SkiaReadbackPixelTestNV12WithBlit
 
 // Test that SkiaRenderer NV12 readback works correctly using existing textures.
 TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
+  if (!can_run_nv12_test(use_multiplanar_si())) {
+    GTEST_SKIP();
+  }
+
   const gfx::Rect result_selection = GetRequestArea();
 
   // Check if request's width and height are even (required for NV12 format).
@@ -795,9 +799,6 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
   ASSERT_TRUE(result_selection.width() % 4 == 0)
       << " request width is not divisible by 4, result_selection.width()="
       << result_selection.width();
-
-  // TODO(crbug.com/1429004): Update test to create one multiplanar SharedImage
-  // when |use_multiplanar_si_| is true.
 
   // Generate 2 shared images that will be owned by us. They will be used as the
   // destination for the issued BlitRequest. The logical size of the image will
@@ -824,33 +825,41 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
       static_cast<uint8_t>(yuv_red.fG * 255.0f),
       static_cast<uint8_t>(yuv_red.fB * 255.0f)};
 
+  size_t num_mailboxes =
+      use_multiplanar_si() ? 1 : CopyOutputResult::kNV12MaxPlanes;
+
   std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes> mailboxes;
   for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
-    const auto format =
-        i == 0 ? SinglePlaneFormat::kR_8 : SinglePlaneFormat::kRG_88;
+    const auto format = use_multiplanar_si() ? MultiPlaneFormat::kNV12
+                        : i == 0             ? SinglePlaneFormat::kR_8
+                                             : SinglePlaneFormat::kRG_88;
     const gfx::Size plane_size =
         i == 0 ? source_size
                : gfx::Size(source_size.width() / 2, source_size.height() / 2);
-    const size_t plane_size_in_bytes =
-        plane_size.GetArea() * (format == SinglePlaneFormat::kR_8 ? 1 : 2);
+    const size_t plane_size_in_bytes = plane_size.GetArea() * (i == 0 ? 1 : 2);
 
     std::vector<uint8_t> pixels =
         (i == 0) ? GeneratePixels(plane_size_in_bytes, luma_pattern)
                  : GeneratePixels(plane_size_in_bytes, chromas_pattern);
 
-    mailboxes[i].mailbox =
-        child_context_provider_->SharedImageInterface()->CreateSharedImage(
-            format, plane_size, gfx::ColorSpace::CreateREC709(),
-            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels",
-            gpu::kNullSurfaceHandle);
-    DCHECK(!mailboxes[i].mailbox.IsZero());
+    if (!use_multiplanar_si() || i == 0) {
+      mailboxes[i].mailbox =
+          child_context_provider_->SharedImageInterface()->CreateSharedImage(
+              format, plane_size, gfx::ColorSpace::CreateREC709(),
+              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels",
+              gpu::kNullSurfaceHandle);
+      DCHECK(!mailboxes[i].mailbox.IsZero());
+    }
 
     // Populate the data. Note that this is done on the GPU main thread, so it
     // is ordered with the creation of the SharedImage above.
+    auto mailbox =
+        use_multiplanar_si() ? mailboxes[0].mailbox : mailboxes[i].mailbox;
+    int plane = use_multiplanar_si() ? i : 0;
     auto color_type = i == 0 ? kAlpha_8_SkColorType : kR8G8_unorm_SkColorType;
-    WriteNV12Plane(gpu_service_holder_, mailboxes[i].mailbox, plane_size,
-                   color_type, /*plane=*/0, pixels);
+    WriteNV12Plane(gpu_service_holder_, mailbox, plane_size, color_type, plane,
+                   pixels);
   }
 
   std::unique_ptr<CopyOutputResult> result = IssueCopyOutputRequestAndRender(
@@ -892,7 +901,7 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
   ReadbackNV12Planes(gpu_service_holder_, *result, source_size, luma_plane,
                      chroma_planes);
 
-  for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
+  for (size_t i = 0; i < num_mailboxes; ++i) {
     child_context_provider_->SharedImageInterface()->DestroySharedImage(
         result->GetTextureResult()->mailbox_holders[i].sync_token,
         result->GetTextureResult()->mailbox_holders[i].mailbox);
