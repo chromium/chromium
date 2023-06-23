@@ -49,8 +49,12 @@ NSString* GetPromoLabelString(signin_metrics::AccessPoint accessPoint) {
       return l10n_util::GetNSString(
           IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
       return l10n_util::GetNSString(
           IDS_IOS_IDENTITY_DISC_SIGNED_OUT_PROMO_LABEL);
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
+      return l10n_util::GetNSString(IDS_IOS_SIGNIN_SHEET_LABEL_FOR_FEED_PROMO);
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
       // No text.
       return nil;

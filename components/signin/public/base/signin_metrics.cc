@@ -646,6 +646,9 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
     case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
     case AccessPoint::ACCESS_POINT_SETTINGS:
     case AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
+    case AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+    case AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
+    case AccessPoint::ACCESS_POINT_SET_UP_LIST:
       break;
 
     // But not these access points.
@@ -678,11 +681,9 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
     case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
     case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
-    case AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
     case AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
     case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
     case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
-    case AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
     case AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
     case AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
     case AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW:
@@ -690,7 +691,6 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
     case AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
     case AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
-    case AccessPoint::ACCESS_POINT_SET_UP_LIST:
     case AccessPoint::ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Signin.AccountConsistencyPromoAction histogram is not"
