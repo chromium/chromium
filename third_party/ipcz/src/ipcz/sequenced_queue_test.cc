@@ -18,7 +18,7 @@ struct TestQueueTraits {
 };
 
 using TestQueue = SequencedQueue<std::string>;
-using TestQueueWithSize = SequencedQueue<std::string, TestQueueTraits>;
+using TestQueueWithSize = SequencedQueue<std::string, 2, TestQueueTraits>;
 
 using SequencedQueueTest = testing::Test;
 

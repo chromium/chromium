@@ -5,14 +5,8 @@
 #ifndef IPCZ_SRC_IPCZ_PARCEL_QUEUE_H_
 #define IPCZ_SRC_IPCZ_PARCEL_QUEUE_H_
 
-#include <cstddef>
-#include <cstdint>
-
-#include "ipcz/ipcz.h"
 #include "ipcz/parcel.h"
-#include "ipcz/sequence_number.h"
 #include "ipcz/sequenced_queue.h"
-#include "third_party/abseil-cpp/absl/types/span.h"
 
 namespace ipcz {
 
@@ -23,15 +17,12 @@ struct ParcelQueueTraits {
 };
 
 // A ParcelQueue is a SequencedQueue of Parcel objects which also tracks the
-// total data size (in bytes) of available parcels at the head of the queue and
-// allows for proper accounting of a partially consumed parcel at the head of
-// the queue.
-class ParcelQueue : public SequencedQueue<Parcel, ParcelQueueTraits> {
- public:
-  // Fully or partially consumes the next parcel in the queue. Returns true iff
-  // there was in fact a parcel at the head of the queue.
-  bool Consume(size_t num_bytes_consumed, absl::Span<IpczHandle> handles);
-};
+// total data size (in bytes) of available parcels at the head of the queue.
+//
+// The template argument N determines how much inlined storage capacity is
+// reserved by the queue.
+template <size_t N>
+using ParcelQueue = SequencedQueue<Parcel, N, ParcelQueueTraits>;
 
 }  // namespace ipcz
 

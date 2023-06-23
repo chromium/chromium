@@ -197,6 +197,7 @@ ipcz_source_set("util") {
     "util/ref_counted.h",
     "util/stack_trace.h",
     "util/strong_alias.h",
+    "util/unique_ptr_comparator.h",
   ]
 
   sources = [ "util/ref_counted.cc" ]
@@ -282,7 +283,6 @@ ipcz_source_set("impl") {
     "ipcz/node_messages_generator.h",
     "ipcz/node_name.cc",
     "ipcz/parcel.cc",
-    "ipcz/parcel_queue.cc",
     "ipcz/parcel_wrapper.cc",
     "ipcz/pending_transaction_set.cc",
     "ipcz/pending_transaction_set.h",
@@ -385,7 +385,6 @@ ipcz_source_set("ipcz_tests_sources") {
     "ipcz/node_link_memory_test.cc",
     "ipcz/node_link_test.cc",
     "ipcz/node_test.cc",
-    "ipcz/parcel_queue_test.cc",
     "ipcz/ref_counted_fragment_test.cc",
     "ipcz/route_edge_test.cc",
     "ipcz/router_link_test.cc",
@@ -398,6 +397,7 @@ ipcz_source_set("ipcz_tests_sources") {
     "util/ref_counted_test.cc",
     "util/safe_math_test.cc",
     "util/stack_trace_test.cc",
+    "util/unique_ptr_comparator_test.cc",
   ]
 
   if (enable_multiprocess_tests) {

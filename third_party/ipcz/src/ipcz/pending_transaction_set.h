@@ -5,18 +5,19 @@
 #ifndef IPCZ_SRC_IPCZ_PENDING_TRANSACTION_SET_
 #define IPCZ_SRC_IPCZ_PENDING_TRANSACTION_SET_
 
-#include <map>
 #include <memory>
+#include <set>
 
 #include "ipcz/ipcz.h"
 #include "ipcz/parcel.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "util/unique_ptr_comparator.h"
 
 namespace ipcz {
 
-// PendingTransactionSet wraps a set of pending Parcel objects with special case
-// for a 1-element set to use inline storage instead. This set does not provide
-// facilities for iteration, only for insertion and removal.
+// PendingTransactionSet wraps a set of pending Parcel objects with a special
+// case for the common scenario where single elements are repeatedly inserted
+// and then removed from the set, repeatedly.
 //
 // Care is taken to ensure that any Parcel owned by this set has a stable
 // address throughout its lifetime, exposed as an opaque IpczTransaction value.
@@ -27,7 +28,9 @@ class PendingTransactionSet {
   PendingTransactionSet& operator=(const PendingTransactionSet&) = delete;
   ~PendingTransactionSet();
 
-  bool empty() const { return !inline_parcel_ && other_parcels_.empty(); }
+  bool empty() const {
+    return transactions_.empty() || has_retained_empty_transaction();
+  }
 
   // Adds `parcel` to this set, returning an opaque IpczTransaction value to
   // reference it.
@@ -46,13 +49,51 @@ class PendingTransactionSet {
                                         size_t num_data_bytes);
 
  private:
-  // Preferred storage for a Parcel in the set.
-  absl::optional<Parcel> inline_parcel_;
+  class Transaction {
+   public:
+    Transaction() = default;
+    explicit Transaction(Parcel parcel)
+        : parcel_(absl::in_place, std::move(parcel)) {}
+    ~Transaction() = default;
 
-  // Run-off storage for other parcels when `inline_parcel_` is occupied. Note
-  // that std::map is chosen for its stable iterators across insertion and
-  // deletion.
-  std::map<IpczTransaction, std::unique_ptr<Parcel>> other_parcels_;
+    bool has_parcel() const { return parcel_.has_value(); }
+    void set_parcel(Parcel parcel) { parcel_ = std::move(parcel); }
+
+    bool CanPut(size_t num_data_bytes) const {
+      return parcel_ && parcel_->data_view().size() >= num_data_bytes;
+    }
+
+    Parcel TakeParcel() {
+      Parcel parcel = std::move(*parcel_);
+      parcel_.reset();
+      return parcel;
+    }
+
+   private:
+    // As an optimization, we may lazily retain an allocated Transaction after
+    // it's finalized so we can reuse its allocation within the set. This is an
+    // optimization for the common case where single transactions are frequently
+    // added and removed in series. Hence the optional Parcel.
+    absl::optional<Parcel> parcel_;
+  };
+
+  using TransactionSet =
+      std::set<std::unique_ptr<Transaction>, UniquePtrComparator>;
+
+  static IpczTransaction AsIpczTransaction(Transaction& transaction) {
+    return reinterpret_cast<IpczTransaction>(&transaction);
+  }
+
+  bool has_retained_empty_transaction() const {
+    return transactions_.size() == 1 && !first().has_parcel();
+  }
+
+  const Transaction& first() const { return **transactions_.begin(); }
+  Transaction& first() { return **transactions_.begin(); }
+
+  Parcel Remove(TransactionSet::iterator it);
+
+  TransactionSet transactions_;
 };
 
 }  // namespace ipcz

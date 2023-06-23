@@ -21,6 +21,16 @@ struct DefaultSequencedQueueTraits {
   static size_t GetElementSize(const T& element) { return 0; }
 };
 
+template <typename T, size_t N>
+struct SequencedQueueStorageTraits {
+  using StorageType = absl::InlinedVector<T, N>;
+};
+
+template <typename T>
+struct SequencedQueueStorageTraits<T, 0> {
+  using StorageType = std::vector<T>;
+};
+
 // SequencedQueue retains a queue of objects strictly ordered by SequenceNumber.
 // This class is not thread-safe.
 //
@@ -35,11 +45,16 @@ struct DefaultSequencedQueueTraits {
 // Storage may be sparsely populated at times, but as elements are consumed from
 // the queue, storage is compacted to reduce waste.
 //
+// The template argument N determines how much inlined storage capacity is
+// reserved by the queue.
+//
 // ElementTraits may be overridden to attribute a measurable size to each stored
 // element. SequencedQueue performs additional accounting to efficiently track
 // the sum of this size across the set of all currently available elements in
 // the queue.
-template <typename T, typename ElementTraits = DefaultSequencedQueueTraits<T>>
+template <typename T,
+          size_t N = 2,
+          typename ElementTraits = DefaultSequencedQueueTraits<T>>
 class SequencedQueue {
  public:
   SequencedQueue() = default;
@@ -366,19 +381,6 @@ class SequencedQueue {
     return entries_[0]->element;
   }
 
- protected:
-  // Adjusts the recorded size of the element at the head of this queue, as if
-  // the element were partially consumed. After this call, the value returned by
-  // GetTotalAvailableElementSize() will be decreased by `amount`, and the value
-  // returned by total_consumed_element_size() will increase by the same.
-  void PartiallyConsumeNextElement(size_t amount) {
-    ABSL_ASSERT(HasNextElement());
-    ABSL_ASSERT(entries_[0]->total_span_size >= amount);
-    entries_[0]->total_span_size -= amount;
-    total_consumed_element_size_ =
-        CheckAdd(total_consumed_element_size_, static_cast<uint64_t>(amount));
-  }
-
  private:
   bool Reallocate(SequenceNumber sequence_length) {
     if (sequence_length < base_sequence_number_) {
@@ -562,7 +564,8 @@ class SequencedQueue {
     SequenceNumber span_end{0};
   };
 
-  using EntryStorage = absl::InlinedVector<absl::optional<Entry>, 4>;
+  using StorageTraits = SequencedQueueStorageTraits<absl::optional<Entry>, N>;
+  using EntryStorage = StorageTraits::StorageType;
   using EntryView = absl::Span<absl::optional<Entry>>;
 
   // This is a sparse vector of queued elements indexed by a relative sequence

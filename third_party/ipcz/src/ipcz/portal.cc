@@ -40,7 +40,7 @@ bool ValidateAndAcquireObjectsForTransitFrom(
 }  // namespace
 
 Portal::Portal(Ref<Node> node, Ref<Router> router)
-    : node_(std::move(node)), router_(std::move(router)) {}
+    : router_(std::move(router)) {}
 
 Portal::~Portal() = default;
 
@@ -125,7 +125,6 @@ IpczResult Portal::BeginPut(IpczBeginPutFlags flags,
   Parcel parcel;
   const IpczResult allocation_result = router_->AllocateOutboundParcel(
       num_bytes_to_request, allow_partial, parcel);
-  absl::MutexLock lock(&mutex_);
   if (allocation_result != IPCZ_RESULT_OK) {
     return allocation_result;
   }
@@ -136,7 +135,10 @@ IpczResult Portal::BeginPut(IpczBeginPutFlags flags,
   if (data) {
     *data = parcel.data_view().data();
   }
-  *transaction = pending_puts_.Add(std::move(parcel));
+  if (!pending_puts_) {
+    pending_puts_ = std::make_unique<PendingTransactionSet>();
+  }
+  *transaction = pending_puts_->Add(std::move(parcel));
   return IPCZ_RESULT_OK;
 }
 
@@ -151,15 +153,16 @@ IpczResult Portal::EndPut(IpczTransaction transaction,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
+  if (!pending_puts_) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
   absl::optional<Parcel> parcel;
-  {
-    absl::MutexLock lock(&mutex_);
-    if (aborted) {
-      parcel = pending_puts_.FinalizeForPut(transaction, 0);
-    } else {
-      parcel =
-          pending_puts_.FinalizeForPut(transaction, num_data_bytes_produced);
-    }
+  if (aborted) {
+    parcel = pending_puts_->FinalizeForPut(transaction, 0);
+  } else {
+    parcel =
+        pending_puts_->FinalizeForPut(transaction, num_data_bytes_produced);
   }
 
   if (!parcel) {

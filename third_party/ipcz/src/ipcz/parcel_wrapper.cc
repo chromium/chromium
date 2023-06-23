@@ -71,7 +71,7 @@ IpczResult ParcelWrapper::Get(IpczGetFlags flags,
   }
 
   memcpy(data, parcel_.data_view().data(), data_size);
-  parcel_.Consume(0, absl::MakeSpan(handles, handles_size));
+  parcel_.ConsumeHandles(absl::MakeSpan(handles, handles_size));
 
   if (parcel) {
     // Allow the caller to acquire another handle to this wrapper. Not
@@ -121,7 +121,7 @@ IpczResult ParcelWrapper::BeginGet(IpczBeginGetFlags flags,
   if (num_handles) {
     *num_handles = num_handles_to_consume;
   }
-  parcel_.Consume(0, absl::MakeSpan(handles, num_handles_to_consume));
+  parcel_.ConsumeHandles(absl::MakeSpan(handles, num_handles_to_consume));
 
   *transaction = reinterpret_cast<IpczTransaction>(&parcel_);
   in_two_phase_get_ = true;

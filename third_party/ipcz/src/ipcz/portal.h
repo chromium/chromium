@@ -34,7 +34,6 @@ class Portal : public APIObjectImpl<Portal, APIObject::kPortal> {
   // `node`.
   Portal(Ref<Node> node, Ref<Router> router);
 
-  const Ref<Node>& node() const { return node_; }
   const Ref<Router>& router() const { return router_; }
 
   // Creates a new pair of portals which live on `node` and which are directly
@@ -79,11 +78,8 @@ class Portal : public APIObjectImpl<Portal, APIObject::kPortal> {
  private:
   ~Portal() override;
 
-  const Ref<Node> node_;
   const Ref<Router> router_;
-
-  absl::Mutex mutex_;
-  PendingTransactionSet pending_puts_ ABSL_GUARDED_BY(mutex_);
+  std::unique_ptr<PendingTransactionSet> pending_puts_;
 };
 
 }  // namespace ipcz

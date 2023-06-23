@@ -37,11 +37,6 @@ Parcel::~Parcel() {
   }
 }
 
-void Parcel::SetInlinedData(std::vector<uint8_t> data) {
-  data_.view = absl::MakeSpan(data);
-  data_.storage = std::move(data);
-}
-
 void Parcel::SetDataFromMessage(Message::ReceivedDataBuffer buffer,
                                 absl::Span<uint8_t> data_view) {
   ABSL_ASSERT(data_view.empty() || data_view.begin() >= buffer.bytes().begin());
@@ -143,20 +138,17 @@ void Parcel::ReleaseDataFragment() {
   data_.view = {};
 }
 
-void Parcel::Consume(size_t num_bytes, absl::Span<IpczHandle> out_handles) {
-  auto data = data_.view;
+void Parcel::ConsumeHandles(absl::Span<IpczHandle> out_handles) {
   absl::Span<Ref<APIObject>> objects;
   if (objects_) {
     objects = objects_->view;
   }
-  ABSL_ASSERT(num_bytes <= data.size());
   ABSL_ASSERT(out_handles.size() <= objects.size());
 
   for (size_t i = 0; i < out_handles.size(); ++i) {
     out_handles[i] = APIObject::ReleaseAsHandle(std::move(objects[i]));
   }
 
-  data_.view.remove_prefix(num_bytes);
   if (objects_) {
     objects_->view.remove_prefix(out_handles.size());
   }
