@@ -48,6 +48,12 @@ namespace printerProvider {
     // Print ticket in
     // <a href="https://developers.google.com/cloud-print/docs/cdd#cjt">
     // CJT format</a>.
+    // <aside class="aside flow bg-state-info-bg color-state-info-text">
+    // <div class="flow">The CJT reference is marked as deprecated. It is
+    // deprecated for Google Cloud Print only. is not deprecated for
+    // ChromeOS printing.
+    // </div>
+    // </aside>
     object ticket;
 
     // The document content type. Supported formats are
