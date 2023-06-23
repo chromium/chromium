@@ -248,13 +248,14 @@ ImageBitmapFactories& ImageBitmapFactories::From(ExecutionContext& context) {
   ImageBitmapFactories* supplement =
       Supplement<ExecutionContext>::From<ImageBitmapFactories>(context);
   if (!supplement) {
-    supplement = MakeGarbageCollected<ImageBitmapFactories>();
+    supplement = MakeGarbageCollected<ImageBitmapFactories>(context);
     Supplement<ExecutionContext>::ProvideTo(context, supplement);
   }
   return *supplement;
 }
 
-ImageBitmapFactories::ImageBitmapFactories() : Supplement(nullptr) {}
+ImageBitmapFactories::ImageBitmapFactories(ExecutionContext& context)
+    : Supplement(context) {}
 
 void ImageBitmapFactories::AddLoader(ImageBitmapLoader* loader) {
   pending_loaders_.insert(loader);
