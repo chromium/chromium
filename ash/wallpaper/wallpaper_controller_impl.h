@@ -771,6 +771,9 @@ class ASH_EXPORT WallpaperControllerImpl
   void CleanUpBeforeSettingUserWallpaperInfo(const AccountId& account_id,
                                              const WallpaperInfo& info);
 
+  // Returns whether session state is oobe or the oobe ui dialog is visible.
+  bool IsOobeState() const;
+
   bool is_session_active_ = false;
 
   OobeDialogState oobe_state_ = OobeDialogState::HIDDEN;

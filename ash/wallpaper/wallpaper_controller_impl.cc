@@ -1696,17 +1696,8 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
         pref_manager_->GetSyncedWallpaperInfo(account_id, &synced_info);
     bool has_local_info =
         pref_manager_->GetLocalWallpaperInfo(account_id, &local_info);
-    session_manager::SessionState session_state =
-        Shell::Get()->session_controller()->GetSessionState();
-    // Default OOBE flow
-    const bool is_default_oobe_flow =
-        session_state == session_manager::SessionState::OOBE;
-    // OOBE enterprise enrollment -> add person flow
-    const bool is_add_person_flow =
-        session_state == session_manager::SessionState::LOGIN_PRIMARY &&
-        oobe_state_ != OobeDialogState::HIDDEN;
-    if ((is_default_oobe_flow || is_add_person_flow) && !has_synced_info &&
-        has_local_info && local_info.type == WallpaperType::kDefault &&
+    if (IsOobeState() && !has_synced_info && has_local_info &&
+        local_info.type == WallpaperType::kDefault &&
         features::IsTimeOfDayWallpaperEnabled()) {
       // Sets the time of day wallpaper as the default wallpaper on active user
       // pref changed during OOBE flow.
@@ -2624,18 +2615,11 @@ bool WallpaperControllerImpl::ShouldCalculateColors() const {
   if (image.isNull()) {
     return false;
   }
-
+  if (IsOobeState()) {
+    return true;
+  }
   session_manager::SessionState session_state =
       Shell::Get()->session_controller()->GetSessionState();
-  // Default OOBE flow
-  if (session_state == session_manager::SessionState::OOBE) {
-    return true;
-  }
-  // OOBE enterprise enrollment -> add person flow
-  if (session_state == session_manager::SessionState::LOGIN_PRIMARY &&
-      oobe_state_ != OobeDialogState::HIDDEN) {
-    return true;
-  }
   // Active session
   if (session_state == session_manager::SessionState::ACTIVE) {
     return true;
@@ -3155,6 +3139,21 @@ void WallpaperControllerImpl::CleanUpBeforeSettingUserWallpaperInfo(
     sequenced_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache, account_id));
   }
+}
+
+bool WallpaperControllerImpl::IsOobeState() const {
+  session_manager::SessionState session_state =
+      Shell::Get()->session_controller()->GetSessionState();
+  // Default OOBE flow
+  const bool is_default_oobe_flow =
+      session_state == session_manager::SessionState::OOBE;
+  // OOBE enterprise enrollment -> add person flow
+  const bool is_add_person_flow =
+      session_state == session_manager::SessionState::LOGIN_PRIMARY &&
+      oobe_state_ != OobeDialogState::HIDDEN;
+  DVLOG(1) << __func__ << " is_default_oobe_flow=" << is_default_oobe_flow
+           << " is_add_person_flow" << is_add_person_flow;
+  return is_default_oobe_flow || is_add_person_flow;
 }
 
 }  // namespace ash
