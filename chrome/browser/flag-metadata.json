@@ -3729,7 +3729,10 @@
   {
     "name": "enable-webassembly-lazy-compilation",
     "owners": [ "clemensb", "wasm-team@google.com" ],
-    "expiry_milestone": 116
+    // This flag is often used by developers and partners to test
+    // impact on performance or startup time if lazy compilation is
+    // disabled and thus all code is compiled ahead of time.
+    "expiry_milestone": -1
   },
   {
     "name": "enable-webassembly-relaxed-simd",
