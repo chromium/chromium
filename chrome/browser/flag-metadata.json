@@ -3947,11 +3947,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "extension-content-verification",
-    "owners": [ "//extensions/OWNERS" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "extension-web-file-handlers",
     "owners": [ "solomonkinard" ],
     "expiry_milestone": 130

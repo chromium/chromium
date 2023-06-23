@@ -856,12 +856,6 @@ extern const char kEvDetailsInPageInfoDescription[];
 extern const char kExperimentalWebPlatformFeaturesName[];
 extern const char kExperimentalWebPlatformFeaturesDescription[];
 
-extern const char kExtensionContentVerificationName[];
-extern const char kExtensionContentVerificationDescription[];
-extern const char kExtensionContentVerificationBootstrap[];
-extern const char kExtensionContentVerificationEnforce[];
-extern const char kExtensionContentVerificationEnforceStrict[];
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 extern const char kExtensionsMenuAccessControlName[];
 extern const char kExtensionsMenuAccessControlDescription[];
