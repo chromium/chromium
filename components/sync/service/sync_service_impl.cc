@@ -307,8 +307,7 @@ void SyncServiceImpl::Initialize() {
   // If sync is disabled permanently, clean up old data that may be around (e.g.
   // crash during signout).
   if (HasDisableReason(DISABLE_REASON_ENTERPRISE_POLICY) ||
-      (HasDisableReason(DISABLE_REASON_NOT_SIGNED_IN) &&
-       auth_manager_->IsActiveAccountInfoFullyLoaded())) {
+      HasDisableReason(DISABLE_REASON_NOT_SIGNED_IN)) {
     StopAndClear();
   }
 
@@ -334,12 +333,7 @@ void SyncServiceImpl::Initialize() {
   }
 
   if (base::FeatureList::IsEnabled(
-          kSyncAllowClearingMetadataWhenDataTypeIsStopped) &&
-      // The selected types depend on the signin state. Checking that the
-      // account info is fully loaded avoids accidentally clearing stuff.
-      // For local sync, no account info is needed.
-      (IsLocalSyncEnabled() ||
-       auth_manager_->IsActiveAccountInfoFullyLoaded())) {
+          kSyncAllowClearingMetadataWhenDataTypeIsStopped)) {
     // Call Stop() on controllers for non-preferred types to clear metadata.
     // This allows clearing metadata for types disabled in previous run early-on
     // during initialization.
