@@ -95,7 +95,6 @@ class PrivacyItemsHost;
 class PrivacyItemsInstance;
 class ProcessInstance;
 class PropertyInstance;
-class RotationLockInstance;
 class ScreenCaptureHost;
 class ScreenCaptureInstance;
 class SharesheetHost;
@@ -308,9 +307,6 @@ class ArcBridgeService {
   }
   ConnectionHolder<mojom::ProcessInstance>* process() { return &process_; }
   ConnectionHolder<mojom::PropertyInstance>* property() { return &property_; }
-  ConnectionHolder<mojom::RotationLockInstance>* rotation_lock() {
-    return &rotation_lock_;
-  }
   ConnectionHolder<mojom::ScreenCaptureInstance, mojom::ScreenCaptureHost>*
   screen_capture() {
     return &screen_capture_;
@@ -417,7 +413,6 @@ class ArcBridgeService {
       privacy_items_;
   ConnectionHolder<mojom::ProcessInstance> process_;
   ConnectionHolder<mojom::PropertyInstance> property_;
-  ConnectionHolder<mojom::RotationLockInstance> rotation_lock_;
   ConnectionHolder<mojom::ScreenCaptureInstance, mojom::ScreenCaptureHost>
       screen_capture_;
   ConnectionHolder<mojom::SharesheetInstance, mojom::SharesheetHost>

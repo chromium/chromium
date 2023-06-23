@@ -1,7 +1,0 @@
-
-include_rules = [
-  "+ash/display",
-  "+ash/wm/tablet_mode",
-  "+ash/shell.h",
-  "+ui/display",
-]
