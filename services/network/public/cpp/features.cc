@@ -84,7 +84,7 @@ BASE_FEATURE(kCoopRestrictProperties,
 // allows us to keep using CoopRestrictProperties to enable COOP: RP for WPTs.
 BASE_FEATURE(kCoopRestrictPropertiesOriginTrial,
              "CoopRestrictPropertiesOriginTrial",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or defaults splittup up server (not proxy) entries in the
 // HttpAuthCache.
