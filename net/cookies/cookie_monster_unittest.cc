@@ -3279,11 +3279,13 @@ TEST_F(CookieMonsterTest, HistogramCheck) {
       expired_histogram->SnapshotSamples());
   auto cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
       "a", "b", "a.url", "/", base::Time(),
-      base::Time::Now() + base::Minutes(59), base::Time(), base::Time(), true,
-      false, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false);
+      base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
+      /*secure=*/true,
+      /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
   GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
   ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
-                                 true /*modify_httponly*/));
+                                 /*modify_httponly=*/true));
 
   std::unique_ptr<base::HistogramSamples> samples2(
       expired_histogram->SnapshotSamples());
@@ -3610,6 +3612,135 @@ TEST_F(CookieMonsterTest, NumKeysHistogram) {
     EXPECT_TRUE(cm->DoRecordPeriodicStatsForTesting());
     histogram_tester.ExpectUniqueSample(kHistogramName, 3 /* sample */,
                                         1 /* count */);
+  }
+}
+
+TEST_F(CookieMonsterTest, CookieCount2Histogram) {
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+    histogram_tester.ExpectUniqueSample("Cookie.Count2", /*sample=*/0,
+                                        /*count=*/1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+
+    auto cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
+        "a", "b", "a.url", "/", base::Time(),
+        base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
+        /*secure=*/true,
+        /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+        COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
+    GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
+    ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
+                                   /*modify_httponly=*/true));
+
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+
+    histogram_tester.ExpectUniqueSample("Cookie.Count2", /*sample=*/1,
+                                        /*count=*/1);
+  }
+}
+
+TEST_F(CookieMonsterTest, PartitionedCookieCountHistograms) {
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+    histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount",
+                                        /*sample=*/0,
+                                        /*count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount.Nonced",
+                                        /*sample=*/0,
+                                        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieCount.Unnonced", /*sample=*/0,
+        /*count=*/1);
+  }
+
+  {  // Add unpartitioned cookie.
+    base::HistogramTester histogram_tester;
+    auto cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
+        "a", "b", "a.url", "/", base::Time(),
+        base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
+        /*secure=*/true,
+        /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+        COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
+    GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
+    ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
+                                   /*modify_httponly=*/true));
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+
+    histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount",
+                                        /*sample=*/0,
+                                        /*count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount.Nonced",
+                                        /*sample=*/0,
+                                        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieCount.Unnonced", /*sample=*/0,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.Count2", /*sample=*/1,
+                                        /*count=*/1);
+  }
+
+  {  // Add unnonced partitioned cookie.
+    base::HistogramTester histogram_tester;
+    auto cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
+        "a", "b", "a.url", "/", base::Time(),
+        base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
+        /*secure=*/true,
+        /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+        COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+        CookiePartitionKey::FromURLForTesting(GURL("https://example.com")));
+    GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
+    ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
+                                   /*modify_httponly=*/true));
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+
+    histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount",
+                                        /*sample=*/1,
+                                        /*count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount.Nonced",
+                                        /*sample=*/0,
+                                        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieCount.Unnonced", /*sample=*/1,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.Count2", /*sample=*/1,
+                                        /*count=*/1);
+  }
+
+  {  // Add nonced partitioned cookie.
+    base::HistogramTester histogram_tester;
+    auto cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
+        "a", "b", "a.url", "/", base::Time(),
+        base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
+        /*secure=*/true,
+        /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+        COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+        CookiePartitionKey::FromURLForTesting(
+            GURL("https://example.com"), base::UnguessableToken::Create()));
+    GURL source_url = cookie_util::SimulatedCookieSource(*cookie, "https");
+    ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
+                                   /*modify_httponly=*/true));
+    ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+
+    histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount",
+                                        /*sample=*/2,
+                                        /*count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount.Nonced",
+                                        /*sample=*/1,
+                                        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieCount.Unnonced", /*sample=*/1,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample("Cookie.Count2", /*sample=*/1,
+                                        /*count=*/1);
   }
 }
 
