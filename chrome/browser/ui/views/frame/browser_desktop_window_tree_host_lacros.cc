@@ -51,16 +51,17 @@ BrowserDesktopWindowTreeHostLacros::BrowserDesktopWindowTreeHostLacros(
                                   desktop_native_widget_aura),
       browser_view_(browser_view),
       desktop_native_widget_aura_(desktop_native_widget_aura) {
-  auto* native_frame = static_cast<DesktopBrowserFrameLacros*>(
+  native_frame_ = static_cast<DesktopBrowserFrameLacros*>(
       browser_frame->native_browser_frame());
-  native_frame->set_host(this);
+  native_frame_->set_host(this);
 
   // Lacros receives occlusion information from exo via aura-shell.
   SetNativeWindowOcclusionEnabled(true);
 }
 
-BrowserDesktopWindowTreeHostLacros::~BrowserDesktopWindowTreeHostLacros() =
-    default;
+BrowserDesktopWindowTreeHostLacros::~BrowserDesktopWindowTreeHostLacros() {
+  native_frame_->set_host(nullptr);
+}
 
 void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
   auto* const view = browser_view_->frame()->GetFrameView();
