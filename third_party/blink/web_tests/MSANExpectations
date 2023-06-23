@@ -112,3 +112,5 @@ crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-e
 crbug.com/1419916 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-shadow.html [ Crash ]
 crbug.com/1419916 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-alpha-shadow.html [ Crash ]
 crbug.com/1419916 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-gradient-shadow.html [ Crash ]
+
+crbug.com/1457275 [ Linux ] external/wpt/dom/ranges/Range-surroundContents.html [ Skip ]
