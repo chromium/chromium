@@ -956,31 +956,11 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                     .invoke(builder, convertOriginToString(origin));
             final Object request = builderClass.getMethod("build").invoke(builder);
             final Object manager = credentialManagerService(context);
-            try {
-                manager.getClass()
-                        .getMethod("createCredential", Context.class, request.getClass(),
-                                android.os.CancellationSignal.class,
-                                java.util.concurrent.Executor.class, OutcomeReceiver.class)
-                        .invoke(manager, context, request, null, context.getMainExecutor(),
-                                receiver);
-            } catch (NoSuchMethodException e) {
-                // In order to be compatible with Android 14 Beta 1, the older
-                // form of the call is also tried.
-                final Activity activity = WebContentsStatics.fromRenderFrameHost(mFrameHost)
-                                                  .getTopLevelNativeWindow()
-                                                  .getActivity()
-                                                  .get();
-                if (activity == null) {
-                    returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
-                    return;
-                }
-                manager.getClass()
-                        .getMethod("createCredential", request.getClass(), Activity.class,
-                                android.os.CancellationSignal.class,
-                                java.util.concurrent.Executor.class, OutcomeReceiver.class)
-                        .invoke(manager, request, activity, null, context.getMainExecutor(),
-                                receiver);
-            }
+            manager.getClass()
+                    .getMethod("createCredential", Context.class, request.getClass(),
+                            android.os.CancellationSignal.class,
+                            java.util.concurrent.Executor.class, OutcomeReceiver.class)
+                    .invoke(manager, context, request, null, context.getMainExecutor(), receiver);
         } catch (ReflectiveOperationException e) {
             Log.e(TAG, "Reflection failed; are you running on Android 14?", e);
             returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
@@ -1138,38 +1118,14 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 return;
             }
             final Object manager = credentialManagerService(context);
-            try {
-                manager.getClass()
-                        .getMethod("getCredential", Context.class, getCredentialRequest.getClass(),
-                                android.os.CancellationSignal.class,
-                                java.util.concurrent.Executor.class, OutcomeReceiver.class)
-                        .invoke(manager, context, getCredentialRequest, null,
-                                context.getMainExecutor(), receiver);
-                mMetricsHelper.reportGetCredentialMetrics(
-                        CredManGetRequestEnum.SENT_REQUEST, mConditionalUiState);
-            } catch (NoSuchMethodException e) {
-                // In order to be compatible with Android 14 Beta 1, the older
-                // form of the call is also tried.
-                final Activity activity = WebContentsStatics.fromRenderFrameHost(mFrameHost)
-                                                  .getTopLevelNativeWindow()
-                                                  .getActivity()
-                                                  .get();
-                if (activity == null) {
-                    mConditionalUiState = options.isConditional
-                            ? ConditionalUiState.WAITING_FOR_SELECTION
-                            : ConditionalUiState.NONE;
-                    returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
-                    return;
-                }
-                manager.getClass()
-                        .getMethod("getCredential", getCredentialRequest.getClass(), Activity.class,
-                                android.os.CancellationSignal.class,
-                                java.util.concurrent.Executor.class, OutcomeReceiver.class)
-                        .invoke(manager, getCredentialRequest, activity, null,
-                                context.getMainExecutor(), receiver);
-                mMetricsHelper.reportGetCredentialMetrics(
-                        CredManGetRequestEnum.SENT_REQUEST, mConditionalUiState);
-            }
+            manager.getClass()
+                    .getMethod("getCredential", Context.class, getCredentialRequest.getClass(),
+                            android.os.CancellationSignal.class,
+                            java.util.concurrent.Executor.class, OutcomeReceiver.class)
+                    .invoke(manager, context, getCredentialRequest, null, context.getMainExecutor(),
+                            receiver);
+            mMetricsHelper.reportGetCredentialMetrics(
+                    CredManGetRequestEnum.SENT_REQUEST, mConditionalUiState);
         } catch (ReflectiveOperationException e) {
             Log.e(TAG, "Reflection failed; are you running on Android 14?", e);
             mMetricsHelper.reportGetCredentialMetrics(
@@ -1297,24 +1253,14 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
 
         // Build the CredentialOption for passkeys:
         Object credentialOption;
-        try {
-            final Class<?> credentialOptionBuilderClass = credManCredentialOptionBuilderClass();
-            final Object credentialOptionBuilder =
-                    credentialOptionBuilderClass
-                            .getConstructor(String.class, Bundle.class, Bundle.class)
-                            .newInstance(TYPE_PASSKEY, publicKeyCredentialOptionBundle,
-                                    publicKeyCredentialOptionBundle);
-            credentialOption =
-                    credentialOptionBuilderClass.getMethod("build").invoke(credentialOptionBuilder);
-        } catch (ClassNotFoundException e) {
-            // In order to be compatible with Android 14 Beta 1, the older
-            // form of the call is also tried.
-            credentialOption =
-                    Class.forName("android.credentials.CredentialOption")
-                            .getConstructor(String.class, Bundle.class, Bundle.class, Boolean.TYPE)
-                            .newInstance(TYPE_PASSKEY, publicKeyCredentialOptionBundle,
-                                    publicKeyCredentialOptionBundle, false);
-        }
+        final Class<?> credentialOptionBuilderClass = credManCredentialOptionBuilderClass();
+        final Object credentialOptionBuilder =
+                credentialOptionBuilderClass
+                        .getConstructor(String.class, Bundle.class, Bundle.class)
+                        .newInstance(TYPE_PASSKEY, publicKeyCredentialOptionBundle,
+                                publicKeyCredentialOptionBundle);
+        credentialOption =
+                credentialOptionBuilderClass.getMethod("build").invoke(credentialOptionBuilder);
 
         // Build the GetCredentialRequest:
         final Class<?> getCredentialRequestBuilderClass = credManGetRequestBuilderClass();
@@ -1412,27 +1358,17 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         Bundle passwordOptionBundle = new Bundle();
         passwordOptionBundle.putString(CHANNEL_KEY, getChannel());
 
-        try {
-            final Class<?> credentialOptionBuilderClass = credManCredentialOptionBuilderClass();
-            final Object credentialOptionBuilder =
-                    credentialOptionBuilderClass
-                            .getConstructor(String.class, Bundle.class, Bundle.class)
-                            .newInstance("android.credentials.TYPE_PASSWORD_CREDENTIAL",
-                                    passwordOptionBundle, passwordOptionBundle);
-            credentialOptionBuilderClass.getMethod("setAllowedProviders", Set.class)
-                    .invoke(credentialOptionBuilder, Set.of(GPM_COMPONENT_NAME));
-            passwordCredentialOption =
-                    credentialOptionBuilderClass.getMethod("build").invoke(credentialOptionBuilder);
+        final Class<?> credentialOptionBuilderClass = credManCredentialOptionBuilderClass();
+        final Object credentialOptionBuilder =
+                credentialOptionBuilderClass
+                        .getConstructor(String.class, Bundle.class, Bundle.class)
+                        .newInstance("android.credentials.TYPE_PASSWORD_CREDENTIAL",
+                                passwordOptionBundle, passwordOptionBundle);
+        credentialOptionBuilderClass.getMethod("setAllowedProviders", Set.class)
+                .invoke(credentialOptionBuilder, Set.of(GPM_COMPONENT_NAME));
+        passwordCredentialOption =
+                credentialOptionBuilderClass.getMethod("build").invoke(credentialOptionBuilder);
 
-        } catch (ClassNotFoundException e) {
-            // In order to be compatible with Android 14 Beta 1, the older
-            // form of the call is also tried.
-            passwordCredentialOption =
-                    Class.forName("android.credentials.CredentialOption")
-                            .getConstructor(String.class, Bundle.class, Bundle.class, Boolean.TYPE)
-                            .newInstance("android.credentials.TYPE_PASSWORD_CREDENTIAL",
-                                    passwordOptionBundle, passwordOptionBundle, false);
-        }
         return passwordCredentialOption;
     }
 
