@@ -8,6 +8,7 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "build/branding_buildflags.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -208,9 +209,13 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     OCMExpect([signin_promo_view_ stopSignInSpinner]);
     if (style == SigninPromoViewStyleCompactVertical ||
         style == SigninPromoViewStyleCompactHorizontal) {
-      OCMExpect([signin_promo_view_
-          setNonProfileImage:
-              [UIImage imageNamed:@"signin_promo_logo_chromium_color"]]);
+      UIImage* logo;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      logo = [UIImage imageNamed:@"signin_promo_logo_chrome_color"];
+#else
+      logo = [UIImage imageNamed:@"signin_promo_logo_chromium_color"];
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      OCMExpect([signin_promo_view_ setNonProfileImage:logo]);
     }
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
     EXPECT_EQ(nil, image_view_profile_image_);

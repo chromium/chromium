@@ -125,6 +125,7 @@ source_set("unit_tests") {
     ":signin_presenter",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/consent_auditor",
     "//components/consent_auditor:test_support",
     "//components/pref_registry",
