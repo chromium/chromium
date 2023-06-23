@@ -73,6 +73,7 @@ source_set("flags") {
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/tabs/tab_pickup:features",
     "//ios/chrome/browser/text_selection:text_selection_utils",
     "//ios/chrome/browser/ui/app_store_rating:features",
     "//ios/chrome/browser/ui/autofill:features",

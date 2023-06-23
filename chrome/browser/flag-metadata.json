@@ -7430,6 +7430,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "tab-pickup-threshold",
+    "owners": [ "ewannpv", "gambard", "bling-flags@google.com" ],
+    "expiry_milestone": 121
+  },
+  {
     "name": "tab-scrolling-button-position",
     "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning" ],
     "expiry_milestone": 120

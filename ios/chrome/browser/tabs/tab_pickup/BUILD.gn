@@ -9,6 +9,7 @@ source_set("tab_pickup") {
     "tab_pickup_browser_agent.mm",
   ]
   deps = [
+    ":features",
     "//base",
     "//components/sync_sessions",
     "//ios/chrome/browser/shared/model/browser",
@@ -17,4 +18,14 @@ source_set("tab_pickup") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/synced_sessions",
   ]
+}
+
+source_set("features") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
+  deps = [ "//ui/base" ]
 }

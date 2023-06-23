@@ -1099,6 +1099,11 @@ const char kTabInactivityThresholdDescription[] =
     "IMPORTANT: If you ever used the in-app settings for Inactive Tabs, this "
     "flag is never read again.";
 
+const char kTabPickupThresholdName[] = "Enable and change tab pickup threshold";
+const char kTabPickupThresholdDescription[] =
+    "When enabled, an infobar will be displayed when the latest tab used from "
+    "another device is yougner than the threshold.";
+
 const char kUseLoadSimulatedRequestForOfflinePageName[] =
     "Use loadSimulatedRequest:responseHTMLString: when displaying offline "
     "pages";

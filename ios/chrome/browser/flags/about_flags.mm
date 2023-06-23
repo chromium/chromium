@@ -86,6 +86,7 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/tabs/tab_pickup/features.h"
 #import "ios/chrome/browser/text_selection/text_selection_util.h"
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/browser/ui/autofill/features.h"
@@ -610,6 +611,22 @@ const FeatureEntry::FeatureVariation kTabInactivityThresholdVariations[] = {
      std::size(kTabInactivityThresholdThreeWeeks), nullptr},
     {"One minute [Demo]", kTabInactivityThresholdOneMinuteDemo,
      std::size(kTabInactivityThresholdOneMinuteDemo), nullptr},
+};
+
+const FeatureEntry::FeatureParam kTabPickupThresholdTenMinutes[] = {
+    {kTabPickupThresholdParameterName, kTabPickupThresholdTenMinutesParam}};
+const FeatureEntry::FeatureParam kTabPickupThresholdOneHour[] = {
+    {kTabPickupThresholdParameterName, kTabPickupThresholdOneHourParam}};
+const FeatureEntry::FeatureParam kTabPickupThresholdTwoHours[] = {
+    {kTabPickupThresholdParameterName, kTabPickupThresholdTwoHoursParam}};
+
+const FeatureEntry::FeatureVariation kTabPickupThresholdVariations[] = {
+    {"Ten Minutes", kTabPickupThresholdTenMinutes,
+     std::size(kTabInactivityThresholdOneWeek), nullptr},
+    {"One Hour", kTabPickupThresholdOneHour,
+     std::size(kTabInactivityThresholdTwoWeeks), nullptr},
+    {"Two Hours", kTabPickupThresholdTwoHours,
+     std::size(kTabInactivityThresholdThreeWeeks), nullptr},
 };
 
 const FeatureEntry::FeatureParam
@@ -1629,6 +1646,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tab-grid-refactoring", flag_descriptions::kTabGridRefactoringName,
      flag_descriptions::kTabGridRefactoringDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGridRefactoring)},
+    {"tab-pickup-threshold", flag_descriptions::kTabPickupThresholdName,
+     flag_descriptions::kTabPickupThresholdDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kTabPickupThreshold,
+                                    kTabPickupThresholdVariations,
+                                    "TabPickupThreshold")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

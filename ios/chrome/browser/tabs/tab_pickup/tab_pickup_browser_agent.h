@@ -32,6 +32,9 @@ class TabPickupBrowserAgent : public BrowserObserver,
   // Called when foreign sessions change.
   void ForeignSessionsChanged();
 
+  // Records the `IOS.TabPickup.TimeSinceLastCrossDeviceSync` metric.
+  void RecordTransitionTime();
+
   // BrowserObserver methods.
   void BrowserDestroyed(Browser* browser) override;
 

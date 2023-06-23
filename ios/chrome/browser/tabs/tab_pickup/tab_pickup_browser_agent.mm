@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/sync/session_sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/synced_sessions.h"
+#import "ios/chrome/browser/tabs/tab_pickup/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -49,6 +50,15 @@ void TabPickupBrowserAgent::BrowserDestroyed(Browser* browser) {
 #pragma mark - Private methods
 
 void TabPickupBrowserAgent::ForeignSessionsChanged() {
+  RecordTransitionTime();
+
+  if (!IsTabPickupEnabled()) {
+    return;
+  }
+  // TODO(crbug.com/1129482): Implement this.
+}
+
+void TabPickupBrowserAgent::RecordTransitionTime() {
   if (transition_time_metric_recorded) {
     return;
   }
