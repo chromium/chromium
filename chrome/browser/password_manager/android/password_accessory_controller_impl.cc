@@ -296,7 +296,7 @@ void PasswordAccessoryControllerImpl::CreateForWebContents(
             web_contents, credential_cache, nullptr,
             ChromePasswordManagerClient::FromWebContents(web_contents),
             base::BindRepeating(GetPasswordManagerDriver),
-            base::BindRepeating(&password_manager::ShowWarning))));
+            base::BindRepeating(&local_password_migration::ShowWarning))));
   }
 }
 

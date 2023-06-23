@@ -117,6 +117,11 @@ extern const char kTimesAttemptedToReenrollToGoogleMobileServices[];
 // the UPM local passwords migration warning. When set to true, the warning
 // should not be displayed again.
 extern const char kUserAcknowledgedLocalPasswordsMigrationWarning[];
+// The timestamp at which the last UPM local passwords migration warning was
+// shown to the user in microseconds since Windows epoch. This is needed to
+// ensure that the UI is prompted only once per given time interval (currently
+// one month).
+extern const char kLocalPasswordsMigrationWarningShownTimestamp[];
 #endif
 
 #if BUILDFLAG(IS_WIN)

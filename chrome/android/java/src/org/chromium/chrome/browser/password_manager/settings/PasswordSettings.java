@@ -32,7 +32,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
@@ -405,8 +404,9 @@ public class PasswordSettings extends PreferenceFragmentCompat
         }
 
         if (!mNoPasswords
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
+                && PasswordManagerHandlerProvider.getInstance()
+                           .getPasswordManagerHandler()
+                           .shouldShowMigrationWarning()) {
             PasswordMigrationWarningCoordinator passwordMigrationWarningCoordinator =
                     new PasswordMigrationWarningCoordinator(getContext(), mProfile,
                             mBottomSheetController, SyncConsentActivityLauncherImpl.get(),

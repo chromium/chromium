@@ -149,6 +149,12 @@ inline constexpr base::FeatureParam<UpmExperimentVariation>
                                  &kUpmExperimentVariationOption};
 
 extern const base::FeatureParam<int> kSaveUpdatePromptSyncingStringVersion;
+
+// Whether to ignore the 1 month timeout in between migration warning prompts.
+// Used for manual testing.
+inline constexpr base::FeatureParam<bool> kIgnoreMigrationWarningTimeout = {
+    &kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
+    "ignore_migration_warning_timeout", false};
 #endif
 
 // Field trial and corresponding parameters.

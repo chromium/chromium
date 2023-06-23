@@ -110,6 +110,11 @@ public final class PasswordUIView implements PasswordManagerHandler {
                 context, settingsLauncher, index, PasswordUIView.this);
     }
 
+    @Override
+    public boolean shouldShowMigrationWarning() {
+        return PasswordUIViewJni.get().shouldShowMigrationWarning();
+    }
+
     /**
      * Returns the URL for the website for managing one's passwords without the need to use Chrome
      * with the user's profile signed in.
@@ -168,5 +173,6 @@ public final class PasswordUIView implements PasswordManagerHandler {
                 SettingsLauncher launcher, int index, PasswordUIView caller);
         void handleShowBlockedCredentialView(long nativePasswordUIViewAndroid, Context context,
                 SettingsLauncher launcher, int index, PasswordUIView caller);
+        boolean shouldShowMigrationWarning();
     }
 }

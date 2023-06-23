@@ -38,12 +38,18 @@ final class FakePasswordManagerHandler implements PasswordManagerHandler {
     @Nullable
     private String mExportTargetPath;
 
+    private boolean mShouldShowWarning;
+
     void setSavedPasswords(ArrayList<SavedPasswordEntry> savedPasswords) {
         mSavedPasswords = savedPasswords;
     }
 
     void setSavedPasswordExceptions(ArrayList<String> savedPasswordExceptions) {
         mSavedPasswordExeptions = savedPasswordExceptions;
+    }
+
+    void setShouldShowWarning(boolean shouldShowWarning) {
+        mShouldShowWarning = shouldShowWarning;
     }
 
     IntStringCallback getExportSuccessCallback() {
@@ -111,5 +117,10 @@ final class FakePasswordManagerHandler implements PasswordManagerHandler {
     public void showPasswordEntryEditingView(
             Context context, SettingsLauncher launcher, int index, boolean isBlockedCredential) {
         assert false : "Define this method before starting to use it in tests.";
+    }
+
+    @Override
+    public boolean shouldShowMigrationWarning() {
+        return mShouldShowWarning;
     }
 }
