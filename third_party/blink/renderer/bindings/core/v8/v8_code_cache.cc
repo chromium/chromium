@@ -140,7 +140,7 @@ V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
 
   // The code cache doesn't behave correctly when scripts have record/replay
   // instrumentation.
-  if (recordreplay::IsRecordingOrReplaying("no-compile-cache")) {
+  if (recordreplay::IsRecordingOrReplaying("no-compile-cache", "V8CodeCache::GetCompileOptions")) {
     return std::make_tuple(v8::ScriptCompiler::kNoCompileOptions,
                            ProduceCacheOptions::kNoProduceCache,
                            no_cache_reason);

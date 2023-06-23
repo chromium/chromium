@@ -168,7 +168,7 @@ bool ShouldGenerateV8CodeCache(ScriptState* script_state,
 
   // Bytecode varies between recording, replaying, and regular execution
   // and is not cached when recording/replaying.
-  if (recordreplay::IsRecordingOrReplaying("no-compile-cache"))
+  if (recordreplay::IsRecordingOrReplaying("no-compile-cache", "ShouldGenerateV8CodeCache"))
     return false;
 
   return true;
