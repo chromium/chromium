@@ -207,6 +207,23 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHPriceInsightsPageActionIconLabelFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    // Show the label once per day, 3 times max in 28 days.
+    config->trigger =
+        EventConfig("price_insights_page_action_icon_label_in_trigger",
+                    Comparator(LESS_THAN, 1), 1, 360);
+    config->used = EventConfig("price_insights_page_action_icon_label_used",
+                               Comparator(EQUAL, 0), 28, 360);
+    config->event_configs.insert(
+        EventConfig("price_insights_page_action_icon_label_in_trigger",
+                    Comparator(LESS_THAN, 3), 28, 360));
+    return config;
+  }
+
   if (kIPHPriceTrackingChipFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

@@ -252,6 +252,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_PriceDropNTP"
       summary="the in product help message to inform users that a price drop
                has occurred in a tab"/>
+  <variant name="IPH_PriceInsightsPageActionIconLabel"
+      summary="price insights page action icon label triggering"/>
   <variant name="IPH_PriceTrackingChipFeature"
       summary="first time user sees the price tracking page action icon"/>
   <variant name="IPH_PriceTrackingInSidePanel"
