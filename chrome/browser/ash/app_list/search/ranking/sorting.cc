@@ -27,14 +27,16 @@ void SortCategories(CategoriesList& categories) {
                 // N.B. (a ^ b) < 0 checks for opposite sign.
                 return (a_burn_in ^ b_burn_in) < 0 ? a_burn_in > b_burn_in
                                                    : a_burn_in < b_burn_in;
-              } else if (a.category == Category::kSearchAndAssistant ||
-                         b.category == Category::kSearchAndAssistant) {
-                // Special-case the search and assistant category, which should
-                // be sorted last, when burn-in iteration numbers are equal.
-                return b.category == Category::kSearchAndAssistant;
-              } else {
-                return a.score > b.score;
               }
+              // Special-case the search and assistant category, which should
+              // be sorted last, when burn-in iteration numbers are equal.
+              if (a.category == Category::kSearchAndAssistant) {
+                return false;
+              }
+              if (b.category == Category::kSearchAndAssistant) {
+                return true;
+              }
+              return a.score > b.score;
             });
 }
 
