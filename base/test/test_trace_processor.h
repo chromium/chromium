@@ -19,16 +19,47 @@
 
 namespace base::test {
 
-using QueryResult = std::vector<std::vector<std::string>>;
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
-std::unique_ptr<perfetto::TracingSession> StartTrace(
-    const StringPiece& category_filter_string);
+// Use TestTraceProcessor to record Perfetto traces in unit and browser tests.
+// This API can be used to start and stop traces, run SQL queries on the trace
+// and write expectations against the query result.
+//
+// Example:
+//
+//   TestTraceProcessor test_trace_processor;
+//   test_trace_processor.StartTrace();
+//
+//   /* do stuff */
+//
+//   absl::Status status = test_trace_processor.StopAndParseTrace();
+//   ASSERT_TRUE(status.ok()) << status.message();
+//
+//   std::string query = "YOUR QUERY";
+//   auto result = test_trace_processor.RunQuery(query);
+//
+//   ASSERT_TRUE(result.has_value()) << result.message();
+//   EXPECT_THAT(result.value(), /* your expectations */);
 
-std::vector<char> StopTrace(std::unique_ptr<perfetto::TracingSession> session);
+class TestTraceProcessor {
+ public:
+  using QueryResult = std::vector<std::vector<std::string>>;
 
-base::expected<QueryResult, std::string> RunQuery(
-    const std::string& query,
-    const std::vector<char>& trace);
+  TestTraceProcessor();
+  ~TestTraceProcessor();
+
+  void StartTrace(const StringPiece& category_filter_string);
+
+  absl::Status StopAndParseTrace();
+
+  base::expected<QueryResult, std::string> RunQuery(const std::string& query);
+
+ private:
+  TestTraceProcessorImpl test_trace_processor_;
+  std::unique_ptr<perfetto::TracingSession> session_;
+};
+
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace base::test
 

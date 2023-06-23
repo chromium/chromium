@@ -7,10 +7,12 @@
 namespace base::test {
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-std::unique_ptr<perfetto::TracingSession> StartTrace(
-    const StringPiece& category_filter_string) {
-  std::unique_ptr<perfetto::TracingSession> session =
-      perfetto::Tracing::NewTrace();
+
+TestTraceProcessor::TestTraceProcessor() = default;
+TestTraceProcessor::~TestTraceProcessor() = default;
+
+void TestTraceProcessor::StartTrace(const StringPiece& category_filter_string) {
+  session_ = perfetto::Tracing::NewTrace();
   perfetto::protos::gen::TraceConfig config =
       TracingEnvironment::GetDefaultTraceConfig();
   for (auto& data_source : *config.mutable_data_sources()) {
@@ -32,31 +34,25 @@ std::unique_ptr<perfetto::TracingSession> StartTrace(
     data_source.mutable_config()->set_track_event_config_raw(
         track_event_config.SerializeAsString());
   }
-  session->Setup(config);
+  session_->Setup(config);
   // Some tests run the tracing service on the main thread and StartBlocking()
   // can deadlock so use a RunLoop instead.
   base::RunLoop run_loop;
-  session->SetOnStartCallback([&run_loop]() { run_loop.QuitWhenIdle(); });
-  session->Start();
+  session_->SetOnStartCallback([&run_loop]() { run_loop.QuitWhenIdle(); });
+  session_->Start();
   run_loop.Run();
-  return session;
 }
 
-std::vector<char> StopTrace(std::unique_ptr<perfetto::TracingSession> session) {
+absl::Status TestTraceProcessor::StopAndParseTrace() {
   base::TrackEvent::Flush();
-  session->StopBlocking();
-  return session->ReadTraceBlocking();
+  session_->StopBlocking();
+  std::vector<char> trace = session_->ReadTraceBlocking();
+  return test_trace_processor_.ParseTrace(trace);
 }
 
-base::expected<QueryResult, std::string> RunQuery(
-    const std::string& query,
-    const std::vector<char>& trace) {
-  TestTraceProcessorImpl trace_processor;
-  absl::Status status = trace_processor.ParseTrace(trace);
-  if (!status.ok()) {
-    return base::unexpected(std::string(status.message()));
-  }
-  auto result = trace_processor.ExecuteQuery(query);
+base::expected<TestTraceProcessor::QueryResult, std::string>
+TestTraceProcessor::RunQuery(const std::string& query) {
+  auto result = test_trace_processor_.ExecuteQuery(query);
   if (absl::holds_alternative<std::string>(result)) {
     return base::unexpected(absl::get<std::string>(result));
   }

@@ -293,23 +293,23 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest,
 // EventLatency events with the correct types.
 IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, ScrollingEventLatencyTrace) {
   LoadURL();
-  std::unique_ptr<perfetto::TracingSession> session =
-      base::test::StartTrace("input.scrolling");
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("input.scrolling");
   DoSmoothWheelScroll(gfx::Vector2d(0, 100));
   while (!VerifyRecordedSamplesForHistogram(
       1, "EventLatency.GestureScrollUpdate.TotalLatency2")) {
     GiveItSomeTime();
     FetchHistogramsFromChildProcesses();
   }
-  std::vector<char> trace = base::test::StopTrace(std::move(session));
-  ASSERT_THAT(trace, Not(testing::IsEmpty()));
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
   std::string query =
       R"(
       SELECT EXTRACT_ARG(arg_set_id, 'event_latency.event_type') AS type
       FROM slice
       WHERE name = 'EventLatency'
       )";
-  auto result = base::test::RunQuery(query, trace);
+  auto result = ttp.RunQuery(query);
   ASSERT_TRUE(result.has_value()) << result.error();
   EXPECT_THAT(result.value(),
               ::testing::ElementsAre(
