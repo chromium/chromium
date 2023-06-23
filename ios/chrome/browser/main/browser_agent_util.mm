@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/synced_window_delegate_browser_agent.h"
 #import "ios/chrome/browser/tabs/tab_parenting_browser_agent.h"
+#import "ios/chrome/browser/tabs/tab_pickup/tab_pickup_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/upgrade/upgrade_center.h"
 #import "ios/chrome/browser/upgrade/upgrade_center_browser_agent.h"
@@ -51,6 +52,11 @@ void AttachBrowserAgents(Browser* browser) {
   if (breadcrumbs::IsEnabled()) {
     BreadcrumbManagerBrowserAgent::CreateForBrowser(browser);
   }
+
+  const bool browser_is_off_record =
+      browser->GetBrowserState()->IsOffTheRecord();
+  const bool browser_is_inactive = browser->IsInactive();
+
   LiveTabContextBrowserAgent::CreateForBrowser(browser);
   TabInsertionBrowserAgent::CreateForBrowser(browser);
   AttachInfobarOverlayBrowserAgent(browser);
@@ -68,16 +74,23 @@ void AttachBrowserAgents(Browser* browser) {
   ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser);
   SnapshotBrowserAgent::CreateForBrowser(browser);
 
-  if (IsWebChannelsEnabled() && !browser->GetBrowserState()->IsOffTheRecord())
+  if (!browser_is_off_record && !browser_is_inactive) {
+    TabPickupBrowserAgent::CreateForBrowser(browser);
+  }
+
+  if (IsWebChannelsEnabled() && !browser_is_off_record) {
     FollowBrowserAgent::CreateForBrowser(browser);
+  }
 
   // PolicyWatcher is non-OTR only.
-  if (!browser->GetBrowserState()->IsOffTheRecord())
+  if (!browser_is_off_record) {
     PolicyWatcherBrowserAgent::CreateForBrowser(browser);
+  }
 
   // Send Tab To Self is non-OTR only.
-  if (!browser->GetBrowserState()->IsOffTheRecord())
+  if (!browser_is_off_record) {
     SendTabToSelfBrowserAgent::CreateForBrowser(browser);
+  }
 
   WebStateDelegateBrowserAgent::CreateForBrowser(
       browser, TabInsertionBrowserAgent::FromBrowser(browser));
@@ -102,13 +115,15 @@ void AttachBrowserAgents(Browser* browser) {
       browser, SessionMetrics::FromBrowserState(browser->GetBrowserState()));
 
   // Normal browser states are the only ones to get tab usage recorder.
-  if (!browser->GetBrowserState()->IsOffTheRecord())
+  if (!browser_is_off_record) {
     TabUsageRecorderBrowserAgent::CreateForBrowser(browser);
+  }
 
-  if (!browser->GetBrowserState()->IsOffTheRecord())
+  if (!browser_is_off_record) {
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser);
+  }
 
-  if (!browser->IsInactive()) {
+  if (!browser_is_inactive) {
     SyncErrorBrowserAgent::CreateForBrowser(browser);
   }
 
