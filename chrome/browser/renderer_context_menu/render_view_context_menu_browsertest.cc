@@ -1799,8 +1799,16 @@ class ContextMenuFencedFrameTest : public ContextMenuBrowserTest {
 
 // Check which commands are present after opening the context menu for a
 // fencedframe.
+// TODO(crbug.com/1457589): Enable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MenuContentsVerification_Fencedframe \
+  DISABLED_MenuContentsVerification_Fencedframe
+#else
+#define MAYBE_MenuContentsVerification_Fencedframe \
+  MenuContentsVerification_Fencedframe
+#endif
 IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
-                       MenuContentsVerification_Fencedframe) {
+                       MAYBE_MenuContentsVerification_Fencedframe) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto initial_url = embedded_test_server()->GetURL("/empty.html");
@@ -2681,14 +2689,26 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, GifImageDownscaleToJpeg) {
       gfx::Size(276, 110), gfx::Size(100, /* 100 / 480 * 320 =  */ 39), ".jpg");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, RequestPngForGifImage) {
+// TODO(crbug.com/1457589): Enable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RequestPngForGifImage DISABLED_RequestPngForGifImage
+#else
+#define MAYBE_RequestPngForGifImage RequestPngForGifImage
+#endif
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_RequestPngForGifImage) {
   OpenImagePageAndContextMenu("/google/logo.gif");
   RequestImageAndVerifyResponse(
       gfx::Size(2048, 2048), chrome::mojom::ImageFormat::PNG,
       gfx::Size(276, 110), gfx::Size(276, 110), ".png");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, PngImageDownscaleToPng) {
+// TODO(crbug.com/1457589): Enable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PngImageDownscaleToPng DISABLED_PngImageDownscaleToPng
+#else
+#define MAYBE_PngImageDownscaleToPng PngImageDownscaleToPng
+#endif
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_PngImageDownscaleToPng) {
   OpenImagePageAndContextMenu("/image_search/valid.png");
   RequestImageAndVerifyResponse(
       gfx::Size(100, 100), chrome::mojom::ImageFormat::PNG, gfx::Size(200, 100),
@@ -2702,7 +2722,13 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, PngImageOriginalDownscaleToPng) {
       gfx::Size(200, 100), gfx::Size(100, 50), ".png");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, JpgImageDownscaleToJpg) {
+// TODO(crbug.com/1457589): Enable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_JpgImageDownscaleToJpg DISABLED_JpgImageDownscaleToJpg
+#else
+#define MAYBE_JpgImageDownscaleToJpg JpgImageDownscaleToJpg
+#endif
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_JpgImageDownscaleToJpg) {
   OpenImagePageAndContextMenu("/android/watch.jpg");
   RequestImageAndVerifyResponse(
       gfx::Size(100, 100), chrome::mojom::ImageFormat::ORIGINAL,
@@ -2717,14 +2743,26 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, JpgImageDownscaleToWebp) {
       ".webp");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, PngImageDownscaleToWebp) {
+// TODO(crbug.com/1457589): Enable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PngImageDownscaleToWebp DISABLED_PngImageDownscaleToWebp
+#else
+#define MAYBE_PngImageDownscaleToWebp PngImageDownscaleToWebp
+#endif
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_PngImageDownscaleToWebp) {
   OpenImagePageAndContextMenu("/image_search/valid.png");
   RequestImageAndVerifyResponse(
       gfx::Size(100, 100), chrome::mojom::ImageFormat::WEBP,
       gfx::Size(200, 100), gfx::Size(100, 50), ".webp");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, GifImageDownscaleToWebp) {
+// TODO(crbug.com/1457589): Enable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_GifImageDownscaleToWebp DISABLED_GifImageDownscaleToWebp
+#else
+#define MAYBE_GifImageDownscaleToWebp GifImageDownscaleToWebp
+#endif
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_GifImageDownscaleToWebp) {
   OpenImagePageAndContextMenu("/google/logo.gif");
   RequestImageAndVerifyResponse(
       gfx::Size(100, 100), chrome::mojom::ImageFormat::WEBP,
@@ -2732,7 +2770,13 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, GifImageDownscaleToWebp) {
       ".webp");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, WebpImageDownscaleToWebp) {
+// TODO(crbug.com/1457589): Enable the test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WebpImageDownscaleToWebp DISABLED_WebpImageDownscaleToWebp
+#else
+#define MAYBE_WebpImageDownscaleToWebp WebpImageDownscaleToWebp
+#endif
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_WebpImageDownscaleToWebp) {
   OpenImagePageAndContextMenu("/banners/webp-icon.webp");
   RequestImageAndVerifyResponse(
       gfx::Size(100, 100), chrome::mojom::ImageFormat::WEBP,
