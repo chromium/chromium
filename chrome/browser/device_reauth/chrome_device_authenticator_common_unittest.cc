@@ -29,7 +29,7 @@ class FakeChromeDeviceAuthenticatorCommon
 
   bool CanAuthenticateWithBiometrics() override;
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   bool CanAuthenticateWithBiometricOrScreenLock() override;
 #endif
 
@@ -56,7 +56,7 @@ bool FakeChromeDeviceAuthenticatorCommon::CanAuthenticateWithBiometrics() {
   return false;
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 bool FakeChromeDeviceAuthenticatorCommon::
     CanAuthenticateWithBiometricOrScreenLock() {
   NOTIMPLEMENTED();

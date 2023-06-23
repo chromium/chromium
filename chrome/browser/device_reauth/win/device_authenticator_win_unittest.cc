@@ -44,6 +44,7 @@ class MockSystemAuthenticator : public AuthenticatorWinInterface {
               CheckIfBiometricsAvailable,
               (AvailabilityCallback callback),
               (override));
+  MOCK_METHOD(bool, CanAuthenticateWithScreenLock, (), (override));
 };
 
 class DeviceAuthenticatorWinTest : public testing::Test {
@@ -161,6 +162,24 @@ TEST_F(DeviceAuthenticatorWinTest, CanAuthenticateWithBiometrics) {
   local_state().Get()->SetBoolean(
       password_manager::prefs::kIsBiometricAvailable, false);
   EXPECT_FALSE(authenticator()->CanAuthenticateWithBiometrics());
+}
+
+// Checks if CanAuthenticateWithBiometricOrScreenLock returns the correct
+// response based on whether biometric or screen lock is available.
+TEST_F(DeviceAuthenticatorWinTest, CanAuthenticateWithBiometricOrScreenLock) {
+  local_state().Get()->SetBoolean(
+      password_manager::prefs::kIsBiometricAvailable, true);
+  EXPECT_TRUE(authenticator()->CanAuthenticateWithBiometricOrScreenLock());
+
+  local_state().Get()->SetBoolean(
+      password_manager::prefs::kIsBiometricAvailable, false);
+  ON_CALL(system_authenticator(), CanAuthenticateWithScreenLock)
+      .WillByDefault(testing::Return(true));
+  EXPECT_TRUE(authenticator()->CanAuthenticateWithBiometricOrScreenLock());
+
+  ON_CALL(system_authenticator(), CanAuthenticateWithScreenLock)
+      .WillByDefault(testing::Return(false));
+  EXPECT_FALSE(authenticator()->CanAuthenticateWithBiometricOrScreenLock());
 }
 
 // Verifies that the caching mechanism for BiometricsAvailable works.
