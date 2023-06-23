@@ -185,11 +185,15 @@ def __enabled(ctx):
     return False
 
 def __step_config(ctx, step_config):
-    mojom_parser_rule = mojo.step_rule()
-    mojom_parser_rule.update({
-        "command_prefix": "python3 ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper --custom_processor=mojom_parser",
-        "handler": "rewrite_action_remote_py",
-    })
+    mojom_rules = mojo.step_rules()
+    for rule in mojom_rules:
+        if rule["name"] == "mojo/mojom_parser":
+            mojom_parser_rule = rule
+            mojom_parser_rule.update({
+                "command_prefix": "python3 ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper --custom_processor=mojom_parser",
+                "handler": "rewrite_action_remote_py",
+            })
+
     step_config["rules"].extend([
         mojom_parser_rule,
         {
