@@ -18,6 +18,8 @@
 #include "base/threading/threading_features.h"
 #endif
 
+#include "base/record_replay.h"
+
 namespace base {
 
 MessagePumpDefault::MessagePumpDefault()
@@ -37,20 +39,49 @@ void MessagePumpDefault::Run(Delegate* delegate) {
     mac::ScopedNSAutoreleasePool autorelease_pool;
 #endif
 
+#if BUILDFLAG(IS_WIN)
+    recordreplay::Assert("[RUN-2214] MessagePumpDefault::Run #1");
+#endif
+
     Delegate::NextWorkInfo next_work_info = delegate->DoWork();
     bool has_more_immediate_work = next_work_info.is_immediate();
-    if (!keep_running_)
-      break;
 
-    if (has_more_immediate_work)
+#if BUILDFLAG(IS_WIN)
+    recordreplay::Assert("[RUN-2214] MessagePumpDefault::Run #2");
+#endif
+
+    if (!keep_running_) {
+#if BUILDFLAG(IS_WIN)
+      recordreplay::Assert("[RUN-2214] MessagePumpDefault::Run #3");
+#endif
+      break;
+    }
+
+    if (has_more_immediate_work) {
+#if BUILDFLAG(IS_WIN)
+      recordreplay::Assert("[RUN-2214] MessagePumpDefault::Run #4");
+#endif
       continue;
+    }
 
     has_more_immediate_work = delegate->DoIdleWork();
-    if (!keep_running_)
+    if (!keep_running_) {
+#if BUILDFLAG(IS_WIN)
+      recordreplay::Assert("[RUN-2214] MessagePumpDefault::Run #5");
+#endif
       break;
+    }
 
-    if (has_more_immediate_work)
+    if (has_more_immediate_work) {
+#if BUILDFLAG(IS_WIN)
+      recordreplay::Assert("[RUN-2214] MessagePumpDefault::Run #6");
+#endif
       continue;
+    }
+
+#if BUILDFLAG(IS_WIN)
+    recordreplay::Assert("[RUN-2214] MessagePumpDefault::Run #7");
+#endif
 
     if (next_work_info.delayed_run_time.is_max()) {
       event_.Wait();
