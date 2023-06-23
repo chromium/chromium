@@ -1088,6 +1088,49 @@ TEST_F(LocalCaretRectTest, LocalCaretAtBeginningOfNonEditable) {
             LocalCaretRectOf(position, kCannotCrossEditingBoundary));
 }
 
+// http://crbug.com/1456664
+TEST_F(LocalCaretRectTest,
+       LocalCaretAtBeginningOfNonEditableWithCollapsedWhitespace) {
+  LoadAhem();
+  InsertStyleElement(
+      "div { width: 70px; padding-left: 10px; font: 10px/10px Ahem }"
+      "span { padding-left: 15px }");
+  // Note the space before the span!
+  SetBodyContent(
+      "<div contenteditable> <span contenteditable=\"false\">foo</span></div>");
+  Element* div = GetDocument().QuerySelector("div");
+  const Element* span = div->firstElementChild();
+  const Node* text = span->firstChild();
+
+  const Position& position = Position::FirstPositionInNode(*div);
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
+            LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(LocalCaretRect(span->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+            LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+}
+
+// http://crbug.com/1384470
+TEST_F(LocalCaretRectTest, LocalCaretAtBeginningOfNonEditableWithSvg) {
+  LoadAhem();
+  InsertStyleElement(
+      "div { width: 70px; padding-left: 10px; font: 10px/10px Ahem }"
+      "span { padding-left: 15px }"
+      "svg { vertical-align: text-bottom; }");
+  // Note the space before the span!
+  SetBodyContent(
+      "<div contenteditable> <span contenteditable=\"false\">"
+      "<svg width=\"30\" height=\"10\"></svg></span></div>");
+  Element* div = GetDocument().QuerySelector("div");
+  const Element* span = div->firstElementChild();
+
+  const Position& position = Position::FirstPositionInNode(*div);
+  // TODO(abotella): Should be (0, 0), with the svg as the layout object.
+  EXPECT_EQ(LocalCaretRect(div->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+            LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(LocalCaretRect(span->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+            LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+}
+
 // http://crbug.com/688015
 TEST_F(LocalCaretRectTest, LocalCaretAtBeginningOfNonEditableInFlatTree) {
   LoadAhem();
@@ -1148,6 +1191,52 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditable) {
   EXPECT_EQ(
       LocalCaretRect(text->GetLayoutObject(), PhysicalRect(55, 10, 1, 10)),
       LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
+      LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+}
+
+// http://crbug.com/1456664
+TEST_F(LocalCaretRectTest,
+       LocalCaretAtEndOfNonEditableWithCollapsedWhitespace) {
+  LoadAhem();
+  InsertStyleElement(
+      "div { width: 70px; padding: 10px; font: 10px/10px Ahem }"
+      "span { padding: 15px }");
+  // Note the space after the span!
+  SetBodyContent(
+      "<div contenteditable><span contenteditable=\"false\">foo</span> </div>");
+  Element* div = GetDocument().QuerySelector("div");
+  const Element* span = To<Element>(div->firstChild());
+  const Node* text = span->firstChild();
+
+  const Position& position = Position::LastPositionInNode(*div);
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(55, 10, 1, 10)),
+      LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
+      LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+}
+
+// http://crbug.com/1384470
+TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditableWithSvg) {
+  LoadAhem();
+  InsertStyleElement(
+      "div { width: 70px; padding: 10px; font: 10px/10px Ahem }"
+      "span { padding: 15px }"
+      "svg { vertical-align: text-bottom; }");
+  // Note the space after the span!
+  SetBodyContent(
+      "<div contenteditable><span contenteditable=\"false\">"
+      "<svg width=\"30\" height=\"10\"></svg></span> </div>");
+  Element* div = GetDocument().QuerySelector("div");
+  const Element* span = To<Element>(div->firstChild());
+  const Element* svg = To<Element>(span->firstChild());
+
+  const Position& position = Position::LastPositionInNode(*div);
+  EXPECT_EQ(LocalCaretRect(svg->GetLayoutObject(), PhysicalRect(29, 0, 1, 10)),
+            LocalCaretRectOf(position, kCanCrossEditingBoundary));
   EXPECT_EQ(
       LocalCaretRect(span->GetLayoutObject(), PhysicalRect(69, 10, 1, 10)),
       LocalCaretRectOf(position, kCannotCrossEditingBoundary));
