@@ -126,9 +126,12 @@
         [[i18n('clearAllHistoryLabel')]]
       </cr-button>
       <cr-button id="managePrinters" hidden="[[!shouldShowManagePrinterButton(
-        ongoingPrintJobs.length, printJobs.length)]]">
+          ongoingPrintJobs.length, printJobs.length)]]"
+          on-click="onManagePrintersClicked">
+        <iron-icon id="openInNewIcon" icon="print-management:open-in-new"
+            slot="suffix-icon">
+        </iron-icon>
         [[i18n('headerManagePrintersButtonLabel')]]
-        <iron-icon id="openInNewIcon" icon="print-management:open-in-new"></iron-icon>
       </cr-button>
     </div>
   </div>

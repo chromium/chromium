@@ -1018,6 +1018,37 @@ suite('PrintManagementTest', () => {
         page!.i18n('headerManagePrintersButtonLabel'),
         managePrintersButton.textContent!.trim());
   });
+
+  // Verifies clicking 'manage printers' button triggers invokes
+  // `PrintManagementHandler.LaunchPrinterSettings`.
+  test('HeaderManagePrinterButtonCallsLaunchPrinterSettings', async () => {
+    const kId = 'fileA';
+    const kTitle = 'titleA';
+    const kTime =
+        convertToMojoTime(new Date(Date.parse('February 5, 2020 03:23:00')));
+
+    const jobsArr = [
+      createJobEntry(
+          kId, kTitle, kTime, PrinterErrorCode.kNoError,
+          /*completedInfo=*/ undefined,
+          createOngoingPrintJobInfo(
+              /*printedPages=*/ 0, ActivePrintJobState.kStarted)),
+    ];
+
+    // Setup for disabled test.
+    loadTimeData.overrideValues({
+      isSetupAssistanceEnabled: true,
+    });
+
+    await initializePrintManagementApp(jobsArr);
+    assertEquals(0, pageHandler.getLaunchPrinterSettingsCount());
+
+    const managePrintersButton: CrButtonElement =
+        querySelector<CrButtonElement>(page!, '#managePrinters')!;
+    managePrintersButton.click();
+
+    assertEquals(1, pageHandler.getLaunchPrinterSettingsCount());
+  });
 });
 
 suite('PrintJobEntryTest', () => {

@@ -24,9 +24,9 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getMetadataProvider} from './mojo_interface_provider.js';
+import {getMetadataProvider, getPrintManagementHandler} from './mojo_interface_provider.js';
 import {getTemplate} from './print_management.html.js';
-import {ActivePrintJobState, PrintingMetadataProviderInterface, PrintJobInfo, PrintJobsObserverInterface, PrintJobsObserverReceiver} from './printing_manager.mojom-webui.js';
+import {ActivePrintJobState, PrintingMetadataProviderInterface, PrintJobInfo, PrintJobsObserverInterface, PrintJobsObserverReceiver, PrintManagementHandlerInterface} from './printing_manager.mojom-webui.js';
 
 const METADATA_STORED_INDEFINITELY = -1;
 const METADATA_STORED_FOR_ONE_DAY = 1;
@@ -151,6 +151,7 @@ export class PrintManagementElement extends PrintManagementElementBase
     super();
 
     this.mojoInterfaceProvider = getMetadataProvider();
+    this.pageHandler = getPrintManagementHandler();
 
     window.CrPolicyStrings = {
       controlledSettingPolicy:
@@ -162,6 +163,7 @@ export class PrintManagementElement extends PrintManagementElementBase
   }
 
   private mojoInterfaceProvider: PrintingMetadataProviderInterface;
+  private pageHandler: PrintManagementHandlerInterface;
   private isPolicyControlled: boolean;
   private printJobs: PrintJobInfo[];
   private printJobHistoryExpirationPeriod: string;
@@ -365,6 +367,10 @@ export class PrintManagementElement extends PrintManagementElementBase
   private shouldShowManagePrinterButton(): boolean {
     return this.showSetupAssistance &&
         (this.ongoingPrintJobs.length > 0 || this.printJobs.length > 0);
+  }
+
+  private onManagePrintersClicked(): void {
+    this.pageHandler.launchPrinterSettings();
   }
 }
 
