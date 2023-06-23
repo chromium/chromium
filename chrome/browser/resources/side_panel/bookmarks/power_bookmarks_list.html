@@ -16,6 +16,10 @@
     }
   }
 
+  :host([drop-position='into']) power-bookmark-row {
+    background: var(--cr-hover-background-color);
+  }
+
   cr-icon-button {
     --cr-icon-button-icon-size: 16px;
     --cr-icon-button-size: 24px;
@@ -278,8 +282,7 @@
                             item, item.*, imageUrls_.*)]]"
               force-hover="[[getBookmarkForceHover_(
                             item, contextMenuBookmark_)]]"
-              draggable="[[canDrag_(editing_, renamingId_, searchQuery_,
-                           labels_.*)]]">
+              draggable="[[canDrag_]]">
             <template is="dom-if" restamp
                 if="[[isPriceTracked(item, trackedProductInfos_.*)]]">
               <sp-list-item-badge slot="badges"
