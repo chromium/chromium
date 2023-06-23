@@ -300,7 +300,7 @@ void PrintToStderr(const char* output) {
   std::ignore = HANDLE_EINTR(write(STDERR_FILENO, output, strlen(output)));
 }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 void AlarmSignalHandler(int signal, siginfo_t* info, void* void_context) {
   // We have seen rare cases on AMD linux where the default signal handler
   // either does not run or a thread (Probably an AMD driver thread) prevents
@@ -319,7 +319,8 @@ void AlarmSignalHandler(int signal, siginfo_t* info, void* void_context) {
   // See: https://man7.org/linux/man-pages/man2/exit_group.2.html
   syscall(SYS_exit_group, EXIT_FAILURE);
 }
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
   // NOTE: This code MUST be async-signal safe.
@@ -529,24 +530,11 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
 
   PrintToStderr("[end of stack trace]\n");
 
-#if BUILDFLAG(IS_MAC)
   if (::signal(signal, SIG_DFL) == SIG_ERR) {
     _exit(EXIT_FAILURE);
   }
-#elif !BUILDFLAG(IS_LINUX)
-  // For all operating systems but Linux we do not reraise the signal that
-  // brought us here but terminate the process immediately.
-  // Otherwise various tests break on different operating systems, see
-  // https://code.google.com/p/chromium/issues/detail?id=551681 amongst others.
-  PrintToStderr(
-      "Calling _exit(EXIT_FAILURE). Core file will not be generated.\n");
-  _exit(EXIT_FAILURE);
-#else   // BUILDFLAG(IS_LINUX)
 
-  // After leaving this handler control flow returns to the point where the
-  // signal was raised, raising the current signal once again but executing the
-  // default handler instead of this one.
-
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   // Set an alarm to trigger in case the default handler does not terminate
   // the process. See 'AlarmSignalHandler' for more details.
   struct sigaction action;
@@ -561,7 +549,42 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
   // shorter than chrome's process watchdog timer.
   constexpr unsigned int kAlarmSignalDelaySeconds = 5;
   alarm(kAlarmSignalDelaySeconds);
-#endif  // !BUILDFLAG(IS_LINUX)
+
+  // The following is mostly from
+  // third_party/crashpad/crashpad/util/posix/signals.cc as re-raising signals
+  // is complicated.
+
+  // If we can raise a signal with siginfo on this platform, do so. This ensures
+  // that we preserve the siginfo information for asynchronous signals (i.e.
+  // signals that do not re-raise autonomously), such as signals delivered via
+  // kill() and asynchronous hardware faults such as SEGV_MTEAERR, which would
+  // otherwise be lost when re-raising the signal via raise().
+  long retval = syscall(SYS_rt_tgsigqueueinfo, getpid(), syscall(SYS_gettid),
+                        info->si_signo, info);
+  if (retval == 0) {
+    return;
+  }
+
+  // Kernels without commit 66dd34ad31e5 ("signal: allow to send any siginfo to
+  // itself"), which was first released in kernel version 3.9, did not permit a
+  // process to send arbitrary signals to itself, and will reject the
+  // rt_tgsigqueueinfo syscall with EPERM. If that happens, follow the non-Linux
+  // code path. Any other errno is unexpected and will cause us to exit.
+  if (errno != EPERM) {
+    _exit(EXIT_FAILURE);
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
+  // Explicitly re-raise the signal even if it might have re-raised itself on
+  // return. Because signal handlers normally execute with their signal blocked,
+  // this raise() cannot immediately deliver the signal. Delivery is deferred
+  // until the signal handler returns and the signal becomes unblocked. The
+  // re-raised signal will appear with the same context as where it was
+  // initially triggered.
+  if (raise(signal) != 0) {
+    _exit(EXIT_FAILURE);
+  }
 }
 
 class PrintBacktraceOutputHandler : public BacktraceOutputHandler {

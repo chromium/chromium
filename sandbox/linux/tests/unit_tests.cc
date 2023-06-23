@@ -293,15 +293,8 @@ void UnitTests::DeathSEGVMessage(int status,
   std::string details(TestFailedMessage(msg));
   const char* expected_msg = static_cast<const char*>(aux);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // This hack is required for ChromeOS since its signal handler does not
-  // return indicating the handled signal, but with a simple _exit(1) only.
-  const bool subprocess_got_sigsegv =
-      WIFEXITED(status) && (WEXITSTATUS(status) == 1);
-#else
   const bool subprocess_got_sigsegv =
       WIFSIGNALED(status) && (SIGSEGV == WTERMSIG(status));
-#endif
 
   ASSERT_TRUE(subprocess_got_sigsegv) << "Exit status: " << status
                                       << " " << details;
