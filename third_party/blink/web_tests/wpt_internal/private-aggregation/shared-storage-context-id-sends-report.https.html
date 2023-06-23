@@ -8,7 +8,7 @@
 <script>
 'use strict';
 
-promise_test(async () => {
+private_aggregation_promise_test(async () => {
   await addModuleOnce("resources/shared-storage-module.js");
 
   const data = {enableDebugMode: true, contributions: [{bucket: 1n, value: 2}]};
@@ -35,7 +35,7 @@ promise_test(async () => {
 }, 'run() that calls Private Aggregation with context ID');
 
 
-promise_test(async () => {
+private_aggregation_promise_test(async () => {
   await addModuleOnce("resources/shared-storage-module.js");
 
   const data = {enableDebugMode: false, contributions: [{bucket: 1n, value: 2}]};

@@ -8,7 +8,7 @@
 <script>
 'use strict';
 
-promise_test(async () => {
+private_aggregation_promise_test(async () => {
   await addModuleOnce("resources/shared-storage-module.js");
 
   const data = {enableDebugMode: true, contributions: [{bucket: 1n, value: 2}]};
@@ -30,7 +30,7 @@ promise_test(async () => {
 
 }, 'run() that calls Private Aggregation with one contribution');
 
-promise_test(async () => {
+private_aggregation_promise_test(async () => {
   await addModuleOnce("resources/shared-storage-module.js");
 
   const data = {enableDebugMode: true,
@@ -53,7 +53,7 @@ promise_test(async () => {
   verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
 }, 'run() that calls Private Aggregation with multiple contributions');
 
-promise_test(async () => {
+private_aggregation_promise_test(async () => {
   await addModuleOnce("resources/shared-storage-module.js");
 
   const data = {enableDebugMode: true,
@@ -78,7 +78,7 @@ promise_test(async () => {
 }, 'run() that calls Private Aggregation with debug key');
 
 
-promise_test(async () => {
+private_aggregation_promise_test(async () => {
   await addModuleOnce("resources/shared-storage-module.js");
 
   const data = {enableDebugMode: true,
@@ -102,7 +102,7 @@ promise_test(async () => {
   verifyReportsIdenticalExceptPayload(report, JSON.parse(debug_reports[0]));
 }, 'run() that calls Private Aggregation with multiple contributions and a debug key');
 
-promise_test(async () => {
+private_aggregation_promise_test(async () => {
   await addModuleOnce("resources/shared-storage-module.js");
 
   const data = {enableDebugMode: false,
@@ -127,7 +127,7 @@ promise_test(async () => {
   assert_equals(debug_reports, null);
 }, 'run() that calls Private Aggregation without debug mode');
 
-promise_test(async () => {
+private_aggregation_promise_test(async () => {
   await addModuleOnce("resources/shared-storage-module.js");
 
   const data = {enableDebugModeAfterOp: true,
@@ -152,7 +152,7 @@ promise_test(async () => {
 }, 'run() that calls enableDebugMode() after contributeToHistogram()');
 
 
-promise_test(async () => {
+private_aggregation_promise_test(async () => {
   await addModuleOnce("resources/shared-storage-module.js");
 
   const data_1 = {enableDebugMode: true,
@@ -178,7 +178,7 @@ promise_test(async () => {
 }, 'calling enableDebugMode() in a different operation doesn\'t apply');
 
 
-promise_test(async () => {
+private_aggregation_promise_test(async () => {
   await addModuleOnce("resources/shared-storage-module.js");
 
   const data_1 = {enableDebugMode: true,

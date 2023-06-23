@@ -6,6 +6,34 @@ const ONE_CONTRIBUTION_EXAMPLE_PAYLOAD =
 const MULTIPLE_CONTRIBUTIONS_EXAMPLE_PAYLOAD =
     'omRkYXRhgqJldmFsdWVEAAAAAmZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAaJldmFsdWVEAAAABGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAA2lvcGVyYXRpb25paGlzdG9ncmFt';
 
+const private_aggregation_promise_test = (f, name) =>
+  promise_test(async t => {
+    await resetWptServer();
+    f(t);
+  }, name);
+
+const resetWptServer = () =>
+  Promise.all([
+    resetReports('/.well-known/private-aggregation/debug/report-protected-audience'),
+    resetReports('/.well-known/private-aggregation/debug/report-shared-storage'),
+    resetReports('/.well-known/private-aggregation/report-protected-audience'),
+    resetReports('/.well-known/private-aggregation/report-shared-storage'),
+  ]);
+
+/**
+ * Method to clear the stash. Takes the URL as parameter.
+ */
+const resetReports = url => {
+  // The view of the stash is path-specific
+  // (https://web-platform-tests.org/tools/wptserve/docs/stash.html), therefore
+  // the origin doesn't need to be specified.
+  url = `${url}?clear_stash=true`;
+  const options = {
+    method: 'POST',
+  };
+  return fetch(url, options);
+};
+
 /**
  * Delay method that waits for prescribed number of milliseconds.
  */
