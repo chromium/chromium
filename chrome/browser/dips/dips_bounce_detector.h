@@ -20,6 +20,7 @@
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
@@ -237,6 +238,7 @@ class DIPSBounceDetector {
   void OnServerCookiesAccessed(DIPSNavigationHandle* navigation_handle,
                                const GURL& url,
                                CookieOperation op);
+  void OnServiceWorkerAccessed(const GURL& url);
   void DidFinishNavigation(DIPSNavigationHandle* navigation_handle);
   // Only records a new user activation event once per
   // |kTimestampUpdateInterval| for a given page.
@@ -327,6 +329,14 @@ class DIPSWebContentsObserver
                          const content::CookieAccessDetails& details) override;
   void OnCookiesAccessed(content::NavigationHandle* navigation_handle,
                          const content::CookieAccessDetails& details) override;
+  void OnServiceWorkerAccessed(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& scope,
+      content::AllowServiceWorkerResult allowed) override;
+  void OnServiceWorkerAccessed(
+      content::NavigationHandle* navigation_handle,
+      const GURL& scope,
+      content::AllowServiceWorkerResult allowed) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void FrameReceivedUserActivation(
