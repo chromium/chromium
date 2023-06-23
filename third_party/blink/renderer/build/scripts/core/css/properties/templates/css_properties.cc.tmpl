@@ -78,16 +78,6 @@ const char* {{class_name}}::GetJSPropertyName() const {
 }
 
   {% if not is_alias %}
-  {% if property.visited_property %}
-const CSSProperty* {{class_name}}::GetVisitedProperty() const {
-  return &Get{{property.visited_property.property_id}}();
-}
-  {% endif %}
-  {% if property.unvisited_property %}
-const CSSProperty* {{class_name}}::GetUnvisitedProperty() const {
-  return &Get{{property.unvisited_property.property_id}}();
-}
-  {% endif %}
 
   {% if property.surrogate_for %}
 const CSSProperty* {{class_name}}::SurrogateFor(TextDirection direction,

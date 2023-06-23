@@ -414,10 +414,8 @@ void StyleCascade::AnalyzeInterpolations() {
         // interpolation of the visited property, add the visited property to
         // the map as well.
         // TODO(crbug.com/1062217): Interpolate visited colors separately
-        if (kPropertiesWithVisited.Has(property.PropertyID())) {
-          if (const CSSProperty* visited = property.GetVisitedProperty()) {
-            map_.Add(visited->PropertyID(), priority);
-          }
+        if (const CSSProperty* visited = property.GetVisitedProperty()) {
+          map_.Add(visited->PropertyID(), priority);
         }
       }
     }
@@ -662,17 +660,15 @@ void StyleCascade::ApplyInterpolation(
   // if its priority is higher.
   //
   // TODO(crbug.com/1062217): Interpolate visited colors separately
-  if (kPropertiesWithVisited.Has(property.PropertyID())) {
-    if (const CSSProperty* visited = property.GetVisitedProperty()) {
-      CascadePriority* visited_priority =
-          map_.Find(visited->GetCSSPropertyName());
-      if (visited_priority && priority < *visited_priority) {
-        DCHECK(visited_priority->IsImportant());
-        // Resetting generation to zero makes it possible to apply the
-        // visited property again.
-        *visited_priority = CascadePriority(*visited_priority, 0);
-        LookupAndApply(*visited, resolver);
-      }
+  if (const CSSProperty* visited = property.GetVisitedProperty()) {
+    CascadePriority* visited_priority =
+        map_.Find(visited->GetCSSPropertyName());
+    if (visited_priority && priority < *visited_priority) {
+      DCHECK(visited_priority->IsImportant());
+      // Resetting generation to zero makes it possible to apply the
+      // visited property again.
+      *visited_priority = CascadePriority(*visited_priority, 0);
+      LookupAndApply(*visited, resolver);
     }
   }
 }

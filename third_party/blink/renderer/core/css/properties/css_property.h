@@ -23,6 +23,15 @@ class CrossThreadStyleValue;
 class ExecutionContext;
 class LayoutObject;
 
+// For use in Get(Un)VisitedProperty(), although you could probably
+// use them yourself if you wanted to; contains a mapping from each
+// CSSPropertyID to its visited/unvisited counterpart, or kInvalid
+// if none exists. They use small integer types (even though they
+// actually contain CSSPropertyIDs) because they can be quite hot
+// in the cache, e.g., during cascade expansion.
+extern CORE_EXPORT const uint8_t kPropertyVisitedIDs[];
+extern CORE_EXPORT const uint16_t kPropertyUnvisitedIDs[];
+
 class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
  public:
   using Flags = uint64_t;
@@ -146,8 +155,24 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
       CSSPropertyID) const {
     return false;
   }
-  virtual const CSSProperty* GetVisitedProperty() const { return nullptr; }
-  virtual const CSSProperty* GetUnvisitedProperty() const { return nullptr; }
+  const CSSProperty* GetVisitedProperty() const {
+    CSSPropertyID visited_id = static_cast<CSSPropertyID>(
+        kPropertyVisitedIDs[static_cast<unsigned>(property_id_)]);
+    if (visited_id == CSSPropertyID::kInvalid) {
+      return nullptr;
+    } else {
+      return To<CSSProperty>(GetPropertyInternal(visited_id));
+    }
+  }
+  const CSSProperty* GetUnvisitedProperty() const {
+    CSSPropertyID unvisited_id = static_cast<CSSPropertyID>(
+        kPropertyUnvisitedIDs[static_cast<unsigned>(property_id_)]);
+    if (unvisited_id == CSSPropertyID::kInvalid) {
+      return nullptr;
+    } else {
+      return To<CSSProperty>(GetPropertyInternal(unvisited_id));
+    }
+  }
 
   virtual const CSSProperty* SurrogateFor(TextDirection, WritingMode) const {
     return nullptr;

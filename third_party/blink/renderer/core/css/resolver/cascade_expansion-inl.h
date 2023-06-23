@@ -68,7 +68,7 @@ void ExpandCascade(const MatchedProperties& matched_properties,
       if (!filter.Rejects(property)) {
         regular_property_callback(priority, id);
       }
-      if (expand_visited && kPropertiesWithVisited.Has(id)) {
+      if (expand_visited) {
         const CSSProperty* visited_property = property.GetVisitedProperty();
         if (visited_property && !filter.Rejects(*visited_property)) {
           regular_property_callback(priority, visited_property->PropertyID());

@@ -92,12 +92,6 @@ class {{class_name}} final : public {{property.superclass}} {
   bool IsLayoutDependentProperty() const override { return true; }
   bool IsLayoutDependent(const ComputedStyle*, LayoutObject*) const override;
   {% endif %}
-  {% if property.visited_property %}
-  const CSSProperty* GetVisitedProperty() const override;
-  {% endif %}
-  {% if property.unvisited_property %}
-  const CSSProperty* GetUnvisitedProperty() const override;
-  {% endif %}
   {% if is_surrogate %}
   const CSSProperty* SurrogateFor(TextDirection, blink::WritingMode) const override;
   {% endif %}
