@@ -458,6 +458,14 @@ bool TestWebContents::IsBackForwardCacheSupported() {
   return back_forward_cache_supported_;
 }
 
+const absl::optional<blink::mojom::PictureInPictureWindowOptions>&
+TestWebContents::GetPictureInPictureOptions() const {
+  if (picture_in_picture_options_.has_value()) {
+    return picture_in_picture_options_;
+  }
+  return WebContentsImpl::GetPictureInPictureOptions();
+}
+
 int TestWebContents::AddPrerender(const GURL& url) {
   DCHECK(!base::FeatureList::IsEnabled(
       blink::features::kPrerender2MemoryControls));
@@ -550,6 +558,11 @@ void TestWebContents::ActivatePrerenderedPageFromAddressBar(const GURL& url) {
 
 base::TimeTicks TestWebContents::GetTabSwitchStartTime() {
   return tab_switch_start_time_;
+}
+
+void TestWebContents::SetPictureInPictureOptions(
+    absl::optional<blink::mojom::PictureInPictureWindowOptions> options) {
+  picture_in_picture_options_ = options;
 }
 
 }  // namespace content
