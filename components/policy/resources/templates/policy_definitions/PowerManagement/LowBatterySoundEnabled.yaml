@@ -1,0 +1,32 @@
+caption: Enable Low Battery Sound
+default_for_enterprise_users: false
+desc: |-
+  Enable the low battery sound feature.
+
+            This feature is responsible to play the low battery sound.
+
+            If this policy is set to enabled, the low battery sound will be played when the battery level or the remaining time drops below a threshold.
+
+            If this policy is set to disabled, no low battery sound will be played.
+
+            If you set this policy, users cannot change or override it.
+
+            If this policy is left unset, this feature is disabled on the managed <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices, but enabled under other circumstances.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- chrome_os
+items:
+- caption: Enable low battery sound
+  value: true
+- caption: Disable low battery sound
+  value: false
+owners:
+- hongyulong@chromium.org
+- chromeos-wms@google.com
+schema:
+  type: boolean
+tags: []
+type: main

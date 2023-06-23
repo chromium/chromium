@@ -33831,6 +33831,8 @@ Called by update_document_policy_enum.py.-->
   <int value="1120" label="ColorCorrectionEnabled"/>
   <int value="1121" label="NativeClientForceAllowed"/>
   <int value="1122" label="EmojiPickerGifSupportEnabled"/>
+  <int value="1123" label="ChargingSoundsEnabled"/>
+  <int value="1124" label="LowBatterySoundEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

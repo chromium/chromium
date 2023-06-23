@@ -8152,6 +8152,76 @@
       }
     ]
   },
+  "ChargingSoundsEnabled": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.charging_sounds.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ChargingSoundsEnabled": false
+        },
+        "prefs": {
+          "ash.charging_sounds.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ChargingSoundsEnabled": true
+        },
+        "prefs": {
+          "ash.charging_sounds.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  "LowBatterySoundEnabled": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.low_battery_sound.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "LowBatterySoundEnabled": false
+        },
+        "prefs": {
+          "ash.low_battery_sound.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "LowBatterySoundEnabled": true
+        },
+        "prefs": {
+          "ash.low_battery_sound.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
   "AppLaunchAutomation": {
     "os": [
       "chromeos_ash"

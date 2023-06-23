@@ -1,0 +1,32 @@
+caption: Enable Charging Sounds
+default_for_enterprise_users: false
+desc: |-
+  Enable the charging sounds feature.
+
+            This feature is responsible to play the charging sounds.
+
+            If this policy is set to enabled, the charging sounds will be played when the device is connected to an AC charger.
+
+            If this policy is set to disabled, no charging sound will be played.
+
+            If you set this policy, users cannot change or override it.
+
+            If this policy is left unset, this feature is disabled on the managed <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices, but enabled under other circumstances.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- chrome_os
+items:
+- caption: Enable charging sounds
+  value: true
+- caption: Disable charging sounds
+  value: false
+owners:
+- hongyulong@chromium.org
+- chromeos-wms@google.com
+schema:
+  type: boolean
+tags: []
+type: main
