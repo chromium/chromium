@@ -204,7 +204,8 @@ void PageTestBase::LoadAhem() {
 }
 
 void PageTestBase::LoadAhem(LocalFrame& frame) {
-  LoadFontFromFile(frame, test::CoreTestDataPath("Ahem.ttf"), "Ahem");
+  LoadFontFromFile(frame, test::CoreTestDataPath("Ahem.ttf"),
+                   AtomicString("Ahem"));
 }
 
 void PageTestBase::LoadFontFromFile(LocalFrame& frame,
@@ -232,7 +233,7 @@ void PageTestBase::LoadNoto(LocalFrame& frame) {
   LoadFontFromFile(frame,
                    blink::test::PlatformTestDataPath(
                        "third_party/Noto/NotoNaskhArabic-regular.woff2"),
-                   "NotoArabic");
+                   AtomicString("NotoArabic"));
 }
 
 // Both sets the inner html and runs the document lifecycle.
@@ -299,7 +300,7 @@ StyleEngine& PageTestBase::GetStyleEngine() {
 }
 
 Element* PageTestBase::GetElementById(const char* id) const {
-  return GetDocument().getElementById(id);
+  return GetDocument().getElementById(AtomicString(id));
 }
 
 AnimationClock& PageTestBase::GetAnimationClock() {
