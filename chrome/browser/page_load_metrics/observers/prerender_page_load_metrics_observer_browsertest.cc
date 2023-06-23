@@ -19,6 +19,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/page_transition_types.h"
 
 using PrerenderPageLoad = ukm::builders::PrerenderPageLoad;
 using PageLoad = ukm::builders::PageLoad;
@@ -55,14 +56,15 @@ class PrerenderPageLoadMetricsObserverBrowserTest
   // by source URL.
   std::map<GURL, ukm::mojom::UkmEntryPtr> GetMergedUkmEntries(
       const std::string& entry_name) {
-    auto entries =
-        ukm_recorder().GetMergedEntriesByName(PrerenderPageLoad::kEntryName);
+    auto entries = ukm_recorder().GetMergedEntriesByName(entry_name);
     std::map<GURL, ukm::mojom::UkmEntryPtr> result;
     for (auto& kv : entries) {
       const ukm::mojom::UkmEntry* entry = kv.second.get();
       const ukm::UkmSource* source =
           ukm_recorder().GetSourceForSourceId(entry->source_id);
-      EXPECT_TRUE(source);
+      if (!source) {
+        continue;
+      }
       EXPECT_TRUE(source->url().is_valid());
       result.emplace(source->url(), std::move(kv.second));
     }
@@ -183,12 +185,15 @@ class PrerenderPageLoadMetricsObserverBrowserTest
       for (auto* entry :
            ukm_recorder().GetEntriesByName(PrerenderPageLoad::kEntryName)) {
         auto* source = ukm_recorder().GetSourceForSourceId(entry->source_id);
-        if (!source)
+        if (!source) {
           continue;
-        if (source->url() != url)
+        }
+        if (source->url() != url) {
           continue;
-        if (!ukm_recorder().EntryHasMetric(entry, ukm.c_str()))
+        }
+        if (!ukm_recorder().EntryHasMetric(entry, ukm.c_str())) {
           continue;
+        }
         count++;
       }
       EXPECT_EQ(count, 1);
@@ -309,6 +314,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       prerendered_page_entry, PrerenderPageLoad::kTriggeredPrerenderName));
   ukm_recorder().ExpectEntryMetric(prerendered_page_entry,
                                    PrerenderPageLoad::kWasPrerenderedName, 1);
+  ukm_recorder().ExpectEntryMetric(
+      prerendered_page_entry, PrerenderPageLoad::kNavigation_PageTransitionName,
+      ui::PAGE_TRANSITION_LINK);
   EXPECT_TRUE(ukm_recorder().EntryHasMetric(
       prerendered_page_entry,
       PrerenderPageLoad::kTiming_NavigationToActivationName));
@@ -406,9 +414,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   const ukm::mojom::UkmEntry* prerendered_page_entry =
       entries[prerender_url].get();
   ASSERT_TRUE(prerendered_page_entry);
-  // `WasPrerendered` exists since it's recorded when the activation starts.
+  // `WasPrerendered` and `PageTransition` exist since they're recorded when the
+  // activation starts.
   EXPECT_TRUE(ukm_recorder().EntryHasMetric(
       prerendered_page_entry, PrerenderPageLoad::kWasPrerenderedName));
+  ukm_recorder().ExpectEntryMetric(
+      prerendered_page_entry, PrerenderPageLoad::kNavigation_PageTransitionName,
+      ui::PAGE_TRANSITION_LINK);
 
   // LCP for prerender shouldn't be recorded since the page is in the
   // background.
@@ -534,6 +546,20 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       1);
 
   CheckResponsivenessMetrics(prerender_url);
+
+  auto entries = GetMergedUkmEntries(PrerenderPageLoad::kEntryName);
+  EXPECT_EQ(entries.size(), 1u);
+
+  const ukm::mojom::UkmEntry* prerendered_page_entry =
+      entries[prerender_url].get();
+  ASSERT_TRUE(prerendered_page_entry);
+  // `WasPrerendered` and `PageTransition` exist since they're recorded when the
+  // activation starts.
+  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
+      prerendered_page_entry, PrerenderPageLoad::kWasPrerenderedName));
+  ukm_recorder().ExpectEntryMetric(
+      prerendered_page_entry, PrerenderPageLoad::kNavigation_PageTransitionName,
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,

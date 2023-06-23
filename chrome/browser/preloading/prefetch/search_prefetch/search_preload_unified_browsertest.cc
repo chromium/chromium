@@ -68,6 +68,7 @@ namespace {
 using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
 using ukm::builders::Preloading_Attempt;
 using ukm::builders::Preloading_Prediction;
+using ukm::builders::PrerenderPageLoad;
 static const auto kMockElapsedTime =
     base::ScopedMockElapsedTimersForTest::kMockElapsedTime;
 
@@ -354,6 +355,25 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
     ASSERT_TRUE(search_engine_server_.ShutdownAndWaitUntilComplete());
   }
 
+  // Similar to UkmRecorder::GetMergedEntriesByName(), but returned map is keyed
+  // by source URL.
+  std::map<GURL, ukm::mojom::UkmEntryPtr> GetMergedUkmEntries(
+      const std::string& entry_name) {
+    auto entries = test_ukm_recorder()->GetMergedEntriesByName(entry_name);
+    std::map<GURL, ukm::mojom::UkmEntryPtr> result;
+    for (auto& kv : entries) {
+      const ukm::mojom::UkmEntry* entry = kv.second.get();
+      const ukm::UkmSource* source =
+          test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
+      if (!source) {
+        continue;
+      }
+      EXPECT_TRUE(source->url().is_valid());
+      result.emplace(source->url(), std::move(kv.second));
+    }
+    return result;
+  }
+
  private:
   AutocompleteMatch CreateSearchSuggestionMatch(
       const std::string& original_query,
@@ -399,7 +419,6 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
 // corresponding prefetch request succeeds.
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
                        PrerenderHintReceivedBeforeSucceed) {
-
   SearchPrefetchServiceFactory::GetForProfile(chrome_test_utils::GetProfile(this));
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
@@ -512,6 +531,18 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
+
+  auto entries = GetMergedUkmEntries(PrerenderPageLoad::kEntryName);
+  EXPECT_EQ(entries.size(), 1u);
+
+  const ukm::mojom::UkmEntry* prerendered_page_entry =
+      entries[expected_prerender_url].get();
+  ASSERT_TRUE(prerendered_page_entry);
+  test_ukm_recorder()->ExpectEntryMetric(
+      prerendered_page_entry, PrerenderPageLoad::kWasPrerenderedName, 1);
+  test_ukm_recorder()->ExpectEntryMetric(
+      prerendered_page_entry, PrerenderPageLoad::kNavigation_PageTransitionName,
+      ui::PAGE_TRANSITION_GENERATED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
 }
 
 // Tests that the SearchSuggestionService can trigger prerendering if it
@@ -613,6 +644,18 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   // No prerender requests went through network.
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
+
+  auto entries = GetMergedUkmEntries(PrerenderPageLoad::kEntryName);
+  EXPECT_EQ(entries.size(), 1u);
+
+  const ukm::mojom::UkmEntry* prerendered_page_entry =
+      entries[expected_prerender_url].get();
+  ASSERT_TRUE(prerendered_page_entry);
+  test_ukm_recorder()->ExpectEntryMetric(
+      prerendered_page_entry, PrerenderPageLoad::kWasPrerenderedName, 1);
+  test_ukm_recorder()->ExpectEntryMetric(
+      prerendered_page_entry, PrerenderPageLoad::kNavigation_PageTransitionName,
+      ui::PAGE_TRANSITION_GENERATED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
 }
 
 // Tests that the SearchSuggestionService will not trigger prerender if the
@@ -644,6 +687,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.FetchResult.SuggestionPrefetch", false, 1);
   EXPECT_FALSE(prerender_manager()->HasSearchResultPagePrerendered());
+
+  auto entries = GetMergedUkmEntries(PrerenderPageLoad::kEntryName);
+  EXPECT_EQ(entries.size(), 0u);
 }
 
 // Tests that the SearchSuggestionService will not trigger prerender if the
@@ -691,6 +737,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
                            {SearchPrefetchStatus::kCanBeServed});
 
   EXPECT_FALSE(prerender_manager()->HasSearchResultPagePrerendered());
+
+  auto entries = GetMergedUkmEntries(PrerenderPageLoad::kEntryName);
+  EXPECT_EQ(entries.size(), 0u);
 }
 
 // Tests the activated prerendered page records navigation timings correctly.
@@ -844,6 +893,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   // Prerender should not retry the request.
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
+
+  auto entries = GetMergedUkmEntries(PrerenderPageLoad::kEntryName);
+  EXPECT_EQ(entries.size(), 0u);
 }
 
 // Tests the prerender works well when running in the

@@ -20523,6 +20523,12 @@ be describing additional metrics about the same event.
       for main frame request.
     </summary>
   </metric>
+  <metric name="Navigation.PageTransition">
+    <summary>
+      The |ui::PageTransition| for the main frame navigation that this activated
+      prerendering navigation fulfilled.
+    </summary>
+  </metric>
   <metric name="PageEndReason" enum="PageEndReason">
     <obsolete>
       Removed March 2023.
