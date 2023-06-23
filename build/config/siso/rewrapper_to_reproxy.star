@@ -59,6 +59,9 @@ def __parse_rewrapper_cfg(ctx, cfg_file):
     return reproxy_config
 
 def __rewrite_rewrapper(ctx, cmd):
+    # Not all clang actions will have rewrapper.
+    if not "rewrapper" in cmd.args[0]:
+        return
     # Example command:
     #   ../../buildtools/reclient/rewrapper
     #     -cfg=../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux.cfg
@@ -80,8 +83,56 @@ def __rewrite_rewrapper(ctx, cmd):
             break
     if wrapped_command_pos < 1:
         fail("couldn't find first non-arg passed to rewrapper for %s" % str(cmd.args))
+    if not cfg_file:
+        fail("couldn't find rewrapper cfg file in %s" % str(cmd.args))
     ctx.actions.fix(
         args = cmd.args[wrapped_command_pos:],
+        reproxy_config = json.encode(__parse_rewrapper_cfg(ctx, cfg_file)),
+    )
+
+# TODO(b/278225415): change gn so this wrapper (and by extension this handler) becomes unnecessary.
+def __rewrite_clang_code_coverage_wrapper(ctx, cmd):
+    # Example command:
+    #   python3
+    #     ../../build/toolchain/clang_code_coverage_wrapper.py
+    #     --target-os=...
+    #     --files_to_instrument=...
+    #     ../../buildtools/reclient/rewrapper
+    #     -cfg=../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux.cfg
+    #     -exec_root=/path/to/your/chromium/src/
+    #     ../../third_party/llvm-build/Release+Asserts/bin/clang++
+    #     [rest of clang args]
+    # We don't need to care about:
+    #   most args to clang_code_coverage_wrapper (need --files_to_instrument as tool_input)
+    #   -exec_root: Siso already knows this.
+    rewrapper_pos = -1
+    wrapped_command_pos = -1
+    coverage_wrapper_inputs = []
+    cfg_file = None
+    for i, arg in enumerate(cmd.args):
+        if i < 2:
+            continue
+        if rewrapper_pos == -1 and not arg.startswith("-"):
+            rewrapper_pos = i
+            continue
+        if rewrapper_pos == -1 and arg.startswith("--files-to-instrument="):
+            coverage_wrapper_inputs.append(ctx.fs.canonpath(arg.removeprefix("--files-to-instrument=")))
+            continue
+        if rewrapper_pos > 0 and arg.startswith("-cfg="):
+            cfg_file = ctx.fs.canonpath(arg.removeprefix("-cfg="))
+            continue
+        if rewrapper_pos > 0 and not arg.startswith("-"):
+            wrapped_command_pos = i
+            break
+    if rewrapper_pos < 1:
+        fail("couldn't find rewrapper in %s" % str(cmd.args))
+    if wrapped_command_pos < 1:
+        fail("couldn't find first non-arg passed to rewrapper for %s" % str(cmd.args))
+    if not cfg_file:
+        fail("couldn't find rewrapper cfg file in %s" % str(cmd.args))
+    ctx.actions.fix(
+        args = cmd.args[:rewrapper_pos] + cmd.args[wrapped_command_pos:],
+        tool_inputs = cmd.tool_inputs + coverage_wrapper_inputs,
         reproxy_config = json.encode(__parse_rewrapper_cfg(ctx, cfg_file)),
     )
 
@@ -122,6 +173,7 @@ def __rewrite_action_remote_py(ctx, cmd):
 
 __handlers = {
     "rewrite_rewrapper": __rewrite_rewrapper,
+    "rewrite_clang_code_coverage_wrapper": __rewrite_clang_code_coverage_wrapper,
     "rewrite_action_remote_py": __rewrite_action_remote_py,
 }
 
@@ -140,6 +192,12 @@ def __step_config(ctx, step_config):
     })
     step_config["rules"].extend([
         mojom_parser_rule,
+        {
+            # TODO(b/278225415): change gn so this wrapper (and by extension this rule) becomes unnecessary.
+            "name": "clang_code_coverage_wrapper",
+            "command_prefix": "python3 ../../build/toolchain/clang_code_coverage_wrapper.py",
+            "handler": "rewrite_clang_code_coverage_wrapper",
+        },
         {
             "name": "action_remote",
             "command_prefix": "python3 ../../build/util/action_remote.py ../../buildtools/reclient/rewrapper",
