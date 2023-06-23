@@ -798,7 +798,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.AvgCpuLoad.{ProcessType}" units="%"
-    expires_after="2023-07-31">
+    expires_after="2024-07-31">
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1310,7 +1310,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType.{Visibility}"
-    enum="ProcessType2" expires_after="2023-07-31">
+    enum="ProcessType2" expires_after="2024-07-31">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1334,7 +1334,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerThreadType.{ProcessType}"
-    enum="CpuTimeMetricsThreadType" expires_after="2023-07-31">
+    enum="CpuTimeMetricsThreadType" expires_after="2024-07-31">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1644,73 +1644,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Power.ForegroundRadio.SignalLevel.{NetworkType}"
-    enum="RadioSignalLevel" expires_after="2023-06-28">
-  <owner>eseckler@chromium.org</owner>
-  <owner>khokhlov@google.com</owner>
-  <owner>skyostil@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Periodically samples the radio (cellular/wifi) signal strength level while
-    Chrome is a foreground app and the device is on battery power. Sampled every
-    30 seconds and when Chrome is backgrounded or the device connects to a
-    charger.
-
-    Only supported on Android.
-  </summary>
-  <token key="NetworkType">
-    <variant name="Cell"/>
-    <variant name="Wifi"/>
-  </token>
-</histogram>
-
-<histogram name="Power.ForegroundRadio.Wakeups.Cell.30Seconds"
-    enum="RadioSignalLevel" expires_after="2023-11-12">
-  <owner>eseckler@chromium.org</owner>
-  <owner>khokhlov@google.com</owner>
-  <owner>skyostil@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Counts the number of radio wakeups while Chrome is a foreground app, the
-    device is on battery power and connection type is cellular. Values are
-    distributed across buckets according to the radio signal quality.
-
-    Caveat: signal quality is measured at the end of 30-sec period, so it might
-    not reflect the quality during the entire period.
-
-    Only supported on Android. Disabled by default. Please supply the
-    ForegroundRadioStateCountWakeups feature flag to turn this metric on.
-  </summary>
-</histogram>
-
-<histogram name="Power.ForegroundRadio.{Direction}KiB.{NetworkType}.30Seconds"
-    enum="RadioSignalLevel" expires_after="2023-06-28">
-  <owner>eseckler@chromium.org</owner>
-  <owner>khokhlov@google.com</owner>
-  <owner>skyostil@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Periodically samples the number of kibibytes received over network while
-    Chrome is a foreground app and the device is on battery power. Sampled every
-    30 seconds and when Chrome is backgrounded or the device connects to a
-    charger. Values are distributed across buckets according to the radio signal
-    quality.
-
-    Caveat: signal quality is measured at the end of 30-sec period, so it might
-    not reflect the quality during the entire period.
-
-    Only supported on Android.
-  </summary>
-  <token key="Direction">
-    <variant name="Received"/>
-    <variant name="Sent"/>
-  </token>
-  <token key="NetworkType">
-    <variant name="Cell"/>
-    <variant name="Wifi"/>
-  </token>
-</histogram>
-
 <histogram name="Power.ForegroundThermalState.ChangeEvent.Android"
     enum="DeviceThermalState" expires_after="2023-10-15">
   <owner>carlscab@google.com</owner>
@@ -1723,36 +1656,6 @@ chromium-metrics-reviews@google.com.
 
     Only supported on Android.
   </summary>
-</histogram>
-
-<histogram name="Power.FrameDamageAreaInDip.{ProcessType}" units="dip"
-    expires_after="2023-06-28">
-  <owner>eseckler@chromium.org</owner>
-  <owner>khokhlov@google.com</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Damaged area of a LayerTree's CompositorFrame in device-independent pixels.
-    Recorded every time a new frame is produced.
-  </summary>
-  <token key="ProcessType">
-    <variant name="Browser"/>
-    <variant name="Renderer"/>
-  </token>
-</histogram>
-
-<histogram name="Power.FrameDamageDiagonalInDip.{ProcessType}" units="dip"
-    expires_after="2023-06-28">
-  <owner>eseckler@chromium.org</owner>
-  <owner>khokhlov@google.com</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Diagonal length of the damaged area of a LayerTree's CompositorFrame in
-    device-independent pixels. Recorded every time a new frame is produced.
-  </summary>
-  <token key="ProcessType">
-    <variant name="Browser"/>
-    <variant name="Renderer"/>
-  </token>
 </histogram>
 
 <histogram name="Power.HasPreciseBatteryDischargeGranularity" enum="Boolean"
