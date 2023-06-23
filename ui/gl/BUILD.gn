@@ -261,8 +261,6 @@ component("gl") {
       "gl_surface_egl_x11.h",
       "gl_surface_egl_x11_gles2.cc",
       "gl_surface_egl_x11_gles2.h",
-      "native_pixmap_egl_x11_binding_helper.cc",
-      "native_pixmap_egl_x11_binding_helper.h",
     ]
 
     deps += [
