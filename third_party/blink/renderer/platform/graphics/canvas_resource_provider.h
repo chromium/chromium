@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PROVIDER_H_
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "cc/raster/playback_image_provider.h"
@@ -43,6 +44,8 @@ class RasterInterface;
 }  // namespace gpu
 
 namespace blink {
+
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DAutoFlushParams);
 
 class CanvasResourceDispatcher;
 class WebGraphicsContext3DProviderWrapper;
@@ -221,19 +224,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
     kMaxValue = kRecordingLimitExceeded,
   };
-  // The following parameters attempt to reach a compromise between not flushing
-  // too often, and not accumulating an unreasonable backlog.  Flushing too
-  // often will hurt performance due to overhead costs. Accumulating large
-  // backlogs, in the case of OOPR-Canvas, results in poor parellelism and
-  // janky UI. With OOPR-Canvas disabled, it is still desirable to flush
-  // periodically to guard against run-away memory consumption caused by
-  // PaintOpBuffers that grow indefinitely. The OOPr-related jank is caused by
-  // long-running RasterCHROMIUM calls that monopolize the main thread
-  // of the GPU process.  By flushing periodically, we allow the rasterization
-  // of canvas contents to be interleaved with other compositing and UI work.
-  static constexpr size_t kMaxRecordedOpBytes = 4 * 1024 * 1024;
-  // The same value as is used in content::WebGraphicsConext3DProviderImpl.
-  static constexpr uint64_t kDefaultMaxPinnedImageBytes = 64 * 1024 * 1024;
 
   using RestoreMatrixClipStackCb =
       base::RepeatingCallback<void(cc::PaintCanvas*)>;
@@ -296,13 +286,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void SetCanvasResourceHost(CanvasResourceHost* resource_host) {
     resource_host_ = resource_host;
-  }
-
-  static void SetMaxPinnedImageBytesForTesting(size_t value) {
-    max_pinned_image_bytes_ = value;
-  }
-  static void ResetMaxPinnedImageBytesForTesting() {
-    max_pinned_image_bytes_ = kDefaultMaxPinnedImageBytes;
   }
 
   // WebGraphicsContext3DProvider::DestructionObserver implementation.
@@ -538,21 +521,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
   bool clear_frame_ = true;
   FlushReason last_flush_reason_ = FlushReason::kNone;
   FlushReason printing_fallback_reason_ = FlushReason::kNone;
-  static size_t max_pinned_image_bytes_;
 
   base::WeakPtrFactory<CanvasResourceProvider> weak_ptr_factory_{this};
 };
-
-ALWAYS_INLINE void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
-  // When printing we avoid flushing if it is still possible to print in
-  // vector mode.
-  if (IsPrinting() && clear_frame_)
-    return;
-  if (TotalOpBytesUsed() > kMaxRecordedOpBytes ||
-      total_pinned_image_bytes_ > max_pinned_image_bytes_) {
-    FlushCanvas(FlushReason::kRecordingLimitExceeded);
-  }
-}
 
 }  // namespace blink
 

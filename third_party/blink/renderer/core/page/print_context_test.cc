@@ -114,13 +114,16 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     print_context_ =
         MakeGarbageCollected<PrintContext>(GetDocument().GetFrame(),
                                            /*use_printing_layout=*/true);
-    CanvasResourceProvider::SetMaxPinnedImageBytesForTesting(100);
+    base::FieldTrialParams auto_flush_params;
+    auto_flush_params["max_pinned_image_kb"] = "1";
+    print_feature_list_.InitAndEnableFeatureWithParameters(
+        kCanvas2DAutoFlushParams, auto_flush_params);
   }
 
   void TearDown() override {
     RenderingTest::TearDown();
     CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
-    CanvasResourceProvider::ResetMaxPinnedImageBytesForTesting();
+    print_feature_list_.Reset();
   }
 
   PrintContext& GetPrintContext() { return *print_context_.Get(); }
@@ -186,6 +189,7 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
  private:
   std::unique_ptr<DummyPageHolder> page_holder_;
   Persistent<PrintContext> print_context_;
+  base::test::ScopedFeatureList print_feature_list_;
 };
 
 class PrintContextFrameTest : public PrintContextTest {
@@ -1057,12 +1061,12 @@ TEST_P(PrintContextTest, Canvas2DAutoFlushBeforePrinting) {
   GetDocument().GetSettings()->SetScriptEnabled(true);
   Element* const script_element =
       GetDocument().CreateRawElement(html_names::kScriptTag);
-  // Note: source_canvas is 10x10, which consumes 400 bytes for pixel data,
-  // which is larger than the 100 limit set in PrintContextTest::SetUp().
+  // Note: source_canvas is 20x20, which consumes 1600 bytes for pixel data,
+  // which is larger than the 1KB limit set in PrintContextTest::SetUp().
   script_element->setTextContent(
       "source_canvas = document.createElement('canvas');"
-      "source_canvas.width = 10;"
-      "source_canvas.height = 10;"
+      "source_canvas.width = 20;"
+      "source_canvas.height = 20;"
       "source_ctx = source_canvas.getContext('2d');"
       "source_ctx.fillRect(0, 0, 1, 1);"
       "ctx = document.getElementById('c').getContext('2d');"

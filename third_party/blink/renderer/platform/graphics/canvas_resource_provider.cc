@@ -6,7 +6,9 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/debug/stack_trace.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
@@ -92,9 +94,6 @@ bool IsGMBAllowed(const SkImageInfo& info, const gpu::Capabilities& caps) {
 }
 
 }  // namespace
-
-size_t CanvasResourceProvider::max_pinned_image_bytes_ =
-    kDefaultMaxPinnedImageBytes;
 
 class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
  public:
@@ -1239,6 +1238,7 @@ CanvasResourceProvider::CanvasResourceProvider(
         context_provider_wrapper_->ContextProvider()->GetCapabilities();
     oopr_uses_dmsaa_ = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
   }
+
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
   recorder_.beginRecording(Size());
 }
@@ -1249,6 +1249,49 @@ CanvasResourceProvider::~CanvasResourceProvider() {
   if (context_provider_wrapper_)
     context_provider_wrapper_->RemoveObserver(this);
   CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
+}
+
+BASE_FEATURE(kCanvas2DAutoFlushParams,
+             "kCanvas2DAutoFlushParams",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The following parameters attempt to reach a compromise between not flushing
+// too often, and not accumulating an unreasonable backlog. Flushing too
+// often will hurt performance due to overhead costs. Accumulating large
+// backlogs, in the case of OOPR-Canvas, results in poor parellelism and
+// janky UI. With OOPR-Canvas disabled, it is still desirable to flush
+// periodically to guard against run-away memory consumption caused by
+// PaintOpBuffers that grow indefinitely. The OOPR-related jank is caused by
+// long-running RasterCHROMIUM calls that monopolize the main thread
+// of the GPU process. By flushing periodically, we allow the rasterization
+// of canvas contents to be interleaved with other compositing and UI work.
+//
+// The default values for these parameters were initially determined
+// empirically. They were selected to maximize the MotionMark score on
+// desktop computers. Field trials may be used to tune these parameters
+// further by using metrics data from the field.
+const base::FeatureParam<int> kMaxRecordedOpKB(&kCanvas2DAutoFlushParams,
+                                               "max_recorded_op_kb",
+                                               4 * 1024);
+
+const base::FeatureParam<int> kMaxPinnedImageKB(&kCanvas2DAutoFlushParams,
+                                                "max_pinned_image_kb",
+                                                64 * 1024);
+
+void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
+  // When printing we avoid flushing if it is still possible to print in
+  // vector mode.
+  if (IsPrinting() && clear_frame_) {
+    return;
+  }
+  static size_t max_recorded_op_bytes =
+      static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
+  static size_t max_pinned_image_bytes =
+      static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
+  if (UNLIKELY(TotalOpBytesUsed() > max_recorded_op_bytes) ||
+      UNLIKELY(total_pinned_image_bytes_ > max_pinned_image_bytes)) {
+    FlushCanvas(FlushReason::kRecordingLimitExceeded);
+  }
 }
 
 SkSurface* CanvasResourceProvider::GetSkSurface() const {

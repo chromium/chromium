@@ -157,7 +157,8 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
 
   enum LatencyMode { kNormalLatency, kLowLatency };
 
-  static constexpr size_t kMaxPinnedImageBytes = 1000;
+  static constexpr size_t kMaxPinnedImageKB = 1;
+  static constexpr size_t kMaxRecordedOpKB = 10;
 
   void CreateContext(
       OpacityMode,
@@ -226,6 +227,9 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
   Member<CanvasGradient>& AlphaGradient() {
     return wrap_gradients_->alpha_gradient_;
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTest);
@@ -253,8 +257,14 @@ void CanvasRenderingContext2DTest::CreateContext(
 }
 
 void CanvasRenderingContext2DTest::SetUp() {
-  CanvasResourceProvider::SetMaxPinnedImageBytesForTesting(
-      kMaxPinnedImageBytes);
+  base::FieldTrialParams auto_flush_params;
+  auto_flush_params["max_pinned_image_kb"] =
+      base::NumberToString(kMaxPinnedImageKB);
+  auto_flush_params["max_recorded_op_kb"] =
+      base::NumberToString(kMaxRecordedOpKB);
+  feature_list_.InitAndEnableFeatureWithParameters(kCanvas2DAutoFlushParams,
+                                                   auto_flush_params);
+
   test_context_provider_ = CreateContextProvider();
   InitializeSharedGpuContext(test_context_provider_.get());
   allow_accelerated_ =
@@ -300,8 +310,7 @@ void CanvasRenderingContext2DTest::SetUp() {
 }
 
 void CanvasRenderingContext2DTest::TearDown() {
-  CanvasResourceProvider::ResetMaxPinnedImageBytesForTesting();
-
+  feature_list_.Reset();
   ThreadState::Current()->CollectAllGarbageForTesting(
       ThreadState::StackState::kNoHeapPointers);
 
@@ -1328,7 +1337,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlush) {
       CanvasElement().ResourceProvider()->TotalOpCount();
 
   while (CanvasElement().ResourceProvider()->TotalOpBytesUsed() <=
-         CanvasResourceProvider::kMaxRecordedOpBytes) {
+         kMaxRecordedOpKB * 1024) {
     Context2D()->fillRect(0, 0, 1, 1);
     // Verify that auto-flush did not happen
     ASSERT_GT(CanvasElement().ResourceProvider()->TotalOpCount(),
@@ -1360,7 +1369,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushPinnedImages) {
   // reset by the Flush.
   for (int repeat = 0; repeat < 2; ++repeat) {
     size_t expected_op_count = initial_op_count;
-    for (size_t pinned_bytes = 0; pinned_bytes <= kMaxPinnedImageBytes;
+    for (size_t pinned_bytes = 0; pinned_bytes <= kMaxPinnedImageKB * 1024;
          pinned_bytes += kBytesPerImage) {
       FakeImageSource unique_image(gfx::Size(kImageSize, kImageSize),
                                    kOpaqueBitmap);
@@ -1420,7 +1429,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushSameImage) {
 
   FakeImageSource image(gfx::Size(kImageSize, kImageSize), kOpaqueBitmap);
 
-  for (size_t pinned_bytes = 0; pinned_bytes <= 2 * kMaxPinnedImageBytes;
+  for (size_t pinned_bytes = 0; pinned_bytes <= 2 * kMaxPinnedImageKB * 1024;
        pinned_bytes += kBytesPerImage) {
     NonThrowableExceptionState exception_state;
     Context2D()->drawImage(&image, 0, 0, 1, 1, 0, 0, 1, 1, exception_state);
@@ -1445,7 +1454,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
   const size_t initial_op_count =
       CanvasElement().ResourceProvider()->TotalOpCount();
   while (CanvasElement().ResourceProvider()->TotalOpBytesUsed() <=
-         CanvasResourceProvider::kMaxRecordedOpBytes + 1024) {
+         kMaxRecordedOpKB * 1024 * 2) {
     Context2D()->fillRect(0, 0, 1, 1);
     ASSERT_GT(CanvasElement().ResourceProvider()->TotalOpCount(),
               initial_op_count);
