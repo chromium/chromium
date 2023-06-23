@@ -458,8 +458,8 @@ base::ScopedFD ConnectToArcVmBootNotificationServer() {
                            reinterpret_cast<const sockaddr*>(
                                GetArcVmBootNotificationServerAddress()),
                            sizeof(sockaddr_un)))) {
-    PLOG(ERROR) << "Unable to connect to "
-                << kArcVmBootNotificationServerSocketPath;
+    PLOG(WARNING) << "Unable to connect to "
+                  << kArcVmBootNotificationServerSocketPath;
     return {};
   }
 
@@ -485,8 +485,8 @@ bool IsArcVmBootNotificationServerListening() {
     if (ConnectToArcVmBootNotificationServer().is_valid())
       return true;
 
-    LOG(ERROR) << "Retrying to connect to boot notification server in "
-               << sleep_duration;
+    LOG(WARNING) << "Retrying to connect to boot notification server in "
+                 << sleep_duration;
     base::PlatformThread::Sleep(sleep_duration);
     sleep_duration *= 2;
   } while (timer.Elapsed() < limit);
