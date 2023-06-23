@@ -1896,8 +1896,8 @@ TEST_F(ReverseGestureWindowCycleControllerTest,
   EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
 }
 
-// Tests that natural scroll doesn't affect two and three finger horizontal
-// scroll gestures for cycling window cycle list.
+// Tests that natural scroll affects two finger horizontal scrolling for the
+// window cycle list, and doesn't affect three finger scrolling.
 TEST_F(ReverseGestureWindowCycleControllerTest,
        WindowCycleListTrackpadGestures) {
   const gfx::Rect bounds(0, 0, 400, 400);
@@ -1918,14 +1918,16 @@ TEST_F(ReverseGestureWindowCycleControllerTest,
     CompleteCycling(controller);
   };
 
-  // Start cycle, scroll right with two finger gesture.
+  // Start cycle, scroll right with two finger gesture. Note: two finger swipes
+  // are negated, so negate in tests to mimic how this actually behaves on
+  // devices.
   // Current order is [5,4,3,2,1].
-  scroll_until_window_highlighted_and_confirm(horizontal_scroll, 0,
+  scroll_until_window_highlighted_and_confirm(-horizontal_scroll, 0,
                                               kNumFingersForMouseWheel);
-  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
+  EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
 
   // Start cycle, scroll right with three finger gesture.
-  // Current order is [4,5,3,2,1].
+  // Current order is [1,5,4,3,2].
   scroll_until_window_highlighted_and_confirm(horizontal_scroll, 0,
                                               kNumFingersForTrackpad);
   EXPECT_TRUE(wm::IsActiveWindow(window5.get()));
@@ -1938,13 +1940,13 @@ TEST_F(ReverseGestureWindowCycleControllerTest,
   // Start cycle, scroll right with two finger gesture. Note: two finger swipes
   // are negated, so negate in tests to mimic how this actually behaves on
   // devices.
-  // Current order is [5,4,3,2,1].
+  // Current order is [5,1,4,3,2].
   scroll_until_window_highlighted_and_confirm(-horizontal_scroll, 0,
                                               kNumFingersForMouseWheel);
-  EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
+  EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
 
   // Start cycle, scroll right with three finger gesture.
-  // Current order is [4,5,3,2,1].
+  // Current order is [1,5,4,3,2].
   scroll_until_window_highlighted_and_confirm(horizontal_scroll, 0,
                                               kNumFingersForTrackpad);
   EXPECT_TRUE(wm::IsActiveWindow(window5.get()));
