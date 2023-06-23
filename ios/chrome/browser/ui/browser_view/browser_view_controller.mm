@@ -1601,7 +1601,9 @@ enum HeaderBehaviour {
   // Resize the typing shield to cover the entire browser view and bring it to
   // the front.
   self.typingShield.frame = self.contentArea.frame;
-  [self.view bringSubviewToFront:self.typingShield];
+  if (initialLayout) {
+    [self.view bringSubviewToFront:self.typingShield];
+  }
 
   // Move the overlay containers in front of the hierarchy.
   [self updateOverlayContainerOrder];
