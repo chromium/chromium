@@ -15,7 +15,8 @@ __handlers = {
 }
 
 def __step_config(ctx, step_config):
-    remote_run = config.get(ctx, "remote_nasm") or config.get(ctx, "remote_all")
+    # TODO(b/285787155): fix remote failure to enable it with `remote_all`.
+    remote_run = config.get(ctx, "remote_nasm")
     rules = []
     for toolchain in ["", "clang_x64"]:
         nasm_path = path.join(toolchain, "nasm")
