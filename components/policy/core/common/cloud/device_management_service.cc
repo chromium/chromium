@@ -169,12 +169,6 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
     case DeviceManagementService::JobConfiguration::
         TYPE_CERT_BASED_REGISTRATION:
       return "CertBasedRegistration";
-    case DeviceManagementService::JobConfiguration::
-        TYPE_ACTIVE_DIRECTORY_ENROLL_PLAY_USER:
-      return "ActiveDirectoryEnrollPlayUser";
-    case DeviceManagementService::JobConfiguration::
-        TYPE_ACTIVE_DIRECTORY_PLAY_ACTIVITY:
-      return "ActiveDirectoryPlayActivity";
     case DeviceManagementService::JobConfiguration::TYPE_TOKEN_ENROLLMENT:
       return "TokenEnrollment";
     case DeviceManagementService::JobConfiguration::TYPE_CHROME_DESKTOP_REPORT:
@@ -210,9 +204,15 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
       return "BrowserUploadPublicKey";
     case DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT:
       return "ChromeProfileReport";
+    // TODO(b/263367348): Remove the Active Directory types below, after they're
+    // removed from the corresponding enum.
+    case DeviceManagementService::JobConfiguration::
+        TYPE_ACTIVE_DIRECTORY_ENROLL_PLAY_USER:
+    case DeviceManagementService::JobConfiguration::
+        TYPE_ACTIVE_DIRECTORY_PLAY_ACTIVITY:
+      NOTREACHED() << "Invalid job type: " << type;
+      return "";
   }
-  NOTREACHED() << "Invalid job type " << type;
-  return "";
 }
 
 JobConfigurationBase::JobConfigurationBase(
@@ -432,8 +432,9 @@ void DeviceManagementService::JobImpl::CreateUrlLoader() {
   url_loader_ = network::SimpleURLLoader::Create(std::move(rr), annotation);
   url_loader_->AttachStringForUpload(config_->GetPayload(), kPostContentType);
   url_loader_->SetAllowHttpErrorResults(true);
-  if (config_->GetTimeoutDuration())
+  if (config_->GetTimeoutDuration()) {
     url_loader_->SetTimeoutDuration(config_->GetTimeoutDuration().value());
+  }
 }
 
 void DeviceManagementService::JobImpl::OnURLLoaderComplete(
@@ -446,13 +447,15 @@ void DeviceManagementService::JobImpl::OnURLLoaderComplete(
         url_loader_->ResponseInfo()->proxy_server.is_valid() &&
         !url_loader_->ResponseInfo()->proxy_server.is_direct();
     mime_type = url_loader_->ResponseInfo()->mime_type;
-    if (url_loader_->ResponseInfo()->headers)
+    if (url_loader_->ResponseInfo()->headers) {
       response_code = url_loader_->ResponseInfo()->headers->response_code();
+    }
   }
 
   std::string response_body_str;
-  if (response_body.get())
+  if (response_body.get()) {
     response_body_str = std::move(*response_body.get());
+  }
 
   OnURLLoaderCompleteInternal(response_body_str, mime_type,
                               url_loader_->NetError(), response_code,
@@ -653,8 +656,9 @@ void DeviceManagementService::ScheduleInitialization(
     int64_t delay_milliseconds) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (initialized_)
+  if (initialized_) {
     return;
+  }
   task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DeviceManagementService::Initialize,
@@ -664,8 +668,9 @@ void DeviceManagementService::ScheduleInitialization(
 
 void DeviceManagementService::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (initialized_)
+  if (initialized_) {
     return;
+  }
   initialized_ = true;
 
   StartQueuedJobs();
@@ -701,10 +706,11 @@ void DeviceManagementService::SetRetryDelayForTesting(long retry_delay_ms) {
 }
 
 void DeviceManagementService::AddJob(JobImpl* job) {
-  if (initialized_)
+  if (initialized_) {
     job->Start();
-  else
+  } else {
     queued_jobs_.push_back(job->GetWeakPtr());
+  }
 }
 
 base::WeakPtr<DeviceManagementService> DeviceManagementService::GetWeakPtr() {

@@ -96,7 +96,7 @@ class POLICY_EXPORT DeviceManagementService {
   // possible because some aren't ready during startup. http://crbug.com/302798
   class POLICY_EXPORT Configuration {
    public:
-    virtual ~Configuration() {}
+    virtual ~Configuration() = default;
 
     // Server at which to contact the service (DMServer).
     virtual std::string GetDMServerUrl() const = 0;
@@ -144,7 +144,7 @@ class POLICY_EXPORT DeviceManagementService {
       RETRY_WITH_DELAY
     };
 
-    virtual ~Job() {}
+    virtual ~Job() = default;
   };
 
   class JobImpl;
@@ -185,7 +185,7 @@ class POLICY_EXPORT DeviceManagementService {
     // facilitate reading of logs.)
     // TYPE_INVALID is used only in tests so that they can EXPECT the correct
     // job type has been used.  Otherwise, tests would need to initially set
-    // the type to somehing like TYPE_AUTO_ENROLLMENT, and then it would not
+    // the type to something like TYPE_AUTO_ENROLLMENT, and then it would not
     // be possible to EXPECT the job type in auto enrollment tests.
     enum JobType {
       TYPE_INVALID = -1,
@@ -230,7 +230,7 @@ class POLICY_EXPORT DeviceManagementService {
     // Convert the job type into a string.
     static std::string GetJobTypeAsString(JobType type);
 
-    virtual ~JobConfiguration() {}
+    virtual ~JobConfiguration() = default;
 
     virtual JobType GetType() = 0;
 

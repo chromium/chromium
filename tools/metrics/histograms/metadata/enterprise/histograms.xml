@@ -1621,16 +1621,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="EnterpriseDMServerRequest">
     <variant name=""/>
-    <variant name=".ActiveDirectoryEnrollPlayUser"
-        summary="Active Directory Enroll Play User.">
-      <owner>rbock@google.com</owner>
-      <owner>zmin@chromium.org</owner>
-    </variant>
-    <variant name=".ActiveDirectoryPlayActivity"
-        summary="Active Directory Play Activity.">
-      <owner>rbock@google.com</owner>
-      <owner>zmin@chromium.org</owner>
-    </variant>
     <variant name=".AndroidManagementCheck" summary="Android Management Check.">
       <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
