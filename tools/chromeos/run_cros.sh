@@ -57,7 +57,7 @@ declare -A DISPLAY_RES=(
 # Use FHD as default panel.
 DISPLAY_CONFIG=${DISPLAY_RES[fhd]}
 
-LACROS_FEATURES=LacrosSupport,LacrosPrimary
+LACROS_FEATURES=LacrosSupport
 FEATURES=OverviewButton
 
 LACROS_ENABLED=false
@@ -101,6 +101,7 @@ function build_args {
     --login-profile=user --lacros-mojo-socket-for-testing=$LACROS_SOCK_FILE \
     --ash-host-window-bounds=${DISPLAY_CONFIG} \
     --enable-features=${FEATURES} \
+    --disable-features=LacrosSxSPrimaryRemove \
     ${TOUCH_DEVICE_OPTION} \
     --lacros-chrome-path=${LACROS_BUILD_DIR}"
 
@@ -185,7 +186,7 @@ command
   --panel=<type>         specifies the panel type. Valid opptions are:
                          wxga(1280x800), fwxga(1355x768), hdp(1600,900),
                          fhd(1920x1080), wuxga(1920,1200), qhd(2560,1440),
-                         qudp(3200,1800), 4k(3840,2160)
+                         qhdp(3200,1800), f4k(3840,2160)
 EOF
 }
 
