@@ -43,7 +43,7 @@ exclusions to
 on trybots.
 * [filters/](./filters/) -- filters out tests that shouldn't be
 run in a particular mode.
-* [manage.py](./manage.py) -- makes sure the buildbot configuration json
+* [check.py](./check.py) -- makes sure the buildbot configuration json
 satisifies certain criteria.
 
 ## How the files are consumed

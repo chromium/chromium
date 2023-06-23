@@ -72,7 +72,7 @@ def CheckTests(input_api, output_api):
 def CheckJsonFiles(input_api, output_api):
   return input_api.RunTests([
       input_api.Command(name='check JSON files',
-                        cmd=[input_api.python3_executable, 'manage.py'],
+                        cmd=[input_api.python3_executable, 'check.py'],
                         kwargs={},
                         message=output_api.PresubmitError),
   ])
