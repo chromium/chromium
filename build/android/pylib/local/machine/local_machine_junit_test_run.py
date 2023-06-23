@@ -335,25 +335,26 @@ def _DumpJavaStacks(pid):
 def _RunCommandsAndSerializeOutput(cmd_list, shard_list):
   """Runs multiple commands in parallel and yields serialized output lines.
 
+  Args:
+    cmd_list: List of command lists to run.
+    shard_list: Shard index of each command list.
+
   Raises:
     TimeoutError: If timeout is exceeded.
+
+  Yields:
+    Command output.
   """
   num_shards = len(shard_list)
   assert num_shards > 0
-  temp_files = []
-  first_shard = shard_list[0]
-  for i, cmd in zip(shard_list, cmd_list):
-    # Shard 0 yields results immediately, the rest write to files.
-    if i == first_shard:
-      temp_files.append(None)  # Placeholder.
-    else:
-      temp_file = tempfile.TemporaryFile(mode='w+t', encoding='utf-8')
-      temp_files.append(temp_file)
+  temp_files = [None]  # First shard is streamed directly to stdout.
+  for _ in range(num_shards - 1):
+    temp_files.append(tempfile.TemporaryFile(mode='w+t', encoding='utf-8'))
 
   deadline = time.time() + (_SHARD_TIMEOUT / (num_shards // 2 + 1))
 
   yield '\n'
-  yield f'Shard {first_shard} output:\n'
+  yield f'Shard {shard_list[0]} output:\n'
 
   timeout_dumps = {}
 
@@ -368,7 +369,7 @@ def _RunCommandsAndSerializeOutput(cmd_list, shard_list):
     proc = cmd_helper.Popen(cmd, stdout=s_out, stderr=s_err)
     # Need to return process so that output can be displayed on stdout
     # in real time.
-    if idx == first_shard:
+    if idx == 0:
       return proc
 
     try:
@@ -385,7 +386,8 @@ def _RunCommandsAndSerializeOutput(cmd_list, shard_list):
     for i, cmd in enumerate(cmd_list):
       futures.append(pool.submit(run_proc, cmd=cmd, idx=i))
 
-    yield from _StreamFirstShardOutput(futures[0].result(), deadline)
+    yield from _StreamFirstShardOutput(shard_list[0], futures[0].result(),
+                                       deadline)
 
     for i, shard in enumerate(shard_list[1:]):
       # Shouldn't cause timeout as run_proc terminates the process with
@@ -414,7 +416,7 @@ def _RunCommandsAndSerializeOutput(cmd_list, shard_list):
     raise cmd_helper.TimeoutError('Junit shards timed out.')
 
 
-def _StreamFirstShardOutput(shard_proc, deadline):
+def _StreamFirstShardOutput(shard, shard_proc, deadline):
   # The following will be run from a thread to pump Shard 0 results, allowing
   # live output while allowing timeout.
   shard_queue = queue.Queue()
@@ -432,7 +434,7 @@ def _StreamFirstShardOutput(shard_proc, deadline):
       line = shard_queue.get(timeout=deadline - time.time())
       if line is None:
         break
-      yield f'0| {line}'
+      yield f'{shard:2}| {line}'
     except queue.Empty:
       if time.time() > deadline:
         break
@@ -442,7 +444,7 @@ def _StreamFirstShardOutput(shard_proc, deadline):
   while not shard_queue.empty():
     line = shard_queue.get()
     if line:
-      yield f'0| {line}'
+      yield f'{shard:2}| {line}'
 
 
 def _GetTestClasses(test_list):
