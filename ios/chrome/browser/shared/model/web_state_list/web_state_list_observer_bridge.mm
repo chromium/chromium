@@ -24,21 +24,8 @@ void WebStateListObserverBridge::WebStateListChanged(
       // WebStateActivatedAt() to here. Note that here is reachable only when
       // `reason` == ActiveWebStateChangeReason::Activated.
       break;
-    case WebStateListChange::Type::kDetach: {
-      const SEL selector = @selector(webStateList:didDetachWebState:atIndex:);
-      if (![observer_ respondsToSelector:selector]) {
-        return;
-      }
-
-      // TODO(crbug.com/1442546): Replace this with
-      // -didChangeWebStateList:change:selection:.
-      const WebStateListChangeDetach& detach_change =
-          change.As<WebStateListChangeDetach>();
-      [observer_ webStateList:web_state_list
-            didDetachWebState:detach_change.detached_web_state()
-                      atIndex:selection.index];
-      break;
-    }
+    case WebStateListChange::Type::kDetach:
+      [[fallthrough]];
     case WebStateListChange::Type::kMove:
       [[fallthrough]];
     case WebStateListChange::Type::kReplace:

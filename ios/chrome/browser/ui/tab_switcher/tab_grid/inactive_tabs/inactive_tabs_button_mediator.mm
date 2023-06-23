@@ -104,10 +104,12 @@ using ScopedWebStateListObservation =
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                     selection:(const WebStateSelection&)selection {
+  DCHECK_EQ(_webStateList, webStateList);
   if (_webStateList->IsBatchInProgress()) {
     // Consumer will be updated at the end of the batch.
     return;
   }
+
   switch (change.type()) {
     case WebStateListChange::Type::kSelectionOnly:
       // TODO(crbug.com/1442546): Move the implementation from
@@ -117,8 +119,7 @@ using ScopedWebStateListObservation =
       // ActiveWebStateChangeReason::Activated in didChangeActiveWebState:.
       break;
     case WebStateListChange::Type::kDetach:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didDetachWebState:atIndex: to here.
+      [_consumer updateInactiveTabsCount:_webStateList->count()];
       break;
     case WebStateListChange::Type::kMove:
     case WebStateListChange::Type::kReplace:
@@ -130,19 +131,8 @@ using ScopedWebStateListObservation =
 - (void)webStateList:(WebStateList*)webStateList
     willDetachWebState:(web::WebState*)webState
                atIndex:(int)index {
-  // No-op. `-webStateList:didDetachWebState:atIndex` will soon be called and
-  // will update the consumer with the new count.
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didDetachWebState:(web::WebState*)webState
-              atIndex:(int)atIndex {
-  DCHECK_EQ(_webStateList, webStateList);
-  if (_webStateList->IsBatchInProgress()) {
-    // Consumer will be updated at the end of the batch.
-    return;
-  }
-  [_consumer updateInactiveTabsCount:_webStateList->count()];
+  // No-op. `-didChangeWebStateList:change:selection:` with kDetach will soon be
+  // called and will update the consumer with the new count.
 }
 
 - (void)webStateList:(WebStateList*)webStateList

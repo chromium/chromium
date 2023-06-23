@@ -3148,22 +3148,43 @@ void InjectNTP(Browser* browser) {
 
 #pragma mark - WebStateListObserving
 
-// Called when a WebState is removed. Triggers the switcher view when the last
-// WebState is closed on a device that uses the switcher.
-- (void)webStateList:(WebStateList*)notifiedWebStateList
-    didDetachWebState:(web::WebState*)webState
-              atIndex:(int)atIndex {
-  // Do nothing on initialization.
-  if (!self.currentInterface.browser) {
-    return;
-  }
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                    selection:(const WebStateSelection&)selection {
+  switch (change.type()) {
+    case WebStateListChange::Type::kSelectionOnly:
+      // Do nothing when a WebState is selected and its status is updated.
+      break;
+    case WebStateListChange::Type::kDetach: {
+      // Do nothing on initialization.
+      if (!self.currentInterface.browser) {
+        return;
+      }
 
-  if (notifiedWebStateList->empty()) {
-    if (webState->GetBrowserState()->IsOffTheRecord()) {
-      [self lastIncognitoTabClosed];
-    } else {
-      [self lastRegularTabClosed];
+      // Triggers the switcher view when the last WebState is closed on a device
+      // that uses the switcher.
+      const WebStateListChangeDetach& detachChange =
+          change.As<WebStateListChangeDetach>();
+      if (webStateList->empty()) {
+        if (detachChange.detached_web_state()
+                ->GetBrowserState()
+                ->IsOffTheRecord()) {
+          [self lastIncognitoTabClosed];
+        } else {
+          [self lastRegularTabClosed];
+        }
+      }
+      break;
     }
+    case WebStateListChange::Type::kMove:
+      // Do nothing when a WebState is moved.
+      break;
+    case WebStateListChange::Type::kReplace:
+      // Do nothing when a WebState is replaced.
+      break;
+    case WebStateListChange::Type::kInsert:
+      // Do nothing when a WebState is inserted.
+      break;
   }
 }
 

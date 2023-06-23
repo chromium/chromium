@@ -161,6 +161,7 @@
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                     selection:(const WebStateSelection&)selection {
+  DCHECK_EQ(_webStateList, webStateList);
   switch (change.type()) {
     case WebStateListChange::Type::kSelectionOnly:
       // TODO(crbug.com/1442546): Move the implementation from
@@ -168,10 +169,14 @@
       // here. Note that here is reachable only when `reason` ==
       // ActiveWebStateChangeReason::Activated.
       break;
-    case WebStateListChange::Type::kDetach:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didDetachWebState:atIndex: to here.
+    case WebStateListChange::Type::kDetach: {
+      if (_inBatchOperation) {
+        return;
+      }
+
+      [self.consumer setTabCount:_webStateList->count() addedInBackground:NO];
       break;
+    }
     case WebStateListChange::Type::kMove:
       // Do nothing when a WebState is moved.
       break;
@@ -179,26 +184,15 @@
       // Do nothing when a WebState is replaced.
       break;
     case WebStateListChange::Type::kInsert: {
-      DCHECK_EQ(_webStateList, webStateList);
       if (_inBatchOperation) {
         return;
       }
 
       [self.consumer setTabCount:_webStateList->count()
                addedInBackground:!selection.activating];
+      break;
     }
   }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didDetachWebState:(web::WebState*)webState
-              atIndex:(int)index {
-  DCHECK_EQ(_webStateList, webStateList);
-  if (_inBatchOperation) {
-    return;
-  }
-
-  [self.consumer setTabCount:_webStateList->count() addedInBackground:NO];
 }
 
 - (void)webStateList:(WebStateList*)webStateList

@@ -167,10 +167,13 @@ const NSString* kDocumentMimeType = @"application/pdf";
     case WebStateListChange::Type::kSelectionOnly:
       // Do nothing when a WebState is selected and its status is updated.
       break;
-    case WebStateListChange::Type::kDetach:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didDetachWebState:atIndex: to here.
+    case WebStateListChange::Type::kDetach: {
+      const WebStateListChangeDetach& detachChange =
+          change.As<WebStateListChangeDetach>();
+      [self
+          removeTabId:detachChange.detached_web_state()->GetStableIdentifier()];
       break;
+    }
     case WebStateListChange::Type::kMove:
       // Do nothing when a WebState is moved.
       break;
@@ -185,12 +188,6 @@ const NSString* kDocumentMimeType = @"application/pdf";
       // Do nothing when a new WebState is inserted.
       break;
   }
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didDetachWebState:(web::WebState*)webState
-              atIndex:(int)atIndex {
-  [self removeTabId:webState->GetStableIdentifier()];
 }
 
 #pragma mark - CRWWebStateObserver protocol

@@ -288,8 +288,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
       // ActiveWebStateChangeReason::Activated for didChangeActiveWebState:.
       break;
     case WebStateListChange::Type::kDetach:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didDetachWebState:atIndex: to here.
+      // Do nothing when a WebState is detached.
       break;
     case WebStateListChange::Type::kMove:
     case WebStateListChange::Type::kReplace:
@@ -326,12 +325,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
                selectedItemID:nil];
 
   _scopedWebStateObservation->RemoveObservation(webState);
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didDetachWebState:(web::WebState*)webState
-              atIndex:(int)atIndex {
-  // No-op.
 }
 
 - (void)webStateList:(WebStateList*)webStateList

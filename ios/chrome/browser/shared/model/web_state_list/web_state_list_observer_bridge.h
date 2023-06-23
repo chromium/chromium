@@ -26,12 +26,6 @@
     willDetachWebState:(web::WebState*)webState
                atIndex:(int)atIndex;
 
-// Invoked after the WebState at the specified index has been detached. The
-// WebState is still valid but is no longer in the WebStateList.
-- (void)webStateList:(WebStateList*)webStateList
-    didDetachWebState:(web::WebState*)webState
-              atIndex:(int)atIndex;
-
 // Invoked before the specified WebState is destroyed via the WebStateList.
 // The WebState is still valid but is no longer in the WebStateList. If the
 // WebState is closed due to user action, `userAction` will be true.
