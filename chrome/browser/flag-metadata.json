@@ -6970,7 +6970,7 @@
   {
     "name": "service-worker-bypass-fetch-handler-for-main-resource",
     "owners": [ "sisidovski@google.com", "chrome-worker@google.com" ],
-    "expiry_milestone": 116
+    "expiry_milestone": 119
   },
   {
     "name": "service-worker-static-router",
