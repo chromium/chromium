@@ -44,7 +44,7 @@ union alignas(kCSSPropertyUnionBytes) CSSPropertyUnion {
 };
 static_assert(sizeof(CSSPropertyUnion) == kCSSPropertyUnionBytes);
 
-const CSSPropertyUnion kProperties[] = {
+const CSSPropertyUnion kCssProperties[] = {
   {},  // kInvalid.
   Variable(),
   {% for property in all_properties %}

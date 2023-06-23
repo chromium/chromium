@@ -35,12 +35,12 @@ union alignas(kCSSPropertyUnionBytes) CSSPropertyUnion;
 
 // Static instances of every single CSSProperty and CSSUnresolvedProperty,
 // indexed by CSSPropertyID.
-extern CORE_EXPORT const CSSPropertyUnion kProperties[];
+extern CORE_EXPORT const CSSPropertyUnion kCssProperties[];
 
 class CSSUnresolvedProperty;
 inline const CSSUnresolvedProperty* GetPropertyInternal(CSSPropertyID id) {
   return reinterpret_cast<const CSSUnresolvedProperty *>(
-      reinterpret_cast<const char *>(kProperties) +
+      reinterpret_cast<const char *>(kCssProperties) +
           kCSSPropertyUnionBytes * static_cast<unsigned>(id));
 }
 
