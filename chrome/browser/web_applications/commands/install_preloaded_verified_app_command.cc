@@ -5,12 +5,10 @@
 #include "chrome/browser/web_applications/commands/install_preloaded_verified_app_command.h"
 
 #include <memory>
-#include <string>
 #include <utility>
 
-#include "base/check_is_test.h"
 #include "base/containers/contains.h"
-#include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
 #include "base/functional/bind.h"
 #include "base/strings/to_string.h"
@@ -39,13 +37,6 @@ namespace web_app {
 
 namespace {
 
-// TODO(crbug.com/1457430): Find a better way to do Lacros testing so that we
-// don't have to pass localhost into the allowlist. Allowlisted host must be
-// from a Google server.
-constexpr auto kHostAllowlist = base::MakeFixedFlatSet<base::StringPiece>(
-    {"googleusercontent.com", "gstatic.com", "youtube.com",
-     "127.0.0.1" /*FOR TESTING*/});
-
 bool HasRequiredManifestFields(const blink::mojom::ManifestPtr& manifest) {
   if (manifest->start_url.is_empty()) {
     return false;
@@ -66,6 +57,7 @@ InstallPreloadedVerifiedAppCommand::InstallPreloadedVerifiedAppCommand(
     GURL manifest_url,
     std::string manifest_contents,
     AppId expected_id,
+    base::flat_set<std::string> host_allowlist,
     OnceInstallCallback callback)
     : WebAppCommandTemplate<SharedWebContentsLock>(
           "InstallPreloadedVerifiedAppCommand"),
@@ -74,6 +66,7 @@ InstallPreloadedVerifiedAppCommand::InstallPreloadedVerifiedAppCommand(
       manifest_url_(std::move(manifest_url)),
       manifest_contents_(std::move(manifest_contents)),
       expected_id_(std::move(expected_id)),
+      host_allowlist_(std::move(host_allowlist)),
       install_callback_(std::move(callback)),
       web_contents_lock_description_(
           std::make_unique<SharedWebContentsLockDescription>()),
@@ -150,23 +143,11 @@ void InstallPreloadedVerifiedAppCommand::OnManifestParsed(
   UpdateWebAppInfoFromManifest(*manifest, manifest_url_, web_app_info_.get());
 
   base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*web_app_info_);
-  base::EraseIf(icon_urls, [](const GURL& url) {
-    for (const auto& allowed_host : kHostAllowlist) {
-      if (url.DomainIs(allowed_host)) {
-        // Found a match, don't erase this url!
-        if (allowed_host == "127.0.0.1") {
-          CHECK_IS_TEST();
-        }
-        return false;
-      }
-    }
-    // No matches, erase this url!
-    return true;
+  base::EraseIf(icon_urls, [this](const GURL& url) {
+    return !base::Contains(host_allowlist_, url.host());
   });
 
   if (icon_urls.empty()) {
-    // TODO(melzhang): Add a new InstallResultCode for this error.
-    //
     // Abort as "not a valid manifest" if there are no icons to download, so we
     // can distinguish this case from having icons but failing to download
     // them.
