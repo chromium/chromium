@@ -65,6 +65,9 @@ install:
 	  "$(SRC_DIR)/remoting/host/linux/pipewire.conf.template" \
 	  "$(INSTALL_DIR)/pipewire.conf.template"
 	install -m 0644 \
+	  "$(SRC_DIR)/remoting/host/linux/pipewire-media-session.conf.template" \
+	  "$(INSTALL_DIR)/pipewire-media-session.conf.template"
+	install -m 0644 \
 	  "$(SRC_DIR)/remoting/host/linux/pipewire-pulse.conf.template" \
 	  "$(INSTALL_DIR)/pipewire-pulse.conf.template"
 	install -m 0644 \

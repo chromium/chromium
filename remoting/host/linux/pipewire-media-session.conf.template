@@ -1,0 +1,24 @@
+context.properties = {
+    remote.name = "$instance_name"
+}
+
+context.modules = [
+    { name = libpipewire-module-protocol-native }
+    { name = libpipewire-module-client-node }
+    { name = libpipewire-module-client-device }
+    { name = libpipewire-module-adapter }
+    { name = libpipewire-module-metadata }
+
+    { name = libpipewire-module-session-manager }
+]
+
+session.modules = {
+    default = [
+        flatpak                 # manages flatpak access
+        portal                  # manage portal permissions
+        suspend-node            # suspend inactive nodes
+        policy-node             # configure and link nodes
+        metadata                # export metadata API
+        streams-follow-default  # move streams when default changes
+    ]
+}
