@@ -440,7 +440,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     defaultBrowserControllerForBrowser:(Browser*)browser
                               delegate:
                                   (id<SettingsNavigationControllerDelegate>)
-                                      delegate {
+                                      delegate
+                          sourceForUMA:(DefaultBrowserPromoSource)source {
   DCHECK(browser);
   DefaultBrowserSettingsTableViewController* controller =
       [[DefaultBrowserSettingsTableViewController alloc] init];
@@ -451,6 +452,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                             delegate:delegate];
   [controller navigationItem].leftBarButtonItem =
       [navigationController cancelButton];
+  controller.source = source;
   return navigationController;
 }
 
