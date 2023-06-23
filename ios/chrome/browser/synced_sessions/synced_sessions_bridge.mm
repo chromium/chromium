@@ -53,10 +53,6 @@ void SyncedSessionsObserverBridge::OnPrimaryAccountChanged(
 
 #pragma mark - Signin and syncing status
 
-bool SyncedSessionsObserverBridge::HasSyncConsent() {
-  return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
-}
-
 void SyncedSessionsObserverBridge::OnForeignSessionChanged() {
   [owner_ reloadSessions];
 }

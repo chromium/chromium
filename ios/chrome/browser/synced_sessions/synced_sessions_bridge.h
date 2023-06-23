@@ -42,9 +42,6 @@ class SyncedSessionsObserverBridge : public signin::IdentityManager::Observer {
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
 
-  // Returns true if user has granted sync consent.
-  bool HasSyncConsent();
-
  private:
   void OnForeignSessionChanged();
 
