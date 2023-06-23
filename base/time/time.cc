@@ -164,9 +164,8 @@ Time Time::NowFromSystemTime() {
 time_t Time::ToTimeT() const {
   if (is_null())
     return 0;  // Preserve 0 so we can tell it doesn't exist.
-  if (!is_inf() && ((std::numeric_limits<int64_t>::max() -
-                     kTimeTToMicrosecondsOffset) > us_)) {
-    return static_cast<time_t>((*this - UnixEpoch()).InSeconds());
+  if (!is_inf()) {
+    return saturated_cast<time_t>((*this - UnixEpoch()).InSecondsFloored());
   }
   return (us_ < 0) ? std::numeric_limits<time_t>::min()
                    : std::numeric_limits<time_t>::max();

@@ -919,14 +919,66 @@ TEST_F(TimeTest, Min) {
   EXPECT_TRUE((kMin - Time::Now()).is_negative());
 }
 
-#if BUILDFLAG(IS_APPLE)
 TEST_F(TimeTest, TimeTOverflow) {
-  constexpr Time kMaxMinusOne =
-      Time::FromInternalValue(std::numeric_limits<int64_t>::max() - 1);
-  static_assert(!kMaxMinusOne.is_max());
-  EXPECT_EQ(std::numeric_limits<time_t>::max(), kMaxMinusOne.ToTimeT());
+  // We always expect Max and Min Time values to map to the extreme of the range
+  // of time_t because we have things that make this assumption - Even if such a
+  // time were representable in time_t.
+  EXPECT_EQ(std::numeric_limits<time_t>::max(), Time::Max().ToTimeT());
+  EXPECT_EQ(std::numeric_limits<time_t>::min(), Time::Min().ToTimeT());
+
+  // In the bad old days time_t was 32 bit. Occasionally it still is.
+  // Usually it is 64 bit. It must be one or the other.
+  constexpr bool time_t_is_32_bit = sizeof(time_t) == sizeof(int32_t);
+  static_assert(time_t_is_32_bit || sizeof(time_t) == sizeof(int64_t));
+
+  // base::Time internally represents time as microseconds since the Windows
+  // epoch as an int64_t. When time_t is a int64_t of seconds since the Unix
+  // epoch, time_t can represent the maxiumum value of base::Time. A 32 bit
+  // time_t can not represent it.
+
+  // If we have a 32 bit time_t, check that a non-infinite value of one
+  // microsecond less than the max value of a base::Time still maps to the max
+  // value of time_t.
+  if (time_t_is_32_bit) {
+    constexpr Time kMaxMinusOne =
+        Time() + base::Microseconds(std::numeric_limits<int64_t>::max() - 1);
+    static_assert(!kMaxMinusOne.is_max());
+    EXPECT_EQ(std::numeric_limits<time_t>::max(), kMaxMinusOne.ToTimeT());
+  }
+  // Converting a base::Time to a time_t subtracts the value of the UnixEpoch in
+  // microseconds since the Windows epoch from the current time value. As such
+  // we expect a value of the minimum time plus one, subtracted by the UnixEpoch
+  // value to be clamped by the TimeDelta math, meaning that we will see a
+  // minimum value in the time_t, 32 bit or 64 bit
+  constexpr Time kMinPlusOne =
+      Time() + base::Microseconds(std::numeric_limits<int64_t>::min() + 1);
+  static_assert(!kMinPlusOne.is_min());
+  EXPECT_EQ(std::numeric_limits<time_t>::min(), kMinPlusOne.ToTimeT());
+
+  // We also expect the same behaviour for Min plus the Unix Epoch.
+  constexpr Time kMinPlusUnix =
+      Time() + base::Microseconds(std::numeric_limits<int64_t>::min() +
+                                  Time::kTimeTToMicrosecondsOffset);
+  static_assert(!kMinPlusUnix.is_min());
+  EXPECT_EQ(std::numeric_limits<time_t>::min(), kMinPlusUnix.ToTimeT());
+
+  // We expect Min plus the UnixEpoch plus 1 in microseconds to convert back to
+  // one more than Min - a negative number of microseconds far before the
+  // Windows epoch of 1601-01-01. It will representable in seconds as a 64 bit
+  // time_t, but not on a 32 bit time_t, which can only represent values
+  // starting from 1901-12-13
+  constexpr Time kMinPlusUnixPlusOne =
+      Time() + base::Microseconds(std::numeric_limits<int64_t>::min() +
+                                  Time::kTimeTToMicrosecondsOffset + 1);
+  static_assert(!kMinPlusUnixPlusOne.is_min());
+  if (time_t_is_32_bit) {
+    EXPECT_EQ(std::numeric_limits<time_t>::min(),
+              kMinPlusUnixPlusOne.ToTimeT());
+  } else {
+    EXPECT_NE(std::numeric_limits<time_t>::min(),
+              kMinPlusUnixPlusOne.ToTimeT());
+  }
 }
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(TimeTest, FromLocalExplodedCrashOnAndroid) {
