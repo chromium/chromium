@@ -44,63 +44,6 @@ using indexed_db::PutVarInt;
 IndexedDBMetadataCoding::IndexedDBMetadataCoding() = default;
 IndexedDBMetadataCoding::~IndexedDBMetadataCoding() = default;
 
-Status IndexedDBMetadataCoding::CreateDatabase(
-    TransactionalLevelDBDatabase* db,
-    const std::string& origin_identifier,
-    const std::u16string& name,
-    int64_t version,
-    IndexedDBDatabaseMetadata* metadata) {
-  // TODO(jsbell): Don't persist metadata if open fails. http://crbug.com/395472
-  std::unique_ptr<LevelDBDirectTransaction> transaction =
-      db->class_factory()->CreateLevelDBDirectTransaction(db);
-
-  int64_t row_id = 0;
-  Status s = indexed_db::GetNewDatabaseId(transaction.get(), &row_id);
-  if (!s.ok())
-    return s;
-  DCHECK_GE(row_id, 0);
-
-  if (version == IndexedDBDatabaseMetadata::NO_VERSION)
-    version = IndexedDBDatabaseMetadata::DEFAULT_VERSION;
-
-  s = PutInt(transaction.get(),
-             DatabaseNameKey::Encode(origin_identifier, name), row_id);
-  if (!s.ok()) {
-    INTERNAL_READ_ERROR(CREATE_IDBDATABASE_METADATA);
-    return s;
-  }
-  s = PutVarInt(
-      transaction.get(),
-      DatabaseMetaDataKey::Encode(row_id, DatabaseMetaDataKey::USER_VERSION),
-      version);
-  if (!s.ok()) {
-    INTERNAL_READ_ERROR(CREATE_IDBDATABASE_METADATA);
-    return s;
-  }
-  s = PutVarInt(
-      transaction.get(),
-      DatabaseMetaDataKey::Encode(
-          row_id, DatabaseMetaDataKey::BLOB_KEY_GENERATOR_CURRENT_NUMBER),
-      DatabaseMetaDataKey::kBlobNumberGeneratorInitialNumber);
-  if (!s.ok()) {
-    INTERNAL_READ_ERROR(CREATE_IDBDATABASE_METADATA);
-    return s;
-  }
-
-  s = transaction->Commit();
-  if (!s.ok()) {
-    INTERNAL_WRITE_ERROR(CREATE_IDBDATABASE_METADATA);
-    return s;
-  }
-
-  // Note: |version| is not stored on purpose.
-  metadata->name = name;
-  metadata->id = row_id;
-  metadata->max_object_store_id = 0;
-
-  return s;
-}
-
 leveldb::Status IndexedDBMetadataCoding::SetDatabaseVersion(
     TransactionalLevelDBTransaction* transaction,
     int64_t row_id,

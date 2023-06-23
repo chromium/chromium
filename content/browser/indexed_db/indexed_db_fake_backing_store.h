@@ -37,6 +37,8 @@ class IndexedDBFakeBackingStore : public IndexedDBBackingStore {
 
   ~IndexedDBFakeBackingStore() override;
 
+  leveldb::Status CreateDatabase(
+      blink::IndexedDBDatabaseMetadata& metadata) override;
   leveldb::Status DeleteDatabase(
       const std::u16string& name,
       TransactionalLevelDBTransaction* transaction) override;

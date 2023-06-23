@@ -418,8 +418,13 @@ class CONTENT_EXPORT IndexedDBBackingStore {
     return active_blob_registry_.get();
   }
 
-  // Compact is public for testing.
+  // Virtual for testing..
   virtual void Compact();
+  // Creates a new database in the backing store. `metadata` is an in-out param.
+  // The `name` and `version` fields are inputs, while the `id` and
+  // `max_object_store_id` fields are outputs.
+  virtual leveldb::Status CreateDatabase(
+      blink::IndexedDBDatabaseMetadata& metadata);
   virtual leveldb::Status DeleteDatabase(
       const std::u16string& name,
       TransactionalLevelDBTransaction* transaction);

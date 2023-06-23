@@ -71,6 +71,11 @@ IndexedDBFakeBackingStore::IndexedDBFakeBackingStore(
                             task_runner) {}
 IndexedDBFakeBackingStore::~IndexedDBFakeBackingStore() = default;
 
+leveldb::Status IndexedDBFakeBackingStore::CreateDatabase(
+    blink::IndexedDBDatabaseMetadata& metadata) {
+  return leveldb::Status::OK();
+}
+
 leveldb::Status IndexedDBFakeBackingStore::DeleteDatabase(
     const std::u16string& name,
     TransactionalLevelDBTransaction* transaction) {

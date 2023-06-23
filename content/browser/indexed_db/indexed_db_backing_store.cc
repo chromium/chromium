@@ -1428,6 +1428,61 @@ bool IndexedDBBackingStore::RecordCorruptionInfo(
   return filesystem->WriteFileAtomically(info_path, std::move(output_js));
 }
 
+Status IndexedDBBackingStore::CreateDatabase(
+    blink::IndexedDBDatabaseMetadata& metadata) {
+  // TODO(jsbell): Don't persist metadata if open fails. http://crbug.com/395472
+  std::unique_ptr<LevelDBDirectTransaction> transaction =
+      db_->class_factory()->CreateLevelDBDirectTransaction(db_.get());
+
+  int64_t row_id = 0;
+  Status s = indexed_db::GetNewDatabaseId(transaction.get(), &row_id);
+  if (!s.ok()) {
+    return s;
+  }
+  DCHECK_GE(row_id, 0);
+
+  int64_t version = metadata.version;
+  if (version == IndexedDBDatabaseMetadata::NO_VERSION) {
+    version = IndexedDBDatabaseMetadata::DEFAULT_VERSION;
+  }
+
+  s = PutInt(transaction.get(),
+             DatabaseNameKey::Encode(origin_identifier_, metadata.name),
+             row_id);
+  if (!s.ok()) {
+    INTERNAL_READ_ERROR(CREATE_IDBDATABASE_METADATA);
+    return s;
+  }
+  s = PutVarInt(
+      transaction.get(),
+      DatabaseMetaDataKey::Encode(row_id, DatabaseMetaDataKey::USER_VERSION),
+      version);
+  if (!s.ok()) {
+    INTERNAL_READ_ERROR(CREATE_IDBDATABASE_METADATA);
+    return s;
+  }
+  s = PutVarInt(
+      transaction.get(),
+      DatabaseMetaDataKey::Encode(
+          row_id, DatabaseMetaDataKey::BLOB_KEY_GENERATOR_CURRENT_NUMBER),
+      DatabaseMetaDataKey::kBlobNumberGeneratorInitialNumber);
+  if (!s.ok()) {
+    INTERNAL_READ_ERROR(CREATE_IDBDATABASE_METADATA);
+    return s;
+  }
+
+  s = transaction->Commit();
+  if (!s.ok()) {
+    INTERNAL_WRITE_ERROR(CREATE_IDBDATABASE_METADATA);
+    return s;
+  }
+
+  metadata.id = row_id;
+  metadata.max_object_store_id = 0;
+
+  return s;
+}
+
 Status IndexedDBBackingStore::DeleteDatabase(
     const std::u16string& name,
     TransactionalLevelDBTransaction* transaction) {

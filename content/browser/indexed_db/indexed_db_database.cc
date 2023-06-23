@@ -1759,9 +1759,7 @@ Status IndexedDBDatabase::OpenInternal() {
   if (!s.ok() || found)
     return s;
 
-  return metadata_coding_->CreateDatabase(
-      backing_store_->db(), backing_store_->origin_identifier(), metadata_.name,
-      metadata_.version, &metadata_);
+  return backing_store_->CreateDatabase(metadata_);
 }
 
 std::unique_ptr<IndexedDBConnection> IndexedDBDatabase::CreateConnection(

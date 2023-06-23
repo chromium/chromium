@@ -40,14 +40,6 @@ class CONTENT_EXPORT IndexedDBMetadataCoding {
 
   virtual ~IndexedDBMetadataCoding();
 
-  // Creates a new database metadata entry and writes it to disk.
-  virtual leveldb::Status CreateDatabase(
-      TransactionalLevelDBDatabase* database,
-      const std::string& origin_identifier,
-      const std::u16string& name,
-      int64_t version,
-      blink::IndexedDBDatabaseMetadata* metadata);
-
   // Changes the database version to |version|.
   [[nodiscard]] virtual leveldb::Status SetDatabaseVersion(
       TransactionalLevelDBTransaction* transaction,
