@@ -277,6 +277,26 @@ ExtensionsMenuMainPageView::MessageSectionState GetMessageSectionState(
                                kUserCustomizedAccess;
 }
 
+void LogSiteAccessUpdate(PermissionsManager::UserSiteAccess site_access) {
+  switch (site_access) {
+    case PermissionsManager::UserSiteAccess::kOnClick:
+      base::RecordAction(
+          base::UserMetricsAction("Extensions.Menu.OnClickSelected"));
+      break;
+    case PermissionsManager::UserSiteAccess::kOnSite:
+      base::RecordAction(
+          base::UserMetricsAction("Extensions.Menu.OnSiteSelected"));
+      break;
+    case PermissionsManager::UserSiteAccess::kOnAllSites:
+      base::RecordAction(
+          base::UserMetricsAction("Extensions.Menu.OnAllSitesSelected"));
+      break;
+    default:
+      NOTREACHED() << "Unknown site access";
+      break;
+  }
+}
+
 }  // namespace
 
 ExtensionsMenuViewController::ExtensionsMenuViewController(
@@ -331,6 +351,8 @@ void ExtensionsMenuViewController::CloseBubble() {
 void ExtensionsMenuViewController::OnSiteAccessSelected(
     extensions::ExtensionId extension_id,
     PermissionsManager::UserSiteAccess site_access) {
+  LogSiteAccessUpdate(site_access);
+
   SitePermissionsHelper permissions(browser_->profile());
   permissions.UpdateSiteAccess(*GetExtension(browser_, extension_id),
                                GetActiveWebContents(), site_access);

@@ -8890,6 +8890,36 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Extensions.Menu.OnAllSitesSelected">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user clicked the &quot;on all sites&quot; option in an extension's site
+    permissions page in the extensions menu. This is recorded for both keyboard
+    and mouse activations.
+  </description>
+</action>
+
+<action name="Extensions.Menu.OnClickSelected">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user clicked the &quot;on click&quot; option in an extension's site
+    permissions page in the extensions menu. This is recorded for both keyboard
+    and mouse activations.
+  </description>
+</action>
+
+<action name="Extensions.Menu.OnSiteSelected">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user clicked the &quot;on site&quot; option in an extension's site
+    permissions page in the extensions menu. This is recorded for both keyboard
+    and mouse activations.
+  </description>
+</action>
+
 <action name="Extensions.NtpPromoClicked">
   <owner>archanasimha@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
