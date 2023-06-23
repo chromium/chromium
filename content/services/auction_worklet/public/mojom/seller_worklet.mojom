@@ -56,6 +56,22 @@ struct ComponentAuctionReportResultParams {
   bool has_modified_bid;
 };
 
+// Represents the time between SellerWorklet::ScoreAd and each of the
+// dependencies to SellerWorklet::ScoreAdIfReady, which can help to identify
+// the slowest dependency, both in absolute terms and relative to other
+// dependencies. Each of the latencies recorded here may be null if that
+// dependency didn't apply for this call to ScoreAd.
+struct ScoreAdDependencyLatencies {
+  // Load of Script
+  mojo_base.mojom.TimeDelta? code_ready_latency;
+
+  // Download of DirectFromSellerSignals
+  mojo_base.mojom.TimeDelta? direct_from_seller_signals_latency;
+
+  // Download of TrustedScoringSignals
+  mojo_base.mojom.TimeDelta? trusted_scoring_signals_latency;
+};
+
 // Interface for returning ScoreAd results. The advantage of having an interface
 // is that it makes ScoreAd() calls cancellable, and allows callbacks passed
 // over the Mojo pipe to be deleted when the Mojo pipe is, to avoid setting off
@@ -117,7 +133,7 @@ interface ScoreAdClient {
                     url.mojom.Url? debug_win_report_url,
                     array<PrivateAggregationRequest> pa_requests,
                     mojo_base.mojom.TimeDelta scoring_latency,
-                    mojo_base.mojom.TimeDelta trusted_signals_fetch_latency,
+                    ScoreAdDependencyLatencies score_ad_dependency_latencies,
                     array<string> errors);
 };
 

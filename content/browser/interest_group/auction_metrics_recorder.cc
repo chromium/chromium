@@ -160,6 +160,55 @@ void AuctionMetricsRecorder::OnAuctionEnd(AuctionResult auction_result) {
       /*set_mean_function=*/
       &UkmEntry::SetMeanTimeBidsQueuedWaitingForSellerWorkletInMillis);
 
+  MaybeSetMeanAndMaxLatency(score_ad_latency_aggregator_,
+                            /*set_mean_function=*/
+                            &UkmEntry::SetMeanScoreAdLatencyInMillis,
+                            /*set_max_function=*/
+                            &UkmEntry::SetMaxScoreAdLatencyInMillis);
+  MaybeSetMeanAndMaxLatency(
+      score_ad_flow_latency_aggregator_,
+      /*set_mean_function=*/&UkmEntry::SetMeanScoreAdFlowLatencyInMillis,
+      /*set_max_function=*/&UkmEntry::SetMaxScoreAdFlowLatencyInMillis);
+
+  MaybeSetMeanAndMaxLatency(score_ad_code_ready_latency_aggregator_,
+                            /*set_mean_function=*/
+                            &UkmEntry::SetMeanScoreAdCodeReadyLatencyInMillis,
+                            /*set_max_function=*/
+                            &UkmEntry::SetMaxScoreAdCodeReadyLatencyInMillis);
+  MaybeSetMeanAndMaxLatency(
+      score_ad_direct_from_seller_signals_latency_aggregator_,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanScoreAdDirectFromSellerSignalsLatencyInMillis,
+      /*set_max_function=*/
+      &UkmEntry::SetMaxScoreAdDirectFromSellerSignalsLatencyInMillis);
+  MaybeSetMeanAndMaxLatency(
+      score_ad_trusted_scoring_signals_latency_aggregator_,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanScoreAdTrustedScoringSignalsLatencyInMillis,
+      /*set_max_function=*/
+      &UkmEntry::SetMaxScoreAdTrustedScoringSignalsLatencyInMillis);
+
+  SetNumAndMaybeMeanLatency(
+      score_ad_code_ready_critical_path_aggregator_,
+      /*set_num_function=*/
+      &UkmEntry::SetNumScoreAdCodeReadyOnCriticalPath,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanScoreAdCodeReadyCriticalPathLatencyInMillis);
+  SetNumAndMaybeMeanLatency(
+      score_ad_direct_from_seller_signals_critical_path_aggregator_,
+      /*set_num_function=*/
+      &UkmEntry::SetNumScoreAdDirectFromSellerSignalsOnCriticalPath,
+      /*set_mean_function=*/
+      &UkmEntry::
+          SetMeanScoreAdDirectFromSellerSignalsCriticalPathLatencyInMillis);
+  SetNumAndMaybeMeanLatency(
+      score_ad_trusted_scoring_signals_critical_path_aggregator_,
+      /*set_num_function=*/
+      &UkmEntry::SetNumScoreAdTrustedScoringSignalsOnCriticalPath,
+      /*set_mean_function=*/
+      &UkmEntry::
+          SetMeanScoreAdTrustedScoringSignalsCriticalPathLatencyInMillis);
+
   auto* ukm_recorder = ukm::UkmRecorder::Get();
   builder_.Record(ukm_recorder->Get());
 }
@@ -314,6 +363,37 @@ void AuctionMetricsRecorder::RecordBidQueuedWaitingForSellerWorklet(
   bid_queued_waiting_for_seller_worklet_aggregator_.RecordLatency(delay);
 }
 
+void AuctionMetricsRecorder::RecordScoreAdFlowLatency(base::TimeDelta latency) {
+  score_ad_flow_latency_aggregator_.RecordLatency(latency);
+}
+
+void AuctionMetricsRecorder::RecordScoreAdLatency(base::TimeDelta latency) {
+  score_ad_latency_aggregator_.RecordLatency(latency);
+}
+
+void AuctionMetricsRecorder::RecordScoreAdDependencyLatencies(
+    const auction_worklet::mojom::ScoreAdDependencyLatencies&
+        score_ad_dependency_latencies) {
+  ScoreAdDependencyCriticalPath critical_path;
+
+  MaybeRecordScoreAdDependencyLatency(
+      ScoreAdDependencyCriticalPath::Dependency::kCodeReady,
+      score_ad_dependency_latencies.code_ready_latency,
+      score_ad_code_ready_latency_aggregator_, critical_path);
+
+  MaybeRecordScoreAdDependencyLatency(
+      ScoreAdDependencyCriticalPath::Dependency::kDirectFromSellerSignals,
+      score_ad_dependency_latencies.direct_from_seller_signals_latency,
+      score_ad_direct_from_seller_signals_latency_aggregator_, critical_path);
+
+  MaybeRecordScoreAdDependencyLatency(
+      ScoreAdDependencyCriticalPath::Dependency::kTrustedScoringSignals,
+      score_ad_dependency_latencies.trusted_scoring_signals_latency,
+      score_ad_trusted_scoring_signals_latency_aggregator_, critical_path);
+
+  RecordScoreAdDependencyLatencyCriticalPath(critical_path);
+}
+
 void AuctionMetricsRecorder::LatencyAggregator::RecordLatency(
     base::TimeDelta latency) {
   // Negative latencies are meaningless; don't record them at all.
@@ -412,6 +492,50 @@ void AuctionMetricsRecorder::RecordGenerateBidDependencyLatencyCriticalPath(
     case Dependency::kTrustedBiddingSignals:
       generate_bid_trusted_bidding_signals_critical_path_aggregator_
           .RecordLatency(critical_path_latency);
+      break;
+  }
+}
+
+void AuctionMetricsRecorder::MaybeRecordScoreAdDependencyLatency(
+    ScoreAdDependencyCriticalPath::Dependency dependency,
+    absl::optional<base::TimeDelta> latency,
+    LatencyAggregator& aggregator,
+    ScoreAdDependencyCriticalPath& critical_path) {
+  if (latency) {
+    aggregator.RecordLatency(*latency);
+    if (*latency >= critical_path.last_resolved_dependency_latency) {
+      critical_path.last_resolved_dependency = dependency;
+      critical_path.penultimate_resolved_dependency_latency =
+          critical_path.last_resolved_dependency_latency;
+      critical_path.last_resolved_dependency_latency = *latency;
+    } else if (*latency >
+               critical_path.penultimate_resolved_dependency_latency) {
+      critical_path.penultimate_resolved_dependency_latency = *latency;
+    }
+  }
+}
+
+void AuctionMetricsRecorder::RecordScoreAdDependencyLatencyCriticalPath(
+    ScoreAdDependencyCriticalPath& critical_path) {
+  if (!critical_path.last_resolved_dependency.has_value()) {
+    return;
+  }
+  base::TimeDelta critical_path_latency =
+      critical_path.last_resolved_dependency_latency -
+      critical_path.penultimate_resolved_dependency_latency;
+  using Dependency = ScoreAdDependencyCriticalPath::Dependency;
+  switch (*critical_path.last_resolved_dependency) {
+    case Dependency::kCodeReady:
+      score_ad_code_ready_critical_path_aggregator_.RecordLatency(
+          critical_path_latency);
+      break;
+    case Dependency::kDirectFromSellerSignals:
+      score_ad_direct_from_seller_signals_critical_path_aggregator_
+          .RecordLatency(critical_path_latency);
+      break;
+    case Dependency::kTrustedScoringSignals:
+      score_ad_trusted_scoring_signals_critical_path_aggregator_.RecordLatency(
+          critical_path_latency);
       break;
   }
 }

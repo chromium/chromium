@@ -3122,6 +3122,7 @@ void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("fledge", ScoreAdTraceEventName(*bid),
                                     bid_trace_id, "decision_logic_url",
                                     config_->decision_logic_url);
+  bid->seller_worklet_score_ad_start = base::TimeTicks::Now();
 
   ++bids_being_scored_;
   Bid* bid_raw = bid.get();
@@ -3221,7 +3222,8 @@ void InterestGroupAuction::OnScoreAdComplete(
     const absl::optional<GURL>& debug_win_report_url,
     PrivateAggregationRequests pa_requests,
     base::TimeDelta scoring_latency,
-    base::TimeDelta trusted_signals_fetch_latency,
+    auction_worklet::mojom::ScoreAdDependencyLatenciesPtr
+        score_ad_dependency_latencies,
     const std::vector<std::string>& errors) {
   DCHECK_GT(bids_being_scored_, 0);
 
@@ -3236,6 +3238,12 @@ void InterestGroupAuction::OnScoreAdComplete(
   std::unique_ptr<Bid> bid = std::move(score_ad_receivers_.current_context());
   score_ad_receivers_.Remove(score_ad_receivers_.current_receiver());
 
+  auction_metrics_recorder_->RecordScoreAdFlowLatency(
+      base::TimeTicks::Now() - bid->seller_worklet_score_ad_start);
+  auction_metrics_recorder_->RecordScoreAdLatency(scoring_latency);
+  auction_metrics_recorder_->RecordScoreAdDependencyLatencies(
+      *score_ad_dependency_latencies);
+
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", ScoreAdTraceEventName(*bid),
                                   bid->TraceId());
   if (bid->bid_role == Bid::BidRole::kEnforcedKAnon) {
@@ -3245,7 +3253,8 @@ void InterestGroupAuction::OnScoreAdComplete(
   }
   bid->bid_state->pa_timings(seller_phase()).script_run_time = scoring_latency;
   bid->bid_state->pa_timings(seller_phase()).signals_fetch_time =
-      trusted_signals_fetch_latency;
+      score_ad_dependency_latencies->trusted_scoring_signals_latency.value_or(
+          base::TimeDelta());
 
   --bids_being_scored_;
 
