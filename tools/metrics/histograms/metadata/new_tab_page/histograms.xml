@@ -747,7 +747,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.HistoryClusters.CartAssociationStatus"
-    units="NTPHistoryClustersModuleCartAssociationStatus"
+    enum="NTPHistoryClustersModuleCartAssociationStatus"
     expires_after="2023-08-08">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
