@@ -179,6 +179,7 @@ TEST_F(ArcBridgeHostImplTest, TestOnInstanceReady) {
     MAKE_INSTANCE_READY(PrintSpooler);
     MAKE_INSTANCE_READY(Process);
     MAKE_INSTANCE_READY(Property);
+    MAKE_INSTANCE_READY(RotationLock);
     MAKE_INSTANCE_READY(ScreenCapture);
     MAKE_INSTANCE_READY(Sharesheet);
     MAKE_INSTANCE_READY(StorageManager);

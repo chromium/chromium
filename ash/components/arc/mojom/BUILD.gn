@@ -54,6 +54,7 @@ mojom("mojom") {
     "privacy_items.mojom",
     "process.mojom",
     "property.mojom",
+    "rotation_lock.mojom",
     "scale_factor.mojom",
     "screen_capture.mojom",
     "sharesheet.mojom",
