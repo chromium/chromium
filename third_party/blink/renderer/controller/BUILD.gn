@@ -147,7 +147,6 @@ test("blink_unittests") {
 
   if (is_ios) {
     bundle_deps = [
-      ":blink_unittests_bundle_data",
       ":blink_unittests_pak_bundle_data",
       "//components/shared_highlighting/core/common:data_driven_testing_data",
       "//media/test:media_bundle_data",
@@ -155,6 +154,7 @@ test("blink_unittests") {
       "//third_party/blink/renderer/core:core_test_bundle_data",
       "//third_party/blink/renderer/core:paint_test_bundle_data",
       "//third_party/blink/renderer/modules:accessibility_selection_test_bundle_data",
+      "//third_party/blink/renderer/platform:blink_platform_unittests_bundle_data",
       "//third_party/text-fragments-polyfill:test_bundle_data",
     ]
   } else {
@@ -307,10 +307,5 @@ if (is_ios) {
     public_deps = [ "//content/shell:pak" ]
     sources = [ "$root_out_dir/content_shell.pak" ]
     outputs = [ "{{bundle_resources_dir}}/content_shell.pak" ]
-  }
-
-  bundle_data_from_filelist("blink_unittests_bundle_data") {
-    testonly = true
-    filelist_name = "blink_unittests_bundle_data.filelist"
   }
 }

@@ -19,9 +19,6 @@ def CheckChange(input_api, output_api):
         # pylint: disable=no-name-in-module,import-outside-toplevel
         from build.ios import presubmit_support
         results += presubmit_support.CheckBundleData(
-            input_api, output_api, 'controller/blink_unittests_bundle_data',
-            'controller')
-        results += presubmit_support.CheckBundleData(
             input_api, output_api,
             'platform/blink_platform_unittests_bundle_data', 'platform')
         results += presubmit_support.CheckBundleData(
