@@ -1220,7 +1220,17 @@ void FrameLoader::StopAllLoaders(bool abort_client) {
   }
 
   frame_->GetDocument()->CancelParsing();
-  frame_->DomWindow()->navigation()->InformAboutCanceledNavigation();
+
+  // `abort_client` is false only when we are stopping all loading in
+  // preparation for a frame swap. When a swap occurs, we're stopping all
+  // loading in this particular LocalFrame, but the conceptual frame is
+  // committing and continuing loading. We shouldn't treat this as a navigation
+  // cancellation in web-observable ways, so the navigation API should not do
+  // its cancelled navigation steps (e.g., firing a navigateerror event).
+  if (abort_client) {
+    frame_->DomWindow()->navigation()->InformAboutCanceledNavigation();
+  }
+
   if (document_loader_)
     document_loader_->StopLoading();
   if (abort_client)
