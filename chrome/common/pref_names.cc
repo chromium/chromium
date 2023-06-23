@@ -1231,6 +1231,9 @@ const char kBrowserColorScheme[] = "browser.theme.color_scheme";
 // SK_ColorTRANSPARENT means the user color has not been set.
 const char kUserColor[] = "browser.theme.user_color";
 
+// Enum tracking the color variant preference for the browser.
+extern const char kBrowserColorVariant[] = "browser.theme.color_variant";
+
 // Boolean pref tracking whether the grayscale theme has been enabled.
 const char kGrayscaleThemeEnabled[] = "browser.theme.is_grayscale";
 

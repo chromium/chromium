@@ -58,6 +58,16 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
     kDark = 2,
   };
 
+  // This is stored as an integer in the profile prefs, so entries should not be
+  // renumbered and numeric values should never be reused.
+  enum class BrowserColorVariant {
+    kSystem = 0,
+    kTonalSpot = 1,
+    kNeutral = 2,
+    kVibrant = 3,
+    kExpressive = 4,
+  };
+
   // This class keeps track of the number of existing |ThemeReinstaller|
   // objects. When that number reaches 0 then unused themes will be deleted.
   class ThemeReinstaller {
@@ -194,6 +204,15 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
   // Sets/gets the browser user color preference.
   virtual void SetUserColor(absl::optional<SkColor> user_color);
   virtual absl::optional<SkColor> GetUserColor() const;
+
+  // Sets/gets the browser kSchemeVariant preference.
+  void SetBrowserColorVariant(BrowserColorVariant color_variant);
+  BrowserColorVariant GetBrowserColorVariant() const;
+
+  // Convenience method that allows setting both the kUserColor and
+  // kSchemeVariant before propagating theme update notifications.
+  void SetUserColorAndBrowserColorVariant(SkColor user_color,
+                                          BrowserColorVariant color_variant);
 
   // Sets/gets the browser grayscale theme preference.
   virtual void SetIsGrayscale(bool is_grayscale);

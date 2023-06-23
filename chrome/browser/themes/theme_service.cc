@@ -540,6 +540,26 @@ absl::optional<SkColor> ThemeService::GetUserColor() const {
              : absl::optional<SkColor>(user_color);
 }
 
+void ThemeService::SetBrowserColorVariant(BrowserColorVariant color_variant) {
+  profile_->GetPrefs()->SetInteger(prefs::kBrowserColorVariant,
+                                   static_cast<int>(color_variant));
+  NotifyThemeChanged();
+}
+
+ThemeService::BrowserColorVariant ThemeService::GetBrowserColorVariant() const {
+  return static_cast<BrowserColorVariant>(
+      profile_->GetPrefs()->GetInteger(prefs::kBrowserColorVariant));
+}
+
+void ThemeService::SetUserColorAndBrowserColorVariant(
+    SkColor user_color,
+    BrowserColorVariant color_variant) {
+  profile_->GetPrefs()->SetInteger(prefs::kUserColor, user_color);
+  profile_->GetPrefs()->SetInteger(prefs::kBrowserColorVariant,
+                                   static_cast<int>(color_variant));
+  NotifyThemeChanged();
+}
+
 void ThemeService::SetIsGrayscale(bool is_grayscale) {
   profile_->GetPrefs()->SetBoolean(prefs::kGrayscaleThemeEnabled, is_grayscale);
   NotifyThemeChanged();
