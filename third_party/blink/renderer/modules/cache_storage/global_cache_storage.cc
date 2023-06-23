@@ -28,13 +28,13 @@ class GlobalCacheStorageImpl final
     GlobalCacheStorageImpl* supplement =
         Supplement<T>::template From<GlobalCacheStorageImpl>(supplementable);
     if (!supplement) {
-      supplement = MakeGarbageCollected<GlobalCacheStorageImpl>();
+      supplement = MakeGarbageCollected<GlobalCacheStorageImpl>(supplementable);
       Supplement<T>::ProvideTo(supplementable, supplement);
     }
     return *supplement;
   }
 
-  GlobalCacheStorageImpl() : Supplement<T>(nullptr) {}
+  GlobalCacheStorageImpl(T& supplementable) : Supplement<T>(supplementable) {}
   ~GlobalCacheStorageImpl() = default;
 
   CacheStorage* Caches(T& fetching_scope, ExceptionState& exception_state) {
