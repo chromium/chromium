@@ -28,6 +28,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/ui_base_features.h"
 
 namespace {
 
@@ -50,8 +51,15 @@ SearchCompanionSidePanelCoordinator::SearchCompanionSidePanelCoordinator(
       // TODO(b/269331995): Localize menu item label.
       name_(l10n_util::GetStringUTF16(IDS_SIDE_PANEL_COMPANION_TITLE)),
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      icon_(vector_icons::kGoogleSearchCompanionMonochromeLogoIcon),
-      disabled_icon_(vector_icons::kGoogleSearchCompanionMonochromeLogoIcon),
+      icon_(features::IsChromeRefresh2023()
+                ? vector_icons::
+                      kGoogleSearchCompanionMonochromeLogoChromeRefreshIcon
+                : vector_icons::kGoogleSearchCompanionMonochromeLogoIcon),
+      disabled_icon_(
+          features::IsChromeRefresh2023()
+              ? vector_icons::
+                    kGoogleSearchCompanionMonochromeLogoChromeRefreshIcon
+              : vector_icons::kGoogleSearchCompanionMonochromeLogoIcon),
 #else
       icon_(vector_icons::kSearchIcon),
       disabled_icon_(vector_icons::kSearchIcon),
