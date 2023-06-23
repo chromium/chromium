@@ -34,6 +34,12 @@ ProfileSelections BuildProfileSelectionsLegacy();
 // Returns given name of the primary account associated with the profile.
 std::string GetAccountGivenName(Profile& profile);
 
+// Asserts that `is_child` matches the child status of the primary user.
+// Terminates user session in case of status mismatch in order to prevent
+// supervision incidents. Relevant on Chrome OS platform that has the concept
+// of the user.
+void AssertChildStatusOfTheUser(Profile* profile, bool is_child);
+
 }  // namespace supervised_user
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_BROWSER_UTILS_H_

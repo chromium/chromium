@@ -59,6 +59,8 @@ static_library("fetcher") {
 
 static_library("browser") {
   sources = [
+    "child_account_service.cc",
+    "child_account_service.h",
     "kids_chrome_management_client.cc",
     "kids_chrome_management_client.h",
     "kids_management_url_checker_client.cc",
@@ -105,6 +107,8 @@ static_library("browser") {
 
   deps = [
     ":fetcher",
+    ":list_family_members_service",
+    ":supervised_user_preferences",
     "//base",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/google/core/common",

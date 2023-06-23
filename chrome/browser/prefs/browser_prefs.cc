@@ -223,7 +223,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #endif
 
@@ -1676,7 +1676,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  ChildAccountService::RegisterProfilePrefs(registry);
+  supervised_user::ChildAccountService::RegisterProfilePrefs(registry);
   supervised_user::SupervisedUserService::RegisterProfilePrefs(registry);
 #endif
 

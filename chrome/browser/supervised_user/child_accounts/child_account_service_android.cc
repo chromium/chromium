@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "chrome/android/chrome_jni_headers/ChildAccountService_jni.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 

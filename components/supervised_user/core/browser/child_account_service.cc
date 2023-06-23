@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
 
 #include <functional>
 #include <memory>
@@ -17,11 +17,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -38,42 +33,45 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
-#include "content/public/browser/storage_partition.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_type.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif
+namespace supervised_user {
 
 namespace {
 using ::base::BindRepeating;
-using ::supervised_user::ListFamilyMembersService;
 }  // namespace
 
 ChildAccountService::ChildAccountService(
-    Profile* profile,
-    ListFamilyMembersService* list_family_members_service)
-    : profile_(profile),
-      list_family_members_service_(list_family_members_service),
-      identity_manager_(IdentityManagerFactory::GetForProfile(profile)) {
+    PrefService& user_prefs,
+    SupervisedUserService& supervised_user_service,
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    base::OnceCallback<void(bool)> check_user_child_status_callback,
+    std::unique_ptr<PermissionRequestCreator> permission_creator,
+    ListFamilyMembersService& list_family_members_service)
+    : list_family_members_service_(list_family_members_service),
+      identity_manager_(identity_manager),
+      user_prefs_(user_prefs),
+      supervised_user_service_(supervised_user_service),
+      url_loader_factory_(url_loader_factory),
+      permission_creator_(std::move(permission_creator)),
+      check_user_child_status_callback_(
+          std::move(check_user_child_status_callback)) {
   set_family_members_subscription_ =
       list_family_members_service_->SubscribeToSuccessfulFetches(BindRepeating(
-          &supervised_user::RegisterFamilyPrefs,
-          std::ref(*profile->GetPrefs())));  // list_family_members_service_ is
-                                             // an instance of a keyed service
-                                             // and PrefService outlives it.
+          &RegisterFamilyPrefs,
+          std::ref(user_prefs)));  // list_family_members_service_ is
+                                   // an instance of a keyed service
+                                   // and PrefService outlives it.
 }
 
 ChildAccountService::~ChildAccountService() = default;
 
 void ChildAccountService::Init() {
-  SupervisedUserServiceFactory::GetForProfile(profile_)->SetDelegate(this);
+  supervised_user_service_->SetDelegate(this);
   identity_manager_->AddObserver(this);
 
-  AssertChildStatusOfTheUser(profile_->IsChild());
+  std::move(check_user_child_status_callback_)
+      .Run(supervised_user_service_->IsSubjectToParentalControls());
 
   // If we're already signed in, check the account immediately just to be sure.
   // (We might have missed an update before registering as an observer.)
@@ -87,20 +85,20 @@ void ChildAccountService::Init() {
 }
 
 bool ChildAccountService::IsChildAccountStatusKnown() {
-  return supervised_user::IsChildAccountStatusKnown(*profile_->GetPrefs());
+  return supervised_user::IsChildAccountStatusKnown(user_prefs_.get());
 }
 
 void ChildAccountService::Shutdown() {
   list_family_members_service_->Cancel();
 
   identity_manager_->RemoveObserver(this);
-  SupervisedUserServiceFactory::GetForProfile(profile_)->SetDelegate(nullptr);
+  supervised_user_service_->SetDelegate(nullptr);
   DCHECK(!active_);
 }
 
 void ChildAccountService::AddChildStatusReceivedCallback(
     base::OnceClosure callback) {
-  if (supervised_user::IsChildAccountStatusKnown(*profile_->GetPrefs())) {
+  if (supervised_user::IsChildAccountStatusKnown(user_prefs_.get())) {
     std::move(callback).Run();
   } else {
     status_received_callback_list_.push_back(std::move(callback));
@@ -128,7 +126,7 @@ base::CallbackListSubscription ChildAccountService::ObserveGoogleAuthState(
 }
 
 void ChildAccountService::SetActive(bool active) {
-  if (!profile_->IsChild() && !active_) {
+  if (!supervised_user_service_->IsSubjectToParentalControls() && !active_) {
     return;
   }
   if (active_ == active) {
@@ -137,19 +135,9 @@ void ChildAccountService::SetActive(bool active) {
   active_ = active;
   if (active_) {
     list_family_members_service_->Start();
-
-    supervised_user::SupervisedUserService* service =
-        SupervisedUserServiceFactory::GetForProfile(profile_);
-    std::unique_ptr<supervised_user::PermissionRequestCreator> creator;
-    if (base::FeatureList::IsEnabled(
-            supervised_user::kEnableCreatePermissionRequestFetcher)) {
-      creator = std::make_unique<supervised_user::PermissionRequestCreatorImpl>(
-          identity_manager_, profile_->GetURLLoaderFactory());
-    } else {
-      creator = PermissionRequestCreatorApiary::CreateWithProfile(profile_);
-    }
-    service->remote_web_approvals_manager().AddApprovalRequestCreator(
-        std::move(creator));
+    CHECK(permission_creator_);
+    supervised_user_service_->remote_web_approvals_manager()
+        .AddApprovalRequestCreator(std::move(permission_creator_));
   } else {
     list_family_members_service_->Cancel();
   }
@@ -157,11 +145,12 @@ void ChildAccountService::SetActive(bool active) {
 
 void ChildAccountService::SetSupervisionStatusAndNotifyObservers(
     bool supervision_status) {
-  if (profile_->IsChild() != supervision_status) {
+  if (supervised_user_service_->IsSubjectToParentalControls() !=
+      supervision_status) {
     if (supervision_status) {
-      supervised_user::EnableParentalControls(*profile_->GetPrefs());
+      EnableParentalControls(user_prefs_.get());
     } else {
-      supervised_user::DisableParentalControls(*profile_->GetPrefs());
+      DisableParentalControls(user_prefs_.get());
     }
   }
 
@@ -224,21 +213,4 @@ void ChildAccountService::OnAccountsInCookieUpdated(
   google_auth_state_observers_.Notify();
 }
 
-void ChildAccountService::AssertChildStatusOfTheUser(bool is_child) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  user_manager::User* user =
-      ash::ProfileHelper::Get()->GetUserByProfile(profile_);
-  if (user && is_child != (user->GetType() == user_manager::USER_TYPE_CHILD)) {
-    LOG(FATAL) << "User child flag has changed: " << is_child;
-  }
-  if (!user && ash::ProfileHelper::IsUserProfile(profile_)) {
-    LOG(DFATAL) << "User instance not found while setting child account flag.";
-  }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool is_child_session = chromeos::BrowserParamsProxy::Get()->SessionType() ==
-                          crosapi::mojom::SessionType::kChildSession;
-  if (is_child_session != is_child) {
-    LOG(FATAL) << "User child flag has changed: " << is_child;
-  }
-#endif
-}
+}  // namespace supervised_user

@@ -14,13 +14,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_utils.h"
@@ -189,8 +189,9 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
   base::Value::List section_list;
 
   base::Value::List* section_general = AddSection(&section_list, "General");
-  AddSectionEntry(section_general, "Child detection enabled",
-                  ChildAccountService::IsChildAccountDetectionEnabled());
+  AddSectionEntry(
+      section_general, "Child detection enabled",
+      supervised_user::ChildAccountService::IsChildAccountDetectionEnabled());
 
   Profile* profile = Profile::FromWebUI(web_ui());
 

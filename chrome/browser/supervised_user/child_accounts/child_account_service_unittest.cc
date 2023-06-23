@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
 
 #include <string>
 #include <vector>
@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -22,6 +21,7 @@
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -83,7 +83,7 @@ class ChildAccountServiceTest : public ::testing::Test {
   signin::IdentityTestEnvironment identity_test_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<ChildAccountService> child_account_service_;
+  raw_ptr<supervised_user::ChildAccountService> child_account_service_;
 };
 
 TEST_F(ChildAccountServiceTest, GetGoogleAuthState) {
@@ -93,14 +93,14 @@ TEST_F(ChildAccountServiceTest, GetGoogleAuthState) {
   signin::SetListAccountsResponseNoAccounts(test_url_loader_factory);
 
   // Initial state should be PENDING.
-  EXPECT_EQ(ChildAccountService::AuthState::PENDING,
+  EXPECT_EQ(supervised_user::ChildAccountService::AuthState::PENDING,
             child_account_service_->GetGoogleAuthState());
 
   // Wait until the response to the ListAccount request triggered by the call
   // above comes back.
   content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(ChildAccountService::AuthState::NOT_AUTHENTICATED,
+  EXPECT_EQ(supervised_user::ChildAccountService::AuthState::NOT_AUTHENTICATED,
             child_account_service_->GetGoogleAuthState());
 
   // A valid, signed-in account means authenticated.
@@ -112,7 +112,7 @@ TEST_F(ChildAccountServiceTest, GetGoogleAuthState) {
                                                       test_url_loader_factory);
   accounts_cookie_mutator->TriggerCookieJarUpdate();
   content::RunAllTasksUntilIdle();
-  EXPECT_EQ(ChildAccountService::AuthState::AUTHENTICATED,
+  EXPECT_EQ(supervised_user::ChildAccountService::AuthState::AUTHENTICATED,
             child_account_service_->GetGoogleAuthState());
 
   // An invalid (but signed-in) account means not authenticated.
@@ -124,7 +124,7 @@ TEST_F(ChildAccountServiceTest, GetGoogleAuthState) {
       test_url_loader_factory);
   accounts_cookie_mutator->TriggerCookieJarUpdate();
   content::RunAllTasksUntilIdle();
-  EXPECT_EQ(ChildAccountService::AuthState::NOT_AUTHENTICATED,
+  EXPECT_EQ(supervised_user::ChildAccountService::AuthState::NOT_AUTHENTICATED,
             child_account_service_->GetGoogleAuthState());
 
   // A valid but not signed-in account means not authenticated.
@@ -136,6 +136,6 @@ TEST_F(ChildAccountServiceTest, GetGoogleAuthState) {
       test_url_loader_factory);
   accounts_cookie_mutator->TriggerCookieJarUpdate();
   content::RunAllTasksUntilIdle();
-  EXPECT_EQ(ChildAccountService::AuthState::NOT_AUTHENTICATED,
+  EXPECT_EQ(supervised_user::ChildAccountService::AuthState::NOT_AUTHENTICATED,
             child_account_service_->GetGoogleAuthState());
 }

@@ -108,7 +108,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -158,6 +157,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/sync/service/sync_service.h"
 #include "components/user_manager/common_types.h"
 #include "components/user_manager/known_user.h"
@@ -1846,7 +1846,7 @@ bool UserSessionManager::MaybeStartNewUserOnboarding(Profile* profile) {
   if (!user_manager->IsCurrentUserNew()) {
     return false;
   }
-  ChildAccountService* child_service =
+  supervised_user::ChildAccountService* child_service =
       ChildAccountServiceFactory::GetForProfile(profile);
   child_service->AddChildStatusReceivedCallback(
       base::BindOnce(&UserSessionManager::ChildAccountStatusReceivedCallback,

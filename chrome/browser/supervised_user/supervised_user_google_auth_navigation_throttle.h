@@ -14,7 +14,10 @@
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "content/public/browser/navigation_throttle.h"
 
+namespace supervised_user {
 class ChildAccountService;
+}  // namespace supervised_user
+
 class Profile;
 
 class SupervisedUserGoogleAuthNavigationThrottle
@@ -53,7 +56,7 @@ class SupervisedUserGoogleAuthNavigationThrottle
 
   void OnReauthenticationFailed();
 
-  raw_ptr<ChildAccountService> child_account_service_;
+  raw_ptr<supervised_user::ChildAccountService> child_account_service_;
   base::CallbackListSubscription google_auth_state_subscription_;
 
 #if BUILDFLAG(IS_ANDROID)
