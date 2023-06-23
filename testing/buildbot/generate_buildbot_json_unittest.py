@@ -54,6 +54,12 @@ class TestCase(fake_filesystem_unittest.TestCase):
     """
     contents = fakebb.generate_outputs()
     with fake_filesystem_unittest.Pause(self.fs):
+      try:
+        os.mkdir(self.output_dir)
+      except FileExistsError:
+        if not os.path.isdir(self.output_dir):
+          raise
+
       fakebb.write_json_result(contents)
 
 
@@ -2581,6 +2587,22 @@ FOO_TEST_SUITE_WITH_MIXIN = """\
 }
 """
 
+MIXIN_ARGS = """\
+{
+  'builder_mixin': {
+    'args': [],
+  },
+}
+"""
+
+MIXIN_ARGS_NOT_LIST = """\
+{
+  'builder_mixin': {
+    'args': 'I am not a list',
+  },
+}
+"""
+
 # These mixins are invalid; if passed to check_input_file_consistency, they will
 # fail. These are used for output file consistency checks.
 SWARMING_MIXINS = """\
@@ -2608,6 +2630,21 @@ SWARMING_MIXINS = """\
   'waterfall_mixin': {
     'swarming': {
       'value': 'waterfall',
+    },
+  },
+}
+"""
+
+SWARMING_NAMED_CACHES = """\
+{
+  'builder_mixin': {
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'cache',
+          'file': 'cache_file',
+        },
+      ],
     },
   },
 }
@@ -2976,6 +3013,15 @@ class MixinTests(TestCase):
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
+  def test_swarming_named_caches(self):
+    fbb = FakeBBGen(self.args,
+                    FOO_GTESTS_BUILDER_MIXIN_WATERFALL,
+                    FOO_TEST_SUITE_WITH_SWARMING_NAMED_CACHES,
+                    LUCI_MILO_CFG,
+                    mixins=SWARMING_NAMED_CACHES)
+    fbb.check_output_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
   def test_mixin_append_swarming_named_caches(self):
     fbb = FakeBBGen(self.args,
                     FOO_GTESTS_BUILDER_MIXIN_WATERFALL,
@@ -3007,6 +3053,27 @@ class MixinTests(TestCase):
     with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
                                 'Key "args" in \$mixin_append must be a list.'):
       fbb.check_output_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
+  def test_args_field_not_list(self):
+    fbb = FakeBBGen(self.args,
+                    FOO_GTESTS_BUILDER_MIXIN_WATERFALL,
+                    FOO_TEST_SUITE_WITH_ARGS,
+                    LUCI_MILO_CFG,
+                    mixins=MIXIN_ARGS_NOT_LIST)
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                '"args" must be a list'):
+      fbb.check_output_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
+  def test_args_field_merging(self):
+    fbb = FakeBBGen(self.args,
+                    FOO_GTESTS_BUILDER_MIXIN_WATERFALL,
+                    FOO_TEST_SUITE_WITH_ARGS,
+                    LUCI_MILO_CFG,
+                    mixins=MIXIN_ARGS)
+    self.regen_test_json(fbb)
+    fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
   def test_mixin_append_test_field_not_list(self):
