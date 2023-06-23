@@ -17,6 +17,7 @@
 #import "base/observer_list.h"
 #import "base/path_service.h"
 #import "base/sequence_checker.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
@@ -42,19 +43,30 @@ namespace {
 // true.
 const int kRemoveSessionStateDataDelay = 10;
 
-// Writes `sessionData` to `cacheDirectory`.  If -writeToFile fails, deletes
+// Returns the session identifier for `web_state` as a string.
+std::string SessionIdentifierForWebState(const web::WebState* web_state) {
+  DCHECK(web_state->GetUniqueIdentifier().is_valid());
+  DCHECK_GT(web_state->GetUniqueIdentifier().id(), 0);
+
+  static_assert(sizeof(SessionID::id_type) == sizeof(int32_t));
+  const uint32_t identifier =
+      static_cast<uint32_t>(web_state->GetUniqueIdentifier().id());
+
+  return base::StringPrintf("%08u", identifier);
+}
+
+// Writes `session_data` to `file_path`.  If -writeToFile fails, deletes
 // the old (now stale) data.
-void WriteSessionData(NSData* sessionData,
-                      base::FilePath cacheDirectory,
-                      NSString* sessionID) {
+void WriteSessionData(NSData* session_data, base::FilePath file_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  if (!base::DirectoryExists(cacheDirectory)) {
-    bool success = base::CreateDirectory(cacheDirectory);
+  const base::FilePath directory = file_path.DirName();
+  if (!base::DirectoryExists(directory)) {
+    bool success = base::CreateDirectory(directory);
     if (!success) {
       DLOG(ERROR) << "Error creating session cache directory "
-                  << cacheDirectory.AsUTF8Unsafe();
+                  << directory.AsUTF8Unsafe();
       return;
     }
   }
@@ -63,25 +75,25 @@ void WriteSessionData(NSData* sessionData,
       NSDataWritingAtomic |
       NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication;
 
-  base::FilePath filePath =
-      cacheDirectory.Append(base::SysNSStringToUTF8(sessionID));
-  NSString* filePathString = base::mac::FilePathToNSString(filePath);
+  NSString* file_path_string = base::mac::FilePathToNSString(file_path);
   NSError* error = nil;
-  if (![sessionData writeToFile:filePathString options:options error:&error]) {
+  if (![session_data writeToFile:file_path_string
+                         options:options
+                           error:&error]) {
     DLOG(WARNING) << "Error writing session data: "
-                  << base::SysNSStringToUTF8(filePathString) << ": "
+                  << base::SysNSStringToUTF8(file_path_string) << ": "
                   << base::SysNSStringToUTF8([error description]);
-    // If -writeToFile failed, this webState's session data is now stale.
-    // Delete it and revert to legacy session restore.
-    base::DeleteFile(filePath);
+    // If -writeToFile failed, this session data is now stale. Delete it and
+    // revert to legacy session restore.
+    base::DeleteFile(file_path);
     return;
   }
 }
 
 // Helper function to implement -purgeCacheExcept: on a background sequence.
 void PurgeCacheOnBackgroundSequenceExcept(
-    const base::FilePath& cache_directory,
-    const std::set<base::FilePath>& files_to_keep) {
+    base::FilePath cache_directory,
+    std::set<base::FilePath> files_to_keep) {
   if (!base::DirectoryExists(cache_directory))
     return;
 
@@ -139,28 +151,50 @@ void PurgeCacheOnBackgroundSequenceExcept(
 - (void)persistSessionStateData:(NSData*)data
                     forWebState:(const web::WebState*)webState {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  NSString* sessionID = webState->GetStableIdentifier();
-  if (!data || !sessionID || !_taskRunner)
+  if (!data || !_taskRunner) {
     return;
+  }
 
-  // Copy ivars used by the block so that it does not reference `self`.
-  const base::FilePath cacheDirectory = _cacheDirectory;
-
-  // Save the session to disk.
-  _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
-                          WriteSessionData(data, cacheDirectory, sessionID);
-                        }));
+  _taskRunner->PostTask(
+      FROM_HERE, base::BindOnce(&WriteSessionData, data,
+                                _cacheDirectory.Append(
+                                    SessionIdentifierForWebState(webState))));
 }
 
 - (NSData*)sessionStateDataForWebState:(const web::WebState*)webState {
-  NSString* sessionID = webState->GetStableIdentifier();
-  base::FilePath filePath =
-      _cacheDirectory.Append(base::SysNSStringToUTF8(sessionID));
-  NSString* filePathString = base::mac::FilePathToNSString(filePath);
-  return [NSData dataWithContentsOfFile:filePathString];
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  const base::FilePath filePath =
+      _cacheDirectory.Append(SessionIdentifierForWebState(webState));
+  NSData* data =
+      [NSData dataWithContentsOfFile:base::mac::FilePathToNSString(filePath)];
+
+  if (!data) {
+    // Until M-115, the file name was derived from GetStableIdentifier()
+    // instead of GetUniqueIndentifier(). So if the session cannot be loaded
+    // with the new path, check if it exists with the old path, and then
+    // rename the file.
+    //
+    // This code is only reachable if new serialisation code has never been
+    // enabled (because otherwise the file would have been migrated already)
+    // and thus GetStableIdentifier() is still valid and can be used to load
+    // the file.
+    const base::FilePath alternateFilePath = _cacheDirectory.Append(
+        base::SysNSStringToUTF8(webState->GetStableIdentifier()));
+
+    data = [NSData dataWithContentsOfFile:base::mac::FilePathToNSString(
+                                              alternateFilePath)];
+    if (data && _taskRunner) {
+      _taskRunner->PostTask(FROM_HERE,
+                            base::BindOnce(base::IgnoreResult(&base::Move),
+                                           alternateFilePath, filePath));
+    }
+  }
+
+  return data;
 }
 
 - (void)purgeUnassociatedData {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (!_taskRunner)
     return;
   [self purgeCacheExcept:[self liveSessionIDs]];
@@ -168,7 +202,6 @@ void PurgeCacheOnBackgroundSequenceExcept(
 
 - (void)removeSessionStateDataForWebState:(const web::WebState*)webState {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-
   if (!_taskRunner)
     return;
 
@@ -180,20 +213,19 @@ void PurgeCacheOnBackgroundSequenceExcept(
     return;
   }
 
-  NSString* sessionID = webState->GetStableIdentifier();
-
-  base::FilePath filePath =
-      _cacheDirectory.Append(base::SysNSStringToUTF8(sessionID));
-  _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
-                          base::DeleteFile(filePath);
-                        }));
+  _taskRunner->PostTask(
+      FROM_HERE, base::BindOnce(base::IgnoreResult(&base::DeleteFile),
+                                _cacheDirectory.Append(
+                                    SessionIdentifierForWebState(webState))));
 }
 
 - (void)setDelayRemove:(BOOL)delayRemove {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _delayRemove = delayRemove;
 }
 
 - (void)shutdown {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _taskRunner = nullptr;
   _browserState = nullptr;
 }
@@ -201,17 +233,28 @@ void PurgeCacheOnBackgroundSequenceExcept(
 #pragma mark - Private
 
 // Returns a set of all known tab ids.
-- (NSSet*)liveSessionIDs {
+- (std::set<std::string>)liveSessionIDs {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   DCHECK(_browserState) << "-liveSessionIDs called after -shutdown";
 
-  NSMutableSet* liveSessionIDs = [[NSMutableSet alloc] init];
+  std::set<std::string> liveSessionIDs;
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(self.browserState);
   for (Browser* browser : browserList->AllRegularBrowsers()) {
     WebStateList* webStateList = browser->GetWebStateList();
     for (int index = 0; index < webStateList->count(); ++index) {
       web::WebState* webState = webStateList->GetWebStateAt(index);
-      [liveSessionIDs addObject:webState->GetStableIdentifier()];
+      liveSessionIDs.insert(SessionIdentifierForWebState(webState));
+
+      // Since until M-115, the filename was derived from GetStableIdentifier()
+      // and since the file are renamed only when loaded (which happens only
+      // for realized WebState), we have to also preserve any file named after
+      // GetStableIdentifier().
+      //
+      // The file are renamed when loaded, so eventually those paths won't
+      // correspond to existing files.
+      liveSessionIDs.insert(
+          base::SysNSStringToUTF8(webState->GetStableIdentifier()));
     }
   }
 
@@ -219,7 +262,17 @@ void PurgeCacheOnBackgroundSequenceExcept(
     WebStateList* webStateList = browser->GetWebStateList();
     for (int index = 0; index < webStateList->count(); ++index) {
       web::WebState* webState = webStateList->GetWebStateAt(index);
-      [liveSessionIDs addObject:webState->GetStableIdentifier()];
+      liveSessionIDs.insert(SessionIdentifierForWebState(webState));
+
+      // Since until M-115, the filename was derived from GetStableIdentifier()
+      // and since the file are renamed only when loaded (which happens only
+      // for realized WebState), we have to also preserve any file named after
+      // GetStableIdentifier().
+      //
+      // The file are renamed when loaded, so eventually those paths won't
+      // correspond to existing files.
+      liveSessionIDs.insert(
+          base::SysNSStringToUTF8(webState->GetStableIdentifier()));
     }
   }
   return liveSessionIDs;
@@ -227,16 +280,14 @@ void PurgeCacheOnBackgroundSequenceExcept(
 
 // Deletes any files from the session cache directory that don't exist in
 // `liveSessionIDs`.
-- (void)purgeCacheExcept:(NSSet*)liveSessionIDs {
+- (void)purgeCacheExcept:(std::set<std::string>)liveSessionIDs {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-
   if (!_taskRunner)
     return;
 
   std::set<base::FilePath> filesToKeep;
-  for (NSString* sessionID : liveSessionIDs) {
-    filesToKeep.insert(
-        _cacheDirectory.Append(base::SysNSStringToUTF8(sessionID)));
+  for (const std::string& sessionID : liveSessionIDs) {
+    filesToKeep.insert(_cacheDirectory.Append(sessionID));
   }
 
   _taskRunner->PostTask(FROM_HERE,

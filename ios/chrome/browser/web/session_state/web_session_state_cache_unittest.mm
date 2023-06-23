@@ -7,7 +7,9 @@
 #import <Foundation/Foundation.h>
 
 #import "base/files/file_util.h"
+#import "base/mac/foundation_util.h"
 #import "base/path_service.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
@@ -15,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -44,10 +47,11 @@ class WebSessionStateCacheTest : public PlatformTest {
   }
 
   bool StorageExists() {
-    NSString* sessionID = web_state_.get()->GetStableIdentifier();
-    base::FilePath filePath =
-        session_cache_directory_.Append(base::SysNSStringToUTF8(sessionID));
-    return base::PathExists(filePath);
+    std::string identifier = base::StringPrintf(
+        "%08u", static_cast<uint32_t>(web_state_->GetUniqueIdentifier().id()));
+
+    base::FilePath file_path = session_cache_directory_.Append(identifier);
+    return base::PathExists(file_path);
   }
 
   void TearDown() override {
@@ -108,6 +112,34 @@ TEST_F(WebSessionStateCacheTest, CacheDelayRemove) {
     FlushRunLoops();
     return !StorageExists();
   }));
+}
+
+// Tests that the file is correctly migrated.
+TEST_F(WebSessionStateCacheTest, MigrateSessionPreM116) {
+  WebSessionStateCache* cache = GetSessionCache();
+
+  const char data_str[] = "foo";
+  EXPECT_FALSE(StorageExists());
+  EXPECT_TRUE(base::CreateDirectory(session_cache_directory_));
+
+  NSError* error = nil;
+  NSData* data = [NSData dataWithBytes:data_str length:strlen(data_str)];
+  NSString* legacy_file_path =
+      base::mac::FilePathToNSString(session_cache_directory_.Append(
+          base::SysNSStringToUTF8(web_state_->GetStableIdentifier())));
+  NSDataWritingOptions options =
+      NSDataWritingAtomic |
+      NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication;
+  [data writeToFile:legacy_file_path options:options error:&error];
+  EXPECT_FALSE(error);
+  EXPECT_FALSE(StorageExists());
+
+  NSData* loaded_data = [cache sessionStateDataForWebState:web_state_.get()];
+  EXPECT_TRUE(loaded_data);
+  EXPECT_NSEQ(loaded_data, data);
+
+  FlushRunLoops();
+  EXPECT_TRUE(StorageExists());
 }
 
 }  // namespace
