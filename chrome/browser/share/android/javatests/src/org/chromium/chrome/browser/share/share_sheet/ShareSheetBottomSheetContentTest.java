@@ -57,6 +57,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Unit tests {@link ShareSheetBottomSheetContent}.
@@ -132,6 +133,30 @@ public final class ShareSheetBottomSheetContentTest {
                 new ShareSheetBottomSheetContent(mActivity, new MockLargeIconBridge(), null,
                         new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"")
                                 .setSingleImageUri(sImageUri)
+                                .setFileContentType(fileContentType)
+                                .build(),
+                        mFeatureEngagementTracker);
+
+        shareSheetBottomSheetContent.createRecyclerViews(ImmutableList.of(), ImmutableList.of(),
+                ImmutableSet.of(ContentType.IMAGE), fileContentType, DetailedContentType.IMAGE,
+                mShareSheetLinkToggleCoordinator);
+
+        TextView titleView =
+                shareSheetBottomSheetContent.getContentView().findViewById(R.id.title_preview);
+        TextView subtitleView =
+                shareSheetBottomSheetContent.getContentView().findViewById(R.id.subtitle_preview);
+        assertEquals("", titleView.getText());
+        assertEquals("image", subtitleView.getText());
+    }
+
+    @Test
+    @MediumTest
+    public void createRecyclerViews_multipleImageShare() {
+        String fileContentType = "image/jpeg";
+        ShareSheetBottomSheetContent shareSheetBottomSheetContent =
+                new ShareSheetBottomSheetContent(mActivity, new MockLargeIconBridge(), null,
+                        new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"")
+                                .setFileUris(new ArrayList<>(List.of(sImageUri, sImageUri)))
                                 .setFileContentType(fileContentType)
                                 .build(),
                         mFeatureEngagementTracker);

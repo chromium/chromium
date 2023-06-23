@@ -248,7 +248,9 @@ public class ShareParams {
         if (getSingleImageUri() != null) {
             return getSingleImageUri();
         }
-        if (getFileUris() != null && getFileUris().size() == 1 && getFileContentType() != null
+
+        // For cases where multiple images are shared, return the first image.
+        if (getFileUris() != null && getFileUris().size() > 0 && getFileContentType() != null
                 && getFileContentType().startsWith("image")) {
             return getFileUris().get(0);
         }
