@@ -8,6 +8,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/default_browser/utils_test_support.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -217,4 +218,55 @@ TEST_F(DefaultBrowserUtilsTest, ManualRecentTimestampForKeyOver6Hours) {
   EXPECT_FALSE(HasRecentTimestampForKey(kTestTimestampKey));
 }
 
+// Test `CalculatePromoStatistics` when feature flag is disabled.
+TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_FlagDisabled) {
+  feature_list_.InitWithFeatures({},
+                                 {kDefaultBrowserTriggerCriteriaExperiment});
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.promoDisplayCount);
+    EXPECT_EQ(0, promo_stats.numDaysSinceLastPromo);
+  }
+
+  LogDefaultBrowserPromoDisplayed();
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.promoDisplayCount);
+    EXPECT_EQ(0, promo_stats.numDaysSinceLastPromo);
+  }
+}
+
+// Test `CalculatePromoStatistics` when feature flag is enabled.
+TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_FlagEnabled) {
+  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
+                                 {});
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.promoDisplayCount);
+    EXPECT_EQ(0, promo_stats.numDaysSinceLastPromo);
+  }
+
+  NSTimeInterval secondsPerDay = 24 * 60 * 60;
+  NSDate* yesterday =
+      [[NSDate alloc] initWithTimeIntervalSinceNow:-secondsPerDay];
+  SetObjectInStorageForKey(kLastTimeUserInteractedWithPromo, yesterday);
+
+  LogDefaultBrowserPromoDisplayed();
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(1, promo_stats.promoDisplayCount);
+    EXPECT_EQ(1, promo_stats.numDaysSinceLastPromo);
+  }
+
+  LogDefaultBrowserPromoDisplayed();
+  LogUserInteractionWithFullscreenPromo();
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(2, promo_stats.promoDisplayCount);
+    EXPECT_EQ(0, promo_stats.numDaysSinceLastPromo);
+  }
+}
 }  // namespace

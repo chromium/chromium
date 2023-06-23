@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/feature_list.h"
+#import "ios/chrome/browser/default_browser/promo_statistics.h"
 
 namespace feature_engagement {
 class Tracker;
@@ -58,6 +59,13 @@ enum class IOSDefaultBrowserVideoPromoAction {
 
 // The feature parameter to activate the remind me later button.
 extern const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[];
+
+// Visible for testing
+// Key in storage containing an NSDate indicating the last time a user
+// interacted with ANY promo. The string value is kept from when the promos
+// first launched to avoid changing the behavior for users that have already
+// seen the promo.
+extern NSString* const kLastTimeUserInteractedWithPromo;
 
 // Logs the timestamp of opening an HTTP(S) link sent and opened by the app.
 void LogOpenHTTPURLFromExternalURL();
@@ -222,5 +230,22 @@ DefaultPromoTypeForUMA GetDefaultPromoTypeForUMA(DefaultPromoType type);
 void LogDefaultBrowserPromoHistogramForAction(
     DefaultPromoType type,
     IOSDefaultBrowserPromoAction action);
+
+// Below collect and compute data to record for an experiment. It is potentially
+// a lot of data but this is planned as a short and small experiment.
+
+// Returns string representation of the enum value.
+const std::string IOSDefaultBrowserPromoActionToString(
+    IOSDefaultBrowserPromoAction action);
+
+// Returns PromoStatistics object with all properties calculated.
+PromoStatistics* CalculatePromoStatistics();
+
+// Records given promo stats for given action into UMA histograms.
+void RecordPromoStatsToUMAForAction(PromoStatistics* promo_stats,
+                                    IOSDefaultBrowserPromoAction action);
+
+// Records given promo stats for "Appear" action into UMA histograms.
+void RecordPromoStatsToUMAForAppear(PromoStatistics* promo_stats);
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_UTILS_H_

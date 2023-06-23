@@ -10,7 +10,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -64,6 +63,7 @@
       dismissViewControllerAnimated:YES
                          completion:nil];
   self.defaultBrowerPromoViewController = nil;
+  self.promoStats = nil;
   [super stop];
 }
 
@@ -78,6 +78,10 @@
   // This ensures that a modal swipe dismiss will also be logged.
   LogUserInteractionWithFullscreenPromo();
 
+  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    RecordPromoStatsToUMAForAction(self.promoStats,
+                                   IOSDefaultBrowserPromoAction::kDismiss);
+  }
   [self.handler hidePromo];
 }
 
@@ -93,7 +97,10 @@
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
                 options:{}
       completionHandler:nil];
-
+  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    RecordPromoStatsToUMAForAction(self.promoStats,
+                                   IOSDefaultBrowserPromoAction::kActionButton);
+  }
   [self.handler hidePromo];
 }
 
@@ -103,6 +110,11 @@
   base::RecordAction(
       base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Cancel"));
   LogUserInteractionWithFullscreenPromo();
+
+  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    RecordPromoStatsToUMAForAction(self.promoStats,
+                                   IOSDefaultBrowserPromoAction::kCancel);
+  }
 
   [self.handler hidePromo];
 }
@@ -133,6 +145,14 @@
       base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Impression"));
   base::UmaHistogramEnumeration("IOS.DefaultBrowserPromo.Shown",
                                 DefaultPromoTypeForUMA::kGeneral);
+
+  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    // `CalculatePromoStatistics` should be called before
+    // `LogDefaultBrowserPromoDisplayed` which will modify storage data.
+    self.promoStats = CalculatePromoStatistics();
+    RecordPromoStatsToUMAForAppear(self.promoStats);
+  }
+
   LogDefaultBrowserPromoDisplayed();
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();

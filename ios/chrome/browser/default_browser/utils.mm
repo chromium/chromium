@@ -11,6 +11,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
+#import "base/strings/strcat.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -64,13 +65,6 @@ NSString* const kLastSignificantUserEventAllTabs =
 NSString* const kLastSignificantUserEventVideo =
     @"lastSignificantUserEventVideo";
 
-// Key in storage containing an NSDate indicating the last time a user
-// interacted with ANY promo. The string value is kept from when the promos
-// first launched to avoid changing the behavior for users that have already
-// seen the promo.
-NSString* const kLastTimeUserInteractedWithPromo =
-    @"lastTimeUserInteractedWithFullscreenPromo";
-
 // Key in storage containing a bool indicating if the user has
 // previously interacted with a regular fullscreen promo.
 NSString* const kUserHasInteractedWithFullscreenPromo =
@@ -123,6 +117,9 @@ NSString* const kTimestampAppLaunchOnColdStart =
 
 const char kDefaultBrowserPromoForceShowPromo[] =
     "default-browser-promo-force-show-promo";
+
+// Action string for "Appear" event of the promo.
+const char kAppearAction[] = "Appear";
 
 // Maximum number of past event timestamps to record.
 const size_t kMaxPastTimestampsToRecord = 10;
@@ -342,7 +339,31 @@ base::TimeDelta ComputeCooldown() {
   return kFullscreenPromoCoolDown;
 }
 
+// Returns number of days since user last intereacted with one of the promos.
+int NumDaysSincePromoInteraction() {
+  NSDate* timestamp =
+      GetObjectFromStorageForKey<NSDate>(kLastTimeUserInteractedWithPromo);
+
+  if (timestamp == nil) {
+    return 0;
+  }
+
+  NSDateComponents* components =
+      [NSCalendar.currentCalendar components:NSCalendarUnitDay
+                                    fromDate:timestamp
+                                      toDate:[NSDate date]
+                                     options:0];
+  if (!components.day || components.day < 0) {
+    return 0;
+  }
+
+  return components.day;
+}
+
 }  // namespace
+
+NSString* const kLastTimeUserInteractedWithPromo =
+    @"lastTimeUserInteractedWithFullscreenPromo";
 
 void LogOpenHTTPURLFromExternalURL() {
   SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, [NSDate date]);
@@ -775,4 +796,57 @@ void LogDefaultBrowserPromoHistogramForAction(
     default:
       NOTREACHED_NORETURN();
   }
+}
+
+const std::string IOSDefaultBrowserPromoActionToString(
+    IOSDefaultBrowserPromoAction action) {
+  switch (action) {
+    case IOSDefaultBrowserPromoAction::kActionButton:
+      return "PrimaryAction";
+    case IOSDefaultBrowserPromoAction::kCancel:
+      return "Cancel";
+    case IOSDefaultBrowserPromoAction::kDismiss:
+      return "Dismiss";
+    case IOSDefaultBrowserPromoAction::kRemindMeLater:
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+void RecordPromoStatsToUMAForActionString(PromoStatistics* promo_stats,
+                                          const std::string& action_str) {
+  if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    return;
+  }
+  std::string histogram_prefix =
+      base::StrCat({"IOS.DefaultBrowserPromo.", action_str});
+
+  base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, ".PromoDisplayCount"}),
+      promo_stats.promoDisplayCount);
+  base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, ".LastPromoInteractionNumDays"}),
+      promo_stats.numDaysSinceLastPromo);
+}
+
+PromoStatistics* CalculatePromoStatistics() {
+  if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    return nil;
+  }
+
+  PromoStatistics* promo_stats = [[PromoStatistics alloc] init];
+  promo_stats.promoDisplayCount = DisplayedPromoCount();
+  promo_stats.numDaysSinceLastPromo = NumDaysSincePromoInteraction();
+
+  return promo_stats;
+}
+
+void RecordPromoStatsToUMAForAction(PromoStatistics* promo_stats,
+                                    IOSDefaultBrowserPromoAction action) {
+  RecordPromoStatsToUMAForActionString(
+      promo_stats, IOSDefaultBrowserPromoActionToString(action));
+}
+
+void RecordPromoStatsToUMAForAppear(PromoStatistics* promo_stats) {
+  RecordPromoStatsToUMAForActionString(promo_stats, kAppearAction);
 }

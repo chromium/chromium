@@ -589,6 +589,26 @@ chromium-metrics-reviews@google.com.
   <summary>The default browser promo type shown to the user.</summary>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserPromo.{PromoAction}.{PromoStat}"
+    units="count" expires_after="2023-12-01">
+  <owner>gayane@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logs all {PromoStat} metrics when the {PromoAction} action happens in a
+    default browser promo.
+  </summary>
+  <token key="PromoAction">
+    <variant name="Accepted"/>
+    <variant name="Appear"/>
+    <variant name="Cancel"/>
+    <variant name="Dismiss"/>
+  </token>
+  <token key="PromoStat">
+    <variant name="LastPromoNumDays"/>
+    <variant name="PromoDisplayCount"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserVideoPromo.Fullscreen"
     enum="IOSDefaultBrowserVideoPromoAction" expires_after="2023-12-01">
   <owner>cheickcisse@google.com</owner>
