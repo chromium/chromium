@@ -94,6 +94,10 @@ class CompanionPageHandler
   // subsequent navigations on the main frame.
   void NotifyURLChanged(bool is_full_reload);
 
+  // Registers a WebContentsModalDialogManager for our WebContents in order to
+  // display web modal dialogs triggered by it.
+  void RegisterModalDialogManager(Browser* browser);
+
   // Get the current browser associated with the WebUI.
   Browser* GetBrowser();
   // Get the profile associated with the WebUI.
