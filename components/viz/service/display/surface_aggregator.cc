@@ -169,8 +169,8 @@ bool CalculateQuadSpaceDamageRect(
 // Create a clip rect for an aggregated quad from the original clip rect and
 // the clip rect from the surface it's on.
 absl::optional<gfx::Rect> CalculateClipRect(
-    const absl::optional<gfx::Rect>& surface_clip,
-    const absl::optional<gfx::Rect>& quad_clip,
+    const absl::optional<gfx::Rect> surface_clip,
+    const absl::optional<gfx::Rect> quad_clip,
     const gfx::Transform& target_transform) {
   absl::optional<gfx::Rect> out_clip;
   if (surface_clip)
@@ -208,7 +208,7 @@ SharedQuadState* CopyAndScaleSharedQuadState(
     const gfx::Transform& target_transform,
     const gfx::Rect& quad_layer_rect,
     const gfx::Rect& visible_quad_layer_rect,
-    const absl::optional<gfx::Rect>& added_clip_rect,
+    const absl::optional<gfx::Rect> added_clip_rect,
     const MaskFilterInfoExt& mask_filter_info_ext,
     AggregatedRenderPass* dest_render_pass) {
   auto* shared_quad_state = dest_render_pass->CreateAndAppendSharedQuadState();
@@ -242,7 +242,7 @@ SharedQuadState* CopySharedQuadState(
     const SharedQuadState* source_sqs,
     uint32_t client_namespace_id,
     const gfx::Transform& target_transform,
-    const absl::optional<gfx::Rect>& added_clip_rect,
+    const absl::optional<gfx::Rect> added_clip_rect,
     const MaskFilterInfoExt& mask_filter_info,
     AggregatedRenderPass* dest_render_pass) {
   return CopyAndScaleSharedQuadState(
@@ -299,7 +299,7 @@ bool ChangeInMergeState(ResolvedPassData& resolved_pass) {
 void UpdateNeedsRedraw(
     ResolvedPassData& resolved_pass,
     AggregatedRenderPass* dest_pass,
-    const absl::optional<gfx::Rect>& dest_root_target_clip_rect) {
+    const absl::optional<gfx::Rect> dest_root_target_clip_rect) {
   // |dest_root_target_clip_rect| is the bounding box on the root surface where
   // this render pass can be rendered into. It includes all ancestors' render
   // pass output rects, RenderPassDrawQuad rect, SurfaceDrawQuad rect, and clip
@@ -393,7 +393,7 @@ gfx::Rect TransformRectToDestRootTargetSpace(
     const gfx::Rect& rect_in_target_space,
     const gfx::Transform& target_to_dest_transform,
     const gfx::Transform& dest_to_root_target_transform,
-    const absl::optional<gfx::Rect>& dest_root_target_clip_rect) {
+    const absl::optional<gfx::Rect> dest_root_target_clip_rect) {
   gfx::Transform target_to_dest_root_target_transform =
       dest_to_root_target_transform * target_to_dest_transform;
 
@@ -453,7 +453,7 @@ void SurfaceAggregator::AddRenderPassFilterDamageToDamageList(
     const ResolvedFrameData& resolved_frame,
     const CompositorRenderPassDrawQuad* render_pass_quad,
     const gfx::Transform& parent_target_transform,
-    const absl::optional<gfx::Rect>& dest_root_target_clip_rect,
+    const absl::optional<gfx::Rect> dest_root_target_clip_rect,
     const gfx::Transform& dest_transform_to_root_target) {
   const CompositorRenderPassId child_pass_id = render_pass_quad->render_pass_id;
   const ResolvedPassData& child_resolved_pass =
@@ -509,7 +509,7 @@ void SurfaceAggregator::AddRenderPassFilterDamageToDamageList(
 void SurfaceAggregator::AddSurfaceDamageToDamageList(
     const gfx::Rect& default_damage_rect,
     const gfx::Transform& parent_target_transform,
-    const absl::optional<gfx::Rect>& dest_root_target_clip_rect,
+    const absl::optional<gfx::Rect> dest_root_target_clip_rect,
     const gfx::Transform& dest_transform_to_root_target,
     ResolvedFrameData* resolved_frame) {
   gfx::Rect damage_rect;
@@ -729,8 +729,8 @@ void SurfaceAggregator::HandleSurfaceQuad(
     uint32_t embedder_client_namespace_id,
     float parent_device_scale_factor,
     const gfx::Transform& target_transform,
-    const absl::optional<gfx::Rect>& added_clip_rect,
-    const absl::optional<gfx::Rect>& dest_root_target_clip_rect,
+    const absl::optional<gfx::Rect> added_clip_rect,
+    const absl::optional<gfx::Rect> dest_root_target_clip_rect,
     AggregatedRenderPass* dest_pass,
     bool ignore_undamaged,
     gfx::Rect* damage_rect_in_quad_space,
@@ -822,8 +822,8 @@ void SurfaceAggregator::EmitSurfaceContent(
     const SurfaceDrawQuad* surface_quad,
     uint32_t embedder_client_namespace_id,
     const gfx::Transform& target_transform,
-    const absl::optional<gfx::Rect>& added_clip_rect,
-    const absl::optional<gfx::Rect>& dest_root_target_clip_rect,
+    const absl::optional<gfx::Rect> added_clip_rect,
+    const absl::optional<gfx::Rect> dest_root_target_clip_rect,
     AggregatedRenderPass* dest_pass,
     bool ignore_undamaged,
     gfx::Rect* damage_rect_in_quad_space,
@@ -1074,7 +1074,7 @@ void SurfaceAggregator::EmitDefaultBackgroundColorQuad(
     const SurfaceDrawQuad* surface_quad,
     uint32_t embedder_client_namespace_id,
     const gfx::Transform& target_transform,
-    const absl::optional<gfx::Rect>& clip_rect,
+    const absl::optional<gfx::Rect> clip_rect,
     AggregatedRenderPass* dest_pass,
     const MaskFilterInfoExt& mask_filter_info) {
   TRACE_EVENT1("viz", "SurfaceAggregator::EmitDefaultBackgroundColorQuad",
@@ -1099,7 +1099,7 @@ void SurfaceAggregator::EmitGutterQuadsIfNecessary(
     const SharedQuadState* primary_shared_quad_state,
     uint32_t embedder_client_namespace_id,
     const gfx::Transform& target_transform,
-    const absl::optional<gfx::Rect>& clip_rect,
+    const absl::optional<gfx::Rect> clip_rect,
     SkColor4f background_color,
     AggregatedRenderPass* dest_pass,
     const MaskFilterInfoExt& mask_filter_info) {
@@ -1324,8 +1324,8 @@ void SurfaceAggregator::CopyQuadsToPass(
     AggregatedRenderPass* dest_pass,
     float parent_device_scale_factor,
     const gfx::Transform& target_transform,
-    const absl::optional<gfx::Rect>& clip_rect,
-    const absl::optional<gfx::Rect>& dest_root_target_clip_rect,
+    const absl::optional<gfx::Rect> clip_rect,
+    const absl::optional<gfx::Rect> dest_root_target_clip_rect,
     const Surface* surface,
     const MaskFilterInfoExt& parent_mask_filter_info_ext) {
   const CompositorRenderPass& source_pass = resolved_pass.render_pass();
