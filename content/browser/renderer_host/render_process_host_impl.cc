@@ -1274,14 +1274,14 @@ void InvokeBadMojoMessageCallbackForTesting(int render_process_id,
 
 void LogDelayReasonForFastShutdown(
     const RenderProcessHostImpl::DelayShutdownReason& reason) {
-  base::UmaHistogramEnumeration(
+  UMA_HISTOGRAM_ENUMERATION(
       "BrowserRenderProcessHost.FastShutdownIfPossible.DelayReason", reason);
 }
 
 void LogDelayReasonForCleanup(
     const RenderProcessHostImpl::DelayShutdownReason& reason) {
-  base::UmaHistogramEnumeration("BrowserRenderProcessHost.Cleanup.DelayReason",
-                                reason);
+  UMA_HISTOGRAM_ENUMERATION("BrowserRenderProcessHost.Cleanup.DelayReason",
+                            reason);
 }
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
