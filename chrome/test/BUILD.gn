@@ -10476,8 +10476,6 @@ if (!is_android) {
 
     if (is_mac) {
       sources += [
-        "../browser/focus_ring_browsertest_mac.h",
-        "../browser/focus_ring_browsertest_mac.mm",
         "../browser/global_keyboard_shortcuts_interactive_uitest_mac.mm",
         "../browser/notifications/notification_interactive_uitest_mac.mm",
         "../browser/spellchecker/spellcheck_mac_view_interactive_uitest.mm",

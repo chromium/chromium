@@ -86,33 +86,19 @@ Color LayoutThemeMac::PlatformGrammarMarkerUnderlineColor() const {
 
 bool LayoutThemeMac::IsAccentColorCustomized(
     mojom::blink::ColorScheme color_scheme) const {
-  if (@available(macOS 10.14, *)) {
-    static const Color kControlBlueAccentColor =
-        GetSystemColor(MacSystemColorID::kControlAccentBlueColor, color_scheme);
-    if (kControlBlueAccentColor ==
-        GetSystemColor(MacSystemColorID::kControlAccentColor, color_scheme)) {
-      return false;
-    }
-  } else {
-    NSInteger user_custom_color = [[NSUserDefaults standardUserDefaults]
-        integerForKey:@"AppleAquaColorVariant"];
-    if (user_custom_color == NSBlueControlTint ||
-        user_custom_color == NSDefaultControlTint) {
-      return false;
-    }
+  static const Color kControlBlueAccentColor =
+      GetSystemColor(MacSystemColorID::kControlAccentBlueColor, color_scheme);
+  if (kControlBlueAccentColor ==
+      GetSystemColor(MacSystemColorID::kControlAccentColor, color_scheme)) {
+    return false;
   }
+
   return true;
 }
 
 Color LayoutThemeMac::GetSystemAccentColor(
     mojom::blink::ColorScheme color_scheme) const {
-  if (@available(macOS 10.14, *)) {
-    return GetSystemColor(MacSystemColorID::kControlAccentColor, color_scheme);
-  } else {
-    return Color::FromRGBA32(
-        static_cast<RGBA32>([[NSUserDefaults standardUserDefaults]
-            integerForKey:@"AppleAquaColorVariant"]));
-  }
+  return GetSystemColor(MacSystemColorID::kControlAccentColor, color_scheme);
 }
 
 Color LayoutThemeMac::GetCustomFocusRingColor(

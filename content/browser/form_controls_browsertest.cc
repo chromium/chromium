@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
-#include "content/browser/form_controls_browsertest_mac.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
@@ -191,11 +190,6 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Radio) {
 #define MAYBE_DarkModeTextSelection DarkModeTextSelection
 #endif
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_DarkModeTextSelection) {
-#if BUILDFLAG(IS_MAC)
-  if (!MacOSVersionSupportsDarkMode())
-    return;
-#endif
-
   if (SkipTestForOldAndroidVersions())
     return;
 
