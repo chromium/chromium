@@ -6861,8 +6861,6 @@
       'chrome_profile_generator_tests': {},
       'chromium_gtests': {},
       'chromium_gtests_for_devices_with_graphical_output': {},
-      'fieldtrial_android_tests': {},
-      'fieldtrial_webview_tests': {},
       'linux_flavor_specific_chromium_gtests': {},
       'system_webview_shell_instrumentation_tests': {}, # Not an experimental test
       'webengine_android_gtests': {},
@@ -6882,6 +6880,7 @@
       'android_specific_chromium_gtests': {},  # Already includes gl_gtests.
       'chromium_gtests': {},
       'chromium_gtests_for_devices_with_graphical_output': {},
+      'fieldtrial_android_tests': {},
       'linux_flavor_specific_chromium_gtests': {},
       'system_webview_shell_instrumentation_tests': {}, # Not an experimental test
       'webengine_android_gtests': {},
