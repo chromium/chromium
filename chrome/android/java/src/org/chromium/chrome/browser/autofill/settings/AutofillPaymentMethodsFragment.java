@@ -150,8 +150,6 @@ public class AutofillPaymentMethodsFragment
                     R.string.autofill_settings_page_enable_payment_method_mandatory_reauth_label);
             mandatoryReauthSwitch.setSummary(
                     R.string.autofill_settings_page_enable_payment_method_mandatory_reauth_sublabel);
-            mandatoryReauthSwitch.setChecked(
-                    PersonalDataManager.isPaymentMethodsMandatoryReauthEnabled());
             mandatoryReauthSwitch.setKey(PREF_MANDATORY_REAUTH);
             // We always display the toggle, but the toggle is only enabled when Autofill credit
             // card is enabled AND the device supports biometric auth or screen lock. If either of
@@ -162,6 +160,18 @@ public class AutofillPaymentMethodsFragment
             mandatoryReauthSwitch.setOnPreferenceChangeListener(
                     this::onMandatoryReauthSwitchToggled);
             getPreferenceScreen().addPreference(mandatoryReauthSwitch);
+
+            // Every {@link SwitchPreferenceCompat} on a {@link PreferenceScreen} has a pref that is
+            // automatically added to the {@link SharedPreferences}. When a switch is added, by
+            // default its checked state is reset to the saved pref value irrespective of whether or
+            // not the switch's checked state was set before adding the switch. Setting the checked
+            // state after adding the switch updates the underlying pref as well.
+            // If a user opts in to mandatory reauth during the checkout flow, since the switch's
+            // underlying pref is still false, the switch does not reflect the opt-in. Set switch's
+            // checked state after adding it to the screen so the underlying pref value is also
+            // updated and is in sync with the mandatory reauth user pref.
+            mandatoryReauthSwitch.setChecked(
+                    PersonalDataManager.isPaymentMethodsMandatoryReauthEnabled());
         }
 
         for (CreditCard card : PersonalDataManager.getInstance().getCreditCardsForSettings()) {
