@@ -1,4 +1,4 @@
-caption: Enable post-quantum key agreement enabled for TLS
+caption: Enable post-quantum key agreement for TLS
 default: null
 desc: |-
   This policy configures whether <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will offer Kyber, a post-quantum key agreement algorithm, in TLS. This allows supporting servers to protect user traffic from being later decrypted by quantum computers.
@@ -22,11 +22,11 @@ features:
 future_on:
 - fuchsia
 items:
-- caption: Use Default Value for Kyber post-quantum key agreement enabled for TLS
+- caption: Use Default Value for Kyber post-quantum key agreement for TLS
   value: null
-- caption: Enable Kyber post-quantum key agreement enabled for TLS
+- caption: Enable Kyber post-quantum key agreement for TLS
   value: true
-- caption: Disable Kyber post-quantum key agreement enabled for TLS
+- caption: Disable Kyber post-quantum key agreement for TLS
   value: false
 owners:
 - file://crypto/OWNERS
