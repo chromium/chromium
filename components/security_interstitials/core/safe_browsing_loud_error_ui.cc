@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_resources.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
@@ -56,6 +57,8 @@ SafeBrowsingLoudErrorUI::SafeBrowsingLoudErrorUI(
                               controller),
       created_prior_to_navigation_(created_prior_to_navigation) {
   user_made_decision_ = false;
+  interstitial_interaction_data_ =
+      std::make_unique<InterstitialInteractionMap>();
   controller->metrics_helper()->RecordUserDecision(MetricsHelper::SHOW);
   controller->metrics_helper()->RecordUserInteraction(
       MetricsHelper::TOTAL_VISITS);
@@ -128,6 +131,10 @@ void SafeBrowsingLoudErrorUI::PopulateStringsForHtml(
 
 void SafeBrowsingLoudErrorUI::HandleCommand(
     SecurityInterstitialCommand command) {
+  if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry)) {
+    UpdateInterstitialInteractionData(command);
+  }
+
   switch (command) {
     case CMD_PROCEED: {
       // User pressed on the button to proceed.
@@ -242,6 +249,7 @@ void SafeBrowsingLoudErrorUI::HandleCommand(
     case CMD_ERROR:
     case CMD_TEXT_FOUND:
     case CMD_TEXT_NOT_FOUND:
+    case CMD_CLOSE_INTERSTITIAL_WITHOUT_UI:
       break;
   }
 }
@@ -356,6 +364,24 @@ void SafeBrowsingLoudErrorUI::PopulateBillingLoadTimeData(
   load_time_data.Set("closeDetails", "");
   load_time_data.Set("explanationParagraph", "");
   load_time_data.Set("finalParagraph", "");
+}
+
+void SafeBrowsingLoudErrorUI::UpdateInterstitialInteractionData(
+    SecurityInterstitialCommand command) {
+  int new_occurrence_count = 1;
+  int64_t new_first_timestamp = base::Time::Now().ToJavaTime();
+  int64_t new_last_timestamp = base::Time::Now().ToJavaTime();
+  // If this is not the first occurrence, use data in the map for correct
+  // occurrence and first timestamp values.
+  if (auto interaction_data = interstitial_interaction_data_->find(command);
+      interaction_data != interstitial_interaction_data_->end()) {
+    new_occurrence_count += interaction_data->second.occurrence_count;
+    new_first_timestamp = interaction_data->second.first_timestamp;
+  }
+  interstitial_interaction_data_->insert_or_assign(
+      command,
+      InterstitialInteractionDetails(new_occurrence_count, new_first_timestamp,
+                                     new_last_timestamp));
 }
 
 int SafeBrowsingLoudErrorUI::GetHTMLTemplateId() const {

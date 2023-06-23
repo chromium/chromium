@@ -143,6 +143,8 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
       nullptr;
   raw_ptr<SafeBrowsingMetricsCollector> metrics_collector_ = nullptr;
   raw_ptr<TriggerManager> trigger_manager_ = nullptr;
+  std::unique_ptr<security_interstitials::InterstitialInteractionMap>
+      interstitial_interactions_;
 };
 
 }  // namespace safe_browsing

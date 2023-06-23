@@ -233,7 +233,7 @@ bool TriggerManager::FinishCollectingThreatDetails(
         FROM_HERE,
         base::BindOnce(&ThreatDetails::FinishCollection,
                        collectors->threat_details->GetWeakPtr(), did_proceed,
-                       num_visits),
+                       num_visits, std::move(interstitial_interactions_)),
         delay);
 
     // Record that this trigger fired and collected data.

@@ -6,6 +6,14 @@
 
 namespace security_interstitials {
 
+InterstitialInteractionDetails::InterstitialInteractionDetails(
+    int occurrence_count,
+    int64_t first_timestamp,
+    int64_t last_timestamp)
+    : occurrence_count(occurrence_count),
+      first_timestamp(first_timestamp),
+      last_timestamp(last_timestamp) {}
+
 BaseSafeBrowsingErrorUI::BaseSafeBrowsingErrorUI(
     const GURL& request_url,
     const GURL& main_frame_url,

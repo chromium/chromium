@@ -817,7 +817,11 @@ void ThreatDetails::AddDOMDetails(
 // to take an action, we expect this to be called after
 // OnReceivedThreatDOMDetails in most cases. If not, we don't include
 // the DOM data in our report.
-void ThreatDetails::FinishCollection(bool did_proceed, int num_visit) {
+void ThreatDetails::FinishCollection(
+    bool did_proceed,
+    int num_visit,
+    std::unique_ptr<security_interstitials::InterstitialInteractionMap>
+        interstitial_interactions) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   all_done_expected_ = true;
@@ -841,6 +845,7 @@ void ThreatDetails::FinishCollection(bool did_proceed, int num_visit) {
 
   did_proceed_ = did_proceed;
   num_visits_ = num_visit;
+  interstitial_interactions_ = std::move(interstitial_interactions);
   std::vector<GURL> urls;
   for (ResourceMap::const_iterator it = resources_.begin();
        it != resources_.end(); ++it) {
@@ -916,6 +921,9 @@ void ThreatDetails::OnCacheCollectionReady() {
   // Fill the referrer chain if applicable.
   MaybeFillReferrerChain();
 
+  // Fill the interstitial interactions if applicable.
+  MaybeFillInterstitialInteractions();
+
   // Send the report, using the SafeBrowsingService.
   ui_manager_->SendThreatDetails(browser_context_, std::move(report_));
 
@@ -937,6 +945,97 @@ void ThreatDetails::MaybeFillReferrerChain() {
   referrer_chain_provider_->IdentifyReferrerChainByRenderFrameHost(
       web_contents_->GetPrimaryMainFrame(), kThreatDetailsUserGestureLimit,
       report_->mutable_referrer_chain());
+}
+
+// Helper function that converts SecurityInterstitialCommand to CSBRR
+// SecurityInterstitialInteraction.
+ClientSafeBrowsingReportRequest::InterstitialInteraction::
+    SecurityInterstitialInteraction
+    GetSecurityInterstitialInteractionFromCommand(
+        security_interstitials::SecurityInterstitialCommand command) {
+  switch (command) {
+    case security_interstitials::CMD_DONT_PROCEED:
+      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
+          CMD_DONT_PROCEED;
+    case security_interstitials::CMD_PROCEED:
+      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
+          CMD_PROCEED;
+    case security_interstitials::CMD_SHOW_MORE_SECTION:
+      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
+          CMD_SHOW_MORE_SECTION;
+    case security_interstitials::CMD_OPEN_HELP_CENTER:
+      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
+          CMD_OPEN_HELP_CENTER;
+    case security_interstitials::CMD_OPEN_DIAGNOSTIC:
+      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
+          CMD_OPEN_DIAGNOSTIC;
+    case security_interstitials::CMD_RELOAD:
+      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
+          CMD_RELOAD;
+    case security_interstitials::CMD_OPEN_DATE_SETTINGS:
+      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
+          CMD_OPEN_DATE_SETTINGS;
+    case security_interstitials::CMD_OPEN_LOGIN:
+      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
+          CMD_OPEN_LOGIN;
+    case security_interstitials::CMD_DO_REPORT:
+      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
+          CMD_DO_REPORT;
+    case security_interstitials::CMD_DONT_REPORT:
+      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
+          CMD_DONT_REPORT;
+    case security_interstitials::CMD_OPEN_REPORTING_PRIVACY:
+      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
+          CMD_OPEN_REPORTING_PRIVACY;
+    case security_interstitials::CMD_OPEN_WHITEPAPER:
+      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
+          CMD_OPEN_WHITEPAPER;
+    case security_interstitials::CMD_REPORT_PHISHING_ERROR:
+      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
+          CMD_REPORT_PHISHING_ERROR;
+    case security_interstitials::CMD_OPEN_ENHANCED_PROTECTION_SETTINGS:
+      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
+          CMD_OPEN_ENHANCED_PROTECTION_SETTINGS;
+    case security_interstitials::CMD_CLOSE_INTERSTITIAL_WITHOUT_UI:
+      return ClientSafeBrowsingReportRequest::InterstitialInteraction::
+          CMD_CLOSE_INTERSTITIAL_WITHOUT_UI;
+    case security_interstitials::CMD_TEXT_FOUND:
+    case security_interstitials::CMD_TEXT_NOT_FOUND:
+    case security_interstitials::CMD_ERROR:
+      break;
+  }
+  return ClientSafeBrowsingReportRequest::InterstitialInteraction::UNSPECIFIED;
+}
+
+void ThreatDetails::MaybeFillInterstitialInteractions() {
+  if (!base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry) ||
+      interstitial_interactions_ == nullptr) {
+    return;
+  }
+  if (!report_ ||
+      (report_->type() != ClientSafeBrowsingReportRequest::URL_PHISHING &&
+       report_->type() !=
+           ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING)) {
+    return;
+  }
+  for (auto const& interaction : *interstitial_interactions_) {
+    // Create InterstitialInteraction object.
+    ClientSafeBrowsingReportRequest::InterstitialInteraction
+        new_interstitial_interaction;
+    new_interstitial_interaction.set_security_interstitial_interaction(
+        GetSecurityInterstitialInteractionFromCommand(interaction.first));
+    new_interstitial_interaction.set_occurrence_count(
+        interaction.second.occurrence_count);
+    new_interstitial_interaction.set_first_interaction_timestamp_msec(
+        interaction.second.first_timestamp);
+    new_interstitial_interaction.set_last_interaction_timestamp_msec(
+        interaction.second.last_timestamp);
+
+    // Add the InterstitialInteraction object to report's
+    // interstitial_interactions.
+    report_->mutable_interstitial_interactions()->Add()->Swap(
+        &new_interstitial_interaction);
+  }
 }
 
 void ThreatDetails::AllDone() {

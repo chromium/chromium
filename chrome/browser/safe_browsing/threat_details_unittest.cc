@@ -248,7 +248,7 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
   std::string WaitForThreatDetailsDone(ThreatDetailsWrap* report,
                                        bool did_proceed,
                                        int num_visit) {
-    report->FinishCollection(did_proceed, num_visit);
+    report->FinishCollection(did_proceed, num_visit, nullptr);
     // Wait for the callback (ThreatDetailsDone).
     base::RunLoop run_loop;
     report->SetRunLoopToQuit(&run_loop);
@@ -1946,7 +1946,9 @@ TEST_F(ThreatDetailsTest, CanCancelDuringCollection) {
     base::RunLoop run_loop;
     report->SetShouldStopAfterRedirectCollection(true);
     report->SetRunLoopToQuit(&run_loop);
-    report->FinishCollection(/*did_proceed=*/true, /*num_visits=*/-1);
+    report->FinishCollection(
+        /*did_proceed=*/true, /*num_visits=*/-1,
+        /*interstitial_interactions=*/nullptr);
     run_loop.Run();
   }
 
