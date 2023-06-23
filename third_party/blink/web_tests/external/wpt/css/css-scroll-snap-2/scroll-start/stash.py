@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """
 This file allows the different windows created by
-css/css-scroll-snap-2/scroll-start-with-text-fragment-navigation.html
+css/css-scroll-snap-2/scroll-start/scroll-start-with-text-fragment-navigation.html
 to store and retrieve data.
 
 scroll-start-with-text-fragment-navigation.html (test file) opens a window to
@@ -19,9 +19,9 @@ def main(request, response):
 
     if request.method == u"POST":
         # Received result data from target page
-        request.server.stash.put(key, request.body, u'/css/css-scroll-snap-2/')
+        request.server.stash.put(key, request.body, u'/css/css-scroll-snap-2/scroll-start')
         return u"ok"
     else:
         # Request for result data from test page
-        value = request.server.stash.take(key, u'/css/css-scroll-snap-2/')
+        value = request.server.stash.take(key, u'/css/css-scroll-snap-2/scroll-start')
         return value

@@ -16,7 +16,7 @@
 <body onload="runTest()">
   <script>
     function fetchResult(key, resolve, reject) {
-      fetch(`/css/css-scroll-snap-2/stash.py?key=${key}`).then(response => {
+      fetch(`/css/css-scroll-snap-2/scroll-start/stash.py?key=${key}`).then(response => {
         return response.text();
       }).then(text => {
         if (text) {
