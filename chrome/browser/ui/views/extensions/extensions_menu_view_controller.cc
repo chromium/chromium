@@ -446,6 +446,9 @@ void ExtensionsMenuViewController::OnDismissExtensionClicked(
   if (tab_helper) {
     tab_helper->DismissExtensionRequests(extension_id);
   }
+
+  base::RecordAction(base::UserMetricsAction(
+      "Extensions.Toolbar.ExtensionRequestDismissedFromMenu"));
 }
 
 void ExtensionsMenuViewController::TabChangedAt(content::WebContents* contents,

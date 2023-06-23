@@ -9123,6 +9123,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Extensions.Toolbar.ExtensionRequestDismissedFromMenu">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user dismissed an extension's site access request in the toolbar and
+    extensions menu by dismissing it from the extensions menu.
+  </description>
+</action>
+
 <action name="Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>emiliapaz@chromium.org</owner>
