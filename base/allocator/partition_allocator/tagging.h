@@ -87,21 +87,16 @@ PA_ALWAYS_INLINE void* TagMemoryRangeIncrement(uintptr_t ptr, size_t size) {
 // Randomly changes the tag of the ptr memory range. Useful for initial random
 // initialization. Returns the pointer with the new tag. Ensures that the entire
 // range is set to the same tag.
-// TODO(bartekn): Remove the T* variant.
-template <typename T>
-PA_ALWAYS_INLINE T* TagMemoryRangeRandomly(T* ptr,
-                                           size_t size,
-                                           uint64_t mask = 0u) {
+PA_ALWAYS_INLINE void* TagMemoryRangeRandomly(uintptr_t address,
+                                              size_t size,
+                                              uint64_t mask = 0u) {
+  void* ptr = reinterpret_cast<void*>(address);
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
-  return reinterpret_cast<T*>(TagMemoryRangeRandomlyInternal(ptr, size, mask));
+  return reinterpret_cast<void*>(
+      TagMemoryRangeRandomlyInternal(ptr, size, mask));
 #else
   return ptr;
 #endif
-}
-PA_ALWAYS_INLINE void* TagMemoryRangeRandomly(uintptr_t ptr,
-                                              size_t size,
-                                              uint64_t mask = 0u) {
-  return TagMemoryRangeRandomly(reinterpret_cast<void*>(ptr), size, mask);
 }
 
 // Gets a version of ptr that's safe to dereference.
