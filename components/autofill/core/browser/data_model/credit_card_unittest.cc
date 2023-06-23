@@ -1804,7 +1804,7 @@ INSTANTIATE_TEST_SUITE_P(
         // It's then modified to fit the correct pattern based on the Elo regex,
         // sourced from the Elo documentation.
         GetCardNetworkTestCase{"5067071446391278", kEloCard, true},
-        GetCardNetworkTestCase{"6362970000457013", kEloCard, true},
+        GetCardNetworkTestCase{"6277800000457016", kEloCard, true},
 
         // These sample numbers were created by taking the expected card prefix,
         // filling out the required number of digits, and editing the last digit
@@ -1896,7 +1896,7 @@ INSTANTIATE_TEST_SUITE_P(
         GetCardNetworkTestCase{"6011", kDiscoverCard, false},
         GetCardNetworkTestCase{"62", kUnionPay, false},
         GetCardNetworkTestCase{"627780", kEloCard, false},
-        GetCardNetworkTestCase{"636297", kEloCard, false},
+        GetCardNetworkTestCase{"636368", kEloCard, false},
         GetCardNetworkTestCase{"644", kDiscoverCard, false},
         GetCardNetworkTestCase{"645", kDiscoverCard, false},
         GetCardNetworkTestCase{"646", kDiscoverCard, false},
