@@ -5,7 +5,10 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
 
 #import "base/debug/dump_without_crashing.h"
+#import "base/notreached.h"
 #import "components/sessions/core/tab_restore_service.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/sync_sessions/synced_session.h"
@@ -29,6 +32,51 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Returns whether the user needs to enter a passphrase or enable sync to make
+// tab sync work.
+bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
+  if (!sync_service->IsSyncFeatureEnabled()) {
+    return true;
+  }
+
+  if (!sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kTabs)) {
+    return true;
+  }
+
+  switch (sync_service->GetUserActionableError()) {
+    // No error.
+    case syncer::SyncService::UserActionableError::kNone:
+      return false;
+
+    // These errors effectively amount to disabled sync or effectively paused.
+    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
+    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
+    case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForEverything:
+      return true;
+
+    // This error doesn't stop tab sync.
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForPasswords:
+      return false;
+
+    // These errors don't actually stop sync.
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForEverything:
+      return false;
+  }
+
+  NOTREACHED_NORETURN();
+}
+
+}  // namespace
+
 @interface RecentTabsMediator () <SyncedSessionsObserver,
                                   WebStateListObserving> {
   std::unique_ptr<AllWebStateListObservationRegistrar> _registrar;
@@ -50,7 +98,7 @@
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
 @property(nonatomic, assign) sessions::TabRestoreService* restoreService;
 @property(nonatomic, assign) FaviconLoader* faviconLoader;
-@property(nonatomic, assign) SyncSetupService* syncSetupService;
+@property(nonatomic, assign) syncer::SyncService* syncService;
 @property(nonatomic, assign) BrowserList* browserList;
 
 @end
@@ -63,7 +111,7 @@
                identityManager:(signin::IdentityManager*)identityManager
                 restoreService:(sessions::TabRestoreService*)restoreService
                  faviconLoader:(FaviconLoader*)faviconLoader
-              syncSetupService:(SyncSetupService*)syncSetupService
+                   syncService:(syncer::SyncService*)syncService
                    browserList:(BrowserList*)browserList {
   self = [super init];
   if (self) {
@@ -71,7 +119,7 @@
     _identityManager = identityManager;
     _restoreService = restoreService;
     _faviconLoader = faviconLoader;
-    _syncSetupService = syncSetupService;
+    _syncService = syncService;
     _browserList = browserList;
   }
   return self;
@@ -113,7 +161,7 @@
     _identityManager = nullptr;
     _restoreService = nullptr;
     _faviconLoader = nullptr;
-    _syncSetupService = nullptr;
+    _syncService = nullptr;
   }
 }
 
@@ -204,7 +252,7 @@
     return SessionsSyncUserState::USER_SIGNED_OUT;
   }
 
-  if (self.syncSetupService->UserActionIsRequiredToHaveTabSyncWork()) {
+  if (UserActionIsRequiredToHaveTabSyncWork(_syncService)) {
     return SessionsSyncUserState::USER_SIGNED_IN_SYNC_OFF;
   }
 

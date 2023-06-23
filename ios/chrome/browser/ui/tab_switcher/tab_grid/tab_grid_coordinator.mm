@@ -53,7 +53,7 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/session_sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/synced_sessions_util.h"
 #import "ios/chrome/browser/tabs/features.h"
@@ -908,8 +908,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
           regularBrowserState);
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(regularBrowserState);
-  SyncSetupService* service =
-      SyncSetupServiceFactory::GetForBrowserState(regularBrowserState);
+  syncer::SyncService* service =
+      SyncServiceFactory::GetForBrowserState(regularBrowserState);
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(regularBrowserState);
   self.remoteTabsMediator =
@@ -917,7 +917,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                              identityManager:identityManager
                                               restoreService:restoreService
                                                faviconLoader:faviconLoader
-                                            syncSetupService:service
+                                                 syncService:service
                                                  browserList:browserList];
 
   self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;

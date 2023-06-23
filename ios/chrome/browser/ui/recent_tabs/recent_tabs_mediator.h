@@ -15,7 +15,6 @@
 class BrowserList;
 class FaviconLoader;
 @protocol RecentTabsConsumer;
-class SyncSetupService;
 
 namespace signin {
 class IdentityManager;
@@ -24,6 +23,10 @@ class IdentityManager;
 namespace sync_sessions {
 class SessionSyncService;
 }  // namespace sync_sessions
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 namespace sessions {
 class TabRestoreService;
@@ -48,7 +51,7 @@ class TabRestoreService;
                identityManager:(signin::IdentityManager*)identityManager
                 restoreService:(sessions::TabRestoreService*)restoreService
                  faviconLoader:(FaviconLoader*)faviconLoader
-              syncSetupService:(SyncSetupService*)syncSetupService
+                   syncService:(syncer::SyncService*)syncService
                    browserList:(BrowserList*)browserList
     NS_DESIGNATED_INITIALIZER;
 

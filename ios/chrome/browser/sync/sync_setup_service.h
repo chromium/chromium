@@ -47,10 +47,6 @@ class SyncSetupService : public KeyedService {
   // backend before the next call to `CommitChanges`.
   void SetDataTypeEnabled(syncer::UserSelectableType datatype, bool enabled);
 
-  // Returns whether the user needs to enter a passphrase or enable sync to make
-  // tab sync work.
-  bool UserActionIsRequiredToHaveTabSyncWork();
-
   // Returns whether all datatypes are being synced.
   virtual bool IsSyncEverythingEnabled() const;
   // Sets whether all datatypes should be synced or not. Changes won't take

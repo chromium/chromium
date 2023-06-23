@@ -42,42 +42,6 @@ void SyncSetupService::SetDataTypeEnabled(syncer::UserSelectableType datatype,
   user_settings->SetSelectedTypes(IsSyncEverythingEnabled(), selected_types);
 }
 
-bool SyncSetupService::UserActionIsRequiredToHaveTabSyncWork() {
-  if (!IsSyncFeatureEnabled() ||
-      !IsDataTypePreferred(syncer::UserSelectableType::kTabs)) {
-    return true;
-  }
-
-  switch (sync_service_->GetUserActionableError()) {
-    // No error.
-    case syncer::SyncService::UserActionableError::kNone:
-      return false;
-
-    // These errors effectively amount to disabled sync or effectively paused.
-    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
-    case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
-    case syncer::SyncService::UserActionableError::
-        kNeedsTrustedVaultKeyForEverything:
-      return true;
-
-    // This error doesn't stop tab sync.
-    case syncer::SyncService::UserActionableError::
-        kNeedsTrustedVaultKeyForPasswords:
-      return false;
-
-    // These errors don't actually stop sync.
-    case syncer::SyncService::UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForPasswords:
-    case syncer::SyncService::UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForEverything:
-      return false;
-  }
-
-  NOTREACHED() << "Unknown sync service state.";
-  return true;
-}
-
 bool SyncSetupService::IsSyncEverythingEnabled() const {
   return sync_service_->GetUserSettings()->IsSyncEverythingEnabled();
 }
