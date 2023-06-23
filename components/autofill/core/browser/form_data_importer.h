@@ -246,9 +246,18 @@ class FormDataImporter : public PersonalDataManagerObserver {
                                 std::vector<AddressProfileImportCandidate>*
                                     address_profile_import_candidates);
 
-  // Helper method for ImportAddressProfiles which only considers the fields for
-  // a specified `section`. If no section is passed, the import is performed on
-  // the union of all sections.
+  // Depending on the `predicted_country_code`, validates that the required
+  // fields in the `profile` have values. Accordingly, logs the form import
+  // requirement metrics.
+  bool LogAddressFormImportRequirementMetric(
+      const AutofillProfile& profile,
+      const std::string& predicted_country_code,
+      const std::string& app_locale,
+      LogBuffer* import_log_buffer);
+
+  // Helper method for ImportAddressProfiles which only considers the fields
+  // for a specified `section`. If no section is passed, the import is
+  // performed on the union of all sections.
   bool ExtractAddressProfileFromSection(
       base::span<const AutofillField* const> section_fields,
       const GURL& source_url,

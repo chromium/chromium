@@ -41,7 +41,7 @@
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/profile_import_requirement_utils.h"
+#include "components/autofill/core/browser/profile_requirement_utils.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -404,6 +404,38 @@ size_t FormDataImporter::ExtractAddressProfiles(
   return num_complete_profiles;
 }
 
+bool FormDataImporter::LogAddressFormImportRequirementMetric(
+    const AutofillProfile& profile,
+    const std::string& predicted_country_code,
+    const std::string& app_locale,
+    LogBuffer* import_log_buffer) {
+  base::flat_set<autofill_metrics::AddressProfileImportRequirementMetric>
+      autofill_profile_requirement_results =
+          GetAutofillProfileRequirementResult(profile, predicted_country_code,
+                                              app_locale_, import_log_buffer);
+
+  for (const auto& requirement_result : autofill_profile_requirement_results) {
+    autofill_metrics::LogAddressFormImportRequirementMetric(requirement_result);
+  }
+
+  autofill_metrics::LogAddressFormImportCountrySpecificFieldRequirementsMetric(
+      autofill_profile_requirement_results.contains(
+          AddressImportRequirement::kZipRequirementViolated),
+      autofill_profile_requirement_results.contains(
+          AddressImportRequirement::kStateRequirementViolated),
+      autofill_profile_requirement_results.contains(
+          AddressImportRequirement::kCityRequirementViolated),
+      autofill_profile_requirement_results.contains(
+          AddressImportRequirement::kLine1RequirementViolated));
+
+  return !base::ranges::any_of(
+      kMinimumAddressRequirementViolations,
+      [&](AddressImportRequirement address_requirement_violation) {
+        return autofill_profile_requirement_results.contains(
+            address_requirement_violation);
+      });
+}
+
 bool FormDataImporter::ExtractAddressProfileFromSection(
     base::span<const AutofillField* const> section_fields,
     const GURL& source_url,
@@ -599,11 +631,10 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   RemoveInaccessibleProfileValues(candidate_profile);
 
   // Do not import a profile if any of the requirements is violated.
-  // |IsMinimumAddress()| goes first to collect metrics.
-  bool all_fulfilled =
-      IsMinimumAddress(candidate_profile, predicted_country_code, app_locale_,
-                       import_log_buffer, /*collect_metrics=*/true) &&
-      !has_invalid_information;
+  bool all_fulfilled = LogAddressFormImportRequirementMetric(
+                           candidate_profile, predicted_country_code,
+                           app_locale_, import_log_buffer) &&
+                       !has_invalid_information;
 
   // Collect metrics regarding the requirements for an address profile import.
   autofill_metrics::LogAddressFormImportRequirementMetric(

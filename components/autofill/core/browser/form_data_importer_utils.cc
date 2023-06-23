@@ -11,7 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
-#include "components/autofill/core/browser/profile_import_requirement_utils.h"
+#include "components/autofill/core/browser/profile_requirement_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 
@@ -166,8 +166,7 @@ bool MultiStepImportMerger::MergeProfileWithMultiStepCandidates(
           completed_profile,
           GetPredictedCountryCode(completed_profile, variation_country_code_,
                                   app_locale_, /*import_log_buffer=*/nullptr),
-          app_locale_,
-          /*import_log_buffer=*/nullptr, /*collect_metrics=*/false)) {
+          app_locale_)) {
     profile = std::move(completed_profile);
     import_metadata = std::move(completed_metadata);
     multistep_candidates_.Clear();
