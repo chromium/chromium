@@ -711,6 +711,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kDebugToggleWallpaperMode:
     case AcceleratorAction::kDebugTriggerCrash:
     case AcceleratorAction::kDebugToggleHudDisplay:
+    case AcceleratorAction::kDebugToggleVirtualTrackpad:
       return debug::DebugAcceleratorsEnabled();
     case AcceleratorAction::kDevAddRemoveDisplay:
     case AcceleratorAction::kDevToggleAppList:
@@ -998,6 +999,7 @@ void AcceleratorControllerImpl::PerformAction(
     case AcceleratorAction::kDebugToggleWallpaperMode:
     case AcceleratorAction::kDebugTriggerCrash:
     case AcceleratorAction::kDebugToggleHudDisplay:
+    case AcceleratorAction::kDebugToggleVirtualTrackpad:
       debug::PerformDebugActionIfEnabled(action);
       break;
     case AcceleratorAction::kDevAddRemoveDisplay:

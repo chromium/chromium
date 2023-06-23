@@ -90,6 +90,8 @@ const AcceleratorData kDebugAcceleratorData[] = {
     {true, ui::VKEY_K, kDebugModifier, AcceleratorAction::kDebugTriggerCrash},
     {true, ui::VKEY_G, kDebugModifier,
      AcceleratorAction::kDebugToggleHudDisplay},
+    {true, ui::VKEY_Q, kDebugModifier,
+     AcceleratorAction::kDebugToggleVirtualTrackpad},
     {true, ui::VKEY_D, kDebugModifier, AcceleratorAction::kDebugToggleDarkMode},
     {true, ui::VKEY_Y, kDebugModifier,
      AcceleratorAction::kDebugToggleDynamicColor},

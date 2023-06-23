@@ -180,6 +180,7 @@ namespace ash {
   /* Intentionally crash the ash process. */                            \
   ACCELERATOR_ACTION_ENTRY(DebugTriggerCrash)                           \
   ACCELERATOR_ACTION_ENTRY(DebugToggleHudDisplay)                       \
+  ACCELERATOR_ACTION_ENTRY(DebugToggleVirtualTrackpad)                  \
   ACCELERATOR_ACTION_ENTRY(DevAddRemoveDisplay)                         \
   /* Different than kToggleAppList to ignore search-as-modifier-key */  \
   /* rules for enabling the accelerator. */                             \
