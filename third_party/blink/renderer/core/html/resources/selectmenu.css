@@ -77,6 +77,12 @@ selectmenu::-internal-selectmenu-button-icon {
   width: 1.2em;
 }
 
+selectmenu:-internal-autofill-selected::-internal-selectmenu-button {
+  background-image:none !important;
+  background-color: -internal-light-dark(#E8F0FE, rgba(70,90,126,0.4)) !important;
+  color: FieldText !important;
+}
+
 selectmenu:disabled::-internal-selectmenu-button {
   background-color: -internal-light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
   border-color: -internal-light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
