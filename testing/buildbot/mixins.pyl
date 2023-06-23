@@ -1591,13 +1591,13 @@
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
-        '15a5160n'
+        '15a5161b'
       ],
     },
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_15a5160n',
+          'name': 'xcode_ios_15a5161b',
           'path': 'Xcode.app',
         },
       ],
