@@ -54,5 +54,5 @@ export {FooProxy} from './modules/v2/dummy/foo_proxy.js';
 export {DummyModuleElement, dummyV2Descriptor} from './modules/v2/dummy/module.js';
 // </if>
 export {historyClustersDescriptor as historyClustersV2Descriptor, HistoryClustersModuleElement as HistoryClustersV2ModuleElement} from './modules/v2/history_clusters/module.js';
-export {ModulesV2Element} from './modules/v2/modules.js';
+export {MAX_COLUMN_COUNT, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
 export {VoiceSearchOverlayElement} from './voice_search_overlay.js';

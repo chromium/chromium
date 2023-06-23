@@ -1,4 +1,15 @@
-<style include="cr-hidden-style">
+<style>
+  #container {
+    display: flex;
+    flex-flow: row wrap;
+    gap: var(--container-gap);
+    justify-content: center;
+    margin-top: 8px;
+    max-width: var(--container-max-width, inherit);
+  }
 </style>
 <div id="container">
+  <template is="dom-repeat" items="[[moduleInstances_]]">
+    <ntp-module-wrapper module="[[item]]">
+  </template>
 </div>

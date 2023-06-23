@@ -242,6 +242,17 @@ TEST_F('NewTabPageModulesModuleWrapperTest', 'All', function() {
   mocha.run();
 });
 
+var NewTabPageModulesModulesV2Test = class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/v2/modules_test.js';
+  }
+};
+
+TEST_F('NewTabPageModulesModulesV2Test', 'All', function() {
+  mocha.run();
+});
+
 var NewTabPageModulesModulesTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {

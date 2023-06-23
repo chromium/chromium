@@ -24,8 +24,12 @@
     justify-content: center;
   }
 
+  :host([modules-redesigned-enabled_]) {
+    border: none;
+  }
+
   :host([modules-redesigned-enabled_]) #moduleElement {
-    background: none;
+    background: var(--color-new-tab-page-background);
   }
 </style>
 <div id="impressionProbe"></div>
