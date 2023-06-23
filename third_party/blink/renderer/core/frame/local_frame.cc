@@ -2779,6 +2779,7 @@ void LocalFrame::RequestExecuteScript(
     mojom::blink::PromiseResultOption promise_behavior) {
   scoped_refptr<DOMWrapperWorld> world;
   ExecuteScriptPolicy execute_script_policy;
+  CHECK(!IsProvisional());
   if (world_id == DOMWrapperWorld::kMainWorldId) {
     world = &DOMWrapperWorld::MainWorld();
     execute_script_policy =
@@ -2801,10 +2802,12 @@ void LocalFrame::RequestExecuteScript(
   script_sources.Append(sources.data(),
                         base::checked_cast<wtf_size_t>(sources.size()));
 
+  ScriptState* script_state = ToScriptState(this, *world);
+  CHECK(script_state);
   PausableScriptExecutor::CreateAndRun(
-      ToScriptState(DomWindow(), *world), std::move(script_sources),
-      execute_script_policy, user_gesture, evaluation_timing, blocking_option,
-      want_result_option, promise_behavior, std::move(callback));
+      script_state, std::move(script_sources), execute_script_policy,
+      user_gesture, evaluation_timing, blocking_option, want_result_option,
+      promise_behavior, std::move(callback));
 }
 
 void LocalFrame::SetEvictCachedSessionStorageOnFreezeOrUnload() {
