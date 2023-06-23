@@ -469,7 +469,7 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
 
   const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
 
-  if (is_jellyroll_enabled) {
+  if (is_jellyroll_enabled || type_ == Type::kDeskButton) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   }
 
