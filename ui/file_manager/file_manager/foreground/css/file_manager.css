@@ -1980,11 +1980,16 @@ li[renaming=''] .filename-label {
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 16px 16px;
   background-color: currentColor;
-  color: var(--cros-icon-color-primary);
+  color: var(--cros-icon-color-secondary);
   height: 24px;
   margin-inline-end: 10px;
   margin-inline-start: auto;
   width: 24px;
+}
+
+body.files-ng.check-select #list-container list:focus li[selected]
+.table-row-cell .dlp-managed-icon {
+  color: var(--cros-icon-color-selection);
 }
 
 body.files-ng #list-container list li .detail-icon {
