@@ -9151,6 +9151,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Extensions.Toolbar.MenuOpenedWhenExtensionsAreRequestingAccess">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user opened the Extensions Menu in the toolbar while the request access
+    button in the toolbar is visible. This is recorded when the user opens the
+    menu for both keyboard and mouse activation.
+  </description>
+</action>
+
 <action name="Extensions.Toolbar.MoreActionsButtonPressedFromMenu">
   <owner>tjudkins@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>

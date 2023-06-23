@@ -904,7 +904,7 @@ class ExtensionsToolbarContainerFeatureUITest
   ExtensionsRequestAccessButton* request_access_button() {
     return GetExtensionsToolbarContainer()
         ->GetExtensionsToolbarControls()
-        ->request_access_button_for_testing();
+        ->request_access_button();
   }
   content::WebContents* web_contents() { return web_contents_; }
 
