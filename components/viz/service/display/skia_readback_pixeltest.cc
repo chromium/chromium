@@ -49,6 +49,7 @@
 namespace viz {
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
 constexpr float kAvgAbsoluteErrorLimit = 8.f;
 constexpr int kMaxAbsoluteErrorLimit = 32;
 
@@ -58,6 +59,7 @@ cc::FuzzyPixelComparator GetDefaultFuzzyPixelComparator() {
       .SetAvgAbsErrorLimit(kAvgAbsoluteErrorLimit)
       .SetAbsErrorLimit(kMaxAbsoluteErrorLimit);
 }
+#endif
 
 base::FilePath GetTestFilePath(const base::FilePath::CharType* basename) {
   base::FilePath test_dir;
@@ -93,6 +95,7 @@ void DeleteSharedImage(scoped_refptr<RasterContextProvider> context_provider,
   sii->DestroySharedImage(sync_token, mailbox);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 struct ReadbackTextureInfo {
   ReadbackTextureInfo(const gfx::Size& size,
                       SkColorType color_type,
@@ -323,28 +326,20 @@ std::vector<uint8_t> GeneratePixels(size_t num_bytes,
   return result;
 }
 
-// NV12 tests can't run with multiplanar SharedImage on certain
-// platforms/configurations.
+// NV12 tests can't run on certain platforms/configurations.
 bool can_run_nv12_test(bool use_multiplanar_si) {
-  if (!use_multiplanar_si) {
-    return true;
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  // Android doesn't support (or use) the MultiPlane::kNV12 format.
-  return false;
-#elif BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, multiplanar SharedImage is supported only when the
   // passthrough decoder is used.
-  return TestGpuServiceHolder::GetInstance()
-      ->gpu_service()
-      ->gpu_preferences()
-      .use_passthrough_cmd_decoder;
+  return !use_multiplanar_si || TestGpuServiceHolder::GetInstance()
+                                    ->gpu_service()
+                                    ->gpu_preferences()
+                                    .use_passthrough_cmd_decoder;
 #else
-  // Multiplanar SI is supported on all other platforms.
   return true;
 #endif
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -595,6 +590,17 @@ INSTANTIATE_TEST_SUITE_P(All,
                          // Result scaling: Scale by half?
                          testing::Values(true, false));
 
+// Tests of NV12.
+
+// NOTE: These tests don't run on Android. Android doesn't use NV12 GMB and
+// doesn't support the MultiPlane:: kNV12 format. Additionally, the test
+// variants that use one SharedImage per plane cannot be made to pass with
+// Vulkan, as they require cross-thread access and there is no SharedImage
+// factory on Android that supports cross-thread access for the required
+// formats (WrappedSkImageBackingFactory and ExternalVkImageBackingFactory
+// don't support cross-thread access, while AHardwareBufferImageBackingFactory
+// doesn't support the plane formats).
+#if !BUILDFLAG(IS_ANDROID)
 class SkiaReadbackPixelTestNV12
     : public SkiaReadbackPixelTest,
       public testing::WithParamInterface<
@@ -714,7 +720,6 @@ TEST_P(SkiaReadbackPixelTestNV12, ExecutesCopyRequest) {
       cc::MatchesBitmap(actual, expected, GetDefaultFuzzyPixelComparator()));
 }
 
-#if !BUILDFLAG(IS_ANDROID_EMULATOR)
 INSTANTIATE_TEST_SUITE_P(
     ,
     SkiaReadbackPixelTestNV12,
@@ -725,13 +730,6 @@ INSTANTIATE_TEST_SUITE_P(
                         CopyOutputResult::Destination::kNativeTextures),
         // Use MultiplanarSharedImage?
         testing::Values(true, false)));
-#else
-// Don't instantiate the NV12 tests when run on Android emulator, they won't
-// work since the SkiaRenderer currently does not support CopyOutputRequests
-// with NV12 format if the platform does not support GL_EXT_texture_rg extension
-// in GL ES 2.0 (which is the case on Android emulator).
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SkiaReadbackPixelTestNV12);
-#endif
 
 class SkiaReadbackPixelTestNV12WithBlit
     : public SkiaReadbackPixelTest,
@@ -948,7 +946,6 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
       cc::MatchesBitmap(actual, expected, GetDefaultFuzzyPixelComparator()));
 }
 
-#if !BUILDFLAG(IS_ANDROID_EMULATOR)
 INSTANTIATE_TEST_SUITE_P(
     ,
     SkiaReadbackPixelTestNV12WithBlit,
@@ -959,13 +956,6 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Bool(),  // Should behave as if COR is populating a GMB?
         testing::Bool()   // Use MultiplanarSI?
         ));
-#else
-// Don't instantiate the NV12 tests when run on Android emulator, they won't
-// work since the SkiaRenderer currently does not support CopyOutputRequests
-// with NV12 format if the platform does not support GL_EXT_texture_rg extension
-// in GL ES 2.0 (which is the case on Android emulator).
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
-    SkiaReadbackPixelTestNV12WithBlit);
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace viz
