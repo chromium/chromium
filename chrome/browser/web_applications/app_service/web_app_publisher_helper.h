@@ -49,7 +49,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_notifications.h"
-#include "chrome/browser/apps/app_service/app_web_contents_data.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"

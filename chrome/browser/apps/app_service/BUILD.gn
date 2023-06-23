@@ -87,8 +87,6 @@ source_set("app_service") {
     sources += [
       "app_notifications.cc",
       "app_notifications.h",
-      "app_web_contents_data.cc",
-      "app_web_contents_data.h",
       "browser_app_instance.cc",
       "browser_app_instance.h",
       "browser_app_instance_map.h",

@@ -13,13 +13,12 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
-#include "chrome/browser/apps/app_service/app_web_contents_data.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_base.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -56,8 +55,7 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                               public extensions::AppWindowRegistry::Observer,
                               public ArcAppListPrefs::Observer,
                               public NotificationDisplayService::Observer,
-                              public MediaCaptureDevicesDispatcher::Observer,
-                              public AppWebContentsData::Client {
+                              public MediaStreamCaptureIndicator::Observer {
  public:
   ExtensionAppsChromeOs(AppServiceProxy* proxy, AppType app_type);
   ~ExtensionAppsChromeOs() override;
@@ -123,14 +121,11 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   void OnPackageListInitialRefreshed() override;
   void OnArcAppListPrefsDestroyed() override;
 
-  // MediaCaptureDevicesDispatcher::Observer:
-  void OnRequestUpdate(int render_process_id,
-                       int render_frame_id,
-                       blink::mojom::MediaStreamType stream_type,
-                       const content::MediaRequestState state) override;
-
-  // AppWebContentsData::Observer:
-  void OnWebContentsDestroyed(content::WebContents* contents) override;
+  // MediaStreamCaptureIndicator::Observer:
+  void OnIsCapturingVideoChanged(content::WebContents* web_contents,
+                                 bool is_capturing_video) override;
+  void OnIsCapturingAudioChanged(content::WebContents* web_contents,
+                                 bool is_capturing_audio) override;
 
   // NotificationDisplayService::Observer overrides.
   void OnNotificationDisplayed(
@@ -217,8 +212,8 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   // Registrar used to monitor the local state prefs.
   PrefChangeRegistrar local_state_pref_change_registrar_;
 
-  base::ScopedObservation<MediaCaptureDevicesDispatcher,
-                          MediaCaptureDevicesDispatcher::Observer>
+  base::ScopedObservation<MediaStreamCaptureIndicator,
+                          MediaStreamCaptureIndicator::Observer>
       media_dispatcher_{this};
 
   MediaRequests media_requests_;

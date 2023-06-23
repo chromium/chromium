@@ -50,6 +50,7 @@
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -57,6 +58,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -215,7 +217,9 @@ void ExtensionAppsChromeOs::Initialize() {
     return;
   }
 
-  media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
+  media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance()
+                                ->GetMediaStreamCaptureIndicator()
+                                .get());
 
   notification_display_service_.Observe(
       NotificationDisplayServiceFactory::GetForProfile(profile()));
@@ -544,31 +548,13 @@ void ExtensionAppsChromeOs::OnArcAppListPrefsDestroyed() {
   arc_prefs_ = nullptr;
 }
 
-void ExtensionAppsChromeOs::OnRequestUpdate(
-    int render_process_id,
-    int render_frame_id,
-    blink::mojom::MediaStreamType stream_type,
-    const content::MediaRequestState state) {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(render_process_id, render_frame_id));
-
-  if (!web_contents) {
-    return;
-  }
-
-  Profile* web_profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (web_profile != profile()) {
-    return;
-  }
-
-  absl::optional<web_app::AppId> web_app_id =
-      web_app::FindInstalledAppWithUrlInScope(profile(),
-                                              web_contents->GetVisibleURL(),
-                                              /*window_only=*/false);
-  if (web_app_id.has_value()) {
-    // WebAppsChromeOs is responsible for |app_id|.
+void ExtensionAppsChromeOs::OnIsCapturingVideoChanged(
+    content::WebContents* web_contents,
+    bool is_capturing_video) {
+  const web_app::AppId* web_app_id =
+      web_app::WebAppTabHelper::GetAppId(web_contents);
+  if (web_app_id) {
+    // This media access is coming from a web app.
     return;
   }
 
@@ -583,21 +569,21 @@ void ExtensionAppsChromeOs::OnRequestUpdate(
     app_id = extension->id();
   }
 
-  if (media_requests_.IsNewRequest(app_id, web_contents, state)) {
-    content::WebContentsUserData<AppWebContentsData>::CreateForWebContents(
-        web_contents, this);
-  }
-
-  auto result =
-      media_requests_.UpdateRequests(app_id, web_contents, stream_type, state);
-
+  auto result = media_requests_.UpdateCameraState(app_id, web_contents,
+                                                  is_capturing_video);
   apps::AppPublisher::ModifyCapabilityAccess(app_id, result.camera,
                                              result.microphone);
 }
 
-void ExtensionAppsChromeOs::OnWebContentsDestroyed(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
+void ExtensionAppsChromeOs::OnIsCapturingAudioChanged(
+    content::WebContents* web_contents,
+    bool is_capturing_audio) {
+  const web_app::AppId* web_app_id =
+      web_app::WebAppTabHelper::GetAppId(web_contents);
+  if (web_app_id) {
+    // This media access is coming from a web app.
+    return;
+  }
 
   std::string app_id = app_constants::kChromeAppId;
   extensions::ExtensionRegistry* registry =
@@ -605,12 +591,13 @@ void ExtensionAppsChromeOs::OnWebContentsDestroyed(
   DCHECK(registry);
   const extensions::ExtensionSet& extensions = registry->enabled_extensions();
   const extensions::Extension* extension =
-      extensions.GetAppByURL(web_contents->GetLastCommittedURL());
+      extensions.GetAppByURL(web_contents->GetVisibleURL());
   if (extension && Accepts(extension)) {
     app_id = extension->id();
   }
 
-  auto result = media_requests_.OnWebContentsDestroyed(app_id, web_contents);
+  auto result = media_requests_.UpdateMicrophoneState(app_id, web_contents,
+                                                      is_capturing_audio);
   apps::AppPublisher::ModifyCapabilityAccess(app_id, result.camera,
                                              result.microphone);
 }

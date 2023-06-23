@@ -54,81 +54,10 @@ AccessingRequest MediaRequests::UpdateCameraState(
   return AccessingRequest(accessing_camera, /*microphone=*/absl::nullopt);
 }
 
-bool MediaRequests::IsNewRequest(const std::string& app_id,
-                                 const content::WebContents* web_contents,
-                                 const content::MediaRequestState state) {
-  if (state != content::MEDIA_REQUEST_STATE_DONE) {
-    return false;
-  }
-
-  DCHECK(web_contents);
-
-  return !HasRequest(app_id, web_contents,
-                     app_id_to_web_contents_for_camera_) &&
-         !HasRequest(app_id, web_contents,
-                     app_id_to_web_contents_for_microphone_);
-}
-
-AccessingRequest MediaRequests::UpdateRequests(
-    const std::string& app_id,
-    const content::WebContents* web_contents,
-    blink::mojom::MediaStreamType stream_type,
-    const content::MediaRequestState state) {
-  DCHECK(web_contents);
-
-  absl::optional<bool> accessing_camera;
-  absl::optional<bool> accessing_microphone;
-  if (state == content::MEDIA_REQUEST_STATE_DONE) {
-    if (stream_type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
-      accessing_camera = MaybeAddRequest(app_id, web_contents,
-                                         app_id_to_web_contents_for_camera_);
-    }
-    if (stream_type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
-      accessing_microphone = MaybeAddRequest(
-          app_id, web_contents, app_id_to_web_contents_for_microphone_);
-    }
-  }
-
-  if (state == content::MEDIA_REQUEST_STATE_CLOSING) {
-    if (stream_type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
-      accessing_camera = MaybeRemoveRequest(app_id, web_contents,
-                                            app_id_to_web_contents_for_camera_);
-    }
-    if (stream_type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
-      accessing_microphone = MaybeRemoveRequest(
-          app_id, web_contents, app_id_to_web_contents_for_microphone_);
-    }
-  }
-
-  return AccessingRequest(accessing_camera, accessing_microphone);
-}
-
 AccessingRequest MediaRequests::RemoveRequests(const std::string& app_id) {
   return AccessingRequest(
       MaybeRemoveRequest(app_id, app_id_to_web_contents_for_camera_),
       MaybeRemoveRequest(app_id, app_id_to_web_contents_for_microphone_));
-}
-
-AccessingRequest MediaRequests::OnWebContentsDestroyed(
-    const std::string& app_id,
-    const content::WebContents* web_contents) {
-  return AccessingRequest(
-      MaybeRemoveRequest(app_id, web_contents,
-                         app_id_to_web_contents_for_camera_),
-      MaybeRemoveRequest(app_id, web_contents,
-                         app_id_to_web_contents_for_microphone_));
-}
-
-bool MediaRequests::HasRequest(
-    const std::string& app_id,
-    const content::WebContents* web_contents,
-    const AppIdToWebContents& app_id_to_web_contents) {
-  auto it = app_id_to_web_contents.find(app_id);
-  if (it != app_id_to_web_contents.end() &&
-      it->second.find(web_contents) != it->second.end()) {
-    return true;
-  }
-  return false;
 }
 
 absl::optional<bool> MediaRequests::MaybeAddRequest(
