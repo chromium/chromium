@@ -19,8 +19,8 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription::VariantLigatures ligatures;
-  Font math =
-      test::CreateTestFont("MathTestFont", data, size, 1000, &ligatures);
+  Font math = test::CreateTestFont(AtomicString("MathTestFont"), data, size,
+                                   1000, &ligatures);
 
   // HasMathData should be used by other API functions below for early return.
   // Explicitly call it here for exhaustivity, since it is fast anyway.
