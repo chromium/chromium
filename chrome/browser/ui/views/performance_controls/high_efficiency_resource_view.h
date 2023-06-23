@@ -21,6 +21,8 @@ class HighEfficiencyResourceView : public views::FlexLayoutView {
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
       kHighEfficiencyResourceViewMemorySavingsElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+      kHighEfficiencyResourceViewMemoryLabelElementId);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_RESOURCE_VIEW_H_

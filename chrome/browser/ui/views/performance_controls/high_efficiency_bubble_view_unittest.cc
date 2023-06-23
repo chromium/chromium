@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_bubble_view.h"
+#include <tuple>
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_resource_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/google_chrome_strings.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/performance_manager/public/features.h"
@@ -29,6 +31,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/events/event_utils.h"
@@ -277,7 +280,8 @@ TEST_F(HighEfficiencyBubbleViewTest,
 }
 
 class HighEfficiencyBubbleViewMemorySavingsImprovementsTest
-    : public HighEfficiencyBubbleViewTest {
+    : public HighEfficiencyBubbleViewTest,
+      public testing::WithParamInterface<std::tuple<int, int>> {
  public:
   HighEfficiencyBubbleViewMemorySavingsImprovementsTest() = default;
 
@@ -326,3 +330,30 @@ TEST_F(HighEfficiencyBubbleViewMemorySavingsImprovementsTest,
                 l10n_util::GetStringUTF16(IDS_HIGH_EFFICIENCY_DIALOG_BODY_V2)),
             std::string::npos);
 }
+
+// The correct label should be rendered for different memory savings amounts.
+TEST_P(HighEfficiencyBubbleViewMemorySavingsImprovementsTest,
+       ShowsCorrectLabelsForDifferentSavings) {
+  AddNewTab(std::get<0>(GetParam()),
+            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+  SetTabDiscardState(0, true);
+
+  ClickPageActionChip();
+
+  views::Label* label = GetDialogLabel<views::Label>(
+      HighEfficiencyResourceView::
+          kHighEfficiencyResourceViewMemoryLabelElementId);
+  EXPECT_EQ(label->GetText(),
+            l10n_util::GetStringUTF16(std::get<1>(GetParam())));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HighEfficiencyBubbleViewMemorySavingsImprovementsTest,
+    ::testing::Values(
+        std::tuple{50 * 1024, IDS_HIGH_EFFICIENCY_DIALOG_SMALL_SAVINGS_LABEL},
+        std::tuple{100 * 1024, IDS_HIGH_EFFICIENCY_DIALOG_MEDIUM_SAVINGS_LABEL},
+        std::tuple{150 * 1024, IDS_HIGH_EFFICIENCY_DIALOG_MEDIUM_SAVINGS_LABEL},
+        std::tuple{600 * 1024, IDS_HIGH_EFFICIENCY_DIALOG_LARGE_SAVINGS_LABEL},
+        std::tuple{900 * 1024,
+                   IDS_HIGH_EFFICIENCY_DIALOG_VERY_LARGE_SAVINGS_LABEL}));
