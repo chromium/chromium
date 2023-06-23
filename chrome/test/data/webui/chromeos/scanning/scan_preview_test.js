@@ -479,22 +479,22 @@ suite('scanPreviewTest', function() {
     assertEquals(darkModeSvg, getReadyToScanSvg().src);
   });
 
-  // Verify "loading scanners" dynamic SVG use when dynamic colors enabled.
-  test('jellyColors_LoadingScannersSvg', async () => {
+  // Verify "ready to scan" dynamic SVG use when dynamic colors enabled.
+  test('jellyColors_ReadyToScanSvg', async () => {
     await setJellyEnabled(true);
     const dynamicSvg = `svg/illo_ready_to_scan.svg#illo_ready_to_scan`;
 
-    const getLoadingScannersSvgValue = () =>
+    const getSvgValue = () =>
         (/** @type {!SVGUseElement} */ (
              scanPreview.shadowRoot.querySelector('#readyToScanSvg > use'))
              .href.baseVal);
 
-    // Setup UI to display no scanners div.
+    // Mock media query state for light mode.
     await setFakePrefersColorSchemeDark(false);
-    assertEquals(dynamicSvg, getLoadingScannersSvgValue());
+    assertEquals(dynamicSvg, getSvgValue());
 
     // Mock media query state for dark mode.
     await setFakePrefersColorSchemeDark(true);
-    assertEquals(dynamicSvg, getLoadingScannersSvgValue());
+    assertEquals(dynamicSvg, getSvgValue());
   });
 });
