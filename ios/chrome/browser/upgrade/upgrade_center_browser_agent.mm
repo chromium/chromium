@@ -31,7 +31,7 @@ UpgradeCenterBrowserAgent::~UpgradeCenterBrowserAgent() {}
 
 #pragma mark - WebStateListObserver
 
-void UpgradeCenterBrowserAgent::WebStateListChanged(
+void UpgradeCenterBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

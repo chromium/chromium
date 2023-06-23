@@ -60,7 +60,7 @@ void FullscreenWebStateListObserver::Disconnect() {
 
 #pragma mark - WebStateListObserver
 
-void FullscreenWebStateListObserver::WebStateListChanged(
+void FullscreenWebStateListObserver::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

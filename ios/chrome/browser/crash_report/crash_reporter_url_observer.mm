@@ -240,7 +240,7 @@ void CrashReporterURLObserver::StopObservingWebStateList(
 
 #pragma mark - WebStateListObserver
 
-void CrashReporterURLObserver::WebStateListChanged(
+void CrashReporterURLObserver::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

@@ -60,7 +60,7 @@ void SyncErrorBrowserAgent::BrowserDestroyed(Browser* browser) {
 
 #pragma mark - WebStateListObserver
 
-void SyncErrorBrowserAgent::WebStateListChanged(
+void SyncErrorBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

@@ -43,9 +43,9 @@ class ClosingWebStateObserverBrowserAgent
   void BrowserDestroyed(Browser* browser) override;
 
   // WebStateListObserver implementation.
-  void WebStateListChanged(WebStateList* web_state_list,
-                           const WebStateListChange& change,
-                           const WebStateSelection& selection) override;
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateSelection& selection) override;
   void WillCloseWebStateAt(WebStateList* web_state_list,
                            web::WebState* web_state,
                            int index,

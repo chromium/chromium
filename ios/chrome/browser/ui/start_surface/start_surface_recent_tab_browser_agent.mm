@@ -68,7 +68,7 @@ void StartSurfaceRecentTabBrowserAgent::BrowserDestroyed(Browser* browser) {
 
 #pragma mark - WebStateListObserver
 
-void StartSurfaceRecentTabBrowserAgent::WebStateListChanged(
+void StartSurfaceRecentTabBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

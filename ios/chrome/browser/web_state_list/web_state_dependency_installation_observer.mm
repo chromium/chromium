@@ -33,7 +33,7 @@ WebStateDependencyInstallationObserver::
 
 #pragma mark - WebStateListObserver
 
-void WebStateDependencyInstallationObserver::WebStateListChanged(
+void WebStateDependencyInstallationObserver::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

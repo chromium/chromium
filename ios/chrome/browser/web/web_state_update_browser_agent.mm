@@ -45,7 +45,7 @@ void WebStateUpdateBrowserAgent::UpdateWebStateScrollViewOffset(
 
 #pragma mark - WebStateListObserver
 
-void WebStateUpdateBrowserAgent::WebStateListChanged(
+void WebStateUpdateBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

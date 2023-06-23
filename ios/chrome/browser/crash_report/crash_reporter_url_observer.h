@@ -66,9 +66,9 @@ class CrashReporterURLObserver : public WebStateListObserver,
                            web::NavigationContext* navigation_context) override;
 
   // WebStateListObserver
-  void WebStateListChanged(WebStateList* web_state_list,
-                           const WebStateListChange& change,
-                           const WebStateSelection& selection) override;
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateSelection& selection) override;
   void WebStateActivatedAt(WebStateList* web_state_list,
                            web::WebState* old_web_state,
                            web::WebState* new_web_state,

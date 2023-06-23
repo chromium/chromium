@@ -62,7 +62,7 @@ void WebStateListMetricsBrowserAgent::SessionRestorationFinished(
 
 #pragma mark - WebStateListObserver
 
-void WebStateListMetricsBrowserAgent::WebStateListChanged(
+void WebStateListMetricsBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

@@ -71,7 +71,7 @@ void WebUsageEnablerBrowserAgent::BrowserDestroyed(Browser* browser) {
 
 #pragma mark - WebStateListObserver
 
-void WebUsageEnablerBrowserAgent::WebStateListChanged(
+void WebUsageEnablerBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

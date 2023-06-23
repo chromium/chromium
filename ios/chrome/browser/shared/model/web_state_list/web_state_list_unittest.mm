@@ -78,9 +78,9 @@ class WebStateListTestObserver : public WebStateListObserver {
   }
 
   // WebStateListObserver implementation.
-  void WebStateListChanged(WebStateList* web_state_list,
-                           const WebStateListChange& change,
-                           const WebStateSelection& selection) override {
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateSelection& selection) override {
     switch (change.type()) {
       case WebStateListChange::Type::kSelectionOnly:
         // TODO(crbug.com/1442546): Move the implementation from

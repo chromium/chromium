@@ -30,7 +30,7 @@ void TabParentingBrowserAgent::BrowserDestroyed(Browser* browser) {
 
 #pragma mark - WebStateListObserver
 
-void TabParentingBrowserAgent::WebStateListChanged(
+void TabParentingBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

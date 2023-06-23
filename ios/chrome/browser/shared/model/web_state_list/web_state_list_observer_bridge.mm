@@ -14,7 +14,7 @@ WebStateListObserverBridge::WebStateListObserverBridge(
 
 WebStateListObserverBridge::~WebStateListObserverBridge() {}
 
-void WebStateListObserverBridge::WebStateListChanged(
+void WebStateListObserverBridge::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

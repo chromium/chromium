@@ -196,9 +196,9 @@ class WebStateListObserver : public base::CheckedObserver {
   ~WebStateListObserver() override;
 
   /// Invoked when WebStateList is updated.
-  virtual void WebStateListChanged(WebStateList* web_state_list,
-                                   const WebStateListChange& change,
-                                   const WebStateSelection& selection);
+  virtual void WebStateListDidChange(WebStateList* web_state_list,
+                                     const WebStateListChange& change,
+                                     const WebStateSelection& selection);
 
   // Invoked before the specified WebState is detached from the WebStateList.
   // The WebState is still valid and still in the WebStateList.

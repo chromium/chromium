@@ -362,7 +362,7 @@ int WebStateList::InsertWebStateImpl(int index,
   const WebStateSelection selection = {.index = index,
                                        .activating = activating};
   for (auto& observer : observers_) {
-    observer.WebStateListChanged(this, insert_change, selection);
+    observer.WebStateListDidChange(this, insert_change, selection);
   }
 
   if (opener.opener) {
@@ -407,7 +407,7 @@ void WebStateList::MoveWebStateAtImpl(int from_index, int to_index) {
   const WebStateListChangeMove move_change(web_state, from_index);
   const WebStateSelection selection = {.index = to_index, .activating = false};
   for (auto& observer : observers_) {
-    observer.WebStateListChanged(this, move_change, selection);
+    observer.WebStateListDidChange(this, move_change, selection);
   }
 }
 
@@ -431,7 +431,7 @@ std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
   const WebStateSelection selection = {.index = index,
                                        .activating = (index == active_index_)};
   for (auto& observer : observers_) {
-    observer.WebStateListChanged(this, replace_change, selection);
+    observer.WebStateListDidChange(this, replace_change, selection);
   }
 
   // When the active WebState is replaced, notify the observers as nearly
@@ -477,7 +477,7 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(int index) {
   // which is the index of the currently active WebState.
   const WebStateSelection selection = {.index = index, .activating = false};
   for (auto& observer : observers_) {
-    observer.WebStateListChanged(this, detach_change, selection);
+    observer.WebStateListDidChange(this, detach_change, selection);
   }
 
   if (active_web_state_was_closed) {

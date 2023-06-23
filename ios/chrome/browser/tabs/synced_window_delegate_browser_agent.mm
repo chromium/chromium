@@ -87,7 +87,7 @@ sync_sessions::SyncedTabDelegate* SyncedWindowDelegateBrowserAgent::GetTabAt(
 
 #pragma mark - WebStateListObserver
 
-void SyncedWindowDelegateBrowserAgent::WebStateListChanged(
+void SyncedWindowDelegateBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

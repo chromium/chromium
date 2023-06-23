@@ -344,7 +344,7 @@ void SessionRestorationBrowserAgent::WebStateActivatedAt(
   SaveSession(/*immediately=*/false);
 }
 
-void SessionRestorationBrowserAgent::WebStateListChanged(
+void SessionRestorationBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

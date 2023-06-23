@@ -21,9 +21,9 @@
 
 class TestRegisteredWebStateListObserver : public WebStateListObserver {
  public:
-  void WebStateListChanged(WebStateList* web_state_list,
-                           const WebStateListChange& change,
-                           const WebStateSelection& selection) override {
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateSelection& selection) override {
     switch (change.type()) {
       case WebStateListChange::Type::kSelectionOnly:
         // Do nothing when a WebState is selected and its status is updated.

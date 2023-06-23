@@ -525,7 +525,7 @@ void TabUsageRecorderBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
 
 #pragma mark - WebStateListObserver
 
-void TabUsageRecorderBrowserAgent::WebStateListChanged(
+void TabUsageRecorderBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

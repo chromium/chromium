@@ -112,7 +112,7 @@ IOSTranslateInternalsHandler::Observer::~Observer() {}
 
 #pragma mark - WebStateListObserver
 
-void IOSTranslateInternalsHandler::Observer::WebStateListChanged(
+void IOSTranslateInternalsHandler::Observer::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

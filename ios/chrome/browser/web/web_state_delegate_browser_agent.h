@@ -60,9 +60,9 @@ class WebStateDelegateBrowserAgent
                                TabInsertionBrowserAgent* tab_insertion_agent);
 
   // WebStateListObserver::
-  void WebStateListChanged(WebStateList* web_state_list,
-                           const WebStateListChange& change,
-                           const WebStateSelection& selection) override;
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateSelection& selection) override;
 
   // BrowserObserver::
   void BrowserDestroyed(Browser* browser) override;

@@ -85,7 +85,7 @@ void WebStateDelegateBrowserAgent::ClearUIProviders() {
 
 #pragma mark - WebStateListObserver
 
-void WebStateDelegateBrowserAgent::WebStateListChanged(
+void WebStateDelegateBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

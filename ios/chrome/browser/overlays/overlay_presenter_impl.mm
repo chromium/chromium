@@ -520,7 +520,7 @@ void OverlayPresenterImpl::OverlayPresentationContextDidMoveToWindow(
 
 #pragma mark - WebStateListObserver
 
-void OverlayPresenterImpl::WebStateListChanged(
+void OverlayPresenterImpl::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

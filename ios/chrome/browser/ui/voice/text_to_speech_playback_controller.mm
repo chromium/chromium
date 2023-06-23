@@ -62,7 +62,7 @@ void TextToSpeechPlaybackController::Shutdown() {
 
 #pragma mark WebStateListObserver
 
-void TextToSpeechPlaybackController::WebStateListChanged(
+void TextToSpeechPlaybackController::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

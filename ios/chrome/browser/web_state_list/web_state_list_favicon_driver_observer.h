@@ -42,9 +42,9 @@ class WebStateListFaviconDriverObserver
   ~WebStateListFaviconDriverObserver() override;
 
   // WebStateListObserver implementation:
-  void WebStateListChanged(WebStateList* web_state_list,
-                           const WebStateListChange& change,
-                           const WebStateSelection& selection) override;
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateSelection& selection) override;
 
   // favicon::FaviconDriverObserver implementation.
   void OnFaviconUpdated(favicon::FaviconDriver* driver,

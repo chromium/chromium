@@ -32,9 +32,9 @@ class OTRWebStateObserver::WebStateObserver : public WebStateListObserver {
   }
 
   // WebStateListObserver
-  void WebStateListChanged(WebStateList* web_state_list,
-                           const WebStateListChange& change,
-                           const WebStateSelection& selection) override;
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateSelection& selection) override;
   void BatchOperationEnded(WebStateList* web_state_list) override;
 
  private:
@@ -50,7 +50,7 @@ class OTRWebStateObserver::WebStateObserver : public WebStateListObserver {
 
 #pragma mark - WebStateListObserver
 
-void OTRWebStateObserver::WebStateObserver::WebStateListChanged(
+void OTRWebStateObserver::WebStateObserver::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

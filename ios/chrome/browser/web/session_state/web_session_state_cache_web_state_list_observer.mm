@@ -25,7 +25,7 @@ WebSessionStateCacheWebStateListObserver::
 
 #pragma mark - WebStateListObserver
 
-void WebSessionStateCacheWebStateListObserver::WebStateListChanged(
+void WebSessionStateCacheWebStateListObserver::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

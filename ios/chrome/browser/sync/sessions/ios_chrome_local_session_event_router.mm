@@ -63,7 +63,7 @@ IOSChromeLocalSessionEventRouter::Observer::~Observer() {}
 
 #pragma mark - WebStateListObserver
 
-void IOSChromeLocalSessionEventRouter::Observer::WebStateListChanged(
+void IOSChromeLocalSessionEventRouter::Observer::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

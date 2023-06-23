@@ -56,9 +56,9 @@ class WebUsageEnablerBrowserAgent
   void BrowserDestroyed(Browser* browser) override;
 
   // WebStateListObserver:
-  void WebStateListChanged(WebStateList* web_state_list,
-                           const WebStateListChange& change,
-                           const WebStateSelection& selection) override;
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateSelection& selection) override;
 
   // web::WebStateObserver:
   void WebStateRealized(web::WebState* web_state) override;

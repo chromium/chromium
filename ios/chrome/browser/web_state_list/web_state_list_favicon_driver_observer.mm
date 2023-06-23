@@ -34,7 +34,7 @@ WebStateListFaviconDriverObserver::~WebStateListFaviconDriverObserver() {
 
 #pragma mark - WebStateListObserver
 
-void WebStateListFaviconDriverObserver::WebStateListChanged(
+void WebStateListFaviconDriverObserver::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

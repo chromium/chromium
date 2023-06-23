@@ -41,7 +41,7 @@ void SnapshotBrowserAgent::BrowserDestroyed(Browser* browser) {
 
 #pragma mark - WebStateListObserver
 
-void SnapshotBrowserAgent::WebStateListChanged(
+void SnapshotBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

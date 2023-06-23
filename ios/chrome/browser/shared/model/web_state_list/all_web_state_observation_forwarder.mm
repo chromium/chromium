@@ -28,7 +28,7 @@ AllWebStateObservationForwarder::~AllWebStateObservationForwarder() {}
 
 #pragma mark - WebStateListObserver
 
-void AllWebStateObservationForwarder::WebStateListChanged(
+void AllWebStateObservationForwarder::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {

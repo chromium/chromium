@@ -67,7 +67,7 @@ void BreadcrumbManagerBrowserAgent::PlatformLogEvent(const std::string& event) {
 
 #pragma mark - WebStateListObserver
 
-void BreadcrumbManagerBrowserAgent::WebStateListChanged(
+void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateSelection& selection) {
