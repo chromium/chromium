@@ -44,6 +44,14 @@ class CORE_EXPORT AnnotationAgentContainerImpl final
 
   static const char kSupplementName[];
 
+  class Observer : public GarbageCollectedMixin {
+   public:
+    virtual void WillPerformAttach() {}
+  };
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   // Static getter for the container for the given document. Will instantiate a
   // container if the document doesn't yet have one. This can return nullptr if
   // requested from an inactive or detached document.
@@ -133,6 +141,8 @@ class CORE_EXPORT AnnotationAgentContainerImpl final
       receivers_;
 
   HeapVector<Member<AnnotationAgentImpl>> agents_;
+
+  HeapHashSet<Member<Observer>> observers_;
 
   bool page_has_been_visible_ = false;
 };
