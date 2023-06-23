@@ -817,6 +817,7 @@ V4L2RequestsQueue* V4L2Device::GetRequestsQueue() {
     struct media_device_info media_info;
     if (HANDLE_EINTR(ioctl(candidate_media_fd.get(), MEDIA_IOC_DEVICE_INFO,
                            &media_info)) < 0) {
+      RecordMediaIoctlUMA(MediaIoctlRequests::kMediaIocDeviceInfo);
       VPLOGF(2) << "Failed to Query media device info.";
       continue;
     }

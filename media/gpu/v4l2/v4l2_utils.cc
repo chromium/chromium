@@ -14,6 +14,7 @@
 #endif
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "media/base/video_codecs.h"
@@ -46,6 +47,11 @@ namespace media {
 
 // Numerical value of ioctl() OK return value;
 constexpr int kIoctlOk = 0;
+
+void RecordMediaIoctlUMA(MediaIoctlRequests function) {
+  base::UmaHistogramEnumeration("Media.V4l2VideoDecoder.MediaIoctlError",
+                                function);
+}
 
 const char* V4L2MemoryToString(const v4l2_memory memory) {
   switch (memory) {

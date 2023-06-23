@@ -70072,6 +70072,13 @@ Called by update_use_counter_css.py.-->
   <int value="5" label="Play/Pause"/>
 </enum>
 
+<enum name="MediaIoctlRequests">
+  <int value="0" label="MEDIA_IOC_DEVICE_INFO"/>
+  <int value="1" label="MEDIA_IOC_REQUEST_ALLOC"/>
+  <int value="2" label="MEDIA_REQUEST_IOC_QUEUE"/>
+  <int value="3" label="MEDIA_REQUEST_IOC_REINIT"/>
+</enum>
+
 <enum name="MediaKeyError">
   <int value="1" label="kUnknownError"/>
   <int value="2" label="kClientError"/>

@@ -1597,7 +1597,12 @@ bool V4L2Request::Submit() {
     return false;
   }
 
-  return HANDLE_EINTR(ioctl(request_fd_.get(), MEDIA_REQUEST_IOC_QUEUE)) == 0;
+  if (HANDLE_EINTR(ioctl(request_fd_.get(), MEDIA_REQUEST_IOC_QUEUE)) != 0) {
+    RecordMediaIoctlUMA(MediaIoctlRequests::kMediaRequestIocQueue);
+    return false;
+  }
+
+  return true;
 }
 
 bool V4L2Request::IsCompleted() {
@@ -1641,6 +1646,7 @@ bool V4L2Request::Reset() {
 
   // Reinit the request to make sure we can use it for a new submission.
   if (HANDLE_EINTR(ioctl(request_fd_.get(), MEDIA_REQUEST_IOC_REINIT)) < 0) {
+    RecordMediaIoctlUMA(MediaIoctlRequests::kMediaRequestIocReinit);
     VPLOGF(1) << "Failed to reinit request.";
     return false;
   }
@@ -1726,6 +1732,7 @@ absl::optional<base::ScopedFD> V4L2RequestsQueue::CreateRequestFD() {
   int ret = HANDLE_EINTR(
       ioctl(media_fd_.get(), MEDIA_IOC_REQUEST_ALLOC, &request_fd));
   if (ret < 0) {
+    RecordMediaIoctlUMA(MediaIoctlRequests::kMediaIocRequestAlloc);
     VPLOGF(1) << "Failed to create request";
     return absl::nullopt;
   }

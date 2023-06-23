@@ -5067,6 +5067,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.V4l2VideoDecoder.MediaIoctlError"
+    enum="MediaIoctlRequests" expires_after="2023-12-07">
+  <owner>stevecho@chromium.org</owner>
+  <owner>chromeos-gfx-video@google.com</owner>
+  <summary>
+    Records when errors happen with media controller API ioctl requests during
+    video decoding session using V4L2 API. Depending on a ioctl request, video
+    decoding session can proceed or stop immediately when an error happens. So
+    multiple errors can be recorded during the object lifetime.
+  </summary>
+</histogram>
+
 <histogram name="Media.VaapiLinux.SupportedVideoDecoder"
     enum="VideoDecoderType" expires_after="2022-02-28">
   <owner>tmathmeyer@chromium.org</owner>

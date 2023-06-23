@@ -38,6 +38,21 @@ using IoctlAsCallback = base::RepeatingCallback<int(int, void*)>;
 using MmapAsCallback =
     base::RepeatingCallback<void*(void*, unsigned int, int, int, unsigned int)>;
 
+// These values are logged to UMA. Entries should not be renumbered and numeric
+// values should never be reused. Please keep in sync with
+// "MediaIoctlRequests" in src/tools/metrics/histograms/enums.xml.
+enum class MediaIoctlRequests {
+  kMediaIocDeviceInfo = 0,
+  kMediaIocRequestAlloc = 1,
+  kMediaRequestIocQueue = 2,
+  kMediaRequestIocReinit = 3,
+  kMaxValue = kMediaRequestIocReinit,
+};
+
+// Records Media.V4L2VideoDecoder.MediaIoctlError UMA when errors happen with
+// media controller API ioctl requests.
+void RecordMediaIoctlUMA(MediaIoctlRequests function);
+
 // Returns a human readable description of |memory|.
 const char* V4L2MemoryToString(v4l2_memory memory);
 
