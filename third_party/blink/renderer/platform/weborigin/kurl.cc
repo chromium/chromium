@@ -42,9 +42,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_statics.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
-#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 #include "url/url_util.h"
 #ifndef NDEBUG
 #include <stdio.h>
@@ -174,18 +174,14 @@ bool ProtocolIsJavaScript(const String& url) {
 }
 
 const KURL& BlankURL() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<KURL>, static_blank_url, ());
-  KURL& blank_url = *static_blank_url;
-  if (blank_url.IsNull())
-    blank_url = KURL(AtomicString(url::kAboutBlankURL));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(KURL, blank_url,
+                                  (AtomicString(url::kAboutBlankURL)));
   return blank_url;
 }
 
 const KURL& SrcdocURL() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<KURL>, static_srcdoc_url, ());
-  KURL& srcdoc_url = *static_srcdoc_url;
-  if (srcdoc_url.IsNull())
-    srcdoc_url = KURL(AtomicString(url::kAboutSrcdocURL));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(KURL, srcdoc_url,
+                                  (AtomicString(url::kAboutSrcdocURL)));
   return srcdoc_url;
 }
 
@@ -215,8 +211,8 @@ bool KURL::IsAboutSrcdocURL() const {
 }
 
 const KURL& NullURL() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<KURL>, static_null_url, ());
-  return *static_null_url;
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(KURL, static_null_url, ());
+  return static_null_url;
 }
 
 String KURL::ElidedString() const {
