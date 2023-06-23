@@ -33,6 +33,11 @@ class CompanionSidePanelUntrustedUI
   // Gets a weak pointer to this object.
   base::WeakPtr<CompanionSidePanelUntrustedUI> GetWeakPtr();
 
+  // content::WebContentsDelegate:
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params) override;
+
  private:
   // side_panel::mojom::CompanionPageHandlerFactory:
   void CreateCompanionPageHandler(
