@@ -905,12 +905,14 @@ bool DriveIntegrationService::IsSharedDrive(
       .IsParent(local_path);
 }
 
-void DriveIntegrationService::AddObserver(Observer* const observer) {
+void DriveIntegrationService::AddObserver(
+    DriveIntegrationServiceObserver* observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   observers_.AddObserver(observer);
 }
 
-void DriveIntegrationService::RemoveObserver(Observer* const observer) {
+void DriveIntegrationService::RemoveObserver(
+    DriveIntegrationServiceObserver* observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   observers_.RemoveObserver(observer);
 }
@@ -1202,18 +1204,10 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
   // Enable bulk-pinning if the feature is enabled.
   if (util::IsDriveFsBulkPinningEnabled(profile_)) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-    // Instantiate a PinManager.
     DCHECK(!pin_manager_);
     pin_manager_ = std::make_unique<PinManager>(profile_->GetPath(), mount_path,
                                                 GetDriveFsInterface());
-
-    // Listen to progress events from this PinManager.
     pin_manager_->AddObserver(this);
-    if (!observers_.empty()) {
-      OnProgress(pin_manager_->GetProgress());
-    }
-
     DCHECK(!bulk_pinning_pref_updater_);
     bulk_pinning_pref_updater_ =
         std::make_unique<BulkPinningPrefUpdater>(GetPrefs());

@@ -257,11 +257,12 @@ void ZipLogs(Profile* profile,
 
 // Class to handle messages from chrome://drive-internals.
 class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
-                                   DriveIntegrationService::Observer {
+                                   public PinManager::Observer {
  public:
   ~DriveInternalsWebUIHandler() override {
-    if (DriveIntegrationService* const service = GetIntegrationService()) {
-      service->RemoveObserver(this);
+    if (pin_manager_) {
+      VLOG(1) << "DriveInternalsWebUIHandler dropped before PinManager";
+      pin_manager_->RemoveObserver(this);
     }
   }
 
@@ -385,6 +386,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
 
     DriveIntegrationService* const service = GetIntegrationService();
     if (!service) {
+      LOG(ERROR) << "No DriveFS integration service";
       return;
     }
 
@@ -614,19 +616,34 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
       return;
     }
 
-    service->RemoveObserver(this);
-    service->AddObserver(this);
+    if (pin_manager_) {
+      pin_manager_->RemoveObserver(this);
+    }
 
-    MaybeCallJavascript(
-        "updateBulkPinning",
-        Value(GetPrefs()->GetBoolean(kDriveFsBulkPinningEnabled)));
+    pin_manager_ = service->GetPinManager();
+    if (!pin_manager_) {
+      LOG(ERROR) << "No DriveFS pin manager";
+      SetSectionEnabled("bulk-pinning-section", false);
+      return;
+    }
 
-    if (PinManager* const manager = service->GetPinManager()) {
-      OnBulkPinProgress(manager->GetProgress());
+    pin_manager_->AddObserver(this);
+
+    SetSectionEnabled("bulk-pinning-section", true);
+    OnProgress(pin_manager_->GetProgress());
+    MaybeCallJavascript("updateBulkPinning",
+                        base::Value(GetPrefs()->GetBoolean(
+                            drive::prefs::kDriveFsBulkPinningEnabled)));
+  }
+
+  void OnDrop() override {
+    if (pin_manager_) {
+      VLOG(1) << "PinManager dropped before DriveInternalsWebUIHandler";
+      pin_manager_ = nullptr;
     }
   }
 
-  void OnBulkPinProgress(const drivefs::pinning::Progress& progress) override {
+  void OnProgress(const drivefs::pinning::Progress& progress) override {
     using drivefs::pinning::HumanReadableSize;
 
     Value::Dict d;
@@ -983,19 +1000,11 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DriveIntegrationService* const service =
         drive::DriveIntegrationServiceFactory::FindForProfile(profile());
-
-    if (!service) {
-      LOG(ERROR) << "No DriveFS integration service";
-      return nullptr;
-    }
-
-    if (!service->is_enabled()) {
-      LOG(ERROR) << "DriveFS integration service is disabled";
-      return nullptr;
-    }
-
-    return service;
+    return service && service->is_enabled() ? service : nullptr;
   }
+
+  // DriveFS bulk-pinning manager.
+  raw_ptr<PinManager> pin_manager_ = nullptr;
 
   // The last event sent to the JavaScript side.
   int last_sent_event_id_ = -1;

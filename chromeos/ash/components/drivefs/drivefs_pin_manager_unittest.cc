@@ -194,6 +194,7 @@ class MockSpaceGetter {
 class MockObserver : public PinManager::Observer {
  public:
   MOCK_METHOD(void, OnProgress, (const Progress&), (override));
+  MOCK_METHOD(void, OnDrop, (), (override));
 };
 
 }  // namespace
@@ -3228,6 +3229,27 @@ TEST_F(DriveFsPinManagerTest, CheckStalledFiles) {
   task_environment_.FastForwardBy(Seconds(100));
 
   manager.Stop();
+}
+
+// Tests that PinManager's destructor calls OnDrop on the registered observer.
+TEST_F(DriveFsPinManagerTest, OnDrop) {
+  {
+    MockObserver observer;
+    PinManager::Observer observer2;
+    PinManager manager(profile_path_, mount_path_, &drivefs_);
+    manager.AddObserver(&observer);
+    manager.AddObserver(&observer2);
+    EXPECT_CALL(observer, OnDrop()).Times(1);
+  }
+  {
+    MockObserver observer;
+    PinManager::Observer observer2;
+    EXPECT_CALL(observer, OnDrop()).Times(0);
+    PinManager manager(profile_path_, mount_path_, &drivefs_);
+    manager.AddObserver(&observer);
+    manager.AddObserver(&observer2);
+    manager.RemoveObserver(&observer);
+  }
 }
 
 // Tests PinManager::NotifyProgress.
