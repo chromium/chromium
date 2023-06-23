@@ -879,8 +879,8 @@ IdentityGetAuthTokenFunction::CreateMintTokenFlow() {
       this,
       OAuth2MintTokenFlow::Parameters::CreateForExtensionFlow(
           extension()->id(), oauth2_client_id_,
-          std::vector<const base::StringPiece>(token_key_.scopes.begin(),
-                                               token_key_.scopes.end()),
+          std::vector<base::StringPiece>(token_key_.scopes.begin(),
+                                         token_key_.scopes.end()),
           gaia_mint_token_mode_, enable_granular_permissions_,
           GetOAuth2MintTokenFlowVersion(), GetOAuth2MintTokenFlowChannel(),
           signin_scoped_device_id, GetSelectedUserId(), consent_result_));
