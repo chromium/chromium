@@ -200,6 +200,9 @@ inline constexpr base::FeatureParam<base::TimeDelta>
 
 // Feature flag to replace all sync-related UI with sign-in ones.
 BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSignInPromos);
+
+// Flag to stop call to reconfiguration of datatypes if it's already stopping.
+BASE_DECLARE_FEATURE(kSyncAvoidReconfigurationIfAlreadyStopping);
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_
