@@ -384,12 +384,6 @@ const char kEnableFeedAblationName[] = "Enables Feed Ablation";
 const char kEnableFeedAblationDescription[] =
     "If Enabled the Feed will be removed from the NTP";
 
-const char kEnableFeedBottomSignInPromoName[] =
-    "Enable Feed bottom sign-in promotion";
-const char kEnableFeedBottomSignInPromoDescription[] =
-    "Display a sign-in promotion card at the bottom of the Discover Feed for "
-    "signed out users.";
-
 const char kEnableFeedCardMenuSignInPromoName[] =
     "Enable Feed card menu sign-in promotion";
 const char kEnableFeedCardMenuSignInPromoDescription[] =

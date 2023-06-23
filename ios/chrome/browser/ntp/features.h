@@ -32,12 +32,6 @@ BASE_DECLARE_FEATURE(kEnableFeedInvisibleForegroundRefresh);
 // Use IsWebChannelsEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableWebChannels);
 
-// Feature flag to enable Feed bottom sign-in promo feature, which displays a
-// sign-in promotion card at the bottom of the Discover Feed for signed out
-// users. Use IsFeedBottomSignInPromoEnabled() instead of this constant
-// directly.
-BASE_DECLARE_FEATURE(kEnableFeedBottomSignInPromo);
-
 // Feature flag to enable Feed card menu promo feature, which displays a sign-in
 // promotion UI when signed out users click on personalization options within
 // the feed card menu.
@@ -225,9 +219,6 @@ double GetFeedUnseenRefreshThresholdInSeconds();
 // during foregrounding. The engagement signals may include a deep scroll or 4
 // views, and no sooner than 5 minutes from the last refresh.
 bool IsFeedUseInteractivityInvalidationForForegroundRefreshesEnabled();
-
-// YES if enabled Feed bottom sign-in promo.
-bool IsFeedBottomSignInPromoEnabled();
 
 // YES if enabled Feed card menu promo.
 bool IsFeedCardMenuSignInPromoEnabled();

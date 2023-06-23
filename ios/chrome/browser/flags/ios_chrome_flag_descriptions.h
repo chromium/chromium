@@ -295,11 +295,6 @@ extern const char kEnableEmailInBookmarksReadingListSnackbarDescription[];
 extern const char kEnableFeedHeaderSettingsName[];
 extern const char kEnableFeedHeaderSettingsDescription[];
 
-// Title and description for the flag to enable the sign-in promotion at the
-// bottom of the discover feed.
-extern const char kEnableFeedBottomSignInPromoName[];
-extern const char kEnableFeedBottomSignInPromoDescription[];
-
 // Title and description for the flag to enable the sign-in promotion triggered
 // by the discover feed card menu.
 extern const char kEnableFeedCardMenuSignInPromoName[];
