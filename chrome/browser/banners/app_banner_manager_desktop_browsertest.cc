@@ -364,10 +364,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
   EXPECT_TRUE(manager->IsPromptAvailableForTesting());
 }
 
-// TODO(crbug.com/1457547): flaky.
-IN_PROC_BROWSER_TEST_F(
-    AppBannerManagerDesktopBrowserTest,
-    DISABLED_InstallPromptAfterUserMenuInstall_DisplayOverride) {
+IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
+                       InstallPromptAfterUserMenuInstall_DisplayOverride) {
   base::HistogramTester tester;
 
   TestAppBannerManagerDesktop* manager =
