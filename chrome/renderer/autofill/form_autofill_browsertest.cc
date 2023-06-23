@@ -18,14 +18,17 @@
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
+#include "components/autofill/content/renderer/test_utils.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_element_collection.h"
@@ -35,6 +38,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_select_element.h"
+#include "third_party/blink/public/web/web_select_menu_element.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/web/win/web_font_rendering.h"
@@ -4992,6 +4996,115 @@ TEST_F(FormAutofillTest, FillFormNonEmptyFieldForUnownedForm) {
       "<INPUT type='text' id='email'/>"
       "<INPUT type='submit' value='Send'/>",
       true, nullptr, nullptr, nullptr, nullptr, nullptr);
+}
+
+TEST_F(FormAutofillTest, UndoAutofill) {
+  LoadHTML(R"(
+    <form id="form_id">
+        <input id="text_id_1">
+        <input id="text_id_2">
+        <select id="select_id_1">
+          <option value="undo_select_option_1">Foo</option>
+          <option value="autofill_select_option_1">Bar</option>
+        </select>
+        <select id="select_id_2">
+          <option value="undo_select_option_2">Foo</option>
+          <option value="autofill_select_option_2">Bar</option>
+        </select>
+        <selectmenu id="selectmenu_id_1">
+          <option value="undo_selectmenu_option_1">Foo</option>
+          <option value="autofill_selectmenu_option_1">Bar</option>
+        </selectmenu>
+        <selectmenu id="selectmenu_id_2">
+          <option value="undo_selectmenu_option_2">Foo</option>
+          <option value="autofill_selectmenu_option_2">Bar</option>
+        </selectmenu>
+      </form>
+  )");
+  WebFormControlElement text_element_1 = GetFormControlElementById("text_id_1");
+  WebFormControlElement text_element_2 = GetFormControlElementById("text_id_2");
+  text_element_1.SetAutofillValue("autofill_text_1",
+                                  WebAutofillState::kAutofilled);
+  text_element_2.SetAutofillValue("autofill_text_2",
+                                  WebAutofillState::kAutofilled);
+
+  WebFormControlElement select_element_1 =
+      GetFormControlElementById("select_id_1");
+  WebFormControlElement select_element_2 =
+      GetFormControlElementById("select_id_2");
+  select_element_1.SetAutofillValue("autofill_select_option_1",
+                                    WebAutofillState::kAutofilled);
+  select_element_2.SetAutofillValue("autofill_select_option_2",
+                                    WebAutofillState::kAutofilled);
+
+  WebFormControlElement selectmenu_element_1 =
+      GetFormControlElementById("selectmenu_id_1");
+  WebFormControlElement selectmenu_element_2 =
+      GetFormControlElementById("selectmenu_id_2");
+  selectmenu_element_1.SetAutofillValue("autofill_selectmenu_option_1",
+                                        WebAutofillState::kAutofilled);
+  selectmenu_element_2.SetAutofillValue("autofill_selectmenu_option_2",
+                                        WebAutofillState::kAutofilled);
+
+  auto HasAutofillValue = [](const WebString& value,
+                             WebAutofillState autofill_state) {
+    return ::testing::AllOf(
+        ::testing::Property(&WebFormControlElement::Value, value),
+        ::testing::Property(&WebFormControlElement::GetAutofillState,
+                            autofill_state));
+  };
+  ASSERT_THAT(text_element_1, HasAutofillValue("autofill_text_1",
+                                               WebAutofillState::kAutofilled));
+  ASSERT_THAT(text_element_2, HasAutofillValue("autofill_text_2",
+                                               WebAutofillState::kAutofilled));
+  ASSERT_THAT(select_element_1,
+              HasAutofillValue("autofill_select_option_1",
+                               WebAutofillState::kAutofilled));
+  ASSERT_THAT(select_element_2,
+              HasAutofillValue("autofill_select_option_2",
+                               WebAutofillState::kAutofilled));
+  ASSERT_THAT(selectmenu_element_1,
+              HasAutofillValue("autofill_selectmenu_option_1",
+                               WebAutofillState::kAutofilled));
+  ASSERT_THAT(selectmenu_element_2,
+              HasAutofillValue("autofill_selectmenu_option_2",
+                               WebAutofillState::kAutofilled));
+
+  WebVector<WebFormElement> forms = GetMainFrame()->GetDocument().Forms();
+  EXPECT_EQ(1U, forms.size());
+
+  FormData form;
+  EXPECT_TRUE(WebFormElementToFormData(forms[0], WebFormControlElement(),
+                                       nullptr, EXTRACT_VALUE, &form, nullptr));
+
+  EXPECT_EQ(form.fields.size(), 6u);
+  std::vector<FormFieldData> undo_fields;
+  for (size_t i = 0; i < 6; i += 2) {
+    std::u16string type = i == 0   ? u"text"
+                          : i == 2 ? u"select_option"
+                                   : u"selectmenu_option";
+    form.fields[i].value = u"undo_" + type + u"_1";
+    form.fields[i].is_autofilled = false;
+    undo_fields.push_back(form.fields[i]);
+  }
+
+  form.fields = undo_fields;
+  UndoForm(form, text_element_1);
+  EXPECT_THAT(text_element_1,
+              HasAutofillValue("undo_text_1", WebAutofillState::kNotFilled));
+  EXPECT_THAT(text_element_2, HasAutofillValue("autofill_text_2",
+                                               WebAutofillState::kAutofilled));
+  EXPECT_THAT(select_element_1, HasAutofillValue("undo_select_option_1",
+                                                 WebAutofillState::kNotFilled));
+  EXPECT_THAT(select_element_2,
+              HasAutofillValue("autofill_select_option_2",
+                               WebAutofillState::kAutofilled));
+  EXPECT_THAT(selectmenu_element_1,
+              HasAutofillValue("undo_selectmenu_option_1",
+                               WebAutofillState::kNotFilled));
+  EXPECT_THAT(selectmenu_element_2,
+              HasAutofillValue("autofill_selectmenu_option_2",
+                               WebAutofillState::kAutofilled));
 }
 
 TEST_F(FormAutofillTest, ClearSectionWithNode) {

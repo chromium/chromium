@@ -1462,6 +1462,30 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, BasicClear) {
   EXPECT_THAT(GetFormValues(), ValuesAre(kEmptyAddress));
 }
 
+class AutofillInteractiveTest_UndoAutofill : public AutofillInteractiveTest {
+  base::test::ScopedFeatureList scoped_feature_list_{features::kAutofillUndo};
+};
+
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest_UndoAutofill,
+                       BasicUndoAutofill) {
+  CreateTestProfile();
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M'),
+                            .after_select = ExpectValues(MergeValue(
+                                kEmptyAddress, {"firstname", "M"}))}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
+
+  ASSERT_TRUE(
+      AutofillFlow(GetElementById("firstname"), this, {.target_index = 1}));
+
+  std::vector<FieldValue> expected_values = kEmptyAddress;
+  expected_values[0].value = "M";
+  EXPECT_THAT(GetFormValues(), ValuesAre(expected_values));
+}
+
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ClearTwoSection) {
   static const char kTestBillingFormString[] =
       R"( An example of a billing address form.
