@@ -520,7 +520,12 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 (credentials)
                         -> checkForNonDiscoverableMatchCredentialsReceived(
                                 options, callerOrigin, credentials),
-                this::onBinderCallException);
+                (e) -> {
+                    Log.e(TAG,
+                            "FIDO2 call to enumerate non-discoverable credentials failed. Dispatching to CredMan.",
+                            e);
+                    getCredentialViaCredMan(options, callerOrigin, /*requestPasswords=*/false);
+                });
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

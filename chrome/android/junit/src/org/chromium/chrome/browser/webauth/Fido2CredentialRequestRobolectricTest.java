@@ -337,6 +337,29 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
+    public void testGetAssertion_allowListEnumerationFails_goesToCredMan() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+
+        PublicKeyCredentialDescriptor descriptor = new PublicKeyCredentialDescriptor();
+        descriptor.type = 0;
+        descriptor.id = new byte[] {1, 2, 3, 4};
+        descriptor.transports = new int[] {0};
+        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[] {descriptor};
+
+        mFido2ApiCallHelper.mCredentialsError = new IllegalStateException("injected error");
+
+        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
+        assertThat(credManRequest).isNotNull();
+        assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
+    }
+
+    @Test
+    @SmallTest
     public void testGetAssertion_allowListMatch_goesToPlayServices() {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
@@ -514,6 +537,7 @@ public class Fido2CredentialRequestRobolectricTest {
         public boolean mMakeCredentialCalled;
         public boolean mGetAssertionCalled;
         public List<WebAuthnCredentialDetails> mCredentials;
+        public Exception mCredentialsError;
 
         @Override
         public boolean arePlayServicesAvailable() {
@@ -524,6 +548,11 @@ public class Fido2CredentialRequestRobolectricTest {
         public void invokeFido2GetCredentials(String relyingPartyId,
                 OnSuccessListener<List<WebAuthnCredentialDetails>> successCallback,
                 OnFailureListener failureCallback) {
+            if (mCredentialsError != null) {
+                failureCallback.onFailure(mCredentialsError);
+                return;
+            }
+
             List<WebAuthnCredentialDetails> credentials;
             if (mCredentials == null) {
                 credentials = new ArrayList();
