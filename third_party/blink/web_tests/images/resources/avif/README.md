@@ -156,9 +156,18 @@ input image to contain half of the red and purple squares.
 Note that the origin of the crop rectangle is at (0, 0).
 
 ### red-and-purple-and-blue.avif
-
 The uncropped version (300x100) of red-and-purple-crop.avif:
 
   avifenc -l draw_points_300x100.png red-and-purple-and-blue.avif
+
+### red-with-alpha-8bpc.avif
+3x3, 8-bit, YUV 4:2:0.
+
+Y: all 63. U: all 102. V: all 240. This is red in YUV, limited range, with
+MatrixCoefficients=1.
+
+A:   0,   0, 127
+     0, 127, 255
+   127, 255, 255
 
 ### TODO(crbug.com/960620): Figure out how the rest of files were generated.

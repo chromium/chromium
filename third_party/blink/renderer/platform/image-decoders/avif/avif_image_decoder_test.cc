@@ -168,7 +168,7 @@ StaticColorCheckParam kTestParams[] = {
      3,
      {
          {gfx::Point(0, 0), SkColorSetARGB(0, 255, 0, 0)},
-         {gfx::Point(1, 1), SkColorSetARGB(128, 255, 0, 0)},
+         {gfx::Point(1, 1), SkColorSetARGB(127, 255, 0, 0)},
          {gfx::Point(2, 2), SkColorSetARGB(255, 255, 0, 0)},
      }},
     {"/images/resources/avif/red-full-range-420-8bpc.avif",
@@ -246,7 +246,7 @@ StaticColorCheckParam kTestParams[] = {
      3,
      {
          {gfx::Point(0, 0), SkColorSetARGB(0, 0, 0, 0)},
-         {gfx::Point(1, 1), SkColorSetARGB(128, 255, 0, 0)},
+         {gfx::Point(1, 1), SkColorSetARGB(127, 255, 0, 0)},
          {gfx::Point(2, 2), SkColorSetARGB(255, 255, 0, 0)},
      }},
 #if FIXME_SUPPORT_ICC_PROFILE_NO_TRANSFORM
