@@ -372,6 +372,36 @@ TEST_F(AnchoredNudgeManagerImplTest,
             GetShownNudges()[id]->arrow());
 }
 
+// Tests that a nudge that is anchored to the shelf maintains the shelf visible
+// while the nudge is being shown and the shelf is on auto-hide.
+TEST_F(AnchoredNudgeManagerImplTest, NudgeAnchoredToShelf_ShelfDoesNotHide) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set up nudge data contents.
+  const std::string id = "id";
+  auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
+
+  // Make the nudge maintain the shelf visible while it is showing.
+  nudge_data.anchored_to_shelf = true;
+
+  // Verify `shelf` is initially visible.
+  Shelf* shelf = GetPrimaryShelf();
+  EXPECT_TRUE(shelf->IsVisible());
+
+  // Set `shelf` to always auto-hide, it should not be visible.
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  EXPECT_FALSE(shelf->IsVisible());
+
+  // Show the nudge, `shelf` should be made visible while nudge is showing.
+  anchored_nudge_manager()->Show(nudge_data);
+  EXPECT_TRUE(shelf->IsVisible());
+
+  // Cancel the nudge, `shelf` should be hidden again.
+  anchored_nudge_manager()->Cancel(id);
+  EXPECT_FALSE(shelf->IsVisible());
+}
+
 // Tests that a nudge closes if its anchor view is made invisible.
 TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenAnchorViewIsHiding) {
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();

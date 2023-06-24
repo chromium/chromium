@@ -55,6 +55,7 @@ AnchoredNudge::~AnchoredNudge() {
 
   if (anchored_to_shelf_) {
     Shell::Get()->RemoveShellObserver(this);
+    disable_shelf_auto_hide_.reset();
   }
 }
 
@@ -102,7 +103,10 @@ AnchoredNudge::CreateNonClientFrameView(views::Widget* widget) {
 
 void AnchoredNudge::AddedToWidget() {
   if (anchored_to_shelf_) {
-    SetArrowFromShelf();
+    auto* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
+    SetArrowFromShelf(shelf);
+    disable_shelf_auto_hide_ =
+        std::make_unique<Shelf::ScopedDisableAutoHide>(shelf);
   }
 }
 
@@ -141,23 +145,16 @@ void AnchoredNudge::OnShelfAlignmentChanged(aura::Window* root_window,
     return;
   }
 
-  if (Shelf::ForWindow(GetWidget()->GetNativeWindow()) ==
-      Shelf::ForWindow(root_window)) {
-    SetArrowFromShelf();
+  auto* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
+  if (shelf == Shelf::ForWindow(root_window)) {
+    SetArrowFromShelf(shelf);
   }
 }
 
-void AnchoredNudge::SetArrowFromShelf() {
-  if (!GetWidget()) {
-    return;
-  }
-
-  auto arrow =
-      Shelf::ForWindow(GetWidget()->GetNativeWindow())
-          ->SelectValueForShelfAlignment(views::BubbleBorder::BOTTOM_CENTER,
-                                         views::BubbleBorder::LEFT_CENTER,
-                                         views::BubbleBorder::RIGHT_CENTER);
-  SetArrow(arrow);
+void AnchoredNudge::SetArrowFromShelf(Shelf* shelf) {
+  SetArrow(shelf->SelectValueForShelfAlignment(
+      views::BubbleBorder::BOTTOM_CENTER, views::BubbleBorder::LEFT_CENTER,
+      views::BubbleBorder::RIGHT_CENTER));
 }
 
 BEGIN_METADATA(AnchoredNudge, views::BubbleDialogDelegateView)

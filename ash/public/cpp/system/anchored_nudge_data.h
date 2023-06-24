@@ -83,6 +83,7 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
 
   // If true, `arrow` will be set based on the current shelf alignment, and the
   // nudge will listen to shelf alignment changes to readjust its `arrow`.
+  // It will maintain the shelf visible while a nudge is being shown.
   bool anchored_to_shelf = false;
 
   // If true, the view will be styled to look like go/toast-style-spec. If there

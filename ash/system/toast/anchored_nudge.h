@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -65,8 +66,8 @@ class ASH_EXPORT AnchoredNudge : public ShellObserver,
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
 
-  // Sets the arrow of the nudge based on the current shelf's alignment.
-  void SetArrowFromShelf();
+  // Sets the arrow of the nudge based on the `shelf` alignment.
+  void SetArrowFromShelf(Shelf* shelf);
 
   const std::string& id() { return id_; }
 
@@ -83,6 +84,9 @@ class ASH_EXPORT AnchoredNudge : public ShellObserver,
   // Nudge action callbacks.
   AnchoredNudgeClickCallback nudge_click_callback_;
   AnchoredNudgeDismissCallback nudge_dismiss_callback_;
+
+  // Used to maintain the shelf visible while a shelf-anchored nudge is shown.
+  std::unique_ptr<Shelf::ScopedDisableAutoHide> disable_shelf_auto_hide_;
 };
 
 }  // namespace ash
