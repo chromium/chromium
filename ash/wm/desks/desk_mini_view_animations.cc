@@ -202,7 +202,14 @@ class RemovedMiniViewAnimation : public ui::ImplicitAnimationObserver {
     DCHECK(removed_mini_view_->parent());
     removed_mini_view_->parent()->RemoveChildViewT(removed_mini_view_.get());
 
-    if (Shell::Get()->overview_controller()->InOverviewSession()) {
+    const auto* overview_controller = Shell::Get()->overview_controller();
+    if (!overview_controller) {
+      // If we're being destroyed due to Shell being destroyed, the
+      // OverviewController is probably already gone. In this case, just stop.
+      return;
+    }
+
+    if (overview_controller->InOverviewSession()) {
       DCHECK(bar_view_);
       bar_view_->UpdateDeskButtonsVisibility();
       UpdateAccessibilityFocusInOverview();
