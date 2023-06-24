@@ -1737,7 +1737,7 @@ void BrowserThemePack::GenerateWindowControlButtonColor(ImageCache* images) {
     button_bg_alpha = SkColorGetA(button_bg_color);
 
   button_bg_alpha =
-      WindowFrameUtil::CalculateWindows10GlassCaptionButtonBackgroundAlpha(
+      WindowFrameUtil::CalculateWindowsCaptionButtonBackgroundAlpha(
           button_bg_alpha);
 
   // Determine what portion of the image to use in our calculations (we won't
@@ -1748,8 +1748,7 @@ void BrowserThemePack::GenerateWindowControlButtonColor(ImageCache* images) {
   // processing time (as it is determined by the size of icons, which we don't
   // have easy access to here), so we use the glass frame area as an
   // approximation.
-  gfx::Size dest_size =
-      WindowFrameUtil::GetWindows10GlassCaptionButtonAreaSize();
+  gfx::Size dest_size = WindowFrameUtil::GetWindowsCaptionButtonAreaSize();
 
   // To get an accurate sampling, all we need to do is get a representative
   // image that is at MOST the size of the caption button area.  In the case of

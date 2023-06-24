@@ -852,9 +852,9 @@ TEST_F(BrowserThemePackTest, TestWindowControlButtonBGColor_ButtonBGColor) {
   ASSERT_TRUE(has_button_bg_color);
   SkAlpha button_bg_alpha = SkColorGetA(button_bg_color);
 
-  // Account for the alpha modification that happens in Windows10CaptionButton.
+  // Account for the alpha modification that happens in WindowsCaptionButton.
   button_bg_alpha =
-      WindowFrameUtil::CalculateWindows10GlassCaptionButtonBackgroundAlpha(
+      WindowFrameUtil::CalculateWindowsCaptionButtonBackgroundAlpha(
           button_bg_alpha);
 
   struct CaptionButtonColorPair {

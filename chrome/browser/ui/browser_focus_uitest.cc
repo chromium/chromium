@@ -131,7 +131,7 @@ class BrowserFocusTest : public InProcessBrowserTest {
 
       // From the location icon we must traverse backwards one more time to
       // traverse past the tab search caption button if present.
-      if (WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(browser()) &&
+      if (WindowFrameUtil::IsWindowsTabSearchCaptionButtonEnabled(browser()) &&
           reverse) {
         ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key, false, true,
                                                     false, false));
@@ -172,7 +172,7 @@ class BrowserFocusTest : public InProcessBrowserTest {
 #endif
 
       // Traverse over the tab search frame caption button if present.
-      if (WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(browser()) &&
+      if (WindowFrameUtil::IsWindowsTabSearchCaptionButtonEnabled(browser()) &&
           !reverse) {
         ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key, false,
                                                     false, false, false));

@@ -167,7 +167,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
 #endif
 
   if (browser && tab_search_button &&
-      !WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(browser) &&
+      !WindowFrameUtil::IsWindowsTabSearchCaptionButtonEnabled(browser) &&
       !render_tab_search_before_tab_strip_) {
     tab_search_button_ = AddChildView(std::move(tab_search_button));
     if (features::IsChromeRefresh2023()) {

@@ -66,7 +66,7 @@ BrowserCaptionButtonContainer::BrowserCaptionButtonContainer(
           frame_view_,
           VIEW_ID_CLOSE_BUTTON,
           IDS_APP_ACCNAME_CLOSE))) {
-  if (WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(
+  if (WindowFrameUtil::IsWindowsTabSearchCaptionButtonEnabled(
           frame_view_->browser_view()->browser())) {
     tab_search_button_ =
         AddChildViewAt(std::make_unique<WindowsTabSearchCaptionButton>(
