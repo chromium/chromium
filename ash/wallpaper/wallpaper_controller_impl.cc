@@ -1696,6 +1696,9 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
         pref_manager_->GetSyncedWallpaperInfo(account_id, &synced_info);
     bool has_local_info =
         pref_manager_->GetLocalWallpaperInfo(account_id, &local_info);
+    DVLOG(1) << " has_synced_info=" << has_synced_info
+             << " has_local_info=" << has_local_info
+             << " is_oobe_state=" << IsOobeState();
     if (IsOobeState() && !has_synced_info && has_local_info &&
         local_info.type == WallpaperType::kDefault &&
         features::IsTimeOfDayWallpaperEnabled()) {
@@ -2825,7 +2828,9 @@ void WallpaperControllerImpl::SyncLocalAndRemotePrefs(
     SaveWallpaperToDriveFsAndSyncInfo(account_id, source);
     return;
   }
-  if (!WallpaperPrefManager::ShouldSyncIn(synced_info, local_info)) {
+
+  if (!WallpaperPrefManager::ShouldSyncIn(synced_info, local_info,
+                                          IsOobeState())) {
     return;
   }
   HandleWallpaperInfoSyncedIn(account_id, synced_info);

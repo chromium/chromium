@@ -83,7 +83,8 @@ class ASH_EXPORT WallpaperPrefManager
   // Determines whether the local wallpaper info should by overriden by the
   // synced prefs.
   static bool ShouldSyncIn(const WallpaperInfo& synced_info,
-                           const WallpaperInfo& local_info);
+                           const WallpaperInfo& local_info,
+                           const bool is_oobe);
 
   static std::unique_ptr<WallpaperPrefManager> Create(PrefService* local_state);
 

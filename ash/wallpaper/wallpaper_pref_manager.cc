@@ -626,7 +626,8 @@ bool WallpaperPrefManager::ShouldSyncOut(const WallpaperInfo& local_info) {
 
 // static
 bool WallpaperPrefManager::ShouldSyncIn(const WallpaperInfo& synced_info,
-                                        const WallpaperInfo& local_info) {
+                                        const WallpaperInfo& local_info,
+                                        const bool is_oobe) {
   if (!IsWallpaperTypeSyncable(synced_info.type)) {
     LOG(ERROR) << " wallpaper type " << static_cast<int>(synced_info.type)
                << " from remote prefs is not syncable.";
@@ -634,6 +635,12 @@ bool WallpaperPrefManager::ShouldSyncIn(const WallpaperInfo& synced_info,
   }
   if (synced_info.MatchesSelection(local_info)) {
     return false;
+  }
+  if (is_oobe) {
+    // synced-in wallpaper during OOBE should always be honored. The user is
+    // setting up a new device and should see the wallpaper they last set on
+    // their account if it exists.
+    return true;
   }
   if (synced_info.date < local_info.date) {
     return false;

@@ -528,7 +528,8 @@ TEST_F(WallpaperPrefManagerTest, ShouldSyncOut) {
 TEST_F(WallpaperPrefManagerTest, ShouldSyncIn) {
   WallpaperInfo local_info = InfoWithType(WallpaperType::kOnline);
   WallpaperInfo synced_info = InfoWithType(WallpaperType::kDaily);
-  EXPECT_TRUE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info));
+  EXPECT_TRUE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info,
+                                                 /*is_oobe=*/false));
 
   std::vector<OnlineWallpaperVariant> variants;
   variants.emplace_back(kAssetId, GURL(kDummyUrl),
@@ -540,7 +541,10 @@ TEST_F(WallpaperPrefManagerTest, ShouldSyncIn) {
   variants.emplace_back(kAssetId4, GURL(kDummyUrl4),
                         backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE);
   local_info.variants = variants;
-  EXPECT_FALSE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info));
+  EXPECT_FALSE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info,
+                                                  /*is_oobe=*/false));
+  EXPECT_TRUE(WallpaperPrefManager::ShouldSyncIn(synced_info, local_info,
+                                                 /*is_oobe=*/true));
 }
 
 }  // namespace
