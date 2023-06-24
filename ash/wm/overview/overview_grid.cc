@@ -41,6 +41,7 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
@@ -426,6 +427,15 @@ class DesksBarSlideAnimation {
 
     const auto duration = is_zero_state ? kZeroDesksBarSlideDuration
                                         : kExpandedDesksBarSlideDuration;
+
+    // Add slide out animation as part of the overview exit animation.
+    ui::ScopedLayerAnimationSettings settings{
+        desks_widget_->GetLayer()->GetAnimator()};
+    auto exit_observer = std::make_unique<ExitAnimationObserver>();
+    settings.AddObserver(exit_observer.get());
+    Shell::Get()->overview_controller()->AddExitAnimationObserver(
+        std::move(exit_observer));
+
     views::AnimationBuilder()
         .OnEnded(base::BindOnce(
             [](DesksBarSlideAnimation* animation) { delete animation; },
