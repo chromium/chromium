@@ -268,7 +268,7 @@ class InteractiveTestApi {
   // ```
   //
   // Note: does not work with EnsureNotPresent; use the `in_any_context`
-  // parameter. Also does not work with all event types (yet).
+  // parameter.
   //
   // TODO(dfried): consider if we should have a version that takes variadic
   // arguments and applies "in any context" to all of them?

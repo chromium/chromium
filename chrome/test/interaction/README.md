@@ -281,12 +281,11 @@ A modifier wraps around a step or steps and change their behavior.
 
 - **InAnyContext** allows the modified verb to find an element outside the test's default
   `ElementContext`. Unlike the other modifiers, there are a number of limitations on its use:
-  - It should not be used with `FlushEvents`, most `Ensure`, or any `Activate`,
-    `Event`, or `Mouse` verbs.
+  - It should not be used with any `Ensure` verbs.
     - This is a shortcoming in the underlying framework that will be fixed in the future.
   - It should not be used with named elements, which can already be found in any context.
   - For unsupported verbs, it is best to either use `InSameContext()` or `InContext()` instead.
-  - Example:
+  - Usage example:
 
 ```cpp
 RunTestSequence(

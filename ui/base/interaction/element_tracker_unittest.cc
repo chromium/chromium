@@ -419,6 +419,29 @@ TEST(ElementTrackerTest, AddElementActivatedCallback) {
   e3->Activate();
 }
 
+TEST(ElementTrackerTest, AddElementActivatedInAnyContextCallback) {
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
+  auto subscription = ElementTracker::GetElementTracker()
+                          ->AddElementActivatedInAnyContextCallback(
+                              kElementIdentifier1, callback.Get());
+  test::TestElementPtr e1 = std::make_unique<test::TestElement>(
+      kElementIdentifier1, kElementContext1);
+  test::TestElementPtr e2 = std::make_unique<test::TestElementOtherFramework>(
+      kElementIdentifier2, kElementContext1);
+  test::TestElementPtr e3 = std::make_unique<test::TestElementOtherFramework>(
+      kElementIdentifier1, kElementContext2);
+  e1->Show();
+  e2->Show();
+  e3->Show();
+
+  // Two of these elements have the specified identifier, but in different
+  // contexts, while the other element does not share the identifier and should
+  // not trigger the callback.
+  EXPECT_CALL_IN_SCOPE(callback, Run(e1.get()), e1->Activate());
+  e2->Activate();
+  EXPECT_CALL_IN_SCOPE(callback, Run(e3.get()), e3->Activate());
+}
+
 TEST(ElementTrackerTest, AddElementHiddenCallback) {
   UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
   auto subscription =
@@ -446,6 +469,29 @@ TEST(ElementTrackerTest, AddElementHiddenCallback) {
   EXPECT_CALL_IN_SCOPE(callback, Run(e1.get()), e1->Hide());
 }
 
+TEST(ElementTrackerTest, AddElementHiddenInAnyContextCallback) {
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
+  auto subscription =
+      ElementTracker::GetElementTracker()->AddElementHiddenInAnyContextCallback(
+          kElementIdentifier1, callback.Get());
+  test::TestElementPtr e1 = std::make_unique<test::TestElement>(
+      kElementIdentifier1, kElementContext1);
+  test::TestElementPtr e2 = std::make_unique<test::TestElementOtherFramework>(
+      kElementIdentifier2, kElementContext1);
+  test::TestElementPtr e3 = std::make_unique<test::TestElementOtherFramework>(
+      kElementIdentifier1, kElementContext2);
+  e1->Show();
+  e2->Show();
+  e3->Show();
+
+  // Two of these elements have the specified identifier, but in different
+  // contexts, while the other element does not share the identifier and should
+  // not trigger the callback.
+  EXPECT_CALL_IN_SCOPE(callback, Run(e1.get()), e1->Hide());
+  e2->Hide();
+  EXPECT_CALL_IN_SCOPE(callback, Run(e3.get()), e3->Hide());
+}
+
 TEST(ElementTrackerTest, AddCustomEventCallback) {
   UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
   auto subscription =
@@ -453,11 +499,41 @@ TEST(ElementTrackerTest, AddCustomEventCallback) {
           kCustomEventType1, kElementContext1, callback.Get());
   test::TestElementPtr e1 = std::make_unique<test::TestElement>(
       kElementIdentifier1, kElementContext1);
+  test::TestElementPtr e2 = std::make_unique<test::TestElement>(
+      kElementIdentifier1, kElementContext2);
   e1->Show();
+  e2->Show();
   EXPECT_CALL_IN_SCOPE(
       callback, Run(e1.get()),
       ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
           e1.get(), kCustomEventType1));
+  ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(e2.get(),
+                                                            kCustomEventType1);
+}
+
+TEST(ElementTrackerTest, AddCustomEventInAnyContextCallback) {
+  UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
+  auto subscription =
+      ElementTracker::GetElementTracker()->AddCustomEventInAnyContextCallback(
+          kCustomEventType1, callback.Get());
+  test::TestElementPtr e1 = std::make_unique<test::TestElement>(
+      kElementIdentifier1, kElementContext1);
+  test::TestElementPtr e2 = std::make_unique<test::TestElement>(
+      kElementIdentifier1, kElementContext2);
+  e1->Show();
+  e2->Show();
+
+  // Two of these elements have the specified identifier, but in different
+  // contexts, while the other element does not share the identifier and should
+  // not trigger the callback.
+  EXPECT_CALL_IN_SCOPE(
+      callback, Run(e1.get()),
+      ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+          e1.get(), kCustomEventType1));
+  EXPECT_CALL_IN_SCOPE(
+      callback, Run(e2.get()),
+      ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+          e2.get(), kCustomEventType1));
 }
 
 TEST(ElementTrackerTest, AddClassCustomEventCallback) {

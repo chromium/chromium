@@ -202,6 +202,37 @@ TEST_F(InteractiveTestTest, RunTestSequenceInContext) {
   EXPECT_TRUE(RunTestSequenceInContext(kTestContext1, WaitForShow(kTestId1)));
 }
 
+TEST_F(InteractiveTestTest, WaitInAnyContext) {
+  TestElement e1(kTestId1, kTestContext2);
+  TestElement e2(kTestId2, kTestContext2);
+
+  QueueActions(base::BindLambdaForTesting([&e1, &e2]() {
+    e1.Show();
+    e2.Show();
+    e1.Activate();
+    e2.SendCustomEvent(kTestEvent1);
+    e1.Hide();
+  }));
+
+  RunTestSequenceInContext(
+      kTestContext1,
+      InAnyContext(Steps(WaitForShow(kTestId1), WaitForShow(kTestId2),
+                         WaitForActivate(kTestId1),
+                         WaitForEvent(kTestId2, kTestEvent1),
+                         WaitForHide(kTestId1))));
+}
+
+TEST_F(InteractiveTestTest, FlushInAnyContext) {
+  TestElement e1(kTestId1, kTestContext2);
+  TestElement e2(kTestId2, kTestContext2);
+  e1.Show();
+  e2.Show();
+
+  RunTestSequenceInContext(
+      kTestContext1, InAnyContext(Steps(WaitForShow(kTestId1), FlushEvents(),
+                                        WaitForShow(kTestId2))));
+}
+
 TEST_F(InteractiveTestTest, InteractionVerbs) {
   TestElement e1(kTestId1, kTestContext1);
   TestElement e2(kTestId2, kTestContext1);

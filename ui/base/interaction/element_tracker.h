@@ -179,6 +179,11 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
                                            Callback callback);
 
   // Adds a callback that will be called whenever an element with identifier
+  // `id` is activated in any context.
+  Subscription AddElementActivatedInAnyContextCallback(ElementIdentifier id,
+                                                       Callback callback);
+
+  // Adds a callback that will be called whenever an element with identifier
   // `id` in `context` is hidden.
   //
   // Note: the TrackedElement* passed to the callback may not remain
@@ -188,11 +193,26 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
                                         ElementContext context,
                                         Callback callback);
 
+  // Adds a callback that will be called whenever an element with identifier
+  // `id` is hidden in any context.
+  //
+  // Note: the TrackedElement* passed to the callback may not remain
+  // valid after the call, even if the same element object in its UI framework
+  // is re-shown (a new TrackedElement may be generated).
+  Subscription AddElementHiddenInAnyContextCallback(ElementIdentifier id,
+                                                    Callback callback);
+
   // Adds a callback that will be called whenever an event of `event_type` is
   // generated within `context` by any element.
   Subscription AddCustomEventCallback(CustomElementEventType event_type,
                                       ElementContext context,
                                       Callback callback);
+
+  // Adds a callback that will be called whenever an event of `event_type` is
+  // generated within any context.
+  Subscription AddCustomEventInAnyContextCallback(
+      CustomElementEventType event_type,
+      Callback callback);
 
   // Returns all known contexts.
   Contexts GetAllContextsForTesting() const;
