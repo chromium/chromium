@@ -654,8 +654,8 @@ NGGridLayoutTrackCollection::CreateSubgridTrackCollection(
     for (wtf_size_t i = 0; i <= range_count; ++i) {
       // Opposite direction subgrids need to iterate backwards.
       const wtf_size_t current_index = is_opposite_direction_in_root_grid
-                                           ? begin_range_index + i
-                                           : end_range_index - i;
+                                           ? end_range_index - i
+                                           : begin_range_index + i;
 
       auto& subgrid_translated_range =
           subgrid_ranges.emplace_back(ranges_[current_index]);
