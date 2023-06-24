@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
@@ -27,6 +28,60 @@
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
+
+namespace {
+bool IsValidRange(const RangeInFlatTree* range) {
+  // An attached range may have !IsCollapsed but converting to EphemeralRange
+  // results in IsCollapsed. For an example, see
+  // AnnotationAgentImplTest.ScrollIntoViewCollapsedRange.
+  return range && range->IsConnected() && !range->IsCollapsed() &&
+         !range->ToEphemeralRange().IsCollapsed();
+}
+
+// It's common for collapsible sections to be implemented by hiding collapsed
+// text within a `height:0; overflow: hidden` box. However, FindBuffer does
+// find this text (as typically overflow: hidden can still be programmatically
+// scrolled). The TextFinder use case wants to prevent offering scrolls to
+// these sections as its confusing (in fact, document Markers will avoid
+// creating a highlight for these, despite the fact we can scroll to it). We
+// probably want to do this for general SharedHighlights as well but that will
+// require some more thought and spec changes but we can experiment with this
+// for TextFinder to see how it works.
+bool IsValidRangeForTextFinder(const RangeInFlatTree* range) {
+  if (!IsValidRange(range)) {
+    return false;
+  }
+
+  EphemeralRangeInFlatTree ephemeral_range = range->ToEphemeralRange();
+
+  // Technically, the text could span multiple Elements, each of which could
+  // hide overflow. However, that doesn't seem to be common so do the more
+  // performant thing and check the common ancestor.
+  Node* common_node = ephemeral_range.CommonAncestorContainer();
+
+  LayoutObject* object = common_node->GetLayoutObject();
+  CHECK(object);
+
+  for (; !object->IsLayoutView(); object = object->Parent()) {
+    LayoutBox* box = DynamicTo<LayoutBox>(object);
+    if (!box || !box->HasNonVisibleOverflow()) {
+      continue;
+    }
+
+    if (box->StyleRef().OverflowX() != EOverflow::kVisible &&
+        box->Size().Width().RawValue() <= 0) {
+      return false;
+    }
+
+    if (box->StyleRef().OverflowY() != EOverflow::kVisible &&
+        box->Size().Height().RawValue() <= 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
+}  // namespace
 
 AnnotationAgentImpl::AnnotationAgentImpl(
     AnnotationAgentContainerImpl& owning_container,
@@ -172,7 +227,11 @@ void AnnotationAgentImpl::DidFinishAttach(const RangeInFlatTree* range) {
     return;
   }
 
-  attached_range_ = range;
+  if (type_ == mojom::blink::AnnotationType::kTextFinder) {
+    attached_range_ = IsValidRangeForTextFinder(range) ? range : nullptr;
+  } else {
+    attached_range_ = range;
+  }
 
   if (IsAttached()) {
     TRACE_EVENT_INSTANT("blink", "IsAttached");

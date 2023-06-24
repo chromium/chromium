@@ -73,7 +73,10 @@ class AnnotationAgentImplTest : public SimTest {
 
   // Creates an agent with a mock selector that will relect the given range
   // when attached.
-  AnnotationAgentImpl* CreateAgentForRange(RangeInFlatTree* range) {
+  AnnotationAgentImpl* CreateAgentForRange(
+      RangeInFlatTree* range,
+      mojom::blink::AnnotationType type =
+          mojom::blink::AnnotationType::kSharedHighlight) {
     EXPECT_TRUE(range);
     if (!range)
       return nullptr;
@@ -84,8 +87,7 @@ class AnnotationAgentImplTest : public SimTest {
       return nullptr;
 
     auto* mock_selector = MakeGarbageCollected<MockAnnotationSelector>(*range);
-    return container->CreateUnboundAgent(
-        mojom::blink::AnnotationType::kSharedHighlight, *mock_selector);
+    return container->CreateUnboundAgent(type, *mock_selector);
   }
 
   // Creates an agent with a mock selector that will always fail to find a
@@ -789,6 +791,127 @@ TEST_F(AnnotationAgentImplTest, ScrollIntoViewCollapsedRange) {
   host.FlushForTesting();
   EXPECT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset().y(),
             0);
+}
+
+// kTextFinder annotations should fail to find text within an empty
+// overflow:hidden ancestor. This is a special case fix of
+// https://crbug.com/1456392.
+TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindEmptyOverflowHidden) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div id="container">
+      <p id="text">FOO BAR</p>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Element* p = GetDocument().getElementById("text");
+  Element* container = GetDocument().getElementById("container");
+  RangeInFlatTree* range_foo = CreateRangeToExpectedText(p, 0, 3, "FOO");
+
+  // Empty container with `overflow: visible hidden` (y being hidden makes x
+  // compute to auto).
+  {
+    container->setAttribute(html_names::kStyleAttr,
+                            "height: 0px; overflow: visible hidden");
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+    auto* agent_foo = CreateAgentForRange(
+        range_foo, mojom::blink::AnnotationType::kTextFinder);
+    agent_foo->Attach();
+
+    // TextFinder should refuse to attach to the text since it has an empty,
+    // overflow: hidden ancestor.
+    EXPECT_FALSE(agent_foo->IsAttached());
+  }
+
+  // Empty container with `overflow: visible hidden` (y being hidden makes x
+  // compute to auto). TextFinder should refuse to attach to the text since
+  // it's clipped by the container.
+  {
+    container->setAttribute(html_names::kStyleAttr,
+                            "height: 0px; overflow: visible hidden");
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+    auto* agent_foo = CreateAgentForRange(
+        range_foo, mojom::blink::AnnotationType::kTextFinder);
+    agent_foo->Attach();
+
+    EXPECT_FALSE(agent_foo->IsAttached());
+  }
+
+  // Empty container with `overflow: clip visible`. Should attach since
+  // `overflow: clip` can clip in a single axis and in this case is clipping
+  // the non-empty axis.
+  {
+    container->setAttribute(html_names::kStyleAttr,
+                            "height: 0px; overflow: clip visible");
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+    auto* agent_foo = CreateAgentForRange(
+        range_foo, mojom::blink::AnnotationType::kTextFinder);
+    agent_foo->Attach();
+
+    EXPECT_TRUE(agent_foo->IsAttached());
+  }
+
+  // Empty container with clip on both axes. Shouldn't attach since it's
+  // clipped in the empty direction.
+  {
+    container->setAttribute(html_names::kStyleAttr,
+                            "height: 0px; overflow: clip clip");
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+    auto* agent_foo = CreateAgentForRange(
+        range_foo, mojom::blink::AnnotationType::kTextFinder);
+    agent_foo->Attach();
+
+    EXPECT_FALSE(agent_foo->IsAttached());
+  }
+
+  // Empty container with `overflow: visible clip`. Should fail since
+  // `overflow: clip` is in the empty direction
+  {
+    container->setAttribute(html_names::kStyleAttr,
+                            "height: 0px; overflow: visible clip");
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+    auto* agent_foo = CreateAgentForRange(
+        range_foo, mojom::blink::AnnotationType::kTextFinder);
+    agent_foo->Attach();
+
+    EXPECT_FALSE(agent_foo->IsAttached());
+  }
+
+  // Giving the container size should make it visible to TextFinder annotations.
+  {
+    container->setAttribute(html_names::kStyleAttr,
+                            "height: 1px; overflow: hidden");
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+    auto* agent_foo = CreateAgentForRange(
+        range_foo, mojom::blink::AnnotationType::kTextFinder);
+    agent_foo->Attach();
+
+    // Now that the ancestor has size TextFinder should attach.
+    EXPECT_TRUE(agent_foo->IsAttached());
+  }
+
+  // An empty container shouldn't prevent attaching if overflow is visible.
+  {
+    container->setAttribute(html_names::kStyleAttr,
+                            "height: 0px; overflow: visible");
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+    auto* agent_foo = CreateAgentForRange(
+        range_foo, mojom::blink::AnnotationType::kTextFinder);
+    agent_foo->Attach();
+
+    // Now that the ancestor has size TextFinder should attach.
+    EXPECT_TRUE(agent_foo->IsAttached());
+  }
 }
 
 }  // namespace blink
