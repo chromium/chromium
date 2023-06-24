@@ -46,6 +46,10 @@ namespace {
 constexpr char kVideoConferenceTraySpeakOnMuteOptInNudgeId[] =
     "video_conference_tray_nudge_ids.speak_on_mute_opt_in";
 
+// The ID for the "Speak-on-mute opt-in/out confirmation" nudge.
+constexpr char kVideoConferenceTraySpeakOnMuteOptInConfirmationNudgeId[] =
+    "video_conference_tray_nudge_ids.speak_on_mute_opt_in_confirmation";
+
 // The ID for the "Speak-on-mute detected" nudge.
 constexpr char kVideoConferenceTraySpeakOnMuteDetectedNudgeId[] =
     "video_conference_tray_nudge_ids.speak_on_mute_detected";
@@ -203,14 +207,14 @@ void VideoConferenceTrayController::MaybeShowSpeakOnMuteOptInNudge(
   nudge_data.dismiss_text = l10n_util::GetStringUTF16(
       IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_DISMISS_BUTTON);
   nudge_data.dismiss_callback = base::BindRepeating(
-      &VideoConferenceTrayController::OnSpeakOnMuteNudgeOptOut,
-      weak_ptr_factory_.GetWeakPtr());
+      &VideoConferenceTrayController::OnSpeakOnMuteNudgeOptInAction,
+      weak_ptr_factory_.GetWeakPtr(), /*opt_in=*/false);
 
   nudge_data.second_button_text = l10n_util::GetStringUTF16(
       IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_SECOND_BUTTON);
   nudge_data.second_button_callback = base::BindRepeating(
-      &VideoConferenceTrayController::OnSpeakOnMuteNudgeOptIn,
-      weak_ptr_factory_.GetWeakPtr());
+      &VideoConferenceTrayController::OnSpeakOnMuteNudgeOptInAction,
+      weak_ptr_factory_.GetWeakPtr(), /*opt_in=*/true);
 
   nudge_data.has_infinite_duration = true;
   nudge_data.anchored_to_shelf = true;
@@ -227,7 +231,7 @@ void VideoConferenceTrayController::MaybeShowSpeakOnMuteOptInNudge(
   }
 }
 
-void VideoConferenceTrayController::OnSpeakOnMuteNudgeOptIn() {
+void VideoConferenceTrayController::OnSpeakOnMuteNudgeOptInAction(bool opt_in) {
   auto* pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
   if (!pref_service) {
@@ -235,24 +239,30 @@ void VideoConferenceTrayController::OnSpeakOnMuteNudgeOptIn() {
   }
 
   pref_service->SetBoolean(prefs::kShouldShowSpeakOnMuteOptInNudge, false);
-  pref_service->SetBoolean(prefs::kUserSpeakOnMuteDetectionEnabled, true);
+  pref_service->SetBoolean(prefs::kUserSpeakOnMuteDetectionEnabled, opt_in);
 
   AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
       NudgeCatalogName::kVideoConferenceTraySpeakOnMuteOptIn);
-}
 
-void VideoConferenceTrayController::OnSpeakOnMuteNudgeOptOut() {
-  auto* pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  if (!pref_service) {
-    return;
-  }
-
-  pref_service->SetBoolean(prefs::kShouldShowSpeakOnMuteOptInNudge, false);
-  pref_service->SetBoolean(prefs::kUserSpeakOnMuteDetectionEnabled, false);
-
-  AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
-      NudgeCatalogName::kVideoConferenceTraySpeakOnMuteOptIn);
+  AnchoredNudgeData nudge_data(
+      kVideoConferenceTraySpeakOnMuteOptInConfirmationNudgeId,
+      NudgeCatalogName::kVideoConferenceTraySpeakOnMuteOptInConfirmation,
+      l10n_util::GetStringUTF16(
+          opt_in
+              ? IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_CONFIRMATION_BODY
+              : IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_OUT_CONFIRMATION_BODY),
+      GetVcTrayInActiveWindow()->audio_icon());
+  nudge_data.dismiss_text = l10n_util::GetStringUTF16(
+      IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_CONFIRMATION_BUTTON);
+  nudge_data.dismiss_callback = base::BindRepeating([]() {
+    Shell::Get()
+        ->system_tray_model()
+        ->client()
+        ->ShowSpeakOnMuteDetectionSettings();
+  });
+  nudge_data.anchored_to_shelf = true;
+  nudge_data.use_toast_style = true;
+  AnchoredNudgeManager::Get()->Show(nudge_data);
 }
 
 void VideoConferenceTrayController::CloseAllVcNudges() {

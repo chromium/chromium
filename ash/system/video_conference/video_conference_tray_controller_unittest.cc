@@ -40,6 +40,9 @@ constexpr char kVideoConferenceTraySpeakOnMuteDetectedNudgeId[] =
 constexpr char kVideoConferenceTraySpeakOnMuteOptInNudgeId[] =
     "video_conference_tray_nudge_ids.speak_on_mute_opt_in";
 
+constexpr char kVideoConferenceTraySpeakOnMuteOptInConfirmationNudgeId[] =
+    "video_conference_tray_nudge_ids.speak_on_mute_opt_in_confirmation";
+
 constexpr char kVideoConferenceTrayMicrophoneUseWhileHWDisabledNudgeId[] =
     "video_conference_tray_nudge_ids.microphone_use_while_hw_disabled";
 constexpr char kVideoConferenceTrayMicrophoneUseWhileSWDisabledNudgeId[] =
@@ -609,6 +612,10 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteOptInNudge_OptOut) {
   EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSpeakOnMuteOptInNudge));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kUserSpeakOnMuteDetectionEnabled));
 
+  // Expect confirmation nudge to be shown.
+  EXPECT_TRUE(
+      IsNudgeShown(kVideoConferenceTraySpeakOnMuteOptInConfirmationNudgeId));
+
   // Unmute and mute again, user opted out so nudge should not be shown.
   controller()->SetMicrophoneMuted(false);
   controller()->SetMicrophoneMuted(true);
@@ -641,6 +648,10 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteOptInNudge_OptIn) {
   EXPECT_FALSE(IsNudgeShown(nudge_id));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSpeakOnMuteOptInNudge));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kUserSpeakOnMuteDetectionEnabled));
+
+  // Expect confirmation nudge to be shown.
+  EXPECT_TRUE(
+      IsNudgeShown(kVideoConferenceTraySpeakOnMuteOptInConfirmationNudgeId));
 
   // Unmute and mute again, user opted in so nudge should not be shown.
   controller()->SetMicrophoneMuted(false);
