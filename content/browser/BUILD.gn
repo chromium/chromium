@@ -2183,6 +2183,8 @@ source_set("browser") {
     "tracing/tracing_controller_impl.cc",
     "tracing/tracing_controller_impl.h",
     "tracing/tracing_controller_impl_data_endpoint.cc",
+    "tracing/tracing_scenario.cc",
+    "tracing/tracing_scenario.h",
     "tracing/tracing_service_controller.cc",
     "tracing/tracing_service_controller.h",
     "ukm_internals_ui.cc",

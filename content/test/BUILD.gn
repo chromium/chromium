@@ -2636,6 +2636,7 @@ test("content_unittests") {
     "../browser/storage_partition_impl_unittest.cc",
     "../browser/tracing/background_startup_tracing_observer_unittest.cc",
     "../browser/tracing/background_tracing_config_unittest.cc",
+    "../browser/tracing/tracing_scenario_unittest.cc",
     "../browser/usb/web_usb_service_impl_unittest.cc",
     "../browser/web_contents/aura/gesture_nav_simple_unittest.cc",
     "../browser/web_contents/web_contents_delegate_unittest.cc",
