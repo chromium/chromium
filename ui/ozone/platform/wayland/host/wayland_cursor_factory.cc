@@ -59,24 +59,26 @@ void WaylandCursorFactory::ObserveThemeChanges() {
 scoped_refptr<PlatformCursor> WaylandCursorFactory::CreateImageCursor(
     mojom::CursorType type,
     const SkBitmap& bitmap,
-    const gfx::Point& hotspot) {
+    const gfx::Point& hotspot,
+    float scale) {
+  SetDeviceScaleFactor(scale);
+
   // Wayland only supports cursor images with an integer scale, so we
   // must upscale cursor images with non-integer scales to integer scaled
   // images so that the cursor is displayed correctly.
-  float rounded_scale = GetRoundedScale(scale_);
-  if (std::abs(rounded_scale - scale_) >
-          std::numeric_limits<float>::epsilon() &&
+  float rounded_scale = GetRoundedScale(scale);
+  if (std::abs(rounded_scale - scale) > std::numeric_limits<float>::epsilon() &&
       !connection_->surface_submission_in_pixel_coordinates()) {
     const SkBitmap scaled_bitmap = skia::ImageOperations::Resize(
         bitmap, skia::ImageOperations::RESIZE_LANCZOS3,
-        std::round(bitmap.width() * (rounded_scale / scale_)),
-        std::round(bitmap.height() * (rounded_scale / scale_)));
+        std::round(bitmap.width() * (rounded_scale / scale)),
+        std::round(bitmap.height() * (rounded_scale / scale)));
     const gfx::Point scaled_hotspot =
-        gfx::ScaleToRoundedPoint(hotspot, rounded_scale / scale_);
+        gfx::ScaleToRoundedPoint(hotspot, rounded_scale / scale);
     return base::MakeRefCounted<BitmapCursor>(type, scaled_bitmap,
                                               scaled_hotspot, rounded_scale);
   } else {
-    return BitmapCursorFactory::CreateImageCursor(type, bitmap, hotspot);
+    return BitmapCursorFactory::CreateImageCursor(type, bitmap, hotspot, scale);
   }
 }
 
@@ -84,25 +86,27 @@ scoped_refptr<PlatformCursor> WaylandCursorFactory::CreateAnimatedCursor(
     mojom::CursorType type,
     const std::vector<SkBitmap>& bitmaps,
     const gfx::Point& hotspot,
+    float scale,
     base::TimeDelta frame_delay) {
-  float rounded_scale = GetRoundedScale(scale_);
-  if (std::abs(rounded_scale - scale_) >
-          std::numeric_limits<float>::epsilon() &&
+  SetDeviceScaleFactor(scale);
+
+  float rounded_scale = GetRoundedScale(scale);
+  if (std::abs(rounded_scale - scale) > std::numeric_limits<float>::epsilon() &&
       !connection_->surface_submission_in_pixel_coordinates()) {
     std::vector<SkBitmap> scaled_bitmaps;
     for (const auto& bitmap : bitmaps) {
       scaled_bitmaps.push_back(skia::ImageOperations::Resize(
           bitmap, skia::ImageOperations::RESIZE_LANCZOS3,
-          std::round(bitmap.width() * (rounded_scale / scale_)),
-          std::round(bitmap.height() * (rounded_scale / scale_))));
+          std::round(bitmap.width() * (rounded_scale / scale)),
+          std::round(bitmap.height() * (rounded_scale / scale))));
     }
     const gfx::Point scaled_hotspot =
-        gfx::ScaleToRoundedPoint(hotspot, rounded_scale / scale_);
+        gfx::ScaleToRoundedPoint(hotspot, rounded_scale / scale);
     return base::MakeRefCounted<BitmapCursor>(
         type, scaled_bitmaps, scaled_hotspot, frame_delay, rounded_scale);
   } else {
     return BitmapCursorFactory::CreateAnimatedCursor(type, bitmaps, hotspot,
-                                                     frame_delay);
+                                                     scale, frame_delay);
   }
 }
 
@@ -136,8 +140,6 @@ scoped_refptr<PlatformCursor> WaylandCursorFactory::GetDefaultCursor(
 }
 
 void WaylandCursorFactory::SetDeviceScaleFactor(float scale) {
-  BitmapCursorFactory::SetDeviceScaleFactor(scale);
-
   if (scale_ == scale)
     return;
 

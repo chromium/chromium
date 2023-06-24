@@ -64,7 +64,8 @@ scoped_refptr<PlatformCursor> CursorFactory::GetDefaultCursor(
 scoped_refptr<PlatformCursor> CursorFactory::CreateImageCursor(
     mojom::CursorType type,
     const SkBitmap& bitmap,
-    const gfx::Point& hotspot) {
+    const gfx::Point& hotspot,
+    float scale) {
   NOTIMPLEMENTED();
   return nullptr;
 }
@@ -78,6 +79,7 @@ scoped_refptr<PlatformCursor> CursorFactory::CreateAnimatedCursor(
     mojom::CursorType type,
     const std::vector<SkBitmap>& bitmaps,
     const gfx::Point& hotspot,
+    float scale,
     base::TimeDelta frame_delay) {
   NOTIMPLEMENTED();
   return nullptr;
@@ -86,8 +88,6 @@ scoped_refptr<PlatformCursor> CursorFactory::CreateAnimatedCursor(
 void CursorFactory::ObserveThemeChanges() {
   NOTIMPLEMENTED();
 }
-
-void CursorFactory::SetDeviceScaleFactor(float scale) {}
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
