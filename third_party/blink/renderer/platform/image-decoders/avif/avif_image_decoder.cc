@@ -731,7 +731,7 @@ avifResult AVIFImageDecoder::ReadFromSegmentReader(avifIO* io,
                                       : AVIF_RESULT_WAITING_ON_IO;
   }
 
-  // It is more convenient to work with a variable of the wtf_size_t type. Since
+  // It is more convenient to work with a variable of the size_t type. Since
   // offset <= io_data->reader->size() <= SIZE_MAX, this cast is safe.
   size_t position = static_cast<size_t>(offset);
   const size_t available_size = io_data->reader->size() - position;
