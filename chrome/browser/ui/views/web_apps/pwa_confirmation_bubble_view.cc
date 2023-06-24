@@ -211,9 +211,8 @@ bool PWAConfirmationBubbleView::OnCloseRequested(
       response = webapps::MlInstallUserResponse::kIgnored;
       break;
   }
-  if (web_app_info_) {
-    CHECK(install_tracker_);
-    install_tracker_->ReportResult(web_app_info_->manifest_id, response);
+  if (install_tracker_) {
+    install_tracker_->ReportResult(response);
     install_tracker_.reset();
   }
   return LocationBarBubbleDelegateView::OnCloseRequested(close_reason);
@@ -292,8 +291,7 @@ bool PWAConfirmationBubbleView::Accept() {
         tracker_views->GetElementForView(ok_button),
         PWAConfirmationBubbleView::kInstalledPWAEventId);
   }
-  install_tracker_->ReportResult(web_app_info_->manifest_id,
-                                 webapps::MlInstallUserResponse::kAccepted);
+  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kAccepted);
   install_tracker_.reset();
 
   std::move(callback_).Run(true, std::move(web_app_info_));

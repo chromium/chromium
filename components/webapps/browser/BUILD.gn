@@ -45,6 +45,8 @@ source_set("browser") {
     "installable/metrics/site_quality_metrics_task.h",
     "installable/ml_install_operation_tracker.cc",
     "installable/ml_install_operation_tracker.h",
+    "installable/ml_install_result_reporter.cc",
+    "installable/ml_install_result_reporter.h",
     "installable/ml_installability_promoter.cc",
     "installable/ml_installability_promoter.h",
     "pwa_install_path_tracker.cc",

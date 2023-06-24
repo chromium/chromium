@@ -194,7 +194,13 @@ class AppBannerManager : public content::WebContentsObserver,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  virtual base::WeakPtr<AppBannerManager> GetWeakPtr() = 0;
+  // This weak pointer should be valid for a given navigation, and will be
+  // invalidated when `InvalidateWeakPtrsForThisNavigation` is called.
+  virtual base::WeakPtr<AppBannerManager> GetWeakPtrForThisNavigation() = 0;
+
+  // This weak pointer is NOT invalidated when
+  // `InvalidateWeakPtrsForThisNavigation` is called.
+  base::WeakPtr<AppBannerManager> GetWeakPtr();
 
   // This is used to determine if the `AppBannerManager` pipeline should be
   // disabled. A test may disable the original `AppBannerManager` (by using
@@ -295,7 +301,7 @@ class AppBannerManager : public content::WebContentsObserver,
   // alerting websites that a banner is about to be created.
   virtual std::string GetBannerType();
 
-  virtual void InvalidateWeakPtrs() = 0;
+  virtual void InvalidateWeakPtrsForThisNavigation() = 0;
 
   // Returns true if |has_sufficient_engagement_| is true or
   // ShouldBypassEngagementChecks() returns true.
@@ -509,6 +515,8 @@ class AppBannerManager : public content::WebContentsObserver,
   PwaInstallPathTracker install_path_tracker_;
 
   base::ObserverList<Observer, true> observer_list_;
+
+  base::WeakPtrFactory<AppBannerManager> weak_factory_{this};
 };
 
 }  // namespace webapps

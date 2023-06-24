@@ -437,8 +437,7 @@ void WebAppDetailedInstallDialogDelegate::OnAccept() {
     tracker_->NotifyEvent(feature_engagement::events::kDesktopPwaInstalled);
   }
 
-  install_tracker_->ReportResult(install_info_->manifest_id,
-                                 webapps::MlInstallUserResponse::kAccepted);
+  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kAccepted);
 
   std::move(callback_).Run(true, std::move(install_info_));
 }
@@ -455,8 +454,7 @@ void WebAppDetailedInstallDialogDelegate::OnCancel() {
     web_app::RecordInstallIphIgnored(prefs_, app_id, base::Time::Now());
   }
 
-  install_tracker_->ReportResult(install_info_->manifest_id,
-                                 webapps::MlInstallUserResponse::kCancelled);
+  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kCancelled);
 
   std::move(callback_).Run(false, std::move(install_info_));
 }
@@ -489,8 +487,7 @@ void WebAppDetailedInstallDialogDelegate::DidFinishNavigation(
 
 void WebAppDetailedInstallDialogDelegate::CloseDialogAsIgnored() {
   if (install_info_) {
-    install_tracker_->ReportResult(install_info_->manifest_id,
-                                   webapps::MlInstallUserResponse::kIgnored);
+    install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
   }
   if (dialog_model() && dialog_model()->host()) {
     dialog_model()->host()->Close();
