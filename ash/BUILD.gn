@@ -1119,6 +1119,8 @@ component("ash") {
     "style/ash_color_provider.h",
     "style/ash_color_provider_source.cc",
     "style/ash_color_provider_source.h",
+    "style/blurred_background_shield.cc",
+    "style/blurred_background_shield.h",
     "style/checkbox.cc",
     "style/checkbox.h",
     "style/checkbox_group.cc",
