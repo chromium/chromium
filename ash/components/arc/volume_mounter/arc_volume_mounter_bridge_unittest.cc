@@ -4,13 +4,20 @@
 
 #include "ash/components/arc/volume_mounter/arc_volume_mounter_bridge.h"
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/mojom/volume_mounter.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_volume_mounter_instance.h"
 #include "ash/components/arc/test/test_browser_context.h"
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
+#include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
@@ -23,6 +30,14 @@ namespace arc {
 namespace {
 
 using ash::disks::DiskMountManager;
+
+constexpr char kMyFilesMountPath[] = "/home/chronos/user/MyFiles";
+
+void SetArcAndroidSdkVersionForTesting(int version) {
+  base::SysInfo::SetChromeOSVersionInfoForTest(
+      base::StringPrintf("CHROMEOS_ARC_ANDROID_SDK_VERSION=%d", version),
+      base::Time::Now());
+}
 
 class FakeArcVolumeMounterBridgeDelegate
     : public ArcVolumeMounterBridge::Delegate {
@@ -80,9 +95,16 @@ class ArcVolumeMounterBridgeTest : public testing::Test {
         ->SetInstance(&volume_mounter_instance_);
     WaitForInstanceReady(
         ArcServiceManager::Get()->arc_bridge_service()->volume_mounter());
+
+    // Assume ARC++ P by default to simplify test cases that check sending mount
+    // point information to ARC.
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+        ash::switches::kEnableArcVm);
+    SetArcAndroidSdkVersionForTesting(arc::kArcVersionP);
   }
 
   void TearDown() override {
+    base::SysInfo::ResetChromeOSVersionInfoForTest();
     bridge_.reset();
     ash::disks::DiskMountManager::Shutdown();
   }
@@ -153,6 +175,172 @@ TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_RemovableMedia) {
             DiskMountManager::MountEvent::UNMOUNTING);
   EXPECT_EQ(mount_point_info->fs_uuid, kFsUUID);
   EXPECT_FALSE(delegate()->is_watching(kMountPath));
+}
+
+TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_IgnoreNonRemovableMedia) {
+  // Only the (un)mount events for /media/removable/* are propagated.
+
+  bridge()->OnMountEvent(DiskMountManager::MountEvent::MOUNTING,
+                         ash::MountError::kSuccess,
+                         ash::MountPoint("/dev/foo", "/media/archive/foo.zip"));
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 0);
+  EXPECT_FALSE(delegate()->is_watching("/media/archive/foo.zip"));
+
+  bridge()->OnMountEvent(DiskMountManager::MountEvent::UNMOUNTING,
+                         ash::MountError::kSuccess,
+                         ash::MountPoint("/dev/foo", "/media/REMOVABLE/foo"));
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 0);
+  EXPECT_FALSE(delegate()->is_watching("/media/REMOVABLE/foo"));
+}
+
+TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_MountError) {
+  // Mount event with errors are not propagated to ARC.
+  bridge()->OnMountEvent(DiskMountManager::MountEvent::MOUNTING,
+                         ash::MountError::kInvalidArgument,
+                         ash::MountPoint("/dev/foo", "/media/removable/FOO"));
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 0);
+  EXPECT_FALSE(delegate()->is_watching("/media/removable/FOO"));
+}
+
+TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_ExternalStorageDisabled) {
+  constexpr char kDevicePath1[] = "/dev/foo";
+  constexpr char kDevicePath2[] = "/dev/bar";
+  constexpr char kRemovableMountPath1[] = "/media/removable/FOO";
+  constexpr char kRemovableMountPath2[] = "/media/removable/BAR";
+
+  disk_mount_manager()->AddDiskForTest(ash::disks::Disk::Builder()
+                                           .SetDevicePath(kDevicePath1)
+                                           .SetMountPath(kRemovableMountPath1)
+                                           .Build());
+
+  // Mount a removable media before disabling external storage.
+  bridge()->OnMountEvent(DiskMountManager::MountEvent::MOUNTING,
+                         ash::MountError::kSuccess,
+                         ash::MountPoint(kDevicePath1, kRemovableMountPath1));
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 1);
+  EXPECT_TRUE(delegate()->is_watching(kRemovableMountPath1));
+
+  // Disable external storage by policy.
+  prefs()->SetBoolean(disks::prefs::kExternalStorageDisabled, true);
+
+  // No new mount events are propagated to the instance or the delegate.
+  bridge()->OnMountEvent(DiskMountManager::MountEvent::MOUNTING,
+                         ash::MountError::kSuccess,
+                         ash::MountPoint(kDevicePath2, kRemovableMountPath2));
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 1);
+  EXPECT_FALSE(delegate()->is_watching(kRemovableMountPath2));
+
+  // Unmounting events are propagated.
+  bridge()->OnMountEvent(DiskMountManager::MountEvent::UNMOUNTING,
+                         ash::MountError::kSuccess,
+                         ash::MountPoint(kDevicePath1, kRemovableMountPath1));
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 2);
+  EXPECT_FALSE(delegate()->is_watching(kRemovableMountPath1));
+}
+
+TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_ExternalStorageAccess) {
+  constexpr char kDevicePath1[] = "/dev/foo";
+  constexpr char kDevicePath2[] = "/dev/bar";
+  constexpr char kRemovableMountPath1[] = "/media/removable/FOO";
+  constexpr char kRemovableMountPath2[] = "/media/removable/BAR";
+
+  disk_mount_manager()->AddDiskForTest(ash::disks::Disk::Builder()
+                                           .SetDevicePath(kDevicePath1)
+                                           .SetMountPath(kRemovableMountPath1)
+                                           .Build());
+
+  // Mount a removable media before disabling external storage access.
+  bridge()->OnMountEvent(DiskMountManager::MountEvent::MOUNTING,
+                         ash::MountError::kSuccess,
+                         ash::MountPoint(kDevicePath1, kRemovableMountPath1));
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 1);
+  EXPECT_TRUE(delegate()->is_watching(kRemovableMountPath1));
+
+  // Disable external storage access by feature.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kExternalStorageAccess);
+
+  // No new mount events are propagated to the instance.
+  bridge()->OnMountEvent(DiskMountManager::MountEvent::MOUNTING,
+                         ash::MountError::kSuccess,
+                         ash::MountPoint(kDevicePath2, kRemovableMountPath2));
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 1);
+  EXPECT_FALSE(delegate()->is_watching(kRemovableMountPath2));
+
+  // Unmounting events are propagated.
+  bridge()->OnMountEvent(DiskMountManager::MountEvent::UNMOUNTING,
+                         ash::MountError::kSuccess,
+                         ash::MountPoint(kDevicePath1, kRemovableMountPath1));
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 2);
+  EXPECT_FALSE(delegate()->is_watching(kRemovableMountPath1));
+}
+
+TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_VisibleToAndroidApps) {
+  constexpr char kDevicePath[] = "/dev/foo";
+  constexpr char kMountPath[] = "/media/removable/UNTITLED";
+  constexpr char kFsUUID[] = "0123-abcd";
+
+  disk_mount_manager()->AddDiskForTest(ash::disks::Disk::Builder()
+                                           .SetDevicePath(kDevicePath)
+                                           .SetFileSystemUUID(kFsUUID)
+                                           .Build());
+
+  // Add the disk to the set of visible external storages from Android apps.
+  base::Value::List visible_external_storages;
+  visible_external_storages.Append(kFsUUID);
+  prefs()->SetList(prefs::kArcVisibleExternalStorages,
+                   std::move(visible_external_storages));
+
+  bridge()->OnMountEvent(DiskMountManager::MountEvent::MOUNTING,
+                         ash::MountError::kSuccess,
+                         ash::MountPoint(kDevicePath, kMountPath));
+
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 1);
+  mojom::MountPointInfoPtr mount_point_info =
+      volume_mounter_instance()->GetMountPointInfo(kMountPath);
+  EXPECT_TRUE(mount_point_info->visible);
+  EXPECT_TRUE(delegate()->is_watching(kMountPath));
+}
+
+TEST_F(ArcVolumeMounterBridgeTest, SendAllMountEvents) {
+  constexpr char kDevicePath1[] = "/dev/foo";
+  constexpr char kDevicePath2[] = "/dev/bar";
+  constexpr char kRemovableMountPath[] = "/media/removable/FOO";
+  constexpr char kNonRemovableMountPath[] = "/mount/path/BAR";
+
+  disk_mount_manager()->AddDiskForTest(ash::disks::Disk::Builder()
+                                           .SetDevicePath(kDevicePath1)
+                                           .SetMountPath(kRemovableMountPath)
+                                           .Build());
+  disk_mount_manager()->AddDiskForTest(ash::disks::Disk::Builder()
+                                           .SetDevicePath(kDevicePath2)
+                                           .SetMountPath(kNonRemovableMountPath)
+                                           .Build());
+  disk_mount_manager()->AddMountPointForTest(
+      {kDevicePath1, kRemovableMountPath, ash::MountType::kDevice});
+  disk_mount_manager()->AddMountPointForTest(
+      {kDevicePath2, kNonRemovableMountPath, ash::MountType::kDevice});
+
+  bridge()->SendAllMountEvents();
+
+  // Mount point info is propagated for /media/removable/FOO and MyFiles, but
+  // not for /mount/path/BAR.
+  EXPECT_EQ(volume_mounter_instance()->num_on_mount_event_called(), 2);
+  mojom::MountPointInfoPtr mount_point_info_removable =
+      volume_mounter_instance()->GetMountPointInfo(kRemovableMountPath);
+  EXPECT_FALSE(mount_point_info_removable.is_null());
+  EXPECT_EQ(mount_point_info_removable->mount_event,
+            DiskMountManager::MountEvent::MOUNTING);
+
+  mojom::MountPointInfoPtr mount_point_info_non_removable =
+      volume_mounter_instance()->GetMountPointInfo(kNonRemovableMountPath);
+  EXPECT_TRUE(mount_point_info_non_removable.is_null());
+
+  mojom::MountPointInfoPtr mount_point_info_myfiles =
+      volume_mounter_instance()->GetMountPointInfo(kMyFilesMountPath);
+  EXPECT_FALSE(mount_point_info_myfiles.is_null());
+  EXPECT_EQ(mount_point_info_myfiles->mount_event,
+            DiskMountManager::MountEvent::MOUNTING);
 }
 
 }  // namespace
