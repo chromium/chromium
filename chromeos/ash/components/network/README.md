@@ -215,6 +215,27 @@ Example of retrieving and iterating over `NetworkState` objects:
   }
 ```
 
+## Connecting to a Network
+
+### `NetworkConnect`
+
+The [`NetworkConnect`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_connect.h;drc=14ccdeb9606a78fadd516d7c1d9dbc7ca28ad019)
+class is used to handle the complex UI flows associated with connecting to a
+network on ChromeOS. This class does not show any UI itself, but
+instead delegates that responsibility to [`NetworkConnect::Delegate`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_connect.h;l=30;drc=14ccdeb9606a78fadd516d7c1d9dbc7ca28ad019)
+implementations.
+
+Further, this class is also not responsible for making Shill connect calls and
+delegates this responsibility to [`NetworkConnectionHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_connection_handler.h;drc=14ccdeb9606a78fadd516d7c1d9dbc7ca28ad019).
+
+The `NetworkConnect` class provides APIs for:
+
+* Connect or disconnect to a network by passing in a network ID
+* Enable or disable a particular technology type (e.g., WiFi)
+* Configure a network and connect to that network
+
+TODO: Discuss NetworkConnectionHandler
+
 ### Configuring Networks
 
 TODO: Discuss network\_configuration\_handler.h and friends.
