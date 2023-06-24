@@ -300,10 +300,10 @@ crbug.com/984734 [ android android-webview-instrumentation android-nexus-5x ] Pi
 # Failing on Linux and Windows, both Intel HD 630 and NVIDIA Quadro P400
 crbug.com/974380 [ amd-0x7340 angle-vulkan display-server-x linux no-clang-coverage release renderer-skia-vulkan ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
 crbug.com/974380 [ angle-vulkan display-server-x linux nvidia-0x2184 renderer-skia-vulkan ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
-crbug.com/974380 [ intel-0x9bc5 linux no-clang-coverage release ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
+crbug.com/974380 [ angle-vulkan display-server-x intel-0x9bc5 linux no-clang-coverage release renderer-skia-vulkan ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
 crbug.com/974380 [ amd-0x7340 angle-vulkan display-server-x linux no-clang-coverage release renderer-skia-vulkan ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
 crbug.com/974380 [ angle-vulkan display-server-x linux nvidia-0x2184 renderer-skia-vulkan ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
-crbug.com/974380 [ intel-0x9bc5 linux no-clang-coverage release ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
+crbug.com/974380 [ angle-vulkan display-server-x intel-0x9bc5 linux no-clang-coverage release renderer-skia-vulkan ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
 
 
 # Times out on Pixel 4s in webview.
@@ -377,7 +377,6 @@ crbug.com/1382332 [ angle-opengles arm chromeos chromeos-board-jacuzzi display-s
 crbug.com/1382332 [ chromeos target-cpu-64 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ angle-disabled chromeos chromeos-board-amd64-generic cros-chrome no-passthrough target-cpu-64 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ angle-opengles arm chromeos chromeos-board-jacuzzi display-server-x lacros-chrome passthrough target-cpu-32 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
-crbug.com/1382332 [ android-chromium android-nexus-5x android-nougat angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled arm no-passthrough renderer-skia-gl target-cpu-32 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled arm no-clang-coverage no-passthrough renderer-skia-gl target-cpu-32 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ android-nexus-5x android-nougat angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
