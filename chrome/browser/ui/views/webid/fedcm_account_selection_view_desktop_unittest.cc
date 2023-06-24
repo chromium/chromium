@@ -941,3 +941,77 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MismatchDialogWithRpContext) {
     EXPECT_EQ(controller->GetRpContext(), blink::mojom::RpContext::kUse);
   }
 }
+
+// Tests that when an accounts dialog is shown, the relevant duration metric is
+// recorded upon dismissal.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       AccountsDialogShownDurationMetric) {
+  {
+    const char kAccountId[] = "account_id";
+    IdentityProviderDisplayData idp_data =
+        CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignIn}});
+    const std::vector<Account>& accounts = idp_data.accounts;
+    histogram_tester_.ExpectTotalCount(
+        "Blink.FedCm.Timing.AccountsDialogShownDuration", 0);
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShow(accounts, SignInMode::kAuto);
+  }
+
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.AccountsDialogShownDuration", 1);
+}
+
+// Tests that when a mismatch dialog is shown, the relevant duration metric is
+// recorded upon dismissal.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       MismatchDialogShownDurationMetric) {
+  {
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShowMismatchDialog();
+    histogram_tester_.ExpectTotalCount(
+        "Blink.FedCm.Timing.MismatchDialogShownDuration", 0);
+  }
+
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.MismatchDialogShownDuration", 1);
+}
+
+// Tests that when transitioning from IDP sign-in status mismatch dialog to
+// accounts dialog, the relevant duration metrics are recorded for each dialog.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       MismatchDialogThenAccountsDialogShownDurationMetric) {
+  {
+    // Trigger IdP sign-in status mismatch dialog.
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShowMismatchDialog();
+    histogram_tester_.ExpectTotalCount(
+        "Blink.FedCm.Timing.MismatchDialogShownDuration", 0);
+
+    // Emulate user clicking on "Continue" button in the mismatch dialog.
+    AccountSelectionBubbleView::Observer* observer =
+        static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
+    observer->OnSigninToIdP();
+    CreateAndShowPopupWindow(*controller);
+
+    // Metric for mismatch dialog should be recorded upon showing pop-up window.
+    histogram_tester_.ExpectTotalCount(
+        "Blink.FedCm.Timing.MismatchDialogShownDuration", 1);
+
+    // Emulate IdP closing the pop-up window.
+    controller->CloseModalDialog();
+
+    // Emulate IdP sending the IdP sign-in status header which updates the
+    // mismatch dialog to an accounts dialog.
+    const char kAccountId[] = "account_id";
+    IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+        {kAccountId, LoginState::kSignUp},
+    });
+    Show(*controller, idp_data.accounts, SignInMode::kExplicit);
+    histogram_tester_.ExpectTotalCount(
+        "Blink.FedCm.Timing.AccountsDialogShownDuration", 0);
+  }
+
+  // Metric for accounts dialog should be recorded upon dismissal.
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.AccountsDialogShownDuration", 1);
+}
