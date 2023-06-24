@@ -97,7 +97,7 @@ void SetNameInternal(PlatformThreadId thread_id, const char* name) {
 static std::atomic<int> g_record_replay_thread_join_ordered_lock_id = 0;
 
 static int GetRecordReplayThreadJoinOrderedLockId() {
-  if (!g_record_replay_thread_ordered_lock_id) {
+  if (!g_record_replay_thread_join_ordered_lock_id) {
     g_record_replay_thread_join_ordered_lock_id = recordreplay::CreateOrderedLock("ThreadJoin");
   }
   return g_record_replay_thread_join_ordered_lock_id;
