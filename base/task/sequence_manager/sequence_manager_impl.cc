@@ -1137,17 +1137,24 @@ void SequenceManagerImpl::ReclaimMemory() {
 }
 
 void SequenceManagerImpl::CleanUpQueues() {
+  recordreplay::Assert("[RUN-2217] SequenceManagerImpl::CleanUpQueues");
+
   for (auto it = main_thread_only().queues_to_gracefully_shutdown.begin();
        it != main_thread_only().queues_to_gracefully_shutdown.end();) {
+    recordreplay::Assert("[RUN-2217] SequenceManagerImpl::CleanUpQueues #1");
     if (it->first->IsEmpty()) {
+      recordreplay::Assert("[RUN-2217] SequenceManagerImpl::CleanUpQueues #2");
       UnregisterTaskQueueImpl(std::move(it->second));
       main_thread_only().active_queues.erase(it->first);
       main_thread_only().queues_to_gracefully_shutdown.erase(it++);
     } else {
+      recordreplay::Assert("[RUN-2217] SequenceManagerImpl::CleanUpQueues #3");
       ++it;
     }
   }
   main_thread_only().queues_to_delete.clear();
+
+  recordreplay::Assert("[RUN-2217] SequenceManagerImpl::CleanUpQueues Done");
 }
 
 void SequenceManagerImpl::RemoveAllCanceledTasksFromFrontOfWorkQueues() {
