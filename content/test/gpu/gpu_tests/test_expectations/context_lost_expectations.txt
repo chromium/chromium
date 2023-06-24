@@ -80,9 +80,15 @@
 # platform/configuration.
 
 # Mac NVIDIA only uses the low-power GPU.
-crbug.com/1186582 [ mac nvidia ] ContextLost_MacWebGLMultisamplingHighPowerSwitchDoesNotCrash [ Skip ]
-crbug.com/681341 [ mac nvidia ] ContextLost_MacWebGLMultisamplingHighPowerSwitchLosesContext [ Skip ]
-crbug.com/681341 [ mac nvidia ] ContextLost_MacWebGLPreserveDBHighPowerSwitchLosesContext [ Skip ]
+crbug.com/1186582 [ mac angle-opengl nvidia ] ContextLost_MacWebGLMultisamplingHighPowerSwitchDoesNotCrash [ Skip ]
+crbug.com/681341 [ mac angle-opengl nvidia ] ContextLost_MacWebGLMultisamplingHighPowerSwitchLosesContext [ Skip ]
+crbug.com/681341 [ mac angle-opengl nvidia ] ContextLost_MacWebGLPreserveDBHighPowerSwitchLosesContext [ Skip ]
+
+# Metal does not switch the GPU of existing contexts.
+crbug.com/1448964 [ mac angle-metal ] ContextLost_MacWebGLCopyTexSubImage2DHighPowerSwitchDoesNotCrash [ Skip ]
+crbug.com/1448964 [ mac angle-metal ] ContextLost_MacWebGLMultisamplingHighPowerSwitchDoesNotCrash [ Skip ]
+crbug.com/1448964 [ mac angle-metal ] ContextLost_MacWebGLMultisamplingHighPowerSwitchLosesContext [ Skip ]
+crbug.com/1448964 [ mac angle-metal ] ContextLost_MacWebGLPreserveDBHighPowerSwitchLosesContext [ Skip ]
 
 # These tests use base::Process::TerminateCurrentProcessImmediately(0) on the
 # GPU process and expect a normal exit code reported to the browser process.

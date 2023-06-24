@@ -33,6 +33,9 @@ TestGLES2Interface::TestGLES2Interface() : context_id_(NextContextId()) {
   // For stream textures.
   test_capabilities_.egl_image_external = true;
   set_max_texture_size(2048);
+
+  // By default, luminance textures are supported in GLES2.
+  test_capabilities_.supports_luminance_shared_images = true;
 }
 
 TestGLES2Interface::~TestGLES2Interface() = default;

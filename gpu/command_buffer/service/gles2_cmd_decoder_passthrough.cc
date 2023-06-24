@@ -1437,6 +1437,8 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.texture_npot = feature_info_->feature_flags().npot_ok;
   caps.supports_scanout_shared_images =
       SharedImageManager::SupportsScanoutImages();
+  caps.supports_luminance_shared_images =
+      !feature_info_->gl_version_info().is_angle_metal;
   caps.chromium_gpu_fence = feature_info_->feature_flags().chromium_gpu_fence;
   caps.chromium_nonblocking_readback = true;
   caps.mesa_framebuffer_flip_y =

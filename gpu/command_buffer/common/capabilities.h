@@ -160,6 +160,7 @@ struct GPU_EXPORT Capabilities {
 
   // TODO(vasilyt): We need SharedImageInterface capabilities and move it there.
   bool supports_scanout_shared_images = false;
+  bool supports_luminance_shared_images = false;
 
   bool supports_oop_raster = false;
 

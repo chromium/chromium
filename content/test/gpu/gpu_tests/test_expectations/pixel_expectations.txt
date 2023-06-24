@@ -167,11 +167,18 @@ crbug.com/580386 [ android ] Pixel_Video_Context_Loss_MP4 [ Skip ]
 # Skip dual gpu switching tests on Mac Nvidia because this
 # configuration has been forced to use only the low-power GPU due to
 # graphics driver bugs.
-crbug.com/1047573 [ mac nvidia ] Pixel_WebGLLowToHighPower [ Skip ]
-crbug.com/1047573 [ mac nvidia ] Pixel_WebGLLowToHighPowerAlphaFalse [ Skip ]
-crbug.com/1047573 [ mac nvidia ] Pixel_WebGLHighToLowPower [ Skip ]
-crbug.com/1048892 [ mac nvidia ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Skip ]
-crbug.com/1048892 [ mac nvidia ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker [ Skip ]
+crbug.com/1047573 [ mac angle-opengl nvidia ] Pixel_WebGLLowToHighPower [ Skip ]
+crbug.com/1047573 [ mac angle-opengl nvidia ] Pixel_WebGLLowToHighPowerAlphaFalse [ Skip ]
+crbug.com/1047573 [ mac angle-opengl nvidia ] Pixel_WebGLHighToLowPower [ Skip ]
+crbug.com/1048892 [ mac angle-opengl nvidia ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Skip ]
+crbug.com/1048892 [ mac angle-opengl nvidia ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker [ Skip ]
+
+# Metal does not switch the GPU of existing contexts.
+crbug.com/1448964 [ mac angle-metal ] Pixel_WebGLLowToHighPower [ Skip ]
+crbug.com/1448964 [ mac angle-metal ] Pixel_WebGLLowToHighPowerAlphaFalse [ Skip ]
+crbug.com/1448964 [ mac angle-metal ] Pixel_WebGLHighToLowPower [ Skip ]
+crbug.com/1448964 [ mac angle-metal ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Skip ]
+crbug.com/1448964 [ mac angle-metal ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker [ Skip ]
 
 # Cannot use file in Chromium checkout for fake video capture device on Android,
 # ChromeOS, or Fuchsia.

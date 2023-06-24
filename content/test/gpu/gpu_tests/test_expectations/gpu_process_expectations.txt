@@ -80,9 +80,14 @@
 # platform/configuration.
 
 # Dual-GPU NVIDIA MacBook Pros no longer activate the discrete GPU.
-crbug.com/681341 [ mac nvidia ] GpuProcess_mac_webgl_backgrounded_high_performance [ Skip ]
-crbug.com/681341 [ mac nvidia ] GpuProcess_mac_webgl_high_performance [ Skip ]
-crbug.com/681341 [ mac nvidia ] GpuProcess_mac_webgl_terminated_high_performance [ Skip ]
+crbug.com/681341 [ mac angle-opengl nvidia ] GpuProcess_mac_webgl_backgrounded_high_performance [ Skip ]
+crbug.com/681341 [ mac angle-opengl nvidia ] GpuProcess_mac_webgl_high_performance [ Skip ]
+crbug.com/681341 [ mac angle-opengl nvidia ] GpuProcess_mac_webgl_terminated_high_performance [ Skip ]
+
+# Metal does not switch the GPU of existing contexts.
+crbug.com/1448964 [ mac angle-metal ] GpuProcess_mac_webgl_backgrounded_high_performance [ Skip ]
+crbug.com/1448964 [ mac angle-metal ] GpuProcess_mac_webgl_high_performance [ Skip ]
+crbug.com/1448964 [ mac angle-metal ] GpuProcess_mac_webgl_terminated_high_performance [ Skip ]
 
 # Android and Fuchsia do not support software fallback.
 [ android ] GpuProcess_disable_gpu [ Skip ]
@@ -128,8 +133,8 @@ crbug.com/1378476 [ mac mac-arm64 ] GpuProcess_swiftshader_for_webgl [ Skip ]
 
 crbug.com/1384930 [ android android-sm-a135m ] GpuProcess_visibility [ RetryOnFailure ]
 
-crbug.com/1422012 [ mac amd-0x67ef ] GpuProcess_mac_webgl_backgrounded_high_performance [ Failure ]
-crbug.com/1422012 [ mac amd-0x67ef ] GpuProcess_mac_webgl_terminated_high_performance [ Failure ]
+crbug.com/1422012 [ mac angle-opengl amd-0x67ef ] GpuProcess_mac_webgl_backgrounded_high_performance [ Failure ]
+crbug.com/1422012 [ mac angle-opengl amd-0x67ef ] GpuProcess_mac_webgl_terminated_high_performance [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

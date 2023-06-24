@@ -767,14 +767,19 @@ viz::SharedImageFormat VideoResourceUpdater::YuvSharedImageFormat(
   const auto& caps = context_provider_->ContextCapabilities();
   if (caps.disable_one_component_textures)
     return PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
-  if (bits_per_channel <= 8)
+  if (bits_per_channel <= 8) {
+    DCHECK(caps.supports_luminance_shared_images || caps.texture_rg);
     return caps.texture_rg ? viz::SinglePlaneFormat::kR_8
                            : viz::SinglePlaneFormat::kLUMINANCE_8;
+  }
   if (use_r16_texture_ && caps.texture_norm16)
     return viz::SinglePlaneFormat::kR_16;
-  if (caps.texture_half_float_linear)
+  if (caps.texture_half_float_linear && caps.supports_luminance_shared_images) {
     return viz::SinglePlaneFormat::kLUMINANCE_F16;
-  return viz::SinglePlaneFormat::kLUMINANCE_8;
+  }
+  DCHECK(caps.supports_luminance_shared_images || caps.texture_rg);
+  return caps.texture_rg ? viz::SinglePlaneFormat::kR_8
+                         : viz::SinglePlaneFormat::kLUMINANCE_8;
 }
 
 bool VideoResourceUpdater::ReallocateUploadPixels(size_t needed_size) {

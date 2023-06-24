@@ -3664,6 +3664,8 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
   caps.texture_npot = feature_info_->feature_flags().npot_ok;
   caps.supports_scanout_shared_images =
       SharedImageManager::SupportsScanoutImages();
+  caps.supports_luminance_shared_images =
+      !feature_info_->gl_version_info().is_angle_metal;
   caps.supports_oop_raster = false;
   caps.chromium_gpu_fence = feature_info_->feature_flags().chromium_gpu_fence;
   caps.chromium_nonblocking_readback =
