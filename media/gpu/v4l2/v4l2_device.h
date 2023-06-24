@@ -113,9 +113,7 @@ class MEDIA_GPU_EXPORT V4L2Device
     kJpegEncoder,
   };
 
-  // Create and initialize an appropriate V4L2Device instance for the current
-  // platform, or return nullptr if not available.
-  static scoped_refptr<V4L2Device> Create();
+  V4L2Device();
 
   // Open a V4L2 device of |type| for use with |v4l2_pixfmt|.
   // Return true on success.
@@ -258,7 +256,6 @@ class MEDIA_GPU_EXPORT V4L2Device
   // by each device node.
   using Devices = std::vector<std::pair<std::string, std::vector<uint32_t>>>;
 
-  V4L2Device();
   ~V4L2Device();
 
   VideoDecodeAccelerator::SupportedProfiles EnumerateSupportedDecodeProfiles(

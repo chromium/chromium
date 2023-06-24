@@ -476,29 +476,20 @@ void V4L2ImageProcessorBackend::Initialize(InitCB init_cb) {
 
 // static
 bool V4L2ImageProcessorBackend::IsSupported() {
-  scoped_refptr<V4L2Device> device = V4L2Device::Create();
-  if (!device)
-    return false;
-
+  auto device = base::MakeRefCounted<V4L2Device>();
   return device->IsImageProcessingSupported();
 }
 
 // static
 std::vector<uint32_t> V4L2ImageProcessorBackend::GetSupportedInputFormats() {
-  scoped_refptr<V4L2Device> device = V4L2Device::Create();
-  if (!device)
-    return std::vector<uint32_t>();
-
+  auto device = base::MakeRefCounted<V4L2Device>();
   return device->GetSupportedImageProcessorPixelformats(
       V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
 }
 
 // static
 std::vector<uint32_t> V4L2ImageProcessorBackend::GetSupportedOutputFormats() {
-  scoped_refptr<V4L2Device> device = V4L2Device::Create();
-  if (!device)
-    return std::vector<uint32_t>();
-
+  auto device = base::MakeRefCounted<V4L2Device>();
   return device->GetSupportedImageProcessorPixelformats(
       V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
 }
@@ -513,10 +504,10 @@ bool V4L2ImageProcessorBackend::TryOutputFormat(uint32_t input_pixelformat,
             << " input_size=" << input_size.ToString()
             << " output_format=" << FourccToString(output_pixelformat)
             << " output_size=" << output_size->ToString();
-  scoped_refptr<V4L2Device> device = V4L2Device::Create();
-  if (!device ||
-      !device->Open(V4L2Device::Type::kImageProcessor, input_pixelformat))
+  auto device = base::MakeRefCounted<V4L2Device>();
+  if (!device->Open(V4L2Device::Type::kImageProcessor, input_pixelformat)) {
     return false;
+  }
 
   // Set input format.
   struct v4l2_format format;

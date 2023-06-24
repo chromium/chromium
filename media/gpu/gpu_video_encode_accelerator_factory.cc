@@ -48,14 +48,11 @@ namespace media {
 namespace {
 #if BUILDFLAG(USE_V4L2_CODEC)
 std::unique_ptr<VideoEncodeAccelerator> CreateV4L2VEA() {
-  scoped_refptr<V4L2Device> device = V4L2Device::Create();
-  if (!device)
-    return nullptr;
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/901264): Encoders use hack for passing offset within
   // a DMA-buf, which is not supported upstream.
   return base::WrapUnique<VideoEncodeAccelerator>(
-      new V4L2VideoEncodeAccelerator(std::move(device)));
+      new V4L2VideoEncodeAccelerator(new V4L2Device()));
 #else
   return nullptr;
 #endif

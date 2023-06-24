@@ -116,24 +116,15 @@ std::unique_ptr<VideoDecoderMixin> V4L2VideoDecoder::Create(
   DCHECK(decoder_task_runner->RunsTasksInCurrentSequence());
   DCHECK(client);
 
-  scoped_refptr<V4L2Device> device = V4L2Device::Create();
-  if (!device) {
-    VLOGF(1) << "Failed to create V4L2 device.";
-    return nullptr;
-  }
-
   return base::WrapUnique<VideoDecoderMixin>(
       new V4L2VideoDecoder(std::move(media_log), std::move(decoder_task_runner),
-                           std::move(client), std::move(device)));
+                           std::move(client), new V4L2Device()));
 }
 
 // static
 absl::optional<SupportedVideoDecoderConfigs>
 V4L2VideoDecoder::GetSupportedConfigs() {
-  scoped_refptr<V4L2Device> device = V4L2Device::Create();
-  if (!device)
-    return absl::nullopt;
-
+  auto device = base::MakeRefCounted<V4L2Device>();
   auto configs = device->GetSupportedDecodeProfiles(kSupportedInputFourccs);
   if (configs.empty())
     return absl::nullopt;
@@ -255,18 +246,7 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
       can_use_decoder_ = false;
     }
 
-    device_ = V4L2Device::Create();
-    if (!device_) {
-      VLOGF(1) << "Failed to create V4L2 device.";
-      SetState(State::kError);
-      // TODO(crbug/1103510): Make V4L2Device::Create return a StatusOr, and
-      // pipe that back instead.
-      std::move(init_cb).Run(
-          DecoderStatus(DecoderStatus::Codes::kNotInitialized)
-              .AddCause(V4L2Status(V4L2Status::Codes::kNoDevice)));
-      return;
-    }
-
+    device_ = base::MakeRefCounted<V4L2Device>();
     continue_change_resolution_cb_.Reset();
     if (backend_)
       backend_ = nullptr;

@@ -119,12 +119,6 @@ void V4L2Device::OnQueueDestroyed(v4l2_buf_type buf_type) {
   queues_.erase(it);
 }
 
-// static
-scoped_refptr<V4L2Device> V4L2Device::Create() {
-  DVLOGF(3);
-  return new V4L2Device();
-}
-
 bool V4L2Device::Open(Type type, uint32_t v4l2_pixfmt) {
   DVLOGF(3);
   std::string path = GetDevicePathFor(type, v4l2_pixfmt);

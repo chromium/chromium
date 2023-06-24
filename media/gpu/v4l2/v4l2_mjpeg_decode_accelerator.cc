@@ -489,10 +489,7 @@ void V4L2MjpegDecodeAccelerator::Decode(
 
 // static
 bool V4L2MjpegDecodeAccelerator::IsSupported() {
-  scoped_refptr<V4L2Device> device = V4L2Device::Create();
-  if (!device)
-    return false;
-
+  auto device = base::MakeRefCounted<V4L2Device>();
   return device->IsJpegDecodingSupported();
 }
 

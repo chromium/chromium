@@ -156,7 +156,7 @@ std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
     return v4l2_vda_helpers::CreateImageProcessor(
         input_fourcc, *output_fourcc, input_size, output_size, visible_rect,
         VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER, num_buffers,
-        V4L2Device::Create(), ImageProcessor::OutputMode::IMPORT,
+        new V4L2Device(), ImageProcessor::OutputMode::IMPORT,
         std::move(client_task_runner), std::move(error_cb));
   }
   return nullptr;
@@ -248,8 +248,9 @@ std::unique_ptr<ImageProcessor> ImageProcessorFactory::Create(
   create_funcs.push_back(
       base::BindRepeating(&VaapiImageProcessorBackend::Create));
 #elif BUILDFLAG(USE_V4L2_CODEC)
-  create_funcs.push_back(base::BindRepeating(
-      &V4L2ImageProcessorBackend::Create, V4L2Device::Create(), num_buffers));
+  create_funcs.push_back(base::BindRepeating(&V4L2ImageProcessorBackend::Create,
+                                             base::MakeRefCounted<V4L2Device>(),
+                                             num_buffers));
 #endif
   create_funcs.push_back(
       base::BindRepeating(&LibYUVImageProcessorBackend::Create));

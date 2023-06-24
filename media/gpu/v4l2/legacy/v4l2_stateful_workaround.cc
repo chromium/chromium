@@ -149,7 +149,7 @@ SupportResolutionChecker::CreateIfNeeded(V4L2Device::Type device_type,
     return nullptr;
   }
 
-  scoped_refptr<V4L2Device> device = V4L2Device::Create();
+  auto device = base::MakeRefCounted<V4L2Device>();
   if (!device->Open(V4L2Device::Type::kDecoder, V4L2_PIX_FMT_VP8)) {
     VPLOGF(1) << "Failed to open device for profile: " << profile
               << " fourcc: " << FourccToString(V4L2_PIX_FMT_VP8);
@@ -173,7 +173,7 @@ SupportResolutionChecker::CreateIfNeeded(V4L2Device::Type device_type,
 
   // Recreate the V4L2 device in order to close the opened decoder, since
   // we are about to query the supported decode profiles.
-  device = V4L2Device::Create();
+  device = base::MakeRefCounted<V4L2Device>();
   auto supported_profiles =
       device->GetSupportedDecodeProfiles(supported_input_fourccs);
   SupportedProfileMap supported_profile_map;

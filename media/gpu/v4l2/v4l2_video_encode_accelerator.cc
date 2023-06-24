@@ -641,10 +641,7 @@ bool V4L2VideoEncodeAccelerator::IsFlushSupported() {
 
 VideoEncodeAccelerator::SupportedProfiles
 V4L2VideoEncodeAccelerator::GetSupportedProfiles() {
-  scoped_refptr<V4L2Device> device = V4L2Device::Create();
-  if (!device)
-    return SupportedProfiles();
-
+  auto device = base::MakeRefCounted<V4L2Device>();
   return device->GetSupportedEncodeProfiles();
 }
 
