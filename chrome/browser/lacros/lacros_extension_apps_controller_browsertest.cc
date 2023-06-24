@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/lacros/lacros_extensions_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -24,6 +25,14 @@ namespace {
 class LacrosExtensionAppsControllerTest
     : public extensions::ExtensionBrowserTest {
  public:
+  void SetUp() override {
+    // Since the browser tests run without Ash, Lacros won't get the Ash
+    // extension keeplist data from Ash (passed via crosapi). Therefore,
+    // set empty ash keeplist for test.
+    extensions::SetEmptyAshKeeplistForTest();
+    ExtensionBrowserTest::SetUp();
+  }
+
   content::WebContents* GetActiveWebContents() {
     Browser* browser =
         chrome::FindTabbedBrowser(profile(), /*match_original_profiles=*/false);

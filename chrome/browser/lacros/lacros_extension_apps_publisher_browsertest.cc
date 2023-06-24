@@ -8,6 +8,7 @@
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/lacros/for_which_extension_type.h"
 #include "chrome/browser/lacros/lacros_extensions_util.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
@@ -31,6 +32,10 @@ class LacrosExtensionAppsPublisherFake : public LacrosExtensionAppsPublisher {
  public:
   LacrosExtensionAppsPublisherFake()
       : LacrosExtensionAppsPublisher(InitForChromeApps()) {
+    // Since LacrosExtensionAppsPublisherTest run without Ash, Lacros won't get
+    // the Ash extension keeplist data from Ash (passed via crosapi). Therefore,
+    // set empty ash keeplist for test.
+    extensions::SetEmptyAshKeeplistForTest();
     apps::EnableHostedAppsInLacrosForTesting();
   }
   ~LacrosExtensionAppsPublisherFake() override = default;

@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/mock_crosapi_app_service_proxy.h"
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,6 +35,10 @@ const crosapi::mojom::WindowOpenDisposition expected_disposition =
 namespace apps {
 
 TEST(AppServiceProxyLacrosTest, Launch) {
+  // Since this unit test runs without Ash, Lacros won't get the Ash
+  // extension keeplist data from Ash (passed via crosapi). Therefore,
+  // set empty ash keeplist for test.
+  extensions::SetEmptyAshKeeplistForTest();
   base::test::SingleThreadTaskEnvironment task_environment;
 
   AppServiceProxy proxy(nullptr);
