@@ -603,8 +603,6 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kHasResetFirst7DaysSettingsUsedCount,
                                 false);
-
-  registry->RegisterBooleanPref(::prefs::kHasEverRevokedMetricsConsent, true);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {

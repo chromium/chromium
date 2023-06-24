@@ -67,13 +67,12 @@ class PerSessionSettingsUserActionTracker {
   // which is set once the user finished the OOBE.
   bool IsTodayInFirst7Days();
 
-  void RecordTotalLifetimeMetric();
-
   void ResetMetricsCountersAndTimestamp();
 
-  // Returns the size of the pref dict ::prefs::kTotalUniqueOsSettingsChanged
-  // after user used unique Settings have been added to it.
-  int UpdateSettingsPrefTotalUniqueChanged();
+  // Returns the size of the pref dict if it changes. Otherwise, no value will
+  // get returned if if there were no new unique settings changed in the
+  // session.
+  absl::optional<int> UpdateSettingsPrefTotalUniqueChanged();
 
   // Time at which the last setting change metric was recorded since the window
   // has been focused, or null if no setting change has been recorded since the
