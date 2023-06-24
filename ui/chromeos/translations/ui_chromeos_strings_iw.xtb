@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">לא עכשיו</translation>
 <translation id="3486821258960016770">מונגולית</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> שגיאות.</translation>
-<translation id="3501954296166022751">‏הקבצים ב-Google Drive זמינים במצב אופליין</translation>
 <translation id="3509680540198371098">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, פרטים</translation>
 <translation id="3511705761158917664">בהכנה לסנכרון של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="3522708245912499433">פורטוגזית</translation>
@@ -892,7 +891,6 @@
 <translation id="7972920761225148017">צרפתית (שוויץ)</translation>
 <translation id="7973962044839454485">‏אימות PPP נכשל בשל שם משתמש או סיסמה שגויים</translation>
 <translation id="7980421588063892270">‏מקלדת Colemak באנגלית (US)</translation>
-<translation id="7985008041109611710">סנכרון של <ph name="NUMBER_OF_FILES_SYNCING" /> קבצים</translation>
 <translation id="8000066093800657092">אין רשת</translation>
 <translation id="8008366997883261463">כלב</translation>
 <translation id="8028993641010258682">גודל</translation>
@@ -1049,7 +1047,6 @@
 <translation id="9213073329713032541">ההתקנה התחילה בהצלחה.</translation>
 <translation id="9219103736887031265">תמונות</translation>
 <translation id="9219908252191632183">נוף ירח</translation>
-<translation id="937795003075802289">סנכרון של קובץ אחד</translation>
 <translation id="938470336146445890">יש להתקין אישור משתמש.</translation>
 <translation id="939736085109172342">תיקייה חדשה</translation>
 <translation id="943972244133411984">שונה על ידי</translation>

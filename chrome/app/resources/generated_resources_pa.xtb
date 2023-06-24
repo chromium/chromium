@@ -79,6 +79,7 @@
 <translation id="1061130374843955397">ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਡੀਵਾਈਸ ਵਿੱਚ ਜੀ ਆਇਆ ਨੂੰ</translation>
 <translation id="1061373870045429865">ਇਸ ਲਿੰਕ ਲਈ QR ਕੋਡ ਬਣਾਓ</translation>
 <translation id="1061904396131502319">ਥੋੜ੍ਹੀ ਦੇਰ ਆਰਾਮ ਕਰਨ ਦਾ ਸਮਾਂ ਹੋਣ ਵਾਲਾ ਹੈ</translation>
+<translation id="10619348099955377">ਡਿਸਪਲੇ ਨਾਮ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="1062407476771304334">ਬਦਲੋ</translation>
 <translation id="1062628064301375934">ਜ਼ਿਆਦਾ ਨਿੱਜੀ ਵੈੱਬ ਬਣਾਉਣ ਵਿੱਚ ਸਾਡੀ ਮਦਦ ਕਰੋ</translation>
 <translation id="1066964438793906105">ਮਾਲਵੇਅਰ ਲਈ ਸਕੈਨ ਕਰੋ</translation>
@@ -582,6 +583,7 @@
 <translation id="1481537595330271162">ਡਿਸਕ ਦਾ ਆਕਾਰ ਬਦਲਣ ਵੇਲੇ ਗੜਬੜ ਹੋਈ</translation>
 <translation id="1482626744466814421">ਇਸ ਟੈਬ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ...</translation>
 <translation id="1482772681918035149">ਪਾਸਵਰਡਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
+<translation id="1483431819520123112">ਡਿਸਪਲੇ ਨਾਮ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1483493594462132177">ਭੇਜੋ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">ਸਾਈਟ ਬਲੂਟੁੱਥ ਨੂੰ ਵਰਤ ਰਹੀ ਹੈ</translation>
@@ -969,6 +971,7 @@
 <translation id="1784707308176068866">ਮੂਲ ਐਪਲੀਕੇਸ਼ਨ ਵੱਲੋਂ ਸਹਿਯੋਗ ਦੀ ਬੇਨਤੀ ਕੀਤੇ ਜਾਣ 'ਤੇ ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਚਲਾਉਣ ਦਿਓ</translation>
 <translation id="1784849162047402014">ਡੀਵਾਈਸ ਵਿੱਚ ਡਿਸਕ ਜਗ੍ਹਾ ਘੱਟ ਹੈ</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{"<ph name="APP_NAME" />" ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨ 'ਤੇ ਇਹ ਐਪ ਵੀ ਅਣਸਥਾਪਤ ਹੋ ਜਾਵੇਗੀ:}one{"<ph name="APP_NAME" />" ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨ 'ਤੇ ਇਹ ਐਪ ਵੀ ਅਣਸਥਾਪਤ ਹੋ ਜਾਵੇਗੀ:}other{"<ph name="APP_NAME" />" ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨ 'ਤੇ ਇਹ ਐਪਾਂ ਵੀ ਅਣਸਥਾਪਤ ਹੋ ਜਾਣਗੀਆਂ:}}</translation>
+<translation id="1786290960428378411">ਪੜ੍ਹਣ ਅਤੇ ਬਦਲਣ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="1787350673646245458">ਵਰਤੋਂਕਾਰ ਚਿੱਤਰ</translation>
 <translation id="1790976235243700817">ਪਹੁੰਚ ਹਟਾਓ</translation>
 <translation id="1791662854739702043">ਸਥਾਪਤ ਕੀਤਾ ਗਿਆ</translation>
@@ -1302,6 +1305,7 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ}one{ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ}other{ਇਹਨਾਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ}}</translation>
 <translation id="2073496667646280609">ਸ਼ਾਇਦ ਤੁਹਾਡੇ ਕੋਲ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਲੋੜੀਂਦੀ ਮੁਫ਼ਤ ਸਟੋਰੇਜ ਜਾਂ ਬੈਕਅੱਪ ਲਈ ਚੁਣਿਆ ਗਿਆ ਟਿਕਾਣਾ ਨਾ ਹੋਵੇ। ਡੀਵਾਈਸ 'ਤੇ ਜਗ੍ਹਾ ਖਾਲੀ ਕਰ ਕੇ ਜਾਂ ਕੋਈ ਵੱਖਰਾ ਟਿਕਾਣਾ ਚੁਣ ਕੇ ਦੇਖੋ।</translation>
 <translation id="2073505299004274893"><ph name="CHARACTER_LIMIT" /> ਜਾਂ ਘੱਟ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਵਰਤੋ</translation>
+<translation id="2075088158103027942">ਸਬਸਕ੍ਰਿਪਸ਼ਨ 'ਤੇ ਜਾਓ</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% ਬੈਟਰੀ</translation>
 <translation id="2076269580855484719">ਇਹ ਪਲੱਗਇਨ ਲੁਕਾਓ</translation>
 <translation id="2076672359661571384">ਦਰਮਿਆਨਾ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
@@ -2123,6 +2127,7 @@
 <translation id="2731700343119398978">ਕਿਰਪਾ ਕਰਕੇ ਠਹਿਰੋ…</translation>
 <translation id="2731971182069536520">ਅਗਲੀ ਵਾਰ ਜਦ ਤੁਸੀਂ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋਗੇ, ਤਾਂ ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇੱਕ ਵਾਰ ਅੱਪਡੇਟ ਕਰੇਗਾ, ਜਿਸ ਨਾਲ ਤੁਹਾਡਾ ਸਥਾਨਕ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ।</translation>
 <translation id="2732134891301408122">ਵਾਧੂ ਸਮੱਗਰੀ ਦੇ <ph name="TOTAL_ELEMENTS" /> ਵਿੱਚੋਂ <ph name="CURRENT_ELEMENT" /></translation>
+<translation id="2733992589856193783">ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਲਈ ਪਾਸਕੀ ਬਣਾਈ। ਤੁਹਾਨੂੰ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਆਪਣੇ ਮੋਬਾਈਲ ਡੀਵਾਈਸ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="27349076983469322">ਹਲਕਾ ਬੈਕਗ੍ਰਾਊਂਡ</translation>
 <translation id="2735712963799620190">ਸਮਾਂ ਨਿਯਤ ਕਰੋ</translation>
 <translation id="2737363922397526254">ਸਮੇਟੋ ...</translation>
@@ -3109,6 +3114,7 @@
 <translation id="3610241585790874201">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="3610369246614755442">ਡੌਕ ਦੇ ਪੱਖੇ ਦੀ ਮੁਰੰਮਤ ਕਰਵਾਉਣ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="3610961622607302617"><ph name="WEBSITE" /> ਦਾ ਪਾਸਵਰਡ ਬਦਲੋ</translation>
+<translation id="3611634011145829814">ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਪੰਨੇ 'ਤੇ ਜਾਓ</translation>
 <translation id="3611658447322220736">ਹਾਲ ਹੀ ਵਿੱਚ ਬੰਦ ਕੀਤੀਆਂ ਸਾਈਟਾਂ ਡਾਟਾ ਭੇਜਣ ਅਤੇ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਮੁਕੰਮਲ ਕਰ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; ਵੱਲੋਂ ਡਾਊਨਲੋਡ ਕੀਤਾ</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" /> ਦਿਖਾਓ</translation>
@@ -3281,6 +3287,7 @@
 <translation id="3750562496035670393">Chrome ਨੇ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰ ਲਿਆ ਹੈ, ਪਰ ਤੁਸੀਂ ਇਸਦੀ ਬਜਾਏ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰ ਸਕਦੇ ਹੋ। ਫਿਰ, ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ ਵੇਲੇ ਸਾਰੇ ਪਾਸਵਰਡ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਉਪਲਬਧ ਹੋਣਗੇ।</translation>
 <translation id="3752253558646317685">ਫਿੰਗਰਪ੍ਰਿੰਟ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਆਪਣੇ ਬੱਚੇ ਤੋਂ ਉਸਦੀ ਉਂਗਲ ਨੂੰ ਸਪਰਸ਼ ਕਰਵਾਉਂਦੇ ਰਹੋ</translation>
 <translation id="3753033997400164841">ਇੱਕ ਵਾਰ ਸਟੋਰ ਕਰੋ। ਹਰ ਜਗ੍ਹਾ ਵਰਤੋ</translation>
+<translation id="3753142252662437130">ਰੰਗ ਵਾਲੇ ਫਿਲਟਰ</translation>
 <translation id="3755411799582650620">ਤੁਹਾਡਾ <ph name="PHONE_NAME" /> ਵੀ ਹੁਣ ਇਸ <ph name="DEVICE_TYPE" /> ਨੂੰ ਅਣਲਾਕ ਕਰ ਸਕਦੀ ਹੈ।</translation>
 <translation id="375636864092143889">ਸਾਈਟ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੀ ਹੈ</translation>
 <translation id="3756485814916578707">ਸਕ੍ਰੀਨ 'ਤੇ ਕਾਸਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -3796,6 +3803,7 @@
 <translation id="4176463684765177261">ਅਸਮਰਥਿਤ</translation>
 <translation id="4176864026061939326">ਇਸ ਡੀਵਾਈਸ ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ <ph name="USER_EMAIL_ADDRESS" /> ਖਾਤੇ ਲਈ ਨਵੇਂ ਪ੍ਰੋਫਾਈਲ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="4177501066905053472">ਵਿਗਿਆਪਨ ਵਿਸ਼ੇ</translation>
+<translation id="4178220097446335546">ਇਸ ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਅਤੇ ਇਸਦੇ ਸੰਬੰਧਿਤ ਨੈੱਟਵਰਕਾਂ ਨੂੰ ਭੁੱਲਣ ਲਈ, ਪਾਸ ਪੁਆਇੰਟ ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਪੰਨੇ 'ਤੇ ਜਾ ਕੇ ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਨੂੰ ਹਟਾਓ।</translation>
 <translation id="4180788401304023883">ਕੀ CA ਪ੍ਰਮਾਣ-ਪੱਤਰ "<ph name="CERTIFICATE_NAME" />" ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ਭਾਸ਼ਾਵਾਂ</translation>
@@ -3948,6 +3956,7 @@
 <translation id="4316850752623536204">ਵਿਕਾਸਕਾਰ ਵੈੱਬਸਾਈਟ</translation>
 <translation id="4317733381297736564">ਐਪ-ਅੰਦਰ ਖਰੀਦਾਂ</translation>
 <translation id="4317820549299924617">ਪੁਸ਼ਟੀਕਰਨ ਅਸਫਲ ਰਿਹਾ</translation>
+<translation id="4319441675152393296"><ph name="HOST" /> ਨੂੰ ਪੜ੍ਹਨ ਅਤੇ ਬਦਲਣ ਲਈ ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਦੇ ਪ੍ਰਤੀਕ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="4320177379694898372">ਕੋਈ ਇੰਟਰਨੈਟ ਕਨੈਕਸ਼ਨ ਨਹੀਂ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197"><ph name="FILE_NAME" /> ਨੂੰ ਖੋਜਕਾਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
@@ -4634,6 +4643,7 @@
 <translation id="4899052647152077033">ਰੰਗ ਪਲਟਾਓ</translation>
 <translation id="4899696330053002588">ਇਸ ਵਿੱਚ ਵਿਗਿਆਪਨ ਸ਼ਾਮਲ ਹਨ</translation>
 <translation id="489985760463306091">ਹਾਨੀਕਾਰਕ ਸਾਫਟਵੇਅਰ ਹਟਾਉਣ ਦੀ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਕਰਨ ਲਈ, ਆਪਣੇ ਕੰਪਿਊਟਰ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
+<translation id="490031510406860025">ਇਸ ਸਾਈਟ 'ਤੇ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="4900392736118574277">ਤੁਹਾਡਾ ਸ਼ੁਰੂਆਤੀ ਪੰਨਾ <ph name="URL" /> 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਗਿਆ ਸੀ।</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - ਇੰਟਰਲੇਸਡ</translation>
 <translation id="4900652253009739885">"'ਚੁਣੋ" ਲਈ ਜ਼ਿੰਮੇ ਲਗਾਏ ਗਏ ਇੱਕੋ-ਇੱਕ ਸਵਿੱਚ ਨੂੰ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ। <ph name="RESPONSE" /> ਲਈ ਕੋਈ ਵੀ ਕੁੰਜੀ ਦਬਾਓ।</translation>
@@ -7374,6 +7384,7 @@
 <translation id="7299515639584427954">ਕੀ ਸਹਾਇਤਾ ਲਈ ਲਿੰਕਾਂ ਵਾਸਤੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਐਪ ਨੂੰ ਬਦਲਣਾ ਹੈ?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">ਤੁਸੀਂ ਪੁੱਛ ਸਕਦੇ ਹੋ ਕਿ “Ok Google, ਇਹ ਕਿਹੜਾ ਗੀਤ ਹੈ?” ਜਾਂ “Ok Google, ਮੇਰੀ ਸਕ੍ਰੀਨ 'ਤੇ ਕੀ ਹੈ?”</translation>
+<translation id="7301812050652048720">ਪਾਸਕੀ ਨੂੰ ਮਿਟਾਇਆ ਗਿਆ</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{ਇਹ ਐਪਲੀਕੇਸ਼ਨ Chrome ਨੂੰ ਸਹੀ ਢੰਗ ਨਾਲ ਕੰਮ ਕਰਨ ਤੋਂ ਰੋਕ ਸਕਦੀ ਹੈ।}one{ਇਹ ਐਪਲੀਕੇਸ਼ਨ Chrome ਨੂੰ ਸਹੀ ਢੰਗ ਨਾਲ ਕੰਮ ਕਰਨ ਤੋਂ ਰੋਕ ਸਕਦੀ ਹੈ।}other{ਇਹ ਐਪਲੀਕੇਸ਼ਨਾਂਂ Chrome ਨੂੰ ਸਹੀ ਢੰਗ ਨਾਲ ਕੰਮ ਕਰਨ ਤੋਂ ਰੋਕ ਸਕਦੀਆਂ ਹਨ।}}</translation>
 <translation id="7303281435234579599">ਓਹੋ! ਡੈਮੋ ਮੋਡ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਦੌਰਾਨ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="7303900363563182677">ਇਸ ਪੰਨੇ ਨੂੰ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤੀ ਲਿਖਤ ਅਤੇ ਚਿੱਤਰਾਂ ਨੂੰ ਦੇਖਣ ਤੋਂ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
@@ -7918,6 +7929,7 @@
 <translation id="7744192722284567281">ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਮਿਲਿਆ</translation>
 <translation id="7744649840067671761">ਅਸਾਈਨਮੈਂਟ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਕੋਈ ਨਵਾਂ ਸਵਿੱਚ ਜਾਂ ਕੀ-ਬੋਰਡ ਕੁੰਜੀ ਦਬਾਓ।
 ਅਸਾਈਨਮੈਂਟ ਹਟਾਉਣ ਲਈ ਕੋਈ ਜ਼ਿੰਮੇ ਲਾਇਆ ਸਵਿੱਚ ਜਾਂ ਕੁੰਜੀ ਦਬਾਓ।</translation>
+<translation id="7745677556280361868">ਕੀ ਪਾਸ ਪੁਆਇੰਟ ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਪੰਨੇ ਵਿੱਚ ਇਸ ਨੈੱਟਵਰਕ ਨੂੰ ਹਟਾਉਣਾ ਹੈ?</translation>
 <translation id="7746045113967198252">ਲਿਖਤ ਸਮੇਤ, ਆਪਣੀ ਸਕ੍ਰੀਨ 'ਤੇ ਮੌਜੂਦ ਆਈਟਮਾਂ ਨੂੰ ਵੱਡਾ ਜਾਂ ਛੋਟਾ ਕਰੋ। ਤੁਸੀਂ ਇਸਨੂੰ ਬਾਅਦ ਵਿੱਚ ਸੈਟਿੰਗਾਂ &gt; ਡੀਵਾਈਸ &gt; ਡਿਸਪਲੇ ਵਿੱਚ ਵੀ ਲੱਭ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7746739418892731373">ਤੁਸੀਂ ਆਪਣੀ Google Photos ਲਾਇਬ੍ਰੇਰੀ ਤੋਂ ਫ਼ੋਟੋ ਅਤੇ ਵੀਡੀਓ ਦੀਆਂ ਹਾਈਲਾਈਟਾਂ ਦੇਖ ਰਹੇ ਹੋ। ਤੁਸੀਂ <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> ਵਿੱਚ ਜਾ ਕੇ ਇਹ ਕੰਟਰੋਲ ਕਰ ਸਕਦੇ ਹੋ ਕਿ ਤੁਹਾਡੀਆਂ ਹਾਈਲਾਈਟਾਂ ਵਿੱਚ ਕੀ ਦਿਖਾਇਆ ਜਾਣਾ ਚਾਹੀਦਾ ਹੈ।
         <ph name="BREAK" />
@@ -8130,6 +8142,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" /> ਵੱਲੋਂ <ph name="FILENAME" /> ਨੂੰ ਦੇਖਿਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="7920482456679570420">ਉਹ ਸ਼ਬਦ ਸ਼ਾਮਲ ਕਰੋ ਜਿੰਨ੍ਹਾਂ ਲਈ ਤੁਸੀਂ ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਨੂੰ ਛੱਡਣਾ ਚਾਹੁੰਦੇ ਹੋ</translation>
 <translation id="7921347341284348270">ਤੁਸੀਂ ਇਸ ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਖਾਤੇ 'ਤੇ ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਨਹੀਂ ਦੇਖ ਸਕਦੇ। ਕਿਸੇ ਵੱਖਰੇ ਖਾਤੇ ਨਾਲ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
+<translation id="7921901223958867679">ਇਹ ਐਕਸਟੈਂਸ਼ਨ <ph name="HOST" /> ਨੂੰ ਪੜ੍ਹ ਅਤੇ ਬਦਲ ਸਕਦੀ ਹੈ</translation>
 <translation id="7922606348470480702">1 ਐਕਸਟੈਂਸ਼ਨ</translation>
 <translation id="7922935920104868876">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕਰਨ ਬਾਰੇ ਵੇਰਵੇ ਦਿਖਾਓ</translation>
 <translation id="7923564237306226146">Linux ਅੱਪਗ੍ਰੇਡ ਪੂਰਾ ਹੋਇਆ</translation>
@@ -9662,6 +9675,7 @@
 <translation id="930551443325541578">ਕੁੰਜੀਆਂ ਦਬਾਉਣ ਦੀ ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਦੁਹਰਾਉਣਾ ਅਤੇ ਐਕਸੈਂਟ ਚਿੰਨ੍ਹ</translation>
 <translation id="930893132043726269">ਫ਼ਿਲਹਾਲ ਰੋਮਿੰਗ 'ਤੇ ਹੈ</translation>
 <translation id="930991362911221750">ਕੀ <ph name="APP_NAME" /> ਨੂੰ ਇਹ ਟੈਬ ਦੇਖਣ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
+<translation id="931273044114601262">ਇਸ ਸਾਈਟ 'ਤੇ ਆਗਿਆ ਹੈ</translation>
 <translation id="93140074055951850">Android ਐਪਾਂ ਨੂੰ ਰੋਕਿਆ ਗਿਆ</translation>
 <translation id="932327136139879170">ਹੋਮ</translation>
 <translation id="932508678520956232">ਪ੍ਰਿੰਟਿੰਗ ਅਰੰਭ ਨਹੀਂ ਕਰ ਸਕਿਆ।</translation>

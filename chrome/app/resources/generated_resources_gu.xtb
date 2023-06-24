@@ -2102,6 +2102,7 @@
 <translation id="2727744317940422214">માફ કરશો, કંઈક ખોટું થયું. કૃપા કરીને વર્ણનમાં #bruschetta સાથે પ્રતિસાદ ફાઇલ કરો. ભૂલનો કોડ <ph name="ERROR" /> છે. સ્પેસ ખાલી કરવાનું નિષ્ફળ થયું, તમારે તે મેન્યુઅલી કરવું પડશે.</translation>
 <translation id="2729314457178420145">બ્રાઉઝિંગ ડેટા (<ph name="URL" />) પણ સાફ કરો જે તમને Google.comમાંથી સાઇન આઉટ કરી શકે છે. <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">Chrome ટ્રૅકિંગ ઘટાડવા તેમજ બ્રાઉઝ કરતી વખતે તમને હજી વધુ સુરક્ષિત રાખવા માટે નવી રીતો શોધવા પ્રયત્નશીલ છે. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> તેમજ તેમને મેનેજ કરવાની ક્ષમતા પણ તમને આપે છે. પછી, તમે જે સાઇટની મુલાકાત લેતા હો, તે સાઇટ જાહેરાતો બતાવવા તમારી રુચિઓ વિશે Chromeને પૂછી શકે છે.</translation>
+<translation id="2729577602370119849">પ્રિન્ટર સહેલાઈથી ઍક્સેસ કરો અને મેનેજ કરો</translation>
 <translation id="2730029791981212295">Linux ઍપ અને ફાઇલોનું બૅકઅપ લઈ રહ્યાં છીએ</translation>
 <translation id="2730901670247399077">ઇમોજી માટે સૂચનો</translation>
 <translation id="273093730430620027">આ પેજ તમારા કૅમેરાને ઍક્સેસ કરી રહ્યું છે.</translation>
@@ -2423,6 +2424,7 @@
 <translation id="2996286169319737844">ડેટા તમારા સિંક પાસફ્રેઝ સાથે એન્ક્રિપ્ટ કર્યો હતો. આમાં Google Payની ચુકવણી પદ્ધતિઓ અને ઍડ્રેસ સામેલ હોતા નથી.</translation>
 <translation id="2996722619877761919">લાંબી કિનારી પર ફ્લિપ કરો</translation>
 <translation id="2996932914629936323">સિંક કરેલા બધા ડિવાઇસમાંથી ઇતિહાસ સાફ કરે છે</translation>
+<translation id="2998097899774209901">ચાલુ • આ એક્સ્ટેન્શન Chrome વેબ સ્ટોર પૉલિસીનું ઉલ્લંઘન કરે છે</translation>
 <translation id="2998267783395280091">નેટવર્ક મળ્યું</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />ને મંજૂરી આપી</translation>
 <translation id="3000461861112256445">મૉનો ઑડિઓ</translation>
@@ -2455,6 +2457,7 @@
 <translation id="3012631534724231212">(iframe)</translation>
 <translation id="3012804260437125868">માત્ર સુરક્ષિત સમાન-સાઇટ કનેક્શન્સ</translation>
 <translation id="3012917896646559015">તમારા કમ્પ્યુટરને સમારકામ સગવડ પર મોકલવા માટે તુરંત તમારા હાર્ડવેર નિર્માતાનો સંપર્ક કરો.</translation>
+<translation id="3013652227108802944">બંધ • આ એક્સ્ટેન્શન Chrome વેબ સ્ટોર પૉલિસીનું ઉલ્લંઘન કરે છે</translation>
 <translation id="3014717196148502230">તમે જે પેજની મુલાકાત લેશો તેવી શક્યતા હોય, Chrome તેવા વધુ પેજને પણ પહેલેથી લોડ કરે છે, જેથી જ્યારે તમે તેમની મુલાકાત લો, ત્યારે તે વધુ ઝડપથી લોડ થાય.</translation>
 <translation id="301525898020410885">ભાષા તમારી સંસ્થા દ્વારા સેટ કરવામાં આવી છે</translation>
 <translation id="3015639418649705390">હમણાં ફરીથી લૉન્ચ કરો</translation>
@@ -2522,6 +2525,7 @@
 <translation id="3072775339180057696">સાઇટને <ph name="FILE_NAME" /> જોવાની મંજૂરી આપીએ?</translation>
 <translation id="3074499504015191586">આખા પેજનો અનુવાદ કરો</translation>
 <translation id="3075144191779656260">તમારા <ph name="DEVICE_TYPE" />ની ડાબી બાજુના ફિંગરપ્રિન્ટ સેન્સરને ટચ કરો. તમારી ફિંગરપ્રિન્ટનો ડેટા સુરક્ષિત રીતે સ્ટોર કરવામાં આવે છે અને હંમેશાં તમારા <ph name="DEVICE_TYPE" />માં જ રહે છે.</translation>
+<translation id="3075740753681485522">બંધ • આ એક્સ્ટેન્શનમાં માલવેર છે</translation>
 <translation id="3075874217500066906">Powerwash પ્રક્રિયા શરૂ કરવા માટે પુનઃપ્રારંભ જરૂરી છે. પુનઃપ્રારંભ પછી તમે આગળ વધવા માંગો છો કે કેમ તે તમને પૂછવામાં આવશે.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">માત્ર આ ડિવાઇસ પર સાચવો</translation>
@@ -2684,6 +2688,7 @@
 <translation id="3243017971870859287">ChromeOS Flex ડિવાઇસ અને કમ્પોનન્ટના અનુક્રમ નંબર વાંચો</translation>
 <translation id="324366796737464147">અવાજ રદ્દીકરણ</translation>
 <translation id="3244294424315804309">અવાજ બંધ કરવાનું ચાલુ રાખો</translation>
+<translation id="3247649647204519958">અહીંથી, તમે જે સાઇટ પર છો તે માટેની એક્સ્ટેન્શન પરવાનગીઓને જોઈ અને મેનેજ કરી શકો છો</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - નેટવર્ક ભૂલ</translation>
 <translation id="3248902735035392926">સલામતી મહત્ત્વપૂર્ણ છે. થોડી ક્ષણ ફાળવીને <ph name="BEGIN_LINK" />હમણાં જ તમારા એક્સ્ટેંશન ચેક કરો<ph name="END_LINK" /></translation>
 <translation id="3249323165366527554">જ્યારે તમારો પાસવર્ડ ઑટોમૅટિક રીતે <ph name="GOOGLE_PASSWORD_MANAGER" />માં સાચવવામાં આવેલો હોય ત્યારે <ph name="EMAIL" /> માટે વધુ ઝડપથી સાઇન અપ અને સાઇન ઇન કરો.</translation>
@@ -2776,6 +2781,7 @@
 <translation id="3320271870899888245">OneDrive સાથે કનેક્ટ કરી શકતા નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="3320630259304269485">Safe Browsing (જોખમકારક સાઇટથી સુરક્ષા) અને અન્ય સુરક્ષા સેટિંગ</translation>
 <translation id="3321460131042519426">એકસાથે રાખો ચાલુ કરો</translation>
+<translation id="3321494112580110651">તમારું પ્રિન્ટર નથી દેખાતું?</translation>
 <translation id="3323521181261657960">બોનસ! તમને હજી વધુ સ્ક્રીન સમય મળ્યો છે</translation>
 <translation id="3323577066981719144">તમે અહીં કરો છો તે ફેરફારો માત્ર Chrome બ્રાઉઝરમાં લાગુ કરવામાં આવે છે. તમારા Lacros Chrome બ્રાઉઝરના સેટિંગમાં ફેરફારો કરવા માટે, Lacros Chrome બ્રાઉઝર ખોલો અને સેટિંગમાં જાઓ.</translation>
 <translation id="3325804108816646710">ઉપલબ્ધ પ્રોફાઇલ શોધી રહ્યાં છીએ…</translation>
@@ -3270,6 +3276,7 @@
 <translation id="3750562496035670393">Chrome દ્વારા તમારો પાસવર્ડ આ ડિવાઇસમાં સાચવવામાં આવ્યો, પરંતુ તેને બદલે તમે તેને તમારા Google એકાઉન્ટમાં સાચવી શકો છો. પછી, જ્યારે તમે સાઇન ઇન થયા હો, ત્યારે તમારા Google એકાઉન્ટના બધા પાસવર્ડ પણ ઉપલબ્ધ રહેશે.</translation>
 <translation id="3752253558646317685">ફિંગરપ્રિન્ટ સાચવવા માટે તમારા બાળકને તેમની આંગળી ઊંચકતા રહેવાનું જણાવો</translation>
 <translation id="3753033997400164841">એકવાર સ્ટોર કરો. ગમે ત્યાં ઉપયોગ કરો</translation>
+<translation id="3753142252662437130">રંગ ફિલ્ટર</translation>
 <translation id="3755411799582650620">તમારો <ph name="PHONE_NAME" /> હવે આ <ph name="DEVICE_TYPE" /> ને પણ અનલૉક કરી શકે છે.</translation>
 <translation id="375636864092143889">સાઇટ તમારા માઇક્રોફોનનો ઉપયોગ કરી રહી છે</translation>
 <translation id="3756485814916578707">સ્ક્રીનને કાસ્ટ કરી રહ્યાં છીએ</translation>
@@ -3636,6 +3643,7 @@
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{પેજમાંથી બહાર નીકળો}one{પેજમાંથી બહાર નીકળો}other{પેજમાંથી બહાર નીકળો}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> વડે <ph name="SITE_ETLD_PLUS_ONE" /> પર ચાલુ રાખો</translation>
 <translation id="4043267180218562935">કર્સરનું કદ</translation>
+<translation id="4043620984511647481">પ્રિન્ટરને મેન્યુઅલી ઉમેરો</translation>
 <translation id="4044612648082411741">તમારો પ્રમાણપત્ર પાસવર્ડ દાખલ કરો</translation>
 <translation id="4044708573046946214">સ્ક્રીન લૉકનો પાસવર્ડ</translation>
 <translation id="404493185430269859">ડિફૉલ્ટ શોધ એન્જિન</translation>
@@ -4466,6 +4474,7 @@
 <translation id="477647109558161443">ડેસ્કટૉપ શૉર્ટકટ બનાવો</translation>
 <translation id="4776594120007763294">થોડા સમય પછી વાંચી શકવા કોઈ પેજને ઉમેરવા માટે, આ બટન ક્લિક કરો</translation>
 <translation id="4777458362738635055">આ ડિવાઇસના અન્ય વપરાશકર્તાઓ આ નેટવર્કનો ઉપયોગ કરી શકે છે</translation>
+<translation id="4777813841994368231">ચાલુ • આ એક્સ્ટેન્શન તેના ડેવલપર દ્વારા અનપબ્લિશ કરવામાં આવ્યું હતું</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">નેટવર્કના નામ સર્વરને ગોઠવો</translation>
 <translation id="4778653490315793244">હજી સુધી બતાવવા માટે કંઈ નથી</translation>
@@ -6387,6 +6396,7 @@ USB ડિવાઇસ</translation>
 <translation id="6453191633103419909">ટૅબ/સ્ક્રીન પ્રોજેક્શન ક્વૉલિટી</translation>
 <translation id="6453921811609336127">આગલી ઇનપુટ પદ્ધતિ પર સ્વિચ કરવા માટે, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> દબાવો</translation>
 <translation id="6455264371803474013">વિશિષ્ટ સાઇટ પર</translation>
+<translation id="6455521402703088376">બંધ • આ એક્સ્ટેન્શન તેના ડેવલપર દ્વારા અનપબ્લિશ કરવામાં આવ્યું હતું</translation>
 <translation id="6455894534188563617">&amp;નવું ફોલ્ડર</translation>
 <translation id="645705751491738698">JavaScript ને અવરોધિત કરવાનું ચાલુ રાખો</translation>
 <translation id="6458347417133445570">તમામ કુકીને મંજૂરી આપવા વિશેની વિગતો બતાવો</translation>
@@ -6597,6 +6607,7 @@ USB ડિવાઇસ</translation>
 <translation id="6633126565486451781">આ ફાઇલ વાંચવામાં આવેલી હોઈ શકે છે કે તેમાં ફેરફાર કરવામાં આવેલો હોઈ શકે છે કારણ કે આ સાઇટ કોઈ સુરક્ષિત કનેક્શનનો ઉપયોગ કરતી નથી</translation>
 <translation id="6635362468090274700">જ્યાં સુધી તમે પોતાને દૃશ્યક્ષમ ન કરો, ત્યાં સુધી કોઈપણ વ્યક્તિ તમારી સાથે શેર કરી શકશે નહીં.<ph name="BR" /><ph name="BR" />થોડા સમય માટે પોતાને દૃશ્યક્ષમ કરવા માટે, સ્ટેટસ એરિયા ખોલો અને તેના પછી 'નજીકની દૃશ્યતા' ચાલુ કરો.</translation>
 <translation id="6635674640674343739">નેટવર્ક કનેક્શન સ્થાપિત કરી શકાતું નથી. તમારું નેટવર્ક કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
+<translation id="663569763553406962">જુઓ કે કયા એક્સ્ટેન્શન કોઈ સાઇટ વાંચી કે બદલી શકે છે</translation>
 <translation id="6635944431854494329">માલિક સેટિંગ &gt; વિગતવાર &gt; Googleને ઑટોમૅટિક રીતે નિદાન અને વપરાશનો ડેટા મોકલો પર જઈને આ સુવિધાને નિયંત્રિત કરી શકે છે.</translation>
 <translation id="6636623428211296678">નીચે વધુ સેટિંગ વિશે જાણકારી મેળવો અથવા હવે સમાપ્ત કરો</translation>
 <translation id="6639554308659482635">SQLite મેમરી</translation>
@@ -6842,6 +6853,7 @@ USB ડિવાઇસ</translation>
 <translation id="6833996806551876956">પ્રાઇવસી સૅન્ડબૉક્સની અજમાયશ</translation>
 <translation id="6835712061486505758">અન્ય ડિવાઇસને ઇન્ટરનેટ પ્રદાન કરવા માટે વાઇ-ફાઇ હૉટસ્પૉટ બનાવો. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">કૃપા કરીને તમારા <ph name="DEVICE_TYPE" /> ને અપડેટ કરવા માટે ઇન્ટરનેટથી કનેક્ટ કરો.</translation>
+<translation id="6836688241291438278">ખાતરી કરો કે તમારું પ્રિન્ટર તે જ વાઇ-ફાઇ નેટવર્કથી કનેક્ટ થયેલું છે જેની સાથે તમારું Chromebook કનેક્ટેડ છે અથવા કોઈ USB કેબલનો ઉપયોગ કરો. સુસંગતતા વિશે વધુ જાણો.</translation>
 <translation id="6839225236531462745">પ્રમાણપત્ર કાઢી નાખવામાં ભૂલ</translation>
 <translation id="6839916869147598086">સાઇન-ઇન બદલાઈ ગયું છે</translation>
 <translation id="6840155290835956714">મોકલતાં પહેલાં પૂછો</translation>
@@ -8558,6 +8570,7 @@ USB ડિવાઇસ</translation>
 <translation id="8275080796245127762">તમારા ડિવાઇસ પરથી કૉલ</translation>
 <translation id="8275339871947079271">તમે જ્યારે પણ સાઇન ઇન થાઓ ત્યારે તમારા પાસવર્ડને સુરક્ષિત રીતે ઍક્સેસ કરવા માટે તેને Google એકાઉન્ટમાં ખસેડો</translation>
 <translation id="8276560076771292512">કૅશ મેમરી ખાલી કરો અને સખત રીતે ફરીથી લોડ કરો</translation>
+<translation id="828180235270931531">અન્ય ઉપલબ્ધ પ્રિન્ટર</translation>
 <translation id="8281886186245836920">છોડો</translation>
 <translation id="8284279544186306258">બધી <ph name="WEBSITE_1" /> સાઇટ</translation>
 <translation id="8284326494547611709">કૅપ્શન્સ</translation>
@@ -9300,6 +9313,7 @@ USB ડિવાઇસ</translation>
 <translation id="8930622219860340959">વાયરલેસ</translation>
 <translation id="8931076093143205651">વપરાશ અને નિદાનનો ડેટા મોકલો. Googleને નિદાન, ડિવાઇસ અને ઍપ વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને તમારા Android અનુભવને બહેતર બનાવવામાં સહાય કરો. આ સિસ્ટમ અને ઍપની સ્થિરતા અને અન્ય સુધારણાઓમાં સહાય કરશે. એકત્ર કરેલો કેટલોક ડેટા Google ઍપ અને ભાગીદારો, જેમ કે Android ડેવલપરને પણ સહાય કરશે. આ સેટિંગ માલિક દ્વારા લાગુ કરવામાં આવ્યું છે. માલિક Googleને આ ડિવાઇસ માટે નિદાન અને વપરાશનો ડેટા મોકલવાનું પસંદ કરી શકે છે. જો તમારી વધારાની વેબ અને ઍપ પ્રવૃત્તિનું સેટિંગ ચાલુ હોય, તો આ ડેટા તમારા Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે.</translation>
 <translation id="8931475688782629595">તમે જે સિંક કરો તેને મેનેજ કરો</translation>
+<translation id="8931713990831679796">આ પ્રિન્ટર કનેક્ટેડ છે અને ઉપયોગ માટે તૈયાર છે. વધુ સરળ ઍક્સેસ માટે તમારી પ્રોફાઇલ પર સાચવો.</translation>
 <translation id="8932654652795262306">ઝટપટ ઇન્ટરનેટ શેર કરવાની સુવિધાની વિગતો</translation>
 <translation id="893298445929867520">કાર્ટ છુપાવેલા છે. તમે ફેરફાર કરશો ત્યારે તે ફરી દેખાશે.</translation>
 <translation id="8933960630081805351">ફાઇન્ડર માં &amp;બતાવો</translation>

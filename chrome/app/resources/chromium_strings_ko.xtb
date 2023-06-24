@@ -182,7 +182,6 @@
 <translation id="479167709087336770">Google 검색과 동일한 맞춤법 검사기가 사용됩니다. 브라우저에 입력되는 텍스트는 Google로 전송됩니다. 설정에서 언제든지 이 동작을 변경할 수 있습니다.</translation>
 <translation id="4888717733111232871">Chromium이 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
 <translation id="4893347770495441059">다시 실행하여 Chromium 업데이트</translation>
-<translation id="4927674536707046009">{COUNT,plural, =1{Chromium을 1분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 기존 탭은 계속 열려 있습니다.}other{Chromium을 #분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 기존 탭은 계속 열려 있습니다.}}</translation>
 <translation id="4943838377383847465">Chromium이 백그라운드 모드로 실행 중입니다.</translation>
 <translation id="4987820182225656817">게스트로 사용 기록을 남기지 않고 Chromium을 사용할 수 있습니다.</translation>
 <translation id="4994636714258228724">Chromium에 본인 추가</translation>

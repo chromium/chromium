@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">Nid nawr</translation>
 <translation id="3486821258960016770">Mongoleg</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> o wallau.</translation>
-<translation id="3501954296166022751">Mae eich ffeiliau Google Drive ar gael all-lein</translation>
 <translation id="3509680540198371098">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Manylion</translation>
 <translation id="3511705761158917664">Wrthi'n paratoi i gysoni <ph name="NUMBER_OF_ITEMS" /> eitem...</translation>
 <translation id="3522708245912499433">Portiwgaleg</translation>
@@ -890,7 +889,6 @@
 <translation id="7972920761225148017">Ffrangeg (Y Swistir)</translation>
 <translation id="7973962044839454485">Mae dilysu PPP wedi methu oherwydd enw defnyddiwr neu gyfrinair anghywir</translation>
 <translation id="7980421588063892270">Saesneg (UDA) gyda bysellfwrdd Colemak</translation>
-<translation id="7985008041109611710">Wrthi'n cysoni <ph name="NUMBER_OF_FILES_SYNCING" /> o ffeiliau</translation>
 <translation id="8000066093800657092">Dim rhwydwaith</translation>
 <translation id="8008366997883261463">Daeargi Jack Russell</translation>
 <translation id="8028993641010258682">Maint</translation>
@@ -1047,7 +1045,6 @@
 <translation id="9213073329713032541">Wedi dechrau gosod yn llwyddiannus.</translation>
 <translation id="9219103736887031265">Lluniau</translation>
 <translation id="9219908252191632183">Lleuadol</translation>
-<translation id="937795003075802289">Wrthi'n cysoni 1 ffeil</translation>
 <translation id="938470336146445890">Gosodwch dystysgrif defnyddiwr.</translation>
 <translation id="939736085109172342">Ffolder newydd</translation>
 <translation id="943972244133411984">Addaswyd gan</translation>

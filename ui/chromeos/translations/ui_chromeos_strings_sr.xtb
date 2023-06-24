@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">Не сада</translation>
 <translation id="3486821258960016770">монголски</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> грешака.</translation>
-<translation id="3501954296166022751">Фајлови са Google диска су доступни офлајн</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, детаљи</translation>
 <translation id="3511705761158917664">Припрема се синхронизација ставки (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="3522708245912499433">португалски</translation>
@@ -891,7 +890,6 @@
 <translation id="7972920761225148017">француски (Швајцарска)</translation>
 <translation id="7973962044839454485">Провера аутентичности преко протокола PPP није успела због нетачног корисничког имена или лозинке</translation>
 <translation id="7980421588063892270">енглески (САД) са тастатуром Colemak</translation>
-<translation id="7985008041109611710">Фајлови се синхронизују (<ph name="NUMBER_OF_FILES_SYNCING" />)</translation>
 <translation id="8000066093800657092">Нема мреже</translation>
 <translation id="8008366997883261463">Пас</translation>
 <translation id="8028993641010258682">Величина</translation>
@@ -1048,7 +1046,6 @@
 <translation id="9213073329713032541">Инсталација је започета.</translation>
 <translation id="9219103736887031265">Слике</translation>
 <translation id="9219908252191632183">Месечева површина</translation>
-<translation id="937795003075802289">Синхронизује се 1 фајл</translation>
 <translation id="938470336146445890">Инсталирајте кориснички сертификат.</translation>
 <translation id="939736085109172342">Нови фолдер</translation>
 <translation id="943972244133411984">Изменио/ла</translation>

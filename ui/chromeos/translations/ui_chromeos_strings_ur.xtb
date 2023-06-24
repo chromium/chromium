@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">ابھی نہیں</translation>
 <translation id="3486821258960016770">منگؤلی</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> خرابیاں۔</translation>
-<translation id="3501954296166022751">‏آپ کی Google Drive فائلز آف لائن دستیاب ہیں</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، تفصیلات</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> آئٹمز کو مطابقت پذیری کرنے کی تیاری ہو رہی ہے...</translation>
 <translation id="3522708245912499433">پُرتگالی</translation>
@@ -890,7 +889,6 @@
 <translation id="7972920761225148017">فرانسیسی (سوئٹزر لینڈ)</translation>
 <translation id="7973962044839454485">‏ایک غلط صارف نام یا پاس ورڈ کی وجہ سے PPP کی توثیق ناکام ہو گئی</translation>
 <translation id="7980421588063892270">کول مارک کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
-<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> فائلز سِنک ہو رہی ہیں</translation>
 <translation id="8000066093800657092">کوئی نیٹ ورک نہیں ہے</translation>
 <translation id="8008366997883261463">ڈاگ</translation>
 <translation id="8028993641010258682">سائز</translation>
@@ -1047,7 +1045,6 @@
 <translation id="9213073329713032541">انسٹالیشن کامیابی کے ساتھ شروع ہو گئی۔</translation>
 <translation id="9219103736887031265">تصاویر</translation>
 <translation id="9219908252191632183">قمری</translation>
-<translation id="937795003075802289">1 فائل سِنک ہو رہی ہے</translation>
 <translation id="938470336146445890">براہ کرم ایک صارف سرٹیفیکیٹ انسٹال کریں۔</translation>
 <translation id="939736085109172342">نیا فولڈر</translation>
 <translation id="943972244133411984">ترمیم کنندہ</translation>

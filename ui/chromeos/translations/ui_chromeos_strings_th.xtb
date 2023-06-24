@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">ไม่ใช่ตอนนี้</translation>
 <translation id="3486821258960016770">มองโกเลีย</translation>
 <translation id="3495304270784461826">ข้อผิดพลาด <ph name="COUNT" /> รายการ</translation>
-<translation id="3501954296166022751">ไฟล์ Google ไดรฟ์พร้อมใช้งานแบบออฟไลน์</translation>
 <translation id="3509680540198371098">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, รายละเอียด</translation>
 <translation id="3511705761158917664">กำลังเตรียมการซิงค์ <ph name="NUMBER_OF_ITEMS" /> รายการ...</translation>
 <translation id="3522708245912499433">โปรตุเกส</translation>
@@ -891,7 +890,6 @@
 <translation id="7972920761225148017">ฝรั่งเศส (สวิตเซอร์แลนด์)</translation>
 <translation id="7973962044839454485">การตรวจสอบสิทธิ์ PPP ล้มเหลวเนื่องจากชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</translation>
 <translation id="7980421588063892270">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์ Colemak</translation>
-<translation id="7985008041109611710">กำลังซิงค์ <ph name="NUMBER_OF_FILES_SYNCING" /> ไฟล์</translation>
 <translation id="8000066093800657092">ไม่มีเครือข่าย</translation>
 <translation id="8008366997883261463">สุนัข</translation>
 <translation id="8028993641010258682">ขนาด</translation>
@@ -1048,7 +1046,6 @@
 <translation id="9213073329713032541">เริ่มการติดตั้งสำเร็จแล้ว</translation>
 <translation id="9219103736887031265">ภาพ</translation>
 <translation id="9219908252191632183">ดวงจันทร์</translation>
-<translation id="937795003075802289">กำลังซิงค์ 1 ไฟล์</translation>
 <translation id="938470336146445890">โปรดติดตั้งใบรับรองของผู้ใช้</translation>
 <translation id="939736085109172342">โฟลเดอร์ใหม่</translation>
 <translation id="943972244133411984">แก้ไขโดย</translation>

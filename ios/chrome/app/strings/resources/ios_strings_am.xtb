@@ -38,6 +38,7 @@
 <translation id="1176932207622159128">ምስሉን ማስቀመጥ አልተቻለም</translation>
 <translation id="1177414119866731261">የChrome ምናሌን ይክፈቱ</translation>
 <translation id="1181037720776840403">አስወግድ</translation>
+<translation id="1200396280085622191">በመልዕክቶች እና ሌሎች መተግበሪያዎች ውስጥ ያሉ አገናኞች ላይ መታ በሚያደርጉበት በማንኛውም ጊዜ Chromeን ይጠቀሙ።</translation>
 <translation id="1207113853726624428">አዲስ ፍለጋ</translation>
 <translation id="1207493287814084192">5:30 ከሰዓት</translation>
 <translation id="1209206284964581585">ለአሁን ደብቅ</translation>
@@ -164,6 +165,7 @@
 <translation id="1974060860693918893">የላቀ</translation>
 <translation id="1980417445547898121">{count,plural, =1{የእርስዎን {count} በቅርብ ጊዜ ገቢር የነበረ ትር ከሌላ መሣሪያዎ በዚህ iPhone ላይ ያግኙ}one{የእርስዎን {count} በቅርብ ጊዜ ገቢር የነበረ ትር ከሌላ መሣሪያዎ በዚህ iPhone ላይ ያግኙ}other{የእርስዎን {count} በቅርብ ጊዜ ገቢር የነበሩ ትሮች ከሌላ መሣሪያዎ በዚህ iPhone ላይ ያግኙ}}</translation>
 <translation id="1981118202195772574">ሞባይል</translation>
+<translation id="1987779152850321833">ከChrome ማግኘት የሚችሉትን ሁሉ ለማግኘት ከታች ያሉትን እነዚህን የተጠቆሙ እርምጃዎች ያጠናቅቁ።</translation>
 <translation id="1989112275319619282">አስስ</translation>
 <translation id="1990820278544963435">አግኝ</translation>
 <translation id="199425419756152024">የይለፍ ቃልን አሳይ</translation>
@@ -321,6 +323,7 @@
 <translation id="2952246431280799028">አድራሻን ይንኩ እና ይያዙ።</translation>
 <translation id="2952278131021475699">የሌንስ ካሜራ ፍለጋ</translation>
 <translation id="2952581218264071393">1. የChrome ቅንብሮችን ይክፈቱ</translation>
+<translation id="2956733177489514605">የእርስዎን የይለፍ ቃላት እና ሌሎችንም ለማስመር በGoogle መለያዎ ይግቡ።</translation>
 <translation id="2958718410589002129">የይለፍ ቃላት</translation>
 <translation id="2961210776189273067">ርዕስ</translation>
 <translation id="2964349545761222050">የሶስተኛ ወገን ኩኪዎችን ያግዱ</translation>
@@ -342,6 +345,7 @@
 መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ የፍለጋ ፕሮግራምዎን መመሪያዎች ይመልከቱ።</translation>
 <translation id="3080525922482950719">በኋላ ላይ ወይም ከመስመር ውጭ ለማንበብ ገጾችን ማስቀመጥ ይችላሉ</translation>
 <translation id="3081338492074632642">እያስቀመጡት ያለው የይለፍ ቃል ከ<ph name="WEBSITE" /> ይለፍ ቃል ጋር የሚዛመድ መሆኑን ያረጋግጡ</translation>
+<translation id="309672519329227863">በሌሎች መተግበሪያዎች ላይ የእርስዎን የChrome የይለፍ ቃላት እና ሌሎችን ይድረሱ።</translation>
 <translation id="3112556859945124369">ምልክት አድርግበት…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />ምን ማስመር እንደሚችሉ ይመልከቱ<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">ታሪክ እና ተጨማሪ</translation>
@@ -519,6 +523,7 @@
 <translation id="4277990410970811858">የጥንቃቄ አሰሳ</translation>
 <translation id="4281844954008187215">የአግልግሎት ውል</translation>
 <translation id="4293080268407233932">ፈልግ</translation>
+<translation id="4302248187517737842">ምንም የተጠቃሚ ስም የለም ••••••••</translation>
 <translation id="4304713468139749426">የይለፍ ቃል አስተዳዳሪ</translation>
 <translation id="430793432425771671">ሁሉንም ያመሳስሉ</translation>
 <translation id="4309403553630140242">ለተጨማሪ መረጃ ሁለቴ መታ ያድርጉ</translation>
@@ -697,6 +702,7 @@
 <translation id="5478327362747197944">በድረ-ገጽ ውስጥ አንድ ቀን ላይ ጠቅ በማድረግ የቀን መቁጠሪያ ክስተቶችን በቀጥታ ይፍጠሩ።</translation>
 <translation id="5489208564673669003">ለሁሉም ጣቢያዎች ኩኪዎችን ለማቀናበር፣ <ph name="BEGIN_LINK" />የኩኪ ቅንብሮችን<ph name="END_LINK" /> ይመልከቱ።</translation>
 <translation id="5490005495580364134">ሁሉንም ኩኪዎች አግድ (አይመከርም)</translation>
+<translation id="5511959326926949696">ለአሳሽዎ ከፍተኛ የጥበቃ አማራጭ። እሱ ጥቅም ላይ መዋል ያለበት በጣም የተወሳሰበ የሳይበር ጥቃት እያነጣጠረዎ እንደሆነ ካመኑ ብቻ ነው።</translation>
 <translation id="5513681519188741830">ከ<ph name="TIME" /> ሰ በፊት</translation>
 <translation id="5520466080178053306">የሚስጥር ቁልፍ አስተዳዳሪን መታ ያድርጉ ከዚያ አክልን መታ ያድርጉ</translation>
 <translation id="5525095647255982834">ይህን ትር ወደ ሌላ መሣሪያ ለመላክ እዚያ ላይ ወደ Chrome ይግቡ።</translation>
@@ -813,6 +819,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6149061208933997199">የይለፍ ቃል ይጠቀሙ</translation>
 <translation id="6152406514676263192">በእርስዎ ዝንባሌዎች ላይ የተመሠረተ በጣም አግባብነት ያለው ይዘትን ለማግኘት ያስምሩ።</translation>
 <translation id="6159839020698489198">የግድ አይደለም</translation>
+<translation id="6166946945007577435">እርስዎ መሄድ ወደሚፈልጉበት እንዲደርሱ የሚያግዝዎ አዲስ ምናሌ።</translation>
 <translation id="6170450281939467187">ትርጉም አልተሳካም</translation>
 <translation id="6173499589275053515">የይለፍ ቃል የእርስዎ Google መለያ <ph name="EMAIL" /> ውስጥ ተቀምጧል</translation>
 <translation id="6177442314419606057">በChrome ውስጥ ይፈልጉ</translation>
@@ -1050,6 +1057,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7554645225856321710">ሁሉንም ዝጋ</translation>
 <translation id="7554791636758816595">አዲስ ትር</translation>
 <translation id="7561196759112975576">ሁልጊዜ</translation>
+<translation id="7582857256643797524">ይህ ቅንብር በመሣሪያዎ ላይ ነቅቷል</translation>
 <translation id="7583004045319035904">የእርስዎን ማንነት የማያሳውቁ ትሮችን ለመከፈት <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ይጠቀሙ።</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />ን በጭራሽ አትተርጉም</translation>
 <translation id="7603852183842204213">ብቅ-ባዮች ታግደዋል (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
@@ -1176,6 +1184,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8319076807703933069">አዲስ ፍለጋ</translation>
 <translation id="8323906514956095947">ተጨማሪ የትር አማራጮችን ለማግኘት ነክተው ይያዙ</translation>
 <translation id="8328777765163860529">ሁሉንም ዝጋ</translation>
+<translation id="8331621926962374866">Chrome ቆልፍ እና ዝጋ ሁነታ ውስጥ ሲሆን የተወሰኑ የድር ቴክኖሎጂዎች ይታገዳሉ፣ ይህም አንዳንድ ድር ጣቢያዎች ይበልጥ ቀስ ባለ መልኩ እንዲጫኑ ወይም በትክክል እንዳይከውኑ ሊያደርግ ይችላል።</translation>
 <translation id="8343993175958086504">የእርስዎን ነገሮች ምትኬ ያስቀምጡ እና በማንኛውም መሣሪያ ላይ ይጠቀሙበት።</translation>
 <translation id="834783239627985533">በብዛት የተጎበኙ ጣቢያዎች</translation>
 <translation id="8378714024927312812">በእርስዎ ድርጅት የሚተዳደር</translation>
@@ -1326,9 +1335,11 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="952704832371081537">ይቅር</translation>
 <translation id="953008885340860025">Chrome ዘግቶ ወጥቷል</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" />ን እየተከተሉ ነው</translation>
+<translation id="97300214378190234">በሌሎች መተግበሪያዎች ውስጥ ያሉ አገናኞች ላይ መታ በሚያደርጉበት በማንኛውም ጊዜ Chromeን ይጠቀሙ።</translation>
 <translation id="973493300226275298">በመላው የመስመር ላይ መደብሮች ላይ የአንድን ምርት ዋጋ ይከታተሉ። ዋጋው በሚቀንበት ጊዜ ማንቂያዎች ይደርሱዎታል።</translation>
 <translation id="981498610235328462">በተወሰኑ መለያዎች አማካኝነት ብቻ እንዲገቡ ድርጅትዎ ይፈቅድልዎታል። ያልተፈቀዱ መለያዎች ተደብቀዋል።</translation>
 <translation id="984509647832111802">ስምረት እየሠራ አይደለም።</translation>
+<translation id="984879470761322682">ቆልፍ እና ዝጋ ሁነታን በChrome ውስጥ ለማሰናከል በመሣሪያዎ ላይ ያጥፉት።</translation>
 <translation id="988141524645182168">ሌሎች መሣሪያዎች</translation>
 <translation id="989988560359834682">አድራሻ ያርትዑ</translation>
 <translation id="994757059139821576">የጽሑፍ አስተያየት ጥቆማዎች</translation>

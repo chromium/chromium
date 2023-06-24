@@ -305,6 +305,19 @@ Namun, pola yang cocok dengan origin untuk kebijakan ini tidak boleh berisi elem
 <translation id="1272798957154751008">Mengaktifkan migrasi perangkat Chromad ke pengelolaan cloud</translation>
 <translation id="1274997165432133392">Cookie dan data situs lainnya</translation>
 <translation id="1277411517984768103">Izinkan <ph name="BOREALIS_NAME" /> dijalankan untuk pengguna</translation>
+<translation id="1280005879732594593">Kebijakan ini mengonfigurasi apakah <ph name="PRODUCT_NAME" /> akan menawarkan Kyber, algoritma perjanjian kunci pasca-kuantum, di TLS. Hal ini memungkinkan server pendukung melindungi traffic pengguna agar tidak didekripsi oleh komputer kuantum di lain waktu.
+
+Jika kebijakan ini disetel ke Aktif, <ph name="PRODUCT_NAME" /> akan menawarkan Kyber di koneksi TLS. Koneksi TLS akan dilindungi dengan perjanjian kunci Kyber saat berkomunikasi dengan server kompatibel yang memilih Kyber selama TLS handshake.
+
+Jika kebijakan ini disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> tidak akan menawarkan Kyber di koneksi TLS. Traffic pengguna tidak akan dilindungi dari komputer kuantum.
+
+Jika kebijakan ini tidak disetel, <ph name="PRODUCT_NAME" /> akan mengikuti proses peluncuran default untuk menawarkan Kyber.
+
+Menawarkan Kyber kompatibel dengan versi lama. Server TLS dan middleware jaringan yang ada diharapkan untuk mengabaikan opsi baru dan tetap memilih opsi sebelumnya.
+
+Namun, perangkat yang tidak menerapkan TLS dengan tepat mungkin berhenti berfungsi saat ditawarkan opsi baru. Misalnya, koneksi mungkin terputus sebagai respons terhadap opsi yang tidak dikenal atau pesan yang dihasilkan dalam jumlah lebih besar. Perangkat tersebut belum siap digunakan untuk pasca-kuantum dan akan mengganggu transisi pasca-kuantum perusahaan. Jika skenario tersebut ditemukan, administrator harus menghubungi vendor untuk memperbaikinya.
+
+Kebijakan ini adalah tindakan sementara dan akan dihapus di <ph name="PRODUCT_NAME" /> versi mendatang. Fitur ini mungkin disetel ke Aktif untuk memungkinkan Anda menguji masalah, dan dapat disetel ke Nonaktif saat masalah sedang diselesaikan.</translation>
 <translation id="1285819498003746288">Event.path API tidak akan tersedia.</translation>
 <translation id="1290722184971934486">Jika kebijakan ini disetel ke <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (nilai 2), izin pengelolaan jendela untuk situs akan otomatis ditolak secara default. Hal ini akan membatasi kemampuan situs untuk melihat informasi tentang layar perangkat dan menggunakan informasi tersebut untuk membuka dan menempatkan jendela atau meminta mode layar penuh pada layar tertentu.
 
@@ -1497,6 +1510,7 @@ Di <ph name="PRODUCT_OS_NAME" /> Kiosk, kebijakan ini tidak menawarkan opsi "Izi
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="2299220924812062390">Tentukan daftar plugin yang diaktifkan</translation>
+<translation id="2299815818824242485">Jangan izinkan pemeriksaan lewat proxy dengan perlindungan yang lebih tinggi</translation>
 <translation id="2303795211377219696">Mengaktifkan IsiOtomatis untuk kartu kredit</translation>
 <translation id="2304009805995145854">Sejak <ph name="PRODUCT_NAME" /> 67, isolasi situs telah diaktifkan secara default di semua platform Desktop, yang menyebabkan setiap situs berjalan dalam prosesnya sendiri. Situs adalah skema plus eTLD+1 (misalnya, https://example.com). Menyetel kebijakan ke Aktif tidak mengubah perilaku tersebut; hanya mencegah pengguna menonaktifkannya (misalnya, menggunakan Nonaktifkan isolasi situs di chrome://flags). Sejak <ph name="PRODUCT_NAME" /> 76, menyetel kebijakan ini ke Nonaktif atau membiarkannya tanpa disetel tidak akan menonaktifkan isolasi situs, tetapi memungkinkan pengguna untuk menonaktifkannya.
 
@@ -1912,6 +1926,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Jika kebijakan disetel ke Nonaktif saat koneksi UDP keluar difilter oleh firewall, perangkat hanya akan mengizinkan koneksi dari perangkat klien dalam jaringan lokal.</translation>
 <translation id="2714756912981510828">Aktifkan deteksi kebocoran sandi</translation>
+<translation id="2716071441112588786">Izinkan pemeriksaan lewat proxy dengan perlindungan yang lebih tinggi</translation>
 <translation id="2716623398185506073">Jika kebijakan disetel ke Aktif, perangkat yang terdaftar akan melaporkan statistik dan ID hardware yang terkait daya.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perangkat yang terdaftar tidak akan melaporkan statistik daya.</translation>
@@ -2575,11 +2590,6 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
 
       Kebijakan ini hanya dapat disetel sebagai kebijakan pengguna cloud.
       </translation>
-<translation id="3247992593782842520">Kebijakan ini memungkinkan administrator mengonfigurasi daftar ID ekstensi yang diperlukan untuk navigasi mode Samaran.
-
-Pengguna harus secara eksplisit mengizinkan semua ekstensi dalam daftar ini untuk dijalankan dalam mode Samaran. Jika tidak, navigasi dalam mode Samaran tidak akan diizinkan.
-
-Jika ekstensi yang ditentukan dalam kebijakan ini tidak diinstal, navigasi dalam mode Samaran akan diblokir.</translation>
 <translation id="3248019773260441802">Mengizinkan halaman menampilkan pop-up saat menghapus muatannya</translation>
 <translation id="3251500716404598358">Konfigurasikan kebijakan untuk beralih ke browser lain.
 
@@ -3003,6 +3013,22 @@ Perlu diingat untuk tidak selalu mengaktifkan kebijakan ini, terutama dalam depl
 <translation id="3591584750136265240">Mengonfigurasi perilaku autentikasi proses masuk</translation>
 <translation id="3593905652755912452">Perilaku lama pengiriman peristiwa pada kontrol formulir yang dinonaktifkan akan digunakan.</translation>
 <translation id="3596112486106491038">Aktifkan akses command line mesin virtual</translation>
+<translation id="3596651403637948128">Kebijakan ini mengontrol apakah mode perlindungan standar Safe Browsing diizinkan
+untuk mengirim hash sebagian dari URL ke Google melalui proxy via Oblivious HTTP
+untuk menentukan apakah URL aman untuk dibuka atau tidak.
+
+Proxy memungkinkan browser mengupload hash sebagian dari URL ke Google
+secara anonim. Hal ini juga memungkinkan browser mengupload dengan frekuensi yang lebih tinggi untuk
+kualitas perlindungan Safe Browsing yang lebih baik.
+
+Kebijakan ini akan diabaikan jika Safe Browsing dinonaktifkan atau disetel ke mode
+perlindungan yang ditingkatkan.
+
+Jika kebijakan disetel ke Aktif atau tidak disetel, pemeriksaan
+lewat proxy dengan perlindungan yang lebih tinggi akan diizinkan.
+
+Jika kebijakan disetel ke Nonaktif, pemeriksaan lewat proxy dengan perlindungan yang lebih tinggi
+tidak akan diizinkan. URL akan diupload ke Google secara langsung dengan frekuensi yang jauh lebih rendah.</translation>
 <translation id="3603469950773500315">Mengaktifkan mitigasi pemeriksaan <ph name="CORS" /> dalam implementasi <ph name="CORS" /> baru, sehingga memungkinkan Ekstensi tetap kompatibel dan mengizinkan <ph name="PRODUCT_NAME" /> mengirim header tertentu tanpa pemeriksaan <ph name="CORS" />.
 
       Jika daftar ini dibiarkan kosong, <ph name="PRODUCT_NAME" /> akan mencoba menjalankan Ekstensi secara kompatibel, dan tidak menerapkan perubahan <ph name="API" /> untuk <ph name="PRODUCT_NAME" /> 79 seperti yang dijelaskan dalam <ph name="WEB_REQUEST_API_MANUAL" />.
@@ -3588,6 +3614,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika kebijakan disetel, pengguna tidak dapat mengubahnya. Jika kebijakan tidak disetel, keyboard virtual mula-mula akan dinonaktifkan, tetapi pengguna dapat mengaktifkannya kapan saja.</translation>
 <translation id="412697421478384751">Izinkan pengguna menyetel PIN lemah untuk PIN layar kunci</translation>
+<translation id="4132809439883883106">Gunakan Nilai Default untuk perjanjian kunci pasca-kuantum Kyber yang diaktifkan untuk TLS</translation>
 <translation id="4136603825567209889">Aktifkan pelaporan informasi identifikasi pengguna</translation>
 <translation id="4138655880188755661">Batas Waktu</translation>
 <translation id="4140646780789794190">Nonaktifkan berbagi data diagnostik ke PluginVm</translation>
@@ -4155,6 +4182,7 @@ API ini.</translation>
       Jika kebijakan tidak disetel, tidak akan ada pemilihan otomatis untuk situs apa pun.</translation>
 <translation id="4611983465824842867">Jangan menampilkan peringatan atau menonaktifkan isi otomatis pada formulir yang tidak aman</translation>
 <translation id="4615003180013429835">Mode penguraian sitelist</translation>
+<translation id="4616706248182656871">Nonaktifkan perjanjian kunci pasca-kuantum Kyber untuk TLS</translation>
 <translation id="4617338332148204752">Lewati pemeriksaan tag meta pada <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Fitur NewBaseUrlInheritanceBehavior tersedia</translation>
 <translation id="4624006912948309924">Menyetel kebijakan akan menetapkan ID aplikasi mana yang ditampilkan oleh <ph name="PRODUCT_OS_NAME" /> sebagai aplikasi tersemat di kotak peluncur, dan pengguna tidak dapat mengubahnya.
@@ -4875,6 +4903,11 @@ Catatan: Kebijakan ini tidak berlaku untuk upgrade HSTS.</translation>
 <translation id="5345910753471481870">Jangan tampilkan tombol Google Lens di kotak penelusuran pada halaman Tab Baru.</translation>
 <translation id="5346587320074666194">Memblokir akses ke sensor di situs ini</translation>
 <translation id="534836255587440809">Nonaktifkan klik otomatis di layar login</translation>
+<translation id="5348658899015174540"><ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API memungkinkan aplikasi web merekam beberapa platform sekaligus.
+      Kebijakan ini membuka properti <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> untuk aplikasi web di origin yang ditentukan.
+      Jika properti <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> ditentukan dalam permintaan <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, semua platform layar akan otomatis direkam tanpa izin pengguna secara eksplisit.
+      Jika kebijakan ini tidak disetel, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> tidak tersedia untuk semua aplikasi web.
+Mulai dari versi 116 <ph name="PRODUCT_NAME" />, kebijakan ini tidak akan mendukung refresh dinamis lagi untuk meningkatkan privasi. Oleh karena itu, pengguna dapat memastikan bahwa tidak ada halaman tambahan yang dapat merekam layar setelah login jika tidak diizinkan sejak awal sesi.</translation>
 <translation id="5361708558735884308">Jika kebijakan disetel, akses ke URL yang tercantum akan diberikan sebagai pengecualian untuk <ph name="URL_BLOCKLIST_POLICY_NAME" />. Lihat deskripsi kebijakan tersebut untuk mengetahui format entri daftar ini. Misalnya, menyetel <ph name="URL_BLOCKLIST_POLICY_NAME" /> ke * akan memblokir semua permintaan, dan Anda dapat menggunakan kebijakan ini untuk mengizinkan akses ke URL yang ada dalam daftar terbatas. Gunakan kebijakan ini untuk membuka pengecualian untuk skema tertentu, subdomain dari domain lain, port, atau jalur khusus, menggunakan format yang ditentukan di ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). Filter paling spesifik akan menentukan apakah URL diblokir atau diizinkan. Kebijakan <ph name="URL_ALLOWLIST_POLICY_NAME" /> akan lebih diprioritaskan daripada <ph name="URL_BLOCKLIST_POLICY_NAME" />. Kebijakan ini terbatas untuk 1.000 entri.
 
 Dengan kebijakan ini, panggilan otomatis dapat dilakukan oleh browser aplikasi eksternal yang terdaftar sebagai pengendali protokol untuk protokol yang tercantum seperti "tel:" atau "ssh:".
@@ -6020,6 +6053,29 @@ mengetahui detail tambahan.</translation>
       URL yang menggunakan skema dari daftar ini tidak akan dimuat dan tidak dapat dibuka.
 
       Jika kebijakan ini tidak disetel atau daftar kosong, semua skema akan dapat diakses di <ph name="PRODUCT_NAME" />.</translation>
+<translation id="6338831500376286321">Menyetel tingkat akses geolokasi tingkat perangkat untuk
+sistem <ph name="PRODUCT_OS_NAME" />, yang
+berlaku sebelum pengguna login. Setelah login, pengguna dapat mengontrol
+tingkat akses geolokasi melalui setelan masing-masing pengguna.
+
+Jika tidak disetel atau disetel ke <ph name="ALLOW" />, akses geolokasi layar login
+akan diizinkan untuk perangkat terkelola. Jika nilai kebijakan yang tidak valid dikirim,
+akses akan disetel ke
+<ph name="DISALLOW" />. Untuk perangkat tidak terkelola, akses selalu
+disetel ke <ph name="ALLOW" />.
+
+PERINGATAN: Hati-hati saat mengubah setelan ini karena dapat melanggar kebijakan lain
+yang melibatkan geolokasi
+(misalnya <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />)!
+Khususnya, jika kebijakan ini disetel ke <ph name="DISALLOW" />,
+opsi
+<ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" />
+dan
+<ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />
+kebijakan
+<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />
+akan gagal berfungsi dan hanya menggunakan resolusi lokasi berbasis <ph name="IP" />
+di layar <ph name="LOG_IN" />.</translation>
 <translation id="6338982178236723271">Melaporkan info sistem</translation>
 <translation id="6339355882150329269">Jangan menganggap pengguna sebagai tidak ada aktivitas saat video diputar</translation>
 <translation id="6352714113109004581">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang dapat meminta izin kepada pengguna untuk mengakses perangkat HID.
@@ -7291,6 +7347,7 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 <translation id="7421230730436851224">Jangan pernah melakukan sandbox proses audio</translation>
 <translation id="7421483919690710988">Setel ukuran cache disk media dalam bita</translation>
 <translation id="7424751532654212117">Daftar pengecualian untuk daftar plugin yang dinonaktifkan</translation>
+<translation id="7425076578809444474">Mengaktifkan perjanjian kunci pasca-kuantum untuk TLS</translation>
 <translation id="7426112309807051726">Menentukan apakah pengoptimalan <ph name="TLS_FALSE_START" /> harus dinonaktifkan atau tidak. Karena alasan historis, kebijakan ini diberi nama DisableSSLRecordSplitting.
 
       Jika kebijakan tidak disetel, atau disetel ke False, <ph name="TLS_FALSE_START" /> akan diaktifkan. Jika disetel ke True, <ph name="TLS_FALSE_START" /> akan dinonaktifkan.</translation>
@@ -7300,6 +7357,7 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 <translation id="7434202861148928348">Mengonfigurasi nama domain wajib untuk klien akses jarak jauh</translation>
 <translation id="7436939516497076240">Jangan izinkan halaman hasil penelusuran mesin telusur default ditampilkan di panel samping Browser.</translation>
 <translation id="7443356543619955157">Jika kebijakan disetel, pendorongan konfigurasi jaringan akan diizinkan untuk semua pengguna perangkat <ph name="PRODUCT_OS_NAME" />. Konfigurasi jaringan berupa string berformat JSON, seperti yang didefinisikan oleh format Konfigurasi Jaringan Terbuka.</translation>
+<translation id="7446978687387327623">Mengizinkan Pemeriksaan Real-Time lewat Proxy Safe Browsing</translation>
 <translation id="7448430478749155471">Mengaktifkan fitur klik untuk diucapkan di layar login</translation>
 <translation id="7456922722153109956">Kebijakan ini mengontrol visibilitas pengumuman slot tengah di Halaman Tab Baru.
 
@@ -7709,7 +7767,6 @@ Jika kebijakan ini tidak disetel, perender PDF akan dipilih oleh browser.</trans
       Jika kebijakan disetel ke salah (false) atau tidak disetel, informasi tidak akan dilaporkan.
       Jika kebijakan disetel ke benar (true), peristiwa jaringan perangkat akan dilaporkan.</translation>
 <translation id="780629758750905699">Mengizinkan penambahan akun Family Link ke perangkat</translation>
-<translation id="7807120658089613760">Mengonfigurasi kamera, setelan browser, setelan OS, pemindaian, web store, canvas, jelajahi, dan fitur-fitur crosh untuk dinonaktifkan</translation>
 <translation id="7807139251387225825">Daftar jenis yang harus dikecualikan dari sinkronisasi</translation>
 <translation id="781268256210530471">Setelan plugin</translation>
 <translation id="7816326058023670173">Rahasia dibagikan antara perangkat anak dan orang tua.</translation>
@@ -8561,6 +8618,7 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
           Jika kebijakan ini tidak ditetapkan, durasi waktu default akan digunakan.
 
           Nilai kebijakan harus ditentukan dalam milidetik.</translation>
+<translation id="859316804517480666">Aktifkan perjanjian kunci pasca-kuantum Kyber untuk TLS</translation>
 <translation id="859579553230883285">Nonaktifkan setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> untuk pengguna Anda.</translation>
 <translation id="8597758693275075382">String OEM SMBIOS yang akan diteruskan ke VM selama penginstalan. Default-nya adalah daftar kosong.</translation>
 <translation id="8598786284856179541">Aktifkan pelaporan informasi versi</translation>

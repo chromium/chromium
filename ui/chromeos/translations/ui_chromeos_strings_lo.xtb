@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">ບໍ່ແມ່ນດຽວນີ້</translation>
 <translation id="3486821258960016770">ພາສາມອງໂກລຽນ</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ຄວາມ​ຜິດ​ພາດ​.</translation>
-<translation id="3501954296166022751">ໄຟລ໌ Google Drive ຂອງທ່ານສາມາດໃຊ້ໄດ້ອອບລາຍ</translation>
 <translation id="3509680540198371098">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ລາຍລະອຽດ</translation>
 <translation id="3511705761158917664">ກຳລັງກະກຽມຊິ້ງຂໍ້ມູນ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
 <translation id="3522708245912499433">ພາສາປັອກຕຸຍການ</translation>
@@ -890,7 +889,6 @@
 <translation id="7972920761225148017">ພາສາຝຣັ່ງ (ສະວິດເຊີແລນ)</translation>
 <translation id="7973962044839454485">ການຮັບຮອງ PPP ບໍ່ສໍາເລັດ ເນື່ອງຈາກຊື່ຜູ້ໃຊ້ ແລະລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ</translation>
 <translation id="7980421588063892270">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມ Colemak</translation>
-<translation id="7985008041109611710">ກໍາລັງຊິງ <ph name="NUMBER_OF_FILES_SYNCING" /> ໄຟລ໌</translation>
 <translation id="8000066093800657092">ບໍ່​ມີເຄືອ​ຂ່າຍ​</translation>
 <translation id="8008366997883261463">ໝາ</translation>
 <translation id="8028993641010258682">ຂະ​ຫນາດ</translation>
@@ -1047,7 +1045,6 @@
 <translation id="9213073329713032541">ເລີ່ມການຕິດຕັ້ງສຳເລັດແລ້ວ.</translation>
 <translation id="9219103736887031265">ຮູບ</translation>
 <translation id="9219908252191632183">ພາບພື້ນຜິວດວງເດືອນ</translation>
-<translation id="937795003075802289">ກຳລັງຊິ້ງ 1 ໄຟລ໌</translation>
 <translation id="938470336146445890">ກະລຸນາຕິດຕັ້ງໃບຢັ້ງຢືນຜູ້ໃຊ້.</translation>
 <translation id="939736085109172342">ໂຟລເດີ​ໃຫມ່</translation>
 <translation id="943972244133411984">ແກ້ໄຂໂດຍ</translation>

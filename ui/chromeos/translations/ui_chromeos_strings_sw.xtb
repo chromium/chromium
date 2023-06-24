@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">Si sasa</translation>
 <translation id="3486821258960016770">Kimongolia</translation>
 <translation id="3495304270784461826">Hitilafu <ph name="COUNT" />.</translation>
-<translation id="3501954296166022751">Faili zako za Hifadhi ya Google zinapatikana ukiwa nje ya mtandao</translation>
 <translation id="3509680540198371098">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Maelezo</translation>
 <translation id="3511705761158917664">Inajitayarisha kusawazisha vipengee <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="3522708245912499433">Kireno</translation>
@@ -891,7 +890,6 @@
 <translation id="7972920761225148017">Kifaransa (Uswizi)</translation>
 <translation id="7973962044839454485">Uthibitishaji wa PPP ulishindwa kutokana na jina la mtumiaji na nenosiri lisilo sahihi</translation>
 <translation id="7980421588063892270">Kiingereza (Marekani) kwenye kibodi ya Colemak</translation>
-<translation id="7985008041109611710">Inasawazisha faili <ph name="NUMBER_OF_FILES_SYNCING" /></translation>
 <translation id="8000066093800657092">Hakuna mtandao</translation>
 <translation id="8008366997883261463">Mbwa</translation>
 <translation id="8028993641010258682">Ukubwa</translation>
@@ -1048,7 +1046,6 @@
 <translation id="9213073329713032541">Imeanza kusakinisha.</translation>
 <translation id="9219103736887031265">Picha</translation>
 <translation id="9219908252191632183">Mandhari ya mwezi mwandamo</translation>
-<translation id="937795003075802289">Inasawazisha faili 1</translation>
 <translation id="938470336146445890">Tafadhali sakinisha cheti cha mtumiaji.</translation>
 <translation id="939736085109172342">Folda mpya</translation>
 <translation id="943972244133411984">Ilibadilishwa na</translation>

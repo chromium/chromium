@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">Ne most</translation>
 <translation id="3486821258960016770">mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> hiba.</translation>
-<translation id="3501954296166022751">Google Drive-fájljai offline is hozzáférhetők</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, részletek</translation>
 <translation id="3511705761158917664">Felkészülés <ph name="NUMBER_OF_ITEMS" /> elem szinkronizálására…</translation>
 <translation id="3522708245912499433">portugál</translation>
@@ -891,7 +890,6 @@
 <translation id="7972920761225148017">francia (Svájc)</translation>
 <translation id="7973962044839454485">Nem sikerült a PPP-hitelesítés helytelen felhasználónév vagy jelszó miatt</translation>
 <translation id="7980421588063892270">angol (USA) billentyűzet Colemak kiosztással</translation>
-<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> fájl szinkronizálása…</translation>
 <translation id="8000066093800657092">Nincs hálózat</translation>
 <translation id="8008366997883261463">Jack Russell-terrier</translation>
 <translation id="8028993641010258682">Méret</translation>
@@ -1048,7 +1046,6 @@
 <translation id="9213073329713032541">Telepítés sikeresen megkezdve.</translation>
 <translation id="9219103736887031265">Képek</translation>
 <translation id="9219908252191632183">Hold</translation>
-<translation id="937795003075802289">1 fájl szinkronizálása…</translation>
 <translation id="938470336146445890">Kérjük, telepítsen felhasználói tanúsítványt.</translation>
 <translation id="939736085109172342">Új mappa</translation>
 <translation id="943972244133411984">Módosította</translation>

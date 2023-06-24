@@ -73,6 +73,7 @@
 <translation id="1358214951266274152">Անցեք ձեր պատճենաց հասցեով</translation>
 <translation id="1360432990279830238">Դուրս գրվե՞լ և անջատել համաժամացումը</translation>
 <translation id="1363028406613469049">Կատարում</translation>
+<translation id="1365106417372288489">Ձեր iPhone-ի պարունակությունը վերջերս վերականգնվել է, ինչը կարող է հանգեցնել կանխադրված դիտարկիչի փոփոխության։</translation>
 <translation id="1375321115329958930">Պահված գաղտնաբառեր</translation>
 <translation id="1377255359165588604">Չհաջողվեց համաժամացնել:</translation>
 <translation id="1377321085342047638">Քարտի համարը</translation>
@@ -90,6 +91,7 @@
 <translation id="1492417797159476138">Օգտանունն արդեն պահված է այս կայքի համար</translation>
 <translation id="1497590942294823549">Ընտրացանկ → Գաղտնաբառերի կառավարիչ</translation>
 <translation id="1498283581832036924">Ձեր <ph name="WEBSITE" /> հաշիվը չի ջնջվի։</translation>
+<translation id="1501820324067650154">Հնարավոր երթուղիները տեսնելու համար հպեք «Ստանալ երթուղիներ»</translation>
 <translation id="1506063256525392513">Սա անհրաժեշտ է լուսանկարներ անելու և վերբեռնելու, ինչպես նաև QR կոդեր սկանավորելու համար</translation>
 <translation id="1509486075633541495">Մտեք հաշիվ</translation>
 <translation id="1509960214886564027">Շատ կայքերում գործառույթները կարող են չաշխատել։</translation>
@@ -148,6 +150,7 @@
 <translation id="1872096359983322073">Լապտեր</translation>
 <translation id="1883255238294161206">Ծալել ցանկը</translation>
 <translation id="1894023287452300670">Հետևեք գներին այստեղ</translation>
+<translation id="189531189292803889">Ձեր iPad-ի պարունակությունը վերջերս վերականգնվել է, ինչը կարող է հանգեցնել կանխադրված դիտարկիչի փոփոխության։</translation>
 <translation id="1910975740091000991">Chrome՝ iOS համար</translation>
 <translation id="1911619930368729126">Վերբեռնել Google Drive</translation>
 <translation id="1923342640370224680">Վերջին ժամը</translation>
@@ -177,6 +180,7 @@
 <translation id="2073572773299281212">Ակտիվ է եղել <ph name="DAYS" /> օր առաջ</translation>
 <translation id="2074131957428911366">Ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" /> և ընտրել, թե ինչն եք ուզում համաժամացնել:</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
+<translation id="2080409463824088391">Բացել հավելվածում…</translation>
 <translation id="2080769225927880590">Մուտք գործեք վավեր հաշվի միջոցով</translation>
 <translation id="2103075008456228677">Բացել history.google.com էջը</translation>
 <translation id="21133533946938348">Ամրացնել ներդիրը</translation>
@@ -316,6 +320,7 @@
 <translation id="2931440415625410757">Ցույց տալ հրահանգները</translation>
 <translation id="2932085390869194046">Ստեղծել գաղտնաբառ…</translation>
 <translation id="2932765531295814441">Ավելացրեք գաղտնաբառեր ձեռքով</translation>
+<translation id="2952246431280799028">Հպեք հասցեի և պահեք։</translation>
 <translation id="2952278131021475699">Որոնում տեսախցիկի միջոցով</translation>
 <translation id="2952581218264071393">1. Բացեք Chrome-ի կարգավորումները։</translation>
 <translation id="2956733177489514605">Մուտք գործեք Google հաշիվ՝ ձեր գաղտնաբառերը և այլ տվյալներ համաժամացնելու համար։</translation>
@@ -1044,6 +1049,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="750493650310597496">Ընտրվել է 0 էջանիշ</translation>
 <translation id="7508728395076009983">Ինկոգնիտո ներդիրները կողպելու համար սահմանեք Touch ID, Face ID կամ անցաբառ։</translation>
 <translation id="7514365320538308">Ներբեռնել</translation>
+<translation id="7524055474074101597">Օգտագործեք ձեր գաղտնաբառերը և այլ տվյալներ հավելվածներում։</translation>
 <translation id="7531345132340165516">Ընթացիկ կայքը</translation>
 <translation id="7537586195939242955">Ներեցեք, այս պահին հնարավոր չէ տեղադրել ձեր Անցագիրը Անցագրերի մատյանում:</translation>
 <translation id="754655535278952384">Ստուգվել է <ph name="TIME" /></translation>
@@ -1269,6 +1275,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="891282356902782456">Այս գաղտնաբառը պահվում է միայն այս սարքում։ Գաղտնաբառը ձեր մյուս սարքերում օգտագործելու համար պահեք այն ձեր Google հաշվում, <ph name="EMAIL" />։</translation>
 <translation id="891658175948553296">Առանձնացրեք տեքստը կայքում</translation>
 <translation id="8917490105272468696">Եղավ</translation>
+<translation id="8926984231484284953">Օգտագործեք կայքէջերում նշված հասցեները՝ տեղական վայրերի մասին տեղեկություններ և երթուղիներ ստանալու համար։</translation>
 <translation id="8928133177108699615">Համակարգչի ռեժիմ</translation>
 <translation id="8934982071228289624">Այս գաղտնաբառը հաշվում պահելու համար նախ պետք է ձեր սարքում անցակոդ կարգավորեք։</translation>
 <translation id="8940809892068499052">Բացեք ինկոգնիտո ներդիրներ այլ հավելվածներից</translation>

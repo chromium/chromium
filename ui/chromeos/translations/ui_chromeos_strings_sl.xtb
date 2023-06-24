@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">Ne zdaj</translation>
 <translation id="3486821258960016770">mongolščina</translation>
 <translation id="3495304270784461826">Št. napak: <ph name="COUNT" />.</translation>
-<translation id="3501954296166022751">Datoteke v Googlu Drive so na voljo brez povezave</translation>
 <translation id="3509680540198371098">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" />%, podrobnosti</translation>
 <translation id="3511705761158917664">Priprava na sinhronizacijo datotek (<ph name="NUMBER_OF_ITEMS" />) …</translation>
 <translation id="3522708245912499433">portugalščina</translation>
@@ -891,7 +890,6 @@
 <translation id="7972920761225148017">francoščina (Švica)</translation>
 <translation id="7973962044839454485">Preverjanje pristnosti PPP ni uspelo zaradi napačnega uporabniškega imena ali gesla</translation>
 <translation id="7980421588063892270">angleščina (ZDA) s tipkovnico Colemak</translation>
-<translation id="7985008041109611710">Sinhroniziranje toliko datotek: <ph name="NUMBER_OF_FILES_SYNCING" /></translation>
 <translation id="8000066093800657092">Ni omrežja</translation>
 <translation id="8008366997883261463">Pes</translation>
 <translation id="8028993641010258682">Velikost</translation>
@@ -1048,7 +1046,6 @@
 <translation id="9213073329713032541">Namestitev je bila uspešno začeta.</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="9219908252191632183">Mesečeva pokrajina</translation>
-<translation id="937795003075802289">Sinhroniziranje 1 datoteke</translation>
 <translation id="938470336146445890">Namestite uporabniško potrdilo.</translation>
 <translation id="939736085109172342">Nova mapa</translation>
 <translation id="943972244133411984">Spremenil(-a):</translation>

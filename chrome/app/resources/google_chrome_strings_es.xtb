@@ -377,7 +377,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8013993649590906847">Si una imagen no tiene ninguna descripción útil, Chrome intentará proporcionártela. Para crear las descripciones, las imágenes se envían a Google.</translation>
 <translation id="8019103195866286235">El desarrollador de esta extensión ha anulado su publicación y la extensión podría no ser segura. Elimínala de Chrome para que no pueda ver ni cambiar tus datos en los sitios que visites, incluida tu información personal.</translation>
 <translation id="80471789339884597">Gracias por realizar la instalación. Debes reiniciar todos tus navegadores para poder usar <ph name="BUNDLE_NAME" />.</translation>
-<translation id="8057070436257749375">{COUNT,plural, =1{Tu organización eliminará automáticamente los datos de navegación cuando Chrome lleve 1 minuto sin usarse. Esto podría incluir el historial, los datos de Autocompletar y las descargas. Tus pestañas actuales permanecerán abiertas.}other{Tu organización eliminará automáticamente los datos de navegación cuando Chrome lleve # minutos sin usarse. Esto podría incluir el historial, los datos de Autocompletar y las descargas. Tus pestañas actuales permanecerán abiertas.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Información de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Inicializando…</translation>

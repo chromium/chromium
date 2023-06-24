@@ -79,6 +79,7 @@
 <translation id="1061130374843955397">សូមស្វាគមន៍មកកាន់ <ph name="DEVICE_TYPE" /> របស់អ្នក</translation>
 <translation id="1061373870045429865">បង្កើតកូដ QR សម្រាប់តំណនេះ</translation>
 <translation id="1061904396131502319">ជិតដល់ពេលសម្រាកហើយ</translation>
+<translation id="10619348099955377">ចម្លង​ឈ្មោះ​បង្ហាញ</translation>
 <translation id="1062407476771304334">ជំនួស</translation>
 <translation id="1062628064301375934">ជួយយើងក្នុងការបង្កើតបណ្ដាញដែលកាន់តែមានលក្ខណៈឯកជន</translation>
 <translation id="1066964438793906105">ស្កេនរក​កម្មវិធី​គ្រោះថ្នាក់</translation>
@@ -581,6 +582,7 @@
 <translation id="1481537595330271162">មានបញ្ហា​ក្នុងការ​ប្ដូរទំហំ​ថាស</translation>
 <translation id="1482626744466814421">ចំណាំ​ផ្ទាំងនេះ...</translation>
 <translation id="1482772681918035149">កែ​ពាក្យសម្ងាត់</translation>
+<translation id="1483431819520123112">បានចម្លង​ឈ្មោះបង្ហាញ​ទៅឃ្លីបបត</translation>
 <translation id="1483493594462132177">ផ្ញើ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">គេហទំព័រ​កំពុងប្រើ​ប៊្លូធូស</translation>
@@ -968,6 +970,7 @@
 <translation id="1784707308176068866">ដំណើរការ​នៅផ្ទៃខាងក្រោយ នៅពេល​ស្នើដោយកម្មវិធី​ដើមដែលសហប្រតិបត្តិការ</translation>
 <translation id="1784849162047402014">ឧបករណ៍មានកម្រិតទំហំផ្ទុកទាប</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{ការលុប "<ph name="APP_NAME" />" ក៏នឹងលុបកម្មវិធីនេះផងដែរ៖}other{ការលុប "<ph name="APP_NAME" />" ក៏នឹងលុបកម្មវិធីទាំងនេះផងដែរ៖}}</translation>
+<translation id="1786290960428378411">កំពុង​ស្នើសុំ​អាន និង​ផ្លាស់ប្ដូរ</translation>
 <translation id="1787350673646245458">រូបភាព​អ្នកប្រើប្រាស់</translation>
 <translation id="1790976235243700817">ដក​សិទ្ធិចូល​ប្រើប្រាស់​ចេញ</translation>
 <translation id="1791662854739702043">បាន​ដំឡើង</translation>
@@ -1301,6 +1304,7 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{ចុចដើម្បីដំឡើង​កម្មវិធីបន្ថែម}other{ចុចដើម្បីដំឡើង​កម្មវិធីបន្ថែម​ទាំងនេះ}}</translation>
 <translation id="2073496667646280609">អ្នកប្រហែលជាមិនមានទំហំផ្ទុកទំនេរគ្រប់គ្រាន់នៅលើឧបករណ៍របស់អ្នក ឬទីតាំងបម្រុងទុកដែលបានជ្រើសរើស។ សូមសាកល្បងបង្កើនទំហំផ្ទុកទំនេរ ឬជ្រើសរើសទីតាំងផ្សេង។</translation>
 <translation id="2073505299004274893">ប្រើប្រាស់ <ph name="CHARACTER_LIMIT" /> តួអក្សរ ឬតិចជាងនេះ</translation>
+<translation id="2075088158103027942">ចូល​ទៅកាន់​ការជាវ</translation>
 <translation id="2075474481720804517">ថ្ម <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2076269580855484719">លាក់កម្មវិធីជំនួយនេះ</translation>
 <translation id="2076672359661571384">មធ្យម (បានណែនាំ)</translation>
@@ -2123,6 +2127,7 @@
 <translation id="2731700343119398978">សូមរង់ចាំ...</translation>
 <translation id="2731971182069536520">នៅពេលអ្នក​ចាប់ផ្ដើមឧបករណ៍​របស់អ្នក​ឡើងវិញលើកក្រោយ អ្នកគ្រប់គ្រង​របស់អ្នក​នឹង​ធ្វើបច្ចុប្បន្នភាពមួយលើក ដែលនឹងលុបទិន្នន័យ​មូលដ្ឋាន​របស់​អ្នក។</translation>
 <translation id="2732134891301408122">ខ្លឹមសារបន្ថែម <ph name="CURRENT_ELEMENT" /> ក្នុងចំណោម <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733992589856193783">អ្នកបាន​បង្កើត​កូដសម្ងាត់​សម្រាប់​គេហទំព័រនេះ។ អ្នកត្រូវការ​ឧបករណ៍​ចល័ត​របស់អ្នក ដើម្បី​ចូលគណនី។</translation>
 <translation id="27349076983469322">ផ្ទៃខាង​ក្រោយ​ភ្លឺ</translation>
 <translation id="2735712963799620190">កាលវិភាគ</translation>
 <translation id="2737363922397526254">បង្រួម...</translation>
@@ -3115,6 +3120,7 @@
 <translation id="3610241585790874201">មិនបានអនុញ្ញាត​ឱ្យរក្សាទុក​ទិន្នន័យ​នៅលើ​ឧបករណ៍​របស់អ្នកទេ</translation>
 <translation id="3610369246614755442">កង្ហារឧបករណ៍​ភ្ជាប់​តម្រូវឱ្យមានការ​ជួលជុល</translation>
 <translation id="3610961622607302617">ផ្លាស់ប្ដូរពាក្យសម្ងាត់សម្រាប់ <ph name="WEBSITE" /></translation>
+<translation id="3611634011145829814">ចូលទៅកាន់​ទំព័រ​ការជាវ</translation>
 <translation id="3611658447322220736">គេហទំព័រដែលបានបិទថ្មីៗអាចបញ្ចប់ការផ្ញើ និងទទួលទិន្នន័យ</translation>
 <translation id="3612673635130633812">បានដោនឡូតដោយ &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">បង្ហាញ <ph name="FOLDER_NAME" /></translation>
@@ -3287,6 +3293,7 @@
 <translation id="3750562496035670393">Chrome បានរក្សាទុកពាក្យសម្ងាត់របស់អ្នកទៅក្នុងឧបករណ៍នេះ ប៉ុន្តែអ្នកអាចរក្សាទុកវាទៅក្នុងគណនី Google របស់អ្នកជំនួសវិញ។ បន្ទាប់ពីនោះ ពាក្យសម្ងាត់ទាំងអស់នៅក្នុង​​គណនី Google របស់អ្នក​ក៏នឹងមាន​ នៅពេលអ្នក​ចូលគណនីផងដែរ។</translation>
 <translation id="3752253558646317685">ប្រាប់ឱ្យកូនរបស់អ្នកបន្តលើកម្រាមដៃរបស់គាត់ឡើង ដើម្បីរក្សាទុកស្នាម​ម្រាមដៃ</translation>
 <translation id="3753033997400164841">រក្សាទុកម្ដង ប្រើបានគ្រប់ទីកន្លែង។</translation>
+<translation id="3753142252662437130">តម្រង​ពណ៌</translation>
 <translation id="3755411799582650620">ឥឡូវនេះ <ph name="PHONE_NAME" /> របស់អ្នកអាចដោះសោ <ph name="DEVICE_TYPE" /> នេះដែរ។</translation>
 <translation id="375636864092143889">ទំព័រ​កំពុងប្រើ​មីក្រូហ្វូន​របស់អ្នក</translation>
 <translation id="3756485814916578707">កំពុងភ្ជាប់អេក្រង់</translation>
@@ -3803,6 +3810,7 @@
 <translation id="4176463684765177261">បានបិទដំណើរការ</translation>
 <translation id="4176864026061939326">ឧបករណ៍​នេះ​ស្ថិត​ក្រោម​ការ​គ្រប់គ្រង។ តម្រូវឱ្យមានកម្រងព័ត៌មានថ្មីសម្រាប់គណនី <ph name="USER_EMAIL_ADDRESS" /> ដោយអ្នកគ្រប់គ្រងឧបករណ៍របស់អ្នក</translation>
 <translation id="4177501066905053472">ប្រធានបទនៃការផ្សាយពាណិជ្ជកម្ម</translation>
+<translation id="4178220097446335546">ដើម្បី​បំភ្លេច​ការជាវនេះ និង​បណ្ដាញ​ពាក់ព័ន្ធ​របស់វា សូមចូលទៅកាន់​ទំព័រ​ការជាវ Passpoint ដើម្បី​ដក​ការជាវនេះ​ចេញ។</translation>
 <translation id="4180788401304023883">លុបវិញ្ញាបនប័ត្រ CA "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ភាសា</translation>
@@ -3955,6 +3963,7 @@
 <translation id="4316850752623536204">គេហទំព័រអ្នកអភិវឌ្ឍន៍</translation>
 <translation id="4317733381297736564">ការទិញក្នុងកម្មវិធី</translation>
 <translation id="4317820549299924617">ការផ្ទៀងផ្ទាត់​មិនបានសម្រេចទេ</translation>
+<translation id="4319441675152393296">ចុច​រូបតំណាង​របស់​កម្មវិធី​បន្ថែមនេះ ដើម្បីអាន និង​ផ្លាស់ប្ដូរ <ph name="HOST" /></translation>
 <translation id="4320177379694898372">គ្មានការភ្ជាប់អ៊ីនធឺណិតទេ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197">បង្ហាញ <ph name="FILE_NAME" /> នៅ​ក្នុង​ Finder</translation>
@@ -4642,6 +4651,7 @@
 <translation id="4899052647152077033">បញ្ច្រាស​ពណ៌</translation>
 <translation id="4899696330053002588">មាន​ការផ្សាយពាណិជ្ជកម្ម</translation>
 <translation id="489985760463306091">ដើម្បី​បញ្ចប់​ការ​លុប​កម្មវិធី​បង្កគ្រោះថ្នាក់ សូម​ចាប់ផ្តើម​កុំព្យូទ័ររបស់អ្នកឡើងវិញ</translation>
+<translation id="490031510406860025">មិនអនុញ្ញាត​នៅលើ​គេហទំព័រនេះទេ</translation>
 <translation id="4900392736118574277">ទំព័រចាប់ផ្តើមរបស់អ្នកត្រូវបានប្តូរទៅ <ph name="URL" /> ។</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - ប្រទាក់គ្នា</translation>
 <translation id="4900652253009739885">មិនអាចលុប​ឧបករណ៍ចុចតែមួយ​ដែលបានកំណត់ទៅ “ជ្រើសរើស” បានទេ។ សូមចុច​គ្រាប់ចុចណាមួយ ដើម្បី<ph name="RESPONSE" />។</translation>
@@ -7383,6 +7393,7 @@
 <translation id="7299515639584427954">ប្ដូរ​កម្មវិធី​លំនាំដើម​សម្រាប់​តំណដែលអាចប្រើបាន​ដែរទេ?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">អ្នកអាចសួរថា “Ok Google តើនេះជាបទអ្វី?” ឬ “Ok Google តើ​មាន​អ្វី​នៅលើ​អេក្រង់​របស់ខ្ញុំ?”</translation>
+<translation id="7301812050652048720">បានលុប​កូដសម្ងាត់</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{កម្មវិធី​នេះអាច​ទប់ស្កាត់ Chrome មិនឱ្យ​ដំណើរការ​ជាប្រក្រតី។}other{កម្មវិធី​ទាំងនេះអាច​ទប់ស្កាត់ Chrome មិនឱ្យ​ដំណើរការ​ជាប្រក្រតី។}}</translation>
 <translation id="7303281435234579599">អូ៎! មាន​អ្វីមួយខុសប្រក្រតី ពេលកំពុងរៀបចំមុខងារសាកល្បង។</translation>
 <translation id="7303900363563182677">ទំព័រ​នេះ​ត្រូវបាន​ទប់ស្កាត់​មិន​ឱ្យមើល​ឃើញអត្ថបទ និងរូប​ភាព​ដែល​បាន​ចម្លង​ទៅ​អង្គចងចាំទេ</translation>
@@ -7927,6 +7938,7 @@
 <translation id="7744192722284567281">បានរកឃើញនៅក្នុងការបែកធ្លាយ​ទិន្នន័យ​</translation>
 <translation id="7744649840067671761">ចុចគ្រាប់​ចុចក្ដារចុច ឬឧបករណ៍ចុចថ្មី ដើម្បីចាប់ផ្ដើម​ការកំណត់។
 ចុចគ្រាប់​ចុច ឬឧបករណ៍ចុចដែលបានកំណត់ ដើម្បីដក​ការកំណត់។</translation>
+<translation id="7745677556280361868">ដក​បណ្ដាញនេះ​ចេញ​តាមទំព័រ​ការជាវ Passpoint ឬ?</translation>
 <translation id="7746045113967198252">ធ្វើឱ្យធាតុ​នៅលើ​អេក្រង់​របស់អ្នក រួមទាំង​អក្សរ​ធំជាងមុន ឬ​តូចជាង​មុន។ អ្នកក៏អាច​រកឃើញវា​នៅពេលក្រោយ​នៅក្នុង​ការកំណត់ &gt; ឧបករណ៍ &gt; ផ្ទាំងអេក្រង់។</translation>
 <translation id="7746739418892731373">អ្នកកំពុងមើលឃើញរំលេចរូបថត និងវីដេអូពីបណ្ណាល័យ Google ​រូបថតរបស់អ្នក។ អ្នកអាចគ្រប់គ្រងអ្វីដែលបង្ហាញនៅក្នុងរំលេចរបស់អ្នកតាមរយៈ <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />។
         <ph name="BREAK" />
@@ -8140,6 +8152,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" /> អាចមើល <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">បញ្ចូលពាក្យសម្ងាត់ដែលអ្នកចង់រំលងការពិនិត្យ​អក្ខរាវិរុទ្ធ</translation>
 <translation id="7921347341284348270">អ្នកមិនអាចមើលការជូនដំណឹងលើទូរសព្ទរបស់អ្នកនៅលើគណនីដែលស្ថិតក្រោមការគ្រប់គ្រងនេះបានទេ។ សូមព្យាយាមម្ដងទៀតដោយប្រើគណនីផ្សេង។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
+<translation id="7921901223958867679">កម្មវិធីបន្ថែម​នេះ​អាចអាន និង​ផ្លាស់ប្ដូរ <ph name="HOST" /> បាន</translation>
 <translation id="7922606348470480702">កម្មវិធីបន្ថែម​ 1</translation>
 <translation id="7922935920104868876">បង្ហាញព័ត៌មានលម្អិតអំពីការទប់ស្កាត់ខូគីភាគីទីបីនៅក្នុងមុខងារឯកជន</translation>
 <translation id="7923564237306226146">ការដំឡើងកំណែ Linux បានបញ្ចប់ហើយ</translation>
@@ -9674,6 +9687,7 @@
 <translation id="930551443325541578">គ្រាប់ចុចដែលចុច​ឡើងវិញ និងសញ្ញា​សម្គាល់​សំឡេង</translation>
 <translation id="930893132043726269">កំពុងរ៉ូ​មីង</translation>
 <translation id="930991362911221750">អនុញ្ញាតឱ្យ <ph name="APP_NAME" /> មើល​ឃើញផ្ទាំងនេះ​ឬ?</translation>
+<translation id="931273044114601262">អនុញ្ញាត​នៅលើ​គេហទំព័រនេះ</translation>
 <translation id="93140074055951850">កម្មវិធី Android ត្រូវបាន​បញ្ឈប់</translation>
 <translation id="932327136139879170">ទំព័រដើម</translation>
 <translation id="932508678520956232">មិនអាចផ្តួចផ្តើមការបោះពុម្ពទេ។</translation>

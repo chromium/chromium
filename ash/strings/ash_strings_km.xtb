@@ -930,6 +930,7 @@
 <translation id="504465286040788597">កថាខណ្ឌមុន</translation>
 <translation id="5045550434625856497">ពាក្យសម្ងាត់មិនត្រឹមត្រូវ</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">អ្នកនឹង​ទទួលបាន​ការជូនដំណឹង ប្រសិនបើ​អ្នកនិយាយ នៅពេល​បិទសំឡេង។ សំឡេង​មិនចាកចេញ​ពីឧបករណ៍​របស់អ្នកឡើយ។</translation>
 <translation id="5078796286268621944">លេខសម្គាល់មិនត្រឹមត្រូវ</translation>
 <translation id="5083553833479578423">ដោះសោ​មុខងារ​ជំនួយការ​ជាច្រើនទៀត។</translation>
 <translation id="5092436659250499817">បិទ/បើក​ពន្លឺ​​ផ្នែក​ខាងក្រោយ​ក្ដារចុច</translation>
@@ -960,6 +961,7 @@
 <translation id="5207949376430453814">រំលេច​សញ្ញា​អត្ថបទ</translation>
 <translation id="5208059991603368177">បើក</translation>
 <translation id="5216991270656129561">បិទរហូតដល់ម៉ោង <ph name="TIME" /></translation>
+<translation id="5221423477036820198">ផ្ញើ ឬ​ឆ្លើយតបទៅ​សារទូរសព្ទ​របស់អ្នក​បានយ៉ាងរហ័ស​ដោយប្រើ​មណ្ឌលទូរសព្ទ។</translation>
 <translation id="5222676887888702881">ចាកចេញ</translation>
 <translation id="5229343007215035173">បិទ/បើករបាំងឯកជនភាព</translation>
 <translation id="5234764350956374838">ច្រានចោល</translation>
@@ -1818,7 +1820,6 @@
 <translation id="9089416786594320554">វិធីសាស្ត្របញ្ចូល</translation>
 <translation id="9091626656156419976">បានលុប​​អេក្រង់ <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">បិទសំឡេង​ទូរសព្ទ</translation>
-<translation id="9105450214093926548">មិនអាចចូលជា​អ្នកប្រើប្រាស់ទីពីរ​បានទេ ខណៈពេល​កម្មវិធីរុករកតាមអ៊ីនធឺណិត Lacros កំពុងដំណើរការ។ សូមប្រើកម្រងព័ត៌មាន​កម្មវិធីរុករកតាមអ៊ីនធឺណិតទីពីរ​នៅក្នុង Lacros ជំនួសវិញ ឬបិទ Lacros រួចព្យាយាម​ម្ដងទៀត។</translation>
 <translation id="9120448753905017833">យើង​បាន​បិទ WiFi ដើម្បី​ចាប់ផ្ដើមប្រើប្រាស់ហតស្ប៉ត​តាមរយៈ​ទិន្នន័យទូរសព្ទចល័ត។ អាច​មាន​ការ​គិត​ថ្លៃ​លើ​ការ​ប្រើប្រាស់ទិន្នន័យ។</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ឬ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">ត្រឡប់​សកម្មភាព​ចុង​ក្រោយវិញ</translation>

@@ -8,6 +8,7 @@
 <translation id="1104942323762546749">Chromium からパスワードをエクスポートするための許可を求められています。許可するには Windows のパスワードを入力してください。</translation>
 <translation id="113122355610423240">既定のブラウザは Chromium です</translation>
 <translation id="1131805035311359397">パスワードにデータ侵害などセキュリティに関する問題がないかどうかを確認するには、<ph name="BEGIN_LINK" />Chromium にログイン<ph name="END_LINK" />してください。</translation>
+<translation id="1153368717515616349">Chromium メニューをクリックする</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium 拡張機能が HID デバイスにアクセスしていました}=1{Chromium 拡張機能が HID デバイスにアクセスしています}other{Chromium 拡張機能が # 個の HID デバイスにアクセスしています}}</translation>
 <translation id="1185134272377778587">Chromium について</translation>
 <translation id="1203500561924088507">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはブラウザを再起動してください。</translation>
@@ -57,6 +58,7 @@
 <translation id="2384373936468275798">アカウントのログイン情報が最新でないため、Chromium OS はデータを同期できませんでした。</translation>
 <translation id="2396765026452590966">拡張機能「<ph name="EXTENSION_NAME" />」により、Chromium の起動時に表示されるページが変更されました。</translation>
 <translation id="2401032172288869980">このサイトを利用するには、Chromium でカメラとマイクの使用を許可する必要があります</translation>
+<translation id="2451727308784734061">ショートカットを使用してパスワード マネージャーにすばやくアクセスできます。ショートカットはパソコンのホーム画面やアプリ ランチャーに移動できます。</translation>
 <translation id="2478295928299953161">Chromium はまもなく終了します</translation>
 <translation id="2483889755041906834">Chromium 内</translation>
 <translation id="2485422356828889247">アンインストール</translation>
@@ -178,7 +180,6 @@
 <translation id="479167709087336770">Google 検索と同じスペルチェックが使用されます。ブラウザに入力したテキストは Google に送信されます。この動作はいつでも設定で変更できます。</translation>
 <translation id="4888717733111232871">mDNS トラフィックを許可する Chromium のインバウンド ルールです。</translation>
 <translation id="4893347770495441059">再起動して Chromium を更新(&amp;C)</translation>
-<translation id="4927674536707046009">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chromium の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。既存のタブは開いたままになります。}other{# 分間使用しなかった場合、組織は Chromium の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。既存のタブは開いたままになります。}}</translation>
 <translation id="4943838377383847465">Chromium はバックグラウンド モードです。</translation>
 <translation id="4987820182225656817">ゲスト ユーザーは、記録を残さずに Chromium を使用できます。</translation>
 <translation id="4994636714258228724">Chromium に自分を追加</translation>
@@ -248,6 +249,7 @@
 <translation id="6333502561965082103">Chromium で別の処理が行われています。しばらくしてからもう一度お試しください。</translation>
 <translation id="6334986366598267305">共有パソコンの Chromium で Google アカウントが簡単に使用できるようになりました。</translation>
 <translation id="6373523479360886564">Chromium をアンインストールしてもよろしいですか？</translation>
+<translation id="6375219077595103062">パスワード マネージャーのショートカットを追加します</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />このデータの利用方法:<ph name="END_BOLD" /> Chromium はユーザーの興味 / 関心を推定する場合があります。その後、アクセスしたサイトは、表示する広告をパーソナライズするために、Chromium にユーザーの興味 / 関心を提示するよう依頼できます。</translation>
 <translation id="6403826409255603130">Chromium は、ウェブページやアプリケーションを高速に実行できるスピードと、高い安定性を兼ね備えた非常に使いやすいウェブブラウザです。不正なソフトウェアやフィッシングに対する保護機能が組み込まれており、ウェブを安全にブラウジングできます。</translation>
 <translation id="6442900851116057561">Chromium OS を再起動してください</translation>
@@ -371,6 +373,7 @@
 <translation id="8697124171261953979">この拡張機能では、Chromium の起動時、またはアドレスバーからの検索時に表示されるページも制御されます。</translation>
 <translation id="8704119203788522458">自分好みに設定</translation>
 <translation id="8796602469536043152">このサイトを利用するには、Chromium でカメラとマイクの使用を許可する必要があります</translation>
+<translation id="8826492472752484139">[パスワード マネージャー] をクリックする</translation>
 <translation id="8833697763442816810">Chromium OS システム</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />使用されるデータ:<ph name="END_BOLD" /> 閲覧履歴（このデバイスで Chromium を使用してアクセスしたサイトの記録）。</translation>
 <translation id="8862326446509486874">権限が不十分なためシステムレベルのインストールができません。管理者権限でインストールしてください。</translation>

@@ -178,7 +178,6 @@
 <translation id="479167709087336770">这项服务会使用 Google 搜索所用的拼写检查工具。您在浏览器中输入的文字会被发送给 Google。您随时可在“设置”中更改此行为。</translation>
 <translation id="4888717733111232871">Chromium的入站规则，允许mDNS流量。</translation>
 <translation id="4893347770495441059">重新启动以更新 Chromium(&amp;C)</translation>
-<translation id="4927674536707046009">{COUNT,plural, =1{贵组织会在 Chromium 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。现有标签页仍将保持打开状态。}other{贵组织会在 Chromium 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。现有标签页仍将保持打开状态。}}</translation>
 <translation id="4943838377383847465">Chromium处于后台运行模式。</translation>
 <translation id="4987820182225656817">访客使用Chromium不会留下任何痕迹。</translation>
 <translation id="4994636714258228724">将您自己添加到Chromium</translation>

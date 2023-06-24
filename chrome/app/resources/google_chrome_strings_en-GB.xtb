@@ -376,7 +376,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8013993649590906847">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google.</translation>
 <translation id="8019103195866286235">This extension was unpublished by its developer and might be unsafe. Remove it from Chrome so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
 <translation id="80471789339884597">Thanks for installing. You must restart all your browsers before using <ph name="BUNDLE_NAME" />.</translation>
-<translation id="8057070436257749375">{COUNT,plural, =1{Your organisation deletes browsing data automatically when Chrome isn't used for one minute. This could include history, autofill and downloads. Your existing tabs will remain open.}other{Your organisation deletes browsing data automatically when Chrome isn't used for # minutes. This could include history, autofill and downloads. Your existing tabs will remain open.}}</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">About &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialising...</translation>

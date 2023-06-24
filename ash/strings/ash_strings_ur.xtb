@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">دستیاب آلات</translation>
 <translation id="1550523713251050646">مزید اختیارات کیلئے کلک کریں</translation>
 <translation id="1555130319947370107">نیلا</translation>
+<translation id="1557622599341396706">ڈیسک نام دکھائیں</translation>
 <translation id="1576511610858879060">‏آپ کا Chromebook یا بلوٹوتھ آلہ بلوٹوتھ کا پرانا ورژن استعمال کر رہا ہے۔ بہتر آڈیو کوالٹی کے لیے دوسرا ان پٹ ماخذ استعمال کریں۔</translation>
 <translation id="1576623706766186887">میگنیفائر آن ہونے پر زوم آؤٹ کریں</translation>
 <translation id="1586324912145647027">ڈیسک 1 سے 8 پر جائیں</translation>
@@ -989,6 +990,7 @@
 <translation id="5317780077021120954">محفوظ کریں</translation>
 <translation id="5319712128756744240">نئے آلے کا جوڑا بنائیں</translation>
 <translation id="5322611492012084517">آپ کا فون تلاش نہیں کیا جا سکا</translation>
+<translation id="5323994101633366939">ڈیسک نام چھپائیں</translation>
 <translation id="5327248766486351172">نام</translation>
 <translation id="5329548388331921293">منسلک ہو رہا ہے…</translation>
 <translation id="5331975486040154427">‏USB-C آلہ (بائیں طرف کا پچھلا پورٹ)</translation>
@@ -1171,6 +1173,7 @@
 <translation id="6103838137565245112">سسٹم</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> کی اسپیچ فائلز ڈاؤن لوڈ ہو گئی</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />۔ <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">رنگ کی اصلاح</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ڈاؤن لوڈ کی توثیق کریں</translation>
 <translation id="612734058257491180">‏Google اسسٹنٹ مہمان سیشن میں دستیاب نہیں ہے۔</translation>
 <translation id="6129953537138746214">اسپیس</translation>
@@ -1638,6 +1641,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />، ایپ</translation>
 <translation id="8255234195843591763">اپ ڈیٹ کرنے کے لیے ری سیٹ کریں</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
+<translation id="8262312463845990408">پلے بیک ٹوگل کریں</translation>
 <translation id="8270450402312105425">{0,plural, =1{ایک گھنٹے کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}other{# گھنٹے کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}}</translation>
 <translation id="8277261673056602147">اپنی اسکرین پر ٹیکسٹ کو نمایاں کریں</translation>
 <translation id="8284362522226889623">پچھلے ڈیسک پر سوئچ کرنے کے لیے، چار انگلیوں سے بائیں سوائپ کریں</translation>
@@ -1815,7 +1819,6 @@
 <translation id="9089416786594320554">اندراج کے طریقے</translation>
 <translation id="9091626656156419976">ڈسپلے <ph name="DISPLAY_NAME" /> کو ہٹا دیا گیا</translation>
 <translation id="9098969848082897657">فون کو خاموش کریں</translation>
-<translation id="9105450214093926548">‏Lacros براؤزر چلانے کے دوران دوسرے صارف میں سائن ان کرنا تعاون یافتہ نہیں ہے۔ براہ کرم اس کی بجائے Lacros میں دوسرا براؤزر پروفائل استعمال کریں یا Lacros کو بند کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="9120448753905017833">‏ہم نے موبائل ڈیٹا کے ذریعے ہاٹ اسپاٹ کا استعمال شروع کرنے کے لیے WiFi کو آف کر دیا ہے۔ اس سے ڈیٹا کی قیمتیں لی جا سکتی ہیں۔</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> یا <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">پچھلی کارروائی کالعدم کریں</translation>

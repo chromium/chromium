@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">Қазір емес</translation>
 <translation id="3486821258960016770">Моңғол</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> қате.</translation>
-<translation id="3501954296166022751">Google Drive файлдарыңыз офлайн қолжетімді</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, мәліметтер</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> элементті синхрондауға әзірленуде...</translation>
 <translation id="3522708245912499433">португал</translation>
@@ -890,7 +889,6 @@
 <translation id="7972920761225148017">Француз (Швейцария)</translation>
 <translation id="7973962044839454485">Пайдаланушы аты немесе құпия сөз дұрыс болмағандықтан, PPP аутентификациясы сәтсіз аяқталды</translation>
 <translation id="7980421588063892270">Ағылшын (АҚШ), Колемак пернетақтасымен</translation>
-<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> файл синхрондалып жатыр</translation>
 <translation id="8000066093800657092">Желі жоқ</translation>
 <translation id="8008366997883261463">Ит</translation>
 <translation id="8028993641010258682">Көлемі</translation>
@@ -1047,7 +1045,6 @@
 <translation id="9213073329713032541">Орнату басталды.</translation>
 <translation id="9219103736887031265">Кескіндер</translation>
 <translation id="9219908252191632183">Ай ландшафты</translation>
-<translation id="937795003075802289">1 файл синхрондалып жатыр</translation>
 <translation id="938470336146445890">Пайдаланушы сертификатын орнатыңыз.</translation>
 <translation id="939736085109172342">Жаңа қалта</translation>
 <translation id="943972244133411984">Өзгерткен:</translation>

@@ -370,7 +370,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8013993649590906847">Bir resmin işe yarar bir açıklaması yoksa, Chrome sizin için bir açıklama sağlamaya çalışır. Açıklama oluşturmak için resimler Google'a gönderilir.</translation>
 <translation id="8019103195866286235">Bu uzantı, geliştiricisi tarafından yayından kaldırıldığı için güvenli olmayabilir. Kişisel bilgileriniz de dahil olmak üzere ziyaret ettiğiniz sitelerdeki verilerinizi artık görememesi ve değiştirememesi için bu uzantıyı Chrome'dan kaldırın.</translation>
 <translation id="80471789339884597">Yüklediğiniz için teşekkür ederiz. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce tüm tarayıcılarınızı yeniden başlatmanız gerekir.</translation>
-<translation id="8057070436257749375">{COUNT,plural, =1{Chrome 1 dakika boyunca kullanılmadığında kuruluşunuz tarama verilerini otomatik olarak siler. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir. Mevcut sekmeleriniz açık kalır.}other{Chrome # dakika boyunca kullanılmadığında kuruluşunuz tarama verilerini otomatik olarak siler. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir. Mevcut sekmeleriniz açık kalır.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">&amp;Google Chrome hakkında</translation>
 <translation id="813913629614996137">İlk kullanıma hazırlanıyor...</translation>

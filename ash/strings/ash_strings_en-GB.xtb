@@ -1821,7 +1821,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9089416786594320554">Input methods</translation>
 <translation id="9091626656156419976">Removed display <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silence phone</translation>
-<translation id="9105450214093926548">Signing in a second user is not supported while the Lacros browser is running. Please use a second browser profile in Lacros instead, or close Lacros and try again.</translation>
 <translation id="9120448753905017833">We've turned off the Wi-Fi to start using hotspot through mobile data. This may incur data costs.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> or <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Undo last action</translation>

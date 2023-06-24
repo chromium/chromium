@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">አሁን አይደለም</translation>
 <translation id="3486821258960016770">ሞንጎሊያኛ</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ስህተቶች።</translation>
-<translation id="3501954296166022751">የእርስዎ Google Drive ፋይሎች ከመስመር ውጪ ይገኛሉ</translation>
 <translation id="3509680540198371098">አውታረመረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />፣ <ph name="SECURITY_STATUS" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ ዝርዝሮች</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> ንጥሎችን ለማስመር በማዘጋጀት ላይ...</translation>
 <translation id="3522708245912499433">ፖርቱጋሊኛ</translation>
@@ -891,7 +890,6 @@
 <translation id="7972920761225148017">ፈረንሳይኛ (ስዊዘርላንድ)</translation>
 <translation id="7973962044839454485">PPP ማረጋገጫ በተሳሳተ የተጠቃሚ ስም ወይም የይለፍ ቃል ምክንያት አልተሳካም</translation>
 <translation id="7980421588063892270">እንግሊዝኛ (አሜሪካ) ከኮልማክ ቁልፍ ሰሌዳ ጋር</translation>
-<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> ፋይሎችን በማስመር ላይ</translation>
 <translation id="8000066093800657092">ምንም አውታረ መረብ የለም</translation>
 <translation id="8008366997883261463">ጃክ ራሰል ቴሪየር</translation>
 <translation id="8028993641010258682">መጠን</translation>
@@ -1048,7 +1046,6 @@
 <translation id="9213073329713032541">ጭነት በተሳካ ሁኔታ ጀምሯል።</translation>
 <translation id="9219103736887031265">ምስሎች</translation>
 <translation id="9219908252191632183">ጨረቃዊ</translation>
-<translation id="937795003075802289">1 ፋይልን በማስመር ላይ</translation>
 <translation id="938470336146445890">እባክዎ የተጠቃሚ እውቅና ማረጋገጫ ይጫኑ።</translation>
 <translation id="939736085109172342">አዲስ ዓቃፊ</translation>
 <translation id="943972244133411984">የተቀየረው በ</translation>

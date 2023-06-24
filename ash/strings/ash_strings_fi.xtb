@@ -1819,7 +1819,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="9089416786594320554">Syöttötavat</translation>
 <translation id="9091626656156419976">Näyttö <ph name="DISPLAY_NAME" /> poistettu</translation>
 <translation id="9098969848082897657">Mykistä puhelin</translation>
-<translation id="9105450214093926548">Toisen käyttäjän sisäänkirjaamista ei tueta, kun Lacros-selain on käynnissä. Käytä toista selainprofiilia Lacrosissa tai sulje Lacros ja yritä uudelleen.</translation>
 <translation id="9120448753905017833">Wi-Fi-yhteys on laitettu pois päältä, jotta voit käyttää hotspotia mobiilidatan kautta. Tästä voidaan veloittaa datamaksuja.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> tai <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Kumoa edellinen toiminto</translation>

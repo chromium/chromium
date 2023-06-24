@@ -180,7 +180,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="479167709087336770">A szolgáltatás ugyanazt a helyesírás-ellenőrzést használja, mint a Google Kereső. A begépelt szöveget a böngésző elküldi a Google-nak. A beállítások között ezt bármikor módosíthatja.</translation>
 <translation id="4888717733111232871">Bejövő szabály a Chromiumhoz az mDNS forgalom engedélyezése céljából.</translation>
 <translation id="4893347770495441059">Indítsa újra a Chromium frissítéshez</translation>
-<translation id="4927674536707046009">{COUNT,plural, =1{Szervezete automatikusan törli a böngészési adatokat, ha a Chromium 1 percig nincs használatban. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések. A megnyitott lapok nyitva maradnak.}other{Szervezete automatikusan törli a böngészési adatokat, ha a Chromium # percig nincs használatban. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések. A megnyitott lapok nyitva maradnak.}}</translation>
 <translation id="4943838377383847465">A Chromium háttérmódban van.</translation>
 <translation id="4987820182225656817">A vendégek úgy használhatják a Chromiumot, hogy nem hagynak hátra semmit.</translation>
 <translation id="4994636714258228724">Adja hozzá magát a Chromiumban</translation>

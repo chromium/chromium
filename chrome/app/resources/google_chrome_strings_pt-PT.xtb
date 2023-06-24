@@ -369,7 +369,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8013993649590906847">Se uma imagem não tiver uma descrição útil, o Chrome tenta fornecer uma. Para criar as descrições, são enviadas imagens para a Google.</translation>
 <translation id="8019103195866286235">A publicação desta extensão foi anulada pelo programador e pode não ser segura. Remova-a do Chrome para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
 <translation id="80471789339884597">Agradecemos a instalação. Tem de reiniciar todos os navegadores antes de usar o <ph name="BUNDLE_NAME" />.</translation>
-<translation id="8057070436257749375">{COUNT,plural, =1{A sua organização elimina automaticamente os dados de navegação quando o Chrome não é usado durante 1 minuto. Estas informações podem incluir o histórico, o preenchimento automático e as transferências. Os separadores existentes permanecem abertos.}other{A sua organização elimina automaticamente os dados de navegação quando o Chrome não é usado durante # minutos. Estas informações podem incluir o histórico, o preenchimento automático e as transferências. Os separadores existentes permanecem abertos.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Acerca do &amp;Google Chrome</translation>
 <translation id="813913629614996137">A inicializar...</translation>

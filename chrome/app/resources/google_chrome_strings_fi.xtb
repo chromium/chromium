@@ -369,7 +369,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8013993649590906847">Jos kuvalla ei ole hyödyllistä kuvausta, Chrome yrittää luoda sellaisen. Kuvat lähetetään Googlelle kuvausten luomista varten.</translation>
 <translation id="8019103195866286235">Kehittäjä on perunut laajennuksen julkaisun, joten se voi olla vaarallinen. Poista se Chromesta, jotta se ei enää voi nähdä tai muuttaa dataasi sivustoilla, joilla vierailet, mukaan lukien henkilökohtaisia tietojasi.</translation>
 <translation id="80471789339884597">Kiitos asennuksesta. Kaikki selaimet pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
-<translation id="8057070436257749375">{COUNT,plural, =1{Organisaatiosi poistaa selausdatan automaattisesti, kun Chromea ei ole käytetty 1 minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Välilehdet pysyvät auki.}other{Organisaatiosi poistaa selausdatan automaattisesti, kun Chromea ei ole käytetty # minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Välilehdet pysyvät auki.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Tietoja &amp;Google Chromesta</translation>
 <translation id="813913629614996137">Käynnistetään…</translation>

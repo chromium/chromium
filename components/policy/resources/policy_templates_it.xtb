@@ -2568,11 +2568,6 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 
       Questo criterio può essere impostato soltanto come criterio relativo agli utenti cloud.
       </translation>
-<translation id="3247992593782842520">Questo criterio consente agli amministratori di configurare un elenco di ID estensione richiesti per la navigazione in modalità di navigazione in incognito.
-
-L'utente deve consentire esplicitamente l'esecuzione in modalità di navigazione in incognito di tutte le estensioni presenti in questo elenco, altrimenti la navigazione in questa modalità non è consentita.
-
-Se un'estensione specificata in questo criterio non viene installata, la navigazione in incognito viene bloccata.</translation>
 <translation id="3248019773260441802">Consente a una pagina di mostrare i popup durante l'unload</translation>
 <translation id="3251500716404598358">Configura le norme per passare da un browser all'altro.
 
@@ -7623,7 +7618,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se il criterio viene impostato su Falso o se non viene configurato, le informazioni non vengono segnalate.
       Se è impostato su Vero, gli eventi di rete del dispositivo verranno segnalati.</translation>
 <translation id="780629758750905699">Consenti l'aggiunta di account Family Link al dispositivo</translation>
-<translation id="7807120658089613760">Configura la videocamera, le impostazioni del browser, le impostazioni del sistema operativo, nonché le funzionalità di scansione, Web Store, canvas, Esplora e Crosh da disattivare</translation>
 <translation id="7807139251387225825">Elenco di tipi di dati che dovrebbero essere esclusi dalla sincronizzazione</translation>
 <translation id="781268256210530471">Impostazioni plug-in</translation>
 <translation id="7816326058023670173">Stesso secret per dispositivi di figli e genitori.</translation>

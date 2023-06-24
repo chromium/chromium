@@ -930,6 +930,7 @@
 <translation id="504465286040788597">Предишен абзац</translation>
 <translation id="5045550434625856497">Грешна парола</translation>
 <translation id="5062496344832867502">RAM</translation>
+<translation id="5068762093486106012">Ще получите известие, ако говорите, докато звукът е спрян. Аудиото не се изпраща извън устройството ви.</translation>
 <translation id="5078796286268621944">Неправилен ПИН</translation>
 <translation id="5083553833479578423">Отключете още функции на Асистент.</translation>
 <translation id="5092436659250499817">Включване/изключване на фоновото осветление на клавиатурата</translation>
@@ -960,6 +961,7 @@
 <translation id="5207949376430453814">Открояване на точката на вмъкване в текста</translation>
 <translation id="5208059991603368177">Вкл.</translation>
 <translation id="5216991270656129561">Изключено до <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Бързо изпращане или отговаряне на съобщенията от телефона ви посредством Phone Hub.</translation>
 <translation id="5222676887888702881">Изход</translation>
 <translation id="5229343007215035173">Включване/изключване на екрана за поверителност</translation>
 <translation id="5234764350956374838">Отхвърляне</translation>
@@ -1818,7 +1820,6 @@
 <translation id="9089416786594320554">Метод за въвеждане</translation>
 <translation id="9091626656156419976">Екранът „<ph name="DISPLAY_NAME" />“ бе премахнат</translation>
 <translation id="9098969848082897657">Заглушаване на телефона</translation>
-<translation id="9105450214093926548">Не се поддържа вход в профил на втори потребител, докато браузърът Lacros се изпълнява. Моля, използвайте втори потребителски профил в Lacros или затворете браузъра и опитайте отново.</translation>
 <translation id="9120448753905017833">Изключихме Wi-Fi, за да започнете да използвате точката за достъп чрез мобилни данни. Това може да доведе до разходи за данни.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> или <ph name="CTRL" /> <ph name="SEPARATOR1" /> <ph name="SHIFT" /> <ph name="SEPARATOR2" /> <ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Отмяна на последното действие</translation>

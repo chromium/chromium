@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">以后再说</translation>
 <translation id="3486821258960016770">蒙古语</translation>
 <translation id="3495304270784461826"><ph name="COUNT" />个错误。</translation>
-<translation id="3501954296166022751">您的 Google 云端硬盘文件已可供离线访问</translation>
 <translation id="3509680540198371098">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
 <translation id="3511705761158917664">正在准备同步 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
 <translation id="3522708245912499433">葡萄牙语</translation>
@@ -886,7 +885,6 @@
 <translation id="7972920761225148017">法语（瑞士）</translation>
 <translation id="7973962044839454485">用户名或密码不正确，导致 PPP 身份验证失败</translation>
 <translation id="7980421588063892270">英语（美国）Colemak 键盘</translation>
-<translation id="7985008041109611710">正在同步 <ph name="NUMBER_OF_FILES_SYNCING" /> 个文件</translation>
 <translation id="8000066093800657092">未连接任何网络</translation>
 <translation id="8008366997883261463">杰克罗素梗犬</translation>
 <translation id="8028993641010258682">大小</translation>
@@ -1043,7 +1041,6 @@
 <translation id="9213073329713032541">安装已成功启动。</translation>
 <translation id="9219103736887031265">图片</translation>
 <translation id="9219908252191632183">月球表面</translation>
-<translation id="937795003075802289">正在同步 1 个文件</translation>
 <translation id="938470336146445890">请安装用户证书。</translation>
 <translation id="939736085109172342">新建文件夹</translation>
 <translation id="943972244133411984">修改者</translation>

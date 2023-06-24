@@ -140,6 +140,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1550406609415860283">Dostupná zařízení</translation>
 <translation id="1550523713251050646">Kliknutím zobrazíte další možnosti</translation>
 <translation id="1555130319947370107">Modrá</translation>
+<translation id="1557622599341396706">Zobrazit název plochy</translation>
 <translation id="1576511610858879060">Váš Chromebook nebo zařízení Bluetooth používá starší verzi rozhraní Bluetooth. Pro lepší kvalitu zvuku použijte jiný zdroj vstupu.</translation>
 <translation id="1576623706766186887">Oddálit, když je zapnutá lupa</translation>
 <translation id="1586324912145647027">Přejděte na plochu 1 až 8</translation>
@@ -989,6 +990,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5319712128756744240">Spárovat nové zařízení</translation>
 <translation id="5322611492012084517">Telefon nebyl nalezen</translation>
+<translation id="5323994101633366939">Skrýt název plochy</translation>
 <translation id="5327248766486351172">Jméno</translation>
 <translation id="5329548388331921293">Připojování…</translation>
 <translation id="5331975486040154427">Zařízení USB Type-C (levý zadní port)</translation>
@@ -1171,6 +1173,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="6103838137565245112">systém</translation>
 <translation id="6114505516289286752">Byly staženy řečové soubory pro jazyk <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Korekce barev</translation>
 <translation id="6121838516699723042">Potvrzení stahování <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistent Google v relaci hosta není k dispozici.</translation>
 <translation id="6129953537138746214">Mezera</translation>
@@ -1639,6 +1642,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplikace</translation>
 <translation id="8255234195843591763">K aktualizaci zařízení resetujte</translation>
 <translation id="8261506727792406068">Smazat</translation>
+<translation id="8262312463845990408">Spustit nebo pozastavit přehrávání</translation>
 <translation id="8270450402312105425">{0,plural, =1{Do hodiny zařízení převeďte na předchozí verzi}few{Do # hodin zařízení převeďte na předchozí verzi}many{Do # hodiny zařízení převeďte na předchozí verzi}other{Do # hodin zařízení převeďte na předchozí verzi}}</translation>
 <translation id="8277261673056602147">Zvýraznit text na obrazovce</translation>
 <translation id="8284362522226889623">Na předchozí plochu přejdete přejetím čtyřmi prsty doleva</translation>
@@ -1815,7 +1819,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="9089416786594320554">Metody zadávání</translation>
 <translation id="9091626656156419976">Obrazovka <ph name="DISPLAY_NAME" /> byla odebrána</translation>
 <translation id="9098969848082897657">Ztlumit telefon</translation>
-<translation id="9105450214093926548">Když běží prohlížeč Lacros, přihlašení druhého uživatele není podporováno. Použijte druhý profil v prohlížeči Lacros nebo Lacros zavřete.</translation>
 <translation id="9120448753905017833">Vypnuli jsme Wi-Fi, aby bylo možné začít používat hotspot přes mobilní datové připojení. Může to vést k účtování poplatků za data.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> nebo <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Vrátit zpět poslední akci</translation>

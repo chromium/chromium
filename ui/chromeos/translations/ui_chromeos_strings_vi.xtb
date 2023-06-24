@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">Để sau</translation>
 <translation id="3486821258960016770">Tiếng Mông Cổ</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> lỗi.</translation>
-<translation id="3501954296166022751">Bạn có thể xem các tệp trên Google Drive khi không có mạng</translation>
 <translation id="3509680540198371098">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Thông tin chi tiết</translation>
 <translation id="3511705761158917664">Đang chuẩn bị đồng bộ hoá <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
 <translation id="3522708245912499433">Tiếng Bồ Đào Nha</translation>
@@ -891,7 +890,6 @@
 <translation id="7972920761225148017">Tiếng Pháp (Thụy Sĩ)</translation>
 <translation id="7973962044839454485">Xác thực PPP không thành công do tên người dùng hoặc mật khẩu không đúng</translation>
 <translation id="7980421588063892270">Tiếng Anh (Mỹ) bằng bàn phím Colemak</translation>
-<translation id="7985008041109611710">Đang đồng bộ hoá <ph name="NUMBER_OF_FILES_SYNCING" /> tệp</translation>
 <translation id="8000066093800657092">Không có mạng nào</translation>
 <translation id="8008366997883261463">Chó</translation>
 <translation id="8028993641010258682">Kích thước</translation>
@@ -1048,7 +1046,6 @@
 <translation id="9213073329713032541">Đã bắt đầu thành công quá trình cài đặt.</translation>
 <translation id="9219103736887031265">Hình ảnh</translation>
 <translation id="9219908252191632183">Hình lưỡi liềm</translation>
-<translation id="937795003075802289">Đang đồng bộ hoá 1 tệp</translation>
 <translation id="938470336146445890">Vui lòng cài đặt chứng chỉ người dùng.</translation>
 <translation id="939736085109172342">Thư mục mới</translation>
 <translation id="943972244133411984">Người sửa đổi:</translation>

@@ -182,7 +182,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="479167709087336770">Detta använder samma stavningskontroll som Google Sök. Text som du skriver i webbläsaren skickas till Google. Du kan när som helst ändra detta i inställningarna.</translation>
 <translation id="4888717733111232871">Regel som tillåter inkommande mDNS-trafik för Chromium.</translation>
 <translation id="4893347770495441059">Starta om för att uppdatera &amp;Chromium</translation>
-<translation id="4927674536707046009">{COUNT,plural, =1{Organisationen raderar automatiskt webbinformation när Chromium inte har använts på 1 minut. Detta kan innefatta historik, autofyll och nedladdningar. Dina befintliga flikar förblir öppna.}other{Organisationen raderar automatiskt webbinformation när Chromium inte har använts på # minuter. Detta kan innefatta historik, autofyll och nedladdningar. Dina befintliga flikar förblir öppna.}}</translation>
 <translation id="4943838377383847465">Chromium körs i bakgrundsläge.</translation>
 <translation id="4987820182225656817">Gäster kan använda Chromium utan att lämna spår efter sig.</translation>
 <translation id="4994636714258228724">Lägg till dig själv i Chromium</translation>

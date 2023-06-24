@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">後で</translation>
 <translation id="3486821258960016770">モンゴル語</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> 件のエラーがあります。</translation>
-<translation id="3501954296166022751">Google ドライブのファイルをオフラインで使用できます</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムの同期を準備しています...</translation>
 <translation id="3522708245912499433">ポルトガル語</translation>
@@ -891,7 +890,6 @@
 <translation id="7972920761225148017">フランス語（スイス）</translation>
 <translation id="7973962044839454485">ユーザー名またはパスワードが正しくないため、PPP 認証に失敗しました</translation>
 <translation id="7980421588063892270">英語（アメリカ）（Colemak）キーボード</translation>
-<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> 個のファイルを同期しています</translation>
 <translation id="8000066093800657092">ネットワーク接続なし</translation>
 <translation id="8008366997883261463">犬</translation>
 <translation id="8028993641010258682">サイズ</translation>
@@ -1048,7 +1046,6 @@
 <translation id="9213073329713032541">インストールを開始しました。</translation>
 <translation id="9219103736887031265">画像</translation>
 <translation id="9219908252191632183">月面</translation>
-<translation id="937795003075802289">1 個のファイルを同期しています</translation>
 <translation id="938470336146445890">ユーザー証明書をインストールしてください。</translation>
 <translation id="939736085109172342">新しいフォルダ</translation>
 <translation id="943972244133411984">更新者</translation>

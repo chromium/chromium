@@ -2470,11 +2470,6 @@
 
       此政策只能设为云端用户政策。
       </translation>
-<translation id="3247992593782842520">此政策让管理员能以列表形式配置无痕模式导航所必需的扩展程序 ID。
-
-用户必须明确允许此列表中的所有扩展程序在无痕模式下运行，否则系统不允许使用无痕模式进行导航。
-
-如果此政策中指定的某个扩展程序未安装，系统会阻止无痕模式导航。</translation>
 <translation id="3248019773260441802">允许页面在取消加载的过程中显示弹出式窗口</translation>
 <translation id="3251500716404598358">配置政策以在浏览器之间切换。
 
@@ -7307,7 +7302,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策设为 false 或未设置，系统不会报告这些信息。
       如果此政策设为 true，系统会报告这类设备上的网络事件。</translation>
 <translation id="780629758750905699">允许向设备添加 Family Link 帐号</translation>
-<translation id="7807120658089613760">配置要停用的摄像头、浏览器设置、操作系统设置、扫描功能、网上应用店、画布、探索和 crosh 功能</translation>
 <translation id="7807139251387225825">应从同步操作中排除的类型列表</translation>
 <translation id="781268256210530471">插件设置</translation>
 <translation id="7816326058023670173">孩子设备和家长设备共用的密钥。</translation>

@@ -140,6 +140,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1550406609415860283">Peranti tersedia</translation>
 <translation id="1550523713251050646">Klik untuk mendapatkan lagi pilihan</translation>
 <translation id="1555130319947370107">Biru</translation>
+<translation id="1557622599341396706">Tunjukkan nama meja</translation>
 <translation id="1576511610858879060">Chromebook atau peranti Bluetooth anda menggunakan versi Bluetooth yang lama. Gunakan sumber input lain untuk kualiti audio yang lebih baik.</translation>
 <translation id="1576623706766186887">Zum keluar apabila penggadang dihidupkan</translation>
 <translation id="1586324912145647027">Pergi ke meja 1 hingga 8</translation>
@@ -990,6 +991,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5319712128756744240">Gandingkan peranti baharu</translation>
 <translation id="5322611492012084517">Tidak dapat menemukan telefon anda</translation>
+<translation id="5323994101633366939">Sembunyikan nama meja</translation>
 <translation id="5327248766486351172">Nama</translation>
 <translation id="5329548388331921293">Menyambung…</translation>
 <translation id="5331975486040154427">Peranti USB-C (port belakang sebelah kiri)</translation>
@@ -1172,6 +1174,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752">Fail pertuturan <ph name="LANGUAGE" /> dimuat turun</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Pembetulan warna</translation>
 <translation id="6121838516699723042">Sahkan muat turun <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google Assistant tidak tersedia dalam sesi tetamu.</translation>
 <translation id="6129953537138746214">Ruang</translation>
@@ -1641,6 +1644,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Apl</translation>
 <translation id="8255234195843591763">Tetapkan semula untuk mengemas kini</translation>
 <translation id="8261506727792406068">Padam</translation>
+<translation id="8262312463845990408">Togol main balik</translation>
 <translation id="8270450402312105425">{0,plural, =1{Tukar peranti kepada versi sebelumnya dalam masa sejam}other{Tukar peranti kepada versi sebelumnya dalam masa # jam}}</translation>
 <translation id="8277261673056602147">Serlahkan teks pada skrin anda</translation>
 <translation id="8284362522226889623">Leret ke kiri dengan empat jari untuk beralih kepada meja sebelumnya</translation>
@@ -1818,7 +1822,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="9089416786594320554">Kaedah input</translation>
 <translation id="9091626656156419976">Paparan <ph name="DISPLAY_NAME" /> dialih keluar</translation>
 <translation id="9098969848082897657">Senyapkan telefon</translation>
-<translation id="9105450214093926548">Log masuk pengguna kedua tidak disokong semasa penyemak imbas Lacros dijalankan. Sila gunakan profil penyemak imbas kedua dalam Lacros atau tutup Lacros dan cuba lagi.</translation>
 <translation id="9120448753905017833">Kami telah mematikan Wi-Fi untuk mula menggunakan Tempat liputan melalui data Mudah alih. Proses ini mungkin dikenakan kos data.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> atau <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Buat asal tindakan terakhir</translation>

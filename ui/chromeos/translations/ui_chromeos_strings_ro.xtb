@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">Nu acum</translation>
 <translation id="3486821258960016770">Mongolă</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> erori.</translation>
-<translation id="3501954296166022751">Fișierele din Google Drive sunt disponibile offline</translation>
 <translation id="3509680540198371098">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, detalii</translation>
 <translation id="3511705761158917664">Se pregătește sincronizarea pentru <ph name="NUMBER_OF_ITEMS" /> elemente...</translation>
 <translation id="3522708245912499433">Portugheză</translation>
@@ -891,7 +890,6 @@
 <translation id="7972920761225148017">Franceză (Elveția)</translation>
 <translation id="7973962044839454485">Autentificarea PPP nu a reușit, din cauza unui nume de utilizator sau a unei parole greșite</translation>
 <translation id="7980421588063892270">Engleză (S.U.A.) cu tastatură Colemak</translation>
-<translation id="7985008041109611710">Se sincronizează <ph name="NUMBER_OF_FILES_SYNCING" /> fișiere</translation>
 <translation id="8000066093800657092">Nicio rețea</translation>
 <translation id="8008366997883261463">Terier</translation>
 <translation id="8028993641010258682">Dimensiune</translation>
@@ -1048,7 +1046,6 @@
 <translation id="9213073329713032541">Instalarea a început.</translation>
 <translation id="9219103736887031265">Imagini</translation>
 <translation id="9219908252191632183">Peisaj lunar</translation>
-<translation id="937795003075802289">Se sincronizează un fișier</translation>
 <translation id="938470336146445890">Instalează un certificat de utilizator.</translation>
 <translation id="939736085109172342">Dosar nou</translation>
 <translation id="943972244133411984">Modificat de</translation>

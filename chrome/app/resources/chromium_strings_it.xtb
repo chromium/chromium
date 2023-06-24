@@ -180,7 +180,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="479167709087336770">Viene usato lo stesso controllo ortografico utilizzato nella Ricerca Google. Il testo che digiti nel browser viene inviato a Google. Puoi modificare questo comportamento in qualsiasi momento nelle impostazioni.</translation>
 <translation id="4888717733111232871">Regola inbound per consentire il traffico mDNS in Chromium.</translation>
 <translation id="4893347770495441059">Riavvia per aggiornare &amp;Chromium</translation>
-<translation id="4927674536707046009">{COUNT,plural, =1{La tua organizzazione elimina automaticamente i dati di navigazione quando Chromium non viene utilizzato per 1 minuto. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede esistenti rimarranno aperte.}other{La tua organizzazione elimina automaticamente i dati di navigazione quando Chromium non viene utilizzato per # minuti. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede esistenti rimarranno aperte.}}</translation>
 <translation id="4943838377383847465">Chromium è in modalità background.</translation>
 <translation id="4987820182225656817">Gli ospiti possono utilizzare Chromium senza lasciare tracce.</translation>
 <translation id="4994636714258228724">Aggiungiti a Chromium</translation>

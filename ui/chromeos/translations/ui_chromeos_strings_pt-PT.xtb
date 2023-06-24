@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">Agora não</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> erros.</translation>
-<translation id="3501954296166022751">Os seus ficheiros do Google Drive estão disponíveis offline</translation>
 <translation id="3509680540198371098">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
 <translation id="3511705761158917664">A preparar a sincronização de <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="3522708245912499433">Português</translation>
@@ -891,7 +890,6 @@
 <translation id="7972920761225148017">Francês (Suíça)</translation>
 <translation id="7973962044839454485">Falha na autenticação PPP devido a um nome de utilizador ou palavra-passe incorretos</translation>
 <translation id="7980421588063892270">Inglês (EUA) com teclado Colemak</translation>
-<translation id="7985008041109611710">A sincronizar <ph name="NUMBER_OF_FILES_SYNCING" /> ficheiros</translation>
 <translation id="8000066093800657092">Sem rede</translation>
 <translation id="8008366997883261463">Jack Russell Terrier</translation>
 <translation id="8028993641010258682">Tamanho</translation>
@@ -1048,7 +1046,6 @@
 <translation id="9213073329713032541">A instalação foi iniciada com êxito.</translation>
 <translation id="9219103736887031265">Imagens</translation>
 <translation id="9219908252191632183">Paisagem lunar</translation>
-<translation id="937795003075802289">A sincronizar 1 ficheiro</translation>
 <translation id="938470336146445890">Instale um certificado de utilizador.</translation>
 <translation id="939736085109172342">Nova pasta</translation>
 <translation id="943972244133411984">Modificado por</translation>

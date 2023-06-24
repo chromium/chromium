@@ -929,6 +929,7 @@
 <translation id="504465286040788597">Նախորդ պարբերությունը</translation>
 <translation id="5045550434625856497">Գաղտնաբառը սխալ է</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">Դուք ծանուցում կստանաք, եթե խոսեք ձայնն անջատված ժամանակ։ Ձայնը մնում է ձեր սարքում։</translation>
 <translation id="5078796286268621944">Սխալ PIN կոդ</translation>
 <translation id="5083553833479578423">Օգտվեք Օգնականի այլ գործառույթներից</translation>
 <translation id="5092436659250499817">Միացնել/անջատել ստեղնաշարի հետնալույսը</translation>
@@ -959,6 +960,7 @@
 <translation id="5207949376430453814">Ընդգծել տեքստի նշորդը</translation>
 <translation id="5208059991603368177">Միացված է</translation>
 <translation id="5216991270656129561">Անջատված կլինի մինչև <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Արագ ուղարկեք հաղորդագրություններ կամ պատասխանեք դրանց Հեռախոսի կառավարման կենտրոնի միջոցով։</translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>
 <translation id="5229343007215035173">Միացնել/անջատել գաղտնիության էկրանը</translation>
 <translation id="5234764350956374838">Փակել</translation>
@@ -1816,7 +1818,6 @@
 <translation id="9089416786594320554">Ներածման եղանակներ</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> էկրանը հեռացվեց</translation>
 <translation id="9098969848082897657">Անջատել հեռախոսի ձայնը</translation>
-<translation id="9105450214093926548">Մի քանի հաշիվների մուտքը չի աջակցվում, երբ գործարկված է Lacros դիտարկիչը։ Օգտագործեք դիտարկիչի երկրորդ պրոֆիլ Lacros-ում կամ փակեք Lacros-ը և նորից փորձեք։</translation>
 <translation id="9120448753905017833">Մենք անջատել ենք Wi-Fi-ը, որպեսզի սկսենք օգտագործել թեժ գիծը բջջային ինտերնետի միջոցով։ Թրաֆիկի համար կարող է գումար գանձվել։</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> կամ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Հետարկել վերջին գործողությունը</translation>

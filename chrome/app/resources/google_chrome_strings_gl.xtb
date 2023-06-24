@@ -376,7 +376,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8013993649590906847">Se unha imaxe non ten unha descrición útil, Chrome tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google.</translation>
 <translation id="8019103195866286235">O programador anulou a publicación desta extensión, polo que poida que non sexa segura. Quítaa de Chrome para que deixe de ver e cambiar os teus datos nos sitios que visites, como a túa información persoal.</translation>
 <translation id="80471789339884597">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar todos os teus navegadores.</translation>
-<translation id="8057070436257749375">{COUNT,plural, =1{A túa organización eliminará os datos de navegación automaticamente cando Chrome leve 1 minuto sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas seguirán abertas.}other{A túa organización eliminará os datos de navegación automaticamente cando Chrome leve # minutos sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas seguirán abertas.}}</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">Acerca de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Iniciando...</translation>

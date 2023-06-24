@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">ယခု မလို</translation>
 <translation id="3486821258960016770">မွန်ဂိုလီးယား</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> အမှားများ။</translation>
-<translation id="3501954296166022751">သင့် Google Drive ဖိုင်များကို အော့ဖ်လိုင်း သုံးနိုင်သည်</translation>
 <translation id="3509680540198371098">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်များ</translation>
 <translation id="3511705761158917664">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ဖိုင်ကို စင့်ခ်လုပ်ရန် ပြင်ဆင်နေသည်...</translation>
 <translation id="3522708245912499433">ပေါ်တူဂီ</translation>
@@ -890,7 +889,6 @@
 <translation id="7972920761225148017">ပြင်သစ် (ဆွစ်ဇာလန်)</translation>
 <translation id="7973962044839454485">PPP အထောက်အထား စိစစ်မှုမှာ မမှန်သည့် အသုံးပြုသူအမည် သို့မဟုတ် စကားဝှက်ကြောင့် မအောင်မြင်ခဲ့</translation>
 <translation id="7980421588063892270">Colemak ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
-<translation id="7985008041109611710">ဖိုင် <ph name="NUMBER_OF_FILES_SYNCING" /> ဖိုင် စင့်ခ်လုပ်နေသည်</translation>
 <translation id="8000066093800657092">ကွန်ရက် မရှိပါ</translation>
 <translation id="8008366997883261463">ဂျက် ရစဲလ် တယ်ရီယာ</translation>
 <translation id="8028993641010258682">ဆိုက်</translation>
@@ -1047,7 +1045,6 @@
 <translation id="9213073329713032541">စတင်ထည့်သွင်းနေပါပြီ။</translation>
 <translation id="9219103736887031265">ပုံများ</translation>
 <translation id="9219908252191632183">လ</translation>
-<translation id="937795003075802289">ဖိုင် ၁ ဖိုင် စင့်ခ်လုပ်နေသည်</translation>
 <translation id="938470336146445890">​​ကျေးဇူးပြုပြီး အသုံးပြုသူ လက်မှတ်ကို တပ်ဆင်ပါ။</translation>
 <translation id="939736085109172342">ဖိုင်တွဲအသစ်</translation>
 <translation id="943972244133411984">ပြုပြင်ထားသူ</translation>

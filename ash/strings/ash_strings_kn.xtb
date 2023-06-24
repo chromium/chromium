@@ -1278,6 +1278,7 @@
 <translation id="6597278316891651699">ಕ್ಯಾಮರಾವನ್ನು ಕೆಳಗಿನ ಎಡ ಮೂಲೆಯಲ್ಲಿ ಸ್ನ್ಯಾಪ್ ಮಾಡಲಾಗಿದೆ. ಸಿಸ್ಟಮ್ ಮೇಲ್ಮೈ ಜೊತೆಗೆ ಸಂಘರ್ಷ.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ</translation>
 <translation id="6612802754306526077">ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಮೋಡ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
+<translation id="6613765291890844037">ಒಟ್ಟು <ph name="STORAGE_TOTAL_SIZE" /> ಸಂಗ್ರಹಣೆಯಲ್ಲಿ | <ph name="STORAGE_IN_USE_SIZE" /> ಬಳಕೆಯಲ್ಲಿದೆ</translation>
 <translation id="6614169507485700968">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="6625718907317144388">ವೀಕ್ಷಣೆ ರಕ್ಷಣೆ ಆನ್ ಆಗಿರುವ ಕಾರಣದಿಂದಾಗಿ <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ಮತ್ತು ಇತರೆ ಅಧಿಸೂಚನೆಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6627638273713273709">ಹುಡುಕಾಟ+Shift+K</translation>
@@ -1820,7 +1821,6 @@
 <translation id="9089416786594320554">ಇನ್‌ಪುಟ್ ವಿಧಾನಗಳು</translation>
 <translation id="9091626656156419976">ಡಿಸ್‌ಪ್ಲೇ <ph name="DISPLAY_NAME" /> ಅನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="9098969848082897657">ಫೋನ್ ನಿಶ್ಯಬ್ದಗೊಳಿಸಿ</translation>
-<translation id="9105450214093926548">Lacros ಬ್ರೌಸರ್ ರನ್ ಆಗುವಾಗ, ಇನ್ನೊಬ್ಬ ಬಳಕೆದಾರರು ಸೈನ್ ಇನ್ ಆಗುವುದನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಬದಲಾಗಿ Lacros ನಲ್ಲಿ ಇನ್ನೊಂದು ಬ್ರೌಸರ್ ಪ್ರೊಫೈಲ್ ಬಳಸಿ ಅಥವಾ Lacros ಅನ್ನು ಮುಚ್ಚಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="9120448753905017833">ಮೊಬೈಲ್ ಡೇಟಾ ಮೂಲಕ ಹಾಟ್‌ಸ್ಪಾಟ್ ಬಳಸುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು ನಾವು Wi-Fi ಅನ್ನು ಆಫ್ ಮಾಡಿದ್ದೇವೆ. ಇದರಿಂದ ಡೇಟಾ ವೆಚ್ಚವನ್ನು ತೆರಬೇಕಾಗಬಹುದು.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ಅಥವಾ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">ಹಿಂದಿನ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>

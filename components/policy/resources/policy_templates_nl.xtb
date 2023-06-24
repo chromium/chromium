@@ -2557,11 +2557,6 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
 
       Dit beleid kan alleen worden ingesteld als cloudgebruikersbeleid.
       </translation>
-<translation id="3247992593782842520">Met dit beleid kunnen beheerders een lijst met extensie-ID's instellen die zijn vereist voor navigatie in de incognitomodus.
-
-De gebruiker moet expliciet toestaan dat alle extensies in deze lijst worden uitgevoerd in de incognitomodus, anders is navigatie in de incognitomodus niet toegestaan.
-
-Als een in dit beleid opgegeven extensie niet is geïnstalleerd, wordt incognitonavigatie geblokkeerd.</translation>
 <translation id="3248019773260441802">Hiermee wordt toegestaan dat een pagina pop-ups toont tijdens het unloaden</translation>
 <translation id="3251500716404598358">Configureer de beleidsregels om te schakelen tussen browsers.
 
@@ -7521,7 +7516,6 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
       Als je het beleid instelt op False of niet instelt, worden de gegevens niet gerapporteerd.
       Als je het beleid instelt op True, worden de netwerkgebeurtenissen van het apparaat gerapporteerd.</translation>
 <translation id="780629758750905699">Toevoegen van Family Link-accounts aan het apparaat toestaan</translation>
-<translation id="7807120658089613760">Instellen welke functies voor de camera, browserinstellingen, OS-instellingen, scannen, Web Store, canvas, Ontdekken en crosh moeten worden uitgezet</translation>
 <translation id="7807139251387225825">Lijst met typen die moeten worden uitgesloten van synchronisatie</translation>
 <translation id="781268256210530471">Instellingen voor plug-ins</translation>
 <translation id="7816326058023670173">Geheim gedeeld tussen het apparaat van het kind en het apparaat van de ouder.</translation>

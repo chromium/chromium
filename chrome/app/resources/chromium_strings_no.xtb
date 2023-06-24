@@ -180,7 +180,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="479167709087336770">Denne funksjonen bruker den samme stavekontrollen som Google Søk. Tekst du skriver inn i nettleseren, sendes til Google. Du kan når som helst endre dette i innstillingene.</translation>
 <translation id="4888717733111232871">Regel om innkommende trafikk for Chromium for å tillate mDNS-trafikk.</translation>
 <translation id="4893347770495441059">Start på nytt for å oppdatere &amp;Chromium</translation>
-<translation id="4927674536707046009">{COUNT,plural, =1{Organisasjonen din sletter nettlesingsdata automatisk når Chromium ikke har vært i bruk på ett minutt. Dette kan omfatte loggen, autofyll og nedlastinger. De eksisterende fanene dine forblir åpne.}other{Organisasjonen din sletter nettlesingsdata automatisk når Chromium ikke har vært i bruk på # minutter. Dette kan omfatte loggen, autofyll og nedlastinger. De eksisterende fanene dine forblir åpne.}}</translation>
 <translation id="4943838377383847465">Chromium er i bakgrunnsmodus.</translation>
 <translation id="4987820182225656817">Gjester kan bruke Chromium uten å etterlate seg spor.</translation>
 <translation id="4994636714258228724">Legg til deg selv i Chromium</translation>

@@ -372,7 +372,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8013993649590906847">Kui pildil puudub kasulik kirjeldus, üritab Chrome selle ise luua. Kirjelduste loomiseks saadetakse pildid Google'ile.</translation>
 <translation id="8019103195866286235">Arendaja tühistas selle laienduse avaldamise ja see võib olla ebaturvaline. Eemaldage see Chrome'ist, et see ei saaks enam näha ja muuta teie andmeid saitidel, mida külastate, sealhulgas teie isiklikku teavet.</translation>
 <translation id="80471789339884597">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate taaskäivitama kõik brauserid.</translation>
-<translation id="8057070436257749375">{COUNT,plural, =1{Teie organisatsioon kustutab sirvimisandmed automaatselt, kui Chrome'i ei kasutata 1 minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Olemasolevaid vahelehti ei suleta.}other{Teie organisatsioon kustutab sirvimisandmed automaatselt, kui Chrome'i ei kasutata # minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Olemasolevaid vahelehti ei suleta.}}</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">Teave &amp;Google Chrome'i kohta</translation>
 <translation id="813913629614996137">Lähtestamine …</translation>

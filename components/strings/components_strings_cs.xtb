@@ -430,6 +430,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1870473978371099486">Soukromé vyučování</translation>
 <translation id="1871208020102129563">Proxy je nastaveno na používání pevně daných serverů proxy, nikoliv adresy URL skriptu PAC.</translation>
 <translation id="1871284979644508959">Povinné pole</translation>
+<translation id="1871739799120352748">Cena je vysoká</translation>
 <translation id="1873899211667975540">Rocková hudba</translation>
 <translation id="1874224422119691492">V <ph name="SETTINGS" /> můžete změnit, zda k vyplňování hesel chcete používat zámek obrazovky</translation>
 <translation id="1875025161375567525">Foto přihrádka</translation>
@@ -474,6 +475,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">Stránka <ph name="URL" /> chce trvale ukládat data v místním počítači</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{a 1 další}few{a # další}many{a # další}other{a # dalších}}</translation>
+<translation id="2001469757375372617">Něco se pokazilo. Změna nebyla uložena.</translation>
 <translation id="2003709556000175978">Resetujte heslo</translation>
 <translation id="2003775180883135320">Čtyři otvory nahoře</translation>
 <translation id="2009942480257059311">Tlačítko Vytvořit událost, aktivací rychle vytvoříte novou událost v Kalendáři Google</translation>
@@ -533,6 +535,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2118132148597630479">Obálka C5</translation>
 <translation id="2119505898009119320">Vydáno organizaci <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Děrování vpravo dole</translation>
+<translation id="2122214041802369259">Cena je vysoká</translation>
 <translation id="2122719317867821810">Zásada funguje podle očekávání, ale jinde je nastavena konfliktní hodnota, kterou tato zásada přepisuje.</translation>
 <translation id="2126374524350484896">Původ souboru PDF:</translation>
 <translation id="2130448033692577677">Zadané šablony nelze použít, protože není nastavená zásada DnsOverHttpsMode.</translation>
@@ -921,6 +924,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3054512251683174387">Témata, která jsou starší než 4 týdny, Chrome automaticky maže. S dalším procházením se téma v seznamu může opět objevit. Můžete také zablokovat témata, která Chrome s weby nemá sdílet. Přečtěte si další informace o správě ochrany soukromí v reklamách v Chromu</translation>
 <translation id="3061707000357573562">Služba oprav</translation>
 <translation id="306573536155379004">Hra byla spuštěna.</translation>
+<translation id="3067505415088964188">Cena je nízká</translation>
 <translation id="3068991664510324412">Počítačové hry a videohry</translation>
 <translation id="3080254622891793721">Obrázek</translation>
 <translation id="3081538120861307764">Aby bylo možné měřit výkon reklam, sdílí se mezi weby určité typy dat, například denní doba, kdy se vám reklama zobrazila.</translation>
@@ -2226,6 +2230,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5967592137238574583">Úprava kontaktních údajů</translation>
 <translation id="5967867314010545767">Odstranit z historie</translation>
 <translation id="5968022600320704045">Žádné výsledky hledání</translation>
+<translation id="5969199813874624822">Uložit a sledovat cenu</translation>
 <translation id="5974052231147553524">Šestá role</translation>
 <translation id="5975083100439434680">Oddálit</translation>
 <translation id="5979084224081478209">Zkontrolovat hesla</translation>
@@ -3663,6 +3668,7 @@ Další podrobnosti:
 <translation id="9141013498910525015">Spravovat adresy</translation>
 <translation id="9144951720726881238">Datum vypršení platnosti:</translation>
 <translation id="9148507642005240123">&amp;Vrátit úpravy zpět</translation>
+<translation id="9148599396704355100">Cena je nízká</translation>
 <translation id="9150045010208374699">Používat fotoaparát</translation>
 <translation id="9150685862434908345">Administrátor může nastavení prohlížeče vzdáleně změnit. Aktivita na tomto zařízení může být spravována také mimo Chrome. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Aktualizováno</translation>

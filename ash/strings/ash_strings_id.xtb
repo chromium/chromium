@@ -930,6 +930,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="504465286040788597">Paragraf sebelumnya</translation>
 <translation id="5045550434625856497">Sandi salah</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">Anda akan mendapatkan notifikasi jika berbicara saat mikrofon dibisukan. Audio tidak pernah dikirim keluar perangkat.</translation>
 <translation id="5078796286268621944">PIN salah</translation>
 <translation id="5083553833479578423">Dapatkan lebih banyak fitur Asisten.</translation>
 <translation id="5092436659250499817">Aktifkan/nonaktifkan lampu latar keyboard</translation>
@@ -960,6 +961,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5207949376430453814">Sorot tempat penyisipan teks</translation>
 <translation id="5208059991603368177">Aktif</translation>
 <translation id="5216991270656129561">Nonaktif sampai <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Kirim atau balas pesan ponsel dengan cepat menggunakan Phone Hub.</translation>
 <translation id="5222676887888702881">Logout</translation>
 <translation id="5229343007215035173">Aktifkan/nonaktifkan layar privasi</translation>
 <translation id="5234764350956374838">Tutup</translation>
@@ -1818,7 +1820,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="9089416786594320554">Metode masukan</translation>
 <translation id="9091626656156419976">Tampilan <ph name="DISPLAY_NAME" /> dihapus</translation>
 <translation id="9098969848082897657">Senyapkan suara ponsel</translation>
-<translation id="9105450214093926548">Login pengguna kedua tidak didukung saat browser Lacros sedang berjalan. Gunakan profil browser kedua di Lacros atau tutup Lacros lalu coba lagi.</translation>
 <translation id="9120448753905017833">Kami telah menonaktifkan Wi-Fi untuk mulai menggunakan Hotspot melalui Data seluler. Anda mungkin akan dikenai biaya data.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> atau <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Urungkan tindakan terakhir</translation>

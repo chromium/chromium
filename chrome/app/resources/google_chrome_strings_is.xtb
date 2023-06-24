@@ -376,7 +376,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8013993649590906847">Ef gagnlega lýsingu vantar við mynd reynir Chrome að útvega þér lýsingu. Til að búa til lýsingar eru myndir sendar til Google.</translation>
 <translation id="8019103195866286235">Útgefandi þessarar viðbótar afturkallaði hana og hún kann að vera óörugg. Fjarlægðu hana úr Chrome svo hún geti ekki lengur séð og breytt gögnunum þínum á vefsvæðum sem þú heimsækir, þ.m.t. persónuupplýsingunum þínum.</translation>
 <translation id="80471789339884597">Takk fyrir að setja upp. Þú þarft að endurræsa alla vafra áður en þú getur notað <ph name="BUNDLE_NAME" />.</translation>
-<translation id="8057070436257749375">{COUNT,plural, =1{Fyrirtækið eyðir vefskoðunargögnum sjálfkrafa þegar Chrome er ekki notað í 1 mínútu. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Fyrirliggjandi flipar verða áfram opnir.}one{Fyrirtækið eyðir vefskoðunargögnum sjálfkrafa þegar Chrome er ekki notað í # mínútu. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Fyrirliggjandi flipar verða áfram opnir.}other{Fyrirtækið eyðir vefskoðunargögnum sjálfkrafa þegar Chrome er ekki notað í # mínútur. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Fyrirliggjandi flipar verða áfram opnir.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Um &amp;Google Chrome</translation>
 <translation id="813913629614996137">Frumstillir...</translation>

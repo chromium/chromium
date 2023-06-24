@@ -368,7 +368,6 @@
 <translation id="8013993649590906847">如果图片缺少有用的说明，则 Chrome 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。</translation>
 <translation id="8019103195866286235">此扩展程序已被其开发者取消发布，可能不安全。请将其从 Chrome 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括您的个人信息。</translation>
 <translation id="80471789339884597">感谢您完成安装。您必须重启所有浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
-<translation id="8057070436257749375">{COUNT,plural, =1{贵组织会在 Chrome 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。现有标签页仍将保持打开状态。}other{贵组织会在 Chrome 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。现有标签页仍将保持打开状态。}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">关于 Google Chrome(&amp;G)</translation>
 <translation id="813913629614996137">正在初始化…</translation>

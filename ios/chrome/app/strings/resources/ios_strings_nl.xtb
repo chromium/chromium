@@ -91,6 +91,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="1492417797159476138">Je hebt deze gebruikersnaam al opgeslagen voor deze site</translation>
 <translation id="1497590942294823549">Menu → Wachtwoordmanager</translation>
 <translation id="1498283581832036924">Je account voor <ph name="WEBSITE" /> wordt niet verwijderd.</translation>
+<translation id="1501820324067650154">Tik voor route-opties op Route</translation>
 <translation id="1506063256525392513">Zo kun je foto's maken en uploaden, maar ook QR-codes scannen</translation>
 <translation id="1509486075633541495">Inloggen op website</translation>
 <translation id="1509960214886564027">Functies op veel sites werken mogelijk niet meer</translation>
@@ -179,6 +180,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="2073572773299281212"><ph name="DAYS" /> dagen geleden actief</translation>
 <translation id="2074131957428911366">Je kunt altijd in de <ph name="BEGIN_LINK" />instellingen<ph name="END_LINK" /> bepalen wat je wilt synchroniseren.</translation>
 <translation id="2079545284768500474">Ongedaan maken</translation>
+<translation id="2080409463824088391">Openen in app…</translation>
 <translation id="2080769225927880590">Log in met een geldig account</translation>
 <translation id="2103075008456228677">history.google.com openen</translation>
 <translation id="21133533946938348">Tabblad vastzetten</translation>
@@ -318,6 +320,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="2931440415625410757">Instructies tonen</translation>
 <translation id="2932085390869194046">Wachtwoord voorstellen…</translation>
 <translation id="2932765531295814441">Wachtwoorden handmatig toevoegen</translation>
+<translation id="2952246431280799028">Houd je vinger op een adres.</translation>
 <translation id="2952278131021475699">Zoeken met Lens-camera</translation>
 <translation id="2952581218264071393">1. Open de Chrome-instellingen</translation>
 <translation id="2956733177489514605">Log in met je Google-account om onder andere je wachtwoorden te synchroniseren.</translation>
@@ -1272,6 +1275,7 @@ Je gegevens zijn op <ph name="TIME" /> versleuteld met je wachtwoordzin. Geef de
 <translation id="891282356902782456">Dit wachtwoord wordt alleen opgeslagen op dit apparaat. Als je het wachtwoord wilt gebruiken op je andere apparaten, sla je het op in je Google-account, <ph name="EMAIL" />.</translation>
 <translation id="891658175948553296">Markeer tekst op een site</translation>
 <translation id="8917490105272468696">Ja, aanzetten</translation>
+<translation id="8926984231484284953">Gebruik adressen op webpagina's om lokale informatie en routes te krijgen.</translation>
 <translation id="8928133177108699615">Desktop</translation>
 <translation id="8934982071228289624">Als je dit wachtwoord wilt opslaan in je account, moet je eerst een toegangscode instellen op je apparaat.</translation>
 <translation id="8940809892068499052">Incognitotabbladen van andere apps openen</translation>

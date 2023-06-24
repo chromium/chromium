@@ -61,6 +61,7 @@
 <translation id="1283039547216852943">विस्तृत करण्यासाठी टॅप करा</translation>
 <translation id="1289059016768036948">तुम्हाला तुमच्या Google खाते मध्ये साइन इन करण्यास सांगितले जाईल</translation>
 <translation id="1291207594882862231">इतिहास, कुकी, साइट डेटा, कॅशे  साफ करा…</translation>
+<translation id="1293898515599432175">Google Password Manager मधून Chrome <ph name="CHROME_CHANNEL" /> साठी तुमचे पासवर्ड हटवले जातील. तुम्ही आताच डाउनलोड केलेली पासवर्डची फाइल तुमच्याजवळ ठेवाल.</translation>
 <translation id="129553762522093515">अलीकडे बंद केलेले</translation>
 <translation id="1298077576058087471">कमाल ६०% डेटाची बचत करा, आजच्या बातम्या वाचा</translation>
 <translation id="1303339473099049190">तो पासवर्ड सापडत नाही. तुमचे शब्दलेखन तपासा आणि पुन्हा प्रयत्न करा.</translation>
@@ -510,6 +511,7 @@
 <translation id="3795154175078851242">लिंकसह इमेज कॉपी करा</translation>
 <translation id="3810838688059735925">व्हिडिओ</translation>
 <translation id="3810973564298564668">व्यवस्थापित करा</translation>
+<translation id="381861209280417772">पासवर्ड हटवा</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड हटविले</translation>
 <translation id="3819183753496523827">तुम्ही ऑफलाइन आहात. तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="3830886834687455630">तुमचे पासवर्ड तपासण्यासाठी Google Play सेवा अपडेट करा</translation>
@@ -594,6 +596,7 @@
 <translation id="4249955472157341256">नवीनतम यानुसार क्रमाने लावा</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4256782883801055595">मुक्त स्रोत परवाने</translation>
+<translation id="4257230861809842349">Google Password Manager मधून पासवर्ड हटवायचे आहेत का?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />कोणता डेटा वापरला जातो:<ph name="END_BOLD" /> तुमचा ब्राउझिंग इतिहास, या डिव्हाइसवर तुम्ही Chrome वापरून भेट दिलेल्या साइटची नोंद.</translation>
 <translation id="4269820728363426813">लिंकचा पत्ता कॉपी करा</translation>
 <translation id="4283102315569707115">बाय डीफॉल्ट डेस्कटॉप साइटची विनंती करायची आहे का?</translation>

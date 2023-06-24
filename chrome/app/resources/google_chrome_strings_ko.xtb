@@ -377,7 +377,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8013993649590906847">이미지에 유용한 설명이 없으면 Chrome에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다.</translation>
 <translation id="8019103195866286235">이 확장 프로그램은 개발자가 게시 취소했으며, 안전하지 않을 수 있습니다. 더 이상 개인 정보를 비롯한 방문 사이트의 데이터를 확인하고 변경할 수 없도록 Chrome에서 이 확장 프로그램을 삭제하세요.</translation>
 <translation id="80471789339884597">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 모든 브라우저를 다시 시작해야 합니다.</translation>
-<translation id="8057070436257749375">{COUNT,plural, =1{Chrome을 1분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 기존 탭은 계속 열려 있습니다.}other{Chrome을 #분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 기존 탭은 계속 열려 있습니다.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Chrome 정보(&amp;G)</translation>
 <translation id="813913629614996137">초기화 중...</translation>

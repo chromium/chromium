@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">Hozir emas</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ta xatolik.</translation>
-<translation id="3501954296166022751">Google Drive fayllarini oflayn ochish mumkin</translation>
 <translation id="3509680540198371098">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Himoya: <ph name="SECURITY_STATUS" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Batafsil</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> ta element sinxronlashga tayyorlanmoqda...</translation>
 <translation id="3522708245912499433">Portugal tili</translation>
@@ -564,6 +563,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5422221874247253874">Internetga ulanish nuqtasi</translation>
 <translation id="5428105026674456456">Ispancha</translation>
 <translation id="5438282218546237410">Bu soʻrov bilan hech narsa topilmadi: <ph name="SEARCH_TERM" /></translation>
+<translation id="5447680084201416734">Xotiradagi joy yetarli emas.</translation>
 <translation id="5449551289610225147">Parol noto‘g‘ri</translation>
 <translation id="5459064203055649751">“<ph name="FILENAME" />” nomli fayl allaqachon mavjud. Uni oʻzingiz koʻchirayotgan fayl bilan almashtirmoqchimisiz?</translation>
 <translation id="5463231940765244860">Enter</translation>
@@ -691,6 +691,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6423031066725912715">Vyetnam (TCVN klaviaturasi)</translation>
 <translation id="6430271654280079150">Sizda 1 ta urinish qoldi.</translation>
 <translation id="643243556292470964">Oʻchirilgan fayllar chiqitdonga koʻchirildi</translation>
+<translation id="6438480100790416671">Xotiradagi joy tekshirilmoqda…</translation>
 <translation id="6485131920355264772">Bo‘shliq ma’lumotini olib bo‘lmadi</translation>
 <translation id="6495925982925244349">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Himoyasi: <ph name="SECURITY_STATUS" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Administrator boshqaruvida, Batafsil</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> fayli <ph name="FOLDER_NAME" /> jildiga chiqarilmoqda</translation>
@@ -890,10 +891,10 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7972920761225148017">Fransuz (Shveytsariya)</translation>
 <translation id="7973962044839454485">PPP haqiqiyligini tekshirib bo‘lmadi: foydalanuvchi nomi yoki parol noto‘g‘ri</translation>
 <translation id="7980421588063892270">Ingliz (AQSH) va Colemak klaviaturasi</translation>
-<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> ta fayl sinxronlanmoqda</translation>
 <translation id="8000066093800657092">Tarmoq topilmadi</translation>
 <translation id="8008366997883261463">It</translation>
 <translation id="8028993641010258682">Hajm</translation>
+<translation id="8034974485549318493">Dastlabki sozlamalarda fayllarni sinxronlash uchun internetga ulanish zarur.</translation>
 <translation id="803771048473350947">Fayl</translation>
 <translation id="8038111231936746805">(standart)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> audio</translation>
@@ -1047,7 +1048,6 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="9213073329713032541">O‘rnatish muvaffaqiyatli boshlandi.</translation>
 <translation id="9219103736887031265">Rasmlar</translation>
 <translation id="9219908252191632183">Oy</translation>
-<translation id="937795003075802289">1 ta fayl sinxronlanmoqda</translation>
 <translation id="938470336146445890">Foydalanuvchi sertifikatini o‘rnating.</translation>
 <translation id="939736085109172342">Yangi jild</translation>
 <translation id="943972244133411984">Tahrirlovchi</translation>

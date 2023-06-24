@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">Ikke nå</translation>
 <translation id="3486821258960016770">Mongolsk</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> feil.</translation>
-<translation id="3501954296166022751">Google Disk-filene dine er tilgjengelige uten nett</translation>
 <translation id="3509680540198371098">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – detaljer</translation>
 <translation id="3511705761158917664">Forbereder synkronisering av <ph name="NUMBER_OF_ITEMS" /> elementer …</translation>
 <translation id="3522708245912499433">Portugisisk</translation>
@@ -891,7 +890,6 @@
 <translation id="7972920761225148017">Fransk (Sveits)</translation>
 <translation id="7973962044839454485">PPP-autentiseringen mislyktes på grunn av feil brukernavn eller passord</translation>
 <translation id="7980421588063892270">Engelsk (USA) med Colemak-tastatur</translation>
-<translation id="7985008041109611710">Synkroniserer <ph name="NUMBER_OF_FILES_SYNCING" /> filer</translation>
 <translation id="8000066093800657092">Ingen nettverk</translation>
 <translation id="8008366997883261463">Jack Russell-terrier</translation>
 <translation id="8028993641010258682">Størrelse</translation>
@@ -1048,7 +1046,6 @@
 <translation id="9213073329713032541">Installeringen er startet.</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="9219908252191632183">Månelandskap</translation>
-<translation id="937795003075802289">Synkroniserer én fil</translation>
 <translation id="938470336146445890">Installer et brukersertifikat.</translation>
 <translation id="939736085109172342">Ny mappe</translation>
 <translation id="943972244133411984">Endret av</translation>

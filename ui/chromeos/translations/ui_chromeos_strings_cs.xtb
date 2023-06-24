@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">Teď ne</translation>
 <translation id="3486821258960016770">mongolština</translation>
 <translation id="3495304270784461826">Chyby: <ph name="COUNT" />.</translation>
-<translation id="3501954296166022751">Vaše soubory na Disku Google jsou dostupné offline</translation>
 <translation id="3509680540198371098">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="3511705761158917664">Příprava na synchronizaci položek (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="3522708245912499433">portugalština</translation>
@@ -890,7 +889,6 @@
 <translation id="7972920761225148017">francouzština (Švýcarsko)</translation>
 <translation id="7973962044839454485">Ověření PPP se nezdařilo kvůli nesprávnému uživatelskému jménu nebo heslu</translation>
 <translation id="7980421588063892270">angličtina (USA) s klávesnicí Colemak</translation>
-<translation id="7985008041109611710">Synchronizace <ph name="NUMBER_OF_FILES_SYNCING" /> souborů</translation>
 <translation id="8000066093800657092">Žádná síť</translation>
 <translation id="8008366997883261463">Jack Russell teriér</translation>
 <translation id="8028993641010258682">Velikost</translation>
@@ -1047,7 +1045,6 @@
 <translation id="9213073329713032541">Instalace byla úspěšně spuštěna.</translation>
 <translation id="9219103736887031265">Obrázky</translation>
 <translation id="9219908252191632183">Měsíční krajina</translation>
-<translation id="937795003075802289">Synchronizace 1 souboru</translation>
 <translation id="938470336146445890">Nainstalujte prosím uživatelský certifikát.</translation>
 <translation id="939736085109172342">Nová složka</translation>
 <translation id="943972244133411984">Upravil(a)</translation>

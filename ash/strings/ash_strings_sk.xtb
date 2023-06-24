@@ -140,6 +140,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1550406609415860283">Dostupné zariadenia</translation>
 <translation id="1550523713251050646">Kliknutím zobrazíte ďalšie možnosti</translation>
 <translation id="1555130319947370107">Modrá</translation>
+<translation id="1557622599341396706">Zobraziť názov plochy</translation>
 <translation id="1576511610858879060">Chromebook alebo zariadenie s rozhraním Bluetooth používa staršiu verziu rozhrania Bluetooth. Ak chcete zlepšiť kvalitu zvuku, použite iný zdroj vstupu.</translation>
 <translation id="1576623706766186887">Oddialenie pri zapnutej lupe</translation>
 <translation id="1586324912145647027">Prejdite na prvú až ôsmu plochu</translation>
@@ -929,6 +930,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="504465286040788597">Predchádzajúci odsek</translation>
 <translation id="5045550434625856497">Nesprávne heslo</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">Ak budete hovoriť s vypnutým zvukom, dostanete upozornenie. Zvuk nikdy neopustí vaše zariadenie.</translation>
 <translation id="5078796286268621944">Nesprávny kód PIN</translation>
 <translation id="5083553833479578423">Odblokujte ďalšie funkcie Asistenta.</translation>
 <translation id="5092436659250499817">Zapnutie alebo vypnutie podsvietenia klávesnice</translation>
@@ -959,6 +961,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="5207949376430453814">Zvýrazniť textový kurzor</translation>
 <translation id="5208059991603368177">Zapnutý</translation>
 <translation id="5216991270656129561">Vypnutý do <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Rýchlo posielajte správy v telefóne alebo v ňom na ne odpovedajte pomocou Telefónneho centra.</translation>
 <translation id="5222676887888702881">Odhlásiť sa</translation>
 <translation id="5229343007215035173">Zapnutie alebo vypnutie zámky na ochranu súkromia</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
@@ -987,6 +990,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5319712128756744240">Spárovanie nového zariadenia</translation>
 <translation id="5322611492012084517">Telefón sa nepodarilo nájsť</translation>
+<translation id="5323994101633366939">Skryť názov plochy</translation>
 <translation id="5327248766486351172">Názov</translation>
 <translation id="5329548388331921293">Pripája sa…</translation>
 <translation id="5331975486040154427">Zariadenie USB-C (port vľavo vzadu)</translation>
@@ -1169,6 +1173,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="6103838137565245112">systém</translation>
 <translation id="6114505516289286752">Súbory s balíkmi reči <ph name="LANGUAGE" /> boli stiahnuté</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Úprava farieb</translation>
 <translation id="6121838516699723042">Potvrďte stiahnutie súboru <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistent Google nie je k dispozícii v relácii hosťa.</translation>
 <translation id="6129953537138746214">Medzera</translation>
@@ -1637,6 +1642,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplikácia</translation>
 <translation id="8255234195843591763">Ak chcete aktualizovať, resetujte</translation>
 <translation id="8261506727792406068">Odstrániť</translation>
+<translation id="8262312463845990408">Prepnúť prehrávanie</translation>
 <translation id="8270450402312105425">{0,plural, =1{Do hodiny obnovte v zariadení predchádzajúcu verziu}few{Do # hodín obnovte v zariadení predchádzajúcu verziu}many{Do # hodiny obnovte v zariadení predchádzajúcu verziu}other{Do # hodín obnovte v zariadení predchádzajúcu verziu}}</translation>
 <translation id="8277261673056602147">Zvýrazňovať text na obrazovke</translation>
 <translation id="8284362522226889623">Na predchádzajúcu plochu prepnete potiahnutím štyrmi prstami doľava</translation>
@@ -1813,7 +1819,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="9089416786594320554">Metódy vstupu</translation>
 <translation id="9091626656156419976">Obrazovka <ph name="DISPLAY_NAME" /> bola odstránená</translation>
 <translation id="9098969848082897657">Vypnutie zvuku telefónu</translation>
-<translation id="9105450214093926548">Prihlásenie druhého používateľa nie je podporované, keď je spustený prehliadač Lacros. Použite radšej druhý profil v prehliadači Lacros alebo Lacros zavrite a skúste to znova.</translation>
 <translation id="9120448753905017833">Wi‐Fi sme vypli, aby ste mohli začať používať hotspot cez mobilné dáta. Môžu sa účtovať poplatky za dáta.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> alebo <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Vrátenie poslednej akcie</translation>

@@ -371,7 +371,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8013993649590906847">如果圖片缺少有用的說明，Chrome 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。</translation>
 <translation id="8019103195866286235">這項擴充功能已由開發人員取消發布，可能不安全。請從 Chrome 中移除這項擴充功能，使其無法再查看及變更你造訪的網站相關資料，包括你的個人資訊。</translation>
 <translation id="80471789339884597">感謝你安裝本服務。你必須重新啟動所有瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
-<translation id="8057070436257749375">{COUNT,plural, =1{根據貴機構規定，如果 Chrome 閒置 1 分鐘，系統就會自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。現有的分頁仍會維持開啟狀態。}other{根據貴機構規定，如果 Chrome 閒置 # 分鐘，系統就會自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。現有的分頁仍會維持開啟狀態。}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">關於 Google Chrome(&amp;G)</translation>
 <translation id="813913629614996137">正在初始化...</translation>

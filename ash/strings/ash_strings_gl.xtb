@@ -931,6 +931,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="504465286040788597">Anterior parágrafo</translation>
 <translation id="5045550434625856497">Contrasinal incorrecto</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">Se falas cando o micrófono estea desactivado, recibirás unha notificación. O audio non sairá do dispositivo.</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5083553833479578423">Desbloquea máis funcións do Asistente.</translation>
 <translation id="5092436659250499817">Activar ou desactivar a luz traseira do teclado</translation>
@@ -961,6 +962,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5207949376430453814">Destacar o cursor de texto</translation>
 <translation id="5208059991603368177">Activado</translation>
 <translation id="5216991270656129561">Función desactivada ata esta hora: <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Envía mensaxes e responde rapidamente no teu teléfono con O meu teléfono.</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="5229343007215035173">Activar ou desactivar a pantalla de privacidade</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
@@ -1819,7 +1821,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="9089416786594320554">Métodos de entrada</translation>
 <translation id="9091626656156419976">Quitouse a pantalla <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silenciar teléfono</translation>
-<translation id="9105450214093926548">Non se pode iniciar sesión cun segundo usuario mentres se executa o navegador Lacros. Utiliza un segundo perfil de navegador en Lacros ou ben pecha o navegador e téntao de novo.</translation>
 <translation id="9120448753905017833">Desactivamos a wifi para empezar a usar a zona wifi con datos móbiles. Pode que se apliquen custos.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /> <ph name="SEPARATOR1" /> <ph name="SHIFT" /> <ph name="SEPARATOR2" /> <ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Desfai a última acción</translation>

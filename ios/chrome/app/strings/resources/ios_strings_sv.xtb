@@ -91,6 +91,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="1492417797159476138">Du har redan sparat användarnamnet för den här webbplatsen</translation>
 <translation id="1497590942294823549">Meny → Lösenordshantering</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" />-kontot raderas inte.</translation>
+<translation id="1501820324067650154">Tryck på Hämta vägbeskrivning … för att se ruttalternativ</translation>
 <translation id="1506063256525392513">Det här gör att du kan ta och ladda upp foton samt skanna QR-koder</translation>
 <translation id="1509486075633541495">Logga in på webbplats</translation>
 <translation id="1509960214886564027">Funktioner kan sluta att fungera på många webbplatser</translation>
@@ -179,6 +180,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="2073572773299281212">Aktiv för <ph name="DAYS" /> dagar sedan</translation>
 <translation id="2074131957428911366">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Ångra</translation>
+<translation id="2080409463824088391">Öppna i appen …</translation>
 <translation id="2080769225927880590">Logga in med ett giltigt konto</translation>
 <translation id="2103075008456228677">Öppna history.google.com</translation>
 <translation id="21133533946938348">Fäst flik</translation>
@@ -318,6 +320,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2931440415625410757">Visa anvisningar</translation>
 <translation id="2932085390869194046">Föreslå lösenord …</translation>
 <translation id="2932765531295814441">Lägga till lösenord manuellt</translation>
+<translation id="2952246431280799028">Tryck länge på en adress.</translation>
 <translation id="2952278131021475699">Kamerasökning med Lens</translation>
 <translation id="2952581218264071393">1. Öppna inställningarna för Chrome</translation>
 <translation id="2956733177489514605">Logga in med Google-kontot för att synkronisera lösenord med mera.</translation>
@@ -1272,6 +1275,7 @@ Din data krypterades med lösenfrasen den <ph name="TIME" />. Ange den om du vil
 <translation id="891282356902782456">Lösenordet sparas endast på den här enheten. Om du vill använda det på dina andra enheter sparar du det i Google-kontot <ph name="EMAIL" />.</translation>
 <translation id="891658175948553296">Markera text på en webbplats</translation>
 <translation id="8917490105272468696">Ja</translation>
+<translation id="8926984231484284953">Använd adresser på webbsidor för att få lokal information och vägbeskrivningar.</translation>
 <translation id="8928133177108699615">Dator</translation>
 <translation id="8934982071228289624">Om du vill spara det här lösenordet i ditt konto måste du först ställa in ett lösenord på enheten.</translation>
 <translation id="8940809892068499052">Öppna inkognitoflikar från andra appar</translation>

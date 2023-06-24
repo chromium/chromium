@@ -926,6 +926,7 @@
 <translation id="504465286040788597">ย่อหน้าก่อนหน้า</translation>
 <translation id="5045550434625856497">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="5062496344832867502">RAM</translation>
+<translation id="5068762093486106012">คุณจะได้รับการแจ้งเตือนเมื่อพูดขณะที่ปิดเสียงอยู่ โดยระบบจะไม่ส่งเสียงของคุณออกไปที่อื่น</translation>
 <translation id="5078796286268621944">PIN ไม่ถูกต้อง</translation>
 <translation id="5083553833479578423">ใช้ฟีเจอร์จาก Assistant ได้มากขึ้น</translation>
 <translation id="5092436659250499817">เปิด/ปิดไฟแบ็กไลต์ของแป้นพิมพ์</translation>
@@ -956,6 +957,7 @@
 <translation id="5207949376430453814">ไฮไลต์เครื่องหมาย Caret ของข้อความ</translation>
 <translation id="5208059991603368177">เปิด</translation>
 <translation id="5216991270656129561">ปิดจนถึง <ph name="TIME" /></translation>
+<translation id="5221423477036820198">ส่งหรือตอบกลับข้อความในโทรศัพท์ได้อย่างรวดเร็วโดยใช้ฮับโทรศัพท์</translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>
 <translation id="5229343007215035173">เปิด/ปิดหน้าจอความเป็นส่วนตัว</translation>
 <translation id="5234764350956374838">ปิด</translation>
@@ -1815,7 +1817,6 @@
 <translation id="9089416786594320554">วิธีป้อนข้อมูล</translation>
 <translation id="9091626656156419976">นำจอแสดงผล <ph name="DISPLAY_NAME" /> ออกแล้ว</translation>
 <translation id="9098969848082897657">ปิดเสียงโทรศัพท์</translation>
-<translation id="9105450214093926548">ผู้ใช้คนที่ 2 ไม่สามารถลงชื่อเข้าใช้ขณะที่เบราว์เซอร์ Lacros ทำงานอยู่ โปรดใช้โปรไฟล์ที่ 2 ของเบราว์เซอร์ Lacros แทน หรือปิด Lacros แล้วลองอีกครั้ง</translation>
 <translation id="9120448753905017833">เราได้ปิด Wi-Fi เพื่อเริ่มใช้ฮอตสปอตผ่านอินเทอร์เน็ตมือถือ ซึ่งอาจทำให้มีค่าบริการอินเทอร์เน็ต</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> หรือ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">เลิกทำงานล่าสุด</translation>

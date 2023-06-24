@@ -2503,11 +2503,6 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
 
       Esta política solo se puede establecer como política del usuario basada en la nube.
       </translation>
-<translation id="3247992593782842520">Esta política permite que los administradores configuren una lista de IDs de extensiones necesarios para la navegación en modo Incógnito.
-
-El usuario debe permitir explícitamente que todas las extensiones de esta lista se ejecuten en modo Incógnito; de lo contrario, no se permite la navegación en Incógnito.
-
-Si no se instala una extensión especificada en esta política, se bloqueará la navegación en Incógnito.</translation>
 <translation id="3248019773260441802">Permitir que una página muestre ventanas emergentes durante su descarga</translation>
 <translation id="3251500716404598358">Permite configurar políticas para cambiar de navegador.
 
@@ -7527,7 +7522,6 @@ Si no estableces esta política, el navegador elegirá el renderizador de PDF.</
       Si estableces la política como falsa o no la estableces, no se informarán los eventos.
       Si la estableces como verdadera, se informarán los eventos de red desde el dispositivo.</translation>
 <translation id="780629758750905699">Permitir agregar cuentas de Family Link al dispositivo</translation>
-<translation id="7807120658089613760">Inhabilitar la cámara; la configuración del navegador y del SO; el escaneo; Web Store, y las funciones de Canvas, Explorar y Crosh</translation>
 <translation id="7807139251387225825">Lista de tipos que deben excluirse de la sincronización</translation>
 <translation id="781268256210530471">Configuración de los complementos</translation>
 <translation id="7816326058023670173">El secreto compartido entre el dispositivo del niño y el del padre o la madre.</translation>

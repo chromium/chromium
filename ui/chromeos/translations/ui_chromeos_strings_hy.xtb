@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">Հիմա չէ</translation>
 <translation id="3486821258960016770">մոնղոլերեն</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> սխալ:</translation>
-<translation id="3501954296166022751">Google Drive-ի ձեր ֆայլերը հասանելի են անցանց</translation>
 <translation id="3509680540198371098">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մանրամասներ</translation>
 <translation id="3511705761158917664">Պատրաստվում ենք համաժամացնել <ph name="NUMBER_OF_ITEMS" /> տարր…</translation>
 <translation id="3522708245912499433">պորտուգալերեն</translation>
@@ -890,7 +889,6 @@
 <translation id="7972920761225148017">ֆրանսերեն (Շվեյցարիա)</translation>
 <translation id="7973962044839454485">PPP իսկորոշումը չհաջողվեց: Օգտանունը կամ գաղտնաբառը սխալ են</translation>
 <translation id="7980421588063892270">անգլերեն (ԱՄՆ)՝ Colemak ստեղնաշարով</translation>
-<translation id="7985008041109611710">Համաժամացվում է <ph name="NUMBER_OF_FILES_SYNCING" /> ֆայլ…</translation>
 <translation id="8000066093800657092">Ցանց չկա</translation>
 <translation id="8008366997883261463">Շուն</translation>
 <translation id="8028993641010258682">Չափ</translation>
@@ -1047,7 +1045,6 @@
 <translation id="9213073329713032541">Տեղադրումը սկսվեց:</translation>
 <translation id="9219103736887031265">Պատկերներ</translation>
 <translation id="9219908252191632183">Լուսնային լանդշաֆտ</translation>
-<translation id="937795003075802289">Համաժամացվում է 1 ֆայլ</translation>
 <translation id="938470336146445890">Տեղադրեք օգտատիրոջ վկայագիրը:</translation>
 <translation id="939736085109172342">Նոր պանակ</translation>
 <translation id="943972244133411984">Ով է փոփոխել</translation>

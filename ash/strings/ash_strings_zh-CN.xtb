@@ -1811,7 +1811,6 @@
 <translation id="9089416786594320554">输入法</translation>
 <translation id="9091626656156419976">已移除显示器“<ph name="DISPLAY_NAME" />”</translation>
 <translation id="9098969848082897657">将手机设为静音</translation>
-<translation id="9105450214093926548">当 Lacros 浏览器正在运行时，不支持多用户登录。请在 Lacros 中改用另一浏览器配置文件，或者关闭 Lacros 并重试。</translation>
 <translation id="9120448753905017833">为了开始通过移动流量建立热点，系统已关闭 WLAN。这可能会产生移动流量费用。</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> 或 <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">撤消上一次操作</translation>

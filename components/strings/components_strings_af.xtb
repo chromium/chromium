@@ -430,6 +430,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1870473978371099486">Privaattutordienste</translation>
 <translation id="1871208020102129563">Instaanbediener is gestel om vaste instaanbedieners te gebruik, nie 'n .pac-skrip-URL nie.</translation>
 <translation id="1871284979644508959">Vereiste veld</translation>
+<translation id="1871739799120352748">Prys is hoog</translation>
 <translation id="1873899211667975540">Rockmusiek</translation>
 <translation id="1874224422119691492">Jy kan in <ph name="SETTINGS" /> verander of jy jou skermslot vir die invul van wagwoorde gebruik</translation>
 <translation id="1875025161375567525">Fotolaai</translation>
@@ -474,6 +475,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> wil groot data permanent op jou plaaslike rekenaar berg</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{en nog 1}other{en nog #}}</translation>
+<translation id="2001469757375372617">Iets het skeefgeloop. Jou verandering is nie gestoor nie.</translation>
 <translation id="2003709556000175978">Stel jou wagwoord nou terug</translation>
 <translation id="2003775180883135320">Vierpons bo</translation>
 <translation id="2009942480257059311">Knoppie om geleentheid te skep; aktiveer om vinnig ’n nuwe geleentheid in Google Kalender te skep</translation>
@@ -533,6 +535,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2118132148597630479">Koevert C5</translation>
 <translation id="2119505898009119320">Uitgereik aan: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Pons regs onder</translation>
+<translation id="2122214041802369259">Prys is hoog</translation>
 <translation id="2122719317867821810">Hierdie beleid werk soos bedoel, maar 'n teenstrydige waarde is elders gestel en word deur hierdie beleid geïgnoreer.</translation>
 <translation id="2126374524350484896">PDF-skepper:</translation>
 <translation id="2130448033692577677">Die template wat jy gespesifiseer het, kan dalk nie toegepas word die omdat die DnsOverHttpsMode-beleid nie gestel is nie.</translation>
@@ -921,6 +924,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3054512251683174387">Chrome vee onderwerpe wat ouer as 4 weke is outomaties uit. As jy verder blaai, kan ’n onderwerp weer op die lys verskyn. Of jy kan onderwerpe blokkeer wat jy nie wil hê Chrome met werwe moet deel nie. Kom meer te wete oor hoe om jou advertensieprivaatheid in Chrome te bestuur.</translation>
 <translation id="3061707000357573562">Regstellingdiens</translation>
 <translation id="306573536155379004">Speletjie het begin.</translation>
+<translation id="3067505415088964188">Prys is laag</translation>
 <translation id="3068991664510324412">Rekenaar- en videospeletjies</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3081538120861307764">Om die werkverrigting van ’n advertensie te meet, word beperkte soorte data tussen werwe gedeel, soos die tyd van die dag waarop ’n advertensie vir jou gewys is.</translation>
@@ -2230,6 +2234,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5967592137238574583">Wysig kontakinligting</translation>
 <translation id="5967867314010545767">Verwyder uit geskiedenis</translation>
 <translation id="5968022600320704045">Geen soekresultate nie</translation>
+<translation id="5969199813874624822">Stoor en spoor prys na</translation>
 <translation id="5974052231147553524">Sesde rol</translation>
 <translation id="5975083100439434680">Zoem uit</translation>
 <translation id="5979084224081478209">Gaan wagwoorde na</translation>
@@ -3668,6 +3673,7 @@ Bykomende besonderhede:
 <translation id="9141013498910525015">Bestuur adresse</translation>
 <translation id="9144951720726881238">Vervaldatum:</translation>
 <translation id="9148507642005240123">Ontdoen wysiging</translation>
+<translation id="9148599396704355100">Prys is laag</translation>
 <translation id="9150045010208374699">Gebruik jou kamera</translation>
 <translation id="9150685862434908345">Jou administrateur kan jou blaaieropstelling oor 'n afstand verander. Aktiwiteit op hierdie toestel kan ook buite Chrome bestuur word. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Opgedateer</translation>

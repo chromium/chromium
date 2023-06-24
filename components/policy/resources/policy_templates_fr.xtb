@@ -303,6 +303,19 @@ Toutefois, dans le cadre de cette règle, ces formats ne doivent pas inclure les
 <translation id="1272798957154751008">Activez la migration des appareils Chromad vers la gestion dans le cloud</translation>
 <translation id="1274997165432133392">Cookies et autres données des sites</translation>
 <translation id="1277411517984768103">Autoriser <ph name="BOREALIS_NAME" /> à s'exécuter pour un utilisateur</translation>
+<translation id="1280005879732594593">Cette règle permet de configurer si <ph name="PRODUCT_NAME" /> proposera Kyber, un algorithme clé-contrat post-quantique, dans TLS. Cela permet aux serveurs compatibles de protéger le trafic utilisateur contre les déchiffrement ultérieurs par des ordinateurs quantiques.
+
+Si cette règle est activée, <ph name="PRODUCT_NAME" /> proposera Kyber dans les connexions TLS. Les connexions TLS seront protégées grâce à l'accord de clé Kyber lors de la communication avec les serveurs compatibles qui sélectionnent Kyber lors du handshake TLS.
+
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ne proposera pas Kyber dans les connexions TLS. Dans ce cas, le trafic utilisateur ne sera pas protégé contre les ordinateurs quantiques.
+
+Si cette règle n'est pas définie, <ph name="PRODUCT_NAME" /> suivra le processus de déploiement par défaut pour Kyber.
+
+La proposition de Kyber est rétrocompatible. Les serveurs TLS et le middleware de mise en réseau existants devraient ignorer la nouvelle option et continuer à sélectionner les options précédentes.
+
+Toutefois, les appareils qui n'implémentent pas correctement TLS peuvent dysfonctionner lorsqu'ils reçoivent la nouvelle option. Par exemple, ils peuvent se déconnecter en réponse à des options non reconnues ou à des messages plus volumineux. Ces appareils ne sont pas prêts pour le post-quantique et interfèrent avec la transition post-quantique d'une entreprise. Le cas échéant, les administrateurs doivent contacter le fournisseur pour obtenir une solution.
+
+Cette règle est une mesure temporaire qui sera supprimée dans les futures versions de <ph name="PRODUCT_NAME" />. Elle peut être activée pour vous permettre de tester des problèmes, ou désactivée pendant la résolution des problèmes.</translation>
 <translation id="1285819498003746288">L'API Event.path sera indisponible.</translation>
 <translation id="1290722184971934486">Si cette règle est définie sur <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (valeur 2), l'autorisation de gestion des fenêtres est par défaut automatiquement refusée aux sites. Cela limite la capacité des sites à voir les informations concernant les écrans de l'appareil, ainsi qu'à utiliser ces informations pour ouvrir et positionner des fenêtres, ou demander le passage en plein écran sur certains écrans.
 
@@ -1484,6 +1497,7 @@ Dans <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle ne propose pas l'option 
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="2299220924812062390">Indiquer une liste de plug-ins activés</translation>
+<translation id="2299815818824242485">Ne pas autoriser la recherche de protection supérieure via proxy</translation>
 <translation id="2303795211377219696">Activer la saisie automatique pour les cartes de crédit</translation>
 <translation id="2304009805995145854">Depuis <ph name="PRODUCT_NAME" /> 67, l'isolation de sites a été activée par défaut sur toutes les plates-formes de bureau. Chaque site exécute ainsi son propre processus. Un site est un schéma avec eTLD+1 (ex. : https://example.com). Activer cette règle ne change pas ce comportement. Cela empêche seulement les utilisateurs de s'y soustraire (par exemple, via l'option "Désactiver l'isolation de sites" sur chrome://flags). Depuis <ph name="PRODUCT_NAME" /> 76, si cette règle est désactivée ou qu'elle n'est pas configurée, l'isolation de sites n'est pas désactivée, mais les utilisateurs peuvent s'y soustraire.
 
@@ -1889,6 +1903,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Si cette règle est désactivée lorsque les connexions UDP sortantes sont filtrées par le pare-feu, l'ordinateur ne permet que la connexion d'ordinateurs clients au sein du réseau local.</translation>
 <translation id="2714756912981510828">Activer la détection de fuite de mots de passe</translation>
+<translation id="2716071441112588786">Autoriser la recherche de protection supérieure via proxy</translation>
 <translation id="2716623398185506073">Si cette règle est activée, les appareils enregistrés communiquent les statistiques et les identifiants matériels associés à l'alimentation.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, les appareils enregistrés ne fournissent pas ces statistiques.</translation>
@@ -2546,11 +2561,6 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
 
       Cette règle ne peut être configurée que comme règle relative aux utilisateurs du cloud.
       </translation>
-<translation id="3247992593782842520">Cette règle permet aux administrateurs de configurer une liste d'identifiants d'extension requis pour la navigation privée.
-
-L'utilisateur doit autoriser explicitement l'exécution en mode navigation privée de toutes les extensions de cette liste. Sinon, la navigation privée n'est pas autorisée.
-
-Si une extension spécifiée dans cette règle n'est pas installée, la navigation privée est bloquée.</translation>
 <translation id="3248019773260441802">Autoriser une page à afficher des pop-up pendant son déchargement</translation>
 <translation id="3251500716404598358">Configurer les règles pour passer d'un navigateur à l'autre.
 
@@ -2938,6 +2948,15 @@ Veillez à ne pas laisser cette règle activée en permanence, en particulier po
 <translation id="3591584750136265240">Configurer le mode d'authentification lors de la connexion</translation>
 <translation id="3593905652755912452">L'ancien comportement d'envoi des événements sur les commandes de formulaire désactivées sera utilisé.</translation>
 <translation id="3596112486106491038">Activer l'accès par ligne de commande aux machines virtuelles</translation>
+<translation id="3596651403637948128">Ce paramètre détermine si le mode de protection standard de la navigation sécurisée autorise l'envoi des hachages partiels de l'URL à Google au travers d'un proxy, via un protocole HTTP Oblivious, pour déterminer si l'URL peut être visitée en toute sécurité.
+
+Le proxy permet aux navigateurs d'envoyer des hachages partiels d'URL vers Google de manière anonyme. Il permet également aux navigateurs de procéder à ces envois plus fréquemment pour améliorer la qualité de la protection offerte par la navigation sécurisée.
+
+Cette règle est ignorée si la navigation sécurisée est désactivée ou définie sur le mode de protection renforcée.
+
+Si cette règle est activée ou n'est pas configurée, la recherche d'une protection supérieure via proxy est activée.
+
+Si cette règle est désactivée, la recherche d'une protection supérieure via proxy est désactivée. Les URL seront envoyées directement à Google avec une fréquence beaucoup plus faible.</translation>
 <translation id="3603469950773500315">Permet d'atténuer les contrôles <ph name="CORS" /> dans la nouvelle mise en œuvre de <ph name="CORS" />. Les extensions peuvent ainsi conserver un comportement compatible, et <ph name="PRODUCT_NAME" /> peut envoyer les en-têtes spécifiés sans contrôles <ph name="CORS" />.
 
       Si aucun paramètre d'atténuation n'est indiqué dans la liste, <ph name="PRODUCT_NAME" /> essaie d'exécuter les extensions de manière compatible, et n'introduit pas de modifications de <ph name="API" /> pour <ph name="PRODUCT_NAME" /> 79 (comme indiqué à la page <ph name="WEB_REQUEST_API_MANUAL" />).
@@ -3512,6 +3531,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, le clavier à l'écran est désactivé par défaut, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="412697421478384751">Autoriser les utilisateurs à définir des codes ayant un niveau de sécurité faible pour le code de l'écran de verrouillage</translation>
+<translation id="4132809439883883106">Utiliser la valeur par défaut pour le contrat de clé post-quantique Kyber activé pour TLS</translation>
 <translation id="4136603825567209889">Activer les rapports sur les informations d'identification des utilisateurs</translation>
 <translation id="4138655880188755661">Période limite</translation>
 <translation id="4140646780789794190">Désactiver le partage des données de diagnostic avec Plugin VM</translation>
@@ -4052,6 +4072,7 @@ Si cette règle n'est pas configurée, toutes les origines nécessitent un geste
       Si cette règle n'est pas configurée, aucune sélection automatique n'est effectuée pour aucun site.</translation>
 <translation id="4611983465824842867">Ne pas afficher d'avertissements ni désactiver la saisie automatique sur les formulaires non sécurisés</translation>
 <translation id="4615003180013429835">Mode d'analyse de la liste des sites</translation>
+<translation id="4616706248182656871">Désactiver l'accord de clé post-quantique Kyber pour TLS</translation>
 <translation id="4617338332148204752">Ignorer la vérification des balises Meta dans <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Fonctionnalité NewBaseUrlInheritanceBehavior disponible</translation>
 <translation id="4624006912948309924">Permet de définir quels identifiants d'appli <ph name="PRODUCT_OS_NAME" /> affiche en tant qu'applis épinglées dans la barre du Lanceur d'applis. Notez que les utilisateurs ne peuvent pas les modifier.
@@ -4751,6 +4772,11 @@ Remarque : Cette règle ne s'applique pas aux mises à niveau HSTS.</translatio
 <translation id="5345910753471481870">Ne pas afficher le bouton Google Lens dans le champ de recherche de la page "Nouvel onglet".</translation>
 <translation id="5346587320074666194">Bloquer l'accès aux capteurs sur ces sites</translation>
 <translation id="534836255587440809">Désactiver les clics automatiques sur l'écran de connexion</translation>
+<translation id="5348658899015174540">L'API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> permet aux applications Web de capturer plusieurs surfaces à la fois.
+      Cette règle déverrouille la propriété <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> pour les applications Web à des origines définies.
+      Si la propriété <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> est définie dans une requête <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, toutes les surfaces d'écran sont automatiquement capturées sans nécessiter l'autorisation explicite de l'utilisateur.
+      Si cette règle n'est pas configurée, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> n'est disponible pour aucune application Web.
+Pour améliorer la confidentialité, à partir de la version 116 de <ph name="PRODUCT_NAME" />, cette règle ne sera plus compatible avec l'actualisation dynamique. Cela permettra à l'utilisateur de s'assurer qu'aucune page supplémentaire ne pourra capturer les écrans après la connexion, sauf celles déjà autorisées au début de la session.</translation>
 <translation id="5361708558735884308">Cette règle permet d'autoriser l'accès aux URL listées comme exceptions à <ph name="URL_BLOCKLIST_POLICY_NAME" />. Lisez sa description pour connaître le format des entrées listées. Par exemple, définir <ph name="URL_BLOCKLIST_POLICY_NAME" /> sur "*" bloque toutes les requêtes, et vous pouvez appliquer cette règle pour autoriser l'accès à une liste limitée d'URL. Utilisez-la pour définir des exceptions à certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines à l'aide du format spécifié sur https://support.google.com/chrome/a?p=url_blocklist_filter_format. Le filtre le plus spécifique détermine si une URL est bloquée ou autorisée. La règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> prévaut sur <ph name="URL_BLOCKLIST_POLICY_NAME" />. Cette règle est limitée à 1 000 entrées.
 
 Elle permet aussi d'autoriser le navigateur d'une appli externe enregistrée comme gestionnaire de protocoles à appeler automatiquement les protocoles listés tels que "tel:" ou "ssh:".
@@ -5862,6 +5888,11 @@ Pour en savoir plus, consultez https://developer.chrome.com/blog/immutable-docum
       Les URL utilisant un schéma de cette liste ne sont pas chargées ni accessibles.
 
       Si cette règle n'est pas configurée ou qu'aucune entrée ne figure dans la liste, tous les schémas sont accessibles dans <ph name="PRODUCT_NAME" />.</translation>
+<translation id="6338831500376286321">Permet de définir le niveau d'accès à la géolocalisation au niveau de l'appareil pour le système <ph name="PRODUCT_OS_NAME" />, qui s'applique avant qu'un utilisateur ne se connecte. Une fois connecté, l'utilisateur peut contrôler ce niveau d'accès via le paramètre par utilisateur.
+
+Si cette règle n'est pas configurée ou qu'elle est définie sur <ph name="ALLOW" />, l'accès à la géolocalisation sur l'écran de connexion est autorisé pour les appareils gérés. Si une valeur non valide est envoyée pour cette règle, l'accès repasse sur <ph name="DISALLOW" />. Pour les appareils non gérés, la valeur est toujours sur <ph name="ALLOW" />.
+
+AVERTISSEMENT : Faites attention quand vous modifiez ce paramètre, car cela pourrait affecter d'autres règles liées à la géolocalisation (<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />, par exemple). Plus précisément, si cette règle est définie sur <ph name="DISALLOW" />, les options <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> et <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> de la règle <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> ne fonctionneront pas correctement et n'utiliseront que la résolution de localisation basée sur <ph name="IP" /> sur l'écran de connexion (<ph name="LOG_IN" />).</translation>
 <translation id="6338982178236723271">Transmettre les informations système</translation>
 <translation id="6339355882150329269">Ne pas considérer l'utilisateur comme inactif pendant la lecture de la vidéo</translation>
 <translation id="6352714113109004581">Permet de dresser la liste des formats d'URL pour lesquels les sites peuvent demander aux utilisateurs de leur accorder l'accès à un appareil HID.
@@ -7102,6 +7133,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="7421230730436851224">Ne jamais utiliser de bac à sable pour le processus audio</translation>
 <translation id="7421483919690710988">Définir la taille du cache du disque de support en octets</translation>
 <translation id="7424751532654212117">Liste des exceptions à la liste des plug-ins désactivés</translation>
+<translation id="7425076578809444474">Activer l'accord de clé post-quantique pour TLS</translation>
 <translation id="7426112309807051726">Indique si l'optimisation de <ph name="TLS_FALSE_START" /> doit être désactivée. Pour des raisons historiques, cette règle se nomme DisableSSLRecordSplitting.
 
       Si cette règle n'est pas configurée, ou si elle est définie sur "False", <ph name="TLS_FALSE_START" /> est activé. Si elle est définie sur "True", <ph name="TLS_FALSE_START" /> est désactivé.</translation>
@@ -7111,6 +7143,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="7434202861148928348">Configurer les noms de domaines requis pour les clients d'accès à distance</translation>
 <translation id="7436939516497076240">Désactiver l'affichage des pages de résultats du moteur de recherche par défaut dans un panneau latéral du navigateur.</translation>
 <translation id="7443356543619955157">Si cette règle est activée, la configuration réseau est appliquée à tous les utilisateurs d'un appareil <ph name="PRODUCT_OS_NAME" />. La configuration réseau est une chaîne au format JSON conformément au format de configuration de réseau ouvert.</translation>
+<translation id="7446978687387327623">Autoriser les vérifications en temps réel via proxy pour la navigation sécurisée</translation>
 <translation id="7448430478749155471">Activer la fonctionnalité Sélectionner pour prononcer sur l'écran de connexion</translation>
 <translation id="7456922722153109956">Cette règle contrôle la visibilité de l'annonce d'espace intermédiaire sur la page "Nouvel onglet".
 
@@ -7517,7 +7550,6 @@ Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélection
       Si la règle est définie sur "False" ou si elle n'est pas configurée, ces informations ne seront pas transmises.
       Si elle est définie sur "True", les événements réseau de l'appareil seront signalés.</translation>
 <translation id="780629758750905699">Autoriser l'ajout de comptes Family Link à l'appareil</translation>
-<translation id="7807120658089613760">Configurer l'appareil photo, les paramètres du navigateur et de l'OS, la fonction de scanner, ainsi que les fonctionnalités Dessin, Web Store, Explorer et Crosh à désactiver</translation>
 <translation id="7807139251387225825">Liste des types à exclure de la synchronisation</translation>
 <translation id="781268256210530471">Paramètres des plug-ins</translation>
 <translation id="7816326058023670173">Secret partagé entre les appareils utilisés par les parents et l’enfant.</translation>
@@ -8354,6 +8386,7 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
           Si cette règle n'est pas configurée, un délai par défaut est utilisé.
 
           La valeur de la règle doit être indiquée en millisecondes.</translation>
+<translation id="859316804517480666">Activer l'accord de clé post-quantique Kyber pour TLS</translation>
 <translation id="859579553230883285">Désactivez le paramètre des annonces suggérées par le site de <ph name="PRIVACY_SANDBOX_NAME" /> pour vos utilisateurs.</translation>
 <translation id="8597758693275075382">Chaînes OEM SMBIOS à transmettre à la VM lors de l'installation. La liste vide est utilisée par défaut.</translation>
 <translation id="8598786284856179541">Activer les rapports sur les informations liées à la version</translation>

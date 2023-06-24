@@ -475,7 +475,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> želi trajno pohraniti veliku količinu podataka na vaš lokalni računar</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{i još 1}one{i još #}few{i još #}other{i još #}}</translation>
-<translation id="2001469757375372617">Nešto nije u redu. Promjena nije spremljena.</translation>
+<translation id="2001469757375372617">Nešto nije uredu. Promjena nije sačuvana.</translation>
 <translation id="2003709556000175978">Poništite lozinku sada</translation>
 <translation id="2003775180883135320">Četverostruko bušenje na gornjoj strani</translation>
 <translation id="2009942480257059311">Dugme Kreiraj događaj, aktivirajte da brzo kreirate novi događaj u Google Kalendaru</translation>
@@ -2234,7 +2234,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5967592137238574583">Uredite kontakt informacije</translation>
 <translation id="5967867314010545767">Ukloni iz historije</translation>
 <translation id="5968022600320704045">Nema rezultata pretraživanja</translation>
-<translation id="5969199813874624822">Spremi i prati cijenu</translation>
+<translation id="5969199813874624822">Sačuvajte i pratite cijene</translation>
 <translation id="5974052231147553524">Šesta rolna</translation>
 <translation id="5975083100439434680">Umanjivanje</translation>
 <translation id="5979084224081478209">Provjeri lozinke</translation>

@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">Hindi ngayon</translation>
 <translation id="3486821258960016770">Mongolian</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> (na) error.</translation>
-<translation id="3501954296166022751">Available offline ang iyong mga file sa Google Drive</translation>
 <translation id="3509680540198371098">Network <ph name="NETWORK_INDEX" /> ng <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
 <translation id="3511705761158917664">Inihahandang i-sync ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
 <translation id="3522708245912499433">Portuguese</translation>
@@ -891,7 +890,6 @@
 <translation id="7972920761225148017">French (Switzerland)</translation>
 <translation id="7973962044839454485">Nabigo ang pagpapatotoo sa PPP dahil sa hindi tamang username o password</translation>
 <translation id="7980421588063892270">English (US) na may Colemak keyboard</translation>
-<translation id="7985008041109611710">Nagsi-sync ng <ph name="NUMBER_OF_FILES_SYNCING" /> (na) file</translation>
 <translation id="8000066093800657092">Walang network</translation>
 <translation id="8008366997883261463">Aso</translation>
 <translation id="8028993641010258682">Laki</translation>
@@ -1048,7 +1046,6 @@
 <translation id="9213073329713032541">Matagumpay na nasimulan ang pag-install.</translation>
 <translation id="9219103736887031265">Mga Larawan</translation>
 <translation id="9219908252191632183">Lunar</translation>
-<translation id="937795003075802289">Nagsi-sync ng 1 file</translation>
 <translation id="938470336146445890">Mangyaring mag-install ng certificate ng user.</translation>
 <translation id="939736085109172342">Bagong folder</translation>
 <translation id="943972244133411984">Binago ni</translation>

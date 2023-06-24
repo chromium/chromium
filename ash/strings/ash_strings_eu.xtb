@@ -140,6 +140,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1550406609415860283">Gailuak erabilgarri</translation>
 <translation id="1550523713251050646">Aukera gehiago ikusteko, egin klik hemen</translation>
 <translation id="1555130319947370107">Urdina</translation>
+<translation id="1557622599341396706">Erakutsi lan-eremuaren izena</translation>
 <translation id="1576511610858879060">Chromebook-ak edo Bluetooth bidezko gailuak Bluetooth-bertsio zahar bat darabil. Audio-kalitatea hobetzeko, erabili beste sarrera-iturburu bat.</translation>
 <translation id="1576623706766186887">Txikitu lupa aktibatuta dagoenean</translation>
 <translation id="1586324912145647027">Zortzi leihoetatik, joan lehenengora</translation>
@@ -930,6 +931,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="504465286040788597">Aurreko paragrafoa</translation>
 <translation id="5045550434625856497">Pasahitz okerra</translation>
 <translation id="5062496344832867502">RAMa</translation>
+<translation id="5068762093486106012">Audioa desaktibatuta daukazunean hitz egiten baduzu, jakinarazpen bat jasoko duzu. Audioa ez da inoiz irtengo gailutik.</translation>
 <translation id="5078796286268621944">Okerra da PINa</translation>
 <translation id="5083553833479578423">Desblokeatu Laguntzailea zerbitzuaren eginbide gehiago.</translation>
 <translation id="5092436659250499817">Aktibatu edo desaktibatu teklatuaren argiztapena</translation>
@@ -960,6 +962,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5207949376430453814">Nabarmendu testu-kurtsorea</translation>
 <translation id="5208059991603368177">Aktibatuta</translation>
 <translation id="5216991270656129561">Desaktibatuta <ph name="TIME" /> arte</translation>
+<translation id="5221423477036820198">Bidali edo erantzun azkar mezuei telefonoan Phone Hub bidez.</translation>
 <translation id="5222676887888702881">Amaitu saioa</translation>
 <translation id="5229343007215035173">Aktibatu edo desaktibatu pribatutasun-pantaila</translation>
 <translation id="5234764350956374838">Baztertu</translation>
@@ -988,6 +991,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5319712128756744240">Parekatu beste gailu batekin</translation>
 <translation id="5322611492012084517">Ezin da aurkitu telefonoa</translation>
+<translation id="5323994101633366939">Ezkutatu lan-eremuaren izena</translation>
 <translation id="5327248766486351172">Izena</translation>
 <translation id="5329548388331921293">Konektatzen…</translation>
 <translation id="5331975486040154427">USB-C gailua (ezkerraldeko atzeko ataka)</translation>
@@ -1170,6 +1174,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">Deskargatu dira hizketa-fitxategiak (<ph name="LANGUAGE" />)</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Koloreen zuzenketa</translation>
 <translation id="6121838516699723042">Berretsi <ph name="FILENAME" /> deskargatu nahi duzula</translation>
 <translation id="612734058257491180">Google-ren Laguntzailea ez dago erabilgarri gonbidatuentzako saioetan.</translation>
 <translation id="6129953537138746214">Zuriunea</translation>
@@ -1637,6 +1642,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8247998213073982446">Aplikazioa (<ph name="APP_NAME" />)</translation>
 <translation id="8255234195843591763">Gailua eguneratzeko, berrezar ezazu</translation>
 <translation id="8261506727792406068">Ezabatu</translation>
+<translation id="8262312463845990408">Erreproduzitu/Pausatu</translation>
 <translation id="8270450402312105425">{0,plural, =1{Itzuli gailuaren aurreko bertsiora ordubete barru}other{Itzuli gailuaren aurreko bertsiora # ordu barru}}</translation>
 <translation id="8277261673056602147">Nabarmendu pantailako testua</translation>
 <translation id="8284362522226889623">Aurreko lan-eremura itzultzeko, pasatu lau hatz ezkerrera</translation>
@@ -1814,7 +1820,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="9089416786594320554">Idazketa-metodoak</translation>
 <translation id="9091626656156419976">Kendu da <ph name="DISPLAY_NAME" /> pantaila</translation>
 <translation id="9098969848082897657">Isilarazi telefonoa</translation>
-<translation id="9105450214093926548">Lacros arakatzailea abian den bitartean ezin da hasi saiorik beste erabiltzaile batekin. Horren ordez, erabili beste erabiltzaile-profil bat Lacros-en bertan, edo itxi arakatzailea eta saiatu berriro.</translation>
 <translation id="9120448753905017833">Wifia desaktibatu da wifi-gunea datu-konexioaren bidez erabiltzen hasteko. Baliteke datu-konexioari dagozkion kostuak ordaindu behar izatea.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> edo <ph name="CTRL" /> <ph name="SEPARATOR1" /> <ph name="SHIFT" /> <ph name="SEPARATOR2" /> <ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Desegin azken ekintza</translation>

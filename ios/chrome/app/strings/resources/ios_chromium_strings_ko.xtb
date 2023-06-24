@@ -18,6 +18,7 @@
 <translation id="1838412507805038478">Chromium이 <ph name="ISSUER" />에서 이 웹사이트의 인증서를 발행했음을 확인했습니다.</translation>
 <translation id="1843424232666537147">Chromium에는 사용자가 간편하게 인터넷 데이터 및 웹페이지 로드 시간을 관리할 수 있는 기능이 있습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="1847960401032164406">Chromium의 지도</translation>
 <translation id="1867772173333403444">4. Chromium을 선택합니다.</translation>
 <translation id="2006345422933397527">Chromium에서 업데이트를 확인할 수 없습니다. 인터넷 연결 상태를 확인해 보세요.</translation>
 <translation id="2052320862053429062">Chromium에서는 온라인에 게시된 비밀번호 목록에 사용자의 비밀번호가 포함되어 있는지를 주기적으로 확인합니다. 이렇게 하면 비밀번호 및 사용자 이름이 암호화되어 Google을 포함해 누구도 읽을 수 없습니다.</translation>
@@ -70,6 +71,7 @@
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" />에서 관리하는 계정에서 로그아웃하면 Chromium 데이터가 기기에서 삭제되나 Google 계정에는 그대로 유지됩니다.</translation>
 <translation id="5048795749726991615">저장된 비밀번호를 다른 앱에서 쉽게 입력하려면 Chromium 자동 완성 기능을 사용하세요</translation>
 <translation id="5171868502429358653">Chromium에 로그인</translation>
+<translation id="5224044903258607400">'Chromium에서 Google 지도로 보기'를 탭합니다.</translation>
 <translation id="5224391634244552924">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Chromium에서 확인할 수 있습니다.</translation>
 <translation id="5308226104666789935">Chromium에서 업데이트를 확인할 수 없습니다.</translation>
 <translation id="5396916991083608703">Chromium을 기본 브라우저로 설정하시겠습니까?</translation>

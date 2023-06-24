@@ -368,7 +368,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8013993649590906847">Se un'immagine è senza descrizione utile, Chrome proverà a fornirne una. Per la creazione delle descrizioni, le immagini vengono inviate a Google.</translation>
 <translation id="8019103195866286235">La pubblicazione di questa estensione è stata annullata dallo sviluppatore e potrebbe non essere sicura. Rimuovila da Chrome in modo che non possa più vedere e modificare i tuoi dati sui siti che visiti, incluse le tue informazioni personali.</translation>
 <translation id="80471789339884597">L'installazione è terminata. Dovrai riavviare tutti i browser per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
-<translation id="8057070436257749375">{COUNT,plural, =1{La tua organizzazione elimina automaticamente i dati di navigazione quando Chrome non viene utilizzato per 1 minuto. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede esistenti rimarranno aperte.}other{La tua organizzazione elimina automaticamente i dati di navigazione quando Chrome non viene utilizzato per # minuti. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede esistenti rimarranno aperte.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Informazioni su &amp;Google Chrome</translation>
 <translation id="813913629614996137">Inizializzazione...</translation>

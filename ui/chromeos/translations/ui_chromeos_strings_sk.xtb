@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">Teraz nie</translation>
 <translation id="3486821258960016770">Mongolská klávesnica</translation>
 <translation id="3495304270784461826">Počet chýb: <ph name="COUNT" />.</translation>
-<translation id="3501954296166022751">Súbory na Disku Google sú k dispozícii offline</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="3511705761158917664">Pripravuje sa synchronizácia <ph name="NUMBER_OF_ITEMS" /> položiek…</translation>
 <translation id="3522708245912499433">Portugalčina</translation>
@@ -891,7 +890,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7972920761225148017">Francúzska (Švajčiarsko) klávesnica</translation>
 <translation id="7973962044839454485">Overenie PKS zlyhalo z dôvodu nesprávneho používateľského mena alebo hesla</translation>
 <translation id="7980421588063892270">Anglická (US) klávesnica s rozložením Colemak</translation>
-<translation id="7985008041109611710">Synchronizujú sa súbory (<ph name="NUMBER_OF_FILES_SYNCING" />)</translation>
 <translation id="8000066093800657092">Žiadna sieť</translation>
 <translation id="8008366997883261463">Jack Russell teriér</translation>
 <translation id="8028993641010258682">Veľkosť</translation>
@@ -1048,7 +1046,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="9213073329713032541">Inštalácia bola úspešne spustená.</translation>
 <translation id="9219103736887031265">Obrázky</translation>
 <translation id="9219908252191632183">Mesačná krajina</translation>
-<translation id="937795003075802289">Synchronizuje sa jeden súbor</translation>
 <translation id="938470336146445890">Nainštalujte si používateľský certifikát.</translation>
 <translation id="939736085109172342">Nový priečinok</translation>
 <translation id="943972244133411984">Upravil(a):</translation>

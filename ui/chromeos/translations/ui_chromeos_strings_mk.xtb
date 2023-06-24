@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">Не сега</translation>
 <translation id="3486821258960016770">монголски</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> грешки.</translation>
-<translation id="3501954296166022751">Вашите датотеки на Google Drive се достапни офлајн</translation>
 <translation id="3509680540198371098">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, детали</translation>
 <translation id="3511705761158917664">Се подготвува синхронизација на <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
 <translation id="3522708245912499433">португалски</translation>
@@ -890,7 +889,6 @@
 <translation id="7972920761225148017">француски (Швајцарија)</translation>
 <translation id="7973962044839454485">PPP автентикацијата не успеа поради неправилно корисничко име и лозинка</translation>
 <translation id="7980421588063892270">англиска (САД) со тастатура Colemak</translation>
-<translation id="7985008041109611710">Се синхронизираат <ph name="NUMBER_OF_FILES_SYNCING" /> датотеки</translation>
 <translation id="8000066093800657092">Нема мрежа</translation>
 <translation id="8008366997883261463">Џек расел териер</translation>
 <translation id="8028993641010258682">Големина</translation>
@@ -1047,7 +1045,6 @@
 <translation id="9213073329713032541">Инсталирањето успешно започна.</translation>
 <translation id="9219103736887031265">Слики</translation>
 <translation id="9219908252191632183">Месечина</translation>
-<translation id="937795003075802289">Се синхронизира 1 датотека</translation>
 <translation id="938470336146445890">Инсталирајте сертификат на корисник.</translation>
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="943972244133411984">Изменето од</translation>

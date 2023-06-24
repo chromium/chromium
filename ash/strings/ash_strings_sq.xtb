@@ -140,6 +140,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1550406609415860283">Pajisjet e disponueshme</translation>
 <translation id="1550523713251050646">Kliko për opsione të tjera</translation>
 <translation id="1555130319947370107">E kaltër</translation>
+<translation id="1557622599341396706">Shfaq emrin e tavolinës së punës</translation>
 <translation id="1576511610858879060">Pajisja jote Chromebook ose me Bluetooth po përdor një version më të vjetër të Bluetooth-it. Përdor një burim tjetër të hyrjes për një cilësi më të mirë të audios.</translation>
 <translation id="1576623706766186887">Zvogëlo kur zmadhuesi është aktiv</translation>
 <translation id="1586324912145647027">Shko te tavolina e punës nga 1 deri në 8</translation>
@@ -987,6 +988,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5319712128756744240">Çifto pajisjen e re</translation>
 <translation id="5322611492012084517">Telefoni yt nuk mund të gjendet</translation>
+<translation id="5323994101633366939">Fshih emrin e tavolinës së punës</translation>
 <translation id="5327248766486351172">Emri</translation>
 <translation id="5329548388331921293">Po lidhet...</translation>
 <translation id="5331975486040154427">Pajisja USB-C (porta e pasme, majtas)</translation>
@@ -1169,6 +1171,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="6103838137565245112">sistemi</translation>
 <translation id="6114505516289286752">Skedarët e ligjërimit në <ph name="LANGUAGE" /> u shkarkuan</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Korrigjimi i ngjyrës</translation>
 <translation id="6121838516699723042">Konfirmo shkarkimin e <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">"Asistenti i Google" nuk ofrohet në një sesion për vizitorët.</translation>
 <translation id="6129953537138746214">Hapësirë</translation>
@@ -1637,6 +1640,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplikacion</translation>
 <translation id="8255234195843591763">Rivendos për ta përditësuar</translation>
 <translation id="8261506727792406068">Fshi</translation>
+<translation id="8262312463845990408">Aktivizo/çaktivizo luajtjen</translation>
 <translation id="8270450402312105425">{0,plural, =1{Kalo pajisjen në versionin e mëparshëm brenda një ore}other{Kalo pajisjen në versionin e mëparshëm brenda # orësh}}</translation>
 <translation id="8277261673056602147">Thekso tekstin në ekranin tënd</translation>
 <translation id="8284362522226889623">Rrëshqit shpejt majtas me katër gishta për të kaluar te tavolina e mëparshme e punës</translation>
@@ -1814,7 +1818,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="9089416786594320554">Metodat e hyrjes</translation>
 <translation id="9091626656156419976">Ekrani <ph name="DISPLAY_NAME" /> u hoq</translation>
 <translation id="9098969848082897657">Vendose telefonin në heshtje</translation>
-<translation id="9105450214093926548">Identifikimi si përdorues i dytë nuk mbështetet kur shfletuesi Lacros është në ekzekutim. Përdor një profil të dytë të shfletuesit në Lacros më mirë ose mbylle Lacros dhe provo përsëri.</translation>
 <translation id="9120448753905017833">E kemi çaktivizuar WiFi për të filluar përdorimin e zonës së qasjes për internet nëpërmjet të dhënave celulare. Kjo mund të shkaktojë kosto për të dhënat.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ose <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Zhbëj veprimin e fundit</translation>

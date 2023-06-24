@@ -377,7 +377,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8013993649590906847">Om en bild inte har någon användbar beskrivning görs ett försök att beskriva den åt dig i Chrome. Bilderna skickas till Google så att beskrivningen kan genereras.</translation>
 <translation id="8019103195866286235">Det här tillägget har tagits bort av utvecklaren och kan vara osäkert. Ta bort det från Chrome så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
 <translation id="80471789339884597">Tack för att du installerat programmet. Du måste starta om alla webbläsare innan du använder <ph name="BUNDLE_NAME" />.</translation>
-<translation id="8057070436257749375">{COUNT,plural, =1{Organisationen raderar automatiskt webbinformation när Chrome inte har använts på 1 minut. Detta kan innefatta historik, autofyll och nedladdningar. Dina befintliga flikar förblir öppna.}other{Organisationen raderar automatiskt webbinformation när Chrome inte har använts på # minuter. Detta kan innefatta historik, autofyll och nedladdningar. Dina befintliga flikar förblir öppna.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Om &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initierar …</translation>

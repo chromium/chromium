@@ -61,6 +61,7 @@ Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu par
 <translation id="1283039547216852943">Genişləndirmək üçün klikləyin</translation>
 <translation id="1289059016768036948">Google Hesabına daxil olmağınız istəniləcək</translation>
 <translation id="1291207594882862231">Tarixçə, kuki, sayt datası və keşi təmizləyin…</translation>
+<translation id="1293898515599432175">Chrome <ph name="CHROME_CHANNEL" /> üçün parollar Google Parol Menecerindən silinəcək. İndicə endirilmiş parol faylını saxlayacaqsınız.</translation>
 <translation id="129553762522093515">Son qapadılan</translation>
 <translation id="1298077576058087471">60%-ədək dataya qənaət edin, bugünün xəbərlərini oxuyun</translation>
 <translation id="1303339473099049190">Həmin parolu tapmaq olmur. Yazılışı yoxlayıb, yenidən cəhd edin.</translation>
@@ -510,6 +511,7 @@ Müntəzəm olaraq hesaba daxil olmaq kimi saytla qarşılıqlı əlaqəniz əsa
 <translation id="3795154175078851242">Şəkli keçid ilə kopyalayın</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">İdarə edin</translation>
+<translation id="381861209280417772">Parolları silin</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> endirmə silindi</translation>
 <translation id="3819183753496523827">Oflaynsınız. İnternet bağlantınızı yoxlayın və yenidən cəhd edin.</translation>
 <translation id="3830886834687455630">Parollarınızı yoxlamaq üçün Google Play xidmətlərini güncəlləyin</translation>
@@ -594,6 +596,7 @@ Müntəzəm olaraq hesaba daxil olmaq kimi saytla qarşılıqlı əlaqəniz əsa
 <translation id="4249955472157341256">Ən sonuncular üzrə sıalayın</translation>
 <translation id="4250229828105606438">Skrinşot</translation>
 <translation id="4256782883801055595">Açıq mənbə lisenziyaları</translation>
+<translation id="4257230861809842349">Parollar Google Parol Menecerindən silinsin?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Hansı data istifadə olunur:<ph name="END_BOLD" /> Baxış tarixçəniz, bu cihazda Chrome istifadə edərək ziyarət etdiyiniz saytların qeydi.</translation>
 <translation id="4269820728363426813">Link ünvanını kopyalayın</translation>
 <translation id="4283102315569707115">Defolt olaraq masaüstü saytlar tələb olunsun?</translation>

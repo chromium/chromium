@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">사전에 추가(&amp;A)</translation>
 <translation id="1018656279737460067">취소됨</translation>
 <translation id="1022489261739821355"><ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />에 저장된 비밀번호를 표시합니다.</translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609"><ph name="DOMAIN" />에서 관리하는 기기입니다. 관리자는 기기에 등록된 모든 프로필의 데이터에 액세스할 수 있습니다.</translation>
 <translation id="1024734233509995696">이 탭은 카메라 또는 마이크를 사용 중입니다</translation>
 <translation id="1026655690966755180">포트 추가</translation>
@@ -3288,6 +3289,7 @@
 <translation id="3750562496035670393">Chrome에서 비밀번호를 이 기기에 저장했으나, 대신 Google 계정에 저장해도 됩니다. 그렇게 하면 로그인한 상태에서 Google 계정에 저장된 모든 비밀번호를 사용할 수도 있습니다.</translation>
 <translation id="3752253558646317685">지문을 저장하려면 자녀가 손가락을 계속 들고 있게 하세요.</translation>
 <translation id="3753033997400164841">한 번만 저장하고 어디서나 사용하세요</translation>
+<translation id="3753142252662437130">색상 필터</translation>
 <translation id="3755411799582650620">이제 <ph name="PHONE_NAME" />에서도 이 <ph name="DEVICE_TYPE" />을(를) 잠금 해제할 수 있습니다.</translation>
 <translation id="375636864092143889">사이트에서 마이크를 사용하고 있습니다.</translation>
 <translation id="3756485814916578707">화면 전송 중</translation>
@@ -3506,6 +3508,7 @@
 <translation id="3919145445993746351">어느 컴퓨터에서나 내 확장 프로그램을 사용하려면 동기화를 사용 설정하세요.</translation>
 <translation id="3919229493046408863">기기가 주변에 있을 때 알림 끄기</translation>
 <translation id="3919262972282962508">2022년 12월 이후에는 이전 버전의 Chrome 앱이 Mac 기기에서 열리지 않습니다. 관리자에게 문의하여 새 버전으로 업데이트하거나 앱을 삭제하세요.</translation>
+<translation id="3919376399641777316">Google Drive 스토리지 사용</translation>
 <translation id="3919798653937160644">이 창에서 보는 페이지는 방문 기록에 나타나지 않으며, 열려 있는 모든 게스트 창을 닫은 후 쿠키와 같은 다른 흔적을 컴퓨터에 남기지 않습니다. 하지만 다운로드한 파일은 모두 저장됩니다.</translation>
 <translation id="3920504717067627103">인증서 정책</translation>
 <translation id="3920909973552939961">결제 핸들러 설치가 허용되지 않음</translation>
@@ -3656,6 +3659,7 @@
 <translation id="4044612648082411741">인증서 비밀번호를 입력하세요.</translation>
 <translation id="4044708573046946214">화면 잠금 비밀번호</translation>
 <translation id="404493185430269859">기본 검색엔진</translation>
+<translation id="4044964245574571633">Microsoft OneDrive 스토리지 사용</translation>
 <translation id="4045196801416070837">기기 알림음</translation>
 <translation id="4046013316139505482">이 사이트의 정보를 확인하고 변경할 필요가 없는 확장 프로그램입니다.</translation>
 <translation id="4046123991198612571">다음 트랙</translation>
@@ -3694,6 +3698,7 @@
 <translation id="4084682180776658562">북마크</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> 닫기</translation>
 <translation id="4085298594534903246">이 페이지에서 자바스크립트가 차단되었습니다.</translation>
+<translation id="4085620044235559093"><ph name="FILE_TYPE" /> 파일을 열 앱을 선택하세요</translation>
 <translation id="4087089424473531098">확장 프로그램(파일: <ph name="EXTENSION_FILE" />)을 만들었습니다.</translation>
 <translation id="408721682677442104">MIDI 기기 전체 제어 거부됨</translation>
 <translation id="4087328411748538168">오른쪽에 표시</translation>
@@ -4448,6 +4453,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4742970037960872810">강조표시 삭제</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />애플리케이션 업데이트 방법 알아보기<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">사이트로 이동</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{사이트 음소거 취소}other{사이트 음소거 취소}}</translation>
 <translation id="474609389162964566">"Hey Google"로 어시스턴트에 액세스</translation>
 <translation id="4746351372139058112">메시지</translation>
@@ -7537,6 +7543,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="7432200167665670017">관리자가 "<ph name="EXTENSION_NAME" />" 확장 프로그램(앱 ID: <ph name="EXTENSION_ID" />)을 차단함</translation>
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> 기기를 계속 사용하려면 스마트 카드 삽입</translation>
 <translation id="7433957986129316853">유지</translation>
+<translation id="7434100547946193426">기타 앱</translation>
 <translation id="7434509671034404296">개발자 정보</translation>
 <translation id="7434757724413878233">마우스 가속</translation>
 <translation id="7434969625063495310">인쇄 서버를 추가할 수 없습니다. 서버 설정을 확인하고 다시 시도해 보세요.</translation>

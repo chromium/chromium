@@ -407,7 +407,7 @@
 <translation id="4289849978083912975">Presentación</translation>
 <translation id="4297501883039923494">Detenido: error desconocido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imágenes</translation>
-<translation id="4311195029067684288">Vista completa</translation>
+<translation id="4311195029067684288">Completa</translation>
 <translation id="4333390807948134856">Tecla <ph name="KEY_NAME" /> pulsada</translation>
 <translation id="435692326371619097">Gestiona los ajustes de APN de la red. Los APN establecen una conexión entre una red móvil e Internet. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">Restablecer todas las combinaciones de teclas</translation>
@@ -498,7 +498,7 @@
 <translation id="4930320165497208503">Para configurar o actualizar una conexión, ve a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Fecha</translation>
 <translation id="4950314376641394653">El firmware de <ph name="DEVICE_NAME" /> se ha actualizado a la versión <ph name="VERSION" /></translation>
-<translation id="4971925105143343452">Vista parcial</translation>
+<translation id="4971925105143343452">Parcial</translation>
 <translation id="4972592110715526173">cambio de modo</translation>
 <translation id="498186245079027698">Revisa el escáner e inténtalo de nuevo. Comprueba que tienes suficiente espacio local para guardar los archivos escaneados.</translation>
 <translation id="4985509611418653372">Ejecutar</translation>
@@ -830,7 +830,7 @@
 <translation id="763165478673169849">Hora a la que se restableció por última vez</translation>
 <translation id="7633068090678117093">Imagen de fondo</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
-<translation id="765159867434478292">Dividir</translation>
+<translation id="765159867434478292">Dividida</translation>
 <translation id="7656388927906093505">El dispositivo es un ratón.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665800271478495366">Cambiar avatar</translation>

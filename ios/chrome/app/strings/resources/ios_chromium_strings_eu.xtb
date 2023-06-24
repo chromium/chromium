@@ -18,6 +18,7 @@
 <translation id="1838412507805038478">Webgunearen ziurtagiria <ph name="ISSUER" /> hornitzaileak jaulki duela egiaztatu du Chromium-ek.</translation>
 <translation id="1843424232666537147">Interneteko datuak eta web-orriak kargatzeko abiadura kudeatzeko eginbideak ditu Chromium-ek.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
+<translation id="1847960401032164406">Maps Chromium-en</translation>
 <translation id="1867772173333403444">4. Hautatu Chromium.</translation>
 <translation id="2006345422933397527">Chromium-ek ezin izan ditu bilatu eguneratzeak. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="2052320862053429062">Sarean argitaratu diren zerrendetan ea zure pasahitzak dauden egiaztatzen du noizean behin Chromium-ek. Horretarako, pasahitzak eta erabiltzaile-izenak enkriptatzen ditu inork irakurri ezin ditzan, ezta Google-k ere.</translation>
@@ -41,6 +42,7 @@
 <translation id="2942241131342758843">Erabili Chromium modu lehenetsian estekak irekitzeko, widgetetatik bilaketak egiteko eta beste aplikazio batzuetako pasahitzak automatikoki betetzeko</translation>
 <translation id="2977470724722393594">Eguneratuta dago Chromium</translation>
 <translation id="3102849287235003384">Google-ko kontuko saioa webgune guztietan amaitzeko, <ph name="BEGIN_LINK" />amaitu Chromium-eko saioa<ph name="END_LINK" />.</translation>
+<translation id="3115956258722352278">Chromium arakatzaile lehenetsi bihurtu nahi duzu?</translation>
 <translation id="3256316712990552818">Chromium-en kopiatu da</translation>
 <translation id="3344973607274501920">Chromium-ek ezin izan ditu egiaztatu pasahitzak. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="3472200483164753384">Ez da bateragarria Chromium Canary-rekin</translation>
@@ -69,6 +71,7 @@
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> domeinuak kudeatutako kontu baten saioa amaituko duzunez, Chromium-en dituzun datuak ezabatu egingo dira gailu honetatik. Hala ere, datu horiek Google-ko kontuan egoten jarraituko dute.</translation>
 <translation id="5048795749726991615">Gordetako pasahitzak beste aplikazioetan erraz lortzeko, erabili Chromium betetze automatikorako</translation>
 <translation id="5171868502429358653">Hasi saioa Chromium-en</translation>
+<translation id="5224044903258607400">Sakatu "Ikusi Google Maps-ekin Chromium-en"</translation>
 <translation id="5224391634244552924">Ez dago pasahitzik gordeta. Gordeta dituzun pasahitzak egiaztatu egin ditzake Chromium-ek.</translation>
 <translation id="5308226104666789935">Chromium-ek ezin ditu bilatu eguneratzeak</translation>
 <translation id="5396916991083608703">Arakatzaile lehenetsi gisa ezarri nahi duzu Chromium?</translation>

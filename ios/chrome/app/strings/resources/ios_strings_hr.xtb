@@ -73,6 +73,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="1358214951266274152">Otvorite vezu koju ste kopirali</translation>
 <translation id="1360432990279830238">Odjaviti se i isključiti sinkronizaciju?</translation>
 <translation id="1363028406613469049">Zvučni zapis</translation>
+<translation id="1365106417372288489">Vaš je iPhone nedavno vraćen na prethodno stanje, što je možda promijenilo vaš zadani preglednik.</translation>
 <translation id="1375321115329958930">Spremljene zaporke</translation>
 <translation id="1377255359165588604">Sinkronizacija je prekinuta.</translation>
 <translation id="1377321085342047638">Broj kartice</translation>
@@ -149,6 +150,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="1872096359983322073">Svjetlo</translation>
 <translation id="1883255238294161206">Sažmi popis</translation>
 <translation id="1894023287452300670">Prati cijenu ovdje</translation>
+<translation id="189531189292803889">Vaš je iPad nedavno vraćen na prethodno stanje, što je možda promijenilo vaš zadani preglednik.</translation>
 <translation id="1910975740091000991">Chrome za iOS</translation>
 <translation id="1911619930368729126">Prenesi na Google disk</translation>
 <translation id="1923342640370224680">Posljednji sat</translation>
@@ -1047,6 +1049,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="750493650310597496">Nije odabrana nijedna oznaka</translation>
 <translation id="7508728395076009983">Da biste zaključali anonimne kartice, postavite Touch ID, Face ID ili šifru.</translation>
 <translation id="7514365320538308">Preuzmi</translation>
+<translation id="7524055474074101597">Pristupajte svojim zaporkama i ostalim podacima u aplikacijama.</translation>
 <translation id="7531345132340165516">Trenutačna web-lokacija</translation>
 <translation id="7537586195939242955">Žao nam je, pristupna riječ trenutačno se ne može instalirati u Passbook.</translation>
 <translation id="754655535278952384">Provjereno: <ph name="TIME" /></translation>

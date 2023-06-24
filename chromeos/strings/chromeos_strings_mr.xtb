@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">वॉलपेपर बदला</translation>
 <translation id="360565022852130722">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP 802.1x सह सुरक्षित केले गेले आहे</translation>
 <translation id="3606583719724308068">HTTPS वेबसाइटवर लेटन्सी जास्त आहे</translation>
+<translation id="3607216139080387279">स्क्रीन सेव्हर दाखवा</translation>
 <translation id="361575905210396100">तुमच्या फीडबॅकबद्दल धन्यवाद</translation>
 <translation id="3632579075709132555">गोपनीयता स्क्रीन टॉगल करा</translation>
 <translation id="3639846061339007994">सर्वात वरती</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> परीक्षणे)</translation>
 <translation id="3748026146096797577">कनेक्टेड नाही</translation>
 <translation id="3749289110408117711">फाइल नाव</translation>
+<translation id="3766934827878963937">१ तासासाठी</translation>
 <translation id="3771294271822695279">व्हिडिओ फाइल</translation>
 <translation id="3784455785234192852">लॉक करा</translation>
 <translation id="380097101658023925">RGB नियंत्रणे</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">कीबोर्ड मंद करणे</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> चाचणी रद्द करण्यात आली आहे</translation>
 <translation id="631063167932043783">अ‍ॅप एक्सप्लोर करा</translation>
+<translation id="6318437367327684789">कायमचे</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> वर फर्मवेअर अपडेट करा</translation>
 <translation id="6321407676395378991">स्क्रीन सेव्हर सुरू करा</translation>
 <translation id="6325525973963619867">अयशस्वी</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">एका PDF मध्ये एकाहून अधिक पेज सेव्ह करा</translation>
 <translation id="9137526406337347448">Google सेवा</translation>
 <translation id="9138630967333032450">डावीकडे शिफ्ट करा</translation>
+<translation id="9143347780818904997"><ph name="MINUTES" /> मिनिटांसाठी</translation>
 <translation id="9149391708638971077">मेमरी चाचणी रन करा</translation>
 <translation id="9161276708550942948">स्पेस</translation>
 <translation id="9173638680043580060">एका मिनिटापेक्षा कमी वेळ शिल्लक आहे</translation>

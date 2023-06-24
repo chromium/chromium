@@ -38,6 +38,7 @@
 <translation id="1176932207622159128">ছবি সেভ করা যায়নি</translation>
 <translation id="1177414119866731261">Chrome মেনু খুলুন</translation>
 <translation id="1181037720776840403">সরান</translation>
+<translation id="1200396280085622191">মেসেজ এবং অন্যান্য অ্যাপের লিঙ্কে ট্যাপ করার সময় Chrome ব্যবহার করুন।</translation>
 <translation id="1207113853726624428">নতুন সার্চ</translation>
 <translation id="1207493287814084192">বিকেল ৫:৩০</translation>
 <translation id="1209206284964581585">এখনকার মতো লুকান</translation>
@@ -73,6 +74,7 @@
 <translation id="1358214951266274152">আপনার কপি করা লিঙ্কে যান</translation>
 <translation id="1360432990279830238">সাইন-আউট করে সিঙ্ক বন্ধ করবেন?</translation>
 <translation id="1363028406613469049">ট্র্যাক</translation>
+<translation id="1365106417372288489">আপনার iPhone সম্প্রতি ফিরিয়ে আনা হয়েছে, যেটি হয়ত আপনার ডিফল্ট ব্রাউজার পরিবর্তন করেছে।</translation>
 <translation id="1375321115329958930">সংরক্ষিত পাসওয়ার্ড</translation>
 <translation id="1377255359165588604">সিঙ্ক কাজ করা বন্ধ করে দিয়েছে।</translation>
 <translation id="1377321085342047638">কার্ড নম্বর</translation>
@@ -149,6 +151,7 @@
 <translation id="1872096359983322073">টর্চ</translation>
 <translation id="1883255238294161206">তালিকা সঙ্কুচিত করুন</translation>
 <translation id="1894023287452300670">এখানে দাম ট্র্যাক করুন</translation>
+<translation id="189531189292803889">আপনার iPad সম্প্রতি ফিরিয়ে আনা হয়েছে, যেটি হয়ত আপনার ডিফল্ট ব্রাউজার পরিবর্তন করেছে।</translation>
 <translation id="1910975740091000991">iOS-এর জন্য Chrome</translation>
 <translation id="1911619930368729126">Google ড্রাইভে আপলোড করুন</translation>
 <translation id="1923342640370224680">শেষ ঘণ্টা</translation>
@@ -163,6 +166,7 @@
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1980417445547898121">{count,plural, =1{এই iPhone-এ, অন্য ডিভাইসে অ্যাক্টিভ থাকা আপনার {count}টি সাম্প্রতিক ট্যাব দেখুন}one{এই iPhone-এ, অন্য ডিভাইসে অ্যাক্টিভ থাকা আপনার {count}টি সাম্প্রতিক ট্যাব দেখুন}other{এই iPhone-এ, অন্য ডিভাইসে অ্যাক্টিভ থাকা আপনার {count}টি সাম্প্রতিক ট্যাব দেখুন}}</translation>
 <translation id="1981118202195772574">মোবাইল</translation>
+<translation id="1987779152850321833">Chrome ব্যবহার করার সবচেয়ে ভাল সুবিধা পেতে নিচে সাজেস্ট করা এইসব অ্যাকশন সম্পূর্ণ করুন।</translation>
 <translation id="1989112275319619282">ব্রাউজ করুন</translation>
 <translation id="1990820278544963435">খুঁজুন</translation>
 <translation id="199425419756152024">পাসওয়ার্ড দেখুন</translation>
@@ -320,6 +324,7 @@
 <translation id="2952246431280799028">কোনও ঠিকানাতে টাচ করে ধরে থাকুন।</translation>
 <translation id="2952278131021475699">Lens-এর ক্যামেরার মাধ্যমে সার্চ করার সুবিধা</translation>
 <translation id="2952581218264071393">১. Chrome সেটিংস খুলুন</translation>
+<translation id="2956733177489514605">আপনার পাসওয়ার্ড এবং আরও অনেক কিছু সিঙ্ক করতে Google অ্যাকাউন্ট দিয়ে সাইন-ইন করুন।</translation>
 <translation id="2958718410589002129">পাসওয়ার্ড</translation>
 <translation id="2961210776189273067">সম্বোধন</translation>
 <translation id="2964349545761222050">থার্ড-পার্টি কুকি ব্লক করুন</translation>
@@ -341,6 +346,7 @@
 এক্ষেত্রে প্রযোজ্য হলে, আপনার সার্চ ইতিহাস মোছার জন্য সার্চ ইঞ্জিনের নির্দেশাবলী দেখুন।</translation>
 <translation id="3080525922482950719">পরে বা অফলাইনে পড়ার জন্য আপনি পৃষ্ঠা সেভ করে রাখতে পারেন</translation>
 <translation id="3081338492074632642">আপনি যে পাসওয়ার্ডটি সেভ করছেন, সেটি <ph name="WEBSITE" />-এ আপনার দেওয়া পাসওয়ার্ডের সাথে মিলছে কিনা ভাল করে দেখে নিন</translation>
+<translation id="309672519329227863">অন্যান্য অ্যাপ জুড়ে আপনার Chrome পাসওয়ার্ড ও আরও অনেক কিছু অ্যাক্সেস করুন।</translation>
 <translation id="3112556859945124369">চিহ্নিত করুন…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />আপনি কী সিঙ্ক করতে পারবেন তা দেখুন<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">ইতিহাস ও আরও অনেক কিছু</translation>
@@ -519,6 +525,7 @@
 <translation id="4277990410970811858">নিরাপদ ব্রাউজিং</translation>
 <translation id="4281844954008187215">পরিষেবার শর্তাদি</translation>
 <translation id="4293080268407233932">সার্চ করুন</translation>
+<translation id="4302248187517737842">কোনও ইউজারনেম নেই ••••••••</translation>
 <translation id="4304713468139749426">পাসওয়ার্ড ম্যানেজার</translation>
 <translation id="430793432425771671">সবকিছু সিঙ্ক করুন</translation>
 <translation id="4309403553630140242">আরও তথ্য জানতে ডবল ট্যাপ করুন</translation>
@@ -698,6 +705,7 @@
 <translation id="5478327362747197944">ওয়েব পৃষ্ঠাতে কোনও তারিখের উপর ক্লিক করার মাধ্যমে সরাসরি ক্যালেন্ডার ইভেন্ট তৈরি করুন।</translation>
 <translation id="5489208564673669003">সব সাইটের জন্য কুকি ম্যানেজ করতে, <ph name="BEGIN_LINK" />কুকি সেটিংস<ph name="END_LINK" /> দেখুন।</translation>
 <translation id="5490005495580364134">সমস্ত সাইটের কুকি ব্লক করুন (যদিও আমরা এটি করতে সাজেস্ট করছি না)</translation>
+<translation id="5511959326926949696">আপনার ব্রাউজারের জন্য ঐচ্ছিক অত্যন্ত শক্তিশালী সুরক্ষা। এটি তখনই ব্যবহার করা উচিত যখন আপনার মনে হয় যে আপনি দারুণ অত্যাধুনিক সাইবার অ্যাটাকের টার্গেট হতে পারেন।</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ঘঃ আগে</translation>
 <translation id="5520466080178053306">প্রথমে Password Manager এবং তারপরে 'যোগ করুন' বিকল্পে ট্যাপ করুন</translation>
 <translation id="5525095647255982834">অন্য ডিভাইসে এই ট্যাবটি পাঠাতে, সেখানে Chrome-এ সাইন-ইন করুন।</translation>
@@ -815,6 +823,7 @@
 <translation id="6149061208933997199">পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="6152406514676263192">আপনার আগ্রহের উপর ভিত্তি করে সবচেয়ে প্রাসঙ্গিক কন্টেন্টের জন্য সিঙ্ক করুন।</translation>
 <translation id="6159839020698489198">ঐচ্ছিক</translation>
+<translation id="6166946945007577435">যেখানে যেতে চান সেখানে যাওয়ার জন্য সহায়তা করতে নতুন মেনু।</translation>
 <translation id="6170450281939467187">অনুবাদ করা যায়নি</translation>
 <translation id="6173499589275053515">পাসওয়ার্ড আপনার Google অ্যাকাউন্ট, <ph name="EMAIL" />-এ সেভ করা আছে</translation>
 <translation id="6177442314419606057">Chrome-এ সার্চ করুন</translation>
@@ -1045,6 +1054,7 @@
 <translation id="750493650310597496">০টি নির্বাচিত</translation>
 <translation id="7508728395076009983">আপনার 'ছদ্মবেশী' ট্যাব লক করতে 'টাচ আইডি', 'ফেস আইডি' বা 'পাসকোড' সেট করুন।</translation>
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
+<translation id="7524055474074101597">অ্যাপ জুড়ে আপনার পাসওয়ার্ড ও আরও অনেক কিছু অ্যাক্সেস করুন।</translation>
 <translation id="7531345132340165516">বর্তমান সাইট</translation>
 <translation id="7537586195939242955">দুঃখিত, এই সময়ে পাসবুকে আপনার পাস ইনস্টল করা যাবে না৷</translation>
 <translation id="754655535278952384"><ph name="TIME" />-এ টিক চিহ্ন দেওয়া হয়েছে</translation>
@@ -1052,6 +1062,7 @@
 <translation id="7554645225856321710">সব বন্ধ করুন</translation>
 <translation id="7554791636758816595">নতুন ট্যাব</translation>
 <translation id="7561196759112975576">সবসময়</translation>
+<translation id="7582857256643797524">আপনার ডিভাইসে এই সেটিং চালু করা আছে</translation>
 <translation id="7583004045319035904">আপনার ছদ্মবেশী ট্যাব আনলক করতে, <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ব্যবহার করুন।</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> কখনও অনুবাদ করবেন না</translation>
 <translation id="7603852183842204213">পপ-আপ ব্লক (<ph name="NUMBER_OF_BLOCKED_POPUPS" />টি)</translation>
@@ -1178,6 +1189,7 @@
 <translation id="8319076807703933069">নতুন ট্যাবে সার্চ করুন</translation>
 <translation id="8323906514956095947">আরও ট্যাবের বিকল্প দেখতে টাচ করে ধরে থাকুন</translation>
 <translation id="8328777765163860529">সমস্ত বন্ধ করুন</translation>
+<translation id="8331621926962374866">Chrome 'লকডাউন' মোডে থাকাকালীন, নির্দিষ্ট ওয়েব প্রযুক্তি ব্লক করা থাকে, যার জন্য কিছু ওয়েবসাইট খুব ধীরগতিতে লোড হতে পারে বা সঠিকভাবে কাজ নাও করতে পারে।</translation>
 <translation id="8343993175958086504">আপনার ডেটার ব্যাক-আপ নিন এবং যেকোনও ডিভাইসে তা ব্যবহার করুন।</translation>
 <translation id="834783239627985533">সবচেয়ে বেশিবার ভিজিট করা সাইট</translation>
 <translation id="8378714024927312812">আপনার প্রতিষ্ঠানের দ্বারা ম্যানেজ করা</translation>
@@ -1328,9 +1340,11 @@
 <translation id="952704832371081537">বাতিল করুন</translation>
 <translation id="953008885340860025">Chrome থেকে সাইন-আউট হয়ে গেছেন</translation>
 <translation id="959066944189734975">আপনি <ph name="CHANNEL_NAME" /> ফলো করছেন</translation>
+<translation id="97300214378190234">অন্যান্য অ্যাপের লিঙ্কে ট্যাপ করার সময় Chrome ব্যবহার করুন।</translation>
 <translation id="973493300226275298">অনলাইন স্টোর জুড়ে প্রোডাক্টের দাম ট্র্যাক করুন। দাম কমে গেলে আপনি বিজ্ঞপ্তি পাবেন।</translation>
 <translation id="981498610235328462">শুধুমাত্র নির্দিষ্ট অ্যাকাউন্টের মাধ্যমেই আপনার সংস্থা সাইন-ইন করার অনুমতি দেবে। অনুমোদন করা নেই এমন অ্যাকাউন্ট লুকানো আছে।</translation>
 <translation id="984509647832111802">সিঙ্ক কাজ করছে না।</translation>
+<translation id="984879470761322682">Chrome-এ 'লকডাউন' মোড বন্ধ করতে এটি আপনার ডিভাইসে বন্ধ করুন।</translation>
 <translation id="988141524645182168">অন্যান্য ডিভাইস</translation>
 <translation id="989988560359834682">ঠিকানা সম্পাদনা করুন</translation>
 <translation id="994757059139821576">নিবন্ধ সম্পর্কিত প্রস্তাবনা</translation>

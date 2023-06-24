@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">መሣሪያዎች ይገኛሉ</translation>
 <translation id="1550523713251050646">ለተጨማሪ አማራጮች ጠቅ ያድርጉ</translation>
 <translation id="1555130319947370107">ሰማያዊ</translation>
+<translation id="1557622599341396706">የዴስክ ስምን አሳይ</translation>
 <translation id="1576511610858879060">የእርስዎ Chromebook ወይም የብሉቱዝ መሣሪያ የድሮ የሆነ የብሉቱዝ ስሪት እየተጠቀመ ነው። ለተሻለ የኦዲዮ ጥራት ሌላ የግብዓት ምንጭ ይጠቀሙ።</translation>
 <translation id="1576623706766186887">ማጉያ ሲበራ አሳንሥ</translation>
 <translation id="1586324912145647027">ወደ ዴስክ 1 እስከ 8 ይሂዱ</translation>
@@ -984,10 +985,12 @@
 <translation id="5308380583665731573">ይገናኙ</translation>
 <translation id="5313326810920013265">የብሉቱዝ ቅንብሮች</translation>
 <translation id="5314219114274263156">የማያ ገፅ ቀረጻ ተቀድቷል</translation>
+<translation id="5314489738835854379">በመስኮቶች አማካኝነት ወደፊት ተጓዝ</translation>
 <translation id="5316716239522500219">ማሳያዎችን አንጸባርቅ</translation>
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5319712128756744240">አዲስ መሣሪያ ያጣምሩ</translation>
 <translation id="5322611492012084517">የእርስዎን ስልክ ማግኘት አልተቻለም</translation>
+<translation id="5323994101633366939">የዴስክ ስምን ደብቅ</translation>
 <translation id="5327248766486351172">ስም</translation>
 <translation id="5329548388331921293">በማገናኘት ላይ...</translation>
 <translation id="5331975486040154427">USB-C መሣሪያ (የግራ ጎን ኋላ ወደብ)</translation>
@@ -1130,6 +1133,7 @@
 <translation id="5958529069007801266">ክትትል የሚደረግበት ተጠቃሚ</translation>
 <translation id="5961960957587052807">ብርሃን</translation>
 <translation id="5965524703725988602">ጠቆር ያለ ገጽታን ቀያይር። <ph name="STATE_TEXT" />።</translation>
+<translation id="5975235751479998104">በመስኮቶች አማካኝነት ወደኋላ ተጓዝ</translation>
 <translation id="5976112937189445008">መስኮት ለመቅዳት አስገባን ይጫኑ</translation>
 <translation id="5978382165065462689">የማያ ገጽዎን ቁጥጥር በርቀት እርዳታ በኩል በማጋራት ላይ።</translation>
 <translation id="5980301590375426705">ከእንግዳ ውጣ</translation>
@@ -1169,6 +1173,7 @@
 <translation id="6103838137565245112">ሥርዓት</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> የንግግር ፋይሎች ወርደዋል</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />። <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">የቀለም ማስተካከያ</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ማውረድን ያረጋግጡ</translation>
 <translation id="612734058257491180">የGoogle ረዳቱ በእንግዳ ክፍለ-ጊዜ ውስጥ አይገኝም።</translation>
 <translation id="6129953537138746214">ባዶ ቦታ</translation>
@@ -1340,6 +1345,7 @@
 <translation id="6891721121089053234">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን የቅርብ ጊዜ ሚዲያ፣ እና መተግበሪያዎች ይመልከቱ</translation>
 <translation id="6896758677409633944">ቅዳ</translation>
 <translation id="6901883536534621389">ለማሰስ የእጅ ምልክቶችን ይሞክሩ</translation>
+<translation id="6912841030378044227">በአድራሻ አሞሌ ላይ አተኩር</translation>
 <translation id="6919251195245069855">የእርስዎን ዘመናዊ ካርድ ለይቶ ማወቅ አልተቻለም። እንደገና ይሞክሩ።</translation>
 <translation id="6920245099716267363">መገናኛ ነጥብ ቀያይር። መገናኛ ነጥብ በርቷል፣ 1 መሣሪያ ተገናኝቷል።</translation>
 <translation id="6931576957638141829">አስቀምጥ ወደ</translation>
@@ -1636,6 +1642,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />፣ መተግበሪያ</translation>
 <translation id="8255234195843591763">ለማዘመን ዳግም ያስጀምሩ</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
+<translation id="8262312463845990408">መልሶ ማጫወትን ይቀያይሩ</translation>
 <translation id="8270450402312105425">{0,plural, =1{በአንድ ሰዓት ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}one{በ# ሰዓታት ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}other{በ# ሰዓታት ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይቀይሩ}}</translation>
 <translation id="8277261673056602147">በማያ ገጽዎ ላይ ጽሁፍ ያድምቁ</translation>
 <translation id="8284362522226889623">ወደ ቀዳሚው ዴስክ ለመቀየር በአራት ጣቶች ወደ ግራ ያንሸራትቱ</translation>
@@ -1813,7 +1820,6 @@
 <translation id="9089416786594320554">የግቤት ስልቶች</translation>
 <translation id="9091626656156419976">ማሳያ <ph name="DISPLAY_NAME" /> ተወግዷል</translation>
 <translation id="9098969848082897657">የስልክ ድምጽን አጥፋ</translation>
-<translation id="9105450214093926548">የLacros አሳሹ በሚሰራበት ጊዜ ወደ ሁለተኛው ተጠቃሚ በመለያ በመግባት አይደገፍም። እባክዎ በምትኩ በLacros ውስጥ ሁለተኛ የአሳሽ መገለጫ ይጠቀሙ ወይም Lacrosን ይዝጉ እና እንደገና ይሞክሩ።</translation>
 <translation id="9120448753905017833">በተንቀሳቃሽ ስልክ ውሂብ አማካኝነት መገናኛ ነጥብ መጠቀም ለመጀመር Wi-Fiን አጥፍተነዋል። ይህ የውሂብ ወጪዎችን ሊያስከትል ይችላል።</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ወይም <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">የመጨረሻውን ድርጊት ይቀልብሱ</translation>

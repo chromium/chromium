@@ -369,7 +369,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8013993649590906847">Ha valamelyik kép nem rendelkezik hasznos leírással, akkor a Chrome igyekszik leírást adni róla. A Google automatikusan megkapja a leírások létrehozásához szükséges képeket.</translation>
 <translation id="8019103195866286235">A bővítmény közzétételét visszavonta a fejlesztő, és előfordulhat, hogy nem biztonságos. Távolítsa el a Chrome-ból, így a továbbiakban már nem láthatja és módosíthatja az Ön felkeresett webhelyekkel kapcsolatos adatait, beleértve a személyes adatokat is.</translation>
 <translation id="80471789339884597">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt minden böngészőt újra kell indítania.</translation>
-<translation id="8057070436257749375">{COUNT,plural, =1{Szervezete automatikusan törli a böngészési adatokat, ha a Chrome 1 percig nincs használatban. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések. A megnyitott lapok nyitva maradnak.}other{Szervezete automatikusan törli a böngészési adatokat, ha a Chrome # percig nincs használatban. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések. A megnyitott lapok nyitva maradnak.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">A &amp;Google Chrome névjegye</translation>
 <translation id="813913629614996137">Indítás…</translation>

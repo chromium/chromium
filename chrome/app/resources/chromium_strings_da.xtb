@@ -180,7 +180,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="479167709087336770">Dette anvender den samme stavekontrol, som anvendes i Google Søgning. Tekst, som du angiver i browseren, sendes til Google. Du kan altid ændre denne adfærd i indstillingerne.</translation>
 <translation id="4888717733111232871">Indgående regel for Chromium om at tillade mDNS-trafik.</translation>
 <translation id="4893347770495441059">Genstart og opdater &amp;Chromium</translation>
-<translation id="4927674536707046009">{COUNT,plural, =1{Din organisation sletter automatisk browserdata, når Chromium ikke bruges i 1 minut. Disse kan omfatte historik, autofyld og downloads. Dine eksisterende faner forbliver åbne.}one{Din organisation sletter automatisk browserdata, når Chromium ikke bruges i # minut. Disse kan omfatte historik, autofyld og downloads. Dine eksisterende faner forbliver åbne.}other{Din organisation sletter automatisk browserdata, når Chromium ikke bruges i # minutter. Disse kan omfatte historik, autofyld og downloads. Dine eksisterende faner forbliver åbne.}}</translation>
 <translation id="4943838377383847465">Chromium kører i baggrunden.</translation>
 <translation id="4987820182225656817">Gæster kan bruge Chromium uden at efterlade noget.</translation>
 <translation id="4994636714258228724">Tilføj dig selv i Chromium</translation>

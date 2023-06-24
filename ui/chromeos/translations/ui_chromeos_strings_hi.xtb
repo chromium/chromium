@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">अभी नहीं</translation>
 <translation id="3486821258960016770">मंगोलियन</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> त्रुटियां.</translation>
-<translation id="3501954296166022751">Google Drive पर मौजूद आपकी फ़ाइलें ऑफ़लाइन उपलब्ध हैं</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> आइटम को सिंक किया जा रहा है...</translation>
 <translation id="3522708245912499433">पुर्तगाली</translation>
@@ -891,7 +890,6 @@
 <translation id="7972920761225148017">फ़्रेंच (स्विट्ज़रलैंड)</translation>
 <translation id="7973962044839454485">किसी गलत उपयोगकर्ता नाम या पासवर्ड के कारण PPP प्रमाणीकरण विफल रहा</translation>
 <translation id="7980421588063892270">कोलमैक कीबोर्ड के साथ अंग्रेज़ी (यूएस)</translation>
-<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> फ़ाइलें सिंक की जा रही हैं</translation>
 <translation id="8000066093800657092">नेटवर्क नहीं है</translation>
 <translation id="8008366997883261463">श्वान</translation>
 <translation id="8028993641010258682">आकार</translation>
@@ -1048,7 +1046,6 @@
 <translation id="9213073329713032541">ठीक से इंस्टॉल होना शुरू हो गया है.</translation>
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="9219908252191632183">लूनर</translation>
-<translation id="937795003075802289">1 फ़ाइल सिंक की जा रही है</translation>
 <translation id="938470336146445890">कृपया कोई 'उपयोगकर्ता प्रमाणपत्र' इंस्टॉल करें.</translation>
 <translation id="939736085109172342">नया फ़ोल्डर</translation>
 <translation id="943972244133411984">बदलाव करने वाले</translation>

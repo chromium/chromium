@@ -929,6 +929,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="504465286040788597">Prethodni odlomak</translation>
 <translation id="5045550434625856497">Pogrešna zaporka</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">Primit ćete obavijest ako govorite, a zvuk je isključen. Zvuk se nikad ne šalje s uređaja.</translation>
 <translation id="5078796286268621944">Netočan PIN</translation>
 <translation id="5083553833479578423">Otključajte više značajki Asistenta.</translation>
 <translation id="5092436659250499817">Uključivanje/isključivanje pozadinskog osvjetljenja tipkovnice</translation>
@@ -959,6 +960,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5207949376430453814">Istakni znak za umetanje teksta</translation>
 <translation id="5208059991603368177">Uključeno</translation>
 <translation id="5216991270656129561">Isključeno do <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Brzo šaljite poruke telefona ili odgovarajte na njih pomoću Phone huba.</translation>
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5229343007215035173">Uključivanje/isključivanje zaslona privatnosti</translation>
 <translation id="5234764350956374838">Odbaci</translation>
@@ -1817,7 +1819,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="9089416786594320554">Načini unosa</translation>
 <translation id="9091626656156419976">Zaslon <ph name="DISPLAY_NAME" /> uklonjen je</translation>
 <translation id="9098969848082897657">Utišaj telefon</translation>
-<translation id="9105450214093926548">Prijava drugog korisnika nije podržana tijekom izvođenja preglednika Lacros. Umjesto toga upotrijebite drugi profil preglednika u Lacrosu ili zatvorite Lacros i pokušajte ponovo.</translation>
 <translation id="9120448753905017833">Isključili smo Wi-Fi da bi se žarišna točka počela upotrebljavati putem mobilnih podataka. To može uzrokovati troškove za prijenos podataka.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ili <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Poništavanje zadnje radnje</translation>

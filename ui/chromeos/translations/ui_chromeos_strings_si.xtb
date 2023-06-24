@@ -299,7 +299,6 @@
 <translation id="3479552764303398839">දැන් නොවේ</translation>
 <translation id="3486821258960016770">මොන්ගෝලියානු</translation>
 <translation id="3495304270784461826">දෝෂ <ph name="COUNT" />.</translation>
-<translation id="3501954296166022751">ඔබේ Google Drive ගොනු නොබැඳිව ඇත</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, විස්තර</translation>
 <translation id="3511705761158917664">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් සමමුහුර්ත කිරීමට සූදානම් කරමින්...</translation>
 <translation id="3522708245912499433">පෘතුගීසි</translation>
@@ -890,7 +889,6 @@
 <translation id="7972920761225148017">ප්‍රංශ (ස්විට්සර්ලන්තය)</translation>
 <translation id="7973962044839454485">වැරදි පරිශීලක නමක් හෝ මුරපදයක් නිසා PPP අවසරදීම අසාර්ථක විය.</translation>
 <translation id="7980421588063892270">Colemak යතුරුපුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
-<translation id="7985008041109611710">ගොනු <ph name="NUMBER_OF_FILES_SYNCING" />ක් සමමුහූර්ත කරමින්</translation>
 <translation id="8000066093800657092">ජාලයක් නැත</translation>
 <translation id="8008366997883261463">ජැක් රසල් ටෙරියර්</translation>
 <translation id="8028993641010258682">ප්‍රමාණය</translation>
@@ -1047,7 +1045,6 @@
 <translation id="9213073329713032541">ස්ථාපනය සාර්ථකව ආරම්භ විය.</translation>
 <translation id="9219103736887031265">රූප</translation>
 <translation id="9219908252191632183">චන්ද්‍රයා</translation>
-<translation id="937795003075802289">1 ගොනුවක් සමමුහූර්ත කරමින්</translation>
 <translation id="938470336146445890">කරුණාකර පරිශීලක සහතිකයක් ස්ථාපනය කරන්න.</translation>
 <translation id="939736085109172342">නව ෆෝල්ඩරය</translation>
 <translation id="943972244133411984">වෙනස් කරන ලද්දේ</translation>

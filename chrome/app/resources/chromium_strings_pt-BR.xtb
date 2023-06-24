@@ -178,7 +178,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="479167709087336770">Esta opção usa o mesmo corretor ortográfico usado na Pesquisa Google. O texto digitado no navegador é enviado para o Google. É possível alterar esse comportamento nas configurações a qualquer momento.</translation>
 <translation id="4888717733111232871">Regra interna para que o Chromium permita tráfego mDNS.</translation>
 <translation id="4893347770495441059">Reinicializar para atualizar o &amp;Chromium</translation>
-<translation id="4927674536707046009">{COUNT,plural, =1{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por 1 minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. As guias vão continuar abertas.}one{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por # minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. As guias vão continuar abertas.}other{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por # minutos. Isso pode incluir o histórico, o preenchimento automático e os downloads. As guias vão continuar abertas.}}</translation>
 <translation id="4943838377383847465">O Chromium está em modo de segundo plano.</translation>
 <translation id="4987820182225656817">Convidados podem usar o Chromium sem deixar nada para trás.</translation>
 <translation id="4994636714258228724">Cadastrar-se no Chromium</translation>

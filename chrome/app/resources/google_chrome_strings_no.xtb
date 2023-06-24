@@ -368,7 +368,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8013993649590906847">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chrome å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google.</translation>
 <translation id="8019103195866286235">Denne utvidelsen er avpublisert av utvikleren og kan være utrygg. Fjern den fra Chrome, slik at den ikke lenger kan se og endre dataene dine på nettsteder du besøker, inkludert personopplysningene dine.</translation>
 <translation id="80471789339884597">Installasjonen er fullført. Start alle nettlesere på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
-<translation id="8057070436257749375">{COUNT,plural, =1{Organisasjonen din sletter nettlesingsdata automatisk når Chrome ikke har vært i bruk på ett minutt. Dette kan omfatte loggen, autofyll og nedlastinger. De eksisterende fanene dine forblir åpne.}other{Organisasjonen din sletter nettlesingsdata automatisk når Chrome ikke har vært i bruk på # minutter. Dette kan omfatte loggen, autofyll og nedlastinger. De eksisterende fanene dine forblir åpne.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Om &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialiserer …</translation>
