@@ -505,7 +505,7 @@ BASE_FEATURE(kCrOSEnforceSystemAecAgc,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCrOSEnforceSystemAec,
              "CrOSEnforceSystemAec",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCrOSDspBasedAecDeactivatedGroups,
              "CrOSDspBasedAecDeactivatedGroups",
