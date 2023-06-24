@@ -222,4 +222,9 @@ public interface ProcessScopeDependencyProvider {
     default boolean enableAppFlowDebugging() {
         return false;
     }
+
+    /** @return the Color provider. */
+    default ColorProvider getColorProvider() {
+        return null;
+    }
 }
