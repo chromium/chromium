@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 188 tests; 0 PASS, 188 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 197 tests; 0 PASS, 197 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL abs(1) should be used-value-equivalent to 1 assert_not_equals: abs(1) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 FAIL sign(1) should be used-value-equivalent to 1 assert_not_equals: sign(1) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 FAIL abs(-1) should be used-value-equivalent to 1 assert_not_equals: abs(-1) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
@@ -14,10 +14,19 @@ FAIL calc(abs(sign(0.1) + 0.2) / 2) should be used-value-equivalent to 0.6 asser
 FAIL calc(abs(0.1 + 0.2) * -2) should be used-value-equivalent to -0.6 assert_not_equals: calc(abs(0.1 + 0.2) * -2) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 FAIL calc(sign(0.1 - 0.2) - 0.05) should be used-value-equivalent to -1.05 assert_not_equals: calc(sign(0.1 - 0.2) - 0.05) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 FAIL calc(sign(1) + sign(1) - 0.05) should be used-value-equivalent to 1.95 assert_not_equals: calc(sign(1) + sign(1) - 0.05) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL abs(10px) should be used-value-equivalent to 10px assert_not_equals: abs(10px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL abs(10%) should be used-value-equivalent to 10px assert_not_equals: abs(10%) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL abs(10px + 10%) should be used-value-equivalent to 20px assert_not_equals: abs(10px + 10%) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL calc(10px + abs(10%)) should be used-value-equivalent to 20px assert_not_equals: calc(10px + abs(10%)) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL abs(-10px) should be used-value-equivalent to 10px assert_not_equals: abs(-10px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL abs(-10%) should be used-value-equivalent to 10px assert_not_equals: abs(-10%) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 FAIL calc(calc(sign(-0))) should be used-value-equivalent to 0 assert_not_equals: calc(calc(sign(-0))) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 FAIL clamp(-1, calc( 1 / sign(calc(sign(-0)))), 1) should be used-value-equivalent to -1 assert_not_equals: clamp(-1, calc( 1 / sign(calc(sign(-0)))), 1) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 FAIL calc(calc(sign(0))) should be used-value-equivalent to 0 assert_not_equals: calc(calc(sign(0))) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 FAIL clamp(-1, calc( 1 / sign(calc(sign(0)))), 1) should be used-value-equivalent to 1 assert_not_equals: clamp(-1, calc( 1 / sign(calc(sign(0)))), 1) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
+FAIL abs(infinity) should be used-value-equivalent to calc(infinity) assert_not_equals: abs(infinity) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL abs(-infinity) should be used-value-equivalent to calc(infinity) assert_not_equals: abs(-infinity) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL abs(NaN) should be used-value-equivalent to calc(NaN) assert_not_equals: abs(NaN) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 FAIL sign(1px) should be used-value-equivalent to 1 assert_not_equals: sign(1px) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 FAIL sign(1cm) should be used-value-equivalent to 1 assert_not_equals: sign(1cm) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 FAIL sign(1mm) should be used-value-equivalent to 1 assert_not_equals: sign(1mm) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"

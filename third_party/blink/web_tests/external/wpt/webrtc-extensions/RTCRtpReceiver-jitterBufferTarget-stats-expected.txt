@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
-FAIL measure raising video jitterBufferTarget to 250 assert_equals: jitterBufferTarget supported for video expected (object) null but got (undefined) undefined
-FAIL measure raising audio jitterBufferTarget to 250 assert_equals: jitterBufferTarget supported for audio expected (object) null but got (undefined) undefined
-FAIL measure lowering video jitterBufferTarget to 150 assert_equals: jitterBufferTarget supported for video expected (object) null but got (undefined) undefined
-FAIL measure lowering audio jitterBufferTarget to 150 assert_equals: jitterBufferTarget supported for audio expected (object) null but got (undefined) undefined
+FAIL measure raising and lowering video jitterBufferTarget assert_equals: jitterBufferTarget supported for video expected (object) null but got (undefined) undefined
+FAIL measure raising and lowering audio jitterBufferTarget assert_equals: jitterBufferTarget supported for audio expected (object) null but got (undefined) undefined
 Harness: the test ran to completion.
 

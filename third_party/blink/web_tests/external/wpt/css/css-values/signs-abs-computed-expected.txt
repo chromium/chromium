@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 188 tests; 186 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 197 tests; 194 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS abs(1) should be used-value-equivalent to 1
 PASS sign(1) should be used-value-equivalent to 1
 PASS abs(-1) should be used-value-equivalent to 1
@@ -14,10 +14,19 @@ PASS calc(abs(sign(0.1) + 0.2) / 2) should be used-value-equivalent to 0.6
 PASS calc(abs(0.1 + 0.2) * -2) should be used-value-equivalent to -0.6
 PASS calc(sign(0.1 - 0.2) - 0.05) should be used-value-equivalent to -1.05
 PASS calc(sign(1) + sign(1) - 0.05) should be used-value-equivalent to 1.95
+PASS abs(10px) should be used-value-equivalent to 10px
+PASS abs(10%) should be used-value-equivalent to 10px
+FAIL abs(10px + 10%) should be used-value-equivalent to 20px assert_not_equals: abs(10px + 10%) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+PASS calc(10px + abs(10%)) should be used-value-equivalent to 20px
+PASS abs(-10px) should be used-value-equivalent to 10px
+PASS abs(-10%) should be used-value-equivalent to 10px
 PASS calc(calc(sign(-0))) should be used-value-equivalent to 0
 PASS clamp(-1, calc( 1 / sign(calc(sign(-0)))), 1) should be used-value-equivalent to -1
 PASS calc(calc(sign(0))) should be used-value-equivalent to 0
 PASS clamp(-1, calc( 1 / sign(calc(sign(0)))), 1) should be used-value-equivalent to 1
+PASS abs(infinity) should be used-value-equivalent to calc(infinity)
+PASS abs(-infinity) should be used-value-equivalent to calc(infinity)
+PASS abs(NaN) should be used-value-equivalent to calc(NaN)
 PASS sign(1px) should be used-value-equivalent to 1
 PASS sign(1cm) should be used-value-equivalent to 1
 PASS sign(1mm) should be used-value-equivalent to 1

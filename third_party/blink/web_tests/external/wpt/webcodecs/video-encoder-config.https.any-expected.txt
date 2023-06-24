@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+PASS Test that VideoEncoder.isConfigSupported() rejects invalid config:Emtpy codec
+PASS Test that VideoEncoder.isConfigSupported() rejects invalid config:Unrecognized codec
+PASS Test that VideoEncoder.isConfigSupported() rejects invalid config:Width is 0
+PASS Test that VideoEncoder.isConfigSupported() rejects invalid config:Height is 0
+FAIL Test that VideoEncoder.isConfigSupported() rejects invalid config:displayWidth is 0 assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Test that VideoEncoder.isConfigSupported() rejects invalid config:displayHeight is 0 assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL VideoEncoder.isConfigSupported() doesn't support config:Invalid scalability mode promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'isConfigSupported' on 'VideoEncoder': Unsupported scalabilityMode."
+FAIL VideoEncoder.isConfigSupported() doesn't support config:Width is too large promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'isConfigSupported' on 'VideoEncoder': Invalid width; expected range from 1 to 32767, received 1000000."
+FAIL VideoEncoder.isConfigSupported() doesn't support config:Height is too large promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'isConfigSupported' on 'VideoEncoder': Invalid height; expected range from 1 to 32767, received 1000000."
+PASS VideoEncoder.isConfigSupported() doesn't support config:Too strenuous accelerated encoding parameters
+PASS VideoEncoder.isConfigSupported() doesn't support config:Odd sized frames for H264
+PASS VideoEncoder.isConfigSupported() supports:{"codec":"avc1.42001E","hardwareAcceleration":"no-preference","width":640,"height":480,"bitrate":5000000,"framerate":24,"avc":{"format":"annexb"},"futureConfigFeature":"foo"}
+PASS VideoEncoder.isConfigSupported() supports:{"codec":"vp8","hardwareAcceleration":"no-preference","width":800,"height":600,"bitrate":7000000,"bitrateMode":"variable","framerate":60,"scalabilityMode":"L1T2","futureConfigFeature":"foo","latencyMode":"quality","avc":{"format":"annexb"}}
+PASS VideoEncoder.isConfigSupported() supports:{"codec":"vp09.00.10.08","hardwareAcceleration":"no-preference","width":1280,"height":720,"bitrate":7000000,"bitrateMode":"constant","framerate":25,"futureConfigFeature":"foo","latencyMode":"realtime","alpha":"discard"}
+Harness: the test ran to completion.
+

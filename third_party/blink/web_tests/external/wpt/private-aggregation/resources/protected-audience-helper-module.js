@@ -137,7 +137,7 @@ async function runBasicFledgeTestExpectingNoWinner(test, testConfig) {
 // Passing worklets in null will cause the test fail.
 //
 // Null worklets test cases are handled under
-// third_party/blink/web_tests/external/wpt/fledge.
+// fledge.
 async function runReportTest(test, uuid, reportResult, reportWin) {
   assert_not_equals(reportResult, null)
   assert_not_equals(reportWin, null)

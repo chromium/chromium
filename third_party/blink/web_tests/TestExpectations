@@ -2815,6 +2815,9 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/editing/crashtests/insertparagraph-in-listitem-in-svg-followed-by-collapsible-spaces.html [ Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/workers/modules/shared-worker-import-failure.html [ Failure Timeout ]
+crbug.com/626703 [ Mac12 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=FailToParseSpeculationRulesHeader [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/view-timelines/view-timeline-inset.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/view-timelines/view-timeline-range.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-counter-styles/cjk-earthly-branch/css3-counter-styles-202.html [ Failure ]
@@ -2827,6 +2830,7 @@ crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/border-image-
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/border-image-004.html [ Failure ]
 crbug.com/626703 [ Mac13 Release ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-nesting/nesting-type-selector.html [ Failure ]
+crbug.com/626703 [ Mac11 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/cors/cors-keepalive.any.html [ Timeout ]
 crbug.com/626703 [ Mac13 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-range-animation.html [ Timeout ]
@@ -2888,6 +2892,7 @@ crbug.com/626703 [ Mac13-arm64 ] external/wpt/css/css-overflow/scrollbar-gutter-
 crbug.com/626703 [ Mac13-arm64 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-rl-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-cascade/import-conditional-002.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Timeout ]
 crbug.com/626703 external/wpt/shape-detection/single-barcode-detection.https.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/shape-detection/single-face-detection.https.html [ Failure Timeout ]
@@ -3052,6 +3057,7 @@ crbug.com/626703 [ Linux ] wpt_internal/webmidi/send-system-messages.https.html 
 crbug.com/626703 [ Linux ] wpt_internal/webxr/ar/ar_hittestsource_lifetimes.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/webxr/xrDevice_supportsSession_immersive.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] wpt_internal/webxr/xrSession_dataProviderDisconnect_immersive.https.html [ Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
