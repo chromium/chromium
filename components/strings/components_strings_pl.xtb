@@ -1083,7 +1083,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3646643500201740985">Pomiar skuteczności reklamy</translation>
 <translation id="3647286794400715637">Każda pozycja z adresami URL musi zawierać od 1 do 2 takich adresów.</translation>
 <translation id="3650584904733503804">Weryfikacja powiodła się</translation>
-<translation id="3650594806107685466">Aby zabezpieczyć kartę, wpisz kod CVC znajdujący się z <ph name="SIDE_OF_CARD" /></translation>
+<translation id="3650594806107685466">Ze względów bezpieczeństwa wpisz kod CVC znajdujący się <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3653033846669030038">Wesołe miasteczka</translation>
 <translation id="3655241534245626312">Otwórz ustawienia uprawnień</translation>
 <translation id="3655670868607891010">Jeśli często widzisz ten komunikat, przeczytaj <ph name="HELP_LINK" />.</translation>

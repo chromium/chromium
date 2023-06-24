@@ -1305,7 +1305,7 @@ Nieuwe installatie</translation>
 <translation id="7026338066939101231">Lager</translation>
 <translation id="7029814467594812963">Sessie sluiten</translation>
 <translation id="7032161822340700104">Er zijn maar 6 templates toegestaan. Verwijder een template om een nieuwe op te slaan.</translation>
-<translation id="7034025838182392395"><ph name="APP_NAME" /> wil de <ph name="DEVICE_NAME" /> gebruiken. Zet de fysieke <ph name="DEVICE_NAME" />schakelaar van je apparaat aan.</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> wil de <ph name="DEVICE_NAME" /> gebruiken. Zet de fysieke schakelaar van de <ph name="DEVICE_NAME" /> van je apparaat aan.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
 <translation id="7042322267639375032">Statusgedeelte samenvouwen</translation>
 <translation id="7045033600005038336">Template vervangen?</translation>

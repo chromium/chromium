@@ -391,7 +391,7 @@
 <translation id="4289849978083912975">スライドショー</translation>
 <translation id="4297501883039923494">停止 - 不明なエラー</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 件の画像</translation>
-<translation id="4311195029067684288">100%</translation>
+<translation id="4311195029067684288">フル</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> キーを押しました</translation>
 <translation id="435692326371619097">ネットワークの APN 設定を管理します。APN は、モバイル ネットワークとインターネットの間の接続を確立します。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">すべてのショートカットをリセットする</translation>
@@ -478,7 +478,7 @@
 <translation id="4932733599132424254">日付</translation>
 <translation id="4937657825850660613">半分</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> のファームウェアがバージョン <ph name="VERSION" /> に更新されました</translation>
-<translation id="4971925105143343452">一部</translation>
+<translation id="4971925105143343452">分割（大小）</translation>
 <translation id="4972592110715526173">モード変更</translation>
 <translation id="498186245079027698">スキャナを確認して、もう一度お試しください。デバイスにスキャンしたファイルを保存するのに十分な容量があるかどうかも確認してください。</translation>
 <translation id="4985509611418653372">実行</translation>
