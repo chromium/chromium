@@ -12,10 +12,10 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
-#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/message_center/message_center_test_util.h"
@@ -32,6 +32,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/message_center/message_center.h"
@@ -99,6 +100,18 @@ class AshMessagePopupCollectionTest : public AshTestBase,
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         keyboard::switches::kEnableVirtualKeyboard);
     AshTestBase::SetUp();
+  }
+
+  // Trigger the timeout so that shelf will show/hide immediately.
+  bool TriggerShelfAutoHideTimeout() {
+    auto* layout_manager = GetPrimaryShelf()->shelf_layout_manager();
+
+    if (!layout_manager->auto_hide_timer_.IsRunning()) {
+      return false;
+    }
+
+    layout_manager->auto_hide_timer_.FireNow();
+    return true;
   }
 
   bool IsQsRevampEnabled() const { return GetParam(); }
@@ -214,7 +227,7 @@ TEST_P(AshMessagePopupCollectionTest, AutoHide) {
   auto* popup_collection = GetPrimaryPopupCollection();
 
   int origin_x = popup_collection->GetPopupOriginX(popup_size);
-  int baseline = popup_collection->GetBaseline();
+  int shelf_show_baseline = popup_collection->GetBaseline();
 
   // Create a window, otherwise autohide doesn't work.
   std::unique_ptr<views::Widget> widget = CreateTestWidget(
@@ -222,7 +235,28 @@ TEST_P(AshMessagePopupCollectionTest, AutoHide) {
   Shelf* shelf = GetPrimaryShelf();
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
   EXPECT_EQ(origin_x, popup_collection->GetPopupOriginX(popup_size));
-  EXPECT_LT(baseline, popup_collection->GetBaseline());
+
+  // The baseline when shelf shows should be less than when it hides.
+  int shelf_hide_baseline = popup_collection->GetBaseline();
+  EXPECT_LT(shelf_show_baseline, shelf_hide_baseline);
+
+  // Tests that popup baseline changes when shelf shows/hides.
+  // Move down the mouse to show shelf. Popup should move up.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  gfx::Rect display_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  generator->MoveMouseTo(display_bounds.bottom_center());
+  ASSERT_TRUE(TriggerShelfAutoHideTimeout());
+  ASSERT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  EXPECT_EQ(shelf_show_baseline, popup_collection->GetBaseline());
+
+  // Move the mouse away to hide shelf. Popup should move down.
+  generator->MoveMouseTo(0, 0);
+  ASSERT_TRUE(TriggerShelfAutoHideTimeout());
+  ASSERT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+  EXPECT_EQ(shelf_hide_baseline, popup_collection->GetBaseline());
 }
 
 TEST_P(AshMessagePopupCollectionTest, DisplayResize) {
@@ -614,6 +648,56 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineBasedOnTrayBubble) {
   EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
 
   // The popup is adjusted to be at the baseline without the offset.
+  EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
+            popup_collection->GetBaseline());
+}
+
+TEST_P(AshMessagePopupCollectionTest,
+       AdjustBaselineBasedOnTrayBubbleAutoHideShelf) {
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  // Create a window, otherwise autohide doesn't work.
+  Shelf* shelf = GetPrimaryShelf();
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(0, 0, 50, 50));
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+
+  // Move mouse to the shelf to make it shows.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  gfx::Rect display_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  generator->MoveMouseTo(display_bounds.bottom_center());
+  ASSERT_TRUE(TriggerShelfAutoHideTimeout());
+  ASSERT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Test showing a bubble with the shelf showing in auto-hide state.
+  auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
+  unified_system_tray->ShowBubble();
+
+  AddNotification();
+  auto* popup = GetLastPopUpAdded();
+  ASSERT_TRUE(popup);
+
+  // The added popup should appears on top of the tray bubble, separated by a
+  // padding of `kMarginBetweenPopups`.
+  EXPECT_EQ(popup->GetBoundsInScreen().bottom() +
+                message_center::kMarginBetweenPopups,
+            unified_system_tray->GetBubbleBoundsInScreen().y());
+  int old_popup_bottom = popup->GetBoundsInScreen().bottom();
+
+  // Click on the screen corner to hide the shelf and the bubble. The shelf
+  // should hide now and the popup is adjusted correctly to the baseline.
+  generator->MoveMouseTo(0, 0);
+  generator->ClickLeftButton();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+  // The popup is moved down to be at the baseline without the offset.
+  EXPECT_LT(old_popup_bottom, popup->GetBoundsInScreen().bottom());
+  auto* popup_collection = GetPrimaryPopupCollection();
+  EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
   EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
             popup_collection->GetBaseline());
 }

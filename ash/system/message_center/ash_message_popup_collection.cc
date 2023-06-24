@@ -90,17 +90,9 @@ void AshMessagePopupCollection::SetBaselineOffset(int baseline_offset) {
 
   baseline_offset_ = baseline_offset;
 
-  // If the shelf is shown during auto-hide state, the distance from the edge
-  // should be reduced by the height of shelf's shown height.
-  if (shelf_->GetVisibilityState() == SHELF_AUTO_HIDE &&
-      shelf_->GetAutoHideState() == SHELF_AUTO_HIDE_SHOWN) {
-    baseline_offset_ -= ShelfConfig::Get()->shelf_size();
-  }
-
-  if (baseline_offset_ > 0) {
+  DCHECK_GE(baseline_offset_, 0);
+  if (baseline_offset_ != 0) {
     baseline_offset_ += message_center::kMarginBetweenPopups;
-  } else {
-    baseline_offset_ = 0;
   }
 
   if (old_baseline_offset != baseline_offset_) {

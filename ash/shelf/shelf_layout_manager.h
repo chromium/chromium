@@ -388,6 +388,7 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
       const gfx::Insets& in_session_shelf_insets);
 
   class UpdateShelfObserver;
+  friend class AshMessagePopupCollectionTest;
   friend class DimShelfLayoutManagerTestBase;
   friend class NotificationTrayTest;
   friend class PanelLayoutManagerTest;
