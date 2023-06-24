@@ -600,9 +600,16 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
   if (initStage <= InitStageFirstRun)
     return NO;
 
+  // Lens entry points should not open an extra new tab page.
+  GURL startupURL =
+      ([shortcutItem.type isEqualToString:kShortcutLensFromAppIconLongPress] ||
+       [shortcutItem.type isEqualToString:kShortcutLensFromSpotlight])
+          ? GURL()
+          : GURL(kChromeUINewTabURL);
+
   AppStartupParameters* startupParams = [[AppStartupParameters alloc]
-      initWithExternalURL:GURL(kChromeUINewTabURL)
-              completeURL:GURL(kChromeUINewTabURL)
+      initWithExternalURL:startupURL
+              completeURL:startupURL
           applicationMode:ApplicationModeForTabOpening::NORMAL];
 
   if ([shortcutItem.type isEqualToString:kShortcutNewSearch]) {

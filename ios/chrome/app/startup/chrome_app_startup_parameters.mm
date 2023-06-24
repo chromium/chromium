@@ -572,7 +572,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   if ([command isEqualToString:base::SysUTF8ToNSString(
                                    app_group::kChromeAppGroupLensCommand)]) {
     params = [[ChromeAppStartupParameters alloc]
-        initWithExternalURL:GURL(kChromeUINewTabURL)
+        initWithExternalURL:GURL()
           declaredSourceApp:appId
             secureSourceApp:secureSourceApp
                 completeURL:url

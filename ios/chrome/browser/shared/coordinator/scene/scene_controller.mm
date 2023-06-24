@@ -287,9 +287,9 @@ void InjectNTP(Browser* browser) {
 @property(nonatomic, assign)
     TabSwitcherDismissalMode modeToDisplayOnTabSwitcherDismissal;
 
-// A property to track whether the QR Scanner should be started upon tab
-// switcher dismissal. It can only be YES if the QR Scanner experiment is
-// enabled.
+// A property to track which action to perform after dismissing the tab
+// switcher. This is used to ensure certain post open actions that are
+// presented by the BVC to only be triggered when the BVC is active.
 @property(nonatomic, readwrite)
     TabOpeningPostOpeningAction NTPActionAfterTabSwitcherDismissal;
 
@@ -2789,14 +2789,23 @@ void InjectNTP(Browser* browser) {
       UrlLoadingBrowserAgent::FromBrowser(targetInterface.browser)
           ->Load(savedParams);
     } else {
-      // Voice search, QRScanner and the omnibox are presented by the BVC.
-      // They must be started after the BVC view is added in the hierarchy.
+      // Voice search, QRScanner, Lens, and the omnibox are presented by the
+      // BVC. They must be started after the BVC view is added in the
+      // hierarchy.
       self.NTPActionAfterTabSwitcherDismissal =
           [self.startupParameters postOpeningAction];
       [self setStartupParameters:nil];
 
+      UrlLoadParams paramsToLoad = urlLoadParams;
+      // If the url to load is empty (such as with Lens) open a new tab page.
+      if (urlLoadParams.web_params.url.is_empty()) {
+        paramsToLoad = UrlLoadParams(urlLoadParams);
+        paramsToLoad.web_params.url = GURL(kChromeUINewTabURL);
+      }
+
       [self addANewTabAndPresentBrowser:targetInterface.browser
-                      withURLLoadParams:urlLoadParams];
+                      withURLLoadParams:paramsToLoad];
+
       // In this particular usage, there should be no postOpeningAction,
       // as triggering voice search while there are multiple windows opened is
       // probably a bad idea both technically and as a user experience. It
@@ -2857,16 +2866,25 @@ void InjectNTP(Browser* browser) {
   }
 }
 
-// Checks the target BVC's current tab's URL. If this URL is chrome://newtab,
-// loads `urlLoadParams` in this tab. Otherwise, open `urlLoadParams` in a new
-// tab in the target BVC. `tabDisplayedCompletion` will be called on the new tab
-// (if not nil).
+// Checks the target BVC's current tab's URL. If `urlLoadParams` has an empty
+// URL, no new tab will be opened and `tabOpenedCompletion` will be run. If this
+// URL is chrome://newtab, loads `urlLoadParams` in this tab. Otherwise, open
+// `urlLoadParams` in a new tab in the target BVC. `tabOpenedCompletion` will be
+// called on the new tab (if not nil).
 - (void)openOrReuseTabInMode:(ApplicationMode)targetMode
            withUrlLoadParams:(const UrlLoadParams&)urlLoadParams
          tabOpenedCompletion:(ProceduralBlock)tabOpenedCompletion {
   WrangledBrowser* targetInterface = targetMode == ApplicationMode::NORMAL
                                          ? self.mainInterface
                                          : self.incognitoInterface;
+  // If the url to load is empty, create a new tab if no tabs are open and run
+  // the completion.
+  if (urlLoadParams.web_params.url.is_empty()) {
+    if (tabOpenedCompletion) {
+      tabOpenedCompletion();
+    }
+    return;
+  }
 
   BrowserViewController* targetBVC = targetInterface.bvc;
   web::WebState* currentWebState =

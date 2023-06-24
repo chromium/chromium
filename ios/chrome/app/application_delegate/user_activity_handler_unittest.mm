@@ -779,16 +779,19 @@ TEST_F(UserActivityHandlerTest,
   FakeConnectionInformation* fakeConnectionInformation =
       [[FakeConnectionInformation alloc] init];
 
+  // Set a list of parameter to test, where each entry has a post open action
+  // name, whether or not it should open a new tab, whether or not to use
+  // incognito, and the post open action enum value.
   NSArray* parametersToTest = @[
-    @[ @"OpenNewSearch", @NO, @(FOCUS_OMNIBOX) ],
-    @[ @"OpenIncognitoSearch", @YES, @(FOCUS_OMNIBOX) ],
-    @[ @"OpenVoiceSearch", @NO, @(START_VOICE_SEARCH) ],
-    @[ @"OpenQRScanner", @NO, @(START_QR_CODE_SCANNER) ],
+    @[ @"OpenNewSearch", @YES, @NO, @(FOCUS_OMNIBOX) ],
+    @[ @"OpenIncognitoSearch", @YES, @YES, @(FOCUS_OMNIBOX) ],
+    @[ @"OpenVoiceSearch", @YES, @NO, @(START_VOICE_SEARCH) ],
+    @[ @"OpenQRScanner", @YES, @NO, @(START_QR_CODE_SCANNER) ],
     @[
-      @"OpenLensFromAppIconLongPress", @NO,
+      @"OpenLensFromAppIconLongPress", @NO, @NO,
       @(START_LENS_FROM_APP_ICON_LONG_PRESS)
     ],
-    @[ @"OpenLensFromSpotlight", @NO, @(START_LENS_FROM_SPOTLIGHT) ]
+    @[ @"OpenLensFromSpotlight", @NO, @NO, @(START_LENS_FROM_SPOTLIGHT) ]
   ];
 
   swizzleHandleStartupParameters();
@@ -813,13 +816,19 @@ TEST_F(UserActivityHandlerTest,
                                             initStage:InitStageFinal];
 
     // Tests.
-    EXPECT_EQ(gurlNewTab,
-              [fakeConnectionInformation startupParameters].externalURL);
-    EXPECT_EQ([[parameters objectAtIndex:1] boolValue]
+    if ([[parameters objectAtIndex:1] boolValue]) {
+      EXPECT_EQ(gurlNewTab,
+                [fakeConnectionInformation startupParameters].externalURL);
+    } else {
+      EXPECT_TRUE(
+          [fakeConnectionInformation startupParameters].externalURL.is_empty());
+    }
+
+    EXPECT_EQ([[parameters objectAtIndex:2] boolValue]
                   ? ApplicationModeForTabOpening::INCOGNITO
                   : ApplicationModeForTabOpening::NORMAL,
               [fakeConnectionInformation startupParameters].applicationMode);
-    EXPECT_EQ([[parameters objectAtIndex:2] intValue],
+    EXPECT_EQ([[parameters objectAtIndex:3] intValue],
               [fakeConnectionInformation startupParameters].postOpeningAction);
     EXPECT_TRUE(completionHandlerExecuted());
     EXPECT_TRUE(completionHandlerArgument());
