@@ -267,8 +267,10 @@ int UpdaterMain(int argc, const char* const* argv) {
   base::AtExitManager exit_manager;
 
   base::CommandLine::Init(argc, argv);
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+#if BUILDFLAG(IS_WIN)
+  *command_line = GetCommandLineLegacyCompatible();
+#endif
 
   const UpdaterScope updater_scope = GetUpdaterScope();
   InitLogging(updater_scope);

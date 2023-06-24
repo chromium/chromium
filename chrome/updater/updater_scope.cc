@@ -81,7 +81,7 @@ UpdaterScope GetUpdaterScopeForCommandLine(
 }
 
 UpdaterScope GetUpdaterScope() {
-  return GetUpdaterScopeForCommandLine(GetCommandLineLegacyCompatible());
+  return GetUpdaterScopeForCommandLine(*base::CommandLine::ForCurrentProcess());
 }
 
 bool IsSystemInstall() {

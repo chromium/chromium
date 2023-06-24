@@ -114,20 +114,10 @@ TagParsingResult GetTagArgsForCommandLine(
     const base::CommandLine& command_line);
 TagParsingResult GetTagArgs();
 
-// Returns the arguments corresponding to `app_id` from the command line tag.
-absl::optional<tagging::AppArgs> GetAppArgsForCommandLine(
-    const base::CommandLine& command_line,
-    const std::string& app_id);
 absl::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id);
 
-std::string GetDecodedInstallDataFromAppArgsForCommandLine(
-    const base::CommandLine& command_line,
-    const std::string& app_id);
 std::string GetDecodedInstallDataFromAppArgs(const std::string& app_id);
 
-std::string GetInstallDataIndexFromAppArgsForCommandLine(
-    const base::CommandLine& command_line,
-    const std::string& app_id);
 std::string GetInstallDataIndexFromAppArgs(const std::string& app_id);
 
 absl::optional<base::FilePath> GetLogFilePath(UpdaterScope scope);
@@ -195,11 +185,11 @@ std::wstring GetTaskDisplayName(UpdaterScope scope);
 absl::optional<base::CommandLine> CommandLineForLegacyFormat(
     const std::wstring& cmd_string);
 
-#endif  // BUILDFLAG(IS_WIN)
-
 // Returns the command line for current process, either in legacy style, or
 // in Chromium style.
 base::CommandLine GetCommandLineLegacyCompatible();
+
+#endif  // BUILDFLAG(IS_WIN)
 
 // Writes the provided string prefixed with the UTF8 byte order mark to a
 // temporary file. The temporary file is created in the specified `directory`.

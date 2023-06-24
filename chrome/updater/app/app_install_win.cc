@@ -539,8 +539,6 @@ void AppInstallControllerImpl::InstallAppOffline(
                 FROM_HERE, {base::MayBlock()},
                 base::BindOnce(
                     [](const std::string& app_id) {
-                      const base::CommandLine cmd_line =
-                          GetCommandLineLegacyCompatible();
                       // Parse the offline manifest to get the install
                       // command and install data.
                       update_client::ProtocolParser::Results results;
@@ -549,16 +547,14 @@ void AppInstallControllerImpl::InstallAppOffline(
                       std::string install_args;
                       std::string install_data;
                       ReadInstallCommandFromManifest(
-                          cmd_line.GetSwitchValueNative(kOfflineDirSwitch),
-                          app_id,
-                          GetInstallDataIndexFromAppArgsForCommandLine(cmd_line,
-                                                                       app_id),
+                          base::CommandLine::ForCurrentProcess()
+                              ->GetSwitchValueNative(kOfflineDirSwitch),
+                          app_id, GetInstallDataIndexFromAppArgs(app_id),
                           results, installer_version, installer_path,
                           install_args, install_data);
 
                       const std::string client_install_data =
-                          GetDecodedInstallDataFromAppArgsForCommandLine(
-                              cmd_line, app_id);
+                          GetDecodedInstallDataFromAppArgs(app_id);
                       return std::make_tuple(results, installer_version,
                                              installer_path, install_args,
                                              client_install_data.empty()
@@ -610,7 +606,7 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   base::Value::Dict install_settings_dict;
   install_settings_dict.Set(kInstallerVersion, installer_version);
 
-  base::CommandLine cmd_line = GetCommandLineLegacyCompatible();
+  const base::CommandLine cmd_line(*base::CommandLine::ForCurrentProcess());
   install_settings_dict.Set(kEnterpriseSwitch,
                             cmd_line.HasSwitch(kEnterpriseSwitch));
   install_settings_dict.Set(kSessionIdSwitch,
@@ -622,14 +618,12 @@ void AppInstallControllerImpl::DoInstallAppOffline(
     VLOG(1) << "Failed to serialize install settings.";
   }
 
-  absl::optional<tagging::TagArgs> tag_args =
-      GetTagArgsForCommandLine(cmd_line).tag_args;
+  absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
   RegistrationRequest request;
   request.app_id = app_id_;
   request.version = base::Version(kNullVersion);
 
-  absl::optional<tagging::AppArgs> app_args =
-      GetAppArgsForCommandLine(cmd_line, app_id_);
+  absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id_);
   if (app_args) {
     request.ap = app_args->ap;
   }

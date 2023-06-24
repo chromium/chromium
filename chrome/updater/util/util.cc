@@ -183,13 +183,11 @@ TagParsingResult GetTagArgs() {
   return GetTagArgsForCommandLine(*base::CommandLine::ForCurrentProcess());
 }
 
-absl::optional<tagging::AppArgs> GetAppArgsForCommandLine(
-    const base::CommandLine& command_line,
-    const std::string& app_id) {
-  const absl::optional<tagging::TagArgs> tag_args =
-      GetTagArgsForCommandLine(command_line).tag_args;
-  if (!tag_args || tag_args->apps.empty())
+absl::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id) {
+  const absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
+  if (!tag_args || tag_args->apps.empty()) {
     return absl::nullopt;
+  }
 
   const std::vector<tagging::AppArgs>& apps_args = tag_args->apps;
   std::vector<tagging::AppArgs>::const_iterator it = base::ranges::find_if(
@@ -200,18 +198,11 @@ absl::optional<tagging::AppArgs> GetAppArgsForCommandLine(
                                    : absl::nullopt;
 }
 
-absl::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id) {
-  return GetAppArgsForCommandLine(*base::CommandLine::ForCurrentProcess(),
-                                  app_id);
-}
-
-std::string GetDecodedInstallDataFromAppArgsForCommandLine(
-    const base::CommandLine& command_line,
-    const std::string& app_id) {
-  const absl::optional<tagging::AppArgs> app_args =
-      GetAppArgsForCommandLine(command_line, app_id);
-  if (!app_args)
+std::string GetDecodedInstallDataFromAppArgs(const std::string& app_id) {
+  const absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id);
+  if (!app_args) {
     return std::string();
+  }
 
   std::string decoded_installer_data;
   const bool result = base::UnescapeBinaryURLComponentSafe(
@@ -225,22 +216,9 @@ std::string GetDecodedInstallDataFromAppArgsForCommandLine(
   return decoded_installer_data;
 }
 
-std::string GetDecodedInstallDataFromAppArgs(const std::string& app_id) {
-  return GetDecodedInstallDataFromAppArgsForCommandLine(
-      *base::CommandLine::ForCurrentProcess(), app_id);
-}
-
-std::string GetInstallDataIndexFromAppArgsForCommandLine(
-    const base::CommandLine& command_line,
-    const std::string& app_id) {
-  const absl::optional<tagging::AppArgs> app_args =
-      GetAppArgsForCommandLine(command_line, app_id);
-  return app_args ? app_args->install_data_index : std::string();
-}
-
 std::string GetInstallDataIndexFromAppArgs(const std::string& app_id) {
-  return GetInstallDataIndexFromAppArgsForCommandLine(
-      *base::CommandLine::ForCurrentProcess(), app_id);
+  const absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id);
+  return app_args ? app_args->install_data_index : std::string();
 }
 
 // The log file is created in DIR_LOCAL_APP_DATA or DIR_ROAMING_APP_DATA.
@@ -330,12 +308,6 @@ base::CommandLine GetCommandLineLegacyCompatible() {
   absl::optional<base::CommandLine> cmd_line =
       CommandLineForLegacyFormat(::GetCommandLine());
   return cmd_line ? *cmd_line : *base::CommandLine::ForCurrentProcess();
-}
-
-#else  // BUILDFLAG(IS_WIN)
-
-base::CommandLine GetCommandLineLegacyCompatible() {
-  return *base::CommandLine::ForCurrentProcess();
 }
 
 #endif  // BUILDFLAG(IS_WIN)

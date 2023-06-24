@@ -120,8 +120,7 @@ void AppInstall::FirstTaskRun() {
     return;
   }
 
-  const TagParsingResult tag_parsing_result =
-      GetTagArgsForCommandLine(GetCommandLineLegacyCompatible());
+  const TagParsingResult tag_parsing_result(GetTagArgs());
 
   // A tag parsing error is handled as an fatal error.
   if (tag_parsing_result.error != tagging::ErrorCode::kSuccess) {
