@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">Достапни уреди</translation>
 <translation id="1550523713251050646">Кликни за повеќе опции</translation>
 <translation id="1555130319947370107">Сина</translation>
+<translation id="1557622599341396706">Прикажи го името на работната површина</translation>
 <translation id="1576511610858879060">Вашиот Chromebook или уредот со Bluetooth користи постара верзија на Bluetooth. Користете друг извор на влез за подобар аудиоквалитет.</translation>
 <translation id="1576623706766186887">Одзумирајте кога е вклучена лупата</translation>
 <translation id="1586324912145647027">Одете на работната површина 1 до 8</translation>
@@ -930,6 +931,7 @@
 <translation id="504465286040788597">Претходен пасус</translation>
 <translation id="5045550434625856497">Погрешна лозинка</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">Ќе добиете известување ако зборувате додека е исклучен звукот. Аудиото никогаш не излегува од вашиот уред.</translation>
 <translation id="5078796286268621944">Неточен PIN</translation>
 <translation id="5083553833479578423">Отклучете повеќе функции на „Помошникот“.</translation>
 <translation id="5092436659250499817">Вклучување/Исклучување заднинско светло на тастатура</translation>
@@ -960,6 +962,7 @@
 <translation id="5207949376430453814">Нагласи го каретот за текст</translation>
 <translation id="5208059991603368177">Вклучено</translation>
 <translation id="5216991270656129561">Исклучено до <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Брзо испратете порака или одговорете на пораките на вашиот телефон со Phone Hub.</translation>
 <translation id="5222676887888702881">Одјави се</translation>
 <translation id="5229343007215035173">Вклучување/Исклучување „Заштита на приватноста“</translation>
 <translation id="5234764350956374838">Отфрли</translation>
@@ -988,6 +991,7 @@
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5319712128756744240">Спарете нов уред</translation>
 <translation id="5322611492012084517">Не може да се најде телефонот</translation>
+<translation id="5323994101633366939">Скриј го името на работната површина</translation>
 <translation id="5327248766486351172">Име</translation>
 <translation id="5329548388331921293">Се поврзува…</translation>
 <translation id="5331975486040154427">USB-Ц уред (задна порта од лева страна)</translation>
@@ -1170,6 +1174,7 @@
 <translation id="6103838137565245112">систем</translation>
 <translation id="6114505516289286752">Датотеките за говор на <ph name="LANGUAGE" /> се преземени</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Корекција на боите</translation>
 <translation id="6121838516699723042">Потврдете го преземањето на <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">„Помошникот на Google“ не е достапен во гостинска сесија.</translation>
 <translation id="6129953537138746214">Празно место</translation>
@@ -1638,6 +1643,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />, апликација</translation>
 <translation id="8255234195843591763">Ресетирајте за ажурирање</translation>
 <translation id="8261506727792406068">Избриши</translation>
+<translation id="8262312463845990408">Вклучете/исклучете ја репродукцијата</translation>
 <translation id="8270450402312105425">{0,plural, =1{Променете го уредот на претходната верзија во рок од еден час}one{Променете го уредот на претходната верзија во рок од # час}other{Променете го уредот на претходната верзија во рок од # часа}}</translation>
 <translation id="8277261673056602147">Нагласете текст на екранот</translation>
 <translation id="8284362522226889623">Повлечете налево со четири прста за да се префрлите на претходната работна површина</translation>

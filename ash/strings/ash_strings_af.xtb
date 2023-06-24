@@ -140,6 +140,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1550406609415860283">Toestelle beskikbaar</translation>
 <translation id="1550523713251050646">Klik vir meer opsies</translation>
 <translation id="1555130319947370107">Blou</translation>
+<translation id="1557622599341396706">Wys lessenaarnaam</translation>
 <translation id="1576511610858879060">Jou Chromebook of Bluetooth-toestel gebruik tans ’n ouer weergawe van Bluetooth. Gebruik ’n ander invoerbron vir beter oudiogehalte.</translation>
 <translation id="1576623706766186887">Zoem uit wanneer vergrootglas aan is</translation>
 <translation id="1586324912145647027">Gaan na lessenaar 1 tot 8</translation>
@@ -990,6 +991,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5319712128756744240">Bind nuwe toestel saam</translation>
 <translation id="5322611492012084517">Kan nie jou foon kry nie</translation>
+<translation id="5323994101633366939">Versteek lessenaarnaam</translation>
 <translation id="5327248766486351172">Naam</translation>
 <translation id="5329548388331921293">Koppel tans …</translation>
 <translation id="5331975486040154427">USB C-toestel (agterste poort aan linkerkant)</translation>
@@ -1172,6 +1174,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6103838137565245112">stelsel</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />-spraaklêers is afgelaai</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Kleurregstelling</translation>
 <translation id="6121838516699723042">Bevestig aflaai <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Die Google Assistent is nie in 'n gastesessie beskikbaar nie.</translation>
 <translation id="6129953537138746214">Spasie</translation>
@@ -1640,6 +1643,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8247998213073982446"><ph name="APP_NAME" />, program</translation>
 <translation id="8255234195843591763">Stel terug na opdatering</translation>
 <translation id="8261506727792406068">Vee uit</translation>
+<translation id="8262312463845990408">Wissel terugspeel</translation>
 <translation id="8270450402312105425">{0,plural, =1{Verander toestel binne 'n uur na vorige weergawe}other{Verander toestel binne # uur na vorige weergawe}}</translation>
 <translation id="8277261673056602147">Kleurmerk teks op jou skerm</translation>
 <translation id="8284362522226889623">Swiep met vier vingers links om na die vorige lessenaar toe te wissel</translation>

@@ -50,6 +50,7 @@
 <translation id="3503014945441706099">Obtén també Navegació segura millorada per a aquest perfil de Chrome</translation>
 <translation id="3522659714780527202">Per veure les pestanyes des de tots els llocs on facis servir Chrome, activa la sincronització</translation>
 <translation id="3533694711092285624">No hi ha cap contrasenya desada. Chrome pot comprovar les teves contrasenyes quan les deses.</translation>
+<translation id="3611867725106943284">Toca Mostra amb Google Maps a Chrome</translation>
 <translation id="3655656110921623717">Això vol dir que Chrome sol·licitarà el lloc web per a mòbils cada vegada.</translation>
 <translation id="3720541637541300822">Bloqueja les pestanyes d'incògnit després de tancar Chrome</translation>
 <translation id="3827545470516145620">Tindràs protecció de seguretat estàndard en aquest dispositiu</translation>
@@ -68,6 +69,7 @@
 <translation id="4636900170638246267">Inicia la sessió en aquest lloc web i a Chrome.</translation>
 <translation id="4698415050768537821">Chrome no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Per ajudar a millorar l'aplicació, Chrome envia les dades d'ús i de bloqueig a Google. <ph name="BEGIN_LINK" />Gestiona<ph name="END_LINK" /></translation>
+<translation id="4830799082179398588">Vols establir Chrome com a navegador predeterminat?</translation>
 <translation id="484033449593719797">No s'admeten a la versió beta de Chrome</translation>
 <translation id="4840404732697892756">El gestor de contrasenyes de Google pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google.</translation>
 <translation id="5030102366287574140">Chrome pot ajudar a protegir-te de violacions de les dades, de llocs web no segurs i més.</translation>
@@ -114,6 +116,7 @@
 <translation id="7261678641327190792">Chrome no pot comprovar les teves contrasenyes</translation>
 <translation id="7272930098487145294">Si vols desar imatges, toca Configuració per permetre que Chrome les afegeixi a les teves fotos</translation>
 <translation id="7275945473750112644">Com que <ph name="HOSTED_DOMAIN" /> gestiona el teu compte, les dades de Chrome s'esborraran d'aquest dispositiu</translation>
+<translation id="7394108421562933108">Maps a Chrome</translation>
 <translation id="7400722733683201933">Sobre Google Chrome</translation>
 <translation id="7501046334262221972">Per establir Chrome com a navegador predeterminat, obre Configuració. Toca Aplicació de navegador predeterminada i, tot seguit, selecciona Chrome.</translation>
 <translation id="756809126120519699">S'han esborrat les dades de Chrome</translation>

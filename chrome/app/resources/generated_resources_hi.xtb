@@ -79,6 +79,7 @@
 <translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> में आपका स्वागत है</translation>
 <translation id="1061373870045429865">इस लिंक के लिए क्यूआर कोड बनाएं</translation>
 <translation id="1061904396131502319">ब्रेक लेने का समय होने वाला है</translation>
+<translation id="10619348099955377">डिसप्ले नेम को कॉपी करें</translation>
 <translation id="1062407476771304334">प्रतिस्थापित करें</translation>
 <translation id="1062628064301375934">वेब को निजता के लिहाज़ से ज़्यादा सुरक्षित बनाने में हमारी मदद करें</translation>
 <translation id="1066964438793906105">मैलवेयर का पता लगाने के लिए स्कैन करें</translation>
@@ -582,6 +583,7 @@
 <translation id="1481537595330271162">डिस्क का साइज़ बदलते समय गड़बड़ी हुई</translation>
 <translation id="1482626744466814421">इस टैब को बुकमार्क करें...</translation>
 <translation id="1482772681918035149">पासवर्ड में बदलाव करना</translation>
+<translation id="1483431819520123112">डिसप्ले नेम को क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="1483493594462132177">भेजें</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">साइट ब्लूटूथ का इस्तेमाल कर रही है</translation>
@@ -968,6 +970,7 @@
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 नोट}one{# नोट}other{# नोट}}</translation>
 <translation id="1784707308176068866">सहयोगी स्थानीय ऐप्लिकेशन की ओर से अनुरोध किए जाने पर बैकग्राउंड में चलाएं</translation>
 <translation id="1784849162047402014">डिवाइस पर डिस्क स्पेस कम है</translation>
+<translation id="1786290960428378411">पढ़ने और बदलाव करने का अनुरोध किया जा रहा है</translation>
 <translation id="1787350673646245458">उपयोगकर्ता की इमेज</translation>
 <translation id="1790976235243700817">ऐक्सेस हटाएं</translation>
 <translation id="1792619191750875668">बढ़ाया हुआ डिसप्ले</translation>
@@ -1300,6 +1303,7 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{एक्सटेंशन को इंस्टॉल करने के लिए क्लिक करें}one{इन एक्सटेंशन को इंस्टॉल करने के लिए क्लिक करें}other{इन एक्सटेंशन को इंस्टॉल करने के लिए क्लिक करें}}</translation>
 <translation id="2073496667646280609">हो सकता है कि आपके डिवाइस या बैक अप के लिए चुनी गई जगह में स्टोरेज काफ़ी न हो. डिवाइस का स्टोरेज खाली करें या कोई दूसरी जगह चुनें.</translation>
 <translation id="2073505299004274893"><ph name="CHARACTER_LIMIT" /> या इससे कम वर्णों का इस्तेमाल करें</translation>
+<translation id="2075088158103027942">सदस्यता प्लान के पेज पर जाएं</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% बैटरी</translation>
 <translation id="2076269580855484719">यह प्लग इन छुपाएं</translation>
 <translation id="2076672359661571384">मध्यम (सुझाया गया)</translation>
@@ -2122,6 +2126,7 @@
 <translation id="2731700343119398978">कृपया प्रतीक्षा करें...</translation>
 <translation id="2731971182069536520">जब आप अगली बार डिवाइस रीस्टार्ट करेंगे, तो आपका एडमिन एक बार किया जाने वाला अपडेट करेगा जिससे आपका स्थानीय डेटा मिट जाएगा.</translation>
 <translation id="2732134891301408122">ज़्यादा कॉन्टेंट वाले <ph name="TOTAL_ELEMENTS" /> पेजों में से पेज <ph name="CURRENT_ELEMENT" /></translation>
+<translation id="2733992589856193783">आपने इस साइट के लिए पासकी बनाई है. साइन इन करने के लिए, आपको मोबाइल डिवाइस की ज़रूरत होगी.</translation>
 <translation id="27349076983469322">हल्का बैकग्राउंड</translation>
 <translation id="2735712963799620190">शेड्यूल</translation>
 <translation id="2737363922397526254">छोटा करें...</translation>
@@ -3109,6 +3114,7 @@
 <translation id="3610241585790874201">साइटों को आपके डिवाइस पर डेटा सेव करने की अनुमति नहीं है</translation>
 <translation id="3610369246614755442">डॉक के पंखे को मरम्मत की ज़रूरत है</translation>
 <translation id="3610961622607302617"><ph name="WEBSITE" /> का पासवर्ड बदलें</translation>
+<translation id="3611634011145829814">सदस्यता वाले पेज पर जाएं</translation>
 <translation id="3611658447322220736">हाल ही में बंद की गई साइटें, डेटा भेजने और पाने की प्रकिया को पूरा कर सकती हैं</translation>
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; के द्वारा डाउनलोड किया गया</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" /> दिखाएं</translation>
@@ -3795,6 +3801,7 @@
 <translation id="4176463684765177261">बंद किया गया</translation>
 <translation id="4176864026061939326">इस डिवाइस को मैनेज किया जाता है. आपके डिवाइस के एडमिन को <ph name="USER_EMAIL_ADDRESS" /> खाते के लिए, नई प्रोफ़ाइल की ज़रूरत है</translation>
 <translation id="4177501066905053472">विज्ञापन के विषय</translation>
+<translation id="4178220097446335546">इस सदस्यता और इससे जुड़े नेटवर्क को हटाने के लिए, पासपॉइंट की सदस्यता वाले पेज पर जाएं और इस सदस्यता को हटाएं.</translation>
 <translation id="4180788401304023883">CA प्रमाणपत्र "<ph name="CERTIFICATE_NAME" />" मिटाएं?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">भाषाएं</translation>
@@ -3947,6 +3954,7 @@
 <translation id="4316850752623536204">डेवलपर वेबसाइट</translation>
 <translation id="4317733381297736564">इन-ऐप्लिकेशन खरीदारी</translation>
 <translation id="4317820549299924617">पुष्टि नहीं हुई</translation>
+<translation id="4319441675152393296">इस एक्सटेंशन के आइकॉन पर क्लिक करें, ताकि यह एक्सटेंशन, <ph name="HOST" /> को पढ़ सके और उसमें बदलाव कर सके</translation>
 <translation id="4320177379694898372">कोई इंटरनेट कनेक्‍शन नहीं</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197"><ph name="FILE_NAME" /> को Finder में दिखाएं</translation>
@@ -4631,6 +4639,7 @@
 <translation id="4899052647152077033">रंग उलटा करने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="4899696330053002588">ऐप्लिकेशन में विज्ञापन शामिल हैं</translation>
 <translation id="489985760463306091">नुकसान पहुंचाने वाला सॉफ़्टवेयर निकालने की प्रक्रिया पूरी करने के लिए, अपना कंप्यूटर फिर से चालू करें</translation>
+<translation id="490031510406860025">इस साइट पर अनुमति नहीं है</translation>
 <translation id="4900392736118574277">आपका स्टार्टअप पेज<ph name="URL" /> में बदल दिया गया था.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> हर्ट्ज़ - साथ में स्कैन किया गया</translation>
 <translation id="4900652253009739885">“चुनें” कार्रवाई के लिए असाइन किए गए एकमात्र स्विच को नहीं हटाया जा सकता. <ph name="RESPONSE" /> के लिए, कोई कुंजी दबाएं.</translation>
@@ -7359,6 +7368,7 @@
 <translation id="7299515639584427954">क्या आप सहायता लिंक खोलने के लिए, डिफ़ॉल्ट ऐप्लिकेशन बदलना चाहते हैं?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">आप पूछ सकते हैं "Ok Google, यह कौनसा गाना है?" या "Ok Google, मेरी स्क्रीन पर क्या है?"</translation>
+<translation id="7301812050652048720">पासकी मिटाई गई</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{यह ऐप्लिकेशन Chrome को ठीक से काम करने से रोक सकता है.}one{ये ऐप्लिकेशन Chrome को ठीक से काम करने से रोक सकते हैं.}other{ये ऐप्लिकेशन Chrome को ठीक से काम करने से रोक सकते हैं.}}</translation>
 <translation id="7303281435234579599">ओह! डेमो मोड सेट अप करते समय कोई गड़बड़ी हुई.</translation>
 <translation id="7303900363563182677">इस साइट को क्लिपबोर्ड पर कॉपी किए गए लेख और इमेज देखने से ब्लॉक कर दिया गया है</translation>
@@ -7901,6 +7911,7 @@
 <translation id="7744192722284567281">यह पासवर्ड आपके हैक हो चुके डेटा में शामिल है</translation>
 <translation id="7744649840067671761">असाइनमेंट को शुरू करने के लिए, किसी नए स्विच या कीबोर्ड की किसी कुंजी को दबाएं.
 असाइनमेंट को हटाने के लिए, असाइन किए गए स्विच या कुंजी को दबाएं.</translation>
+<translation id="7745677556280361868">क्या आपको पासपॉइंट की सदस्यता वाले पेज से यह नेटवर्क हटाना है?</translation>
 <translation id="7746045113967198252">टेक्स्ट के साथ-साथ आपकी स्क्रीन पर मौजूद आइटम को बड़ा या छोटा करता है. इसे बाद में, सेटिंग &gt; डिवाइस &gt; डिसप्ले पर भी देखा जा सकता है.</translation>
 <translation id="7746739418892731373">आपको Google Photos की लाइब्रेरी में मौजूद फ़ोटो और वीडियो के हाइलाइट दिखाए जा रहे हैं. <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> पर जाकर यह कंट्रोल किया जा सकता है कि हाइलाइट में क्या दिखे और क्या नहीं.
         <ph name="BREAK" />
@@ -8112,6 +8123,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" /> को देख सकती है</translation>
 <translation id="7920482456679570420">जिन शब्दों को आप स्पेलिंग जांच में शामिल नहीं करना चाहते उन्हें जोड़ें</translation>
 <translation id="7921347341284348270">मैनेज किए जा रहे इस खाते पर, आपके फ़ोन की सूचनाएं नहीं दिखेंगी. किसी दूसरे खाते का इस्तेमाल करके, दोबारा कोशिश करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
+<translation id="7921901223958867679">यह एक्सटेंशन, <ph name="HOST" /> को पढ़ सकता है और उसमें बदलाव कर सकता है</translation>
 <translation id="7922606348470480702">1 एक्सटेंशन</translation>
 <translation id="7922935920104868876">गुप्त मोड में तीसरे पक्ष की कुकी को ब्लॉक करने से जुड़ी जानकारी दिखाएं</translation>
 <translation id="7923564237306226146">Linux अपग्रेड हो गया है</translation>
@@ -9641,6 +9653,7 @@
 <translation id="930551443325541578">दबाकर रखे जाने वाले बटन और उच्चारण के चिह्न</translation>
 <translation id="930893132043726269">फ़िलहाल, रोमिंग में है</translation>
 <translation id="930991362911221750">क्या <ph name="APP_NAME" /> को यह टैब देखने की अनुमति देनी है?</translation>
+<translation id="931273044114601262">इस साइट पर अनुमति दी गई है</translation>
 <translation id="93140074055951850">Android ऐप्लिकेशन को रोका गया</translation>
 <translation id="932327136139879170">होम बटन</translation>
 <translation id="932508678520956232">प्रिंटिंग आरंभ नहीं कर सका.</translation>

@@ -18,6 +18,7 @@
 <translation id="1838412507805038478">Chromium потврди дека <ph name="ISSUER" /> го издал сертификатот за веб-сајтов.</translation>
 <translation id="1843424232666537147">Chromium има функции што помагаат во управувањето со интернет сообраќајот и со брзината на вчитување веб-страници.
 <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
+<translation id="1847960401032164406">„Карти“ во Chromium</translation>
 <translation id="1867772173333403444">4. Изберете Chromium</translation>
 <translation id="2006345422933397527">Chromium не може да провери дали има ажурирања. Проверете ја интернет-врската.</translation>
 <translation id="2052320862053429062">Chromium повремено ги споредува лозинките со списоци објавени онлајн. Кога го прави ова, вашите лозинки и кориснички имиња се шифрирани, па нив не може да ги прочита никој, вклучително и Google.</translation>
@@ -41,6 +42,7 @@
 <translation id="2942241131342758843">Користете го Chromium како стандарден прелистувач за отворање линкови, пребарување од виџети и автоматско пополнување лозинки во другите апликации</translation>
 <translation id="2977470724722393594">Chromium е ажуриран</translation>
 <translation id="3102849287235003384">За да се одјавите од вашата сметка на Google на сите веб-сајтови, <ph name="BEGIN_LINK" />одјавете се од Chromium<ph name="END_LINK" />.</translation>
+<translation id="3115956258722352278">Да се направи Chromium ваш стандарден прелистувач?</translation>
 <translation id="3256316712990552818">Копирано на Chromium</translation>
 <translation id="3344973607274501920">Chromium не може да ги провери вашите лозинки. Проверете ја интернет-врската.</translation>
 <translation id="3472200483164753384">Не е поддржана на Chromium Canary</translation>
@@ -69,6 +71,7 @@
 <translation id="4999538639245140991">Бидејќи се одјавувате од сметка управувана од <ph name="SIGNOUT_MANAGED_DOMAIN" />, вашите податоци на Chromium ќе се избришат од уредов. Податоците ќе останат на сметката на Google.</translation>
 <translation id="5048795749726991615">За лесно добивање на зачуваните лозинки во другите апликации, користете Chromium за автоматско пополнување</translation>
 <translation id="5171868502429358653">Најавете се на Chromium</translation>
+<translation id="5224044903258607400">Допрете „Прикажи со „Карти на Google“ во Chromium“</translation>
 <translation id="5224391634244552924">Немате зачувани лозинки. Chromium може да ги проверува вашите лозинки ако ги зачувате.</translation>
 <translation id="5308226104666789935">Chromium не може да провери дали има ажурирања</translation>
 <translation id="5396916991083608703">Да се постави Chromium како стандарден?</translation>

@@ -438,6 +438,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3656645960301737801">Tədbiri tamamlayıb, yadda saxlayın</translation>
 <translation id="3661160521073045932">Konfiqurasiya Profili Əlçatandır</translation>
 <translation id="3670030362669914947">Nömrə</translation>
+<translation id="368329460027487650">Çıxılıb. Giriş seçimlərini açır.</translation>
 <translation id="3700134753671613714">Bütün cihazlarınızda əlfəcinləri əldə etmək üçün daxil olun.</translation>
 <translation id="3709582977625132201">Oxunmamış kimi qeyd edin</translation>
 <translation id="371230970611282515">Təhlükəli hadisələr baş vermədən əvvəl onları proqnozlaşdırır və sizə xəbərdarlıq edir.</translation>
@@ -666,6 +667,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5190835502935405962">Əlfəcinlər Paneli</translation>
 <translation id="519530786644929958">Endirmə uğursuz oldu və yenidən cəhd etmək mümkün deyil.</translation>
 <translation id="5197255632782567636">internet</translation>
+<translation id="5209674813563615506">Yeni tab açın</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />" saytının <ph name="PERMISSION" /> istifadə etməsinə icazə verilsin?</translation>
 <translation id="5219295696240154694">Vebdə hər kəsin güvənliyini artırmağa yardım edin</translation>
 <translation id="5221339005270097309">Parollar yoxlanır…</translation>
@@ -941,6 +943,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6684906340059221832">Qiymətlər izlənilir</translation>
 <translation id="6710079714193676716">Təşkilatınız tərəfindən idarə olunur. Bəzi funksiyalar əlçatan olmaya bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Tətbiqlər</translation>
+<translation id="672735642903863329">Əlfəcin, parol və s. məlumatları bütün cihazlarda əldə edin.</translation>
 <translation id="6730682669179532099">Parolları Eksport Etmək alınmadı</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6748108480210050150">Kimdən</translation>

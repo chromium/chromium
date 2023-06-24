@@ -140,6 +140,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1550406609415860283">Có sẵn thiết bị</translation>
 <translation id="1550523713251050646">Nhấp để xem các tùy chọn khác</translation>
 <translation id="1555130319947370107">Xanh lam</translation>
+<translation id="1557622599341396706">Hiện tên không gian làm việc</translation>
 <translation id="1576511610858879060">Chromebook hoặc thiết bị Bluetooth của bạn đang dùng phiên bản Bluetooth cũ. Sử dụng nguồn đầu vào khác để có chất lượng âm thanh tốt hơn.</translation>
 <translation id="1576623706766186887">Thu nhỏ khi kính lúp đang bật</translation>
 <translation id="1586324912145647027">Chuyển đến không gian làm việc từ 1 đến 8</translation>
@@ -989,6 +990,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5319712128756744240">Ghép nối thiết bị mới</translation>
 <translation id="5322611492012084517">Không tìm được điện thoại của bạn</translation>
+<translation id="5323994101633366939">Ẩn tên không gian làm việc</translation>
 <translation id="5327248766486351172">Tên</translation>
 <translation id="5329548388331921293">Đang kết nối...</translation>
 <translation id="5331975486040154427">Thiết bị USB-C (cổng phía sau, bên trái)</translation>
@@ -1171,6 +1173,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="6103838137565245112">hệ thống</translation>
 <translation id="6114505516289286752">Đã tải tệp mã chuyển lời nói thành văn bản <ph name="LANGUAGE" /> xuống</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Chỉnh màu</translation>
 <translation id="6121838516699723042">Xác nhận tải <ph name="FILENAME" /> xuống</translation>
 <translation id="612734058257491180">Bạn không thể dùng Trợ lý Google trong phiên khách.</translation>
 <translation id="6129953537138746214">Dấu cách</translation>
@@ -1639,6 +1642,7 @@ Mới cài đặt</translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Ứng dụng</translation>
 <translation id="8255234195843591763">Hãy đặt lại để cập nhật</translation>
 <translation id="8261506727792406068">Xoá</translation>
+<translation id="8262312463845990408">Phát hoặc dừng phát</translation>
 <translation id="8270450402312105425">{0,plural, =1{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 giờ}other{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng # giờ}}</translation>
 <translation id="8277261673056602147">Đánh dấu văn bản trên màn hình</translation>
 <translation id="8284362522226889623">Hãy vuốt sang trái bằng 4 ngón tay để chuyển sang không gian làm việc trước</translation>

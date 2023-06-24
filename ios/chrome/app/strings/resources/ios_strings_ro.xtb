@@ -438,6 +438,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3656645960301737801">Finalizează evenimentul și salvează</translation>
 <translation id="3661160521073045932">Este disponibil un profil de configurare</translation>
 <translation id="3670030362669914947">Număr</translation>
+<translation id="368329460027487650">Utilizator deconectat. Deschide opțiunile pentru a te conecta.</translation>
 <translation id="3700134753671613714">Conectează-te pentru a putea accesa marcajele pe toate dispozitivele.</translation>
 <translation id="3709582977625132201">Marchează ca necitit</translation>
 <translation id="371230970611282515">Anticipează și te avertizează cu privire la evenimente periculoase înainte să aibă loc.</translation>
@@ -666,6 +667,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5190835502935405962">Bară de marcaje</translation>
 <translation id="519530786644929958">Descărcarea nu a reușit. Nu poți să încerci din nou.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5209674813563615506">Deschide o filă nouă</translation>
 <translation id="5211488077761630279">Permiți ca <ph name="SITE_NAME" /> să-ți folosească <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Contribuie la îmbunătățirea securității pe web pentru toată lumea</translation>
 <translation id="5221339005270097309">Se verifică parolele…</translation>
@@ -941,6 +943,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6684906340059221832">Se urmăresc prețurile</translation>
 <translation id="6710079714193676716">Gestionat de organizația ta. Este posibil ca unele funcții să nu fie disponibile. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="672735642903863329">Accesează marcajele, parolele și multe altele pe toate dispozitivele.</translation>
 <translation id="6730682669179532099">Nu se pot exporta parole</translation>
 <translation id="6732087373923685049">Cameră</translation>
 <translation id="6748108480210050150">De la</translation>

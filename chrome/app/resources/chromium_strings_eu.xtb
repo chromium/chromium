@@ -10,6 +10,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1104942323762546749">Chromium-ek pasahitzak esportatu nahi ditu. Hori baimentzeko, idatzi Windows pasahitza.</translation>
 <translation id="113122355610423240">Chromium da arakatzaile lehenetsia</translation>
 <translation id="1131805035311359397">Pasahitzak datuen isilpekotasunaren urratzeen eta beste segurtasun-arazoen aurka babestuta dauden egiaztatzeko, <ph name="BEGIN_LINK" />hasi saioa Chromium-en<ph name="END_LINK" />.</translation>
+<translation id="1153368717515616349">Sakatu Chromium-eko menua</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium-erako luzapen batzuk giza interfazeko gailu batzuk erabiltzen ari ziren}=1{Chromium-erako luzapen batzuk giza interfazeko gailu batzuk erabiltzen ari dira}other{Chromium-erako luzapen batzuk giza interfazeko # gailu erabiltzen ari dira}}</translation>
 <translation id="1185134272377778587">Chromium arakatzaileari buruz</translation>
 <translation id="1203500561924088507">Eskerrik asko instalatzeagatik. <ph name="BUNDLE_NAME" /> erabiltzeko, arakatzailea berrabiarazi behar duzu.</translation>
@@ -59,6 +60,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="2384373936468275798">Chromium OS-k ezin izan ditu sinkronizatu zure datuak, kontuan saioa hasteko xehetasunak zaharkituta daudelako.</translation>
 <translation id="2396765026452590966"><ph name="EXTENSION_NAME" /> luzapenak aldatu egin du Chromium abiarazten duzunean agertzen den orria.</translation>
 <translation id="2401032172288869980">Chromium-ek kamera eta mikrofonoa erabiltzeko baimenak behar ditu webgune honetan</translation>
+<translation id="2451727308784734061">Erabili lasterbidea Pasahitz-kudeatzailea zerbitzura azkar joateko. Lasterbidea ordenagailuaren hasierako pantailara edo aplikazioak exekutatzeko tresnara eraman dezakezu.</translation>
 <translation id="2478295928299953161">Chromium itxi egingo da laster</translation>
 <translation id="2483889755041906834">Chromium-en</translation>
 <translation id="2485422356828889247">Desinstalatu</translation>
@@ -250,6 +252,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6333502561965082103">Beste eragiketa bat egiten ari da Chromium. Saiatu berriro geroago.</translation>
 <translation id="6334986366598267305">Errazagoa da Chromium erabiltzea Google-ko kontuarekin eta partekatutako ordenagailuetan.</translation>
 <translation id="6373523479360886564">Ziur Chromium desinstalatu nahi duzula?</translation>
+<translation id="6375219077595103062">Gehitu Pasahitz-kudeatzailea zerbitzurako lasterbide bat</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Nola erabiltzen ditugu datu horiek?<ph name="END_BOLD" /> Chromium-ek zure interesak estima ditzake. Beranduago, bisitatzen duzun webgune batek zure interesak ikusteko eska diezaioke Chromium-i, agertzen zaizkizun iragarkiak pertsonalizatze aldera.</translation>
 <translation id="6403826409255603130">Web-orriak eta aplikazioak tximista bezain azkar abiarazten dituen web-arakatzailea da Chromium. Bizkorra, egonkorra eta erabiltzeko erraza da. Chromium-ek malwarearen eta phishingaren aurka dituen babes inkorporatuei esker, seguruago ibiliko zara Interneten.</translation>
 <translation id="6442900851116057561">Berrabiarazi Chromium OS</translation>
@@ -373,6 +376,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8697124171261953979">Chromium hasten duzunean edo Omnibox-etik bilaketak egiten dituzunean erakusten den orria ere kontrolatzen du.</translation>
 <translation id="8704119203788522458">Hau da zure Chromium arakatzailea</translation>
 <translation id="8796602469536043152">Chromium-ek webgune honen izenean kamera eta mikrofonoa erabiltzeko baimena behar du</translation>
+<translation id="8826492472752484139">Sakatu Pasahitz-kudeatzailea</translation>
 <translation id="8833697763442816810">Chromium OS sistema</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Zein datu erabiltzen dira?<ph name="END_BOLD" /> Zure arakatze-historia eta gailu hau erabili bitartean Chromium-en bidez bisitatutako webguneen erregistro bat.</translation>
 <translation id="8862326446509486874">Ez dituzu eskubide egokiak sistema mailako instalazio bat egiteko. Saiatu instalatzailea administratzaile gisa abiarazten.</translation>

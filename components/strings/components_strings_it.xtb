@@ -1190,7 +1190,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3646643500201740985">Misurazione del rendimento di un annuncio</translation>
 <translation id="3647286794400715637">Ogni voce della stringa dell'URL deve contenere da 1 a 2 URL.</translation>
 <translation id="3650584904733503804">Convalida riuscita</translation>
-<translation id="3650594806107685466">Per contribuire a proteggere la tua carta, inserisci il CVC indicato sulla <ph name="SIDE_OF_CARD" /></translation>
+<translation id="3650594806107685466">Per contribuire a proteggere la tua carta, inserisci il codice CVC indicato sulla <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3650917416636556301">Escursioni e campeggio</translation>
 <translation id="3653033846669030038">Parchi tematici</translation>
 <translation id="3655241534245626312">Vai alle impostazioni dell'autorizzazione</translation>
@@ -1240,7 +1240,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="374325029554577103">Prodotti tecnologici per il fitness</translation>
 <translation id="3743765582345153106">Verifica sempre quando è in uso la compilazione automatica</translation>
 <translation id="3744111561329211289">Sincronizzazione in background</translation>
-<translation id="3744212718085287312">Vuoi renderlo più sicuro con una carta virtuale la prossima volta?</translation>
+<translation id="3744212718085287312">Vuoi pagare in modo più sicuro con una carta virtuale la prossima volta?</translation>
 <translation id="3744286742364977428">I file che scarichi vengono inviati a Google Cloud o a terze parti per l'analisi. Ad esempio, potrebbero essere sottoposti a scansione per rilevare dati sensibili o malware e archiviati in base ai criteri aziendali.</translation>
 <translation id="3744899669254331632">Al momento non puoi visitare il sito <ph name="SITE" /> perché tale sito web ha inviato credenziali criptate che Chromium non è riuscito a elaborare. Gli attacchi e gli errori di rete in genere sono temporanei, pertanto è possibile che questa pagina funzioni più tardi.</translation>
 <translation id="3748148204939282805">Gli utenti malintenzionati presenti sul sito <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> potrebbero indurti con l'inganno a effettuare operazioni pericolose, come installare software o rivelare informazioni personali (ad esempio password, numeri di telefono o carte di credito). <ph name="BEGIN_LEARN_MORE_LINK" />Ulteriori informazioni<ph name="END_LEARN_MORE_LINK" /></translation>

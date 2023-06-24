@@ -18,6 +18,7 @@
 <translation id="1838412507805038478">Prehliadač Chromium overil, že certifikát tohto webu bol vydaný vydavateľom <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Prehliadač Chromium obsahuje funkcie, ktoré vám pomôžu spravovať internetové dáta a rýchlosť načítania webových stránok.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="1847960401032164406">Mapy v prehliadači Chromium</translation>
 <translation id="1867772173333403444">4. Vyberte Chromium</translation>
 <translation id="2006345422933397527">Prehliadaču Chromium sa nepodarilo skontrolovať dostupnosť aktualizácií. Skontrolujte internetové pripojenie.</translation>
 <translation id="2052320862053429062">Chromium pravidelne kontroluje heslá podľa zoznamov, ktoré boli zverejnené na internete. Vaše heslá a používateľské mená sú pritom šifrované, aby ich nikto nemohol prečítať (ani Google).</translation>
@@ -41,6 +42,7 @@
 <translation id="2942241131342758843">Predvolene otvárajte odkazy, vyhľadávajte v miniaplikáciách a automaticky dopĺňajte heslá v iných aplikáciách pomocou prehliadača Chromium</translation>
 <translation id="2977470724722393594">Prehliadač Chromium bol aktualizovaný</translation>
 <translation id="3102849287235003384">Ak sa chcete odhlásiť zo svojho účtu Google na všetkých weboch, <ph name="BEGIN_LINK" />odhláste sa z prehliadača Chromium<ph name="END_LINK" />.</translation>
+<translation id="3115956258722352278">Chcete nastaviť Chromium ako predvolený prehliadač?</translation>
 <translation id="3256316712990552818">Skopírovaná do prehliadača Chromium</translation>
 <translation id="3344973607274501920">Prehliadaču Chromium sa nepodarilo skontrolovať heslá. Skontrolujte internetové pripojenie.</translation>
 <translation id="3472200483164753384">Nepodporované vo verzii Chromium Canary</translation>
@@ -69,6 +71,7 @@
 <translation id="4999538639245140991">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, takže údaje prehliadača Chromium budú z tohto zariadenia odstránené. Vaše údaje zostanú vo vašom účte Google.</translation>
 <translation id="5048795749726991615">Ak chcete ľahko získať svoje uložené heslá v iných aplikáciách, použite automatické dopĺňanie v prehliadači Chromium</translation>
 <translation id="5171868502429358653">Prihláste sa do prehliadača Chromium</translation>
+<translation id="5224044903258607400">Klepnite na Zobraziť v Mapách Google v prehliadači Chromium</translation>
 <translation id="5224391634244552924">Žiadne uložené heslá. Chromium môže skontrolovať heslá, keď ich uložíte.</translation>
 <translation id="5308226104666789935">Chromium nemôže skontrolovať dostupnosť aktualizácií</translation>
 <translation id="5396916991083608703">Chcete nastaviť Chromium ako predvolený prehliadač?</translation>

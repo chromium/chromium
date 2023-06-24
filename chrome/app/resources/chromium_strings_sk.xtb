@@ -10,6 +10,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1104942323762546749">Prehliadač Chromium sa pokúša exportovať vaše heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
 <translation id="113122355610423240">Chromium je vaším predvoleným prehliadačom</translation>
 <translation id="1131805035311359397">Ak chcete skontrolovať, či sú vaše heslá chránené pred porušením ochrany údajov a inými bezpečnostnými hrozbami, <ph name="BEGIN_LINK" />prihláste sa do prehliadača Chromium<ph name="END_LINK" />.</translation>
+<translation id="1153368717515616349">Kliknite na ponuku prehliadača Chromium</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Rozšírenia pre prehliadač Chromium mali prístup k zariadeniam s ľudským rozhraním}=1{Rozšírenia pre prehliadač Chromium majú prístup k zariadeniam s ľudským rozhraním}few{Rozšírenia pre prehliadač Chromium majú prístup k # zariadeniam s ľudským rozhraním}many{Chromium extensions are accessing # HID devices}other{Rozšírenia pre prehliadač Chromium majú prístup k # zariadeniam s ľudským rozhraním}}</translation>
 <translation id="1185134272377778587">Informácie o prehliadači Chromium</translation>
 <translation id="1203500561924088507">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať prehliadač.</translation>
@@ -59,6 +60,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="2384373936468275798">Systému Chromium OS sa nepodarilo synchronizovať vaše údaje, pretože vaše prihlasovacie údaje účtu sú zastarané.</translation>
 <translation id="2396765026452590966">Rozšírenie „<ph name="EXTENSION_NAME" />“ zmenilo stránku, ktorá sa zobrazí pri spustení prehliadača Chromium.</translation>
 <translation id="2401032172288869980">Chromium vyžaduje pre tento web povolený prístup ku kamere aj mikrofónu</translation>
+<translation id="2451727308784734061">Pomocou odkazu rýchlo prejdete do Správcu hesiel. Odkaz môžete v počítači presunúť na plochu alebo do Spúšťača aplikácií.</translation>
 <translation id="2478295928299953161">Chromium sa čoskoro zavrie</translation>
 <translation id="2483889755041906834">V prehliadači Chromium</translation>
 <translation id="2485422356828889247">Odinštalovať</translation>
@@ -250,6 +252,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="6333502561965082103">V prehliadači Chromium práve prebieha iná operácia. Skúste to neskôr.</translation>
 <translation id="6334986366598267305">Teraz je používanie prehliadača Chromium s účtom Google a na zdieľaných počítačoch oveľa ľahšie.</translation>
 <translation id="6373523479360886564">Naozaj chcete Chromium odinštalovať?</translation>
+<translation id="6375219077595103062">Pridajte odkaz na Správcu hesiel</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Ako používame tieto údaje:<ph name="END_BOLD" /> Chromium môže odhadovať vaše záujmy. Neskôr môže web, ktorý navštívite, o ne Chromium požiadať, aby mohol prispôsobiť zobrazované reklamy.</translation>
 <translation id="6403826409255603130">Chromium je webový prehliadač, ktorý spúšťa webové stránky a aplikácie rýchlosťou svetla. Je rýchly, stabilný a ľahko sa používa. S ochranou proti škodlivému softvéru a phishingu, ktorá je zabudovaná do prehliadača Chromium, môžete prehliadať web bezpečnejšie.</translation>
 <translation id="6442900851116057561">Reštartovanie systému Chromium OS</translation>
@@ -374,6 +377,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8697124171261953979">Tiež určuje, ktorá stránka sa zobrazí pri spustení prehliadača Chromium alebo pri vyhľadávaní pomocou všeobecného poľa.</translation>
 <translation id="8704119203788522458">Toto je váš prehliadač Chromium</translation>
 <translation id="8796602469536043152">Chromium potrebuje povolenie pre tento web na prístup k fotoaparátu a mikrofónu</translation>
+<translation id="8826492472752484139">Kliknite na položku Správca hesiel</translation>
 <translation id="8833697763442816810">Systém Chromium OS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Aké údaje sa používajú:<ph name="END_BOLD" /> vaša história prehliadania, teda záznam webov, ktoré ste navštívili pomocou prehliadača Chromium v tomto zariadení.</translation>
 <translation id="8862326446509486874">Nemáte potrebné práva na inštaláciu na úrovni systému. Skúste inštalátor spustiť znova ako správca.</translation>

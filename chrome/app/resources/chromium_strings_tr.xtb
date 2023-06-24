@@ -8,6 +8,7 @@
 <translation id="1104942323762546749">Chromium, şifrelerinizi dışa aktarmak istiyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="113122355610423240">Chromium varsayılan tarayıcınız</translation>
 <translation id="1131805035311359397">Şifrelerinizin veri ihlali ve diğer güvenlik sorunlarına karşı güvende olup olmadığını kontrol etmek için <ph name="BEGIN_LINK" />Chromium'da oturum açın<ph name="END_LINK" />.</translation>
+<translation id="1153368717515616349">Chromium menüsünü tıklayın</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium uzantıları, HID cihazlarına erişiyordu}=1{Chromium uzantıları, HID cihazlarına erişiyor}other{Chromium uzantıları, # HID cihazına erişiyor}}</translation>
 <translation id="1185134272377778587">Chromium hakkında</translation>
 <translation id="1203500561924088507">Yüklediğiniz için teşekkürler. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce tarayıcınızı yeniden başlatmanız gerekir.</translation>
@@ -57,6 +58,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="2384373936468275798">Hesap oturum açma ayrıntılarınız güncel olmadığından ChromiumOS, verilerinizi senkronize edemedi.</translation>
 <translation id="2396765026452590966">"<ph name="EXTENSION_NAME" />" uzantısı, Chromium'u başlattığınızda gösterilen sayfayı değiştirdi.</translation>
 <translation id="2401032172288869980">Bu site için Chromium'un kamera ve mikrofon izinlerine ihtiyacı var</translation>
+<translation id="2451727308784734061">Şifre Yöneticisi'ne hızlıca gitmek için kısayolunuzu kullanın. Kısayolunuzu bilgisayarınızın ana ekranına veya uygulama başlatıcıya taşıyabilirsiniz.</translation>
 <translation id="2478295928299953161">Chromium yakında kapanacak</translation>
 <translation id="2483889755041906834">Chromium'da</translation>
 <translation id="2485422356828889247">Kaldır</translation>
@@ -246,6 +248,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="6333502561965082103">Chromium'da başka bir işlem devam ediyor. Lütfen daha sonra yeniden deneyin.</translation>
 <translation id="6334986366598267305">Chromium'u Google Hesabınızla ve paylaşılan bilgisayarlarda kullanmak artık daha kolay.</translation>
 <translation id="6373523479360886564">Chromium'u kaldırmak istediğinizden emin misiniz?</translation>
+<translation id="6375219077595103062">Şifre Yöneticisi'ne kısayol ekleyin</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Bu verileri kullanma şeklimiz:<ph name="END_BOLD" /> Chromium, ilgi alanlarınızı tahmin edebilir. Daha sonra ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chromium'dan ilgi alanlarınızı göstermesini isteyebilir.</translation>
 <translation id="6403826409255603130">Chromium, Web sayfalarını ve uygulamaları yıldırım hızıyla çalıştıran bir Web tarayıcısıdır. Hızlı ve kararlı çalışır, kolay kullanılır. Chromium'da dahili olarak bulunan zararlı yazılım ve kimlik avı koruması sayesinde Web'de daha güvenli gezinin.</translation>
 <translation id="6442900851116057561">ChromiumOS'i yeniden başlatın</translation>
@@ -369,6 +372,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8697124171261953979">Ayrıca Chromium'u başlattığınızda veya Çok Amaçlı Adres Çubuğu'ndan arama yaptığınızda gösterilecek sayfayı da denetler.</translation>
 <translation id="8704119203788522458">Bu sizin Chromium'unuz</translation>
 <translation id="8796602469536043152">Chromium'un bu sitede kameranıza ve mikrofonunuza erişmesi için izin gerekiyor</translation>
+<translation id="8826492472752484139">"Şifre Yöneticisi"ni tıklayın</translation>
 <translation id="8833697763442816810">ChromiumOS Sistemi</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Kullanılan veriler:<ph name="END_BOLD" /> Tarama geçmişiniz, bu cihazda Chromium'u kullanarak ziyaret ettiğiniz sitelerin kaydı.</translation>
 <translation id="8862326446509486874">Sistem düzeyinde yükleme için gerekli haklara sahip değilsiniz. Yükleyiciyi Yönetici olarak tekrar çalıştırmayı deneyin.</translation>

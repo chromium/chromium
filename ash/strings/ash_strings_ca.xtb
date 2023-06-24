@@ -140,6 +140,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1550406609415860283">Dispositius disponibles</translation>
 <translation id="1550523713251050646">Feu clic per veure més opcions</translation>
 <translation id="1555130319947370107">Blau</translation>
+<translation id="1557622599341396706">Mostra el nom de l'escriptori</translation>
 <translation id="1576511610858879060">El Chromebook o el dispositiu Bluetooth utilitza una versió anterior de Bluetooth. Fes servir una altra font d'entrada per millorar la qualitat de l'àudio.</translation>
 <translation id="1576623706766186887">Redueix quan la lupa estigui activada</translation>
 <translation id="1586324912145647027">Ves a l'escriptori de l'1 al 8</translation>
@@ -929,6 +930,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="504465286040788597">Paràgraf anterior</translation>
 <translation id="5045550434625856497">Contrasenya incorrecta</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">Si parles mentre el micròfon està silenciat, rebràs una notificació. No s'emetrà àudio des del dispositiu.</translation>
 <translation id="5078796286268621944">PIN incorrecte</translation>
 <translation id="5083553833479578423">Desbloqueja més funcions de l'Assistent.</translation>
 <translation id="5092436659250499817">Activa/desactiva la retroil·luminació del teclat</translation>
@@ -959,6 +961,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5207949376430453814">Ressalta la marca d'inserció de text</translation>
 <translation id="5208059991603368177">Activat</translation>
 <translation id="5216991270656129561">Desactivada fins a les <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Envia missatges de telèfon o respon als que reps ràpidament amb El meu telèfon.</translation>
 <translation id="5222676887888702881">Tanca la sessió</translation>
 <translation id="5229343007215035173">Activa/desactiva la pantalla de privadesa</translation>
 <translation id="5234764350956374838">Ignora</translation>
@@ -987,6 +990,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5319712128756744240">Vincula un dispositiu nou</translation>
 <translation id="5322611492012084517">No es troba el telèfon</translation>
+<translation id="5323994101633366939">Amaga el nom de l'escriptori</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5329548388331921293">S'està connectant...</translation>
 <translation id="5331975486040154427">Dispositiu USB-C (port posterior esquerre)</translation>
@@ -1169,6 +1173,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">S'han baixat fitxers de veu en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
+<translation id="6119972796024789243">Correcció de color</translation>
 <translation id="6121838516699723042">Confirma la baixada del fitxer <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistent de Google no està disponible a les sessions de convidat.</translation>
 <translation id="6129953537138746214">Espai</translation>
@@ -1634,6 +1639,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplicació</translation>
 <translation id="8255234195843591763">Restableix per actualitzar</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
+<translation id="8262312463845990408">Commuta la reproducció</translation>
 <translation id="8270450402312105425">{0,plural, =1{Canvia el dispositiu a la versió anterior en el termini d’una hora}other{Canvia el dispositiu a la versió anterior en el termini de # hores}}</translation>
 <translation id="8277261673056602147">Marca el text en pantalla</translation>
 <translation id="8284362522226889623">Fes lliscar quatre dits cap a l'esquerra per canviar a l'escriptori anterior</translation>

@@ -8,6 +8,7 @@
 <translation id="1104942323762546749">Chromium vol exportar les teves contrasenyes. Escriu la contrasenya de Windows per permetre-ho.</translation>
 <translation id="113122355610423240">Chromium és el navegador predeterminat</translation>
 <translation id="1131805035311359397">Per comprovar si les teves contrasenyes estan protegides contra violacions de les dades i contra altres problemes de seguretat, <ph name="BEGIN_LINK" />inicia la sessió a Chromium<ph name="END_LINK" />.</translation>
+<translation id="1153368717515616349">Fes clic al menú de Chromium</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Les extensions de Chromium estaven accedint als dispositius HID}=1{Les extensions de Chromium estan accedint a un dispositiu HID}other{Les extensions de Chromium estan accedint a # dispositius HID}}</translation>
 <translation id="1185134272377778587">Quant a Chromium</translation>
 <translation id="1203500561924088507">T'agraïm la instal·lació. Has de reiniciar el navegador abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
@@ -57,6 +58,7 @@
 <translation id="2384373936468275798">Chromium OS no ha pogut sincronitzar les teves dades perquè la informació d'inici de sessió del teu compte no està actualitzada.</translation>
 <translation id="2396765026452590966">L'extensió <ph name="EXTENSION_NAME" /> ha canviat la pàgina que es mostra quan inicieu Chromium.</translation>
 <translation id="2401032172288869980">Chromium necessita permís d'accés a la càmera i al micròfon per a aquest lloc web</translation>
+<translation id="2451727308784734061">Utilitza la drecera per accedir ràpidament al gestor de contrasenyes. Pots moure la drecera a la pantalla d'inici o al menú d'aplicacions de l'ordinador.</translation>
 <translation id="2478295928299953161">Chromium es tancarà aviat</translation>
 <translation id="2483889755041906834">A Chromium</translation>
 <translation id="2485422356828889247">Desinstal·la</translation>
@@ -248,6 +250,7 @@
 <translation id="6333502561965082103">Hi ha una altra operació en curs a Chromium. Torna-ho a provar més tard.</translation>
 <translation id="6334986366598267305">Ara resulta més fàcil utilitzar Chromium amb el vostre compte de Google i en ordinadors compartits.</translation>
 <translation id="6373523479360886564">Confirmeu que voleu desinstal·lar Chromium?</translation>
+<translation id="6375219077595103062">Afegeix una drecera al gestor de contrasenyes</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Com utilitzem aquestes dades<ph name="END_BOLD" />: Chromium pot estimar els teus interessos. Després, un lloc web que visitis pot demanar els teus interessos a Chromium per personalitzar els anuncis que veus.</translation>
 <translation id="6403826409255603130">Chromium és un navegador web que executa les pàgines web i les aplicacions a gran velocitat. És ràpid, estable i fàcil d'utilitzar. Navegueu per Internet amb més seguretat amb protecció inserida a Chromium contra el programari maliciós i contra la pesca de credencials.</translation>
 <translation id="6442900851116057561">Reinicia Chromium OS</translation>
@@ -372,6 +375,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8697124171261953979">També controla la pàgina que es mostra quan inicieu Chromium o quan feu una cerca des de l'omnibox.</translation>
 <translation id="8704119203788522458">Aquest és el vostre Chromium</translation>
 <translation id="8796602469536043152">Per visitar aquest lloc web, Chromium necessita permís per accedir a la càmera i al micròfon</translation>
+<translation id="8826492472752484139">Fes clic a Gestor de contrasenyes</translation>
 <translation id="8833697763442816810">Sistema Chromium OS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Quines dades s'utilitzen<ph name="END_BOLD" />: el teu historial de navegació, que és un registre dels llocs web que has visitat amb Chromium en aquest dispositiu.</translation>
 <translation id="8862326446509486874">No disposeu dels drets necessaris per instal·lar aplicacions al sistema. Proveu de tornar a executar l'instal·lador com a administrador.</translation>

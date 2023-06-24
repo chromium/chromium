@@ -18,6 +18,7 @@
 <translation id="1838412507805038478">Chromium-ը հաստատել է, որ <ph name="ISSUER" />-ն է թողարկել վեբկայքի հավաստագիրը:</translation>
 <translation id="1843424232666537147">Chromium-ի գործառույթները կօգնեն ձեզ կառավարել թրաֆիկի սպառման և էջերի բեռնման արագությունները:
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
+<translation id="1847960401032164406">Քարտեզները Chromium-ում</translation>
 <translation id="1867772173333403444">4. Ընտրեք Chromium-ը։</translation>
 <translation id="2006345422933397527">Chromium-ին չհաջողվեց ստուգել թարմացումների առկայությունը։ Ստուգեք ինտերնետ կապը։</translation>
 <translation id="2052320862053429062">Chromium-ը պարբերաբար hամեմատում է ձեր գաղտնաբառերը ցուցակների հետ, որոնք հրապարակվել են առցանց։ Այդ ժամանակ ձեր գաղտնաբառերը և օգտանունները գաղտնագրվում են, այնպես որ ոչ ոք, այդ թվում՝ Google-ը, չի կարող կարդալ դրանք։</translation>
@@ -41,6 +42,7 @@
 <translation id="2942241131342758843">Դարձրեք Chromium-ը ձեր կանխադրված դիտարկիչը՝ հղումներ բացելու, վիջեթներից որոնելու և այլ հավելվածներում գաղտնաբառերի ինքնալրացման համար</translation>
 <translation id="2977470724722393594">Chromium-ը թարմացված է</translation>
 <translation id="3102849287235003384">Բոլոր կայքերում ձեր Google հաշվից դուրս գալու համար <ph name="BEGIN_LINK" />դուրս եկեք Chromium-ից<ph name="END_LINK" />։</translation>
+<translation id="3115956258722352278">Դարձնե՞լ Chromium-ը ձեր կանխադրված դիտարկիչը</translation>
 <translation id="3256316712990552818">Պատճենվել է Chromium-ում</translation>
 <translation id="3344973607274501920">Chromium-ին չհաջողվեց ստուգել ձեր գաղտնաբառերը։ Ստուգեք ինտերնետ կապը։</translation>
 <translation id="3472200483164753384">Չի աջակցվում Chromium Canary-ում</translation>
@@ -69,6 +71,7 @@
 <translation id="4999538639245140991">Դուք դուրս եք գալիս <ph name="SIGNOUT_MANAGED_DOMAIN" /> տիրույթի ադմինիստրատորի կողմից կառավարվող հաշվից: Նկատի առեք, որ Chromium-ի տվյալները սարքից կհեռացվեն, սակայն կմնան ձեր Google հաշվում:</translation>
 <translation id="5048795749726991615">Պահված գաղտնաբառերն այլ հավելվածներում հեշտությամբ մուտքագրելու համար օգտագործեք ինքնալրացման գործառույթը Chromium-ում</translation>
 <translation id="5171868502429358653">Մուտք Chromium</translation>
+<translation id="5224044903258607400">Հպեք «Դիտել Google Քարտեզների միջոցով Chromium-ում»</translation>
 <translation id="5224391634244552924">Պահված գաղտնաբառեր չկան։ Chromium-ը կարող է ստուգել ձեր գաղտնաբառերը, երբ պահում եք դրանք։</translation>
 <translation id="5308226104666789935">Chromium-ին չհաջողվեց ստուգել թարմացումների առկայությունը</translation>
 <translation id="5396916991083608703">Սահմանե՞լ Chromium-ը որպես կանխադրված դիտարկիչ</translation>

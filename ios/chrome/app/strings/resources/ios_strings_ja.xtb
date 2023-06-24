@@ -72,6 +72,7 @@
 <translation id="1358214951266274152">コピーしたリンクに移動</translation>
 <translation id="1360432990279830238">ログアウトして同期をオフにしますか？</translation>
 <translation id="1363028406613469049">トラック</translation>
+<translation id="1365106417372288489">iPhone が最近復元されたため、デフォルトのブラウザが変更されている可能性があります。</translation>
 <translation id="1375321115329958930">保存したパスワード</translation>
 <translation id="1377255359165588604">同期機能が動作を停止しました。</translation>
 <translation id="1377321085342047638">カード番号</translation>
@@ -148,6 +149,7 @@
 <translation id="1872096359983322073">照明</translation>
 <translation id="1883255238294161206">リストを折りたたむ</translation>
 <translation id="1894023287452300670">ここで価格をトラッキングできます</translation>
+<translation id="189531189292803889">iPad が最近復元されたため、デフォルトのブラウザが変更されている可能性があります。</translation>
 <translation id="1910975740091000991">Chrome for iOS</translation>
 <translation id="1911619930368729126">ドライブにアップロード</translation>
 <translation id="1923342640370224680">1 時間以内</translation>
@@ -1043,6 +1045,7 @@
 <translation id="750493650310597496">選択されていません</translation>
 <translation id="7508728395076009983">シークレット タブをロックするには、Touch ID、Face ID、またはパスコードを設定してください。</translation>
 <translation id="7514365320538308">ダウンロード</translation>
+<translation id="7524055474074101597">アプリからパスワードなどにアクセスできます。</translation>
 <translation id="7531345132340165516">現在のサイト</translation>
 <translation id="7537586195939242955">現在、Passbookにパスをインストールできません。</translation>
 <translation id="754655535278952384"><ph name="TIME" /> にチェック</translation>

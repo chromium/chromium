@@ -399,6 +399,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1864927262126810325">Nga <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Përfaqësuesi është caktuar të përdorë serverë përfaqësues fiksë, jo një shkrim URL-je .pac.</translation>
 <translation id="1871284979644508959">Fushë e detyrueshme</translation>
+<translation id="1871739799120352748">Çmimi është i lartë</translation>
 <translation id="1873899211667975540">Muzika rok</translation>
 <translation id="1874224422119691492">Mund të ndryshosh nëse e përdor kyçjen e ekranit për plotësimin e fjalëkalimeve te "<ph name="SETTINGS" />"</translation>
 <translation id="1875025161375567525">Tabakaja e fotografive</translation>
@@ -442,6 +443,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> kërkon të ruajë të dhëna të mëdha në mënyrë të përhershme në kompjuterin tënd lokal</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{dhe 1 tjetër}other{dhe # të tjera}}</translation>
+<translation id="2001469757375372617">Ndodhi një gabim. Ndryshimi yt nuk u ruajt.</translation>
 <translation id="2003709556000175978">Rivendos fjalëkalimin tënd tani</translation>
 <translation id="2003775180883135320">Katër shpime lart</translation>
 <translation id="2009942480257059311">Butoni "Krijo ngjarje". Aktivizoje për të krijuar me shpejtësi një ngjarje të re te "Kalendari i Google"</translation>
@@ -499,6 +501,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2118132148597630479">Zarf C5</translation>
 <translation id="2119505898009119320">Lëshuar për: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Shpim poshtë djathtas</translation>
+<translation id="2122214041802369259">Çmimi është i lartë</translation>
 <translation id="2122719317867821810">Kjo politikë funksionon sipas parashikimit, por diku është caktuar një vlerë në konflikt dhe ajo është anuluar nga kjo politikë.</translation>
 <translation id="2126374524350484896">Prodhuesi i PDF-së:</translation>
 <translation id="2130448033692577677">Shabllonet që ke specifikuar mund të mos zbatohen për shkak se politika DnsOverHttpsMode nuk është caktuar.</translation>
@@ -859,6 +862,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3054512251683174387">Chrome i fshin automatikisht temat që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një temë mund të shfaqet përsëri në listë. Ose mund t'i bllokosh temat që nuk dëshiron që Chrome t'i ndajë me sajtet. Mëso më shumë rreth menaxhimit të privatësisë së reklamave në Chrome.</translation>
 <translation id="3061707000357573562">Shërbimi i korrigjimit</translation>
 <translation id="306573536155379004">Loja filloi.</translation>
+<translation id="3067505415088964188">Çmimi është i ulët</translation>
 <translation id="3068991664510324412">Kompjuterët dhe videolojërat</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3081538120861307764">Për të matur performancën e një reklame, lloje të kufizuara të të dhënave ndahen mes sajteve, si p.sh. ora kur të është shfaqur reklama.</translation>
@@ -2074,6 +2078,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5967592137238574583">Modifiko informacionet e kontaktit</translation>
 <translation id="5967867314010545767">Hiqe nga historiku</translation>
 <translation id="5968022600320704045">Asnjë rezultat kërkimi</translation>
+<translation id="5969199813874624822">Gjej dhe gjurmo çmimet</translation>
 <translation id="5974052231147553524">Ruli i gjashtë</translation>
 <translation id="5975083100439434680">Zvogëlo</translation>
 <translation id="5979084224081478209">Kontrollo fjalëkalimet</translation>
@@ -3397,6 +3402,7 @@ Detaje shtesë:
 <translation id="9141013498910525015">Menaxho adresat</translation>
 <translation id="9144951720726881238">Data e skadimit:</translation>
 <translation id="9148507642005240123">&amp;Zhbëje redaktimin</translation>
+<translation id="9148599396704355100">Çmimi është i ulët</translation>
 <translation id="9150045010208374699">Përdor kamerën</translation>
 <translation id="9150685862434908345">Administratori yt mund të ndryshojë konfigurimin e shfletuesit në distancë. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chrome. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">I përditësuar</translation>

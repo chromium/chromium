@@ -79,6 +79,7 @@
 <translation id="1061130374843955397">Dámosche a benvida ao teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="1061373870045429865">Crear código QR para esta ligazón</translation>
 <translation id="1061904396131502319">Xa case é hora de facer unha pausa</translation>
+<translation id="10619348099955377">Copiar nome visible</translation>
 <translation id="1062407476771304334">Substituír</translation>
 <translation id="1062628064301375934">Axúdanos a facer que a Web sexa máis privada</translation>
 <translation id="1066964438793906105">Busca software malicioso</translation>
@@ -578,6 +579,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1481537595330271162">Produciuse un erro ao cambiar o tamaño do disco</translation>
 <translation id="1482626744466814421">Engadir esta pestana aos marcadores…</translation>
 <translation id="1482772681918035149">editar os contrasinais</translation>
+<translation id="1483431819520123112">O nome visible copiouse no portapapeis</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">O sitio está usando o Bluetooth</translation>
@@ -956,6 +958,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1784707308176068866">Executar en segundo plano cando o solicite unha aplicación nativa de cooperación</translation>
 <translation id="1784849162047402014">O dispositivo ten pouco espazo restante no disco</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Se desinstalas <ph name="APP_NAME" />, tamén se desinstalará esta aplicación:}other{Se desinstalas <ph name="APP_NAME" />, tamén se desinstalarán estas aplicacións:}}</translation>
+<translation id="1786290960428378411">Solicitude de lectura e cambio</translation>
 <translation id="1787350673646245458">Imaxe do usuario</translation>
 <translation id="1790976235243700817">Quitar acceso</translation>
 <translation id="1792619191750875668">Pantalla ampliada</translation>
@@ -1287,6 +1290,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Fai clic para instalar a extensión}other{Fai clic para instalar estas extensións}}</translation>
 <translation id="2073496667646280609">Pode que non teñas suficiente espazo de almacenamento no dispositivo ou na localización seleccionada para gardar a copia de seguranza. Proba a liberar espazo ou a escoller outra localización.</translation>
 <translation id="2073505299004274893">Usa <ph name="CHARACTER_LIMIT" /> caracteres ou menos</translation>
+<translation id="2075088158103027942">Ir á subscrición</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
 <translation id="2076269580855484719">Ocultar este plugin</translation>
 <translation id="2076672359661571384">Tamaño medio (recomendado)</translation>
@@ -2106,6 +2110,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2731700343119398978">Agarda...</translation>
 <translation id="2731971182069536520">A próxima vez que reinicies o dispositivo, o administrador levará a cabo unha actualización única que eliminará os teus datos locais.</translation>
 <translation id="2732134891301408122">Contido extra: <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733992589856193783">Creaches unha clave de acceso para este sitio. Necesitas o teu dispositivo móbil para iniciar sesión.</translation>
 <translation id="27349076983469322">Fondo claro</translation>
 <translation id="2735712963799620190">Programación</translation>
 <translation id="2737363922397526254">Contraer...</translation>
@@ -3094,6 +3099,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3610241585790874201">Sen permiso para gardar datos no teu dispositivo</translation>
 <translation id="3610369246614755442">O ventilador da base necesita unha reparación</translation>
 <translation id="3610961622607302617">Cambiar contrasinal de <ph name="WEBSITE" />.</translation>
+<translation id="3611634011145829814">Ir á páxina de subscrición</translation>
 <translation id="3611658447322220736">Os sitios pechados recentemente poden rematar de enviar e recibir datos</translation>
 <translation id="3612673635130633812">Descargouse a través de &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Mostrar <ph name="FOLDER_NAME" /></translation>
@@ -3781,6 +3787,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4176463684765177261">Desactivado</translation>
 <translation id="4176864026061939326">Este é un dispositivo xestionado. O administrador do dispositivo require a creación dun perfil novo para a conta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4177501066905053472">Temas dos anuncios</translation>
+<translation id="4178220097446335546">Para esquecer esta subscrición e as redes asociadas, vai á páxina de subscrición de Passpoint e quítaa.</translation>
 <translation id="4180788401304023883">Queres eliminar o certificado de CA "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Idiomas</translation>
@@ -3933,6 +3940,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4316850752623536204">Sitio web para programadores</translation>
 <translation id="4317733381297736564">Compras integradas na aplicación</translation>
 <translation id="4317820549299924617">A verificación non se realizou correctamente</translation>
+<translation id="4319441675152393296">Fai clic na icona desta extensión para que poida ler e cambiar <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Non hai conexión a Internet</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197">Mostrar <ph name="FILE_NAME" /> en Finder</translation>
@@ -4618,6 +4626,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4899052647152077033">Inverter cores</translation>
 <translation id="4899696330053002588">Contén anuncios</translation>
 <translation id="489985760463306091">Para completar a eliminación de software daniño, reinicia o ordenador</translation>
+<translation id="490031510406860025">Non se permite neste sitio</translation>
 <translation id="4900392736118574277">A páxina de inicio cambiou a <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz: liñas entrelazadas</translation>
 <translation id="4900652253009739885">Non se pode quitar o único interruptor que ten asignada a acción Seleccionar. Preme calquera tecla para <ph name="RESPONSE" />.</translation>
@@ -7352,6 +7361,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7299515639584427954">Queres cambiar a aplicación predeterminada para abrir as ligazóns compatibles?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">Podes preguntar: “Hey Google, que canción é esta?" ou “Hey Google, que hai na miña pantalla?”</translation>
+<translation id="7301812050652048720">Clave de acceso eliminada</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Esta aplicación podería impedir que Chrome funcione correctamente.}other{Estas aplicacións poderían impedir que Chrome funcione correctamente.}}</translation>
 <translation id="7303281435234579599">Produciuse un erro ao configurar o modo de demostración.</translation>
 <translation id="7303900363563182677">Impediuse que este sitio vexa o texto e as imaxes que se copian no portapapeis</translation>
@@ -7896,6 +7906,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7744192722284567281">O contrasinal viuse implicado nunha violación da seguranza dos datos</translation>
 <translation id="7744649840067671761">Para iniciar a asignación, preme unha tecla ou un interruptor novo.
 Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha acción asignada.</translation>
+<translation id="7745677556280361868">Queres eliminar esta rede na páxina de subscrición de Passpoint?</translation>
 <translation id="7746045113967198252">Reduce ou amplía os elementos da pantalla, como o texto. Tamén podes atopar esta opción de configuración en Configuración &gt; Dispositivo &gt; Pantallas.</translation>
 <translation id="7746739418892731373">Estás vendo fotos e vídeos destacados da túa mediateca de Google Fotos. Podes controlar o que se mostra nesta sección en <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.
         <ph name="BREAK" />
@@ -8109,6 +8120,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7920363873148656176"><ph name="ORIGIN" /> pode ver <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Engade as palabras que queiras que omita o corrector ortográfico</translation>
 <translation id="7921347341284348270">Non podes ver as notificacións do móbil nesta conta xestionada. Téntao de novo con outra conta. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
+<translation id="7921901223958867679">Esta extensión pode ler e cambiar <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 extensión</translation>
 <translation id="7922935920104868876">Mostrar detalles sobre o bloqueo de cookies de terceiros no modo de incógnito</translation>
 <translation id="7923564237306226146">Completouse a actualización de Linux</translation>
@@ -9640,6 +9652,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="930551443325541578">Repetición de teclas e acentos</translation>
 <translation id="930893132043726269">Nestes momentos, estase usando a itinerancia</translation>
 <translation id="930991362911221750">Queres permitir que <ph name="APP_NAME" /> vexa esta pestana?</translation>
+<translation id="931273044114601262">Permitido neste sitio</translation>
 <translation id="93140074055951850">Detivéronse as aplicacións para Android</translation>
 <translation id="932327136139879170">Inicio</translation>
 <translation id="932508678520956232">Non se puido empezar a imprimir.</translation>

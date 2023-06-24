@@ -10,6 +10,7 @@
 <translation id="1104942323762546749">Chromiumএ আপোনাৰ পাছৱর্ডসমূহ ৰপ্তানি কৰিব খোজে। ইয়াৰ অনুমতি আপোনাৰ দিবলৈ Windows পাছৱৰ্ড টাইপ কৰক।</translation>
 <translation id="113122355610423240">Chromium হৈছে আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ</translation>
 <translation id="1131805035311359397">আপোনাৰ পাছৱৰ্ডসমূহ ডেটা উলংঘন আৰু আন সুৰক্ষা সম্পৰ্কীয় সমস্যাৰ পৰা নিৰাপদে আছেনে নাই পৰীক্ষা কৰিবলৈ <ph name="BEGIN_LINK" />Chromiumত ছাইন ইন কৰক<ph name="END_LINK" />।</translation>
+<translation id="1153368717515616349">Chromiumৰ মেনুত ক্লিক কৰক</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromiumৰ এক্সটেনশ্বনসমূহে HID ডিভাইচসমূহ এক্সেছ কৰি আছিল}=1{Chromiumৰ এক্সটেনশ্বনসমূহে HID ডিভাইচসমূহ এক্সেছ কৰি আছে}one{Chromiumৰ এক্সটেনশ্বনসমূহে # টা HID ডিভাইচ এক্সেছ কৰি আছে}other{Chromiumৰ এক্সটেনশ্বনসমূহে # টা HID ডিভাইচ এক্সেছ কৰি আছে}}</translation>
 <translation id="1185134272377778587">Chromiumৰ বিষয়ে</translation>
 <translation id="1203500561924088507">ইনষ্টল কৰাৰ বাবে ধন্যবাদ। আপুনি <ph name="BUNDLE_NAME" /> ব্যৱহাৰ কৰাৰ পূৰ্বে আপোনাৰ ব্ৰাউজাৰটো ৰিষ্টাৰ্ট কৰিবই লাগিব।</translation>
@@ -59,6 +60,7 @@
 <translation id="2384373936468275798">আপোনাৰ একাউণ্টৰ ছাইন ইনৰ সবিশেষ তথ্যৰ ম্যাদ উকলি যোৱাৰ বাবে ChromiumOSএ আপোনাৰ ডেটা ছিংক কৰিব নোৱাৰিলে।</translation>
 <translation id="2396765026452590966">আপুনি Chromium আৰম্ভ কৰিলে কোনটো পৃষ্ঠা দেখুওৱা হ’ব সেয়া "<ph name="EXTENSION_NAME" />" এক্সটেনশ্বনে সলনি কৰিছে৷</translation>
 <translation id="2401032172288869980">Chromiumক এই ছাইটটোৰ বাবে মাইক্ৰ’ফ’ন আৰু কেমেৰাৰ অনুমতিৰ আৱশ্যক</translation>
+<translation id="2451727308784734061">দ্ৰুতভাৱে Password Managerলৈ যাবলৈ আপোনাৰ শ্বৰ্টকাট ব্যৱহাৰ কৰক। আপুনি আপোনাৰ শ্বৰ্টকাটটো আপোনাৰ কম্পিউটাৰৰ গৃহ স্ক্ৰীন অথবা এপ্‌ লঞ্চাৰলৈ স্থানান্তৰ কৰিব পাৰে।</translation>
 <translation id="2478295928299953161">Chromium শীঘ্ৰেই বন্ধ হ’ব</translation>
 <translation id="2483889755041906834">Chromiumত</translation>
 <translation id="2485422356828889247">আনইনষ্টল কৰক</translation>
@@ -250,6 +252,7 @@
 <translation id="6333502561965082103">Chromiumত অন্য এটা কার্য চলি আছে। অনুগ্ৰহ কৰি কিছু সময়ৰ পাছত আকৌ চেষ্টা কৰক।</translation>
 <translation id="6334986366598267305">বর্তমান আপোনাৰ Google একাউণ্টৰ জৰিয়তে আৰু শ্বেয়াৰ কৰা কম্পিউটাৰসমূহ সহজে Chromium ব্যৱহাৰ কৰিব পৰা যায়।</translation>
 <translation id="6373523479360886564">আপুনি Chromium আনইনষ্টল কৰিবলৈ বিচৰাটো নিশ্চিতনে?</translation>
+<translation id="6375219077595103062">Password Managerৰ এটা শ্বৰ্টকাট যোগ দিয়ক</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />আমি এই ডেটা কেনেকৈ ব্যৱহাৰ কৰোঁ:<ph name="END_BOLD" /> Chromiumএ আপোনাৰ আগ্ৰহৰ বিষয়বস্তুৰ অনুমান কৰিব পাৰে। পাছত, আপুনি চোৱা কোনো ছাইটে আপুনি দেখা বিজ্ঞাপনসমূহ ব্যক্তিগতকৃত কৰিবলৈ Chromiumক আপোনাৰ আগ্ৰহসমূহৰ বিষয়ে সুধিব পাৰে।</translation>
 <translation id="6403826409255603130">Chromium হৈছে ৱেবপৃষ্ঠা আৰু এপ্লিকেশ্বনসমূহক বিজুলী বেগেৰে চলোৱা এক ৱেব ব্ৰাউজাৰ। এইটো ক্ষিপ্ৰ, স্থিৰ আৰু ব্যৱহাৰৰ বাবে সুবিধাজনক। মালৱেৰ আৰু ফিশ্বিঙৰ পৰা বিশেষভাৱে সুৰক্ষা পোৱা সুবিধাৰে নির্মিত Chromium ৰ জৰিয়তে অতি সুৰক্ষিতভাৱে ৱেব ব্ৰাউজিং কৰক।</translation>
 <translation id="6442900851116057561">ChromiumOS ৰিষ্টাৰ্ট কৰক</translation>
@@ -374,6 +377,7 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="8697124171261953979">এইটোৱে আপুনি Chromiumৰ ব্যৱহাৰ আৰম্ভ কৰিলে বা Omniboxৰ পৰা সন্ধান কৰিলে কি পৃষ্ঠা খোল খাব সেয়া নিয়ন্ত্ৰণ কৰে।</translation>
 <translation id="8704119203788522458">এইটো আপোনাৰ Chromium</translation>
 <translation id="8796602469536043152">এই ছাইটটোত আপোনাৰ কেমেৰা আৰু মাইক্ৰ’ফ’ন এক্সেছ কৰিবলৈ Chromiumক অনুমতিৰ আৱশ্যক</translation>
+<translation id="8826492472752484139">“Password Manager”ত ক্লিক কৰক</translation>
 <translation id="8833697763442816810">ChromiumOS ছিষ্টেম</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />কি ডেটা ব্যৱহাৰ কৰা হয়:<ph name="END_BOLD" /> আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস, আপুনি এই ডিভাইচটোত Chromium ব্যৱহাৰ কৰি চোৱা ছাইটৰ ৰেকৰ্ড।</translation>
 <translation id="8862326446509486874">ছিষ্টেম-পৰ্যায়ৰ ইনষ্টলৰ বাবে আপোনাৰ সঠিক অধিকাৰ নাই। প্রশাসক হিচাপে ইনষ্টলাৰটো পুনৰ চলাই চাওক।</translation>

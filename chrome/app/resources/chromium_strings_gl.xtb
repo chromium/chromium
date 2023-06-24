@@ -10,6 +10,7 @@
 <translation id="1104942323762546749">Chromium quere exportar os teus contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="113122355610423240">Chromium é o teu navegador predeterminado</translation>
 <translation id="1131805035311359397">Para comprobar se os teus contrasinais están protexidos fronte a violacións da seguranza dos datos e outros problemas de seguranza, debes <ph name="BEGIN_LINK" />iniciar sesión en Chromium<ph name="END_LINK" />.</translation>
+<translation id="1153368717515616349">Fai clic no menú de Chromium</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{As extensións de Chromium tiñan acceso a dispositivos de interface humana}=1{As extensións de Chromium teñen acceso a dispositivos de interface humana}other{As extensións de Chromium teñen acceso a # dispositivos de interface humana}}</translation>
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1203500561924088507">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar o navegador.</translation>
@@ -59,6 +60,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="2384373936468275798">Chromium OS non puido sincronizar os teus datos porque a información de inicio de sesión da túa conta está desactualizada.</translation>
 <translation id="2396765026452590966">A extensión "<ph name="EXTENSION_NAME" />" cambiou a páxina que se mostra ao iniciar Chromium.</translation>
 <translation id="2401032172288869980">Chromium necesita permiso de acceso á cámara e ao micrófono para este sitio</translation>
+<translation id="2451727308784734061">Usa o atallo para acceder rapidamente ao xestor de contrasinais. Podes mover o atallo ao Menú de aplicacións ou á pantalla de inicio do ordenador.</translation>
 <translation id="2478295928299953161">Chromium pecharase en breve</translation>
 <translation id="2483889755041906834">En Chromium</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -250,6 +252,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6333502561965082103">Hai outra operación en Chromium que está en progreso. Téntao de novo máis tarde.</translation>
 <translation id="6334986366598267305">Agora é máis fácil utilizar Chromium coa túa conta de Google e en ordenadores compartidos.</translation>
 <translation id="6373523479360886564">Seguro que queres desinstalar Chromium?</translation>
+<translation id="6375219077595103062">Engade un atallo ao xestor de contrasinais</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Como usamos estes datos?<ph name="END_BOLD" /> Chromium pode facer unha estimación dos teus intereses. Máis tarde, un sitio que visites pode consultarlle a Chromium os teus intereses para personalizar os anuncios que se che mostren.</translation>
 <translation id="6403826409255603130">Chromium é un navegador web que executa páxinas web e aplicacións a gran velocidade. É rápido, estable e fácil de utilizar. Chromium permíteche navegar na web de forma máis segura, xa que inclúe protección contra malware e phishing.</translation>
 <translation id="6442900851116057561">Reiniciar Chromium OS</translation>
@@ -373,6 +376,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8697124171261953979">Tamén controla a páxina que se mostra ao iniciar Chromium ou ao realizar unha busca desde Omnibox.</translation>
 <translation id="8704119203788522458">Este é o teu Chromium</translation>
 <translation id="8796602469536043152">Chromium necesita permiso para acceder á cámara e ao micrófono neste sitio</translation>
+<translation id="8826492472752484139">Fai clic no xestor de contrasinais</translation>
 <translation id="8833697763442816810">Sistema Chromium OS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Que datos se usan?<ph name="END_BOLD" /> O teu historial de navegación e un rexistro dos sitios que visitases usando Chromium neste dispositivo.</translation>
 <translation id="8862326446509486874">Non tes os dereitos apropiados para efectuar a instalación a nivel do sistema. Tenta volver executar o instalador como administrador.</translation>

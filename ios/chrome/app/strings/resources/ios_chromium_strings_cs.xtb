@@ -17,6 +17,7 @@
 <translation id="1758508597843173586">Uzamkněte anonymní okna, když prohlížeč Chromium opustíte nebo přejdete do jiné aplikace.</translation>
 <translation id="1838412507805038478">Prohlížeč Chromium ověřil, že certifikát tohoto webu byl vydán vydavatelem <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium obsahuje funkce, které pomáhají spravovat přenosy dat z internetu a umožňují zrychlit načítání webových stránek. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
+<translation id="1847960401032164406">Mapy v prohlížeči Chromium</translation>
 <translation id="1867772173333403444">4. Vyberte Chromium.</translation>
 <translation id="2006345422933397527">Chromium nemůže vyhledat dostupné aktualizace. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="2052320862053429062">Chromium vaše hesla pravidelně porovnává se seznamy hesel, která unikla na internet. Vaše hesla a uživatelská jména jsou při tom šifrována, takže je nemůže nikdo zobrazit (ani Google).</translation>
@@ -69,6 +70,7 @@
 <translation id="4999538639245140991">Protože se odhlašujete z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaše data prohlížeče Chromium z tohoto zařízení budou smazána. V účtu Google vám zůstanou.</translation>
 <translation id="5048795749726991615">Pokud chcete mít uložená hesla snadno k dispozici v jiných aplikacích, používejte Chromium k automatickému vyplňování</translation>
 <translation id="5171868502429358653">Přihlásit se do prohlížeče Chromium</translation>
+<translation id="5224044903258607400">Klepněte na „Zobrazit v Mapách Google v prohlížeči Chromium“</translation>
 <translation id="5224391634244552924">Nemáte žádná uložená hesla. Chromium může hesla zkontrolovat, pouze když si je uložíte.</translation>
 <translation id="5308226104666789935">Chromium nemůže vyhledat dostupné aktualizace</translation>
 <translation id="5396916991083608703">Nastavit Chromium jako výchozí prohlížeč?</translation>

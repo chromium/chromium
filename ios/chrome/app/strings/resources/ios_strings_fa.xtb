@@ -91,6 +91,7 @@
 <translation id="1492417797159476138">قبلاً این نام کاربری را برای این سایت ذخیره کرده‌اید</translation>
 <translation id="1497590942294823549">منو ← مدیر گذرواژه</translation>
 <translation id="1498283581832036924">حساب <ph name="WEBSITE" /> حذف نخواهد شد.</translation>
+<translation id="1501820324067650154">برای گزینه‌های مسیر، روی «دریافت مسیر» ضربه بزنید</translation>
 <translation id="1506063256525392513">با این اجازه می‌توانید عکس بگیرید و بارگذاری کنید و همچنین رمزینه‌های پاسخ‌سریع را اسکن کنید</translation>
 <translation id="1509486075633541495">ورود به سیستم وب‌سایت</translation>
 <translation id="1509960214886564027">ویژگی‌های بسیاری از سایت‌ها ممکن است درست کار نکنند</translation>
@@ -179,6 +180,7 @@
 <translation id="2073572773299281212">آخرین فعالیت: <ph name="DAYS" /> روز قبل</translation>
 <translation id="2074131957428911366">هرزمان خواستید می‌توانید مواردی را که می‌خواهید همگام‌سازی شود در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> انتخاب کنید.</translation>
 <translation id="2079545284768500474">لغو</translation>
+<translation id="2080409463824088391">باز کردن در برنامه…</translation>
 <translation id="2080769225927880590">با حساب معتبر به سیستم وارد شوید</translation>
 <translation id="2103075008456228677">‏باز کردن history.google.com</translation>
 <translation id="21133533946938348">کوچک کردن برگه</translation>
@@ -318,6 +320,7 @@
 <translation id="2931440415625410757">نمایش دستورالعمل‌ها</translation>
 <translation id="2932085390869194046">پیشنهاد گذرواژه…</translation>
 <translation id="2932765531295814441">افزودن دستی گذرواژه‌ها</translation>
+<translation id="2952246431280799028">نشانی‌ای را لمس کنید و نگه دارید.</translation>
 <translation id="2952278131021475699">جستجوی دوربینی با «لنز»</translation>
 <translation id="2952581218264071393">‏۱. «تنظیمات Chrome» را باز کنید</translation>
 <translation id="2956733177489514605">‏به سیستم «حساب Google» وارد شوید تا گذرواژه‌ها و موارد دیگر همگام‌سازی شود.</translation>
@@ -1272,6 +1275,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="891282356902782456">‏این گذرواژه فقط در این دستگاه ذخیره می‌شود. برای استفاده از این گذرواژه در دستگاه‌های دیگر، آن را در «حساب Google» خود (<ph name="EMAIL" />) ذخیره کنید.</translation>
 <translation id="891658175948553296">نوشتار سایت‌ها برجسته کنید</translation>
 <translation id="8917490105272468696">بله، موافقم</translation>
+<translation id="8926984231484284953">برای دریافت اطلاعات محلی و مسیرها، از نشانی‌های موجود در صفحه‌های وب استفاده کنید.</translation>
 <translation id="8928133177108699615">رایانه</translation>
 <translation id="8934982071228289624">برای ذخیره کردن این گذرواژه در حسابتان، ابتدا باید گذرنویسه‌ای در دستگاهتان تنظیم کنید.</translation>
 <translation id="8940809892068499052">باز کردن «برگه‌های ناشناس» از برنامه‌های دیگر</translation>

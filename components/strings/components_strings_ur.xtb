@@ -431,6 +431,7 @@
 <translation id="1870473978371099486">نجی تدریس کی سروسز</translation>
 <translation id="1871208020102129563">‏پراکسی ایک ‎.pac اسکرپٹ URL نہیں بلکہ مقررہ پراکسی سرورز استعمال کرنے کیلئے سیٹ ہے۔</translation>
 <translation id="1871284979644508959">مطلوبہ فیلڈ</translation>
+<translation id="1871739799120352748">قیمت زیادہ ہے</translation>
 <translation id="1873899211667975540">راک موسیقی</translation>
 <translation id="1874224422119691492">آپ تبدیل کر سکتے ہیں کہ آیا آپ <ph name="SETTINGS" /> میں پاس ورڈز درج کرنے کے لیے اپنا اسکرین لاک استعمال کرتے ہیں</translation>
 <translation id="1875025161375567525">تصویری ٹرے</translation>
@@ -475,6 +476,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> آپ کے مقامی کمپیوٹر پر مستقل طور پر بڑا ڈیٹا اسٹور کرنا چاہتا ہے</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{اور 1 مزید}other{اور # مزید}}</translation>
+<translation id="2001469757375372617">کچھ غلط ہو گیا۔ آپ کی تبدیلی محفوظ نہیں ہوئی۔</translation>
 <translation id="2003709556000175978">اپنا پاس ورڈ ابھی ری سیٹ کریں</translation>
 <translation id="2003775180883135320">اوپر مستطیل سوراخ</translation>
 <translation id="2009942480257059311">‏ایونٹ تخلیق کریں بٹن، Google کیلنڈر میں تیزی سے نیا ایونٹ تخلیق کرنے کے لیے فعال کریں</translation>
@@ -534,6 +536,7 @@
 <translation id="2118132148597630479">‏C5 لفافہ</translation>
 <translation id="2119505898009119320">جاری کردہ بنام: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">نیچے دائیں طرف سوراخ</translation>
+<translation id="2122214041802369259">قیمت زیادہ ہے</translation>
 <translation id="2122719317867821810">یہ پالیسی توقع کے مطابق کام کر رہی ہے لیکن کسی دوسری جگہ ایک متضاد قدر سیٹ کی گئی ہے اور اسے اس پالیسی سے اوور رائیڈ کر دیا گیا ہے۔</translation>
 <translation id="2126374524350484896">‏PDF پروڈیوسر:</translation>
 <translation id="2130448033692577677">‏ہو سکتا ہے کہ آپ کے ذریعے متعینہ تمثیلات DnsOverHttpsMode پالیسی سیٹ نہ ہونے کی وجہ سے لاگو نہ ہو۔</translation>
@@ -922,6 +925,7 @@
 <translation id="3054512251683174387">‏Chrome‏ 4 ہفتے سے زیادہ پرانی موضوعات کو خودکار طور پر حذف کر دیتا ہے۔ جب تک آپ براؤزنگ جاری رکھتے ہیں فہرست پر موضوع دوبارہ ظاہر ہو سکتا ہے۔ یا آپ ان موضوعات کو مسدود کر سکتے ہیں جنہیں آپ نہیں چاہتے کہ Chrome سائٹس کے ساتھ اس کا اشتراک کرے۔ Chrome میں اپنے اشتہار کی رازداری کا نظم کرنے کے بارے میں مزید جانیں۔</translation>
 <translation id="3061707000357573562">پیچ سروس</translation>
 <translation id="306573536155379004">گیم شروع ہو گئی۔</translation>
+<translation id="3067505415088964188">قیمت کم ہے</translation>
 <translation id="3068991664510324412">کمپیوٹر اور ویڈیو گیمز</translation>
 <translation id="3080254622891793721">گرافک</translation>
 <translation id="3081538120861307764">کسی اشتہار کی کارکردگی کی پیمائش کرنے کے لیے، سائٹس کے درمیان ڈیٹا کی محدود اقسام کا اشتراک کیا جاتا ہے، جیسے کہ دن کا وہ وقت جب آپ کو اشتہار دکھایا گیا تھا۔</translation>
@@ -2232,6 +2236,7 @@
 <translation id="5967592137238574583">رابطے کی معلومات میں ترمیم کریں</translation>
 <translation id="5967867314010545767">سرگزشت سے ہٹا دیں</translation>
 <translation id="5968022600320704045">تلاش کا کوئی نتیجہ نہیں ہے</translation>
+<translation id="5969199813874624822">قیمت محفوظ کریں اور ٹریک کریں</translation>
 <translation id="5974052231147553524">چھٹا رول</translation>
 <translation id="5975083100439434680">زوم آؤٹ کریں</translation>
 <translation id="5979084224081478209">پاس ورڈز چیک کریں</translation>
@@ -3672,6 +3677,7 @@
 <translation id="9141013498910525015">پتوں کا نظم کریں</translation>
 <translation id="9144951720726881238">اختتامی تاریخ:</translation>
 <translation id="9148507642005240123">ترمیم کریں کو &amp;کالعدم کریں</translation>
+<translation id="9148599396704355100">قیمت کم ہے</translation>
 <translation id="9150045010208374699">اپنا کیمرا استعمال کریں</translation>
 <translation id="9150685862434908345">‏آپ کا منتظم دور سے آپ کے براؤزر کا سیٹ اپ تبدیل کر سکتا ہے۔ اس آلے پر ہونے والی سرگرمی کا نظم Chrome سے باہر بھی کیا جا سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">اپ ڈیٹ کر دیا گیا</translation>

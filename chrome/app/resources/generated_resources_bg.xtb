@@ -79,6 +79,7 @@
 <translation id="1061130374843955397">Добре дошли във вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">Създаване на QR код за тази връзка</translation>
 <translation id="1061904396131502319">Скоро ще е време за почивка</translation>
+<translation id="10619348099955377">Копиране на екранното име</translation>
 <translation id="1062407476771304334">Замяна</translation>
 <translation id="1062628064301375934">Помогнете ни да изградим мрежа, която предлага по-голяма поверителност</translation>
 <translation id="1066964438793906105">Сканиране за злонамерен софтуер</translation>
@@ -581,6 +582,7 @@
 <translation id="1481537595330271162">Грешка при преоразмеряването на диска</translation>
 <translation id="1482626744466814421">Запазване на отметка към този раздел...</translation>
 <translation id="1482772681918035149">редактиране на паролите</translation>
+<translation id="1483431819520123112">Екранното име е копирано в буферната памет</translation>
 <translation id="1483493594462132177">Изпращане</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">Сайтът използва Bluetooth</translation>
@@ -964,6 +966,7 @@
 <translation id="1784707308176068866">Изпълняване на заден план при поискване от съдействащо приложение с директно изпълнение</translation>
 <translation id="1784849162047402014">Дисковото пространство на устройството е малко</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{При деинсталиране на <ph name="APP_NAME" /> ще бъде деинсталирано и следното приложение:}other{При деинсталиране на <ph name="APP_NAME" /> ще бъдат деинсталирани и следните приложения:}}</translation>
+<translation id="1786290960428378411">Заявява се четене и промяна</translation>
 <translation id="1787350673646245458">Изображение на потребител</translation>
 <translation id="1790976235243700817">Премахване на достъпа</translation>
 <translation id="1792619191750875668">Разширен екран</translation>
@@ -1296,6 +1299,7 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Кликнете, за да го инсталирате}other{Кликнете, за да ги инсталирате}}</translation>
 <translation id="2073496667646280609">Възможно е да няма достатъчно място в хранилището на устройството или в местоположението, избрано за създаване на резервно копие. Освободете място или изберете друго местоположение.</translation>
 <translation id="2073505299004274893">Използвайте не повече от <ph name="CHARACTER_LIMIT" /> знака</translation>
+<translation id="2075088158103027942">Към абонамента</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% батерия</translation>
 <translation id="2076269580855484719">Скриване на тази приставка</translation>
 <translation id="2076672359661571384">Среден (по подразбиране)</translation>
@@ -2118,6 +2122,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2731700343119398978">Моля, изчакайте...</translation>
 <translation id="2731971182069536520">При следващото рестартиране на устройството администраторът ви ще извърши еднократна актуализация, при която ще бъдат изтрити локалните ви данни.</translation>
 <translation id="2732134891301408122">Допълнително съдържание <ph name="CURRENT_ELEMENT" /> от <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733992589856193783">Създадохте ключ за достъп за този сайт. За да влезете в профила си, ви е необходимо мобилното ви устройство.</translation>
 <translation id="27349076983469322">Светъл фон</translation>
 <translation id="2735712963799620190">График</translation>
 <translation id="2737363922397526254">Свиване...</translation>
@@ -3106,6 +3111,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3610241585790874201">Без разрешение за запазване на данни на устройството ви</translation>
 <translation id="3610369246614755442">Вентилаторът на докинг станцията трябва да бъде обслужен</translation>
 <translation id="3610961622607302617">Промяна на паролата за <ph name="WEBSITE" /></translation>
+<translation id="3611634011145829814">Към страницата за абонамента</translation>
 <translation id="3611658447322220736">Наскоро затворените сайтове могат да завършат изпращането и получаването на данни</translation>
 <translation id="3612673635130633812">Изтеглено от &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">Показване на „<ph name="FOLDER_NAME" />“</translation>
@@ -3794,6 +3800,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4176463684765177261">Деактивирано</translation>
 <translation id="4176864026061939326">Това устройство се управлява. Администраторът му изисква нов потребителски профил за профила <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4177501066905053472">Рекламни теми</translation>
+<translation id="4178220097446335546">За да бъде забравен този абонамент и свързаните с него мрежи, отворете страницата му в Passpoint и го премахнете.</translation>
 <translation id="4180788401304023883">Да се изтрие ли сертификатът на сертифициращ орган „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Езици</translation>
@@ -3946,6 +3953,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4316850752623536204">Уебсайт на програмиста</translation>
 <translation id="4317733381297736564">Покупки в приложения</translation>
 <translation id="4317820549299924617">Потвърждението не бе успешно</translation>
+<translation id="4319441675152393296">Кликнете върху иконата на това разширение, за да може да чете и променя <ph name="HOST" /></translation>
 <translation id="4320177379694898372">Няма връзка с интернет</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197">Показване на <ph name="FILE_NAME" /> във Finder</translation>
@@ -4632,6 +4640,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4899052647152077033">Обръщане на цветовете</translation>
 <translation id="4899696330053002588">Съдържа реклами</translation>
 <translation id="489985760463306091">За да завършите премахването на опасния софтуер, рестартирайте компютъра си</translation>
+<translation id="490031510406860025">Не е разрешено на този сайт</translation>
 <translation id="4900392736118574277">Страницата ви при стартиране бе променена на <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Хц – презредова развивка</translation>
 <translation id="4900652253009739885">Единственият превключвател, за който е зададено „Избиране“, не може да бъде премахнат. Натиснете който и да е клавиш за <ph name="RESPONSE" />.</translation>
@@ -7370,6 +7379,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7299515639584427954">Да се промени ли стандартното приложение за поддържаните връзки?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">Можете да попитате „Hey Google, what song is this?“ или „Hey Google, what's on my screen?“</translation>
+<translation id="7301812050652048720">Ключът за достъп е изтрит</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Възможно е това приложение да пречи на Chrome да работи правилно.}other{Възможно е тези приложения да пречат на Chrome да работи правилно.}}</translation>
 <translation id="7303281435234579599">Ами сега! Нещо се обърка при настройването на демонстрационния режим.</translation>
 <translation id="7303900363563182677">Този сайт няма право да преглежда текста и изображенията, копирани в буферната памет</translation>
@@ -7914,6 +7924,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7744192722284567281">Разкрита при нарушение на сигурността на данните</translation>
 <translation id="7744649840067671761">Натиснете нов превключвател или клавиш, за да стартирате задаването.
 Натиснете зададен превключвател или клавиш, за да премахнете зададеното действие</translation>
+<translation id="7745677556280361868">Искате ли да премахнете тази мрежа от страницата в Passpoint за абонамента?</translation>
 <translation id="7746045113967198252">Уголемете или смалете елементите на екрана, включително текста. Можете също да намерите функцията впоследствие в „Настройки &gt; Устройство &gt; Дисплеи“.</translation>
 <translation id="7746739418892731373">Показват се фото- и видеоакценти от колекцията ви в Google Снимки. Имате възможност да контролирате какво да се показва в акцентите за вас на адрес <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.
         <ph name="BREAK" />
@@ -8127,6 +8138,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7920363873148656176"><ph name="ORIGIN" /> може да преглежда <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Добавете думи, които да се пропускат при проверка на правописа</translation>
 <translation id="7921347341284348270">Не можете да преглеждате известията от телефона си в този управляван профил. Опитайте отново с друг профил. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
+<translation id="7921901223958867679">Това разширение може да чете и променя <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 разширение</translation>
 <translation id="7922935920104868876">Показване на подробностите за блокирането на „бисквитки“ на трети страни в режим „инкогнито“</translation>
 <translation id="7923564237306226146">Надстройването на Linux завърши успешно</translation>
@@ -9659,6 +9671,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="930551443325541578">Повтаряне на клавиши и ударения</translation>
 <translation id="930893132043726269">Понастоящем се използва роуминг</translation>
 <translation id="930991362911221750">Да се разреши ли на <ph name="APP_NAME" /> да вижда този раздел?</translation>
+<translation id="931273044114601262">Разрешено на този сайт</translation>
 <translation id="93140074055951850">Приложенията за Android бяха спрени</translation>
 <translation id="932327136139879170">Начална страница</translation>
 <translation id="932508678520956232">Отпечатването не можа да стартира.</translation>

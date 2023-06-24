@@ -73,6 +73,7 @@
 <translation id="1358214951266274152">เข้าชมลิงก์ที่คุณคัดลอก</translation>
 <translation id="1360432990279830238">ออกจากระบบและปิดการซิงค์ไหม</translation>
 <translation id="1363028406613469049">แทร็ก</translation>
+<translation id="1365106417372288489">iPhone ได้รับการกู้คืนข้อมูลเมื่อเร็วๆ นี้ ซึ่งอาจมีการเปลี่ยนเบราว์เซอร์เริ่มต้น</translation>
 <translation id="1375321115329958930">รหัสผ่านที่บันทึกไว้</translation>
 <translation id="1377255359165588604">การซิงค์หยุดทำงานแล้ว</translation>
 <translation id="1377321085342047638">หมายเลขบัตร</translation>
@@ -149,6 +150,7 @@
 <translation id="1872096359983322073">แฟลช</translation>
 <translation id="1883255238294161206">ยุบรายการ</translation>
 <translation id="1894023287452300670">ติดตามราคาที่นี่</translation>
+<translation id="189531189292803889">iPad ได้รับการกู้คืนข้อมูลเมื่อเร็วๆ นี้ ซึ่งอาจมีการเปลี่ยนเบราว์เซอร์เริ่มต้น</translation>
 <translation id="1910975740091000991">Chrome สำหรับ iOS</translation>
 <translation id="1911619930368729126">อัปโหลดไปยัง Google ไดรฟ์</translation>
 <translation id="1923342640370224680">ชั่วโมงล่าสุด</translation>
@@ -1050,6 +1052,7 @@
 <translation id="750493650310597496">เลือก 0 รายการ</translation>
 <translation id="7508728395076009983">หากต้องการล็อกแท็บที่ไม่ระบุตัวตน ให้ตั้งค่า Touch ID, Face ID หรือรหัสผ่าน</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
+<translation id="7524055474074101597">เข้าถึงรหัสผ่านและข้อมูลอื่นๆ ได้ในแอปต่างๆ</translation>
 <translation id="7531345132340165516">เว็บไซต์ปัจจุบัน</translation>
 <translation id="7537586195939242955">ขออภัย ไม่สามารถติดตั้ง Pass ของคุณใน Passbook ในขณะนี้</translation>
 <translation id="754655535278952384">ตรวจสอบเมื่อ <ph name="TIME" /></translation>

@@ -61,6 +61,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1283039547216852943">Atinge pentru a extinde</translation>
 <translation id="1289059016768036948">Ți se va solicita să te conectezi la Contul Google</translation>
 <translation id="1291207594882862231">Șterge istoricul, cookie-urile, datele privind site-urile și memoria cache…</translation>
+<translation id="1293898515599432175">Parolele vor fi șterse din Managerul de parole Google pentru Chrome <ph name="CHROME_CHANNEL" />. Vei păstra fișierul cu parole pe care tocmai l-ai descărcat.</translation>
 <translation id="129553762522093515">Închise recent</translation>
 <translation id="1298077576058087471">Economisește până la 60 % din date, citește știrile de azi</translation>
 <translation id="1303339473099049190">Parola nu a fost găsită. Verifică dacă ai scris-o corect și încearcă din nou.</translation>
@@ -510,6 +511,7 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="3795154175078851242">Copiază imaginea cu linkul</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Gestionează</translation>
+<translation id="381861209280417772">Șterge parolele</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> descărcări șterse</translation>
 <translation id="3819183753496523827">Ești offline. Verifică starea conexiunii la internet și încearcă din nou.</translation>
 <translation id="3830886834687455630">Actualizează serviciile Google Play pentru a verifica parolele</translation>
@@ -594,6 +596,7 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="4249955472157341256">Sortează după cele mai recente</translation>
 <translation id="4250229828105606438">Captură de ecran</translation>
 <translation id="4256782883801055595">Licențe open source</translation>
+<translation id="4257230861809842349">Ștergi parolele din Managerul de parole Google?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Ce date sunt folosite:<ph name="END_BOLD" /> istoricul tău de navigare, o evidență a site-urilor pe care le-ai accesat folosind Chrome pe acest dispozitiv.</translation>
 <translation id="4269820728363426813">Copiază adresa linkului</translation>
 <translation id="4283102315569707115">Soliciți în mod prestabilit versiunea site-urilor pentru computer?</translation>

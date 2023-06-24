@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">&amp;Lägg till i ordlistan</translation>
 <translation id="1018656279737460067">Avbröts</translation>
 <translation id="1022489261739821355">Visar lösenord från ditt <ph name="BEGIN_LINK" />Google-konto<ph name="END_LINK" /></translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Enheten hanteras av <ph name="DOMAIN" />. Administratörer kan få åtkomst till data i alla profiler på enheten.</translation>
 <translation id="1024734233509995696">Den här fliken använder kameran eller mikrofonen</translation>
 <translation id="1026655690966755180">Lägg till en port</translation>
@@ -3505,6 +3506,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3919145445993746351">Aktivera synkronisering om du vill ha tilläggen på alla dina datorer</translation>
 <translation id="3919229493046408863">Inaktivera avisering när det finns enheter i närheten</translation>
 <translation id="3919262972282962508">Äldre versioner av Chrome-appar öppnas inte på Mac-enheter efter december 2022. Kontakta administratören om att uppdatera till en ny version eller ta bort appen.</translation>
+<translation id="3919376399641777316">Använder Google Drive-lagring</translation>
 <translation id="3919798653937160644">Sidorna som du visar i det här fönstret visas inte i webbläsarhistoriken och lämnar inga andra spår, till exempel cookies, på datorn när du har stängt alla öppna gästfönster. Filer som du laddar ned kommer dock att sparas.</translation>
 <translation id="3920504717067627103">Certifikatpolicyer</translation>
 <translation id="3920909973552939961">Får inte installera betalningshanterare</translation>
@@ -3655,6 +3657,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4044612648082411741">Ange certifikatlösenordet</translation>
 <translation id="4044708573046946214">Lösenord för skärmlåset</translation>
 <translation id="404493185430269859">Standardsökmotor</translation>
+<translation id="4044964245574571633">Använder Microsoft OneDrive-lagring</translation>
 <translation id="4045196801416070837">Ljud på enheten</translation>
 <translation id="4046013316139505482">De här tilläggen behöver inte se och ändra information på den här webbplatsen.</translation>
 <translation id="4046123991198612571">Nästa spår</translation>
@@ -3693,6 +3696,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4084682180776658562">Lägg till bokmärke</translation>
 <translation id="4084835346725913160">Stäng <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript är blockerat på den här sidan.</translation>
+<translation id="4085620044235559093">Välj en app för att öppna <ph name="FILE_TYPE" />-filer</translation>
 <translation id="4087089424473531098">Skapade tillägget:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4449,6 +4453,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4742970037960872810">Ta bort markering</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Läs mer om hur du uppdaterar appar<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">Besök webbplatsen</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Sätt på webbplatsens ljud}other{Sätt på webbplatsernas ljud}}</translation>
 <translation id="474609389162964566">Kom åt assistenten med ”Hey Google”</translation>
 <translation id="4746351372139058112">Meddelanden</translation>
@@ -7539,6 +7544,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7432200167665670017">Administratören blockerar <ph name="EXTENSION_NAME" /> – app-id <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Sätt i smartkort för att fortsätta använda din <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Behåll den</translation>
+<translation id="7434100547946193426">Andra appar</translation>
 <translation id="7434509671034404296">Utvecklare</translation>
 <translation id="7434757724413878233">Musacceleration</translation>
 <translation id="7434969625063495310">Det gick inte att lägga till utskriftsservern. Kontrollera serverns konfiguration och försök igen.</translation>

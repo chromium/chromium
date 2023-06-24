@@ -140,6 +140,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1550406609415860283">Kullanılabilir cihazlar var</translation>
 <translation id="1550523713251050646">Daha fazla seçenek için tıklayın</translation>
 <translation id="1555130319947370107">Mavi</translation>
+<translation id="1557622599341396706">Masa adını göster</translation>
 <translation id="1576511610858879060">Chromebook veya Bluetooth cihazınızda Bluetooth'un eski bir sürümü kullanılıyor. Daha iyi ses kalitesi için başka bir giriş kaynağı kullanın.</translation>
 <translation id="1576623706766186887">Büyüteç açıkken uzaklaştırın</translation>
 <translation id="1586324912145647027">1 ile 8 arasındaki masalara git</translation>
@@ -929,6 +930,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="504465286040788597">Önceki paragraf</translation>
 <translation id="5045550434625856497">Hatalı parola</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">Mikrofonunuz kapalıyken konuşursanız bildirim alırsınız. Cihazınızdan hiç ses aktarılmaz.</translation>
 <translation id="5078796286268621944">Yanlış PIN</translation>
 <translation id="5083553833479578423">Diğer Asistan özelliklerinin kilidini açın.</translation>
 <translation id="5092436659250499817">Klavye arka ışığını açın/kapatın</translation>
@@ -959,6 +961,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5207949376430453814">Metin imlecini vurgula</translation>
 <translation id="5208059991603368177">Açık</translation>
 <translation id="5216991270656129561">Saat <ph name="TIME" /> olana kadar kapalı</translation>
+<translation id="5221423477036820198">Telefon Merkezi'ni kullanarak telefonunuzdaki mesajları hızlıca gönderin veya yanıtlayın.</translation>
 <translation id="5222676887888702881">Çıkış</translation>
 <translation id="5229343007215035173">Gizlilik ekranını açın/kapatın</translation>
 <translation id="5234764350956374838">Kapat</translation>
@@ -987,6 +990,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5319712128756744240">Yeni cihaz eşle</translation>
 <translation id="5322611492012084517">Telefonunuz bulunamıyor</translation>
+<translation id="5323994101633366939">Masa adını gizle</translation>
 <translation id="5327248766486351172">Ad</translation>
 <translation id="5329548388331921293">Bağlanıyor...</translation>
 <translation id="5331975486040154427">USB-C cihaz (sol arka bağlantı noktası)</translation>
@@ -1169,6 +1173,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> dosyaları indirildi</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Renk düzeltme</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> dosyasının indirilmesini onaylayın</translation>
 <translation id="612734058257491180">Google Asistan, misafir oturumunda kullanılamaz.</translation>
 <translation id="6129953537138746214">Boşluk</translation>
@@ -1637,6 +1642,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Uygulama</translation>
 <translation id="8255234195843591763">Güncellemek için sıfırlayın</translation>
 <translation id="8261506727792406068">Sil</translation>
+<translation id="8262312463845990408">Çal/duraklat</translation>
 <translation id="8270450402312105425">{0,plural, =1{Cihazı bir saat içinde önceki sürüme geçirin}other{Cihazı # saat içinde önceki sürüme geçirin}}</translation>
 <translation id="8277261673056602147">Ekrandaki metni vurgula</translation>
 <translation id="8284362522226889623">Önceki masaya geçmek için dört parmakla sola kaydırın</translation>

@@ -399,6 +399,7 @@
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> дереккөзінен</translation>
 <translation id="1871208020102129563">Прокси .pac сценарий URL мекенжайын емес, бекітілген прокси серверлерін пайдалануға орнатылған.</translation>
 <translation id="1871284979644508959">Міндетті өріс</translation>
+<translation id="1871739799120352748">Бағасы жоғары</translation>
 <translation id="1873899211667975540">Рок музыка</translation>
 <translation id="1874224422119691492"><ph name="SETTINGS" /> ішінде құпия сөздерді толтыру үшін экран құлпын пайдалану-пайдаланбау керектігін өзгертуге болады</translation>
 <translation id="1875025161375567525">Фото науасы</translation>
@@ -442,6 +443,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> үлкен көлемді деректерді жергілікті компьютеріңізде біржола сақтағысы келеді</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{және тағы 1}other{және тағы #}}</translation>
+<translation id="2001469757375372617">Бірдеңе дұрыс болмады. Өзгерістер сақталмады.</translation>
 <translation id="2003709556000175978">Құпия сөзді қайта орнату</translation>
 <translation id="2003775180883135320">Жоғарғы жағын төрт рет тесу</translation>
 <translation id="2009942480257059311">"Іс-шара жасау" түймесі, Google Calendar-да жылдам жаңа іс-шара жасау үшін белсендіріңіз</translation>
@@ -499,6 +501,7 @@
 <translation id="2118132148597630479">C5 хатқалтасы</translation>
 <translation id="2119505898009119320">Берілетін ұйым: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Төменгі оң жақты тесу</translation>
+<translation id="2122214041802369259">Бағасы жоғары</translation>
 <translation id="2122719317867821810">Бұл саясат ойдағыдай жұмыс істеуде, бірақ басқа жерде осы саясат бойынша қабылданбайтын қарама-қайшы мән орнатылған.</translation>
 <translation id="2126374524350484896">PDF жасаушы:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode саясаты орнатылмағандықтан, сіз көрсеткен үлгілер қолданылмауы мүмкін.</translation>
@@ -859,6 +862,7 @@
 <translation id="3054512251683174387">Chrome браузері 4 аптадан асқан тақырыптарды автоматты жояды. Оны қайта қараған кезде, тақырып тізімге қайта қосылуы мүмкін. Болмаса Chrome браузері сайттармен бөлісуді қаламайтын тақырыптарды бөгей аласыз. Chrome-да жарнамадағы құпиялықты басқару туралы толық ақпарат.</translation>
 <translation id="3061707000357573562">Қызметті түзету</translation>
 <translation id="306573536155379004">Ойын басталды.</translation>
+<translation id="3067505415088964188">Бағасы төмен</translation>
 <translation id="3068991664510324412">Компьютердегі және бейне ойындар</translation>
 <translation id="3080254622891793721">Кескін</translation>
 <translation id="3081538120861307764">Жарнаманың өнімділігін өлшеу үшін сізге жарнама көрсетілген күн уақыты сияқты шектеулі дерек түрлері сайттарға беріледі.</translation>
@@ -2073,6 +2077,7 @@
 <translation id="5967592137238574583">Байланыс ақпаратын өңдеу</translation>
 <translation id="5967867314010545767">Тарихтан алып тастау</translation>
 <translation id="5968022600320704045">Іздеу нәтижелері жоқ.</translation>
+<translation id="5969199813874624822">Бағаны сақтау және бақылау</translation>
 <translation id="5974052231147553524">Алтыншы орам</translation>
 <translation id="5975083100439434680">Кішірейту</translation>
 <translation id="5979084224081478209">Құпия сөздерді тексеру</translation>
@@ -3397,6 +3402,7 @@
 <translation id="9141013498910525015">Мекенжайларды басқару</translation>
 <translation id="9144951720726881238">Жарамдылық мерзімі:</translation>
 <translation id="9148507642005240123">&amp;Өзгерту әрекетін кері қайтару</translation>
+<translation id="9148599396704355100">Бағасы төмен</translation>
 <translation id="9150045010208374699">Камераңызды пайдалану</translation>
 <translation id="9150685862434908345">Браузер реттеуді әкімші қашықтан өзгерте алады. Сонымен қатар құрылғыдағы әрекеттерді Chrome браузерінен тыс басқаруға болады. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Жаңартылды</translation>
