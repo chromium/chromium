@@ -91,6 +91,23 @@ void SetNameInternal(PlatformThreadId thread_id, const char* name) {
   }
 }
 
+// On windows the WaitForSingleObject calls done on thread handles will not be
+// ordered when replaying wrt the associated thread exiting. For now we workaround
+// this by using an ordered lock to explicitly enforce this ordering constraint.
+static std::atomic<int> g_record_replay_thread_join_ordered_lock_id = 0;
+
+static int GetRecordReplayThreadJoinOrderedLockId() {
+  if (!g_record_replay_thread_ordered_lock_id) {
+    g_record_replay_thread_join_ordered_lock_id = recordreplay::CreateOrderedLock("ThreadJoin");
+  }
+  return g_record_replay_thread_join_ordered_lock_id;
+}
+
+static void RecordReplayThreadJoinFence() {
+  int id = GetRecordReplayThreadJoinOrderedLockId();
+  recordreplay::AutoOrderedLock ordered(id);
+}
+
 struct ThreadParams {
   raw_ptr<PlatformThread::Delegate> delegate;
   bool joinable;
@@ -151,6 +168,8 @@ DWORD __stdcall ThreadFunc(void* params) {
   if (::GetThreadPriority(::GetCurrentThread()) < THREAD_PRIORITY_NORMAL)
     PlatformThread::SetCurrentThreadType(ThreadType::kDefault);
 
+  RecordReplayThreadJoinFence();
+
   return 0;
 }
 
@@ -162,6 +181,9 @@ bool CreateThreadInternal(size_t stack_size,
                           PlatformThreadHandle* out_thread_handle,
                           ThreadType thread_type,
                           MessagePumpType message_pump_type) {
+  // Make sure we instantiate this now so we don't race to create it later.
+  GetRecordReplayThreadJoinOrderedLockId();
+
   unsigned int flags = 0;
   if (stack_size > 0) {
     flags = STACK_SIZE_PARAM_IS_A_RESERVATION;
@@ -373,6 +395,8 @@ void PlatformThread::Join(PlatformThreadHandle thread_handle) {
   CHECK_EQ(WAIT_OBJECT_0,
            WaitForSingleObject(thread_handle.platform_handle(), INFINITE));
   CloseHandle(thread_handle.platform_handle());
+
+  RecordReplayThreadJoinFence();
 }
 
 // static
