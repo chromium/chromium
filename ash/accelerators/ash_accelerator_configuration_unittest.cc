@@ -186,7 +186,7 @@ TEST_F(AshAcceleratorConfigurationTest, DeprecatedAccelerators) {
   const DeprecatedAcceleratorData deprecated_data[] = {
       {AcceleratorAction::kShowTaskManager,
        /*uma_histogram_name=*/"deprecated.showTaskManager",
-       /*notification_message_id=*/1, /*old_shortcut_id=*/1,
+       /*notification_message_id=*/1,
        /*new_shortcut_id=*/2, /*deprecated_enabled=*/true},
   };
 
@@ -264,7 +264,7 @@ TEST_F(AshAcceleratorConfigurationTest,
   const DeprecatedAcceleratorData deprecated_data[] = {
       {AcceleratorAction::kShowTaskManager,
        /*uma_histogram_name=*/"deprecated.showTaskManager",
-       /*notification_message_id=*/1, /*old_shortcut_id=*/1,
+       /*notification_message_id=*/1,
        /*new_shortcut_id=*/2, /*deprecated_enabled=*/true},
   };
 
@@ -960,7 +960,7 @@ TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorDeprecatedConflict) {
   const DeprecatedAcceleratorData deprecated_data[] = {
       {AcceleratorAction::kShowTaskManager,
        /*uma_histogram_name=*/"deprecated.showTaskManager",
-       /*notification_message_id=*/1, /*old_shortcut_id=*/1,
+       /*notification_message_id=*/1,
        /*new_shortcut_id=*/2, /*deprecated_enabled=*/true},
   };
 
