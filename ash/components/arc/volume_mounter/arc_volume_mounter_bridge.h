@@ -59,8 +59,6 @@ class ArcVolumeMounterBridge
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcVolumeMounterBridge* GetForBrowserContext(
       content::BrowserContext* context);
-  static ArcVolumeMounterBridge* GetForBrowserContextForTesting(
-      content::BrowserContext* context);
 
   // Returns Factory instance for ArcVolumeMounterBridge.
   static KeyedServiceBaseFactory* GetFactory();
