@@ -218,6 +218,7 @@ suite('acceleratorViewTest', function() {
   });
 
   test('LockIconVisibilityBasedOnProperties', async () => {
+    viewElement = initAcceleratorViewElement();
     const scenarios = [
       {customizationEnabled: true, locked: true, sourceIsLocked: true},
       {customizationEnabled: true, locked: true, sourceIsLocked: false},
@@ -256,7 +257,6 @@ suite('acceleratorViewTest', function() {
     for (const testCase of testCases) {
       loadTimeData.overrideValues(
           {isCustomizationEnabled: testCase.customizationEnabled});
-      viewElement = initAcceleratorViewElement();
       viewElement.source = testCase.layoutInfo.source;
       viewElement.action = testCase.layoutInfo.action;
       viewElement.categoryIsLocked = testCase.categoryIsLocked;
@@ -274,6 +274,7 @@ suite('acceleratorViewTest', function() {
   });
 
   test('EditIconVisibilityBasedOnProperties', async () => {
+    viewElement = initAcceleratorViewElement();
     // Mainly test on customizationEnabled and accelerator is not locked.
     const scenarios = [
       {
@@ -341,7 +342,6 @@ suite('acceleratorViewTest', function() {
     for (const testCase of testCases) {
       loadTimeData.overrideValues(
           {isCustomizationEnabled: testCase.customizationEnabled});
-      viewElement = initAcceleratorViewElement();
       viewElement.source = testCase.layoutInfo.source;
       viewElement.action = testCase.layoutInfo.action;
       viewElement.categoryIsLocked = testCase.categoryIsLocked;
