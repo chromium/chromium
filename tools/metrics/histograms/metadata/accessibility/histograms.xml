@@ -2165,18 +2165,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.WinHighContrastTheme"
-    enum="AccessibilityHighContrastColorScheme" expires_after="2022-12-25">
-  <owner>aleventhal@chromium.org</owner>
-  <owner>almaher@microsoft.com</owner>
-  <owner>weblayoutdev@microsoft.com</owner>
-  <summary>
-    Tracks which Windows high contrast theme is set in system settings (logged
-    once 45 secs after startup). AccessibilityHighContrastColorScheme::None
-    indicates that high contrast mode is not enabled.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.WinJAWS{AccessibilityEveryReport}"
     enum="BooleanEnabled" expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->

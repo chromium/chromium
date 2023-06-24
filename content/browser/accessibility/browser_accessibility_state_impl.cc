@@ -25,7 +25,6 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/native_theme/native_theme.h"
 
 namespace content {
 
@@ -270,13 +269,6 @@ void BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread() {
 
   UMA_HISTOGRAM_BOOLEAN("Accessibility.ManuallyEnabled",
                         force_renderer_accessibility_);
-#if BUILDFLAG(IS_WIN)
-  UMA_HISTOGRAM_ENUMERATION(
-      "Accessibility.WinHighContrastTheme",
-      ui::NativeTheme::GetInstanceForNativeUi()
-          ->GetPlatformHighContrastColorScheme(),
-      ui::NativeTheme::PlatformHighContrastColorScheme::kMaxValue);
-#endif
 
   ui_thread_done_ = true;
   if (other_thread_done_ && background_thread_done_callback_)
