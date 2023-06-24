@@ -28,6 +28,11 @@ pub struct BuildConfig {
 pub struct ResolveConfig {
     /// The Cargo package to use as the root of the dependency graph.
     pub root: String,
+    /// Remove crates from the set of resolved dependencies. Should be used
+    /// sparingly; it does not affect Cargo's dependency resolution, so the
+    /// output can easily be incorrect. This is primarily intended to work
+    /// around bugs in `cargo metadata` output.
+    pub remove_crates: Vec<String>,
 }
 
 /// Customizes GN output for a crate.
@@ -38,6 +43,11 @@ pub struct CrateConfig {
     pub cfg: Vec<String>,
     /// Features to enable when building this crate.
     pub features: Vec<String>,
+    /// Dependencies to remove from this crate. Note that this happens after
+    /// dependency and feature resolution, so if an optional dep's feature is
+    /// enabled but the dep is removed, the crate will still attempt to
+    /// reference that dependency.
+    pub remove_deps: Vec<String>,
     /// Compile-time environment variables for this crate.
     pub env: Vec<String>,
     /// Apply rustc metadata to this target.

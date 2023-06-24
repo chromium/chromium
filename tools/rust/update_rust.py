@@ -36,8 +36,8 @@ sys.path.append(
 # In the case that a Rust roll fails and you want to roll Clang alone, reset
 # this back to its previous value _AND_ set `OVERRIDE_CLANG_REVISION` below
 # to the `CLANG_REVISION` that was in place before the roll.
-RUST_REVISION = 'a2b1646c597329d0a25efa3889b66650f65de1de'
-RUST_SUB_REVISION = 6
+RUST_REVISION = '006a26c0b546abc0fbef59a773639582b641e500'
+RUST_SUB_REVISION = 1
 
 # If not None, this overrides the `CLANG_REVISION` in
 # //tools/clang/scripts/update.py in order to download a Rust toolchain that
@@ -58,7 +58,7 @@ CRUBIT_SUB_REVISION = 1
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
 # itself check the hash.
-STAGE0_JSON_SHA256 = 'b1aae08ff68e03322e55e02cf1eabd4a796ec477a5d64b7b1daa504ccc3b21ba'
+STAGE0_JSON_SHA256 = 'f7ff08ff3c1e51189e26a578e31dc06574ab75b855ebef5c5ec184cfc7ae4b46'
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))

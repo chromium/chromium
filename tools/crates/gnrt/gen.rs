@@ -307,6 +307,25 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
         None,
     );
 
+    // Filter out any crates' dependencies removed by config file.
+    for dep in dependencies.iter_mut() {
+        let Some(conf) = config.per_crate_config.get(&dep.package_name) else { continue };
+        if conf.remove_deps.is_empty() {
+            continue;
+        }
+
+        for kind in [&mut dep.dependencies, &mut dep.build_dependencies] {
+            kind.retain(|dep_of_dep| {
+                conf.remove_deps.iter().find(|r| **r == dep_of_dep.package_name).is_none()
+            });
+        }
+    }
+
+    // Remove any excluded dep entries.
+    dependencies.retain(|dep| {
+        config.resolve.remove_crates.iter().find(|r| **r == dep.package_name).is_none()
+    });
+
     // Remove dev dependencies since tests aren't run. Also remove build deps
     // since we configure flags and env vars manually. Include the root
     // explicitly since it doesn't get a dependency_kinds entry.

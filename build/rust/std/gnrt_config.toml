@@ -9,6 +9,13 @@
 # dependencies.
 root = "sysroot"
 
+# Workaround for Cargo issue: hashbrown's Cargo.toml uses an unstable Cargo
+# feature that leads to incorrect `cargo metadata` output.
+#
+# TODO(https://github.com/rust-lang/cargo/issues/10801): remove workaround once
+# issue is fixed.
+remove_crates = ['allocator-api2']
+
 [all-crates]
 # std crates should have metadata applied to them. This would avoid any symbol
 # conflicts between std dependencies and third_party/rust crates.
@@ -48,6 +55,14 @@ extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
 remove_library_configs = ['//build/config/coverage:default_coverage']
 extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
 add_library_configs = ['//build/rust:panic_immediate_abort']
+
+[crate.hashbrown]
+# Workaround for Cargo issue: hashbrown's Cargo.toml uses an unstable Cargo
+# feature that leads to incorrect `cargo metadata` output.
+#
+# TODO(https://github.com/rust-lang/cargo/issues/10801): remove workaround once
+# issue is fixed.
+remove_deps = ['allocator-api2']
 
 [crate.libc]
 # The libc crate tries to link in the Windows CRT, but we specify the CRT
