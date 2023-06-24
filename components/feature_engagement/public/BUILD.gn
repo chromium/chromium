@@ -31,6 +31,7 @@ source_set("public") {
 
   deps = [
     "//base",
+    "//build:branding_buildflags",
     "//components/feed:feature_list",
     "//components/flags_ui",
     "//components/keyed_service/core",
