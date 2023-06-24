@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_test_ids.h"
 #include "ui/gfx/color_palette.h"
@@ -33,9 +34,9 @@ class ColorProviderManagerTest : public testing::Test {
 
 ColorProvider* GetLightNormalColorProvider() {
   return ColorProviderManager::GetForTesting().GetColorProviderFor(
-      {ColorProviderManager::ColorMode::kLight,
-       ColorProviderManager::ContrastMode::kNormal, ui::SystemTheme::kDefault,
-       ColorProviderManager::FrameType::kChromium, /*user_color=*/absl::nullopt,
+      {ColorProviderKey::ColorMode::kLight,
+       ColorProviderKey::ContrastMode::kNormal, ui::SystemTheme::kDefault,
+       ColorProviderKey::FrameType::kChromium, /*user_color=*/absl::nullopt,
        /*scheme_variant=*/absl::nullopt, /*is_grayscale=*/false, nullptr});
 }
 
