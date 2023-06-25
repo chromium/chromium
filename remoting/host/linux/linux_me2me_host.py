@@ -293,12 +293,14 @@ def is_googler_owned(config):
     return False
 
 
-def is_pipewire_supported():
-  for binary in ["pipewire", "pipewire-pulse", "wireplumber"]:
-    if shutil.which(binary) is None:
-      logging.warning(binary
-                      + " not found. Not enabling PipeWire audio support.")
-      return False
+def get_pipewire_session_manager():
+  """Returns the PipeWire session manager supported on this system (either
+  "wireplumber" or "pipewire-media-session"), or None if a supported PipeWire
+  installation is not found."""
+
+  if shutil.which("pipewire") is None:
+    logging.warning("PipeWire not found. Not enabling PipeWire audio support.")
+    return None
 
   try:
     version_output = subprocess.check_output(["pipewire", "--version"],
@@ -306,27 +308,38 @@ def is_pipewire_supported():
   except subprocess.CalledProcessError as e:
     logging.warning("Failed to execute pipewire. Not enabling PipeWire audio"
                     + " support: " + str(e))
-    return False
+    return None
 
   match = re.search(r"pipewire (\S+)$", version_output, re.MULTILINE)
   if not match:
     logging.warning("Failed to determine pipewire version. Not enabling"
                     + " PipeWire audio support.")
-    return False
+    return None
 
   try:
     pipewire_version = version.parse(match[1])
   except version.InvalidVersion as e:
     logging.warning("Failed to parse pipewire version. Not enabling PipeWire"
                     + " audio support: " + str(e))
-    return False
+    return None
 
   if pipewire_version < version.parse("0.3.53"):
     logging.warning("Installed pipewire version is too old. Not enabling"
                     + " PipeWire audio support.")
-    return False
+    return None
 
-  return True
+  session_manager = None
+  for binary in ["wireplumber", "pipewire-media-session"]:
+    if shutil.which(binary) is not None:
+      session_manager = binary
+      break
+
+  if session_manager is None:
+    logging.warning("No session manager found. Not enabling PipeWire audio"
+                    + " support.")
+    return None
+
+  return session_manager
 
 
 def terminate_process(pid, name):
@@ -544,7 +557,8 @@ class Desktop(abc.ABC):
     self.server_proc = None
     self.pipewire_proc = None
     self.pipewire_pulse_proc = None
-    self.wireplumber_proc = None
+    self.pipewire_session_manager = None
+    self.pipewire_session_manager_proc = None
     self.pre_session_proc = None
     self.session_proc = None
     self.host_proc = None
@@ -624,12 +638,13 @@ class Desktop(abc.ABC):
     self.child_env["SSH_AUTH_SOCK"] = self.ssh_auth_sockname
 
   def _launch_pipewire(self, instance_name, runtime_path, sink_name):
-    if not is_pipewire_supported():
+    self.pipewire_session_manager = get_pipewire_session_manager()
+    if self.pipewire_session_manager is None:
       return False
 
     try:
       for config_file in ["pipewire.conf", "pipewire-pulse.conf",
-                          "wireplumber.conf"]:
+                          self.pipewire_session_manager + ".conf"]:
         with (open(os.path.join(SCRIPT_DIR, config_file + ".template"), "r")
                 as infile,
               open(os.path.join(runtime_path, config_file), "w") as outfile):
@@ -642,20 +657,28 @@ class Desktop(abc.ABC):
       logging.info("Launching pipewire")
       pipewire_cmd = ["pipewire", "-c",
                       os.path.join(runtime_path, "pipewire.conf")]
-      pipewire_pulse_cmd = ["pipewire-pulse", "-c",
+      # PulseAudio protocol support is built into PipeWire for the versions we
+      # support. Invoking the pipewire binary directly instead of via the
+      # pipewire-pulse symlink allows this to work even if the pipewire-pulse
+      # package is not installed (e.g., if the user is still using PulseAudio
+      # for local sessions).
+      pipewire_pulse_cmd = ["pipewire", "-c",
                       os.path.join(runtime_path, "pipewire-pulse.conf")]
-      wireplumber_cmd = ["wireplumber", "-c",
-                      os.path.join(runtime_path, "wireplumber.conf")]
+      session_manager_cmd = [
+          self.pipewire_session_manager, "-c",
+          os.path.join(runtime_path, self.pipewire_session_manager + ".conf")]
 
       # Terminate any stale processes before relaunching.
-      for command in [pipewire_cmd, pipewire_pulse_cmd, wireplumber_cmd]:
+      for command in [pipewire_cmd, pipewire_pulse_cmd, session_manager_cmd]:
         terminate_command_if_running(command)
 
       self.pipewire_proc = subprocess.Popen(pipewire_cmd, env=self.child_env)
       self.pipewire_pulse_proc = subprocess.Popen(pipewire_pulse_cmd,
                                                   env=self.child_env)
-      self.wireplumber_proc = subprocess.Popen(wireplumber_cmd,
-                                               env=self.child_env)
+      # MEDIA_SESSION_CONFIG_DIR is needed to use an absolute path with
+      # pipewire-media-session.
+      self.pipewire_session_manager_proc = subprocess.Popen(session_manager_cmd,
+          env={**self.child_env, "MEDIA_SESSION_CONFIG_DIR": "/"})
 
       # Directs native PipeWire clients to the correct instance
       self.child_env["PIPEWIRE_REMOTE"] = instance_name
@@ -667,12 +690,13 @@ class Desktop(abc.ABC):
       # Clean up any processes that did start
       for proc, name in [(self.pipewire_proc, "pipewire"),
                          (self.pipewire_pulse_proc, "pipewire-pulse"),
-                         (self.wireplumber_proc, "wireplumber")]:
+                         (self.pipewire_session_manager_proc,
+                          self.pipewire_session_manager)]:
         if proc is not None:
           terminate_process(proc.pid, name)
       self.pipewire_proc = None
       self.pipewire_pulse_proc = None
-      self.wireplumber_proc = None
+      self.pipewire_session_manager_proc = None
 
     return False
 
@@ -799,14 +823,15 @@ class Desktop(abc.ABC):
                        (self.pre_session_proc, "pre-session"),
                        (self.pipewire_proc, "pipewire"),
                        (self.pipewire_pulse_proc, "pipewire-pulse"),
-                       (self.wireplumber_proc, "wireplumber"),
+                       (self.pipewire_session_manager_proc,
+                        self.pipewire_session_manager),
                        (self.server_proc, "display server")]:
       if proc is not None:
         terminate_process(proc.pid, name)
     self.server_proc = None
     self.pipewire_proc = None
     self.pipewire_pulse_proc = None
-    self.wireplumber_proc = None
+    self.pipewire_session_manager_proc = None
     self.pre_session_proc = None
     self.session_proc = None
     self.host_proc = None
@@ -864,9 +889,10 @@ class Desktop(abc.ABC):
       self.pipewire_pulse_proc = None
       pipewire_process = True
 
-    if self.wireplumber_proc is not None and pid == self.wireplumber_proc.pid:
-      logging.info("WirePlumber process terminated")
-      self.wireplumber_proc = None
+    if (self.pipewire_session_manager_proc is not None
+        and pid == self.pipewire_session_manager_proc.pid):
+      logging.info(self.pipewire_session_manager + " process terminated")
+      self.pipewire_session_manager_proc = None
       pipewire_process = True
 
     if pipewire_process:
@@ -874,12 +900,13 @@ class Desktop(abc.ABC):
       # Terminate other PipeWire-related processes to start fresh.
       for proc, name in [(self.pipewire_proc, "pipewire"),
                          (self.pipewire_pulse_proc, "pipewire-pulse"),
-                         (self.wireplumber_proc, "wireplumber")]:
+                         (self.pipewire_session_manager_proc,
+                          self.pipewire_session_manager)]:
         if proc is not None:
           terminate_process(proc.pid, name)
       self.pipewire_proc = None
       self.pipewire_pulse_proc = None
-      self.wireplumber_proc = None
+      self.pipewire_session_manager_proc = None
 
     if self.session_proc is not None and pid == self.session_proc.pid:
       logging.info("Session process terminated")
@@ -2543,7 +2570,7 @@ def main():
       logging.info("Waiting before relaunching")
     else:
       if (desktop.pipewire_proc is None and desktop.pipewire_pulse_proc is None
-          and desktop.wireplumber_proc is None
+          and desktop.pipewire_session_manager_proc is None
           and not desktop.pipewire_inhibitor.disabled
           and desktop.pipewire_inhibitor.failures < MAX_LAUNCH_FAILURES):
         desktop.setup_audio(host.host_id, backoff_time)

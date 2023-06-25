@@ -26,6 +26,7 @@ if (enable_me2me_host) {
 
   copy("remoting_me2me_host_copy_pipewire_templates") {
     sources = [
+      "pipewire-media-session.conf.template",
       "pipewire-pulse.conf.template",
       "pipewire.conf.template",
       "wireplumber.conf.template",
