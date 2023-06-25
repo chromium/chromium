@@ -101,7 +101,9 @@ TEST_F(LayoutBlockTest, NestedInlineVisualOverflowVerticalRL) {
   )HTML");
 
   auto* target = GetLayoutBoxByElementId("target");
-  EXPECT_EQ(LayoutRect(-15, 0, 40, 40), target->VisualOverflowRect());
+  const int kLeft =
+      RuntimeEnabledFeatures::LayoutNGNoLocationEnabled() ? -25 : -15;
+  EXPECT_EQ(LayoutRect(kLeft, 0, 40, 40), target->VisualOverflowRect());
   EXPECT_EQ(PhysicalRect(-25, 0, 40, 40), target->PhysicalVisualOverflowRect());
 }
 

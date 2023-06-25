@@ -683,26 +683,33 @@ TEST_F(LayoutBoxTest, ContentsVisualOverflowPropagation) {
     </div>
   )HTML");
 
+  const int kCContentsLeft =
+      RuntimeEnabledFeatures::LayoutNGNoLocationEnabled() ? -10 : 0;
   auto* c = GetLayoutBoxByElementId("c");
   EXPECT_EQ(LayoutRect(0, 0, 100, 100), c->SelfVisualOverflowRect());
-  EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(10, 20, 100, 100), c);
-  EXPECT_EQ(LayoutRect(0, 0, 110, 120), c->VisualOverflowRect());
+  EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(kCContentsLeft, 20, 100, 100), c);
+  EXPECT_EQ(LayoutRect(kCContentsLeft, 0, 110, 120), c->VisualOverflowRect());
   // C and its parent b have the same blocks direction.
-  EXPECT_EQ(LayoutRect(0, 0, 110, 120), c->VisualOverflowRectForPropagation());
+  EXPECT_EQ(LayoutRect(kCContentsLeft, 0, 110, 120),
+            c->VisualOverflowRectForPropagation());
 
+  const int kDLeft =
+      RuntimeEnabledFeatures::LayoutNGNoLocationEnabled() ? 0 : -10;
   auto* d = GetLayoutBoxByElementId("d");
   EXPECT_EQ(LayoutRect(0, 0, 100, 100), d->SelfVisualOverflowRect());
   EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(10, 20, 100, 100), d);
   EXPECT_EQ(LayoutRect(0, 0, 110, 120), d->VisualOverflowRect());
   // D and its parent b have different blocks direction.
-  EXPECT_EQ(LayoutRect(-10, 0, 110, 120),
+  EXPECT_EQ(LayoutRect(kDLeft, 0, 110, 120),
             d->VisualOverflowRectForPropagation());
 
   auto* b = GetLayoutBoxByElementId("b");
+  const int kBContentsLeft =
+      RuntimeEnabledFeatures::LayoutNGNoLocationEnabled() ? -130 : 0;
   EXPECT_EQ(LayoutRect(0, 0, 100, 100), b->SelfVisualOverflowRect());
   // Union of VisualOverflowRectForPropagations offset by locations of c and d.
-  EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(30, 40, 200, 120), b);
-  EXPECT_EQ(LayoutRect(0, 0, 230, 160), b->VisualOverflowRect());
+  EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(kBContentsLeft, 40, 200, 120), b);
+  EXPECT_EQ(LayoutRect(kBContentsLeft, 0, 230, 160), b->VisualOverflowRect());
   // B and its parent A have different blocks direction.
   EXPECT_EQ(LayoutRect(-130, 0, 230, 160),
             b->VisualOverflowRectForPropagation());

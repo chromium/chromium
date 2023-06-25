@@ -5223,7 +5223,8 @@ void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
     ClearVisualOverflow();
     return;
   }
-  if (UNLIKELY(IsFlippedBlocksWritingMode(writing_mode))) {
+  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled() &&
+      UNLIKELY(IsFlippedBlocksWritingMode(writing_mode))) {
     DCHECK(!blink::IsHorizontalWritingMode(writing_mode));
     const LayoutUnit flip_offset = cb->Size().Width() - Size().Width();
     self_rect.offset.left += flip_offset;

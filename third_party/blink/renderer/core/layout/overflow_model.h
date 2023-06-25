@@ -131,6 +131,10 @@ class BoxVisualOverflowModel {
     self_visual_overflow_ = rect;
   }
 
+  // The resultant rectangle is in the physical coordinate system if
+  // 'LayoutNGNoLocation' flag is enabled.
+  // It's in the flipped block-flow physical coordinate system otherwise.
+  // TODO(crbug.com/1353190): Change the return type to PhysicalRect.
   const LayoutRect& SelfVisualOverflowRect() const {
     return self_visual_overflow_;
   }
@@ -138,6 +142,10 @@ class BoxVisualOverflowModel {
     self_visual_overflow_.Unite(rect);
   }
 
+  // The resultant rectangle is in the physical coordinate system if
+  // 'LayoutNGNoLocation' flag is enabled.
+  // It's in the flipped block-flow physical coordinate system otherwise.
+  // TODO(crbug.com/1353190): Change the return type to PhysicalRect.
   const LayoutRect& ContentsVisualOverflowRect() const {
     return contents_visual_overflow_;
   }

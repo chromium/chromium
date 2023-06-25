@@ -507,6 +507,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutRect VisualOverflowRect() const;
   PhysicalRect PhysicalVisualOverflowRect() const final {
     NOT_DESTROYED();
+    if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
+      return PhysicalRect(VisualOverflowRect());
+    }
     return FlipForWritingMode(VisualOverflowRect());
   }
   // VisualOverflow has DCHECK for reading before it is computed. These
@@ -534,6 +537,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   PhysicalRect PhysicalSelfVisualOverflowRect() const {
     NOT_DESTROYED();
+    if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
+      return PhysicalRect(SelfVisualOverflowRect());
+    }
     return FlipForWritingMode(SelfVisualOverflowRect());
   }
   LayoutRect ContentsVisualOverflowRect() const {
@@ -544,6 +550,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   PhysicalRect PhysicalContentsVisualOverflowRect() const {
     NOT_DESTROYED();
+    if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
+      return PhysicalRect(ContentsVisualOverflowRect());
+    }
     return FlipForWritingMode(ContentsVisualOverflowRect());
   }
 
@@ -561,12 +570,17 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void AddLayoutOverflow(const LayoutRect&);
   void AddSelfVisualOverflow(const PhysicalRect& r) {
     NOT_DESTROYED();
-    AddSelfVisualOverflow(FlipForWritingMode(r));
+    AddSelfVisualOverflow(RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
+                              ? r.ToLayoutRect()
+                              : FlipForWritingMode(r));
   }
   void AddSelfVisualOverflow(const LayoutRect&);
   void AddContentsVisualOverflow(const PhysicalRect& r) {
     NOT_DESTROYED();
-    AddContentsVisualOverflow(FlipForWritingMode(r));
+    AddContentsVisualOverflow(
+        RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
+            ? r.ToLayoutRect()
+            : FlipForWritingMode(r));
   }
   void AddContentsVisualOverflow(const LayoutRect&);
 
@@ -574,7 +588,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   NGPhysicalBoxStrut ComputeVisualEffectOverflowOutsets();
   void AddVisualOverflowFromChild(const LayoutBox& child) {
     NOT_DESTROYED();
-    AddVisualOverflowFromChild(child, child.LocationOffset());
+    LayoutSize delta = RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
+                           ? PhysicalLocation().ToLayoutSize()
+                           : child.LocationOffset();
+    AddVisualOverflowFromChild(child, delta);
   }
   void AddVisualOverflowFromChild(const LayoutBox& child,
                                   const LayoutSize& delta);
@@ -1364,6 +1381,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   LayoutRect VisualOverflowRectForPropagation() const {
     NOT_DESTROYED();
+    if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
+      return VisualOverflowRect();
+    }
     return RectForOverflowPropagation(VisualOverflowRect());
   }
 

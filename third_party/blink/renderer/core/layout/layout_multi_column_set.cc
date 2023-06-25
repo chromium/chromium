@@ -453,6 +453,9 @@ void LayoutMultiColumnSet::AddVisualOverflowFromChildren() {
     rect.Move(group.OffsetFromColumnSet());
     overflow_rect.Unite(rect);
   }
+  if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
+    overflow_rect = FlipForWritingMode(overflow_rect).ToLayoutRect();
+  }
   AddContentsVisualOverflow(overflow_rect);
 }
 
