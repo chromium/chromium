@@ -270805,6 +270805,19 @@
    "web-animations": {
     "animation-model": {
      "keyframe-effects": {
+      "effect-value-opacity-replaced-effect.html": [
+       "bef3bd3e8d27fd721dd373e4f33cbae1f6b5b2c0",
+       [
+        null,
+        [
+         [
+          "/web-animations/animation-model/keyframe-effects/effect-value-opacity-replaced-effect-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "transform-and-opacity-on-inline-001.html": [
        "f76b53cd4c49152b1527bae481d76ace94243c7b",
        [
@@ -274195,16 +274208,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "f568b454d3d34a9d670bfecbdbdab01cd2050211",
-     []
-    ],
-    "mtime.json": [
-     "35a614248ac0e9af7cb8a4e602a3884e8a2b0166",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -292310,6 +292313,14 @@
       ],
       "100x100-red.png": [
        "57bf3ddc5213d06e0975de38f330ffb7c441b268",
+       []
+      ],
+      "12x12-green.png": [
+       "1b9284844852a853624cc9c5848a6b1cef876e02",
+       []
+      ],
+      "1pxgreen-98pxred.png": [
+       "0f8571a94550493b483a4f0988fcb6ce1df1d412",
        []
       ],
       "1x1-green.png": [
@@ -396940,6 +396951,10 @@
        "43a496adb565ad954979a2d5702cc03c7a0a6368",
        []
       ],
+      "effect-value-opacity-replaced-effect-ref.html": [
+       "792ca214cfb0c9b02609b484a95891bd1683bfe3",
+       []
+      ],
       "transform-and-opacity-on-inline-001-ref.html": [
        "1e7f250c48fb093160a509b3d98c0b265085179f",
        []
@@ -456225,7 +456240,7 @@
      },
      "image-set": {
       "image-set-computed.sub.html": [
-       "6d54fd0d09b4ade26a254a0a9c8cb5a76097e88a",
+       "a3e781007aa5c143e4f9f8822c67058d5cbc85cc",
        [
         null,
         {}
@@ -644811,7 +644826,7 @@
        ]
       ],
       "Set.html": [
-       "3134c8185906c1fcf0d5deeecf2ec668f73ef2c6",
+       "1390b51cd03b51cb15ceea1519fcd309bf914c86",
        [
         null,
         {}
