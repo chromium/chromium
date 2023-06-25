@@ -1643,7 +1643,7 @@ void SurfaceAggregator::SetRenderPassDamageRect(
     static const bool can_skip_render_pass = base::FeatureList::IsEnabled(
         features::kAllowUndamagedNonrootRenderPassToSkip);
     if (resolved_pass.IsUnembedded() && can_skip_render_pass) {
-      copy_pass->damage_rect.Union(resolved_pass.render_pass().damage_rect);
+      copy_pass->damage_rect.Union(resolved_pass.aggregation().added_damage);
     }
   }
 }
@@ -1942,6 +1942,8 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
     // may be valid coordinates in the embedder coordinate space, causing
     // unnecessary damage expansion.
     damage_rect.Intersect(render_pass.output_rect);
+
+    resolved_pass.aggregation().added_damage.Union(damage_rect);
   }
 
   return damage_rect;
@@ -2009,10 +2011,11 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
     // important to propagate.
     if (resolved_pass.IsUnembedded()) {
       stats_->has_unembedded_pass = true;
-      PrewalkRenderPass(resolved_frame, resolved_pass,
-                        /*damage_from_parent=*/gfx::Rect(),
-                        /*target_to_root_transform=*/gfx::Transform(),
-                        /*parent_pass=*/nullptr, result);
+      resolved_pass.aggregation().added_damage =
+          PrewalkRenderPass(resolved_frame, resolved_pass,
+                            /*damage_from_parent=*/gfx::Rect(),
+                            /*target_to_root_transform=*/gfx::Transform(),
+                            /*parent_pass=*/nullptr, result);
     }
   }
 

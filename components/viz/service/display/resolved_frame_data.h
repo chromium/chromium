@@ -108,6 +108,10 @@ struct VIZ_SERVICE_EXPORT AggregationPassData {
   // is false for may still be drawn but they won't contribute pixels to
   // framebuffer.
   bool will_draw = false;
+
+  // The damage added from its descandant surfaces during aggregation. This is
+  // not part of the original render_pass->damage_rect from CC.
+  gfx::Rect added_damage;
 };
 
 // Render pass data that must be recomputed each aggregation and needs to be
