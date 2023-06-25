@@ -11,9 +11,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/common/companion/eligibility_spec.pb.h"
 #include "chrome/common/companion/visual_search.mojom.h"
 #include "chrome/renderer/companion/visual_search/visual_search_classification_and_eligibility.h"
+#include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -26,12 +26,17 @@ namespace companion::visual_search {
 
 namespace {
 
+using optimization_guide::proto::EligibilitySpec;
+using optimization_guide::proto::FeatureLibrary;
+using optimization_guide::proto::OrOfThresholdingRules;
+using optimization_guide::proto::ThresholdingRule;
+
 using DOMImageList = base::flat_map<ImageId, SingleImageFeaturesAndBytes>;
 
-// We concurrently on send back up to 4 results of visual classifications.
+// We concurrently on send back up to 2 results of visual classifications.
 // The results are not ordered in any way, we simply return the first 4
 // items that we get from the classifier.
-const int kMaxNumberResults = 4;
+const int kMaxNumberResults = 2;
 
 EligibilitySpec CreateEligibilitySpec(std::string config_proto) {
   EligibilitySpec eligibility_spec;
@@ -169,23 +174,28 @@ void VisualSearchClassifierAgent::StartVisualClassification(
     mojo::PendingRemote<mojom::VisualSuggestionsResultHandler> result_handler) {
   result_handler_.reset();
   result_handler_.Bind(std::move(result_handler));
+  std::vector<SkBitmap> empty_results;
 
   if (is_classifying_) {
     LOCAL_HISTOGRAM_BOOLEAN(
         "Companion.VisualSearch.Agent.OngoingClassificationFailure",
         is_classifying_);
+    OnClassificationDone(empty_results);
     return;
   }
 
   if (!visual_model.IsValid()) {
     LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.Agent.InvalidModelFailure",
                             !visual_model.IsValid());
+    OnClassificationDone(empty_results);
     return;
   }
 
-  if (!visual_model_.Initialize(std::move(visual_model))) {
+  if (!visual_model_.IsValid() &&
+      !visual_model_.Initialize(std::move(visual_model))) {
     LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.Agent.InitModelFailure",
                             true);
+    OnClassificationDone(empty_results);
     return;
   }
 

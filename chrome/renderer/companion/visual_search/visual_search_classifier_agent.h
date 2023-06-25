@@ -9,7 +9,6 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/common/companion/visual_search.mojom-forward.h"
 #include "chrome/common/companion/visual_search.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"

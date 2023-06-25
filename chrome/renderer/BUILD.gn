@@ -140,7 +140,6 @@ static_library("renderer") {
     "//chrome/common",
     "//chrome/common:mojo_bindings",
     "//chrome/common/cart:mojo_bindings",
-    "//chrome/common/companion:proto",
     "//chrome/common/net",
     "//chrome/common/search:mojo_bindings",
     "//chrome/renderer/companion/visual_search",

@@ -35,13 +35,23 @@ namespace companion::visual_search {
 
 namespace {
 
-static const char kModelFilename[] = "visual_model.tflite";
+constexpr char kValidUrl[] = "https://foo.com/";
+
+base::FilePath model_file_path() {
+  base::FilePath source_root_dir;
+  base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+  return source_root_dir.AppendASCII("chrome")
+      .AppendASCII("test")
+      .AppendASCII("data")
+      .AppendASCII("companion_visual_search")
+      .AppendASCII("test-model-quantized.tflite");
+}
 
 }  // namespace
 
 class VisualSearchClassifierHostTest : public ChromeRenderViewHostTestHarness {
  public:
-  VisualSearchClassifierHostTest() : url_("www.style-files.com") {}
+  VisualSearchClassifierHostTest() : url_(kValidUrl) {}
   ~VisualSearchClassifierHostTest() override = default;
 
   void SetUp() override {
@@ -64,24 +74,20 @@ class VisualSearchClassifierHostTest : public ChromeRenderViewHostTestHarness {
   void SetModelPath() {
     base::FilePath test_data_dir;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir);
-    test_data_dir = test_data_dir.AppendASCII("components/test/data");
 
     base::flat_set<base::FilePath> additional_files;
-    additional_files.insert(test_data_dir.AppendASCII(kModelFilename));
+    additional_files.insert(model_file_path());
 
-    model_info_ =
-        optimization_guide::TestModelInfoBuilder()
-            .SetModelFilePath(test_data_dir.AppendASCII(kModelFilename))
-            .SetAdditionalFiles(additional_files)
-            .SetVersion(123)
-            .Build();
+    model_info_ = optimization_guide::TestModelInfoBuilder()
+                      .SetModelFilePath(model_file_path())
+                      .SetAdditionalFiles(additional_files)
+                      .SetVersion(123)
+                      .Build();
 
     service_->OnModelUpdated(
         optimization_guide::proto::OptimizationTarget::
             OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION,
         *model_info_);
-
-    base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override {
@@ -107,6 +113,7 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification) {
       base::BindOnce([](std::vector<std::string> results) {});
   visual_search_host_->StartClassification(
       web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
+  base::RunLoop().RunUntilIdle();
   histogram_tester_.ExpectBucketCount("Companion.VisualSearch.ModelFileSuccess",
                                       true, 1);
   histogram_tester_.ExpectBucketCount(
@@ -122,6 +129,7 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification_WithOverride) {
       base::BindOnce([](std::vector<std::string> results) {});
   visual_search_host_->StartClassification(
       web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
+  base::RunLoop().RunUntilIdle();
   histogram_tester_.ExpectBucketCount("Companion.VisualSearch.ModelFileSuccess",
                                       true, 1);
   histogram_tester_.ExpectBucketCount(
@@ -133,19 +141,28 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification_NoModelSet) {
       base::BindOnce([](std::vector<std::string> results) {});
   visual_search_host_->StartClassification(
       web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
-  histogram_tester_.ExpectBucketCount("Companion.VisualSearch.ModelFileSuccess",
-                                      false, 1);
+  base::RunLoop().RunUntilIdle();
+
+  // ModelFileSuccess is never called because the |OnModelUpdate| is never
+  // called by the |service_| since we never setup the model path.
+  histogram_tester_.ExpectTotalCount("Companion.VisualSearch.ModelFileSuccess",
+                                     0);
 }
 
-TEST_F(VisualSearchClassifierHostTest,
-       StartClassification_NoModelSetAndNoCallbackSet) {
-  base::HistogramTester histogram_tester;
+TEST_F(VisualSearchClassifierHostTest, StartClassification_WithCancellation) {
+  SetModelPath();
   VisualSearchClassifierHost::ResultCallback callback =
       base::BindOnce([](std::vector<std::string> results) {});
   visual_search_host_->StartClassification(
       web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
+  visual_search_host_->CancelClassification();
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_.ExpectBucketCount(
+      "Companion.VisualSearch.ClassificationCancelled", true, 1);
   histogram_tester_.ExpectBucketCount("Companion.VisualSearch.ModelFileSuccess",
-                                      false, 1);
+                                      true, 1);
+  histogram_tester_.ExpectBucketCount("Companion.VisualSearch.MismatchURL",
+                                      true, 1);
 }
 
 }  // namespace companion::visual_search
