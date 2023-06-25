@@ -430,7 +430,7 @@ debugging and follow them.
 If you use `xcode-select` to switch between multiple version of Xcode,
 you will have to follow the same steps.
 
-### Improving performance of `git status`
+### Improving performance of git commands
 
 #### Increase the vnode cache size
 

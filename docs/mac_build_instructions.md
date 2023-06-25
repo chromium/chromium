@@ -282,7 +282,7 @@ ask there. Be sure that the
 [waterfall](https://build.chromium.org/buildbot/waterfall/) is green and the
 tree is open before checking out. This will increase your chances of success.
 
-### Improving performance of `git status`
+### Improving performance of git commands
 
 #### Increase the vnode cache size
 

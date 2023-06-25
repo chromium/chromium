@@ -486,7 +486,7 @@ attach to the main browser process. To debug all of Chrome, install
 You will also need to run Visual Studio as administrator, or it will silently
 fail to attach to some of Chrome's child processes.
 
-### Improving performance of `git status`
+### Improving performance of git commands
 
 #### Configure git to use an untracked cache
 
