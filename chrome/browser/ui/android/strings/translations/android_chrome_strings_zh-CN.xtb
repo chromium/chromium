@@ -61,6 +61,7 @@
 <translation id="1283039547216852943">点按即可展开</translation>
 <translation id="1289059016768036948">系统会要求您登录自己的 Google 帐号</translation>
 <translation id="1291207594882862231">清除历史记录、Cookie、网站数据、缓存内容…</translation>
+<translation id="1293898515599432175">系统将从 Chrome <ph name="CHROME_CHANNEL" />的 Google 密码管理工具中删除您的密码。您可以保留刚刚下载的密码文件。</translation>
 <translation id="129553762522093515">最近关闭的标签页</translation>
 <translation id="1298077576058087471">节省高达 60% 的数据流量，阅读今日新闻</translation>
 <translation id="1303339473099049190">找不到该密码。请检查拼写，然后重试。</translation>
@@ -510,6 +511,7 @@
 <translation id="3795154175078851242">复制图片且含链接</translation>
 <translation id="3810838688059735925">视频</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="381861209280417772">删除密码</translation>
 <translation id="3819178904835489326">已删除 <ph name="NUMBER_OF_DOWNLOADS" /> 项下载内容</translation>
 <translation id="3819183753496523827">您未联网。请检查您的互联网连接状况，然后重试。</translation>
 <translation id="3830886834687455630">请更新 Google Play 服务以检查您的密码</translation>
@@ -594,6 +596,7 @@
 <translation id="4249955472157341256">按新近度排序</translation>
 <translation id="4250229828105606438">屏幕截图</translation>
 <translation id="4256782883801055595">开放源代码许可</translation>
+<translation id="4257230861809842349">从 Google 密码管理工具中删除密码？</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />我们会使用哪些数据<ph name="END_BOLD" />：您的浏览记录，即您在此设备上使用 Chrome 访问过的网站的记录。</translation>
 <translation id="4269820728363426813">复制链接地址</translation>
 <translation id="4283102315569707115">默认请求访问桌面版网站？</translation>
