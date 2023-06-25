@@ -90,7 +90,7 @@ void U2fSignOperation::OnSignResponseReceived(
       auto sign_response =
           AuthenticatorGetAssertionResponse::CreateFromU2fSignResponse(
               std::move(application_parameter), apdu_response->data(),
-              key_handle());
+              key_handle(), device()->DeviceTransport());
       if (!sign_response) {
         std::move(callback())
             .Run(CtapDeviceResponseCode::kCtap2ErrOther, absl::nullopt);

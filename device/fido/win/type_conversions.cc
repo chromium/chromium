@@ -167,10 +167,15 @@ ToAuthenticatorGetAssertionResponse(
                                    assertion.cbAuthenticatorData);
     return absl::nullopt;
   }
+  absl::optional<FidoTransportProtocol> transport_used =
+      assertion.dwVersion >= WEBAUTHN_ASSERTION_VERSION_4
+          ? FromWinTransportsMask(assertion.dwUsedTransport)
+          : absl::nullopt;
   AuthenticatorGetAssertionResponse response(
       std::move(*authenticator_data),
       std::vector<uint8_t>(assertion.pbSignature,
-                           assertion.pbSignature + assertion.cbSignature));
+                           assertion.pbSignature + assertion.cbSignature),
+      transport_used);
   response.credential = PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey,
       std::vector<uint8_t>(
@@ -194,9 +199,6 @@ ToAuthenticatorGetAssertionResponse(
   if (assertion.dwVersion >= WEBAUTHN_ASSERTION_VERSION_3 &&
       assertion.pHmacSecret) {
     response.hmac_secret = HMACSecretOutputs(*assertion.pHmacSecret);
-  }
-  if (assertion.dwVersion >= WEBAUTHN_ASSERTION_VERSION_4) {
-    response.transport_used = FromWinTransportsMask(assertion.dwUsedTransport);
   }
   return response;
 }

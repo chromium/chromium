@@ -73,9 +73,12 @@ TEST_F(U2fSignOperationTest, SignSuccess) {
   sign_callback_receiver().WaitForCallback();
   EXPECT_EQ(CtapDeviceResponseCode::kSuccess,
             sign_callback_receiver().status());
-  EXPECT_THAT(sign_callback_receiver().value()->signature,
+  absl::optional<AuthenticatorGetAssertionResponse> response =
+      sign_callback_receiver().TakeValue();
+  ASSERT_TRUE(response);
+  EXPECT_THAT(response->signature,
               ::testing::ElementsAreArray(test_data::kU2fSignature));
-  EXPECT_THAT(sign_callback_receiver().value()->credential->id,
+  EXPECT_THAT(response->credential->id,
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
 }
 

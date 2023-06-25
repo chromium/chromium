@@ -346,10 +346,9 @@ void ChromeOSAuthenticator::OnGetAssertionResponse(
   std::vector<uint8_t> signature(assertion.signature().begin(),
                                  assertion.signature().end());
   std::vector<AuthenticatorGetAssertionResponse> authenticator_response;
-  authenticator_response.emplace_back(std::move(*authenticator_data),
-                                      std::move(signature));
-  authenticator_response.at(0).transport_used =
-      FidoTransportProtocol::kInternal;
+  authenticator_response.push_back(AuthenticatorGetAssertionResponse(
+      std::move(*authenticator_data), std::move(signature),
+      FidoTransportProtocol::kInternal));
   const std::string& credential_id = assertion.credential_id();
   authenticator_response.at(0).credential = PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey,

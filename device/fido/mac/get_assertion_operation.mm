@@ -156,8 +156,8 @@ GetAssertionOperation::ResponseForCredential(const Credential& credential,
     return absl::nullopt;
   }
   AuthenticatorGetAssertionResponse response(std::move(authenticator_data),
-                                             std::move(*signature));
-  response.transport_used = FidoTransportProtocol::kInternal;
+                                             std::move(*signature),
+                                             FidoTransportProtocol::kInternal);
   response.credential = PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey, credential.credential_id);
   if (has_uv) {

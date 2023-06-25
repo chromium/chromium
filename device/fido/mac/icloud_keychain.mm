@@ -311,20 +311,22 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
       return;
     }
 
+    // The hybrid flow can be offered in the macOS UI, so this may be
+    // incorrect, but we've no way of knowing. It's not clear that we can
+    // do much about this with the macOS API at the time of writing, short of
+    // replacing the system UI completely.
+    constexpr auto transport_used = FidoTransportProtocol::kInternal;
+
     AuthenticatorGetAssertionResponse response(
         std::move(*authenticator_data),
-        fido_parsing_utils::Materialize(ToSpan(result.signature)));
+        fido_parsing_utils::Materialize(ToSpan(result.signature)),
+        transport_used);
     response.user_entity = PublicKeyCredentialUserEntity(
         fido_parsing_utils::Materialize(ToSpan(result.userID)));
     response.credential = PublicKeyCredentialDescriptor(
         CredentialType::kPublicKey,
         fido_parsing_utils::Materialize(ToSpan(result.credentialID)));
     response.user_selected = true;
-    // The hybrid flow can be offered in the macOS UI, so this may be
-    // incorrect, but we've no way of knowing. It's not clear that we can
-    // do much about this with the macOS API at the time of writing, short of
-    // replacing the system UI completely.
-    response.transport_used = FidoTransportProtocol::kInternal;
 
     std::vector<AuthenticatorGetAssertionResponse> responses;
     responses.emplace_back(std::move(response));

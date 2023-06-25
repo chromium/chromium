@@ -19,6 +19,7 @@
 #include "device/fido/opaque_attestation_statement.h"
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public_key.h"
+#include "fido_transport_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -648,7 +649,8 @@ TEST(CTAPResponseTest, TestSerializeAuthenticatorDataForSign) {
 TEST(CTAPResponseTest, TestParseSignResponseData) {
   auto response = AuthenticatorGetAssertionResponse::CreateFromU2fSignResponse(
       test_data::kApplicationParameter, GetTestSignResponse(),
-      GetTestCredentialRawIdBytes());
+      GetTestCredentialRawIdBytes(),
+      FidoTransportProtocol::kUsbHumanInterfaceDevice);
   ASSERT_TRUE(response);
   EXPECT_EQ(GetTestCredentialRawIdBytes(), response->credential->id);
   EXPECT_THAT(
@@ -656,19 +658,22 @@ TEST(CTAPResponseTest, TestParseSignResponseData) {
       ::testing::ElementsAreArray(test_data::kTestSignAuthenticatorData));
   EXPECT_THAT(response->signature,
               ::testing::ElementsAreArray(test_data::kU2fSignature));
+  EXPECT_EQ(response->transport_used,
+            FidoTransportProtocol::kUsbHumanInterfaceDevice);
 }
 
 TEST(CTAPResponseTest, TestParseU2fSignWithNullNullKeyHandle) {
   auto response = AuthenticatorGetAssertionResponse::CreateFromU2fSignResponse(
       test_data::kApplicationParameter, GetTestSignResponse(),
-      std::vector<uint8_t>());
+      std::vector<uint8_t>(), FidoTransportProtocol::kUsbHumanInterfaceDevice);
   EXPECT_FALSE(response);
 }
 
 TEST(CTAPResponseTest, TestParseU2fSignWithNullResponse) {
   auto response = AuthenticatorGetAssertionResponse::CreateFromU2fSignResponse(
       test_data::kApplicationParameter, std::vector<uint8_t>(),
-      GetTestCredentialRawIdBytes());
+      GetTestCredentialRawIdBytes(),
+      FidoTransportProtocol::kUsbHumanInterfaceDevice);
   EXPECT_FALSE(response);
 }
 
@@ -683,7 +688,8 @@ TEST(CTAPResponseTest, TestParseU2fSignWithCTAP2Flags) {
 
   auto response = AuthenticatorGetAssertionResponse::CreateFromU2fSignResponse(
       test_data::kApplicationParameter, sign_response,
-      GetTestCredentialRawIdBytes());
+      GetTestCredentialRawIdBytes(),
+      FidoTransportProtocol::kUsbHumanInterfaceDevice);
   EXPECT_FALSE(response);
 }
 
@@ -691,7 +697,8 @@ TEST(CTAPResponseTest, TestParseU2fSignWithNullCorruptedCounter) {
   // A sign response of less than 5 bytes.
   auto response = AuthenticatorGetAssertionResponse::CreateFromU2fSignResponse(
       test_data::kApplicationParameter, GetTestCorruptedSignResponse(3),
-      GetTestCredentialRawIdBytes());
+      GetTestCredentialRawIdBytes(),
+      FidoTransportProtocol::kUsbHumanInterfaceDevice);
   EXPECT_FALSE(response);
 }
 
@@ -699,7 +706,8 @@ TEST(CTAPResponseTest, TestParseU2fSignWithNullCorruptedSignature) {
   // A sign response no more than 5 bytes.
   auto response = AuthenticatorGetAssertionResponse::CreateFromU2fSignResponse(
       test_data::kApplicationParameter, GetTestCorruptedSignResponse(5),
-      GetTestCredentialRawIdBytes());
+      GetTestCredentialRawIdBytes(),
+      FidoTransportProtocol::kUsbHumanInterfaceDevice);
   EXPECT_FALSE(response);
 }
 

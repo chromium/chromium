@@ -188,10 +188,8 @@ absl::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
     return absl::nullopt;
 
   auto signature = it->second.GetBytestring();
-  AuthenticatorGetAssertionResponse response(std::move(*auth_data),
-                                             std::move(signature));
-
-  response.transport_used = transport_used;
+  AuthenticatorGetAssertionResponse response(
+      std::move(*auth_data), std::move(signature), transport_used);
 
   it = response_map.find(CBOR(0x01));
   if (it != response_map.end()) {
