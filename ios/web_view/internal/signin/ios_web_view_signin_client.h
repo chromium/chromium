@@ -15,6 +15,10 @@ namespace ios_web_view {
 class WebViewBrowserState;
 }
 
+namespace version_info {
+enum class Channel;
+}
+
 // iOS WebView specific signin client.
 class IOSWebViewSigninClient : public SigninClient {
  public:
@@ -49,6 +53,7 @@ class IOSWebViewSigninClient : public SigninClient {
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcher(
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source) override;
+  version_info::Channel GetClientChannel() override;
 
  private:
   // Helper to delay callbacks until connection becomes online again.

@@ -15,6 +15,10 @@
 
 class ChromeBrowserState;
 
+namespace version_info {
+enum class Channel;
+}
+
 // Concrete implementation of SigninClient for //ios/chrome.
 class IOSChromeSigninClient : public SigninClient {
  public:
@@ -47,6 +51,7 @@ class IOSChromeSigninClient : public SigninClient {
       content_settings::Observer* observer) override;
   bool AreNetworkCallsDelayed() override;
   void DelayNetworkCall(base::OnceClosure callback) override;
+  version_info::Channel GetClientChannel() override;
 
  private:
   // Helper to delay callbacks until connection becomes online again.

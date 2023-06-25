@@ -53,6 +53,7 @@ static_library("base") {
     ":signin_buildflags",
     "//base",
     "//components/keyed_service/core",
+    "//components/version_info:channel",
     "//google_apis",
     "//url",
   ]

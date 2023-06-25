@@ -27,6 +27,10 @@ class ForceSigninVerifier;
 #endif
 class Profile;
 
+namespace version_info {
+enum class Channel;
+}
+
 class ChromeSigninClient
     : public SigninClient
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -81,6 +85,7 @@ class ChromeSigninClient
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcher(
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source) override;
+  version_info::Channel GetClientChannel() override;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // network::NetworkConnectionTracker::NetworkConnectionObserver

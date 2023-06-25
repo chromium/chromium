@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "components/version_info/channel.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_cookie_manager.h"
@@ -104,6 +105,10 @@ std::unique_ptr<GaiaAuthFetcher> TestSigninClient::CreateGaiaAuthFetcher(
     gaia::GaiaSource source) {
   return std::make_unique<GaiaAuthFetcher>(consumer, source,
                                            GetURLLoaderFactory());
+}
+
+version_info::Channel TestSigninClient::GetClientChannel() {
+  return version_info::Channel::UNKNOWN;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

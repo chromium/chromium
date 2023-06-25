@@ -44,6 +44,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/supervised_user/core/common/buildflags.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -282,6 +283,10 @@ std::unique_ptr<GaiaAuthFetcher> ChromeSigninClient::CreateGaiaAuthFetcher(
     gaia::GaiaSource source) {
   return std::make_unique<GaiaAuthFetcher>(consumer, source,
                                            GetURLLoaderFactory());
+}
+
+version_info::Channel ChromeSigninClient::GetClientChannel() {
+  return chrome::GetChannel();
 }
 
 SigninClient::SignoutDecision ChromeSigninClient::GetSignoutDecision(

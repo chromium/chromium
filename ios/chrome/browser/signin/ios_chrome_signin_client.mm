@@ -84,3 +84,7 @@ std::unique_ptr<GaiaAuthFetcher> IOSChromeSigninClient::CreateGaiaAuthFetcher(
   return std::make_unique<GaiaAuthFetcherIOS>(
       consumer, source, GetURLLoaderFactory(), browser_state_);
 }
+
+version_info::Channel IOSChromeSigninClient::GetClientChannel() {
+  return GetChannel();
+}

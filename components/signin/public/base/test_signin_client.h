@@ -28,6 +28,10 @@
 
 class PrefService;
 
+namespace version_info {
+enum class Channel;
+}
+
 // An implementation of SigninClient for use in unittests. Instantiates test
 // versions of the various objects that SigninClient is required to provide as
 // part of its interface.
@@ -89,6 +93,7 @@ class TestSigninClient : public SigninClient {
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcher(
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source) override;
+  version_info::Channel GetClientChannel() override;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   absl::optional<account_manager::Account> GetInitialPrimaryAccount() override;

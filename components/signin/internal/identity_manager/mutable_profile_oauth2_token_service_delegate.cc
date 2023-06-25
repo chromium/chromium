@@ -258,12 +258,12 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
   if (token_binding_helper_ &&
       token_binding_helper_->HasBindingKey(account_id)) {
     // `GaiaAccessTokenFetcher` doesn't support bound refresh tokens.
-    // TODO(b/263253243): Obtain a real `client_channel` from the embedder.
     return std::make_unique<OAuth2MintAccessTokenFetcherAdapter>(
         consumer, url_loader_factory, refresh_token,
         signin::GetSigninScopedDeviceId(client_->GetPrefs()),
         std::string(version_info::GetVersionNumber()),
-        /*client_channel=*/"unknown");
+        std::string(
+            version_info::GetChannelString(client_->GetClientChannel())));
   }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   return GaiaAccessTokenFetcher::
