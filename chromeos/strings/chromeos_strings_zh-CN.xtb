@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">更换壁纸</translation>
 <translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
 <translation id="3606583719724308068">HTTPS 网站的延迟时间较长</translation>
+<translation id="3607216139080387279">屏保显示时长</translation>
 <translation id="361575905210396100">感谢您的反馈</translation>
 <translation id="3632579075709132555">隐私保护屏幕开关</translation>
 <translation id="3639846061339007994">顶部</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 条评价）</translation>
 <translation id="3748026146096797577">未建立连接</translation>
 <translation id="3749289110408117711">文件名</translation>
+<translation id="3766934827878963937">1 小时</translation>
 <translation id="3771294271822695279">视频文件</translation>
 <translation id="3784455785234192852">锁定</translation>
 <translation id="380097101658023925">RGB 控件</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">将键盘调暗</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />测试已被取消</translation>
 <translation id="631063167932043783">“探索”应用</translation>
+<translation id="6318437367327684789">不限时</translation>
 <translation id="6319207335391420837">更新“<ph name="DEVICE_NAME" />”上的固件</translation>
 <translation id="6321407676395378991">开启屏保功能</translation>
 <translation id="6325525973963619867">失败</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">将多个页面扫描成 1 个 PDF 文件</translation>
 <translation id="9137526406337347448">Google 服务</translation>
 <translation id="9138630967333032450">左 Shift</translation>
+<translation id="9143347780818904997"><ph name="MINUTES" /> 分钟</translation>
 <translation id="9149391708638971077">运行内存测试</translation>
 <translation id="9161276708550942948">空格键</translation>
 <translation id="9173638680043580060">还剩不到 1 分钟</translation>

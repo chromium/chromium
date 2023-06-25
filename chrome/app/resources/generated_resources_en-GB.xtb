@@ -2119,6 +2119,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2727744317940422214">Sorry, something went wrong. Please file feedback with #bruschetta in the description. Error code is <ph name="ERROR" />. Cleaning up failed. You may need to do so manually.</translation>
 <translation id="2729314457178420145">Also clear browsing data (<ph name="URL" />) which may sign you out of Google.com. <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">Chrome is finding new ways to reduce tracking and keep you even safer as you browse. Chrome also <ph name="ESTIMATE_INTERESTS_LINK" /> and enables you to manage them. Then, sites that you visit can ask Chrome for your interests to show you ads.</translation>
+<translation id="2729577602370119849">Easily access and manage printers</translation>
 <translation id="2730029791981212295">Backing up Linux apps and files</translation>
 <translation id="2730901670247399077">Emoji suggestions</translation>
 <translation id="273093730430620027">This page is accessing your camera.</translation>
@@ -2440,6 +2441,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2996286169319737844">Data is encrypted with your sync passphrase. This doesn't include payment methods and addresses from Google Pay.</translation>
 <translation id="2996722619877761919">Flip on long edge</translation>
 <translation id="2996932914629936323">Clears history from all synced devices</translation>
+<translation id="2998097899774209901">On • This extension violates the Chrome Web Store policy</translation>
 <translation id="2998267783395280091">Network found</translation>
 <translation id="3000378525979847272">Allowed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Mono audio</translation>
@@ -2472,6 +2474,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3012631534724231212">(iframe)</translation>
 <translation id="3012804260437125868">Secure same-site connections only</translation>
 <translation id="3012917896646559015">Please contact your hardware manufacturer immediately to send your computer to a repair facility.</translation>
+<translation id="3013652227108802944">Off • This extension violates the Chrome Web Store policy</translation>
 <translation id="3014717196148502230">Chrome preloads even more pages that you're likely to visit, so that they load more quickly when you visit them.</translation>
 <translation id="301525898020410885">Language is set by your organisation</translation>
 <translation id="3015639418649705390">Relaunch now</translation>
@@ -2539,6 +2542,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3072775339180057696">Let site view <ph name="FILE_NAME" />?</translation>
 <translation id="3074499504015191586">Translate full page</translation>
 <translation id="3075144191779656260">Touch the fingerprint sensor at the left hand side of your <ph name="DEVICE_TYPE" />. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3075740753681485522">Off • This extension contains malware</translation>
 <translation id="3075874217500066906">A restart is required to begin the Powerwash process. After restart you will be asked to confirm that you want to proceed.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Save only on this device</translation>
@@ -2701,6 +2705,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3243017971870859287">Read ChromeOS Flex device and component serial numbers</translation>
 <translation id="324366796737464147">Noise cancellation</translation>
 <translation id="3244294424315804309">Continue muting sound</translation>
+<translation id="3247649647204519958">From here, you can see and manage extension permissions for the site you're on</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Network error</translation>
 <translation id="3248902735035392926">Safety matters. Take a moment and <ph name="BEGIN_LINK" />check your extensions now<ph name="END_LINK" /></translation>
 <translation id="3249323165366527554">Sign up and sign in faster when your password is automatically saved to <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" />.</translation>
@@ -2793,6 +2798,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3320271870899888245">Can't connect to OneDrive. Try again.</translation>
 <translation id="3320630259304269485">Safe Browsing (protection from dangerous sites) and other security settings</translation>
 <translation id="3321460131042519426">Enable word wrap</translation>
+<translation id="3321494112580110651">Don’t see your printer?</translation>
 <translation id="3323521181261657960">Bonus! You got more screen time</translation>
 <translation id="3323577066981719144">Changes that you make here apply only to Chrome Browser. To make changes to your Lacros Chrome Browser settings, open Lacros Chrome Browser and go to settings.</translation>
 <translation id="3325804108816646710">Looking for available profiles…</translation>
@@ -3654,6 +3660,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Exit Page}other{Exit Pages}}</translation>
 <translation id="4042941173059740150">Continue to <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Cursor size</translation>
+<translation id="4043620984511647481">Add printer manually</translation>
 <translation id="4044612648082411741">Enter your certificate password</translation>
 <translation id="4044708573046946214">Screen lock password</translation>
 <translation id="404493185430269859">Default search engine</translation>
@@ -4485,6 +4492,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="477647109558161443">Create a desktop shortcut</translation>
 <translation id="4776594120007763294">To add a page to read later, click the button</translation>
 <translation id="4777458362738635055">Other users of this device can use this network</translation>
+<translation id="4777813841994368231">On • This extension was unpublished by its developer</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Configure network name servers</translation>
 <translation id="4778653490315793244">Nothing to show yet</translation>
@@ -6404,6 +6412,7 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
 <translation id="6453191633103419909">Tab/screen projection quality</translation>
 <translation id="6453921811609336127">To switch to the next input method, press <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">On specific sites</translation>
+<translation id="6455521402703088376">Off • This extension was unpublished by its developer</translation>
 <translation id="6455894534188563617">&amp;New Folder</translation>
 <translation id="645705751491738698">Continue blocking JavaScript</translation>
 <translation id="6458347417133445570">Show details about allowing all cookies</translation>
@@ -6612,6 +6621,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6633126565486451781">This file may have been read or edited because this site isn't using a secure connection</translation>
 <translation id="6635362468090274700">No one can share with you until you make yourself visible.<ph name="BR" /><ph name="BR" />To make yourself visible temporarily, open the status area, then turn on Nearby visibility.</translation>
 <translation id="6635674640674343739">Network connection cannot be established. Check your network connection and try again.</translation>
+<translation id="663569763553406962">See what extensions can read or change a site</translation>
 <translation id="6635944431854494329">The owner can control this feature from Settings &gt; Advanced &gt; Automatically send diagnostic and usage data to Google.</translation>
 <translation id="6636623428211296678">Explore more settings below or finish now</translation>
 <translation id="6639554308659482635">SQLite memory</translation>
@@ -6857,6 +6867,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6833996806551876956">Privacy sandbox trial</translation>
 <translation id="6835712061486505758">Create a Wi-Fi hotspot to provide Internet to other devices. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Please connect to the Internet to update your <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6836688241291438278">Make sure your printer is connected to the same Wi-Fi network as your Chromebook or use a USB cable. Learn more about compatibility.</translation>
 <translation id="6839225236531462745">Certificate Deletion Error</translation>
 <translation id="6839916869147598086">Sign-in has changed</translation>
 <translation id="6840155290835956714">Ask before sending</translation>
@@ -8579,6 +8590,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8275080796245127762">Call from Your Device</translation>
 <translation id="8275339871947079271">Move your password to your Google Account to access it securely wherever you're signed in</translation>
 <translation id="8276560076771292512">Empty cache and hard reload</translation>
+<translation id="828180235270931531">Other available printers</translation>
 <translation id="8281886186245836920">Skip</translation>
 <translation id="8284279544186306258">all <ph name="WEBSITE_1" /> sites</translation>
 <translation id="8284326494547611709">Captions</translation>
@@ -9320,6 +9332,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8931076093143205651">Send usage and diagnostic data. Help improve your Android experience by automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account.</translation>
 <translation id="8931475688782629595">Manage what you sync</translation>
+<translation id="8931713990831679796">These printers are connected and ready to use. Save to your profile for easier access.</translation>
 <translation id="8932654652795262306">Instant Tethering details</translation>
 <translation id="893298445929867520">Baskets hidden. They'll reappear when you make changes.</translation>
 <translation id="8933960630081805351">&amp;Show in Finder</translation>

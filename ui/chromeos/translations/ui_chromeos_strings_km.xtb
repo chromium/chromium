@@ -563,6 +563,7 @@
 <translation id="5422221874247253874">ចំណុចចូលប្រើ</translation>
 <translation id="5428105026674456456">ភាសាអេស្ប៉ាញ</translation>
 <translation id="5438282218546237410">គ្មានលទ្ធផល​អំពី <ph name="SEARCH_TERM" /> ទេ។</translation>
+<translation id="5447680084201416734">ទំហំផ្ទុក​មិនគ្រប់គ្រាន់។</translation>
 <translation id="5449551289610225147">ពាក្យ​សម្ងាត់​មិន​ត្រឹមត្រូវ</translation>
 <translation id="5459064203055649751">ឯកសារដែលបានដាក់​ឈ្មោះថា "<ph name="FILENAME" />" មានរួចហើយ។ តើអ្នកចង់ជំនួសឯកសារនេះដោយឯកសារដែលអ្នកកំពុងផ្លាស់ទីដែរឬទេ?</translation>
 <translation id="5463231940765244860">បញ្ចូល</translation>
@@ -690,6 +691,7 @@
 <translation id="6423031066725912715">ភាសាវៀតណាម​ដែលប្រើ​ក្ដារចុច TCVN</translation>
 <translation id="6430271654280079150">អ្នកអាចព្យាយាមបាន 1 ដងទៀត។</translation>
 <translation id="643243556292470964">ឯកសារដែលបានលុប​ត្រូវបាន​ផ្លាស់ទី​ទៅក្នុងធុងសំរាម​ឥឡូវនេះ</translation>
+<translation id="6438480100790416671">កំពុង​ពិនិត្យមើល​ទំហំផ្ទុក…</translation>
 <translation id="6485131920355264772">បានបរាជ័យក្នុងការទាញត្រលប់ព័ត៌មានចន្លោះផ្ទុក</translation>
 <translation id="6495925982925244349">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, គ្រប់គ្រងដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក, ព័ត៌មាន​លម្អិត</translation>
 <translation id="649877868557234318">កំពុងស្រង់ <ph name="FILE_NAME" /> ទៅ <ph name="FOLDER_NAME" /></translation>
@@ -892,6 +894,7 @@
 <translation id="8000066093800657092">គ្មានបណ្តាញទេ</translation>
 <translation id="8008366997883261463">សត្វឆ្កែ</translation>
 <translation id="8028993641010258682">ទំហំ</translation>
+<translation id="8034974485549318493">សម្រាប់​ការរៀបចំ​ដំបូង អ្នកត្រូវភ្ជាប់​ទៅអ៊ីនធឺណិត ដូច្នេះ​ឯកសារ​អាចធ្វើ​សម​កាលកម្ម​បាន។</translation>
 <translation id="803771048473350947">ឯកសារ</translation>
 <translation id="8038111231936746805">(លំនាំដើម)</translation>
 <translation id="8042602468072383151">សំឡេង <ph name="AUDIO_TYPE" /></translation>

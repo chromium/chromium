@@ -774,6 +774,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1629451755632656601">Umožnit Googlu vyhledávat u vašich košíků personalizované slevy?</translation>
 <translation id="163072119192489970">Povolení dokončovat odeslání a příjem dat</translation>
 <translation id="1630768113285622200">Restartovat a pokračovat</translation>
+<translation id="1631503405579357839">Barvoslepost</translation>
 <translation id="1632082166874334883">Heslo uložené ve vašem účtu Google</translation>
 <translation id="1632756664321977232">Nástroj Oříznout</translation>
 <translation id="163309982320328737">Výchozí šířka znaků je Plná</translation>
@@ -1479,6 +1480,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2214018885812055163">Sdílené složky</translation>
 <translation id="2214884991347062907">Nesprávné heslo, zkuste to znovu</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 řádek není zobrazen&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> řádky nejsou zobrazeny&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> řádku není zobrazeno&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> řádků není zobrazeno&gt;}}</translation>
+<translation id="2215070081105889450">Pokud chcete sdílet zvuk, sdílejte místo toho kartu nebo obrazovku</translation>
 <translation id="2218019600945559112">Myš a touchpad</translation>
 <translation id="2218515861914035131">Vložit jako prostý text</translation>
 <translation id="221872881068107022">Opačné posouvání</translation>
@@ -2009,6 +2011,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2645047101481282803">Toto zařízení spravuje organizace <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Tato karta se odesílá do zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="264897126871533291">Protanomálie</translation>
 <translation id="2649045351178520408">Soubor ASCII kódovaný Base64, řetězec certifikátů</translation>
 <translation id="265156376773362237">Standardní předběžné načítání</translation>
 <translation id="2652129567809778422">Vyberte heslo</translation>
@@ -2961,6 +2964,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3476303763173086583">Odesílat údaje o využití a diagnostice. Pomozte prostředí Android svého dítěte zlepšit tím, že necháte do Googlu automaticky odesílat diagnostické údaje a údaje o využití zařízení a aplikací. Tyto údaje nebudou používány ke zjištění totožnosti dítěte a pomohou nám se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Toto nastavení je <ph name="BEGIN_LINK1" />vyžadováno<ph name="END_LINK1" /> vlastníkem. Vlastník může zvolit, že se diagnostické údaje a údaje o využití z tohoto zařízení mají odesílat do Googlu. Pokud má dítě zapnuté dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do jeho účtu Google. <ph name="BEGIN_LINK2" />Další informace<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Jejda! Systému se nepodařilo načíst zásady pro vaše zařízení.</translation>
 <translation id="347785443197175480">Povolit webu <ph name="HOST" /> přístup k webové kameře a mikrofonu i nadále</translation>
+<translation id="3479357084663933762">Deuteranomálie</translation>
 <translation id="3479552764303398839">Teď ne</translation>
 <translation id="3479685872808224578">K tiskovému serveru se nelze připojit. Zkontrolujte adresu a zkuste to znovu.</translation>
 <translation id="3479753605053415848">Kliknutím si Chrome přizpůsobte</translation>
@@ -3432,6 +3436,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3867134342671430205">Přesuňte displej přetažením nebo pomocí kláves se šipkami</translation>
 <translation id="3867944738977021751">Pole certifikátu</translation>
 <translation id="3869917919960562512">Chybný index.</translation>
+<translation id="3870626286046977643">Sdílet také systémový zvuk</translation>
 <translation id="3870688298003434214">Zrušit výběr záložky <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="3870931306085184145">Pro web <ph name="DOMAIN" /> nejsou uložená žádná hesla</translation>
 <translation id="3871350334636688135">Za 24 hodin administrátor provede jednorázovou aktualizaci. Až zařízení restartujete, tato aktualizace vymaže vaše místní data. Všechna místní data, která potřebujete, si do 24 hodin uložte do cloudového úložiště.</translation>
@@ -4302,6 +4307,7 @@ Signály zařízení mohou zahrnovat informace o prohlížeči, operačním sys
 <translation id="4623189117674524348">Systému se nepodařilo autorizovat pro toto zařízení přístup k rozhraní API.</translation>
 <translation id="4623341761454569602">Ve Správci hesel Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="4625078469366263107">Aktivovat aplikaci</translation>
+<translation id="4625905218692741757">Výchozí šedá barva</translation>
 <translation id="4627427111733173920">Byly zablokovány soubory cookie</translation>
 <translation id="4627442949885028695">Pokračovat z jiného zařízení</translation>
 <translation id="4628762811416793313">Nastavení kontejneru systému Linux nebylo dokončeno. Zkuste to znovu.</translation>
@@ -5207,6 +5213,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5430931332414098647">Dynamický tethering</translation>
 <translation id="5431318178759467895">Barevně</translation>
 <translation id="5432145523462851548">Zobrazit <ph name="FILE_NAME" /> ve složce</translation>
+<translation id="5432223177001837288">Pokud chcete sdílet zvuk, sdílejte místo toho kartu</translation>
 <translation id="543338862236136125">Upravit heslo</translation>
 <translation id="5434065355175441495">Šifrování PKCS #1 RSA</translation>
 <translation id="5435274640623994081">Zapnout protokolování</translation>
@@ -5982,6 +5989,7 @@ Můžete ho odeslat do Googlu ke kontrole, zda je bezpečný. Kontrola obvykle t
 <translation id="6087960857463881712">Paráda</translation>
 <translation id="6088475950266477163">&amp;Nastavení</translation>
 <translation id="608912389580139775">Pokud tuto stránku chcete přidat do seznamu ke čtení, klikněte na ikonu záložky</translation>
+<translation id="6089289670051481345">Tritanomálie</translation>
 <translation id="6090760257419195752">Zavřená upozornění</translation>
 <translation id="6091761513005122595">Sdílená složka byla úspěšně připojena.</translation>
 <translation id="6093803049406781019">Smazat profil</translation>
@@ -6067,6 +6075,7 @@ Můžete ho odeslat do Googlu ke kontrole, zda je bezpečný. Kontrola obvykle t
 <translation id="6163363155248589649">Normální</translation>
 <translation id="6163376401832887457">Nastavení protokolu Kerberos</translation>
 <translation id="6163522313638838258">Rozbalit vše...</translation>
+<translation id="6164393601566177235">Přidání webů</translation>
 <translation id="6164832038898943453">Přidejte jazyky, které se mají automaticky překládat</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6166185671393271715">Import hesel do Chromu</translation>
@@ -8697,6 +8706,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="839363317075970734">Podrobnosti zařízení Bluetooth</translation>
 <translation id="8393700583063109961">Odeslat zprávu</translation>
 <translation id="8394212467245680403">Alfanumerická</translation>
+<translation id="8396098434728053815">Sdílet také zvuk karty</translation>
 <translation id="8397825320644530257">Odpojit připojený telefon</translation>
 <translation id="8398877366907290961">Přesto pokračovat</translation>
 <translation id="8399282673057829204">Zobrazit heslo</translation>

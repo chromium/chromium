@@ -55,6 +55,11 @@
       如果您未设置此政策，默认情况下，受管用户将无法使用这项功能，但其他用户可以使用这项功能。</translation>
 <translation id="1035860095382451169">在多功能框中使用锁形图标表示安全连接</translation>
 <translation id="1037470927044831850">允许网站提示用户分享录屏</translation>
+<translation id="1038049732032297658">启用或停用实体键盘的自动更正功能。
+
+如果已启用或未设置此政策，系统将允许使用实体键盘的自动更正功能。
+
+如果已停用此政策，系统将禁止使用实体键盘的自动更正功能。</translation>
 <translation id="1038725366103635282">允许 NetBIOS 共享操作发现</translation>
 <translation id="1040446814317236570">启用 PAC 网址剔除功能（适用于 https:// 类网址）</translation>
 <translation id="1041719059374171202">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站无法运行 JavaScript。
@@ -188,6 +193,7 @@
       *“旧版”，系统将仅允许使用 RC4 类型。RC4 不安全，因此应仅在非常特殊的情况下使用。如有可能，请重新配置服务器以支持 AES 加密。
 
       另请参阅 https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_client_encryption_types。</translation>
+<translation id="1173493742686115032">允许在所有网页上使用 <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
 <translation id="1177567780207290133">通过设置此政策，您可以控制 SafeSites 网址滤除机制，此机制使用 Google Safe Search API 来判断是否将网址归类为色情内容。
 
       如果此政策设为：
@@ -463,6 +469,7 @@
 
 如果此政策已停用或未设置，<ph name="PRODUCT_NAME" /> 将不会在“打印预览”对话框中向用户提供“以图片形式打印”选项，PDF 将会像平常一样打印，而不会在发送到目标打印机之前光栅化为图片。</translation>
 <translation id="1435659902881071157">设备级网络配置</translation>
+<translation id="143649776386947790">使用默认行为</translation>
 <translation id="1438739959477268107">默认的密钥生成设置</translation>
 <translation id="1440408958042020947">允许已选择启用 Phone Hub 的用户访问其手机上近期拍摄的照片和视频</translation>
 <translation id="1449083855104537880">如果此政策设为 True，无障碍选项将会显示在系统任务栏菜单中。如果此政策设为 False，这些选项就不会显示在菜单中。
@@ -538,6 +545,10 @@
 
       注意：若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。</translation>
 <translation id="1488724823347505879">允许将 Android 应用中的内容分享给 Web 应用</translation>
+<translation id="1492223733885011596">此政策可为 <ph name="PRODUCT_OS_NAME" /> 上的表情符号选择器启用 GIF 支持。
+如果已启用此政策，表情符号选择器将支持 GIF 表情符号。
+如果已停用或未设置此政策，表情符号选择器将不支持 GIF 表情符号。
+如果未设置此政策，系统会为普通用户启用表情符号选择器，但会为受管用户停用表情符号选择器。</translation>
 <translation id="1494138678487405397">为登录屏幕停用高对比度模式</translation>
 <translation id="1499129134689253257">控制 <ph name="OFFSET_PARENT" /> 的新行为</translation>
 <translation id="1501644502684303995">仅在登录页面强制执行在线登录</translation>
@@ -1964,6 +1975,7 @@
 <translation id="286898786908566256">允许用户将电话号码从 Chrome 发送到 Android 设备</translation>
 <translation id="2872098849906555324">停用 Google 云端硬盘同步</translation>
 <translation id="2872961005593481000">关机</translation>
+<translation id="2872968825059227580">停用 GIF 支持。</translation>
 <translation id="2874209944580848064">针对支持 Android 应用的 <ph name="PRODUCT_OS_NAME" />设备的注意事项：</translation>
 <translation id="287474029350993681">禁止向设备投放内容</translation>
 <translation id="2875192972412983412">指定要让系统为确认是否有可用的服务器打印机而查询的部分打印服务器。
@@ -2084,6 +2096,7 @@
 <translation id="2959527429632925933">如果此政策不存在（例如对于非受管用户），系统将在终端系统应用中启用 SSH（安全外壳）出站客户端连接功能（默认为 True）。
       如果用户是受管用户，并且此政策未设置或已停用，系统将在终端中停用该功能。
       如果此政策已启用，系统会允许受管用户在终端中创建出站客户端 SSH 连接。</translation>
+<translation id="2959737282368424062">允许 Native Client 运行</translation>
 <translation id="2959898425599642200">代理绕过规则</translation>
 <translation id="2960013482187484833">在打印预览中将上次使用的打印机设为默认选项</translation>
 <translation id="2960128438010718932">分阶段应用新更新的时间表</translation>
@@ -2486,6 +2499,7 @@
 <translation id="3258380413685430793">运行所有 <ph name="FLASH_PLUGIN_NAME" /> 内容</translation>
 <translation id="3261592499545947104">应在证书还差多少秒到期时触发续订操作</translation>
 <translation id="3262080895269946462">允许第三方情境下的 WebSQL 默认处于停用状态。</translation>
+<translation id="326341982850521928">启用色彩校正</translation>
 <translation id="3263892501786842604">允许在“新标签页”页面上的搜索框中显示 <ph name="GOOGLE_LENS_PRODUCT_NAME" />按钮（如果支持的话）。</translation>
 <translation id="3264793472749429012">默认搜索服务提供商的编码</translation>
 <translation id="3269198556438453775">禁止企业管理员与这台计算机建立远程支持连接</translation>
@@ -2577,6 +2591,11 @@
       如需查看可用变量的列表，请访问 https://support.google.com/chrome/a?p=Supported_directory_variables。
 
       如果您未设置此政策，系统将会使用默认的个人资料路径，而用户可以使用“--user-data-dir”命令行标记来替换此路径。</translation>
+<translation id="3379368498958498146">启用或停用实体键盘的预测性撰写功能。
+
+如果已启用或未设置此政策，系统将允许使用实体键盘的预测性撰写功能。
+
+如果已停用此政策，系统将禁止使用实体键盘的预测性撰写功能。</translation>
 <translation id="3380801667330555918">为 Kerberos 票据更改预填充配置</translation>
 <translation id="338149029069528354">不清除本地用户数据</translation>
 <translation id="3381968327636295719">默认情况下托管主机浏览器</translation>
@@ -4103,6 +4122,8 @@
 <translation id="4812714598405913256">为 DeviceMinimumVersion 政策配置自动更新期限已过消息</translation>
 <translation id="4815581264328351694">在系统任务栏菜单中显示无障碍选项</translation>
 <translation id="4816674326202173458">允许企业用户以主用户或次要用户的身份登录多个人资料会话（非受管理用户的默认行为）</translation>
+<translation id="4819906370830175867">如果此政策设为 True，即使默认行为是停用 Native Client，系统也会允许 Native Client 继续运行。
+如果此政策设为 False，系统将使用默认行为。</translation>
 <translation id="4820432864264617413">禁止用户运行 <ph name="BOREALIS_NAME" /></translation>
 <translation id="4821987881803903281">拒绝向这些网站授予窗口放置权限</translation>
 <translation id="4825777333376170738">停用设备自助服务终端会话报告功能</translation>
@@ -4190,6 +4211,7 @@
 <translation id="4922136799178503494">禁止通过网络共享文件</translation>
 <translation id="4923806312383904642">允许 WebDriver 替换与之冲突的政策</translation>
 <translation id="4924377847308623325">阻止其他 DNS 查询类型</translation>
+<translation id="492685741837024549">强制允许 Native Client (NaCl) 运行。</translation>
 <translation id="4927214690104703256">通过设置此政策，您可以指定哪些扩展程序能够使用 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 函数进行远程认证。只有添加到此列表中的扩展程序才能使用该 API。
 
       如果扩展程序不在此列表中或者此列表未设置，则会导致无法调用该 API 并返回错误代码。</translation>
@@ -4612,6 +4634,7 @@
 <translation id="5345910753471481870">不在“新标签页”页面上的搜索框中显示 Google 智能镜头按钮。</translation>
 <translation id="5346587320074666194">禁止在这些网站上使用传感器</translation>
 <translation id="534836255587440809">禁止在登录屏幕上自动点击</translation>
+<translation id="5361167871898066799">控制实体键盘的自动更正功能</translation>
 <translation id="5361708558735884308">通过设置此政策，您可列出允许访问的网址，以便将这些网址作为 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外情况。有关此列表所含条目的格式，请参阅 URLBlocklist 政策的说明。例如，将 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 设置为 * 会屏蔽所有请求，但您可以通过此政策来允许访问您所列出的部分网址。您可借助此政策为某些 scheme、其他网域的子网域、端口或特定路径设置例外情况（需使用指定格式，详见 https://support.google.com/chrome/a?p=url_blocklist_filter_format）。系统是会屏蔽还是会允许某个网址取决于最具体的过滤条件。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的优先级高于 <ph name="URL_BLOCKLIST_POLICY_NAME" />。此政策最多只能包含 1,000 个条目。
 
 通过此政策，您还可让浏览器自动调用以下类型的外部应用：已注册为所列协议（如“tel:”或“ssh:”）的协议处理程序。
@@ -5774,6 +5797,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如需详细了解旧版技术，请访问 https://chromestatus.com/features。</translation>
 <translation id="640827304541402854">禁止从远程访问主机穿越防火墙</translation>
 <translation id="6412352702230183710">仅允许使用系统级原生消息传递主机</translation>
+<translation id="6416506846917150119">在用户输入内容时停用实体键盘预测性撰写功能</translation>
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="6422575351619065453">在自助服务终端模式中，用于控制是否显示悬浮无障碍功能菜单。
 
@@ -6600,6 +6624,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7122626777103192518">如果此政策设为 True，系统将允许使用内置 Android 分享系统将 Android 应用中的文本/文件分享给受支持的 Web 应用。
       启用后，该功能会将已安装的 Web 应用的元数据发送给 Google，以生成和安装 shim Android 应用。
       如果此政策设为 False，系统将停用该功能。</translation>
+<translation id="7123271473727774529">启用色彩校正无障碍功能</translation>
 <translation id="7126716959063786004">允许在任务管理器中结束进程</translation>
 <translation id="7126928806195745404">JavaScript 设置</translation>
 <translation id="7127980134843952133">下载记录</translation>
@@ -6803,6 +6828,17 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="731208205557053914">报告 VPD 信息</translation>
 <translation id="7313672174502374994">相应壁纸图片的 SHA-256 哈希值。</translation>
 <translation id="7322825363493984512">用于向远程网络代理验证系统服务身份的密码。</translation>
+<translation id="7323773727263636287">启用色彩校正无障碍功能。
+
+          该功能允许用户在受管理的 <ph name="PRODUCT_OS_NAME" /> 设备上调整色彩校正设置，以便色弱用户更轻松地辨别屏幕上的颜色。
+
+          如果已启用此政策，色彩校正功能将始终处于启用状态；用户需要前往“设置”中选择适用的色彩校正选项（例如绿色弱/红色弱/蓝色弱/灰阶滤镜和强度）。系统会在用户首次使用时显示色彩校正设置。
+
+          如果已停用此政策，色彩校正功能将始终处于停用状态。
+
+          如果您设置了此政策，用户便无法更改或覆盖它。
+
+          如果未设置此政策，色彩校正功能最初会处于停用状态，但用户可以随时启用该功能。</translation>
 <translation id="7323855063560306712">您可用来设置一个网站网址格式列表，指定要系统自动拒绝向哪些网站授予窗口管理权限。此设置会限制网站的以下功能：查看设备屏幕的相关信息，以及使用该信息在特定屏幕上打开并放置窗口或者请求进入全屏模式。
 
 如需详细了解有效网站网址格式，请访问 https://chromeenterprise.google/intl/zh_cn/policies/url-patterns/。允许使用通配符 <ph name="WILDCARD_VALUE" />。此政策只能根据源进行匹配，因此网址格式中的任何路径都会被忽略。
@@ -7469,6 +7505,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7976157349247117979"><ph name="PRODUCT_NAME" /> 目标名称</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7986473886676689183">启用 Android 报告</translation>
+<translation id="7990280274626154329">启用“<ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" />”政策</translation>
 <translation id="7991022023019679916">请注意，此政策已被弃用，并将在 <ph name="PRODUCT_OS_NAME" />版本 85 中移除。请改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 
           指定当使用交流电源供电时系统应在设备闲置多久后关闭屏幕。
@@ -7533,6 +7570,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8028814157747157754">启用默认搜索服务提供商并允许用户修改搜索服务提供商列表</translation>
 <translation id="8029201909194194377">远程访问连接可达到的会话时长上限</translation>
 <translation id="8035570672225663428">启用“自适应充电”模式以暂缓充电进程，进而延长电池寿命</translation>
+<translation id="8038007682032315784">禁止在所有网页上使用 <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
 <translation id="8044493735196713914">报告设备引导模式</translation>
 <translation id="8044720778481009876"><ph name="CLOUD_PRINT_NAME" />和“保存到 Google 云端硬盘”目的地（已弃用）</translation>
 <translation id="80453040817068401">启用 <ph name="LACROS_NAME" /> 浏览器</translation>
@@ -7572,6 +7610,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8080200590486938727">停用插件查找器</translation>
 <translation id="8089200718228084417">启用已弃用的 Privet 本地打印</translation>
 <translation id="8091982561085048989">一个布尔值标记，用于表明是否应该使用 IPP Everywhere 来设置打印机。<ph name="PRODUCT_OS_NAME" /> 76 版及更高版本支持该标记。</translation>
+<translation id="8094095107731619070">在用户输入内容时启用实体键盘自动更正功能</translation>
 <translation id="8099880303030573137">使用电池供电时的闲置延迟时间</translation>
 <translation id="8101381354936029836">政策原子组：</translation>
 <translation id="8102854005031553638">PDF 查看器使用 AGG 渲染程序。</translation>
@@ -7864,6 +7903,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8330437518362176921">下载和更新自助服务终端 Chrome 应用时仅使用政策提供的更新网址</translation>
 <translation id="8331479227794770304">启用粘滞键</translation>
 <translation id="8332822245414537447">停用 RSA 密钥用法检查</translation>
+<translation id="8334685561819743286">在用户输入内容时停用实体键盘自动更正功能</translation>
 <translation id="8337114537412769126">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> 来指定在借助 POST 搜索建议时应使用的参数。所指定的内容由一系列以英文逗号分隔的名称-值对组成。如果值为模板参数（例如<ph name="SEARCH_TERM_MARKER" />），系统会将其替换成真实的搜索字词数据。
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />，系统将使用 GET 方法发送建议搜索请求。</translation>
@@ -7945,6 +7985,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8427466947904008809">允许 CRD 执行远程主机通过代理发送的 WebAuthn API 请求。</translation>
 <translation id="8428295225823548121">启用设备内存信息报告功能</translation>
 <translation id="8428635849021776523">停用 Android 报告</translation>
+<translation id="8429593528367808164">在用户输入内容时启用实体键盘预测性撰写功能</translation>
 <translation id="8433186206711564395">网络设置</translation>
 <translation id="8433769814000220721">启用建议的内容</translation>
 <translation id="843609873781525167">如果此政策设为 True，<ph name="PRODUCT_NAME" /> 在启动时始终会检查自己是否是默认浏览器，并会尽可能自动注册。如果此政策设为 False，<ph name="PRODUCT_NAME" /> 一律不会检查自己是否是默认浏览器，并会禁止用户设置此选项。
@@ -8338,10 +8379,12 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
           如果未设置，此政策将不会产生任何影响。在这种情况下，此计算机上的远程访问连接将不会受到任何时长上限的制约。</translation>
 <translation id="8800453707696044281">设置电池充电自定义停止充电值（以百分比表示）</translation>
 <translation id="8801680448782904838">系统建议或要求重新启动浏览器或重启设备时，通知用户</translation>
+<translation id="8802800226877198994">启用 GIF 支持。</translation>
 <translation id="8804685015028424497">停用无痕模式</translation>
 <translation id="8806478127647484805">禁止用户通过 Chrome 任务管理器终止进程</translation>
 <translation id="8807274441692477185">不在用户登录期间显示触控板滚动方向界面</translation>
 <translation id="8807313206348471682">显示让用户确认退出登录的对话框</translation>
+<translation id="8809082103104823938">表情符号选择器中的 GIF 支持</translation>
 <translation id="8812091410765157924">允许以 <ph name="BLANK_PAGE_NAME" /> 为目标打开的弹出式窗口与那个打开弹出式窗口的页面互动，但前提是这个页面已明确接受此类互动</translation>
 <translation id="8816370949847593408">Chrome 应用能否运行取决于弃用安排的状态。</translation>
 <translation id="8818768076343557335">连上网络时一律预测网络操作（移动网络除外）。
@@ -8387,6 +8430,9 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       用户可以触发导入对话框，系统将会根据此政策的值选中或不选中“书签”复选框。</translation>
 <translation id="8858642179038618439">强制启用 YouTube 安全模式</translation>
 <translation id="8860342862142842017">对于指定的一系列 subjectPublicKeyInfo 哈希，不强制执行证书透明化要求</translation>
+<translation id="8860474826929590628">如果已启用或未设置“<ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" />”政策，系统会允许在所有网页上使用此政策。
+
+如果已停用“<ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" />”政策，所有网页上都无法使用此政策。</translation>
 <translation id="8860894781631833477">用户可以配置 <ph name="PRODUCT_OS_NAME" /> 发布渠道</translation>
 <translation id="8864975621965365890">浏览使用 <ph name="PRODUCT_FRAME_NAME" />呈现的网站时，阻止显示“停止支持”的提示。</translation>
 <translation id="8865404058177794289">为 RSA 密钥用法检查使用默认设置</translation>
@@ -8503,6 +8549,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8956312248048980644">默认允许使用以源为键的代理集群。</translation>
 <translation id="8970205333161758602">阻止显示 <ph name="PRODUCT_FRAME_NAME" />停止支持的提示</translation>
 <translation id="8973579598359969188">选择是否可向用户显示 <ph name="PRIVACY_SANDBOX_NAME" /> 提示</translation>
+<translation id="8974457039656761249">控制实体键盘的预测性撰写功能</translation>
 <translation id="8974588819713914715">此政策已被弃用且不再受支持，请改用“<ph name="URL_ALLOWLIST_POLICY_NAME" />”政策。</translation>
 <translation id="8976248126101463034">允许针对远程访问主机进行 gnubby 身份验证</translation>
 <translation id="8976531594979650914">使用系统默认打印机作为默认选项</translation>
@@ -8857,4 +8904,5 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       启用此政策会导致网站容易受到某些类型的跨网站攻击，并会允许使用网址内嵌的凭据向 HTTP 身份验证缓存文件添加条目以对用户进行跨网站跟踪（甚至是在没有 Cookie 的情况下）。
 
       此政策旨在让依靠旧版行为的企业能够更新他们的登录流程，日后将被移除。</translation>
+<translation id="999340611001666174">停用色彩校正</translation>
 </translationbundle>

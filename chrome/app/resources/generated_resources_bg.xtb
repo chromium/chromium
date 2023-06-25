@@ -2115,6 +2115,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2727744317940422214">За съжаление, нещо се обърка. Моля, изпратете отзиви, като включите #bruschetta в описанието. Кодът на грешката е <ph name="ERROR" />. Изчистването не бе успешно. Може да се наложи да го направите ръчно.</translation>
 <translation id="2729314457178420145">Също така изчистване на данните за сърфирането (<ph name="URL" />), при което може да бъде прекратена сесията ви в Google.com. <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">Chrome намира нови начини да намали проследяването и да ви осигури още по-голяма безопасност, докато сърфирате. Също така браузърът <ph name="ESTIMATE_INTERESTS_LINK" /> и ви дава възможност да ги управлявате. След това посещаваните от вас сайтове могат да поискат от Chrome интересите ви, за да ви показват реклами.</translation>
+<translation id="2729577602370119849">Лесно осъществявайте достъп до принтерите и ги управлявайте</translation>
 <translation id="2730029791981212295">Създава се резервно копие на приложенията и файловете под Linux</translation>
 <translation id="2730901670247399077">Предложения за емоджи</translation>
 <translation id="273093730430620027">Тази страница осъществява достъп до камерата ви.</translation>
@@ -2436,6 +2437,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2996286169319737844">Данните са шифровани с пропуска ви за синхронизиране. Това не включва начините на плащане и адресите от Google Pay.</translation>
 <translation id="2996722619877761919">Обръщане по дългата страна</translation>
 <translation id="2996932914629936323">Изчиства историята от всички синхронизирани устройства.</translation>
+<translation id="2998097899774209901">Включено • Това разширение нарушава правилата на уеб магазина на Chrome</translation>
 <translation id="2998267783395280091">Намерена е мрежа</translation>
 <translation id="3000378525979847272">Разрешени са „<ph name="PERMISSION_1" />“ и „<ph name="PERMISSION_2" />“</translation>
 <translation id="3000461861112256445">Монозвук</translation>
@@ -2468,6 +2470,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3012631534724231212">(вложена рамка)</translation>
 <translation id="3012804260437125868">Само сигурни връзки в същия сайт</translation>
 <translation id="3012917896646559015">Моля, незабавно се свържете с производителя на хардуера си, за да изпратите компютъра си на поправка.</translation>
+<translation id="3013652227108802944">Изключено • Това разширение нарушава правилата на уеб магазина на Chrome</translation>
 <translation id="3014717196148502230">Chrome зарежда предварително още повече страници, които е вероятно да посетите, така че да се заредят по-бързо, когато ги отворите.</translation>
 <translation id="301525898020410885">Езикът е зададен от организацията ви</translation>
 <translation id="3015639418649705390">Рестартиране сега</translation>
@@ -2535,6 +2538,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3072775339180057696">Да се разреши ли на сайта да преглежда <ph name="FILE_NAME" />?</translation>
 <translation id="3074499504015191586">Превод на цялата страница</translation>
 <translation id="3075144191779656260">Докоснете сензора за отпечатъци от лявата страна на устройството си <ph name="DEVICE_TYPE" />. Данните за отпечатъка ви се съхраняват надеждно и никога не напускат устройството ви <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3075740753681485522">Изключено • Това разширение съдържа злонамерен софтуер</translation>
 <translation id="3075874217500066906">За започването на Powerwash се изисква рестартиране. След това ще бъдете помолени да потвърдите, че искате да продължите.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Запазване само на това устройство</translation>
@@ -2697,6 +2701,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3243017971870859287">Четене на серийните номера на компонентите и устройството с ChromeOS Flex</translation>
 <translation id="324366796737464147">Потискане на шума</translation>
 <translation id="3244294424315804309">Продължаване без звук</translation>
+<translation id="3247649647204519958">Оттук можете да преглеждате и управлявате разрешенията за разширенията за сайта, който сте отворили</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – грешка в мрежата</translation>
 <translation id="3248902735035392926">Безопасността е от първостепенна важност. Отделете малко време и <ph name="BEGIN_LINK" />проверете разширенията си сега<ph name="END_LINK" /></translation>
 <translation id="3249323165366527554">Регистрирайте се и влизайте по-бързо, когато паролата ви бъде запазена автоматично в <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
@@ -2789,6 +2794,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3320271870899888245">Не може да се установи връзка с OneDrive. Опитайте отново.</translation>
 <translation id="3320630259304269485">Безопасно сърфиране (защита от опасни сайтове) и други настройки за сигурността</translation>
 <translation id="3321460131042519426">Активиране на пренасянето на думи</translation>
+<translation id="3321494112580110651">Не виждате принтера си?</translation>
 <translation id="3323521181261657960">Бонус! Получихте още време на ползване</translation>
 <translation id="3323577066981719144">Промените тук важат само за браузъра Chrome. За да промените настройките на браузъра Lacros Chrome, отворете ги в този браузър.</translation>
 <translation id="3325804108816646710">Търсят се налични профили...</translation>
@@ -3651,6 +3657,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Изход от страницата}other{Изход от страниците}}</translation>
 <translation id="4042941173059740150">Продължаване към <ph name="SITE_ETLD_PLUS_ONE" /> чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Размер на курсора</translation>
+<translation id="4043620984511647481">Ръчно добавяне на принтер</translation>
 <translation id="4044612648082411741">Въведете паролата си за сертификата</translation>
 <translation id="4044708573046946214">Парола за заключване на екрана</translation>
 <translation id="404493185430269859">Основна търсеща машина</translation>
@@ -4482,6 +4489,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="477647109558161443">Създаване на пряк път на работния плот</translation>
 <translation id="4776594120007763294">За да добавите страница за четене по-късно, кликнете върху бутона</translation>
 <translation id="4777458362738635055">Другите потребители на устройството могат да използват тази мрежа</translation>
+<translation id="4777813841994368231">Включено • Публикуването на това разширение бе прекратено от програмиста му</translation>
 <translation id="4777825441726637019">Google Play Магазин</translation>
 <translation id="4777943778632837590">Конфигуриране на сървърите за имена в мрежата</translation>
 <translation id="4778653490315793244">Още няма нищо за показване</translation>
@@ -6402,6 +6410,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6453191633103419909">Качество на прожектиране на разделите/екрана</translation>
 <translation id="6453921811609336127">За да превключите към следващия метод на въвеждане, натиснете <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /> <ph name="SEPARATOR1" /> <ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /> <ph name="SEPARATOR2" /> <ph name="BEGIN_SPACE" />интервал<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">На конкретни сайтове</translation>
+<translation id="6455521402703088376">Изключено • Публикуването на това разширение бе прекратено от програмиста му</translation>
 <translation id="6455894534188563617">&amp;Нова папка</translation>
 <translation id="645705751491738698">Блокирането на JavaScript да продължи</translation>
 <translation id="6458347417133445570">Показване на подробностите за разрешаването на всички „бисквитки“</translation>
@@ -6610,6 +6619,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6633126565486451781">Този файл може да е четен или редактиран, защото сайтът не използва защитена връзка</translation>
 <translation id="6635362468090274700">Никой не може да споделя с вас, докато не включите видимостта.<ph name="BR" /><ph name="BR" />За да бъде временно видимо устройството ви, отворете лентата на състоянието и включете „Видимост наблизо“.</translation>
 <translation id="6635674640674343739">Не може да се установи мрежова връзка. Проверете връзката си с мрежата и опитайте отново.</translation>
+<translation id="663569763553406962">Вижте кои разширения могат да четат или променят данните на даден сайт</translation>
 <translation id="6635944431854494329">Собственикът може да контролира тази функция от „Настройки &gt; Разширени &gt; Автоматично изпращане до Google на данни за диагностиката и употребата“.</translation>
 <translation id="6636623428211296678">Разгледайте още настройки по-долу или завършете сега</translation>
 <translation id="6639554308659482635">Памет за SQLite</translation>
@@ -6855,6 +6865,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6833996806551876956">Пробен период за Privacy Sandbox</translation>
 <translation id="6835712061486505758">Създайте точка за достъп до Wi-Fi, за да предоставите достъп до интернет на други устройства. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Моля, свържете се с интернет, за да актуализирате устройството си <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6836688241291438278">Уверете се, че принтерът ви е свързан със същата Wi-Fi мрежа като вашия Chromebook, или използвайте USB кабел. Научете повече за съвместимостта.</translation>
 <translation id="6839225236531462745">Грешка при изтриване на сертификат</translation>
 <translation id="6839916869147598086">Функцията за влизане в профил е променена</translation>
 <translation id="6840155290835956714">Извеждане на запитване преди изпращане</translation>
@@ -8577,6 +8588,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8275080796245127762">Обаждане от устройството ви</translation>
 <translation id="8275339871947079271">Преместете паролата в профила си в Google, за да имате сигурен достъп до нея, когато сте влезли в него</translation>
 <translation id="8276560076771292512">Изпразване на кеша и твърдо презареждане</translation>
+<translation id="828180235270931531">Други налични принтери</translation>
 <translation id="8281886186245836920">Пропускане</translation>
 <translation id="8284279544186306258">всички <ph name="WEBSITE_1" /> сайта</translation>
 <translation id="8284326494547611709">Надписи</translation>
@@ -9318,6 +9330,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8930622219860340959">Безжична</translation>
 <translation id="8931076093143205651">Изпращане на данни за употребата и диагностиката. Помогнете за подобряването на работата си с Android, като автоматично изпращате до Google диагностична информация и данни за употребата на устройството и приложенията. Това ще послужи за подобряване на стабилността на системата и приложенията и др. Някои обобщени данни също така ще подпомогнат приложенията и партньорите на Google, напр. програмистите за Android. Тази настройка е наложена от собственика. Той може да избере до Google да се изпращат диагностична информация и данни за употребата на това устройство. Ако настройката „Допълнителна активност в мрежата и приложенията“ е включена за вас, тези данни може да се запазват в профила ви в Google.</translation>
 <translation id="8931475688782629595">Управление на синхронизираните данни</translation>
+<translation id="8931713990831679796">Тези принтери са свързани и готови за употреба. Запазете ги в потребителския си профил с цел по-лесен достъп.</translation>
 <translation id="8932654652795262306">Подробности за мрежата за незабавен тетъринг</translation>
 <translation id="893298445929867520">Кошниците са скрити. Те ще се покажат отново, когато направите промени.</translation>
 <translation id="8933960630081805351">&amp;Показване във Finder</translation>
