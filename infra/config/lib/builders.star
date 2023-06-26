@@ -404,6 +404,7 @@ defaults = args.defaults(
     siso_project = None,
     siso_enable_cloud_profiler = None,
     siso_enable_cloud_trace = None,
+    siso_experiments = [],
     health_spec = None,
 
     # Provide vars for bucket and executable so users don't have to
@@ -471,7 +472,7 @@ def builder(
         siso_project = args.DEFAULT,
         siso_enable_cloud_profiler = args.DEFAULT,
         siso_enable_cloud_trace = args.DEFAULT,
-        siso_experiments = None,
+        siso_experiments = args.DEFAULT,
         health_spec = args.DEFAULT,
         **kwargs):
     """Define a builder.
@@ -826,7 +827,7 @@ def builder(
         "configs": defaults.get_value("siso_configs", siso_configs),
         "enable_cloud_profiler": defaults.get_value("siso_enable_cloud_profiler", siso_enable_cloud_profiler),
         "enable_cloud_trace": defaults.get_value("siso_enable_cloud_trace", siso_enable_cloud_trace),
-        "experiments": siso_experiments,
+        "experiments": defaults.get_value("siso_experiments", siso_experiments),
         "project": defaults.get_value("siso_project", siso_project),
     }
     if siso["project"]:
