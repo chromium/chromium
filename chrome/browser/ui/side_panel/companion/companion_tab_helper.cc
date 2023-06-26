@@ -135,7 +135,7 @@ void CompanionTabHelper::SetTextQuery(const std::string& text_query) {
   CHECK(!text_query.empty());
   text_query_ = text_query;
   if (companion_page_handler_) {
-    companion_page_handler_->OnSearchTextQuery(GetTextQuery());
+    companion_page_handler_->OnSearchTextQuery();
   }
 }
 
