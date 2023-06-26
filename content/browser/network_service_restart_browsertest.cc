@@ -1104,8 +1104,8 @@ class NetworkServiceRestartWithFirstPartySetBrowserTest
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     if (IsFirstPartySetsEnabled()) {
       scoped_feature_list_.InitWithFeatures(
-          {features::kFirstPartySets,
-           net::features::kSamePartyAttributeEnabled},
+          {features::kFirstPartySets, net::features::kSamePartyAttributeEnabled,
+           net::features::kWaitForFirstPartySetsInit},
           {});
     } else {
       scoped_feature_list_.InitAndDisableFeature(features::kFirstPartySets);

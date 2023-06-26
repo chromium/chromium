@@ -136,6 +136,10 @@ class FirstPartySetsAccessDelegate
   // `SetEnabled`.
   bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Whether this instance should wait for First-Party Sets initialization (in
+  // the browser process) before responding to queries.
+  const bool wait_for_init_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   // The first ReadyEvent received. This is set at most once, and is immutable
   // thereafter.
   absl::optional<mojom::FirstPartySetsReadyEventPtr> ready_event_

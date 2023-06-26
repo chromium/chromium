@@ -268,8 +268,9 @@ class TestCookieChangeListener : public network::mojom::CookieChangeListener {
 class WithSamePartyAttributeFeatureState {
  public:
   WithSamePartyAttributeFeatureState() {
-    feature_list_.InitAndEnableFeature(
-        net::features::kSamePartyAttributeEnabled);
+    feature_list_.InitWithFeatures({net::features::kSamePartyAttributeEnabled,
+                                    net::features::kWaitForFirstPartySetsInit},
+                                   {});
   }
 
  private:
