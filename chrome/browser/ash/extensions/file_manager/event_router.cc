@@ -638,9 +638,12 @@ void EventRouter::Shutdown() {
       chromeos::PowerManagerClient::Get();
   power_manager_client->RemoveObserver(device_event_router_.get());
 
-  auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
-                       ->MountProviderRegistry();
-  registry->RemoveObserver(this);
+  auto* guest_os_service = guest_os::GuestOsService::GetForProfile(profile_);
+  if (guest_os_service) {
+    // GuestOsService doesn't exist for all profiles.
+    auto* registry = guest_os_service->MountProviderRegistry();
+    registry->RemoveObserver(this);
+  }
 
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_)) {
     apps::AppServiceProxy* proxy =
@@ -750,9 +753,12 @@ void EventRouter::ObserveEvents() {
     tablet_mode->AddObserver(this);
   }
 
-  auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
-                       ->MountProviderRegistry();
-  registry->AddObserver(this);
+  auto* guest_os_service = guest_os::GuestOsService::GetForProfile(profile_);
+  if (guest_os_service) {
+    // GuestOsService doesn't exist for all profiles.
+    auto* registry = guest_os_service->MountProviderRegistry();
+    registry->AddObserver(this);
+  }
 
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_)) {
     apps::AppServiceProxy* proxy =
