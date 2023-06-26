@@ -1417,7 +1417,7 @@ if (enable_java_templates && is_android) {
               "$target_name has shared_libraries with incorrect toolchain. " +
                   "Should contain (\$robolectric_toolchain) suffix: $_dep")
           _jni_srcjar_deps +=
-              [ "${_dep_no_toolchain}__jni_registration($_dep_toolchain)" ]
+              [ "${_dep_no_toolchain}__jni_registration($default_toolchain)" ]
         }
 
         # Write shared library output files of all dependencies to a file. Those
@@ -1431,12 +1431,11 @@ if (enable_java_templates && is_android) {
           rebase = root_build_dir
         }
       } else {
-        _outer_target_name = target_name
         _jni_srcjar_target_name = "${target_name}__final_jni"
         generate_jni_registration(_jni_srcjar_target_name) {
           enable_native_mocks = true
           require_native_mocks = true
-          java_targets = [ ":$_outer_target_name" ]
+          java_targets = [ ":$_java_binary_target_name" ]
           add_stubs_for_missing_jni = true
         }
         _jni_srcjar_deps = [ ":$_jni_srcjar_target_name" ]
@@ -1515,6 +1514,11 @@ if (enable_java_templates && is_android) {
 
       # Add non-libary deps, since the __host target does not depend on them.
       deps += filter_exclude(_invoker_deps, java_library_patterns)
+
+      metadata = {
+        # Allows metadata collection via apk targets that traverse only java deps.
+        java_walk_keys = [ ":${_java_binary_target_name}__host" ]
+      }
     }
   }
 
@@ -3320,8 +3324,15 @@ if (enable_java_templates && is_android) {
                                "assert_no_deps",
                                "data",
                                "data_deps",
-                               "metadata",
                              ])
+      metadata = {
+        if (defined(invoker.metadata)) {
+          forward_variables_from(invoker.metadata, "*")
+        }
+
+        # Allows metadata collection via apk targets that traverse only java deps.
+        java_walk_keys = [ ":$_java_target_name" ]
+      }
 
       # Generate apk related operations at runtime.
       public_deps = _final_deps
@@ -3413,7 +3424,6 @@ if (enable_java_templates && is_android) {
             "input_jars_paths",
             "jacoco_never_instrument",
             "javac_args",
-            "jni_registrations",
             "keystore_name",
             "keystore_password",
             "keystore_path",
@@ -3473,9 +3483,9 @@ if (enable_java_templates && is_android) {
       }
       metadata = {
         install_artifacts = [ final_apk_path ]
-      }
-      if (defined(invoker.static_library_provider)) {
-        metadata.install_artifacts_barrier = []
+        if (defined(invoker.static_library_provider)) {
+          install_artifacts_barrier = []
+        }
       }
 
       # TODO(smaier) - there were some remaining usages of this in angle. Once
@@ -3560,7 +3570,6 @@ if (enable_java_templates && is_android) {
             "jacoco_never_instrument",
             "jar_excluded_patterns",
             "javac_args",
-            "jni_registrations",
             "loadable_modules",
             "product_config_java_packages",
             "main_component_library",
@@ -5371,9 +5380,9 @@ if (enable_java_templates && is_android) {
       deps = [ ":$_bundle_target_name" ]
       metadata = {
         install_artifacts = [ _apks_path ]
-      }
-      if (defined(invoker.static_library_provider)) {
-        metadata.install_artifacts_barrier = []
+        if (defined(invoker.static_library_provider)) {
+          install_artifacts_barrier = []
+        }
       }
 
       # http://crbug.com/725224. Fix for bots running out of memory.

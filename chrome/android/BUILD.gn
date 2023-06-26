@@ -48,14 +48,14 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
   assert(current_toolchain != android_secondary_abi_toolchain)
 }
 
-if (current_toolchain == default_toolchain) {
-  # 32-bit library will have browser code in it. 64-bit is webview-only.
-  if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
-    _monochrome_browser_toolchain = android_secondary_abi_toolchain
-  } else {
-    _monochrome_browser_toolchain = current_toolchain
-  }
+# 32-bit library will have browser code in it. 64-bit is webview-only.
+if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
+  _monochrome_browser_toolchain = android_secondary_abi_toolchain
+} else {
+  _monochrome_browser_toolchain = default_toolchain
+}
 
+if (current_toolchain == default_toolchain) {
   app_hooks_impl = "java/src/org/chromium/chrome/browser/AppHooksImpl.java"
 
   template("chrome_public_bundle") {
@@ -3671,23 +3671,22 @@ template("libmonochrome_apk_or_bundle_tmpl") {
   }
 }
 
-if (!android_64bit_target_cpu ||
-    (!skip_secondary_abi_for_cq &&
-     current_toolchain == android_secondary_abi_toolchain)) {
+libmonochrome_apk_or_bundle_tmpl("libmonochrome") {
+  enable_target = current_toolchain == _monochrome_browser_toolchain
+  define_unwind_table_target =
+      add_unwind_tables_in_chrome_32bit_apk && current_cpu == "arm"
+  if (enable_resource_allowlist_generation) {
+    # Make sure allowlist_inputs is built first so when concurrent_links == 1
+    # it comes before the actual (very slow) link step.
+    deps = [ ":libmonochrome_inputs($_monochrome_browser_toolchain)" ]
+  }
+}
+
+if (current_toolchain == _monochrome_browser_toolchain) {
   # Avoiding a real link for this step allows the actual libmonochrome to
   # run at the same time as R8.
   libmonochrome_apk_or_bundle_tmpl("libmonochrome_inputs") {
     collect_inputs_only = true
-  }
-
-  libmonochrome_apk_or_bundle_tmpl("libmonochrome") {
-    define_unwind_table_target =
-        add_unwind_tables_in_chrome_32bit_apk && current_cpu == "arm"
-    if (enable_resource_allowlist_generation) {
-      # Make sure allowlist_inputs is built first so when concurrent_links == 1
-      # it comes before the actual (very slow) link step.
-      deps = [ ":libmonochrome_inputs" ]
-    }
   }
 
   if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
@@ -3695,13 +3694,15 @@ if (!android_64bit_target_cpu ||
       public_deps = [ ":libmonochrome_64($android_secondary_abi_toolchain)" ]
     }
   }
-} else {
+}
+
+if (android_64bit_target_cpu) {
   # 64-bit browser library targets (APK and bundle).
   libmonochrome_apk_or_bundle_tmpl("libmonochrome_64") {
   }
 
   # 32-bit browser library alias targets, pulled in by 64-bit WebView builds.
-  if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
+  if (!skip_secondary_abi_for_cq) {
     group("monochrome_secondary_abi_lib") {
       public_deps = [ ":libmonochrome($android_secondary_abi_toolchain)" ]
     }

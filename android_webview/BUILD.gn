@@ -393,24 +393,20 @@ template("webview_alternate_library") {
   }
 }
 
-if (defined(android_secondary_abi_toolchain)) {
+if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
   # Note here that on a given system, the webview-only library needs the same
   # library name as the browser library, since the system webview factory will
   # differentiate only by ABI.
-  if (current_toolchain == android_secondary_abi_toolchain) {
+  webview_alternate_library("monochrome_64") {
     # This target is the 32-bit WebView library that pairs with a 64-bit
     # browser. It is suffixed with _64 because its name must match the 64-bit
     # browser library.
-    webview_alternate_library("monochrome_64") {
-    }
-  } else {
-    # Inverse of above, for the original 32-bit case.
-    webview_alternate_library("monochrome") {
-    }
+    enable_target = current_toolchain == android_secondary_abi_toolchain
   }
-} else {
-  # 32-bit WebView library used in 32-bit only builds of 64/32 targets.
-  webview_alternate_library("monochrome_64") {
+
+  # Inverse of above, for the original 32-bit case.
+  webview_alternate_library("monochrome") {
+    enable_target = current_toolchain != android_secondary_abi_toolchain
   }
 }
 

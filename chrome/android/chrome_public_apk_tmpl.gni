@@ -567,7 +567,7 @@ template("chrome_common_apk_or_module_tmpl") {
             }
           }
         } else {
-          srcjar_deps = [ "//chrome/android:libmonochrome__jni_registration($android_secondary_abi_toolchain)" ]
+          srcjar_deps = [ "//chrome/android:libmonochrome__jni_registration($default_toolchain)" ]
           if (_is_monochrome) {
             if (_include_64_bit_webview) {
               shared_libraries += [ "//android_webview:monochrome" ]
