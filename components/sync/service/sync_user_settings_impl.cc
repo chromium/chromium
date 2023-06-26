@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -57,13 +58,15 @@ SyncUserSettingsImpl::SyncUserSettingsImpl(
     const SyncTypePreferenceProvider* preference_provider,
     ModelTypeSet registered_model_types,
     base::RepeatingCallback<SyncPrefs::SyncAccountState()>
-        sync_account_state_for_prefs_callback)
+        sync_account_state_for_prefs_callback,
+    base::RepeatingCallback<CoreAccountInfo()> sync_account_info_callback)
     : crypto_(crypto),
       prefs_(prefs),
       preference_provider_(preference_provider),
       registered_model_types_(registered_model_types),
       sync_account_state_for_prefs_callback_(
-          std::move(sync_account_state_for_prefs_callback)) {
+          std::move(sync_account_state_for_prefs_callback)),
+      sync_account_info_callback_(std::move(sync_account_info_callback)) {
   DCHECK(crypto_);
   DCHECK(prefs_);
 }

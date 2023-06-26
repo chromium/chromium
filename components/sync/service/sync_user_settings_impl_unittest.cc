@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
@@ -72,6 +73,11 @@ class SyncUserSettingsImplTest : public testing::Test {
   std::unique_ptr<SyncUserSettingsImpl> MakeSyncUserSettings(
       ModelTypeSet registered_types,
       bool in_transport_mode = false) {
+    CoreAccountInfo account;
+    account.email = "name@account.com";
+    account.gaia = "name";
+    account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+
     return std::make_unique<SyncUserSettingsImpl>(
         sync_service_crypto_.get(), sync_prefs_.get(),
         /*preference_provider=*/nullptr, registered_types,
@@ -79,7 +85,8 @@ class SyncUserSettingsImplTest : public testing::Test {
           return in_transport_mode
                      ? SyncPrefs::SyncAccountState::kSignedInNotSyncing
                      : SyncPrefs::SyncAccountState::kSyncing;
-        }));
+        }),
+        base::BindLambdaForTesting([account] { return account; }));
   }
 
   // The order of fields matters because it determines destruction order and

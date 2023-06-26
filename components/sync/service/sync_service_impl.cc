@@ -263,6 +263,8 @@ void SyncServiceImpl::Initialize() {
       &crypto_, &sync_prefs_, sync_client_->GetPreferenceProvider(),
       GetRegisteredDataTypes(),
       base::BindRepeating(&SyncServiceImpl::GetSyncAccountStateForPrefs,
+                          base::Unretained(this)),
+      base::BindRepeating(&SyncServiceImpl::GetAccountInfo,
                           base::Unretained(this)));
 
   sync_prefs_.AddSyncPrefObserver(this);

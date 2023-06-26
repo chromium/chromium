@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -26,12 +27,14 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   // Both |crypto| and |prefs| must not be null, and must outlive this object.
   // |preference_provider| can be null, but must outlive this object if not
   // null.
-  SyncUserSettingsImpl(SyncServiceCrypto* crypto,
-                       SyncPrefs* prefs,
-                       const SyncTypePreferenceProvider* preference_provider,
-                       ModelTypeSet registered_types,
-                       base::RepeatingCallback<SyncPrefs::SyncAccountState()>
-                           sync_account_state_for_prefs_callback);
+  SyncUserSettingsImpl(
+      SyncServiceCrypto* crypto,
+      SyncPrefs* prefs,
+      const SyncTypePreferenceProvider* preference_provider,
+      ModelTypeSet registered_types,
+      base::RepeatingCallback<SyncPrefs::SyncAccountState()>
+          sync_account_state_for_prefs_callback,
+      base::RepeatingCallback<CoreAccountInfo()> sync_account_info_callback);
   ~SyncUserSettingsImpl() override;
 
   // SyncUserSettings implementation.
@@ -87,6 +90,7 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   const ModelTypeSet registered_model_types_;
   base::RepeatingCallback<SyncPrefs::SyncAccountState()>
       sync_account_state_for_prefs_callback_;
+  base::RepeatingCallback<CoreAccountInfo()> sync_account_info_callback_;
 };
 
 }  // namespace syncer
