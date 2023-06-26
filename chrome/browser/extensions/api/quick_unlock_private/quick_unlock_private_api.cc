@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/event_router.h"
@@ -450,10 +451,17 @@ QuickUnlockPrivateGetCredentialRequirementsFunction::Run() {
       GetCredentialRequirements::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
+  // GetCredentialRequirements could be called before user sign-in during
+  // UI initialization in SetupPinKeyboardElement.connectedCallback.
+  // Use the sign-in profile from browser_context() in such case.
+  // TODO(b/288150711): Revert to `GetActiveProfile` after fix.
+  Profile* profile = user_manager::UserManager::Get()->IsUserLoggedIn()
+                         ? GetActiveProfile(browser_context())
+                         : Profile::FromBrowserContext(browser_context());
+
   auto result = std::make_unique<CredentialRequirements>();
   std::tie(result->min_length, result->max_length) =
-      GetSanitizedPolicyPinMinMaxLength(
-          GetActiveProfile(browser_context())->GetPrefs());
+      GetSanitizedPolicyPinMinMaxLength(profile->GetPrefs());
 
   return RespondNow(
       ArgumentList(GetCredentialRequirements::Results::Create(*result)));
