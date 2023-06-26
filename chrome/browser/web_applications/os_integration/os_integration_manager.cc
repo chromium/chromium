@@ -281,7 +281,7 @@ void OsIntegrationManager::Synchronize(
 void OsIntegrationManager::InstallOsHooks(
     const AppId& app_id,
     InstallOsHooksCallback callback,
-    std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     InstallOsHooksOptions options) {
   // If the "Execute" step is enabled for sub-managers, then the 'old' os
   // integration path needs to be turned off so that os integration doesn't get
@@ -400,7 +400,7 @@ void OsIntegrationManager::UpdateOsHooks(
     const AppId& app_id,
     base::StringPiece old_name,
     FileHandlerUpdateAction file_handlers_need_os_update,
-    const web_app::WebAppInstallInfo& web_app_info,
+    const WebAppInstallInfo& web_app_info,
     UpdateOsHooksCallback callback) {
   // If the "Execute" step is enabled for sub-managers, then the 'old' os
   // integration path needs to be turned off so that os integration doesn't get
@@ -780,7 +780,7 @@ void OsIntegrationManager::UpdateShortcuts(const AppId& app_id,
 
 void OsIntegrationManager::UpdateShortcutsMenu(
     const AppId& app_id,
-    const web_app::WebAppInstallInfo& web_app_info,
+    const WebAppInstallInfo& web_app_info,
     ResultCallback callback) {
   if (web_app_info.shortcuts_menu_item_infos.empty()) {
     UnregisterShortcutsMenu(app_id, std::move(callback));
@@ -1042,7 +1042,7 @@ void OsIntegrationManager::ForceUnregisterOsIntegrationOnSubManager(
 
 void OsIntegrationManager::OnShortcutsCreated(
     const AppId& app_id,
-    std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     InstallOsHooksOptions options,
     scoped_refptr<OsHooksBarrier> barrier,
     bool shortcuts_created) {

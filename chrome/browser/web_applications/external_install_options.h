@@ -25,7 +25,7 @@
 namespace web_app {
 
 using WebAppInstallInfoFactory =
-    base::RepeatingCallback<std::unique_ptr<web_app::WebAppInstallInfo>()>;
+    base::RepeatingCallback<std::unique_ptr<WebAppInstallInfo>()>;
 
 enum class ExternalInstallSource;
 
@@ -197,8 +197,8 @@ struct ExternalInstallOptions {
   // |service_worker_registration_url| will not be loaded.
   bool only_use_app_info_factory = false;
 
-  // A factory callback that returns a unique_ptr<web_app::WebAppInstallInfo> to
-  // be used as the app's installation metadata.
+  // A factory callback that returns a unique_ptr<WebAppInstallInfo> to be used
+  // as the app's installation metadata.
   WebAppInstallInfoFactory app_info_factory;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

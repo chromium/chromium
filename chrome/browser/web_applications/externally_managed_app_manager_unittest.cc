@@ -689,7 +689,7 @@ TEST_F(ExternallyAppManagerTest, PolicyAppOverridesUserInstalledApp) {
         web_contents_manager().GetOrCreatePageState(kInstallUrl);
     install_page_state.opt_manifest->short_name = u"Test user app";
 
-    auto install_info = std::make_unique<web_app::WebAppInstallInfo>();
+    auto install_info = std::make_unique<WebAppInstallInfo>();
     install_info->start_url = kStartUrl;
     install_info->title = u"Test user app";
     absl::optional<AppId> user_app_id =

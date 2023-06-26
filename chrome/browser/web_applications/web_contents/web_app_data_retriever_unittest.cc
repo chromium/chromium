@@ -61,9 +61,8 @@ class FakeWebPageMetadataAgent
   }
 
   // Set |web_app_info| to respond on |GetWebAppInstallInfo|.
-  void SetWebAppInstallInfo(const web_app::WebAppInstallInfo& web_app_info) {
-    web_app_info_ =
-        std::make_unique<web_app::WebAppInstallInfo>(web_app_info.Clone());
+  void SetWebAppInstallInfo(const WebAppInstallInfo& web_app_info) {
+    web_app_info_ = std::make_unique<WebAppInstallInfo>(web_app_info.Clone());
   }
 
   void GetWebPageMetadata(GetWebPageMetadataCallback callback) override {
@@ -77,13 +76,13 @@ class FakeWebPageMetadataAgent
     // Convert more fields as needed.
     DCHECK(web_app_info_->manifest_icons.empty());
     DCHECK(web_app_info_->mobile_capable ==
-           web_app::WebAppInstallInfo::MOBILE_CAPABLE_UNSPECIFIED);
+           WebAppInstallInfo::MOBILE_CAPABLE_UNSPECIFIED);
 
     std::move(callback).Run(std::move(web_page_metadata));
   }
 
  private:
-  std::unique_ptr<web_app::WebAppInstallInfo> web_app_info_;
+  std::unique_ptr<WebAppInstallInfo> web_app_info_;
 
   mojo::AssociatedReceiver<webapps::mojom::WebPageMetadataAgent> receiver_{
       this};
@@ -118,14 +117,13 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
         web_contents()->GetPrimaryMainFrame());
   }
 
-  void SetRendererWebAppInstallInfo(
-      const web_app::WebAppInstallInfo& web_app_info) {
+  void SetRendererWebAppInstallInfo(const WebAppInstallInfo& web_app_info) {
     fake_chrome_render_frame_.SetWebAppInstallInfo(web_app_info);
   }
 
   void GetWebAppInstallInfoCallback(
       base::OnceClosure quit_closure,
-      std::unique_ptr<web_app::WebAppInstallInfo> web_app_info) {
+      std::unique_ptr<WebAppInstallInfo> web_app_info) {
     web_app_info_ = std::move(web_app_info);
     std::move(quit_closure).Run();
   }
@@ -141,7 +139,7 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
     return content::WebContentsTester::For(web_contents());
   }
 
-  const std::unique_ptr<web_app::WebAppInstallInfo>& web_app_info() {
+  const std::unique_ptr<WebAppInstallInfo>& web_app_info() {
     return web_app_info_.value();
   }
 
@@ -149,7 +147,7 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
 
  private:
   FakeWebPageMetadataAgent fake_chrome_render_frame_;
-  absl::optional<std::unique_ptr<web_app::WebAppInstallInfo>> web_app_info_;
+  absl::optional<std::unique_ptr<WebAppInstallInfo>> web_app_info_;
   std::vector<apps::IconInfo> icons_;
 };
 
@@ -173,7 +171,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlAbsent) {
   const GURL kFooUrl("https://foo.example");
   web_contents_tester()->NavigateAndCommit(kFooUrl);
 
-  web_app::WebAppInstallInfo original_web_app_info;
+  WebAppInstallInfo original_web_app_info;
   original_web_app_info.start_url = GURL();
 
   SetRendererWebAppInstallInfo(original_web_app_info);
@@ -196,7 +194,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlPresent) {
 
   web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
-  web_app::WebAppInstallInfo original_web_app_info;
+  WebAppInstallInfo original_web_app_info;
   original_web_app_info.start_url = GURL("https://bar.example");
 
   SetRendererWebAppInstallInfo(original_web_app_info);
@@ -219,7 +217,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_TitleAbsentFromRenderer) {
 
   web_contents_tester()->SetTitle(kFooTitle);
 
-  web_app::WebAppInstallInfo original_web_app_info;
+  WebAppInstallInfo original_web_app_info;
   original_web_app_info.title = u"";
 
   SetRendererWebAppInstallInfo(original_web_app_info);
@@ -245,7 +243,7 @@ TEST_F(WebAppDataRetrieverTest,
 
   web_contents_tester()->SetTitle(u"");
 
-  web_app::WebAppInstallInfo original_web_app_info;
+  WebAppInstallInfo original_web_app_info;
   original_web_app_info.title = u"";
 
   SetRendererWebAppInstallInfo(original_web_app_info);
@@ -359,7 +357,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_FrameNavigated) {
 
   // TODO(b/280862254): This will stop working once we remove the default
   // constructor.
-  SetRendererWebAppInstallInfo(web_app::WebAppInstallInfo());
+  SetRendererWebAppInstallInfo(WebAppInstallInfo());
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;

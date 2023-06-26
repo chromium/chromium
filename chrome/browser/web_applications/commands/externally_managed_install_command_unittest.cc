@@ -230,7 +230,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     auto data_retriever = std::make_unique<FakeDataRetriever>();
     data_retriever->BuildDefaultDataToRetrieve(url, url);
 
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
     data_retriever->SetRendererWebAppInstallInfo(std::move(web_app_info));
 
@@ -250,7 +250,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     auto data_retriever = std::make_unique<FakeDataRetriever>();
     data_retriever->BuildDefaultDataToRetrieve(url, url);
 
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     data_retriever->SetRendererWebAppInstallInfo(std::move(web_app_info));
 
@@ -274,7 +274,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     auto data_retriever = std::make_unique<FakeDataRetriever>();
     data_retriever->BuildDefaultDataToRetrieve(url, url);
 
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     data_retriever->SetRendererWebAppInstallInfo(std::move(web_app_info));
 
@@ -294,7 +294,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     auto data_retriever = std::make_unique<FakeDataRetriever>();
     data_retriever->BuildDefaultDataToRetrieve(url, url);
 
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
     data_retriever->SetRendererWebAppInstallInfo(std::move(web_app_info));
 
@@ -389,7 +389,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     auto data_retriever = std::make_unique<FakeDataRetriever>();
     data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl, kWebAppScope);
 
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     data_retriever->SetRendererWebAppInstallInfo(std::move(web_app_info));
 
@@ -464,7 +464,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
       http_results[url_and_bitmap.first] = net::HttpStatusCode::HTTP_OK;
     }
 
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
     auto data_retriever = std::make_unique<FakeDataRetriever>();
@@ -553,7 +553,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
       http_results[url_and_bitmap.first] = net::HttpStatusCode::HTTP_OK;
     }
 
-    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
     auto data_retriever = std::make_unique<FakeDataRetriever>();

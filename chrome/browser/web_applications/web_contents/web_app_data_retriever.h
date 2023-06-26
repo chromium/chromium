@@ -34,9 +34,9 @@ struct InstallableData;
 
 namespace web_app {
 
-struct WebAppInstallInfo;
-
 enum class IconsDownloadedResult;
+
+struct WebAppInstallInfo;
 
 // Class used by the WebApp system to retrieve the necessary information to
 // install an app. Should only be called from the UI thread.

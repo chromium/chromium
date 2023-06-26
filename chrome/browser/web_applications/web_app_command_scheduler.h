@@ -47,12 +47,12 @@ namespace web_app {
 class IsolatedWebAppUrlInfo;
 class WebApp;
 class WebAppDataRetriever;
+struct WebAppInstallInfo;
 class WebAppProvider;
 class WebAppUrlLoader;
 enum class ApiApprovalState;
 struct IsolationData;
 struct SynchronizeOsOptions;
-struct WebAppInstallInfo;
 
 // The command scheduler is the main API to access the web app system. The
 // scheduler internally ensures:
@@ -90,21 +90,20 @@ class WebAppCommandScheduler {
   void FetchInstallInfoFromInstallUrl(
       ManifestId manifest_id,
       GURL install_url,
-      base::OnceCallback<void(std::unique_ptr<web_app::WebAppInstallInfo>)>
-          callback);
+      base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback);
 
   // Install with provided `WebAppInstallInfo` instead of fetching data from
   // manifest.
   // `InstallFromInfo` doesn't install OS hooks. `InstallFromInfoWithParams`
   // install OS hooks when they are set in `install_params`.
-  void InstallFromInfo(std::unique_ptr<web_app::WebAppInstallInfo> install_info,
+  void InstallFromInfo(std::unique_ptr<WebAppInstallInfo> install_info,
                        bool overwrite_existing_manifest_fields,
                        webapps::WebappInstallSource install_surface,
                        OnceInstallCallback install_callback,
                        const base::Location& location = FROM_HERE);
 
   void InstallFromInfoWithParams(
-      std::unique_ptr<web_app::WebAppInstallInfo> install_info,
+      std::unique_ptr<WebAppInstallInfo> install_info,
       bool overwrite_existing_manifest_fields,
       webapps::WebappInstallSource install_surface,
       OnceInstallCallback install_callback,
@@ -112,7 +111,7 @@ class WebAppCommandScheduler {
       const base::Location& location = FROM_HERE);
 
   void InstallFromInfoWithParams(
-      std::unique_ptr<web_app::WebAppInstallInfo> install_info,
+      std::unique_ptr<WebAppInstallInfo> install_info,
       bool overwrite_existing_manifest_fields,
       webapps::WebappInstallSource install_surface,
       base::OnceCallback<void(const AppId& app_id,
@@ -164,7 +163,7 @@ class WebAppCommandScheduler {
   void ScheduleManifestUpdateFinalize(
       const GURL& url,
       const AppId& app_id,
-      web_app::WebAppInstallInfo install_info,
+      WebAppInstallInfo install_info,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       ManifestWriteCallback callback,
