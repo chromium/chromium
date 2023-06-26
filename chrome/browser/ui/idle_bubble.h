@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/ui/idle_dialog.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 
 class Browser;
 
@@ -19,6 +20,6 @@ void ShowIdleBubble(Browser* browser,
 
 // TODO(crbug.com/1442224): Convert idle_service_browsertest.cc to an
 // InteractiveTest, and get rid of this.
-bool IsIdleBubbleOpen(Browser* browser);
+views::BubbleFrameView* GetIdleBubble(Browser* browser);
 
 #endif  // CHROME_BROWSER_UI_IDLE_BUBBLE_H_
