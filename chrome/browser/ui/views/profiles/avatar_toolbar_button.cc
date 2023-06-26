@@ -142,7 +142,6 @@ void AvatarToolbarButton::UpdateText() {
 
   if (features::IsChromeRefresh2023()) {
     color = color_provider->GetColor(kColorAvatarButtonHighlightDefault);
-    UpdateLayoutInsets();
   }
   switch (delegate_->GetState()) {
     case State::kIncognitoProfile: {
@@ -196,6 +195,9 @@ void AvatarToolbarButton::UpdateText() {
   SetInsets();
   SetTooltipText(GetAvatarTooltipText());
   SetHighlight(text, color);
+  // Update the layout insets after `SetHighlight()` since
+  // text might be updated by setting the highlight.
+  UpdateLayoutInsets();
 
   // TODO(crbug.com/1078221): this is a hack because toolbar buttons don't
   // correctly calculate their preferred size until they've been laid out once
