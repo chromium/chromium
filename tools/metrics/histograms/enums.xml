@@ -12904,6 +12904,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Incognito"/>
 </enum>
 
+<enum name="BooleanIneligible">
+  <int value="0" label="Eligible"/>
+  <int value="1" label="Ineligible"/>
+</enum>
+
 <enum name="BooleanInfinity">
   <int value="0" label="Not Infinity"/>
   <int value="1" label="Infinity"/>

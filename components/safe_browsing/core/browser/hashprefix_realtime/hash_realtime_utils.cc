@@ -5,6 +5,8 @@
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "build/branding_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -34,20 +36,39 @@ bool IsHashRealTimeLookupEligibleInSession() {
   // check.
   return base::FeatureList::IsEnabled(kHashPrefixRealTimeLookups);
 }
-HashRealTimeSelection DetermineHashRealTimeSelection(bool is_off_the_record,
-                                                     PrefService* prefs) {
+HashRealTimeSelection DetermineHashRealTimeSelection(
+    bool is_off_the_record,
+    PrefService* prefs,
+    bool log_usage_histograms) {
   // All prefs used in this method must match the ones returned by
   // |GetHashRealTimeSelectionConfiguringPrefs| so that consumers listening for
   // changes can receive them correctly.
 #if BUILDFLAG(IS_ANDROID)
   return HashRealTimeSelection::kNone;
 #else
-  bool can_do_lookup =
-      hash_realtime_utils::IsHashRealTimeLookupEligibleInSession() &&
-      !is_off_the_record &&
-      safe_browsing::GetSafeBrowsingState(*prefs) ==
-          SafeBrowsingState::STANDARD_PROTECTION &&
-      safe_browsing::AreHashPrefixRealTimeLookupsAllowedByPolicy(*prefs);
+  struct Requirement {
+    std::string failed_requirement_histogram_suffix;
+    bool passes_requirement;
+  } requirements[] = {
+      {"IneligibleForSession",
+       hash_realtime_utils::IsHashRealTimeLookupEligibleInSession()},
+      {"OffTheRecord", !is_off_the_record},
+      {"NotStandardProtection", safe_browsing::GetSafeBrowsingState(*prefs) ==
+                                    SafeBrowsingState::STANDARD_PROTECTION},
+      {"NotAllowedByPolicy",
+       safe_browsing::AreHashPrefixRealTimeLookupsAllowedByPolicy(*prefs)}};
+  bool can_do_lookup = true;
+  for (const auto& requirement : requirements) {
+    if (!requirement.passes_requirement) {
+      can_do_lookup = false;
+    }
+    if (log_usage_histograms) {
+      base::UmaHistogramBoolean(
+          base::StrCat({"SafeBrowsing.HPRT.Ineligible.",
+                        requirement.failed_requirement_histogram_suffix}),
+          !requirement.passes_requirement);
+    }
+  }
   return can_do_lookup ? HashRealTimeSelection::kHashRealTimeService
                        : HashRealTimeSelection::kNone;
 #endif

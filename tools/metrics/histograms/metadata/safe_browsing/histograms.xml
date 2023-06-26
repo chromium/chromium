@@ -1166,6 +1166,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.HPRT.Ineligible.{IneligibleReason}"
+    enum="BooleanIneligible" expires_after="2023-12-23">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether hash-prefix real-time lookups are ineligible due to
+    {IneligibleReason}. Logged when a browser URL loader throttle is created.
+    There may be multiple reasons why the lookups are ineligible, but this
+    reason is one of them.
+  </summary>
+  <token key="IneligibleReason">
+    <variant name="IneligibleForSession"
+        summary="the feature being disabled for the session"/>
+    <variant name="NotAllowedByPolicy" summary="not being allowed by policy"/>
+    <variant name="NotStandardProtection"
+        summary="not having standard protection"/>
+    <variant name="OffTheRecord" summary="being off the record"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.HPRT.IsLookupServiceFound" enum="BooleanFound"
     expires_after="2023-12-04">
   <owner>thefrog@chromium.org</owner>

@@ -35,9 +35,13 @@ std::string GetHashPrefix(const std::string& full_hash);
 bool IsHashRealTimeLookupEligibleInSession();
 
 // Based on the user's settings and session, determines which hash-prefix
-// real-time lookup should be used, if any.
-HashRealTimeSelection DetermineHashRealTimeSelection(bool is_off_the_record,
-                                                     PrefService* prefs);
+// real-time lookup should be used, if any. If |log_usage_histograms| is true,
+// this will log metrics related to whether hash real-time lookups were
+// available or why not.
+HashRealTimeSelection DetermineHashRealTimeSelection(
+    bool is_off_the_record,
+    PrefService* prefs,
+    bool log_usage_histograms = false);
 
 // A helper for consumers that want to recompute DetermineHashRealTimeSelection
 // when there are pref changes. This returns all prefs that modify the outcome

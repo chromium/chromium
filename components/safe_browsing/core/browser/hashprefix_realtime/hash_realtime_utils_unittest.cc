@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -66,23 +67,32 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
     bool is_feature_on = true;
     absl::optional<bool> lookups_allowed_by_policy = absl::nullopt;
     hash_realtime_utils::HashRealTimeSelection expected_selection;
+    bool expected_log_usage_histograms = true;
+    bool expected_ineligible_for_session_log = false;
+    bool expected_off_the_record_log = false;
+    bool expected_not_standard_protection_log = false;
+    bool expected_not_allowed_by_policy_log = false;
   } test_cases[] = {
 #if BUILDFLAG(IS_ANDROID)
     // Lookups disabled for Android.
-    {.expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone},
+    {.expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+     .expected_log_usage_histograms = false},
 #else
     // HashRealTimeService lookups selected.
     {.expected_selection =
          hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService},
     // Lookups disabled for ESB.
     {.safe_browsing_state = SafeBrowsingState::ENHANCED_PROTECTION,
-     .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone},
+     .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+     .expected_not_standard_protection_log = true},
     // Lookups disabled due to being off the record.
     {.is_off_the_record = true,
-     .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone},
+     .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+     .expected_off_the_record_log = true},
     // Lookups disabled because the feature is disabled.
     {.is_feature_on = false,
-     .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone},
+     .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+     .expected_ineligible_for_session_log = true},
     // Lookups allowed because policy allows them and nothing else prevents
     // them.
     {.lookups_allowed_by_policy = true,
@@ -90,13 +100,51 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
          hash_realtime_utils::HashRealTimeSelection::kHashRealTimeService},
     // Lookups disabled because policy prevents them.
     {.lookups_allowed_by_policy = false,
-     .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone},
+     .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+     .expected_not_allowed_by_policy_log = true},
 #endif
   };
+
+  auto check_usage_histograms =
+      [](const base::HistogramTester& histogram_tester,
+         const TestCase& test_case) {
+        histogram_tester.ExpectUniqueSample(
+            /*name=*/"SafeBrowsing.HPRT.Ineligible.IneligibleForSession",
+            /*sample=*/test_case.expected_ineligible_for_session_log,
+            /*expected_bucket_count=*/1);
+        histogram_tester.ExpectUniqueSample(
+            /*name=*/"SafeBrowsing.HPRT.Ineligible.OffTheRecord",
+            /*sample=*/test_case.expected_off_the_record_log,
+            /*expected_bucket_count=*/1);
+        histogram_tester.ExpectUniqueSample(
+            /*name=*/"SafeBrowsing.HPRT.Ineligible.NotStandardProtection",
+            /*sample=*/test_case.expected_not_standard_protection_log,
+            /*expected_bucket_count=*/1);
+        histogram_tester.ExpectUniqueSample(
+            /*name=*/"SafeBrowsing.HPRT.Ineligible.NotAllowedByPolicy",
+            /*sample=*/test_case.expected_not_allowed_by_policy_log,
+            /*expected_bucket_count=*/1);
+      };
+  auto check_no_usage_histograms =
+      [](const base::HistogramTester& histogram_tester) {
+        histogram_tester.ExpectTotalCount(
+            /*name=*/"SafeBrowsing.HPRT.Ineligible.IneligibleForSession",
+            /*expected_count=*/0);
+        histogram_tester.ExpectTotalCount(
+            /*name=*/"SafeBrowsing.HPRT.Ineligible.OffTheRecord",
+            /*expected_count=*/0);
+        histogram_tester.ExpectTotalCount(
+            /*name=*/"SafeBrowsing.HPRT.Ineligible.NotStandardProtection",
+            /*expected_count=*/0);
+        histogram_tester.ExpectTotalCount(
+            /*name=*/"SafeBrowsing.HPRT.Ineligible.NotAllowedByPolicy",
+            /*expected_count=*/0);
+      };
 
   for (const auto& test_case : test_cases) {
     base::test::ScopedFeatureList scoped_feature_list;
     TestingPrefServiceSimple prefs;
+    base::HistogramTester histogram_tester;
     if (test_case.is_feature_on) {
       scoped_feature_list.InitAndEnableFeature(kHashPrefixRealTimeLookups);
     } else {
@@ -108,9 +156,21 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
       prefs.SetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
                        test_case.lookups_allowed_by_policy.value());
     }
+    // Confirm result is correct and no histograms are logged.
     EXPECT_EQ(hash_realtime_utils::DetermineHashRealTimeSelection(
                   test_case.is_off_the_record, &prefs),
               test_case.expected_selection);
+    check_no_usage_histograms(histogram_tester);
+    // Confirm result is still correct and relevant histograms are logged.
+    EXPECT_EQ(
+        hash_realtime_utils::DetermineHashRealTimeSelection(
+            test_case.is_off_the_record, &prefs, /*log_usage_histograms=*/true),
+        test_case.expected_selection);
+    if (test_case.expected_log_usage_histograms) {
+      check_usage_histograms(histogram_tester, test_case);
+    } else {
+      check_no_usage_histograms(histogram_tester);
+    }
   }
 }
 
