@@ -8,6 +8,7 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -42,6 +43,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/live_caption/caption_util.h"
 #include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo_specification.h"
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -61,11 +63,12 @@ namespace {
 
 // Returns an appropriate set of string replacements; passing the wrong number
 // of replacements for the body text of the IPH will cause a DCHECK.
-user_education::FeaturePromoSpecification::StringReplacements
+user_education::FeaturePromoSpecification::FormatParameters
 GetReplacementsForFeature(const base::Feature& feature) {
-  if (&feature == &feature_engagement::kIPHDesktopPwaInstallFeature)
-    return {u"Placeholder Text"};
-  return {};
+  if (&feature == &feature_engagement::kIPHDesktopPwaInstallFeature) {
+    return u"Placeholder Text";
+  }
+  return user_education::FeaturePromoSpecification::NoSubstitution();
 }
 
 }  // namespace
@@ -140,7 +143,7 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
         .Times(1)
         .WillOnce(Return(true));
     ASSERT_TRUE(promo_controller->MaybeShowPromo(
-        feature, GetReplacementsForFeature(feature)));
+        feature, base::DoNothing(), GetReplacementsForFeature(feature)));
   }
 
  private:

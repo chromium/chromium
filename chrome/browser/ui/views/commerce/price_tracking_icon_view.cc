@@ -195,7 +195,7 @@ bool PriceTrackingIconView::MaybeShowIPH() {
     return false;
   }
   return browser_->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHPriceTrackingChipFeature, {},
+      feature_engagement::kIPHPriceTrackingChipFeature,
       base::BindOnce(&PriceTrackingIconView::UnpauseAnimation,
                      base::Unretained(this)));
 }

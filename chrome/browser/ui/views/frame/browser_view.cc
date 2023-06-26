@@ -4634,10 +4634,9 @@ bool BrowserView::IsFeaturePromoActive(const base::Feature& iph_feature) const {
 
 bool BrowserView::MaybeShowFeaturePromo(
     const base::Feature& iph_feature,
-    user_education::FeaturePromoSpecification::StringReplacements
-        body_text_replacements,
-    user_education::FeaturePromoController::BubbleCloseCallback
-        close_callback) {
+    user_education::FeaturePromoController::BubbleCloseCallback close_callback,
+    user_education::FeaturePromoSpecification::FormatParameters body_params,
+    user_education::FeaturePromoSpecification::FormatParameters title_params) {
   // Trying to show a promo before the browser is initialized can result in a
   // failure to retrieve accelerators, which can cause issues for screen reader
   // users.
@@ -4648,20 +4647,19 @@ bool BrowserView::MaybeShowFeaturePromo(
   }
   return feature_promo_controller_ &&
          feature_promo_controller_->MaybeShowPromo(
-             iph_feature, body_text_replacements, std::move(close_callback));
+             iph_feature, std::move(close_callback), body_params, title_params);
 }
 
 bool BrowserView::MaybeShowStartupFeaturePromo(
     const base::Feature& iph_feature,
-    user_education::FeaturePromoSpecification::StringReplacements
-        body_text_replacements,
     user_education::FeaturePromoController::StartupPromoCallback promo_callback,
-    user_education::FeaturePromoController::BubbleCloseCallback
-        close_callback) {
+    user_education::FeaturePromoController::BubbleCloseCallback close_callback,
+    user_education::FeaturePromoSpecification::FormatParameters body_params,
+    user_education::FeaturePromoSpecification::FormatParameters title_params) {
   return feature_promo_controller_ &&
          feature_promo_controller_->MaybeShowStartupPromo(
-             iph_feature, body_text_replacements, std::move(promo_callback),
-             std::move(close_callback));
+             iph_feature, std::move(promo_callback), std::move(close_callback),
+             body_params, title_params);
 }
 
 bool BrowserView::CloseFeaturePromo(const base::Feature& iph_feature) {

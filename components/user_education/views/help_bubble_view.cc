@@ -467,6 +467,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView,
                                       kFirstNonDefaultButtonIdForTesting);
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView, kBodyTextIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView, kTitleTextIdForTesting);
 
 HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
                                const internal::HelpBubbleAnchorParams& anchor,
@@ -571,21 +572,26 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
 
   // Add title (optional) and body label.
   if (!params.title_text.empty()) {
-    labels_.push_back(
+    views::Label* const title_label =
         top_text_container->AddChildView(std::make_unique<views::Label>(
-            params.title_text, delegate->GetTitleTextContext())));
-    views::Label* label =
+            params.title_text, delegate->GetTitleTextContext()));
+    title_label->SetProperty(views::kElementIdentifierKey,
+                             kTitleTextIdForTesting);
+    labels_.push_back(title_label);
+    views::Label* const body_label =
         AddChildViewAt(std::make_unique<views::Label>(
                            params.body_text, delegate->GetBodyTextContext()),
                        GetIndexOf(button_container).value());
-    labels_.push_back(label);
-    label->SetProperty(views::kElementIdentifierKey, kBodyTextIdForTesting);
+    labels_.push_back(body_label);
+    body_label->SetProperty(views::kElementIdentifierKey,
+                            kBodyTextIdForTesting);
   } else {
-    views::Label* label =
+    views::Label* const body_label =
         top_text_container->AddChildView(std::make_unique<views::Label>(
             params.body_text, delegate->GetBodyTextContext()));
-    labels_.push_back(label);
-    label->SetProperty(views::kElementIdentifierKey, kBodyTextIdForTesting);
+    labels_.push_back(body_label);
+    body_label->SetProperty(views::kElementIdentifierKey,
+                            kBodyTextIdForTesting);
   }
 
   // Set common label properties.

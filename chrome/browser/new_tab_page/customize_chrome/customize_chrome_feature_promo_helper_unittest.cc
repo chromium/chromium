@@ -96,7 +96,7 @@ TEST_F(CustomizeChromeFeaturePromoHelperTest,
       *mock_promo_controller(),
       MaybeShowPromo(
           testing::Ref(feature_engagement::kIPHDesktopCustomizeChromeFeature),
-          testing::_, testing::_))
+          testing::_, testing::_, testing::_))
       .Times(1)
       .WillOnce(testing::Return(true));
   CustomizeChromeFeaturePromoHelper customize_chrome_feature_promo_helper;

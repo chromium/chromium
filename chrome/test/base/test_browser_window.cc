@@ -353,27 +353,26 @@ bool TestBrowserWindow::IsFeaturePromoActive(
 
 bool TestBrowserWindow::MaybeShowFeaturePromo(
     const base::Feature& iph_feature,
-    user_education::FeaturePromoSpecification::StringReplacements
-        body_text_replacements,
-    user_education::FeaturePromoController::BubbleCloseCallback
-        close_callback) {
+    user_education::FeaturePromoController::BubbleCloseCallback close_callback,
+    user_education::FeaturePromoSpecification::FormatParameters body_params,
+    user_education::FeaturePromoSpecification::FormatParameters title_params) {
   return feature_promo_controller_ &&
          feature_promo_controller_->MaybeShowPromo(
-             iph_feature, body_text_replacements, std::move(close_callback));
+             iph_feature, std::move(close_callback), std::move(body_params),
+             std::move(title_params));
 }
 
 bool TestBrowserWindow::MaybeShowStartupFeaturePromo(
     const base::Feature& iph_feature,
-    user_education::FeaturePromoSpecification::StringReplacements
-        body_text_replacements,
     user_education::FeaturePromoController::StartupPromoCallback promo_callback,
-    user_education::FeaturePromoController::BubbleCloseCallback
-        close_callback) {
+    user_education::FeaturePromoController::BubbleCloseCallback close_callback,
+    user_education::FeaturePromoSpecification::FormatParameters body_params,
+    user_education::FeaturePromoSpecification::FormatParameters title_params) {
   if (!feature_promo_controller_)
     return false;
   return feature_promo_controller_->MaybeShowStartupPromo(
-      iph_feature, body_text_replacements, std::move(promo_callback),
-      std::move(close_callback));
+      iph_feature, std::move(promo_callback), std::move(close_callback),
+      std::move(body_params), std::move(title_params));
 }
 
 bool TestBrowserWindow::CloseFeaturePromo(const base::Feature& iph_feature) {

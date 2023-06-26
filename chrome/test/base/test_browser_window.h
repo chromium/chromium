@@ -241,18 +241,22 @@ class TestBrowserWindow : public BrowserWindow {
   bool IsFeaturePromoActive(const base::Feature& iph_feature) const override;
   bool MaybeShowFeaturePromo(
       const base::Feature& iph_feature,
-      user_education::FeaturePromoSpecification::StringReplacements
-          body_text_replacements = {},
       user_education::FeaturePromoController::BubbleCloseCallback
-          close_callback = base::DoNothing()) override;
+          close_callback = base::DoNothing(),
+      user_education::FeaturePromoSpecification::FormatParameters body_params =
+          user_education::FeaturePromoSpecification::NoSubstitution(),
+      user_education::FeaturePromoSpecification::FormatParameters title_params =
+          user_education::FeaturePromoSpecification::NoSubstitution()) override;
   bool MaybeShowStartupFeaturePromo(
       const base::Feature& iph_feature,
-      user_education::FeaturePromoSpecification::StringReplacements
-          body_text_replacements = {},
       user_education::FeaturePromoController::StartupPromoCallback
           promo_callback = base::DoNothing(),
       user_education::FeaturePromoController::BubbleCloseCallback
-          close_callback = base::DoNothing()) override;
+          close_callback = base::DoNothing(),
+      user_education::FeaturePromoSpecification::FormatParameters body_params =
+          user_education::FeaturePromoSpecification::NoSubstitution(),
+      user_education::FeaturePromoSpecification::FormatParameters title_params =
+          user_education::FeaturePromoSpecification::NoSubstitution()) override;
   bool CloseFeaturePromo(const base::Feature& iph_feature) override;
   user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(
       const base::Feature& iph_feature) override;

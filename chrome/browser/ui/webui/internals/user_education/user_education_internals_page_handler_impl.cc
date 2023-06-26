@@ -66,8 +66,9 @@ std::vector<std::string> GetSupportedPlatforms(
 std::vector<std::string> GetPromoInstructions(
     const user_education::FeaturePromoSpecification& spec) {
   std::vector<std::string> instructions;
-  if (!spec.bubble_title_text().empty()) {
-    instructions.emplace_back(base::UTF16ToUTF8(spec.bubble_title_text()));
+  if (spec.bubble_title_string_id()) {
+    instructions.emplace_back(
+        l10n_util::GetStringUTF8(spec.bubble_title_string_id()));
   }
   instructions.emplace_back(
       l10n_util::GetStringUTF8(spec.bubble_body_string_id()));

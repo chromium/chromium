@@ -30,10 +30,18 @@ class FeaturePromoHandle;
 // Specifies the parameters for a feature promo and its associated bubble.
 class FeaturePromoSpecification {
  public:
-  // The body text (specified by |bubble_body_string_id|) can have parameters
-  // that can be specified situationally. When specifying these parameters,
-  // use a |StringReplacements| object.
-  using StringReplacements = std::vector<std::u16string>;
+  // Provide different ways to specify parameters for title or body text.
+  struct NoSubstitution {};
+  using StringSubstitutions = std::vector<std::u16string>;
+  using FormatParameters = absl::variant<
+      // No substitutions; use the string as-is (default).
+      NoSubstitution,
+      // Use the following substitutions for the various substitution fields.
+      StringSubstitutions,
+      // Use a single string substitution. Included for convenience.
+      std::u16string,
+      // Specify a number of items in a singular/plural string.
+      int>;
 
   // Optional method that filters a set of potential `elements` to choose and
   // return the anchor element, or null if none of the inputs is appropriate.
@@ -119,6 +127,11 @@ class FeaturePromoSpecification {
   FeaturePromoSpecification(FeaturePromoSpecification&& other);
   ~FeaturePromoSpecification();
   FeaturePromoSpecification& operator=(FeaturePromoSpecification&& other);
+
+  // Format a localized string with ID `string_id` based on the given
+  // `format_params`.
+  static std::u16string FormatString(int string_id,
+                                     const FormatParameters& format_params);
 
   // Specifies a standard toast promo.
   //
@@ -220,7 +233,7 @@ class FeaturePromoSpecification {
   }
   bool in_any_context() const { return in_any_context_; }
   int bubble_body_string_id() const { return bubble_body_string_id_; }
-  const std::u16string& bubble_title_text() const { return bubble_title_text_; }
+  int bubble_title_string_id() const { return bubble_title_string_id_; }
   const gfx::VectorIcon* bubble_icon() const { return bubble_icon_; }
   HelpBubbleArrow bubble_arrow() const { return bubble_arrow_; }
   int screen_reader_string_id() const { return screen_reader_string_id_; }
@@ -283,7 +296,7 @@ class FeaturePromoSpecification {
 
   // Optional text that is displayed at the top of the bubble, in a slightly
   // more prominent font.
-  std::u16string bubble_title_text_;
+  int bubble_title_string_id_ = 0;
 
   // Optional icon that is displayed next to bubble text.
   raw_ptr<const gfx::VectorIcon> bubble_icon_ = nullptr;

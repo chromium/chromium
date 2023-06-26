@@ -591,10 +591,12 @@ class BrowserWindow : public ui::BaseWindow {
   // calling MaybeShowStartupFeaturePromo() instead.
   virtual bool MaybeShowFeaturePromo(
       const base::Feature& iph_feature,
-      user_education::FeaturePromoSpecification::StringReplacements
-          body_text_replacements = {},
       user_education::FeaturePromoController::BubbleCloseCallback
-          close_callback = base::DoNothing()) = 0;
+          close_callback = base::DoNothing(),
+      user_education::FeaturePromoSpecification::FormatParameters body_params =
+          user_education::FeaturePromoSpecification::NoSubstitution(),
+      user_education::FeaturePromoSpecification::FormatParameters title_params =
+          user_education::FeaturePromoSpecification::NoSubstitution()) = 0;
 
   // Maybe shows an in-product help promo at startup, whenever the Feature
   // Engagement system is fully initialized. If the promo cannot be queued for
@@ -612,12 +614,14 @@ class BrowserWindow : public ui::BaseWindow {
   // MaybeShowFeaturePromo() - which always runs synchronously - instead.
   virtual bool MaybeShowStartupFeaturePromo(
       const base::Feature& iph_feature,
-      user_education::FeaturePromoSpecification::StringReplacements
-          body_text_replacements = {},
       user_education::FeaturePromoController::StartupPromoCallback
           promo_callback = base::DoNothing(),
       user_education::FeaturePromoController::BubbleCloseCallback
-          close_callback = base::DoNothing()) = 0;
+          close_callback = base::DoNothing(),
+      user_education::FeaturePromoSpecification::FormatParameters body_params =
+          user_education::FeaturePromoSpecification::NoSubstitution(),
+      user_education::FeaturePromoSpecification::FormatParameters title_params =
+          user_education::FeaturePromoSpecification::NoSubstitution()) = 0;
 
   // Closes the in-product help promo for `iph_feature` if it is showing or
   // cancels a pending startup promo; returns true if a promo bubble was
