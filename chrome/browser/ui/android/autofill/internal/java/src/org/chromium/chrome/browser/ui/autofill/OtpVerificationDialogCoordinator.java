@@ -145,7 +145,7 @@ class OtpVerificationDialogCoordinator {
                 .with(ModalDialogProperties.TITLE,
                         mContext.getResources().getString(
                                 org.chromium.chrome.browser.ui.autofill.internal.R.string
-                                        .autofill_payments_otp_verification_dialog_title))
+                                        .autofill_card_unmask_otp_input_dialog_title))
                 .with(ModalDialogProperties.TITLE_ICON,
                         ResourcesCompat.getDrawable(mContext.getResources(),
                                 org.chromium.chrome.browser.ui.autofill.internal.R.drawable
