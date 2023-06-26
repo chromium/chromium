@@ -55,7 +55,8 @@ class PermissionBubbleMediaAccessHandler
   using RequestsMap = std::map<int64_t, PendingAccessRequest>;
   using RequestsMaps = std::map<content::WebContents*, RequestsMap>;
 
-  void ProcessQueuedAccessRequest(content::WebContents* web_contents);
+  void ProcessQueuedAccessRequest(
+      MayBeDangling<content::WebContents> web_contents);
   void OnMediaStreamRequestResponse(
       content::WebContents* web_contents,
       int64_t request_id,

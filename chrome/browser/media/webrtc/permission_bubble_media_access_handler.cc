@@ -230,11 +230,15 @@ void PermissionBubbleMediaAccessHandler::HandleRequest(
 }
 
 void PermissionBubbleMediaAccessHandler::ProcessQueuedAccessRequest(
-    content::WebContents* web_contents) {
+    MayBeDangling<content::WebContents> web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // The queue is iterated through using a chain of PostTasks, and between these
+  // executions, `web_contents` might have been destroyed. In that case, the
+  // observer will have removed it from the map. Because all the accesses to the
+  // pending_requests_ map are made from the UI thread, we do not need to use a
+  // lock and simply verify that the WebContents is still there.
   auto it = pending_requests_.find(web_contents);
-
   if (it == pending_requests_.end() || it->second.empty()) {
     // Don't do anything if the tab was closed.
     return;
@@ -455,8 +459,7 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
         FROM_HERE,
         base::BindOnce(
             &PermissionBubbleMediaAccessHandler::ProcessQueuedAccessRequest,
-            base::Unretained(this),
-            base::UnsafeDanglingUntriaged(web_contents)));
+            base::Unretained(this), base::UnsafeDangling(web_contents)));
   }
 
   std::move(callback).Run(stream_devices_set, final_result, std::move(ui));
