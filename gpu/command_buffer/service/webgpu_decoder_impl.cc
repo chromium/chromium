@@ -1491,9 +1491,9 @@ WGPUAdapter WebGPUDecoderImpl::CreatePreferredAdapter(
         // If on battery power, default to the integrated GPU.
         if (!base::PowerMonitor::IsInitialized() ||
             base::PowerMonitor::IsOnBatteryPower()) {
-          power_preference = WGPUPowerPreference_HighPerformance;
-        } else {
           power_preference = WGPUPowerPreference_LowPower;
+        } else {
+          power_preference = WGPUPowerPreference_HighPerformance;
         }
       }
       break;
