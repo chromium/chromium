@@ -83,15 +83,13 @@ class TestNetworkQualityObserver
 class SandboxedNQEBrowserTest : public ContentBrowserTest {
  public:
   SandboxedNQEBrowserTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
       // Network Service Sandboxing is unconditionally enabled on these
       // platforms.
-      sandbox::policy::features::kNetworkServiceSandbox,
-#endif
-    };
-    scoped_feature_list_.InitWithFeatures(enabled_features, {});
-    ForceOutOfProcessNetworkServiceImpl();
+    scoped_feature_list_.InitAndEnableFeature(
+        sandbox::policy::features::kNetworkServiceSandbox);
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
+    ForceOutOfProcessNetworkService();
   }
 
   void SetUpOnMainThread() override {

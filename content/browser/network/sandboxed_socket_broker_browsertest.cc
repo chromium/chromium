@@ -48,30 +48,23 @@ class SandboxedSocketBrokerBrowserTest : public ContentBrowserTest {
     // functionality with the featurelist we won't enable it on Android versions
     // prior to R.
     const int sdk_version = base::android::BuildInfo::GetInstance()->sdk_int();
-    if (sdk_version >= base::android::SdkVersion::SDK_VERSION_R) {
-      std::vector<base::test::FeatureRef> enabled_features = {
-          sandbox::policy::features::kNetworkServiceSandbox,
-      };
-      scoped_feature_list_.InitWithFeatures(
-          enabled_features, {features::kNetworkServiceInProcess});
-    } else {
-      check_sandbox_ = false;
-    }
-#else
+    check_sandbox_ = sdk_version >= base::android::SdkVersion::SDK_VERSION_R;
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_WIN)
     if (!sandbox::features::IsAppContainerSandboxSupported())
       check_sandbox_ = false;
 #endif  // BUILDFLAG(IS_WIN)
-    std::vector<base::test::FeatureRef> enabled_features = {
+
+    if (check_sandbox_) {
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
       // Network Service Sandboxing is unconditionally enabled on these
       // platforms.
-      sandbox::policy::features::kNetworkServiceSandbox,
+      scoped_feature_list_.InitAndEnableFeature(
+          sandbox::policy::features::kNetworkServiceSandbox);
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
-    };
-    scoped_feature_list_.InitWithFeatures(enabled_features,
-                                          {features::kNetworkServiceInProcess});
-#endif  // BUILDFLAG(IS_ANDROID)
+      ForceOutOfProcessNetworkService();
+    }
   }
 
   void SetUp() override {

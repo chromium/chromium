@@ -37,13 +37,13 @@ constexpr base::FeatureParam<int> kNetworkServiceOutOfProcessThresholdMb{
 }  // namespace
 
 void ForceInProcessNetworkServiceImpl() {
-  DCHECK(!g_force_network_service_process_in_or_out ||
-         *g_force_network_service_process_in_or_out);
+  CHECK(!g_force_network_service_process_in_or_out ||
+        *g_force_network_service_process_in_or_out);
   g_force_network_service_process_in_or_out = true;
 }
 void ForceOutOfProcessNetworkServiceImpl() {
-  DCHECK(!g_force_network_service_process_in_or_out ||
-         !*g_force_network_service_process_in_or_out);
+  CHECK(!g_force_network_service_process_in_or_out ||
+        !*g_force_network_service_process_in_or_out);
   g_force_network_service_process_in_or_out = false;
 }
 
