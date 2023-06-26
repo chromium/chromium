@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
@@ -575,8 +576,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
         if (OmniboxFeatures.shouldShowModernizeVisualUpdate(this)) {
             View toolbarView = contentView.findViewById(R.id.toolbar);
-            final int edgePadding =
-                    getResources().getDimensionPixelOffset(R.dimen.toolbar_edge_padding_modern);
+            final int edgePadding = OmniboxResourceProvider.getToolbarSidePadding(this);
             toolbarView.setPaddingRelative(edgePadding, toolbarView.getPaddingTop(), edgePadding,
                     toolbarView.getPaddingBottom());
             toolbarView.setBackground(new ColorDrawable(ChromeColors.getSurfaceColor(
