@@ -14,50 +14,6 @@
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 
 namespace ash {
-namespace {
-
-EasyUnlockIconState GetEasyUnlockIconStateFromUserPodCustomIconId(
-    proximity_auth::ScreenlockBridge::UserPodCustomIcon icon) {
-  switch (icon) {
-    case proximity_auth::ScreenlockBridge::USER_POD_CUSTOM_ICON_NONE:
-      return EasyUnlockIconState::NONE;
-    case proximity_auth::ScreenlockBridge::USER_POD_CUSTOM_ICON_LOCKED:
-      return EasyUnlockIconState::LOCKED;
-    case proximity_auth::ScreenlockBridge::
-        USER_POD_CUSTOM_ICON_LOCKED_TO_BE_ACTIVATED:
-      return EasyUnlockIconState::LOCKED_TO_BE_ACTIVATED;
-    case proximity_auth::ScreenlockBridge::
-        USER_POD_CUSTOM_ICON_LOCKED_WITH_PROXIMITY_HINT:
-      return EasyUnlockIconState::LOCKED_WITH_PROXIMITY_HINT;
-    case proximity_auth::ScreenlockBridge::USER_POD_CUSTOM_ICON_UNLOCKED:
-      return EasyUnlockIconState::UNLOCKED;
-    case proximity_auth::ScreenlockBridge::USER_POD_CUSTOM_ICON_SPINNER:
-      return EasyUnlockIconState::SPINNER;
-  }
-}
-
-// Converts parameters to a mojo struct that can be sent to the
-// screenlock view-based UI.
-EasyUnlockIconInfo ToEasyUnlockIconInfo(
-    const proximity_auth::ScreenlockBridge::UserPodCustomIconInfo&
-        user_pod_icon_info) {
-  EasyUnlockIconInfo easy_unlock_icon_info;
-  easy_unlock_icon_info.icon_state =
-      GetEasyUnlockIconStateFromUserPodCustomIconId(user_pod_icon_info.icon());
-
-  if (!user_pod_icon_info.tooltip().empty()) {
-    easy_unlock_icon_info.tooltip = user_pod_icon_info.tooltip();
-    easy_unlock_icon_info.autoshow_tooltip =
-        user_pod_icon_info.autoshow_tooltip();
-  }
-
-  if (!user_pod_icon_info.aria_label().empty())
-    easy_unlock_icon_info.aria_label = user_pod_icon_info.aria_label();
-
-  return easy_unlock_icon_info;
-}
-
-}  // namespace
 
 UserBoardViewMojo::UserBoardViewMojo() {}
 
@@ -98,17 +54,6 @@ void UserBoardViewMojo::ShowBannerMessage(const std::u16string& message,
   // TODO(fukino): Remove ShowWarningMessage and related implementation along
   // with the migration screen once the transition to ext4 is compilete.
   LoginScreen::Get()->GetModel()->UpdateWarningMessage(message);
-}
-
-void UserBoardViewMojo::ShowUserPodCustomIcon(
-    const AccountId& account_id,
-    const proximity_auth::ScreenlockBridge::UserPodCustomIconInfo& icon_info) {
-  LoginScreen::Get()->GetModel()->ShowEasyUnlockIcon(
-      account_id, ToEasyUnlockIconInfo(icon_info));
-}
-
-void UserBoardViewMojo::HideUserPodCustomIcon(const AccountId& account_id) {
-  LoginScreen::Get()->GetModel()->ShowEasyUnlockIcon(account_id, {});
 }
 
 void UserBoardViewMojo::SetSmartLockState(const AccountId& account_id,

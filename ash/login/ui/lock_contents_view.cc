@@ -386,13 +386,6 @@ LockContentsView::LockContentsView(
       AddChildView(std::make_unique<LoginErrorBubble>());
   detachable_base_error_bubble_->set_persistent(true);
 
-  tooltip_bubble_ = AddChildView(std::make_unique<LoginTooltipView>(
-      u"" /*message*/, nullptr /*anchor_view*/));
-  tooltip_bubble_->set_positioning_strategy(
-      LoginBaseBubbleView::PositioningStrategy::kTryBeforeThenAfter);
-  tooltip_bubble_->SetPadding(kHorizontalPaddingLoginTooltipViewDp,
-                              kVerticalPaddingLoginTooltipViewDp);
-
   management_bubble_ = AddChildView(std::make_unique<ManagementBubble>(
       l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_ENTERPRISE_MANAGED_POP_UP,
                                  ui::GetChromeOSDeviceName(),
@@ -974,26 +967,6 @@ void LockContentsView::OnSetTpmLockedState(const AccountId& user,
   }
 }
 
-void LockContentsView::OnTapToUnlockEnabledForUserChanged(const AccountId& user,
-                                                          bool enabled) {
-  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
-    return;
-  }
-
-  UserState* state = FindStateForUser(user);
-  if (!state) {
-    LOG(ERROR) << "Unable to find user enabling click to auth";
-    return;
-  }
-  state->enable_tap_auth = enabled;
-
-  LoginBigUserView* big_user =
-      TryToFindBigUser(user, true /*require_auth_active*/);
-  if (big_user && big_user->auth_user()) {
-    LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
-  }
-}
-
 void LockContentsView::OnForceOnlineSignInForUser(const AccountId& user) {
   UserState* state = FindStateForUser(user);
   if (!state) {
@@ -1006,40 +979,6 @@ void LockContentsView::OnForceOnlineSignInForUser(const AccountId& user) {
       TryToFindBigUser(user, true /*require_auth_active*/);
   if (big_user && big_user->auth_user()) {
     LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
-  }
-}
-
-void LockContentsView::OnShowEasyUnlockIcon(
-    const AccountId& user,
-    const EasyUnlockIconInfo& icon_info) {
-  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
-    return;
-  }
-
-  UserState* state = FindStateForUser(user);
-  if (!state) {
-    return;
-  }
-
-  state->easy_unlock_icon_info = icon_info;
-  UpdateEasyUnlockIconForUser(user);
-
-  // Show tooltip only if the user is actively showing auth.
-  LoginBigUserView* big_user =
-      TryToFindBigUser(user, true /*require_auth_active*/);
-  if (!big_user || !big_user->auth_user()) {
-    return;
-  }
-
-  if (tooltip_bubble_->GetVisible()) {
-    tooltip_bubble_->Hide();
-  }
-
-  if (icon_info.autoshow_tooltip) {
-    tooltip_bubble_->SetAnchorView(big_user->auth_user()->GetActiveInputView());
-    tooltip_bubble_->set_text(icon_info.tooltip);
-    tooltip_bubble_->Show();
-    tooltip_bubble_->SetVisible(true);
   }
 }
 
@@ -2016,10 +1955,6 @@ void LockContentsView::OnBigUserChanged() {
 
   Shell::Get()->login_screen_controller()->OnFocusPod(big_user_account_id);
 
-  if (!base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
-    UpdateEasyUnlockIconForUser(big_user_account_id);
-  }
-
   // The new auth user might have different last used detachable base - make
   // sure the detachable base pairing error is updated if needed.
   OnDetachableBasePairingStatusChanged(
@@ -2028,36 +1963,6 @@ void LockContentsView::OnBigUserChanged() {
   if (!detachable_base_error_bubble_->GetVisible()) {
     CurrentBigUserView()->RequestFocus();
   }
-}
-
-void LockContentsView::UpdateEasyUnlockIconForUser(const AccountId& user) {
-  // Try to find an big view for |user|. If there is none, there is no state to
-  // update.
-  LoginBigUserView* big_view =
-      TryToFindBigUser(user, false /*require_auth_active*/);
-  if (!big_view || !big_view->auth_user()) {
-    return;
-  }
-
-  UserState* state = FindStateForUser(user);
-  DCHECK(state);
-
-  // Hide easy unlock icon if there is no data available.
-  if (!state->easy_unlock_icon_info) {
-    big_view->auth_user()->SetEasyUnlockIcon(EasyUnlockIconState::NONE,
-                                             std::u16string());
-    return;
-  }
-
-  // TODO(jdufault): Make easy unlock backend always send aria_label, right now
-  // it is only sent if there is no tooltip.
-  std::u16string accessibility_label = state->easy_unlock_icon_info->aria_label;
-  if (accessibility_label.empty()) {
-    accessibility_label = state->easy_unlock_icon_info->tooltip;
-  }
-
-  big_view->auth_user()->SetEasyUnlockIcon(
-      state->easy_unlock_icon_info->icon_state, accessibility_label);
 }
 
 LoginBigUserView* LockContentsView::CurrentBigUserView() {
@@ -2201,24 +2106,6 @@ void LockContentsView::HideAuthErrorMessage() {
   }
 }
 
-void LockContentsView::OnEasyUnlockIconHovered() {
-  LoginBigUserView* big_view = CurrentBigUserView();
-  if (!big_view->auth_user()) {
-    return;
-  }
-
-  UserState* state =
-      FindStateForUser(big_view->GetCurrentUser().basic_user_info.account_id);
-  DCHECK(state);
-  DCHECK(state->easy_unlock_icon_info);
-
-  if (!state->easy_unlock_icon_info->tooltip.empty()) {
-    tooltip_bubble_->SetAnchorView(big_view->auth_user()->GetActiveInputView());
-    tooltip_bubble_->set_text(state->easy_unlock_icon_info->tooltip);
-    tooltip_bubble_->Show();
-  }
-}
-
 void LockContentsView::OnParentAccessValidationFinished(
     const AccountId& account_id,
     bool access_granted) {
@@ -2303,8 +2190,6 @@ std::unique_ptr<LoginBigUserView> LockContentsView::AllocateLoginBigUserView(
                           base::Unretained(this), is_primary);
   auth_user_callbacks.on_remove = base::BindRepeating(
       &LockContentsView::RemoveUser, base::Unretained(this), is_primary);
-  auth_user_callbacks.on_easy_unlock_icon_hovered = base::BindRepeating(
-      &LockContentsView::OnEasyUnlockIconHovered, base::Unretained(this));
   auth_user_callbacks.on_auth_factor_is_hiding_password_changed =
       base::BindRepeating(
           &LockContentsView::OnAuthFactorIsHidingPasswordChanged,

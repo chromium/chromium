@@ -53,10 +53,6 @@ views::View* LockContentsViewTestApi::note_action() const {
   return view_->note_action_;
 }
 
-views::View* LockContentsViewTestApi::tooltip_bubble() const {
-  return view_->tooltip_bubble_;
-}
-
 views::View* LockContentsViewTestApi::management_bubble() const {
   return view_->management_bubble_;
 }

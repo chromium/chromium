@@ -21,10 +21,6 @@ class FakeLockHandler : public ScreenlockBridge::LockHandler {
   // LockHandler:
   void ShowBannerMessage(const std::u16string& message,
                          bool is_warning) override;
-  void ShowUserPodCustomIcon(
-      const AccountId& account_id,
-      const ScreenlockBridge::UserPodCustomIconInfo& icon_info) override;
-  void HideUserPodCustomIcon(const AccountId& account_id) override;
   void SetSmartLockState(const AccountId& account_id,
                          ash::SmartLockState state) override;
   void NotifySmartLockAuthResult(const AccountId& account_id,

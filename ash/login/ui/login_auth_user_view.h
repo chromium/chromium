@@ -127,7 +127,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
       base::RepeatingCallback<void(bool auth_success,
                                    bool display_error_messages,
                                    bool authenticated_by_pin)>;
-  using OnEasyUnlockIconHovered = base::RepeatingClosure;
 
   struct Callbacks {
     Callbacks();
@@ -144,8 +143,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     // Called when the user should be removed. The callback should do the actual
     // removal.
     LoginUserView::OnRemove on_remove;
-    // Called when the easy unlock icon is hovered.
-    OnEasyUnlockIconHovered on_easy_unlock_icon_hovered;
     // Called when LoginAuthFactorsView enters/exits a state where an auth
     // factor wants to hide the password and pin.
     base::RepeatingCallback<void(bool)>
@@ -168,10 +165,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
       const AuthMethodsMetadata& auth_metadata = AuthMethodsMetadata());
   AuthMethods auth_methods() const { return auth_methods_; }
   InputFieldMode input_field_mode() const { return input_field_mode_; }
-
-  // Add an easy unlock icon.
-  void SetEasyUnlockIcon(EasyUnlockIconState icon_state,
-                         const std::u16string& accessibility_label);
 
   // Captures any metadata about the current view state that will be used for
   // animation.

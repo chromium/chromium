@@ -18,7 +18,6 @@ enum class FingerprintState;
 enum class SmartLockState;
 enum class OobeDialogState;
 struct AuthDisabledData;
-struct EasyUnlockIconInfo;
 struct InputMethodItem;
 struct LocaleItem;
 struct LoginUserInfo;
@@ -36,13 +35,6 @@ class ASH_PUBLIC_EXPORT LoginScreenModel {
   // |account_id|:   The account id of the user in the user pod.
   // |is_enabled|:   True if pin unlock is enabled.
   virtual void SetPinEnabledForUser(const AccountId& user, bool enabled) = 0;
-
-  // TODO(https://crbug.com/1233614): Delete this method in favor of
-  // SetSmartLockState once the Smart Lock UI revamp is enabled. Requests to
-  // show the custom icon in the user pod. |account_id|:  The account id of the
-  // user in the user pod. |icon_info|:   Information regarding the icon.
-  virtual void ShowEasyUnlockIcon(const AccountId& account_id,
-                                  const EasyUnlockIconInfo& icon_info) = 0;
 
   // Update the status of the challenge-response authentication against a
   // security token for the given user.

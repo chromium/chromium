@@ -44,11 +44,6 @@ class UserBoardView {
       bool show_full_management_disclosure) = 0;
   virtual void ShowBannerMessage(const std::u16string& message,
                                  bool is_warning) = 0;
-  virtual void ShowUserPodCustomIcon(
-      const AccountId& account_id,
-      const proximity_auth::ScreenlockBridge::UserPodCustomIconInfo&
-          icon_info) = 0;
-  virtual void HideUserPodCustomIcon(const AccountId& account_id) = 0;
   virtual void SetSmartLockState(const AccountId& account_id,
                                  SmartLockState state) = 0;
   virtual void NotifySmartLockAuthResult(const AccountId& account_id,

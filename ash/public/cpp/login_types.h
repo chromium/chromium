@@ -113,23 +113,6 @@ enum class MultiProfileUserBehavior {
   OWNER_PRIMARY_ONLY = 3,
 };
 
-// Easy unlock icon states.
-enum class EasyUnlockIconState {
-  // No icon shown.
-  NONE,
-  // Phone could not be found.
-  LOCKED,
-  // Phone found, but it is not unlocked.
-  LOCKED_TO_BE_ACTIVATED,
-  // Phone found, but it is too far away.
-  LOCKED_WITH_PROXIMITY_HINT,
-  // Phone found and unlocked. The user can click to dismiss the login/lock
-  // screen.
-  UNLOCKED,
-  // Scanning for phone.
-  SPINNER,
-};
-
 // The status of fingerprint availability.
 enum class FingerprintState {
   // The user cannot use fingerprint. This may be because:
@@ -149,33 +132,6 @@ enum class FingerprintState {
   // It has been too long since the device was last used.
   DISABLED_FROM_TIMEOUT,
   kMaxValue = DISABLED_FROM_TIMEOUT,
-};
-
-// Information about the custom icon in the user pod.
-struct ASH_PUBLIC_EXPORT EasyUnlockIconInfo {
-  EasyUnlockIconInfo();
-  EasyUnlockIconInfo(const EasyUnlockIconInfo& other);
-  EasyUnlockIconInfo(EasyUnlockIconInfo&& other);
-  ~EasyUnlockIconInfo();
-
-  EasyUnlockIconInfo& operator=(const EasyUnlockIconInfo& other);
-  EasyUnlockIconInfo& operator=(EasyUnlockIconInfo&& other);
-
-  // Icon that should be displayed.
-  EasyUnlockIconState icon_state = EasyUnlockIconState::NONE;
-  // Tooltip that is associated with the icon. This is shown automatically if
-  // |autoshow_tooltip| is true. The user can always see the tooltip if they
-  // hover over the icon. The tooltip should be used for the accessibility label
-  // if it is present.
-  std::u16string tooltip;
-  // If true, the tooltip should be displayed (even if the user is not currently
-  // hovering over the icon, ie, this makes |tooltip| act like a little like a
-  // notification).
-  bool autoshow_tooltip = false;
-  // Accessibility label. Only used if |tooltip| is empty.
-  // TODO(jdufault): Always populate and use |aria_label|, even if |tooltip| is
-  // non-empty.
-  std::u16string aria_label;
 };
 
 // Enterprise information about a managed device.

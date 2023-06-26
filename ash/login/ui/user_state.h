@@ -31,7 +31,6 @@ class UserState {
   bool disable_auth = false;
   bool show_pin_pad_for_password = false;
   size_t autosubmit_pin_length = 0;
-  absl::optional<EasyUnlockIconInfo> easy_unlock_icon_info = absl::nullopt;
   FingerprintState fingerprint_state = FingerprintState::UNAVAILABLE;
   SmartLockState smart_lock_state = SmartLockState::kDisabled;
   bool auth_factor_is_hiding_password = false;

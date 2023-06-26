@@ -794,7 +794,6 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   DCHECK(callbacks.on_tap);
   DCHECK(callbacks.on_remove_warning_shown);
   DCHECK(callbacks.on_remove);
-  DCHECK(callbacks.on_easy_unlock_icon_hovered);
   DCHECK(callbacks.on_auth_factor_is_hiding_password_changed);
   DCHECK_NE(user.basic_user_info.type, user_manager::USER_TYPE_PUBLIC_ACCOUNT);
   if (Shell::Get()->login_screen_controller()->IsAuthenticating()) {
@@ -821,8 +820,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       base::BindRepeating(&LoginAuthUserView::OnAuthSubmit,
                           base::Unretained(this)),
       base::BindRepeating(&LoginAuthUserView::OnPasswordTextChanged,
-                          base::Unretained(this)),
-      callbacks.on_easy_unlock_icon_hovered);
+                          base::Unretained(this)));
 
   auto pin_input_view = std::make_unique<LoginPinInputView>();
   pin_input_view_ = pin_input_view.get();
@@ -1087,12 +1085,6 @@ void LoginAuthUserView::SetAuthMethods(
 
   UpdateFocus();
   PreferredSizeChanged();
-}
-
-void LoginAuthUserView::SetEasyUnlockIcon(
-    EasyUnlockIconState icon_state,
-    const std::u16string& accessibility_label) {
-  // TODO(b/281542383): remove this function
 }
 
 void LoginAuthUserView::CaptureStateForAnimationPreLayout() {

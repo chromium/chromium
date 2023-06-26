@@ -18,7 +18,6 @@
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/login/ui/login_display_style.h"
 #include "ash/login/ui/login_error_bubble.h"
-#include "ash/login/ui/login_tooltip_view.h"
 #include "ash/login/ui/management_bubble.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/user_state.h"
@@ -158,13 +157,7 @@ class ASH_EXPORT LockContentsView
                            bool is_locked,
                            base::TimeDelta time_left) override;
   void OnLockScreenNoteStateChanged(mojom::TrayActionState state) override;
-  void OnTapToUnlockEnabledForUserChanged(const AccountId& user,
-                                          bool enabled) override;
   void OnForceOnlineSignInForUser(const AccountId& user) override;
-  // TODO(https://crbug.com/1233614): Delete this method in favor of
-  // OnSmartLockStateChanged once Smart Lock UI revamp is enabled.
-  void OnShowEasyUnlockIcon(const AccountId& user,
-                            const EasyUnlockIconInfo& icon_info) override;
   void OnWarningMessageUpdated(const std::u16string& message) override;
   void OnSystemInfoChanged(bool show,
                            bool enforced,
@@ -327,9 +320,6 @@ class ASH_EXPORT LockContentsView
   // Called after the big user change has taken place.
   void OnBigUserChanged();
 
-  // Shows the correct (cached) easy unlock icon for the given auth user.
-  void UpdateEasyUnlockIconForUser(const AccountId& user);
-
   // Get the current active big user view.
   LoginBigUserView* CurrentBigUserView();
 
@@ -338,9 +328,6 @@ class ASH_EXPORT LockContentsView
 
   // Hides the error bubble indicating authentication failure if open.
   void HideAuthErrorMessage();
-
-  // Called when the easy unlock icon is hovered.
-  void OnEasyUnlockIconHovered();
 
   // Called when LoginAuthFactorsView enters/exits a state where an auth
   // factor wants to hide the password and pin fields.
@@ -471,8 +458,6 @@ class ASH_EXPORT LockContentsView
   raw_ptr<AuthErrorBubble, ExperimentalAsh> auth_error_bubble_;
   // Bubble for displaying detachable base errors.
   raw_ptr<LoginErrorBubble, ExperimentalAsh> detachable_base_error_bubble_;
-  // Bubble for displaying easy-unlock tooltips.
-  raw_ptr<LoginTooltipView, ExperimentalAsh> tooltip_bubble_;
   // Bubble for displaying management details.
   raw_ptr<ManagementBubble, ExperimentalAsh> management_bubble_;
   // Indicator at top of screen for displaying a warning message when a

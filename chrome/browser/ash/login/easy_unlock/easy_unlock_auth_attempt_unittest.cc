@@ -55,17 +55,6 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
     ADD_FAILURE() << "Should not be reached.";
   }
 
-  void ShowUserPodCustomIcon(
-      const AccountId& account_id,
-      const proximity_auth::ScreenlockBridge::UserPodCustomIconInfo& icon_info)
-      override {
-    ADD_FAILURE() << "Should not be reached.";
-  }
-
-  void HideUserPodCustomIcon(const AccountId& account_id) override {
-    ADD_FAILURE() << "Should not be reached.";
-  }
-
   void EnableInput() override {
     ASSERT_EQ(STATE_ATTEMPTING_UNLOCK, state_);
     state_ = STATE_UNLOCK_CANCELED;

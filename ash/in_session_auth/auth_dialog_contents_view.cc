@@ -117,16 +117,18 @@ class AuthDialogContentsView::FingerprintView : public views::View {
   }
 
   void SetState(FingerprintState state) {
-    if (state_ == state)
+    if (state_ == state) {
       return;
+    }
 
     state_ = state;
     DisplayCurrentState();
   }
 
   void SetCanUsePin(bool can_use_pin) {
-    if (can_use_pin_ == can_use_pin)
+    if (can_use_pin_ == can_use_pin) {
       return;
+    }
 
     can_use_pin_ = can_use_pin;
     DisplayCurrentState();
@@ -176,8 +178,9 @@ class AuthDialogContentsView::FingerprintView : public views::View {
 
   // views::View:
   void OnGestureEvent(ui::GestureEvent* event) override {
-    if (event->type() != ui::ET_GESTURE_TAP)
+    if (event->type() != ui::ET_GESTURE_TAP) {
       return;
+    }
     if (state_ == FingerprintState::AVAILABLE_DEFAULT ||
         state_ == FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING) {
       SetState(FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING);
@@ -241,8 +244,9 @@ class AuthDialogContentsView::FingerprintView : public views::View {
       case FingerprintState::DISABLED_FROM_ATTEMPTS:
         return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_DISABLED_FROM_ATTEMPTS;
       case FingerprintState::DISABLED_FROM_TIMEOUT:
-        if (can_use_pin_)
+        if (can_use_pin_) {
           return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_PIN_OR_PASSWORD_REQUIRED;
+        }
         return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_PASSWORD_REQUIRED;
       case FingerprintState::UNAVAILABLE:
         NOTREACHED();
@@ -470,8 +474,7 @@ void AuthDialogContentsView::AddPasswordView() {
                           base::Unretained(this),
                           /*authenticated_by_pin=*/false),
       base::BindRepeating(&AuthDialogContentsView::OnInputTextChanged,
-                          base::Unretained(this)),
-      base::DoNothing());
+                          base::Unretained(this)));
 }
 
 void AuthDialogContentsView::AddPinPadView() {
@@ -503,8 +506,7 @@ void AuthDialogContentsView::AddPinPadView() {
                             base::Unretained(this),
                             /*authenticated_by_pin=*/true),
         base::BindRepeating(&AuthDialogContentsView::OnInputTextChanged,
-                            base::Unretained(this)),
-        base::DoNothing());
+                            base::Unretained(this)));
   }
   pin_pad_view_->SetVisible(true);
 }
@@ -555,11 +557,13 @@ void AuthDialogContentsView::AddActionButtonsView() {
 
 void AuthDialogContentsView::OnInsertDigitFromPinPad(int digit) {
   // Ignore anything if reached max attempts.
-  if (pin_locked_out_)
+  if (pin_locked_out_) {
     return;
+  }
 
-  if (title_->IsShowingError())
+  if (title_->IsShowingError()) {
     title_->ShowTitle();
+  }
 
   if (pin_autosubmit_on_) {
     pin_digit_input_view_->InsertDigit(digit);
@@ -570,11 +574,13 @@ void AuthDialogContentsView::OnInsertDigitFromPinPad(int digit) {
 
 void AuthDialogContentsView::OnBackspaceFromPinPad() {
   // Ignore anything if reached max attempts.
-  if (pin_locked_out_)
+  if (pin_locked_out_) {
     return;
+  }
 
-  if (title_->IsShowingError())
+  if (title_->IsShowingError()) {
     title_->ShowTitle();
+  }
 
   if (pin_autosubmit_on_) {
     pin_digit_input_view_->Backspace();
@@ -590,8 +596,9 @@ void AuthDialogContentsView::OnInputTextChanged(bool is_empty) {
   // If |is_empty| is true, this call may come from resetting
   // |pin_text_input_view_| or |pin_digit_input_view_|, when the error message
   // hasn't been shown and read yet. In this case we don't restore the title.
-  if (title_->IsShowingError() && !is_empty)
+  if (title_->IsShowingError() && !is_empty) {
     title_->ShowTitle();
+  }
 
   if (pin_pad_view_) {
     pin_pad_view_->OnPasswordTextChanged(is_empty);
@@ -620,8 +627,9 @@ void AuthDialogContentsView::OnPasswordOrPinAuthComplete(
     bool success,
     bool can_use_pin) {
   // On success, do nothing, and the dialog will dismiss.
-  if (success)
+  if (success) {
     return;
+  }
 
   std::u16string error_text;
   if (authenticated_by_pin) {
