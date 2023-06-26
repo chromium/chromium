@@ -40,6 +40,8 @@ final class FakePasswordManagerHandler implements PasswordManagerHandler {
 
     private boolean mShouldShowWarning;
 
+    private int mSerializationInvocationCount;
+
     void setSavedPasswords(ArrayList<SavedPasswordEntry> savedPasswords) {
         mSavedPasswords = savedPasswords;
     }
@@ -70,6 +72,7 @@ final class FakePasswordManagerHandler implements PasswordManagerHandler {
      */
     FakePasswordManagerHandler(PasswordListObserver observer) {
         mObserver = observer;
+        mSerializationInvocationCount = 0;
     }
 
     @Override
@@ -111,6 +114,7 @@ final class FakePasswordManagerHandler implements PasswordManagerHandler {
         mExportSuccessCallback = successCallback;
         mExportErrorCallback = errorCallback;
         mExportTargetPath = targetPath;
+        mSerializationInvocationCount += 1;
     }
 
     @Override
@@ -122,5 +126,9 @@ final class FakePasswordManagerHandler implements PasswordManagerHandler {
     @Override
     public boolean shouldShowMigrationWarning() {
         return mShouldShowWarning;
+    }
+
+    public int getSerializationInvocationCount() {
+        return mSerializationInvocationCount;
     }
 }

@@ -76,7 +76,7 @@ public class PasswordMigrationWarningCoordinator implements MigrationWarningOpti
     }
 
     @Override
-    public void startExportFlow(FragmentManager fragmentManager) {
+    public void startExportFlow(FragmentManager fragmentManager, boolean passwordsAvailable) {
         // TODO(crbug.com/1445065): Hide the sheet when the export is done.
         mExportFlow.onCreate(new Bundle(), new ExportFlowInterface.Delegate() {
             @Override
@@ -96,6 +96,16 @@ public class PasswordMigrationWarningCoordinator implements MigrationWarningOpti
                 return R.id.fragment_container_view;
             }
         });
-        mExportFlow.startExporting();
+        mExportFlow.startExporting(passwordsAvailable);
+    }
+
+    @Override
+    public void resumeExportFlow() {
+        mExportFlow.onResume();
+    }
+
+    @Override
+    public void passwordsAvailable() {
+        mExportFlow.passwordsAvailable();
     }
 }

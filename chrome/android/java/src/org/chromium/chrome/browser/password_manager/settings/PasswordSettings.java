@@ -237,7 +237,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
             RecordHistogram.recordEnumeratedHistogram(PASSWORD_EXPORT_EVENT_HISTOGRAM,
                     ExportFlow.PasswordExportEvent.EXPORT_OPTION_SELECTED,
                     ExportFlow.PasswordExportEvent.COUNT);
-            mExportFlow.startExporting();
+            mExportFlow.startExporting(true);
             return true;
         }
         if (SearchUtils.handleSearchNavigation(item, mSearchItem, mSearchQuery, getActivity())) {

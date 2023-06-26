@@ -43,12 +43,20 @@ public interface ExportFlowInterface {
 
     /**
      * Starts the password export flow.
+     *
+     * @param passwordsAvailable indicates if the passwords have been fetched and are ready to be
+     *         exported.
      */
-    public void startExporting();
+    public void startExporting(boolean passwordsAvailable);
 
     /**
      * A hook to be used in a {@link Fragment}'s onResume method. I processes the result of the
      * reauthentication.
      */
     public void onResume();
+
+    /**
+     * Continues the export flow when password list is available.
+     */
+    public void passwordsAvailable();
 }

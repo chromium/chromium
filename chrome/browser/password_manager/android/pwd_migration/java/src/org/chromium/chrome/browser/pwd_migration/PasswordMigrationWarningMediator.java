@@ -39,6 +39,7 @@ class PasswordMigrationWarningMediator
     private PropertyModel mModel;
     private Profile mProfile;
     private MigrationWarningOptionsHandler mOptionsHandler;
+    private boolean mPasswordsAvailable;
 
     public interface MigrationWarningOptionsHandler {
         /**
@@ -56,13 +57,24 @@ class PasswordMigrationWarningMediator
          *
          * @param fragmentManager for the fragment that owns the export flow.
          */
-        void startExportFlow(FragmentManager fragmentManager);
+        void startExportFlow(FragmentManager fragmentManager, boolean passwordsAvailable);
+
+        /**
+         * Resumes the password export flow.
+         */
+        void resumeExportFlow();
+
+        /**
+         * Notifies the {@link ExportFlow} that passwords are fetched.
+         */
+        void passwordsAvailable();
     }
 
     PasswordMigrationWarningMediator(
             Profile profile, MigrationWarningOptionsHandler optionsHandler) {
         mProfile = profile;
         mOptionsHandler = optionsHandler;
+        mPasswordsAvailable = false;
     }
 
     void initializeModel(PropertyModel model) {
@@ -100,7 +112,7 @@ class PasswordMigrationWarningMediator
             mModel.set(VISIBLE, false);
             startSyncFlow();
         } else {
-            mOptionsHandler.startExportFlow(fragmentManager);
+            mOptionsHandler.startExportFlow(fragmentManager, mPasswordsAvailable);
         }
         // TODO(crbug.com/1445065): Launch the password Export flow.
     }
@@ -138,7 +150,8 @@ class PasswordMigrationWarningMediator
 
     @Override
     public void passwordListAvailable(int count) {
-        // TODO(crbug.com/1445065): Note down that the passwords are ready to try exporting.
+        mPasswordsAvailable = true;
+        mOptionsHandler.passwordsAvailable();
     }
 
     @Override

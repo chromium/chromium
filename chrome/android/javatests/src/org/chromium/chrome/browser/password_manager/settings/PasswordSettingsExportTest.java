@@ -948,6 +948,30 @@ public class PasswordSettingsExportTest {
         onView(withText(R.string.settings_passwords_preparing_export)).check(doesNotExist());
     }
 
+    @Test
+    @SmallTest
+    public void testDontRepeatedlySerialisePasswords() {
+        mTestHelper.setPasswordSource(
+                new SavedPasswordEntry("https://example.com", "test user", "password"));
+
+        ReauthenticationManager.setApiOverride(ReauthenticationManager.OverrideState.AVAILABLE);
+        ReauthenticationManager.setScreenLockSetUpOverride(
+                ReauthenticationManager.OverrideState.AVAILABLE);
+
+        final SettingsActivity settingsActivity =
+                mTestHelper.startPasswordSettingsFromMainSettings(mSettingsActivityTestRule);
+
+        PasswordSettings fragment = mSettingsActivityTestRule.getFragment();
+        ExportFlow exportFlow = fragment.getExportFlowForTesting();
+        exportFlow.startExporting(false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            exportFlow.passwordsAvailable();
+            exportFlow.passwordsAvailable();
+        });
+
+        Assert.assertEquals(1, mTestHelper.getHandler().getSerializationInvocationCount());
+    }
+
     /**
      * Taps the menu item to trigger exporting and ensures that reauthentication passes.
      * It also disables the timer in {@link DialogManager} which is used to allow hiding the
