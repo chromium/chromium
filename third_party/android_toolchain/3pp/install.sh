@@ -18,3 +18,17 @@ mv simpleperf "$PREFIX"
 mkdir -p "$PREFIX/toolchains/llvm/prebuilt/linux-x86_64/"
 mv toolchains/llvm/prebuilt/linux-x86_64/sysroot \
   "$PREFIX/toolchains/llvm/prebuilt/linux-x86_64/"
+# Remove files that have identical names on case-insensitive file systems.
+FILES_TO_REMOVE=(
+  "sysroot/usr/include/linux/netfilter_ipv4/ipt_ECN.h"
+  "sysroot/usr/include/linux/netfilter_ipv4/ipt_TTL.h"
+  "sysroot/usr/include/linux/netfilter_ipv6/ip6t_HL.h"
+  "sysroot/usr/include/linux/netfilter/xt_CONNMARK.h"
+  "sysroot/usr/include/linux/netfilter/xt_DSCP.h"
+  "sysroot/usr/include/linux/netfilter/xt_MARK.h"
+  "sysroot/usr/include/linux/netfilter/xt_RATEEST.h"
+  "sysroot/usr/include/linux/netfilter/xt_TCPMSS.h"
+)
+for file in "${FILES_TO_REMOVE[@]}"; do
+  rm "$PREFIX/toolchains/llvm/prebuilt/linux-x86_64/${file}"
+done

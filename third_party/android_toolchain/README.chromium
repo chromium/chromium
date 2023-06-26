@@ -11,4 +11,8 @@ and debugging C/C++ on Android. However, as Chromium builds it's own toolchain,
 this directory only contains the simpleperf scripts and sysroot from the NDK.
 This allows us to build and run tracing scripts and limits our dependencies.
 
+Local Modifications:
+* Removed files in the sysroot that conflict with other files when unzipped on
+  case-insensitive filesystems (e.g. usr/include/netfilter/xt_CONNMARK.h).
+
 Downloaded from: https://developer.android.com/ndk/downloads/index.html
