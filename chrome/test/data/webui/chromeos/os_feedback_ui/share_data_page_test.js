@@ -790,12 +790,20 @@ export function shareDataPageTestSuite() {
   });
 
   /**
-   * Test that when feedback context contains category_tag matching value
+   * Test that when feedback context contains categoryTag matching value
    * is set on report.
    */
-  test('AdditionalContext_CategoryTag', async () => {
+  test('AdditionalContext_CategoryTag_Bluetooth', async () => {
     await initializePage();
     page.feedbackContext = fakeFeedbackContext;
+
+    // Uncheck the "Link Cross Device Dogfood Feedback" checkbox so that only
+    // the Bluetooth-specific categoryTag is added to the report.
+    const linkCrossDeviceDogfoodFeedbackCheckbox =
+        getElement('#linkCrossDeviceDogfoodFeedbackCheckbox');
+    assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+    linkCrossDeviceDogfoodFeedbackCheckbox.checked = false;
+    assertFalse(linkCrossDeviceDogfoodFeedbackCheckbox.checked);
 
     // Uncheck the bluetooth logs checkbox.
     const bluetoothLogsCheckbox = getElement('#bluetoothLogsCheckbox');
@@ -817,7 +825,7 @@ export function shareDataPageTestSuite() {
         fakeFeedbackContextWithCategoryTag.categoryTag,
         reportWithCategoryTag.feedbackContext.categoryTag);
 
-    // Check the bluetooth logs checkbox. The category tag
+    // Check the bluetooth logs checkbox. The categoryTag
     // should be BluetoothReportWithLogs, not the tag from url.
     page.reEnableSendReportButton();
     bluetoothLogsCheckbox.checked = true;
@@ -831,6 +839,97 @@ export function shareDataPageTestSuite() {
         'BluetoothReportWithLogs',
         reportWithCategoryTagAndBluetoothFlag.feedbackContext.categoryTag);
   });
+
+  /**
+   * Test that when feedback context contains categoryTag matching value
+   * is set on report.
+   */
+  test(
+      'AdditionalContext_CategoryTag_LinkCrossDeviceDogfoodFeedback',
+      async () => {
+        await initializePage();
+        page.feedbackContext = fakeFeedbackContext;
+
+        // Uncheck the bluetooth logs checkbox so that only the "Link Cross
+        // Device Dogfood Feedback"-specific categoryTag is added to the report.
+        const bluetoothLogsCheckbox = getElement('#bluetoothLogsCheckbox');
+        assertTrue(!!bluetoothLogsCheckbox);
+        bluetoothLogsCheckbox.checked = false;
+        assertFalse(bluetoothLogsCheckbox.checked);
+
+        // Uncheck the "Link Cross Device Dogfood Feedback" checkbox.
+        const linkCrossDeviceDogfoodFeedbackCheckbox =
+            getElement('#linkCrossDeviceDogfoodFeedbackCheckbox');
+        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+        linkCrossDeviceDogfoodFeedbackCheckbox.checked = false;
+        assertFalse(linkCrossDeviceDogfoodFeedbackCheckbox.checked);
+
+        const reportWithoutCategoryTag = (await clickSendAndWait(page)).report;
+        assertFalse(!!reportWithoutCategoryTag.feedbackContext.categoryTag);
+
+        page.reEnableSendReportButton();
+        const fakeFeedbackContextWithCategoryTag =
+            /** @type {!FeedbackContext} */ (
+                {categoryTag: 'some category tag'});
+        page.feedbackContext = fakeFeedbackContextWithCategoryTag;
+        await flushTasks();
+
+        const reportWithCategoryTag = (await clickSendAndWait(page)).report;
+        assertEquals(
+            fakeFeedbackContextWithCategoryTag.categoryTag,
+            reportWithCategoryTag.feedbackContext.categoryTag);
+
+        // Check the Link Cross Device Dogfood Feedback checkbox. The
+        // categoryTag should be
+        // 'linkCrossDeviceDogfoodFeedbackWithoutBluetoothLogs'.
+        page.reEnableSendReportButton();
+        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+        linkCrossDeviceDogfoodFeedbackCheckbox.checked = true;
+        assertTrue(linkCrossDeviceDogfoodFeedbackCheckbox.checked);
+
+        page.reEnableSendReportButton();
+
+        const reportWithCrossDeviceWithoutBluetoothLogsTag =
+            (await clickSendAndWait(page)).report;
+        assertEquals(
+            'linkCrossDeviceDogfoodFeedbackWithoutBluetoothLogs',
+            reportWithCrossDeviceWithoutBluetoothLogsTag.feedbackContext
+                .categoryTag);
+      });
+
+  /**
+   * Test that when feedback context contains categoryTag matching value
+   * is set on report.
+   */
+  test(
+      'AdditionalContext_CategoryTag_BluetoothLogsAndLinkCrossDeviceDogfoodFeedback',
+      async () => {
+        await initializePage();
+        page.feedbackContext = fakeFeedbackContext;
+
+        // Check both the "Link Cross Device Dogfood Feedback" and Bluetooth
+        // logs checkboxes. The categoryTag should then be
+        // 'linkCrossDeviceDogfoodFeedbackWithBluetoothLogs'.
+        const linkCrossDeviceDogfoodFeedbackCheckbox =
+            getElement('#linkCrossDeviceDogfoodFeedbackCheckbox');
+        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+        linkCrossDeviceDogfoodFeedbackCheckbox.checked = true;
+        assertTrue(linkCrossDeviceDogfoodFeedbackCheckbox.checked);
+
+        const bluetoothLogsCheckbox = getElement('#bluetoothLogsCheckbox');
+        assertTrue(!!bluetoothLogsCheckbox);
+        bluetoothLogsCheckbox.checked = true;
+        assertTrue(bluetoothLogsCheckbox.checked);
+
+        await flushTasks();
+
+        const reportWithCrossDeviceWithBluetoothLogsTag =
+            (await clickSendAndWait(page)).report;
+        assertEquals(
+            'linkCrossDeviceDogfoodFeedbackWithBluetoothLogs',
+            reportWithCrossDeviceWithBluetoothLogsTag.feedbackContext
+                .categoryTag);
+      });
 
   /**
    * Test that openMetricsDialog and recordPreSubmitAction are called when
@@ -919,6 +1018,37 @@ export function shareDataPageTestSuite() {
   });
 
   /**
+   * Test that clicking the #linkCrossDeviceDogfoodFeedbackInfoLink will open
+   * the dialog and set the focus on the close dialog icon button.
+   */
+  test('openLinkCrossDeviceDogfoodFeedbackDialog', async () => {
+    await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
+
+    // The "Link Cross Device Dogfood Feedback" dialog is not visible as
+    // default.
+    const closeDialogButton =
+        getElement('#linkCrossDeviceDogfoodFeedbackDialogDoneButton');
+    assertFalse(isVisible(closeDialogButton));
+
+    // After clicking the #linkCrossDeviceDogfoodFeedbackLink, the dialog pops
+    // up.
+    getElement('#linkCrossDeviceDogfoodFeedbackInfoLink').click();
+    assertTrue(isVisible(closeDialogButton));
+
+    // The preview dialog's close icon button is focused.
+    assertEquals(closeDialogButton, getDeepActiveElement());
+
+    // Press enter should close the preview dialog.
+    closeDialogButton.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Enter'}));
+    await flushTasks();
+
+    // The preview dialog's close icon button is not visible now.
+    assertFalse(isVisible(closeDialogButton));
+  });
+
+  /**
    * Test that clicking the #assistantLogsLink will open the dialog and set the
    * focus on the close dialog icon button.
    */
@@ -962,10 +1092,18 @@ export function shareDataPageTestSuite() {
     getElement('#bluetoothCheckboxContainer').hidden = false;
 
     const bluetoothLogsCheckbox = getElement('#bluetoothLogsCheckbox');
+    const linkCrossDeviceDogfoodFeedbackCheckbox =
+        getElement('#linkCrossDeviceDogfoodFeedbackCheckbox');
 
     // Check the bluetoothLogs checkbox, it is default to be checked.
     assertTrue(!!bluetoothLogsCheckbox);
     assertTrue(bluetoothLogsCheckbox.checked);
+
+    // Uncheck the "Link Cross Device Dogfood Feedback" checkbox so that only
+    // the Bluetooth-specific categoryTag is added to the report.
+    assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+    linkCrossDeviceDogfoodFeedbackCheckbox.checked = false;
+    assertFalse(linkCrossDeviceDogfoodFeedbackCheckbox.checked);
 
     // Report should have sendBluetoothLogs flag true, and category marked as
     // "BluetoothReportWithLogs".
@@ -997,6 +1135,14 @@ export function shareDataPageTestSuite() {
     const bluetoothLogsCheckbox = getElement('#bluetoothLogsCheckbox');
     assertTrue(!!bluetoothLogsCheckbox);
     assertTrue(bluetoothLogsCheckbox.checked);
+
+    // Uncheck the "Link Cross Device Dogfood Feedback" checkbox so that only
+    // the Bluetooth-specific categoryTag is added to the report.
+    const linkCrossDeviceDogfoodFeedbackCheckbox =
+        getElement('#linkCrossDeviceDogfoodFeedbackCheckbox');
+    assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
+    linkCrossDeviceDogfoodFeedbackCheckbox.checked = false;
+    assertFalse(linkCrossDeviceDogfoodFeedbackCheckbox.checked);
 
     // Verify that unchecking the checkbox will remove the flag in the report.
     bluetoothLogsCheckbox.click();

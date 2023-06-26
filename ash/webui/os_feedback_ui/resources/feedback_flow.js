@@ -190,6 +190,13 @@ export class FeedbackFlowElement extends PolymerElement {
     this.shouldShowBluetoothCheckbox_;
 
     /**
+     * Whether to show the Link Cross Device Dogfood Feedback checkbox in share
+     * data page.
+     * @type {boolean}
+     */
+    this.shouldShowLinkCrossDeviceDogfoodFeedbackCheckbox_;
+
+    /**
      * Whether to show the autofill checkbox in share data page.
      * @type {boolean}
      * @protected
@@ -440,6 +447,11 @@ export class FeedbackFlowElement extends PolymerElement {
         this.shouldShowBluetoothCheckbox_ = this.feedbackContext_ !== null &&
             this.feedbackContext_.isInternalAccount &&
             this.isDescriptionRelatedToBluetooth(this.description_);
+        this.shouldShowLinkCrossDeviceDogfoodFeedbackCheckbox_ =
+            this.feedbackContext_ !== null &&
+            loadTimeData.getBoolean(
+                'enableLinkCrossDeviceDogfoodFeedbackFlag') &&
+            this.feedbackContext_.isInternalAccount;
         this.fetchScreenshot_();
         const shareDataPage = this.shadowRoot.querySelector('share-data-page');
         shareDataPage.focusScreenshotCheckbox();

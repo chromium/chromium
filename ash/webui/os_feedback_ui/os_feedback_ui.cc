@@ -114,6 +114,10 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"fileTooBigErrorMessage", IDS_FEEDBACK_TOOL_FILE_TOO_BIG_ERROR_MESSAGE},
       {"bluetoothLogsInfo", IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_CHECKBOX},
       {"bluetoothLogsMessage", IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_MESSAGE},
+      {"linkCrossDeviceDogfoodFeedbackInfo",
+       IDS_FEEDBACK_TOOL_LINK_CROSS_DEVICE_DOGFOOD_FEEDBACK_INFO},
+      {"linkCrossDeviceDogfoodFeedbackMessage",
+       IDS_FEEDBACK_TOOL_LINK_CROSS_DEVICE_DOGFOOD_FEEDBACK_MESSAGE},
       {"includeAssistantLogsCheckboxLabel",
        IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_CHECKBOX},
       {"assistantLogsMessage", IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_MESSAGE},
@@ -123,6 +127,9 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
 
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();
+
+  source->AddBoolean("enableLinkCrossDeviceDogfoodFeedbackFlag",
+                     features::IsLinkCrossDeviceDogfoodFeedbackEnabled());
 }
 
 }  // namespace
