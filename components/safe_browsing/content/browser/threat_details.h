@@ -23,6 +23,8 @@
 #include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
+#include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -107,7 +109,11 @@ class ThreatDetails {
   // in UI thread; then do cache collection back in IO thread. We also record
   // if the user did proceed with the warning page, and how many times user
   // visited this page before. When we are done, we send the report.
-  virtual void FinishCollection(bool did_proceed, int num_visits);
+  virtual void FinishCollection(
+      bool did_proceed,
+      int num_visits,
+      std::unique_ptr<security_interstitials::InterstitialInteractionMap>
+          interstitial_interactions);
 
   void OnCacheCollectionReady();
 
@@ -198,6 +204,10 @@ class ThreatDetails {
   // include the referrer chain.
   void MaybeFillReferrerChain();
 
+  // Populates all interstitial interactions in |report_| if the
+  // kAntiPhishingTelemetry experiment is enabled.
+  void MaybeFillInterstitialInteractions();
+
   // Called when the report is complete. Runs |done_callback_|.
   void AllDone();
 
@@ -244,6 +254,10 @@ class ThreatDetails {
 
   // How many times this user has visited this page before.
   int num_visits_;
+
+  // Interactions the user had with the interstitial.
+  std::unique_ptr<security_interstitials::InterstitialInteractionMap>
+      interstitial_interactions_;
 
   // Whether this report should be trimmed down to only ad tags, not the entire
   // page contents. Used for sampling ads.

@@ -60,6 +60,7 @@ static_library("core") {
     "//components/policy/core/common",
     "//components/prefs",
     "//components/resources",
+    "//components/safe_browsing/core/common:common",
     "//components/ssl_errors",
     "//components/strings",
     "//components/url_formatter",

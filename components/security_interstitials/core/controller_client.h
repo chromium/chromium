@@ -52,6 +52,8 @@ enum SecurityInterstitialCommand {
   CMD_REPORT_PHISHING_ERROR = 12,
   // Open enhanced protection settings.
   CMD_OPEN_ENHANCED_PROTECTION_SETTINGS = 13,
+  // User closes interstitial without making decision through UI.
+  CMD_CLOSE_INTERSTITIAL_WITHOUT_UI = 14,
 };
 
 // Provides methods for handling commands from the user, which requires some

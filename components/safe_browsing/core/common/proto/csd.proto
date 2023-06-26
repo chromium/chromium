@@ -1820,6 +1820,52 @@ message ClientSafeBrowsingReportRequest {
   // Only populated for interstitial reports (URL_PHISHING, URL_MALWARE,
   // URL_UNWANTED and BILLING).
   optional UrlRequestDestination url_request_destination = 29;
+
+  // Information about user interactions with an interstitial.
+  message InterstitialInteraction {
+    // Type of interaction with security interstitial.
+    enum SecurityInterstitialInteraction {
+      UNSPECIFIED = 0;
+      // Decisions
+      CMD_DONT_PROCEED = 1;
+      CMD_PROCEED = 2;
+      // Ways for user to get more information
+      CMD_SHOW_MORE_SECTION = 3;
+      CMD_OPEN_HELP_CENTER = 4;
+      CMD_OPEN_DIAGNOSTIC = 5;
+      // Primary button actions
+      CMD_RELOAD = 6;
+      CMD_OPEN_DATE_SETTINGS = 7;
+      CMD_OPEN_LOGIN = 8;
+      // Safe Browsing Extended Reporting
+      CMD_DO_REPORT = 9;
+      CMD_DONT_REPORT = 10;
+      CMD_OPEN_REPORTING_PRIVACY = 11;
+      CMD_OPEN_WHITEPAPER = 12;
+      // Report a phishing error
+      CMD_REPORT_PHISHING_ERROR = 13;
+      // Open enhanced protection settings.
+      CMD_OPEN_ENHANCED_PROTECTION_SETTINGS = 14;
+      // Leave interstitial without making explicit UI decision.
+      CMD_CLOSE_INTERSTITIAL_WITHOUT_UI = 15;
+    }
+
+    // Type of security interstitial interaction that occurred.
+    optional SecurityInterstitialInteraction security_interstitial_interaction =
+        1;
+
+    // Number of interstitial interaction occurrences.
+    optional int32 occurrence_count = 2;
+
+    // Timestamp of first interstitial interaction occurrence.
+    optional int64 first_interaction_timestamp_msec = 3;
+
+    // Timestamp of last interstitial interaction occurrence.
+    optional int64 last_interaction_timestamp_msec = 4;
+  }
+
+  // List of user interactions that the user performs with the interstitial.
+  repeated InterstitialInteraction interstitial_interactions = 30;
 }
 
 // An HTML Element on the page (eg: iframe, div, script, etc).
