@@ -77,7 +77,9 @@ public class QuickDeleteDialogDelegateTest {
 
         onView(withText(R.string.quick_delete_dialog_title)).check(matches(isDisplayed()));
         onView(withText(R.string.quick_delete_dialog_description)).check(matches(isDisplayed()));
-        onView(withText(R.string.clear_history_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.quick_delete_history_row_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.quick_delete_dialog_browsing_history_secondary_text))
+                .check(matches(isDisplayed()));
         onView(withText(mActivityTestRule.getActivity().getResources().getQuantityString(
                        R.plurals.quick_delete_dialog_tabs_closed_text, 1)))
                 .check(matches(isDisplayed()));

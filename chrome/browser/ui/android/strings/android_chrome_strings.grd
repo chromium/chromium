@@ -5743,6 +5743,14 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_QUICK_DELETE_DIALOG_TABS_CLOSED_TEXT" desc="Text indicating that the tabs which a user recently used to visit a website within 15 minutes would be closed.">
         {NUM_TABS, plural, =1 {1 tab on this device} other {# tabs on this device}}
       </message>
+      <message name="IDS_QUICK_DELETE_DIALOG_BROWSING_HISTORY_DOMAIN_COUNT_TEXT" desc="This text would start by mentioning the last visited domain, and, then followed by showing the count of other unique domains that the user has visited. For example: if a user visits/revisits facebook.com, followed by figma.com, within the last 15 minutes then this text would say 'figma.com + 1 site'.">
+        {DOMAIN_COUNT, plural,
+          =1 {+ 1 site}
+          other {+ # sites}}
+      </message>
+      <message name="IDS_QUICK_DELETE_DIALOG_BROWSING_HISTORY_SECONDARY_TEXT" desc="Secondary text for browsing history item for syncing users, indicating that there could be more domains on other devices that the user has visited within 15 minutes, which would be deleted from history.">
+        More on synced devices
+      </message>
       <message name="IDS_QUICK_DELETE_DIALOG_COOKIES_CACHE_AND_OTHER_SITE_DATA_TEXT" desc="Text indicating that browsing data like cookies, cache, and other site data would be deleted.">
         Cookies, cache, and other site data
       </message>

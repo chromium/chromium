@@ -16,20 +16,50 @@ found in the LICENSE file.
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="18dp"
         android:text="@string/quick_delete_dialog_description" />
 
-    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+    <RelativeLayout
+        android:id="@+id/quick_delete_history_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="20dp"
         android:gravity="center_vertical"
-        android:textDirection="locale"
-        android:drawableStart="@drawable/ic_history_24dp"
-        android:paddingBottom="24dp"
-        android:drawablePadding="12dp"
-        app:chromeDrawableTint="@macro/default_icon_color"
-        android:text="@string/clear_history_title"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/quick_delete_history_row_icon"
+            android:importantForAccessibility="no"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="14dp"
+            android:src="@drawable/ic_history_24dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            style="@style/ListItemStartIcon" />
+
+        <org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView
+            android:id="@+id/quick_delete_history_row_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:layout_toEndOf="@id/quick_delete_history_row_icon"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+        <TextView
+            android:id="@+id/quick_delete_history_row_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:visibility="gone"
+            android:layout_alignStart="@id/quick_delete_history_row_title"
+            android:layout_below="@id/quick_delete_history_row_title"
+            android:text="@string/quick_delete_dialog_browsing_history_secondary_text"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+    </RelativeLayout>
+
     <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
         android:id="@+id/quick_delete_tabs_close_row"
         android:layout_width="match_parent"
@@ -40,7 +70,8 @@ found in the LICENSE file.
         android:paddingBottom="24dp"
         android:drawablePadding="12dp"
         app:chromeDrawableTint="@macro/default_icon_color"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
     <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -51,7 +82,7 @@ found in the LICENSE file.
         android:drawablePadding="12dp"
         app:chromeDrawableTint="@macro/default_icon_color"
         android:text="@string/quick_delete_dialog_cookies_cache_and_other_site_data_text"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
 
     <org.chromium.ui.widget.TextViewWithClickableSpans
         android:id="@+id/search_history_disambiguation"
