@@ -33,7 +33,7 @@
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/test_shell_delegate.h"
-#include "ash/wallpaper/wallpaper_widget_controller.h"
+#include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "base/command_line.h"

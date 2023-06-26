@@ -11,7 +11,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/style/style_util.h"
-#include "ash/wallpaper/wallpaper_base_view.h"
+#include "ash/wallpaper/views/wallpaper_base_view.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wallpaper/wallpaper_widget_controller.h"
+#include "ash/wallpaper/views/wallpaper_widget_controller.h"
 
 #include <utility>
 
@@ -10,7 +10,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
-#include "ash/wallpaper/wallpaper_view.h"
+#include "ash/wallpaper/views/wallpaper_view.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
@@ -62,8 +62,9 @@ bool WallpaperWidgetController::Reparent(int container) {
   auto* root_window = parent->GetRootWindow();
   aura::Window* new_parent = root_window->GetChildById(container);
 
-  if (parent == new_parent)
+  if (parent == new_parent) {
     return false;
+  }
   new_parent->AddChild(GetWidget()->GetNativeWindow());
   return true;
 }
@@ -71,16 +72,18 @@ bool WallpaperWidgetController::Reparent(int container) {
 bool WallpaperWidgetController::SetWallpaperBlur(
     float blur,
     const base::TimeDelta& animation_duration) {
-  if (!widget_->GetNativeWindow())
+  if (!widget_->GetNativeWindow()) {
     return false;
+  }
 
   StopAnimating();
   bool blur_changed = wallpaper_view_->blur_sigma() != blur;
 
   wallpaper_view_->set_blur_sigma(blur);
   // Show the widget when we have something to show.
-  if (!widget_->IsVisible())
+  if (!widget_->IsVisible()) {
     widget_->Show();
+  }
   if (!animation_duration.is_zero()) {
     ApplyCrossFadeAnimation(animation_duration);
   } else {
@@ -106,8 +109,9 @@ void WallpaperWidgetController::OnImplicitAnimationsCompleted() {
 void WallpaperWidgetController::RunAnimationEndCallbacks() {
   std::list<base::OnceClosure> callbacks;
   animation_end_callbacks_.swap(callbacks);
-  for (auto& callback : callbacks)
+  for (auto& callback : callbacks) {
     std::move(callback).Run();
+  }
 }
 
 void WallpaperWidgetController::ApplyCrossFadeAnimation(

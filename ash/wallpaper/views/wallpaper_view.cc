@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wallpaper/wallpaper_view.h"
+#include "ash/wallpaper/views/wallpaper_view.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
-#include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "cc/paint/render_surface_filters.h"
 #include "ui/aura/window.h"
@@ -93,8 +93,9 @@ void WallpaperView::ClearCachedImage() {
 }
 
 void WallpaperView::SetLockShieldEnabled(bool enabled) {
-  if (enabled == !!shield_view_)
+  if (enabled == !!shield_view_) {
     return;
+  }
 
   if (enabled) {
     DCHECK(!shield_view_);
@@ -120,8 +121,9 @@ bool WallpaperView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void WallpaperView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  if (shield_view_)
+  if (shield_view_) {
     shield_view_->SetBoundsRect(parent()->GetLocalBounds());
+  }
 }
 
 bool WallpaperView::AreDropTypesRequired() {

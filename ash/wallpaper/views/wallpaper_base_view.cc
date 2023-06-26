@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wallpaper/wallpaper_base_view.h"
+#include "ash/wallpaper/views/wallpaper_base_view.h"
 
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/session/session_controller_impl.h"
@@ -56,8 +56,9 @@ void WallpaperBaseView::OnPaint(gfx::Canvas* canvas) {
   // with black to make it opaque before painting the wallpaper.
   canvas->FillRect(GetLocalBounds(), SK_ColorBLACK);
 
-  if (wallpaper.isNull())
+  if (wallpaper.isNull()) {
     return;
+  }
 
   cc::PaintFlags flags;
   switch (layout) {
@@ -116,8 +117,9 @@ void WallpaperBaseView::OnPaint(gfx::Canvas* canvas) {
     }
   }
 
-  if (controller->ShouldApplyShield())
+  if (controller->ShouldApplyShield()) {
     canvas->FillRect(GetLocalBounds(), GetWallpaperShieldColor(GetWidget()));
+  }
 }
 
 void WallpaperBaseView::OnThemeChanged() {

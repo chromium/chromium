@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WALLPAPER_WALLPAPER_VIEW_H_
-#define ASH_WALLPAPER_WALLPAPER_VIEW_H_
+#ifndef ASH_WALLPAPER_VIEWS_WALLPAPER_VIEW_H_
+#define ASH_WALLPAPER_VIEWS_WALLPAPER_VIEW_H_
 
 #include <set>
 
-#include "ash/wallpaper/wallpaper_base_view.h"
+#include "ash/wallpaper/views/wallpaper_base_view.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/context_menu_controller.h"
@@ -87,4 +87,4 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
 
 }  // namespace ash
 
-#endif  // ASH_WALLPAPER_WALLPAPER_VIEW_H_
+#endif  // ASH_WALLPAPER_VIEWS_WALLPAPER_VIEW_H_

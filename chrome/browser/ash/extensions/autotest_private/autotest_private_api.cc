@@ -47,7 +47,7 @@
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
-#include "ash/wallpaper/wallpaper_widget_controller.h"
+#include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/wm_event.h"
 #include "base/base64.h"

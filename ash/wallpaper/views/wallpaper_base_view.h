@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WALLPAPER_WALLPAPER_BASE_VIEW_H_
-#define ASH_WALLPAPER_WALLPAPER_BASE_VIEW_H_
+#ifndef ASH_WALLPAPER_VIEWS_WALLPAPER_BASE_VIEW_H_
+#define ASH_WALLPAPER_VIEWS_WALLPAPER_BASE_VIEW_H_
 
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/view.h"
@@ -55,4 +55,4 @@ class WallpaperBaseView : public views::View {
 
 }  // namespace ash
 
-#endif  // ASH_WALLPAPER_WALLPAPER_BASE_VIEW_H_
+#endif  // ASH_WALLPAPER_VIEWS_WALLPAPER_BASE_VIEW_H_
