@@ -4137,6 +4137,11 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
+  'src/components/crash/core/app/internal': {
+    'url': Var('chrome_git') + '/chrome/components/crash.git' + '@' + '977755983e64eb91813875407050afcc7c1b6683',
+    'condition': 'checkout_src_internal',
+  },
+
   'src/components/metrics/internal': {
       'url': Var('chrome_git') + '/chrome/components/metrics/internal.git' + '@' +
         'ac51808a082f35a97395ebb49c74dca809bd7540',

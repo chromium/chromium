@@ -209,6 +209,7 @@ vs-chromium-project.txt
 /components/autofill/core/browser/form_parsing/internal_resources
 /components/chrome_settings_proto_generated_compile.xml
 /components/cloud_policy_proto_generated_compile.xml
+/components/crash/core/app/internal
 /components/gcm_driver.xml
 /components/history_clusters/internal
 /components/leveldb_proto_test_support.xml
