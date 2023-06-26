@@ -2795,10 +2795,22 @@ config("strip_debug") {
 }
 
 if (is_apple) {
-  # On Mac and iOS, this enables support for ARC (automatic ref-counting).
-  # See http://clang.llvm.org/docs/AutomaticReferenceCounting.html.
+  # On macOS and iOS, this enables support for ARC (automatic reference
+  # counting). See http://clang.llvm.org/docs/AutomaticReferenceCounting.html.
+  #
+  # -fobjc-arc enables ARC overall.
+  #
+  # ARC does not add exception handlers to pure Objective-C code, but does add
+  # them to Objective-C++ code with the rationale that C++ pervasively adds them
+  # in for exception safety. However, exceptions are banned in Chromium code for
+  # C++ and exceptions in Objective-C code are intended to be fatal, so
+  # -fno-objc-arc-exceptions is specified to disable these unwanted exception
+  # handlers.
   config("enable_arc") {
-    common_flags = [ "-fobjc-arc" ]
+    common_flags = [
+      "-fobjc-arc",
+      "-fno-objc-arc-exceptions",
+    ]
     cflags_objc = common_flags
     cflags_objcc = common_flags
   }
