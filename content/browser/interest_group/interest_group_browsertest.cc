@@ -4314,19 +4314,43 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidAuctionSignals) {
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
-  AttachInterestGroupObserver();
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
   EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
-      "auctionSignals for AuctionAdConfig with seller 'https://test.com' must "
-      "be a JSON-serializable object.",
-      RunAuctionAndWait(R"({
-      seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
-      auctionSignals: alert
-  })"));
-  WaitForAccessObserved({});
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': auctionSignals for AuctionAdConfig with seller "
+      "'https://a.test:*' must be a JSON-serializable object.");
+
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      auctionSignals: alert,
+      interestGroupBuyers: [$1]
+  })",
+                                        test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
 }
 
 // Exercise rejection path in the renderer for promise-delivered auction
@@ -4413,19 +4437,43 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidSellerSignals) {
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
-  AttachInterestGroupObserver();
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
   EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
-      "sellerSignals for AuctionAdConfig with seller 'https://test.com' must "
-      "be a JSON-serializable object.",
-      RunAuctionAndWait(R"({
-      seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
-      sellerSignals: function() {}
-  })"));
-  WaitForAccessObserved({});
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': sellerSignals for AuctionAdConfig with seller "
+      "'https://a.test:*' must be a JSON-serializable object.");
+
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      sellerSignals: function() {},
+      interestGroupBuyers: [$1]
+  })",
+                                        test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
 }
 
 // Exercise rejection path in the renderer for promise-delivered seller signals.
@@ -4591,19 +4639,44 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerSignalsOrigin) {
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
-  AttachInterestGroupObserver();
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
   EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
-      "perBuyerSignals buyer 'https://invalid^&' for AuctionAdConfig with "
-      "seller 'https://test.com' must be a valid https origin.",
-      RunAuctionAndWait(R"({
-      seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
-      perBuyerSignals: {'https://invalid^&': {a:1}}
-  })"));
-  WaitForAccessObserved({});
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': perBuyerSignals buyer 'https://invalid^&' for "
+      "AuctionAdConfig with seller 'https://a.test:*' must be a valid https "
+      "origin.");
+
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      perBuyerSignals: {'https://invalid^&': {a:1}},
+      interestGroupBuyers: [$1]
+  })",
+                                        test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
 }
 
 // Test rejection path in the renderer for promise-delivered perBuyerTimeouts.
@@ -4690,20 +4763,44 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerTimeoutsOrigin) {
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
-  AttachInterestGroupObserver();
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
   EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
-      "perBuyerTimeouts buyer 'https://invalid^&' for AuctionAdConfig with "
-      "seller 'https://test.com' must be \"*\" (wildcard) or a valid https "
-      "origin.",
-      RunAuctionAndWait(R"({
-      seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
-      perBuyerTimeouts: {'https://invalid^&': 100}
-  })"));
-  WaitForAccessObserved({});
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': perBuyerTimeouts buyer 'https://invalid^&' for "
+      "AuctionAdConfig with seller 'https://a.test:*' must be \"*\" (wildcard) "
+      "or a valid https origin.");
+
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      perBuyerTimeouts: {'https://invalid^&': 100},
+      interestGroupBuyers: [$1]
+  })",
+                                        test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
 }
 
 // Test rejection path in the renderer for promise-delivered
@@ -4792,57 +4889,126 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerCumulativeTimeoutsOrigin) {
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
-  AttachInterestGroupObserver();
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
   EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
-      "perBuyerCumulativeTimeouts buyer 'https://invalid^&' for "
-      "AuctionAdConfig "
-      "with seller 'https://test.com' must be \"*\" (wildcard) or a valid "
-      "https origin.",
-      RunAuctionAndWait(R"({
-      seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
-      perBuyerCumulativeTimeouts: {'https://invalid^&': 100}
-  })"));
-  WaitForAccessObserved({});
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': perBuyerCumulativeTimeouts buyer "
+      "'https://invalid^&' for AuctionAdConfig with seller 'https://a.test:*' "
+      "must be \"*\" (wildcard) or a valid https origin.");
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      perBuyerCumulativeTimeouts: {'https://invalid^&': 100},
+      interestGroupBuyers: [$1]
+  })",
+                                        test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerCurrenciesOrigin) {
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
-  AttachInterestGroupObserver();
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
   EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
-      "perBuyerCurrencies buyer 'https://invalid^&' for "
-      "AuctionAdConfig "
-      "with seller 'https://test.com' must be \"*\" (wildcard) or a valid "
-      "https origin.",
-      RunAuctionAndWait(R"({
-      seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
-      perBuyerCurrencies: {'https://invalid^&': 'USD'}
-  })"));
-  WaitForAccessObserved({});
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': perBuyerCurrencies buyer 'https://invalid^&' for "
+      "AuctionAdConfig with seller 'https://a.test:*' must be \"*\" (wildcard) "
+      "or a valid https origin.");
+
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      perBuyerCurrencies: {'https://invalid^&': 'USD'},
+      interestGroupBuyers: [$1]
+  })",
+                                        test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerCurrenciesCurrency) {
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
-  AttachInterestGroupObserver();
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
   EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator':"
-      " perBuyerCurrencies currency 'usd' for AuctionAdConfig with seller"
-      " 'https://test.com' must be a 3-letter uppercase currency code.",
-      RunAuctionAndWait(R"({
-      seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
-      perBuyerCurrencies: {'*': 'usd'}
-  })"));
-  WaitForAccessObserved({});
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': perBuyerCurrencies currency 'usd' for "
+      "AuctionAdConfig with seller 'https://a.test:*' must be a 3-letter "
+      "uppercase currency code.");
+
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      perBuyerCurrencies: {'*': 'usd'},
+      interestGroupBuyers: [$1]
+  })",
+                                        test_origin, decision_url)));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -5021,19 +5187,43 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidPerBuyerSignals) {
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
-  AttachInterestGroupObserver();
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
   EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
-      "perBuyerSignals for AuctionAdConfig with seller 'https://test.com' "
-      "must be a JSON-serializable object.",
-      RunAuctionAndWait(R"({
-      seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
-      perBuyerSignals: {'https://test.com': function() {}}
-  })"));
-  WaitForAccessObserved({});
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': perBuyerSignals for AuctionAdConfig with seller "
+      "'https://a.test:*' must be a JSON-serializable object.");
+
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      perBuyerSignals: {'https://test.com': function() {}},
+      interestGroupBuyers: [$1]
+  })",
+                                        test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -5159,74 +5349,170 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidDirectFromSellerSignalsInvalidURL) {
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
-  AttachInterestGroupObserver();
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
   EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
-      "directFromSellerSignals 'https://invalid^&' for AuctionAdConfig with "
-      "seller 'https://test.com' cannot be resolved to a valid URL.",
-      RunAuctionAndWait(R"({
-      seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
-      directFromSellerSignals: 'https://invalid^&'
-  })"));
-  WaitForAccessObserved({});
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': directFromSellerSignals 'https://invalid^&' for "
+      "AuctionAdConfig with seller 'https://a.test:*' cannot be resolved to a "
+      "valid URL.");
+
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      directFromSellerSignals: 'https://invalid^&',
+      interestGroupBuyers: [$1]
+  })",
+                                        test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidDirectFromSellerSignalsNotHttps) {
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
-  AttachInterestGroupObserver();
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
   EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
-      "directFromSellerSignals 'http://test.com/signals' for AuctionAdConfig "
-      "with seller 'https://test.com' must match seller origin; only https "
-      "scheme is supported.",
-      RunAuctionAndWait(R"({
-      seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
-      directFromSellerSignals: 'http://test.com/signals'
-  })"));
-  WaitForAccessObserved({});
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': directFromSellerSignals 'http://test.com/signals' "
+      "for AuctionAdConfig with seller 'https://a.test:*' must match seller "
+      "origin; only https scheme is supported.");
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      directFromSellerSignals: 'http://test.com/signals',
+      interestGroupBuyers: [$1]
+  })",
+                                        test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionInvalidDirectFromSellerSignalsWrongOrigin) {
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
-  AttachInterestGroupObserver();
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
   EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
-      "directFromSellerSignals 'https://test2.com/signals' for AuctionAdConfig "
-      "with seller 'https://test.com' must match seller origin; only https "
-      "scheme is supported.",
-      RunAuctionAndWait(R"({
-      seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
-      directFromSellerSignals: 'https://test2.com/signals'
-  })"));
-  WaitForAccessObserved({});
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': directFromSellerSignals 'https://test2.com/signals' "
+      "for AuctionAdConfig with seller 'https://a.test:*' must match seller "
+      "origin; only https scheme is supported.");
+
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      directFromSellerSignals: 'https://test2.com/signals',
+      interestGroupBuyers: [$1]
+  })",
+                                        test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(
     InterestGroupBrowserTest,
     RunAdAuctionInvalidDirectFromSellerSignalsHasQueryString) {
-  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
-  AttachInterestGroupObserver();
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
+  // Note: at present at least one bid must be made for promise checking to
+  // be guaranteed to happen; if the auction is (effectively) empty whether
+  // it happens or not is timing-dependent.
   EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
-      "directFromSellerSignals 'https://test.com/signals?shouldntBeHere' for "
-      "AuctionAdConfig with seller 'https://test.com' URL prefix must not have "
-      "a query string.",
-      RunAuctionAndWait(R"({
-      seller: 'https://test.com',
-      decisionLogicUrl: 'https://test.com',
-      directFromSellerSignals: 'https://test.com/signals?shouldntBeHere'
-  })"));
-  WaitForAccessObserved({});
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0,
+          /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Uncaught (in promise) TypeError: Failed to execute 'runAdAuction' on "
+      "'NavigatorAuction': directFromSellerSignals "
+      "'https://a.test:*/signals?shouldntBeHere' for AuctionAdConfig with "
+      "seller 'https://a.test:*' URL prefix must not have a query string.");
+
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      directFromSellerSignals: $1 + '/signals?shouldntBeHere',
+      interestGroupBuyers: [$1]
+  })",
+                                        test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
 }
 
 // `bidder_origin` is used in per-buyer signals, but the bundle only has
