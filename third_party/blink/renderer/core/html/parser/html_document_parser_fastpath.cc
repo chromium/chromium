@@ -613,7 +613,7 @@ class HTMLFastPathParser {
     // input. This path could handle other valid attribute name chars, but they
     // are not as common, so it only looks for lowercase.
     const Char* start = pos_;
-    while (pos_ != end_ && *pos_ >= 'a' && *pos_ <= 'z') {
+    while (pos_ != end_ && ((*pos_ >= 'a' && *pos_ <= 'z') || *pos_ == '-')) {
       ++pos_;
     }
     if (UNLIKELY(pos_ == end_)) {
