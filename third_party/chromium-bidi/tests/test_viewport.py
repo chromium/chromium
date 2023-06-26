@@ -53,3 +53,27 @@ async def test_set_viewport(websocket, context_id):
         "type": "number",
         "value": 300
     }]] == result["result"]["value"]
+
+
+@pytest.mark.asyncio
+async def test_set_viewport_unsupported(websocket, context_id):
+    await goto_url(websocket, context_id, "about:blank")
+
+    with pytest.raises(Exception) as exception_info:
+        # https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:content/browser/devtools/protocol/emulation_handler.cc;l=232;drc=1890f3f74c8100eb1a3e945d34d6fd576d2a9061
+        await execute_command(
+            websocket, {
+                "method": "browsingContext.setViewport",
+                "params": {
+                    "context": context_id,
+                    "viewport": {
+                        "width": 10000001,
+                        "height": 10000001,
+                    }
+                }
+            })
+
+    assert {
+        "error": "unsupported operation",
+        "message": "Provided viewport dimensions are not supported"
+    } == exception_info.value.args[0]
