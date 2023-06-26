@@ -76,46 +76,6 @@ absl::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axis,
 
 }  // namespace
 
-CSSToLengthConversionData::FontSizes::FontSizes(float em,
-                                                float rem,
-                                                const Font* font,
-                                                float font_zoom)
-    : em_(em),
-      rem_(rem),
-      font_(font),
-      root_font_(font),
-      font_zoom_(font_zoom),
-      root_font_zoom_(font_zoom) {
-  DCHECK(font_);
-}
-
-CSSToLengthConversionData::FontSizes::FontSizes(float em,
-                                                float rem,
-                                                const Font* font,
-                                                const Font* root_font,
-                                                float font_zoom,
-                                                float root_font_zoom)
-    : em_(em),
-      rem_(rem),
-      font_(font),
-      root_font_(root_font),
-      font_zoom_(font_zoom),
-      root_font_zoom_(root_font_zoom) {
-  DCHECK(font_);
-  DCHECK(root_font_);
-}
-
-CSSToLengthConversionData::FontSizes::FontSizes(const FontSizeStyle& style,
-                                                const ComputedStyle* root_style)
-    : FontSizes(
-          style.SpecifiedFontSize(),
-          root_style ? root_style->SpecifiedFontSize()
-                     : style.SpecifiedFontSize(),
-          &style.GetFont(),
-          root_style ? &root_style->GetFont() : &style.GetFont(),
-          style.EffectiveZoom(),
-          root_style ? root_style->EffectiveZoom() : style.EffectiveZoom()) {}
-
 float CSSToLengthConversionData::FontSizes::Ex(float zoom) const {
   DCHECK(font_);
   const SimpleFontData* font_data = font_->PrimaryFont();

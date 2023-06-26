@@ -58,14 +58,41 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
 
    public:
     FontSizes() = default;
-    FontSizes(float em, float rem, const Font*, float font_zoom);
+    FontSizes(float em, float rem, const Font* font, float font_zoom)
+        : em_(em),
+          rem_(rem),
+          font_(font),
+          root_font_(font),
+          font_zoom_(font_zoom),
+          root_font_zoom_(font_zoom) {
+      DCHECK(font_);
+    }
+
     FontSizes(float em,
               float rem,
               const Font* font,
               const Font* root_font,
               float font_zoom,
-              float root_font_zoom);
-    FontSizes(const FontSizeStyle&, const ComputedStyle* root_style);
+              float root_font_zoom)
+        : em_(em),
+          rem_(rem),
+          font_(font),
+          root_font_(root_font),
+          font_zoom_(font_zoom),
+          root_font_zoom_(root_font_zoom) {
+      DCHECK(font_);
+      DCHECK(root_font_);
+    }
+
+    FontSizes(const FontSizeStyle& style, const ComputedStyle* root_style)
+        : FontSizes(style.SpecifiedFontSize(),
+                    root_style ? root_style->SpecifiedFontSize()
+                               : style.SpecifiedFontSize(),
+                    &style.GetFont(),
+                    root_style ? &root_style->GetFont() : &style.GetFont(),
+                    style.EffectiveZoom(),
+                    root_style ? root_style->EffectiveZoom()
+                               : style.EffectiveZoom()) {}
 
     float Em(float zoom) const { return em_ * zoom; }
     float Rem(float zoom) const { return rem_ * zoom; }
