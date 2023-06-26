@@ -409,6 +409,7 @@ crbug.com/1453989 [ linux nvidia ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableOOP
 
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLCopyImage [ Skip ]
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas [ Skip ]
+crbug.com/1456755 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLDisplayP3 [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
