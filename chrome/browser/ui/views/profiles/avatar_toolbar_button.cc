@@ -199,6 +199,14 @@ void AvatarToolbarButton::UpdateText() {
   // text might be updated by setting the highlight.
   UpdateLayoutInsets();
 
+  if (features::IsChromeRefresh2023()) {
+    UpdateInkdrop();
+    // Outset focus ring should be present for the chip but not when only
+    // the icon is visible.
+    views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(
+        IsLabelPresentAndVisible() ? false : true);
+  }
+
   // TODO(crbug.com/1078221): this is a hack because toolbar buttons don't
   // correctly calculate their preferred size until they've been laid out once
   // or twice, because they modify their own borders and insets in response to
