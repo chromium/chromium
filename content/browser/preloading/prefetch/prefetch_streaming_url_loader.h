@@ -19,6 +19,16 @@ namespace content {
 
 class PrefetchStreamingURLLoader;
 
+// `PrefetchResponseReader` stores the prefetched data needed for serving, and
+// serves a URLLoaderClient (`serving_url_loader_client_`). One
+// `PrefetchResponseReader` corresponds to one
+// `PrefetchContainer::SinglePrefetch`, i.e. one redirect hop.
+//
+// A sequences of events are received from `PrefetchStreamingURLLoader` and
+// served to `serving_url_loader_client_`. Expected sequences are either:
+// - Redirect cases: `HandleRedirect()` [last event]
+// - Non-redirect cases: `OnReceiveResponse()` -> `OnComplete()` [last event]
+// with optional `OnReceiveEarlyHints()` and `OnTransferSizeUpdated()` events.
 class CONTENT_EXPORT PrefetchResponseReader final
     : public network::mojom::URLLoader {
  public:
@@ -27,15 +37,10 @@ class CONTENT_EXPORT PrefetchResponseReader final
 
   void SetStreamingURLLoader(
       base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader);
+  base::WeakPtr<PrefetchStreamingURLLoader> GetStreamingLoader() const;
 
   void MakeSelfOwned(std::unique_ptr<PrefetchResponseReader> self);
   void PostTaskToDeleteSelf();
-
-  // Whether |this| is ready to serve its last set of events. This can either be
-  // the head and body of the overall prefetch, or a redirect that required a
-  // switch in network context and was followed in a separate
-  // |PrefetchStreamingURLLoader|.
-  bool IsReadyToServeLastEvents() const;
 
   // Adds events (plumbing either directly to `serving_url_loader_client_` or
   // via `AddEventToQueue()`) from the methods with the same names in
@@ -44,8 +49,7 @@ class CONTENT_EXPORT PrefetchResponseReader final
   void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
                          mojo::ScopedDataPipeConsumerHandle body);
   void HandleRedirect(const net::RedirectInfo& redirect_info,
-                      network::mojom::URLResponseHeadPtr redirect_head,
-                      bool pause_after_event);
+                      network::mojom::URLResponseHeadPtr redirect_head);
   void OnTransferSizeUpdated(int32_t transfer_size_diff);
   void OnComplete(network::URLLoaderCompletionStatus completion_status);
 
@@ -54,14 +58,10 @@ class CONTENT_EXPORT PrefetchResponseReader final
       mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client)>;
 
-  // Creates a request handler to serve the final response of the prefetch, and
+  // Creates a request handler to serve the response of the prefetch, and
   // also makes |this| self owned.
-  RequestHandler ServingFinalResponseHandler(
+  RequestHandler CreateRequestHandler(
       std::unique_ptr<PrefetchResponseReader> self);
-
-  // Creates a request handler to serve the next redirect. Ownership of |this|
-  // does not change.
-  RequestHandler ServingRedirectHandler();
 
   base::WeakPtr<PrefetchResponseReader> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -74,10 +74,8 @@ class CONTENT_EXPORT PrefetchResponseReader final
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
-  // Adds an event to the queue that will be run when serving the prefetch. If
-  // |pause_after_event| is true, then the event queue will pause after running
-  // the event.
-  void AddEventToQueue(base::OnceClosure closure, bool pause_after_event);
+  // Adds an event to the queue that will be run when serving the prefetch.
+  void AddEventToQueue(base::OnceClosure closure);
 
   // Sends all stored events in |event_queue_| to |serving_url_loader_client_|.
   void RunEventQueue();
@@ -107,19 +105,20 @@ class CONTENT_EXPORT PrefetchResponseReader final
   void OnServingURLLoaderMojoDisconnect();
 
   // The URL Loader events that occur before serving the prefetch are queued up
-  // until the prefetch is served. The first value is the closure to run the
-  // event, and the second value is whether or not the event queue should be
-  // paused after running the event.
-  std::vector<std::pair<base::OnceClosure, bool>> event_queue_;
+  // until the prefetch is served.
+  std::vector<base::OnceClosure> event_queue_;
 
   // The status of the event queue.
   enum class EventQueueStatus {
     kNotStarted,
     kRunning,
-    kPaused,
     kFinished,
   };
   EventQueueStatus event_queue_status_{EventQueueStatus::kNotStarted};
+
+  // Indicates whether the last event is added to `event_queue_` and thus no
+  // more events can be added. See the class comment for valid event sequences.
+  bool last_event_added_ = false;
 
   // The URL loader client that will serve the prefetched data.
   mojo::Receiver<network::mojom::URLLoader> serving_url_loader_receiver_{this};

@@ -360,12 +360,10 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
   // Gets handler to serve prefetch from |reseponse_reader|. After this
   // |response_reader| is self owned, so |weak_response_reader| should be used
   // after this point.
-  EXPECT_TRUE(response_reader->IsReadyToServeLastEvents());
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
   PrefetchResponseReader::RequestHandler request_handler =
-      weak_response_reader->ServingFinalResponseHandler(
-          std::move(response_reader));
+      weak_response_reader->CreateRequestHandler(std::move(response_reader));
   streaming_loader->OnStartServing();
 
   // Set up URLLoaderClient to "serve" the prefetch.
@@ -475,12 +473,10 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
   // Gets handler to serve prefetch from |reseponse_reader|. After this
   // |response_reader| is self owned, so |weak_response_reader| should be used
   // after this point.
-  EXPECT_TRUE(response_reader->IsReadyToServeLastEvents());
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
   PrefetchResponseReader::RequestHandler request_handler =
-      weak_response_reader->ServingFinalResponseHandler(
-          std::move(response_reader));
+      weak_response_reader->CreateRequestHandler(std::move(response_reader));
   streaming_loader->OnStartServing();
 
   // Set up URLLoaderClient to "serve" the prefetch.
@@ -862,12 +858,10 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
   // Gets handler to serve prefetch from |reseponse_reader|. After this
   // |response_reader| is self owned, so |weak_response_reader| should be used
   // after this point.
-  EXPECT_TRUE(response_reader->IsReadyToServeLastEvents());
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
   PrefetchResponseReader::RequestHandler request_handler =
-      weak_response_reader->ServingFinalResponseHandler(
-          std::move(response_reader));
+      weak_response_reader->CreateRequestHandler(std::move(response_reader));
   streaming_loader->OnStartServing();
 
   // Set up URLLoaderClient to "serve" the prefetch.
@@ -945,7 +939,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   network::mojom::URLResponseHeadPtr redirect_head;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
-  std::unique_ptr<PrefetchResponseReader> response_reader =
+  std::unique_ptr<PrefetchResponseReader> redirect_response_reader =
       std::make_unique<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
@@ -967,7 +961,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
               &on_response_complete_loop),
           CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
                                                 &redirect_info, &redirect_head),
-          response_reader->GetWeakPtr());
+          redirect_response_reader->GetWeakPtr());
 
   if (GetParam()) {
     streaming_loader->SetOnReceivedHeadCallback(
@@ -988,6 +982,11 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
       std::move(redirect_head));
   on_follow_redirect_loop.Run();
 
+  // Switch to a new ResponseReader.
+  std::unique_ptr<PrefetchResponseReader> final_response_reader =
+      std::make_unique<PrefetchResponseReader>();
+  streaming_loader->SetResponseReader(final_response_reader->GetWeakPtr());
+
   // Simulates receiving the prefetch after the redirect
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
                                                  kBodyContent.size());
@@ -1005,9 +1004,11 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
 
   // Simulates serving the redirect.
-  EXPECT_FALSE(response_reader->IsReadyToServeLastEvents());
+  base::WeakPtr<PrefetchResponseReader> weak_redirect_response_reader =
+      redirect_response_reader->GetWeakPtr();
   PrefetchResponseReader::RequestHandler redirect_handler =
-      response_reader->ServingRedirectHandler();
+      weak_redirect_response_reader->CreateRequestHandler(
+          std::move(redirect_response_reader));
   streaming_loader->OnStartServing();
 
   std::unique_ptr<TestURLLoaderClient> redirect_url_loader_client =
@@ -1034,16 +1035,21 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   EXPECT_EQ(redirect_url_loader_client->received_redirects().size(), 1U);
 
   redirect_url_loader_client->DisconnectMojoPipes();
+
+  EXPECT_TRUE(weak_redirect_response_reader);
   task_environment()->RunUntilIdle();
+  // Once the `PrefetchResponseReader` serves is finished (the redirect is
+  // served) and the serving mojo pipe is disconnected, it should delete
+  // itself while the streaming loader is still alive.
+  EXPECT_FALSE(weak_redirect_response_reader);
   ASSERT_TRUE(streaming_loader);
 
   // Simulates serving the final response.
-  EXPECT_TRUE(response_reader->IsReadyToServeLastEvents());
-  base::WeakPtr<PrefetchResponseReader> weak_response_reader =
-      response_reader->GetWeakPtr();
+  base::WeakPtr<PrefetchResponseReader> weak_final_response_reader =
+      final_response_reader->GetWeakPtr();
   PrefetchResponseReader::RequestHandler final_response_handler =
-      weak_response_reader->ServingFinalResponseHandler(
-          std::move(response_reader));
+      weak_final_response_reader->CreateRequestHandler(
+          std::move(final_response_reader));
   streaming_loader->OnStartServing();
 
   // Set up URLLoaderClient to "serve" the prefetch.
@@ -1069,12 +1075,12 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
 
   serving_url_loader_client->DisconnectMojoPipes();
 
-  EXPECT_TRUE(weak_response_reader);
+  EXPECT_TRUE(weak_final_response_reader);
   task_environment()->RunUntilIdle();
   // Once the `PrefetchResponseReader` serves is finished (all prefetched data
   // served) and the serving mojo pipe is disconnected, it should delete
   // itself.
-  EXPECT_FALSE(weak_response_reader);
+  EXPECT_FALSE(weak_final_response_reader);
 
   streaming_loader.reset();
 
@@ -1206,12 +1212,10 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
   // redirect. The follow up streaming URL loader would then continue serving
   // the prefetch.
   EXPECT_FALSE(streaming_loader->Servable(base::TimeDelta::Max()));
-  EXPECT_TRUE(response_reader->IsReadyToServeLastEvents());
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
   PrefetchResponseReader::RequestHandler redirect_handler =
-      weak_response_reader->ServingFinalResponseHandler(
-          std::move(response_reader));
+      weak_response_reader->CreateRequestHandler(std::move(response_reader));
   streaming_loader->OnStartServing();
 
   std::unique_ptr<TestURLLoaderClient> serving_url_loader_client =
@@ -1502,8 +1506,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, StopTimeoutTimerAfterBeingServed) {
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
   PrefetchResponseReader::RequestHandler request_handler =
-      weak_response_reader->ServingFinalResponseHandler(
-          std::move(response_reader));
+      weak_response_reader->CreateRequestHandler(std::move(response_reader));
   streaming_loader->OnStartServing();
 
   std::unique_ptr<TestURLLoaderClient> serving_url_loader_client =
@@ -1687,12 +1690,10 @@ TEST_F(PrefetchStreamingURLLoaderTest, TransferSizeUpdated) {
   // Gets handler to serve prefetch from |reseponse_reader|. After this
   // |response_reader| is self owned, so |weak_response_reader| should be used
   // after this point.
-  EXPECT_TRUE(response_reader->IsReadyToServeLastEvents());
   base::WeakPtr<PrefetchResponseReader> weak_response_reader =
       response_reader->GetWeakPtr();
   PrefetchResponseReader::RequestHandler request_handler =
-      weak_response_reader->ServingFinalResponseHandler(
-          std::move(response_reader));
+      weak_response_reader->CreateRequestHandler(std::move(response_reader));
   streaming_loader->OnStartServing();
 
   // Set up URLLoaderClient to "serve" the prefetch.

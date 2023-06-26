@@ -776,6 +776,8 @@ void PrefetchService::OnGotEligibilityResultForRedirect(
         PrefetchStreamingURLLoaderStatus::
             kStopSwitchInNetworkContextForRedirect,
         redirect_info, std::move(redirect_head));
+    // The new ResponseReader is associated with the new streaming URL loader at
+    // the PrefetchStreamingURLLoader constructor.
     MakePrefetchRequest(prefetch_container, redirect_info.new_url);
 
     return;
@@ -785,6 +787,9 @@ void PrefetchService::OnGotEligibilityResultForRedirect(
   prefetch_container->GetLastStreamingURLLoader()->HandleRedirect(
       PrefetchStreamingURLLoaderStatus::kFollowRedirect, redirect_info,
       std::move(redirect_head));
+  // Associate the new ResponseReader with the current streaming URL loader.
+  prefetch_container->GetLastStreamingURLLoader()->SetResponseReader(
+      prefetch_container->GetResponseReaderForCurrentPrefetch());
 }
 
 void PrefetchService::Prefetch() {
@@ -1069,8 +1074,6 @@ void PrefetchService::MakePrefetchRequest(
             policy_exception_justification: "Not implemented."
         })");
 
-  std::unique_ptr<PrefetchResponseReader> response_reader =
-      std::make_unique<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           GetURLLoaderFactoryForCurrentPrefetch(prefetch_container),
@@ -1081,10 +1084,9 @@ void PrefetchService::MakePrefetchRequest(
                          base::Unretained(this), prefetch_container),
           base::BindRepeating(&PrefetchService::OnPrefetchRedirect,
                               base::Unretained(this), prefetch_container),
-          response_reader->GetWeakPtr());
+          prefetch_container->GetResponseReaderForCurrentPrefetch());
 
-  prefetch_container->TakeStreamingURLLoader(
-      std::make_pair(std::move(streaming_loader), std::move(response_reader)));
+  prefetch_container->TakeStreamingURLLoader(std::move(streaming_loader));
 
   DVLOG(1) << *prefetch_container << ": PrefetchStreamingURLLoader is created.";
 }

@@ -51,6 +51,40 @@ struct PrefetchResponseSizes {
 };
 
 // This class contains the state for a request to prefetch a specific URL.
+//
+// A `PrefetchContainer` can have multiple `PrefetchContainer::SinglePrefetch`es
+// and `PrefetchStreamingURLLoader`s to support redirects. Each
+// `PrefetchContainer::SinglePrefetch` in `redirect_chain_` corresponds to a
+// single redirect hop, while a single `PrefetchStreamingURLLoader` in
+// `streaming_loaders_` can receive multiple redirect hops unless network
+// context switching is needed.
+//
+// For example:
+//
+// |PrefetchStreamingURLLoader A-----| |PrefetchStreamingURLLoader B ---------|
+// HandleRedirect  - HandleRedirect  - HandleRedirect  - ReceiveResponse-Finish
+// |SinglePrefetch0| |SinglePrefetch1| |SinglePrefetch2| |SinglePrefetch3-----|
+//
+// While prefetching (see methods named like "ForCurrentPrefetch" or
+// "ToPrefetch"), `SinglePrefetch`es and `PrefetchStreamingURLLoader`s (among
+// other members) are added and filled. The steps for creating these objects and
+// associating with each other span multiple classes/methods:
+//
+// 1. A new `PrefetchContainer::SinglePrefetch` and thus a new
+// `PrefetchResponseReader` is created and added to `redirect_chain_`.
+// This is done either in:
+// - `PrefetchContainer` constructor [for an initial request], or
+// - `AddRedirectHop()` [for a redirect].
+//
+// 2. The new `PrefetchResponseReader` (created at Step 1, referenced as
+// `GetResponseReaderForCurrentPrefetch()`) is associated with the
+// `PrefetchStreamingURLLoader` to be used.
+// This is done either in (see the indirect call sites of
+// `PrefetchStreamingURLLoader::SetResponseReader()`):
+// - `PrefetchService::StartSinglePrefetch()` [initial request] or
+// - `PrefetchService::OnGotEligibilityResultForRedirect()` [redirect].
+// A new `PrefetchStreamingURLLoader` is also created if needed in
+// `PrefetchService::MakePrefetchRequest()`.
 class CONTENT_EXPORT PrefetchContainer {
  public:
   PrefetchContainer(
@@ -90,6 +124,8 @@ class CONTENT_EXPORT PrefetchContainer {
   // Whether or not an isolated network context is required for the previous
   // redirect hop of the given url.
   bool IsIsolatedNetworkContextRequiredForPreviousRedirectHop() const;
+
+  base::WeakPtr<PrefetchResponseReader> GetResponseReaderForCurrentPrefetch();
 
   // Gets the site for the previous redirect hop to the given URL.
   net::SchemefulSite GetSiteForPreviousRedirectHop(const GURL& url) const;
@@ -140,7 +176,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The length of the redirect chain for this prefetch.
   size_t GetRedirectChainSize() const { return redirect_chain_.size(); }
-  GURL GetMatchingURLFromRedirectChain() const;
 
   // Whether this prefetch is a decoy. Decoy prefetches will not store the
   // response, and not serve any prefetched resources.
@@ -159,11 +194,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // Closes idle connections for all elements in |network_contexts_|.
   void CloseIdleConnections();
 
-  // Adds the given |PrefetchStreamingURLLoader| and its
-  // |PrefetchResponseReader| to the end of |streaming_loaders_|.
+  // Adds the given |PrefetchStreamingURLLoader| to the end of
+  // |streaming_loaders_|.
   void TakeStreamingURLLoader(
-      std::pair<std::unique_ptr<PrefetchStreamingURLLoader>,
-                std::unique_ptr<PrefetchResponseReader>>);
+      std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader);
 
   // Set up a RequestHandler from the prefetch. After this point,
   // - The PrefetchResponseReader will manage its own lifetime, and will delete
@@ -174,7 +208,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // `streaming_loaders_`.
   PrefetchResponseReader::RequestHandler CreateRequestHandler();
 
-  bool HasRemainingResponseReader() const;
+  bool HasStreamingURLLoadersForTest() const;
 
   // Returns the last |PrefetchStreamingURLLoader| from |streaming_loaders_|.
   // This URL loader should be used when fetching the prefetch.
@@ -291,6 +325,10 @@ class CONTENT_EXPORT PrefetchContainer {
     Reader(const Reader&) = delete;
     Reader& operator=(const Reader&) = delete;
 
+    // Returns whether the Reader reached the end. If true, the other methods
+    // shouldn't be called, because the current `SinglePrefetch` doesn't exist.
+    bool IsEnd() const;
+
     // Whether or not an isolated network context is required to serve.
     bool IsIsolatedNetworkContextRequiredToServe() const;
 
@@ -321,6 +359,9 @@ class CONTENT_EXPORT PrefetchContainer {
     // Returns the URL that can be served next.
     const GURL& GetCurrentURLToServe() const;
 
+    // Takes the ownership of the current PrefetchResponseReader.
+    std::unique_ptr<PrefetchResponseReader> TakeCurrentResponseReaderToServe();
+
     // Called when one element of |redirect_chain_| is served and the next
     // element can now be served.
     void AdvanceCurrentURLToServe() { index_redirect_chain_to_serve_++; }
@@ -329,10 +370,10 @@ class CONTENT_EXPORT PrefetchContainer {
       index_redirect_chain_to_serve_ = 0;
     }
 
-   private:
     // Returns the `SinglePrefetch` to be served next.
     const SinglePrefetch& GetCurrentSinglePrefetchToServe() const;
 
+   private:
     // Currently the lifetime of `Reader` and `PrefetchContainer` are the same
     // and thus this reference is always valid as long as `Reader` is valid.
     const raw_ref<PrefetchContainer> prefetch_container_;
@@ -427,13 +468,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // The series of streaming URL loaders used to fetch and serve this prefetch.
   // Multiple streaming URL loaders are used in the event a redirect causes a
   // change in the network context.
-  // TODO(crbug.com/1449360): Although paired with |PrefetchResponseReader|,
-  // this and similar members/variables are named "streaming_loaders". This is
-  // expected transient and |PrefetchResponseReader| will be moved out to
-  // another location.
-  std::vector<std::pair<std::unique_ptr<PrefetchStreamingURLLoader>,
-                        std::unique_ptr<PrefetchResponseReader>>>
-      streaming_loaders_;
+  std::vector<std::unique_ptr<PrefetchStreamingURLLoader>> streaming_loaders_;
 
   // The time at which |prefetched_response_| was received. This is used to
   // determine whether or not |prefetched_response_| is stale.

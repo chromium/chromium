@@ -863,7 +863,7 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
       blink::mojom::SpeculationInjectionWorld::kNone,
       /*prefetch_document_manager=*/nullptr);
 
-  EXPECT_FALSE(prefetch_container.HasRemainingResponseReader());
+  EXPECT_FALSE(prefetch_container.HasStreamingURLLoadersForTest());
   EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(), nullptr);
 
   EXPECT_FALSE(prefetch_container.IsPrefetchServable(base::TimeDelta::Max()));
@@ -893,7 +893,7 @@ TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
   PrefetchResponseReader::RequestHandler second_request_handler =
       prefetch_container.CreateRequestHandler();
 
-  EXPECT_FALSE(prefetch_container.HasRemainingResponseReader());
+  EXPECT_FALSE(prefetch_container.HasStreamingURLLoadersForTest());
   EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(), nullptr);
 
   EXPECT_FALSE(prefetch_container.IsPrefetchServable(base::TimeDelta::Max()));
@@ -919,7 +919,7 @@ TEST_F(PrefetchContainerTest, ReleaseAllStreamingURLLoaders) {
       blink::mojom::SpeculationInjectionWorld::kNone,
       /*prefetch_document_manager=*/nullptr);
 
-  EXPECT_FALSE(prefetch_container.HasRemainingResponseReader());
+  EXPECT_FALSE(prefetch_container.HasStreamingURLLoadersForTest());
   EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(), nullptr);
 
   auto streaming_loaders =
@@ -931,7 +931,7 @@ TEST_F(PrefetchContainerTest, ReleaseAllStreamingURLLoaders) {
 
   prefetch_container.ResetAllStreamingURLLoaders();
 
-  EXPECT_FALSE(prefetch_container.HasRemainingResponseReader());
+  EXPECT_FALSE(prefetch_container.HasStreamingURLLoadersForTest());
   EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(), nullptr);
 
   EXPECT_TRUE(streaming_loaders[0]);

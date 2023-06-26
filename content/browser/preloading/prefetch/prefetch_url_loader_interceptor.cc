@@ -140,13 +140,12 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
   // If |prefetch_container| is done serving the prefetch, clear out
   // |redirect_prefetch_container_|, but otherwise cache it in
   // |redirect_prefetch_container_|.
-  if (!prefetch_container->HasRemainingResponseReader()) {
+  if (prefetch_container->GetReader().IsEnd()) {
     if (redirect_prefetch_container_) {
       RecordWasFullRedirectChainServedHistogram(true);
     }
     redirect_prefetch_container_ = nullptr;
   } else {
-    prefetch_container->GetReader().AdvanceCurrentURLToServe();
     redirect_prefetch_container_ = prefetch_container;
   }
 

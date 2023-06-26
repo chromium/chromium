@@ -246,24 +246,20 @@ void PrefetchStreamingURLLoader::HandleRedirect(
 
       if (response_reader_) {
         response_reader_->HandleRedirect(redirect_info,
-                                         std::move(redirect_head),
-                                         /*pause_after_event=*/true);
+                                         std::move(redirect_head));
       }
       break;
     case PrefetchStreamingURLLoaderStatus::
         kStopSwitchInNetworkContextForRedirect:
       // The redirect requires a switch in network context, so the redirect will
       // be followed using a separate PrefetchStreamingURLLoader, and this url
-      // loader will stop its request. When serving the prefetch, this url
-      // loader will forward the redirect, and the other
-      // PrefetchStreamingURLLoader will then continue serving the prefetch.
+      // loader will stop its request.
       DisconnectPrefetchURLLoaderMojo();
       timeout_timer_.AbandonAndStop();
 
       if (response_reader_) {
         response_reader_->HandleRedirect(redirect_info,
-                                         std::move(redirect_head),
-                                         /*pause_after_event=*/false);
+                                         std::move(redirect_head));
       }
       break;
     case PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect:
@@ -390,6 +386,11 @@ void PrefetchResponseReader::SetStreamingURLLoader(
   streaming_url_loader_ = std::move(streaming_url_loader);
 }
 
+base::WeakPtr<PrefetchStreamingURLLoader>
+PrefetchResponseReader::GetStreamingLoader() const {
+  return streaming_url_loader_;
+}
+
 void PrefetchResponseReader::MakeSelfOwned(
     std::unique_ptr<PrefetchResponseReader> self) {
   self_pointer_ = std::move(self);
@@ -412,19 +413,11 @@ void PrefetchResponseReader::OnServingURLLoaderMojoDisconnect() {
 }
 
 PrefetchResponseReader::RequestHandler
-PrefetchResponseReader::ServingFinalResponseHandler(
+PrefetchResponseReader::CreateRequestHandler(
     std::unique_ptr<PrefetchResponseReader> self) {
   DCHECK(self);
-  DCHECK(IsReadyToServeLastEvents());
   return base::BindOnce(&PrefetchResponseReader::BindAndStart,
                         weak_ptr_factory_.GetWeakPtr(), std::move(self));
-}
-
-PrefetchResponseReader::RequestHandler
-PrefetchResponseReader::ServingRedirectHandler() {
-  DCHECK(!IsReadyToServeLastEvents());
-  return base::BindOnce(&PrefetchResponseReader::BindAndStart,
-                        weak_ptr_factory_.GetWeakPtr(), nullptr);
 }
 
 void PrefetchResponseReader::BindAndStart(
@@ -432,14 +425,11 @@ void PrefetchResponseReader::BindAndStart(
     const network::ResourceRequest& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  DCHECK(!self || self.get() == this);
+  DCHECK(self.get() == this);
   DCHECK(!serving_url_loader_receiver_.is_bound());
 
-  // If the final response is ready to be served, then make self owned, and
-  // delete self once serving the prefetch is finished.
-  if (self) {
-    MakeSelfOwned(std::move(self));
-  }
+  // Make self owned, and delete self once serving is finished.
+  MakeSelfOwned(std::move(self));
 
   serving_url_loader_receiver_.Bind(std::move(receiver));
   serving_url_loader_receiver_.set_disconnect_handler(
@@ -450,48 +440,30 @@ void PrefetchResponseReader::BindAndStart(
   RunEventQueue();
 }
 
-bool PrefetchResponseReader::IsReadyToServeLastEvents() const {
-  for (const auto& event : event_queue_) {
-    if (event.second) {
-      return false;
-    }
-  }
-  return true;
-}
-
-void PrefetchResponseReader::AddEventToQueue(base::OnceClosure closure,
-                                             bool pause_after_event) {
+void PrefetchResponseReader::AddEventToQueue(base::OnceClosure closure) {
   DCHECK(event_queue_status_ != EventQueueStatus::kFinished);
 
-  event_queue_.emplace_back(std::move(closure), pause_after_event);
+  event_queue_.emplace_back(std::move(closure));
 }
 
 void PrefetchResponseReader::RunEventQueue() {
   DCHECK(serving_url_loader_client_);
   DCHECK(event_queue_.size() > 0);
-  DCHECK(event_queue_status_ == EventQueueStatus::kNotStarted ||
-         event_queue_status_ == EventQueueStatus::kPaused);
+  DCHECK_EQ(event_queue_status_, EventQueueStatus::kNotStarted);
 
   event_queue_status_ = EventQueueStatus::kRunning;
   while (event_queue_.size() > 0) {
     auto event_itr = event_queue_.begin();
-
-    base::OnceClosure& event_closure = event_itr->first;
-    bool pause_after_event = event_itr->second;
-
-    std::move(event_closure).Run();
-
+    std::move(*event_itr).Run();
     event_queue_.erase(event_itr);
-    if (pause_after_event) {
-      event_queue_status_ = EventQueueStatus::kPaused;
-      return;
-    }
   }
   event_queue_status_ = EventQueueStatus::kFinished;
 }
 
 void PrefetchResponseReader::OnComplete(
     network::URLLoaderCompletionStatus completion_status) {
+  DCHECK(!last_event_added_);
+  last_event_added_ = true;
   if (serving_url_loader_client_ &&
       event_queue_status_ == EventQueueStatus::kFinished) {
     ForwardCompletionStatus(completion_status);
@@ -499,25 +471,25 @@ void PrefetchResponseReader::OnComplete(
   }
   AddEventToQueue(
       base::BindOnce(&PrefetchResponseReader::ForwardCompletionStatus,
-                     base::Unretained(this), completion_status),
-      /*pause_after_event=*/false);
+                     base::Unretained(this), completion_status));
 }
 
 void PrefetchResponseReader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
+  DCHECK(!last_event_added_);
   if (serving_url_loader_client_ &&
       event_queue_status_ == EventQueueStatus::kFinished) {
     ForwardEarlyHints(std::move(early_hints));
     return;
   }
 
-  AddEventToQueue(
-      base::BindOnce(&PrefetchResponseReader::ForwardEarlyHints,
-                     base::Unretained(this), std::move(early_hints)),
-      /*pause_after_event=*/false);
+  AddEventToQueue(base::BindOnce(&PrefetchResponseReader::ForwardEarlyHints,
+                                 base::Unretained(this),
+                                 std::move(early_hints)));
 }
 
 void PrefetchResponseReader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
+  DCHECK(!last_event_added_);
   if (serving_url_loader_client_ &&
       event_queue_status_ == EventQueueStatus::kFinished) {
     ForwardTransferSizeUpdate(transfer_size_diff);
@@ -526,29 +498,31 @@ void PrefetchResponseReader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
 
   AddEventToQueue(
       base::BindOnce(&PrefetchResponseReader::ForwardTransferSizeUpdate,
-                     base::Unretained(this), transfer_size_diff),
-      /*pause_after_event=*/false);
+                     base::Unretained(this), transfer_size_diff));
 }
 
 void PrefetchResponseReader::HandleRedirect(
     const net::RedirectInfo& redirect_info,
-    network::mojom::URLResponseHeadPtr redirect_head,
-    bool pause_after_event) {
+    network::mojom::URLResponseHeadPtr redirect_head) {
+  DCHECK(!last_event_added_);
+  // Because we always switch to a new `PrefetchResponseReader` on redirects,
+  // this redirect event is the last event of `this`.
+  last_event_added_ = true;
+
   DCHECK(event_queue_status_ == EventQueueStatus::kNotStarted);
   AddEventToQueue(base::BindOnce(&PrefetchResponseReader::ForwardRedirect,
                                  base::Unretained(this), redirect_info,
-                                 std::move(redirect_head)),
-                  pause_after_event);
+                                 std::move(redirect_head)));
 }
 
 void PrefetchResponseReader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body) {
+  DCHECK(!last_event_added_);
   DCHECK(event_queue_status_ == EventQueueStatus::kNotStarted);
-  AddEventToQueue(
-      base::BindOnce(&PrefetchResponseReader::ForwardResponse,
-                     base::Unretained(this), std::move(head), std::move(body)),
-      /*pause_after_event=*/false);
+  AddEventToQueue(base::BindOnce(&PrefetchResponseReader::ForwardResponse,
+                                 base::Unretained(this), std::move(head),
+                                 std::move(body)));
 }
 
 void PrefetchResponseReader::ForwardCompletionStatus(
