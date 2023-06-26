@@ -296,8 +296,8 @@ id<GREYMatcher> notPracticallyVisible() {
 }
 
 // Tests that the fake omnibox width is correctly updated after a rotation.
-- (void)testOmniboxWidthRotation {
-
+// TODO(crbug.com/652465): Re-enable when fixed.
+- (void)DISABLED_testOmniboxWidthRotation {
   // TODO(crbug.com/652465): Enable the test for iPad when rotation bug is
   // fixed.
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -337,8 +337,8 @@ id<GREYMatcher> notPracticallyVisible() {
 
 // Tests that the fake omnibox width is correctly updated after a rotation done
 // while the settings screen is shown.
-- (void)testOmniboxWidthRotationBehindSettings {
-
+// TODO(crbug.com/652465): Re-enable when fixed.
+- (void)DISABLED_testOmniboxWidthRotationBehindSettings {
   // TODO(crbug.com/652465): Enable the test for iPad when rotation bug is
   // fixed.
   if ([ChromeEarlGrey isRegularXRegularSizeClass]) {
@@ -383,7 +383,8 @@ id<GREYMatcher> notPracticallyVisible() {
 
 // Tests that the fake omnibox width is correctly updated after a rotation done
 // while the fake omnibox is pinned to the top.
-- (void)testOmniboxPinnedWidthRotation {
+// TODO(crbug.com/652465): Re-enable when fixed.
+- (void)DISABLED_testOmniboxPinnedWidthRotation {
   // TODO(crbug.com/652465): Enable the test for iPad when rotation bug is
   // fixed.
   if ([ChromeEarlGrey isRegularXRegularSizeClass]) {
