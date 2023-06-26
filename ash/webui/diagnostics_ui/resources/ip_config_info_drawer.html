@@ -3,6 +3,10 @@
     --divider-horizontal-height: 100%;
   }
 
+  :host(:not([expanded])):host-context(body.jelly-enabled) #drawerToggle:hover {
+    border-radius: 0 0 16px 16px;
+  }
+
   :host-context(body.jelly-enabled) #drawerTitle {
     font: var(--cros-body-2-font);
   }
