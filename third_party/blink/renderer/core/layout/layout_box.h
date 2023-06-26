@@ -311,8 +311,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return frame_location_;
   }
+  // LocationOffset() is deprecated.  Use PhysicalLocation() instead.
   LayoutSize LocationOffset() const {
     NOT_DESTROYED();
+    DCHECK(!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled());
     auto location = Location();
     return LayoutSize(location.X(), location.Y());
   }
