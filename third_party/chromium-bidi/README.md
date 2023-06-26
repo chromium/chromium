@@ -366,11 +366,9 @@ new command, add it to `_processCommand`, write and call processor for it.
 
 ### Publish new `npm` release
 
-#### Semi-automatic release
+#### Automatic release
 
-Go to [GitHub Actions](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/create-release-pr.yml) and trigger a run with the correct SemVer
-type.
-That will create a PR. Once that is merge a new tag and release will be created.
+We use [release-please](https://github.com/googleapis/release-please) to automate releases. When a release should be done, check for the release PR in our [pull requests](https://github.com/GoogleChromeLabs/chromium-bidi/pulls) and merge it.
 
 #### Manual release
 
@@ -383,7 +381,7 @@ That will create a PR. Once that is merge a new tag and release will be created.
 1. Open a PR bumping the chromium-bidi version number in `package.json` for review:
 
    ```sh
-   npm version patch -m 'Release v%s' --no-git-tag-version
+   npm version patch -m 'chore: Release v%s' --no-git-tag-version
    ```
 
    Instead of `patch`, use `minor` or `major` [as needed](https://semver.org/).
