@@ -3233,6 +3233,8 @@ source_set("browser") {
       "webauth/virtual_fido_discovery_factory.h",
 
       # The Document Picture-in-Picture API is not implemented on Android.
+      "picture_in_picture/document_picture_in_picture_navigation_throttle.cc",
+      "picture_in_picture/document_picture_in_picture_navigation_throttle.h",
       "picture_in_picture/document_picture_in_picture_window_controller_impl.cc",
       "picture_in_picture/document_picture_in_picture_window_controller_impl.h",
     ]

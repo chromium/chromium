@@ -171,6 +171,10 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
 
   base::TimeTicks GetTabSwitchStartTime() final;
 
+  void SetPictureInPictureOptions(
+      absl::optional<blink::mojom::PictureInPictureWindowOptions> options)
+      override;
+
  protected:
   // The deprecated WebContentsTester still needs to subclass this.
   explicit TestWebContents(BrowserContext* browser_context);
@@ -209,6 +213,8 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void ReattachToOuterWebContentsFrame() override {}
   void SetPageFrozen(bool frozen) override;
   bool IsBackForwardCacheSupported() override;
+  const absl::optional<blink::mojom::PictureInPictureWindowOptions>&
+  GetPictureInPictureOptions() const override;
 
   raw_ptr<RenderViewHostDelegateView> delegate_view_override_;
 
@@ -226,6 +232,8 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   bool is_page_frozen_;
   bool back_forward_cache_supported_ = true;
   base::TimeTicks tab_switch_start_time_;
+  absl::optional<blink::mojom::PictureInPictureWindowOptions>
+      picture_in_picture_options_;
 };
 
 }  // namespace content
