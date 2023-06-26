@@ -87,7 +87,7 @@ public class PasswordMigrationWarningViewTest {
             mModel = PasswordMigrationWarningProperties.createDefaultModel(
                     mDismissCallback, mOnClickHandler);
             mView = new PasswordMigrationWarningView(
-                    mActivityTestRule.getActivity(), mBottomSheetController);
+                    mActivityTestRule.getActivity(), mBottomSheetController, () -> {});
             PropertyModelChangeProcessor.create(mModel, mView,
                     PasswordMigrationWarningViewBinder::bindPasswordMigrationWarningView);
         });
@@ -185,7 +185,9 @@ public class PasswordMigrationWarningViewTest {
         });
 
         onView(withId(R.id.password_migration_next_button)).perform(click());
-        verify(mOnClickHandler).onNext(MigrationOption.SYNC_PASSWORDS);
+        verify(mOnClickHandler)
+                .onNext(MigrationOption.SYNC_PASSWORDS,
+                        mActivityTestRule.getActivity().getSupportFragmentManager());
     }
 
     @Test
@@ -211,7 +213,9 @@ public class PasswordMigrationWarningViewTest {
         });
 
         onView(withId(R.id.password_migration_next_button)).perform(click());
-        verify(mOnClickHandler).onNext(MigrationOption.EXPORT_AND_DELETE);
+        verify(mOnClickHandler)
+                .onNext(MigrationOption.EXPORT_AND_DELETE,
+                        mActivityTestRule.getActivity().getSupportFragmentManager());
     }
 
     /**

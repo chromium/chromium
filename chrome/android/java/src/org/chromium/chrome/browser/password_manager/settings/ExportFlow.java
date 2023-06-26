@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,13 +14,13 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.pwd_migration.ExportFlowInterface;
 import org.chromium.ui.widget.Toast;
 
 import java.io.File;
@@ -45,7 +44,7 @@ import java.lang.annotation.RetentionPolicy;
  * (4)  {@link #sendExportIntent} creates an intent chooser for sharing the exported passwords with
  *      an app of user's choice.
  */
-public class ExportFlow {
+public class ExportFlow implements ExportFlowInterface {
     @IntDef({ExportState.INACTIVE, ExportState.REQUESTED, ExportState.CONFIRMED})
     @Retention(RetentionPolicy.SOURCE)
     private @interface ExportState {
@@ -187,34 +186,10 @@ public class ExportFlow {
         return mProgressBarManager;
     }
 
-    /** The delegate to provide ExportFlow with essential information from the owning fragment. */
-    public interface Delegate {
-        /**
-         * @return The activity associated with the owning fragment.
-         */
-        Activity getActivity();
-
-        /**
-         * @return The fragment manager associated with the owning fragment.
-         */
-        FragmentManager getFragmentManager();
-
-        /**
-         * @return The ID of the root view of the owning fragment.
-         */
-        int getViewId();
-    }
-
     /** The concrete delegate instance. It is (re)set in {@link #onCreate}. */
     private Delegate mDelegate;
 
-    /**
-     * A hook to be used in the onCreate method of the owning {@link Fragment}. I restores the state
-     * of the flow.
-     * @param savedInstanceState The {@link Bundle} passed from the fragment's onCreate
-     * method.
-     * @param delegate The {@link Delegate} for this ExportFlow.
-     */
+    @Override
     public void onCreate(Bundle savedInstanceState, Delegate delegate) {
         mDelegate = delegate;
 
@@ -285,12 +260,7 @@ public class ExportFlow {
         }
     }
 
-    /**
-     * Starts the password export flow.
-     * Current state of export flow: the user just tapped the menu item for export
-     * The next steps are: passing reauthentication, confirming the export, waiting for exported
-     * data (if needed) and choosing a consumer app for the data.
-     */
+    @Override
     public void startExporting() {
         assert mExportState == ExportState.INACTIVE;
         // Disable re-triggering exporting until the current exporting finishes.
@@ -517,10 +487,7 @@ public class ExportFlow {
         mExportFileUri = null;
     }
 
-    /**
-     * A hook to be used in a {@link Fragment}'s onResume method. I processes the result of the
-     * reauthentication.
-     */
+    @Override
     public void onResume() {
         if (mExportState == ExportState.REQUESTED) {
             // If Chrome returns to foreground from being paused (but without being killed), and

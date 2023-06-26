@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import androidx.fragment.app.FragmentManager;
+
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.MigrationOption;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
@@ -31,8 +33,10 @@ interface PasswordMigrationWarningOnClickHandler {
      * choice in the screen with more options.
      *
      * @param selectedOption is the flow that the user wants to proceed with.
+     * @param fragmentManager is the fragment manager of the fragment that offers the options. It's
+     *         used for creating the {@link ExportFlow}.
      */
-    void onNext(@MigrationOption int selectedOption);
+    void onNext(@MigrationOption int selectedOption, FragmentManager fragmentManager);
 
     /**
      * Closes the sheet when the "Cancel" button is clicked, but doesn't mark
