@@ -118,7 +118,9 @@ public class TabGridAccessibilityHelperTest {
     // Low-end uses list mode.
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     // Fails to rotate on some ARM devices.
-    @DisableIf.Build(supported_abis_includes = "arm") // crbug.com/1454747
+    // TODO(crbug.com/1454747): fix and re-enable on ARM devices.
+    @DisableIf.Build(supported_abis_includes = "armeabi-v7a")
+    @DisableIf.Build(supported_abis_includes = "arm64-v8a")
     public void testGetPotentialActionsForView() throws Exception {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         final AccessibilityActionChecker checker = new AccessibilityActionChecker(cta);
@@ -233,7 +235,9 @@ public class TabGridAccessibilityHelperTest {
     // Low-end uses list mode.
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     // Fails to rotate on some ARM devices.
-    @DisableIf.Build(supported_abis_includes = "arm") // crbug.com/1454747
+    // TODO(crbug.com/1454747): fix and re-enable on ARM devices.
+    @DisableIf.Build(supported_abis_includes = "armeabi-v7a")
+    @DisableIf.Build(supported_abis_includes = "arm64-v8a")
     public void testGetPositionsOfReorderAction() throws Exception {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         int leftActionId = R.id.move_tab_left;
