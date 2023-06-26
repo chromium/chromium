@@ -50,7 +50,7 @@ ui::ColorProviderKey::SchemeVariant GetSchemeVariant(
 }
 
 SkColor GetColorForSchemeVariant(
-    ui::ColorProviderManager::SchemeVariant scheme_variant) {
+    ui::ColorProviderKey::SchemeVariant scheme_variant) {
   using SV = ui::ColorProviderKey::SchemeVariant;
   static constexpr auto kColorMap = base::MakeFixedFlatMap<SV, SkColor>({
       {SV::kTonalSpot, SkColorSetRGB(20, 20, 20)},
