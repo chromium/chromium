@@ -478,6 +478,12 @@ const base::FeatureParam<ChromeRefresh2023Level> kChromeRefresh2023Level(
     &kChromeRefresh2023LevelOption);
 
 ChromeRefresh2023Level GetChromeRefresh2023Level() {
+  // For simplicity, the secondary field trial to enable chrome refresh will
+  // also enable the omnibox refresh.
+  if (base::FeatureList::IsEnabled(kChromeRefreshSecondary2023)) {
+    return ChromeRefresh2023Level::kLevel2;
+  }
+
   static const ChromeRefresh2023Level level =
       IsChromeRefresh2023() ? kChromeRefresh2023Level.Get()
                             : ChromeRefresh2023Level::kDisabled;

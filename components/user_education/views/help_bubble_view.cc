@@ -822,7 +822,7 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
   // have to change it afterwards:
   set_adjust_if_offscreen(true);
   auto* const frame_view = GetBubbleFrameView();
-  if (!base::FeatureList::IsEnabled(features::kChromeRefresh2023)) {
+  if (!features::IsChromeRefresh2023()) {
     frame_view->SetCornerRadius(
         views::LayoutProvider::Get()->GetCornerRadiusMetric(
             views::Emphasis::kHigh));
