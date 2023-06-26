@@ -1292,7 +1292,9 @@ void PageInfo::PresentSitePermissions() {
             permissions::features::kPermissionStorageAccessAPI)) {
       continue;
     }
-    for (auto& setting : content_settings->GetSettingsForOneType(type)) {
+    ContentSettingsForOneType settings;
+    content_settings->GetSettingsForOneType(type, &settings);
+    for (auto& setting : settings) {
       // Skip default setting.
       if (setting.primary_pattern == ContentSettingsPattern::Wildcard() &&
           setting.secondary_pattern == ContentSettingsPattern::Wildcard()) {

@@ -159,9 +159,9 @@ bool IsGetAllScreensMediaAllowedForAnySite(content::BrowserContext* context) {
   if (!host_content_settings_map) {
     return false;
   }
-  ContentSettingsForOneType content_settings =
-      host_content_settings_map->GetSettingsForOneType(
-          ContentSettingsType::ALL_SCREEN_CAPTURE);
+  ContentSettingsForOneType content_settings;
+  host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::ALL_SCREEN_CAPTURE, &content_settings);
   return base::ranges::any_of(content_settings,
                               [](const ContentSettingPatternSource& source) {
                                 return source.GetContentSetting() ==

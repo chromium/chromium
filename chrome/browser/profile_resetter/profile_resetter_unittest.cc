@@ -490,8 +490,9 @@ TEST_F(ProfileResetterTest, ResetContentSettings) {
     if (info->IsSettingValid(site_setting)) {
       host_content_settings_map->SetContentSettingDefaultScope(
           url, url, content_type, site_setting);
-      ContentSettingsForOneType host_settings =
-          host_content_settings_map->GetSettingsForOneType(content_type);
+      ContentSettingsForOneType host_settings;
+      host_content_settings_map->GetSettingsForOneType(content_type,
+                                                       &host_settings);
       EXPECT_EQ(2U, host_settings.size());
     }
   }
@@ -512,8 +513,9 @@ TEST_F(ProfileResetterTest, ResetContentSettings) {
         GURL("example.org"), GURL(), content_type);
     EXPECT_EQ(default_setting, site_setting);
 
-    ContentSettingsForOneType host_settings =
-        host_content_settings_map->GetSettingsForOneType(content_type);
+    ContentSettingsForOneType host_settings;
+    host_content_settings_map->GetSettingsForOneType(content_type,
+                                                     &host_settings);
     EXPECT_EQ(1U, host_settings.size());
   }
 }

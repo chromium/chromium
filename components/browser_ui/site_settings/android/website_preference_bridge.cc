@@ -136,12 +136,12 @@ void GetOrigins(JNIEnv* env,
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
   HostContentSettingsMap* content_settings_map =
       GetHostContentSettingsMap(browser_context);
+  ContentSettingsForOneType all_settings;
+  ContentSettingsForOneType embargo_settings;
 
-  ContentSettingsForOneType all_settings =
-      content_settings_map->GetSettingsForOneType(content_type);
-  ContentSettingsForOneType embargo_settings =
-      content_settings_map->GetSettingsForOneType(
-          ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA);
+  content_settings_map->GetSettingsForOneType(content_type, &all_settings);
+  content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA, &embargo_settings);
   ContentSetting default_content_setting =
       content_settings_map->GetDefaultContentSetting(content_type, nullptr);
 
@@ -908,11 +908,12 @@ static void JNI_WebsitePreferenceBridge_GetContentSettingsExceptions(
     int content_settings_type,
     const JavaParamRef<jobject>& list) {
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
+  ContentSettingsForOneType entries;
+  GetHostContentSettingsMap(browser_context)
+      ->GetSettingsForOneType(
+          static_cast<ContentSettingsType>(content_settings_type), &entries);
   std::vector<std::string> seen_origins;
-  for (const ContentSettingPatternSource& entry :
-       GetHostContentSettingsMap(browser_context)
-           ->GetSettingsForOneType(
-               static_cast<ContentSettingsType>(content_settings_type))) {
+  for (const ContentSettingPatternSource& entry : entries) {
     std::string origin = entry.primary_pattern.ToString();
     seen_origins.push_back(origin);
     Java_WebsitePreferenceBridge_addContentSettingExceptionToList(

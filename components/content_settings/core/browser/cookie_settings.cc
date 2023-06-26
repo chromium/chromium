@@ -63,8 +63,10 @@ ContentSetting CookieSettings::GetDefaultCookieSetting(
 }
 
 ContentSettingsForOneType CookieSettings::GetCookieSettings() const {
-  return host_content_settings_map_->GetSettingsForOneType(
-      ContentSettingsType::COOKIES);
+  ContentSettingsForOneType settings;
+  host_content_settings_map_->GetSettingsForOneType(
+      ContentSettingsType::COOKIES, &settings);
+  return settings;
 }
 
 void CookieSettings::RegisterProfilePrefs(

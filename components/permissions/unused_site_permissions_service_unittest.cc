@@ -62,8 +62,11 @@ class UnusedSitePermissionsServiceTest
 
   ContentSettingsForOneType GetRevokedUnusedPermissions(
       HostContentSettingsMap* hcsm) {
-    return hcsm->GetSettingsForOneType(
-        ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
+    ContentSettingsForOneType settings;
+    hcsm->GetSettingsForOneType(
+        ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, &settings);
+
+    return settings;
   }
 
   base::Value::List GetRevokedPermissionsForOneOrigin(
@@ -370,17 +373,19 @@ TEST_F(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
       base::Value(dict.Clone()));
 
   // Check there are 2 origin in revoked permissions list.
-  ContentSettingsForOneType revoked_permissions_list =
-      hcsm()->GetSettingsForOneType(
-          ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
+  ContentSettingsForOneType revoked_permissions_list;
+  hcsm()->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      &revoked_permissions_list);
   EXPECT_EQ(2U, revoked_permissions_list.size());
 
   // Allow the permission for `url1` again
   service()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url1)));
 
   // Check there is only `url2` in revoked permissions list.
-  revoked_permissions_list = hcsm()->GetSettingsForOneType(
-      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
+  hcsm()->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      &revoked_permissions_list);
   EXPECT_EQ(1U, revoked_permissions_list.size());
 
   // Check if the permissions of `url1` is regranted.
@@ -392,8 +397,9 @@ TEST_F(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
   service()->UndoRegrantPermissionsForOrigin({type}, absl::nullopt,
                                              url::Origin::Create(GURL(url1)));
 
-  revoked_permissions_list = hcsm()->GetSettingsForOneType(
-      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
+  hcsm()->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      &revoked_permissions_list);
   EXPECT_EQ(2U, revoked_permissions_list.size());
   EXPECT_EQ(ContentSetting::CONTENT_SETTING_ASK,
             hcsm()->GetContentSetting(GURL(url1), GURL(url1), type));
@@ -535,16 +541,18 @@ TEST_F(UnusedSitePermissionsServiceTest, ClearRevokedPermissionsList) {
       base::Value(dict.Clone()));
 
   // Check there are 2 origins in the revoked permissions list.
-  ContentSettingsForOneType revoked_permissions_list =
-      hcsm()->GetSettingsForOneType(
-          ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
+  ContentSettingsForOneType revoked_permissions_list;
+  hcsm()->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      &revoked_permissions_list);
   EXPECT_EQ(2U, revoked_permissions_list.size());
 
   service()->ClearRevokedPermissionsList();
 
   // Revoked permissions list should be empty.
-  revoked_permissions_list = hcsm()->GetSettingsForOneType(
-      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
+  hcsm()->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      &revoked_permissions_list);
   EXPECT_EQ(revoked_permissions_list.size(), 0U);
 }
 
@@ -617,9 +625,10 @@ TEST_F(UnusedSitePermissionsServiceTest, RecordRegrantMetricForAllowAgain) {
       base::Value(dict.Clone()), constraint);
 
   // Assert there is 1 origin in revoked permissions list.
-  ContentSettingsForOneType revoked_permissions_list =
-      hcsm()->GetSettingsForOneType(
-          ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
+  ContentSettingsForOneType revoked_permissions_list;
+  hcsm()->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      &revoked_permissions_list);
   ASSERT_EQ(1U, revoked_permissions_list.size());
 
   // Advance 14 days; this will be the expected histogram sample.
@@ -657,9 +666,10 @@ TEST_F(UnusedSitePermissionsServiceTest,
       url2, url2, ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
       base::Value(dict.Clone()));
 
-  ContentSettingsForOneType revoked_permissions_list =
-      hcsm()->GetSettingsForOneType(
-          ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
+  ContentSettingsForOneType revoked_permissions_list;
+  hcsm()->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      &revoked_permissions_list);
 
   EXPECT_EQ(2U, revoked_permissions_list.size());
 
@@ -668,8 +678,9 @@ TEST_F(UnusedSitePermissionsServiceTest,
   hcsm()->SetContentSettingDefaultScope(
       url1, GURL(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
   // Check there is only url2 in revoked permissions list.
-  revoked_permissions_list = hcsm()->GetSettingsForOneType(
-      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
+  hcsm()->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      &revoked_permissions_list);
   EXPECT_EQ(1U, revoked_permissions_list.size());
 }
 

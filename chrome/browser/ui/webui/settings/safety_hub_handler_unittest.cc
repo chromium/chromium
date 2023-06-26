@@ -93,9 +93,10 @@ class SafetyHubHandlerTest : public testing::Test {
   }
 
   void ExpectRevokedPermission() {
-    ContentSettingsForOneType revoked_permissions_list =
-        hcsm()->GetSettingsForOneType(
-            ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
+    ContentSettingsForOneType revoked_permissions_list;
+    hcsm()->GetSettingsForOneType(
+        ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+        &revoked_permissions_list);
     EXPECT_EQ(1U, revoked_permissions_list.size());
     EXPECT_EQ(
         ContentSetting::CONTENT_SETTING_ASK,
@@ -167,9 +168,10 @@ TEST_F(SafetyHubHandlerTest, HandleAllowPermissionsAgainForUnusedSite) {
   handler()->HandleAllowPermissionsAgainForUnusedSite(args);
 
   // Check there is no origin in revoked permissions list.
-  ContentSettingsForOneType revoked_permissions_list =
-      hcsm()->GetSettingsForOneType(
-          ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
+  ContentSettingsForOneType revoked_permissions_list;
+  hcsm()->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      &revoked_permissions_list);
   EXPECT_EQ(0U, revoked_permissions_list.size());
   // Check if the permissions of url is regranted.
   EXPECT_EQ(
@@ -211,9 +213,9 @@ TEST_F(SafetyHubHandlerTest,
 
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  ContentSettingsForOneType ignored_patterns =
-      content_settings->GetSettingsForOneType(
-          ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW);
+  ContentSettingsForOneType ignored_patterns;
+  content_settings->GetSettingsForOneType(
+      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
   ASSERT_EQ(0U, ignored_patterns.size());
 
   base::Value::List args;
@@ -221,8 +223,8 @@ TEST_F(SafetyHubHandlerTest,
   handler()->HandleIgnoreOriginsForNotificationPermissionReview(args);
 
   // Check there is 1 origin in ignore list.
-  ignored_patterns = content_settings->GetSettingsForOneType(
-      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW);
+  content_settings->GetSettingsForOneType(
+      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
   ASSERT_EQ(1U, ignored_patterns.size());
 
   ValidateNotificationPermissionUpdate();
@@ -237,15 +239,16 @@ TEST_F(SafetyHubHandlerTest,
   // Check there is 1 origin in ignore list.
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  ContentSettingsForOneType ignored_patterns =
-      content_settings->GetSettingsForOneType(
-          ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW);
+  ContentSettingsForOneType ignored_patterns;
+  ASSERT_EQ(0U, ignored_patterns.size());
+  content_settings->GetSettingsForOneType(
+      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
   ASSERT_EQ(1U, ignored_patterns.size());
 
   // Check there are no origins in ignore list.
   handler()->HandleUndoIgnoreOriginsForNotificationPermissionReview(args);
-  ignored_patterns = content_settings->GetSettingsForOneType(
-      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW);
+  content_settings->GetSettingsForOneType(
+      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
   ASSERT_EQ(0U, ignored_patterns.size());
 }
 
@@ -262,9 +265,9 @@ TEST_F(SafetyHubHandlerTest, HandleAllowNotificationPermissionForOrigins) {
   // Check the permission for the two origins is allow.
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  ContentSettingsForOneType notification_permissions =
-      content_settings->GetSettingsForOneType(
-          ContentSettingsType::NOTIFICATIONS);
+  ContentSettingsForOneType notification_permissions;
+  content_settings->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS,
+                                          &notification_permissions);
   auto type = content_settings->GetContentSetting(
       GURL(origins[0].GetString()), GURL(), ContentSettingsType::NOTIFICATIONS);
   ASSERT_EQ(CONTENT_SETTING_ALLOW, type);
@@ -290,9 +293,9 @@ TEST_F(SafetyHubHandlerTest, HandleBlockNotificationPermissionForOrigins) {
   // Check the permission for the two origins is block.
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  ContentSettingsForOneType notification_permissions =
-      content_settings->GetSettingsForOneType(
-          ContentSettingsType::NOTIFICATIONS);
+  ContentSettingsForOneType notification_permissions;
+  content_settings->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS,
+                                          &notification_permissions);
   auto type = content_settings->GetContentSetting(
       GURL(origins[0].GetString()), GURL(), ContentSettingsType::NOTIFICATIONS);
   ASSERT_EQ(CONTENT_SETTING_BLOCK, type);

@@ -103,8 +103,9 @@ class SiteSettingsCounterTest : public testing::Test {
   void ClearNotificationsChannels() {
     // Because notification channel settings aren't tied to the profile, they
     // will persist across tests. We need to make sure they're reset here.
-    for (auto& setting :
-         map_->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS)) {
+    ContentSettingsForOneType settings;
+    map_->GetSettingsForOneType(ContentSettingsType ::NOTIFICATIONS, &settings);
+    for (auto& setting : settings) {
       if (!setting.primary_pattern.MatchesAllHosts() ||
           !setting.secondary_pattern.MatchesAllHosts()) {
         map_->SetContentSettingCustomScope(

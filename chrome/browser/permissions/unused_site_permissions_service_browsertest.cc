@@ -39,8 +39,11 @@ class UnusedSitePermissionsServiceBrowserTest : public InProcessBrowserTest {
 
   ContentSettingsForOneType GetRevokedUnusedPermissions(
       HostContentSettingsMap* hcsm) {
-    return hcsm->GetSettingsForOneType(
-        ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
+    ContentSettingsForOneType settings;
+    hcsm->GetSettingsForOneType(
+        ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, &settings);
+
+    return settings;
   }
 
  private:
