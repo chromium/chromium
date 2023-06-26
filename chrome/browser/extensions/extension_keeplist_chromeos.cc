@@ -80,7 +80,6 @@ base::span<const base::StringPiece> ExtensionAppsRunInOSOnlyAllowlist() {
   static const base::StringPiece kKeeplist[] = {
       arc::kPlayStoreAppId,
       extension_misc::kFilesManagerAppId,
-      extension_misc::kCalculatorAppId,
   };
 
   return base::make_span(kKeeplist);
