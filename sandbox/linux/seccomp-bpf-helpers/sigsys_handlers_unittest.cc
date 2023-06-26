@@ -20,6 +20,8 @@ namespace {
 // baseline_policy_unittest.cc and syscall_parameters_restrictions_unittests.cc.
 
 using sandbox::bpf_dsl::Allow;
+using sandbox::bpf_dsl::Arg;
+using sandbox::bpf_dsl::If;
 using sandbox::bpf_dsl::ResultExpr;
 
 // On x86, socket-related syscalls typically go through socketcall() instead of
@@ -35,8 +37,10 @@ class DisallowSocketPolicy : public bpf_dsl::Policy {
 
   ResultExpr EvaluateSyscall(int sysno) const override {
     switch (sysno) {
-      case __NR_socket:
-        return CrashSIGSYSSocket();
+      case __NR_socket: {
+        const Arg<int> domain(0);
+        return If(domain == AF_INET, CrashSIGSYSSocket()).Else(Allow());
+      }
       default:
         return Allow();
     }
@@ -48,7 +52,7 @@ BPF_DEATH_TEST_C(
     SocketPrintsCorrectMessage,
     DEATH_SEGV_MESSAGE(sandbox::GetSocketErrorMessageContentForTests()),
     DisallowSocketPolicy) {
-  socket(0, 0, 0);
+  socket(AF_INET, 0, 0);
 }
 
 class DisallowSockoptPolicy : public bpf_dsl::Policy {
@@ -84,6 +88,18 @@ BPF_DEATH_TEST_C(
 }
 
 #endif  // !defined(__i386__)
+
+const char kSigsysMessage[] =
+    "nr=0x42 arg1=0xffffffffffffffff arg2=0x0 arg3=0xabcdef arg4=0xffffffff";
+
+SANDBOX_DEATH_TEST(SigsysHandlers,
+                   SigsysErrorDetails,
+                   DEATH_SEGV_MESSAGE(kSigsysMessage)) {
+  arch_seccomp_data args = {.nr = 0x42,
+                            .args = {static_cast<uint64_t>(-1), 0, 0xabcdef,
+                                     static_cast<uint32_t>(-1)}};
+  CrashSIGSYS_Handler(args, nullptr);
+}
 
 }  // namespace
 }  // namespace sandbox
