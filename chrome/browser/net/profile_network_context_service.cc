@@ -211,9 +211,9 @@ void UpdateAntiAbuseSettings(Profile* profile) {
 }
 
 void UpdateCookieSettings(Profile* profile) {
-  ContentSettingsForOneType settings;
-  HostContentSettingsMapFactory::GetForProfile(profile)->GetSettingsForOneType(
-      ContentSettingsType::COOKIES, &settings);
+  ContentSettingsForOneType settings =
+      HostContentSettingsMapFactory::GetForProfile(profile)
+          ->GetSettingsForOneType(ContentSettingsType::COOKIES);
   profile->ForEachLoadedStoragePartition(base::BindRepeating(
       [](ContentSettingsForOneType settings,
          content::StoragePartition* storage_partition) {
@@ -224,9 +224,9 @@ void UpdateCookieSettings(Profile* profile) {
 }
 
 void UpdateLegacyCookieSettings(Profile* profile) {
-  ContentSettingsForOneType settings;
-  HostContentSettingsMapFactory::GetForProfile(profile)->GetSettingsForOneType(
-      ContentSettingsType::LEGACY_COOKIE_ACCESS, &settings);
+  ContentSettingsForOneType settings =
+      HostContentSettingsMapFactory::GetForProfile(profile)
+          ->GetSettingsForOneType(ContentSettingsType::LEGACY_COOKIE_ACCESS);
   profile->ForEachLoadedStoragePartition(base::BindRepeating(
       [](ContentSettingsForOneType settings,
          content::StoragePartition* storage_partition) {
@@ -238,9 +238,9 @@ void UpdateLegacyCookieSettings(Profile* profile) {
 
 void UpdateStorageAccessSettings(Profile* profile) {
   if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
-    ContentSettingsForOneType settings;
-    HostContentSettingsMapFactory::GetForProfile(profile)
-        ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS, &settings);
+    ContentSettingsForOneType settings =
+        HostContentSettingsMapFactory::GetForProfile(profile)
+            ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS);
 
     profile->ForEachLoadedStoragePartition(base::BindRepeating(
         [](ContentSettingsForOneType settings,
@@ -257,14 +257,13 @@ void UpdateAllStorageAccessSettings(Profile* profile) {
   if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) &&
       base::FeatureList::IsEnabled(
           blink::features::kStorageAccessAPIForOriginExtension)) {
-    ContentSettingsForOneType top_level_settings;
-    HostContentSettingsMapFactory::GetForProfile(profile)
-        ->GetSettingsForOneType(ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-                                &top_level_settings);
-    ContentSettingsForOneType storage_access_settings;
-    HostContentSettingsMapFactory::GetForProfile(profile)
-        ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS,
-                                &storage_access_settings);
+    ContentSettingsForOneType top_level_settings =
+        HostContentSettingsMapFactory::GetForProfile(profile)
+            ->GetSettingsForOneType(
+                ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS);
+    ContentSettingsForOneType storage_access_settings =
+        HostContentSettingsMapFactory::GetForProfile(profile)
+            ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS);
 
     profile->ForEachLoadedStoragePartition(base::BindRepeating(
         [](ContentSettingsForOneType storage_access_settings,
@@ -579,38 +578,29 @@ ProfileNetworkContextService::CreateCookieManagerParams(
       extensions::kExtensionScheme);
 #endif
 
-  ContentSettingsForOneType settings;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
-  host_content_settings_map->GetSettingsForOneType(ContentSettingsType::COOKIES,
-                                                   &settings);
-  out->settings = std::move(settings);
+  out->settings = host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::COOKIES);
 
-  ContentSettingsForOneType settings_for_legacy_cookie_access;
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::LEGACY_COOKIE_ACCESS,
-      &settings_for_legacy_cookie_access);
   out->settings_for_legacy_cookie_access =
-      std::move(settings_for_legacy_cookie_access);
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::LEGACY_COOKIE_ACCESS);
 
-  ContentSettingsForOneType settings_for_storage_access;
   if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI)) {
-    host_content_settings_map->GetSettingsForOneType(
-        ContentSettingsType::STORAGE_ACCESS, &settings_for_storage_access);
+    out->settings_for_storage_access =
+        host_content_settings_map->GetSettingsForOneType(
+            ContentSettingsType::STORAGE_ACCESS);
   }
-  out->settings_for_storage_access = std::move(settings_for_storage_access);
 
-  ContentSettingsForOneType settings_for_top_level_storage_access;
   // TODO(crbug.com/1385156): Separate the two flags entirely.
   if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) &&
       base::FeatureList::IsEnabled(
           blink::features::kStorageAccessAPIForOriginExtension)) {
-    host_content_settings_map->GetSettingsForOneType(
-        ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-        &settings_for_top_level_storage_access);
+    out->settings_for_top_level_storage_access =
+        host_content_settings_map->GetSettingsForOneType(
+            ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS);
   }
-  out->settings_for_top_level_storage_access =
-      std::move(settings_for_top_level_storage_access);
 
   out->cookie_access_delegate_type =
       network::mojom::CookieAccessDelegateType::USE_CONTENT_SETTINGS;

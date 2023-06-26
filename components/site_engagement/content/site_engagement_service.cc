@@ -74,20 +74,13 @@ class StoppedClock : public base::Clock {
   const base::Time time_;
 };
 
-// Helpers for fetching content settings for one type.
-ContentSettingsForOneType GetContentSettingsFromMap(HostContentSettingsMap* map,
-                                                    ContentSettingsType type) {
-  ContentSettingsForOneType content_settings;
-  map->GetSettingsForOneType(type, &content_settings);
-  return content_settings;
-}
-
+// Helper for fetching content settings for one type.
 ContentSettingsForOneType GetContentSettingsFromBrowserContext(
     content::BrowserContext* browser_context,
     ContentSettingsType type) {
-  return GetContentSettingsFromMap(
-      permissions::PermissionsClient::Get()->GetSettingsMap(browser_context),
-      type);
+  return permissions::PermissionsClient::Get()
+      ->GetSettingsMap(browser_context)
+      ->GetSettingsForOneType(type);
 }
 
 // Returns the combined list of origins which either have site engagement
@@ -98,7 +91,7 @@ std::set<GURL> GetEngagementOriginsFromContentSettings(
 
   // Fetch URLs of sites with engagement details stored.
   for (const auto& site :
-       GetContentSettingsFromMap(map, ContentSettingsType::SITE_ENGAGEMENT)) {
+       map->GetSettingsForOneType(ContentSettingsType::SITE_ENGAGEMENT)) {
     urls.insert(GURL(site.primary_pattern.ToString()));
   }
 

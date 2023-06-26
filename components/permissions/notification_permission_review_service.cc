@@ -51,11 +51,8 @@ std::set<std::pair<ContentSettingsPattern, ContentSettingsPattern>>
 GetIgnoredPatternPairs(scoped_refptr<HostContentSettingsMap> hcsm) {
   std::set<std::pair<ContentSettingsPattern, ContentSettingsPattern>> result;
 
-  ContentSettingsForOneType ignored_patterns;
-  hcsm->GetSettingsForOneType(
-      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
-
-  for (auto& item : ignored_patterns) {
+  for (auto& item : hcsm->GetSettingsForOneType(
+           ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW)) {
     const base::Value& stored_value = item.setting_value;
     bool is_ignored =
         stored_value.is_dict() &&
@@ -72,13 +69,10 @@ GetIgnoredPatternPairs(scoped_refptr<HostContentSettingsMap> hcsm) {
 std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
 GetNotificationCountMapPerPatternPair(
     scoped_refptr<HostContentSettingsMap> hcsm) {
-  ContentSettingsForOneType notification_count_list;
-  hcsm->GetSettingsForOneType(ContentSettingsType::NOTIFICATION_INTERACTIONS,
-                              &notification_count_list);
-
   std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
       result;
-  for (auto& item : notification_count_list) {
+  for (auto& item : hcsm->GetSettingsForOneType(
+           ContentSettingsType::NOTIFICATION_INTERACTIONS)) {
     result[std::pair{item.primary_pattern, item.secondary_pattern}] =
         GetDailyAverageNotificationCount(item);
   }
@@ -141,12 +135,9 @@ NotificationPermissionsReviewService::GetNotificationSiteListForReview() {
   // This list will be filtered based on notification count and site engagement
   // score in SiteSettingsHandler#PopulateNotificationPermissionReviewData
   // function.
-  ContentSettingsForOneType notifications;
-  hcsm_->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS,
-                               &notifications);
-
   std::vector<NotificationPermissions> notification_permissions_list;
-  for (auto& item : notifications) {
+  for (auto& item :
+       hcsm_->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS)) {
     std::pair pair(item.primary_pattern, item.secondary_pattern);
 
     // Blocklisted permissions should not be in the review list.

@@ -475,9 +475,9 @@ TEST_F(NotificationPermissionContextTest, GetNotificationsSettings) {
   NotificationPermissionContext::UpdatePermission(
       profile(), GURL("https://denied2.com"), CONTENT_SETTING_BLOCK);
 
-  ContentSettingsForOneType settings;
-  HostContentSettingsMapFactory::GetForProfile(profile())
-      ->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS, &settings);
+  ContentSettingsForOneType settings =
+      HostContentSettingsMapFactory::GetForProfile(profile())
+          ->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
 
   // |settings| contains the default setting and 4 exceptions.
   ASSERT_EQ(5u, settings.size());

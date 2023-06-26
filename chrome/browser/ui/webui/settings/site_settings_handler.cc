@@ -386,8 +386,8 @@ void LogAllSitesAction(AllSitesAction2 action) {
 
 int GetNumCookieExceptionsOfTypes(HostContentSettingsMap* map,
                                   const std::set<ContentSetting> types) {
-  ContentSettingsForOneType output;
-  map->GetSettingsForOneType(ContentSettingsType::COOKIES, &output);
+  ContentSettingsForOneType output =
+      map->GetSettingsForOneType(ContentSettingsType::COOKIES);
   return base::ranges::count_if(
       output, [types](const ContentSettingPatternSource setting) {
         return types.count(

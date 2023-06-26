@@ -645,10 +645,10 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
   DCHECK(settings_map);
 
   // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
-  ContentSettingsForOneType non_restorable_grants;
-  settings_map->GetSettingsForOneType(
-      ContentSettingsType::STORAGE_ACCESS, &non_restorable_grants,
-      content_settings::SessionModel::NonRestorableUserSession);
+  ContentSettingsForOneType non_restorable_grants =
+      settings_map->GetSettingsForOneType(
+          ContentSettingsType::STORAGE_ACCESS,
+          content_settings::SessionModel::NonRestorableUserSession);
   EXPECT_EQ(0u, non_restorable_grants.size());
 
   EXPECT_EQ(DecidePermissionSync(/*user_gesture=*/true), CONTENT_SETTING_ALLOW);
@@ -660,8 +660,8 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
 
   DCHECK(settings_map);
   // Check the `SessionModel::NonRestorableUserSession` settings granted by FPS.
-  settings_map->GetSettingsForOneType(
-      ContentSettingsType::STORAGE_ACCESS, &non_restorable_grants,
+  non_restorable_grants = settings_map->GetSettingsForOneType(
+      ContentSettingsType::STORAGE_ACCESS,
       content_settings::SessionModel::NonRestorableUserSession);
   EXPECT_EQ(1u, non_restorable_grants.size());
 

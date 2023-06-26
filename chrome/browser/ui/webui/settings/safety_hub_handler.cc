@@ -182,11 +182,8 @@ base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
   HostContentSettingsMap* hcsm =
       HostContentSettingsMapFactory::GetForProfile(profile_);
 
-  ContentSettingsForOneType settings;
-  hcsm->GetSettingsForOneType(
-      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, &settings);
-
-  for (const auto& revoked_permissions : settings) {
+  for (const auto& revoked_permissions : hcsm->GetSettingsForOneType(
+           ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS)) {
     base::Value::Dict revoked_permission_value;
     revoked_permission_value.Set(
         site_settings::kOrigin, revoked_permissions.primary_pattern.ToString());

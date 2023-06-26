@@ -321,12 +321,10 @@ void ObjectPermissionContextBase::ScheduleSaveWebsiteSetting(
 
 std::vector<std::unique_ptr<ObjectPermissionContextBase::Object>>
 ObjectPermissionContextBase::GetWebsiteSettingObjects() {
-  ContentSettingsForOneType content_settings;
-  host_content_settings_map_->GetSettingsForOneType(data_content_settings_type_,
-                                                    &content_settings);
-
   std::vector<std::unique_ptr<Object>> results;
-  for (const ContentSettingPatternSource& content_setting : content_settings) {
+  for (const ContentSettingPatternSource& content_setting :
+       host_content_settings_map_->GetSettingsForOneType(
+           data_content_settings_type_)) {
     // Old settings used the (requesting,embedding) pair whereas the new
     // settings simply use (embedding, *). The migration logic in
     // HostContentSettingsMap::MigrateSettingsPrecedingPermissionDelegationActivation

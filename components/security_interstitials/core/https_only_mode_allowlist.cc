@@ -65,9 +65,9 @@ bool HttpsOnlyModeAllowlist::IsHttpAllowedForAnyHost(
     return !allowed_http_hosts_for_non_default_storage_partitions_.empty();
   }
 
-  ContentSettingsForOneType content_settings_list;
-  host_content_settings_map_->GetSettingsForOneType(
-      ContentSettingsType::HTTP_ALLOWED, &content_settings_list);
+  ContentSettingsForOneType content_settings_list =
+      host_content_settings_map_->GetSettingsForOneType(
+          ContentSettingsType::HTTP_ALLOWED);
   return !content_settings_list.empty();
 }
 

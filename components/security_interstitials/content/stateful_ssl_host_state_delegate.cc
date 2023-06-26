@@ -435,9 +435,9 @@ bool StatefulSSLHostStateDelegate::HasCertAllowExceptionForAnyHost(
     return !allowed_certs_for_non_default_storage_partitions_.empty();
   }
 
-  ContentSettingsForOneType content_settings_list;
-  host_content_settings_map_->GetSettingsForOneType(
-      ContentSettingsType::SSL_CERT_DECISIONS, &content_settings_list);
+  ContentSettingsForOneType content_settings_list =
+      host_content_settings_map_->GetSettingsForOneType(
+          ContentSettingsType::SSL_CERT_DECISIONS);
   return !content_settings_list.empty();
 }
 

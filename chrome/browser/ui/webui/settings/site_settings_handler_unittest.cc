@@ -4882,7 +4882,6 @@ TEST_F(SiteSettingsHandlerTest, ClearClientHints) {
 
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  ContentSettingsForOneType client_hints_settings;
 
   // Add setting for the two hosts host[0], host[1].
   base::Value client_hint_platform_version(14);
@@ -4907,8 +4906,9 @@ TEST_F(SiteSettingsHandlerTest, ClearClientHints) {
   base::Value::List args;
   args.Append(GroupingKey::CreateFromEtldPlus1("example.com").Serialize());
   handler()->HandleClearSiteGroupDataAndCookies(args);
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::CLIENT_HINTS, &client_hints_settings);
+  ContentSettingsForOneType client_hints_settings =
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::CLIENT_HINTS);
   EXPECT_EQ(2U, client_hints_settings.size());
 
   EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[2]),
@@ -4930,8 +4930,8 @@ TEST_F(SiteSettingsHandlerTest, ClearClientHints) {
   handler()->HandleClearUnpartitionedUsage(args);
 
   // Validate the client hint has been cleared.
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::CLIENT_HINTS, &client_hints_settings);
+  client_hints_settings = host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::CLIENT_HINTS);
   EXPECT_EQ(1U, client_hints_settings.size());
 
   // www.google.com should be the only remaining entry.
@@ -4949,8 +4949,8 @@ TEST_F(SiteSettingsHandlerTest, ClearClientHints) {
   handler()->HandleClearUnpartitionedUsage(args);
 
   // Validate the client hint has been cleared.
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::CLIENT_HINTS, &client_hints_settings);
+  client_hints_settings = host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::CLIENT_HINTS);
   EXPECT_EQ(0U, client_hints_settings.size());
 }
 
@@ -4965,7 +4965,6 @@ TEST_F(SiteSettingsHandlerTest, ClearReducedAcceptLanguage) {
 
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  ContentSettingsForOneType accept_language_settings;
 
   std::string language = "en-us";
   base::Value::Dict accept_language_dictionary;
@@ -4982,8 +4981,9 @@ TEST_F(SiteSettingsHandlerTest, ClearReducedAcceptLanguage) {
   base::Value::List args;
   args.Append(GroupingKey::CreateFromEtldPlus1("example.com").Serialize());
   handler()->HandleClearSiteGroupDataAndCookies(args);
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, &accept_language_settings);
+  ContentSettingsForOneType accept_language_settings =
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::REDUCED_ACCEPT_LANGUAGE);
   EXPECT_EQ(2U, accept_language_settings.size());
 
   EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[2]),
@@ -5007,8 +5007,8 @@ TEST_F(SiteSettingsHandlerTest, ClearReducedAcceptLanguage) {
   handler()->HandleClearUnpartitionedUsage(args);
 
   // Validate the reduce accept language has been cleared.
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, &accept_language_settings);
+  accept_language_settings = host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::REDUCED_ACCEPT_LANGUAGE);
   EXPECT_EQ(1U, accept_language_settings.size());
 
   // www.google.com should be the only remaining entry.
@@ -5027,8 +5027,8 @@ TEST_F(SiteSettingsHandlerTest, ClearReducedAcceptLanguage) {
   handler()->HandleClearUnpartitionedUsage(args);
 
   // Validate the reduced accept language has been cleared.
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, &accept_language_settings);
+  accept_language_settings = host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::REDUCED_ACCEPT_LANGUAGE);
   EXPECT_EQ(0U, accept_language_settings.size());
 }
 

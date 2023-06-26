@@ -112,9 +112,8 @@ void SiteDataCountingHelper::GetOriginsFromHostContentSettignsMap(
     HostContentSettingsMap* hcsm,
     ContentSettingsType type) {
   std::set<GURL> origins;
-  ContentSettingsForOneType settings;
-  hcsm->GetSettingsForOneType(type, &settings);
-  for (const ContentSettingPatternSource& rule : settings) {
+  for (const ContentSettingPatternSource& rule :
+       hcsm->GetSettingsForOneType(type)) {
     GURL url(rule.primary_pattern.ToString());
     if (!url.is_empty()) {
       origins.insert(url);
