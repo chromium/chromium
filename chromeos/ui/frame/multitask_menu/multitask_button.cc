@@ -4,6 +4,7 @@
 
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
@@ -52,26 +53,32 @@ void MultitaskButton::PaintButtonContents(gfx::Canvas* canvas) {
   pattern_flags.setStyle(cc::PaintFlags::kFill_Style);
 
   const auto* color_provider = GetColorProvider();
+  const bool is_jelly = features::IsJellyEnabled();
   if (paint_as_active_ || GetState() == Button::STATE_HOVERED ||
       GetState() == Button::STATE_PRESSED) {
     fill_flags.setColor(
-        SkColorSetA(color_provider->GetColor(ui::kColorSysPrimary),
-                    kMultitaskHoverBackgroundOpacity));
+        is_jelly ? SkColorSetA(color_provider->GetColor(ui::kColorSysPrimary),
+                               kMultitaskHoverBackgroundOpacity)
+                 : kMultitaskButtonViewHoverColor);
     const auto hovered_color = color_provider->GetColor(ui::kColorSysPrimary);
-    border_flags.setColor(hovered_color);
-    pattern_flags.setColor(hovered_color);
+    border_flags.setColor(is_jelly ? hovered_color
+                                   : kMultitaskButtonPrimaryHoverColor);
+    pattern_flags.setColor(is_jelly ? hovered_color : gfx::kGoogleBlue600);
   } else if (GetState() == Button::STATE_DISABLED) {
-    fill_flags.setColor(SK_ColorTRANSPARENT);
+    fill_flags.setColor(is_jelly ? SK_ColorTRANSPARENT
+                                 : kMultitaskButtonViewHoverColor);
     const auto disabled_color =
-        SkColorSetA(color_provider->GetColor(ui::kColorSysOnSurface),
-                    kMultitaskDisabledButtonOpacity);
+        is_jelly ? SkColorSetA(color_provider->GetColor(ui::kColorSysOnSurface),
+                               kMultitaskDisabledButtonOpacity)
+                 : kMultitaskButtonDisabledColor;
     border_flags.setColor(disabled_color);
     pattern_flags.setColor(disabled_color);
   } else {
     fill_flags.setColor(SK_ColorTRANSPARENT);
     const auto default_color =
-        SkColorSetA(color_provider->GetColor(ui::kColorSysOnSurface),
-                    kMultitaskDefaultButtonOpacity);
+        is_jelly ? SkColorSetA(color_provider->GetColor(ui::kColorSysOnSurface),
+                               kMultitaskDefaultButtonOpacity)
+                 : kMultitaskButtonDefaultColor;
     border_flags.setColor(default_color);
     pattern_flags.setColor(default_color);
   }
