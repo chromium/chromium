@@ -637,6 +637,26 @@ TEST_F(ArcUtilTest, SetAndGetArcVmDataMigrationStatus) {
   }
 }
 
+TEST_F(ArcUtilTest, SetAndGetArcVmDataMigrationStrategy) {
+  profile_prefs()->SetInteger(prefs::kArcVmDataMigrationStrategy, -1);
+  EXPECT_EQ(ArcVmDataMigrationStrategy::kDoNotPrompt,
+            GetArcVmDataMigrationStrategy(profile_prefs()));
+
+  profile_prefs()->SetInteger(prefs::kArcVmDataMigrationStrategy, 0);
+  EXPECT_EQ(ArcVmDataMigrationStrategy::kDoNotPrompt,
+            GetArcVmDataMigrationStrategy(profile_prefs()));
+
+  profile_prefs()->SetInteger(prefs::kArcVmDataMigrationStrategy, 1);
+  EXPECT_EQ(ArcVmDataMigrationStrategy::kPrompt,
+            GetArcVmDataMigrationStrategy(profile_prefs()));
+
+  profile_prefs()->SetInteger(
+      prefs::kArcVmDataMigrationStrategy,
+      static_cast<int>(ArcVmDataMigrationStrategy::kMaxValue) + 1);
+  EXPECT_EQ(ArcVmDataMigrationStrategy::kPrompt,
+            GetArcVmDataMigrationStrategy(profile_prefs()));
+}
+
 // Tests that ShouldUseVirtioBlkData() returns true when virtio-blk /data is
 // enabled via the kEnableVirtioBlkForData feature.
 TEST_F(ArcUtilTest, ShouldUseVirtioBlkData_VirtioBlkForDataFeatureEnabled) {
