@@ -13,7 +13,9 @@ found in the LICENSE file.
       android:layout_height="wrap_content"
       android:layout_width="match_parent"
       android:orientation="vertical"
-      style="@style/AlertDialogContent">
+      style="@style/AlertDialogContent"
+      android:layout_marginTop="@dimen/otp_verification_dialog_content_margin_top"
+      android:layout_marginBottom="@dimen/otp_verification_dialog_content_margin_bottom">
 
     <EditText
         android:id="@+id/otp_input"
@@ -22,7 +24,8 @@ found in the LICENSE file.
         android:digits="0123456789"
         android:inputType="phone"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"/>
+        android:layout_width="match_parent"
+        android:layout_marginBottom="@dimen/otp_verification_dialog_input_margin_bottom"/>
 
     <TextView
         android:id="@+id/otp_error_message"
