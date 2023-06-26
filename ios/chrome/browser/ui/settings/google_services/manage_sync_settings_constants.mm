@@ -18,6 +18,7 @@ NSString* const kSyncEverythingItemAccessibilityIdentifier =
     @"syncEverythingItemAccessibilityIdentifier";
 NSString* const kSyncBookmarksIdentifier = @"syncBookmarksIdentifier";
 NSString* const kSyncOmniboxHistoryIdentifier = @"syncOmniboxHistoryIdentifier";
+NSString* const kSyncHistoryAndTabsIdentifier = @"syncHistoryAndTabsIdentifier";
 NSString* const kSyncPasswordsIdentifier = @"syncPasswordsIdentifier";
 NSString* const kSyncOpenTabsIdentifier = @"syncOpenTabsIdentifier";
 NSString* const kSyncAutofillIdentifier = @"syncAutofillIdentifier";

@@ -65,11 +65,23 @@ using l10n_util::GetNSString;
 namespace {
 
 // Ordered list of all sync switches.
+// This is the list of available datatypes for account state kSyncing and
+// kAdvancedInitialSyncSetup.
 static const syncer::UserSelectableType kSyncSwitchItems[] = {
     syncer::UserSelectableType::kAutofill,
     syncer::UserSelectableType::kBookmarks,
     syncer::UserSelectableType::kHistory,
     syncer::UserSelectableType::kTabs,
+    syncer::UserSelectableType::kPasswords,
+    syncer::UserSelectableType::kReadingList,
+    syncer::UserSelectableType::kPreferences};
+
+// Ordered list of all account data type switches.
+// This is the list of available datatypes for account state `kSignedIn`.
+static const syncer::UserSelectableType kAccountSwitchItems[] = {
+    syncer::UserSelectableType::kHistory,
+    syncer::UserSelectableType::kAutofill,
+    syncer::UserSelectableType::kBookmarks,
     syncer::UserSelectableType::kPasswords,
     syncer::UserSelectableType::kReadingList,
     syncer::UserSelectableType::kPreferences};
@@ -261,12 +273,20 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
       break;
   }
   NSMutableArray* syncSwitchItems = [[NSMutableArray alloc] init];
-
-  for (syncer::UserSelectableType dataType : kSyncSwitchItems) {
-    TableViewItem* switchItem = [self tableViewItemWithDataType:dataType];
-    [syncSwitchItems addObject:switchItem];
-    [model addItem:switchItem
-        toSectionWithIdentifier:SyncDataTypeSectionIdentifier];
+  if (self.syncAccountState == SyncSettingsAccountState::kSignedIn) {
+    for (syncer::UserSelectableType dataType : kAccountSwitchItems) {
+      TableViewItem* switchItem = [self tableViewItemWithDataType:dataType];
+      [syncSwitchItems addObject:switchItem];
+      [model addItem:switchItem
+          toSectionWithIdentifier:SyncDataTypeSectionIdentifier];
+    }
+  } else {
+    for (syncer::UserSelectableType dataType : kSyncSwitchItems) {
+      TableViewItem* switchItem = [self tableViewItemWithDataType:dataType];
+      [syncSwitchItems addObject:switchItem];
+      [model addItem:switchItem
+          toSectionWithIdentifier:SyncDataTypeSectionIdentifier];
+    }
   }
   self.syncSwitchItems = syncSwitchItems;
 
@@ -373,6 +393,23 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
         self.syncSetupService->IsDataTypePreferred(dataType);
     BOOL isEnabled = self.shouldSyncDataItemEnabled &&
                      ![self isManagedSyncSettingsDataType:dataType];
+    if (self.syncAccountState == SyncSettingsAccountState::kSignedIn &&
+        dataType == syncer::UserSelectableType::kHistory) {
+      // kHistory toggle represents both kHistory and kTabs in this case.
+      // kHistory and kTabs should usually have the same value, but in some
+      // cases they may not, e.g. if one of them is disabled by policy. In that
+      // case, show the toggle as on if at least one of them is enabled. The
+      // toggle should reflect the value of the non-disabled type.
+      isDataTypeSynced = self.syncSetupService->IsDataTypePreferred(
+                             syncer::UserSelectableType::kHistory) ||
+                         self.syncSetupService->IsDataTypePreferred(
+                             syncer::UserSelectableType::kTabs);
+      isEnabled = self.shouldSyncDataItemEnabled &&
+                  (![self isManagedSyncSettingsDataType:
+                              syncer::UserSelectableType::kHistory] ||
+                   ![self isManagedSyncSettingsDataType:
+                              syncer::UserSelectableType::kTabs]);
+    }
     BOOL needsUpdate = (syncSwitchItem.on != isDataTypeSynced) ||
                        (syncSwitchItem.isEnabled != isEnabled);
     syncSwitchItem.on = isDataTypeSynced;
@@ -655,8 +692,14 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
       break;
     case syncer::UserSelectableType::kHistory:
       itemType = HistoryDataTypeItemType;
-      textStringID = IDS_SYNC_DATATYPE_TYPED_URLS;
-      accessibilityIdentifier = kSyncOmniboxHistoryIdentifier;
+      textStringID =
+          self.syncAccountState == SyncSettingsAccountState::kSignedIn
+              ? IDS_SYNC_DATATYPE_HISTORY_AND_TABS
+              : IDS_SYNC_DATATYPE_TYPED_URLS;
+      accessibilityIdentifier =
+          self.syncAccountState == SyncSettingsAccountState::kSignedIn
+              ? kSyncHistoryAndTabsIdentifier
+              : kSyncOmniboxHistoryIdentifier;
       break;
     case syncer::UserSelectableType::kPasswords:
       itemType = PasswordsDataTypeItemType;
@@ -871,9 +914,43 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
           _autocompleteWalletPreference.value = true;
         }
         break;
+      case HistoryDataTypeItemType: {
+        DCHECK(syncSwitchItem);
+
+        switch (self.syncAccountState) {
+          case SyncSettingsAccountState::kSignedIn:
+            // In kSignedIn case, the kTabs toggle does not exist. Instead it's
+            // controlled by the history toggle.
+
+            // Don't try to toggle the managed item.
+            if (![self isManagedSyncSettingsDataType:
+                           syncer::UserSelectableType::kHistory]) {
+              _syncService->GetUserSettings()->SetSelectedType(
+                  syncer::UserSelectableType::kHistory, value);
+            }
+            if (![self isManagedSyncSettingsDataType:
+                           syncer::UserSelectableType::kTabs]) {
+              _syncService->GetUserSettings()->SetSelectedType(
+                  syncer::UserSelectableType::kTabs, value);
+            }
+            break;
+          case SyncSettingsAccountState::kSyncing:
+          case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
+            if ([self isManagedSyncSettingsDataType:syncer::UserSelectableType::
+                                                        kHistory]) {
+              break;
+            }
+            self.syncSetupService->SetDataTypeEnabled(
+                syncer::UserSelectableType::kHistory, value);
+            break;
+          case SyncSettingsAccountState::kSignedOut:
+            NOTREACHED();
+            break;
+        }
+        break;
+      }
       case AutofillDataTypeItemType:
       case BookmarksDataTypeItemType:
-      case HistoryDataTypeItemType:
       case OpenTabsDataTypeItemType:
       case PasswordsDataTypeItemType:
       case ReadingListDataTypeItemType:
@@ -1270,6 +1347,9 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
 
 // Returns NO if any syncable item is managed, YES otherwise.
 - (BOOL)allItemsAreSynceable {
+  // This method in not be called in the kSignedIn state, as there is no sync
+  // everything item.
+  CHECK(self.syncAccountState != SyncSettingsAccountState::kSignedIn);
   for (const auto& type : kSyncSwitchItems) {
     if ([self isManagedSyncSettingsDataType:type]) {
       return NO;

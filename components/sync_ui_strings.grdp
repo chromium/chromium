@@ -22,6 +22,9 @@
     <message name="IDS_SYNC_DATATYPE_TYPED_URLS" desc="History, one of the data types that we allow syncing.">
       History
     </message>
+    <message name="IDS_SYNC_DATATYPE_HISTORY_AND_TABS" desc="History and tabs, one of the data types that we allow syncing.">
+      History and Tabs
+    </message>
     <message name="IDS_SYNC_DATATYPE_READING_LIST" desc="Reading List, one of the data types that we allow syncing">
       Reading List
     </message>

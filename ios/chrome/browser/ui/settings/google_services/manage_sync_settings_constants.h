@@ -19,6 +19,7 @@ extern NSString* const kManageSyncTableViewAccessibilityIdentifier;
 extern NSString* const kSyncEverythingItemAccessibilityIdentifier;
 extern NSString* const kSyncBookmarksIdentifier;
 extern NSString* const kSyncOmniboxHistoryIdentifier;
+extern NSString* const kSyncHistoryAndTabsIdentifier;
 extern NSString* const kSyncPasswordsIdentifier;
 extern NSString* const kSyncOpenTabsIdentifier;
 extern NSString* const kSyncAutofillIdentifier;
