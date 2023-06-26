@@ -176,4 +176,65 @@ TEST_F(HTMLSelectMenuElementTest, NotifyClientListItemRemove) {
             chrome_client_->GetOptionChangeNotificationCount());
 }
 
+// Test behavior of HTMLSelectMenuElement::OwnerSelectMenu() if selectmenu uses
+// default parts.
+TEST_F(HTMLSelectMenuElementTest, OwnerSelectMenu_Parts) {
+  SetHtmlInnerHTML(R"HTML(
+    <selectmenu id='selectmenu'>
+    <b>
+      <option>First</option>
+      <option>Second</option>
+    </b>
+    </selectmenu>
+  )HTML");
+
+  HTMLSelectMenuElement* select_menu_element =
+      To<HTMLSelectMenuElement>(GetElementById("selectmenu"));
+  EXPECT_EQ(select_menu_element, HTMLSelectMenuElement::OwnerSelectMenu(
+                                     select_menu_element->selectedOption()));
+  EXPECT_EQ(select_menu_element, HTMLSelectMenuElement::OwnerSelectMenu(
+                                     select_menu_element->ButtonPart()));
+}
+
+// Test behavior of HTMLSelectMenuElement::OwnerSelectMenu() if selectmenu uses
+// custom parts.
+TEST_F(HTMLSelectMenuElementTest, OwnerSelectMenu_PartsCustomSlots) {
+  SetHtmlInnerHTML(R"HTML(
+    <selectmenu id='selectmenu'>
+      <div behavior="button" slot="button" id="selectmenu_button">
+        Button
+      </div>
+      <div behavior="listbox" slot="listbox" id="selectmenu_listbox" popover>
+        <b>
+          <option id="first_option">First</option>
+          <option>Second</option>
+        </b>
+      </div>
+    </selectmenu>
+  )HTML");
+
+  HTMLSelectMenuElement* select_menu_element =
+      To<HTMLSelectMenuElement>(GetElementById("selectmenu"));
+  EXPECT_EQ(select_menu_element, HTMLSelectMenuElement::OwnerSelectMenu(
+                                     GetElementById("selectmenu_button")));
+  EXPECT_EQ(select_menu_element, HTMLSelectMenuElement::OwnerSelectMenu(
+                                     GetElementById("selectmenu_listbox")));
+  ASSERT_EQ(select_menu_element, HTMLSelectMenuElement::OwnerSelectMenu(
+                                     GetElementById("first_option")));
+}
+
+// Test behavior of HTMLSelectMenuElement::OwnerSelectMenu() when a node which
+// is not a descendant of the selectmenu is passed.
+TEST_F(HTMLSelectMenuElementTest, OwnerSelectMenu_NotInSelectMenu) {
+  SetHtmlInnerHTML(R"HTML(
+    <selectmenu id='selectmenu'>
+      <option>First</option>
+      <option>Second</option>
+    </selectmenu>
+    <div id="Other">other</div>
+  )HTML");
+  EXPECT_EQ(nullptr,
+            HTMLSelectMenuElement::OwnerSelectMenu(GetElementById("other")));
+}
+
 }  // namespace blink

@@ -203,6 +203,16 @@ HTMLSelectMenuElement::HTMLSelectMenuElement(Document& document)
 
 // static
 HTMLSelectMenuElement* HTMLSelectMenuElement::OwnerSelectMenu(Node* node) {
+  // Do some quick checks in order to avoid, in most cases, walking up the
+  // entire tree if `node` does not have a selectmenu ancestor.
+  if (!IsA<HTMLOptionElement>(node)) {
+    HTMLElement* html_element = DynamicTo<HTMLElement>(node);
+    if (!html_element ||
+        !html_element->FastHasAttribute(html_names::kBehaviorAttr)) {
+      return nullptr;
+    }
+  }
+
   HTMLSelectMenuElement* nearest_select_menu_ancestor =
       SelectMenuPartTraversal::NearestSelectMenuAncestor(*node);
 
