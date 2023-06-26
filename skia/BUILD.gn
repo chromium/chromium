@@ -765,16 +765,6 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     }
     visibility = [ ":skia_opts" ]
   }
-  skia_source_set("skia_opts_skx") {
-    sources = skia_opts.skx_sources
-    if (!is_win) {
-      cflags = [ "-march=skylake-avx512" ]
-    }
-    if (is_win) {
-      cflags = [ "/arch:AVX512" ]
-    }
-    visibility = [ ":skia_opts" ]
-  }
 }
 
 skia_source_set("skia_opts") {
@@ -787,7 +777,6 @@ skia_source_set("skia_opts") {
     deps += [
       ":skia_opts_avx",
       ":skia_opts_hsw",
-      ":skia_opts_skx",
       ":skia_opts_sse3",
     ]
   } else if (current_cpu == "arm") {
