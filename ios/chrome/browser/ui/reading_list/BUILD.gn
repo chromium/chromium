@@ -194,6 +194,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/reading_list/core",
     "//components/reading_list/core:test_support",
+    "//components/sync:test_support",
     "//components/sync/base",
     "//components/url_formatter",
     "//ios/chrome/browser/favicon",

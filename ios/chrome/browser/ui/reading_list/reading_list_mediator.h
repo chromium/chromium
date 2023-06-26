@@ -15,6 +15,9 @@ class GURL;
 class ReadingListEntry;
 @class ReadingListListItemFactory;
 class ReadingListModel;
+namespace syncer {
+class SyncService;
+}
 
 // Mediator between the Model and the UI.
 @interface ReadingListMediator : NSObject<ReadingListDataSource>
@@ -22,6 +25,7 @@ class ReadingListModel;
 - (nullable instancetype)init NS_UNAVAILABLE;
 
 - (nullable instancetype)initWithModel:(nonnull ReadingListModel*)model
+                           syncService:(nonnull syncer::SyncService*)syncService
                          faviconLoader:(nonnull FaviconLoader*)faviconLoader
                        listItemFactory:
                            (nonnull ReadingListListItemFactory*)itemFactory

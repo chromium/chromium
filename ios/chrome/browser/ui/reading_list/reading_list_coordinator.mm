@@ -116,6 +116,8 @@
   PrefService* _prefService;
   // Manager for user's Google identities.
   signin::IdentityManager* _identityManager;
+  // Sync service.
+  syncer::SyncService* _syncService;
 }
 
 #pragma mark - ChromeCoordinator
@@ -132,11 +134,13 @@
   // Create the mediator.
   ReadingListModel* model =
       ReadingListModelFactory::GetInstance()->GetForBrowserState(browserState);
+  _syncService = SyncServiceFactory::GetForBrowserState(browserState);
   ReadingListListItemFactory* itemFactory =
       [[ReadingListListItemFactory alloc] init];
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
   self.mediator = [[ReadingListMediator alloc] initWithModel:model
+                                                 syncService:_syncService
                                                faviconLoader:faviconLoader
                                              listItemFactory:itemFactory];
   // Initialize services.
@@ -249,6 +253,7 @@
   _authService = nullptr;
   _prefService = nullptr;
   _identityManager = nullptr;
+  _syncService = nullptr;
   _identityManagerObserverBridge.reset();
 
   [super stop];
@@ -675,12 +680,10 @@
 
 // Returns YES if the user cannot turn on sync for enterprise policy reasons.
 - (BOOL)isSyncDisabledByAdministrator {
-  syncer::SyncService* syncService = SyncServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
-  const bool syncDisabledPolicy = syncService->HasDisableReason(
+  const bool syncDisabledPolicy = _syncService->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
   const bool syncTypesDisabledPolicy = IsManagedSyncDataType(
-      syncService, syncer::UserSelectableType::kReadingList);
+      _syncService, syncer::UserSelectableType::kReadingList);
   return syncDisabledPolicy || syncTypesDisabledPolicy;
 }
 
