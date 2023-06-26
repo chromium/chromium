@@ -329,6 +329,8 @@ void PasswordManager::RegisterProfilePrefs(
       prefs::kTimesAttemptedToReenrollToGoogleMobileServices, 0);
   registry->RegisterBooleanPref(
       prefs::kUserAcknowledgedLocalPasswordsMigrationWarning, false);
+  registry->RegisterTimePref(
+      prefs::kLocalPasswordsMigrationWarningShownTimestamp, base::Time());
 #endif
   // Preferences for |PasswordChangeSuccessTracker|.
   registry->RegisterIntegerPref(prefs::kPasswordChangeSuccessTrackerVersion, 0);

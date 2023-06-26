@@ -64,7 +64,7 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
       dismissal_callback_(std::move(dismissal_callback)),
       focused_field_type_(focused_field_type),
       show_migration_warning_callback_(
-          base::BindRepeating(&password_manager::ShowWarning)) {
+          base::BindRepeating(&local_password_migration::ShowWarning)) {
   DCHECK(web_contents_);
   DCHECK(store_);
   DCHECK(dismissal_callback_);

@@ -82,7 +82,7 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
       webauthn_delegate_(webauthn_delegate),
       filler_(std::move(filler)),
       show_password_migration_warning_(
-          base::BindRepeating(&password_manager::ShowWarning)),
+          base::BindRepeating(&local_password_migration::ShowWarning)),
       should_show_hybrid_option_(should_show_hybrid_option),
       source_id_(password_client->web_contents()
                      ->GetPrimaryMainFrame()
@@ -254,8 +254,10 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
 
   // Do not trigger autosubmission if the password migration warning is being
   // shown because it interrupts the nomal workflow.
-  filler_->UpdateTriggerSubmission(ShouldTriggerSubmission() &&
-                                   !password_manager::ShouldShowWarning());
+  filler_->UpdateTriggerSubmission(
+      ShouldTriggerSubmission() &&
+      !local_password_migration::ShouldShowWarning(
+          Profile::FromBrowserContext(web_contents_->GetBrowserContext())));
   filler_->FillUsernameAndPassword(credential.username(),
                                    credential.password());
   ShowPasswordMigrationWarningIfNeeded();
@@ -279,7 +281,8 @@ void TouchToFillControllerAutofillDelegate::CleanUpFillerAndReportOutcome(
 
 void TouchToFillControllerAutofillDelegate::
     ShowPasswordMigrationWarningIfNeeded() {
-  if (!password_manager::ShouldShowWarning()) {
+  if (!local_password_migration::ShouldShowWarning(
+          Profile::FromBrowserContext(web_contents_->GetBrowserContext()))) {
     return;
   }
   show_password_migration_warning_.Run(

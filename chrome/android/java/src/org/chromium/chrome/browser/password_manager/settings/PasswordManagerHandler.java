@@ -80,4 +80,10 @@ public interface PasswordManagerHandler {
      */
     void showPasswordEntryEditingView(Context context, SettingsLauncher settingsLauncher, int index,
             boolean isBlockedCredential);
+
+    /**
+     * Checks whether the all the conditions for the migraiton warning to be shown are met.
+     * This includes the flag check, whether there was another warning shown in the past month, etc.
+     */
+    boolean shouldShowMigrationWarning();
 }
