@@ -347,16 +347,16 @@ TEST(WebAppTest, IsolationDataDebugValue) {
 
   EXPECT_TRUE(app.isolation_data().has_value());
 
-  base::Value expected_isolation_data = base::JSONReader::Read(R"({
+  base::Value expected_isolation_data = base::JSONReader::Read(R"|({
         "isolated_web_app_location": {
           "installed_bundle": {
             "path": "random_path"
           }
         },
         "version": "1.0.0",
-        "controlled_frame_partitions": [],
+        "controlled_frame_partitions (on-disk)": [],
         "pending_update_info": null
-      })")
+      })|")
                                             .value();
 
   base::Value::Dict debug_app = app.AsDebugValue().GetDict().Clone();
@@ -379,14 +379,14 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
 
   EXPECT_TRUE(app.isolation_data().has_value());
 
-  base::Value expected_isolation_data = base::JSONReader::Read(R"({
+  base::Value expected_isolation_data = base::JSONReader::Read(R"|({
         "isolated_web_app_location": {
           "installed_bundle": {
             "path": "random_path"
           }
         },
         "version": "1.0.0",
-        "controlled_frame_partitions": [],
+        "controlled_frame_partitions (on-disk)": [],
         "pending_update_info": {
           "isolated_web_app_location": {
             "installed_bundle": {
@@ -395,7 +395,7 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
           },
           "version": "2.0.0"
         }
-      })")
+      })|")
                                             .value();
 
   base::Value::Dict debug_app = app.AsDebugValue().GetDict().Clone();

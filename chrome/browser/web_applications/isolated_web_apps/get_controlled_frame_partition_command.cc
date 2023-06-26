@@ -27,28 +27,38 @@ base::Value GetControlledFramePartitionWithLock(
     base::OnceCallback<void(absl::optional<content::StoragePartitionConfig>)>
         callback,
     AppLock& lock) {
-  content::StoragePartitionConfig storage_partition_config =
-      url_info.GetStoragePartitionConfigForControlledFrame(
-          profile, partition_name, in_memory);
-
-  // If persisted, register the StoragePartition with the web_app system.
-  if (!in_memory) {
-    ScopedRegistryUpdate update(&lock.sync_bridge());
-    WebApp* iwa = update->UpdateApp(url_info.app_id());
-    CHECK(iwa && iwa->isolation_data().has_value());
-
-    WebApp::IsolationData isolation_data = *iwa->isolation_data();
-    isolation_data.controlled_frame_partitions.insert(partition_name);
-    iwa->SetIsolationData(isolation_data);
-  }
-
   base::Value::Dict debug_info;
   debug_info.Set("app_id", url_info.app_id());
   debug_info.Set("partition_name", partition_name);
+  debug_info.Set("in_memory", in_memory);
+
+  if (in_memory) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            lock.registrar().SaveAndGetInMemoryControlledFramePartitionConfig(
+                url_info, partition_name)));
+
+    return base::Value(std::move(debug_info));
+  }
+
+  content::StoragePartitionConfig storage_partition_config =
+      url_info.GetStoragePartitionConfigForControlledFrame(
+          profile, partition_name, /*in_memory=*/false);
+
+  // Register the StoragePartition with the web_app system.
+  ScopedRegistryUpdate update(&lock.sync_bridge());
+  WebApp* iwa = update->UpdateApp(url_info.app_id());
+  CHECK(iwa && iwa->isolation_data().has_value());
+
+  WebApp::IsolationData isolation_data = *iwa->isolation_data();
+  isolation_data.controlled_frame_partitions.insert(partition_name);
+  iwa->SetIsolationData(isolation_data);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), storage_partition_config));
-  return base::Value(debug_info.Clone());
+  return base::Value(std::move(debug_info));
 }
 
 }  // namespace web_app

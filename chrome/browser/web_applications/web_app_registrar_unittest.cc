@@ -23,6 +23,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
@@ -1023,6 +1024,35 @@ TEST_F(
       registrar().GetIsolatedWebAppStoragePartitionConfigs(app_id);
 
   EXPECT_TRUE(storage_partition_configs.empty());
+}
+
+TEST_F(WebAppRegistrarTest, SaveAndGetInMemoryControlledFramePartitionConfig) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kIsolatedWebApps);
+  InitSyncBridge();
+
+  constexpr char kIwaHostname[] =
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+  GURL start_url(base::StrCat({chrome::kIsolatedAppScheme,
+                               url::kStandardSchemeSeparator, kIwaHostname}));
+  auto isolated_web_app = test::CreateWebApp(start_url);
+  const AppId app_id = isolated_web_app->app_id();
+  auto url_info = IsolatedWebAppUrlInfo::Create(start_url);
+  ASSERT_TRUE(url_info.has_value());
+
+  isolated_web_app->SetScope(isolated_web_app->start_url());
+  isolated_web_app->SetIsolationData(WebApp::IsolationData(
+      InstalledBundle{.path = base::FilePath()}, base::Version("1.0.0")));
+  RegisterApp(std::move(isolated_web_app));
+
+  auto output_config =
+      registrar().SaveAndGetInMemoryControlledFramePartitionConfig(
+          url_info.value(), "partition_1");
+
+  auto expected_config_cf_1 = content::StoragePartitionConfig::Create(
+      profile(), /*partition_domain=*/base::StrCat({"iwa-", kIwaHostname}),
+      /*partition_name=*/"partition_1", /*in_memory=*/true);
+
+  EXPECT_EQ(expected_config_cf_1, output_config);
 }
 
 TEST_F(WebAppRegistrarTest,

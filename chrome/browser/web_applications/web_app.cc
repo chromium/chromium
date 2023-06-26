@@ -774,7 +774,7 @@ base::Value WebApp::IsolationData::AsDebugValue() const {
                         IsolatedWebAppLocationAsDebugValue(location))
                    .Set("version", version.GetString());
   base::Value::List* partitions =
-      value.EnsureList("controlled_frame_partitions");
+      value.EnsureList("controlled_frame_partitions (on-disk)");
   for (const std::string& partition : controlled_frame_partitions) {
     partitions->Append(partition);
   }
