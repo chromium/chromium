@@ -576,15 +576,23 @@ void WebStateList::PerformBatchOperation(
     base::OnceCallback<void(WebStateList*)> operation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(!batch_operation_in_progress_);
-  base::AutoReset<bool> lock(&batch_operation_in_progress_, /*locked=*/true);
+  // Scope to control the lifetime of the `base::AutoReset<>` which is used to
+  // set `batch_operation_in_progress_` to false when the the batch operation is
+  // completed. `base::AutoReset<>` needs to be destroyed before calling
+  // `WebStateListObserver::BatchOperationEnded()`.
+  {
+    DCHECK(!batch_operation_in_progress_);
+    base::AutoReset<bool> lock(&batch_operation_in_progress_, /*locked=*/true);
 
-  for (auto& observer : observers_) {
-    observer.WillBeginBatchOperation(this);
+    for (auto& observer : observers_) {
+      observer.WillBeginBatchOperation(this);
+    }
+    if (!operation.is_null()) {
+      std::move(operation).Run(this);
+    }
   }
-  if (!operation.is_null()) {
-    std::move(operation).Run(this);
-  }
+
+  DCHECK(!batch_operation_in_progress_);
   for (auto& observer : observers_) {
     observer.BatchOperationEnded(this);
   }

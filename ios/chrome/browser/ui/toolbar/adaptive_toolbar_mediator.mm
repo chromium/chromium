@@ -64,7 +64,6 @@
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
   std::unique_ptr<OverlayPresenterObserverBridge> _overlayObserver;
-  BOOL _inBatchOperation;
 }
 
 - (instancetype)init {
@@ -170,7 +169,7 @@
       // ActiveWebStateChangeReason::Activated.
       break;
     case WebStateListChange::Type::kDetach: {
-      if (_inBatchOperation) {
+      if (webStateList->IsBatchInProgress()) {
         return;
       }
 
@@ -184,7 +183,7 @@
       // Do nothing when a WebState is replaced.
       break;
     case WebStateListChange::Type::kInsert: {
-      if (_inBatchOperation) {
+      if (webStateList->IsBatchInProgress()) {
         return;
       }
 
@@ -204,16 +203,8 @@
   self.webState = newWebState;
 }
 
-- (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
-  DCHECK_EQ(_webStateList, webStateList);
-  DCHECK(!_inBatchOperation);
-  _inBatchOperation = YES;
-}
-
 - (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
   DCHECK_EQ(_webStateList, webStateList);
-  DCHECK(_inBatchOperation);
-  _inBatchOperation = NO;
   [self.consumer setTabCount:_webStateList->count() addedInBackground:NO];
 }
 

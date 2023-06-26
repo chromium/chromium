@@ -146,7 +146,6 @@ class SessionRestorationBrowserAgent
   // Used to delay saves requested while a batch operation was in progress.
   // The save will be scheduled with a delay unless any of the SaveSession()
   // call was asking for no delay.
-  bool batch_in_progress_ = false;
   bool save_after_batch_ = false;
   bool save_immediately_ = false;
 

@@ -256,7 +256,7 @@ void SessionRestorationBrowserAgent::SaveSession(bool immediately) {
   if (!CanSaveSession())
     return;
 
-  if (batch_in_progress_) {
+  if (web_state_list_->IsBatchInProgress()) {
     save_after_batch_ = true;
     save_immediately_ = save_immediately_ || immediately;
     return;
@@ -415,14 +415,12 @@ void SessionRestorationBrowserAgent::WillDetachWebStateAt(
 
 void SessionRestorationBrowserAgent::WillBeginBatchOperation(
     WebStateList* web_state_list) {
-  batch_in_progress_ = true;
   save_after_batch_ = false;
   save_immediately_ = false;
 }
 
 void SessionRestorationBrowserAgent::BatchOperationEnded(
     WebStateList* web_state_list) {
-  batch_in_progress_ = false;
   if (save_after_batch_) {
     SaveSession(save_immediately_);
     save_after_batch_ = false;
