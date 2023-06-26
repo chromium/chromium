@@ -26,7 +26,9 @@ namespace ash {
 namespace {
 
 // Sizing and spacing values for `result_image_`.
-constexpr int kRoundedCornerRadius = 16;
+constexpr int kTopBottomMargin = 10;
+constexpr int kLeftRightMargin = 15;
+constexpr int kRoundedCornerRadius = 8;
 
 class ImagePreviewView : public views::ImageButton {
  public:
@@ -59,6 +61,8 @@ SearchResultImageView::SearchResultImageView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   result_image_ = AddChildView(std::make_unique<ImagePreviewView>());
   result_image_->SetCanProcessEventsWithinSubtree(false);
+  result_image_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      kTopBottomMargin, kLeftRightMargin, kTopBottomMargin, kLeftRightMargin)));
 
   SetCallback(base::BindRepeating(&SearchResultImageView::OnImageViewPressed,
                                   base::Unretained(this)));
@@ -91,22 +95,9 @@ void SearchResultImageView::OnMouseEvent(ui::MouseEvent* event) {
   SearchResultBaseView::OnMouseEvent(event);
 }
 
-gfx::Size SearchResultImageView::CalculatePreferredSize() const {
-  // Keep the ratio of the width and height be 3:2.
-  return gfx::Size(preferred_width_, 2 * preferred_width_ / 3);
-}
-
 void SearchResultImageView::OnResultChanged() {
   OnMetadataChanged();
   SchedulePaint();
-}
-
-void SearchResultImageView::ConfigureLayoutForAvailableWidth(int width) {
-  if (preferred_width_ == width) {
-    return;
-  }
-  preferred_width_ = width;
-  PreferredSizeChanged();
 }
 
 void SearchResultImageView::OnMetadataChanged() {
@@ -115,12 +106,8 @@ void SearchResultImageView::OnMetadataChanged() {
     return;
   }
 
-  gfx::ImageSkia image = result()->icon().icon.Rasterize(GetColorProvider());
-  if (!GetContentsBounds().IsEmpty()) {
-    image = gfx::ImageSkiaOperations::CreateResizedImage(
-        image, skia::ImageOperations::RESIZE_BEST, GetContentsBounds().size());
-  }
-
+  const gfx::ImageSkia& image =
+      result()->icon().icon.Rasterize(GetColorProvider());
   result_image_->SetImage(views::Button::STATE_NORMAL, image);
   result_image_->SetTooltipText(result()->title());
   result_image_->SetAccessibleName(result()->title());

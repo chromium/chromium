@@ -4,7 +4,6 @@
 
 #include "ash/app_list/views/search_result_image_list_view.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -15,17 +14,15 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/typography.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/table_layout_view.h"
 
 namespace ash {
@@ -37,16 +34,6 @@ constexpr int kPreferredTitleHorizontalMargins = 16;
 constexpr int kPreferredTitleTopMargins = 12;
 constexpr int kPreferredTitleBottomMargins = 4;
 
-// Layout constants for `image_view_container_`.
-constexpr int kImageContainerHorizontalMargins =
-    kPreferredTitleHorizontalMargins;
-constexpr int kImageContainerVerticalMargins = 8;
-constexpr int kSpaceBetweenImages = 8;
-
-// Layout constants for `image_info_container_`.
-constexpr auto kInfoContainerMargins = gfx::Insets::TLBR(0, 8, 0, 0);
-constexpr int kSpaceBetweenInfoTitleAndContent = 16;
-
 }  // namespace
 
 using views::LayoutAlignment;
@@ -55,6 +42,7 @@ using views::TableLayout;
 SearchResultImageListView::SearchResultImageListView(
     AppListViewDelegate* view_delegate)
     : SearchResultContainerView(view_delegate) {
+  SetLayoutManager(std::make_unique<views::FillLayout>());
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
 
@@ -71,21 +59,9 @@ SearchResultImageListView::SearchResultImageListView(
   title_label_->layer()->SetFillsBoundsOpaquely(false);
 
   image_view_container_ =
-      AddChildView(std::make_unique<views::FlexLayoutView>());
+      AddChildView(std::make_unique<views::BoxLayoutView>());
   image_view_container_->SetPaintToLayer();
   image_view_container_->layer()->SetFillsBoundsOpaquely(false);
-  image_view_container_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kPreferred));
-
-  // `image_view_container_` flex layout settings.
-  image_view_container_->SetInteriorMargin(gfx::Insets::TLBR(
-      kImageContainerVerticalMargins, kImageContainerHorizontalMargins,
-      kImageContainerVerticalMargins, kImageContainerHorizontalMargins));
-  image_view_container_->SetCollapseMargins(true);
-  image_view_container_->SetDefault(views::kMarginsKey,
-                                    gfx::Insets::VH(0, kSpaceBetweenImages));
 
   // TODO(crbug.com/1352636) replace mock results with real results.
   int dummy_search_result_id = 0;
@@ -107,45 +83,24 @@ SearchResultImageListView::SearchResultImageListView(
       IDS_ASH_SEARCH_RESULT_IMAGE_DATE_MODIFIED,
       IDS_ASH_SEARCH_RESULT_IMAGE_FILE_TYPE,
       IDS_ASH_SEARCH_RESULT_IMAGE_FILE_LOCATION};
+  const views::Label::CustomFont title_font = {
+      views::Label::GetDefaultFontList().DeriveWithWeight(
+          gfx::Font::Weight::MEDIUM)};
 
   auto append_image_info = [&](int idx) {
-    auto title_label = std::make_unique<views::Label>(
-        l10n_util::GetStringUTF16(title_string_ids[idx]));
-    auto content_label = std::make_unique<views::Label>(info_strings[idx]);
-    if (chromeos::features::IsJellyEnabled()) {
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
-                                            *title_label);
-      title_label->SetEnabledColorId(cros_tokens::kColorPrimary);
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
-                                            *content_label);
-      content_label->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
-    } else {
-      title_label->SetFontList(
-          views::Label::GetDefaultFontList().DeriveWithWeight(
-              gfx::Font::Weight::MEDIUM));
-    }
-
-    // TODO(crbug.com/1352636): Double check which part of the file path we want
-    // to elide.
-    // Elide the file path if needed.
-    if (title_string_ids[idx] == IDS_ASH_SEARCH_RESULT_IMAGE_FILE_LOCATION) {
-      content_label->SetElideBehavior(gfx::ElideBehavior::ELIDE_MIDDLE);
-    }
-
-    image_info_container_->AddChildView(std::move(title_label));
-    image_info_container_->AddChildView(std::move(content_label));
+    image_info_container_->AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(title_string_ids[idx]), title_font));
+    image_info_container_->AddChildView(
+        std::make_unique<views::Label>(info_strings[idx]));
   };
 
   image_info_container_ = image_view_container_->AddChildView(
       std::make_unique<views::TableLayoutView>());
   image_info_container_->SetVisible(false);
-  image_info_container_->SetBorder(
-      views::CreateEmptyBorder(kInfoContainerMargins));
   image_info_container_->AddColumn(
       LayoutAlignment::kStart, LayoutAlignment::kStretch,
       TableLayout::kFixedSize, TableLayout::ColumnSize::kUsePreferred, 0, 0);
-  image_info_container_->AddPaddingColumn(TableLayout::kFixedSize,
-                                          kSpaceBetweenInfoTitleAndContent);
+  image_info_container_->AddPaddingColumn(TableLayout::kFixedSize, 5);
   image_info_container_->AddColumn(
       LayoutAlignment::kStart, LayoutAlignment::kStretch, 1.0f,
       TableLayout::ColumnSize::kUsePreferred, 0, 0);
@@ -189,17 +144,6 @@ SearchResultImageListView::GetSearchResultImageViews() {
   return image_views_;
 }
 
-void SearchResultImageListView::ConfigureLayoutForAvailableWidth(int width) {
-  const int image_count = image_views_.size();
-  const int margin_space = kImageContainerHorizontalMargins * 2 +
-                           kSpaceBetweenImages * (image_count - 1);
-  const int image_width = std::max(0, (width - margin_space) / image_count);
-
-  for (auto* image_view : image_views_) {
-    image_view->ConfigureLayoutForAvailableWidth(image_width);
-  }
-}
-
 void SearchResultImageListView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kListBox;
@@ -217,7 +161,7 @@ int SearchResultImageListView::DoUpdate() {
           results(), base::BindRepeating([](const SearchResult& result) {
             return result.display_type() == SearchResultDisplayType::kImage;
           }),
-          SharedAppListConfig::instance().image_search_max_results());
+          ash::SharedAppListConfig::instance().image_search_max_results());
 
   const size_t num_results = display_results.size();
 

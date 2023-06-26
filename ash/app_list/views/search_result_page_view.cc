@@ -83,8 +83,12 @@ END_METADATA
 SearchResultPageView::SearchResultPageView() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  SetBorder(views::CreateEmptyBorder(
+  root_view_ = AddChildView(std::make_unique<views::View>());
+  root_view_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(kActiveSearchBoxHeight, 0, 0, 0)));
+  root_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
+
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
       this, kSearchBoxSearchResultShadowType);
   shadow_->SetRoundedCornerRadius(kSearchBoxBorderCornerRadiusSearchResult);
@@ -115,7 +119,8 @@ void SearchResultPageView::InitializeContainers(
       std::make_unique<AppListSearchView>(
           view_delegate, dialog_controller_.get(), search_box_view);
   search_view_ = search_view_ptr.get();
-  AddChildView(std::make_unique<SearchCardView>(std::move(search_view_ptr)));
+  root_view_->AddChildView(
+      std::make_unique<SearchCardView>(std::move(search_view_ptr)));
 }
 
 const char* SearchResultPageView::GetClassName() const {

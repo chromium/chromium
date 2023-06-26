@@ -36,10 +36,6 @@ class ASH_EXPORT SearchResultImageView : public SearchResultBaseView {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
-  gfx::Size CalculatePreferredSize() const override;
-
-  // Updates `preferred_width_`.
-  void ConfigureLayoutForAvailableWidth(int width);
 
   // SearchResultBaseView overrides:
   void OnResultChanged() override;
@@ -55,11 +51,6 @@ class ASH_EXPORT SearchResultImageView : public SearchResultBaseView {
 
   // Parent list view. Owned by views hierarchy.
   raw_ptr<SearchResultImageListView, ExperimentalAsh> const list_view_;
-
-  // The preferred width of the image view which is used to calculate the
-  // preferred size. This is set by the parent container view so that the image
-  // views share the space equally.
-  int preferred_width_;
 };
 
 }  // namespace ash

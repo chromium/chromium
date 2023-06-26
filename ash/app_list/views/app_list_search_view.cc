@@ -37,7 +37,6 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/view_utils.h"
 
 using views::BoxLayout;
 
@@ -125,9 +124,9 @@ AppListSearchView::AppListSearchView(
 
   // Launcher image search container is always the third view shown.
   if (features::IsProductivityLauncherImageSearchEnabled()) {
-    image_search_container_ = scroll_contents->AddChildView(
+    auto* image_search_container = scroll_contents->AddChildView(
         std::make_unique<SearchResultImageListView>(view_delegate));
-    add_result_container(image_search_container_);
+    add_result_container(image_search_container);
   }
 
   // SearchResultListViews are aware of their relative position in the
@@ -332,12 +331,6 @@ void AppListSearchView::UpdateForNewSearch(bool search_active) {
     } else {
       search_result_fast_update_time_.reset();
     }
-  }
-}
-
-void AppListSearchView::OnBoundsChanged(const gfx::Rect& old_bounds) {
-  if (image_search_container_ && width() != old_bounds.width()) {
-    image_search_container_->ConfigureLayoutForAvailableWidth(width());
   }
 }
 
