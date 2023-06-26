@@ -10,10 +10,12 @@
     [RaisesException] constructor(optional (sequence<sequence<USVString>> or record<USVString, USVString> or USVString) init = "");
     readonly attribute unsigned long size;
     void append(USVString name, USVString value);
-    [ImplementedAs=deleteAllWithName, CallWith=ScriptState] void delete(USVString name, optional any ignored);
+    [ImplementedAs=deleteAllWithNameOrTuple, CallWith=ExecutionContext] void delete(USVString name);
+    [ImplementedAs=deleteAllWithNameOrTuple, RuntimeEnabled=URLSearchParamsHasAndDeleteMultipleArgs, CallWith=ExecutionContext] void delete(USVString name, USVString value);
     USVString? get(USVString name);
     sequence<USVString> getAll(USVString name);
-    [CallWith=ScriptState] boolean has(USVString name, optional any ignored);
+    [CallWith=ExecutionContext] boolean has(USVString name);
+    [RuntimeEnabled=URLSearchParamsHasAndDeleteMultipleArgs, CallWith=ExecutionContext] boolean has(USVString name, USVString value);
     void set(USVString name, USVString value);
 
     void sort();

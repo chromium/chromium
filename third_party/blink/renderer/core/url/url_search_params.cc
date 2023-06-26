@@ -190,28 +190,48 @@ void URLSearchParams::append(const String& name, const String& value) {
   RunUpdateSteps();
 }
 
-void URLSearchParams::deleteAllWithName(ScriptState*, const String& name) {
-  for (wtf_size_t i = 0; i < params_.size();) {
-    if (params_[i].first == name)
-      params_.EraseAt(i);
-    else
-      i++;
-  }
-  RunUpdateSteps();
+void URLSearchParams::deleteAllWithNameOrTuple(
+    ExecutionContext* execution_context,
+    const String& name) {
+  deleteAllWithNameOrTuple(execution_context, name, String());
 }
 
-void URLSearchParams::deleteAllWithName(ScriptState* script_state,
-                                        const String& name,
-                                        const ScriptValue& ignored) {
-  UseCounter::Count(ExecutionContext::From(script_state),
-                    WebFeature::kURLSearchParams_Has_Delete_MultipleArguments);
-  deleteAllWithName(script_state, name);
+void URLSearchParams::deleteAllWithNameOrTuple(
+    ExecutionContext* execution_context,
+    const String& name,
+    const String& value) {
+  // TODO(debadree333): Remove the code to count
+  // kURLSearchParamsDeleteFnBehaviourDiverged in October 2023.
+  Vector<wtf_size_t, 1u> indices_to_remove_with_name_value;
+  Vector<wtf_size_t, 1u> indices_to_remove_with_name;
+
+  for (wtf_size_t i = 0; i < params_.size(); i++) {
+    if (params_[i].first == name) {
+      indices_to_remove_with_name.push_back(i);
+      if (params_[i].second == value || value.IsNull()) {
+        indices_to_remove_with_name_value.push_back(i);
+      }
+    }
+  }
+
+  if (indices_to_remove_with_name_value != indices_to_remove_with_name) {
+    UseCounter::Count(execution_context,
+                      WebFeature::kURLSearchParamsDeleteFnBehaviourDiverged);
+  }
+
+  for (auto it = indices_to_remove_with_name_value.rbegin();
+       it != indices_to_remove_with_name_value.rend(); ++it) {
+    params_.EraseAt(*it);
+  }
+
+  RunUpdateSteps();
 }
 
 String URLSearchParams::get(const String& name) const {
   for (const auto& param : params_) {
-    if (param.first == name)
+    if (param.first == name) {
       return param.second;
+    }
   }
   return String();
 }
@@ -219,26 +239,41 @@ String URLSearchParams::get(const String& name) const {
 Vector<String> URLSearchParams::getAll(const String& name) const {
   Vector<String> result;
   for (const auto& param : params_) {
-    if (param.first == name)
+    if (param.first == name) {
       result.push_back(param.second);
+    }
   }
   return result;
 }
 
-bool URLSearchParams::has(ScriptState*, const String& name) const {
-  for (const auto& param : params_) {
-    if (param.first == name)
-      return true;
-  }
-  return false;
+bool URLSearchParams::has(ExecutionContext* execution_context,
+                          const String& name) const {
+  return has(execution_context, name, String());
 }
 
-bool URLSearchParams::has(ScriptState* script_state,
+bool URLSearchParams::has(ExecutionContext* execution_context,
                           const String& name,
-                          const ScriptValue& ignored) const {
-  UseCounter::Count(ExecutionContext::From(script_state),
-                    WebFeature::kURLSearchParams_Has_Delete_MultipleArguments);
-  return has(script_state, name);
+                          const String& value) const {
+  // TODO(debadree333): Remove the code to count
+  // kURLSearchParamsHasFnBehaviourDiverged in October 2023.
+  bool found_match_using_name_and_value = false;
+  bool found_match_using_name = false;
+  for (const auto& param : params_) {
+    const bool name_matched = (param.first == name);
+    if (name_matched) {
+      found_match_using_name = true;
+    }
+    if (name_matched && (value.IsNull() || param.second == value)) {
+      found_match_using_name_and_value = true;
+      break;
+    }
+  }
+
+  if (found_match_using_name_and_value != found_match_using_name) {
+    UseCounter::Count(execution_context,
+                      WebFeature::kURLSearchParamsHasFnBehaviourDiverged);
+  }
+  return found_match_using_name_and_value;
 }
 
 void URLSearchParams::set(const String& name, const String& value) {
@@ -259,10 +294,11 @@ void URLSearchParams::set(const String& name, const String& value) {
     }
   }
   // Otherwise, append a new name-value pair to the list.
-  if (!found_match)
+  if (!found_match) {
     append(name, value);
-  else
+  } else {
     RunUpdateSteps();
+  }
 }
 
 void URLSearchParams::sort() {
@@ -271,10 +307,11 @@ void URLSearchParams::sort() {
 }
 
 void URLSearchParams::EncodeAsFormData(Vector<char>& encoded_data) const {
-  for (const auto& param : params_)
+  for (const auto& param : params_) {
     FormDataEncoder::AddKeyValuePairAsFormData(
         encoded_data, param.first.Utf8(), param.second.Utf8(),
         EncodedFormData::kFormURLEncoded, FormDataEncoder::kDoNotNormalizeCRLF);
+  }
 }
 
 scoped_refptr<EncodedFormData> URLSearchParams::ToEncodedFormData() const {
