@@ -36,8 +36,6 @@ bool CanDisplayFirstTimeInterstitialBanner();
 
 BASE_DECLARE_FEATURE(kLocalExtensionApprovalsV2);
 
-BASE_DECLARE_FEATURE(kRetireStaticDenyList);
-
 BASE_DECLARE_FEATURE(kEnableProtoApiForClassifyUrl);
 
 BASE_DECLARE_FEATURE(kUpdateSupervisedUserFactoryCreation);
