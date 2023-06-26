@@ -26778,6 +26778,17 @@ Called by update_debug_scenarios.py.-->
   <int value="2" label="Features deprecated, toast not shown (already shown)"/>
 </enum>
 
+<enum name="DescFailureReason">
+  <summary>
+    The reason for the failure of a request made to the image annotation service
+    by a client feature.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Other"/>
+  <int value="2" label="Policy Violation"/>
+  <int value="3" label="Adult"/>
+</enum>
+
 <enum name="DeskCloseType">
   <int value="0" label="Combine desks."/>
   <int value="1" label="Close all windows"/>
