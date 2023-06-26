@@ -30,6 +30,19 @@ def ParseArgs() -> argparse.Namespace:
         help=('The billing project to use for BigQuery queries. '
               'Must have access to the ResultDB BQ tables, e.g. '
               '"luci-resultdb.chromium.web_tests_ci_test_results".'))
+    parser.add_argument(
+        '--image-diff-num-threshold',
+        default=3,
+        action="store",
+        help=
+        "Threshold for the number of image diff data, must have this number "
+        "to analyze the fuzzy diff range.")
+    parser.add_argument(
+        '--distinct-diff-num-threshold',
+        default=3,
+        action="store",
+        help="Threshold for the number of distinct image diff data, must this"
+        "number to furtuher provide prcentile data.")
     parser.add_argument('--sample-period',
                         type=int,
                         default=1,
@@ -52,12 +65,14 @@ def main() -> int:
     results_processor = results.ResultProcessor()
     aggregated_results = results_processor.aggregate_results(query_results)
 
-    matching_analyzer = analyzer.FuzzyMatchingAnalyzer()
+    matching_analyzer = analyzer.FuzzyMatchingAnalyzer(
+        args.image_diff_num_threshold, args.distinct_diff_num_threshold)
     for test_name, test_data in aggregated_results.items():
-        test_result = matching_analyzer.run_analyzer(test_data)
-        print('')
-        print('test_name: %s' % test_name)
-        print('test_result: %s' % test_result)
-        print('')
+        test_analysis_result = matching_analyzer.run_analyzer(test_data)
+        if test_analysis_result.is_analyzed:
+            print('')
+            print('test_name: %s' % test_name)
+            print('test_result: %s' % test_analysis_result.analysis_result)
+            print('')
 
     return 0

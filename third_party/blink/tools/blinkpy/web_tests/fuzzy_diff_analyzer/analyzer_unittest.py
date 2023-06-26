@@ -25,7 +25,8 @@ class FuzzyMatchingAnalyzerTest(unittest.TestCase):
                 dt.ImageDiffTagTupleType(
                     10, 40, 'http://ci.chromium.org/b/3333')],
         }
-        actual_result = fuzzy_match_analyzer.run_analyzer(test_data)
+        actual_result = fuzzy_match_analyzer.run_analyzer(
+            test_data).analysis_result
         expected_result = 'Total image diff number is less than 4, no result'
         self.assertEqual(actual_result, expected_result)
 
@@ -45,7 +46,8 @@ class FuzzyMatchingAnalyzerTest(unittest.TestCase):
                 dt.ImageDiffTagTupleType(
                     10, 40, 'http://ci.chromium.org/b/3333')],
         }
-        actual_result = fuzzy_match_analyzer.run_analyzer(test_data)
+        actual_result = fuzzy_match_analyzer.run_analyzer(
+            test_data).analysis_result
         expected_result = 'Total image diff number is 3. ' \
                           'Total distinct image diff number is less than 4. ' \
                           'Suggested make all following image diff ' \
@@ -74,7 +76,8 @@ class FuzzyMatchingAnalyzerTest(unittest.TestCase):
                 dt.ImageDiffTagTupleType(
                     10, 40, 'http://ci.chromium.org/b/3333')],
         }
-        actual_result = fuzzy_match_analyzer.run_analyzer(test_data)
+        actual_result = fuzzy_match_analyzer.run_analyzer(
+            test_data).analysis_result
         expected_result = 'Total image diff number is 5. The list of fuzzy match range suggested for this ' \
                           'test: \nFor color difference:\n15 to cover 50 percentile, 16 ' \
                           'to cover 75 percentile, 16 to cover 90 percentile, ' \
@@ -96,7 +99,8 @@ class FuzzyMatchingAnalyzerTest(unittest.TestCase):
         {
             tuple(['win']): image_diffs,
         }
-        actual_result = fuzzy_match_analyzer.run_analyzer(test_data)
+        actual_result = fuzzy_match_analyzer.run_analyzer(
+            test_data).analysis_result
         expected_result = 'Total image diff number is 100. The list of fuzzy match range suggested for this ' \
                           'test: \nFor color difference:\n50 to cover 50 percentile, 75 ' \
                           'to cover 75 percentile, 90 to cover 90 percentile, ' \
@@ -118,7 +122,8 @@ class FuzzyMatchingAnalyzerTest(unittest.TestCase):
         {
             tuple(['win']): image_diffs,
         }
-        actual_result = fuzzy_match_analyzer.run_analyzer(test_data)
+        actual_result = fuzzy_match_analyzer.run_analyzer(
+            test_data).analysis_result
         expected_result = 'Total image diff number is 101. The list of fuzzy match range suggested for this ' \
                           'test: \nFor color difference:\n51 to cover 50 percentile, 76 ' \
                           'to cover 75 percentile, 91 to cover 90 percentile, ' \

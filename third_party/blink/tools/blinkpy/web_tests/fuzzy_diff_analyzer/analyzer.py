@@ -10,12 +10,14 @@ from blinkpy.web_tests.fuzzy_diff_analyzer import data_types as dt
 
 class ImageMatchingAnalyzer:
     """Abstract base class for all analyzers."""
-    def run_analyzer(self, test_results: dt.TestToTypTagsType) -> str:
+    def run_analyzer(
+            self,
+            test_results: dt.TestToTypTagsType) -> dt.TestAnalysisResultType:
         """Gets the analysis result of the input test's results.
 
         Returns:
-          A string representing the analyzer suggested matching information for
-          the input image comparison test's result.
+          A test analysis result representing the analyzer suggested matching
+          information for the input image comparison test's result.
         """
         raise NotImplementedError()
 
@@ -43,7 +45,9 @@ class FuzzyMatchingAnalyzer(ImageMatchingAnalyzer):
         self._image_diff_num_threshold = fuzzy_match_image_diff_num_threshold
         self._distinct_diff_num_threshold = fuzzy_match_distinct_diff_num_threshold
 
-    def run_analyzer(self, test_results: dt.TestToTypTagsType) -> str:
+    def run_analyzer(
+            self,
+            test_results: dt.TestToTypTagsType) -> dt.TestAnalysisResultType:
         """Analyze the input image comparison test result for a fuzzy match
         range suggestion.
 
@@ -51,7 +55,8 @@ class FuzzyMatchingAnalyzer(ImageMatchingAnalyzer):
           test_results: Parsed test results of a test with image diff data.
 
         Returns:
-          A string of fuzzy match range suggestion
+          A test analysis result representing the analyzer suggested matching
+          information for the input image comparison test's result.
         """
         # Check the image num threshold
         total_image_diff_num = 0
@@ -65,8 +70,9 @@ class FuzzyMatchingAnalyzer(ImageMatchingAnalyzer):
 
         # Total image diff number does not meet the threshold, return no result.
         if total_image_diff_num < self._image_diff_num_threshold:
-            return ('Total image diff number is less than %d, no result' %
-                    self._image_diff_num_threshold)
+            return dt.TestAnalysisResultType(
+                False, 'Total image diff number is less than %d, no result' %
+                self._image_diff_num_threshold)
 
         # Total distinct image diff number does not reach the threshold, return all
         # these image diff as suggested matching.
@@ -80,7 +86,7 @@ class FuzzyMatchingAnalyzer(ImageMatchingAnalyzer):
                 result = result + ' (%d, %d) with total %d' % (
                     image_diff.color_difference, image_diff.pixel_difference,
                     image_diff_number)
-            return result
+            return dt.TestAnalysisResultType(True, result)
 
         # Calculate the suggested fuzzy match number.
         color_diff_list = []
@@ -95,7 +101,7 @@ class FuzzyMatchingAnalyzer(ImageMatchingAnalyzer):
         result += self._calculate_data_percentile(color_diff_list)
         result += '\nFor pixel difference:\n'
         result += self._calculate_data_percentile(pixel_diff_list)
-        return result
+        return dt.TestAnalysisResultType(True, result)
 
     def _calculate_data_percentile(self, data_list: List[int]) -> str:
         """Calculate the input data list for the percentile result.

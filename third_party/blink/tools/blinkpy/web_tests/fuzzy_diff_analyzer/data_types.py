@@ -22,6 +22,11 @@ ImageDiffTagTupleType = namedtuple(
 TestToTypTagsType = Dict[TypTagTupleType, List[ImageDiffTagTupleType]]
 AggregatedResultsType = Dict[str, TestToTypTagsType]
 
+# Test analysis result data, first item is bool if the tests is analyzed
+# second is analysis result string, example: [true, 'result is fool']
+TestAnalysisResultType = namedtuple('TestAnalysisResultType',
+                                    ['is_analyzed', 'analysis_result'])
+
 
 class Result:
     """Container for an image diff test result.
