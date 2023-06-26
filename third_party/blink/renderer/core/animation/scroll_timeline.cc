@@ -216,4 +216,26 @@ ScrollAxis ScrollTimeline::GetAxis() const {
   return ScrollAxis::kBlock;
 }
 
+absl::optional<double> ScrollTimeline::GetMaximumScrollPosition() const {
+  absl::optional<ScrollOffsets> scroll_offsets = GetResolvedScrollOffsets();
+  if (!scroll_offsets) {
+    return absl::nullopt;
+  }
+  LayoutBox* layout_box = ResolvedSource()->GetLayoutBox();
+  if (!layout_box) {
+    return absl::nullopt;
+  }
+
+  PaintLayerScrollableArea* scrollable_area = layout_box->GetScrollableArea();
+  if (!scrollable_area) {
+    return absl::nullopt;
+  }
+  ScrollOffset scroll_dimensions = scrollable_area->MaximumScrollOffset() -
+                                   scrollable_area->MinimumScrollOffset();
+  auto physical_orientation =
+      ToPhysicalScrollOrientation(GetAxis(), *layout_box);
+  return physical_orientation == kHorizontalScroll ? scroll_dimensions.x()
+                                                   : scroll_dimensions.y();
+}
+
 }  // namespace blink

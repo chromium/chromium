@@ -235,7 +235,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
     CompositorAnimations::GetAnimationOnCompositor(
         *element_, timing, NormalizedTiming(timing), 0, absl::nullopt,
         base::TimeDelta(), effect, keyframe_models, animation_playback_rate,
-        /*is_monotonic_timeline=*/true);
+        /*is_monotonic_timeline=*/true, /*is_boundary_aligned=*/false);
   }
 
   CompositorAnimations::FailureReasons
@@ -2638,9 +2638,9 @@ TEST_P(AnimationCompositorAnimationsTest,
   // to the end and play backwards, which triggers problems with math
   // involving infinity.
   animation->setPlaybackRate(-0.01);
-  EXPECT_EQ(CompositorAnimations::kInvalidAnimationOrEffect,
-            animation->CheckCanStartAnimationOnCompositor(
-                GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_TRUE(CompositorAnimations::kInvalidAnimationOrEffect &
+              animation->CheckCanStartAnimationOnCompositor(
+                  GetDocument().View()->GetPaintArtifactCompositor()));
 }
 
 }  // namespace blink

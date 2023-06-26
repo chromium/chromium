@@ -102,7 +102,6 @@ std::unique_ptr<KeyframeModel> KeyframeModel::CreateImplInstance(
   to_return->set_direction(direction());
   to_return->set_playback_rate(playback_rate());
   to_return->set_fill_mode(fill_mode());
-  to_return->set_active_at_boundary(active_at_boundary());
   DCHECK(!to_return->is_controlling_instance_);
   to_return->is_controlling_instance_ = true;
 #if DCHECK_IS_ON()

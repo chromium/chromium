@@ -18,7 +18,6 @@ class AnimationTimingTest : public testing::Test {
         playback_rate < 0 ? Timing::AnimationDirection::kBackwards
                           : Timing::AnimationDirection::kForwards;
     return timing_.CalculateTimings(local_time,
-                                    /* at_progress_timeline_boundary */ false,
                                     /* is_idle */ false, normalized_timing_,
                                     animation_direction, is_keyframe_effect,
                                     playback_rate);

@@ -226,13 +226,18 @@ struct CORE_EXPORT Timing {
     AnimationTimeDelta active_duration;
     // Calculated as (start_delay + active_duration + end_delay)
     AnimationTimeDelta end_time;
+    // Indicates if the active-after phase boundary aligns with the maximum
+    // scroll position.
+    bool is_start_boundary_aligned = false;
+    // Indicates if the before-active phase boundary aligns with the minimum
+    // scroll position.
+    bool is_end_boundary_aligned = false;
   };
 
   // TODO(crbug.com/1394434): Cleanup method signature by passing in
   // AnimationEffectOwner.
   CalculatedTiming CalculateTimings(
       absl::optional<AnimationTimeDelta> local_time,
-      bool at_progress_timeline_boundary,
       bool is_idle,
       const NormalizedTiming& normalized_timing,
       AnimationDirection animation_direction,

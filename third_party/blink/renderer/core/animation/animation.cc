@@ -190,6 +190,9 @@ bool GreaterThanOrEqualWithinTimeTolerance(const AnimationTimeDelta& a,
   return a_ms > b_ms;
 }
 
+// Consider boundaries aligned if they round to the same integer pixel value.
+const double kScrollBoundaryTolerance = 0.5;
+
 }  // namespace
 
 Animation* Animation::Create(AnimationEffect* effect,
@@ -2016,6 +2019,7 @@ void Animation::ApplyPendingPlaybackRate() {
   if (pending_playback_rate_) {
     playback_rate_ = pending_playback_rate_.value();
     pending_playback_rate_ = absl::nullopt;
+    InvalidateNormalizedTiming();
   }
 }
 
@@ -2037,7 +2041,6 @@ void Animation::setPlaybackRate(double playback_rate,
   //        associated effect end - start time
   bool preserve_current_time =
       timeline_ && timeline_->IsMonotonicallyIncreasing();
-
   bool reversal = (EffectivePlaybackRate() < 0) != (playback_rate < 0);
   pending_playback_rate_ = absl::nullopt;
   V8CSSNumberish* previous_current_time = currentTime();
@@ -2048,7 +2051,11 @@ void Animation::setPlaybackRate(double playback_rate,
 
   if (timeline_ && !timeline_->IsMonotonicallyIncreasing() && reversal &&
       start_time_) {
-    start_time_ = EffectEnd() - start_time_.value();
+    if (auto_align_start_time_) {
+      UpdateAutoAlignedStartTime();
+    } else {
+      start_time_ = EffectEnd() - start_time_.value();
+    }
   }
 
   // Adds a UseCounter to check if setting playbackRate causes a compensatory
@@ -2062,7 +2069,7 @@ void Animation::setPlaybackRate(double playback_rate,
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kAnimationSetPlaybackRateCompensatorySeek);
   }
-
+  InvalidateNormalizedTiming();
   SetCompositorPending(false);
   SetOutdated();
   NotifyProbe();
@@ -2269,11 +2276,17 @@ void Animation::StartAnimationOnCompositor(
   if (start_time) {
     start_time_s = start_time.value().InSecondsF();
   }
+
+  const Timing::NormalizedTiming& timing = effect()->NormalizedTiming();
+  bool boundary_aligned = EffectivePlaybackRate() >= 0
+                              ? timing.is_end_boundary_aligned
+                              : timing.is_start_boundary_aligned;
+
   To<KeyframeEffect>(content_.Get())
-      ->StartAnimationOnCompositor(compositor_group_, start_time_s, time_offset,
-                                   EffectivePlaybackRate(),
-                                   /*compositor_animation=*/nullptr,
-                                   timeline()->IsMonotonicallyIncreasing());
+      ->StartAnimationOnCompositor(
+          compositor_group_, start_time_s, time_offset, EffectivePlaybackRate(),
+          /*compositor_animation=*/nullptr,
+          timeline()->IsMonotonicallyIncreasing(), boundary_aligned);
 }
 
 // TODO(crbug.com/960944): Rename to SetPendingCommit. This method handles both
@@ -2525,6 +2538,61 @@ void Animation::OnRangeUpdate() {
   }
 }
 
+void Animation::UpdateBoundaryAlignment(
+    Timing::NormalizedTiming& timing) const {
+  timing.is_start_boundary_aligned = false;
+  timing.is_end_boundary_aligned = false;
+  if (!auto_align_start_time_) {
+    // If the start time is not auto adjusted to align with the bounds of the
+    // animation range, then it is not possible in all cases to test whether
+    // setting the scroll position with either end of the scroll range will
+    // align with the before-active or active-after boundaries. Safest to
+    // assume that we are not-aligned and the boundary is exclusive.
+    // TODO(kevers): Investigate if/when a use-case pops up that is important to
+    // address.
+    return;
+  }
+
+  if (auto* scroll_timeline = DynamicTo<ScrollTimeline>(TimelineInternal())) {
+    absl::optional<double> max_scroll =
+        scroll_timeline->GetMaximumScrollPosition();
+    if (!max_scroll) {
+      return;
+    }
+    absl::optional<ScrollOffsets> scroll_offsets =
+        scroll_timeline->GetResolvedScrollOffsets();
+    if (!scroll_offsets) {
+      return;
+    }
+    TimelineRange timeline_range = scroll_timeline->GetTimelineRange();
+    double start = range_start_
+                       ? timeline_range.ToFractionalOffset(range_start_.value())
+                       : 0;
+    double end =
+        range_end_ ? timeline_range.ToFractionalOffset(range_end_.value()) : 1;
+
+    AnimationTimeDelta timeline_duration =
+        scroll_timeline->GetDuration().value();
+    if (timeline_duration > AnimationTimeDelta()) {
+      start += timing.start_delay / timeline_duration;
+      end -= timing.end_delay / timeline_duration;
+    }
+
+    double start_offset =
+        start * scroll_offsets->end + (1 - start) * scroll_offsets->start;
+
+    double end_offset =
+        end * scroll_offsets->end + (1 - end) * scroll_offsets->start;
+
+    double rate = EffectivePlaybackRate();
+    timing.is_start_boundary_aligned =
+        rate < 0 && start_offset <= kScrollBoundaryTolerance;
+    timing.is_end_boundary_aligned =
+        rate > 0 &&
+        rate * end_offset >= max_scroll.value() - kScrollBoundaryTolerance;
+  }
+}
+
 namespace {
 
 double ResolveAnimationRange(const absl::optional<TimelineOffset>& offset,
@@ -2584,50 +2652,6 @@ bool Animation::HasActiveAnimationsOnCompositor() {
   return keyframe_effect->HasActiveAnimationsOnCompositor();
 }
 
-bool Animation::AtScrollTimelineBoundary() {
-  // Based on changed defined in: https://github.com/w3c/csswg-drafts/pull/6702
-  // 1.  If any of the following conditions are true:
-  //     * the associated animation's timeline is not a progress-based timeline,
-  //     or
-  //     * the associated animation's timeline duration is unresolved or zero,
-  //     or
-  //     * the animation's playback rate is zero
-  //     return false
-  absl::optional<AnimationTimeDelta> timeline_duration =
-      timeline_ ? timeline_->GetDuration() : absl::nullopt;
-  if (!timeline_ || !timeline_->IsScrollSnapshotTimeline() ||
-      !timeline_duration || timeline_duration->is_zero() ||
-      playback_rate_ == 0) {
-    return false;
-  }
-
-  // 2.  Let effective start time be the animation's start time if resolved, or
-  // zero otherwise.
-  AnimationTimeDelta effective_start_time =
-      start_time_.value_or(AnimationTimeDelta());
-  // 3.  Let effective timeline time be (animation's current time / animation's
-  // playback rate) + effective start time
-  // TODO(crbug.com/1329159): Spec needs updating since a finished animation
-  // sets it's hold time which effectively caps current time at end time.
-  AnimationTimeDelta effective_timeline_time =
-      (UnlimitedCurrentTime().value_or(AnimationTimeDelta()) / playback_rate_) +
-      effective_start_time;
-
-  // 4.  Let effective timeline progress be (effective timeline time / timeline
-  // duration)
-  // 5.  If effective timeline progress is 0 or 1, return true,
-  // We avoid the division here but it is effectively the same as 4 & 5 above.
-  bool result = effective_timeline_time.is_zero() ||
-                IsWithinAnimationTimeTolerance(effective_timeline_time,
-                                               timeline_duration.value());
-  return result;
-
-  // Issue: This procedure is not strictly correct for a paused
-  // animation if the animation's current time is explicitly set, as this can
-  // introduce a lead or lag, between the timeline's current time and
-  // animation's current time.
-}
-
 // Update current time of the animation. Refer to step 1 in:
 // https://www.w3.org/TR/web-animations-1/#update-animations-and-send-events
 bool Animation::Update(TimingUpdateReason reason) {
@@ -2650,13 +2674,9 @@ bool Animation::Update(TimingUpdateReason reason) {
 
     if (!idle) {
       inherited_time = CurrentTimeInternal();
-      // Special case for end-exclusivity when playing backwards.
-      if (inherited_time == AnimationTimeDelta() && EffectivePlaybackRate() < 0)
-        inherited_time = ANIMATION_TIME_DELTA_FROM_SECONDS(-1);
     }
 
-    content_->UpdateInheritedTime(inherited_time, AtScrollTimelineBoundary(),
-                                  idle, playback_rate_, reason);
+    content_->UpdateInheritedTime(inherited_time, idle, playback_rate_, reason);
 
     // After updating the animation time if the animation is no longer current
     // blink will no longer composite the element (see

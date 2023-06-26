@@ -200,6 +200,12 @@ void AnimationEffect::EnsureNormalizedTiming() const {
       std::max(normalized_->start_delay + normalized_->active_duration +
                    normalized_->end_delay,
                AnimationTimeDelta());
+
+  // Determine if boundary aligned to indicate if the active-(before|after)
+  // phase boundary is inclusive or exclusive.
+  if (GetAnimation()) {
+    GetAnimation()->UpdateBoundaryAlignment(normalized_.value());
+  }
 }
 
 void AnimationEffect::UpdateSpecifiedTiming(const Timing& timing) {
@@ -320,7 +326,6 @@ void AnimationEffect::updateTiming(OptionalEffectTiming* optional_timing,
 
 void AnimationEffect::UpdateInheritedTime(
     absl::optional<AnimationTimeDelta> inherited_time,
-    bool at_progress_timeline_boundary,
     bool is_idle,
     double inherited_playback_rate,
     TimingUpdateReason reason) const {
@@ -328,24 +333,17 @@ void AnimationEffect::UpdateInheritedTime(
       (inherited_playback_rate < 0) ? Timing::AnimationDirection::kBackwards
                                     : Timing::AnimationDirection::kForwards;
 
-  bool needs_update =
-      needs_update_ || last_update_time_ != inherited_time ||
-      last_at_progress_timeline_boundary_ != at_progress_timeline_boundary ||
-      last_is_idle_ != is_idle || (owner_ && owner_->EffectSuppressed());
+  bool needs_update = needs_update_ || last_update_time_ != inherited_time ||
+                      last_is_idle_ != is_idle ||
+                      (owner_ && owner_->EffectSuppressed());
   needs_update_ = false;
   last_update_time_ = inherited_time;
   last_is_idle_ = is_idle;
-  // A finished animation saturates inherited time at 0 or effect end.
-  // If we hit a progress timeline boundary and then enter the after phase
-  // timeline time doesn't change. Thus, we need to track boundary transitions
-  // as well since this can affect the phase (active vs after).
-  last_at_progress_timeline_boundary_ = at_progress_timeline_boundary;
 
   if (needs_update) {
     Timing::CalculatedTiming calculated = SpecifiedTiming().CalculateTimings(
-        inherited_time, at_progress_timeline_boundary, is_idle,
-        NormalizedTiming(), direction, IsA<KeyframeEffect>(this),
-        inherited_playback_rate);
+        inherited_time, is_idle, NormalizedTiming(), direction,
+        IsA<KeyframeEffect>(this), inherited_playback_rate);
 
     const bool was_canceled = calculated.phase != calculated_.phase &&
                               calculated.phase == Timing::kPhaseNone;

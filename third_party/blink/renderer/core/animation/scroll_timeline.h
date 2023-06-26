@@ -65,6 +65,8 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
 
   ScrollAxis GetAxis() const override;
 
+  absl::optional<double> GetMaximumScrollPosition() const;
+
   void AnimationAttached(Animation*) override;
   void AnimationDetached(Animation*) override;
 

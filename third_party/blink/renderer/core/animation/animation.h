@@ -239,6 +239,8 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   virtual void SetRange(const absl::optional<TimelineOffset>& range_start,
                         const absl::optional<TimelineOffset>& range_end);
 
+  void UpdateBoundaryAlignment(Timing::NormalizedTiming& timing) const;
+
   // Called during validation of a scroll timeline to determine if a second
   // style and layout pass is required. During this validation step, we have an
   // up to date snapshot of the timeline and can initialize the start time if
@@ -356,7 +358,6 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
     return compositor_property_animations_have_no_effect_;
   }
   bool AnimationHasNoEffect() const { return animation_has_no_effect_; }
-  bool AtScrollTimelineBoundary();
 
   bool WaitingOnDeferredStartTime() {
     return !start_time_ && (pending_play_ || pending_pause_);
