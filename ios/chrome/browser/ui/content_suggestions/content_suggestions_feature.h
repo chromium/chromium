@@ -13,6 +13,9 @@
 // TODO(crbug.com/1385512): Remove this.
 BASE_DECLARE_FEATURE(kDiscoverFeedInNtp);
 
+// Feature to add the Safety Check module to the Magic Stack.
+BASE_DECLARE_FEATURE(kSafetyCheckMagicStack);
+
 // Feature to use one NTP for all tabs in a Browser.
 BASE_DECLARE_FEATURE(kSingleNtp);
 
@@ -45,6 +48,9 @@ bool IsDiscoverFeedEnabled();
 
 // Whether the Magic Stack should be shown.
 bool IsMagicStackEnabled();
+
+// Whether the Safety Check module should be shown in the Magic Stack.
+bool IsSafetyCheckMagicStackEnabled();
 
 // Whether the Most Visited Sites should be put into the Magic Stack.
 bool ShouldPutMostVisitedSitesInMagicStack();

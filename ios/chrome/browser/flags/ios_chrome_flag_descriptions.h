@@ -824,6 +824,11 @@ extern const char kSafeBrowsingAvailableDescription[];
 extern const char kSafeBrowsingRealTimeLookupName[];
 extern const char kSafeBrowsingRealTimeLookupDescription[];
 
+// Title and description for the flag to enable the Safety Check module in the
+// Magic Stack.
+extern const char kSafetyCheckMagicStackName[];
+extern const char kSafetyCheckMagicStackDescription[];
+
 // Title and description for the flag to enable integration with the ScreenTime
 // system.
 extern const char kScreenTimeIntegrationName[];

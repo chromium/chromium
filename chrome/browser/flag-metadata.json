@@ -6823,6 +6823,11 @@
       "psarouthakis@google.com"
     ],
     "expiry_milestone": 125
+    },
+{
+    "name": "safety-check-magic-stack",
+    "owners": ["bwwilliams@google.com", "thegreenfrog@google.com"],
+    "expiry_milestone": 120
   },
   {
     "name": "safety-check-notification-permissions",

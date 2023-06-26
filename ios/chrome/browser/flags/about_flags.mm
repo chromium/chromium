@@ -1656,6 +1656,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIPHForSafariSwitcherName,
      flag_descriptions::kIPHForSafariSwitcherDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIPHForSafariSwitcher)},
+    {"safety-check-magic-stack", flag_descriptions::kSafetyCheckMagicStackName,
+     flag_descriptions::kSafetyCheckMagicStackDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kSafetyCheckMagicStack)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
