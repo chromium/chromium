@@ -7809,10 +7809,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWindowsScrollingPersonalityDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWindowsScrollingPersonality)},
 
-    {"scroll-unification", flag_descriptions::kScrollUnificationName,
-     flag_descriptions::kScrollUnificationDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kScrollUnification)},
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
     {"elastic-overscroll", flag_descriptions::kElasticOverscrollName,
      flag_descriptions::kElasticOverscrollDescription, kOsWin | kOsAndroid,

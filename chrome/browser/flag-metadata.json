@@ -6895,11 +6895,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "scroll-unification",
-    "owners": [ "skobes@chromium.org", "input-dev@chromium.org", "awogbemila@chromium.org" ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "scrollable-tabstrip",
     "owners": [ "chrome-desktop-ui-sea@google.com", "tbergquist" ],
     "expiry_milestone": 120
