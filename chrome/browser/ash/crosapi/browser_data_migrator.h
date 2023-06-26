@@ -206,6 +206,8 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
                            MaybeRestartToMigrateWithMigrationStep);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorRestartTest,
                            MaybeRestartToMigrateMoveAfterCopy);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorRestartTest,
+                           MaybeRestartToMigrateSecondaryUser);
 
   // The common implementation of `MaybeRestartToMigrate` and
   // `MaybeRestartToMigrateWithDiskCheck`.

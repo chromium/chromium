@@ -243,12 +243,9 @@ class BrowserDataMigratorRestartTest : public ::testing::Test {
     fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                      /*browser_restart=*/false,
                                      /*is_child=*/false);
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user, &testing_profile_);
   }
 
  protected:
-  TestingProfile* testing_profile() { return &testing_profile_; }
   ash::FakeChromeUserManager* user_manager() { return fake_user_manager_; }
   PrefService* local_state() { return fake_user_manager_->GetLocalState(); }
 
@@ -256,7 +253,6 @@ class BrowserDataMigratorRestartTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState scoped_local_state_{
       TestingBrowserProcess::GetGlobal()};
-  TestingProfile testing_profile_;
   raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_ =
       nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
@@ -296,8 +292,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithCommandLine) {
 
   base::test::ScopedFeatureList feature_list;
   AddRegularUser("user@gmail.com");
-  const user_manager::User* const user =
-      ash::ProfileHelper::Get()->GetUserByProfile(testing_profile());
+  const user_manager::User* const user = user_manager()->GetPrimaryUser();
   {
     base::test::ScopedCommandLine command_line;
     command_line.GetProcessCommandLine()->AppendSwitchASCII(
@@ -324,8 +319,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
 
   base::test::ScopedFeatureList feature_list;
   AddRegularUser("user@gmail.com");
-  const user_manager::User* const user =
-      ash::ProfileHelper::Get()->GetUserByProfile(testing_profile());
+  const user_manager::User* const user = user_manager()->GetPrimaryUser();
   // If MaybeRestartToMigrate will skip the restarting, WithDiskCheck variation
   // also skips it.
   {
@@ -406,8 +400,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
   // Check that `MaybeRestartToMigrateInternal()` returns true after completion
   // of copy migration if move migration is enabled.
   AddRegularUser("user@gmail.com");
-  const user_manager::User* const user =
-      ash::ProfileHelper::Get()->GetUserByProfile(testing_profile());
+  const user_manager::User* const user = user_manager()->GetPrimaryUser();
 
   crosapi::browser_util::RecordDataVer(
       local_state(), user->username_hash(),
@@ -481,6 +474,32 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
               crosapi::browser_util::MigrationMode::kMove);
     EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
         user->GetAccountId(), user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+}
+
+TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateSecondaryUser) {
+  // Add two users to simulate multi user session.
+  AddRegularUser("user1@gmail.com");
+  AddRegularUser("user2@gmail.com");
+  const auto* const primary_user = user_manager()->GetPrimaryUser();
+  const auto* const secondary_user =
+      user_manager()->FindUser(AccountId::FromUserEmail("user2@gmail.com"));
+  EXPECT_NE(primary_user, secondary_user);
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly},
+        {});
+    // Migration should be triggered for the primary user.
+    EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+        primary_user->GetAccountId(), primary_user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+    // But not for secondary users.
+    EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+        secondary_user->GetAccountId(), secondary_user->username_hash(),
         crosapi::browser_util::PolicyInitState::kAfterInit));
   }
 }

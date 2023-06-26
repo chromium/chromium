@@ -213,6 +213,20 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
   // Check if user exists i.e. not a guest session.
   if (!user)
     return false;
+
+  // Migration should not run for secondary users.
+  const auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+  // `MaybeRestartToMigrateInternal()` either gets called before profile
+  // initialization or after profile initialization. In case of the former, its
+  // called from `PreProfileInit()` and this is only called for the primary
+  // profile so we can assume that the user is the primary user if `primary_user
+  // == nullptr`. If primary_user is not null then we check if `user !=
+  // primary_user`.
+  if (primary_user && (user != primary_user)) {
+    LOG(WARNING) << "Skip migration for secondary users.";
+    return false;
+  }
+
   // Check if profile migration is enabled. If not immediately return.
   if (!crosapi::browser_util::
           IsProfileMigrationEnabledWithUserAndPolicyInitState(
