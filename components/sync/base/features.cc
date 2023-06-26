@@ -166,4 +166,8 @@ BASE_FEATURE(kTabGroupsSaveNudgeDelay,
 BASE_FEATURE(kReplaceSyncPromosWithSignInPromos,
              "ReplaceSyncPromosWithSignInPromos",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSyncAvoidReconfigurationIfAlreadyStopping,
+             "SyncAvoidReconfigurationIfAlreadyStopping",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace syncer
