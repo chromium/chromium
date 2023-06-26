@@ -14,8 +14,6 @@
 #include "build/buildflag.h"
 #include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
 #include "chrome/renderer/google_accounts_private_api_util.h"
-#include "components/trusted_vault/features.h"
-#include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
@@ -30,6 +28,11 @@
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-primitive.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/trusted_vault/features.h"
+#include "components/trusted_vault/trusted_vault_server_constants.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 

@@ -193,7 +193,6 @@ static_library("renderer") {
     "//components/subresource_filter/content/renderer",
     "//components/subresource_filter/core/common",
     "//components/supervised_user/core/common:buildflags",
-    "//components/sync/service",
     "//components/translate/content/renderer",
     "//components/translate/core/common",
     "//components/translate/core/language_detection",
@@ -434,6 +433,7 @@ static_library("renderer") {
       "//components/crx_file",
       "//components/services/screen_ai/buildflags",
       "//components/services/screen_ai/public/mojom",
+      "//components/trusted_vault",
       "//third_party/re2:re2",
     ]
   }
