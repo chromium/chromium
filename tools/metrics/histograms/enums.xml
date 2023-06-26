@@ -33804,6 +33804,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1122" label="EmojiPickerGifSupportEnabled"/>
   <int value="1123" label="ChargingSoundsEnabled"/>
   <int value="1124" label="LowBatterySoundEnabled"/>
+  <int value="1125" label="ArcVmDataMigrationStrategy"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -1471,6 +1471,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kLowBatterySoundEnabled,
     ash::prefs::kLowBatterySoundEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kArcVmDataMigrationStrategy,
+    arc::prefs::kArcVmDataMigrationStrategy,
+    base::Value::Type::INTEGER },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

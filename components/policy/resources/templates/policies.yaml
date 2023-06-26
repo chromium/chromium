@@ -1123,6 +1123,7 @@ policies:
   1122: EmojiPickerGifSupportEnabled
   1123: ChargingSoundsEnabled
   1124: LowBatterySoundEnabled
+  1125: ArcVmDataMigrationStrategy
 atomic_groups:
   1: Homepage
   2: RemoteAccess

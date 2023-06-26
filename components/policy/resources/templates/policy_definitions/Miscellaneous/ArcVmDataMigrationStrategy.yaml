@@ -1,0 +1,38 @@
+caption: Migration strategy for ARC VM Data Migration
+desc: |-
+  Setting the policy specifies the action to take when the user's ARC data directory was created with virtio-fs. Unless virtio-fs data is migrated to virtio-blk, Android apps might run slower on ARC VM.
+
+        Setting the policy to:
+
+        * DoNotPrompt means do not ask the user to go through the migration flow. This is the default value when policy is unset.
+
+        * Prompt (or an unsupported value) means that, at sign-in, user is prompted to go through the data migration flow. This can take up to 10 minutes.
+
+        This policy only applies to ARM devices migrating to ARCVM.
+device_only: false
+default: 0
+default_for_enterprise_users: 0
+example_value: 1
+features:
+  dynamic_refresh: false
+  per_profile: true
+items:
+- caption: Do not prompt users to migrate.
+  name: DoNotPrompt
+  value: 0
+- caption: Prompt users to migrate.
+  name: Prompt
+  value: 1
+owners:
+- youkichihosoi@chromium.org
+- mhasank@chromium.org
+- arc-commercial@google.com
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+supported_on:
+- chrome_os:117-
+tags: []
+type: int-enum
