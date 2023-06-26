@@ -4443,6 +4443,40 @@ TEST_F(TextfieldTest, MoveRangeSelectionExtentOffset) {
   EXPECT_EQ(textfield_->GetSelectedText(), u"me textfiel");
 }
 
+TEST_F(TextfieldTest, MoveRangeSelectionExtentNonEmptySelection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  InitTextfield();
+  textfield_->SetText(u"some textfield text");
+  const int cursor_y = GetCursorYForTesting();
+  textfield_->SelectBetweenCoordinates(
+      gfx::Point(GetCursorPositionX(2), cursor_y),
+      gfx::Point(GetCursorPositionX(12), cursor_y));
+
+  // Shrink the selection. Selection should not become empty.
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(3), cursor_y));
+  gfx::Range range;
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 3));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"m");
+
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(2), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 3));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"m");
+
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(1), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 1));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"o");
+}
+
 TEST_F(TextfieldTest, SelectBetweenCoordinates) {
   InitTextfield();
   textfield_->SetText(u"hello world");

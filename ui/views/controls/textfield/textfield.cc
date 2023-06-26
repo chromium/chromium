@@ -1357,14 +1357,20 @@ void Textfield::MoveRangeSelectionExtent(const gfx::Point& extent) {
               ? nearest_word_boundaries.start()
               : nearest_word_boundaries.end();
   }
+
+  // No need to update the selection if the end is still the same.
   if (end == selection.end()) {
     return;
   }
 
   const size_t start = selection.start();
+  // Don't let the selection become empty.
+  if (start == end) {
+    return;
+  }
+
   const gfx::LogicalCursorDirection affinity =
       start > end ? gfx::CURSOR_FORWARD : gfx::CURSOR_BACKWARD;
-
   OnBeforeUserAction();
   SelectSelectionModel(gfx::SelectionModel(gfx::Range(start, end), affinity));
   OnAfterUserAction();
