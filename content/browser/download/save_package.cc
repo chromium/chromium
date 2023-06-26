@@ -5,7 +5,9 @@
 #include "content/browser/download/save_package.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -26,6 +28,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_item_impl.h"
+#include "components/download/public/common/download_save_item_data.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "components/download/public/common/download_ukm_helper.h"
@@ -757,6 +760,15 @@ void SavePackage::Finish() {
 
   wait_state_ = SUCCESSFUL;
   finished_ = true;
+
+  if (download_) {
+    std::vector<download::DownloadSaveItemData::ItemInfo> files;
+    for (auto& item : saved_success_items_) {
+      files.emplace_back(item.second->full_path(), item.second->url(),
+                         item.second->referrer().url);
+    }
+    download::DownloadSaveItemData::AttachItemData(download_, std::move(files));
+  }
 
   // Record finish.
   download::RecordSavePackageEvent(download::SAVE_PACKAGE_FINISHED);

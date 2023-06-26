@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -21,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -69,6 +71,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/dbus/dlp/dlp_client.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 using content::BrowserContext;
 using content::BrowserThread;
 using content::DownloadManager;
@@ -76,6 +82,7 @@ using content::RenderFrameHost;
 using content::RenderProcessHost;
 using content::WebContents;
 using download::DownloadItem;
+using testing::_;
 using testing::ContainsRegex;
 using testing::HasSubstr;
 using ui::FakeSelectFileDialog;
@@ -1702,5 +1709,65 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveCompleteHTMLBlocked) {
       dir.AppendASCII("1.css"),
   });
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveHTMLWithDlp) {
+  base::FilePath full_file_name, dir;
+  GURL url;
+
+  chromeos::DlpClient::Shutdown();
+  chromeos::DlpClient::InitializeFake();
+  base::test::RepeatingTestFuture<
+      dlp::AddFilesRequest, base::OnceCallback<void(dlp::AddFilesResponse)>>
+      add_file_cb;
+  chromeos::DlpClient::Get()->GetTestInterface()->SetAddFilesMock(
+      add_file_cb.GetCallback());
+
+  url = NavigateToMockURL("a");
+
+  SaveCurrentTab(url, content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML, "a", 1, &dir,
+                 &full_file_name);
+
+  ASSERT_FALSE(HasFailure());
+
+  auto request = std::get<0>(add_file_cb.Take());
+  EXPECT_EQ(1, request.add_file_requests().size());
+  EXPECT_EQ(full_file_name.value(), request.add_file_requests(0).file_path());
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(base::PathExists(full_file_name));
+  EXPECT_FALSE(base::PathExists(dir));
+}
+
+IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveMHTMLWithDlp) {
+  base::FilePath full_file_name, dir;
+  GURL url;
+
+  chromeos::DlpClient::Shutdown();
+  chromeos::DlpClient::InitializeFake();
+  base::test::RepeatingTestFuture<
+      dlp::AddFilesRequest, base::OnceCallback<void(dlp::AddFilesResponse)>>
+      add_file_cb;
+  chromeos::DlpClient::Get()->GetTestInterface()->SetAddFilesMock(
+      add_file_cb.GetCallback());
+
+  url = NavigateToMockURL("a");
+
+  SaveCurrentTab(url, content::SAVE_PAGE_TYPE_AS_MHTML, "a", -1, &dir,
+                 &full_file_name);
+
+  ASSERT_FALSE(HasFailure());
+
+  auto request = std::get<0>(add_file_cb.Take());
+  EXPECT_EQ(1, request.add_file_requests().size());
+  EXPECT_EQ(full_file_name.value(), request.add_file_requests(0).file_path());
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(base::PathExists(full_file_name));
+  EXPECT_FALSE(base::PathExists(dir));
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

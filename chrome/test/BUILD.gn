@@ -1714,7 +1714,10 @@ if (!is_android) {
     ]
 
     if (is_chromeos) {
-      deps += [ "//ui/chromeos" ]
+      deps += [
+        "//chromeos/dbus/dlp:dlp",
+        "//ui/chromeos",
+      ]
     }
 
     # Runtime dependencies
