@@ -9,6 +9,7 @@
 #include "ui/views/widget/widget.h"
 
 namespace app_restore {
+class RestoreData;
 struct WindowInfo;
 
 // For ARC session id, 1 ~ 1000000000 is used as the window id for all new app
@@ -88,6 +89,12 @@ const std::string GetLacrosWindowId(aura::Window* window);
 // Returns the restore window id for the Lacros window with `lacros_window_id`.
 COMPONENT_EXPORT(APP_RESTORE)
 int32_t GetLacrosRestoreWindowId(const std::string& lacros_window_id);
+
+// Returns a tuple containing the window count, tab count, and total count, in
+// that order. Note that tab count data is not saved for full restore, which
+// relies on session restore to restore tabs.
+COMPONENT_EXPORT(APP_RESTORE)
+std::tuple<int, int, int> GetWindowAndTabCount(const RestoreData& restore_data);
 
 }  // namespace app_restore
 

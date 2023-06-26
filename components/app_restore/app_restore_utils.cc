@@ -6,11 +6,13 @@
 
 #include "ash/constants/app_types.h"
 #include "base/functional/bind.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/desk_template_read_handler.h"
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/full_restore_save_handler.h"
+#include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -219,6 +221,35 @@ const std::string GetLacrosWindowId(aura::Window* window) {
 int32_t GetLacrosRestoreWindowId(const std::string& lacros_window_id) {
   return full_restore::FullRestoreReadHandler::GetInstance()
       ->GetLacrosRestoreWindowId(lacros_window_id);
+}
+
+std::tuple<int, int, int> GetWindowAndTabCount(
+    const RestoreData& restore_data) {
+  int window_count = 0;
+  int tab_count = 0;
+  int total_count = 0;
+
+  const RestoreData::AppIdToLaunchList& launch_list_map =
+      restore_data.app_id_to_launch_list();
+  for (const auto& [app_id, launch_list] : launch_list_map) {
+    for (const auto& [window_id, app_restore_data] : launch_list) {
+      const absl::optional<std::vector<GURL>>& urls = app_restore_data->urls;
+      // Url field could be empty if the app is not the browser, or if from full
+      // restore. We check the app type also in case the url field is not set up
+      // correctly.
+      if (!urls || urls->empty() || app_id != app_constants::kChromeAppId) {
+        ++window_count;
+        ++total_count;
+        continue;
+      }
+
+      ++window_count;
+      tab_count += urls->size();
+      total_count += urls->size();
+    }
+  }
+
+  return std::make_tuple(window_count, tab_count, total_count);
 }
 
 }  // namespace app_restore

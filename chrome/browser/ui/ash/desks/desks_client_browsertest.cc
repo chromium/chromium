@@ -262,7 +262,8 @@ void DeleteDeskTemplate(const base::Uuid& uuid) {
 
 web_app::AppId CreateSystemWebApp(Profile* profile,
                                   ash::SystemWebAppType app_type) {
-  DCHECK(app_type == ash::SystemWebAppType::SETTINGS ||
+  DCHECK(app_type == ash::SystemWebAppType::FILE_MANAGER ||
+         app_type == ash::SystemWebAppType::SETTINGS ||
          app_type == ash::SystemWebAppType::HELP);
   web_app::AppId app_id = *ash::GetAppIdForSystemWebApp(profile, app_type);
   apps::AppLaunchParams params(
@@ -279,6 +280,10 @@ web_app::AppId CreateSystemWebApp(Profile* profile,
           [&](apps::LaunchResult&& result) { launch_wait.Quit(); }));
   launch_wait.Run();
   return app_id;
+}
+
+web_app::AppId CreateFilesSystemWebApp(Profile* profile) {
+  return CreateSystemWebApp(profile, ash::SystemWebAppType::FILE_MANAGER);
 }
 
 web_app::AppId CreateSettingsSystemWebApp(Profile* profile) {
@@ -2155,8 +2160,9 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        SystemUIDeskTemplateWindowAndTabCountHistogram) {
   base::HistogramTester histogram_tester;
 
-  // Create the settings app, which is a system web app.
-  CreateSettingsSystemWebApp(browser()->profile());
+  // Create the two file manager (system web app) windows.
+  CreateFilesSystemWebApp(browser()->profile());
+  CreateFilesSystemWebApp(browser()->profile());
 
   CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
   CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2), GURL(kExampleUrl3)});
@@ -2167,11 +2173,16 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ClickSaveDeskAsTemplateButton();
 
   // NOTE: there is an existing browser with 1 tab created by BrowserMain().
-  histogram_tester.ExpectBucketCount(ash::kTemplateWindowCountHistogramName, 4,
+  // Window count: 2 files app windows + 2 created browsers + 1 existing browser
+  //               = 5.
+  // Tab count: 5 tabs on the created browsers + 1 tab on the existing browser
+  //            = 6.
+  // Total count: 2 files app windows + 6 tabs = 8.
+  histogram_tester.ExpectBucketCount(ash::kTemplateWindowCountHistogramName, 5,
                                      1);
   histogram_tester.ExpectBucketCount(ash::kTemplateTabCountHistogramName, 6, 1);
   histogram_tester.ExpectBucketCount(
-      ash::kTemplateWindowAndTabCountHistogramName, 7, 1);
+      ash::kTemplateWindowAndTabCountHistogramName, 8, 1);
 }
 
 // Tests that the template count histogram is recorded properly.

@@ -2184,6 +2184,23 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
+<histogram name="Apps.FullRestoreTabCount" units="count"
+    expires_after="2024-06-20">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <summary>
+    Records the number of tabs restored by full restore. Note that this is not
+    recorded for lacros browsers.
+  </summary>
+</histogram>
+
+<histogram name="Apps.FullRestoreWindowCount" units="count"
+    expires_after="2024-06-20">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <summary>Records the number of windows restored by full restore.</summary>
+</histogram>
+
 <histogram
     name="Apps.HomeLauncherTransition.AnimationSmoothness{AppListTabletModeTransition}"
     units="%" expires_after="never">
