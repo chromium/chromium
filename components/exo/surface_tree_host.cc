@@ -150,8 +150,11 @@ void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
     root_surface_ = root_surface;
     root_surface_->SetSurfaceDelegate(this);
 
+    if (client_submits_surfaces_in_pixel_coordinates_) {
+      SetScaleFactorTransform(GetScaleFactor());
+    }
     // TODO(oshima): Investigate if we can set this to `host_window`.
-    root_surface->window()->SetProperty(
+    root_surface_->window()->SetProperty(
         ui::kAXConsiderInvisibleAndIgnoreChildren, true);
     host_window_->AddChild(root_surface_->window());
     UpdateHostWindowBounds();
