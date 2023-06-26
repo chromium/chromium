@@ -74,6 +74,7 @@ source_set("unit_tests") {
     ":hash_realtime_service",
     ":hash_realtime_utils",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/browser:verdict_cache_manager",

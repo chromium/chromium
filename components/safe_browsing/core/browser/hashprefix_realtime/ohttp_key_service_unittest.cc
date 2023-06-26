@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "google_apis/google_api_keys.h"
@@ -120,6 +121,9 @@ class OhttpKeyServiceTest : public ::testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   TestingPrefServiceSimple pref_service_;
   std::string key_param_;
+
+ private:
+  hash_realtime_utils::GoogleChromeBrandingPretenderForTesting apply_branding_;
 };
 
 TEST_F(OhttpKeyServiceTest, GetOhttpKey_Success) {

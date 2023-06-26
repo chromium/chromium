@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -47,24 +48,34 @@ TEST(HashRealTimeUtilsTest, TestIsThreatTypeRelevant) {
       V5::ThreatType::BETTER_ADS_VIOLATION));
 }
 
-TEST(HashRealTimeUtilsTest,
-     TestIsHashRealTimeLookupEligibleInSession_FeatureOn) {
+TEST(HashRealTimeUtilsTest, TestIsHashRealTimeLookupEligibleInSession_Yes) {
+  hash_realtime_utils::GoogleChromeBrandingPretenderForTesting apply_branding;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kHashPrefixRealTimeLookups);
   EXPECT_TRUE(hash_realtime_utils::IsHashRealTimeLookupEligibleInSession());
 }
 TEST(HashRealTimeUtilsTest,
      TestIsHashRealTimeLookupEligibleInSession_FeatureOff) {
+  hash_realtime_utils::GoogleChromeBrandingPretenderForTesting apply_branding;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(kHashPrefixRealTimeLookups);
   EXPECT_FALSE(hash_realtime_utils::IsHashRealTimeLookupEligibleInSession());
 }
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST(HashRealTimeUtilsTest,
+     TestIsHashRealTimeLookupEligibleInSession_GoogleChromeBrandingOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kHashPrefixRealTimeLookups);
+  EXPECT_FALSE(hash_realtime_utils::IsHashRealTimeLookupEligibleInSession());
+}
+#endif
 TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
   struct TestCase {
     SafeBrowsingState safe_browsing_state =
         SafeBrowsingState::STANDARD_PROTECTION;
     bool is_off_the_record = false;
     bool is_feature_on = true;
+    bool has_google_chrome_branding = true;
     absl::optional<bool> lookups_allowed_by_policy = absl::nullopt;
     hash_realtime_utils::HashRealTimeSelection expected_selection;
     bool expected_log_usage_histograms = true;
@@ -93,6 +104,12 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
     {.is_feature_on = false,
      .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
      .expected_ineligible_for_session_log = true},
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    // Lookups disabled because it's not a branded build.
+    {.has_google_chrome_branding = false,
+     .expected_selection = hash_realtime_utils::HashRealTimeSelection::kNone,
+     .expected_ineligible_for_session_log = true},
+#endif
     // Lookups allowed because policy allows them and nothing else prevents
     // them.
     {.lookups_allowed_by_policy = true,
@@ -142,6 +159,7 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
       };
 
   for (const auto& test_case : test_cases) {
+    hash_realtime_utils::GoogleChromeBrandingPretenderForTesting apply_branding;
     base::test::ScopedFeatureList scoped_feature_list;
     TestingPrefServiceSimple prefs;
     base::HistogramTester histogram_tester;
@@ -149,6 +167,9 @@ TEST(HashRealTimeUtilsTest, TestDetermineHashRealTimeSelection) {
       scoped_feature_list.InitAndEnableFeature(kHashPrefixRealTimeLookups);
     } else {
       scoped_feature_list.InitAndDisableFeature(kHashPrefixRealTimeLookups);
+    }
+    if (!test_case.has_google_chrome_branding) {
+      apply_branding.StopApplyingBranding();
     }
     RegisterProfilePrefs(prefs.registry());
     SetSafeBrowsingState(&prefs, test_case.safe_browsing_state);

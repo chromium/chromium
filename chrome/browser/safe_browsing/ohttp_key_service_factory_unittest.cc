@@ -8,6 +8,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,6 +47,7 @@ class OhttpKeyServiceFactoryTest : public testing::Test {
 
  private:
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
+  hash_realtime_utils::GoogleChromeBrandingPretenderForTesting apply_branding_;
 };
 
 #if BUILDFLAG(IS_ANDROID)

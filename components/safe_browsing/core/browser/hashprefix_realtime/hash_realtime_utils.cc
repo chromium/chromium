@@ -13,6 +13,20 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace safe_browsing::hash_realtime_utils {
+// Used by tests so that more than just GOOGLE_CHROME_BRANDING bots are capable
+// of running these tests.
+bool kPretendHasGoogleChromeBranding = false;
+
+namespace {
+bool HasGoogleChromeBranding() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return true;
+#else
+  return kPretendHasGoogleChromeBranding;
+#endif
+}
+}  // namespace
+
 bool IsThreatTypeRelevant(const V5::ThreatType& threat_type) {
   switch (threat_type) {
     case V5::ThreatType::MALWARE:
@@ -32,9 +46,8 @@ std::string GetHashPrefix(const std::string& full_hash) {
   return full_hash.substr(0, kHashPrefixLength);
 }
 bool IsHashRealTimeLookupEligibleInSession() {
-  // TODO(crbug.com/1441654) [Also TODO(thefrog)]: Add GOOGLE_CHROME_BRANDING
-  // check.
-  return base::FeatureList::IsEnabled(kHashPrefixRealTimeLookups);
+  return HasGoogleChromeBranding() &&
+         base::FeatureList::IsEnabled(kHashPrefixRealTimeLookups);
 }
 HashRealTimeSelection DetermineHashRealTimeSelection(
     bool is_off_the_record,
@@ -77,6 +90,18 @@ HashRealTimeSelection DetermineHashRealTimeSelection(
 std::vector<const char*> GetHashRealTimeSelectionConfiguringPrefs() {
   return {prefs::kSafeBrowsingEnabled, prefs::kSafeBrowsingEnhanced,
           prefs::kHashPrefixRealTimeChecksAllowedByPolicy};
+}
+
+GoogleChromeBrandingPretenderForTesting::
+    GoogleChromeBrandingPretenderForTesting() {
+  kPretendHasGoogleChromeBranding = true;
+}
+GoogleChromeBrandingPretenderForTesting::
+    ~GoogleChromeBrandingPretenderForTesting() {
+  StopApplyingBranding();
+}
+void GoogleChromeBrandingPretenderForTesting::StopApplyingBranding() {
+  kPretendHasGoogleChromeBranding = false;
 }
 
 }  // namespace safe_browsing::hash_realtime_utils

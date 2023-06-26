@@ -23,6 +23,28 @@ enum class HashRealTimeSelection {
   kHashRealTimeService = 1,
 };
 
+// Used only for tests. This is useful so that more than just
+// GOOGLE_CHROME_BRANDING bots are capable of testing code that only runs when
+// |IsHashRealTimeLookupEligibleInSession| returns true. To allow pretending
+// that there is Google Chrome branding on unbranded builds, create an object
+// of this type and keep it in scope for as long as the override should exist.
+// The constructor will set the override, and the destructor will clear it. If
+// necessary, the override can be cleared by calling |StopApplyingBranding|.
+class GoogleChromeBrandingPretenderForTesting {
+ public:
+  GoogleChromeBrandingPretenderForTesting();
+  GoogleChromeBrandingPretenderForTesting(
+      const GoogleChromeBrandingPretenderForTesting&) = delete;
+  GoogleChromeBrandingPretenderForTesting& operator=(
+      const GoogleChromeBrandingPretenderForTesting&) = delete;
+  ~GoogleChromeBrandingPretenderForTesting();
+
+  // The normal way to stop applying branding is for this object to go out of
+  // scope. However, if necessary it can also be done manually by calling this
+  // method.
+  void StopApplyingBranding();
+};
+
 // Returns whether the threat type is relevant for hash-prefix real-time
 // lookups.
 bool IsThreatTypeRelevant(const V5::ThreatType& threat_type);

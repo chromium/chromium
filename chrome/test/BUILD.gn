@@ -8848,6 +8848,7 @@ test("unit_tests") {
       "//components/file_access:test_support",
       "//components/safe_browsing/content/browser:safe_browsing_service",
       "//components/safe_browsing/core/browser:token_fetcher_testing_helper",
+      "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
       "//ipc:protobuf_support",
     ]
   } else if (safe_browsing_mode == 2 && is_android) {
