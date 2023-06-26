@@ -60,11 +60,13 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
 
   absl::optional<LayoutSize> SubjectSize() const;
   absl::optional<gfx::PointF> SubjectPosition(Node* resolved_source) const;
-  void GetSubjectMaxStickyOffsets(LayoutUnit& top,
-                                  LayoutUnit& right,
-                                  LayoutUnit& bottom,
-                                  LayoutUnit& left,
-                                  Node* resolved_source) const;
+  void ApplyStickyAdjustments(ScrollOffsets& scroll_offsets,
+                              ViewOffsets& view_offsets,
+                              double viewport_size,
+                              double target_size,
+                              double target_offset,
+                              ScrollOrientation orientation,
+                              Node* resolved_source) const;
 
   // If either of the following elements are non-null, we need to update
   // |inset_| on a style change.
