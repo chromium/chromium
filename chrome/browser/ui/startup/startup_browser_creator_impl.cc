@@ -127,7 +127,7 @@ bool ShouldRestoreApps(bool is_post_restart, Profile* profile) {
   return is_post_restart ||
          (primary_user_profile &&
           BrowserLauncher::GetForProfile(primary_user_profile)
-              ->is_launching_for_full_restore());
+              ->is_launching_for_last_opened_profiles());
 #else
   return is_post_restart;
 #endif
