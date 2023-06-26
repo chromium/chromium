@@ -18,6 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/companion/visual_search/features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/companion/visual_search.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
@@ -47,6 +48,12 @@ base::FilePath model_file_path() {
       .AppendASCII("test-model-quantized.tflite");
 }
 
+const SkBitmap create_bitmap(int width, int height, int r, int g, int b) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(width, height);
+  bitmap.eraseARGB(255, r, g, b);
+  return bitmap;
+}
 }  // namespace
 
 class VisualSearchClassifierHostTest : public ChromeRenderViewHostTestHarness {
@@ -163,6 +170,24 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification_WithCancellation) {
                                       true, 1);
   histogram_tester_.ExpectBucketCount("Companion.VisualSearch.MismatchURL",
                                       true, 1);
+}
+
+TEST_F(VisualSearchClassifierHostTest, HandleClassification) {
+  SetModelPath();
+  VisualSearchClassifierHost::ResultCallback callback = base::BindOnce(
+      [](std::vector<std::string> results) { EXPECT_EQ(results.size(), 1U); });
+  visual_search_host_->StartClassification(
+      web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
+  std::vector<mojom::VisualSearchSuggestionPtr> results;
+  SkBitmap result = create_bitmap(1000, 1000, 128, 128, 255);
+  results.emplace_back(mojom::VisualSearchSuggestion::New(result));
+
+  visual_search_host_->HandleClassification(std::move(results));
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_.ExpectBucketCount(
+      "Companion.VisualSearch.ClassificationResultsSize", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Companion.VisualSearch.EndClassificationSuccess", 0);
 }
 
 }  // namespace companion::visual_search
