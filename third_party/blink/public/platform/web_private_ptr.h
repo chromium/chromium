@@ -241,34 +241,40 @@ class PtrStorage final : public PtrStorageImpl<T, PtrDestruction, PrStrength> {
 //
 // A typical implementation of a class which uses WebPrivatePtr might look like
 // this:
-//    class WebFoo {
+//
+//   // WebFoo.h
+//   class WebFoo {
 //    public:
-//        BLINK_EXPORT ~WebFoo();
-//        WebFoo() { }
-//        WebFoo(const WebFoo& other) { Assign(other); }
-//        WebFoo& operator=(const WebFoo& other)
-//        {
-//            Assign(other);
-//            return *this;
-//        }
-//        BLINK_EXPORT void Assign(const WebFoo&);  // Implemented in the body.
+//     BLINK_EXPORT ~WebFoo();
+//     // Implemented in the .cc file as it requires full definition of Foo.
+//     WebFoo();
+//     // Implemented in the .cc file as it requires full definition of Foo.
+//     WebFoo(const WebFoo& other);
+//     WebFoo& operator=(const WebFoo& other) {
+//       Assign(other);
+//       return *this;
+//     }
+//     // Implemented in the .cc file as it requires full definition of Foo.
+//     BLINK_EXPORT void Assign(const WebFoo&);
 //
-//        // Methods that are exposed to Chromium and which are specific to
-//        // WebFoo go here.
-//        BLINK_EXPORT DoWebFooThing();
+//     // Methods that are exposed to Chromium and which are specific to
+//     // WebFoo go here.
+//     BLINK_EXPORT DoWebFooThing();
 //
-//        // Methods that are used only by other Blink classes should only be
-//        // declared when INSIDE_BLINK is set.
-//    #if INSIDE_BLINK
-//        WebFoo(scoped_refptr<Foo>);
-//    #endif
+//     // Methods that are used only by other Blink classes should only be
+//     // declared when INSIDE_BLINK is set.
+//     #if INSIDE_BLINK
+//     WebFoo(scoped_refptr<Foo>);
+//     #endif
 //
-//    private:
-//        WebPrivatePtr<Foo> private_;
+//     private:
+//      WebPrivatePtr<Foo> private_;
 //    };
 //
 //    // WebFoo.cpp
 //    WebFoo::~WebFoo() { private_.Reset(); }
+//    WebFoo::WebFoo() = default;
+//    WebFoo::WebFoo(const WebFoo& other) { Assign(other); }
 //    void WebFoo::Assign(const WebFoo& other) { ... }
 //
 template <typename T,
@@ -277,16 +283,11 @@ template <typename T,
           WebPrivatePtrStrength PtrStrength = WebPrivatePtrStrength::kNormal>
 class WebPrivatePtr final {
  public:
-  // This constructor may be used outside of Blink to construct empty pointers.
-  // Since it is used on the API and T may refer to a forward-declared internal
-  // type, we cannot refer to Storage() from its body.
-  WebPrivatePtr() { memset(&storage_, 0, sizeof(storage_)); }
-
   ~WebPrivatePtr() {
     // We don't destruct the object pointed by storage_ here because we don't
-    // want to expose destructors of core classes to embedders. We should
-    // call Reset() manually in destructors of classes with WebPrivatePtr
-    // members.
+    // want to expose destructors of core classes to embedders which is the case
+    // for reference counted objects. The embedder should call Reset() manually
+    // in destructors of classes with WebPrivatePtr members.
     DCHECK(IsNull());
   }
 
@@ -299,6 +300,11 @@ class WebPrivatePtr final {
   explicit operator bool() const { return !IsNull(); }
 
 #if INSIDE_BLINK
+  explicit WebPrivatePtr(
+      const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE) {
+    Storage().Construct(nullptr, loc);
+  }
+
   void Reset() { Storage().Release(); }
 
   T* Get() const { return Storage().Get(); }
@@ -332,6 +338,8 @@ class WebPrivatePtr final {
   }
 
 #else   // !INSIDE_BLINK
+  WebPrivatePtr() { memset(&storage_, 0, sizeof(storage_)); }
+
   // Disable the assignment operator; we define it above for when
   // INSIDE_BLINK is set, but we need to make sure that it is not
   // used outside there; the compiler-provided version won't handle reference

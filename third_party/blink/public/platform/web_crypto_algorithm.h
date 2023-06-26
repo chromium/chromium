@@ -154,7 +154,7 @@ class WebCryptoAlgorithmPrivate;
 class BLINK_PLATFORM_EXPORT WebCryptoAlgorithm {
  public:
 #if INSIDE_BLINK
-  WebCryptoAlgorithm() = default;
+  WebCryptoAlgorithm();
   WebCryptoAlgorithm(WebCryptoAlgorithmId,
                      std::unique_ptr<WebCryptoAlgorithmParams>);
 #endif
@@ -171,7 +171,7 @@ class BLINK_PLATFORM_EXPORT WebCryptoAlgorithm {
 
   ~WebCryptoAlgorithm() { Reset(); }
 
-  WebCryptoAlgorithm(const WebCryptoAlgorithm& other) { Assign(other); }
+  WebCryptoAlgorithm(const WebCryptoAlgorithm& other);
   WebCryptoAlgorithm& operator=(const WebCryptoAlgorithm& other) {
     Assign(other);
     return *this;

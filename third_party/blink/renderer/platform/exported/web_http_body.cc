@@ -42,6 +42,12 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 namespace blink {
 
+WebHTTPBody::WebHTTPBody() = default;
+
+WebHTTPBody::WebHTTPBody(const WebHTTPBody& b) {
+  Assign(b);
+}
+
 void WebHTTPBody::Initialize() {
   private_ = EncodedFormData::Create();
 }

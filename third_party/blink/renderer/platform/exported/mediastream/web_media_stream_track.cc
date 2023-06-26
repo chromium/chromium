@@ -50,6 +50,12 @@ WebMediaStreamTrack& WebMediaStreamTrack::operator=(
   return *this;
 }
 
+WebMediaStreamTrack::WebMediaStreamTrack() = default;
+
+WebMediaStreamTrack::WebMediaStreamTrack(const WebMediaStreamTrack& other) {
+  Assign(other);
+}
+
 void WebMediaStreamTrack::Reset() {
   private_.Reset();
 }

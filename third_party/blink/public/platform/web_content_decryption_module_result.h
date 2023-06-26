@@ -30,9 +30,7 @@ class BLINK_PLATFORM_EXPORT WebContentDecryptionModuleResult {
     kSessionAlreadyExists,
   };
 
-  WebContentDecryptionModuleResult(const WebContentDecryptionModuleResult& o) {
-    Assign(o);
-  }
+  WebContentDecryptionModuleResult(const WebContentDecryptionModuleResult& o);
 
   ~WebContentDecryptionModuleResult() { Reset(); }
 

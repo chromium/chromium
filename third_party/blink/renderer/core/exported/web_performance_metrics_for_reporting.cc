@@ -36,6 +36,14 @@
 
 namespace blink {
 
+WebPerformanceMetricsForReporting::WebPerformanceMetricsForReporting() =
+    default;
+
+WebPerformanceMetricsForReporting::WebPerformanceMetricsForReporting(
+    const WebPerformanceMetricsForReporting& p) {
+  Assign(p);
+}
+
 void WebPerformanceMetricsForReporting::Reset() {
   private_.Reset();
 }

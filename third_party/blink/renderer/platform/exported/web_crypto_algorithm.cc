@@ -358,11 +358,17 @@ class WebCryptoAlgorithmPrivate
   std::unique_ptr<WebCryptoAlgorithmParams> params;
 };
 
+WebCryptoAlgorithm::WebCryptoAlgorithm() = default;
+
 WebCryptoAlgorithm::WebCryptoAlgorithm(
     WebCryptoAlgorithmId id,
     std::unique_ptr<WebCryptoAlgorithmParams> params)
     : private_(base::AdoptRef(
           new WebCryptoAlgorithmPrivate(id, std::move(params)))) {}
+
+WebCryptoAlgorithm::WebCryptoAlgorithm(const WebCryptoAlgorithm& other) {
+  Assign(other);
+}
 
 WebCryptoAlgorithm WebCryptoAlgorithm::CreateNull() {
   return WebCryptoAlgorithm();

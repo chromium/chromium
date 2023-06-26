@@ -50,8 +50,8 @@ class BLINK_PLATFORM_EXPORT WebMediaStreamTrack {
     kVideoText
   };
 
-  WebMediaStreamTrack() = default;
-  WebMediaStreamTrack(const WebMediaStreamTrack& other) { Assign(other); }
+  WebMediaStreamTrack();
+  WebMediaStreamTrack(const WebMediaStreamTrack& other);
   ~WebMediaStreamTrack() { Reset(); }
 
   WebMediaStreamTrack& operator=(const WebMediaStreamTrack& other) {

@@ -74,6 +74,12 @@ WebCryptoKey WebCryptoKey::Create(WebCryptoKeyHandle* handle,
   return key;
 }
 
+WebCryptoKey::WebCryptoKey() = default;
+
+WebCryptoKey::WebCryptoKey(const WebCryptoKey& other) {
+  Assign(other);
+}
+
 WebCryptoKey WebCryptoKey::CreateNull() {
   return WebCryptoKey();
 }

@@ -50,8 +50,8 @@ class BLINK_PLATFORM_EXPORT WebSecurityOrigin {
  public:
   ~WebSecurityOrigin() { Reset(); }
 
-  WebSecurityOrigin() = default;
-  WebSecurityOrigin(const WebSecurityOrigin& s) { Assign(s); }
+  WebSecurityOrigin();
+  WebSecurityOrigin(const WebSecurityOrigin& s);
   WebSecurityOrigin& operator=(const WebSecurityOrigin& s) {
     Assign(s);
     return *this;

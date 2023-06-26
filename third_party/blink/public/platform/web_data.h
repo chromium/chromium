@@ -50,16 +50,16 @@ class BLINK_PLATFORM_EXPORT WebData {
  public:
   ~WebData() { Reset(); }
 
-  WebData() = default;
+  WebData();
 
-  WebData(const char* data, size_t size) { Assign(data, size); }
+  WebData(const char* data, size_t size);
 
   template <int N>
-  WebData(const char (&data)[N]) {
+  WebData(const char (&data)[N]) : WebData() {
     Assign(data, N - 1);
   }
 
-  WebData(const WebData& d) { Assign(d); }
+  WebData(const WebData& d);
 
   WebData& operator=(const WebData& d) {
     Assign(d);
@@ -110,7 +110,7 @@ class BLINK_PLATFORM_EXPORT WebData {
   operator const SharedBuffer&() const;
 #else
   template <class C>
-  WebData(const C& c) {
+  WebData(const C& c) : WebData() {
     Assign(c.data(), c.size());
   }
 

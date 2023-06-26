@@ -273,8 +273,8 @@ struct MediaTrackConstraintSetPlatform {
 
 class MediaConstraints {
  public:
-  MediaConstraints() = default;
-  MediaConstraints(const MediaConstraints& other) { Assign(other); }
+  MODULES_EXPORT MediaConstraints();
+  MediaConstraints(const MediaConstraints& other);
   ~MediaConstraints() { Reset(); }
 
   MediaConstraints& operator=(const MediaConstraints& other) {

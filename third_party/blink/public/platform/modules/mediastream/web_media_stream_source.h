@@ -54,8 +54,8 @@ class BLINK_PLATFORM_EXPORT WebMediaStreamSource {
     kReadyStateEnded = 2
   };
 
-  WebMediaStreamSource() = default;
-  WebMediaStreamSource(const WebMediaStreamSource& other) { Assign(other); }
+  WebMediaStreamSource();
+  WebMediaStreamSource(const WebMediaStreamSource& other);
   ~WebMediaStreamSource() { Reset(); }
 
   WebMediaStreamSource& operator=(const WebMediaStreamSource& other) {

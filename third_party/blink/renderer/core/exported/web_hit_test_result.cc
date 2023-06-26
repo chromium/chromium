@@ -49,6 +49,12 @@ class WebHitTestResultPrivate final
   HitTestResult result_;
 };
 
+WebHitTestResult::WebHitTestResult() = default;
+
+WebHitTestResult::WebHitTestResult(const WebHitTestResult& info) {
+  Assign(info);
+}
+
 inline WebHitTestResultPrivate::WebHitTestResultPrivate(
     const HitTestResult& result)
     : result_(result) {}

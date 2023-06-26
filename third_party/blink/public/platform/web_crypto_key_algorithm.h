@@ -54,7 +54,7 @@ class WebCryptoKeyAlgorithmPrivate;
 // https://w3c.github.io/webcrypto/#cryptokey-interface
 class BLINK_PLATFORM_EXPORT WebCryptoKeyAlgorithm {
  public:
-  WebCryptoKeyAlgorithm() = default;
+  WebCryptoKeyAlgorithm();
 
 #if INSIDE_BLINK
   WebCryptoKeyAlgorithm(WebCryptoAlgorithmId,
@@ -84,7 +84,7 @@ class BLINK_PLATFORM_EXPORT WebCryptoKeyAlgorithm {
 
   ~WebCryptoKeyAlgorithm() { Reset(); }
 
-  WebCryptoKeyAlgorithm(const WebCryptoKeyAlgorithm& other) { Assign(other); }
+  WebCryptoKeyAlgorithm(const WebCryptoKeyAlgorithm& other);
   WebCryptoKeyAlgorithm& operator=(const WebCryptoKeyAlgorithm& other) {
     Assign(other);
     return *this;

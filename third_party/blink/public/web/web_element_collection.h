@@ -45,8 +45,8 @@ class BLINK_EXPORT WebElementCollection {
  public:
   ~WebElementCollection() { Reset(); }
 
-  WebElementCollection() : current_(0) {}
-  WebElementCollection(const WebElementCollection& n) { Assign(n); }
+  WebElementCollection();
+  WebElementCollection(const WebElementCollection& n);
   WebElementCollection& operator=(const WebElementCollection& n) {
     Assign(n);
     return *this;

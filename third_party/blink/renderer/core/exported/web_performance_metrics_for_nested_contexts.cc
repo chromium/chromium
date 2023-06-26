@@ -7,6 +7,15 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 
 namespace blink {
+
+WebPerformanceMetricsForNestedContexts::
+    WebPerformanceMetricsForNestedContexts() = default;
+
+WebPerformanceMetricsForNestedContexts::WebPerformanceMetricsForNestedContexts(
+    const WebPerformanceMetricsForNestedContexts& p) {
+  Assign(p);
+}
+
 void WebPerformanceMetricsForNestedContexts::Reset() {
   private_.Reset();
 }

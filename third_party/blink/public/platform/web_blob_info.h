@@ -19,8 +19,7 @@ class BlobDataHandle;
 
 class WebBlobInfo {
  public:
-  WebBlobInfo()
-      : is_file_(false), size_(std::numeric_limits<uint64_t>::max()) {}
+  BLINK_EXPORT WebBlobInfo();
   BLINK_EXPORT WebBlobInfo(const WebString& uuid,
                            const WebString& type,
                            uint64_t size,

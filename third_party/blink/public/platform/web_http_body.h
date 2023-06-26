@@ -67,8 +67,8 @@ class BLINK_PLATFORM_EXPORT WebHTTPBody {
 
   ~WebHTTPBody() { Reset(); }
 
-  WebHTTPBody() = default;
-  WebHTTPBody(const WebHTTPBody& b) { Assign(b); }
+  WebHTTPBody();
+  WebHTTPBody(const WebHTTPBody& b);
   WebHTTPBody& operator=(const WebHTTPBody& b) {
     Assign(b);
     return *this;

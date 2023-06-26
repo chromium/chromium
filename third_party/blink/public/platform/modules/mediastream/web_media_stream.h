@@ -53,8 +53,8 @@ class BLINK_PLATFORM_EXPORT WebMediaStreamObserver {
 
 class BLINK_PLATFORM_EXPORT WebMediaStream {
  public:
-  WebMediaStream() = default;
-  WebMediaStream(const WebMediaStream& other) { Assign(other); }
+  WebMediaStream();
+  WebMediaStream(const WebMediaStream& other);
   ~WebMediaStream() { Reset(); }
 
   WebMediaStream& operator=(const WebMediaStream& other) {

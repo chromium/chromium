@@ -192,4 +192,11 @@ void WebCryptoKeyAlgorithm::Reset() {
   private_.Reset();
 }
 
+WebCryptoKeyAlgorithm::WebCryptoKeyAlgorithm() = default;
+
+WebCryptoKeyAlgorithm::WebCryptoKeyAlgorithm(
+    const WebCryptoKeyAlgorithm& other) {
+  Assign(other);
+}
+
 }  // namespace blink

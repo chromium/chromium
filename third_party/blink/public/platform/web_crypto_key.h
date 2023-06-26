@@ -90,10 +90,10 @@ class WebCryptoKeyHandle;
 class BLINK_PLATFORM_EXPORT WebCryptoKey {
  public:
   // Constructs a "null" key (One for which isNull() returns true).
-  WebCryptoKey() = default;
+  WebCryptoKey();
   ~WebCryptoKey() { Reset(); }
 
-  WebCryptoKey(const WebCryptoKey& other) { Assign(other); }
+  WebCryptoKey(const WebCryptoKey& other);
   WebCryptoKey& operator=(const WebCryptoKey& other) {
     Assign(other);
     return *this;

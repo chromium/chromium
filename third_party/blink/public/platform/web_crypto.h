@@ -60,7 +60,7 @@ enum WebCryptoErrorType {
 
 class BLINK_PLATFORM_EXPORT WebCryptoResult {
  public:
-  WebCryptoResult(const WebCryptoResult& o) { Assign(o); }
+  WebCryptoResult(const WebCryptoResult& o);
 
   ~WebCryptoResult() { Reset(); }
 

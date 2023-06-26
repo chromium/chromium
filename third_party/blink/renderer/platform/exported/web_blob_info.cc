@@ -10,6 +10,9 @@
 
 namespace blink {
 
+WebBlobInfo::WebBlobInfo()
+    : is_file_(false), size_(std::numeric_limits<uint64_t>::max()) {}
+
 WebBlobInfo::WebBlobInfo(const WebString& uuid,
                          const WebString& type,
                          uint64_t size,

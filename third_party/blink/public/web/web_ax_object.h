@@ -66,8 +66,8 @@ class BLINK_EXPORT WebAXObject {
  public:
   ~WebAXObject() { Reset(); }
 
-  WebAXObject() = default;
-  WebAXObject(const WebAXObject& o) { Assign(o); }
+  WebAXObject();
+  WebAXObject(const WebAXObject& o);
   WebAXObject& operator=(const WebAXObject& o) {
     Assign(o);
     return *this;

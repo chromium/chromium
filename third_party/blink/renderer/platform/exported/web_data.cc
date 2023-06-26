@@ -36,6 +36,16 @@
 
 namespace blink {
 
+WebData::WebData() = default;
+
+WebData::WebData(const char* data, size_t size) {
+  Assign(data, size);
+}
+
+WebData::WebData(const WebData& d) {
+  Assign(d);
+}
+
 void WebData::Reset() {
   private_.Reset();
 }

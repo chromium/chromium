@@ -55,6 +55,12 @@ void WebMediaStreamSource::Assign(const WebMediaStreamSource& other) {
   private_ = other.private_;
 }
 
+WebMediaStreamSource::WebMediaStreamSource() = default;
+
+WebMediaStreamSource::WebMediaStreamSource(const WebMediaStreamSource& other) {
+  Assign(other);
+}
+
 void WebMediaStreamSource::Reset() {
   private_.Reset();
 }

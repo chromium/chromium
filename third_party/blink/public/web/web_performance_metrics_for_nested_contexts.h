@@ -19,12 +19,10 @@ class BLINK_EXPORT WebPerformanceMetricsForNestedContexts {
  public:
   ~WebPerformanceMetricsForNestedContexts() { Reset(); }
 
-  WebPerformanceMetricsForNestedContexts() = default;
+  WebPerformanceMetricsForNestedContexts();
 
   WebPerformanceMetricsForNestedContexts(
-      const WebPerformanceMetricsForNestedContexts& p) {
-    Assign(p);
-  }
+      const WebPerformanceMetricsForNestedContexts& p);
 
   WebPerformanceMetricsForNestedContexts& operator=(
       const WebPerformanceMetricsForNestedContexts& p) {

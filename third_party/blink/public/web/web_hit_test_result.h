@@ -44,8 +44,8 @@ class WebURL;
 // time, for example in the instance of an <img> inside an <a>.
 class BLINK_EXPORT WebHitTestResult {
  public:
-  WebHitTestResult() = default;
-  WebHitTestResult(const WebHitTestResult& info) { Assign(info); }
+  WebHitTestResult();
+  WebHitTestResult(const WebHitTestResult& info);
   ~WebHitTestResult() { Reset(); }
 
   void Assign(const WebHitTestResult&);

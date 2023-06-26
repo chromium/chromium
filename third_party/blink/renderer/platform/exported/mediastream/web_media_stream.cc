@@ -37,6 +37,12 @@
 
 namespace blink {
 
+WebMediaStream::WebMediaStream() = default;
+
+WebMediaStream::WebMediaStream(const WebMediaStream& other) {
+  Assign(other);
+}
+
 WebMediaStream::WebMediaStream(MediaStreamDescriptor* media_stream_descriptor)
     : private_(media_stream_descriptor) {}
 

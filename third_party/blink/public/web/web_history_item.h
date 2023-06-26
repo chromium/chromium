@@ -51,9 +51,9 @@ class WebVector;
 class BLINK_EXPORT WebHistoryItem {
  public:
   ~WebHistoryItem() { Reset(); }
-  WebHistoryItem() = default;
+  WebHistoryItem();
   explicit WebHistoryItem(const PageState& page_state);
-  WebHistoryItem(const WebHistoryItem& h) { Assign(h); }
+  WebHistoryItem(const WebHistoryItem& h);
   WebHistoryItem& operator=(const WebHistoryItem& h) {
     Assign(h);
     return *this;

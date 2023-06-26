@@ -58,12 +58,9 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
 
   ~WebPerformanceMetricsForReporting() { Reset(); }
 
-  WebPerformanceMetricsForReporting() = default;
+  WebPerformanceMetricsForReporting();
 
-  WebPerformanceMetricsForReporting(
-      const WebPerformanceMetricsForReporting& p) {
-    Assign(p);
-  }
+  WebPerformanceMetricsForReporting(const WebPerformanceMetricsForReporting& p);
 
   WebPerformanceMetricsForReporting& operator=(
       const WebPerformanceMetricsForReporting& p) {
