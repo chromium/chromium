@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+FAIL softplus float32 1D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL softplus float32 2D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL softplus float32 3D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL softplus float32 4D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL softplus float32 5D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL softplus both positive float32 4D tensor and options.steepness / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL softplus both negative float32 4D tensor and options.steepness / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+Harness: the test ran to completion.
+

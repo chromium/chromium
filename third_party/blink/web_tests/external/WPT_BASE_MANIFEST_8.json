@@ -274223,11 +274223,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "48eaf8938e8e2185c7e57f95703ad285e1da3a1c",
+     "10b3236627cd2d18eae076a4a1f218377f3444be",
      []
     ],
     "mtime.json": [
-     "9b8cfe886acba21774b3a8ec4f27c4880286f15e",
+     "6780b20b41f2c09303f2864f0823b89023da6f6a",
      []
     ]
    },
@@ -290778,6 +290778,10 @@
       ],
       "attachment-local-clipping-color-1-ref.html": [
        "e3cc0375a491a228af8ccd102269716063f4829a",
+       []
+      ],
+      "attachment-local-clipping-color-2.html.ini": [
+       "ac8ff1137a870217ffeca9bac12a6eeebea4aeba",
        []
       ],
       "attachment-local-clipping-color-3-ref.html": [
@@ -313835,7 +313839,7 @@
        []
       ],
       "clip-path-filter-order.html.ini": [
-       "e376dae045e67471da622f7876f2f40c7aa5bd37",
+       "725caf3842ef27b082d1139ef05736b479a01d79",
        []
       ],
       "clip-path-fixed-nested-ref.html": [
@@ -383417,7 +383421,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "947715249c6cf3c3877102af2369caf5f25870bf",
+     "1a9152563042463bdb3df15a38a683055b691708",
      []
     ],
     "modulepreload-expected.txt": [
@@ -398395,7 +398399,7 @@
      []
     ],
     "full-cycle-test.https.any.js.ini": [
-     "3fe449754df4c6fcb38798a84a485c003706331f",
+     "1790b7fa76b06baddb98afdcfb96b36297349174",
      []
     ],
     "h264.annexb": [
@@ -398479,7 +398483,7 @@
      []
     ],
     "video-encoder-config.https.any.js.ini": [
-     "4cc1f96859cf4d314ac9c4ead22aa1116e2b81ac",
+     "6dd7d297e04c9d602b41b79d66fa3b4835768dae",
      []
     ],
     "video-encoder-config.https.any.worker-expected.txt": [
@@ -399898,6 +399902,10 @@
        "52ea57c7632d0d27b1745ddd4e983c37becf9832",
        []
       ],
+      "softplus.json": [
+       "2b26e1439e30cd8c2f7bd504d9553ab6eb38138a",
+       []
+      ],
       "softsign.json": [
        "e3208b18ad49a64dbbeb6a939dc69d2ea5ab3c43",
        []
@@ -399928,7 +399936,7 @@
       ]
      },
      "utils.js": [
-      "37748fd57a405e645798a3bb92e3138d48a9941a",
+      "920459275d4bceac6d501b750bfaacbaecdb2a4d",
       []
      ]
     },
@@ -399942,6 +399950,18 @@
     ],
     "softmax.https.any.js.ini": [
      "a8a6b6b1405075fa6be9163df14a2c24dee34b4a",
+     []
+    ],
+    "softplus.https.any-expected.txt": [
+     "74311acdfe2a5ad29b704297d6b78dd0fc665480",
+     []
+    ],
+    "softplus.https.any.js.ini": [
+     "a87f272f4b89e82335b077bb7e2e6f9c603d3ffb",
+     []
+    ],
+    "softplus.https.any.worker-expected.txt": [
+     "b6fe0bec8630ef29b43f8e8f213f327db05e7648",
      []
     ],
     "softsign.https.any-expected.txt": [
@@ -647506,6 +647526,57 @@
         [
          "title",
          "test WebNN API softmax operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "softplus.https.any.js": [
+     "7096f64a043a91fba09c91df70114666c8980664",
+     [
+      "webnn/softplus.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API softplus operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "webnn/softplus.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API softplus operation"
         ],
         [
          "global",
