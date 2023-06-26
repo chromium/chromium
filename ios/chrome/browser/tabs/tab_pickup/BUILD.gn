@@ -1,0 +1,20 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tab_pickup") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tab_pickup_browser_agent.h",
+    "tab_pickup_browser_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/sync_sessions",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/synced_sessions",
+  ]
+}
