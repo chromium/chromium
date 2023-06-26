@@ -38,14 +38,14 @@ Main origin
                     </SPAN>
                 </LI>
                 <OL class=children expanded role=group aria-label=Main origin >
-                    <LI title=Reload to view details role=treeitem class=security-main-view-reload-message >
+                    <LI title=Reload to view details role=treeitem class=security-main-view-reload-message hidden >
                         <DIV class=selection fill >
                         </DIV>
                         <SPAN class=tree-element-title >
 Reload to view details
                         </SPAN>
                     </LI>
-                    <OL class=children role=group >
+                    <OL class=children hidden role=group >
                     </OL>
                 </OL>
                 <LI title=Non-secure origins role=treeitem class=parent always-parent expanded security-sidebar-origins aria-expanded=true >
