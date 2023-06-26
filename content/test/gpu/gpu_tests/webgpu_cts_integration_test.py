@@ -99,7 +99,8 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   # Only perform the pre/post test cleanup every X tests instead of every test
   # to reduce overhead.
   def ShouldPerformMinidumpCleanupOnSetUp(self) -> bool:
-    return self.total_tests_run % TEST_RUNS_BETWEEN_CLEANUP == 0
+    return (self.total_tests_run % TEST_RUNS_BETWEEN_CLEANUP == 0
+            and super().ShouldPerformMinidumpCleanupOnSetUp())
 
   def ShouldPerformMinidumpCleanupOnTearDown(self) -> bool:
     return self.ShouldPerformMinidumpCleanupOnSetUp()
@@ -287,6 +288,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def _SetClassVariablesFromOptions(cls, options: ct.ParsedCmdArgs) -> None:
+    super()._SetClassVariablesFromOptions(options)
     if options.override_timeout:
       cls._test_timeout = options.override_timeout
     cls._enable_dawn_backend_validation = options.enable_dawn_backend_validation

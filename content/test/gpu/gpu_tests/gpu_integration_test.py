@@ -55,6 +55,7 @@ TestTuple = Tuple[str, ct.GeneratedTest]
 TestTupleGenerator = Generator[TestTuple, None, None]
 
 
+# pylint: disable=too-many-public-methods
 class GpuIntegrationTest(
     serially_executed_browser_test_case.SeriallyExecutedBrowserTestCase):
 
@@ -62,6 +63,7 @@ class GpuIntegrationTest(
   _also_run_disabled_tests = False
   _disable_log_uploads = False
   _extra_intel_device_id_with_overlays = None
+  _skip_post_test_cleanup_and_debug_info = False
 
   # Several of the tests in this directory need to be able to relaunch
   # the browser on demand with a new set of command line arguments
@@ -107,6 +109,12 @@ class GpuIntegrationTest(
       artifacts = acw.FullLoggingArtifactImpl()
     super().set_artifacts(artifacts)
 
+  def ShouldPerformMinidumpCleanupOnSetUp(self) -> bool:
+    return not self._skip_post_test_cleanup_and_debug_info
+
+  def ShouldPerformMinidumpCleanupOnTearDown(self) -> bool:
+    return not self._skip_post_test_cleanup_and_debug_info
+
   def CanRunInParallel(self) -> bool:
     """Returns whether a particular test instance can be run in parallel."""
     if not self._SuiteSupportsParallelTests():
@@ -142,6 +150,8 @@ class GpuIntegrationTest(
 
     This should be called once in SetUpProcess and once in GenerateGpuTests.
     """
+    cls._skip_post_test_cleanup_and_debug_info =\
+        options.skip_post_test_cleanup_and_debug_info
 
   @classmethod
   def SetUpProcess(cls) -> None:
@@ -164,6 +174,14 @@ class GpuIntegrationTest(
     parser.add_option('--extra-intel-device-id-with-overlays',
                       dest='extra_intel_device_id_with_overlays',
                       help='The extra Intel device id with overlays')
+    parser.add_option('--skip-post-test-cleanup-and-debug-info',
+                      action='store_true',
+                      help=('Disables the automatic cleanup of minidumps after '
+                            'each test and prevents collection of debug '
+                            'information such as screenshots when a test '
+                            'fails. This can can speed up local testing at the '
+                            'cost of providing less actionable data when a '
+                            'test does fail.'))
 
   @classmethod
   def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
@@ -561,7 +579,7 @@ class GpuIntegrationTest(
       # tracking retries if possible.
       self._flaky_test_tries[test_name] += 1
       if self._flaky_test_tries[test_name] == _MAX_TEST_TRIES:
-        if self.browser is not None:
+        if self._ShouldCollectDebugInfo():
           self.browser.CollectDebugData(logging.ERROR)
       # For robustness, shut down the browser and restart it
       # between flaky test failures, to make sure any state
@@ -585,13 +603,17 @@ class GpuIntegrationTest(
     # expectations, and since minidump symbolization is slow
     # (upwards of one minute on a fast laptop), symbolizing all the
     # stacks could slow down the tests' running time unacceptably.
-    # We also don't do this if the browser failed to startup.
-    if self.browser is not None:
+    if self._ShouldCollectDebugInfo():
       self.browser.CollectDebugData(logging.ERROR)
     # This failure might have been caused by a browser or renderer
     # crash, so restart the browser to make sure any state doesn't
     # propagate to the next test iteration.
     self._RestartBrowser('unexpected test failure')
+
+  def _ShouldCollectDebugInfo(self) -> bool:
+    # We need a browser in order to collect debug info.
+    return (self.browser is not None
+            and not self._skip_post_test_cleanup_and_debug_info)
 
   def _HandlePass(self, test_name: str, expected_crashes: Dict[str, int],
                   expected_results: Set[str]) -> None:
