@@ -1559,6 +1559,11 @@ public class TabImpl implements Tab {
 
         try {
             TraceEvent.begin("Tab.restoreIfNeeded");
+            if (isFrozen()) {
+                assert CriticalPersistedTabData.from(this).getWebContentsState()
+                        != null
+                    : "crbug/1393848: A frozen tab must have WebContentsState to restore from.";
+            }
             // Restore is needed for a tab that is loaded for the first time. WebContents will
             // be restored from a saved state.
             if ((isFrozen() && CriticalPersistedTabData.from(this).getWebContentsState() != null
