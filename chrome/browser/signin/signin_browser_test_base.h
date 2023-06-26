@@ -43,7 +43,17 @@ class SigninBrowserTestBaseT : public T {
   // Returns `AccountInfo`s for each added account, in the same order as
   // `emails`.
   std::vector<AccountInfo> SetAccounts(const std::vector<std::string>& emails) {
-    return identity_test_env()->MakeAccountsAvailableWithCookies(emails);
+    auto account_availability_options =
+        identity_test_env()
+            ->CreateAccountAvailabilityOptionsBuilder()
+            .WithCookie();
+
+    std::vector<AccountInfo> accounts_info;
+    for (const auto& email : emails) {
+      accounts_info.push_back(identity_test_env()->MakeAccountAvailable(
+          account_availability_options.Build(email)));
+    }
+    return accounts_info;
   }
 
   // Returns the profile attached to the `signin::IdentityTestEnvironment`. This

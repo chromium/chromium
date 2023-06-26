@@ -1654,8 +1654,12 @@ TEST_F(
   ClearPrimaryAccount(identity_manager());
 
   // Add an unconsented primary account, incl. proper cookies.
-  AccountInfo expected_account_info = MakeAccountAvailableWithCookies(
-      identity_manager(), test_url_loader_factory(), kTestEmail2, kTestGaiaId2);
+  AccountInfo expected_account_info = MakeAccountAvailable(
+      identity_manager(),
+      AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .WithCookie(true)
+          .WithGaiaId(kTestGaiaId2)
+          .Build(kTestEmail2));
   EXPECT_EQ(kTestEmail2, expected_account_info.email);
 
   CoreAccountInfo account_info =
@@ -1671,8 +1675,12 @@ TEST_F(
   ClearPrimaryAccount(identity_manager());
 
   // Add an unconsented primary account, incl. proper cookies.
-  AccountInfo expected_account_info = MakeAccountAvailableWithCookies(
-      identity_manager(), test_url_loader_factory(), kTestEmail2, kTestGaiaId2);
+  AccountInfo expected_account_info = MakeAccountAvailable(
+      identity_manager(),
+      AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .WithCookie(true)
+          .WithGaiaId(kTestGaiaId2)
+          .Build(kTestEmail2));
   EXPECT_EQ(kTestEmail2, expected_account_info.email);
 
   SetInvalidRefreshTokenForAccount(identity_manager(),
@@ -1690,8 +1698,12 @@ TEST_F(IdentityManagerTest,
   ClearPrimaryAccount(identity_manager());
 
   // Add an unconsented primary account, incl. proper cookies.
-  AccountInfo expected_account_info = MakeAccountAvailableWithCookies(
-      identity_manager(), test_url_loader_factory(), kTestEmail2, kTestGaiaId2);
+  AccountInfo expected_account_info = MakeAccountAvailable(
+      identity_manager(),
+      AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .WithCookie(true)
+          .WithGaiaId(kTestGaiaId2)
+          .Build(kTestEmail2));
   EXPECT_EQ(kTestEmail2, expected_account_info.email);
 
   RemoveRefreshTokenForAccount(identity_manager(),
