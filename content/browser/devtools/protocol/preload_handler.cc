@@ -368,7 +368,8 @@ void PreloadHandler::DidUpdatePrefetchStatus(
     const std::string& initiating_frame_id,
     const GURL& prefetch_url,
     PreloadingTriggeringOutcome status,
-    PrefetchStatus prefetch_status) {
+    PrefetchStatus prefetch_status,
+    const std::string& request_id) {
   if (!enabled_) {
     return;
   }
@@ -383,7 +384,7 @@ void PreloadHandler::DidUpdatePrefetchStatus(
     frontend_->PrefetchStatusUpdated(
         std::move(preloading_attempt_key), initiating_frame_id,
         prefetch_url.spec(), PreloadingTriggeringOutcomeToProtocol(status),
-        PrefetchStatusToProtocol(prefetch_status));
+        PrefetchStatusToProtocol(prefetch_status), request_id);
   }
 }
 

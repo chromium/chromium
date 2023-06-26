@@ -213,7 +213,8 @@ void DidUpdatePrefetchStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prefetch_url,
     PreloadingTriggeringOutcome status,
-    PrefetchStatus prefetch_status);
+    PrefetchStatus prefetch_status,
+    const std::string& request_id);
 
 void DidUpdatePrerenderStatus(
     int initiator_frame_tree_node_id,
