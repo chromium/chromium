@@ -7266,8 +7266,8 @@
   },
   {
     "name": "storage-access-api",
-    "owners": [ "brandm@microsoft.com" ],
-    "expiry_milestone": 116
+    "owners": [ "brandm@microsoft.com", "cfredric@chromium.org"],
+    "expiry_milestone": 120
   },
   {
     "name": "storage-buckets",
