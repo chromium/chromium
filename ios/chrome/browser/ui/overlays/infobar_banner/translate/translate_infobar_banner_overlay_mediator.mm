@@ -77,6 +77,7 @@
       break;
     }
     case translate::TranslateStep::TRANSLATE_STEP_TRANSLATING:
+      break;
     case translate::TranslateStep::TRANSLATE_STEP_NEVER_TRANSLATE:
       NOTREACHED_NORETURN()
           << "Should not be presenting Banner in this TranslateStep";
@@ -107,6 +108,7 @@
 - (NSString*)bannerTitleText {
   switch (self.translateDelegate->translate_step()) {
     case translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE:
+    case translate::TranslateStep::TRANSLATE_STEP_TRANSLATING:
       return l10n_util::GetNSString(
           IDS_IOS_TRANSLATE_INFOBAR_BEFORE_TRANSLATE_BANNER_TITLE);
     case translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE:
@@ -115,7 +117,6 @@
     case translate::TranslateStep::TRANSLATE_STEP_TRANSLATE_ERROR:
       return l10n_util::GetNSString(
           IDS_IOS_TRANSLATE_INFOBAR_ON_ERROR_BANNER_TITLE);
-    case translate::TranslateStep::TRANSLATE_STEP_TRANSLATING:
     case translate::TranslateStep::TRANSLATE_STEP_NEVER_TRANSLATE:
       NOTREACHED_NORETURN()
           << "Should not be presenting Banner in this TranslateStep";
@@ -136,6 +137,7 @@
 - (NSString*)infobarButtonText {
   switch (self.translateDelegate->translate_step()) {
     case translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE:
+    case translate::TranslateStep::TRANSLATE_STEP_TRANSLATING:
       return l10n_util::GetNSString(IDS_IOS_TRANSLATE_INFOBAR_TRANSLATE_ACTION);
     case translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE:
       return l10n_util::GetNSString(
@@ -143,9 +145,7 @@
     case translate::TranslateStep::TRANSLATE_STEP_TRANSLATE_ERROR:
       return l10n_util::GetNSString(
           IDS_IOS_TRANSLATE_INFOBAR_TRANSLATE_TRY_AGAIN_ACTION);
-    case translate::TranslateStep::TRANSLATE_STEP_TRANSLATING:
     case translate::TranslateStep::TRANSLATE_STEP_NEVER_TRANSLATE:
-
       NOTREACHED() << "Translate infobar should not be presenting anything in "
                       "this state.";
       return nil;
