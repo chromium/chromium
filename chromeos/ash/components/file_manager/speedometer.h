@@ -24,9 +24,9 @@ class COMPONENT_EXPORT(FILE_MANAGER) Speedometer {
   // Gets the number of samples currently maintained.
   size_t GetSampleCount() const;
 
-  // Gets the projected remaining time in seconds. It can be negative, or
-  // infinity, or NaN (not-a-number) if there aren't enough samples yet.
-  double GetRemainingSeconds() const;
+  // Gets the projected remaining time. It can be negative, or TimeDelta::Max()
+  // if there aren't enough samples yet.
+  base::TimeDelta GetRemainingTime() const;
 
   // Adds a sample with the current timestamp and the given number of bytes.
   // Does nothing if the previous sample was received less than 3 seconds ago.

@@ -56,10 +56,10 @@ bool Speedometer::Update(const int64_t bytes) {
   return true;
 }
 
-double Speedometer::GetRemainingSeconds() const {
+base::TimeDelta Speedometer::GetRemainingTime() const {
   auto it = samples_.Begin();
   if (!it) {
-    return std::numeric_limits<double>::quiet_NaN();
+    return base::TimeDelta::Max();
   }
 
   const Sample& first = **it;
@@ -77,6 +77,10 @@ double Speedometer::GetRemainingSeconds() const {
   }
 
   DCHECK_EQ(size_t(n), GetSampleCount());
+  if (n < 2) {
+    return base::TimeDelta::Max();
+  }
+
   average_bytes /= double(n);
   average_time /= double(n);
 
@@ -99,11 +103,15 @@ double Speedometer::GetRemainingSeconds() const {
       << " speed = " << speed << ", variance_time = " << variance_time
       << ", covariance_time_bytes = " << covariance_time_bytes;
 
+  if (!(speed > 0)) {
+    return base::TimeDelta::Max();
+  }
+
   // The linear interpolation goes through (average_time, average_bytes).
   const double end_time =
       (double(total_bytes_ - first.bytes) - average_bytes) / speed +
       average_time;
-  return end_time - (base::TimeTicks::Now() - first.time).InSecondsF();
+  return base::Seconds(end_time) - (base::TimeTicks::Now() - first.time);
 }
 
 }  // namespace file_manager

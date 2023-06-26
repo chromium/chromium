@@ -657,8 +657,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
           drivefs::pinning::ToString(progress.time_spent_listing_items));
     d.Set("time_spent_pinning_files",
           drivefs::pinning::ToString(progress.time_spent_pinning_files));
-    d.Set("remaining_time", drivefs::pinning::ToString(
-                                base::Seconds(progress.remaining_seconds)));
+    d.Set("remaining_time",
+          drivefs::pinning::ToString(progress.remaining_time));
     MaybeCallJavascript("onBulkPinningProgress", Value(std::move(d)));
   }
 

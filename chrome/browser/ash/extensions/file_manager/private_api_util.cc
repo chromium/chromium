@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
@@ -839,7 +840,9 @@ extensions::api::file_manager_private::BulkPinProgress BulkPinProgressToJs(
   result.bytes_to_pin = progress.bytes_to_pin;
   result.pinned_bytes = progress.pinned_bytes;
   result.files_to_pin = progress.files_to_pin;
-  result.remaining_seconds = progress.remaining_seconds;
+  result.remaining_seconds = !progress.remaining_time.is_inf()
+                                 ? progress.remaining_time.InSecondsF()
+                                 : 0;
   return result;
 }
 

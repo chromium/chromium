@@ -23,6 +23,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
@@ -775,12 +776,12 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveProgress(
   aggregate_progress += delta;
 
   if (speedometer_.Update(progress_->bytes_transferred += delta)) {
-    const double remaining_seconds = speedometer_.GetRemainingSeconds();
+    const base::TimeDelta remaining_time = speedometer_.GetRemainingTime();
 
     // Speedometer can produce infinite result which can't be serialized to JSON
     // when sending the status via private API.
-    if (std::isfinite(remaining_seconds)) {
-      progress_->remaining_seconds = remaining_seconds;
+    if (!remaining_time.is_inf()) {
+      progress_->remaining_seconds = remaining_time.InSecondsF();
     }
   }
 

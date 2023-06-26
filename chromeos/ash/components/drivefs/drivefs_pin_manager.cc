@@ -20,6 +20,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/drive/file_errors.h"
@@ -101,22 +102,26 @@ ostream& operator<<(ostream& out, Quoter<T> q) {
 }
 
 ostream& operator<<(ostream& out, Quoter<TimeDelta> q) {
-  const int64_t ms = q.value->InMilliseconds();
-  if (ms < 1000) {
-    return out << ms << " ms";
+  if (q.value->is_inf()) {
+    return out << "🤔";
   }
 
-  const double seconds = ms / 1000.0;
+  const double ms = q.value->InMillisecondsF();
+  if (ms < 1000) {
+    return out << base::StringPrintf("%.0f ms", ms);
+  }
+
+  const double seconds = ms / 1000;
   if (seconds < 60) {
     return out << base::StringPrintf("%.1f seconds", seconds);
   }
 
-  const double minutes = seconds / 60.0;
+  const double minutes = seconds / 60;
   if (minutes < 60) {
     return out << base::StringPrintf("%.1f minutes", minutes);
   }
 
-  const double hours = minutes / 60.0;
+  const double hours = minutes / 60;
   return out << base::StringPrintf("%.1f hours", hours);
 }
 
@@ -437,7 +442,7 @@ bool PinManager::Add(const FileMetadata& md, const Path& path) {
     progress_.bytes_to_pin = 0;
     progress_.pinned_files = 0;
     progress_.pinned_bytes = 0;
-    progress_.remaining_seconds = 0;
+    progress_.remaining_time = TimeDelta();
     speedometer_.SetTotalBytes(0);
   }
 
@@ -1513,13 +1518,7 @@ void PinManager::NotifyProgress() {
   if (progress_.pinned_bytes > 0) {
     speedometer_.SetTotalBytes(progress_.bytes_to_pin);
     if (speedometer_.Update(progress_.pinned_bytes)) {
-      const double remaining_seconds = speedometer_.GetRemainingSeconds();
-
-      // Speedometer can produce infinite result which can't be serialized to
-      // JSON when sending the status via private API.
-      if (std::isfinite(remaining_seconds)) {
-        progress_.remaining_seconds = remaining_seconds;
-      }
+      progress_.remaining_time = speedometer_.GetRemainingTime();
     }
   }
 

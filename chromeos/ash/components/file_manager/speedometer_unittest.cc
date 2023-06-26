@@ -25,12 +25,12 @@ TEST(SpeedometerTest, RemainingTime) {
 
   // Testing without setting the total bytes:
   EXPECT_EQ(0u, meter.GetSampleCount());
-  EXPECT_THAT(meter.GetRemainingSeconds(), IsNan());
+  EXPECT_TRUE(meter.GetRemainingTime().is_max());
 
   // Sets total number of bytes.
   meter.SetTotalBytes(2000);
   EXPECT_EQ(0u, meter.GetSampleCount());
-  EXPECT_THAT(meter.GetRemainingSeconds(), IsNan());
+  EXPECT_TRUE(meter.GetRemainingTime().is_max());
 
   // 1st sample.
   // 1st sample, but not enough to calculate the remaining time.
@@ -38,46 +38,46 @@ TEST(SpeedometerTest, RemainingTime) {
 
   EXPECT_TRUE(meter.Update(100));
   EXPECT_EQ(1u, meter.GetSampleCount());
-  EXPECT_THAT(meter.GetRemainingSeconds(), IsNan());
+  EXPECT_TRUE(meter.GetRemainingTime().is_max());
 
   // Sample received less than 3 second after the previous one should be
   // ignored.
   clock.Advance(Milliseconds(2999));
   EXPECT_FALSE(meter.Update(300));
   EXPECT_EQ(1u, meter.GetSampleCount());
-  EXPECT_THAT(meter.GetRemainingSeconds(), IsNan());
+  EXPECT_TRUE(meter.GetRemainingTime().is_max());
 
   // 2nd sample, the remaining time can be computed.
   clock.Advance(Milliseconds(1));
   EXPECT_TRUE(meter.Update(300));
   EXPECT_EQ(2u, meter.GetSampleCount());
-  EXPECT_EQ(25, round(meter.GetRemainingSeconds()));
+  EXPECT_EQ(meter.GetRemainingTime().InSeconds(), 25);
 
   // 3rd sample. +3 seconds and still only processed 300 bytes.
   clock.Advance(Seconds(3));
   EXPECT_TRUE(meter.Update(300));
   EXPECT_EQ(3u, meter.GetSampleCount());
-  EXPECT_EQ(50, round(meter.GetRemainingSeconds()));
+  EXPECT_EQ(meter.GetRemainingTime().InSeconds(), 50);
 
   // 4th sample, +5 seconds and still only 300 bytes.
   clock.Advance(Seconds(5));
   EXPECT_TRUE(meter.Update(300));
   EXPECT_EQ(4u, meter.GetSampleCount());
-  EXPECT_EQ(110, round(meter.GetRemainingSeconds()));
+  EXPECT_EQ(meter.GetRemainingTime().InSeconds(), 109);
 
   // 5th sample, +3 seconds and now bumped from 300 to 600 bytes.
   clock.Advance(Seconds(3));
   EXPECT_TRUE(meter.Update(600));
   EXPECT_EQ(5u, meter.GetSampleCount());
-  EXPECT_EQ(55, round(meter.GetRemainingSeconds()));
+  EXPECT_EQ(meter.GetRemainingTime().InSeconds(), 55);
 
   // Elapsed time should impact the remaining time.
   clock.Advance(Seconds(12));
-  EXPECT_EQ(43, round(meter.GetRemainingSeconds()));
+  EXPECT_EQ(meter.GetRemainingTime().InSeconds(), 43);
 
-  // GetRemainingSeconds() can return negative value.
+  // GetRemainingTime() can return negative value.
   clock.Advance(Seconds(60));
-  EXPECT_EQ(-17, round(meter.GetRemainingSeconds()));
+  EXPECT_EQ(meter.GetRemainingTime().InSeconds(), -16);
 }
 
 TEST(SpeedometerTest, Samples) {
@@ -97,7 +97,7 @@ TEST(SpeedometerTest, Samples) {
   }
 
   EXPECT_EQ(kMaxSamples, meter.GetSampleCount());
-  EXPECT_EQ(543, round(meter.GetRemainingSeconds()));
+  EXPECT_EQ(meter.GetRemainingTime().InSeconds(), 543);
 
   // +200 to make it compatible with the values in the unittest in the JS
   // version.
@@ -112,11 +112,11 @@ TEST(SpeedometerTest, Samples) {
 
     // Current speed should be seen as accelerating, thus the remaining time
     // decreasing.
-    EXPECT_GT(543, meter.GetRemainingSeconds());
+    EXPECT_LT(meter.GetRemainingTime().InSeconds(), 543);
   }
 
   EXPECT_EQ(kMaxSamples, meter.GetSampleCount());
-  EXPECT_EQ(122, round(meter.GetRemainingSeconds()));
+  EXPECT_EQ(meter.GetRemainingTime().InSeconds(), 122);
 
   // Stalling.
   for (size_t i = 0; i < kMaxSamples; i++) {
@@ -130,8 +130,7 @@ TEST(SpeedometerTest, Samples) {
   // because the Linear Interpolation expects an inclination/slope, but with all
   // values the same, it becomes a horizontal line, meaning that the bytes will
   // never grow towards the total bytes.
-  EXPECT_EQ(std::numeric_limits<double>::infinity(),
-            meter.GetRemainingSeconds());
+  EXPECT_TRUE(meter.GetRemainingTime().is_max());
 }
 
 TEST(SpeedometerTest, ProgressGoingBackwards) {
@@ -144,18 +143,18 @@ TEST(SpeedometerTest, ProgressGoingBackwards) {
   clock.Advance(Seconds(5));
   EXPECT_TRUE(meter.Update(300));
   EXPECT_EQ(2u, meter.GetSampleCount());
-  EXPECT_EQ(43, round(meter.GetRemainingSeconds()));
+  EXPECT_EQ(meter.GetRemainingTime().InSeconds(), 42);
 
   // Progress going backwards should clear the samples.
   clock.Advance(Seconds(3));
   EXPECT_TRUE(meter.Update(200));
   EXPECT_EQ(1u, meter.GetSampleCount());
-  EXPECT_THAT(meter.GetRemainingSeconds(), IsNan());
+  EXPECT_TRUE(meter.GetRemainingTime().is_max());
 
   clock.Advance(Seconds(5));
   EXPECT_TRUE(meter.Update(300));
   EXPECT_EQ(2u, meter.GetSampleCount());
-  EXPECT_EQ(85, round(meter.GetRemainingSeconds()));
+  EXPECT_EQ(meter.GetRemainingTime().InSeconds(), 85);
 }
 
 TEST(SpeedometerTest, ChangeTotalBytes) {
@@ -168,18 +167,18 @@ TEST(SpeedometerTest, ChangeTotalBytes) {
   clock.Advance(Seconds(5));
   EXPECT_TRUE(meter.Update(300));
   EXPECT_EQ(2u, meter.GetSampleCount());
-  EXPECT_EQ(43, round(meter.GetRemainingSeconds()));
+  EXPECT_EQ(meter.GetRemainingTime().InSeconds(), 42);
 
   // Setting the total number of bytes to the existing value shouldn't change
   // anything.
   meter.SetTotalBytes(2000);
   EXPECT_EQ(2u, meter.GetSampleCount());
-  EXPECT_EQ(43, round(meter.GetRemainingSeconds()));
+  EXPECT_EQ(meter.GetRemainingTime().InSeconds(), 42);
 
   // Changing the total number of bytes should clear the samples.
   meter.SetTotalBytes(3000);
   EXPECT_EQ(0u, meter.GetSampleCount());
-  EXPECT_THAT(meter.GetRemainingSeconds(), IsNan());
+  EXPECT_TRUE(meter.GetRemainingTime().is_max());
 }
 
 }  // namespace

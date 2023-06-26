@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -72,12 +73,12 @@ ExtractIOTask::~ExtractIOTask() {
 
 void ExtractIOTask::ZipListenerCallback(uint64_t bytes) {
   if (speedometer_.Update(progress_.bytes_transferred += bytes)) {
-    const double remaining_seconds = speedometer_.GetRemainingSeconds();
+    const base::TimeDelta remaining_time = speedometer_.GetRemainingTime();
 
     // Speedometer can produce infinite result which can't be serialized to JSON
     // when sending the status via private API.
-    if (std::isfinite(remaining_seconds)) {
-      progress_.remaining_seconds = remaining_seconds;
+    if (!remaining_time.is_inf()) {
+      progress_.remaining_seconds = remaining_time.InSecondsF();
     }
   }
 

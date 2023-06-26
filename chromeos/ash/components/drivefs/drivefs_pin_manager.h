@@ -136,14 +136,17 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
   // High watermark of the number of active queries.
   int max_active_queries = 0;
 
-  // Estimated number of seconds remaining to pin all `bytes_to_pin`.
-  double remaining_seconds = 0;
-
   // Stage of the setup process.
   Stage stage = Stage::kStopped;
 
+  // Time spent listing and enumerating items.
   base::TimeDelta time_spent_listing_items;
+
+  // Time spent pinning and caching files.
   base::TimeDelta time_spent_pinning_files;
+
+  // Estimated time remaining to pin and cache all the files.
+  base::TimeDelta remaining_time = base::TimeDelta::Max();
 
   // Has the PinManager ever emptied its set of tracking items?
   bool emptied_queue = false;
