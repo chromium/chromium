@@ -632,6 +632,9 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   content::TestNavigationObserver navigation_observer(test_url);
   navigation_observer.StartWatchingNewWebContents();
 
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey(),
+                                       "PWAConfirmationBubbleView");
+
   // Script that tells the Help App to call the
   // OpenUrlInBrowserAndTriggerInstallDialog Mojo function.
   constexpr char kScript[] = R"(
@@ -660,8 +663,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 
   // Wait for the PWA install dialog to show up. Internally, this is called the
   // PWAConfirmationBubbleView (Not to be confused with the omnibox icon).
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey(),
-                                       "PWAConfirmationBubbleView");
   waiter.WaitIfNeededAndGet();
 
   EXPECT_TRUE(PWAConfirmationBubbleView::IsShowing());
