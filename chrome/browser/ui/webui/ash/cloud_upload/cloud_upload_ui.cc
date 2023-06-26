@@ -36,6 +36,7 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
       // Dialog buttons.
       {"cancel", IDS_CANCEL},
       {"close", IDS_CLOSE},
+      {"done", IDS_DONE},
       {"open", IDS_OFFICE_FILE_HANDLER_OPEN_BUTTON},
       {"install", IDS_INSTALL},
       {"installing", IDS_OFFICE_INSTALL_PWA_INSTALLING_BUTTON},
@@ -69,6 +70,10 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
       // Cancel setup dialog.
       {"cancelSetupTitle", IDS_OFFICE_CANCEL_SETUP_TITLE},
       {"cancelSetupBodyText", IDS_OFFICE_CANCEL_SETUP_BODY_TEXT},
+      // OneDrive setup complete dialog.
+      {"oneDriveSetupCompleteTitle", IDS_OFFICE_ONEDRIVE_SETUP_COMPLETE_TITLE},
+      {"oneDriveSetupCompleteBodyText",
+       IDS_OFFICE_ONEDRIVE_SETUP_COMPLETE_BODY_TEXT},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("isJellyEnabled", chromeos::features::IsJellyEnabled());

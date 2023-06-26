@@ -1,4 +1,3 @@
-<!-- TODO: Use localized strings -->
 <style>
   :host-context([theme='legacy']) cr-button {
     border-radius: 16px;
@@ -60,15 +59,10 @@
 <svg slot="header-image" viewBox="0 0 448 200">
   <use href="images/one_drive_success.svg#EXPORT_image"></use>
 </svg>
-<div slot="title">
-  Microsoft 365 setup complete
-</div>
+<div slot="title">$i18n{oneDriveSetupCompleteTitle}</div>
 <div slot="body">
-  <p>
-    When opening Word, Excel, and Powerpoint files, the files
-    will move to Microsoft OneDrive before opening in Microsoft 365
-  </p>
+  <p>$i18n{oneDriveSetupCompleteBodyText}</p>
 </div>
 <div slot="button-container">
-  <cr-button class="action-button">Done</cr-button>
+  <cr-button class="action-button">$i18n{done}</cr-button>
 </div>
