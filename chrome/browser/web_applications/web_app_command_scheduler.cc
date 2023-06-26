@@ -41,6 +41,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/get_isolated_web_app_browsing_data_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_prepare_and_store_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -389,6 +390,36 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
           url_info, location, expected_version,
           CreateIsolatedWebAppWebContents(*profile_),
           provider_->web_contents_manager().CreateUrlLoader(),
+          std::move(optional_keep_alive),
+          std::move(optional_profile_keep_alive), std::move(callback),
+          std::make_unique<IsolatedWebAppInstallCommandHelper>(
+              url_info, provider_->web_contents_manager().CreateDataRetriever(),
+              IsolatedWebAppInstallCommandHelper::
+                  CreateDefaultResponseReaderFactory(*profile_->GetPrefs()))),
+      call_location);
+}
+
+void WebAppCommandScheduler::PrepareAndStoreIsolatedWebAppUpdate(
+    const WebApp::IsolationData::PendingUpdateInfo& update_info,
+    const IsolatedWebAppUrlInfo& url_info,
+    std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+    base::OnceCallback<void(
+        base::expected<void, IsolatedWebAppUpdatePrepareAndStoreCommandError>)>
+        callback,
+    const base::Location& call_location) {
+  if (IsShuttingDown()) {
+    IsolatedWebAppUpdatePrepareAndStoreCommandError error{
+        .message = "The profile and/or browser are shutting down."};
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), base::unexpected(error)));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<IsolatedWebAppUpdatePrepareAndStoreCommand>(
+          update_info, url_info, CreateIsolatedWebAppWebContents(*profile_),
           std::move(optional_keep_alive),
           std::move(optional_profile_keep_alive), std::move(callback),
           std::make_unique<IsolatedWebAppInstallCommandHelper>(

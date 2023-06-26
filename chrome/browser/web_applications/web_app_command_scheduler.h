@@ -44,6 +44,7 @@ class ScopedProfileKeepAlive;
 
 namespace web_app {
 
+struct IsolatedWebAppUpdatePrepareAndStoreCommandError;
 class IsolatedWebAppUrlInfo;
 class WebApp;
 class WebAppDataRetriever;
@@ -193,6 +194,23 @@ class WebAppCommandScheduler {
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       InstallIsolatedWebAppCallback callback,
+      const base::Location& call_location = FROM_HERE);
+
+  // Schedules a command to prepare the update of an Isolated Web App.
+  // `update_info` specifies the location of the update for the IWA referred to
+  // in `url_info`. This command is safe to run even if the IWA is not installed
+  // or already updated, in which case it will gracefully fail. If a dry-run of
+  // the update succeeds, then the `update_info` is persisted in the
+  // `IsolationData::pending_update_info()` of the IWA in the Web App database.
+  virtual void PrepareAndStoreIsolatedWebAppUpdate(
+      const WebApp::IsolationData::PendingUpdateInfo& update_info,
+      const IsolatedWebAppUrlInfo& url_info,
+      std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
+      base::OnceCallback<
+          void(base::expected<void,
+                              IsolatedWebAppUpdatePrepareAndStoreCommandError>)>
+          callback,
       const base::Location& call_location = FROM_HERE);
 
   // Computes the browsing data size of all installed Isolated Web Apps.
