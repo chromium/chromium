@@ -39,9 +39,21 @@ bool RuleMetaData::operator==(const RuleMetaData& other) const {
 // static
 base::TimeDelta RuleMetaData::ComputeLifetime(base::TimeDelta lifetime,
                                               base::Time expiration) {
-  // The stored metadata may have included an expiration without a lifetime; but
-  // if it included a lifetime, it must also have included an expiration.
-  CHECK(lifetime.is_zero() || !expiration.is_null());
+  if (!lifetime.is_zero() && expiration.is_null()) {
+    // This is an invalid state, since:
+    // * old writes would have written a nonzero expiration and zero lifetime or
+    // zero expiration and zero lifetime;
+    // * new writes would write a nonzero expiration and nonzero lifetime or
+    // zero expiration and zero lifetime.
+    //
+    // Yet when we read from disk, we got a zero expiration and nonzero
+    // lifetime. This indicates disk corruption: the expiration field is either
+    // missing or mangled. We therefore defer to the expiration, and give up on
+    // the lifetime. This has the effect that temporary settings may become
+    // permanent in the event of disk corruption; but this has always been the
+    // case.
+    return base::TimeDelta();
+  }
 
   if (expiration.is_null()) {
     return base::TimeDelta();
