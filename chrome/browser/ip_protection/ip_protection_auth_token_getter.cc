@@ -9,6 +9,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/google_api_keys.h"
+#include "mojo/public/cpp/bindings/message.h"
 
 IpProtectionAuthTokenGetter::IpProtectionAuthTokenGetter(
     signin::IdentityManager* identity_manager,
@@ -27,12 +28,20 @@ IpProtectionAuthTokenGetter IpProtectionAuthTokenGetter::CreateForTesting(
 }
 
 void IpProtectionAuthTokenGetter::TryGetAuthTokens(
-    int batch_size,
+    uint32_t batch_size,
     TryGetAuthTokensCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CHECK(!try_get_auth_token_callback_)
-      << "Concurrent calls to TryGetAuthTokens are not allowed";
-  DCHECK(batch_size > 0);
+  if (try_get_auth_token_callback_) {
+    mojo::ReportBadMessage(
+        "Concurrent calls to TryGetAuthTokens are not allowed");
+    return;
+  }
+  // The `batch_size` is cast to an `int` for use by BlindSignAuth, so check for
+  // overflow here.
+  if (batch_size == 0 || batch_size > INT_MAX) {
+    mojo::ReportBadMessage("Invalid batch_size");
+    return;
+  }
   try_get_auth_token_callback_ = std::move(callback);
   batch_size_ = batch_size;
   RequestOAuthToken();
@@ -94,9 +103,14 @@ void IpProtectionAuthTokenGetter::OnFetchBlindSignedTokenCompleted(
     return;
   }
 
-  std::vector<std::string> result;
+  std::vector<network::mojom::BlindSignedAuthTokenPtr> result;
   std::transform(tokens->begin(), tokens->end(), std::back_inserter(result),
-                 [](quiche::BlindSignToken token) { return token.token; });
+                 [](quiche::BlindSignToken bsa_token) {
+                   base::Time expiration = base::Time::FromTimeT(
+                       absl::ToTimeT(bsa_token.expiration));
+                   return network::mojom::BlindSignedAuthToken::New(
+                       bsa_token.token, expiration);
+                 });
 
   std::move(try_get_auth_token_callback_).Run(std::move(result));
 }

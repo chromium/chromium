@@ -438,6 +438,10 @@ struct NetworkContextParams {
   // the browser. Set when the sandbox is enabled.
   pending_remote<SocketBroker>? socket_broker;
 
+  // A service to fetch blind-signed auth tokens for IP protection. If this
+  // is not set, then no tokens are available.
+  pending_remote<IpProtectionAuthTokenGetter>? ip_protection_auth_token_getter;
+
   // When PAC quick checking is enabled, DNS lookups for PAC script's host are
   // timed out aggressively. This prevents hanging all network request on DNS
   // lookups that are slow or are blockholed, at the cost of making it more
@@ -863,6 +867,26 @@ interface NetworkContextClient {
   // clients.
   [EnableIf=is_ct_supported]
   OnNewSCTAuditingReportSent();
+};
+
+// A blind-signed auth token, suitable for use with IP protection proxies.
+struct BlindSignedAuthToken {
+  // The token value, for inclusion in a header.
+  string token;
+
+  // The expiration time of this token.
+  mojo_base.mojom.Time expiration;
+};
+
+// A source for new BlindSignedAuthTokens.
+interface IpProtectionAuthTokenGetter {
+  // Try to get a batch of new tokens.
+  //
+  // This may take some time, if external network requests are required. If no
+  // tokens are available, it will return NULL. It is forbidden for two calls
+  // to this method to be outstanding at the same time.
+  TryGetAuthTokens(uint32 batch_size) =>
+    (array<BlindSignedAuthToken>? bsa_token);
 };
 
 // Represents a distinct context for making network requests, with its own

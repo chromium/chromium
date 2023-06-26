@@ -15,6 +15,7 @@ class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
  public:
   using BlindSignTokenCallback =
       std::function<void(absl::StatusOr<absl::Span<quiche::BlindSignToken>>)>;
+
   void GetTokens(absl::string_view oauth_token,
                  int num_tokens,
                  BlindSignTokenCallback callback) override {
@@ -71,7 +72,13 @@ enum class PrimaryAccountBehavior {
 
 class IpProtectionAuthTokenGetterTest : public testing::Test {
  protected:
-  using TokensResult = const absl::optional<std::vector<std::string>>;
+  using TokensResult =
+      absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>;
+  IpProtectionAuthTokenGetterTest()
+      : absl_expiration_time_(absl::Now() + absl::Hours(1)),
+        base_expiration_time_(
+            base::Time::FromTimeT(absl::ToTimeT(absl_expiration_time_))) {}
+
   // Get the IdentityManager for this test.
   signin::IdentityManager* IdentityManager() {
     return identity_test_env_.identity_manager();
@@ -111,11 +118,16 @@ class IpProtectionAuthTokenGetterTest : public testing::Test {
 
   // Run on the UI thread.
   content::BrowserTaskEnvironment task_environment_;
-  base::test::TestFuture<TokensResult&> tokens_future_;
+  base::test::TestFuture<TokensResult> tokens_future_;
 
   // Test environment for IdentityManager. This must come after the
   // TaskEnvironment.
   signin::IdentityTestEnvironment identity_test_env_;
+
+  // A convenient expiration time for fake tokens, in the future. These specify
+  // the same time with two types.
+  absl::Time absl_expiration_time_;
+  base::Time base_expiration_time_;
 };
 
 // The success case: a primary account is available, and BSA gets a token for
@@ -125,14 +137,19 @@ TEST_F(IpProtectionAuthTokenGetterTest, Success) {
   auto bsa = MockBlindSignAuth();
   auto getter =
       IpProtectionAuthTokenGetter::CreateForTesting(IdentityManager(), &bsa);
-  bsa.tokens_ = {{"single-use-1", absl::Now()}, {"single-use-2", absl::Now()}};
+  bsa.tokens_ = {{"single-use-1", absl_expiration_time_},
+                 {"single-use-2", absl_expiration_time_}};
 
   TryGetAuthTokens(2, getter);
 
   EXPECT_TRUE(bsa.get_tokens_called_);
   EXPECT_EQ(bsa.oauth_token_, "access_token");
   EXPECT_EQ(bsa.num_tokens_, 2);
-  std::vector<std::string> expected = {"single-use-1", "single-use-2"};
+  std::vector<network::mojom::BlindSignedAuthTokenPtr> expected;
+  expected.push_back(network::mojom::BlindSignedAuthToken::New(
+      "single-use-1", base_expiration_time_));
+  expected.push_back(network::mojom::BlindSignedAuthToken::New(
+      "single-use-2", base_expiration_time_));
   EXPECT_EQ(*tokens_future_.Get(), expected);
 }
 
@@ -146,6 +163,7 @@ TEST_F(IpProtectionAuthTokenGetterTest, NoTokens) {
   TryGetAuthTokens(1, getter);
 
   EXPECT_TRUE(bsa.get_tokens_called_);
+  EXPECT_EQ(bsa.num_tokens_, 1);
   EXPECT_EQ(bsa.oauth_token_, "access_token");
   EXPECT_EQ(tokens_future_.Get(), absl::nullopt);
 }
@@ -161,6 +179,7 @@ TEST_F(IpProtectionAuthTokenGetterTest, BlindSignedTokenError) {
   TryGetAuthTokens(1, getter);
 
   EXPECT_TRUE(bsa.get_tokens_called_);
+  EXPECT_EQ(bsa.num_tokens_, 1);
   EXPECT_EQ(bsa.oauth_token_, "access_token");
   EXPECT_EQ(tokens_future_.Get(), absl::nullopt);
 }

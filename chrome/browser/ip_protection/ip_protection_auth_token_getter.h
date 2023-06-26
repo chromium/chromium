@@ -16,6 +16,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace quiche {
 class BlindSignAuth;
@@ -26,12 +27,14 @@ class BlindSignAuth;
 // This class handles both requesting OAuth2 tokens for the signed-in user, and
 // fetching blind-signed auth tokens for that user. It may only be used on the
 // UI thread.
-class IpProtectionAuthTokenGetter {
+class IpProtectionAuthTokenGetter
+    : public network::mojom::IpProtectionAuthTokenGetter {
  public:
   using TryGetAuthTokensCallback = base::OnceCallback<void(
-      const absl::optional<std::vector<std::string>>& tokens)>;
+      absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
+          bsa_tokens)>;
 
-  ~IpProtectionAuthTokenGetter();
+  ~IpProtectionAuthTokenGetter() override;
 
   // Create a getter with the given BSA implementation, typically a mock.
   static IpProtectionAuthTokenGetter CreateForTesting(
@@ -42,7 +45,8 @@ class IpProtectionAuthTokenGetter {
   //
   // It is forbidden for two calls to this method to be outstanding at the same
   // time.
-  void TryGetAuthTokens(int batch_size, TryGetAuthTokensCallback callback);
+  void TryGetAuthTokens(uint32_t batch_size,
+                        TryGetAuthTokensCallback callback) override;
 
  private:
   IpProtectionAuthTokenGetter(signin::IdentityManager* identity_manager,
@@ -76,7 +80,7 @@ class IpProtectionAuthTokenGetter {
       access_token_fetcher_;
 
   // The batch size of the current request.
-  int batch_size_ = 0;
+  uint32_t batch_size_ = 0;
 
   // The callback for the executing `TryGetAuthTokens()` call.
   TryGetAuthTokensCallback try_get_auth_token_callback_;

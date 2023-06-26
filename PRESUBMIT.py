@@ -972,7 +972,11 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         'Abseil\'s time library is banned. Use base/time instead.',
       ),
       True,
-      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+      [
+        # Needed to use QUICHE API.
+        r'chrome/browser/ip_protection/.*',
+        _THIRD_PARTY_EXCEPT_BLINK  # Not an error in third_party folders.
+      ],
     ),
     BanRule(
       r'/\bstd::optional\b',
