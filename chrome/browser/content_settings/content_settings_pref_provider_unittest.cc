@@ -1059,6 +1059,56 @@ TEST_F(PrefProviderTest, LastVisitedTimeIsTracked) {
   provider.ShutdownOnUIThread();
 }
 
+TEST_F(PrefProviderTest, RenewContentSetting) {
+  TestingProfile testing_profile;
+  PrefProvider provider(testing_profile.GetPrefs(), /*off_the_record=*/false,
+                        /*store_last_modified=*/true,
+                        /*restore_session=*/false);
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+  provider.SetClockForTesting(&clock);
+
+  GURL primary_url("https://example.com/");
+  ContentSettingsPattern primary_pattern =
+      ContentSettingsPattern::FromString("https://[*.]example.com");
+
+  ContentSettingConstraints constraints;
+  constraints.set_lifetime(base::Days(2));
+
+  ASSERT_TRUE(provider.SetWebsiteSetting(
+      primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
+      base::Value(CONTENT_SETTING_ALLOW), constraints));
+
+  RuleMetaData metadata;
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, TestUtils::GetContentSetting(
+                                       &provider, primary_url, primary_url,
+                                       ContentSettingsType::STORAGE_ACCESS,
+                                       /*include_incognito=*/false, &metadata));
+  EXPECT_EQ(metadata.lifetime(), base::Days(2));
+  EXPECT_EQ(metadata.expiration(), clock.Now() + base::Days(2));
+
+  clock.Advance(base::Days(1));
+
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, TestUtils::GetContentSetting(
+                                       &provider, primary_url, primary_url,
+                                       ContentSettingsType::STORAGE_ACCESS,
+                                       /*include_incognito=*/false, &metadata));
+  EXPECT_EQ(metadata.lifetime(), base::Days(2));
+  EXPECT_EQ(metadata.expiration(), clock.Now() + base::Days(1));
+
+  EXPECT_TRUE(provider.RenewContentSetting(
+      primary_url, primary_url, ContentSettingsType::STORAGE_ACCESS));
+
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, TestUtils::GetContentSetting(
+                                       &provider, primary_url, primary_url,
+                                       ContentSettingsType::STORAGE_ACCESS,
+                                       /*include_incognito=*/false, &metadata));
+  EXPECT_EQ(metadata.lifetime(), base::Days(2));
+  EXPECT_EQ(metadata.expiration(), clock.Now() + base::Days(2));
+
+  provider.ShutdownOnUIThread();
+}
+
 TEST_F(PrefProviderTest, LastVisitedTimeStoredOnDisk) {
   TestingProfile testing_profile;
   PrefProvider provider(testing_profile.GetPrefs(), /*off_the_record=*/false,

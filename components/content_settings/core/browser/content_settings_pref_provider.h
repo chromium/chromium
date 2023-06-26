@@ -62,6 +62,9 @@ class PrefProvider : public UserModifiableProvider {
   bool UpdateLastVisitTime(const ContentSettingsPattern& primary_pattern,
                            const ContentSettingsPattern& secondary_pattern,
                            ContentSettingsType content_type) override;
+  bool RenewContentSetting(const GURL& primary_url,
+                           const GURL& secondary_url,
+                           ContentSettingsType content_type) override;
   void SetClockForTesting(base::Clock* clock) override;
 
   void ClearPrefs();
@@ -79,6 +82,27 @@ class PrefProvider : public UserModifiableProvider {
                         const ContentSettingsPattern& secondary_pattern,
                         ContentSettingsType content_type,
                         const base::Time time);
+
+  // Updates the setting whose patterns and type are `primary_pattern`,
+  // `secondary_pattern`, and `content_type`. `compute_update` may modify the
+  // Rule in-place, and should return true if any modifications were made.
+  // Returns whether or not any setting was updated.
+  bool UpdateSetting(const ContentSettingsPattern& primary_pattern,
+                     const ContentSettingsPattern& secondary_pattern,
+                     ContentSettingsType content_type,
+                     base::FunctionRef<bool(Rule&)> compute_update);
+  // Overload of the above which identifies matching settings by GURLs instead
+  // of patterns.
+  bool UpdateSetting(const GURL& primary_url,
+                     const GURL& secondary_url,
+                     ContentSettingsType content_type,
+                     base::FunctionRef<bool(Rule&)> compute_update);
+  // Overload of the above which identifies matching settings by a predicate.
+  bool UpdateSetting(
+      ContentSettingsType content_type,
+      base::FunctionRef<bool(const ContentSettingsPattern&,
+                             const ContentSettingsPattern&)> is_match,
+      base::FunctionRef<bool(Rule&)> compute_update);
 
   // Clean up the obsolete preferences from the user's profile.
   void DiscardOrMigrateObsoletePreferences();

@@ -22,6 +22,11 @@ void StorageAccessAPITabHelper::FrameReceivedUserActivation(
     return;
   }
 
+  if (rfh->GetLastCommittedOrigin().opaque() ||
+      rfh->GetParentOrOuterDocument()->GetLastCommittedOrigin().opaque()) {
+    return;
+  }
+
   service_->RenewPermissionGrant(
       rfh->GetLastCommittedOrigin(),
       rfh->GetParentOrOuterDocument()->GetLastCommittedOrigin());

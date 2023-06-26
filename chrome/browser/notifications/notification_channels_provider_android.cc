@@ -394,6 +394,14 @@ bool NotificationChannelsProviderAndroid::UpdateLastVisitTime(
   return false;
 }
 
+bool NotificationChannelsProviderAndroid::RenewContentSetting(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type) {
+  // Setting renewal is not implemented for this type.
+  return false;
+}
+
 void NotificationChannelsProviderAndroid::SetClockForTesting(
     base::Clock* clock) {
   clock_ = clock;

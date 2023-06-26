@@ -53,6 +53,10 @@ class StorageAccessAPIServiceImpl : public StorageAccessAPIService,
   // Handles state updates due to the passage of time.
   void OnPeriodicTimerFired();
 
+  // The BrowserContext this service instance is associated with.
+  const raw_ref<content::BrowserContext> browser_context_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   // The grants that have already been updated.
   SitePairCache updated_grants_ GUARDED_BY_CONTEXT(sequence_checker_);
 

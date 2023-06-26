@@ -101,6 +101,10 @@ class MockUserModifiableProvider
                bool(const ContentSettingsPattern& primary_pattern,
                     const ContentSettingsPattern& secondary_pattern,
                     ContentSettingsType content_type));
+  MOCK_METHOD3(RenewContentSetting,
+               bool(const GURL& primary_url,
+                    const GURL& secondary_url,
+                    ContentSettingsType content_type));
 
   MOCK_METHOD1(SetClockForTesting, void(base::Clock*));
 };

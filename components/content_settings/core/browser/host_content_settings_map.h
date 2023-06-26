@@ -273,6 +273,12 @@ class HostContentSettingsMap : public content_settings::Observer,
                              const ContentSettingsPattern& secondary_pattern,
                              ContentSettingsType type);
 
+  // Updates the expiration to `lifetime + now()`. Returns true if any setting
+  // was matched and updated.
+  bool RenewContentSetting(const GURL& primary_url,
+                           const GURL& secondary_url,
+                           ContentSettingsType type);
+
   // Clears all host-specific settings for one content type.
   //
   // This should only be called on the UI thread.

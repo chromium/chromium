@@ -6,10 +6,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/test/simple_test_clock.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/storage_access_api/storage_access_api_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,12 +62,56 @@ class StorageAccessAPIServiceImplTest : public testing::Test {
 };
 
 TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant) {
+  url::Origin origin_a(
+      url::Origin::Create(GURL(base::StrCat({"https://", kHostA}))));
+  url::Origin origin_b(
+      url::Origin::Create(GURL(base::StrCat({"https://", kHostB}))));
+
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  settings_map->SetClockForTesting(&clock);
+
+  content_settings::ContentSettingConstraints constraints(clock.Now());
+  constraints.set_lifetime(base::Days(30));
+
+  settings_map->SetContentSettingDefaultScope(
+      origin_a.GetURL(), origin_b.GetURL(), ContentSettingsType::STORAGE_ACCESS,
+      CONTENT_SETTING_ALLOW, constraints);
+
   StorageAccessAPIServiceImpl* service =
       StorageAccessAPIServiceFactory::GetForBrowserContext(profile());
-
   ASSERT_NE(nullptr, service);
 
-  // TODO(https://crbug.com/1450356): test grant renewal.
+  clock.Advance(base::Days(20));
+
+  // 20 days into a 30 day lifetime, so the setting hasn't expired yet.
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, settings_map->GetContentSetting(
+                                       origin_a.GetURL(), origin_b.GetURL(),
+                                       ContentSettingsType::STORAGE_ACCESS));
+
+  EXPECT_TRUE(service->RenewPermissionGrant(origin_a, origin_b));
+
+  clock.Advance(base::Days(20));
+  // The 30d lifetime was renewed 20 days ago, so it hasn't expired yet.
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, settings_map->GetContentSetting(
+                                       origin_a.GetURL(), origin_b.GetURL(),
+                                       ContentSettingsType::STORAGE_ACCESS));
+
+  clock.Advance(base::Days(11));
+  // The 30d lifetime was renewed 31 days ago, so it has expired now.
+  EXPECT_EQ(CONTENT_SETTING_ASK, settings_map->GetContentSetting(
+                                     origin_a.GetURL(), origin_b.GetURL(),
+                                     ContentSettingsType::STORAGE_ACCESS));
+
+  EXPECT_FALSE(service->RenewPermissionGrant(origin_a, origin_b));
+  // The setting was already expired, so renewing it has no effect.
+  EXPECT_EQ(CONTENT_SETTING_ASK, settings_map->GetContentSetting(
+                                     origin_a.GetURL(), origin_b.GetURL(),
+                                     ContentSettingsType::STORAGE_ACCESS));
 }
 
 TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant_DailyCache) {
@@ -75,6 +123,14 @@ TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant_DailyCache) {
       url::Origin::Create(GURL(base::StrCat({"https://", kHostA}))));
   url::Origin origin_b(
       url::Origin::Create(GURL(base::StrCat({"https://", kHostB}))));
+
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_lifetime(base::Days(30));
+
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetContentSettingDefaultScope(origin_a.GetURL(), origin_b.GetURL(),
+                                      ContentSettingsType::STORAGE_ACCESS,
+                                      CONTENT_SETTING_ALLOW, constraints);
 
   EXPECT_TRUE(service->RenewPermissionGrant(origin_a, origin_b));
   EXPECT_FALSE(service->RenewPermissionGrant(origin_a, origin_b));

@@ -78,3 +78,20 @@ TEST_F(StorageAccessAPITabHelperTest, OnFrameReceivedUserActivation_Subframe) {
   // Non-main-frame user activations cause the service to be invoked.
   tab_helper()->FrameReceivedUserActivation(subframe);
 }
+
+TEST_F(StorageAccessAPITabHelperTest,
+       OnFrameReceivedUserActivation_SubframeOpaque) {
+  EXPECT_CALL(service(), RenewPermissionGrant(testing::_, testing::_)).Times(0);
+
+  NavigateAndCommit(GURL("https://example.test/"));
+
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+
+  subframe = SimulateNavigateAndCommit(
+      GURL("data:text/html,%3Ch1%3EHello%2C%20World%21%3C%2Fh1%3E"), subframe);
+  ASSERT_NE(nullptr, subframe);
+
+  // User activations in iframes with opaque origins are ignored.
+  tab_helper()->FrameReceivedUserActivation(subframe);
+}
