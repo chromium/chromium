@@ -40,6 +40,8 @@ std::string NearbyConnectionsManager::ConnectionsStatusToString(
       return "kPayloadUnknown";
     case ConnectionsStatus::kAlreadyListening:
       return "kAlreadyListening";
+    case ConnectionsStatus::kNextValue:
+      return "kNextValue";
   }
 }
 

@@ -240,6 +240,7 @@ NearbyConnectionsStatusToStartAdvertisingFailureReason(
     case nearby::connections::mojom::Status::kNotConnectedToEndpoint:
     case nearby::connections::mojom::Status::kPayloadUnknown:
     case nearby::connections::mojom::Status::kAlreadyListening:
+    case nearby::connections::mojom::Status::kNextValue:
       return StartAdvertisingFailureReason::kUnknown;
   }
 }

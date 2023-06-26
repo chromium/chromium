@@ -60,6 +60,8 @@ mojom::Status StatusToMojom(Status::Value status) {
       return mojom::Status::kPayloadUnknown;
     case Status::Value::kAlreadyListening:
       return mojom::Status::kAlreadyListening;
+    case Status::Value::kNextValue:
+      return mojom::Status::kNextValue;
   }
 }
 
