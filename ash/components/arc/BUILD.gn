@@ -434,7 +434,6 @@ source_set("unit_tests") {
     "net/passpoint_dialog_view_unittest.cc",
     "pay/arc_payment_app_bridge_unittest.cc",
     "power/arc_power_bridge_unittest.cc",
-    "property/arc_property_bridge_unittest.cc",
     "sensor/arc_iio_sensor_bridge_unittest.cc",
     "storage_manager/arc_storage_manager_unittest.cc",
     "system_ui/arc_system_ui_bridge_unittest.cc",
