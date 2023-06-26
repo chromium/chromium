@@ -4,6 +4,10 @@
 
 #include "components/viz/common/resources/shared_image_format_utils.h"
 
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <GLES2/gl2extchromium.h>
+
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -11,6 +15,63 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 
 namespace viz {
+
+namespace {
+
+#if BUILDFLAG(ENABLE_VULKAN)
+VkFormat ToVkFormatInternal(SharedImageFormat format) {
+  CHECK(format.is_single_plane());
+  switch (format.resource_format()) {
+    case RGBA_8888:
+      return VK_FORMAT_R8G8B8A8_UNORM;  // or VK_FORMAT_R8G8B8A8_SRGB
+    case RGBA_4444:
+      return VK_FORMAT_R4G4B4A4_UNORM_PACK16;
+    case BGRA_8888:
+      return VK_FORMAT_B8G8R8A8_UNORM;
+    case RED_8:
+      return VK_FORMAT_R8_UNORM;
+    case RGB_565:
+      return VK_FORMAT_R5G6B5_UNORM_PACK16;
+    case BGR_565:
+      return VK_FORMAT_B5G6R5_UNORM_PACK16;
+    case RG_88:
+      return VK_FORMAT_R8G8_UNORM;
+    case RGBA_F16:
+      return VK_FORMAT_R16G16B16A16_SFLOAT;
+    case R16_EXT:
+      return VK_FORMAT_R16_UNORM;
+    case RG16_EXT:
+      return VK_FORMAT_R16G16_UNORM;
+    case RGBX_8888:
+      return VK_FORMAT_R8G8B8A8_UNORM;
+    case BGRX_8888:
+      return VK_FORMAT_B8G8R8A8_UNORM;
+    case RGBA_1010102:
+      return VK_FORMAT_A2B10G10R10_UNORM_PACK32;
+    case BGRA_1010102:
+      return VK_FORMAT_A2R10G10B10_UNORM_PACK32;
+    case ALPHA_8:
+      return VK_FORMAT_R8_UNORM;
+    case LUMINANCE_8:
+      return VK_FORMAT_R8_UNORM;
+    case YVU_420:
+      return VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
+    case YUV_420_BIPLANAR:
+      return VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
+    case ETC1:
+      return VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK;
+    case LUMINANCE_F16:
+      return VK_FORMAT_R16_SFLOAT;
+    case P010:
+      return VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16;
+    case YUVA_420_TRIPLANAR:
+      break;
+  }
+  return VK_FORMAT_UNDEFINED;
+}
+#endif
+
+}  // namespace
 
 SkColorType ToClosestSkColorType(bool gpu_compositing,
                                  SharedImageFormat format) {
@@ -353,5 +414,91 @@ SharedImageFormat GetSharedImageFormat(gfx::BufferFormat format) {
   }
   NOTREACHED_NORETURN();
 }
+
+// static
+unsigned int SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataFormat(
+    SharedImageFormat format) {
+  CHECK(format.is_single_plane());
+  static const GLenum format_gl_data_format[] = {
+      GL_RGBA,       // RGBA_8888
+      GL_RGBA,       // RGBA_4444
+      GL_BGRA_EXT,   // BGRA_8888
+      GL_ALPHA,      // ALPHA_8
+      GL_LUMINANCE,  // LUMINANCE_8
+      GL_RGB,        // RGB_565
+      GL_RGB,        // BGR_565
+      GL_RGB,        // ETC1
+      GL_RED_EXT,    // RED_8
+      GL_RG_EXT,     // RG_88
+      GL_LUMINANCE,  // LUMINANCE_F16
+      GL_RGBA,       // RGBA_F16
+      GL_RED_EXT,    // R16_EXT
+      GL_RG_EXT,     // RG16_EXT
+      GL_RGB,        // RGBX_8888
+      GL_RGB,        // BGRX_8888
+      GL_RGBA,       // RGBA_1010102
+      GL_RGBA,       // BGRA_1010102
+      GL_ZERO,       // YVU_420
+      GL_ZERO,       // YUV_420_BIPLANAR
+      GL_ZERO,       // YUVA_420_TRIPLANAR
+      GL_ZERO,       // P010
+  };
+  static_assert(std::size(format_gl_data_format) == (RESOURCE_FORMAT_MAX + 1),
+                "format_gl_data_format does not handle all cases.");
+
+  return format_gl_data_format[format.resource_format()];
+}
+
+// static
+unsigned int SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataType(
+    SharedImageFormat format) {
+  CHECK(format.is_single_plane());
+  static const GLenum format_gl_data_type[] = {
+      GL_UNSIGNED_BYTE,                    // RGBA_8888
+      GL_UNSIGNED_SHORT_4_4_4_4,           // RGBA_4444
+      GL_UNSIGNED_BYTE,                    // BGRA_8888
+      GL_UNSIGNED_BYTE,                    // ALPHA_8
+      GL_UNSIGNED_BYTE,                    // LUMINANCE_8
+      GL_UNSIGNED_SHORT_5_6_5,             // RGB_565,
+      GL_UNSIGNED_SHORT_5_6_5,             // BGR_565
+      GL_UNSIGNED_BYTE,                    // ETC1
+      GL_UNSIGNED_BYTE,                    // RED_8
+      GL_UNSIGNED_BYTE,                    // RG_88
+      GL_HALF_FLOAT_OES,                   // LUMINANCE_F16
+      GL_HALF_FLOAT_OES,                   // RGBA_F16
+      GL_UNSIGNED_SHORT,                   // R16_EXT
+      GL_UNSIGNED_SHORT,                   // RG16_EXT
+      GL_UNSIGNED_BYTE,                    // RGBX_8888
+      GL_UNSIGNED_BYTE,                    // BGRX_8888
+      GL_UNSIGNED_INT_2_10_10_10_REV_EXT,  // RGBA_1010102
+      GL_UNSIGNED_INT_2_10_10_10_REV_EXT,  // BGRA_1010102
+      GL_ZERO,                             // YVU_420
+      GL_ZERO,                             // YUV_420_BIPLANAR
+      GL_ZERO,                             // YUVA_420_TRIPLANAR
+      GL_ZERO,                             // P010
+  };
+  static_assert(std::size(format_gl_data_type) == (RESOURCE_FORMAT_MAX + 1),
+                "format_gl_data_type does not handle all cases.");
+
+  return format_gl_data_type[format.resource_format()];
+}
+
+#if BUILDFLAG(ENABLE_VULKAN)
+// static
+bool SharedImageFormatRestrictedSinglePlaneUtils::HasVkFormat(
+    SharedImageFormat format) {
+  CHECK(format.is_single_plane());
+  return ToVkFormatInternal(format) != VK_FORMAT_UNDEFINED;
+}
+// static
+VkFormat SharedImageFormatRestrictedSinglePlaneUtils::ToVkFormat(
+    SharedImageFormat format) {
+  CHECK(format.is_single_plane());
+  auto result = ToVkFormatInternal(format);
+  DCHECK_NE(result, VK_FORMAT_UNDEFINED)
+      << "Unsupported format " << format.ToString();
+  return result;
+}
+#endif
 
 }  // namespace viz

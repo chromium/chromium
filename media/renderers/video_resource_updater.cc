@@ -1007,7 +1007,8 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
                 : VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_601;
 
         transfer_resource.ycbcr_info = gpu::VulkanYCbCrInfo(
-            ToVkFormat(transfer_resource.format.resource_format()),
+            viz::SharedImageFormatRestrictedSinglePlaneUtils::ToVkFormat(
+                transfer_resource.format),
             /*external_format=*/0, ycbcr_conversion,
             VK_SAMPLER_YCBCR_RANGE_ITU_NARROW, VK_CHROMA_LOCATION_COSITED_EVEN,
             VK_CHROMA_LOCATION_COSITED_EVEN,
@@ -1244,11 +1245,14 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
           HardwarePlaneResource::ScopedTexture scope(gl, hardware_resource);
           gl->BindTexture(hardware_resource->texture_target(),
                           scope.texture_id());
-          gl->TexSubImage2D(hardware_resource->texture_target(), 0, 0, 0,
-                            plane_size.width(), plane_size.height(),
-                            GLDataFormat(output_si_format.resource_format()),
-                            GLDataType(output_si_format.resource_format()),
-                            source_pixels);
+          gl->TexSubImage2D(
+              hardware_resource->texture_target(), 0, 0, 0, plane_size.width(),
+              plane_size.height(),
+              viz::SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataFormat(
+                  output_si_format),
+              viz::SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataType(
+                  output_si_format),
+              source_pixels);
         }
       }
       plane_resource->SetUniqueId(video_frame->unique_id(), 0);
@@ -1410,11 +1414,14 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
 
       gl->PixelStorei(GL_UNPACK_ROW_LENGTH, unpack_row_length);
       gl->PixelStorei(GL_UNPACK_ALIGNMENT, unpack_alignment);
-      gl->TexSubImage2D(plane_resource->texture_target(), 0, 0, 0,
-                        resource_size_pixels.width(),
-                        resource_size_pixels.height(),
-                        GLDataFormat(plane_si_format.resource_format()),
-                        GLDataType(plane_si_format.resource_format()), pixels);
+      gl->TexSubImage2D(
+          plane_resource->texture_target(), 0, 0, 0,
+          resource_size_pixels.width(), resource_size_pixels.height(),
+          viz::SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataFormat(
+              plane_si_format),
+          viz::SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataType(
+              plane_si_format),
+          pixels);
       gl->PixelStorei(GL_UNPACK_ROW_LENGTH, kDefaultUnpackRowLength);
       gl->PixelStorei(GL_UNPACK_ALIGNMENT, kDefaultUnpackAlignment);
     }

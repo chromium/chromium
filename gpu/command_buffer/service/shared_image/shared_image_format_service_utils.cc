@@ -18,6 +18,36 @@
 
 namespace gpu {
 
+// Wraps functions from shared_image_format_utils.h that are made private with
+// friending to prevent their existing client-side usage (which is an
+// anti-pattern) from growing within a class that
+// SharedImageFormatRestrictedSinglePlaneUtils can friend. (Note that if
+// SharedImageFormatRestrictedSinglePlaneUtils instead directly friended the
+// service-side calling functions, any client-side code could then also
+// directly call those service-side calling functions as well, defeating the
+// purpose).
+class SharedImageFormatRestrictedSinglePlaneUtilsAccessor {
+ public:
+  static GLenum ToGLDataFormat(viz::SharedImageFormat format) {
+    return viz::SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataFormat(
+        format);
+  }
+  static GLenum ToGLDataType(viz::SharedImageFormat format) {
+    return viz::SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataType(
+        format);
+  }
+
+#if BUILDFLAG(ENABLE_VULKAN)
+  static bool HasVkFormat(viz::SharedImageFormat format) {
+    return viz::SharedImageFormatRestrictedSinglePlaneUtils::HasVkFormat(
+        format);
+  }
+  static VkFormat ToVkFormat(viz::SharedImageFormat format) {
+    return viz::SharedImageFormatRestrictedSinglePlaneUtils::ToVkFormat(format);
+  }
+#endif
+};
+
 gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
   if (format.is_single_plane()) {
     return viz::SinglePlaneSharedImageFormatToBufferFormat(format);
@@ -82,7 +112,8 @@ GLFormatDesc ToGLFormatDesc(viz::SharedImageFormat format,
 
 GLenum GLDataType(viz::SharedImageFormat format) {
   if (format.is_single_plane()) {
-    return viz::GLDataType(format.resource_format());
+    return SharedImageFormatRestrictedSinglePlaneUtilsAccessor::ToGLDataType(
+        format);
   }
 
   switch (format.channel_format()) {
@@ -100,7 +131,8 @@ GLenum GLDataType(viz::SharedImageFormat format) {
 GLenum GLDataFormat(viz::SharedImageFormat format, int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
   if (format.is_single_plane()) {
-    return viz::GLDataFormat(format.resource_format());
+    return SharedImageFormatRestrictedSinglePlaneUtilsAccessor::ToGLDataFormat(
+        format);
   }
 
   // For multiplanar formats without external sampler, GL formats are per plane.
@@ -179,7 +211,8 @@ GLenum TextureStorageFormat(viz::SharedImageFormat format,
 #if BUILDFLAG(ENABLE_VULKAN)
 bool HasVkFormat(viz::SharedImageFormat format) {
   if (format.is_single_plane()) {
-    return viz::HasVkFormat(format.resource_format());
+    return SharedImageFormatRestrictedSinglePlaneUtilsAccessor::HasVkFormat(
+        format);
   } else if (format == viz::MultiPlaneFormat::kYV12 ||
              format == viz::MultiPlaneFormat::kNV12 ||
              format == viz::MultiPlaneFormat::kP010) {
@@ -193,7 +226,8 @@ VkFormat ToVkFormat(viz::SharedImageFormat format, int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
 
   if (format.is_single_plane()) {
-    return viz::ToVkFormat(format.resource_format());
+    return SharedImageFormatRestrictedSinglePlaneUtilsAccessor::ToVkFormat(
+        format);
   }
 
   // The following SharedImageFormat constants have PrefersExternalSampler()
