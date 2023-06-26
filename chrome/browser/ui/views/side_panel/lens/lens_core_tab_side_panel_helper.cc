@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/lens/lens_core_tab_side_panel_helper.h"
 
+#include "chrome/browser/companion/core/constants.h"
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -72,7 +74,18 @@ bool IsSidePanelEnabledForLens(content::WebContents* web_contents) {
   // Companion feature being enabled should disable Lens in the side panel.
   bool is_companion_enabled = false;
 #if !BUILDFLAG(IS_ANDROID)
-  is_companion_enabled = companion::IsCompanionFeatureEnabled();
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  // Consider companion as enabled if (i) It's enabled via field trial, or (ii)
+  // User has cleared exps waiting list and is in the corresponding field trial.
+  is_companion_enabled =
+      base::FeatureList::IsEnabled(
+          companion::features::internal::kSidePanelCompanion) ||
+      (base::FeatureList::IsEnabled(
+           companion::features::internal::
+               kCompanionEnabledByObservingExpsNavigations) &&
+       profile->GetPrefs()->GetBoolean(
+           companion::kHasNavigatedToExpsSuccessPage));
 #endif
   return search::DefaultSearchProviderIsGoogle(
              lens::internal::GetTemplateURLService(web_contents)) &&

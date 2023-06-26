@@ -10,8 +10,16 @@
 namespace companion {
 
 std::string GetHomepageURLForCompanion() {
+  // Allow multiple field trials to control the value. This is needed because
+  // companion may be enabled by any of the field trials.
   std::string url = base::GetFieldTrialParamValueByFeature(
-      features::kSidePanelCompanion, "companion-homepage-url");
+      features::internal::kSidePanelCompanion, "companion-homepage-url");
+
+  if (url.empty()) {
+    url = base::GetFieldTrialParamValueByFeature(
+        features::internal::kCompanionEnabledByObservingExpsNavigations,
+        "companion-homepage-url");
+  }
   if (url.empty()) {
     return std::string("https://lens.google.com/companion");
   }
@@ -19,8 +27,15 @@ std::string GetHomepageURLForCompanion() {
 }
 
 std::string GetImageUploadURLForCompanion() {
+  // Allow multiple field trials to control the value. This is needed because
+  // companion may be enabled by any of the field trials.
   std::string url = base::GetFieldTrialParamValueByFeature(
-      features::kSidePanelCompanion, "companion-image-upload-url");
+      features::internal::kSidePanelCompanion, "companion-image-upload-url");
+  if (url.empty()) {
+    url = base::GetFieldTrialParamValueByFeature(
+        features::internal::kCompanionEnabledByObservingExpsNavigations,
+        "companion-image-upload-url");
+  }
   if (url.empty()) {
     return std::string("https://lens.google.com/upload");
   }
@@ -28,31 +43,64 @@ std::string GetImageUploadURLForCompanion() {
 }
 
 bool ShouldEnableOpenCompanionForImageSearch() {
-  if (base::FeatureList::IsEnabled(features::kSidePanelCompanion)) {
+  // Allow multiple field trials to control the value. This is needed because
+  // companion may be enabled by any of the field trials.
+  if (base::FeatureList::IsEnabled(features::internal::kSidePanelCompanion)) {
     return base::GetFieldTrialParamByFeatureAsBool(
-        features::kSidePanelCompanion, "open-companion-for-image-search", true);
+        features::internal::kSidePanelCompanion,
+        "open-companion-for-image-search", true);
   }
+
+  if (base::FeatureList::IsEnabled(
+          features::internal::kCompanionEnabledByObservingExpsNavigations)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        features::internal::kCompanionEnabledByObservingExpsNavigations,
+        "open-companion-for-image-search", true);
+  }
+  NOTREACHED();
   return false;
 }
 
 bool ShouldEnableOpenCompanionForWebSearch() {
-  if (base::FeatureList::IsEnabled(features::kSidePanelCompanion)) {
+  // Allow multiple field trials to control the value. This is needed because
+  // companion may be enabled by any of the field trials.
+  if (base::FeatureList::IsEnabled(features::internal::kSidePanelCompanion)) {
     return base::GetFieldTrialParamByFeatureAsBool(
-        features::kSidePanelCompanion, "open-companion-for-web-search", true);
+        features::internal::kSidePanelCompanion,
+        "open-companion-for-web-search", true);
   }
+
+  if (base::FeatureList::IsEnabled(
+          features::internal::kCompanionEnabledByObservingExpsNavigations)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        features::internal::kCompanionEnabledByObservingExpsNavigations,
+        "open-companion-for-web-search", true);
+  }
+  NOTREACHED();
   return false;
 }
 bool ShouldOpenLinksInCurrentTab() {
-  if (base::FeatureList::IsEnabled(features::kSidePanelCompanion)) {
+  // Allow multiple field trials to control the value. This is needed because
+  // companion may be enabled by any of the field trials.
+  if (base::FeatureList::IsEnabled(features::internal::kSidePanelCompanion)) {
     return base::GetFieldTrialParamByFeatureAsBool(
-        features::kSidePanelCompanion, "open-links-in-current-tab", true);
+        features::internal::kSidePanelCompanion, "open-links-in-current-tab",
+        true);
   }
+
+  if (base::FeatureList::IsEnabled(
+          features::internal::kCompanionEnabledByObservingExpsNavigations)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        features::internal::kCompanionEnabledByObservingExpsNavigations,
+        "open-links-in-current-tab", true);
+  }
+  NOTREACHED();
   return false;
 }
 
 std::string GetExpsRegistrationSuccessPageURLs() {
   return base::GetFieldTrialParamValueByFeature(
-      features::kCompanionEnabledByObservingExpsNavigations,
+      features::internal::kCompanionEnabledByObservingExpsNavigations,
       "exps-registration-success-page-urls");
 }
 

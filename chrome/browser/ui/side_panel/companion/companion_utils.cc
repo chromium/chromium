@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/utils.h"
@@ -22,7 +23,10 @@
 namespace companion {
 
 bool IsCompanionFeatureEnabled() {
-  return base::FeatureList::IsEnabled(features::kSidePanelCompanion);
+  return base::FeatureList::IsEnabled(
+             features::internal::kSidePanelCompanion) ||
+         base::FeatureList::IsEnabled(
+             features::internal::kCompanionEnabledByObservingExpsNavigations);
 }
 
 bool IsCompanionAvailableForCurrentActiveTab(const Browser* browser) {
@@ -61,9 +65,28 @@ bool IsSearchInCompanionSidePanelSupportedForProfile(Profile* profile) {
     return false;
   }
 
+  if (!IsCompanionFeatureEnabled()) {
+    return false;
+  }
+
+  // If `kSidePanelCompanion` is disabled, then
+  // `kCompanionEnabledByObservingExpsNavigations` must be enabled and pref must
+  // be set to true.
+  if (!base::FeatureList::IsEnabled(features::internal::kSidePanelCompanion)) {
+    CHECK(base::FeatureList::IsEnabled(
+        features::internal::kCompanionEnabledByObservingExpsNavigations));
+    base::UmaHistogramBoolean(
+        "Companion.HasNavigatedToExpsSuccessPagePref.Status",
+        profile->GetPrefs()->GetBoolean(
+            companion::kHasNavigatedToExpsSuccessPage));
+    if (!profile->GetPrefs()->GetBoolean(kHasNavigatedToExpsSuccessPage)) {
+      return false;
+    }
+  }
+
   return !profile->IsIncognitoProfile() && !profile->IsGuestSession() &&
          search::DefaultSearchProviderIsGoogle(profile) &&
-         !profile->IsOffTheRecord() && IsCompanionFeatureEnabled() &&
+         !profile->IsOffTheRecord() &&
          IsCompanionFeatureEnabledByPolicy(profile->GetPrefs());
 }
 
@@ -92,10 +115,16 @@ void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service) {
     return;
   }
 
+  bool observed_exps_nav =
+      base::FeatureList::IsEnabled(
+          features::internal::kCompanionEnabledByObservingExpsNavigations) &&
+      pref_service->GetBoolean(companion::kHasNavigatedToExpsSuccessPage);
+
   bool companion_should_be_default_pinned =
       base::FeatureList::IsEnabled(
           ::features::kSidePanelCompanionDefaultPinned) ||
-      pref_service->GetBoolean(companion::kExpsOptInStatusGrantedPref);
+      pref_service->GetBoolean(companion::kExpsOptInStatusGrantedPref) ||
+      observed_exps_nav;
   pref_service->SetDefaultPrefValue(
       prefs::kSidePanelCompanionEntryPinnedToToolbar,
       base::Value(companion_should_be_default_pinned));

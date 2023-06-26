@@ -45,6 +45,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Companion.HasNavigatedToExpsSuccessPagePref.OnChanged"
+    enum="Boolean" expires_after="2023-10-20">
+  <owner>tbansal@chromium.org</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records value of the Exps Policy Pref. That pref contains boolean on whether
+    companion featureobserved successful exps registration. Recorded after the
+    value of pref has changed.
+  </summary>
+</histogram>
+
+<histogram name="Companion.HasNavigatedToExpsSuccessPagePref.Status"
+    enum="Boolean" expires_after="2023-10-20">
+  <owner>tbansal@chromium.org</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records value of the Exps Policy Pref. Recorded when the pref is read.
+  </summary>
+</histogram>
+
 <histogram name="Companion.IsUserOptedInToExps" enum="BooleanOptedIn"
     expires_after="2023-10-20">
   <owner>tbansal@chromium.org</owner>
@@ -72,6 +92,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the UI location from which the companion side panel was triggered to
     be opened. Recorded after the companion is opened and loaded.
+  </summary>
+</histogram>
+
+<histogram name="Companion.SidePanelAvailabilityChanged"
+    enum="CompanionSidePanelAvailabilityChanged" expires_after="2023-10-20">
+  <owner>tbansal@chromium.org</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records change in availability of the Companion side panel based on finch
+    and runtime checks. Recorded everytime the availability computation is run.
   </summary>
 </histogram>
 

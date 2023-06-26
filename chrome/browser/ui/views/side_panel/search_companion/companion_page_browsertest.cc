@@ -31,6 +31,8 @@
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -411,14 +413,19 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     base::FieldTrialParams params2;
     params2["exps-registration-success-page-urls"] =
         kExpsRegistrationSuccessUrl;
+    params2["companion-homepage-url"] =
+        companion_server_.GetURL("/companion_iframe.html").spec();
+    params2["companion-image-upload-url"] =
+        companion_server_.GetURL("/upload").spec();
 
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     if (enable_feature_side_panel_companion_) {
-      enabled_features.emplace_back(companion::features::kSidePanelCompanion,
-                                    params);
+      enabled_features.emplace_back(
+          companion::features::internal::kSidePanelCompanion, params);
     }
     enabled_features.emplace_back(
-        companion::features::kCompanionEnabledByObservingExpsNavigations,
+        companion::features::internal::
+            kCompanionEnabledByObservingExpsNavigations,
         params2);
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -482,6 +489,12 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
 
   size_t requests_received_on_server() const {
     return requests_received_on_server_;
+  }
+
+  SidePanelToolbarContainer* side_panel_toolbar_container() {
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    return browser_view->toolbar()->side_panel_container();
   }
 
  protected:
@@ -1436,20 +1449,95 @@ class CompanionPageDisabledBrowserTest : public CompanionPageBrowserTest {
   }
 };
 
+// Verifies the behavior when companion feature is disabled but a navigation to
+// exps registration URL is observed.
 IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
-                       ObservesExpsRegistrationSuccessURL) {
+                       PRE_ObservesExpsRegistrationSuccessURL) {
+  EXPECT_TRUE(companion::IsCompanionFeatureEnabled());
+  EXPECT_TRUE(base::FeatureList::IsEnabled(
+      companion::features::internal::
+          kCompanionEnabledByObservingExpsNavigations));
+  EXPECT_FALSE(base::FeatureList::IsEnabled(
+      companion::features::internal::kSidePanelCompanion));
+
+  base::HistogramTester histogram_tester;
+
   // Navigate to a random page.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
   EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
       companion::kHasNavigatedToExpsSuccessPage));
 
-  // Navigate to exps registration success page. It should enable the pref.
+  // Load a page on the active tab and open companion side panel.
+  // Verify that companion is not enabled even though
+  // `kCompanionEnabledByObservingExpsNavigations` is enabled.
+  EXPECT_TRUE(companion::IsCompanionFeatureEnabled());
+  WaitForMainPageToBeLoaded(kRelativeUrl1);
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_FALSE(side_panel_coordinator()->GetCurrentEntryId().has_value());
+  EXPECT_EQ(0u, requests_received_on_server());
+  EXPECT_FALSE(side_panel_toolbar_container()->IsPinned(
+      SidePanelEntry::Id::kSearchCompanion));
+
+  // Navigate to exps registration success page. It should enable the pref and
+  // companion.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(kExpsRegistrationSuccessUrl)));
-  // Verify that the pref.
+  // Verify that the pref and companion are enabled now.
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
       companion::kHasNavigatedToExpsSuccessPage));
+  histogram_tester.ExpectTotalCount(
+      "Companion.HasNavigatedToExpsSuccessPagePref.OnChanged", 1);
+  histogram_tester.ExpectBucketCount(
+      "Companion.HasNavigatedToExpsSuccessPagePref.OnChanged", 1, 1);
+  histogram_tester.ExpectTotalCount("Companion.SidePanelAvailabilityChanged",
+                                    1);
+  histogram_tester.ExpectBucketCount("Companion.SidePanelAvailabilityChanged",
+                                     1 /* kUnavailableToAvailable */, 1);
+
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_EQ(1u, requests_received_on_server());
+  // Companion is immediately pinned.
+  EXPECT_TRUE(side_panel_toolbar_container()->IsPinned(
+      SidePanelEntry::Id::kSearchCompanion));
+}
+
+// Verifies the behavior when companion feature is disabled but a navigation to
+// exps registration URL is observed. Restart the browser and verify that
+// companion is active and pinned.
+IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
+                       ObservesExpsRegistrationSuccessURL) {
+  EXPECT_TRUE(companion::IsCompanionFeatureEnabled());
+  EXPECT_TRUE(base::FeatureList::IsEnabled(
+      companion::features::internal::
+          kCompanionEnabledByObservingExpsNavigations));
+  EXPECT_FALSE(base::FeatureList::IsEnabled(
+      companion::features::internal::kSidePanelCompanion));
+
+  // Verify that the pref and companion are enabled.
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      companion::kHasNavigatedToExpsSuccessPage));
+
+  // Load a page on the active tab and open companion side panel.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_EQ(1u, requests_received_on_server());
+
+  // Companion should be pinned now.
+  EXPECT_TRUE(side_panel_toolbar_container()->IsPinned(
+      SidePanelEntry::Id::kSearchCompanion));
 }
 
 class CompanionPagePolicyBrowserTest : public CompanionPageBrowserTest {

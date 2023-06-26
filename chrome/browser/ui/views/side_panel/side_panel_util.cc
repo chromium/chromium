@@ -12,6 +12,7 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
@@ -93,7 +94,7 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
   // Create Search Companion coordinator.
   // Disable runtime checks so that coordinator can monitor the runtime changes
   // in the availability of companion.
-  if (base::FeatureList::IsEnabled(companion::features::kSidePanelCompanion) &&
+  if (companion::IsCompanionFeatureEnabled() &&
       SearchCompanionSidePanelCoordinator::IsSupported(
           browser->profile(),
           /*include_runtime_checks=*/false)) {
