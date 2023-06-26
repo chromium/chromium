@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/codec/SkCodec.h"
+#include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 #if VIZ_DEBUGGER_IS_ON()
@@ -230,12 +231,16 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
       // into |buff.bitmap| before we release |image_bytes|.
       sk_sp<SkData> data =
           SkData::MakeWithoutCopy(image_bytes->data(), image_bytes->size());
-      std::unique_ptr<SkCodec> codec = SkCodec::MakeFromData(data);
+      SkCodec::Result decode_result;
+      std::unique_ptr<SkCodec> codec =
+          SkPngDecoder::Decode(data, &decode_result);
+      EXPECT_EQ(SkCodec::Result::kSuccess, decode_result);
 
       VizDebuggerInternal::BufferInfo buff;
       buff.bitmap.allocPixels(codec->getInfo());
-      const SkCodec::Result result = codec->getPixels(buff.bitmap.pixmap());
-      EXPECT_EQ(SkCodec::Result::kSuccess, result);
+      const SkCodec::Result read_result =
+          codec->getPixels(buff.bitmap.pixmap());
+      EXPECT_EQ(SkCodec::Result::kSuccess, read_result);
 
       int id;
       base::StringToInt(itr->first, &id);

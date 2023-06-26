@@ -30,6 +30,7 @@
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/codec/SkCodecAnimation.h"
 #include "third_party/skia/include/codec/SkEncodedImageFormat.h"
+#include "third_party/skia/include/codec/SkGifDecoder.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -86,13 +87,10 @@ void GIFImageDecoder::OnSetData(SegmentReader* data) {
 
   if (!codec_) {
     SkCodec::Result codec_creation_result;
-    codec_ = SkCodec::MakeFromStream(std::move(segment_stream),
-                                     &codec_creation_result, nullptr);
-
-    // SkCodec supports many codecs, but this class is only for GIF decoding.
-    if (codec_ && codec_->getEncodedFormat() != SkEncodedImageFormat::kGIF) {
-      SetFailed();
-      return;
+    codec_ =
+        SkGifDecoder::Decode(std::move(segment_stream), &codec_creation_result);
+    if (codec_) {
+      CHECK_EQ(codec_->getEncodedFormat(), SkEncodedImageFormat::kGIF);
     }
 
     switch (codec_creation_result) {
