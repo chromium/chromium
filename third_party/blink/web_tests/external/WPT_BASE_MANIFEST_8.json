@@ -42958,6 +42958,35 @@
         {}
        ]
       ],
+      "clear-on-replaced-element.html": [
+       "e5566b38326da17455d54c3d06d498f72bc4c693",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             2
+            ],
+            [
+             0,
+             1500
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "clear-with-top-margin-after-cleared-empty-block.html": [
        "5d0fba7981f3f688b22442c1e8bef2ff8b146f5e",
        [
@@ -332255,11 +332284,11 @@
       []
      ],
      "appearance-cssom-001.html.ini": [
-      "5d82f992f7d1462cb9af8726890742a434742492",
+      "facca9599699b8bab8be62f778240559ade7d5fe",
       []
      ],
      "appearance-cssom-001_include=Invalid-expected.txt": [
-      "b0dbe1dd60483f0851e62de94e6c12ac94914bfd",
+      "b6a57d04304c23a48aa2bfa74d23504bf6c31a84",
       []
      ],
      "appearance-listbox-001.html.ini": [
@@ -396138,27 +396167,15 @@
      []
     ],
     "urlsearchparams-delete.any-expected.txt": [
-     "1af29c1937a322794722aea6f3fc5d69f5679d8e",
+     "b8d900c0da06fa1264392a07d8b36dda0d242ad4",
      []
     ],
     "urlsearchparams-delete.any.js.ini": [
-     "c7ebe7db0f6f690b27b845c332019a6b4b588b40",
+     "9f22a447d7a66f9514b01ba4102d38c7aff7d171",
      []
     ],
     "urlsearchparams-delete.any.worker-expected.txt": [
-     "1af29c1937a322794722aea6f3fc5d69f5679d8e",
-     []
-    ],
-    "urlsearchparams-has.any-expected.txt": [
-     "b156cd4cd3c9a4803dcf826233db5ba3d6579e91",
-     []
-    ],
-    "urlsearchparams-has.any.js.ini": [
-     "41e60afed198e870438df1c93e06969e6b789d7e",
-     []
-    ],
-    "urlsearchparams-has.any.worker-expected.txt": [
-     "b156cd4cd3c9a4803dcf826233db5ba3d6579e91",
+     "b8d900c0da06fa1264392a07d8b36dda0d242ad4",
      []
     ],
     "urlsearchparams-size.any.js.ini": [
@@ -515918,7 +515935,7 @@
    "fledge": {
     "tentative": {
      "auction-config.https.sub.window.js": [
-      "1455871dad6ccf8cb9b7431e49c19a0e9af4f9f2",
+      "537f3267838148fff4353762d263e1ceeaffcf4d",
       [
        "fledge/tentative/auction-config.https.sub.window.html",
        {
@@ -609261,6 +609278,57 @@
        {}
       ]
      ],
+     "sticky": {
+      "view-timeline-sticky-offscreen-1.html": [
+       "d8756769c5179cdb7458958b81151baa17b17d6a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "view-timeline-sticky-offscreen-2.html": [
+       "2d098dcbe306ddf4e089d50fc4a0bdd408538f77",
+       [
+        null,
+        {}
+       ]
+      ],
+      "view-timeline-sticky-offscreen-3.html": [
+       "c87dfc4dcb7d155f852e0d1a27cbcd427de27213",
+       [
+        null,
+        {}
+       ]
+      ],
+      "view-timeline-sticky-offscreen-4.html": [
+       "f6b02ffb2eebfbbf3338f49edc3068282a9949d7",
+       [
+        null,
+        {}
+       ]
+      ],
+      "view-timeline-sticky-offscreen-5.html": [
+       "380c01297e14571cd2a678c2547ddf1374d6a654",
+       [
+        null,
+        {}
+       ]
+      ],
+      "view-timeline-sticky-offscreen-6.html": [
+       "94f0abc9b1e6662931e630c231334d5bff77b082",
+       [
+        null,
+        {}
+       ]
+      ],
+      "view-timeline-sticky-offscreen-7.html": [
+       "83115249fae7fb1ad263b6c5db4095701051bac9",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "timeline-offset-in-keyframe.html": [
       "1168893854297560262e03c28bdf71580955b8ae",
       [
