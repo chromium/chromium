@@ -447,6 +447,10 @@ class BackgroundColorChangeSystemWebAppBrowserTest
           /*prefer_manifest_background_color=*/bool> {
  public:
   BackgroundColorChangeSystemWebAppBrowserTest() {
+    // TODO(b/284501548): Delete this test when Jelly is fully enabled.
+    // UseSystemTheme() supersedes this behavior.
+    features_.InitAndDisableFeature(chromeos::features::kJelly);
+
     static_cast<ash::UnittestingSystemAppDelegate*>(
         system_web_app_installation_->GetDelegate())
         ->SetPreferManifestBackgroundColor(PreferManifestBackgroundColor());
@@ -455,6 +459,9 @@ class BackgroundColorChangeSystemWebAppBrowserTest
   // Returns whether the web app under test prefers manifest background colors
   // over web contents background colors.
   bool PreferManifestBackgroundColor() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList features_;
 };
 
 class DynamicColorSystemWebAppBrowserTest
@@ -513,10 +520,14 @@ IN_PROC_BROWSER_TEST_P(BackgroundColorChangeSystemWebAppBrowserTest,
     EXPECT_TRUE(content::ExecJs(
         web_contents, "document.body.style.backgroundColor = 'cyan';"));
     waiter.Wait();
-    EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
-              PreferManifestBackgroundColor()
-                  ? (is_dark_mode_state ? SK_ColorBLACK : SK_ColorWHITE)
-                  : SK_ColorCYAN);
+    if (PreferManifestBackgroundColor()) {
+      EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
+                (is_dark_mode_state ? SK_ColorBLACK : SK_ColorWHITE));
+    } else {
+      auto background_opt = app_browser->app_controller()->GetBackgroundColor();
+      ASSERT_TRUE(background_opt);
+      EXPECT_EQ(background_opt.value(), SK_ColorCYAN);
+    }
     SkColor download_shelf_color;
     app_browser->app_controller()->GetThemeSupplier()->GetColor(
         ThemeProperties::COLOR_TOOLBAR, &download_shelf_color);
