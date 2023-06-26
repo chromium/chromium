@@ -1085,8 +1085,10 @@ std::string TemplateURLRef::HandleReplacements(
 
       case GOOGLE_ASSISTED_QUERY_STATS: {
         DCHECK(!replacement.is_post_param);
+        const size_t searchbox_stats_size =
+            search_terms_args.searchbox_stats.ByteSizeLong();
         if (!search_terms_args.assisted_query_stats.empty()) {
-          DCHECK(search_terms_args.searchbox_stats.ByteSizeLong() > 0)
+          DCHECK(searchbox_stats_size > 0)
               << "searchbox_stats must be set when assisted_query_stats is.";
           // Get the base URL without substituting AQS and gs_lcrp to avoid
           // infinite recursion and unwanted replacement respectively. We need
@@ -1111,7 +1113,7 @@ std::string TemplateURLRef::HandleReplacements(
           }
         }
 
-        if (search_terms_args.searchbox_stats.ByteSizeLong() > 0) {
+        if (searchbox_stats_size > 0) {
           DCHECK(!search_terms_args.assisted_query_stats.empty())
               << "assisted_query_stats must be set when searchbox_stats is.";
           // Get the base URL without substituting gs_lcrp and AQS to avoid
@@ -1127,22 +1129,22 @@ std::string TemplateURLRef::HandleReplacements(
                                            search_terms_data, nullptr));
           if (base_url.SchemeIsCryptographic() &&
               base::FeatureList::IsEnabled(omnibox::kReportSearchboxStats)) {
-            std::string serialized_searchbox_stats;
-            search_terms_args.searchbox_stats.SerializeToString(
-                &serialized_searchbox_stats);
-            if (!serialized_searchbox_stats.empty()) {
-              std::string encoded_searchbox_stats;
-              base::Base64UrlEncode(serialized_searchbox_stats,
-                                    base::Base64UrlEncodePolicy::OMIT_PADDING,
-                                    &encoded_searchbox_stats);
-              HandleReplacement("gs_lcrp", encoded_searchbox_stats, replacement,
-                                &url);
-              base::UmaHistogramCounts1000(
-                  "Omnibox.SearchboxStats.Length",
-                  static_cast<int>(encoded_searchbox_stats.length()));
-            } else {
-              base::UmaHistogramCounts1000("Omnibox.SearchboxStats.Length", 0);
-            }
+            TRACE_EVENT0(
+                "omnibox",
+                "TemplateURLRef::HandleReplacement:serialize_searchbox_stats");
+            std::vector<uint8_t> serialized_searchbox_stats(
+                searchbox_stats_size);
+            search_terms_args.searchbox_stats.SerializeWithCachedSizesToArray(
+                &serialized_searchbox_stats[0]);
+            std::string encoded_searchbox_stats;
+            base::Base64UrlEncode(serialized_searchbox_stats,
+                                  base::Base64UrlEncodePolicy::OMIT_PADDING,
+                                  &encoded_searchbox_stats);
+            HandleReplacement("gs_lcrp", encoded_searchbox_stats, replacement,
+                              &url);
+            base::UmaHistogramCounts1000(
+                "Omnibox.SearchboxStats.Length",
+                static_cast<int>(encoded_searchbox_stats.length()));
           }
         }
         break;

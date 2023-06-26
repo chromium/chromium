@@ -5,11 +5,73 @@
 #include "base/base64url.h"
 
 #include "base/ranges/algorithm.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using testing::ElementsAreArray;
+using testing::Optional;
 
 namespace base {
 
 namespace {
+
+TEST(Base64UrlTest, BinaryIncludePaddingPolicy) {
+  const uint8_t kData[] = {0x00, 0x01, 0xFE, 0xFF};
+
+  std::string binary_encoded_with_padding;
+  Base64UrlEncode(kData, Base64UrlEncodePolicy::INCLUDE_PADDING,
+                  &binary_encoded_with_padding);
+
+  // Check that encoding the same binary data through the StringPiece interface
+  // gives the same result.
+  std::string string_encoded_with_padding;
+  Base64UrlEncode(
+      StringPiece(reinterpret_cast<const char*>(kData), sizeof(kData)),
+      Base64UrlEncodePolicy::INCLUDE_PADDING, &string_encoded_with_padding);
+  EXPECT_EQ(binary_encoded_with_padding, string_encoded_with_padding);
+
+  // Check that decoding the result gives the same binary data.
+  EXPECT_THAT(Base64UrlDecode(string_encoded_with_padding,
+                              Base64UrlDecodePolicy::REQUIRE_PADDING),
+              Optional(ElementsAreArray(kData)));
+
+  EXPECT_THAT(Base64UrlDecode(string_encoded_with_padding,
+                              Base64UrlDecodePolicy::IGNORE_PADDING),
+              Optional(ElementsAreArray(kData)));
+
+  EXPECT_THAT(Base64UrlDecode(string_encoded_with_padding,
+                              Base64UrlDecodePolicy::DISALLOW_PADDING),
+              absl::nullopt);
+}
+
+TEST(Base64UrlTest, BinaryOmitPaddingPolicy) {
+  const uint8_t kData[] = {0x00, 0x01, 0xFE, 0xFF};
+
+  std::string binary_encoded_without_padding;
+  Base64UrlEncode(kData, Base64UrlEncodePolicy::OMIT_PADDING,
+                  &binary_encoded_without_padding);
+
+  // Check that encoding the same binary data through the StringPiece interface
+  // gives the same result.
+  std::string string_encoded_without_padding;
+  Base64UrlEncode(
+      StringPiece(reinterpret_cast<const char*>(kData), sizeof(kData)),
+      Base64UrlEncodePolicy::OMIT_PADDING, &string_encoded_without_padding);
+  EXPECT_EQ(binary_encoded_without_padding, string_encoded_without_padding);
+
+  // Check that decoding the result gives the same binary data.
+  EXPECT_THAT(Base64UrlDecode(string_encoded_without_padding,
+                              Base64UrlDecodePolicy::DISALLOW_PADDING),
+              Optional(ElementsAreArray(kData)));
+
+  EXPECT_THAT(Base64UrlDecode(string_encoded_without_padding,
+                              Base64UrlDecodePolicy::IGNORE_PADDING),
+              Optional(ElementsAreArray(kData)));
+
+  EXPECT_THAT(Base64UrlDecode(string_encoded_without_padding,
+                              Base64UrlDecodePolicy::REQUIRE_PADDING),
+              absl::nullopt);
+}
 
 TEST(Base64UrlTest, EncodeIncludePaddingPolicy) {
   std::string output;
