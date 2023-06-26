@@ -80,17 +80,6 @@ chromium-metrics-reviews@google.com.
   <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents"/>
 </histogram>
 
-<histogram name="BackgroundFetch.HasDuplicateRequests" enum="Boolean"
-    expires_after="2022-06-30">
-  <owner>peter@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <summary>
-    Records whether the fetch requests contains any duplicate URLs. This is
-    called after the provided requests are verified, but before the fetch is
-    started.
-  </summary>
-</histogram>
-
 <histogram name="BackgroundMode.OnStartup.IsBackgroundModePrefEnabled"
     enum="BooleanEnabled" expires_after="2022-04-17">
   <owner>mvanouwerkerk@chromium.org</owner>
