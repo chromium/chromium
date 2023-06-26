@@ -206,6 +206,17 @@ void LogPageAccessAction(int command_id) {
   }
 }
 
+// Logs the action's visibility in the toolbar after it was set to `visible`.
+void LogToggleVisibility(bool visible) {
+  if (visible) {
+    base::RecordAction(
+        base::UserMetricsAction("Extensions.ContextMenu.PinExtension"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("Extensions.ContextMenu.UnpinExtension"));
+  }
+}
+
 void OpenUrl(Browser& browser, const GURL& url) {
   content::OpenURLParams params(
       url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -399,8 +410,10 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       ExtensionTabUtil::OpenOptionsPage(extension, browser_);
       break;
     case TOGGLE_VISIBILITY: {
+      bool visible = !is_pinned_;
       ToolbarActionsModel::Get(browser_->profile())
-          ->SetActionVisibility(extension->id(), !is_pinned_);
+          ->SetActionVisibility(extension->id(), visible);
+      LogToggleVisibility(visible);
       break;
     }
     case UNINSTALL: {

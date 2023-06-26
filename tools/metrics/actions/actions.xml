@@ -8857,6 +8857,28 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Extensions.ContextMenu.PinExtension">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user pinned an extenson to the toolbar by clicking on the pin entry of
+    an extension's context menu. This isn't emmitted if extension is pinned
+    through other mechanism. This is recorded for both keyboard and mouse
+    activation.
+  </description>
+</action>
+
+<action name="Extensions.ContextMenu.UnpinExtension">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user unpinned an extenson to the toolbar by clicking on the unpin entry
+    of an extension's context menu. This isn't emmitted if extension is unpinned
+    through other mechanism. This is recorded for both keyboard and mouse
+    activation.
+  </description>
+</action>
+
 <action name="Extensions.ExtensionDisabled">
   <owner>archanasimha@chromium.org</owner>
   <description>
