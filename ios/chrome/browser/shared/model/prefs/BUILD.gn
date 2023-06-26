@@ -56,6 +56,7 @@ source_set("browser_prefs") {
     "//components/signin/public/identity_manager",
     "//components/strings",
     "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
     "//components/supervised_user/core/common:buildflags",
     "//components/sync",
     "//components/sync_sessions",

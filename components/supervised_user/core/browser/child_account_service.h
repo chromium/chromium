@@ -83,8 +83,6 @@ class ChildAccountService : public KeyedService,
   base::CallbackListSubscription ObserveGoogleAuthState(
       const base::RepeatingCallback<void()>& callback);
 
- private:
-  friend class ::ChildAccountServiceFactory;
   // Use |ChildAccountServiceFactory::GetForProfile(...)| to get an instance of
   // this service.
   ChildAccountService(
@@ -96,6 +94,7 @@ class ChildAccountService : public KeyedService,
       std::unique_ptr<PermissionRequestCreator> permission_creator,
       ListFamilyMembersService& list_family_members_service);
 
+ private:
   // SupervisedUserService::Delegate implementation.
   void SetActive(bool active) override;
 
