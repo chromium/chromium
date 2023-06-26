@@ -2168,28 +2168,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.DXVAVDA.PictureBufferMechanism"
-    enum="PictureBufferMechanism" expires_after="2020-10-11">
-  <owner>liberato@chromium.org</owner>
-  <owner>sandersd@chromium.org</owner>
-  <summary>
-    This enum measures how often each of the various DXVAVDA PictureBuffer
-    display mechanisms are used. Each count represents the mechanism selected at
-    the end of DXVA::Initialize; i.e., there is one count per decoder.
-  </summary>
-</histogram>
-
-<histogram name="Media.DXVAVDA.UseD3D11" enum="DXVADXVersion"
-    expires_after="2022-07-03">
-  <owner>liberato@chromium.org</owner>
-  <owner>tmathmeyer@chromium.org</owner>
-  <owner>sandersd@chromium.org</owner>
-  <summary>
-    Records how many times the DXVA VDA successfully initializes a D3D11 device
-    vs. D3D9 device.
-  </summary>
-</histogram>
-
 <histogram name="Media.EME.CdmFileIO.FileSizeKBOnError" units="KB"
     expires_after="2024-04-11">
   <owner>xhwang@chromium.org</owner>
