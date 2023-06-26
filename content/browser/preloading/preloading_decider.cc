@@ -11,6 +11,7 @@
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/prerenderer_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/navigation_handle.h"
@@ -161,6 +162,19 @@ void PreloadingDecider::OnPointerHover(
   if (observer_for_testing_) {
     observer_for_testing_->OnPointerHover(url);
   }
+
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host());
+  auto* preloading_data = static_cast<PreloadingDataImpl*>(
+      PreloadingData::GetOrCreateForWebContents(web_contents));
+  preloading_data->AddExperimentalPreloadingPrediction(
+      /*name=*/"OnPointerHoverWithMotionEstimator",
+      /*url_match_predicate=*/PreloadingData::GetSameURLMatcher(url),
+      /*score=*/std::clamp(mouse_data->mouse_velocity, 0.0, 500.0),
+      /*min_score=*/0,
+      /*max_score=*/500,
+      /*buckets=*/100);
+
   if (base::FeatureList::IsEnabled(
           blink::features::kSpeculationRulesPointerHoverHeuristics)) {
     // First try to prerender the |url|, if not possible try to prefetch,
@@ -230,8 +244,8 @@ void PreloadingDecider::UpdateSpeculationCandidates(
 
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(&render_frame_host());
-  auto* preloading_data =
-      PreloadingData::GetOrCreateForWebContents(web_contents);
+  auto* preloading_data = static_cast<PreloadingDataImpl*>(
+      PreloadingData::GetOrCreateForWebContents(web_contents));
   preloading_data->SetIsNavigationInDomainCallback(
       content_preloading_predictor::kSpeculationRules,
       base::BindRepeating([](NavigationHandle* navigation_handle) -> bool {

@@ -146,6 +146,19 @@ void PreloadingDataImpl::AddPreloadingPrediction(
   preloading_predictions_.push_back(std::move(prediction));
 }
 
+void PreloadingDataImpl::AddExperimentalPreloadingPrediction(
+    base::StringPiece name,
+    PreloadingURLMatchCallback url_match_predicate,
+    float score,
+    float min_score,
+    float max_score,
+    size_t buckets) {
+  experimental_predictions_.push_back(
+      std::make_unique<ExperimentalPreloadingPrediction>(
+          name, std::move(url_match_predicate), score, min_score, max_score,
+          buckets));
+}
+
 void PreloadingDataImpl::SetIsNavigationInDomainCallback(
     PreloadingPredictor predictor,
     PredictorDomainCallback is_navigation_in_domain_callback) {
@@ -223,6 +236,11 @@ void PreloadingDataImpl::WebContentsDestroyed() {
   // avoid the UKM associated to wrong page.
   RecordMetricsForPreloadingAttempts(ukm::kInvalidSourceId);
   RecordUKMForPreloadingPredictions(ukm::kInvalidSourceId);
+
+  for (const auto& experimental_prediction : experimental_predictions_) {
+    experimental_prediction->RecordToUMA();
+  }
+  experimental_predictions_.clear();
 
   // Delete the user data after logging.
   web_contents()->RemoveUserData(UserDataKey());
@@ -309,6 +327,12 @@ void PreloadingDataImpl::RecordRecallStatsToUMA(
 
 void PreloadingDataImpl::SetIsAccurateTriggeringAndPrediction(
     const GURL& navigated_url) {
+  for (auto& experimental_prediction : experimental_predictions_) {
+    experimental_prediction->SetIsAccuratePrediction(navigated_url);
+    experimental_prediction->RecordToUMA();
+  }
+  experimental_predictions_.clear();
+
   for (auto& attempt : preloading_attempts_) {
     attempt->SetIsAccurateTriggering(navigated_url);
     RecordPreloadingAttemptPrecisionToUMA(*attempt);

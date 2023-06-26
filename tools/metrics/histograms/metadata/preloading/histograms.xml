@@ -20,6 +20,19 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ExperimentalPreloadingPrediction">
+  <variant name="OnPointerHoverWithMotionEstimator"
+      summary="Predictor based on pointer hover, except if the pointer
+               velocity and acceleration suggest it will leave soon. The
+               output of this predictor is mouse velocity instead of a
+               logit/probability."/>
+</variants>
+
+<variants name="GroundTruth">
+  <variant name="Negative" summary=""/>
+  <variant name="Positive" summary=""/>
+</variants>
+
 <variants name="PreloadingPredictor">
   <variant name="BackButtonHover"
       summary="When the user hovers their mouse over the back button."/>
@@ -73,6 +86,30 @@ chromium-metrics-reviews@google.com.
     request to the network service. Associated with the Source ID of the page
     triggering the preconnection.
   </summary>
+</histogram>
+
+<histogram
+    name="Preloading.Experimental.{ExperimentalPreloadingPrediction}.{GroundTruth}"
+    units="param" expires_after="2024-06-01">
+  <owner>isaboori@google.com</owner>
+  <owner>spelchat@chromium.org</owner>
+  <owner>jbroman@chromium.org</owner>
+  <owner>portals-team@google.com</owner>
+  <summary>
+    The output of many predictors is a logit score. To use this score for binary
+    classification, we compare it to a threshold. If the score is above the
+    threshold, we classify the instance as positive; otherwise, we classify it
+    as negative. Threshold choice affects classifier precision and recall. There
+    is a trade-off between precision and recall. If we set the threshold too
+    low, we will have high precision but low recall. If we set the threshold too
+    high, we will have high recall but low precision. To choose the best
+    threshold, we can use ROC curves, precision-recall curves, or
+    logit-precision and logit-recall curves. `ExperimentalPreloadingPrediction`
+    helps us collect the UMA data required to achieve this.
+  </summary>
+  <token key="ExperimentalPreloadingPrediction"
+      variants="ExperimentalPreloadingPrediction"/>
+  <token key="GroundTruth" variants="GroundTruth"/>
 </histogram>
 
 <histogram name="Preloading.Predictor.{PreloadingPredictor}.Precision"
