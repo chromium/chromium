@@ -411,12 +411,7 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
   // scale factor the buffer is created for to set the transform for
   // synchronization.
   if (client_submits_surfaces_in_pixel_coordinates_) {
-    gfx::Transform tr;
-    float scale = GetScaleFactor();
-    tr.Scale(1.0f / scale, 1.0f / scale);
-    if (root_surface_->window()->transform() != tr) {
-      root_surface_->window()->SetTransform(tr);
-    }
+    SetScaleFactorTransform(GetScaleFactor());
   }
   const bool fills_bounds_opaquely =
       gfx::SizeF(bounds.size()) == root_surface_->content_size() &&
@@ -548,6 +543,16 @@ std::unique_ptr<LayerTreeFrameSinkHolder>
 SurfaceTreeHost::CreateLayerTreeFrameSinkHolder() {
   return std::make_unique<LayerTreeFrameSinkHolder>(
       this, host_window_->CreateLayerTreeFrameSink());
+}
+
+void SurfaceTreeHost::SetScaleFactorTransform(float scale_factor) {
+  DCHECK(client_submits_surfaces_in_pixel_coordinates_);
+
+  gfx::Transform tr;
+  tr.Scale(1.0f / scale_factor, 1.0f / scale_factor);
+  if (root_surface()->window()->transform() != tr) {
+    root_surface()->window()->SetTransform(tr);
+  }
 }
 
 }  // namespace exo
