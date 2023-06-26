@@ -191,7 +191,7 @@ BASE_FEATURE(kNoUndamagedOverlayPromotion,
 // allocation of the root surface will be owned by DirectRenderer.
 BASE_FEATURE(kDCompPresenter,
              "DCompPresenter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
