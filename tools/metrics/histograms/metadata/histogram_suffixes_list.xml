@@ -2964,7 +2964,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Unknown" label=""/>
   <suffix name="WebUI" label=""/>
   <affected-histogram name="Notifications.Scheduler.IhnrActionButtonEvent"/>
-  <affected-histogram name="Notifications.Scheduler.Impression.Count"/>
   <affected-histogram
       name="Notifications.Scheduler.NotificationLifeCycleEvent"/>
   <affected-histogram name="Notifications.Scheduler.UserAction"/>
@@ -4908,12 +4907,12 @@ chromium-metrics-reviews@google.com.
       label="Interstitial for a resource classified as unsafe by the Safe
              Browsing database version 4 via either
              {Local,Remote}SafeBrowsingDatabaseManager."/>
-  <suffix name="from_real_time_check"
-      label="Interstitial for a resource classified as unsafe by the Safe
-             Browsing URL real-time API."/>
   <suffix name="from_hash_prefix_real_time_check_v5"
       label="Interstitial for a resource classified as unsafe by the Safe
              Browsing hash-prefix real-time API version 5."/>
+  <suffix name="from_real_time_check"
+      label="Interstitial for a resource classified as unsafe by the Safe
+             Browsing URL real-time API."/>
   <affected-histogram name="interstitial.harmful.decision"/>
   <affected-histogram name="interstitial.harmful.decision.repeat_visit"/>
   <affected-histogram name="interstitial.harmful.interaction"/>

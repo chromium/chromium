@@ -197,7 +197,6 @@ void ImpressionHistoryTrackerImpl::OnStoreInitialized(
         impressions.emplace_back(impression);
       }
     }
-    stats::LogImpressionCount(impressions.size(), type);
     entry->impressions.swap(impressions);
     client_states_.emplace(type, std::move(*it));
     MaybeUpdateDb(type);
@@ -407,7 +406,6 @@ void ImpressionHistoryTrackerImpl::ApplyPositiveImpression(
     client_state->current_max_daily_show =
         client_state->suppression_info->recover_goal;
     client_state->suppression_info.reset();
-    stats::LogImpressionEvent(stats::ImpressionEvent::kSuppressionRelease);
     return;
   }
 
@@ -450,7 +448,6 @@ void ImpressionHistoryTrackerImpl::OnCustomSuppressionDurationQueried(
   client_state->current_max_daily_show = 0;
   client_state->last_negative_event_ts = now;
   client_state->negative_events_count++;
-  stats::LogImpressionEvent(stats::ImpressionEvent::kNewSuppression);
 }
 
 void ImpressionHistoryTrackerImpl::CheckSuppressionExpiration(
@@ -473,7 +470,6 @@ void ImpressionHistoryTrackerImpl::CheckSuppressionExpiration(
   // Clear suppression if fully recovered.
   client_state->suppression_info.reset();
   SetNeedsUpdate(client_state->type, true);
-  stats::LogImpressionEvent(stats::ImpressionEvent::kSuppressionExpired);
 }
 
 bool ImpressionHistoryTrackerImpl::MaybeUpdateDb(SchedulerClientType type) {

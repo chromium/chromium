@@ -863,28 +863,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.Scheduler.Impression.Count" units="records"
-    expires_after="2022-12-31">
-<!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
-
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    Records the number of impression records in impression db right after the
-    impression database is initialized.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Scheduler.Impression.Event"
-    enum="NotificationSchedulerImpressionEvent" expires_after="2022-12-31">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    Records various events in impression history tracker in notification
-    scheduling system when the user interacts with the notification.
-  </summary>
-</histogram>
-
 <histogram name="Notifications.Scheduler.ImpressionDb.InitResult"
     enum="BooleanSuccess" expires_after="2022-12-31">
   <owner>shaktisahu@chromium.org</owner>

@@ -126,16 +126,6 @@ void LogDbOperation(DatabaseType type, bool success) {
   base::UmaHistogramBoolean(name, success);
 }
 
-void LogImpressionCount(int impression_count, SchedulerClientType type) {
-  std::string name("Notifications.Scheduler.Impression.Count.");
-  name.append(ToHistogramSuffix(type));
-  base::UmaHistogramCounts100(name, impression_count);
-}
-
-void LogImpressionEvent(ImpressionEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("Notifications.Scheduler.Impression.Event", event);
-}
-
 void LogNotificationShow(const NotificationData& notification_data,
                          SchedulerClientType client_type) {
   bool has_ihnr_button = false;

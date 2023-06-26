@@ -37,18 +37,6 @@ enum class ActionButtonEvent {
   kMaxValue = kUnhelpfulClick
 };
 
-// Used to log events in impression tracker. Don't reuse or delete values. Needs
-// to match NotificationSchedulerImpressionEvent in enums.xml.
-enum class ImpressionEvent {
-  // A new suppression is created to stop certain type of notification to show.
-  kNewSuppression = 0,
-  // The suppression is released due to new user action.
-  kSuppressionRelease = 1,
-  // The suppression is expired.
-  kSuppressionExpired = 2,
-  kMaxValue = kSuppressionExpired
-};
-
 // Event to track the life cycle of a scheduled notification. Don't reuse or
 // delete values. Needs to match NotificationSchedulerNotificationLifeCycleEvent
 // in enums.xml.
@@ -91,12 +79,6 @@ void LogDbInit(DatabaseType type, bool success, int entry_count);
 
 // Logs the database operation result.
 void LogDbOperation(DatabaseType type, bool success);
-
-// Logs the number of impression data in the impression database.
-void LogImpressionCount(int impression_count, SchedulerClientType type);
-
-// Logs user impression events for notification scheduling system.
-void LogImpressionEvent(ImpressionEvent event);
 
 // Logs metrics before showing the notification.
 void LogNotificationShow(const NotificationData& notification_data,
