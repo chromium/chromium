@@ -9,6 +9,10 @@
   "WiFi": {
     "AutoConnect": true,
     "BSSID": "00:12:34:ca:56:8b",
+    "BSSIDAllowlist": [
+        "00:12:34:ca:56:8b",
+    ],
+    "BSSIDRequested": "00:12:34:ca:56:8b",
     "HexSSID": "4F70656E577274", // "OpenWrt"
     "HiddenSSID": false,
     "Passphrase": "some passphrase",

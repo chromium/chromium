@@ -506,6 +506,22 @@ field **WiFi** must be set to an object of type [WiFi](#WiFi-type).
           shouldn't associate with any AP. `"00:00:00:00:00:00"` shouldn't be a
           part of any other list of values, otherwise it may cause an error.
 
+* **BSSIDRequested**
+    * (optional) - **string**
+    * BSSID that the AP should connect to. BSSIDs
+      should be formatted as colon-separated octets (e.g.
+      `"00:01:02:03:04:05"`).
+    * If the AP cannot connect to the requested BSSID, then it will not fallback
+      to another BSSID and will remain unconnected.
+    * If **BSSIDRequested** is empty and **BSSIDAllowlist** is not, then the
+      WiFi network will follow the values in **BSSIDAllowlist**
+    * If **BSSIDAllowlist** is empty and **BSSIDRequested** is not, then the
+      WiFi network will follow the value in **BSSIDRequested**
+    * If **BSSIDRequested** and **BSSIDAllowlist** have a disjoint set of
+      values, then the WiFi network will not connect.
+    * If **BSSIDRequested** is also in **BSSIDAllowlist**, then the network will
+      follow the value in **BSSIDRequested**
+
 * **EAP**
     * (required if **Security** is
         *WEP-8021X* or *WPA-EAP*, otherwise ignored) - [EAP](#EAP-type)

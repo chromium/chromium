@@ -466,7 +466,9 @@ void ArcNetHostImpl::CreateNetworkWithEapTranslated(
       wifi_dict.Set(onc::wifi::kPassphrase, details->passphrase.value());
     }
   }
-  wifi_dict.Set(onc::wifi::kBSSID, cfg->bssid);
+  if (details->bssid.has_value()) {
+    wifi_dict.Set(onc::wifi::kBSSIDRequested, details->bssid.value());
+  }
   if (cfg->bssid_allowlist.has_value()) {
     wifi_dict.Set(onc::wifi::kBSSIDAllowlist,
                   TranslateStringListToValue(cfg->bssid_allowlist.value()));

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 33
+// Next MinVersion: 34
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -80,6 +80,12 @@ struct VisibleNetworkDetails {
 struct ConfiguredNetworkDetails {
   string? passphrase;
   bool autoconnect;
+
+  // This is the BSSID that the client would like to connect to. This is
+  // semantically different from |WiFi.bssid|, which is what the network's BSSID
+  // actually is. In the format of an Ethernet MAC address with lowercase
+  // letters (e.g. 00:11:22:aa:bb:cc).
+  [MinVersion=33] string? bssid;
 };
 
 // Passpoint credentials used to connect to matching passpoint networks.
