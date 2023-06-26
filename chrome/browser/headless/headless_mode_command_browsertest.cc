@@ -4,14 +4,18 @@
 
 #include "chrome/browser/headless/headless_mode_browsertest.h"
 
+#include <algorithm>
 #include <memory>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/to_string.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -22,6 +26,7 @@
 #include "components/headless/test/pdf_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -30,11 +35,17 @@
 namespace headless {
 
 namespace {
+
+void RemoveSpaces(std::string& str) {
+  str.erase(remove_if(str.begin(), str.end(), isspace), str.end());
+}
+
 bool DecodePNG(const std::string& png_data, SkBitmap* bitmap) {
   return gfx::PNGCodec::Decode(
       reinterpret_cast<const unsigned char*>(png_data.data()), png_data.size(),
       bitmap);
 }
+
 }  // namespace
 
 class HeadlessModeCommandBrowserTest : public HeadlessModeBrowserTest {
@@ -65,9 +76,13 @@ class HeadlessModeCommandBrowserTest : public HeadlessModeBrowserTest {
 
   bool test_complete() const { return test_complete_; }
 
+  absl::optional<HeadlessCommandHandler::Result> result() const {
+    return result_;
+  }
+
  private:
   void FinishTest(HeadlessCommandHandler::Result result) {
-    ASSERT_EQ(result, HeadlessCommandHandler::Result::kSuccess);
+    result_ = result;
     test_complete_ = true;
     if (run_loop_) {
       run_loop_->Quit();
@@ -76,6 +91,7 @@ class HeadlessModeCommandBrowserTest : public HeadlessModeBrowserTest {
 
   std::unique_ptr<base::RunLoop> run_loop_;
   bool test_complete_ = false;
+  absl::optional<HeadlessCommandHandler::Result> result_;
 };
 
 class HeadlessModeCommandBrowserTestWithTempDir
@@ -112,10 +128,12 @@ class HeadlessModeDumpDomCommandBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     HeadlessModeCommandBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kDumpDom);
-    command_line->AppendArg(GetTargetUrl("/hello.html").spec());
+    command_line->AppendArg(GetTargetUrl(GetTargetPage()).spec());
 
     capture_stdout_.StartCapture();
   }
+
+  virtual std::string GetTargetPage() { return "/hello.html"; }
 
  protected:
   CaptureStdOut capture_stdout_;
@@ -134,6 +152,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeDumpDomCommandBrowserTest,
   RunLoop();
   capture_stdout_.StopCapture();
 
+  ASSERT_THAT(result(), testing::Eq(HeadlessCommandHandler::Result::kSuccess));
+
   std::string captured_stdout = capture_stdout_.TakeCapturedData();
 
   static const char kDomDump[] =
@@ -143,8 +163,22 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeDumpDomCommandBrowserTest,
   EXPECT_THAT(captured_stdout, testing::HasSubstr(kDomDump));
 }
 
-class HeadlessModeDumpDomCommandBrowserTestWithTimeout
+class HeadlessModeDumpDomCommandBrowserTestWithTimeoutBase
     : public HeadlessModeDumpDomCommandBrowserTest {
+ public:
+  HeadlessModeDumpDomCommandBrowserTestWithTimeoutBase() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessModeDumpDomCommandBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kTimeout,
+                                    base::ToString(timeout().InMilliseconds()));
+  }
+
+  base::TimeDelta timeout() { return TestTimeouts::action_timeout(); }
+};
+
+class HeadlessModeDumpDomCommandBrowserTestWithTimeout
+    : public HeadlessModeDumpDomCommandBrowserTestWithTimeoutBase {
  public:
   HeadlessModeDumpDomCommandBrowserTestWithTimeout() = default;
 
@@ -153,42 +187,130 @@ class HeadlessModeDumpDomCommandBrowserTestWithTimeout
         &HeadlessModeDumpDomCommandBrowserTestWithTimeout::RequestHandler,
         base::Unretained(this)));
 
-    HeadlessModeDumpDomCommandBrowserTest::SetUp();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    HeadlessModeDumpDomCommandBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kTimeout, "1000");
+    HeadlessModeDumpDomCommandBrowserTestWithTimeoutBase::SetUp();
   }
 
  private:
+  std::string GetTargetPage() override { return "/page.html"; }
+
   std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
       const net::test_server::HttpRequest& request) {
-    if (request.relative_url == "/hello.html") {
+    if (request.relative_url == "/page.html") {
       // The target page is opened first from the browser startup sequence and
       // then again from the command handler. We want to delay only the second
       // request until the command processing is done.
-      if (++hello_request_number_ == 2) {
-        while (!test_complete()) {
-          base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-        }
+      std::unique_ptr<net::test_server::BasicHttpResponse> response;
+      if (++page_request_number_ == 2) {
+        response = std::make_unique<net::test_server::DelayedHttpResponse>(
+            timeout() * 2);
+      } else {
+        response = std::make_unique<net::test_server::BasicHttpResponse>();
       }
 
-      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_OK);
       response->set_content_type("text/html");
-      response->set_content("<body>Hello headless world!</body>");
+      response->set_content(R"(<div>Hi, I'm headless!</div>)");
+
+      return response;
     }
 
     return nullptr;
   }
 
-  int hello_request_number_ = 0;
+  int page_request_number_ = 0;
 };
 
-// TODO(crbug.com/1446617): Reenable once deflaked.
 IN_PROC_BROWSER_TEST_F(HeadlessModeDumpDomCommandBrowserTestWithTimeout,
-                       DISABLED_HeadlessDumpDomWithTimeout) {
+                       HeadlessDumpDomWithTimeout) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  RunLoop();
+
+  capture_stdout_.StopCapture();
+
+  // Main page timeout should be reported.
+  EXPECT_THAT(result(),
+              testing::Eq(HeadlessCommandHandler::Result::kPageLoadTimeout));
+
+  std::string captured_stdout = capture_stdout_.TakeCapturedData();
+  RemoveSpaces(captured_stdout);
+
+  // Expect about:blank page DOM.
+  EXPECT_THAT(captured_stdout,
+              testing::HasSubstr("<html><head></head><body></body></html>"));
+}
+
+class HeadlessModeDumpDomCommandBrowserTestWithSubResourceTimeout
+    : public HeadlessModeDumpDomCommandBrowserTestWithTimeoutBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  HeadlessModeDumpDomCommandBrowserTestWithSubResourceTimeout() = default;
+
+  bool delay_response() { return GetParam(); }
+
+  void SetUp() override {
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &HeadlessModeDumpDomCommandBrowserTestWithSubResourceTimeout::
+            RequestHandler,
+        base::Unretained(this)));
+
+    HeadlessModeDumpDomCommandBrowserTestWithTimeoutBase::SetUp();
+  }
+
+ private:
+  std::string GetTargetPage() override { return "/page.html"; }
+
+  std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url == "/page.html") {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/html");
+      response->set_content(R"(
+        <html><body>
+        <div id="thediv">INITIAL</div>
+        <script src="./script.js"></script>
+        </body></html>
+      )");
+
+      return response;
+    }
+
+    if (request.relative_url == "/script.js") {
+      // The target page is opened first from the browser startup sequence and
+      // then again from the command handler. We want to delay only the second
+      // request until the command processing is done.
+      std::unique_ptr<net::test_server::BasicHttpResponse> response;
+      if (++subresource_request_number_ == 2 && delay_response()) {
+        response = std::make_unique<net::test_server::DelayedHttpResponse>(
+            timeout() * 2);
+      } else {
+        response = std::make_unique<net::test_server::BasicHttpResponse>();
+      }
+
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/javascript");
+      response->set_content(R"(
+        document.getElementById("thediv").innerText="REPLACED";
+      )");
+
+      return response;
+    }
+
+    return nullptr;
+  }
+
+  int subresource_request_number_ = 0;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HeadlessModeDumpDomCommandBrowserTestWithSubResourceTimeout,
+    testing::Values(false, true));
+
+IN_PROC_BROWSER_TEST_P(
+    HeadlessModeDumpDomCommandBrowserTestWithSubResourceTimeout,
+    HeadlessDumpDomWithSubResourceTimeout) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   RunLoop();
@@ -196,10 +318,23 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeDumpDomCommandBrowserTestWithTimeout,
   capture_stdout_.StopCapture();
 
   std::string captured_stdout = capture_stdout_.TakeCapturedData();
+  RemoveSpaces(captured_stdout);
 
-  // Expect about:blank DOM, not the one we might have returned after a delay.
-  EXPECT_THAT(captured_stdout,
-              testing::HasSubstr("<html><head></head><body></body></html>"));
+  if (delay_response()) {
+    EXPECT_THAT(result(),
+                testing::Eq(HeadlessCommandHandler::Result::kPageLoadTimeout));
+    EXPECT_THAT(captured_stdout,
+                testing::HasSubstr(
+                    "<html><head></head><body><divid=\"thediv\">INITIAL</"
+                    "div><scriptsrc=\"./script.js\"></script></body></html>"));
+  } else {
+    EXPECT_THAT(result(),
+                testing::Eq(HeadlessCommandHandler::Result::kSuccess));
+    EXPECT_THAT(captured_stdout,
+                testing::HasSubstr(
+                    "<html><head></head><body><divid=\"thediv\">REPLACED</"
+                    "div><scriptsrc=\"./script.js\"></script></body></html>"));
+  }
 }
 
 // Screenshot command tests -------------------------------------------
@@ -233,6 +368,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandBrowserTest,
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   RunLoop();
+
+  ASSERT_THAT(result(), testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 
   ASSERT_TRUE(base::PathExists(screenshot_filename_)) << screenshot_filename_;
 
@@ -294,6 +431,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessModePrintToPdfCommandBrowserTest,
 
   RunLoop();
 
+  ASSERT_THAT(result(), testing::Eq(HeadlessCommandHandler::Result::kSuccess));
+
   ASSERT_TRUE(base::PathExists(print_to_pdf_filename_))
       << print_to_pdf_filename_;
 
@@ -326,6 +465,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeLazyLoadingPrintToPdfCommandBrowserTest,
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   RunLoop();
+
+  ASSERT_THAT(result(), testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 
   ASSERT_TRUE(base::PathExists(print_to_pdf_filename_))
       << print_to_pdf_filename_;
