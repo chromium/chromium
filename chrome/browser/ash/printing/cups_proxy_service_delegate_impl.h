@@ -29,7 +29,7 @@ class PrinterConfigurer;
 class CupsProxyServiceDelegateImpl
     : public cups_proxy::CupsProxyServiceDelegate {
  public:
-  CupsProxyServiceDelegateImpl();
+  explicit CupsProxyServiceDelegateImpl(Profile* profile);
   ~CupsProxyServiceDelegateImpl() override;
 
   bool IsPrinterAccessAllowed() const override;
