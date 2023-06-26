@@ -105,6 +105,12 @@ enum class BookmarkFolderIconType {
 };
 ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
                                      absl::variant<ui::ColorId, SkColor> color);
+
+// returns the vector image used for bookmarks folder.
+gfx::ImageSkia GetBookmarkFolderImageFromVectorIcon(
+    BookmarkFolderIconType icon_type,
+    absl::variant<ui::ColorId, SkColor> color,
+    ui::ColorProvider* color_provider);
 #endif
 
 }  // namespace chrome

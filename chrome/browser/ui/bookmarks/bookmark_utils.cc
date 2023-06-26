@@ -270,6 +270,34 @@ bool IsValidBookmarkDropLocation(Profile* profile,
 }
 
 #if defined(TOOLKIT_VIEWS)
+
+gfx::ImageSkia GetBookmarkFolderImageFromVectorIcon(
+    BookmarkFolderIconType icon_type,
+    absl::variant<ui::ColorId, SkColor> color,
+    const ui::ColorProvider* color_provider) {
+  const gfx::VectorIcon* id;
+  gfx::ImageSkia folder;
+  if (icon_type == BookmarkFolderIconType::kNormal) {
+    id = features::IsChromeRefresh2023()
+             ? &vector_icons::kFolderChromeRefreshIcon
+             : (ui::TouchUiController::Get()->touch_ui()
+                    ? &vector_icons::kFolderTouchIcon
+                    : &vector_icons::kFolderIcon);
+  } else {
+    id = features::IsChromeRefresh2023()
+             ? &vector_icons::kFolderManagedRefreshIcon
+             : (ui::TouchUiController::Get()->touch_ui()
+                    ? &vector_icons::kFolderManagedTouchIcon
+                    : &vector_icons::kFolderManagedIcon);
+  }
+  const ui::ThemedVectorIcon icon =
+      absl::holds_alternative<SkColor>(color)
+          ? ui::ThemedVectorIcon(id, absl::get<SkColor>(color))
+          : ui::ThemedVectorIcon(id, absl::get<ui::ColorId>(color));
+  folder = icon.GetImageSkia(color_provider);
+  return folder;
+}
+
 ui::ImageModel GetBookmarkFolderIcon(
     BookmarkFolderIconType icon_type,
     absl::variant<ui::ColorId, SkColor> color) {
@@ -284,47 +312,35 @@ ui::ImageModel GetBookmarkFolderIcon(
                             absl::variant<ui::ColorId, SkColor> color,
                             const ui::ColorProvider* color_provider) {
     gfx::ImageSkia folder;
+    if (features::IsChromeRefresh2023()) {
+      folder = GetBookmarkFolderImageFromVectorIcon(icon_type, color,
+                                                    color_provider);
+    } else {
 #if BUILDFLAG(IS_WIN)
-    // TODO(bsep): vectorize the Windows versions: crbug.com/564112
-    folder =
-        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(default_id);
+      // TODO(bsep): vectorize the Windows versions: crbug.com/564112
+      folder = *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          default_id);
 #elif BUILDFLAG(IS_MAC)
-    SkColor sk_color;
-    if (absl::holds_alternative<SkColor>(color)) {
-      sk_color = absl::get<SkColor>(color);
-    } else {
-      DCHECK(color_provider);
-      sk_color = color_provider->GetColor(absl::get<ui::ColorId>(color));
-    }
-    const int white_id = (icon_type == BookmarkFolderIconType::kNormal)
-                             ? IDR_FOLDER_CLOSED_WHITE
-                             : IDR_BOOKMARK_BAR_FOLDER_MANAGED_WHITE;
-    const int resource_id =
-        color_utils::IsDark(sk_color) ? default_id : white_id;
-    folder = *ui::ResourceBundle::GetSharedInstance()
-                  .GetNativeImageNamed(resource_id)
-                  .ToImageSkia();
+      SkColor sk_color;
+      if (absl::holds_alternative<SkColor>(color)) {
+        sk_color = absl::get<SkColor>(color);
+      } else {
+        DCHECK(color_provider);
+        sk_color = color_provider->GetColor(absl::get<ui::ColorId>(color));
+      }
+      const int white_id = (icon_type == BookmarkFolderIconType::kNormal)
+                               ? IDR_FOLDER_CLOSED_WHITE
+                               : IDR_BOOKMARK_BAR_FOLDER_MANAGED_WHITE;
+      const int resource_id =
+          color_utils::IsDark(sk_color) ? default_id : white_id;
+      folder = *ui::ResourceBundle::GetSharedInstance()
+                    .GetNativeImageNamed(resource_id)
+                    .ToImageSkia();
 #else
-    const gfx::VectorIcon* id;
-    if (icon_type == BookmarkFolderIconType::kNormal) {
-      id = features::IsChromeRefresh2023()
-               ? &vector_icons::kFolderChromeRefreshIcon
-               : (ui::TouchUiController::Get()->touch_ui()
-                      ? &vector_icons::kFolderTouchIcon
-                      : &vector_icons::kFolderIcon);
-    } else {
-      id = features::IsChromeRefresh2023()
-               ? &vector_icons::kFolderManagedRefreshIcon
-               : (ui::TouchUiController::Get()->touch_ui()
-                      ? &vector_icons::kFolderManagedTouchIcon
-                      : &vector_icons::kFolderManagedIcon);
-    }
-    const ui::ThemedVectorIcon icon =
-        absl::holds_alternative<SkColor>(color)
-            ? ui::ThemedVectorIcon(id, absl::get<SkColor>(color))
-            : ui::ThemedVectorIcon(id, absl::get<ui::ColorId>(color));
-    folder = icon.GetImageSkia(color_provider);
+      folder = GetBookmarkFolderImageFromVectorIcon(icon_type, color,
+                                                    color_provider);
 #endif
+    }
     return gfx::ImageSkia(std::make_unique<RTLFlipSource>(folder),
                           folder.size());
   };
