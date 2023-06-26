@@ -329,7 +329,7 @@ void ExtensionsMenuViewController::OpenMainPage() {
 }
 
 void ExtensionsMenuViewController::OpenSitePermissionsPage(
-    extensions::ExtensionId extension_id) {
+    const extensions::ExtensionId& extension_id) {
   CHECK(CanUserCustomizeExtensionSiteAccess(
       *GetExtension(browser_, extension_id), *browser_->profile(),
       *toolbar_model_, *GetActiveWebContents()));
@@ -352,7 +352,7 @@ void ExtensionsMenuViewController::CloseBubble() {
 }
 
 void ExtensionsMenuViewController::OnSiteAccessSelected(
-    extensions::ExtensionId extension_id,
+    const extensions::ExtensionId& extension_id,
     PermissionsManager::UserSiteAccess site_access) {
   LogSiteAccessUpdate(site_access);
 
@@ -377,7 +377,7 @@ void ExtensionsMenuViewController::OnSiteSettingsToggleButtonPressed(
 }
 
 void ExtensionsMenuViewController::OnExtensionToggleSelected(
-    extensions::ExtensionId extension_id,
+    const extensions::ExtensionId& extension_id,
     bool is_on) {
   const extensions::Extension* extension = GetExtension(browser_, extension_id);
   content::WebContents* web_contents = GetActiveWebContents();
