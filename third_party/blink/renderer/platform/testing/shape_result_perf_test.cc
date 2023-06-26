@@ -51,7 +51,7 @@ class ShapeResultPerfTest {
     FontDescription::VariantLigatures ligatures(
         FontDescription::kEnabledLigaturesState);
     font = CreateTestFont(
-        "TestFont",
+        AtomicString("TestFont"),
         test::PlatformTestDataPath(font_path.find(font_name)->value), 100,
         &ligatures);
 

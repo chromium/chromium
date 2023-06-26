@@ -145,7 +145,8 @@ TEST_F(ShapingLineBreakerPerfTest, ShapeLatinText) {
       "And you, poor victims of this last \"too late,\""
       "Shall in the shadows mourn your lost estate.");
   unsigned len = string.length();
-  LazyLineBreakIterator break_iterator(string, "en-US", LineBreakType::kNormal);
+  LazyLineBreakIterator break_iterator(string, AtomicString("en-US"),
+                                       LineBreakType::kNormal);
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);

@@ -2412,7 +2412,6 @@ test("blink_platform_perftests") {
     "//third_party/blink/renderer/platform/wtf:wtf_config",
     "//third_party/blink/renderer:config",
   ]
-  defines = [ "ALLOW_IMPLICIT_ATOMIC_STRING_CONVERSIONS" ]
 
   deps = [
     ":platform",
