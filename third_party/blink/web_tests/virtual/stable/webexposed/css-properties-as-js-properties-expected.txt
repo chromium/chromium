@@ -305,6 +305,7 @@ overflowClipMargin
 overflowWrap
 overflowX
 overflowY
+overlay
 overrideColors
 overscrollBehavior
 overscrollBehaviorBlock

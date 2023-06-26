@@ -282,6 +282,7 @@ All changes to this list should go through Blink's feature review process: http:
     overflow-wrap
     overflow-x
     overflow-y
+    overlay
     overscroll-behavior-block
     overscroll-behavior-inline
     overscroll-behavior-x
