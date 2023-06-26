@@ -25,13 +25,12 @@ const char kDisableSigninScopedDeviceId[] = "disable-signin-scoped-device-id";
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 // Enable experimental binding session credentials to the device.
-BASE_FEATURE(kEnableBoundSessionCrendentials,
-             "EnableBoundSessionCrendentials",
+BASE_FEATURE(kEnableBoundSessionCredentials,
+             "EnableBoundSessionCredentials",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsBoundSessionCredentialsEnabled() {
-  return base::FeatureList::IsEnabled(
-      switches::kEnableBoundSessionCrendentials);
+  return base::FeatureList::IsEnabled(switches::kEnableBoundSessionCredentials);
 }
 #endif
 

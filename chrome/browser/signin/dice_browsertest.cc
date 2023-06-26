@@ -726,7 +726,7 @@ class DiceBrowserTestWithBoundSessionCredentialsEnabled
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kEnableBoundSessionCrendentials};
+      switches::kEnableBoundSessionCredentials};
 };
 
 // Checks that signin on Gaia triggers the fetch for a refresh token.

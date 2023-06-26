@@ -151,7 +151,7 @@ class GoogleURLLoaderThrottleTest
   }
 
   base::test::ScopedFeatureList feature_list_{
-      switches::kEnableBoundSessionCrendentials};
+      switches::kEnableBoundSessionCredentials};
   base::test::TaskEnvironment task_environment_;
   raw_ptr<FakeBoundSessionRequestThrottledListener, DanglingUntriaged>
       bound_session_listener_ = nullptr;

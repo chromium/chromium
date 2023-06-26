@@ -257,7 +257,7 @@ class DiceResponseHandlerTest : public testing::Test,
   std::string auth_error_email_;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   base::test::ScopedFeatureList feature_list_{
-      switches::kEnableBoundSessionCrendentials};
+      switches::kEnableBoundSessionCredentials};
   StrictMock<
       base::MockCallback<DiceResponseHandler::RegistrationTokenHelperFactory>>
       mock_registration_token_helper_factory_;

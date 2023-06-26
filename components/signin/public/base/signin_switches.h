@@ -28,7 +28,7 @@ extern const char kClearTokenService[];
 extern const char kDisableSigninScopedDeviceId[];
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-BASE_DECLARE_FEATURE(kEnableBoundSessionCrendentials);
+BASE_DECLARE_FEATURE(kEnableBoundSessionCredentials);
 bool IsBoundSessionCredentialsEnabled();
 #endif
 
