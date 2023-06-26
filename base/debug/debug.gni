@@ -18,6 +18,16 @@ declare_args() {
   build_allocation_stack_trace_recorder = false
 }
 
+declare_args() {
+  # If enabled, the recorder gathers some additional information, i.e. number of
+  # collisions of slots, and prints these periodically.
+  #
+  # Since this might impact performance negatively, it's disabled by default.
+  # Even if it's disabled we still collect some data, i.e. total number of
+  # allocations. All other data will be set to a default value.
+  build_allocation_trace_recorder_full_reporting = false
+}
+
 assert(!(build_allocation_stack_trace_recorder && is_fuchsia),
        "Stack trace recording is not supported on Fuchsia due to missing" +
            " Crashpad!")
@@ -25,3 +35,8 @@ assert(!(build_allocation_stack_trace_recorder && is_fuchsia),
 assert(!(build_allocation_stack_trace_recorder && is_linux),
        "WARNING: Stack trace recording is not supported on Linux due to" +
            " performance issues computing stack trace!")
+
+assert(
+    build_allocation_stack_trace_recorder ||
+        !build_allocation_trace_recorder_full_reporting,
+    "Report for stack trace recorder is enabled, but the recorder is disabled!")

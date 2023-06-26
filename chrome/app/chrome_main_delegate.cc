@@ -1796,6 +1796,7 @@ void ChromeMainDelegate::InitializeMemorySystem() {
       .SetDispatcherParameters(memory_system::DispatcherParameters::
                                    PoissonAllocationSamplerInclusion::kEnforce,
                                memory_system::DispatcherParameters::
-                                   AllocationTraceRecorderInclusion::kDynamic)
+                                   AllocationTraceRecorderInclusion::kDynamic,
+                               process_type)
       .Initialize(memory_system_);
 }

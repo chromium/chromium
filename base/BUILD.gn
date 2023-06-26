@@ -1340,6 +1340,13 @@ component("base") {
       "debug/allocation_trace.cc",
       "debug/allocation_trace.h",
     ]
+
+    if (build_allocation_trace_recorder_full_reporting) {
+      sources += [
+        "debug/allocation_trace_reporting.cc",
+        "debug/allocation_trace_reporting.h",
+      ]
+    }
   }
 
   if (is_robolectric) {
@@ -2470,6 +2477,7 @@ buildflag_header("debugging_buildflags") {
     "ENABLE_STACK_TRACE_LINE_NUMBERS=$enable_stack_trace_line_numbers",
     "ENABLE_COMMANDLINE_SEQUENCE_CHECKS=$enable_commandline_sequence_checks",
     "ENABLE_ALLOCATION_STACK_TRACE_RECORDER=$build_allocation_stack_trace_recorder",
+    "ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING=$build_allocation_trace_recorder_full_reporting",
   ]
 }
 

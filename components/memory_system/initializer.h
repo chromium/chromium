@@ -32,7 +32,8 @@ class Initializer {
       DispatcherParameters::PoissonAllocationSamplerInclusion
           poisson_allocation_sampler_inclusion,
       DispatcherParameters::AllocationTraceRecorderInclusion
-          allocation_trace_recorder_inclusion);
+          allocation_trace_recorder_inclusion,
+      base::StringPiece process_type);
 
   void Initialize(MemorySystem& memory_system) const;
 

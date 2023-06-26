@@ -247,13 +247,17 @@ void IOSChromeMainParts::PreCreateThreads() {
   // On iOS we know that ProfilingClient is the only user of
   // PoissonAllocationSampler, there are no others. Therefore, make
   // memory_system include it dynamically.
+  // We pass an empty string as process type to the dispatcher to keep
+  // consistency with other main delegates where the browser process is denoted
+  // this way.
   memory_system::Initializer()
       .SetProfilingClientParameters(
           channel, metrics::CallStackProfileParams::Process::kBrowser)
       .SetDispatcherParameters(memory_system::DispatcherParameters::
                                    PoissonAllocationSamplerInclusion::kDynamic,
                                memory_system::DispatcherParameters::
-                                   AllocationTraceRecorderInclusion::kIgnore)
+                                   AllocationTraceRecorderInclusion::kIgnore,
+                               "")
       .Initialize(memory_system_);
 
   variations::InitCrashKeys();
