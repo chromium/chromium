@@ -7,8 +7,8 @@
 #include "base/run_loop.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
@@ -21,7 +21,7 @@
 
 namespace device {
 
-using ::base::test::RepeatingTestFuture;
+using ::base::test::TestFuture;
 
 class CoreLocationProviderTest : public testing::Test {
  public:
@@ -143,9 +143,9 @@ TEST_F(CoreLocationProviderTest, GetPositionUpdates) {
   test_position->altitude_accuracy = altitude_accuracy;
   test_position->timestamp = base::Time::Now();
 
-  RepeatingTestFuture<const LocationProvider*, mojom::GeopositionResultPtr>
+  TestFuture<const LocationProvider*, mojom::GeopositionResultPtr>
       location_update_future;
-  provider_->SetUpdateCallback(location_update_future.GetCallback());
+  provider_->SetUpdateCallback(location_update_future.GetRepeatingCallback());
   FakeUpdatePosition(*test_position);
   auto [provider, result] = location_update_future.Take();
   ASSERT_TRUE(result);

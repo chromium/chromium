@@ -20,8 +20,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
@@ -42,7 +42,7 @@
 
 namespace device {
 
-using ::base::test::RepeatingTestFuture;
+using ::base::test::TestFuture;
 
 // Records the most recent position update and counts the number of times
 // OnLocationUpdate is called.
@@ -97,8 +97,9 @@ class GeolocationNetworkProviderTest : public testing::Test {
         base::SingleThreadTaskRunner::GetCurrentDefault(), api_key,
         &position_cache_);
 #endif
-    if (set_permission_granted)
+    if (set_permission_granted) {
       provider->OnPermissionGranted();
+    }
 
     return provider;
   }
@@ -193,9 +194,10 @@ class GeolocationNetworkProviderTest : public testing::Test {
                                               const base::Value::Dict& dict,
                                               base::Value::List* output_list) {
     const base::Value::List* list = dict.FindList(field);
-    if (!list)
+    if (!list) {
       return testing::AssertionFailure() << "Dictionary " << PrettyJson(dict)
                                          << " is missing list field " << field;
+    }
     *output_list = list->Clone();
     return testing::AssertionSuccess();
   }
@@ -206,19 +208,22 @@ class GeolocationNetworkProviderTest : public testing::Test {
       const base::Value::Dict& actual) {
     const base::Value* expected_value = expected.Find(field);
     const base::Value* actual_value = actual.Find(field);
-    if (!expected_value)
+    if (!expected_value) {
       return testing::AssertionFailure()
              << "Expected dictionary " << PrettyJson(expected)
              << " is missing field " << field;
-    if (!actual_value)
+    }
+    if (!actual_value) {
       return testing::AssertionFailure()
              << "Actual dictionary " << PrettyJson(actual)
              << " is missing field " << field;
-    if (*expected_value != *actual_value)
+    }
+    if (*expected_value != *actual_value) {
       return testing::AssertionFailure()
              << "Field " << field
              << " mismatch: " << PrettyJson(*expected_value)
              << " != " << PrettyJson(*actual_value);
+    }
     return testing::AssertionSuccess();
   }
 
@@ -556,11 +561,11 @@ TEST_F(GeolocationNetworkProviderTest, NetworkRequestServiceBadRequest) {
   provider->StartProvider(false);
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
 
-  RepeatingTestFuture<mojom::GeopositionResultPtr> future;
+  TestFuture<mojom::GeopositionResultPtr> future;
   provider->SetUpdateCallback(
       base::BindLambdaForTesting([&future](const LocationProvider* provider,
                                            mojom::GeopositionResultPtr result) {
-        future.AddValue(std::move(result));
+        future.SetValue(std::move(result));
       }));
   const std::string& request_url =
       test_url_loader_factory_.pending_requests()->back().request.url.spec();
@@ -585,11 +590,11 @@ TEST_F(GeolocationNetworkProviderTest, NetworkRequestResponseMalformed) {
   provider->StartProvider(false);
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
 
-  RepeatingTestFuture<mojom::GeopositionResultPtr> future;
+  TestFuture<mojom::GeopositionResultPtr> future;
   provider->SetUpdateCallback(
       base::BindLambdaForTesting([&future](const LocationProvider* provider,
                                            mojom::GeopositionResultPtr result) {
-        future.AddValue(std::move(result));
+        future.SetValue(std::move(result));
       }));
   const std::string& request_url =
       test_url_loader_factory_.pending_requests()->back().request.url.spec();

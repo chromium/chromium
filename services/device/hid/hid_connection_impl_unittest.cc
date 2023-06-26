@@ -8,7 +8,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -85,7 +84,7 @@ class TestHidConnectionClient : public mojom::HidConnectionClient {
 
   void OnInputReport(uint8_t report_id,
                      const std::vector<uint8_t>& buffer) override {
-    future_.AddValue(report_id, buffer);
+    future_.SetValue(report_id, buffer);
   }
 
   std::pair<uint8_t, std::vector<uint8_t>> GetNextInputReport() {
@@ -94,7 +93,7 @@ class TestHidConnectionClient : public mojom::HidConnectionClient {
 
  private:
   mojo::Receiver<mojom::HidConnectionClient> receiver_{this};
-  base::test::RepeatingTestFuture<uint8_t, std::vector<uint8_t>> future_;
+  base::test::TestFuture<uint8_t, std::vector<uint8_t>> future_;
 };
 
 }  // namespace
@@ -150,8 +149,9 @@ class HidConnectionImplTest : public DeviceServiceTestBase {
   std::vector<uint8_t> CreateTestReportBuffer(uint8_t report_id, size_t size) {
     std::vector<uint8_t> buffer(size);
     buffer[0] = report_id;
-    for (size_t i = 1; i < size; ++i)
+    for (size_t i = 1; i < size; ++i) {
       buffer[i] = i;
+    }
     return buffer;
   }
 
