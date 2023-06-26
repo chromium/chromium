@@ -94,6 +94,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowsingTopics.EpochTopicsCalculation.TimeBetweenCalculations"
+    units="ms" expires_after="2023-12-22">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the time between top topic calculations. Recorded when a topic
+    calculation finishes and results from a prior epoch are available. This
+    metric is recorded even in case of a calculation failure (e.g. permission
+    denied, etc.).
+  </summary>
+</histogram>
+
 <histogram
     name="BrowsingTopics.EpochTopicsCalculation.TopTopicsCountBeforePadding"
     units="topics" expires_after="2023-11-12">

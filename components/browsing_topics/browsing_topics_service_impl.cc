@@ -650,6 +650,18 @@ void BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted(
   DCHECK(topics_calculator_);
   topics_calculator_.reset();
 
+  if (!browsing_topics_state_.epochs().empty()) {
+    // Use 24 days as the max value, because 24 days is the maximum number of
+    // days that works with UmaHistogramCustomTimes due to its conversion of
+    // times into milliseconds. We expect most values to be around
+    // `kBrowsingTopicsTimePeriodPerEpoch`.
+    base::UmaHistogramCustomTimes(
+        "BrowsingTopics.EpochTopicsCalculation.TimeBetweenCalculations",
+        epoch_topics.calculation_time() -
+            browsing_topics_state_.epochs().back().calculation_time(),
+        /*min=*/base::Seconds(1), /*max=*/base::Days(24), /*buckets=*/100);
+  }
+
   browsing_topics_state_.AddEpoch(std::move(epoch_topics));
   browsing_topics_state_.UpdateNextScheduledCalculationTime();
 

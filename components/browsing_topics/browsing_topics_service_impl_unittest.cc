@@ -354,6 +354,10 @@ TEST_F(BrowsingTopicsServiceImplTest, EmptyInitialState_CalculationScheduling) {
 
   EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 1u);
 
+  histogram_tester_.ExpectTimeBucketCount(
+      "BrowsingTopics.EpochTopicsCalculation.TimeBetweenCalculations",
+      kTime2 - kTime1, 0);
+
   // Advance the time to the scheduled calculation time. A calculation should
   // happen.
   task_environment()->FastForwardBy(base::Microseconds(1));
@@ -367,6 +371,10 @@ TEST_F(BrowsingTopicsServiceImplTest, EmptyInitialState_CalculationScheduling) {
   EXPECT_EQ(browsing_topics_state().epochs()[1].calculation_time(), kTime2);
   EXPECT_EQ(browsing_topics_state().next_scheduled_calculation_time(),
             start_time + 2 * kCalculatorDelay + 2 * kEpoch);
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "BrowsingTopics.EpochTopicsCalculation.TimeBetweenCalculations",
+      kTime2 - kTime1, 1);
 }
 
 TEST_F(BrowsingTopicsServiceImplTest,
@@ -403,6 +411,10 @@ TEST_F(BrowsingTopicsServiceImplTest,
   EXPECT_EQ(browsing_topics_state().next_scheduled_calculation_time(),
             start_time + kOneTestDay);
 
+  histogram_tester_.ExpectTimeBucketCount(
+      "BrowsingTopics.EpochTopicsCalculation.TimeBetweenCalculations",
+      kTime2 - kTime1, 0);
+
   EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 0u);
 
   // Advance the time to the scheduled calculation time. A calculation should
@@ -417,6 +429,61 @@ TEST_F(BrowsingTopicsServiceImplTest,
   EXPECT_EQ(browsing_topics_state().epochs()[1].calculation_time(), kTime2);
   EXPECT_EQ(browsing_topics_state().next_scheduled_calculation_time(),
             start_time + kOneTestDay + kCalculatorDelay + kEpoch);
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "BrowsingTopics.EpochTopicsCalculation.TimeBetweenCalculations",
+      kTime2 - kTime1, 1);
+}
+
+TEST_F(BrowsingTopicsServiceImplTest,
+       StartFromPreexistingState_CalculateAtScheduledTime_FailedCalculation) {
+  base::Time start_time = base::Time::Now();
+
+  std::vector<EpochTopics> preexisting_epochs;
+  preexisting_epochs.push_back(CreateTestEpochTopics({{Topic(1), {}},
+                                                      {Topic(2), {}},
+                                                      {Topic(3), {}},
+                                                      {Topic(4), {}},
+                                                      {Topic(5), {}}},
+                                                     kTime1));
+
+  CreateBrowsingTopicsStateFile(
+      std::move(preexisting_epochs),
+      /*next_scheduled_calculation_time=*/start_time + kOneTestDay);
+
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.push(EpochTopics(kTime2));
+
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(browsing_topics_state().epochs().size(), 1u);
+  EXPECT_EQ(browsing_topics_state().epochs()[0].calculation_time(), kTime1);
+  EXPECT_EQ(browsing_topics_state().next_scheduled_calculation_time(),
+            start_time + kOneTestDay);
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "BrowsingTopics.EpochTopicsCalculation.TimeBetweenCalculations",
+      kTime2 - kTime1, 0);
+
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 0u);
+
+  // Advance the time to the scheduled calculation time. A calculation should
+  // happen.
+  task_environment()->FastForwardBy(kOneTestDay);
+
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 1u);
+  // Finish the calculation.
+  task_environment()->FastForwardBy(kCalculatorDelay);
+
+  EXPECT_EQ(browsing_topics_state().epochs().size(), 2u);
+  EXPECT_EQ(browsing_topics_state().epochs()[1].calculation_time(), kTime2);
+  EXPECT_EQ(browsing_topics_state().next_scheduled_calculation_time(),
+            start_time + kOneTestDay + kCalculatorDelay + kEpoch);
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "BrowsingTopics.EpochTopicsCalculation.TimeBetweenCalculations",
+      kTime2 - kTime1, 1);
 }
 
 TEST_F(
@@ -455,6 +522,10 @@ TEST_F(
             start_time - base::Microseconds(1));
 
   EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 1u);
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "BrowsingTopics.EpochTopicsCalculation.TimeBetweenCalculations",
+      kTime2 - kTime1, 0);
 }
 
 TEST_F(
@@ -504,6 +575,10 @@ TEST_F(
   EXPECT_EQ(
       content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).size(),
       0u);
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "BrowsingTopics.EpochTopicsCalculation.TimeBetweenCalculations",
+      kTime2 - kTime1, 0);
 }
 
 TEST_F(
@@ -540,6 +615,10 @@ TEST_F(
 
   EXPECT_EQ(browsing_topics_state().epochs().size(), 0u);
   EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 1u);
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "BrowsingTopics.EpochTopicsCalculation.TimeBetweenCalculations",
+      kTime2 - kTime1, 0);
 }
 
 TEST_F(BrowsingTopicsServiceImplTest,
