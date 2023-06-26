@@ -767,7 +767,7 @@ public abstract class AsyncInitializationActivity
 
             if (BuildInfo.getInstance().isAutomotive) {
                 smallestScreenWidth =
-                        (int) (smallestScreenWidth / DisplayUtil.UI_SCALING_FACTOR_FOR_AUTO);
+                        (int) (smallestScreenWidth / DisplayUtil.getUiScalingFactorForAutomotive());
             }
             return smallestScreenWidth;
         }
