@@ -8,10 +8,12 @@
 #include <sys/ioctl.h>
 
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/posix/eintr_wrapper.h"
 #include "media/base/media_log.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/v4l2/v4l2_queue.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -19,6 +21,16 @@ namespace {
 int HandledIoctl(int fd, int request, void* arg) {
   return HANDLE_EINTR(ioctl(fd, request, arg));
 }
+
+void* Mmap(int fd,
+           void* addr,
+           unsigned int len,
+           int prot,
+           int flags,
+           unsigned int offset) {
+  return mmap(addr, len, prot, flags, fd, offset);
+}
+
 }  // namespace
 
 namespace media {
@@ -103,7 +115,73 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(config.IsValidConfig());
   DVLOGF(1) << config.AsHumanReadableString();
-  NOTIMPLEMENTED();
+
+  if (config.is_encrypted() || !!cdm_context) {
+    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
+    return;
+  }
+
+  // Our caller VideoDecoderPipeline will make sure that |config| is within
+  // GetSupportedConfigs() beforehand. CHECK()ing it here seems excessive.
+
+  if (!device_fd_.is_valid()) {
+    constexpr char kVideoDeviceDriverPath[] = "/dev/video-dec0";
+    CHECK(base::PathExists(base::FilePath(kVideoDeviceDriverPath)));
+
+    device_fd_.reset(HANDLE_EINTR(
+        open(kVideoDeviceDriverPath, O_RDWR | O_NONBLOCK | O_CLOEXEC)));
+    if (!device_fd_.is_valid()) {
+      std::move(init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
+      return;
+    }
+  }
+
+  // If we've been Initialize()d before, destroy state members.
+  if (OUTPUT_queue_) {
+    // This will also Deallocate() all buffers and issue a VIDIOC_STREAMOFF.
+    OUTPUT_queue_.reset();
+  }
+
+  // At this point we initialize the |OUTPUT_queue_| only, following
+  // instructions in e.g. [1]. The decoded video frames queue configuration
+  // must wait until there are enough encoded chunks fed into said
+  // |OUTPUT_queue_| for the driver to know the output details. The driver will
+  // let us know that moment via a V4L2_EVENT_SOURCE_CHANGE.
+  // [1]
+  // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/dev-decoder.html#initialization
+
+  OUTPUT_queue_ = base::WrapRefCounted(
+      new V4L2Queue(base::BindRepeating(&HandledIoctl, device_fd_.get()),
+                    /*schedule_poll_cb=*/base::DoNothing(),
+                    /*mmap_cb=*/base::BindRepeating(&Mmap, device_fd_.get()),
+                    V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE,
+                    /*destroy_cb=*/base::DoNothing()));
+
+  const auto profile_as_v4l2_fourcc =
+      VideoCodecProfileToV4L2PixFmt(config.profile(), /*slice_based=*/false);
+
+  // In legacy code this was good for up to 1080p.
+  // TODO(mcasas): Increase this by 4x to support 4K decoding, if needed.
+  constexpr size_t kInputBufferMaxSize = 1024 * 1024;
+  const auto v4l2_format = OUTPUT_queue_->SetFormat(
+      profile_as_v4l2_fourcc, gfx::Size(), kInputBufferMaxSize);
+  if (!v4l2_format) {
+    std::move(init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
+    return;
+  }
+  DCHECK_EQ(v4l2_format->fmt.pix_mp.pixelformat, profile_as_v4l2_fourcc);
+
+  constexpr size_t kNumInputBuffers = 8;
+  if (OUTPUT_queue_->AllocateBuffers(kNumInputBuffers, V4L2_MEMORY_MMAP,
+                                     /*incoherent=*/false) < kNumInputBuffers) {
+    std::move(init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
+    return;
+  }
+  if (!OUTPUT_queue_->Streamon()) {
+    std::move(init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
+    return;
+  }
+  std::move(init_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -173,7 +251,7 @@ V4L2StatefulVideoDecoder::V4L2StatefulVideoDecoder(
     : VideoDecoderMixin(std::move(media_log),
                         std::move(task_runner),
                         std::move(client)) {
-  DCHECK(task_runner->RunsTasksInCurrentSequence());
+  DCHECK(decoder_task_runner_->RunsTasksInCurrentSequence());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(1);
 }

@@ -581,6 +581,7 @@ class MEDIA_GPU_EXPORT V4L2Queue
   friend class V4L2QueueFactory;
   friend class V4L2BufferRefBase;
   friend class base::RefCountedThreadSafe<V4L2Queue>;
+  friend class V4L2StatefulVideoDecoder;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -17,6 +17,8 @@
 
 namespace media {
 
+class V4L2Queue;
+
 // V4L2StatefulVideoDecoder is an implementation of VideoDecoderMixin
 // (an augmented media::VideoDecoder) for stateful V4L2 decoding drivers
 // (e.g. those in ChromeOS Qualcomm devices, and Mediatek 8173). This API has
@@ -63,6 +65,13 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
                            scoped_refptr<base::SequencedTaskRunner> task_runner,
                            base::WeakPtr<VideoDecoderMixin::Client> client);
   ~V4L2StatefulVideoDecoder() override;
+
+  base::ScopedFD device_fd_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // OUTPUT in V4L2 terminology is the queue holding encoded chunks of bistream.
+  // See e.g. [1].
+  // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/dev-decoder.html#glossary
+  scoped_refptr<V4L2Queue> OUTPUT_queue_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Pegged to the construction and main work thread. Notably, |task_runner| is
   // not used.
