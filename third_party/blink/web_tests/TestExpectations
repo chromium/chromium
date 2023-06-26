@@ -6622,3 +6622,6 @@ crbug.com/1456821 [ Linux ] fast/forms/accent-color/range-accent-color-hover-dar
 crbug.com/1456514 [ Linux ] fast/forms/number/number-appearance-spinbutton-disabled-readonly.html [ Failure Pass ]
 
 crbug.com/1457660 external/wpt/editing/other/white-spaces-after-execCommand-forwarddelete.tentative.html [ Pass Timeout ]
+
+# Gardener 2023-06-26
+crbug.com/1457850 [ Linux ] virtual/plz-dedicated-worker/http/tests/inspector-protocol/runtime/serialization_options.js [ Failure Pass ]
