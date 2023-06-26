@@ -2660,12 +2660,6 @@ MULTI_THREAD_TEST_F(LayerTreeHostScrollTestImplSideInvalidation);
 
 class LayerTreeHostScrollTestMainRepaint : public LayerTreeHostScrollTest {
  public:
-  LayerTreeHostScrollTestMainRepaint() {
-    scoped_feature_list.InitWithFeatures(
-        {features::kScrollUnification},
-        {features::kMainRepaintScrollPrefersNewContent});
-  }
-
   void SetupTree() override {
     LayerTreeHostScrollTest::SetupTree();
     GetViewportScrollNode()->main_thread_scrolling_reasons =
@@ -2688,10 +2682,10 @@ class LayerTreeHostScrollTestMainRepaint : public LayerTreeHostScrollTest {
       EXPECT_EQ(SAME_PRIORITY_FOR_BOTH_TREES, host_impl->GetTreePriority());
       DoScrollBeginAndUpdate(input_handler);
 
-      // In frame 0, scroll node has main_thread_scrolling_reasons. Do not
-      // prioritize smoothness, since we need to repaint on the main thread for
-      // the user to see the scroll.
-      EXPECT_EQ(ExpectedMainRepaintPriority(), host_impl->GetTreePriority());
+      // In frame 0, scroll node has main_thread_scrolling_reasons. Prioritize
+      // new content and not smoothness, since we need to repaint on the main
+      // thread for the user to see the scroll.
+      EXPECT_EQ(NEW_CONTENT_TAKES_PRIORITY, host_impl->GetTreePriority());
       input_handler.ScrollEnd();
       PostSetNeedsCommitToMainThread();
     }
@@ -2706,11 +2700,6 @@ class LayerTreeHostScrollTestMainRepaint : public LayerTreeHostScrollTest {
       input_handler.ScrollEnd();
       EndTest();
     }
-  }
-
- protected:
-  virtual TreePriority ExpectedMainRepaintPriority() {
-    return SAME_PRIORITY_FOR_BOTH_TREES;
   }
 
  private:
@@ -2728,30 +2717,9 @@ class LayerTreeHostScrollTestMainRepaint : public LayerTreeHostScrollTest {
     input_handler.ScrollUpdate(
         UpdateState(gfx::Point(), gfx::Vector2dF(0, 10)).get());
   }
-
-  base::test::ScopedFeatureList scoped_feature_list;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostScrollTestMainRepaint);
-
-class LayerTreeHostScrollTestMainRepaintNewContent
-    : public LayerTreeHostScrollTestMainRepaint {
- public:
-  LayerTreeHostScrollTestMainRepaintNewContent() {
-    scoped_feature_list.InitAndEnableFeature(
-        features::kMainRepaintScrollPrefersNewContent);
-  }
-
- protected:
-  TreePriority ExpectedMainRepaintPriority() override {
-    return NEW_CONTENT_TAKES_PRIORITY;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list;
-};
-
-MULTI_THREAD_TEST_F(LayerTreeHostScrollTestMainRepaintNewContent);
 
 class NonScrollingNonFastScrollableRegion : public LayerTreeHostScrollTest {
  public:
