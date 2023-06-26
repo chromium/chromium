@@ -122,7 +122,9 @@
       <cr-button id="clearAllButton" on-click="onClearHistoryClicked"
           disabled="[[shouldDisableClearAllButton]]"
           hidden="[[!showClearAllButton]]">
-        <iron-icon id="deleteIcon" icon="print-management:delete"></iron-icon>
+        <iron-icon id="deleteIcon" icon="print-management:delete"
+            slot="prefix-icon">
+        </iron-icon>
         [[i18n('clearAllHistoryLabel')]]
       </cr-button>
       <cr-button id="managePrinters" hidden="[[!shouldShowManagePrinterButton(
