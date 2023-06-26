@@ -48,6 +48,7 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/devtools_util.h"
 #include "chrome/browser/file_util_service.h"
@@ -511,7 +512,7 @@ FileManagerPrivateAddProvidedFileSystemFunction::Run() {
   // Show Connect To OneDrive dialog only when mounting ODFS for the first time.
   // There will already a ODFS mount if the user is requesting a new mount to
   // replace the unauthenticated one.
-  if (ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
+  if (chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
       params->provider_id ==
           file_manager::file_tasks::GetODFSExtensionId(profile) &&
       first_file_system) {

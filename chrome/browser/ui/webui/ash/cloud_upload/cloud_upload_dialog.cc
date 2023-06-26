@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -42,7 +41,6 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
@@ -574,20 +572,6 @@ void CloudOpenTask::ConfirmMoveOrStartUpload() {
   } else {
     StartUpload();
   }
-}
-
-bool IsEligibleAndEnabledUploadOfficeToCloud(Profile* profile) {
-  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    return false;
-  }
-  if (!profile) {
-    return false;
-  }
-  // Managed users, e.g. enterprise account, child account, are not eligible.
-  if (profile->GetProfilePolicyConnector()->IsManaged()) {
-    return false;
-  }
-  return true;
 }
 
 bool ShouldFixUpOffice(Profile* profile, const CloudProvider cloud_provider) {

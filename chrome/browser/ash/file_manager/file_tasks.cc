@@ -54,6 +54,7 @@
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
+#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -373,7 +374,7 @@ void PostProcessFoundTasks(Profile* profile,
   disabled_actions.emplace("view-pdf");
 #endif  // !BUILDFLAG(ENABLE_PDF)
 
-  if (!ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
+  if (!chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     disabled_actions.emplace(kActionIdWebDriveOfficeWord);
     disabled_actions.emplace(kActionIdWebDriveOfficeExcel);
     disabled_actions.emplace(kActionIdWebDriveOfficePowerPoint);

@@ -214,10 +214,6 @@ class CloudOpenTask : public BrowserListObserver,
       OfficeFilesTransferRequired::kNotRequired;
 };
 
-// Return True if feature `kUploadOfficeToCloud` is enabled and is eligible for
-// the user of the |profile|. A user is eligible if they are not managed.
-bool IsEligibleAndEnabledUploadOfficeToCloud(Profile* profile);
-
 // Returns True if OneDrive is the selected `cloud_provider` but either ODFS
 // is not mounted or the Office PWA is not installed. Returns False otherwise.
 bool ShouldFixUpOffice(Profile* profile, const CloudProvider cloud_provider);

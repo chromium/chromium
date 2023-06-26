@@ -48,6 +48,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
+#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -876,8 +877,8 @@ class NonManagedAccount : public TestAccountBrowserTest {
 // non-managed user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(NonManagedAccount,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_TRUE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(
-      browser()->profile()));
+  ASSERT_TRUE(
+      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
 }
 
 // Test that the office PWA file handler is hidden from the available file
@@ -937,8 +938,8 @@ class EnterpriseAccount : public TestAccountBrowserTest {
 // enterprise user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(EnterpriseAccount,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_FALSE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(
-      browser()->profile()));
+  ASSERT_FALSE(
+      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
 }
 
 class ChildAccount : public TestAccountBrowserTest {
@@ -955,8 +956,8 @@ class ChildAccount : public TestAccountBrowserTest {
 // Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns false when a
 // child user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(ChildAccount, IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_FALSE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(
-      browser()->profile()));
+  ASSERT_FALSE(
+      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
 }
 
 class NonManagedAccountNoFlag : public TestAccountBrowserTest {
@@ -968,8 +969,8 @@ class NonManagedAccountNoFlag : public TestAccountBrowserTest {
 // non-managed user is logged in but |kUploadOfficeToCloud| is disabled.
 IN_PROC_BROWSER_TEST_F(NonManagedAccountNoFlag,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_FALSE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(
-      browser()->profile()));
+  ASSERT_FALSE(
+      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
 }
 
 // TODO(cassycc): move this class to a more appropriate spot.

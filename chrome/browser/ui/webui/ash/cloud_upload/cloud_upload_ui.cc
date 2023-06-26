@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -23,7 +24,7 @@ namespace ash::cloud_upload {
 
 bool CloudUploadUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(
+  return chromeos::IsEligibleAndEnabledUploadOfficeToCloud(
       Profile::FromBrowserContext(browser_context));
 }
 

@@ -17,6 +17,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/cart/commerce_hint_service.h"
+#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
@@ -1459,13 +1460,13 @@ void PopulateChromeWebUIFrameBinders(
 
   Profile* profile =
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
-  if (ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
+  if (chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     RegisterWebUIControllerInterfaceBinder<
         ash::cloud_upload::mojom::PageHandlerFactory,
         ash::cloud_upload::CloudUploadUI>(map);
   }
 
-  if (ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
+  if (chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     RegisterWebUIControllerInterfaceBinder<
         ash::office_fallback::mojom::PageHandlerFactory,
         ash::office_fallback::OfficeFallbackUI>(map);
