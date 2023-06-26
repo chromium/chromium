@@ -1458,8 +1458,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                                 VisualRectFlags,
                                 TransformState&) const;
 
-  bool HasRelativeLogicalHeight() const;
-
   virtual LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject*) const {
     NOT_DESTROYED();

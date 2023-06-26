@@ -5466,13 +5466,6 @@ LayoutBox* LayoutBox::LocationContainer() const {
   return To<LayoutBox>(container);
 }
 
-bool LayoutBox::HasRelativeLogicalHeight() const {
-  NOT_DESTROYED();
-  return StyleRef().LogicalHeight().IsPercentOrCalc() ||
-         StyleRef().LogicalMinHeight().IsPercentOrCalc() ||
-         StyleRef().LogicalMaxHeight().IsPercentOrCalc();
-}
-
 ShapeOutsideInfo* LayoutBox::GetShapeOutsideInfo() const {
   NOT_DESTROYED();
   return ShapeOutsideInfo::Info(*this);
