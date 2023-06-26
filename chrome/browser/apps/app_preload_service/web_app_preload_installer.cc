@@ -167,10 +167,6 @@ void WebAppPreloadInstaller::OnManifestRetrieved(
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
 
-  // TODO(b/284053861) Move allowlist into InstallPreloadedVerifiedAppCommand.
-  base::flat_set<std::string> host_allowlist = {
-      "meltingpot.googleusercontent.com"};
-
   if (web_app::IsWebAppsCrosapiEnabled()) {
     crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
         crosapi::CrosapiManager::Get()
@@ -199,7 +195,7 @@ void WebAppPreloadInstaller::OnManifestRetrieved(
             webapps::WebappInstallSource::PRELOADED_OEM,
             /*document_url=*/GURL(app.GetWebAppManifestId()).GetWithEmptyPath(),
             /*manifest_url=*/app.GetWebAppOriginalManifestUrl(),
-            std::move(*response), GetAppId(app), std::move(host_allowlist),
+            std::move(*response), GetAppId(app),
             base::BindOnce(&WebAppPreloadInstaller::OnAppInstalled,
                            weak_ptr_factory_.GetWeakPtr(),
                            std::move(callback))));
