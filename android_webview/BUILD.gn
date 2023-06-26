@@ -1019,11 +1019,10 @@ grit("generate_mojo_resources") {
 
 action("concatenate_resources_allowlists") {
   script = "//mojo/public/tools/bindings/concatenate-files.py"
-  inputs = [ "//android_webview/ui/grit_resources_allowlist.txt" ]
-
-  if (webview_includes_weblayer) {
-    inputs += [ "//weblayer/grit_resources_allowlist.txt" ]
-  }
+  inputs = [
+    "//android_webview/ui/grit_resources_allowlist.txt",
+    "//android_webview/ui/temporary_grit_resources_allowlist.txt",
+  ]
 
   outputs = [ "$target_gen_dir/grit_resources_allowlist.txt" ]
   args =

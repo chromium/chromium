@@ -8,7 +8,7 @@
 #include "base/android/library_loader/library_loader_hooks.h"
 
 #if defined(WEBVIEW_INCLUDES_WEBLAYER)
-#include "weblayer/app/jni_onload.h"
+#include "weblayer/app/jni_onload.h"  // nogncheck
 #endif
 
 namespace {
