@@ -118,8 +118,6 @@ class ShortcutsBackend : public RefcountedKeyedService,
       scoped_refptr<ShortcutsBackend> backend,
       TestShortcutData* db,
       size_t db_size);
-  FRIEND_TEST_ALL_PREFIXES(ShortcutsBackendTest, EntitySuggestionTest);
-  FRIEND_TEST_ALL_PREFIXES(ShortcutsBackendTest, MatchCoreDescriptionTest);
 
   enum CurrentState {
     NOT_INITIALIZED,  // Backend created but not initialized.

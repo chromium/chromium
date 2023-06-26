@@ -67,8 +67,12 @@ class ShortcutsBackendTest : public testing::Test,
   bool ShortcutExists(const std::u16string& terms) const;
   std::vector<std::u16string> ShortcutsMapTexts() const;
   void ClearShortcutsMap();
-
-  TemplateURLService* GetTemplateURLService();
+  ShortcutsDatabase::Shortcut::MatchCore MatchToMatchCore(
+      const AutocompleteMatch& match) {
+    SearchTermsData search_terms_data;
+    return ShortcutsBackend::MatchToMatchCore(
+        match, template_url_service_.get(), &search_terms_data);
+  }
 
   ShortcutsBackend* backend() { return backend_.get(); }
 
@@ -108,9 +112,7 @@ ShortcutsBackendTest::MatchCoreForTesting(const std::string& url,
       AutocompleteMatch::ClassificationsFromString(description_class);
   match.search_terms_args =
       std::make_unique<TemplateURLRef::SearchTermsArgs>(match.contents);
-  SearchTermsData search_terms_data;
-  return ShortcutsBackend::MatchToMatchCore(match, template_url_service_.get(),
-                                            &search_terms_data);
+  return MatchToMatchCore(match);
 }
 
 void ShortcutsBackendTest::SetSearchProvider() {
@@ -208,10 +210,6 @@ void ShortcutsBackendTest::ClearShortcutsMap() {
   backend_->shortcuts_map_.clear();
 }
 
-TemplateURLService* ShortcutsBackendTest::GetTemplateURLService() {
-  return template_url_service_.get();
-}
-
 // Actual tests ---------------------------------------------------------------
 
 // Verifies that creating MatchCores strips classifications and sanitizes match
@@ -272,10 +270,7 @@ TEST_F(ShortcutsBackendTest, EntitySuggestionTest) {
   match.search_terms_args =
       std::make_unique<TemplateURLRef::SearchTermsArgs>(match.fill_into_edit);
 
-  SearchTermsData search_terms_data;
-  ShortcutsDatabase::Shortcut::MatchCore match_core =
-      ShortcutsBackend::MatchToMatchCore(match, GetTemplateURLService(),
-                                         &search_terms_data);
+  ShortcutsDatabase::Shortcut::MatchCore match_core = MatchToMatchCore(match);
   EXPECT_EQ("http://foo.com/search?bar=franklin+d+roosevelt",
             match_core.destination_url.spec());
   EXPECT_EQ(match.fill_into_edit, match_core.contents);
@@ -293,10 +288,7 @@ TEST_F(ShortcutsBackendTest, MatchCoreDescriptionTest) {
     match.description_class =
         AutocompleteMatch::ClassificationsFromString("0,1");
 
-    SearchTermsData search_terms_data;
-    ShortcutsDatabase::Shortcut::MatchCore match_core =
-        ShortcutsBackend::MatchToMatchCore(match, GetTemplateURLService(),
-                                           &search_terms_data);
+    ShortcutsDatabase::Shortcut::MatchCore match_core = MatchToMatchCore(match);
     EXPECT_EQ(match_core.description, match.description);
     EXPECT_EQ(
         match_core.description_class,
@@ -314,10 +306,7 @@ TEST_F(ShortcutsBackendTest, MatchCoreDescriptionTest) {
     match.description_class_for_shortcuts =
         AutocompleteMatch::ClassificationsFromString("0,4");
 
-    SearchTermsData search_terms_data;
-    ShortcutsDatabase::Shortcut::MatchCore match_core =
-        ShortcutsBackend::MatchToMatchCore(match, GetTemplateURLService(),
-                                           &search_terms_data);
+    ShortcutsDatabase::Shortcut::MatchCore match_core = MatchToMatchCore(match);
     EXPECT_EQ(match_core.description, match.description_for_shortcuts);
     EXPECT_EQ(match_core.description_class,
               AutocompleteMatch::ClassificationsToString(
@@ -683,4 +672,36 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding_Case) {
   // lowercase.
   test("x", "xİxy", "xi̇xy");
   test("x", "xi̇xy", "xi̇xy");
+
+  // Also test updating existing shortcuts, which involves an additional
+  // case-sensitive operation when append 3 chars to the input.
+  const auto test_update = [&](const std::string& text,
+                               const std::string& match_text,
+                               const std::string& expected_expanded_text) {
+    SCOPED_TRACE("Text: " + text + ", match_text: " + match_text);
+    AutocompleteMatch match;
+    match.contents = base::UTF8ToUTF16(match_text);
+    match.contents_class.emplace_back(0, 0);
+    match.destination_url = GURL("http://www.url.com");
+
+    backend()->AddOrUpdateShortcut(match.contents, match);
+
+    // Should expand last word when creating shortcuts.
+    backend()->AddOrUpdateShortcut(base::UTF8ToUTF16(text), match);
+    EXPECT_THAT(
+        ShortcutsMapTexts(),
+        testing::ElementsAre(base::UTF8ToUTF16(expected_expanded_text)));
+
+    ClearShortcutsMap();
+  };
+
+  // Upper case 'İ' in input.
+  test_update("xİx", "xİxy", "xİxy");
+  test_update("xİx", "xi̇xy", "xİxy");
+  // Lower case 'i̇' in input.
+  test_update("xi̇x", "xİxy", "xi̇xy");
+  test_update("xi̇x", "xi̇xy", "xi̇xy");
+  // 'İ' not present in input.
+  test_update("x", "xİxy", "xi̇xy");
+  test_update("x", "xi̇xy", "xi̇xy");
 }

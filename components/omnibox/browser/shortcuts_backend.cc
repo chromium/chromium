@@ -11,7 +11,6 @@
 #include <set>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/i18n/break_iterator.h"
@@ -19,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -30,7 +30,6 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/shortcuts_database.h"
 #include "components/omnibox/browser/tailored_word_break_iterator.h"
 
@@ -69,24 +68,26 @@ AutocompleteMatch::Type GetTypeForShortcut(AutocompleteMatch::Type type) {
 
 // Expand the last word in `text` to a full word in `match_text`. E.g., if
 // `text` is 'Cha Aznav' and the `match_text` is 'Charles Aznavour', will return
-// 'Cha Aznavour'.
-std::u16string ExpandToFullWord(const std::u16string& text,
-                                const std::u16string& match_text) {
-  DCHECK(!text.empty());
+// 'Cha Aznavour'. Inlining 'Cha Aznav' would look incomplete.
+// - `trimmed_text` and `match_text` should have original capitalization as
+//   `ExpandToFullWord()` tries to preserve it.
+// - `trimmed_text` should be trimmed for efficiency since the callers already
+//   have it available.
+// - `is_existing_shortcut` is true when updating existing shortcuts and false
+//    when creating new shortcuts. See comment below.
+std::u16string ExpandToFullWord(std::u16string trimmed_text,
+                                std::u16string match_text,
+                                bool is_existing_shortcut) {
+  DCHECK(!trimmed_text.empty());
 
-  // Trim the `text` to:
+  // `trimmed_text` should be trimmed to:
   // 1) Avoid expanding, e.g., the `text` 'Cha Aznav ' to 'Cha Aznav ur'.
   // 2) Avoid truncating the shortcut e.g., 'Cha Aznavour' to 'Cha ' for the
   //    `text` 'C' when `AddOrUpdateShortcut()` appends 3 chars to `text`.
   // 3) Allow expanding, e.g., the `text` 'Cha ' to 'Charles'.
   // 4) Even when not expanding, autocompleting trailing whitespace looks weird.
-  const auto trimmed_text = std::u16string(
-      base::TrimWhitespace(text, base::TrimPositions::TRIM_TRAILING));
-
-  // Use the lower cased text for string insensitive comparisons. Use the
-  // original case to construct the returned expanded text. E.g., 'cHa' should
-  // expand to 'cHarles', not 'Charles'.
-  const auto trimmed_lower_text = base::i18n::ToLower(trimmed_text);
+  CHECK_EQ(trimmed_text, base::TrimWhitespace(
+                             trimmed_text, base::TrimPositions::TRIM_TRAILING));
 
   // Preserving original `match_text` case is ideal; it allows autocompleting
   // 'char[les Aznavour] instead of 'char[les aznavour]'. But some characters
@@ -97,9 +98,28 @@ std::u16string ExpandToFullWord(const std::u16string& text,
   //  - Worst case, it crashes when trimming string out of bounds.
   // So fallback to lower casing the match text when lengths don't match.
   const auto lower_match_text = base::i18n::ToLower(match_text);
-  const auto& match_text_for_expansion =
-      match_text.length() != lower_match_text.length() ? lower_match_text
-                                                       : match_text;
+  if (match_text.length() != lower_match_text.length())
+    match_text = lower_match_text;
+
+  // Adopt extra chars from the existing shortcut to avoid unstable
+  // shortcuts. E.g. if the user types 'Charl', keep the shortcut text
+  // 'Charles Aznavour' instead of truncating it to 'Charles'.
+  if (is_existing_shortcut) {
+    // 3 chars is sufficient to keep shortcuts meaningful while reducing them
+    // to what the user tends to type.
+    constexpr int kCharCount = 3;
+    trimmed_text = base::StrCat(
+        {trimmed_text,
+         match_text.substr(base::i18n::ToLower(trimmed_text).length(),
+                           kCharCount)});
+    trimmed_text =
+        base::TrimWhitespace(trimmed_text, base::TrimPositions::TRIM_TRAILING);
+  }
+
+  // Use the lower cased text for string insensitive comparisons. Use the
+  // original case to construct the returned expanded text. E.g., 'cHa' should
+  // expand to 'cHarles', not 'Charles'.
+  const auto trimmed_lower_text = base::i18n::ToLower(trimmed_text);
 
   // There may be multiple matching match words `text` can be expanded to. E.g.
   // with `text` 'x' and `match_text` 'x1 x2', 'x' matches both 'x1' and 'x2'.
@@ -125,8 +145,7 @@ std::u16string ExpandToFullWord(const std::u16string& text,
   if (base::StartsWith(lower_match_text, trimmed_lower_text,
                        base::CompareCase::SENSITIVE)) {
     // Cut off the common prefix.
-    const auto cut_match_text =
-        match_text_for_expansion.substr(trimmed_lower_text.length());
+    const auto cut_match_text = match_text.substr(trimmed_lower_text.length());
     // Find the 1st word of the cut `match_text`.
     TailoredWordBreakIterator iter(cut_match_text,
                                    base::i18n::BreakIterator::BREAK_WORD);
@@ -155,8 +174,7 @@ std::u16string ExpandToFullWord(const std::u16string& text,
   const auto& text_last_word = text_words.back();
 
   // This handles cases (2) and (3) from the above comment.
-  const auto match_words =
-      String16VectorFromString16(match_text_for_expansion, nullptr);
+  const auto match_words = String16VectorFromString16(match_text, nullptr);
   std::u16string best_word;
   // Iterate up to 100 `match_words` for performance.
   for (size_t i = 0;
@@ -291,8 +309,8 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
   // Trim `text` since `ExpandToFullWord()` trims the shortcut text; otherwise,
   // inputs with trailing whitespace wouldn't match a shortcut even if the user
   // previously used the input with a trailing whitespace.
-  const auto text_trimmed =
-      base::TrimWhitespace(text, base::TrimPositions::TRIM_TRAILING);
+  const std::u16string text_trimmed = std::u16string(
+      base::TrimWhitespace(text, base::TrimPositions::TRIM_TRAILING));
 
   // `text` may be empty for pedal and zero suggest navigations. `text_trimmed`
   // can additionally be empty for whitespace-only inputs. It's unlikely users
@@ -322,14 +340,9 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
        ++it) {
     if (match.destination_url == it->second.match_core.destination_url) {
       // When a user navigates to a shortcut after typing a prefix of the
-      // shortcut, the shortcut text is replaced with the shorter user input,
-      // plus an additional 3 chars to avoid unstable shortcuts. E.g. if the
-      // user creates a shortcut with text 'google.com', then navigates
-      // typing 'go', the shortcut text should be updated to 'googl'.
-      const auto text_and_3_chars = base::StrCat(
-          {text_trimmed, it->second.text.substr(text_trimmed.length(), 3)});
+      // shortcut, the shortcut text is replaced with the shorter user input.
       const auto expanded_text =
-          ExpandToFullWord(text_and_3_chars, it->second.text);
+          ExpandToFullWord(text_trimmed, it->second.text, true);
       UpdateShortcut(ShortcutsDatabase::Shortcut(
           it->second.id, expanded_text,
           MatchToMatchCore(match, template_url_service_,
@@ -350,9 +363,11 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
   // is usually also recognizable and helpful when there are whitespace or other
   // discrepancies between the title and host (e.g. 'Stack Overflow' and
   // 'stackoverflow.com').
-  const auto expanded_text = ExpandToFullWord(
-      text, GetSwappedContents(match) + u" " +
-                base::UTF8ToUTF16(match.destination_url.host()));
+  const auto expanded_text =
+      ExpandToFullWord(text_trimmed,
+                       GetSwappedContents(match) + u" " +
+                           base::UTF8ToUTF16(match.destination_url.host()),
+                       false);
   AddShortcut(ShortcutsDatabase::Shortcut(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), expanded_text,
       MatchToMatchCore(match, template_url_service_, search_terms_data_.get()),
