@@ -94,6 +94,8 @@ class MLInstallabilityPromoter
       public content::ServiceWorkerContextObserver,
       public content::WebContentsUserData<MLInstallabilityPromoter> {
  public:
+  static constexpr char kShowInstallPromptLabel[] = "ShowInstallPrompt";
+
   ~MLInstallabilityPromoter() override;
 
   MLInstallabilityPromoter(const MLInstallabilityPromoter&) = delete;

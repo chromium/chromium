@@ -28,6 +28,7 @@
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -159,7 +160,7 @@ bool AppBannerManagerDesktop::IsWebAppConsideredInstalled() const {
 void AppBannerManagerDesktop::OnMlInstallPrediction(
     base::PassKey<MLInstallabilityPromoter>,
     std::string result_label) {
-  if (result_label == "ShowInstallPrompt") {
+  if (result_label == MLInstallabilityPromoter::kShowInstallPromptLabel) {
     ShowBannerUi(WebappInstallSource::ML_PROMOTION);
   }
 }
