@@ -756,17 +756,6 @@ std::string AboutUIHTMLSource::GetMimeType(const GURL& url) {
   return "text/html";
 }
 
-bool AboutUIHTMLSource::ShouldAddContentSecurityPolicy() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (source_name_ == chrome::kChromeUIOSCreditsHost ||
-      source_name_ == chrome::kChromeUICrostiniCreditsHost ||
-      source_name_ == chrome::kChromeUIBorealisCreditsHost) {
-    return false;
-  }
-#endif
-  return content::URLDataSource::ShouldAddContentSecurityPolicy();
-}
-
 std::string AboutUIHTMLSource::GetAccessControlAllowOriginForOrigin(
     const std::string& origin) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
