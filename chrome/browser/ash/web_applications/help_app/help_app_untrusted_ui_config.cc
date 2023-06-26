@@ -92,6 +92,8 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddBoolean(
       "HelpAppSearchServiceIntegration",
       base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
+  source->AddBoolean("HelpAppWelcomeTips",
+                     ash::features::AreHelpAppWelcomeTipsEnabled());
   source->AddBoolean("isCloudGamingDevice",
                      chromeos::features::IsCloudGamingDeviceEnabled());
   source->AddBoolean("jelly", chromeos::features::IsJellyEnabled());
