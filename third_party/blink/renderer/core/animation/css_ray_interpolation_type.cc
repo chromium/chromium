@@ -7,9 +7,10 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -22,23 +23,28 @@ namespace {
 
 class RayMode {
  public:
-  RayMode(StyleRay::RaySize size, bool contain)
-      : size_(size), contain_(contain) {}
+  RayMode(StyleRay::RaySize size, bool contain, CoordBox coord_box)
+      : size_(size), contain_(contain), coord_box_(coord_box) {}
 
-  explicit RayMode(const StyleRay& style_ray)
-      : size_(style_ray.Size()), contain_(style_ray.Contain()) {}
+  RayMode(const StyleRay& style_ray, CoordBox coord_box)
+      : size_(style_ray.Size()),
+        contain_(style_ray.Contain()),
+        coord_box_(coord_box) {}
 
   StyleRay::RaySize Size() const { return size_; }
   bool Contain() const { return contain_; }
+  CoordBox GetCoordBox() const { return coord_box_; }
 
   bool operator==(const RayMode& other) const {
-    return size_ == other.size_ && contain_ == other.contain_;
+    return size_ == other.size_ && contain_ == other.contain_ &&
+           coord_box_ == other.coord_box_;
   }
   bool operator!=(const RayMode& other) const { return !(*this == other); }
 
  private:
   StyleRay::RaySize size_;
   bool contain_;
+  CoordBox coord_box_;
 };
 
 }  // namespace
@@ -72,16 +78,22 @@ struct DowncastTraits<CSSRayNonInterpolableValue> {
 
 namespace {
 
+struct StyleRayAndCoordBox {
+  const StyleRay* ray;
+  const CoordBox coord_box;
+};
+
 // Returns the offset-path ray() value.
 // If the offset-path is not a ray(), returns nullptr.
-const StyleRay* GetRay(const ComputedStyle& style) {
+StyleRayAndCoordBox GetRay(const ComputedStyle& style) {
   const auto* offset_shape =
       DynamicTo<ShapeOffsetPathOperation>(style.OffsetPath());
   if (!offset_shape) {
-    return nullptr;
+    return {nullptr, CoordBox::kBorderBox};
   }
   const BasicShape& shape = offset_shape->GetBasicShape();
-  return DynamicTo<StyleRay>(shape);
+  const CoordBox coord_box = offset_shape->GetCoordBox();
+  return {DynamicTo<StyleRay>(shape), coord_box};
 }
 
 class UnderlyingRayModeChecker
@@ -102,18 +114,21 @@ class UnderlyingRayModeChecker
 
 class InheritedRayChecker : public CSSInterpolationType::CSSConversionChecker {
  public:
-  explicit InheritedRayChecker(scoped_refptr<const StyleRay> style_ray)
-      : style_ray_(std::move(style_ray)) {
+  InheritedRayChecker(scoped_refptr<const StyleRay> style_ray,
+                      CoordBox coord_box)
+      : style_ray_(std::move(style_ray)), coord_box_(coord_box) {
     DCHECK(style_ray_);
   }
 
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue&) const final {
-    return GetRay(*state.ParentStyle()) == style_ray_.get();
+    const auto& [ray, coord_box] = GetRay(*state.ParentStyle());
+    return ray == style_ray_.get() && coord_box_ == coord_box;
   }
 
   scoped_refptr<const StyleRay> style_ray_;
+  CoordBox coord_box_;
 };
 
 std::unique_ptr<InterpolableValue> ConvertCoordinate(
@@ -144,15 +159,17 @@ enum RayComponentIndex : unsigned {
   kRayComponentIndexCount,
 };
 
-InterpolationValue CreateValue(const StyleRay& ray, double zoom) {
+InterpolationValue CreateValue(const StyleRay& ray,
+                               CoordBox coord_box,
+                               double zoom) {
   auto list = std::make_unique<InterpolableList>(kRayComponentIndexCount);
   list->Set(kRayAngleIndex, std::make_unique<InterpolableNumber>(ray.Angle()));
   list->Set(kRayCenterXIndex, ConvertCoordinate(ray.CenterX(), zoom));
   list->Set(kRayCenterYIndex, ConvertCoordinate(ray.CenterY(), zoom));
   list->Set(kRayHasExplicitCenterIndex,
             std::make_unique<InterpolableNumber>(ray.HasExplicitCenter()));
-  return InterpolationValue(std::move(list),
-                            CSSRayNonInterpolableValue::Create(RayMode(ray)));
+  return InterpolationValue(std::move(list), CSSRayNonInterpolableValue::Create(
+                                                 RayMode(ray, coord_box)));
 }
 
 InterpolationValue CreateNeutralValue(const RayMode& mode) {
@@ -184,9 +201,8 @@ void CSSRayInterpolationType::ApplyStandardPropertyValue(
       CreateCoordinate(*list.Get(kRayCenterYIndex),
                        state.CssToLengthConversionData()),
       To<InterpolableNumber>(list.Get(kRayHasExplicitCenterIndex))->Value());
-  // TODO(sakhapov): handle coord box.
-  state.StyleBuilder().SetOffsetPath(
-      ShapeOffsetPathOperation::Create(style_ray, CoordBox::kBorderBox));
+  state.StyleBuilder().SetOffsetPath(ShapeOffsetPathOperation::Create(
+      style_ray, ray_non_interpolable_value.Mode().GetCoordBox()));
 }
 
 void CSSRayInterpolationType::Composite(
@@ -231,13 +247,14 @@ InterpolationValue CSSRayInterpolationType::MaybeConvertInherit(
   if (!state.ParentStyle())
     return nullptr;
 
-  const StyleRay* inherited_ray = GetRay(*state.ParentStyle());
+  const auto& [inherited_ray, coord_box] = GetRay(*state.ParentStyle());
   if (!inherited_ray)
     return nullptr;
 
   conversion_checkers.push_back(
-      std::make_unique<InheritedRayChecker>(inherited_ray));
-  return CreateValue(*inherited_ray, state.ParentStyle()->EffectiveZoom());
+      std::make_unique<InheritedRayChecker>(inherited_ray, coord_box));
+  return CreateValue(*inherited_ray, coord_box,
+                     state.ParentStyle()->EffectiveZoom());
 }
 
 PairwiseInterpolationValue CSSRayInterpolationType::MaybeMergeSingles(
@@ -257,11 +274,11 @@ PairwiseInterpolationValue CSSRayInterpolationType::MaybeMergeSingles(
 InterpolationValue
 CSSRayInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
-  const StyleRay* underlying_ray = GetRay(style);
+  const auto& [underlying_ray, coord_box] = GetRay(style);
   if (!underlying_ray)
     return nullptr;
 
-  return CreateValue(*underlying_ray, style.EffectiveZoom());
+  return CreateValue(*underlying_ray, coord_box, style.EffectiveZoom());
 }
 
 InterpolationValue CSSRayInterpolationType::MaybeConvertValue(
@@ -270,9 +287,13 @@ InterpolationValue CSSRayInterpolationType::MaybeConvertValue(
     ConversionCheckers&) const {
   DCHECK(state);
   scoped_refptr<BasicShape> shape = nullptr;
+  CoordBox coord_box = CoordBox::kBorderBox;
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     if (list->First().IsRayValue()) {
       shape = BasicShapeForValue(*state, list->First());
+      if (list->length() == 2) {
+        coord_box = To<CSSIdentifierValue>(list->Last()).ConvertTo<CoordBox>();
+      }
     }
   } else if (value.IsRayValue()) {
     shape = BasicShapeForValue(*state, value);
@@ -280,7 +301,7 @@ InterpolationValue CSSRayInterpolationType::MaybeConvertValue(
   if (!shape) {
     return nullptr;
   }
-  return CreateValue(To<StyleRay>(*shape),
+  return CreateValue(To<StyleRay>(*shape), coord_box,
                      state->ParentStyle()->EffectiveZoom());
 }
 

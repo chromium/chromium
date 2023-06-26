@@ -136,7 +136,7 @@
         {at: 2, expect: 'ray(-90deg farthest-corner at 150% 150%)'},
       ]);
 
-      // No interpolation between different sizes and/or different containment.
+      // No interpolation between different sizes and/or different containment and/or coord-boxes.
       test_no_interpolation({
         property: 'offset-path',
         from: 'ray(200deg farthest-side)',
@@ -151,6 +151,11 @@
         property: 'offset-path',
         from: 'ray(200deg farthest-side contain)',
         to: 'ray(300deg sides)'
+      });
+      test_no_interpolation({
+        property: 'offset-path',
+        from: 'ray(-10deg farthest-corner) content-box',
+        to: 'ray(-50deg farthest-corner at 100% 100%) padding-box'
       });
     </script>
   </body>
