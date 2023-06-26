@@ -20,6 +20,8 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_restore_test_helper.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -453,7 +455,7 @@ class SystemWebAppSessionRestoreTestChromeOS
   ~SystemWebAppSessionRestoreTestChromeOS() override = default;
 
  protected:
-  size_t GetNumBrowsers() { return BrowserList::GetInstance()->size(); }
+  SessionRestoreTestHelper waiter_;
 };
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppSessionRestoreTestChromeOS,
@@ -463,16 +465,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppSessionRestoreTestChromeOS,
   WaitForTestSystemAppInstall();
   LaunchApp(GetAppType());
 
-  auto app_params = Browser::CreateParams::CreateForApp(
-      test_app_name1, true, gfx::Rect(), browser()->profile(), true);
-  Browser* app_browser = Browser::Create(app_params);
-  AddBlankTabAndShow(app_browser);
-
-  // There should be three browsers:
-  //   1. The SWA browser
-  //   2. The |test_app_name1| browser
-  //   3. The main browser window
-  EXPECT_EQ(3u, GetNumBrowsers());
+  // Should have one SWA window and one default browser window.
+  EXPECT_TRUE(ash::FindSystemWebAppBrowser(browser()->profile(), GetAppType()));
+  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
 
   SessionStartupPref::SetStartupPref(
       browser()->profile(), SessionStartupPref(SessionStartupPref::LAST));
@@ -480,20 +475,15 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppSessionRestoreTestChromeOS,
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppSessionRestoreTestChromeOS,
                        OmitSystemWebApps) {
-  // TODO(b/287166775): Fix the test and remove this.
-  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
-    GTEST_SKIP()
-        << "Skipping test body for CrosapiParam::kEnabled, see b/287166775.";
-  }
+  waiter_.Wait();
 
-  // There should only be two browsers:
-  //  1. The |test_app_name1| browser
-  //  2. The main browser window
-  EXPECT_EQ(2u, GetNumBrowsers());
-  for (auto* browser : *BrowserList::GetInstance()) {
-    EXPECT_TRUE(browser->app_name().empty() ||
-                browser->app_name() == test_app_name1);
-  }
+  // Should have only one default browser window.
+  //
+  // Session restore doesn't go through system web app launch path, so system
+  // web app utils like `FindSystemWebAppBrowser` might not recognize such
+  // windows as a SWA browser window. Therefore we count the number of browser
+  // windows here instead of trying to find one.
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
