@@ -1,6 +1,6 @@
 {
   "name": "@lit/reactive-element",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "publishConfig": {
     "access": "public"
   },
@@ -184,6 +184,7 @@
       "command": "tsc --build --pretty",
       "clean": "if-file-deleted",
       "dependencies": [
+        "../labs/testing:build:ts:utils",
         "../labs/ssr-dom-shim:build:ts"
       ],
       "files": [

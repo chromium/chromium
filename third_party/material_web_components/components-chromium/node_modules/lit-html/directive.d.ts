@@ -27,7 +27,7 @@ export declare const PartType: {
     readonly EVENT: 5;
     readonly ELEMENT: 6;
 };
-export declare type PartType = typeof PartType[keyof typeof PartType];
+export declare type PartType = (typeof PartType)[keyof typeof PartType];
 export interface ChildPartInfo {
     readonly type: typeof PartType.CHILD;
 }

@@ -4,6 +4,14 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 import { ReactiveElement } from '../reactive-element.js';
+/**
+ * Generates a public interface type that removes private and protected fields.
+ * This allows accepting otherwise compatible versions of the type (e.g. from
+ * multiple copies of the same package in `node_modules`).
+ */
+export declare type Interface<T> = {
+    [K in keyof T]: T[K];
+};
 export declare type Constructor<T> = {
     new (...args: any[]): T;
 };
@@ -44,5 +52,5 @@ export declare const standardPrototypeMethod: (descriptor: PropertyDescriptor, e
 export declare const decorateProperty: ({ finisher, descriptor, }: {
     finisher?: ((ctor: typeof ReactiveElement, property: PropertyKey) => void) | null | undefined;
     descriptor?: ((property: PropertyKey) => PropertyDescriptor) | undefined;
-}) => (protoOrDescriptor: ReactiveElement | ClassElement, name?: PropertyKey) => void | any;
+}) => (protoOrDescriptor: Interface<ReactiveElement> | ClassElement, name?: PropertyKey) => void | any;
 //# sourceMappingURL=base.d.ts.map

@@ -1,6 +1,6 @@
 {
   "name": "@lit-labs/ssr-dom-shim",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "publishConfig": {
     "access": "public"
   },
@@ -23,7 +23,8 @@
     }
   },
   "files": [
-    "index.{d.ts,d.ts.map,js,js.map}"
+    "index.{d.ts,d.ts.map,js,js.map}",
+    "lib/"
   ],
   "scripts": {
     "build": "wireit",
@@ -43,6 +44,7 @@
         "tsconfig.json"
       ],
       "output": [
+        "lib/",
         "index.{d.ts,d.ts.map,js,js.map}",
         "tsconfig.tsbuildinfo"
       ]

@@ -13,7 +13,7 @@ import { Directive, DirectiveParameters, PartInfo } from '../directive.js';
  * for CSSStyleDeclaration like `backgroundColor`.
  */
 export interface StyleInfo {
-    [name: string]: string | undefined | null;
+    [name: string]: string | number | undefined | null;
 }
 declare class StyleMapDirective extends Directive {
     _previousStyleProperties?: Set<string>;
@@ -26,8 +26,10 @@ declare class StyleMapDirective extends Directive {
  *
  * `styleMap` can only be used in the `style` attribute and must be the only
  * expression in the attribute. It takes the property names in the
- * {@link StyleInfo styleInfo} object and adds the property values as CSS
- * properties. Property names with dashes (`-`) are assumed to be valid CSS
+ * {@link StyleInfo styleInfo} object and adds the properties to the inline
+ * style of the element.
+ *
+ * Property names with dashes (`-`) are assumed to be valid CSS
  * property names and set on the element's style object using `setProperty()`.
  * Names without dashes are assumed to be camelCased JavaScript property names
  * and set on the element's style object using property assignment, allowing the

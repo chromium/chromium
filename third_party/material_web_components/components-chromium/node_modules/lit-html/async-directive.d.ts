@@ -41,7 +41,7 @@
  *     AsyncDirective(D2)
  *   ._value // user value was TemplateResult
  *     TemplateInstance(T3) _$dC=[A4,A6,N10,N12]
- *      ._parts[]
+ *      ._$parts[]
  *        AttributePart(A4) _$dC=[D5]
  *         ._directives[]
  *           AsyncDirective(D5)
@@ -69,7 +69,7 @@
  *                AsyncDirective(D17)
  *              ._value // user value was TemplateResult
  *                TemplateInstance(T18) _$dC=[A19,A21,N25]
- *                 ._parts[]
+ *                 ._$parts[]
  *                   AttributePart(A19) _$dC=[D20]
  *                    ._directives[]
  *                      AsyncDirective(D20)
