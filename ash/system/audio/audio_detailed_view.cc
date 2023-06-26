@@ -542,9 +542,8 @@ AudioDetailedView::CreateQsNoiseCancellationToggleRow(
 
   auto toggle_icon =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          noise_cancellation_state ? kUnifiedMenuMicNoiseCancelHighIcon
-                                   : kUnifiedMenuMicNoiseCancelOffIcon,
-          cros_tokens::kCrosSysOnSurface, kQsSliderIconSize));
+          kUnifiedMenuMicNoiseCancelHighIcon, cros_tokens::kCrosSysOnSurface,
+          kQsSliderIconSize));
   noise_cancellation_icon_ = toggle_icon.get();
 
   noise_cancellation_view->AddViewAndLabel(
@@ -687,10 +686,6 @@ void AudioDetailedView::OnInputNoiseCancellationTogglePressed() {
   audio_handler->SetNoiseCancellationState(
       new_state, CrasAudioHandler::AudioSettingsChangeSource::kSystemTray);
   if (features::IsQsRevampEnabled()) {
-    noise_cancellation_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        new_state ? kUnifiedMenuMicNoiseCancelHighIcon
-                  : kUnifiedMenuMicNoiseCancelOffIcon,
-        cros_tokens::kCrosSysOnSurface, kQsSliderIconSize));
     noise_cancellation_button_->SetIsOn(new_state);
   }
 }
