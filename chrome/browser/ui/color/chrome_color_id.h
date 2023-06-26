@@ -454,6 +454,8 @@
   E_CPONLY(kColorTabBackgroundInactiveFrameInactive) \
   E_CPONLY(kColorTabBackgroundHoverFrameActive) \
   E_CPONLY(kColorTabBackgroundHoverFrameInactive) \
+  E_CPONLY(kColorTabBackgroundSelectedFrameActive) \
+  E_CPONLY(kColorTabBackgroundSelectedFrameInactive) \
   E_CPONLY(kColorTabCloseButtonFocusRingActive) \
   E_CPONLY(kColorTabCloseButtonFocusRingInactive) \
   E_CPONLY(kColorTabFocusRingActive) \

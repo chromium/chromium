@@ -54,6 +54,10 @@ class ChromeRefresh2023TabStyle : public GM2TabStyle {
   int GetTabOverlap() const override;
   gfx::Size GetSeparatorSize() const override;
   gfx::Insets GetSeparatorMargins() const override;
+  SkColor GetTabBackgroundColor(
+      TabSelectionState state,
+      bool frame_active,
+      const ui::ColorProvider& color_provider) const override;
   gfx::Insets GetContentsInsets() const override;
 };
 
@@ -177,8 +181,7 @@ SkColor GM2TabStyle::GetTabBackgroundColor(
     case TabStyle::TabSelectionState::kInactive:
       return inactive_color;
     default:
-      NOTREACHED();
-      return gfx::kPlaceholderColor;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -219,6 +222,30 @@ gfx::Insets ChromeRefresh2023TabStyle::GetContentsInsets() const {
 gfx::Insets ChromeRefresh2023TabStyle::GetSeparatorMargins() const {
   return gfx::Insets::TLBR(0, kChromeRefreshSeparatorHorizontalMargin, 6,
                            kChromeRefreshSeparatorHorizontalMargin);
+}
+
+SkColor ChromeRefresh2023TabStyle::GetTabBackgroundColor(
+    const TabSelectionState state,
+    const bool frame_active,
+    const ui::ColorProvider& color_provider) const {
+  switch (state) {
+    case TabStyle::TabSelectionState::kSelected:
+      return frame_active ? color_provider.GetColor(
+                                kColorTabBackgroundSelectedFrameActive)
+                          : color_provider.GetColor(
+                                kColorTabBackgroundSelectedFrameInactive);
+    case TabStyle::TabSelectionState::kHovered:
+      return frame_active
+                 ? color_provider.GetColor(kColorTabBackgroundHoverFrameActive)
+                 : color_provider.GetColor(
+                       kColorTabBackgroundHoverFrameInactive);
+    case TabStyle::TabSelectionState::kActive:
+    case TabStyle::TabSelectionState::kInactive:
+      return GM2TabStyle::GetTabBackgroundColor(state, frame_active,
+                                                color_provider);
+    default:
+      NOTREACHED_NORETURN();
+  }
 }
 
 // static

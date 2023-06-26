@@ -132,11 +132,31 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
   }
 
   // Fallbacks for ChromeRefresh2023, these colors dont exist in the
-  // GM2TabStyleViews version of the tabstrip.
-  mixer[kColorTabBackgroundHoverFrameActive] = {ui::SetAlpha(
-      kColorTabBackgroundActiveFrameActive, /* 50% opacity */ 0.5 * 255)};
-  mixer[kColorTabBackgroundHoverFrameInactive] = {ui::SetAlpha(
-      kColorTabBackgroundActiveFrameInactive, /* 50% opacity */ 0.5 * 255)};
+  // GM2TabStyleViews version of the tabstrip. They approximately replicate GM2
+  // behavior, with two compromises:
+  // 1. The tab hover color in GM2 depends on the tab width - narrower tabs have
+  // more opacity. We must chooses a single opacity, so we go with one towards
+  // the more opaque end of the GM2 range.
+  // 2. The tab hover color in GM2 depends on the inactive vs selected state -
+  // hovered selected tabs are ~85% opacity, hovered inactive tabs ~40%. We go
+  // with the hovered inactive color, as the other color only comes into play
+  // with multi-selection, which is very infrequently used by most users.
+  mixer[kColorTabBackgroundHoverFrameActive] = {
+      ui::AlphaBlend(kColorTabBackgroundActiveFrameActive,
+                     kColorTabBackgroundInactiveFrameActive,
+                     /* 40% opacity */ 0.4 * SK_AlphaOPAQUE)};
+  mixer[kColorTabBackgroundHoverFrameInactive] = {
+      ui::AlphaBlend(kColorTabBackgroundActiveFrameInactive,
+                     kColorTabBackgroundInactiveFrameInactive,
+                     /* 40% opacity */ 0.4 * SK_AlphaOPAQUE)};
+  mixer[kColorTabBackgroundSelectedFrameActive] = {
+      ui::AlphaBlend(kColorTabBackgroundActiveFrameActive,
+                     kColorTabBackgroundInactiveFrameActive,
+                     /* 75% opacity */ 0.75 * SK_AlphaOPAQUE)};
+  mixer[kColorTabBackgroundSelectedFrameInactive] = {
+      ui::AlphaBlend(kColorTabBackgroundActiveFrameInactive,
+                     kColorTabBackgroundInactiveFrameInactive,
+                     /* 75% opacity */ 0.75 * SK_AlphaOPAQUE)};
 
   mixer[kColorTabDividerFrameActive] = {kColorToolbar};
   mixer[kColorTabDividerFrameInactive] = {kColorToolbar};

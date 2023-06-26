@@ -551,6 +551,8 @@ void GM2TabStyleViews::PaintTabBackgroundWithImages(
     PaintTabBackground(canvas, TabStyle::TabSelectionState::kActive,
                        active_tab_fill_id, active_tab_y_inset);
   } else {
+    // TODO(tbergquist): This needs to paint a pill shape for hover, especially
+    // when selected, in GM3.
     PaintTabBackground(canvas, TabStyle::TabSelectionState::kInactive,
                        inactive_tab_fill_id, 0);
 
@@ -824,7 +826,7 @@ SkColor GM2TabStyleViews::GetTargetTabBackgroundColor(
     return gfx::kPlaceholderColor;
   }
 
-  const SkColor color = TabStyle::Get()->GetTabBackgroundColor(
+  const SkColor color = tab_style()->GetTabBackgroundColor(
       selection_state, active_widget, *tab_->GetColorProvider());
   if (selection_state != TabStyle::TabSelectionState::kHovered) {
     return color;
@@ -835,7 +837,7 @@ SkColor GM2TabStyleViews::GetTargetTabBackgroundColor(
   const TabStyle::TabSelectionState unhovered_state =
       tab_->IsSelected() ? TabStyle::TabSelectionState::kSelected
                          : TabStyle::TabSelectionState::kInactive;
-  const SkColor unhovered_color = TabStyle::Get()->GetTabBackgroundColor(
+  const SkColor unhovered_color = tab_style()->GetTabBackgroundColor(
       unhovered_state, active_widget, *tab_->GetColorProvider());
   return color_utils::AlphaBlend(color, unhovered_color, GetHoverOpacity());
 }
@@ -1080,6 +1082,8 @@ class ChromeRefresh2023TabStyleViews : public GM2TabStyleViews {
  public:
   explicit ChromeRefresh2023TabStyleViews(Tab* tab);
   ~ChromeRefresh2023TabStyleViews() override = default;
+  SkColor GetTargetTabBackgroundColor(
+      TabStyle::TabSelectionState selection_state) const override;
   int GetStrokeThickness(bool should_paint_as_active = false) const override;
   SkPath GetPath(TabStyle::PathType path_type,
                  float scale,
@@ -1099,6 +1103,19 @@ class ChromeRefresh2023TabStyleViews : public GM2TabStyleViews {
 ChromeRefresh2023TabStyleViews::ChromeRefresh2023TabStyleViews(Tab* tab)
     : GM2TabStyleViews(tab) {}
 
+SkColor ChromeRefresh2023TabStyleViews::GetTargetTabBackgroundColor(
+    TabStyle::TabSelectionState selection_state) const {
+  // Tests may not have a color provider or a widget.
+  const bool active_widget =
+      tab()->GetWidget() ? tab()->GetWidget()->ShouldPaintAsActive() : true;
+  if (!tab()->GetColorProvider()) {
+    return gfx::kPlaceholderColor;
+  }
+
+  return tab_style()->GetTabBackgroundColor(selection_state, active_widget,
+                                            *tab()->GetColorProvider());
+}
+
 int ChromeRefresh2023TabStyleViews::GetStrokeThickness(
     bool should_paint_as_active) const {
   if (tab()->group().has_value() && tab()->IsActive()) {
@@ -1116,9 +1133,10 @@ SkPath ChromeRefresh2023TabStyleViews::GetPath(
   CHECK(tab());
   const int stroke_thickness = GetStrokeThickness(force_active);
 
+  const TabStyle::TabSelectionState state = GetCurrentSelectionState();
   // Active fill for CR23 is the same as GM2. Selected/hover is a detached tab.
-  if ((path_type == TabStyle::PathType::kFill && !tab()->IsActive() &&
-       tab()->IsSelected()) ||
+  if ((path_type == TabStyle::PathType::kFill &&
+       state == TabStyle::TabSelectionState::kSelected) ||
       (path_type == TabStyle::PathType::kHighlight)) {
     // TODO (crbug.com/1451400): This constant should be unified with
     // kCRtabstripRegionViewControlPadding in tab_strip_region_view.
@@ -1172,17 +1190,12 @@ void ChromeRefresh2023TabStyleViews::PaintBackgroundHover(gfx::Canvas* canvas,
       GetPath(TabStyle::PathType::kHighlight, canvas->image_scale(), true);
   canvas->ClipPath(fill_path, true);
 
-  const auto* cp = tab()->GetWidget()->GetColorProvider();
-  const SkColor color =
-      cp->GetColor(tab()->GetWidget()->ShouldPaintAsActive()
-                       ? kColorTabBackgroundHoverFrameActive
-                       : kColorTabBackgroundHoverFrameInactive);
-  const SkColor4f color_with_alpha_animation = SkColor4f::FromColor(
-      SkColorSetA(color, GetHoverAnimationValue() * SkColorGetA(color)));
+  const SkColor hover_color =
+      GetCurrentTabBackgroundColor(TabStyle::TabSelectionState::kHovered);
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(color_with_alpha_animation);
+  flags.setColor(hover_color);
   canvas->DrawRect(gfx::ScaleToEnclosingRect(tab()->GetLocalBounds(), scale),
                    flags);
 }

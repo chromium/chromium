@@ -46,6 +46,12 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabBackgroundHoverFrameInactive] = {
       ui::kColorSysStateHoverOnSubtle};
 
+  mixer[kColorTabBackgroundSelectedFrameActive] = {ui::GetResultingPaintColor(
+      ui::kColorSysStateRippleNeutralOnSubtle, ui::kColorSysStateHeaderHover)};
+  mixer[kColorTabBackgroundSelectedFrameInactive] = {
+      ui::GetResultingPaintColor(ui::kColorSysStateRippleNeutralOnSubtle,
+                                 ui::kColorSysStateHoverOnSubtle)};
+
   /* WebUI Tab Strip colors. */
   mixer[kColorWebUiTabStripBackground] = {ui::kColorSysHeader};
   mixer[kColorWebUiTabStripFocusOutline] = {ui::kColorSysPrimary};
