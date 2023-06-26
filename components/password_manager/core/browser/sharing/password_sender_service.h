@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_PASSWORD_SENDER_SERVICE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_PASSWORD_SENDER_SERVICE_H_
 
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
 namespace password_manager {
@@ -19,12 +20,13 @@ struct PasswordRecipient {
 };
 
 // The PasswordSenderService class defines the interface for sending passwords.
-class PasswordSenderService {
+class PasswordSenderService : public KeyedService {
  public:
   PasswordSenderService() = default;
+  ~PasswordSenderService() override = default;
+
   PasswordSenderService(const PasswordSenderService&) = delete;
   PasswordSenderService& operator=(const PasswordSenderService&) = delete;
-  virtual ~PasswordSenderService() = default;
 
   // Sends password entries for the given `credential_ui_entry` to the specified
   // `recipient`.
