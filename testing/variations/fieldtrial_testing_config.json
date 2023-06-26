@@ -3271,6 +3271,25 @@
             ]
         }
     ],
+    "ClipboardDeemphasisAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "MaxAge180SuppressAfterFirstUse",
+                    "params": {
+                        "UIClipboardMaximumAge": "180"
+                    },
+                    "enable_features": [
+                        "ClipboardMaximumAge",
+                        "SuppressClipboardSuggestionAfterFirstUsed"
+                    ]
+                }
+            ]
+        }
+    ],
     "CodeBasedRBD": [
         {
             "platforms": [
