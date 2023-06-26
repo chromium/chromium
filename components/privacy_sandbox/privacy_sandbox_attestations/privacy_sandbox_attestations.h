@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
+
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
@@ -15,21 +17,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace privacy_sandbox {
-
-// When a new enum value is added:
-// 1. Update kMaxValue to match it.
-// 2. Update `PrivacySandboxAttestationsGatedAPIProto` in
-//    `privacy_sandbox_attestations.proto`.
-// 3. Update `AllowAPI` in `privacy_sandbox_attestations_parser.cc`.
-enum class PrivacySandboxAttestationsGatedAPI {
-  kTopics,
-  kProtectedAudience,
-  kPrivateAggregation,
-  kAttributionReporting,
-  kSharedStorage,
-
-  kMaxValue = kSharedStorage,
-};
 
 using PrivacySandboxAttestationsGatedAPISet =
     base::EnumSet<PrivacySandboxAttestationsGatedAPI,
@@ -75,8 +62,9 @@ class PrivacySandboxAttestations {
   // Returns whether `site` is enrolled and attested for `invoking_api`.
   // (If the `kEnforcePrivacySandboxAttestations` flag is disabled, returns
   // true unconditionally.)
-  bool IsSiteAttested(const net::SchemefulSite& site,
-                      PrivacySandboxAttestationsGatedAPI invoking_api) const;
+  PrivacySandboxSettingsImpl::Status IsSiteAttested(
+      const net::SchemefulSite& site,
+      PrivacySandboxAttestationsGatedAPI invoking_api) const;
 
   // Override the site to be attested for all the Privacy Sandbox APIs, even if
   // it is not officially enrolled. This allows developers to test Privacy
@@ -89,7 +77,7 @@ class PrivacySandboxAttestations {
   // calling this to make sure the attestations map is set to the testing
   // instance.
   void SetAttestationsForTesting(
-      PrivacySandboxAttestationsMap attestations_map);
+      absl::optional<PrivacySandboxAttestationsMap> attestations_map);
 
  private:
   // TODO(xiaochenzh): This class should also hold the version of the

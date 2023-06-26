@@ -12,6 +12,7 @@ source_set("privacy_sandbox_attestations") {
 
   deps = [
     "//components/privacy_sandbox:features",
+    "//components/privacy_sandbox:privacy_sandbox_settings_headers",
     "//components/privacy_sandbox/privacy_sandbox_attestations/proto:proto",
   ]
 

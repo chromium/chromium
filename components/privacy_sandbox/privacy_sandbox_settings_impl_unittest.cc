@@ -1760,6 +1760,44 @@ class PrivacySandboxAttestationsTest : public PrivacySandboxSettingsM1Test {
   }
 };
 
+// When the attestations map has not yet been loaded,  attestation fails.
+TEST_F(PrivacySandboxAttestationsTest, AttestationsNotLoaded) {
+  GURL top_frame_url("https://top-frame.com");
+  GURL enrollee_url("https://embedded.com");
+  RunTestCase(
+      TestState{{MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
+                                   kM1FledgeEnabledUserPrefValue,
+                                   kM1AdMeasurementEnabledUserPrefValue},
+                 true},
+                {kAttestationsMap, absl::nullopt}},
+      TestInput{
+          {kTopicsURL, enrollee_url},
+          {kTopFrameOrigin, url::Origin::Create(top_frame_url)},
+          {kAdMeasurementReportingOrigin, url::Origin::Create(enrollee_url)},
+          {kFledgeAuctionPartyOrigin, url::Origin::Create(enrollee_url)},
+          {kEventReportingDestinationOrigin, url::Origin::Create(enrollee_url)},
+          {kAdMeasurementSourceOrigin,
+           url::Origin::Create(GURL(top_frame_url))},
+          {kAdMeasurementDestinationOrigin,
+           url::Origin::Create(GURL(top_frame_url))},
+          {kAccessingOrigin, url::Origin::Create(enrollee_url)}},
+      TestOutput{
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContext, kIsAttributionReportingAllowed,
+               kMaySendAttributionReport, kIsFledgeAllowed,
+               kIsEventReportingDestinationAttestedForFledge,
+               kIsEventReportingDestinationAttestedForSharedStorage,
+               kIsSharedStorageAllowed, kIsPrivateAggregationAllowed},
+           false},
+          {MultipleOutputKeys{kIsTopicsAllowedForContextMetric,
+                              kIsAttributionReportingAllowedMetric,
+                              kMaySendAttributionReportMetric,
+                              kIsFledgeAllowedMetric,
+                              kIsSharedStorageAllowedMetric,
+                              kIsPrivateAggregationAllowedMetric},
+           static_cast<int>(Status::kAttestationsNotLoaded)}});
+}
+
 // When the attestations map has no enrollments at all (i.e., no enrollment
 // for the site in question), attestation fails.
 TEST_F(PrivacySandboxAttestationsTest, NoEnrollments) {
