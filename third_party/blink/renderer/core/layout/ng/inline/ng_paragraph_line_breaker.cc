@@ -5,8 +5,6 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_paragraph_line_breaker.h"
 
 #include <numeric>
-#include "base/metrics/histogram_macros.h"
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_breaker.h"
@@ -144,26 +142,6 @@ wtf_size_t EstimateNumLines(const String& text_content,
 
 // static
 absl::optional<LayoutUnit> NGParagraphLineBreaker::AttemptParagraphBalancing(
-    const NGInlineNode& node,
-    const NGConstraintSpace& space,
-    const NGLineLayoutOpportunity& line_opportunity) {
-  const base::ElapsedTimer timer;
-  const absl::optional<LayoutUnit> result =
-      AttemptParagraphBalancingCore(node, space, line_opportunity);
-  if (result) {
-    UMA_HISTOGRAM_TIMES("Renderer.Layout.TextWrapBalance", timer.Elapsed());
-    UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapBalance);
-  } else {
-    UMA_HISTOGRAM_TIMES("Renderer.Layout.TextWrapBalance.Fail",
-                        timer.Elapsed());
-    UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapBalanceFail);
-  }
-  return result;
-}
-
-// static
-absl::optional<LayoutUnit>
-NGParagraphLineBreaker::AttemptParagraphBalancingCore(
     const NGInlineNode& node,
     const NGConstraintSpace& space,
     const NGLineLayoutOpportunity& line_opportunity) {
