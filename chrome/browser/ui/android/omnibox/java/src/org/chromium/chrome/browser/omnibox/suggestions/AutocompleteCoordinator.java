@@ -198,6 +198,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     }
 
     private OmniboxSuggestionsDropdownAdapter createAdapter(ModelList listItems) {
+        BaseSuggestionViewBinder.resetCachedDimensions();
         OmniboxSuggestionsDropdownAdapter adapter =
                 new OmniboxSuggestionsDropdownAdapter(listItems);
 

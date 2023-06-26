@@ -354,6 +354,10 @@ public final class BaseSuggestionViewBinder<T extends View>
         view.setLayoutParams(layoutParams);
     }
 
+    public static void resetCachedDimensions() {
+        sDimensionsInitialized = false;
+    }
+
     @VisibleForTesting
     static void initializeDimensions(Context context) {
         boolean showModernizeVisualUpdate =
