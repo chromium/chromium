@@ -19,7 +19,7 @@
 <div class="settings-box first">
   <div id="hotspotToggleText" class="start" on$="[[isHotspotToggleOn_]]"
        aria-hidden="true">
-     [[getOnOffString_(isHotspotToggleOn_)]]
+     [[getOnOffString_(hotspotInfo.state)]]
   </div>
   <cr-toggle id="enableHotspotToggle"
       checked="{{isHotspotToggleOn_}}"

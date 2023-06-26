@@ -23,7 +23,7 @@
       $i18n{hotspotPageTitle}
       <div class="secondary" id="hotspotStateSublabel"
           hidden="[[shouldHideHotspotStateSublabel_(hotspotInfo.allowStatus)]]">
-        [[getHotspotStateSublabel_(isHotspotToggleOn_)]]
+        [[getHotspotStateSublabel_(hotspotInfo.state)]]
       </div>
       <localized-link class="secondary" id="hotspotDisabledSublabelLink"
           hidden="[[!shouldHideHotspotStateSublabel_(hotspotInfo.allowStatus)]]"
@@ -44,7 +44,7 @@
       <cr-icon-button id="hotspotSummaryItemRowArrowIcon"
           class="subpage-arrow layout end"
           aria-label="$i18n{hotspotPageTitle}"
-          aria-description$="[[getHotspotStateSublabel_(isHotspotToggleOn_)]]"
+          aria-description$="[[getHotspotStateSublabel_(hotspotInfo.state)]]"
           aria-roledescription="$i18n{subpageArrowRoleDescription}"
           on-click="navigateToDetailPage_">
       </cr-icon-button>

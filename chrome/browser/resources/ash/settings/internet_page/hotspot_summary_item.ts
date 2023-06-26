@@ -76,9 +76,18 @@ export class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
     Router.getInstance().navigateTo(routes.HOTSPOT_DETAIL);
   }
 
-  private getHotspotStateSublabel_(isHotspotToggleOn: boolean): string {
-    return isHotspotToggleOn ? this.i18n('hotspotSummaryStateOn') :
-                               this.i18n('hotspotSummaryStateOff');
+  private getHotspotStateSublabel_(): string {
+    if (this.hotspotInfo.state === HotspotState.kEnabling) {
+      return this.i18n('hotspotSummaryStateTurningOn');
+    }
+    if (this.hotspotInfo.state === HotspotState.kEnabled) {
+      return this.i18n('hotspotSummaryStateOn');
+    }
+    if (this.hotspotInfo.state === HotspotState.kDisabling) {
+      return this.i18n('hotspotSummaryStateTurningOff');
+    }
+
+    return this.i18n('hotspotSummaryStateOff');
   }
 
   private shouldHideHotspotStateSublabel_(allowStatus: HotspotAllowStatus):

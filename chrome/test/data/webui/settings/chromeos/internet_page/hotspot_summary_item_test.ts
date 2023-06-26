@@ -166,6 +166,34 @@ suite('<hotspot-summary-item>', () => {
         'Disabled sublabel link should hide');
   });
 
+  test('Hotspot sublabel in various hotspot states', async () => {
+    hotspotConfig_.setFakeHotspotState(HotspotState.kEnabling);
+    await flushAsync();
+    const hotspotStateSublabel = queryHotspotStateSublabel();
+    assertTrue(!!hotspotStateSublabel);
+    assertEquals(
+        hotspotSummaryItem.i18n('hotspotSummaryStateTurningOn'),
+        hotspotStateSublabel.textContent!.trim());
+
+    hotspotConfig_.setFakeHotspotState(HotspotState.kEnabled);
+    await flushAsync();
+    assertEquals(
+        hotspotSummaryItem.i18n('hotspotSummaryStateOn'),
+        hotspotStateSublabel.textContent!.trim());
+
+    hotspotConfig_.setFakeHotspotState(HotspotState.kDisabling);
+    await flushAsync();
+    assertEquals(
+        hotspotSummaryItem.i18n('hotspotSummaryStateTurningOff'),
+        hotspotStateSublabel.textContent!.trim());
+
+    hotspotConfig_.setFakeHotspotState(HotspotState.kDisabled);
+    await flushAsync();
+    assertEquals(
+        hotspotSummaryItem.i18n('hotspotSummaryStateOff'),
+        hotspotStateSublabel.textContent!.trim());
+  });
+
   test('UI state when disallowed by policy', async () => {
     hotspotConfig_.setFakeHotspotAllowStatus(
         HotspotAllowStatus.kDisallowedByPolicy);

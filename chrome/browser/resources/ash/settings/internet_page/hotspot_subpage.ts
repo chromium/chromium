@@ -123,9 +123,21 @@ export class SettingsHotspotSubpageElement extends
         this.hotspotInfo.state === HotspotState.kDisabling;
   }
 
-  private getOnOffString_(isHotspotToggleOn: boolean): string {
-    return isHotspotToggleOn ? this.i18n('hotspotSummaryStateOn') :
-                               this.i18n('hotspotSummaryStateOff');
+  private getOnOffString_(): string {
+    if (!this.hotspotInfo) {
+      return this.i18n('hotspotSummaryStateOff');
+    }
+    if (this.hotspotInfo.state === HotspotState.kEnabling) {
+      return this.i18n('hotspotSummaryStateTurningOn');
+    }
+    if (this.hotspotInfo.state === HotspotState.kEnabled) {
+      return this.i18n('hotspotSummaryStateOn');
+    }
+    if (this.hotspotInfo.state === HotspotState.kDisabling) {
+      return this.i18n('hotspotSummaryStateTurningOff');
+    }
+
+    return this.i18n('hotspotSummaryStateOff');
   }
 
   private setHotspotEnabledState_(enabled: boolean): void {

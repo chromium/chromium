@@ -190,12 +190,26 @@ suite('<settings-hotspot-subpage>', () => {
     // Toggle should be disabled.
     assertTrue(enableToggle.disabled);
 
+    hotspotConfig.setFakeHotspotState(HotspotState.kEnabling);
+    await flushAsync();
+    assertEquals(
+        hotspotSubpage.i18n('hotspotSummaryStateTurningOn'),
+        hotspotOnOffLabel.textContent!.trim());
+    assertTrue(enableToggle.checked);
+
     hotspotConfig.setFakeHotspotState(HotspotState.kEnabled);
     await flushAsync();
     assertEquals(
         hotspotSubpage.i18n('hotspotSummaryStateOn'),
         hotspotOnOffLabel.textContent!.trim());
     assertTrue(enableToggle.checked);
+
+    hotspotConfig.setFakeHotspotState(HotspotState.kDisabling);
+    await flushAsync();
+    assertEquals(
+        hotspotSubpage.i18n('hotspotSummaryStateTurningOff'),
+        hotspotOnOffLabel.textContent!.trim());
+    assertFalse(enableToggle.checked);
 
     hotspotConfig.setFakeHotspotState(HotspotState.kDisabled);
     await flushAsync();
