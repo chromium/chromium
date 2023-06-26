@@ -7,6 +7,8 @@ import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {$} from '//resources/ash/common/util.js';
 import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Oobe} from '../../cr_ui.js';
+
 /**
  * @fileoverview Common testing utils methods used for OOBE tast tests.
  */
@@ -994,6 +996,18 @@ export class OobeApiProvider {
 
     this.getBrowseAsGuestButtonName = function() {
       return loadTimeData.getString('testapi_browseAsGuest');
+    };
+
+    this.getCurrentScreenName = function() {
+      return Oobe.getInstance().currentScreen.id.trim();
+    };
+
+    this.getCurrentScreenStep = function() {
+      const step = Oobe.getInstance().currentScreen.getAttribute('multistep');
+      if (step === null) {
+        return 'default';
+      }
+      return step.trim();
     };
   }
 }

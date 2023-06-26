@@ -5,11 +5,13 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
+  is_polymer3 = true
   deps = [ ":test_api" ]
 }
 
 js_library("test_api") {
   deps = [
+    "../:cr_ui",
     "//ash/webui/common/resources:load_time_data.m",
     "//ash/webui/common/resources:util",
   ]
