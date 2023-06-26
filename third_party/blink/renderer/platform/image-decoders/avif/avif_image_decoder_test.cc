@@ -885,6 +885,76 @@ TEST(StaticAVIFTests, ValidImages) {
       &CreateAVIFDecoder,
       "/images/resources/avif/gracehopper_422_12b_grid2x4.avif", 1,
       kAnimationNone);
+  TestByteByByteDecode(&CreateAVIFDecoder,
+                       "/images/resources/avif/small-with-gainmap.avif", 1,
+                       kAnimationNone);
+}
+
+TEST(StaticAVIFTests, GetGainmapInfoAndData) {
+  scoped_refptr<SharedBuffer> data =
+      ReadFile("/images/resources/avif/small-with-gainmap.avif");
+  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
+  decoder->SetData(data, true);
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  const bool has_gainmap =
+      decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data);
+  ASSERT_TRUE(has_gainmap);
+
+  // Check gainmap metadata.
+  constexpr double kEpsilon = 0.00001;
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[0], 1.0, kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[1], 1.0, kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[2], 1.0, kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[3], 1.0, kEpsilon);
+
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[0], std::pow(2., 2.753770),
+              kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[1], std::pow(2., 2.753770),
+              kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[2], std::pow(2., 2.753770),
+              kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[3], 1., kEpsilon);
+
+  EXPECT_NEAR(gainmap_info.fGainmapGamma[0], 1. / 0.31108, kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapGamma[1], 1. / 0.31108, kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapGamma[2], 1. / 0.31108, kEpsilon);
+  EXPECT_NEAR(gainmap_info.fGainmapGamma[3], 1., kEpsilon);
+
+  EXPECT_NEAR(gainmap_info.fEpsilonSdr[0], 0.015625, kEpsilon);
+  EXPECT_NEAR(gainmap_info.fEpsilonSdr[1], 0.015625, kEpsilon);
+  EXPECT_NEAR(gainmap_info.fEpsilonSdr[2], 0.015625, kEpsilon);
+  EXPECT_NEAR(gainmap_info.fEpsilonSdr[3], 1., kEpsilon);
+
+  EXPECT_NEAR(gainmap_info.fEpsilonHdr[0], 0.015625, kEpsilon);
+  EXPECT_NEAR(gainmap_info.fEpsilonHdr[1], 0.015625, kEpsilon);
+  EXPECT_NEAR(gainmap_info.fEpsilonHdr[2], 0.015625, kEpsilon);
+  EXPECT_NEAR(gainmap_info.fEpsilonHdr[3], 1., kEpsilon);
+
+  EXPECT_NEAR(gainmap_info.fDisplayRatioSdr, 1, kEpsilon);
+  EXPECT_NEAR(gainmap_info.fDisplayRatioHdr, std::pow(2., 2.8), kEpsilon);
+
+  // Check that the gainmap can be decoded.
+  std::unique_ptr<ImageDecoder> gainmap_decoder = CreateAVIFDecoder();
+  gainmap_decoder->SetData(gainmap_data, true);
+  ImageFrame* gainmap_frame = decoder->DecodeFrameBufferAtIndex(0);
+  EXPECT_TRUE(gainmap_frame);
+}
+
+TEST(StaticAVIFTests, GetGainmapInfoAndDataWithTruncatedData) {
+  scoped_refptr<SharedBuffer> data =
+      ReadFile("/images/resources/avif/small-with-gainmap.avif");
+  const std::vector<char> data_vector = data->CopyAs<std::vector<char>>();
+  scoped_refptr<SharedBuffer> half_data =
+      SharedBuffer::Create(data_vector.data(), data_vector.size() / 2);
+
+  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
+  decoder->SetData(half_data, true);
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  const bool has_gainmap =
+      decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data);
+  ASSERT_FALSE(has_gainmap);
 }
 
 TEST(StaticAVIFTests, YUV) {

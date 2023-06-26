@@ -1815,7 +1815,10 @@ component("platform") {
       "image-decoders/avif/avif_image_decoder.h",
     ]
 
-    deps += [ "//third_party/libavif" ]
+    deps += [
+      "//third_party/libavif",
+      "//third_party/libavifinfo",
+    ]
   }
 
   if (current_cpu == "x86" || current_cpu == "x64") {
