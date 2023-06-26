@@ -117,7 +117,7 @@ class PLATFORM_EXPORT NonMainThreadImpl : public NonMainThread {
 
     // The following variables are "owned" by the worker thread
     std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
-    scoped_refptr<base::sequence_manager::TaskQueue> internal_task_queue_;
+    base::sequence_manager::TaskQueue::Handle internal_task_queue_;
     std::unique_ptr<scheduler::NonMainThreadSchedulerBase>
         non_main_thread_scheduler_;
     scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;

@@ -1136,9 +1136,10 @@ size_t SequenceManagerImpl::GetPendingTaskCountForTesting() const {
   return total;
 }
 
-scoped_refptr<TaskQueue> SequenceManagerImpl::CreateTaskQueue(
+TaskQueue::Handle SequenceManagerImpl::CreateTaskQueue(
     const TaskQueue::Spec& spec) {
-  return WrapRefCounted(new TaskQueue(CreateTaskQueueImpl(spec), spec));
+  return TaskQueue::Handle(
+      std::make_unique<TaskQueue>(CreateTaskQueueImpl(spec), spec));
 }
 
 std::string SequenceManagerImpl::DescribeAllPendingTasks() const {

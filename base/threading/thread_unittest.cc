@@ -572,7 +572,7 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
 
  private:
   std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
-  scoped_refptr<TaskQueue> task_queue_;
+  TaskQueue::Handle task_queue_;
 };
 
 }  // namespace

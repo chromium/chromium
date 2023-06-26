@@ -46,10 +46,10 @@ int main() {
 
   // Create two same-priority TaskQueues that feed into the main thread's
   // SequenceManager.
-  scoped_refptr<base::sequence_manager::TaskQueue> tq_a =
+  base::sequence_manager::TaskQueue::Handle tq_a =
       sequence_manager->CreateTaskQueue(base::sequence_manager::TaskQueue::Spec(
           base::sequence_manager::QueueName::TEST_TQ));
-  scoped_refptr<base::sequence_manager::TaskQueue> tq_b =
+  base::sequence_manager::TaskQueue::Handle tq_b =
       sequence_manager->CreateTaskQueue(base::sequence_manager::TaskQueue::Spec(
           base::sequence_manager::QueueName::TEST2_TQ));
 

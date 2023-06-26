@@ -286,11 +286,10 @@ class BASE_EXPORT SequenceManager {
 
   virtual TaskQueue::QueuePriority GetPriorityCount() const = 0;
 
-  // Creates a vanilla TaskQueue rather than a user type derived from it. This
-  // should be used if you don't wish to sub class TaskQueue.
-  // Must be called on the main thread.
-  virtual scoped_refptr<TaskQueue> CreateTaskQueue(
-      const TaskQueue::Spec& spec) = 0;
+  // Creates a `TaskQueue` and returns a `TaskQueue::Handle`for it. The queue is
+  // owned by the handle and shut down when the handle is destroyed. Must be
+  // called on the main thread.
+  virtual TaskQueue::Handle CreateTaskQueue(const TaskQueue::Spec& spec) = 0;
 
   // Returns true iff this SequenceManager has no immediate work to do. I.e.
   // there are no pending non-delayed tasks or delayed tasks that are due to

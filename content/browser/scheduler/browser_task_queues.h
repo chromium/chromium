@@ -185,7 +185,7 @@ class CONTENT_EXPORT BrowserTaskQueues {
     ~QueueData();
     QueueData(QueueData&& other);
 
-    scoped_refptr<base::sequence_manager::TaskQueue> task_queue;
+    base::sequence_manager::TaskQueue::Handle task_queue;
     std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter> voter;
   };
 
@@ -214,10 +214,10 @@ class CONTENT_EXPORT BrowserTaskQueues {
 
   // Helper queue to make sure private methods run on the associated thread. the
   // control queue has maximum priority and will never be disabled.
-  scoped_refptr<base::sequence_manager::TaskQueue> control_queue_;
+  base::sequence_manager::TaskQueue::Handle control_queue_;
 
   // Helper queue to run all pending tasks.
-  scoped_refptr<base::sequence_manager::TaskQueue> run_all_pending_tasks_queue_;
+  base::sequence_manager::TaskQueue::Handle run_all_pending_tasks_queue_;
   int run_all_pending_nesting_level_ = 0;
 
   scoped_refptr<Handle> handle_;

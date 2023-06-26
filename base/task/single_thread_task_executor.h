@@ -10,6 +10,7 @@
 #include "base/base_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace base {
@@ -18,7 +19,6 @@ class MessagePump;
 
 namespace sequence_manager {
 class SequenceManager;
-class TaskQueue;
 }  // namespace sequence_manager
 
 // A simple single thread TaskExecutor intended for non-test usage. Tests should
@@ -56,7 +56,7 @@ class BASE_EXPORT SingleThreadTaskExecutor {
                                     std::unique_ptr<MessagePump> pump);
 
   std::unique_ptr<sequence_manager::SequenceManager> sequence_manager_;
-  scoped_refptr<sequence_manager::TaskQueue> default_task_queue_;
+  sequence_manager::TaskQueue::Handle default_task_queue_;
   MessagePumpType type_;
 };
 

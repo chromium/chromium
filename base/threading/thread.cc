@@ -102,7 +102,7 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
  private:
   std::unique_ptr<sequence_manager::internal::SequenceManagerImpl>
       sequence_manager_;
-  scoped_refptr<sequence_manager::TaskQueue> default_task_queue_;
+  sequence_manager::TaskQueue::Handle default_task_queue_;
   OnceCallback<std::unique_ptr<MessagePump>()> message_pump_factory_;
 };
 

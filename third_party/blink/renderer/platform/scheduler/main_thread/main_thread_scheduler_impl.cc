@@ -847,13 +847,6 @@ MainThreadSchedulerImpl::NewThrottleableTaskQueueForTest(
                           .SetCanRunWhenVirtualTimePaused(false));
 }
 
-scoped_refptr<base::sequence_manager::TaskQueue>
-MainThreadSchedulerImpl::NewTaskQueueForTest() {
-  return sequence_manager_->CreateTaskQueue(
-      base::sequence_manager::TaskQueue::Spec(
-          base::sequence_manager::QueueName::TEST_TQ));
-}
-
 void MainThreadSchedulerImpl::OnShutdownTaskQueue(
     const scoped_refptr<MainThreadTaskQueue>& task_queue) {
   if (was_shutdown_) {

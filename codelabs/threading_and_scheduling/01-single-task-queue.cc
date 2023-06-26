@@ -50,7 +50,7 @@ int main() {
 
   // Create a default TaskQueue that feeds into the SequenceManager. Inside a
   // SequenceManager, TaskQueue is the basic unit of scheduling...
-  scoped_refptr<base::sequence_manager::TaskQueue> default_task_queue =
+  base::sequence_manager::TaskQueue::Handle default_task_queue =
       sequence_manager->CreateTaskQueue(base::sequence_manager::TaskQueue::Spec(
           base::sequence_manager::QueueName::DEFAULT_TQ));
 

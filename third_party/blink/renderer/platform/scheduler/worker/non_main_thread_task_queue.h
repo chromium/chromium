@@ -7,7 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/common/lazy_now.h"
-#include "base/task/sequence_manager/task_queue_impl.h"
+#include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -129,7 +129,7 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
   scoped_refptr<BlinkSchedulerSingleThreadTaskRunner> WrapTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner>);
 
-  scoped_refptr<TaskQueue> task_queue_;
+  TaskQueue::Handle task_queue_;
   absl::optional<TaskQueueThrottler> throttler_;
 
   // Not owned.

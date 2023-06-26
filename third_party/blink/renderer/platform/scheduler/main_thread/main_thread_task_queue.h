@@ -555,7 +555,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   scoped_refptr<BlinkSchedulerSingleThreadTaskRunner> WrapTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner>);
 
-  scoped_refptr<TaskQueue> task_queue_;
+  TaskQueue::Handle task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner>
       task_runner_with_default_task_type_;
   absl::optional<TaskQueueThrottler> throttler_;

@@ -71,7 +71,7 @@ class IOThreadDelegate : public base::Thread::Delegate {
  private:
   std::unique_ptr<base::sequence_manager::SequenceManager>
       owned_sequence_manager_;
-  scoped_refptr<base::sequence_manager::TaskQueue> task_queue_;
+  base::sequence_manager::TaskQueue::Handle task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
 };
 
@@ -86,7 +86,7 @@ int main() {
           std::move(pump));
 
   // Create a default TaskQueue that feeds into the SequenceManager.
-  scoped_refptr<base::sequence_manager::TaskQueue> main_task_queue =
+  base::sequence_manager::TaskQueue::Handle main_task_queue =
       sequence_manager->CreateTaskQueue(base::sequence_manager::TaskQueue::Spec(
           base::sequence_manager::TaskQueue::Spec(
               base::sequence_manager::QueueName::DEFAULT_TQ)));

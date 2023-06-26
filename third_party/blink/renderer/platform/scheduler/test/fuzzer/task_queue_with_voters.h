@@ -15,10 +15,10 @@ namespace sequence_manager {
 
 struct PLATFORM_EXPORT TaskQueueWithVoters
     : public RefCountedThreadSafe<TaskQueueWithVoters> {
-  explicit TaskQueueWithVoters(scoped_refptr<TaskQueue> task_queue)
+  explicit TaskQueueWithVoters(TaskQueue::Handle task_queue)
       : queue(std::move(task_queue)) {}
 
-  scoped_refptr<TaskQueue> queue;
+  TaskQueue::Handle queue;
   Vector<std::unique_ptr<TaskQueue::QueueEnabledVoter>> voters;
 };
 

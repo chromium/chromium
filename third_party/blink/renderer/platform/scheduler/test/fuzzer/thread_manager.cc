@@ -214,8 +214,7 @@ void ThreadManager::PostDelayedTask(
   // PostDelayedTask could be called cross-thread - therefore we need a refptr
   // to the TaskQueue which could potentially be deleted by the thread on which
   // ThreadManager lives.
-  scoped_refptr<TaskQueue> chosen_task_queue =
-      GetTaskQueueFor(task_queue_id)->queue.get();
+  TaskQueue* chosen_task_queue = GetTaskQueueFor(task_queue_id)->queue.get();
 
   std::unique_ptr<Task> pending_task = std::make_unique<Task>(this);
 
@@ -343,7 +342,7 @@ void ThreadManager::ExecuteInsertFenceAction(
                                   ActionForTest::ActionType::kInsertFence,
                                   NowTicks());
 
-  scoped_refptr<TaskQueue> chosen_task_queue =
+  TaskQueue* chosen_task_queue =
       GetTaskQueueFor(action.task_queue_id())->queue.get();
 
   if (action.position() ==
@@ -364,7 +363,7 @@ void ThreadManager::ExecuteRemoveFenceAction(
                                   ActionForTest::ActionType::kRemoveFence,
                                   NowTicks());
 
-  scoped_refptr<TaskQueue> chosen_task_queue =
+  TaskQueue* chosen_task_queue =
       GetTaskQueueFor(action.task_queue_id())->queue.get();
   chosen_task_queue->RemoveFence();
 }

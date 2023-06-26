@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequence_manager/sequence_manager.h"
+#include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/threading/thread_checker.h"
@@ -494,7 +495,7 @@ class TaskEnvironment {
   // Null in other modes.
   std::unique_ptr<subtle::ScopedTimeClockOverrides> time_overrides_;
 
-  scoped_refptr<sequence_manager::TaskQueue> task_queue_;
+  sequence_manager::TaskQueue::Handle task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // Only set for instances using TimeSource::MOCK_TIME.
