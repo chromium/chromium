@@ -24,15 +24,6 @@ extern const char kIphIgnoreCount[];
 
 extern const char kIphLastIgnoreTime[];
 
-bool GetBoolWebAppPref(const PrefService* pref_service,
-                       const AppId& app_id,
-                       base::StringPiece path);
-
-void UpdateBoolWebAppPref(PrefService* pref_service,
-                          const AppId& app_id,
-                          base::StringPiece path,
-                          bool value);
-
 absl::optional<int> GetIntWebAppPref(const PrefService* pref_service,
                                      const AppId& app_id,
                                      base::StringPiece path);
@@ -41,15 +32,6 @@ void UpdateIntWebAppPref(PrefService* pref_service,
                          const AppId& app_id,
                          base::StringPiece path,
                          int value);
-
-absl::optional<double> GetDoubleWebAppPref(const PrefService* pref_service,
-                                           const AppId& app_id,
-                                           base::StringPiece path);
-
-void UpdateDoubleWebAppPref(PrefService* pref_service,
-                            const AppId& app_id,
-                            base::StringPiece path,
-                            double value);
 
 absl::optional<base::Time> GetTimeWebAppPref(const PrefService* pref_service,
                                              const AppId& app_id,

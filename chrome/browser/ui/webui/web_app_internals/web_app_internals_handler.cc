@@ -48,7 +48,9 @@ constexpr char kInstalledWebApps[] = "InstalledWebApps";
 constexpr char kPreinstalledWebAppConfigs[] = "PreinstalledWebAppConfigs";
 constexpr char kUserUninstalledPreinstalledWebAppPrefs[] =
     "UserUninstalledPreinstalledWebAppPrefs";
-constexpr char kExternallyManagedWebAppPrefs[] = "ExternallyManagedWebAppPrefs";
+constexpr char kWebAppPreferences[] = "WebAppPreferences";
+constexpr char kWebAppIphPreferences[] = "WebAppIphPreferences";
+constexpr char kWebAppMlPreferences[] = "WebAppMlPreferences";
 constexpr char kLockManager[] = "LockManager";
 constexpr char kCommandManager[] = "CommandManager";
 constexpr char kIconErrorLog[] = "IconErrorLog";
@@ -76,7 +78,9 @@ base::Value::Dict BuildIndexJson() {
   index.Append(kInstalledWebApps);
   index.Append(kPreinstalledWebAppConfigs);
   index.Append(kUserUninstalledPreinstalledWebAppPrefs);
-  index.Append(kExternallyManagedWebAppPrefs);
+  index.Append(kWebAppPreferences);
+  index.Append(kWebAppIphPreferences);
+  index.Append(kWebAppMlPreferences);
   index.Append(kLockManager);
   index.Append(kCommandManager);
   index.Append(kIconErrorLog);
@@ -91,9 +95,7 @@ base::Value::Dict BuildIndexJson() {
 
 base::Value::Dict BuildInstalledWebAppsJson(web_app::WebAppProvider& provider) {
   base::Value::Dict root;
-
   root.Set(kInstalledWebApps, provider.registrar_unsafe().AsDebugValue());
-
   return root;
 }
 
@@ -170,6 +172,29 @@ base::Value::Dict BuildUserUninstalledPreinstalledWebAppPrefsJson(
            profile->GetPrefs()
                ->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref)
                .Clone());
+  return root;
+}
+
+base::Value::Dict BuildWebAppsPrefsJson(Profile* profile) {
+  base::Value::Dict root;
+  root.Set(kWebAppPreferences,
+           profile->GetPrefs()->GetDict(prefs::kWebAppsPreferences).Clone());
+  return root;
+}
+
+base::Value::Dict BuildWebAppIphPrefsJson(Profile* profile) {
+  base::Value::Dict root;
+  root.Set(
+      kWebAppIphPreferences,
+      profile->GetPrefs()->GetDict(prefs::kWebAppsAppAgnosticIphState).Clone());
+  return root;
+}
+
+base::Value::Dict BuildWebAppMlPrefsJson(Profile* profile) {
+  base::Value::Dict root;
+  root.Set(
+      kWebAppMlPreferences,
+      profile->GetPrefs()->GetDict(prefs::kWebAppsAppAgnosticMlState).Clone());
   return root;
 }
 
@@ -316,6 +341,9 @@ void WebAppInternalsHandler::BuildDebugInfo(
   root.Append(BuildInstalledWebAppsJson(*provider));
   root.Append(BuildPreinstalledWebAppConfigsJson(*provider));
   root.Append(BuildUserUninstalledPreinstalledWebAppPrefsJson(profile));
+  root.Append(BuildWebAppsPrefsJson(profile));
+  root.Append(BuildWebAppIphPrefsJson(profile));
+  root.Append(BuildWebAppMlPrefsJson(profile));
   root.Append(BuildLockManagerJson(*provider));
   root.Append(BuildCommandManagerJson(*provider));
   root.Append(BuildIconErrorLogJson(*provider));

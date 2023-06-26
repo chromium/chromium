@@ -125,26 +125,6 @@ void WebAppPrefsUtilsRegisterProfilePrefs(
   registry->RegisterDictionaryPref(::prefs::kWebAppsAppAgnosticMlState);
 }
 
-bool GetBoolWebAppPref(const PrefService* pref_service,
-                       const AppId& app_id,
-                       base::StringPiece path) {
-  if (const base::Value::Dict* web_app_prefs =
-          GetWebAppDictionary(pref_service, app_id)) {
-    return web_app_prefs->FindBoolByDottedPath(path).value_or(false);
-  }
-  return false;
-}
-
-void UpdateBoolWebAppPref(PrefService* pref_service,
-                          const AppId& app_id,
-                          base::StringPiece path,
-                          bool value) {
-  ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsPreferences);
-
-  base::Value::Dict& web_app_prefs = UpdateWebAppDictionary(update, app_id);
-  web_app_prefs.SetByDottedPath(path, value);
-}
-
 absl::optional<int> GetIntWebAppPref(const PrefService* pref_service,
                                      const AppId& app_id,
                                      base::StringPiece path) {
@@ -159,26 +139,6 @@ void UpdateIntWebAppPref(PrefService* pref_service,
                          const AppId& app_id,
                          base::StringPiece path,
                          int value) {
-  ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsPreferences);
-
-  base::Value::Dict& web_app_prefs = UpdateWebAppDictionary(update, app_id);
-  web_app_prefs.SetByDottedPath(path, value);
-}
-
-absl::optional<double> GetDoubleWebAppPref(const PrefService* pref_service,
-                                           const AppId& app_id,
-                                           base::StringPiece path) {
-  const base::Value::Dict* web_app_prefs =
-      GetWebAppDictionary(pref_service, app_id);
-  if (web_app_prefs)
-    return web_app_prefs->FindDoubleByDottedPath(path);
-  return absl::nullopt;
-}
-
-void UpdateDoubleWebAppPref(PrefService* pref_service,
-                            const AppId& app_id,
-                            base::StringPiece path,
-                            double value) {
   ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsPreferences);
 
   base::Value::Dict& web_app_prefs = UpdateWebAppDictionary(update, app_id);
