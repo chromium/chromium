@@ -123,7 +123,6 @@ struct ItemInfoToBeRestored {
 class NavigationManagerTest : public PlatformTest {
  protected:
   NavigationManagerTest() {
-    manager_.reset(new NavigationManagerImpl);
     mock_web_view_ = OCMClassMock([WKWebView class]);
     mock_wk_list_ = [[CRWFakeBackForwardList alloc] init];
     OCMStub([mock_web_view_ backForwardList]).andReturn(mock_wk_list_);
@@ -133,8 +132,8 @@ class NavigationManagerTest : public PlatformTest {
     BrowserURLRewriter::GetInstance()->AddURLRewriter(UrlRewriter);
     url::AddStandardScheme(kSchemeToRewrite, url::SCHEME_WITH_HOST);
 
-    manager_->SetDelegate(&delegate_);
-    manager_->SetBrowserState(&browser_state_);
+    manager_ =
+        std::make_unique<NavigationManagerImpl>(&browser_state_, &delegate_);
   }
 
   // Returns the value of the "#session=" URL hash component from `url`.
@@ -2887,10 +2886,7 @@ TEST_F(NavigationManagerDetachedModeTest, NotSerializable) {
 
 // Tests that GetVisibleWebViewURL() returns a cached GURL.
 TEST_F(NavigationManagerTest, TestGetVisibleWebViewOriginURLCache) {
-  NavigationManagerImpl manager;
-  manager.SetDelegate(&delegate_);
-  manager.SetBrowserState(&browser_state_);
-
+  NavigationManagerImpl manager(&browser_state_, &delegate_);
   NavigationManagerImpl::WKWebViewCache& cache = manager.web_view_cache_;
 
   GURL gurl("http://www.existing.com");

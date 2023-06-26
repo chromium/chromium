@@ -111,17 +111,15 @@ NavigationManager::WebLoadParams& NavigationManager::WebLoadParams::operator=(
   return *this;
 }
 
-NavigationManagerImpl::NavigationManagerImpl() = default;
+NavigationManagerImpl::NavigationManagerImpl(
+    BrowserState* browser_state,
+    NavigationManagerDelegate* delegate)
+    : delegate_(delegate), browser_state_(browser_state) {
+  CHECK(browser_state_);
+  CHECK(delegate_);
+}
 
 NavigationManagerImpl::~NavigationManagerImpl() = default;
-
-void NavigationManagerImpl::SetDelegate(NavigationManagerDelegate* delegate) {
-  delegate_ = delegate;
-}
-
-void NavigationManagerImpl::SetBrowserState(BrowserState* browser_state) {
-  browser_state_ = browser_state;
-}
 
 void NavigationManagerImpl::SetNativeSessionFetcher(
     SessionDataBlobFetcher native_session_fetcher) {

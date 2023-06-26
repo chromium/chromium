@@ -84,11 +84,10 @@ void WebStateImpl::RealizedWebState::Init(const CreateParams& params,
                                           CRWSessionStorage* session_storage,
                                           FaviconStatus favicon_status) {
   created_with_opener_ = params.created_with_opener;
-  navigation_manager_ = std::make_unique<NavigationManagerImpl>();
   favicon_status_ = std::move(favicon_status);
 
-  navigation_manager_->SetDelegate(this);
-  navigation_manager_->SetBrowserState(params.browser_state);
+  navigation_manager_ =
+      std::make_unique<NavigationManagerImpl>(params.browser_state, this);
   web_controller_ = [[CRWWebController alloc] initWithWebState:owner_];
 
   // Restore session history last because NavigationManagerImpl relies on

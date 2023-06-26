@@ -26,13 +26,12 @@ namespace web {
 class NavigationManagerUtilTest : public PlatformTest {
  protected:
   NavigationManagerUtilTest() {
-    manager_ = std::make_unique<NavigationManagerImpl>();
-    manager_->SetBrowserState(&browser_state_);
     WKWebView* mock_web_view = OCMClassMock([WKWebView class]);
     mock_wk_list_ = [[CRWFakeBackForwardList alloc] init];
     OCMStub([mock_web_view backForwardList]).andReturn(mock_wk_list_);
     delegate_.SetWebViewNavigationProxy(mock_web_view);
-    manager_->SetDelegate(&delegate_);
+    manager_ =
+        std::make_unique<NavigationManagerImpl>(&browser_state_, &delegate_);
   }
 
   std::unique_ptr<NavigationManagerImpl> manager_;
