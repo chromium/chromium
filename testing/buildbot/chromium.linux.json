@@ -12,7 +12,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -28,7 +27,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -45,7 +43,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -61,7 +58,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -77,7 +73,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -93,7 +88,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -110,7 +104,6 @@
         },
         "name": "webkit_unit_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -126,7 +119,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -142,7 +134,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -161,7 +152,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -177,7 +167,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -193,7 +182,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -209,7 +197,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -225,7 +212,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -241,7 +227,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -267,7 +252,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -283,7 +267,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -299,7 +282,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -315,7 +297,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -334,7 +315,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -351,7 +331,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -367,7 +346,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -383,7 +361,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -400,7 +377,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -416,7 +392,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -432,7 +407,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -448,7 +422,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -464,7 +437,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -480,7 +452,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -496,7 +467,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -512,7 +482,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -528,7 +497,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -545,7 +513,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -561,7 +528,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -577,7 +543,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -593,7 +558,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -609,7 +573,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -625,7 +588,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -641,7 +603,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -657,7 +618,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -673,7 +633,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -689,7 +648,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -705,7 +663,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -721,7 +678,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -737,7 +693,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -753,7 +708,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -769,7 +723,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -785,7 +738,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -801,7 +753,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -817,7 +768,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -833,7 +783,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -858,7 +807,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -874,7 +822,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -891,7 +838,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -907,7 +853,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -923,7 +868,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -939,7 +883,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -956,7 +899,6 @@
         },
         "name": "webkit_unit_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -972,7 +914,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -988,7 +929,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1007,7 +947,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1023,7 +962,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1039,7 +977,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1055,7 +992,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1071,7 +1007,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1088,7 +1023,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1104,7 +1038,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1120,7 +1053,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1146,7 +1078,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1162,7 +1093,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1178,7 +1108,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1194,7 +1123,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1213,7 +1141,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1230,7 +1157,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1246,7 +1172,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1262,7 +1187,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1279,7 +1203,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1295,7 +1218,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1311,7 +1233,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1327,7 +1248,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1343,7 +1263,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1359,7 +1278,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1375,7 +1293,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1391,7 +1308,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1407,7 +1323,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1424,7 +1339,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1440,7 +1354,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1456,7 +1369,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1472,7 +1384,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1488,7 +1399,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1504,7 +1414,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1520,7 +1429,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1536,7 +1444,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1552,7 +1459,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1568,7 +1474,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1584,7 +1489,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1600,7 +1504,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1616,7 +1519,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1632,7 +1534,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1648,7 +1549,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1664,7 +1564,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1680,7 +1579,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1697,7 +1595,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1713,7 +1610,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1729,7 +1625,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1779,7 +1674,6 @@
           "performance_test_suite"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1855,7 +1749,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1872,7 +1765,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1889,7 +1781,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1907,7 +1798,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1924,7 +1814,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1941,7 +1830,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1958,7 +1846,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1975,7 +1862,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -1992,7 +1878,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2009,7 +1894,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2027,7 +1911,6 @@
         },
         "name": "webkit_unit_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2044,7 +1927,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2061,7 +1943,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2078,7 +1959,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2102,7 +1982,6 @@
         },
         "name": "cr23_browser_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2122,7 +2001,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2139,7 +2017,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2156,7 +2033,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2173,7 +2049,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2190,7 +2065,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2207,7 +2081,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2224,7 +2097,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2241,7 +2113,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2258,7 +2129,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2275,7 +2145,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2293,7 +2162,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2310,7 +2178,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2327,7 +2194,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2344,7 +2210,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2361,7 +2226,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2378,7 +2242,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2395,7 +2258,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2412,7 +2274,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2430,7 +2291,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2447,7 +2307,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2464,7 +2323,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2481,7 +2339,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2498,7 +2355,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2515,7 +2371,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2532,7 +2387,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2549,7 +2403,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2566,7 +2419,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2583,7 +2435,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2600,7 +2451,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2617,7 +2467,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2634,7 +2483,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2651,7 +2499,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2675,7 +2522,6 @@
         },
         "name": "cr23_interactive_ui_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2692,7 +2538,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2709,7 +2554,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2727,7 +2571,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2744,7 +2587,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2761,7 +2603,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2778,7 +2619,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2795,7 +2635,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2812,7 +2651,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2829,7 +2667,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2846,7 +2683,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2863,7 +2699,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2880,7 +2715,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2897,7 +2731,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2914,7 +2747,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2931,7 +2763,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2948,7 +2779,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2965,7 +2795,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2982,7 +2811,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -2999,7 +2827,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3017,7 +2844,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3034,7 +2860,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3051,7 +2876,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3068,7 +2892,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3085,7 +2908,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3102,7 +2924,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3119,7 +2940,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3136,7 +2956,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3153,7 +2972,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3170,7 +2988,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3187,7 +3004,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3205,7 +3021,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3222,7 +3037,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3239,7 +3053,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3256,7 +3069,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3273,7 +3085,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3296,7 +3107,6 @@
         },
         "name": "cr23_views_unittests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3313,7 +3123,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3330,7 +3139,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3347,7 +3155,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3364,7 +3171,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3382,7 +3188,6 @@
         },
         "name": "xr_browser_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3399,7 +3204,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3423,7 +3227,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3445,7 +3248,6 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3476,7 +3278,6 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3508,7 +3309,6 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3534,7 +3334,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3552,7 +3351,6 @@
         },
         "name": "chromedriver_replay_unittests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3574,7 +3372,6 @@
           "result_format": "single"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3596,7 +3393,6 @@
           "result_format": "single"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3618,7 +3414,6 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3640,7 +3435,6 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3662,7 +3456,6 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3683,7 +3476,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3715,7 +3507,6 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3747,7 +3538,6 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3769,7 +3559,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3801,7 +3590,6 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3833,7 +3621,6 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3855,7 +3642,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3882,7 +3668,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3909,7 +3694,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3932,7 +3716,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3954,7 +3737,6 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -3978,7 +3760,6 @@
         },
         "name": "views_perftests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4010,7 +3791,6 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4031,7 +3811,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4056,7 +3835,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4078,7 +3856,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4100,7 +3877,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4123,7 +3899,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4145,7 +3920,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4167,7 +3941,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4189,7 +3962,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4211,7 +3983,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4233,7 +4004,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4255,7 +4025,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4278,7 +4047,6 @@
         },
         "name": "webkit_unit_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4300,7 +4068,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4322,7 +4089,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4345,7 +4111,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4372,7 +4137,6 @@
         },
         "name": "cr23_browser_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4395,7 +4159,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4417,7 +4180,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4439,7 +4201,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4461,7 +4222,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4483,7 +4243,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4505,7 +4264,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4527,7 +4285,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4549,7 +4306,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4571,7 +4327,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4593,7 +4348,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4616,7 +4370,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4638,7 +4391,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4660,7 +4412,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4682,7 +4433,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4704,7 +4454,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4726,7 +4475,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4748,7 +4496,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4770,7 +4517,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4793,7 +4539,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4815,7 +4560,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4837,7 +4581,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4859,7 +4602,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4881,7 +4623,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4903,7 +4644,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4925,7 +4665,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4947,7 +4686,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4969,7 +4707,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -4991,7 +4728,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5013,7 +4749,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5035,7 +4770,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5058,7 +4792,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5085,7 +4818,6 @@
         },
         "name": "cr23_interactive_ui_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5107,7 +4839,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5129,7 +4860,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5152,7 +4882,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5174,7 +4903,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5196,7 +4924,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5218,7 +4945,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5240,7 +4966,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5262,7 +4987,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5284,7 +5008,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5306,7 +5029,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5328,7 +5050,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5350,7 +5071,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5372,7 +5092,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5394,7 +5113,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5416,7 +5134,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5438,7 +5155,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5460,7 +5176,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5482,7 +5197,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5505,7 +5219,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5527,7 +5240,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5549,7 +5261,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5571,7 +5282,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5593,7 +5303,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5615,7 +5324,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5637,7 +5345,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5659,7 +5366,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5681,7 +5387,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5703,7 +5408,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5725,7 +5429,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5748,7 +5451,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5770,7 +5472,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5793,7 +5494,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5815,7 +5515,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5838,7 +5537,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5864,7 +5562,6 @@
         },
         "name": "cr23_views_unittests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5886,7 +5583,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5908,7 +5604,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5930,7 +5625,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5952,7 +5646,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5975,7 +5668,6 @@
         },
         "name": "xr_browser_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -5997,7 +5689,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6017,7 +5708,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6033,7 +5723,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6049,7 +5738,6 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6066,7 +5754,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6082,7 +5769,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6098,7 +5784,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6114,7 +5799,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6130,7 +5814,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6146,7 +5829,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6162,7 +5844,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6179,7 +5860,6 @@
         },
         "name": "webkit_unit_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6195,7 +5875,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6211,7 +5890,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6227,7 +5905,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6250,7 +5927,6 @@
         },
         "name": "cr23_browser_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6269,7 +5945,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6285,7 +5960,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6301,7 +5975,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6317,7 +5990,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6333,7 +6005,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6349,7 +6020,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6365,7 +6035,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6381,7 +6050,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6397,7 +6065,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6413,7 +6080,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6430,7 +6096,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6446,7 +6111,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6462,7 +6126,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6478,7 +6141,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6494,7 +6156,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6510,7 +6171,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6526,7 +6186,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6542,7 +6201,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6559,7 +6217,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6575,7 +6232,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6591,7 +6247,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6607,7 +6262,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6623,7 +6277,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6639,7 +6292,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6655,7 +6307,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6671,7 +6322,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6687,7 +6337,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6703,7 +6352,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6719,7 +6367,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6735,7 +6382,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6751,7 +6397,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6767,7 +6412,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6790,7 +6434,6 @@
         },
         "name": "cr23_interactive_ui_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6806,7 +6449,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6822,7 +6464,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6839,7 +6480,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6855,7 +6495,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6871,7 +6510,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6887,7 +6525,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6903,7 +6540,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6919,7 +6555,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6935,7 +6570,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6951,7 +6585,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6967,7 +6600,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -6983,7 +6615,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7000,7 +6631,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7016,7 +6646,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7032,7 +6661,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7048,7 +6676,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7064,7 +6691,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7080,7 +6706,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7096,7 +6721,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7113,7 +6737,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7129,7 +6752,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7145,7 +6767,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7161,7 +6782,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7177,7 +6797,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7193,7 +6812,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7209,7 +6827,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7225,7 +6842,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7241,7 +6857,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7257,7 +6872,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7273,7 +6887,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7290,7 +6903,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7306,7 +6918,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7322,7 +6933,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7338,7 +6948,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7354,7 +6963,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7376,7 +6984,6 @@
         },
         "name": "cr23_views_unittests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7392,7 +6999,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7408,7 +7014,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7424,7 +7029,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7440,7 +7044,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7457,7 +7060,6 @@
         },
         "name": "xr_browser_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7473,7 +7075,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7496,7 +7097,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7526,7 +7126,6 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7557,7 +7156,6 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7579,7 +7177,6 @@
           "result_format": "single"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7600,7 +7197,6 @@
           "result_format": "single"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7620,7 +7216,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7650,7 +7245,6 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7671,7 +7265,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7697,7 +7290,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7723,7 +7315,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7748,7 +7339,6 @@
         },
         "name": "views_perftests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7768,7 +7358,6 @@
         },
         "name": "webdriver_tests_suite",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7792,7 +7381,6 @@
         },
         "name": "network_service_web_request_proxy_browser_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7817,7 +7405,6 @@
         },
         "name": "bf_cache_browser_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7838,7 +7425,6 @@
         },
         "name": "bf_cache_content_browsertests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7859,7 +7445,6 @@
         },
         "name": "bf_cache_content_unittests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7881,7 +7466,6 @@
         },
         "name": "bf_cache_unit_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7914,7 +7498,6 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -7945,7 +7528,6 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"

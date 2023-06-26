@@ -27,7 +27,6 @@
         },
         "name": "args_test mixins",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "iama": "mixin"
@@ -47,7 +46,6 @@
         "name": "args_test swarming",
         "swarming": {
           "a": "b",
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "hello": "world"

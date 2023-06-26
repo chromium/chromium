@@ -19,7 +19,6 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cores": "8",
@@ -75,7 +74,6 @@
         },
         "name": "webkit_unit_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cores": "8",
@@ -148,7 +146,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -184,7 +181,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -220,7 +216,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -256,7 +251,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -292,7 +286,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -332,7 +325,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -377,7 +369,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -422,7 +413,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -458,7 +448,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -494,7 +483,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -539,7 +527,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -584,7 +571,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -621,7 +607,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -658,7 +643,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -695,7 +679,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -731,7 +714,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -770,7 +752,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -810,7 +791,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -849,7 +829,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -888,7 +867,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",

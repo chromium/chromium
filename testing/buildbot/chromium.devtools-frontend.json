@@ -12,7 +12,6 @@
         },
         "name": "blink_unit_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -44,7 +43,6 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -76,7 +74,6 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"
@@ -106,7 +103,6 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-22.04"

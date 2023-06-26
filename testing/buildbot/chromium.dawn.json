@@ -26,7 +26,6 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -77,7 +76,6 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -128,7 +126,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -169,7 +166,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -212,7 +208,6 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -263,7 +258,6 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -314,7 +308,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -355,7 +348,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "R",
@@ -398,7 +390,6 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "TP1A.220624.021",
@@ -449,7 +440,6 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "TP1A.220624.021",
@@ -500,7 +490,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "TP1A.220624.021",
@@ -541,7 +530,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "TP1A.220624.021",
@@ -584,7 +572,6 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "TP1A.220624.021",
@@ -635,7 +622,6 @@
           "has_native_resultdb_integration": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "TP1A.220624.021",
@@ -686,7 +672,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "TP1A.220624.021",
@@ -727,7 +712,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_os": "TP1A.220624.021",
@@ -759,7 +743,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -787,7 +770,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -814,7 +796,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -841,7 +822,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -872,7 +852,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -900,7 +879,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -927,7 +905,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -954,7 +931,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -981,7 +957,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -1006,7 +981,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -1035,7 +1009,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -1065,7 +1038,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -1087,7 +1059,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -1120,7 +1091,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -1152,7 +1122,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -1187,7 +1156,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -1226,7 +1194,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -1259,7 +1226,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -1291,7 +1257,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -1328,7 +1293,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -1369,7 +1333,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -1399,7 +1362,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -1427,7 +1389,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -1454,7 +1415,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -1481,7 +1441,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -1508,7 +1467,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -1533,7 +1491,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -1562,7 +1519,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -1592,7 +1548,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -1614,7 +1569,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -1647,7 +1601,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -1679,7 +1632,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -1714,7 +1666,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -1752,7 +1703,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -1785,7 +1735,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -1817,7 +1766,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -1854,7 +1802,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -1894,7 +1841,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -1924,7 +1870,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -1952,7 +1897,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -1979,7 +1923,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -2006,7 +1949,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -2033,7 +1975,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -2058,7 +1999,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -2087,7 +2027,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -2117,7 +2056,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -2139,7 +2077,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -2172,7 +2109,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -2204,7 +2140,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -2239,7 +2174,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -2278,7 +2212,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -2311,7 +2244,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -2343,7 +2275,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -2380,7 +2311,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -2421,7 +2351,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -2451,7 +2380,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -2479,7 +2407,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -2506,7 +2433,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -2533,7 +2459,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -2560,7 +2485,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -2585,7 +2509,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -2614,7 +2537,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -2644,7 +2566,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -2666,7 +2587,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -2699,7 +2619,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -2731,7 +2650,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -2766,7 +2684,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -2804,7 +2721,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -2837,7 +2753,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -2869,7 +2784,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -2906,7 +2820,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -2946,7 +2859,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -2975,7 +2887,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3005,7 +2916,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3034,7 +2944,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3063,7 +2972,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3092,7 +3000,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3119,7 +3026,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3150,7 +3056,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3183,7 +3088,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3208,7 +3112,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3243,7 +3146,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3277,7 +3179,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3315,7 +3216,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3356,7 +3256,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3391,7 +3290,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3425,7 +3323,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3465,7 +3362,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3508,7 +3404,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3540,7 +3435,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3570,7 +3464,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3599,7 +3492,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3628,7 +3520,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3657,7 +3548,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3684,7 +3574,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3715,7 +3604,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3748,7 +3636,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3773,7 +3660,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3808,7 +3694,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3842,7 +3727,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3880,7 +3764,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3921,7 +3804,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3956,7 +3838,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -3990,7 +3871,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -4030,7 +3910,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -4073,7 +3952,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "arm64",
@@ -4107,7 +3985,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4137,7 +4014,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4166,7 +4042,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4195,7 +4070,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4224,7 +4098,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4251,7 +4124,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4282,7 +4154,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4315,7 +4186,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4340,7 +4210,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4375,7 +4244,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4409,7 +4277,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4447,7 +4314,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4488,7 +4354,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4523,7 +4388,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4557,7 +4421,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4597,7 +4460,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4640,7 +4502,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4672,7 +4533,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4700,7 +4560,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4727,7 +4586,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4754,7 +4612,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4781,7 +4638,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4806,7 +4662,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4835,7 +4690,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4866,7 +4720,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4889,7 +4742,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4922,7 +4774,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4954,7 +4805,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -4990,7 +4840,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5029,7 +4878,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5062,7 +4910,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5094,7 +4941,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5132,7 +4978,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5173,7 +5018,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5209,7 +5053,6 @@
         "name": "noop_sleep_tests",
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5247,7 +5090,6 @@
         "name": "noop_sleep_tests",
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5277,7 +5119,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5307,7 +5148,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5336,7 +5176,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5365,7 +5204,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5394,7 +5232,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5421,7 +5258,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5452,7 +5288,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5485,7 +5320,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5510,7 +5344,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5545,7 +5378,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5579,7 +5411,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5617,7 +5448,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5658,7 +5488,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5693,7 +5522,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5727,7 +5555,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5767,7 +5594,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5810,7 +5636,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5842,7 +5667,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5870,7 +5694,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5897,7 +5720,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5924,7 +5746,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5951,7 +5772,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -5976,7 +5796,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -6005,7 +5824,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -6036,7 +5854,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -6059,7 +5876,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -6092,7 +5908,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -6124,7 +5939,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -6160,7 +5974,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -6199,7 +6012,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -6232,7 +6044,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -6264,7 +6075,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -6302,7 +6112,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -6343,7 +6152,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "cpu": "x86-64",
@@ -6373,7 +6181,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6407,7 +6214,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6440,7 +6246,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6473,7 +6278,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6504,7 +6308,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6539,7 +6342,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6576,7 +6378,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6605,7 +6406,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6645,7 +6445,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6683,7 +6482,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6725,7 +6523,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6764,7 +6561,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6802,7 +6598,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6838,7 +6633,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6866,7 +6660,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6893,7 +6686,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6920,7 +6712,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6947,7 +6738,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -6972,7 +6762,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7001,7 +6790,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7032,7 +6820,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7055,7 +6842,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7088,7 +6874,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7124,7 +6909,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7157,7 +6941,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7189,7 +6972,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7227,7 +7009,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7257,7 +7038,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7285,7 +7065,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7312,7 +7091,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7339,7 +7117,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7366,7 +7143,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7391,7 +7167,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7420,7 +7195,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7451,7 +7225,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7474,7 +7247,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7507,7 +7279,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7539,7 +7310,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7575,7 +7345,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7614,7 +7383,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7647,7 +7415,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7679,7 +7446,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7717,7 +7483,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7758,7 +7523,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7794,7 +7558,6 @@
         "name": "noop_sleep_tests",
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7824,7 +7587,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7852,7 +7614,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7879,7 +7640,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7906,7 +7666,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7933,7 +7692,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7958,7 +7716,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -7987,7 +7744,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8018,7 +7774,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8041,7 +7796,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8074,7 +7828,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8110,7 +7863,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8143,7 +7895,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8175,7 +7926,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8213,7 +7963,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8243,7 +7992,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8271,7 +8019,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8298,7 +8045,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8325,7 +8071,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8352,7 +8097,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8377,7 +8121,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8406,7 +8149,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8437,7 +8179,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8460,7 +8201,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8493,7 +8233,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8525,7 +8264,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8561,7 +8299,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8600,7 +8337,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8633,7 +8369,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8665,7 +8400,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8703,7 +8437,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8744,7 +8477,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8776,7 +8508,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8804,7 +8535,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8831,7 +8561,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8858,7 +8587,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8885,7 +8613,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8910,7 +8637,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8939,7 +8665,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8970,7 +8695,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -8993,7 +8717,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9025,7 +8748,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9056,7 +8778,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9092,7 +8813,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9124,7 +8844,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9155,7 +8874,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9193,7 +8911,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9223,7 +8940,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9251,7 +8967,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9278,7 +8993,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9305,7 +9019,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9332,7 +9045,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9357,7 +9069,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9386,7 +9097,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9417,7 +9127,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9440,7 +9149,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9472,7 +9180,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9503,7 +9210,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9539,7 +9245,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9571,7 +9276,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9602,7 +9306,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9640,7 +9343,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9681,7 +9383,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9717,7 +9418,6 @@
         "name": "noop_sleep_tests",
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9747,7 +9447,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9775,7 +9474,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9802,7 +9500,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9829,7 +9526,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9856,7 +9552,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9881,7 +9576,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9910,7 +9604,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9941,7 +9634,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9964,7 +9656,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -9996,7 +9687,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10027,7 +9717,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10063,7 +9752,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10095,7 +9783,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10126,7 +9813,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10164,7 +9850,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10194,7 +9879,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10222,7 +9906,6 @@
         },
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10249,7 +9932,6 @@
         },
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10276,7 +9958,6 @@
         },
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10303,7 +9984,6 @@
         },
         "name": "dawn_end2end_wire_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10328,7 +10008,6 @@
         },
         "name": "gl_tests_passthrough",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10357,7 +10036,6 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10388,7 +10066,6 @@
         },
         "name": "dawn_perf_tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10411,7 +10088,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10443,7 +10119,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10474,7 +10149,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10510,7 +10184,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10542,7 +10215,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10573,7 +10245,6 @@
           "enable": true
         },
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10611,7 +10282,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",
@@ -10652,7 +10322,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "display_attached": "1",

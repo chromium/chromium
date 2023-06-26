@@ -721,6 +721,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     if 'hard_timeout' in swarming_dict:
       if swarming_dict['hard_timeout'] == 0: # pragma: no cover
         del swarming_dict['hard_timeout'] # pragma: no cover
+    del swarming_dict['can_use_on_swarming_builders']
 
   def update_and_cleanup_test(self, test, test_name, tester_name, tester_config,
                               waterfall):
@@ -733,7 +734,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     if modifications:
       test = self.dictionary_merge(test, modifications)
     if (swarming_dict := test.get('swarming')) is not None:
-      if swarming_dict.get('can_use_on_swarming_builders', False):
+      if swarming_dict.get('can_use_on_swarming_builders'):
         self.clean_swarming_dictionary(swarming_dict)
       else:
         del test['swarming']
@@ -852,8 +853,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.add_common_test_properties(result, tester_config)
     self.substitute_magic_args(result, tester_name, tester_config)
 
-    if (result.get('swarming', {}).get('can_use_on_swarming_builders')
-        and not result.get('merge')):
+    if 'swarming' in result and not result.get('merge'):
       if test_config.get('use_isolated_scripts_api', False):
         merge_script = 'standard_isolated_script_merge'
       else:
@@ -885,8 +885,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.add_common_test_properties(result, tester_config)
     self.substitute_magic_args(result, tester_name, tester_config)
 
-    if (result.get('swarming', {}).get('can_use_on_swarming_builders')
-        and not result.get('merge')):
+    if 'swarming' in result and not result.get('merge'):
       # TODO(https://crbug.com/958376): Consider adding the ability to not have
       # this default.
       result['merge'] = {
@@ -2128,7 +2127,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
   def _check_swarming_config(self, filename, builder, step_name, step_data):
     # TODO(crbug.com/1203436): Ensure all swarming tests specify cpu, not
     # just mac tests.
-    if step_data.get('swarming', {}).get('can_use_on_swarming_builders'):
+    if 'swarming' in step_data:
       dimension_sets = step_data['swarming'].get('dimension_sets')
       if not dimension_sets:
         raise BBGenErr('%s: %s / %s : os must be specified for all '

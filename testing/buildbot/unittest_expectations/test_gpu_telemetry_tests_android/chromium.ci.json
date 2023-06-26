@@ -20,7 +20,6 @@
         "name": "foo_tests",
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "device_type": "bullhead"

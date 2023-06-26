@@ -26,7 +26,6 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-16.04"
@@ -57,7 +56,6 @@
         },
         "results_handler": "layout tests",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "os": "Ubuntu-16.04"
@@ -81,7 +79,6 @@
         },
         "name": "gles2_conform_test GTX 1660",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -104,7 +101,6 @@
         },
         "name": "gles2_conform_test UHD 630",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -145,7 +141,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -184,7 +179,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -219,7 +213,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -254,7 +247,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -290,7 +282,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -326,7 +317,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -361,7 +351,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -396,7 +385,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -434,7 +422,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -473,7 +460,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",
@@ -511,7 +497,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "10de:2184-440.100",
@@ -549,7 +534,6 @@
         },
         "should_retry_with_patch": false,
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "gpu": "8086:9bc5-20.0.8",

@@ -12,7 +12,6 @@
         },
         "name": "swarming_test args",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "foo": "bar"
@@ -29,7 +28,6 @@
         },
         "name": "swarming_test mixins",
         "swarming": {
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "foo": "bar",
@@ -48,7 +46,6 @@
         "name": "swarming_test swarming",
         "swarming": {
           "a": "b",
-          "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
               "foo": "bar",
