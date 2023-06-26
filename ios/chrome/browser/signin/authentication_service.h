@@ -144,6 +144,7 @@ class AuthenticationService : public KeyedService,
   // data if the account is managed. If force_clear_browsing_data is true,
   // clears the browsing data unconditionally.
   // Sync consent is automatically removed from all signed-out accounts.
+  // `completion` is then executed asynchronously.
   // Virtual for testing.
   virtual void SignOut(signin_metrics::ProfileSignout signout_source,
                        bool force_clear_browsing_data,

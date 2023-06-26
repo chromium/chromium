@@ -431,7 +431,8 @@ void AuthenticationService::SignOut(
     ProceduralBlock completion) {
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     if (completion)
-      completion();
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(completion));
     return;
   }
 

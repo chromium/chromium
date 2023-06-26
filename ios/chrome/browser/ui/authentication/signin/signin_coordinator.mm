@@ -281,7 +281,7 @@ using signin_metrics::PromoAction;
             (SigninCoordinatorResult)signinResult
                                completionInfo:
                                    (SigninCompletionInfo*)completionInfo {
-  // `identity` is set, only and only if the sign-in is successful.
+  // `identity` is set, if and only if the sign-in is successful.
   DCHECK(((signinResult == SigninCoordinatorResultSuccess) &&
           completionInfo.identity) ||
          ((signinResult != SigninCoordinatorResultSuccess) &&

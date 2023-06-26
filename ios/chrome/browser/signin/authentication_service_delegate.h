@@ -19,7 +19,8 @@ class AuthenticationServiceDelegate {
   virtual ~AuthenticationServiceDelegate() = default;
 
   // Invoked by AuthenticationService after the user has signed out. All the
-  // local browsing data must be cleared out, then `completion` called.
+  // local browsing data must be cleared out. `completion` is then called
+  // asynchronously.
   virtual void ClearBrowsingData(ProceduralBlock completion) = 0;
 
  private:

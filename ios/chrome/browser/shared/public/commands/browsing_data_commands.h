@@ -18,7 +18,7 @@ class ChromeBrowserState;
 
 // Remove browsing data for `browserState` for the `timePeriod`. The type of
 // data to remove is controlled by `removeMask` (see BrowserDataRemoveMask).
-// Once data is removed, `completionBlock` is invoked.
+// Once data is removed, `completionBlock` is invoked asynchronously.
 - (void)removeBrowsingDataForBrowserState:(ChromeBrowserState*)browserState
                                timePeriod:(browsing_data::TimePeriod)timePeriod
                                removeMask:(BrowsingDataRemoveMask)removeMask

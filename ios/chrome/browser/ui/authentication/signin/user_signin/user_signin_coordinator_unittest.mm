@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "base/run_loop.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -189,6 +190,7 @@ TEST_F(UserSigninCoordinatorTest, StartAndInterruptCoordinator) {
   // Simulate the end of -[UIViewController
   // presentViewController:animated:completion] by calling the completion block.
   view_controller_present_completion_();
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(interrupt_done);
   EXPECT_FALSE(completion_done);
   // Dismiss method is expected to be called.
