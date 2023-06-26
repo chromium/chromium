@@ -82,8 +82,9 @@ class TabletModeMultitaskMenuTest : public AshTestBase {
 
   void DismissMenu(TabletModeMultitaskMenu* multitask_menu) {
     GetEventGenerator()->GestureTapAt(
-        GetMultitaskMenuView(multitask_menu)->bounds().bottom_center() +
+        multitask_menu->widget()->GetWindowBoundsInScreen().bottom_center() +
         gfx::Vector2d(0, 10));
+
     DCHECK(!GetMultitaskMenu());
   }
 
@@ -788,6 +789,18 @@ TEST_F(TabletModeMultitaskMenuTest, HidesWhenMinimized) {
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
       AcceleratorAction::kWindowMinimize, {});
   ASSERT_TRUE(WindowState::Get(window.get())->IsMinimized());
+  EXPECT_FALSE(GetMultitaskMenu());
+}
+
+TEST_F(TabletModeMultitaskMenuTest, NotShownInKioskMode) {
+  // Enter kiosk mode and try swiping down. The multitask menu and cue should
+  // not show.
+  LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
+                                      LoginState::LOGGED_IN_USER_KIOSK);
+  auto window = CreateAppWindow(gfx::Rect(800, 600));
+  EXPECT_FALSE(
+      GetMultitaskMenuController()->multitask_cue_controller()->cue_layer());
+  ShowMultitaskMenu(*window);
   EXPECT_FALSE(GetMultitaskMenu());
 }
 

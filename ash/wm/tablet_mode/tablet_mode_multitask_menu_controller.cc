@@ -5,6 +5,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 
 #include "ash/accelerators/debug_commands.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue_controller.h"
@@ -13,6 +14,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
 #include "ui/events/types/event_type.h"
@@ -64,6 +66,12 @@ TabletModeMultitaskMenuController::~TabletModeMultitaskMenuController() {
 
 // static
 bool TabletModeMultitaskMenuController::CanShowMenu(aura::Window* window) {
+  // Cannot show the menu in the lock screen, or in app/kiosk mode.
+  if (Shell::Get()->session_controller()->IsScreenLocked() ||
+      chromeos::IsKioskSession()) {
+    return false;
+  }
+
   auto* window_state = WindowState::Get(window);
   return window_state && window_state->CanMaximize() &&
          window_state->CanResize() && !window_state->IsFloated() &&
