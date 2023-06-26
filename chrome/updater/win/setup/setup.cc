@@ -78,6 +78,11 @@ int Setup(UpdaterScope scope) {
     LOG(ERROR) << "GetVersionedInstallDirectory failed.";
     return kErrorNoVersionedDirectory;
   }
+
+  // Stop any processes that may be running under the versioned path before
+  // installation.
+  StopProcessesUnderPath(*versioned_dir, base::Seconds(15));
+
   base::FilePath exe_path;
   if (!base::PathService::Get(base::FILE_EXE, &exe_path)) {
     LOG(ERROR) << "PathService failed.";
