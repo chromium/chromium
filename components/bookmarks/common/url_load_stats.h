@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BOOKMARKS_COMMON_URL_LOAD_STATS_H_
 #define COMPONENTS_BOOKMARKS_COMMON_URL_LOAD_STATS_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
