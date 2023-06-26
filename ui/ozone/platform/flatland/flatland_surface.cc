@@ -64,11 +64,13 @@ OverlayTransformFlatlandProperties OverlayTransformToFlatlandProperties(
           .translation = {rounded_bounds.x(), rounded_bounds.y()},
           .orientation = fuchsia::ui::composition::Orientation::CCW_0_DEGREES,
           .image_flip = fuchsia::ui::composition::ImageFlip::NONE};
+    // gfx::OverlayTransform and Flatland rotate in opposite directions relative
+    // to each other, so swap 90 and 270.
     case gfx::OVERLAY_TRANSFORM_ROTATE_90:
       return {
-          .translation = {rounded_bounds.x(),
-                          rounded_bounds.y() + rounded_bounds.height()},
-          .orientation = fuchsia::ui::composition::Orientation::CCW_90_DEGREES,
+          .translation = {rounded_bounds.x() + rounded_bounds.width(),
+                          rounded_bounds.y()},
+          .orientation = fuchsia::ui::composition::Orientation::CCW_270_DEGREES,
           .image_flip = fuchsia::ui::composition::ImageFlip::NONE};
     case gfx::OVERLAY_TRANSFORM_ROTATE_180:
       return {
@@ -78,9 +80,9 @@ OverlayTransformFlatlandProperties OverlayTransformToFlatlandProperties(
           .image_flip = fuchsia::ui::composition::ImageFlip::NONE};
     case gfx::OVERLAY_TRANSFORM_ROTATE_270:
       return {
-          .translation = {rounded_bounds.x() + rounded_bounds.width(),
-                          rounded_bounds.y()},
-          .orientation = fuchsia::ui::composition::Orientation::CCW_270_DEGREES,
+          .translation = {rounded_bounds.x(),
+                          rounded_bounds.y() + rounded_bounds.height()},
+          .orientation = fuchsia::ui::composition::Orientation::CCW_90_DEGREES,
           .image_flip = fuchsia::ui::composition::ImageFlip::NONE};
     case gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL:
       return {
