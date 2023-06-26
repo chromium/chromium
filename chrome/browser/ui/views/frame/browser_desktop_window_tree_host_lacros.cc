@@ -23,8 +23,7 @@ namespace {
 
 bool ShouldHaveRoundedCorners(chromeos::WindowStateType window_state) {
   return window_state == chromeos::WindowStateType::kNormal ||
-         window_state == chromeos::WindowStateType::kDefault ||
-         window_state == chromeos::WindowStateType::kFloated;
+         window_state == chromeos::WindowStateType::kDefault;
 }
 
 // Returns the event source for the active tab drag session.
