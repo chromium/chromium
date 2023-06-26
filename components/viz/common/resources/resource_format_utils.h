@@ -10,12 +10,6 @@
 
 namespace viz {
 
-// |use_angle_rgbx_format| should be true when the GL_ANGLE_rgbx_internal_format
-// extension is available.
-VIZ_RESOURCE_FORMAT_EXPORT unsigned int TextureStorageFormat(
-    ResourceFormat format,
-    bool use_angle_rgbx_format);
-
 }  // namespace viz
 
 #endif  // COMPONENTS_VIZ_COMMON_RESOURCES_RESOURCE_FORMAT_UTILS_H_

@@ -37,6 +37,12 @@ class SharedImageFormatRestrictedSinglePlaneUtilsAccessor {
         format);
   }
 
+  static unsigned int ToGLTextureStorageFormat(viz::SharedImageFormat format,
+                                               bool use_angle_rgbx_format) {
+    return viz::SharedImageFormatRestrictedSinglePlaneUtils::
+        ToGLTextureStorageFormat(format, use_angle_rgbx_format);
+  }
+
 #if BUILDFLAG(ENABLE_VULKAN)
   static bool HasVkFormat(viz::SharedImageFormat format) {
     return viz::SharedImageFormatRestrictedSinglePlaneUtils::HasVkFormat(
@@ -186,8 +192,8 @@ GLenum TextureStorageFormat(viz::SharedImageFormat format,
                             int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
   if (format.is_single_plane()) {
-    return viz::TextureStorageFormat(format.resource_format(),
-                                     use_angle_rgbx_format);
+    return SharedImageFormatRestrictedSinglePlaneUtilsAccessor::
+        ToGLTextureStorageFormat(format, use_angle_rgbx_format);
   }
 
   // For multiplanar formats without external sampler, GL formats are per plane.

@@ -19,11 +19,19 @@ namespace gpu {
 class SharedImageFormatRestrictedSinglePlaneUtilsAccessor;
 }  // namespace gpu
 
+namespace cc {
+class PerfContextProvider;
+}
+
 namespace media {
 class VideoResourceUpdater;
 }
 
 namespace viz {
+
+class ContextProviderCommandBuffer;
+class TestContextProvider;
+class TestInProcessContextProvider;
 
 // Returns the closest SkColorType for a given single planar `format`.
 //
@@ -68,6 +76,10 @@ GetSharedImageFormat(gfx::BufferFormat format);
 // currently used by some clients. Usage is restricted to friended clients.
 class VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormatRestrictedSinglePlaneUtils {
  private:
+  friend class ContextProviderCommandBuffer;
+  friend class TestContextProvider;
+  friend class TestInProcessContextProvider;
+  friend class cc::PerfContextProvider;
   friend class media::VideoResourceUpdater;
   friend class gpu::SharedImageFormatRestrictedSinglePlaneUtilsAccessor;
 
@@ -77,6 +89,11 @@ class VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormatRestrictedSinglePlaneUtils {
   // ui/gl/gl_bindings.h. See http://crbug.com/512833 for more information.
   static unsigned int ToGLDataFormat(SharedImageFormat format);
   static unsigned int ToGLDataType(SharedImageFormat format);
+
+  // |use_angle_rgbx_format| should be true when the
+  // GL_ANGLE_rgbx_internal_format extension is available.
+  static unsigned int ToGLTextureStorageFormat(SharedImageFormat format,
+                                               bool use_angle_rgbx_format);
 
 #if BUILDFLAG(ENABLE_VULKAN)
   static bool HasVkFormat(SharedImageFormat format);

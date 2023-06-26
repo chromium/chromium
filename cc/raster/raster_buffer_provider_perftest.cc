@@ -26,6 +26,7 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_context_support.h"
 #include "components/viz/test/test_gles2_interface.h"
@@ -74,6 +75,8 @@ class PerfGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
     memcpy(sync_token, &sync_token_data, sizeof(sync_token_data));
   }
 };
+
+}  // namespace
 
 class PerfContextProvider
     : public base::RefCountedThreadSafe<PerfContextProvider>,
@@ -130,9 +133,9 @@ class PerfContextProvider
   void RemoveObserver(viz::ContextLostObserver* obs) override {}
   unsigned int GetGrGLTextureFormat(
       viz::SharedImageFormat format) const override {
-    return viz::TextureStorageFormat(
-        format.resource_format(),
-        ContextCapabilities().angle_rgbx_internal_format);
+    return viz::SharedImageFormatRestrictedSinglePlaneUtils::
+        ToGLTextureStorageFormat(
+            format, ContextCapabilities().angle_rgbx_internal_format);
   }
 
  private:
@@ -150,6 +153,8 @@ class PerfContextProvider
   gpu::Capabilities capabilities_;
   gpu::GpuFeatureInfo gpu_feature_info_;
 };
+
+namespace {
 
 enum RasterBufferProviderType {
   RASTER_BUFFER_PROVIDER_TYPE_ZERO_COPY,
