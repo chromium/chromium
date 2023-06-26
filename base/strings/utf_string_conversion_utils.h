@@ -16,6 +16,7 @@
 #include "base/base_export.h"
 #include "base/third_party/icu/icu_utf.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -38,6 +39,15 @@ inline bool IsValidCharacter(base_icu::UChar32 code_point) {
          (code_point > 0xFDEF && code_point <= 0x10FFFF &&
           (code_point & 0xFFFE) != 0xFFFE);
 }
+
+// CountUnicodeCharacters ------------------------------------------------------
+
+// Returns the number of Unicode characters in `text`, up to the supplied
+// `limit`, if `text` contains valid UTF-16. Returns `nullopt` otherwise.
+BASE_EXPORT absl::optional<size_t> CountUnicodeCharacters(
+    const char16_t* src,
+    size_t src_len,
+    size_t limit = std::numeric_limits<size_t>::max());
 
 // ReadUnicodeCharacter --------------------------------------------------------
 

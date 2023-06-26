@@ -419,6 +419,7 @@ template <typename Char>
 inline bool IsAsciiPrintable(Char c) {
   return c >= ' ' && c <= '~';
 }
+
 template <typename Char>
 inline bool IsAsciiControl(Char c) {
   if constexpr (std::is_signed_v<Char>) {
@@ -428,6 +429,14 @@ inline bool IsAsciiControl(Char c) {
   }
   return c <= 0x1f || c == 0x7f;
 }
+
+template <typename Char>
+inline bool IsUnicodeControl(Char c) {
+  return IsAsciiControl(c) ||
+         // C1 control characters: http://unicode.org/charts/PDF/U0080.pdf
+         (c >= 0x80 && c <= 0x9F);
+}
+
 template <typename Char>
 inline bool IsAsciiPunctuation(Char c) {
   return c > 0x20 && c < 0x7f && !IsAsciiAlphaNumeric(c);

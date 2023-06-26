@@ -132,13 +132,6 @@ component("events_base") {
     ]
   }
 
-  if (is_mac) {
-    sources += [
-      "keycodes/keyboard_code_conversion_mac.h",
-      "keycodes/keyboard_code_conversion_mac.mm",
-    ]
-  }
-
   if (is_win) {
     sources += [
       "keycodes/keyboard_code_conversion_win.cc",
@@ -164,6 +157,14 @@ component("events_base") {
     "//ui/events/types:headers",
     "//ui/gfx/geometry",
   ]
+
+  if (is_mac) {
+    sources += [
+      "keycodes/keyboard_code_conversion_mac.h",
+      "keycodes/keyboard_code_conversion_mac.mm",
+    ]
+    deps += [ "//base:i18n" ]
+  }
 
   if (is_apple) {
     configs += [ "//build/config/compiler:enable_arc" ]

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
-#include "base/mac/foundation_util.h"
 
 #import <Carbon/Carbon.h>
 
@@ -13,6 +12,10 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/notreached.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversion_utils.h"
+#include "base/third_party/icu/icu_utf.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -23,20 +26,30 @@ namespace ui {
 
 namespace {
 
+// A glyph modifier key is any of the following modifier keys: Shift, CapsLock
+// or AltGr (Option for macOS). These keys may, when applied, cause a
+// character-key to generate a different character.
+//
+// See https://w3c.github.io/uievents-key/#selecting-key-attribute-values.
+constexpr int kGlyphModifiers = NSEventModifierFlagShift |
+                                NSEventModifierFlagCapsLock |
+                                NSEventModifierFlagOption;
+
 // Per Apple docs, the buffer length can be up to 255 but is rarely more than 4.
 // https://developer.apple.com/documentation/coreservices/1390584-uckeytranslate
 constexpr int kUCKeyTranslateBufferLength = 4;
 
-bool IsUnicodeControl(unichar c) {
-  // C0 control characters: http://unicode.org/charts/PDF/U0000.pdf
-  // C1 control characters: http://unicode.org/charts/PDF/U0080.pdf
-  return c <= 0x1F || (c >= 0x7F && c <= 0x9F);
+// Returns whether the given key is a valid DOM key character.
+//
+// See https://w3c.github.io/uievents-key/#key-string.
+inline bool IsDomKeyUnicodeCharacter(char32_t c) {
+  return base::IsValidCodepoint(c) && !base::IsUnicodeControl(c);
 }
 
 // This value is not defined but shows up as 0x36.
-const int kVK_RightCommand = 0x36;
+constexpr int kVK_RightCommand = 0x36;
 // Context menu is not defined but shows up as 0x6E.
-const int kVK_ContextMenu = 0x6E;
+constexpr int kVK_ContextMenu = 0x6E;
 
 // A struct to hold a Windows keycode to Mac virtual keycode mapping.
 struct KeyCodeMap {
@@ -435,7 +448,7 @@ DomKey DomKeyFromKeyCode(unsigned short keyCode) {
   }
 }
 
-DomKey DomKeyFromCharCode(unichar char_code) {
+DomKey DomKeyFromNsCharCode(char32_t char_code) {
   switch (char_code) {
     case NSUpArrowFunctionKey:
       return DomKey::ARROW_UP;
@@ -532,9 +545,13 @@ DomKey DomKeyFromCharCode(unichar char_code) {
   }
 }
 
-UniChar MacKeycodeAndModifiersToCharacter(unsigned short mac_keycode,
-                                          int modifiers,
-                                          bool* is_dead_key) {
+// Returns a macOS key code and modifier to a character based on the current
+// keyboard layout.
+//
+// NsKeyCodeAndModifiersToCharacter() is efficient (around 6E-4 ms).
+std::tuple<UniChar, bool> NsKeyCodeAndModifiersToCharacter(
+    unsigned short key_code,
+    int modifiers) {
   // Convert NSEvent modifiers to format UCKeyTranslate accepts. See docs
   // on UCKeyTranslate for more info.
   int unicode_modifiers = 0;
@@ -554,17 +571,36 @@ UniChar MacKeycodeAndModifiersToCharacter(unsigned short mac_keycode,
   base::ScopedCFTypeRef<TISInputSourceRef> input_source(
       TISCopyCurrentKeyboardLayoutInputSource());
   UniChar translated_char = TranslatedUnicodeCharFromKeyCode(
-      input_source.get(), static_cast<UInt16>(mac_keycode), kUCKeyActionDown,
+      input_source.get(), static_cast<UInt16>(key_code), kUCKeyActionDown,
       modifier_key_state, LMGetKbdLast(), &dead_key_state);
 
-  *is_dead_key = dead_key_state != 0;
-  if (*is_dead_key) {
+  bool is_dead_key = dead_key_state != 0;
+  if (is_dead_key) {
     translated_char = TranslatedUnicodeCharFromKeyCode(
         input_source.get(), static_cast<UInt16>(kVK_Space), kUCKeyActionDown, 0,
         LMGetKbdLast(), &dead_key_state);
   }
 
-  return translated_char;
+  return {translated_char, is_dead_key};
+}
+
+// Returns the last Unicode character from the given string.
+char32_t ReadLastUnicodeCharacter(const NSString* const characters) {
+  if (characters.length == 0) {
+    return 0;
+  }
+  char16_t trail = [characters characterAtIndex:characters.length - 1];
+  if (CBU16_IS_SINGLE(trail)) {
+    return trail;
+  }
+  if (characters.length == 1 || !CBU16_IS_TRAIL(trail)) {
+    return 0;
+  }
+  char16_t lead = [characters characterAtIndex:characters.length - 2];
+  if (!CBU16_IS_LEAD(lead)) {
+    return 0;
+  }
+  return CBU16_GET_SUPPLEMENTARY(lead, trail);
 }
 
 }  // namespace
@@ -834,56 +870,77 @@ DomCode DomCodeFromNSEvent(NSEvent* event) {
   return ui::KeycodeConverter::NativeKeycodeToDomCode(event.keyCode);
 }
 
+// To select an appropriate key attribute value to store in a KeyboardEvent's
+// key attribute, run these steps:
+//
+//  1. Let key be a DOMString initially set to "Unidentified".
+//  2. If there exists an appropriate named key attribute value for this key
+//     event, then set key to that named key attribute value.
+//  3. Else, if the key event generates a valid key string, then set key to that
+//     key string value.
+//  4. Else, if the key event has any modifier keys other than glyph modifier
+//     keys, then set key to the key string that would have been generated by
+//     this event if it had been typed with all modifer keys removed except for
+//     glyph modifier keys.
+//  5. Return key as the key attribute value for this key event.
+//
+// Taken from https://w3c.github.io/uievents-key/#selecting-key-attribute-values
 DomKey DomKeyFromNSEvent(NSEvent* event) {
-  // Apply the lookup based on the character first since that has the
-  // Keyboard layout and modifiers already applied; whereas the keyCode
-  // doesn't.
-  if (event.type == NSEventTypeKeyDown || event.type == NSEventTypeKeyUp) {
-    // Cannot use `event.characters` to check whether it's a dead key, because
-    // KeyUp event has the character form of the dead key in `event.characters`.
-    bool is_dead_key = false;
-    // MacKeycodeAndModifiersToCharacter() is efficient (around 6E-4 ms).
-    unichar dead_dom_key_char = MacKeycodeAndModifiersToCharacter(
-        event.keyCode, event.modifierFlags, &is_dead_key);
-    if (is_dead_key)
-      return DomKey::DeadKeyFromCombiningCharacter(dead_dom_key_char);
-
-    // Mac Eisu Kana key events have a space symbol (U+0020) as [event
-    // characters]. However, the symbol is not generated for users and the event
-    // is just used for enabling/disabling an IME.
-    if (event.keyCode == kVK_JIS_Eisu || event.keyCode == kVK_JIS_Kana) {
-      return DomKeyFromKeyCode(event.keyCode);
-    }
-
-    // `event.characters` will have dead key state applied.
-    NSString* characters = event.characters;
-    if (characters.length > 0) {
-      // An invalid dead key combination will produce two characters, according
-      // to spec DomKey should be the last character.
-      // e.g. On French keyboard [+a will produce "^q", DomKey should be 'q'.
-      unichar dom_key_char =
-          [characters characterAtIndex:characters.length - 1];
-      if (IsUnicodeControl(dom_key_char)) {
-        // Filter non-glyph modifiers if the generated characters are part of
-        // Unicode 'Other, Control' General Category.
-        // https://w3c.github.io/uievents-key/#selecting-key-attribute-values
-        bool unused_is_dead_key;
-        const int kAllowedModifiersMask = NSEventModifierFlagShift |
-                                          NSEventModifierFlagCapsLock |
-                                          NSEventModifierFlagOption;
-        // MacKeycodeAndModifiersToCharacter() is efficient (around 6E-4 ms).
-        dom_key_char = MacKeycodeAndModifiersToCharacter(
-            event.keyCode, event.modifierFlags & kAllowedModifiersMask,
-            &unused_is_dead_key);
+  switch (event.type) {
+    case NSEventTypeKeyDown:
+    case NSEventTypeKeyUp: {
+      // macOS Eisu Kana key events have a space symbol (U+0020) as
+      // event.characters, but the symbol is not generated for users and the
+      // event is just used for enabling/disabling an IME.
+      if (event.keyCode == kVK_JIS_Eisu || event.keyCode == kVK_JIS_Kana) {
+        return DomKeyFromKeyCode(event.keyCode);
       }
 
-      // We need to check again because keys like ESC will produce control
-      // characters even without any modifiers.
-      if (!IsUnicodeControl(dom_key_char))
-        return DomKeyFromCharCode(dom_key_char);
+      // Step pre-3. Not specified in the spec, but we need special handling for
+      // dead keys in macOS.
+      auto [maybe_dead_key, is_dead_key] =
+          NsKeyCodeAndModifiersToCharacter(event.keyCode, event.modifierFlags);
+      if (is_dead_key) {
+        return DomKey::DeadKeyFromCombiningCharacter(maybe_dead_key);
+      }
+
+      // Step 2 and 3. If there exists an appropriate named key attribute value
+      // for this key event or the key event generates a valid key string, set
+      // key to that named key attribute value or to the generated string value.
+      const NSString* const characters =
+          event.characters.precomposedStringWithCanonicalMapping;
+
+      // When a dead key is pressed and the next key pressed generates an
+      // invalid dead key sequences, that next key press will include the
+      // previous dead key character at the beginning, so we always need to read
+      // from the back.
+      char32_t character = ReadLastUnicodeCharacter(characters);
+      if (IsDomKeyUnicodeCharacter(character)) {
+        return DomKeyFromNsCharCode(character);
+      }
+
+      // Step 4. If the key event has any modifier keys other than glyph
+      // modifier keys, then set key to the key string that would have been
+      // generated by this event if it had been typed with all modifer keys
+      // removed except for glyph modifier keys.
+      if ((event.modifierFlags & kGlyphModifiers) != event.modifierFlags) {
+        character = std::get<UniChar>(NsKeyCodeAndModifiersToCharacter(
+            event.keyCode, event.modifierFlags & kGlyphModifiers));
+      }
+      if (IsDomKeyUnicodeCharacter(character)) {
+        return DomKeyFromNsCharCode(character);
+      }
+      // Map non-character keys based on the physical key identifier.
+      return DomKeyFromKeyCode(event.keyCode);
     }
+    case NSEventTypeFlagsChanged: {
+      // This event does not generate characters, but its key code is a named
+      // key.
+      return DomKeyFromKeyCode(event.keyCode);
+    }
+    default:
+      NOTREACHED_NORETURN();
   }
-  return DomKeyFromKeyCode(event.keyCode);
 }
 
 UniChar TranslatedUnicodeCharFromKeyCode(TISInputSourceRef input_source,
