@@ -24,6 +24,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
+#include "content/test/test_content_browser_client.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_request_headers.h"
@@ -81,6 +82,20 @@ auto ElementsAreRequests(Ts&... requests) {
   return testing::UnorderedElementsAre(testing::Eq(std::ref(requests))...);
 }
 
+class InterestGroupEnabledContentBrowserClient
+    : public TestContentBrowserClient {
+ public:
+  // ContentBrowserClient overrides:
+  // This is needed so that the interest group related APIs can run without
+  // failing with the result AuctionResult::kSellerRejected.
+  bool IsPrivacySandboxReportingDestinationAttested(
+      content::BrowserContext* browser_context,
+      const url::Origin& destination_origin,
+      content::PrivacySandboxInvokingAPI invoking_api) override {
+    return true;
+  }
+};
+
 class FencedFrameReporterTest : public RenderViewHostTestHarness {
  public:
   FencedFrameReporterTest() {
@@ -97,8 +112,15 @@ class FencedFrameReporterTest : public RenderViewHostTestHarness {
   }
 
   void SetUp() override {
+    old_content_browser_client_ =
+        SetBrowserClientForTesting(&test_content_browser_client_);
     RenderViewHostTestHarness::SetUp();
     NavigateAndCommit(request_initiator_);
+  }
+
+  void TearDown() override {
+    SetBrowserClientForTesting(old_content_browser_client_);
+    RenderViewHostTestHarness::TearDown();
   }
 
   void ValidateRequest(const network::ResourceRequest& request,
@@ -154,6 +176,9 @@ class FencedFrameReporterTest : public RenderViewHostTestHarness {
   TestInterestGroupPrivateAggregationManager private_aggregation_manager_{
       main_frame_origin_};
 
+  InterestGroupEnabledContentBrowserClient test_content_browser_client_;
+  raw_ptr<ContentBrowserClient> old_content_browser_client_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -162,7 +187,7 @@ class FencedFrameReporterTest : public RenderViewHostTestHarness {
 TEST_F(FencedFrameReporterTest, NoReportNoMap) {
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForSharedStorage(
-          shared_url_loader_factory(), attribution_manager(),
+          shared_url_loader_factory(), browser_context(),
           /*reporting_url_map=*/{{"event_type", report_destination_}});
   std::string error_message;
   // A Shared Storage FencedFrameReporter has no map for FLEDGE destinations.
@@ -198,7 +223,7 @@ TEST_F(FencedFrameReporterTest, NoReportNoMap) {
 
   // A FLEDGE FencedFrameReporter has no map for Shared Storage.
   reporter = FencedFrameReporter::CreateForFledge(
-      shared_url_loader_factory(), attribution_manager(),
+      shared_url_loader_factory(), browser_context(),
       /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
       main_frame_origin_,
       /*winner_origin=*/report_destination_origin_);
@@ -219,7 +244,7 @@ TEST_F(FencedFrameReporterTest, NoReportNoMap) {
 TEST_F(FencedFrameReporterTest, NoReportEmptyMap) {
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForSharedStorage(shared_url_loader_factory(),
-                                                  attribution_manager(),
+                                                  browser_context(),
                                                   /*reporting_url_map=*/{});
   std::string error_message;
   EXPECT_FALSE(reporter->SendReport(
@@ -239,7 +264,7 @@ TEST_F(FencedFrameReporterTest, NoReportEmptyMap) {
 TEST_F(FencedFrameReporterTest, NoReportEventTypeNotRegistered) {
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForSharedStorage(
-          shared_url_loader_factory(), attribution_manager(),
+          shared_url_loader_factory(), browser_context(),
           /*reporting_url_map=*/
           {{"registered_event_type", report_destination_}});
   std::string error_message;
@@ -261,7 +286,7 @@ TEST_F(FencedFrameReporterTest, NoReportEventTypeNotRegistered) {
 TEST_F(FencedFrameReporterTest, NoReportBadUrl) {
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForSharedStorage(
-          shared_url_loader_factory(), attribution_manager(),
+          shared_url_loader_factory(), browser_context(),
           /*reporting_url_map=*/
           {{"no_url", GURL()},
            {"data_url", GURL("data:,only http is allowed")}});
@@ -290,7 +315,7 @@ TEST_F(FencedFrameReporterTest, NoReportBadUrl) {
 TEST_F(FencedFrameReporterTest, SendReports) {
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForSharedStorage(
-          shared_url_loader_factory(), attribution_manager(),
+          shared_url_loader_factory(), browser_context(),
           /*reporting_url_map=*/
           {{"event_type", report_destination_},
            {"event_type2", report_destination2_}});
@@ -333,7 +358,7 @@ TEST_F(FencedFrameReporterTest, SendReports) {
 TEST_F(FencedFrameReporterTest, SendFledgeReportsAfterMapsReceived) {
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForFledge(
-          shared_url_loader_factory(), attribution_manager(),
+          shared_url_loader_factory(), browser_context(),
           /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
           main_frame_origin_,
           /*winner_origin=*/report_destination_origin_);
@@ -392,7 +417,7 @@ TEST_F(FencedFrameReporterTest, SendFledgeReportsAfterMapsReceived) {
 TEST_F(FencedFrameReporterTest, SendReportsFledgeBeforeMapsReceived) {
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForFledge(
-          shared_url_loader_factory(), attribution_manager(),
+          shared_url_loader_factory(), browser_context(),
           /*direct_seller_is_seller=*/true, &private_aggregation_manager_,
           main_frame_origin_,
           /*winner_origin=*/report_destination_origin_);
@@ -472,7 +497,7 @@ TEST_F(FencedFrameReporterTest, SendFledgeReportsBeforeMapsReceivedWithErrors) {
 
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForFledge(
-          shared_url_loader_factory(), attribution_manager(),
+          shared_url_loader_factory(), browser_context(),
           /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
           main_frame_origin_,
           /*winner_origin=*/report_destination_origin_);
@@ -533,7 +558,7 @@ TEST_F(FencedFrameReporterTest, SendFledgeReportsNoMapReceived) {
   {
     scoped_refptr<FencedFrameReporter> reporter =
         FencedFrameReporter::CreateForFledge(
-            shared_url_loader_factory(), attribution_manager(),
+            shared_url_loader_factory(), browser_context(),
             /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
             main_frame_origin_,
             /*winner_origin=*/report_destination_origin_);
@@ -553,7 +578,7 @@ TEST_F(FencedFrameReporterTest, SendFledgeReportsNoMapReceived) {
 TEST_F(FencedFrameReporterTest, FledgeEventsReceivedAfterRequestsReady) {
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForFledge(
-          shared_url_loader_factory(), attribution_manager(),
+          shared_url_loader_factory(), browser_context(),
           /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
           main_frame_origin_,
           /*winner_origin=*/report_destination_origin_);
@@ -638,7 +663,7 @@ TEST_F(FencedFrameReporterTest, FledgeEventsReceivedAfterRequestsReady) {
 TEST_F(FencedFrameReporterTest, FledgeEventsReceivedBeforeRequestsReady) {
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForFledge(
-          shared_url_loader_factory(), attribution_manager(),
+          shared_url_loader_factory(), browser_context(),
           /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
           main_frame_origin_,
           /*winner_origin=*/report_destination_origin_);
@@ -729,7 +754,7 @@ TEST_F(FencedFrameReporterTest, FledgeEventsReceivedBeforeRequestsReady) {
 TEST_F(FencedFrameReporterTest, FledgeEventsReceivedUnexpectedly) {
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForFledge(
-          shared_url_loader_factory(), attribution_manager(),
+          shared_url_loader_factory(), browser_context(),
           /*direct_seller_is_seller=*/false,
           /*private_aggregation_manager=*/nullptr, main_frame_origin_,
           /*winner_origin=*/report_destination_origin_);
@@ -747,7 +772,7 @@ TEST_F(FencedFrameReporterTest, AttributionManagerShutDown_NoCrash) {
 
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForSharedStorage(
-          shared_url_loader_factory(), attribution_manager(),
+          shared_url_loader_factory(), browser_context(),
           /*reporting_url_map=*/
           {{"event_type", report_destination_}});
 

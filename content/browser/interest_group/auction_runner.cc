@@ -17,6 +17,7 @@
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -64,7 +65,7 @@ blink::AuctionConfig* LookupAuction(
 std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     AuctionWorkletManager* auction_worklet_manager,
     InterestGroupManagerImpl* interest_group_manager,
-    AttributionManager* attribution_manager,
+    BrowserContext* browser_context,
     PrivateAggregationManager* private_aggregation_manager,
     InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
         log_private_aggregation_requests_callback,
@@ -78,7 +79,7 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback) {
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
-      auction_worklet_manager, interest_group_manager, attribution_manager,
+      auction_worklet_manager, interest_group_manager, browser_context,
       private_aggregation_manager,
       std::move(log_private_aggregation_requests_callback),
       DetermineKAnonMode(), std::move(auction_config), main_frame_origin,
@@ -312,7 +313,7 @@ void AuctionRunner::FailAuction(
 AuctionRunner::AuctionRunner(
     AuctionWorkletManager* auction_worklet_manager,
     InterestGroupManagerImpl* interest_group_manager,
-    AttributionManager* attribution_manager,
+    BrowserContext* browser_context,
     PrivateAggregationManager* private_aggregation_manager,
     InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
         log_private_aggregation_requests_callback,
@@ -327,7 +328,7 @@ AuctionRunner::AuctionRunner(
     mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback)
     : interest_group_manager_(interest_group_manager),
-      attribution_manager_(attribution_manager),
+      browser_context_(browser_context),
       private_aggregation_manager_(private_aggregation_manager),
       main_frame_origin_(main_frame_origin),
       frame_origin_(frame_origin),
@@ -394,10 +395,9 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
 
   std::unique_ptr<InterestGroupAuctionReporter> reporter =
       auction_.CreateReporter(
-          attribution_manager_, private_aggregation_manager_,
-          url_loader_factory_, std::move(owned_auction_config_),
-          main_frame_origin_, frame_origin_, client_security_state_.Clone(),
-          std::move(interest_groups_that_bid));
+          browser_context_, private_aggregation_manager_, url_loader_factory_,
+          std::move(owned_auction_config_), main_frame_origin_, frame_origin_,
+          client_security_state_.Clone(), std::move(interest_groups_that_bid));
   DCHECK(reporter);
 
   state_ = State::kSucceeded;

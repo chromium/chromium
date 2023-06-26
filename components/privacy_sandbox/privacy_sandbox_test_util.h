@@ -143,6 +143,7 @@ enum class InputKey {
   kTopicsToggleNewValue = 8,
   kForceChromeBuild = 9,
   kPromptAction = 10,
+  kEventReportingDestinationOrigin = 11,
 };
 
 // Defines the expected output of the functions under test, when the profile is
@@ -179,6 +180,8 @@ enum class OutputKey {
   kIsAttributionReportingEverAllowed = 29,
   kIsAttributionReportingEverAllowedMetric = 30,
   kM1RestrictedNoticeAcknowledged = 31,
+  kIsEventReportingDestinationAttestedForFledge = 32,
+  kIsEventReportingDestinationAttestedForSharedStorage = 33,
 };
 
 // To allow multiple input keys to map to the same value, without having to

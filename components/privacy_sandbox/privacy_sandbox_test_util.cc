@@ -356,6 +356,33 @@ void CheckOutput(
                     top_frame_origin, fledge_auction_party_origin));
       return;
     }
+    case (OutputKey::kIsEventReportingDestinationAttestedForFledge): {
+      SCOPED_TRACE(
+          "Check Output: IsEventReportingDestinationAttestedForFledge()");
+      auto event_reporting_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kEventReportingDestinationOrigin, input);
+      auto return_value = GetItemValue<bool>(output_value);
+      ASSERT_EQ(return_value,
+                privacy_sandbox_settings->IsEventReportingDestinationAttested(
+                    event_reporting_origin,
+                    privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                        kProtectedAudience));
+      return;
+    }
+    case (OutputKey::kIsEventReportingDestinationAttestedForSharedStorage): {
+      SCOPED_TRACE(
+          "Check Output: "
+          "IsEventReportingDestinationAttestedForSharedStorage()");
+      auto event_reporting_origin = GetItemValueForKey<url::Origin>(
+          InputKey::kEventReportingDestinationOrigin, input);
+      auto return_value = GetItemValue<bool>(output_value);
+      ASSERT_EQ(return_value,
+                privacy_sandbox_settings->IsEventReportingDestinationAttested(
+                    event_reporting_origin,
+                    privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                        kSharedStorage));
+      return;
+    }
     case (OutputKey::kIsAttributionReportingAllowed): {
       SCOPED_TRACE("Check Output: IsAttributionReportingAllowed()");
       auto top_frame_origin =

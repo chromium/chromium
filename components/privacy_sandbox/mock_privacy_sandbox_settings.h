@@ -58,6 +58,12 @@ class MockPrivacySandboxSettings
               IsFledgeAllowed,
               (const url::Origin&, const url::Origin&),
               (override, const));
+  MOCK_METHOD(
+      bool,
+      IsEventReportingDestinationAttested,
+      (const url::Origin&,
+       privacy_sandbox::PrivacySandboxAttestationsGatedAPI invoking_api),
+      (override, const));
   MOCK_METHOD(bool,
               IsSharedStorageAllowed,
               (const url::Origin&, const url::Origin&),
