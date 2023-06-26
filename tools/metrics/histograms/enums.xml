@@ -58299,12 +58299,6 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="2" label="Attempted cryptohome deletion"/>
 </enum>
 
-<enum name="LensChipEvent">
-  <int value="0" label="Shown"/>
-  <int value="1" label="Clicked"/>
-  <int value="2" label="Dismissed"/>
-</enum>
-
 <enum name="LensClassifyResultState">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success: shoppy image"/>

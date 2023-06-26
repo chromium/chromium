@@ -319,9 +319,6 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
             menuCoordinator.clickChipForTesting();
         });
 
-        Assert.assertEquals("Selection histogram pings not equal to one", 1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "ContextMenu.LensChip.Event", ContextMenuChipController.ChipEvent.CLICKED));
         Assert.assertFalse("Chip popoup still showing.",
                 menuCoordinator.getCurrentPopupWindowForTesting().isShowing());
     }
@@ -422,9 +419,6 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
             menuCoordinator.clickChipForTesting();
         });
 
-        Assert.assertEquals("Selection histogram pings not equal to one", 1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "ContextMenu.LensChip.Event", ContextMenuChipController.ChipEvent.CLICKED));
         Assert.assertFalse("Chip popoup still showing.",
                 menuCoordinator.getCurrentPopupWindowForTesting().isShowing());
     }

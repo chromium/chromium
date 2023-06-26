@@ -2252,17 +2252,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ChipEvent.SHOWN, ChipEvent.CLICKED, ChipEvent.DISMISSED"
-        errorLine1="                &quot;ContextMenu.LensChip.Event&quot;, chipEvent, ChipEvent.NUM_ENTRIES);"
-        errorLine2="                                                                   ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuChipController.java"
-            line="51"
-            column="68"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: ContextMenuItemId.SEARCH, ContextMenuItemId.OPEN_IN_NEW_TAB, ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP, ContextMenuItemId.OPEN_IN_INCOGNITO_TAB, ContextMenuItemId.OPEN_IN_NEW_WINDOW, ContextMenuItemId.SAVE_FOR_OFFLINE, ContextMenuItemId.ADD_TO_MY_APPS, ContextMenuItemId.REMOVE"
         errorLine1="        for (@ContextMenuItemId int itemId = 0; itemId &lt; ContextMenuItemId.NUM_ENTRIES; itemId++) {"
         errorLine2="                                                                           ~~~~~~~~~~~">

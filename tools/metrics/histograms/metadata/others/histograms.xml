@@ -3152,16 +3152,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContextMenu.LensChip.Event" enum="LensChipEvent"
-    expires_after="2022-08-07">
-  <owner>yusuyoutube@google.com</owner>
-  <owner>benwgold@google.com</owner>
-  <summary>
-    Logged when the Lens chip is shown and relevant events when the user
-    interacts with the Lens chip. Only logged on Android.
-  </summary>
-</histogram>
-
 <histogram name="ContextMenu.LensSupportStatus" enum="LensSupportStatus"
     expires_after="2023-12-17">
   <owner>benwgold@google.com</owner>

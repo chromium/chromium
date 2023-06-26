@@ -10,11 +10,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.text.SpanApplier;
@@ -22,8 +20,6 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 /**
  * A controller to handle chip construction and cross-app communication.
  */
@@ -35,21 +31,6 @@ class ContextMenuChipController implements View.OnClickListener {
     private Context mContext;
     private ChipRenderParams mChipRenderParams;
     private final Runnable mDismissContextMenuCallback;
-
-    @VisibleForTesting
-    @IntDef({ChipEvent.SHOWN, ChipEvent.CLICKED, ChipEvent.DISMISSED})
-    @Retention(RetentionPolicy.SOURCE)
-    protected @interface ChipEvent {
-        int SHOWN = 0;
-        int CLICKED = 1;
-        int DISMISSED = 2;
-        int NUM_ENTRIES = 3;
-    }
-
-    private void recordChipEvent(@ChipEvent int chipEvent) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "ContextMenu.LensChip.Event", chipEvent, ChipEvent.NUM_ENTRIES);
-    }
 
     ContextMenuChipController(
             Context context, View anchorView, final Runnable dismissContextMenuCallback) {
@@ -112,7 +93,6 @@ class ContextMenuChipController implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v == mChipView) {
-            recordChipEvent(ChipEvent.CLICKED);
             // The onClick callback may result in a cross-app switch so dismiss the menu before
             // executing that logic. Also note that dismissing the menu will also dismiss the chip.
             mDismissContextMenuCallback.run();
@@ -175,16 +155,12 @@ class ContextMenuChipController implements View.OnClickListener {
 
         if (!chipRenderParams.isRemoveIconHidden) {
             mChipView.addRemoveIcon();
-            mChipView.setRemoveIconClickListener(v -> {
-                dismissChipIfShowing();
-                recordChipEvent(ChipEvent.DISMISSED);
-            });
+            mChipView.setRemoveIconClickListener(v -> { dismissChipIfShowing(); });
         }
 
         mChipView.setOnClickListener(this);
 
         mPopupWindow.show();
-        recordChipEvent(ChipEvent.SHOWN);
         if (mChipRenderParams.onShowCallback != null) {
             mChipRenderParams.onShowCallback.run();
         }
