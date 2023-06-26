@@ -7,6 +7,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/logging.gni")
 
@@ -85,6 +86,19 @@ if (enable_pkeys && is_debug) {
   config("no_stack_protector") {
     cflags = [ "-fno-stack-protector" ]
   }
+}
+
+_remove_configs = []
+_add_configs = []
+if (!is_debug || partition_alloc_optimized_debug) {
+  _remove_configs += [ "//build/config/compiler:default_optimization" ]
+
+  # Partition alloc is relatively hot (>1% of cycles for users of CrOS).
+  # Use speed-focused optimizations for it.
+  _add_configs += [ "//build/config/compiler:optimize_speed" ]
+} else {
+  _remove_configs += [ "//build/config/compiler:default_optimization" ]
+  _add_configs += [ "//build/config/compiler:no_optimize" ]
 }
 
 component("partition_alloc") {
@@ -410,13 +424,8 @@ component("partition_alloc") {
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  # Partition alloc is relatively hot (>1% of cycles for users of CrOS). Use speed-focused
-  # optimizations for it.
-  if (!is_debug) {
-    configs -= [ "//build/config/compiler:default_optimization" ]
-    configs += [ "//build/config/compiler:optimize_speed" ]
-  }
+  configs -= _remove_configs
+  configs += _add_configs
 
   # We want to be able to test pkey mode without access to the default pkey.
   # This is incompatible with stack protectors since the TLS won't be pkey-tagged.
@@ -430,6 +439,9 @@ source_set("allocator_shim") {
   deps = []
   all_dependent_configs = []
   defines = [ "BASE_IMPLEMENTATION" ]
+
+  configs -= _remove_configs
+  configs += _add_configs
 
   if (use_allocator_shim) {
     sources += [
@@ -559,6 +571,9 @@ source_set("raw_ptr") {
   if (build_with_chromium) {
     visibility = [ "//base" ]
   }
+
+  configs -= _remove_configs
+  configs += _add_configs
 }
 
 buildflag_header("partition_alloc_buildflags") {
