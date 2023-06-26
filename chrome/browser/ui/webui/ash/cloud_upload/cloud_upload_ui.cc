@@ -33,20 +33,25 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
       Profile::FromWebUI(web_ui), chrome::kChromeUICloudUploadHost);
 
   static constexpr webui::LocalizedString kStrings[] = {
+      // Dialog buttons.
       {"cancel", IDS_CANCEL},
       {"close", IDS_CLOSE},
       {"open", IDS_OFFICE_FILE_HANDLER_OPEN_BUTTON},
       {"install", IDS_INSTALL},
       {"installing", IDS_OFFICE_INSTALL_PWA_INSTALLING_BUTTON},
       {"installed", IDS_OFFICE_INSTALL_PWA_INSTALLED_BUTTON},
+      {"cancelSetup", IDS_OFFICE_CANCEL_SETUP_CANCEL_BUTTON},
+      {"continueSetup", IDS_OFFICE_CANCEL_SETUP_CONTINUE_BUTTON},
+      {"animationPlayText", IDS_OOBE_PLAY_ANIMATION_MESSAGE},
+      {"animationPauseText", IDS_OOBE_PAUSE_ANIMATION_MESSAGE},
+      // Connect To OneDrive dialog.
       {"connectToOneDriveTitle", IDS_CONNECT_TO_ONEDRIVE_TITLE},
       {"connectToOneDriveBodyText", IDS_CONNECT_TO_ONEDRIVE_BODY_TEXT},
       {"cantConnectOneDrive", IDS_CANT_CONNECT_ONEDRIVE},
       {"connectOneDrive", IDS_CONNECT_ONEDRIVE},
       {"oneDriveConnectedTitle", IDS_ONEDRIVE_CONNECTED_TITLE},
       {"oneDriveConnectedBodyText", IDS_ONEDRIVE_CONNECTED_BODY_TEXT},
-      {"animationPlayText", IDS_OOBE_PLAY_ANIMATION_MESSAGE},
-      {"animationPauseText", IDS_OOBE_PAUSE_ANIMATION_MESSAGE},
+      // File Handler selection dialog.
       {"fileHandlerTitle", IDS_OFFICE_FILE_HANDLER_TITLE},
       {"word", IDS_OFFICE_FILE_HANDLER_FILE_TYPE_WORD},
       {"excel", IDS_OFFICE_FILE_HANDLER_FILE_TYPE_EXCEL},
@@ -58,8 +63,13 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
       {"otherApps", IDS_OFFICE_FILE_HANDLER_APP_OTHERS},
       {"googleDriveStorage", IDS_OFFICE_FILE_HANDLER_STORAGE_GOOGLE},
       {"oneDriveStorage", IDS_OFFICE_FILE_HANDLER_STORAGE_MICROSOFT},
+      // Install PWA dialog.
       {"installPWATitle", IDS_OFFICE_INSTALL_PWA_TITLE},
-      {"installPWABodyText", IDS_OFFICE_INSTALL_PWA_BODY_TEXT}};
+      {"installPWABodyText", IDS_OFFICE_INSTALL_PWA_BODY_TEXT},
+      // Cancel setup dialog.
+      {"cancelSetupTitle", IDS_OFFICE_CANCEL_SETUP_TITLE},
+      {"cancelSetupBodyText", IDS_OFFICE_CANCEL_SETUP_BODY_TEXT},
+  };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("isJellyEnabled", chromeos::features::IsJellyEnabled());
   webui::SetupWebUIDataSource(

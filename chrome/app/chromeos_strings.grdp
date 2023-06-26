@@ -6845,6 +6845,20 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Installed
   </message>
 
+  <!-- Office cancel setup dialog -->
+  <message name="IDS_OFFICE_CANCEL_SETUP_TITLE" desc="Title for a dialog which allows the user to cancel the Microsoft 365 setup.">
+    Cancel Microsoft 365 setup?
+  </message>
+  <message name="IDS_OFFICE_CANCEL_SETUP_BODY_TEXT" desc="Explanation text for a dialog which allows the user to cancel the Microsoft 365 setup.">
+    You won’t be able to open files in Microsoft 365 until setup is complete.
+  </message>
+  <message name="IDS_OFFICE_CANCEL_SETUP_CANCEL_BUTTON" desc="Text for a button which cancels the Microsoft 365 setup flow.">
+    Cancel setup
+  </message>
+  <message name="IDS_OFFICE_CANCEL_SETUP_CONTINUE_BUTTON" desc="Text for a button which continues the Microsoft 365 setup flow.">
+    Continue setup
+  </message>
+
   <!-- security curtain -->
   <message name="IDS_SECURITY_CURTAIN_TITLE" desc="Title text displayed to inform the user a remote admin has taken control of the ChromeOs device.">
     Your administrator is controlling your device
