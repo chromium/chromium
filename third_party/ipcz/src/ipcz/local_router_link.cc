@@ -19,7 +19,8 @@ namespace ipcz {
 // This object is shared between the two Routers on either end of a
 // LocalRouterLink. The Routers access each other through references owned by
 // this object.
-class LocalRouterLink::SharedState : public RefCounted {
+class LocalRouterLink::SharedState
+    : public RefCounted<LocalRouterLink::SharedState> {
  public:
   SharedState(LinkType type,
               LocalRouterLink::InitialState initial_state,
@@ -65,7 +66,9 @@ class LocalRouterLink::SharedState : public RefCounted {
   }
 
  private:
-  ~SharedState() override = default;
+  friend class RefCounted<SharedState>;
+
+  ~SharedState() = default;
 
   const LinkType type_;
 

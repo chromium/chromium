@@ -856,7 +856,7 @@ void NodeLink::WaitForParcelFragmentToResolve(
     bool is_split_parcel) {
   // ParcelWrapper wraps a Parcel in a RefCounted object so the reference can
   // be captured by a copyable lambda below.
-  struct ParcelWrapper : public RefCounted {
+  struct ParcelWrapper : public RefCounted<ParcelWrapper> {
     explicit ParcelWrapper(Parcel parcel) : parcel(std::move(parcel)) {}
     Parcel parcel;
   };

@@ -17,7 +17,7 @@ class Portal;
 //
 // A subclass T should inherit from APIObjectImpl<T, U> rather than inheriting
 // this base class directly. See APIObjectImpl below.
-class APIObject : public RefCounted {
+class APIObject : public RefCounted<APIObject> {
  public:
   enum ObjectType {
     kNode,
@@ -61,7 +61,9 @@ class APIObject : public RefCounted {
   virtual bool CanSendFrom(Portal& sender);
 
  protected:
-  ~APIObject() override;
+  friend class RefCounted<APIObject>;
+
+  virtual ~APIObject();
 
   const ObjectType type_;
 };

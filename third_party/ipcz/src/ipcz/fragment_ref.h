@@ -85,7 +85,7 @@ class FragmentRef : public internal::GenericFragmentRef {
 
   // Adopts an existing ref to the RefCountedFragment located at the beginning
   // of `fragment`, which is a Fragment owned by `memory.
-  FragmentRef(decltype(RefCountedFragment::kAdoptExistingRef),
+  FragmentRef(decltype(kAdoptExistingRef),
               Ref<NodeLinkMemory> memory,
               const Fragment& fragment)
       : GenericFragmentRef(std::move(memory), fragment) {

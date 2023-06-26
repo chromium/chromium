@@ -123,8 +123,8 @@ IpczResult MergePortals(IpczHandle portal0,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  ipcz::Ref<ipcz::Portal> one(ipcz::RefCounted::kAdoptExistingRef, first);
-  ipcz::Ref<ipcz::Portal> two(ipcz::RefCounted::kAdoptExistingRef, second);
+  ipcz::Ref<ipcz::Portal> one(ipcz::kAdoptExistingRef, first);
+  ipcz::Ref<ipcz::Portal> two(ipcz::kAdoptExistingRef, second);
   IpczResult result = one->Merge(*two);
   if (result != IPCZ_RESULT_OK) {
     one.release();

@@ -34,7 +34,7 @@ class NodeLink;
 // single NodeLink. Each end of a NodeLink has its own NodeLinkMemory instance
 // cooperatively managing the same dynamic pool of memory, shared exclusively
 // between the two endpoint nodes.
-class NodeLinkMemory : public RefCounted {
+class NodeLinkMemory : public RefCounted<NodeLinkMemory> {
  public:
   static constexpr BufferId kPrimaryBufferId{0};
 
@@ -91,8 +91,7 @@ class NodeLinkMemory : public RefCounted {
   template <typename T>
   FragmentRef<T> AdoptFragmentRef(const Fragment& fragment) {
     ABSL_ASSERT(sizeof(T) <= fragment.size());
-    return FragmentRef<T>(RefCountedFragment::kAdoptExistingRef,
-                          WrapRefCounted(this), fragment);
+    return FragmentRef<T>(kAdoptExistingRef, WrapRefCounted(this), fragment);
   }
 
   // Adds a new buffer to the underlying BufferPool to use as additional
@@ -141,11 +140,13 @@ class NodeLinkMemory : public RefCounted {
  private:
   struct PrimaryBuffer;
 
+  friend class RefCounted<NodeLinkMemory>;
+
   // Constructs a new NodeLinkMemory over `mapping`, which must correspond to
   // a DriverMemory whose contents have already been initialized as a
   // NodeLinkMemory primary buffer.
   NodeLinkMemory(Ref<Node> node, DriverMemoryMapping mapping);
-  ~NodeLinkMemory() override;
+  ~NodeLinkMemory();
 
   // Indicates whether the NodeLinkMemory should be allowed to expand its
   // allocation capacity further for blocks of size `block_size`.

@@ -51,7 +51,7 @@ class TrapEventDispatcher;
 // terminal Routers. When a portal moves, its side of the route is extended by
 // creating a new terminal Router at the portal's new location. The previous
 // terminal Router remains as a proxying hop to be phased out eventually.
-class Router : public RefCounted {
+class Router : public RefCounted<Router> {
  public:
   using Pair = std::pair<Ref<Router>, Ref<Router>>;
 
@@ -326,7 +326,9 @@ class Router : public RefCounted {
              FlushBehavior behavior = kDefault);
 
  private:
-  ~Router() override;
+  friend class RefCounted<Router>;
+
+  ~Router();
 
   // Attempts to initiate bypass of this router by its peers, and ultimately to
   // remove this router from its route.

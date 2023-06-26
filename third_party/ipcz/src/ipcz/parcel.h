@@ -16,6 +16,8 @@
 #include "ipcz/fragment.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/message.h"
+#include "ipcz/node_link.h"
+#include "ipcz/node_link_memory.h"
 #include "ipcz/sequence_number.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"

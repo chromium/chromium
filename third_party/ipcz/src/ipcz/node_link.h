@@ -210,6 +210,8 @@ class NodeLink : public msg::NodeMessageListener {
   void Transmit(Message& message);
 
  private:
+  friend class RefCounted<NodeLink>;
+
   enum ActivationState {
     kNeverActivated,
     kActive,

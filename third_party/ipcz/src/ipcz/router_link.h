@@ -34,7 +34,7 @@ class Router;
 // deactivate it. As a general rule, calls into Router should be made using a
 // Router reference owned on the calling stack rather than a reference owned by
 // the RouterLink.
-class RouterLink : public RefCounted {
+class RouterLink : public RefCounted<RouterLink> {
  public:
   using Pair = std::pair<Ref<RouterLink>, Ref<RouterLink>>;
 
@@ -184,7 +184,9 @@ class RouterLink : public RefCounted {
   virtual std::string Describe() const = 0;
 
  protected:
-  ~RouterLink() override = default;
+  friend class RefCounted<RouterLink>;
+
+  virtual ~RouterLink() = default;
 };
 
 }  // namespace ipcz

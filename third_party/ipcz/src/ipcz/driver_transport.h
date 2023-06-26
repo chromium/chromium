@@ -37,10 +37,8 @@ class DriverTransport
   };
 
   // A Listener to receive message and error events from the driver.
-  class Listener : public RefCounted {
+  class Listener : public RefCounted<Listener> {
    public:
-    ~Listener() override = default;
-
     // Accepts a raw message from the transport. Note that this is called
     // without *any* validation of the size or content of `message`.
     virtual bool OnTransportMessage(const RawMessage& message,
@@ -52,6 +50,11 @@ class DriverTransport
     // Indicates that dectivation has been completed by the driver, meaning that
     // no further methods will be invoked on this Listener.
     virtual void OnTransportDeactivated() {}
+
+   protected:
+    friend class RefCounted<Listener>;
+
+    virtual ~Listener() = default;
   };
 
   // Constructs a new DriverTransport object over the driver-created transport

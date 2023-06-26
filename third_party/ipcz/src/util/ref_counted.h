@@ -5,56 +5,55 @@
 #ifndef IPCZ_SRC_UTIL_REF_COUNTED_H_
 #define IPCZ_SRC_UTIL_REF_COUNTED_H_
 
+#include <algorithm>
 #include <atomic>
 #include <cstddef>
 #include <type_traits>
 #include <utility>
 
+#include "third_party/abseil-cpp/absl/base/macros.h"
+
 namespace ipcz {
 
-// Base class for any kind of ref-counted thing whose ownership will be shared
-// by one or more Ref<T> objects.
-class RefCounted {
- public:
-  enum { kAdoptExistingRef };
+namespace internal {
 
-  RefCounted();
-  virtual ~RefCounted();
+// Base class for RefCounted<T> instances. See that definition below.
+class RefCountedBase {
+ protected:
+  RefCountedBase();
+  ~RefCountedBase();
 
-  void AcquireRef();
-  void ReleaseRef();
+  // Increases the ref count.
+  void AcquireImpl();
+
+  // Decreases the ref count, returning true if and only if this call just
+  // released the last reference to the object.
+  bool ReleaseImpl();
 
  private:
   std::atomic_int ref_count_{1};
 };
 
-// Base class for every Ref<T>, providing a common implementation for ref count
-// management, assignment, etc.
-class GenericRef {
+}  // namespace internal
+
+// Tag used to construct a Ref<T> which does not increase ref-count.
+enum { kAdoptExistingRef };
+
+// Base class for any ref-counted type T whose ownership can be shared by any
+// number of Ref<T> objects.
+template <typename T>
+class RefCounted : public internal::RefCountedBase {
  public:
-  constexpr GenericRef() = default;
+  RefCounted() = default;
+  ~RefCounted() = default;
 
-  // Does not increase the ref count, effectively assuming ownership of a
-  // previously acquired ref.
-  GenericRef(decltype(RefCounted::kAdoptExistingRef), RefCounted* ptr);
+  void AcquireRef() { AcquireImpl(); }
 
-  // Constructs a new reference to `ptr`, increasing its ref count by 1.
-  explicit GenericRef(RefCounted* ptr);
-
-  GenericRef(GenericRef&& other);
-  GenericRef& operator=(GenericRef&& other);
-  GenericRef(const GenericRef& other);
-  GenericRef& operator=(const GenericRef& other);
-  ~GenericRef();
-
-  explicit operator bool() const { return ptr_ != nullptr; }
-
-  void reset();
-
- protected:
-  void* ReleaseImpl();
-
-  RefCounted* ptr_ = nullptr;
+  void ReleaseRef() {
+    if (ReleaseImpl()) {
+      delete static_cast<T*>(this);
+    }
+  }
 };
 
 // A smart pointer which can be used to share ownership of an instance of T,
@@ -66,13 +65,22 @@ class GenericRef {
 // ipcz ABI boundary. std::shared_ptr design does not allow for such manual ref
 // manipulation without additional indirection.
 template <typename T>
-class Ref : public GenericRef {
+class Ref {
  public:
   constexpr Ref() = default;
+
   constexpr Ref(std::nullptr_t) {}
-  explicit Ref(T* ptr) : GenericRef(ptr) {}
-  Ref(decltype(RefCounted::kAdoptExistingRef), T* ptr)
-      : GenericRef(RefCounted::kAdoptExistingRef, ptr) {}
+
+  explicit Ref(T* ptr) : ptr_(ptr) {
+    if (ptr_) {
+      ptr_->AcquireRef();
+    }
+  }
+
+  Ref(decltype(kAdoptExistingRef), T* ptr) : ptr_(ptr) {}
+
+  Ref(const Ref& other) : Ref(other.ptr_) {}
+  Ref(Ref&& other) noexcept : ptr_(other.release()) {}
 
   template <typename U>
   using EnableIfConvertible =
@@ -82,8 +90,35 @@ class Ref : public GenericRef {
   Ref(const Ref<U>& other) : Ref(other.get()) {}
 
   template <typename U, typename = EnableIfConvertible<U>>
-  Ref(Ref<U>&& other) noexcept
-      : Ref(RefCounted::kAdoptExistingRef, other.release()) {}
+  Ref(Ref<U>&& other) noexcept : ptr_(other.release()) {}
+
+  ~Ref() { reset(); }
+
+  Ref& operator=(std::nullptr_t) {
+    reset();
+    return *this;
+  }
+
+  Ref& operator=(Ref&& other) {
+    if (this != &other) {
+      reset();
+      std::swap(ptr_, other.ptr_);
+    }
+    return *this;
+  }
+
+  Ref& operator=(const Ref& other) {
+    if (this != &other) {
+      reset();
+      ptr_ = other.ptr_;
+      if (ptr_) {
+        ptr_->AcquireRef();
+      }
+    }
+    return *this;
+  }
+
+  explicit operator bool() const { return ptr_ != nullptr; }
 
   T* get() const { return static_cast<T*>(ptr_); }
   T* operator->() const { return get(); }
@@ -94,7 +129,13 @@ class Ref : public GenericRef {
   bool operator==(const Ref<T>& other) const { return ptr_ == other.ptr_; }
   bool operator!=(const Ref<T>& other) const { return ptr_ != other.ptr_; }
 
-  T* release() { return static_cast<T*>(ReleaseImpl()); }
+  void reset() {
+    if (ptr_) {
+      std::exchange(ptr_, nullptr)->ReleaseRef();
+    }
+  }
+
+  T* release() { return std::exchange(ptr_, nullptr); }
 
   void swap(Ref<T>& other) noexcept { std::swap(ptr_, other.ptr_); }
 
@@ -102,6 +143,9 @@ class Ref : public GenericRef {
   friend H AbslHashValue(H h, const Ref<T>& ref) {
     return H::combine(std::move(h), ref.get());
   }
+
+ private:
+  T* ptr_ = nullptr;
 };
 
 // Wraps `ptr` as a Ref<T>, increasing the refcount by 1.
@@ -114,7 +158,7 @@ Ref<T> WrapRefCounted(T* ptr) {
 // not change the object's refcount.
 template <typename T>
 Ref<T> AdoptRef(T* ptr) {
-  return Ref<T>(RefCounted::kAdoptExistingRef, ptr);
+  return Ref<T>(kAdoptExistingRef, ptr);
 }
 
 template <typename T, typename... Args>

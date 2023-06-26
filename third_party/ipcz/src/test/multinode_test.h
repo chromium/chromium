@@ -94,7 +94,7 @@ class TestNode : public internal::TestBase {
   using TransportPair = ::ipcz::test::TransportPair;
 
   // Exposes interaction with one node spawned by another.
-  class TestNodeController : public RefCounted {
+  class TestNodeController : public RefCounted<TestNodeController> {
    public:
     // Blocks until the spawned node has terminated. Returns true if the node
     // executed and terminated cleanly, or false if it encountered at least one
@@ -104,6 +104,11 @@ class TestNode : public internal::TestBase {
     // Creates a new pair of transports suitable for connecting the calling
     // node with the TestNode controlled by this object.
     virtual TransportPair CreateNewTransports() = 0;
+
+   protected:
+    friend class RefCounted<TestNodeController>;
+
+    virtual ~TestNodeController() = default;
   };
 
   virtual ~TestNode();
