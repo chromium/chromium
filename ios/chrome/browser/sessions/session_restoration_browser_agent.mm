@@ -83,7 +83,7 @@ void SessionRestorationBrowserAgent::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-bool SessionRestorationBrowserAgent::RestoreSessionWindow(
+void SessionRestorationBrowserAgent::RestoreSessionWindow(
     SessionWindowIOS* window,
     SessionRestorationScope scope) {
   // Start the session restoration.
@@ -187,7 +187,6 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
   }
 
   // If there was only one tab and it was the new tab page, clobber it.
-  bool closed_ntp_tab = false;
   if (old_count == 1) {
     web::WebState* web_state = web_state_list_->GetWebStateAt(0);
 
@@ -201,7 +200,6 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
     if (!has_pending_load &&
         (web_state->GetLastCommittedURL() == kChromeUINewTabURL)) {
       web_state_list_->CloseWebStateAt(0, WebStateList::CLOSE_USER_ACTION);
-      closed_ntp_tab = true;
     }
   }
 
@@ -214,11 +212,9 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
 
   // Schedule a session save.
   SaveSession(/*immediately*/ false);
-
-  return closed_ntp_tab;
 }
 
-bool SessionRestorationBrowserAgent::RestoreSession() {
+void SessionRestorationBrowserAgent::RestoreSession() {
   DCHECK(session_identifier_.length != 0);
 
   const base::TimeTicks start_time = base::TimeTicks::Now();
@@ -237,13 +233,9 @@ bool SessionRestorationBrowserAgent::RestoreSession() {
     session_window = session.sessionWindows[0];
   }
 
-  const bool closed_ntp_tab =
-      RestoreSessionWindow(session_window, SessionRestorationScope::kAll);
-
+  RestoreSessionWindow(session_window, SessionRestorationScope::kAll);
   base::UmaHistogramTimes("Session.WebStates.LoadingTimeOnMainThread",
                           base::TimeTicks::Now() - start_time);
-
-  return closed_ntp_tab;
 }
 
 bool SessionRestorationBrowserAgent::IsRestoringSession() {
