@@ -2919,8 +2919,9 @@
     {
       // Non-standard appearance values should be removed. This feature removes
       // inner-spin-button, media-slider, media-sliderthumb, media-volume-slider
-      // media-volume-sliderthumb, searchfield-cancel-button,
-      // sliderthumb-horizontal, sliderthumb-vertical.
+      // media-volume-sliderthumb, push-button, searchfield-cancel-button,
+      // slider-horizontal, sliderthumb-horizontal, sliderthumb-vertical,
+      // square-button.
       // https://drafts.csswg.org/css-ui-4/#appearance-switching
       name: "RemoveNonStandardAppearanceValue",
       status: "experimental",

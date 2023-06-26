@@ -3739,14 +3739,16 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
     case CSSPropertyID::kAppearance:
       // TODO(crbug.com/924486): Remove CSS value slider-horizontal,
       // slider-vertical and the associated warnings.
-      if ((value_id == CSSValueID::kSliderHorizontal ||
-           value_id == CSSValueID::kSliderVertical) ||
+      if (value_id == CSSValueID::kSliderVertical ||
           (!RuntimeEnabledFeatures::RemoveNonStandardAppearanceValueEnabled() &&
            (value_id == CSSValueID::kInnerSpinButton ||
             value_id == CSSValueID::kMediaSlider ||
             value_id == CSSValueID::kMediaSliderthumb ||
             value_id == CSSValueID::kMediaVolumeSlider ||
             value_id == CSSValueID::kMediaVolumeSliderthumb ||
+            value_id == CSSValueID::kPushButton ||
+            value_id == CSSValueID::kSquareButton ||
+            value_id == CSSValueID::kSliderHorizontal ||
             value_id == CSSValueID::kSliderthumbHorizontal ||
             value_id == CSSValueID::kSliderthumbVertical ||
             value_id == CSSValueID::kSearchfieldCancelButton))) {
