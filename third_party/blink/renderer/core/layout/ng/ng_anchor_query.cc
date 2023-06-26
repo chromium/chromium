@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_anchor_query_map.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_logical_link.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 
 namespace blink {
@@ -108,60 +107,6 @@ const NGLogicalAnchorQuery& NGLogicalAnchorQuery::Empty() {
   DEFINE_STATIC_LOCAL(Persistent<NGLogicalAnchorQuery>, empty,
                       (MakeGarbageCollected<NGLogicalAnchorQuery>()));
   return *empty;
-}
-
-// static
-const NGPhysicalAnchorQuery* NGPhysicalAnchorQuery::GetFromLayoutResult(
-    const LayoutObject& layout_object) {
-  if (!layout_object.IsOutOfFlowPositioned()) {
-    return nullptr;
-  }
-  LayoutBox::NGPhysicalFragmentList containing_block_fragments =
-      layout_object.ContainingBlock()->PhysicalFragments();
-  if (containing_block_fragments.IsEmpty()) {
-    return nullptr;
-  }
-  // TODO(crbug.com/1309178): Make it work when the containing block is
-  // fragmented or inline.
-  return containing_block_fragments.front().AnchorQuery();
-}
-
-// static
-NGAnchorEvaluatorImpl NGAnchorEvaluatorImpl::BuildFromLayoutResult(
-    const LayoutObject& layout_object) {
-  const NGPhysicalAnchorQuery* physical_query =
-      NGPhysicalAnchorQuery::GetFromLayoutResult(layout_object);
-  if (!physical_query) {
-    return NGAnchorEvaluatorImpl();
-  }
-
-  // TODO(crbug.com/1309178): Make it work when the containing block is
-  // fragmented or inline.
-
-  DCHECK(layout_object.IsOutOfFlowPositioned());
-  DCHECK(layout_object.ContainingBlock());
-  const LayoutBlock* container = layout_object.ContainingBlock();
-  PhysicalSize container_size = container->PhysicalFragments().front().Size();
-  WritingModeConverter container_converter(
-      container->StyleRef().GetWritingDirection(), container_size);
-
-  NGLogicalAnchorQuery* logical_query =
-      MakeGarbageCollected<NGLogicalAnchorQuery>();
-  logical_query->SetFromPhysical(*physical_query, container_converter,
-                                 LogicalOffset() /* additional_offset */,
-                                 NGLogicalAnchorQuery::SetOptions::kInFlow);
-
-  Element* element = DynamicTo<Element>(layout_object.GetNode());
-  Element* implicit_anchor =
-      element ? element->ImplicitAnchorElement() : nullptr;
-  LayoutObject* implicit_anchor_object =
-      implicit_anchor ? implicit_anchor->GetLayoutObject() : nullptr;
-
-  return NGAnchorEvaluatorImpl(layout_object, *logical_query,
-                               layout_object.StyleRef().AnchorDefault(),
-                               implicit_anchor_object, container_converter,
-                               layout_object.StyleRef().GetWritingDirection(),
-                               PhysicalOffset() /* offset_to_padding_box */);
 }
 
 const NGPhysicalAnchorReference* NGPhysicalAnchorQuery::AnchorReference(

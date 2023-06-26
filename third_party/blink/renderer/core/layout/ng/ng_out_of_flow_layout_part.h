@@ -212,6 +212,9 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     DISALLOW_NEW();
 
    public:
+    // Absolutized inset property values. Not necessarily the insets of the box.
+    NGBoxStrut insets_for_get_computed_style;
+    // Offset to container's border box.
     LogicalOffset offset;
     // If |has_cached_layout_result| is true, this will hold the cached layout
     // result that should be returned. Otherwise, this will hold the initial

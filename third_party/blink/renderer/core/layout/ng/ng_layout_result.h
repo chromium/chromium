@@ -153,8 +153,20 @@ class CORE_EXPORT NGLayoutResult final
   }
 
   LogicalOffset OutOfFlowPositionedOffset() const {
-    DCHECK(bitfields_.has_oof_positioned_offset);
-    return oof_positioned_offset_;
+    // The offset is either explicitly stored on the rare data, or impliclty
+    // stored as the start offset of |oof_insets_for_get_computed_style_|.
+    CHECK(bitfields_.has_oof_insets_for_get_computed_style);
+    return rare_data_ && rare_data_->oof_positioned_offset_is_set()
+               ? rare_data_->OutOfFlowPositionedOffset()
+               : oof_insets_for_get_computed_style_.StartOffset();
+  }
+
+  // Returns the absolutized inset property values in the parent's writing mode.
+  // Not necessarily the insets of the actual box in the container, but matches
+  // the result of the `getComputedStyle()` JavaScript API.
+  const NGBoxStrut& OutOfFlowInsetsForGetComputedStyle() const {
+    CHECK(bitfields_.has_oof_insets_for_get_computed_style);
+    return oof_insets_for_get_computed_style_;
   }
 
   // Returns if we can use the first-tier OOF-positioned cache.
@@ -212,7 +224,7 @@ class CORE_EXPORT NGLayoutResult final
   EStatus Status() const { return static_cast<EStatus>(bitfields_.status); }
 
   LayoutUnit BfcLineOffset() const {
-    if (bitfields_.has_oof_positioned_offset) {
+    if (bitfields_.has_oof_insets_for_get_computed_style) {
       DCHECK(physical_fragment_->IsOutOfFlowPositioned());
       return LayoutUnit();
     }
@@ -221,7 +233,7 @@ class CORE_EXPORT NGLayoutResult final
   }
 
   const absl::optional<LayoutUnit> BfcBlockOffset() const {
-    if (bitfields_.has_oof_positioned_offset) {
+    if (bitfields_.has_oof_insets_for_get_computed_style) {
       DCHECK(physical_fragment_->IsOutOfFlowPositioned());
       return LayoutUnit();
     }
@@ -467,8 +479,8 @@ class CORE_EXPORT NGLayoutResult final
    protected:
     friend class NGOutOfFlowLayoutPart;
 
-    void SetOutOfFlowPositionedOffset(
-        const LogicalOffset& offset,
+    void SetOutOfFlowInsetsForGetComputedStyle(
+        const NGBoxStrut& insets,
         bool can_use_out_of_flow_positioned_first_tier_cache) {
       // OOF-positioned nodes *must* always have an initial BFC-offset.
       DCHECK(layout_result_->physical_fragment_->IsOutOfFlowPositioned());
@@ -479,8 +491,23 @@ class CORE_EXPORT NGLayoutResult final
       layout_result_->bitfields_
           .can_use_out_of_flow_positioned_first_tier_cache =
           can_use_out_of_flow_positioned_first_tier_cache;
-      layout_result_->bitfields_.has_oof_positioned_offset = true;
-      layout_result_->oof_positioned_offset_ = offset;
+      layout_result_->bitfields_.has_oof_insets_for_get_computed_style = true;
+      layout_result_->oof_insets_for_get_computed_style_ = insets;
+    }
+
+    void SetOutOfFlowPositionedOffset(const LogicalOffset& offset) {
+      CHECK(layout_result_->bitfields_.has_oof_insets_for_get_computed_style);
+      // To minimize the chance of creating a rare data, we explicitly store
+      // |offset| on rare data only if:
+      // 1. There's already an offset stored on rare data, in which case we
+      //    simply update it regardlessly.
+      // 2. It no longer matches the start offset of the stored insets.
+      if ((layout_result_->rare_data_ &&
+           layout_result_->rare_data_->oof_positioned_offset_is_set()) ||
+          offset != layout_result_->oof_insets_for_get_computed_style_
+                        .StartOffset()) {
+        layout_result_->EnsureRareData()->SetOutOfFlowPositionedOffset(offset);
+      }
     }
 
     void SetPositionFallbackResult(
@@ -580,8 +607,10 @@ class CORE_EXPORT NGLayoutResult final
     using LineBoxBfcBlockOffsetIsSetFlag = BitField::DefineFirstValue<bool, 1>;
     using PositionFallbackResultIsSetFlag =
         LineBoxBfcBlockOffsetIsSetFlag::DefineNextValue<bool, 1>;
+    using OutOfFlowPositionedOffsetIsSetFlag =
+        PositionFallbackResultIsSetFlag::DefineNextValue<bool, 1>;
     using DataUnionTypeValue =
-        PositionFallbackResultIsSetFlag::DefineNextValue<uint8_t, 3>;
+        OutOfFlowPositionedOffsetIsSetFlag::DefineNextValue<uint8_t, 3>;
 
     struct BlockData {
       GC_PLUGIN_IGNORE("crbug.com/1146383")
@@ -636,6 +665,14 @@ class CORE_EXPORT NGLayoutResult final
 
     void set_position_fallback_result_is_set(bool flag) {
       return bit_field.set<PositionFallbackResultIsSetFlag>(flag);
+    }
+
+    bool oof_positioned_offset_is_set() const {
+      return bit_field.get<OutOfFlowPositionedOffsetIsSetFlag>();
+    }
+
+    void set_oof_positioned_offset_is_set(bool flag) {
+      return bit_field.set<OutOfFlowPositionedOffsetIsSetFlag>(flag);
     }
 
     DataUnionType data_union_type() const {
@@ -701,6 +738,7 @@ class CORE_EXPORT NGLayoutResult final
     }
 
     RareData() : bit_field(DataUnionTypeValue::encode(kNone)) {}
+
     RareData(const RareData& rare_data)
         : early_break(rare_data.early_break),
           end_margin_strut(rare_data.end_margin_strut),
@@ -717,6 +755,7 @@ class CORE_EXPORT NGLayoutResult final
           position_fallback_index(rare_data.position_fallback_index),
           position_fallback_non_overflowing_ranges(
               rare_data.position_fallback_non_overflowing_ranges),
+          oof_positioned_offset(rare_data.oof_positioned_offset),
           bit_field(rare_data.bit_field) {
       switch (data_union_type()) {
         case kNone:
@@ -802,6 +841,15 @@ class CORE_EXPORT NGLayoutResult final
       return &position_fallback_non_overflowing_ranges;
     }
 
+    void SetOutOfFlowPositionedOffset(const LogicalOffset& offset) {
+      oof_positioned_offset = offset;
+      set_oof_positioned_offset_is_set(true);
+    }
+    LogicalOffset OutOfFlowPositionedOffset() const {
+      CHECK(oof_positioned_offset_is_set());
+      return oof_positioned_offset;
+    }
+
     void Trace(Visitor* visitor) const;
 
     Member<const NGEarlyBreak> early_break;
@@ -834,6 +882,9 @@ class CORE_EXPORT NGLayoutResult final
     // Only valid if position_fallback_result_is_set
     wtf_size_t position_fallback_index;
     Vector<PhysicalScrollRange> position_fallback_non_overflowing_ranges;
+
+    // Only valid if oof_positioned_offset_is_set
+    LogicalOffset oof_positioned_offset;
 
     BitField bit_field;
 
@@ -870,7 +921,7 @@ class CORE_EXPORT NGLayoutResult final
               bool has_descendant_that_depends_on_percentage_block_size,
               bool subtree_modified_margin_strut)
         : has_rare_data_exclusion_space(false),
-          has_oof_positioned_offset(false),
+          has_oof_insets_for_get_computed_style(false),
           can_use_out_of_flow_positioned_first_tier_cache(false),
           is_bfc_block_offset_nullopt(false),
           has_forced_break(false),
@@ -892,7 +943,7 @@ class CORE_EXPORT NGLayoutResult final
           has_orthogonal_fallback_size_descendant(false) {}
 
     unsigned has_rare_data_exclusion_space : 1;
-    unsigned has_oof_positioned_offset : 1;
+    unsigned has_oof_insets_for_get_computed_style : 1;
     unsigned can_use_out_of_flow_positioned_first_tier_cache : 1;
     unsigned is_bfc_block_offset_nullopt : 1;
 
@@ -926,19 +977,16 @@ class CORE_EXPORT NGLayoutResult final
 
   // |rare_data_| cannot be stored in the union because it is difficult to have
   // a const bitfield for it and it cannot be traced.
-  //  - When |rare_data_| is valid, |bfc_offset_| and |oof_positioned_offset_|
-  //    are stored within the |RareData| object.
-  //  - |oof_positioned_offset_| is valid if the
-  //    |Bitfields::has_oof_positioned_offset| bit is set. As the node is
-  //    OOF-positioned the |bfc_offset_| is *always* the initial value.
-  //  - Otherwise |bfc_offset_| is valid.
+  // Note that |bfc_offset_| and |oof_insets_for_get_computed_style_| cannot be
+  // both valid at the same time, because an OOF-positioned node's BFC offset is
+  // *always* the initial value.
   Member<RareData> rare_data_;
   union {
     NGBfcOffset bfc_offset_;
-    // This is the final position of an OOF-positioned object in its parent's
-    // writing-mode. This is set by the |NGOutOfFlowLayoutPart| while
-    // generating this layout result.
-    LogicalOffset oof_positioned_offset_;
+    // This is the absolutized inset property values of an OOF-positioned object
+    // in its parent's writing-mode. This is set by the |NGOutOfFlowLayoutPart|
+    // while generating this layout result.
+    NGBoxStrut oof_insets_for_get_computed_style_;
   };
 
   LayoutUnit intrinsic_block_size_;

@@ -1853,6 +1853,13 @@
       status: "test",
     },
     {
+      // Kill switch for bug fix of https://crbug.com/867616 and
+      // https://crbug.com/1451020
+      // TODO(xiaochengh): Remove it in M119.
+      name: "GetComputedStyleOutOfFlowInsetsFix",
+      status: "stable",
+    },
+    {
       name: "GetDisplayMedia",
       public: true,
       status: {

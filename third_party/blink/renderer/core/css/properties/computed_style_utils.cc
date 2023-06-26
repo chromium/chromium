@@ -52,7 +52,6 @@
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_anchor_query.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_intrinsic_length.h"
@@ -642,29 +641,53 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     const ComputedStyle& style,
     const CSSProperty& property,
     const LayoutObject* layout_object) {
+  if (RuntimeEnabledFeatures::GetComputedStyleOutOfFlowInsetsFixEnabled() &&
+      layout_object && layout_object->IsOutOfFlowPositioned()) {
+    CHECK(layout_object->IsBox());
+    // LayoutBox::OutOfFlowInsetsForGetComputedStyle() are relative to the
+    // container's writing direction. Convert it to physical.
+    const LayoutBox* box = To<LayoutBox>(layout_object);
+    const NGPhysicalBoxStrut& insets =
+        box->OutOfFlowInsetsForGetComputedStyle().ConvertToPhysical(
+            box->ContainingBlock()->StyleRef().GetWritingDirection());
+    LayoutUnit offset;
+    switch (property.PropertyID()) {
+      case CSSPropertyID::kLeft:
+        offset = insets.left;
+        break;
+      case CSSPropertyID::kTop:
+        offset = insets.top;
+        break;
+      case CSSPropertyID::kRight:
+        offset = insets.right;
+        break;
+      case CSSPropertyID::kBottom:
+        offset = insets.bottom;
+        break;
+      default:
+        NOTREACHED();
+    }
+    return ZoomAdjustedPixelValue(offset, style);
+  }
+
   std::pair<const Length*, const Length*> positions;
   bool is_horizontal_property;
-  bool is_right_or_bottom;
   switch (property.PropertyID()) {
     case CSSPropertyID::kLeft:
       positions = std::make_pair(&style.UsedLeft(), &style.UsedRight());
       is_horizontal_property = true;
-      is_right_or_bottom = false;
       break;
     case CSSPropertyID::kRight:
       positions = std::make_pair(&style.UsedRight(), &style.UsedLeft());
       is_horizontal_property = true;
-      is_right_or_bottom = true;
       break;
     case CSSPropertyID::kTop:
       positions = std::make_pair(&style.UsedTop(), &style.UsedBottom());
       is_horizontal_property = false;
-      is_right_or_bottom = false;
       break;
     case CSSPropertyID::kBottom:
       positions = std::make_pair(&style.UsedBottom(), &style.UsedTop());
       is_horizontal_property = false;
-      is_right_or_bottom = true;
       break;
     default:
       NOTREACHED();
@@ -694,18 +717,8 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
               : box->ContainingBlockLogicalHeightForGetComputedStyle();
     }
 
-    absl::optional<NGAnchorEvaluatorImpl> anchor_evaluator_storage;
-    NGAnchorEvaluatorImpl* anchor_evaluator = nullptr;
-    if (offset.HasAnchorQueries() && layout_object->IsOutOfFlowPositioned()) {
-      anchor_evaluator_storage.emplace(
-          NGAnchorEvaluatorImpl::BuildFromLayoutResult(*layout_object));
-      anchor_evaluator = &anchor_evaluator_storage.value();
-      anchor_evaluator->SetAxis(!is_horizontal_property, is_right_or_bottom,
-                                containing_block_size);
-    }
-
-    return ZoomAdjustedPixelValue(
-        ValueForLength(offset, containing_block_size, anchor_evaluator), style);
+    return ZoomAdjustedPixelValue(ValueForLength(offset, containing_block_size),
+                                  style);
   }
 
   if (offset.IsAuto() && layout_object) {
@@ -742,6 +755,8 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     }
 
     if (layout_object->IsOutOfFlowPositioned() && layout_object->IsBox()) {
+      CHECK(
+          !RuntimeEnabledFeatures::GetComputedStyleOutOfFlowInsetsFixEnabled());
       // For fixed and absolute positioned elements, the top, left, bottom, and
       // right are defined relative to the corresponding sides of the containing
       // block.

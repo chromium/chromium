@@ -5983,4 +5983,19 @@ LayoutBox::PositionFallbackNonOverflowingRanges() const {
   return layout_results.front()->PositionFallbackNonOverflowingRanges();
 }
 
+const NGBoxStrut& LayoutBox::OutOfFlowInsetsForGetComputedStyle() const {
+  const auto& layout_results = GetLayoutResults();
+  // We should call this function only after the node is laid out.
+  CHECK(layout_results.size());
+  // We only need to check the first fragment, because when the box is
+  // fragmented, insets are duplicated on all fragments.
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  for (wtf_size_t i = 1; i < layout_results.size(); ++i) {
+    DCHECK_EQ(layout_results[i]->OutOfFlowInsetsForGetComputedStyle(),
+              layout_results[i - 1]->OutOfFlowInsetsForGetComputedStyle());
+  }
+#endif
+  return GetLayoutResults().front()->OutOfFlowInsetsForGetComputedStyle();
+}
+
 }  // namespace blink

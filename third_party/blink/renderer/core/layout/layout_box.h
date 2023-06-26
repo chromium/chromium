@@ -1693,6 +1693,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   const Vector<PhysicalScrollRange>* PositionFallbackNonOverflowingRanges()
       const;
 
+  const NGBoxStrut& OutOfFlowInsetsForGetComputedStyle() const;
+
  protected:
   ~LayoutBox() override;
 
