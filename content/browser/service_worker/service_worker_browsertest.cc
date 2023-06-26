@@ -4809,10 +4809,11 @@ class ServiceWorkerBypassFetchHandlerTest
   ServiceWorkerBypassFetchHandlerTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kServiceWorkerBypassFetchHandler,
+          {{"strategy", ShouldUseAllowListStrategy() ? "allowlist" : "optin"},
+           {"bypass_for", BypassFetchHandlerTargetStr()}}},
+         {features::kServiceWorkerBypassFetchHandlerHashStrings,
           {{"script_checksum_to_bypass",
-            ShouldUseValidChecksum() ? kValidChecksum : kInvalidChecksum},
-           {"strategy", ShouldUseAllowListStrategy() ? "allowlist" : "optin"},
-           {"bypass_for", BypassFetchHandlerTargetStr()}}}},
+            ShouldUseValidChecksum() ? kValidChecksum : kInvalidChecksum}}}},
         {});
   }
   ~ServiceWorkerBypassFetchHandlerTest() override = default;

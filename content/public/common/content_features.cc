@@ -1021,9 +1021,13 @@ const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>
 // e.g.
 // 9685C8DE399237BDA6FF3AD0F281E9D522D46BB0ECFACE05E98D2B9AAE51D1EF,
 // 20F0D78B280E40C0A17ABB568ACF4BDAFFB9649ADA75B0675F962B3F4FC78EA4
+BASE_FEATURE(kServiceWorkerBypassFetchHandlerHashStrings,
+             "ServiceWorkerBypassFetchHandlerHashStrings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string>
     kServiceWorkerBypassFetchHandlerBypassedHashStrings{
-        &kServiceWorkerBypassFetchHandler, "script_checksum_to_bypass", ""};
+        &kServiceWorkerBypassFetchHandlerHashStrings,
+        "script_checksum_to_bypass", ""};
 
 // Enables skipping the service worker fetch handler if the fetch handler is
 // identified as ignorable.
