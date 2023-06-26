@@ -257,6 +257,7 @@ enum VideoCaptureError {
   [MinVersion=5] kWinDirectShowDeviceFilterCreationFailed,
   [MinVersion=5] kWinDirectShowDeviceInitializationFailed,
   [MinVersion=6] kVideoCaptureDeviceFactorySecondCreateDenied,
+  [MinVersion=7] kScreenCaptureKitResetStreamError,
 };
 
 [Stable, Extensible]

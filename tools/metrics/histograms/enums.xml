@@ -94504,6 +94504,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Failed to load library functions."/>
 </enum>
 
+<enum name="ScreenCaptureKitFullscreenModuleMode">
+  <int value="0" label="Unsupported"/>
+  <int value="1" label="PowerPoint"/>
+  <int value="2" label="OpenOffice Impress"/>
+  <int value="3" label="Keynote"/>
+  <int value="4" label="LibreOffice"/>
+</enum>
+
 <enum name="ScreenRotationAcceleratorAction">
   <int value="0" label="CancelledDialog"/>
   <int value="1" label="AcceptedDialog"/>

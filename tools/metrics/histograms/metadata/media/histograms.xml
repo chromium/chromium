@@ -4846,6 +4846,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.ScreenCaptureKit.FullscreenModuleMode"
+    enum="ScreenCaptureKitFullscreenModuleMode" expires_after="2023-10-10">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Records the mode that is used in the ScreenCaptureKit Fullscreen module if
+    the selected window to capture belongs to a supported application. The mode
+    is reported once per captured window when the fullscreen module is created.
+  </summary>
+</histogram>
+
 <histogram name="Media.Session.ActiveTime" units="ms"
     expires_after="2023-01-22">
   <owner>steimel@chromium.org</owner>
