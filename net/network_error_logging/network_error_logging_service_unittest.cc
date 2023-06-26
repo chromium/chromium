@@ -118,7 +118,7 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
   // These methods are design so that using them together will create unique
   // Origin, NetworkAnonymizationKey pairs, but they do return repeated values
   // when called separately, so they can be used to ensure that reports are
-  // keyed on both NIK and Origin.
+  // keyed on both NAK and Origin.
   url::Origin MakeOrigin(size_t index) {
     GURL url(base::StringPrintf("https://example%zd.com/", index / 2));
     return url::Origin::Create(url);
@@ -194,6 +194,9 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
       "{\"report_to\":\"group\",\"max_age\":86400,\"success_fraction\":1.0}";
   const std::string kHeaderIncludeSubdomains_ =
       "{\"report_to\":\"group\",\"max_age\":86400,\"include_subdomains\":true}";
+  const std::string kHeaderIncludeSubdomainsAndSuccess_ =
+      "{\"report_to\":\"group\",\"max_age\":86400,\"include_subdomains\":true,"
+      "\"success_fraction\":1.0}";
   const std::string kHeaderMaxAge0_ = "{\"max_age\":0}";
   const std::string kHeaderTooLong_ =
       "{\"report_to\":\"group\",\"max_age\":86400,\"junk\":\"" +
@@ -257,12 +260,12 @@ TEST_P(NetworkErrorLoggingServiceTest, PolicyKeyMatchesNikAndOrigin) {
   // Make the rest of the test run synchronously.
   FinishLoading(true /* load_success */);
 
-  // Wrong NIK and origin.
+  // Wrong NAK and origin.
   service()->OnRequest(MakeRequestDetails(kOtherNak_, kUrlDifferentHost_,
                                           ERR_CONNECTION_REFUSED));
   EXPECT_TRUE(reports().empty());
 
-  // Wrong NIK.
+  // Wrong NAK.
   service()->OnRequest(
       MakeRequestDetails(kOtherNak_, kUrl_, ERR_CONNECTION_REFUSED));
   EXPECT_TRUE(reports().empty());
@@ -290,17 +293,17 @@ TEST_P(NetworkErrorLoggingServiceTest,
   // Make the rest of the test run synchronously.
   FinishLoading(true /* load_success */);
 
-  // Wrong NIK and origin.
+  // Wrong NAK and origin.
   service()->OnRequest(MakeRequestDetails(kOtherNak_, kUrlDifferentHost_,
                                           ERR_CONNECTION_REFUSED));
   EXPECT_TRUE(reports().empty());
 
-  // Wrong NIK (same origin).
+  // Wrong NAK (same origin).
   service()->OnRequest(
       MakeRequestDetails(kOtherNak_, kUrl_, ERR_CONNECTION_REFUSED));
   EXPECT_TRUE(reports().empty());
 
-  // Wrong NIK (subdomain).
+  // Wrong NAK (subdomain).
   service()->OnRequest(
       MakeRequestDetails(kOtherNak_, kUrlSubdomain_, ERR_CONNECTION_REFUSED));
   EXPECT_TRUE(reports().empty());
@@ -310,7 +313,11 @@ TEST_P(NetworkErrorLoggingServiceTest,
       MakeRequestDetails(kNak_, kUrlDifferentHost_, ERR_CONNECTION_REFUSED));
   EXPECT_TRUE(reports().empty());
 
-  // Correct key (same origin).
+  // Correct key, successful request (same origin).
+  service()->OnRequest(MakeRequestDetails(kNak_, kUrl_, OK));
+  EXPECT_TRUE(reports().empty());
+
+  // Correct key, non-DNS error (same origin).
   service()->OnRequest(
       MakeRequestDetails(kNak_, kUrl_, ERR_CONNECTION_REFUSED));
   EXPECT_EQ(1u, reports().size());
@@ -320,7 +327,64 @@ TEST_P(NetworkErrorLoggingServiceTest,
   EXPECT_EQ(kGroup_, reports()[0].group);
   EXPECT_EQ(kType_, reports()[0].type);
 
-  // Correct key (subdomain).
+  // Correct key, successful request (subdomain).
+  service()->OnRequest(MakeRequestDetails(kNak_, kUrlSubdomain_, OK));
+  EXPECT_EQ(1u, reports().size());
+
+  // Correct key, non-DNS error (subdomain).
+  service()->OnRequest(
+      MakeRequestDetails(kNak_, kUrlSubdomain_, ERR_CONNECTION_REFUSED));
+  EXPECT_EQ(1u, reports().size());
+
+  // Correct key, DNS error (subdomain).
+  service()->OnRequest(
+      MakeRequestDetails(kNak_, kUrlSubdomain_, ERR_NAME_NOT_RESOLVED));
+  EXPECT_EQ(2u, reports().size());
+  EXPECT_EQ(kUrlSubdomain_, reports()[1].url);
+  EXPECT_EQ(kNak_, reports()[1].network_anonymization_key);
+  EXPECT_EQ(kUserAgent_, reports()[1].user_agent);
+  EXPECT_EQ(kGroup_, reports()[1].group);
+  EXPECT_EQ(kType_, reports()[1].type);
+}
+
+TEST_P(NetworkErrorLoggingServiceTest,
+       PolicyKeyMatchesNikAndOriginIncludeSubdomainsAndSuccess) {
+  service()->OnHeader(kNak_, kOrigin_, kServerIP_,
+                      kHeaderIncludeSubdomainsAndSuccess_);
+
+  // Make the rest of the test run synchronously.
+  FinishLoading(true /* load_success */);
+
+  // Wrong NAK and origin.
+  service()->OnRequest(MakeRequestDetails(kOtherNak_, kUrlDifferentHost_,
+                                          ERR_CONNECTION_REFUSED));
+  EXPECT_TRUE(reports().empty());
+
+  // Wrong NAK (same origin).
+  service()->OnRequest(
+      MakeRequestDetails(kOtherNak_, kUrl_, ERR_CONNECTION_REFUSED));
+  EXPECT_TRUE(reports().empty());
+
+  // Wrong NAK (subdomain).
+  service()->OnRequest(
+      MakeRequestDetails(kOtherNak_, kUrlSubdomain_, ERR_CONNECTION_REFUSED));
+  EXPECT_TRUE(reports().empty());
+
+  // Wrong origin.
+  service()->OnRequest(
+      MakeRequestDetails(kNak_, kUrlDifferentHost_, ERR_CONNECTION_REFUSED));
+  EXPECT_TRUE(reports().empty());
+
+  // Correct key, successful request (same origin).
+  service()->OnRequest(MakeRequestDetails(kNak_, kUrl_, OK));
+  EXPECT_EQ(1u, reports().size());
+  EXPECT_EQ(kUrl_, reports()[0].url);
+  EXPECT_EQ(kNak_, reports()[0].network_anonymization_key);
+  EXPECT_EQ(kUserAgent_, reports()[0].user_agent);
+  EXPECT_EQ(kGroup_, reports()[0].group);
+  EXPECT_EQ(kType_, reports()[0].type);
+
+  // Correct key, non-DNS error (same origin).
   service()->OnRequest(
       MakeRequestDetails(kNak_, kUrl_, ERR_CONNECTION_REFUSED));
   EXPECT_EQ(2u, reports().size());
@@ -329,6 +393,25 @@ TEST_P(NetworkErrorLoggingServiceTest,
   EXPECT_EQ(kUserAgent_, reports()[1].user_agent);
   EXPECT_EQ(kGroup_, reports()[1].group);
   EXPECT_EQ(kType_, reports()[1].type);
+
+  // Correct key (subdomain).
+  service()->OnRequest(
+      MakeRequestDetails(kNak_, kUrlSubdomain_, ERR_NAME_NOT_RESOLVED));
+  EXPECT_EQ(3u, reports().size());
+  EXPECT_EQ(kUrlSubdomain_, reports()[2].url);
+  EXPECT_EQ(kNak_, reports()[2].network_anonymization_key);
+  EXPECT_EQ(kUserAgent_, reports()[2].user_agent);
+  EXPECT_EQ(kGroup_, reports()[2].group);
+  EXPECT_EQ(kType_, reports()[2].type);
+
+  // Correct key, successful request (subdomain).
+  service()->OnRequest(MakeRequestDetails(kNak_, kUrlSubdomain_, OK));
+  EXPECT_EQ(3u, reports().size());
+
+  // Correct key, successful request on mismatched IP (subdomain).
+  service()->OnRequest(MakeRequestDetails(kNak_, kUrlSubdomain_, OK, "GET", 200,
+                                          kOtherServerIP_));
+  ASSERT_EQ(3u, reports().size());
 }
 
 TEST_P(NetworkErrorLoggingServiceTest, NetworkAnonymizationKeyDisabled) {
@@ -347,7 +430,7 @@ TEST_P(NetworkErrorLoggingServiceTest, NetworkAnonymizationKeyDisabled) {
   // Make the rest of the test run synchronously.
   FinishLoading(true /* load_success */);
 
-  // Wrong NIK, but a report should be generated anyways.
+  // Wrong NAK, but a report should be generated anyways.
   service()->OnRequest(
       MakeRequestDetails(kOtherNak_, kUrl_, ERR_CONNECTION_REFUSED));
   EXPECT_EQ(1u, reports().size());
@@ -1385,7 +1468,7 @@ TEST_P(NetworkErrorLoggingServiceTest,
   // Make the rest of the test run synchronously.
   FinishLoading(true /* load_success */);
 
-  // Wrong NIK, but a report should be generated anyways.
+  // Wrong NAK, but a report should be generated anyways.
   service()->QueueSignedExchangeReport(MakeSignedExchangeReportDetails(
       kOtherNak_, true, "ok", kUrl_, kInnerUrl_, kCertUrl_, kServerIP_));
 
