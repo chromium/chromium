@@ -40,6 +40,8 @@ source_set("chromeos") {
     "app_mode/kiosk_troubleshooting_controller.h",
     "app_mode/startup_app_launcher_update_checker.cc",
     "app_mode/startup_app_launcher_update_checker.h",
+    "app_mode/web_kiosk_app_installer.cc",
+    "app_mode/web_kiosk_app_installer.h",
     "app_mode/web_kiosk_browser_controller_base.cc",
     "app_mode/web_kiosk_browser_controller_base.h",
     "arc/arc_external_protocol_dialog.cc",
