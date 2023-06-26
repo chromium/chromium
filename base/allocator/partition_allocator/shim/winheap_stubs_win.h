@@ -11,7 +11,7 @@
 
 #include <stdint.h>
 
-#include "base/base_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 
 namespace allocator_shim {
 
@@ -35,11 +35,11 @@ bool WinCallNewHandler(size_t size);
 
 // Wrappers to implement the interface for the _aligned_* functions on top of
 // the CRT's Windows heap. Exported for tests.
-BASE_EXPORT void* WinHeapAlignedMalloc(size_t size, size_t alignment);
-BASE_EXPORT void* WinHeapAlignedRealloc(void* ptr,
-                                        size_t size,
-                                        size_t alignment);
-BASE_EXPORT void WinHeapAlignedFree(void* ptr);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void* WinHeapAlignedMalloc(size_t size, size_t alignment);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void* WinHeapAlignedRealloc(void* ptr, size_t size, size_t alignment);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) void WinHeapAlignedFree(void* ptr);
 
 }  // namespace allocator_shim
 

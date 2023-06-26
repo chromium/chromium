@@ -6,10 +6,6 @@
 # into partition_allocator/. This file will be removed away once the
 # migration gets done.
 
-include_rules = [
-    "+base/base_export.h",
-]
-
 specific_include_rules = {
   "allocator_shim_unittest\.cc$": [
     "+base/synchronization/waitable_event.h",

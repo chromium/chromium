@@ -102,6 +102,18 @@ if (!is_debug || partition_alloc_optimized_debug) {
 }
 
 component("partition_alloc") {
+  public_deps = []
+
+  if (use_partition_alloc || use_allocator_shim) {
+    # allocator_shim uses partition_alloc_base in allocator_core.
+    public_deps += [ ":allocator_core" ]
+  }
+  public_deps += [ ":allocator_shim" ]
+}
+
+source_set("allocator_core") {
+  visibility = [ ":*" ]
+
   sources = [
     "address_pool_manager.cc",
     "address_pool_manager.h",
@@ -435,10 +447,12 @@ component("partition_alloc") {
 }
 
 source_set("allocator_shim") {
+  visibility = [ ":*" ]
+
   sources = []
   deps = []
   all_dependent_configs = []
-  defines = [ "BASE_IMPLEMENTATION" ]
+  configs += [ ":partition_alloc_implementation" ]
 
   configs -= _remove_configs
   configs += _add_configs
@@ -506,9 +520,8 @@ source_set("allocator_shim") {
     }
 
     deps += [
+      ":allocator_core",
       ":buildflags",
-      ":partition_alloc",
-      "//base:base_static",  # For base_export.h
     ]
   }
 
@@ -520,14 +533,9 @@ source_set("allocator_shim") {
       "shim/malloc_zone_functions_mac.h",
     ]
     deps += [
+      ":allocator_core",
       ":buildflags",
-      ":partition_alloc",
-      "//base:base_static",  # For base_export.h
     ]
-  }
-
-  if (build_with_chromium) {
-    visibility = [ "//base:base" ]
   }
 }
 
