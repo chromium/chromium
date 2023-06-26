@@ -37,6 +37,7 @@
 #define PR_MTE_TCF_MASK (3UL << PR_MTE_TCF_SHIFT)
 #define PR_MTE_TAG_SHIFT 3
 #define PR_MTE_TAG_MASK (0xffffUL << PR_MTE_TAG_SHIFT)
+#define HWCAP2_MTE (1 << 18)
 #endif
 #endif
 
