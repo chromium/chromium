@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace password_manager {
 
@@ -90,17 +91,26 @@ PasskeyCredential& PasskeyCredential::operator=(const PasskeyCredential&) =
 PasskeyCredential::PasskeyCredential(PasskeyCredential&&) = default;
 PasskeyCredential& PasskeyCredential::operator=(PasskeyCredential&&) = default;
 
-int PasskeyCredential::GetAuthenticatorLabel() const {
+std::u16string PasskeyCredential::GetAuthenticatorLabel() const {
+  if (authenticator_label_) {
+    return *authenticator_label_;
+  }
+  int id;
   switch (source_) {
     case Source::kWindowsHello:
-      return IDS_PASSWORD_MANAGER_USE_WINDOWS_HELLO;
+      id = IDS_PASSWORD_MANAGER_USE_WINDOWS_HELLO;
+      break;
     case Source::kTouchId:
-      return IDS_PASSWORD_MANAGER_USE_TOUCH_ID;
+      id = IDS_PASSWORD_MANAGER_USE_TOUCH_ID;
+      break;
     case Source::kAndroidPhone:
-      return IDS_PASSWORD_MANAGER_USE_SCREEN_LOCK;
+      id = IDS_PASSWORD_MANAGER_USE_SCREEN_LOCK;
+      break;
     case Source::kOther:
-      return IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;
+      id = IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;
+      break;
   }
+  return l10n_util::GetStringUTF16(id);
 }
 
 bool operator==(const PasskeyCredential& lhs,

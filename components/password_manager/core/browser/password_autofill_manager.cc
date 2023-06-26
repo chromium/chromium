@@ -747,8 +747,8 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
           suggestion.custom_icon = page_favicon_;
           suggestion.payload = autofill::Suggestion::BackendId(
               base::Base64Encode(passkey.credential_id()));
-          suggestion.labels = {{autofill::Suggestion::Text(
-              l10n_util::GetStringUTF16(passkey.GetAuthenticatorLabel()))}};
+          suggestion.labels = {
+              {autofill::Suggestion::Text(passkey.GetAuthenticatorLabel())}};
           return suggestion;
         });
   }

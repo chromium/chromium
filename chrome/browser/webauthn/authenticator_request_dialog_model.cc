@@ -1104,10 +1104,11 @@ void AuthenticatorRequestDialogModel::StartConditionalMediationRequest() {
   auto* web_contents = GetWebContents();
   if (web_contents && render_frame_host) {
     std::vector<password_manager::PasskeyCredential> credentials;
+    absl::optional<PairedPhone> priority_phone = GetPrioritySyncedPhone();
     base::ranges::transform(
         ephemeral_state_.creds_, std::back_inserter(credentials),
-        [](const auto& credential) {
-          return password_manager::PasskeyCredential(
+        [&priority_phone](const auto& credential) {
+          password_manager::PasskeyCredential passkey(
               ToPasswordManagerSource(credential.source),
               password_manager::PasskeyCredential::RpId(credential.rp_id),
               password_manager::PasskeyCredential::CredentialId(
@@ -1117,6 +1118,12 @@ void AuthenticatorRequestDialogModel::StartConditionalMediationRequest() {
                   credential.user.name.value_or("")),
               password_manager::PasskeyCredential::DisplayName(
                   credential.user.display_name.value_or("")));
+          if (credential.source == device::AuthenticatorType::kPhone &&
+              priority_phone) {
+            passkey.set_authenticator_label(
+                base::UTF8ToUTF16(priority_phone->name));
+          }
+          return passkey;
         });
     ReportConditionalUiPasskeyCount(credentials.size());
     ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents)

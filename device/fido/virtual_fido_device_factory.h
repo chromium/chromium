@@ -17,10 +17,13 @@
 #include "device/fido/virtual_fido_device.h"
 #include "device/fido/virtual_fido_device_discovery.h"
 
-namespace device {
-namespace test {
+namespace device::test {
 
 // A |FidoDiscoveryFactory| that always returns |VirtualFidoDevice|s.
+//
+// If the transport is set to `hybrid` and a client obtains a phone contact
+// callback from |get_cable_contact_callback|, authenticators will only be
+// created only after the callback is executed.
 class VirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
  public:
   VirtualFidoDeviceFactory();
@@ -60,8 +63,11 @@ class VirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
   std::vector<std::unique_ptr<FidoDiscoveryBase>> Create(
       FidoTransportProtocol transport) override;
   bool IsTestOverride() override;
+  base::RepeatingCallback<void(size_t)> get_cable_contact_callback() override;
 
  private:
+  std::unique_ptr<FidoDeviceDiscovery::EventStream<size_t>>
+      contact_device_stream_;
   ProtocolVersion supported_protocol_ = ProtocolVersion::kU2f;
   FidoTransportProtocol transport_ =
       FidoTransportProtocol::kUsbHumanInterfaceDevice;
@@ -70,9 +76,10 @@ class VirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
   scoped_refptr<VirtualFidoDeviceDiscovery::Trace> trace_ =
       new VirtualFidoDeviceDiscovery::Trace;
   bool discover_win_webauthn_api_authenticator_ = false;
+
+  base::WeakPtrFactory<VirtualFidoDeviceFactory> weak_ptr_factory_{this};
 };
 
-}  // namespace test
-}  // namespace device
+}  // namespace device::test
 
 #endif  // DEVICE_FIDO_VIRTUAL_FIDO_DEVICE_FACTORY_H_

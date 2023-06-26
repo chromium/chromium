@@ -4,10 +4,10 @@
 
 #include "device/fido/virtual_fido_device_factory.h"
 
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/virtual_fido_device_discovery.h"
 
-namespace device {
-namespace test {
+namespace device::test {
 
 VirtualFidoDeviceFactory::VirtualFidoDeviceFactory() = default;
 VirtualFidoDeviceFactory::~VirtualFidoDeviceFactory() = default;
@@ -46,11 +46,20 @@ VirtualFidoDeviceFactory::Create(FidoTransportProtocol transport) {
   trace_->discoveries.emplace_back();
   return SingleDiscovery(std::make_unique<VirtualFidoDeviceDiscovery>(
       trace_, trace_index, transport_, state_, supported_protocol_,
-      ctap2_config_, /*disconnect_events=*/nullptr));
+      ctap2_config_, /*disconnect_events=*/nullptr,
+      std::move(contact_device_stream_)));
 }
 
 bool VirtualFidoDeviceFactory::IsTestOverride() {
   return true;
+}
+
+base::RepeatingCallback<void(size_t)>
+VirtualFidoDeviceFactory::get_cable_contact_callback() {
+  base::RepeatingCallback<void(size_t)> ret;
+  std::tie(ret, contact_device_stream_) =
+      FidoDeviceDiscovery::EventStream<size_t>::New();
+  return ret;
 }
 
 void VirtualFidoDeviceFactory::set_discover_win_webauthn_api_authenticator(
@@ -69,5 +78,4 @@ VirtualFidoDeviceFactory::MaybeCreateWinWebAuthnApiDiscovery() {
 }
 #endif
 
-}  // namespace test
-}  // namespace device
+}  // namespace device::test

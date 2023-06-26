@@ -6,9 +6,11 @@
 
 #include "base/containers/span.h"
 #include "base/rand_util.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace password_manager {
 
@@ -166,6 +168,18 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics_EmptyOptionalFields) {
           PasskeyCredential::UserId(ToUint8Vector(kUserId1)),
           PasskeyCredential::Username(""),
           PasskeyCredential::DisplayName(""))));
+}
+
+TEST_F(PasskeyCredentialTest, GetAuthenticatorLabel) {
+  PasskeyCredential credential(PasskeyCredential::Source::kAndroidPhone,
+                               PasskeyCredential::RpId("rpid.com"),
+                               PasskeyCredential::CredentialId({1, 2, 3, 4}),
+                               PasskeyCredential::UserId({5, 6, 7, 8}));
+  EXPECT_EQ(credential.GetAuthenticatorLabel(),
+            l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_SCREEN_LOCK));
+  std::u16string authenticator_label = u"Reimu's phone";
+  credential.set_authenticator_label(authenticator_label);
+  EXPECT_EQ(credential.GetAuthenticatorLabel(), authenticator_label);
 }
 
 }  // namespace password_manager

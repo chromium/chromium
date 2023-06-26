@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/types/strong_alias.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class WebauthnCredentialSpecifics;
@@ -54,9 +55,15 @@ class PasskeyCredential {
   PasskeyCredential(PasskeyCredential&&);
   PasskeyCredential& operator=(PasskeyCredential&&);
 
-  // Returns the l10n ID for the name of the authenticator this credential
+  // Returns the user-friendly label for the authenticator this credential
   // belongs to.
-  int GetAuthenticatorLabel() const;
+  std::u16string GetAuthenticatorLabel() const;
+
+  // Sets an authenticator label for this passkey. If no label is set, a generic
+  // device name will be returned by GetAuthenticatorLabel().
+  void set_authenticator_label(const std::u16string& authenticator_label) {
+    authenticator_label_ = authenticator_label;
+  }
 
   Source source() const { return source_; }
   const std::string& rp_id() const { return rp_id_; }
@@ -91,6 +98,10 @@ class PasskeyCredential {
   // The user's display name.
   // https://w3c.github.io/webauthn/#dom-publickeycredentialuserentity-displayname
   std::string display_name_;
+
+  // An optional label for the authenticator. If this is not set, a generic
+  // device name will be returned by GetAuthenticatorLabel().
+  absl::optional<std::u16string> authenticator_label_;
 };
 
 bool operator==(const PasskeyCredential& lhs, const PasskeyCredential& rhs);

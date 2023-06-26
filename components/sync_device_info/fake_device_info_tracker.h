@@ -51,6 +51,12 @@ class FakeDeviceInfoTracker : public DeviceInfoTracker {
   // Adds a vector of new DeviceInfo entries to |devices_|.
   void Add(const std::vector<const DeviceInfo*>& devices);
 
+  // Removes a DeviceInfo entry from the device list.
+  // FakeDeviceInfoTracker keeps raw pointers to previously added devices, so
+  // clients should take care of removing them after those are destroyed if the
+  // FakeDeviceInfoTracker may outlive them.
+  void Remove(const DeviceInfo* device);
+
   // Replaces |old_device| with |new_device|. |old_device| must be present in
   // the tracker.
   void Replace(const DeviceInfo* old_device, const DeviceInfo* new_device);

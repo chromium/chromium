@@ -2131,7 +2131,7 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   ASSERT_EQ(open_args.suggestions[0].labels.size(), 1U);
   ASSERT_EQ(open_args.suggestions[0].labels[0].size(), 1U);
   EXPECT_EQ(open_args.suggestions[0].labels[0][0].value,
-            l10n_util::GetStringUTF16(passkey.GetAuthenticatorLabel()));
+            passkey.GetAuthenticatorLabel());
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   // Check that preview of the "username" (i.e. the credential name) works.
