@@ -8,9 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/types/strong_alias.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/base_export.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
@@ -140,48 +140,43 @@ struct AllocatorDispatch {
 
 // When true makes malloc behave like new, w.r.t calling the new_handler if
 // the allocation fails (see set_new_mode() in Windows).
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-void SetCallNewHandlerOnMallocFailure(bool value);
+BASE_EXPORT void SetCallNewHandlerOnMallocFailure(bool value);
 
 // Allocates |size| bytes or returns nullptr. It does NOT call the new_handler,
 // regardless of SetCallNewHandlerOnMallocFailure().
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) void* UncheckedAlloc(size_t size);
+BASE_EXPORT void* UncheckedAlloc(size_t size);
 
 // Frees memory allocated with UncheckedAlloc().
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) void UncheckedFree(void* ptr);
+BASE_EXPORT void UncheckedFree(void* ptr);
 
 // Inserts |dispatch| in front of the allocator chain. This method is
 // thread-safe w.r.t concurrent invocations of InsertAllocatorDispatch().
 // The callers have responsibility for inserting a single dispatch no more
 // than once.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-void InsertAllocatorDispatch(AllocatorDispatch* dispatch);
+BASE_EXPORT void InsertAllocatorDispatch(AllocatorDispatch* dispatch);
 
 // Test-only. Rationale: (1) lack of use cases; (2) dealing safely with a
 // removal of arbitrary elements from a singly linked list would require a lock
 // in malloc(), which we really don't want.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch);
+BASE_EXPORT void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch);
 
 #if BUILDFLAG(IS_APPLE)
 // The fallback function to be called when try_free_default_function receives a
 // pointer which doesn't belong to the allocator.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-void TryFreeDefaultFallbackToFindZoneAndFree(void* ptr);
+BASE_EXPORT void TryFreeDefaultFallbackToFindZoneAndFree(void* ptr);
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_APPLE)
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-void InitializeDefaultAllocatorPartitionRoot();
+BASE_EXPORT void InitializeDefaultAllocatorPartitionRoot();
 bool IsDefaultAllocatorPartitionRootInitialized();
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // On macOS, the allocator shim needs to be turned on during runtime.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) void InitializeAllocatorShim();
+BASE_EXPORT void InitializeAllocatorShim();
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) void EnablePartitionAllocMemoryReclaimer();
+BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
 
 using EnableBrp =
     partition_alloc::internal::base::StrongAlias<class EnableBrpTag, bool>;
@@ -200,8 +195,7 @@ enum class AlternateBucketDistribution : uint8_t { kDefault, kDenser };
 // If |thread_cache_on_non_quarantinable_partition| is specified, the
 // thread-cache will be enabled on the non-quarantinable partition. The
 // thread-cache on the main (malloc) partition will be disabled.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-void ConfigurePartitions(
+BASE_EXPORT void ConfigurePartitions(
     EnableBrp enable_brp,
     EnableBrpPartitionMemoryReclaimer enable_brp_memory_reclaimer,
     EnableMemoryTagging enable_memory_tagging,
@@ -210,11 +204,10 @@ void ConfigurePartitions(
     size_t ref_count_size,
     AlternateBucketDistribution use_alternate_bucket_distribution);
 
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) uint32_t GetMainPartitionRootExtrasSize();
+BASE_EXPORT uint32_t GetMainPartitionRootExtrasSize();
 
 #if BUILDFLAG(USE_STARSCAN)
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-void EnablePCScan(partition_alloc::internal::PCScan::InitConfig);
+BASE_EXPORT void EnablePCScan(partition_alloc::internal::PCScan::InitConfig);
 #endif
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
