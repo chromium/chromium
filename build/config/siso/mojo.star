@@ -127,6 +127,27 @@ def __step_rules():
             "exclude_input_patterns": [
                 "*.stamp",
             ],
+            # TODO(b/288523418): missing inputs for mojom_parser?
+            "outputs_map": {
+                "./gen/mojo/public/interfaces/bindings/tests/sample_import2.mojom-module": {
+                    "inputs": [
+                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper.build_metadata",
+                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper_wrapper.build_metadata",
+                    ],
+                },
+                "./gen/mojo/public/interfaces/bindings/tests/math_calculator.mojom-module": {
+                    "inputs": [
+                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper.build_metadata",
+                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper_wrapper.build_metadata",
+                    ],
+                },
+                "./gen/mojo/public/interfaces/bindings/tests/test_associated_interfaces.mojom-module": {
+                    "inputs": [
+                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper.build_metadata",
+                        "./gen/mojo/public/interfaces/bindings/tests/test_mojom_import_wrapper_wrapper.build_metadata",
+                    ],
+                },
+            },
             "remote": True,
             "input_root_absolute_path": True,
             "output_local": True,
