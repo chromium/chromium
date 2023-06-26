@@ -54,6 +54,9 @@ def __parse_rewrapper_cfg(ctx, cfg_file):
                     fail("not k,v %s" % label)
                 reproxy_config["platform"][label_parts[0]] = label_parts[1]
 
+        if line.startswith("remote_wrapper="):
+            reproxy_config["remote_wrapper"] = line.removeprefix("remote_wrapper=")
+
         if line.startswith("server_address="):
             reproxy_config["server_address"] = line.removeprefix("server_address=")
     return reproxy_config
