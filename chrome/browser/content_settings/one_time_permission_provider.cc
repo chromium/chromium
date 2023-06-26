@@ -50,13 +50,14 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
     return false;
   }
 
-  base::AutoLock lock(value_map_.GetLock());
+  value_map_.GetLock().Acquire();
   // This block handles transitions from Allow Once to Ask/Block by clearing
   // the one time grant and letting the pref provider handle the permission as
   // usual.
   if (constraints.session_model() != content_settings::SessionModel::OneTime) {
     value_map_.DeleteValue(primary_pattern, secondary_pattern,
                            content_settings_type);
+    value_map_.GetLock().Release();
 
     permissions::PermissionUmaUtil::RecordOneTimePermissionEvent(
         content_settings_type,
@@ -64,6 +65,7 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
 
     return false;
   }
+
   DCHECK_EQ(content_settings::ValueToContentSetting(value),
             CONTENT_SETTING_ALLOW);
 
@@ -79,6 +81,8 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
   permissions::PermissionUmaUtil::RecordOneTimePermissionEvent(
       content_settings_type,
       permissions::OneTimePermissionEvent::GRANTED_ONE_TIME);
+  value_map_.GetLock().Release();
+  NotifyObservers(primary_pattern, secondary_pattern, content_settings_type);
 
   // We need to handle transitions from Allow to Allow Once gracefully.
   // In that case we add the Allow Once setting in this provider, but also
@@ -187,10 +191,16 @@ void OneTimePermissionProvider::DeleteValuesMatchingGurl(
   }
   rule_iterator.reset();
 
-  base::AutoLock lock(value_map_.GetLock());
+  value_map_.GetLock().Acquire();
   for (const auto& pattern : patterns_to_delete) {
     value_map_.DeleteValue(pattern.primary_pattern, pattern.secondary_pattern,
                            content_setting_type);
+  }
+  value_map_.GetLock().Release();
+
+  for (const auto& pattern : patterns_to_delete) {
+    NotifyObservers(pattern.primary_pattern, pattern.secondary_pattern,
+                    content_setting_type);
   }
 }
 
