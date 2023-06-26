@@ -253,6 +253,10 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     std::string element_name;
     StepContext context = ContextMode::kInitial;
 
+    // This is used for testing; while `context` can be updated as part of
+    // sequence execution, this will never change.
+    bool in_any_context = false;
+
     // These will always have values when the sequence is built, but can be
     // unspecified during construction. If unspecified, they will be set to
     // appropriate defaults for `type`.
@@ -463,6 +467,9 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // This is a test-only method since production code applications should
   // always run asynchronously.
   void RunSynchronouslyForTesting();
+
+  // Returns whether the current step uses ContextMode::kAny.
+  bool IsCurrentStepInAnyContextForTesting() const;
 
   // Explicitly fails the sequence.
   void FailForTesting();

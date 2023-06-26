@@ -233,8 +233,7 @@ class InteractiveTestApi {
   // previous step was responding to elements being added, the
   // `element_to_check` may not have had its shown event called yet.
   [[nodiscard]] static MultiStep EnsureNotPresent(
-      ElementIdentifier element_to_check,
-      bool in_any_context = false);
+      ElementIdentifier element_to_check);
 
   // Opposite of EnsureNotPresent. Flushes the current message queue and then
   // checks that the specified element is [still] present. Equivalent to:
@@ -242,13 +241,8 @@ class InteractiveTestApi {
   //   FlushEvents(),
   //   WithElement(element_to_check, base::DoNothing())
   // ```
-  //
-  // Like EnsureNotPresent(), is not compatible with InAnyContext(); set
-  // `in_any_context` to true instead. Otherwise, you can still wrap this call
-  // in an InContext() or InSameContext().
   [[nodiscard]] static MultiStep EnsurePresent(
-      ElementSpecifier element_to_check,
-      bool in_any_context = false);
+      ElementSpecifier element_to_check);
 
   // Ensures that the next step does not piggyback on the previous step(s), but
   // rather, executes on a fresh message loop. Normally, steps will continue to
@@ -266,9 +260,6 @@ class InteractiveTestApi {
   //
   //    InAnyContext(PressButton(kElementIdentifier))
   // ```
-  //
-  // Note: does not work with EnsureNotPresent; use the `in_any_context`
-  // parameter.
   //
   // TODO(dfried): consider if we should have a version that takes variadic
   // arguments and applies "in any context" to all of them?

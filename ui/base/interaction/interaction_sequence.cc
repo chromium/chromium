@@ -272,6 +272,11 @@ InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetContext(
   DCHECK(context != StepContext(ElementContext()));
   DCHECK(!step_->uses_named_element());
   step_->context = context;
+  if (const ContextMode* mode = absl::get_if<ContextMode>(&context)) {
+    step_->in_any_context = *mode == ContextMode::kAny;
+  } else {
+    step_->in_any_context = false;
+  }
   return *this;
 }
 
@@ -453,6 +458,11 @@ void InteractionSequence::RunSynchronouslyForTesting() {
   quit_run_loop_closure_for_testing_ = run_loop.QuitClosure();
   Start();
   run_loop.Run();
+}
+
+bool InteractionSequence::IsCurrentStepInAnyContextForTesting() const {
+  CHECK(current_step_);
+  return current_step_->in_any_context;
 }
 
 void InteractionSequence::FailForTesting() {

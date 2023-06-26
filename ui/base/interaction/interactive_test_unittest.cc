@@ -559,12 +559,11 @@ TEST_F(InteractiveTestTest, PresentOrNotPresentInAnyContext) {
   e1.Show();
   e2.Show();
 
-  RunTestSequenceInContext(
-      kTestContext1, EnsurePresent(kTestId1),
-      // Not present in the current context.
-      EnsureNotPresent(kTestId2),
-      EnsureNotPresent(kTestId3, /* in_any_context = */ true),
-      EnsurePresent(kTestId2, /* in_any_context = */ true));
+  RunTestSequenceInContext(kTestContext1, EnsurePresent(kTestId1),
+                           // Not present in the current context.
+                           EnsureNotPresent(kTestId2),
+                           InAnyContext(EnsureNotPresent(kTestId3)),
+                           InAnyContext(EnsurePresent(kTestId2)));
 }
 
 TEST_F(InteractiveTestTest, WithElementFails) {
@@ -600,8 +599,16 @@ TEST_F(InteractiveTestTest, EnsureNotPresentInAnyContextFails) {
 
   EXPECT_CALL_IN_SCOPE(aborted, Run, {
     EXPECT_FALSE(RunTestSequenceInContext(
-        kTestContext2,
-        EnsureNotPresent(kTestId1, /* in_any_context = */ true)));
+        kTestContext2, InAnyContext(EnsureNotPresent(kTestId1))));
+  });
+}
+
+TEST_F(InteractiveTestTest, EnsurePresentFails) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+  EXPECT_CALL_IN_SCOPE(aborted, Run, {
+    EXPECT_FALSE(RunTestSequenceInContext(
+        kTestContext2, InAnyContext(EnsurePresent(kTestId2))));
   });
 }
 

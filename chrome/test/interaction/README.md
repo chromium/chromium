@@ -113,10 +113,9 @@ Verbs fall into a number of different categories:
     - `WithElement()`
     - `WithView()` [Views]
 - **Ensure** verbs check the presence or absence of an element after allowing
-  all pending events to settle. They are not compatible with `InAnyContext()`
-  for technical reasons, and therefore, take an `in_any_context` parameter.
-  There are also versions that look for a DOM element in an
-  [instrumented WebContents](#webcontents-instrumentation) [Browser].
+  all pending events to settle. There are also versions that look for a DOM
+  element in an [instrumented WebContents](#webcontents-instrumentation)
+  [Browser].
     - `EnsurePresent()`
     - `EnsureNotPresent()`
 - **Action** verbs simulate input to specific UI elements. You can often specify
@@ -295,10 +294,7 @@ RunTestSequence(
 ```
 
 - **InSameContext** allows the modified verb (or verbs) to find an element in the same context
-  as the previous step.
-  - Has no effect on `EnsurePresent()` or `EnsureNotPresent()` when the `in_any_context`
-    parameter is set to true.
-  - Example:
+  as the previous step. Example:
 ```cpp
 RunTestSequence(
     InAnyContext(WaitForShow(kMyButton)),
@@ -306,10 +302,7 @@ RunTestSequence(
 ```
 
 - **InContext** allows the modified verb (or verbs) to execute in the specified context instead of
-  the default context for the sequence.
-  - Has no effect on `EnsurePresent()` or `EnsureNotPresent()` when the `in_any_context` parameter
-    is set to true.
-  - Example:
+  the default context for the sequence. Example:
 
 ```cpp
 Browser* const incognito = CreateIncognitoBrowser();

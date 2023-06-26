@@ -244,8 +244,8 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogFirstPartySection,
                                  kFirstPartyAllowedRow, 0)),
       // Verify no empty state label is present.
-      EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel,
-                       /* in_any_context =*/true),
+      InAnyContext(
+          EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel)),
       // Verify the row label and open the row menu.
       CheckRowLabel(kFirstPartyAllowedRow,
                     IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE),
@@ -254,8 +254,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
       InAnyContext(WaitForShow(SiteDataRowView::kBlockMenuItem)),
       InAnyContext(WaitForShow(SiteDataRowView::kClearOnExitMenuItem)),
       // Verify that "Allow" is not present as it is already allowed.
-      EnsureNotPresent(SiteDataRowView::kAllowMenuItem,
-                       /* in_any_context =*/true),
+      InAnyContext(EnsureNotPresent(SiteDataRowView::kAllowMenuItem)),
       // Verify that the site can be deleted.
       DeleteRow(kFirstPartyAllowedRow),
       // Verify that UI has updated as a result of clicking on a menu item and
@@ -296,8 +295,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
       InAnyContext(WaitForShow(SiteDataRowView::kAllowMenuItem)),
       // Verify that the menu doesn't have the "Block" or "Delete" menu items
       // because it is already blocked.
-      EnsureNotPresent(SiteDataRowView::kBlockMenuItem,
-                       /* in_any_context =*/true),
+      InAnyContext(EnsureNotPresent(SiteDataRowView::kBlockMenuItem)),
       InAnyContext(SelectMenuItem(SiteDataRowView::kAllowMenuItem)),
       // Wait until custom event happens (triggered when any menu item
       // callback is called). Menu item is accepted on Mac async, after
@@ -475,8 +473,8 @@ IN_PROC_BROWSER_TEST_F(
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogFirstPartySection,
                                  kFirstPartyAllowedRow, 0)),
       // Verify no empty state label is present.
-      EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel,
-                       /* in_any_context =*/true),
+      InAnyContext(
+          EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel)),
       // Verify the hostname label.
       CheckHostnameLabel(kFirstPartyAllowedRow, u"Simple Isolated App"));
 }
@@ -520,8 +518,8 @@ IN_PROC_BROWSER_TEST_F(
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogFirstPartySection,
                                  kFirstPartyAllowedRow, 0)),
       // Verify no empty state label is present.
-      EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel,
-                       /*in_any_context=*/true),
+      InAnyContext(
+          EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel)),
       // Verify the row label and open the row menu.
       CheckRowLabel(kFirstPartyAllowedRow,
                     IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE),
@@ -530,8 +528,7 @@ IN_PROC_BROWSER_TEST_F(
       InAnyContext(WaitForShow(SiteDataRowView::kBlockMenuItem)),
       InAnyContext(WaitForShow(SiteDataRowView::kClearOnExitMenuItem)),
       // Verify that "Allow" is not present as it is already allowed.
-      EnsureNotPresent(SiteDataRowView::kAllowMenuItem,
-                       /*in_any_context=*/true),
+      InAnyContext(EnsureNotPresent(SiteDataRowView::kAllowMenuItem)),
       // Verify that the site can be deleted.
       DeleteRow(kFirstPartyAllowedRow),
       // Verify that UI has updated as a result of clicking on a menu item and
