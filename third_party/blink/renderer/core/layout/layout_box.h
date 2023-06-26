@@ -350,9 +350,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     SizeChanged();
   }
 
-  // See frame_location_ and frame_size_.
+  // FrameRect() is deprecated. Use
+  // PhysicalRect(box->PhysicalLocation(), box->Size()) instead.
   LayoutRect FrameRect() const {
     NOT_DESTROYED();
+    DCHECK(!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled());
     return LayoutRect(Location(), Size());
   }
 
