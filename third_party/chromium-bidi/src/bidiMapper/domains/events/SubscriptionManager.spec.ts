@@ -461,6 +461,7 @@ describe('SubscriptionManager', () => {
       expect(unrollEvents([Script.AllEvents])).to.deep.equal([
         Script.EventNames.MessageEvent,
         Script.EventNames.RealmCreated,
+        Script.EventNames.RealmDestroyed,
       ]);
     });
 

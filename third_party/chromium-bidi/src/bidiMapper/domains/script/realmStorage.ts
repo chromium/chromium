@@ -47,8 +47,8 @@ export class RealmStorage {
     return this.#knownHandlesToRealm;
   }
 
-  get realmMap() {
-    return this.#realmMap;
+  addRealm(realm: Realm) {
+    this.#realmMap.set(realm.realmId, realm);
   }
 
   /** Finds all realms that match the given filter. */
@@ -116,10 +116,11 @@ export class RealmStorage {
   /** Deletes all realms that match the given filter. */
   deleteRealms(filter: RealmFilter) {
     this.findRealms(filter).map((realm) => {
+      realm.delete();
       this.#realmMap.delete(realm.realmId);
-      Array.from(this.#knownHandlesToRealm.entries())
+      Array.from(this.knownHandlesToRealm.entries())
         .filter(([, r]) => r === realm.realmId)
-        .map(([handle]) => this.#knownHandlesToRealm.delete(handle));
+        .map(([handle]) => this.knownHandlesToRealm.delete(handle));
     });
   }
 }

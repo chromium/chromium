@@ -36,8 +36,8 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   #messageQueue: ProcessingQueue<OutgoingBidiMessage>;
   #transport: BidiTransport;
   #commandProcessor: CommandProcessor;
-  #browsingContextStorage: BrowsingContextStorage;
-  #realmStorage: RealmStorage;
+  #browsingContextStorage = new BrowsingContextStorage();
+  #realmStorage = new RealmStorage();
   #logger?: LoggerFn;
 
   #handleIncomingMessage = (message: Message.RawCommandRequest) => {
@@ -65,8 +65,6 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   ) {
     super();
     this.#logger = logger;
-    this.#browsingContextStorage = new BrowsingContextStorage();
-    this.#realmStorage = new RealmStorage();
     this.#messageQueue = new ProcessingQueue<OutgoingBidiMessage>(
       this.#processOutgoingMessage,
       this.#logger
@@ -74,12 +72,12 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     this.#transport = bidiTransport;
     this.#transport.setOnMessage(this.#handleIncomingMessage);
     this.#commandProcessor = new CommandProcessor(
-      this.#realmStorage,
       cdpConnection,
       new EventManager(this),
       selfTargetId,
       parser,
       this.#browsingContextStorage,
+      this.#realmStorage,
       this.#logger
     );
     this.#commandProcessor.on(

@@ -47,24 +47,24 @@ export class BrowsingContextProcessor {
   readonly #logger?: LoggerFn;
   readonly #realmStorage: RealmStorage;
   readonly #selfTargetId: string;
-  readonly #preloadScriptStorage: PreloadScriptStorage;
+  readonly #preloadScriptStorage = new PreloadScriptStorage();
   readonly #inputStateManager = new InputStateManager();
 
   constructor(
-    realmStorage: RealmStorage,
     cdpConnection: ICdpConnection,
     selfTargetId: string,
     eventManager: IEventManager,
     browsingContextStorage: BrowsingContextStorage,
+    realmStorage: RealmStorage,
     logger?: LoggerFn
   ) {
-    this.#browsingContextStorage = browsingContextStorage;
     this.#cdpConnection = cdpConnection;
-    this.#eventManager = eventManager;
-    this.#logger = logger;
-    this.#realmStorage = realmStorage;
     this.#selfTargetId = selfTargetId;
-    this.#preloadScriptStorage = new PreloadScriptStorage();
+    this.#eventManager = eventManager;
+    this.#browsingContextStorage = browsingContextStorage;
+    this.#realmStorage = realmStorage;
+
+    this.#logger = logger;
 
     this.#setEventListeners(this.#cdpConnection.browserClient());
   }

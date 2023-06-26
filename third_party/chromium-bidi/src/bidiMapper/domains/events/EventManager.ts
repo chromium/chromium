@@ -30,7 +30,7 @@ import {DefaultMap} from '../../../utils/DefaultMap.js';
 import {SubscriptionManager} from './SubscriptionManager.js';
 
 class EventWrapper {
-  readonly #idWrapper: IdWrapper;
+  readonly #idWrapper = new IdWrapper();
   readonly #contextId: CommonDataTypes.BrowsingContext | null;
   readonly #event: Promise<Message.EventMessage>;
 
@@ -38,9 +38,8 @@ class EventWrapper {
     event: Promise<Message.EventMessage>,
     contextId: CommonDataTypes.BrowsingContext | null
   ) {
-    this.#idWrapper = new IdWrapper();
-    this.#contextId = contextId;
     this.#event = event;
+    this.#contextId = contextId;
   }
 
   get id(): number {

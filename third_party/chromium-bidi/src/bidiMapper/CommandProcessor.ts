@@ -142,23 +142,23 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   #logger?: LoggerFn;
 
   constructor(
-    realmStorage: RealmStorage,
     cdpConnection: ICdpConnection,
     eventManager: IEventManager,
     selfTargetId: string,
     parser: BidiParser = new BidiNoOpParser(),
     browsingContextStorage: BrowsingContextStorage,
+    realmStorage: RealmStorage,
     logger?: LoggerFn
   ) {
     super();
     this.#eventManager = eventManager;
     this.#logger = logger;
     this.#contextProcessor = new BrowsingContextProcessor(
-      realmStorage,
       cdpConnection,
       selfTargetId,
       eventManager,
       browsingContextStorage,
+      realmStorage,
       logger
     );
     this.#parser = parser;

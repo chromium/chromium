@@ -22,7 +22,6 @@ import {
   BrowsingContext,
   type CommonDataTypes,
   Message,
-  Script,
 } from '../../../protocol/protocol.js';
 import {type LoggerFn, LogType} from '../../../utils/log.js';
 import {Deferred} from '../../../utils/deferred.js';
@@ -456,14 +455,6 @@ export class BrowsingContextImpl {
               )
           );
         }
-
-        this.#eventManager.registerEvent(
-          {
-            method: Script.EventNames.RealmCreated,
-            params: realm.toBiDi(),
-          },
-          this.id
-        );
       }
     );
 

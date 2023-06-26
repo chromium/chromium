@@ -48,15 +48,13 @@ export class NetworkRequest {
   #responseReceivedEvent?: Protocol.Network.ResponseReceivedEvent;
   #responseReceivedExtraInfoEvent?: Protocol.Network.ResponseReceivedExtraInfoEvent;
 
-  #beforeRequestSentDeferred: Deferred<void>;
-  #responseReceivedDeferred: Deferred<void>;
+  #beforeRequestSentDeferred = new Deferred<void>();
+  #responseReceivedDeferred = new Deferred<void>();
 
   constructor(requestId: Network.Request, eventManager: IEventManager) {
     this.requestId = requestId;
     this.#redirectCount = 0;
     this.#eventManager = eventManager;
-    this.#beforeRequestSentDeferred = new Deferred<void>();
-    this.#responseReceivedDeferred = new Deferred<void>();
   }
 
   onRequestWillBeSentEvent(event: Protocol.Network.RequestWillBeSentEvent) {

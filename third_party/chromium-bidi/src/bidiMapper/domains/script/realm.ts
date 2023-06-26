@@ -17,7 +17,8 @@
 
 import type {Protocol} from 'devtools-protocol';
 
-import type {CommonDataTypes, Script} from '../../../protocol/protocol.js';
+import {Script} from '../../../protocol/protocol.js';
+import type {CommonDataTypes} from '../../../protocol/protocol.js';
 import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 import type {IEventManager} from '../events/EventManager.js';
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
@@ -71,9 +72,17 @@ export class Realm {
     this.#eventManager = eventManager;
     this.#scriptEvaluator = new ScriptEvaluator(this.#eventManager);
 
-    this.#realmStorage.realmMap.set(this.#realmId, this);
+    this.#realmStorage.addRealm(this);
 
     this.#logger = logger;
+
+    this.#eventManager.registerEvent(
+      {
+        method: Script.EventNames.RealmCreated,
+        params: this.toBiDi(),
+      },
+      this.browsingContextId
+    );
   }
 
   async #releaseObject(handle: CommonDataTypes.Handle): Promise<void> {
@@ -301,5 +310,17 @@ export class Realm {
     cdpObject: Protocol.Runtime.RemoteObject
   ): Promise<string> {
     return ScriptEvaluator.stringifyObject(cdpObject, this);
+  }
+
+  delete() {
+    this.#eventManager.registerEvent(
+      {
+        method: Script.EventNames.RealmDestroyed,
+        params: {
+          realm: this.realmId,
+        },
+      },
+      this.browsingContextId
+    );
   }
 }

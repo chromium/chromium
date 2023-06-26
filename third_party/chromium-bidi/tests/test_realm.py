@@ -15,7 +15,8 @@
 
 import pytest
 from anys import ANY_STR
-from test_helpers import read_JSON_message, send_JSON_command, subscribe
+from test_helpers import (execute_command, read_JSON_message,
+                          send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -34,10 +35,9 @@ async def test_realm_realmCreated(websocket, context_id, html):
             }
         })
 
-    response = await read_JSON_message(websocket),
+    response = await read_JSON_message(websocket)
 
-    # Wait for `script.realmCreated` event.
-    assert ({
+    assert {
         "method": "script.realmCreated",
         "params": {
             "type": "window",
@@ -45,4 +45,104 @@ async def test_realm_realmCreated(websocket, context_id, html):
             "realm": ANY_STR,
             "context": context_id,
         }
-    }, ) == response
+    } == response
+
+
+@pytest.mark.asyncio
+async def test_realm_realmCreated_sandbox(websocket, context_id):
+
+    await subscribe(websocket, "script.realmCreated")
+
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "target": {
+                    "context": context_id,
+                    "sandbox": "SOME_SANDBOX"
+                },
+                "expression": "2 + 2",
+                "awaitPromise": True
+            }
+        })
+
+    response = await read_JSON_message(websocket)
+
+    assert {
+        "method": "script.realmCreated",
+        "params": {
+            "type": "window",
+            "origin": "null",
+            "realm": ANY_STR,
+            "context": context_id,
+            "sandbox": "SOME_SANDBOX"
+        }
+    } == response
+
+
+@pytest.mark.asyncio
+async def test_realm_realmDestroyed(websocket, context_id):
+
+    await subscribe(websocket, "script.realmDestroyed")
+
+    await send_JSON_command(websocket, {
+        "method": "browsingContext.close",
+        "params": {
+            "context": context_id,
+        }
+    })
+
+    response = await read_JSON_message(websocket)
+
+    assert {
+        "method": "script.realmDestroyed",
+        "params": {
+            "realm": ANY_STR,
+        }
+    } == response
+
+
+@pytest.mark.asyncio
+async def test_realm_realmDestroyed_sandbox(websocket, context_id):
+
+    await subscribe(websocket, "script.realmDestroyed")
+
+    await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "target": {
+                    "context": context_id,
+                    "sandbox": "SOME_SANDBOX"
+                },
+                "expression": "2 + 2",
+                "awaitPromise": True
+            }
+        })
+
+    await send_JSON_command(
+        websocket, {
+            "id": 22,
+            "method": "browsingContext.close",
+            "params": {
+                "context": context_id,
+            }
+        })
+
+    response = await read_JSON_message(websocket)
+
+    assert {
+        "method": "script.realmDestroyed",
+        "params": {
+            "realm": ANY_STR,
+        }
+    } == response
+
+    response = await read_JSON_message(websocket)
+
+    assert {
+        "method": "script.realmDestroyed",
+        "params": {
+            "realm": ANY_STR,
+        }
+    } == response
