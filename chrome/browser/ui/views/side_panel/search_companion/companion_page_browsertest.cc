@@ -1464,8 +1464,6 @@ IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
   EXPECT_FALSE(base::FeatureList::IsEnabled(
       companion::features::internal::kSidePanelCompanion));
 
-  base::HistogramTester histogram_tester;
-
   // Navigate to a random page.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
@@ -1482,6 +1480,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
   EXPECT_EQ(0u, requests_received_on_server());
   EXPECT_FALSE(side_panel_toolbar_container()->IsPinned(
       SidePanelEntry::Id::kSearchCompanion));
+
+  base::HistogramTester histogram_tester;
 
   // Navigate to exps registration success page. It should enable the pref and
   // companion.
@@ -1516,16 +1516,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
 // Verifies the behavior when companion feature is disabled but a navigation to
 // exps registration URL is observed. Restart the browser and verify that
 // companion is active and pinned.
-// TODO(https://crbug.com/1457279): Flaky on Mac12 and Mac13.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ObservesExpsRegistrationSuccessURL \
-  DISABLED_ObservesExpsRegistrationSuccessURL
-#else
-#define MAYBE_ObservesExpsRegistrationSuccessURL \
-  ObservesExpsRegistrationSuccessURL
-#endif
 IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
-                       MAYBE_ObservesExpsRegistrationSuccessURL) {
+                       ObservesExpsRegistrationSuccessURL) {
   EXPECT_TRUE(companion::IsCompanionFeatureEnabled());
   EXPECT_TRUE(base::FeatureList::IsEnabled(
       companion::features::internal::
