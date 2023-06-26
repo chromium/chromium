@@ -46,8 +46,9 @@ class WebUIBubbleView : public views::WebView {
 WebUIBubbleDialogView::WebUIBubbleDialogView(
     views::View* anchor_view,
     BubbleContentsWrapper* contents_wrapper,
-    const absl::optional<gfx::Rect>& anchor_rect)
-    : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
+    const absl::optional<gfx::Rect>& anchor_rect,
+    views::BubbleBorder::Arrow arrow)
+    : BubbleDialogDelegateView(anchor_view, arrow),
       contents_wrapper_(contents_wrapper),
       web_view_(AddChildView(std::make_unique<WebUIBubbleView>(
           contents_wrapper_->web_contents()))),

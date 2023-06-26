@@ -49,6 +49,10 @@ class TabSearchBubbleHost : public views::WidgetObserver {
     return bubble_created_time_;
   }
 
+  // Return whether the tab search button is shown before tab strip.
+  // This also determines tab search bubble's anchor position.
+  static bool ShouldTabSearchRenderBeforeTabStrip();
+
  private:
   void ButtonPressed(const ui::Event& event);
 
