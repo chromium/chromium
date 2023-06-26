@@ -95,7 +95,7 @@ void FederatedServiceControllerImpl::OnLoginStatusChanged(
   // Actually once `federated_service_` gets bound, even if availability is set
   // false because of subsequent LoginStatus changes, it keeps bound and it's
   // safe to call `federated_service_->ReportExample()`. But on the ChromeOS
-  // daemon side it loses a valid ctyptohome hence no valid example storage, all
+  // daemon side it loses a valid cryptohome hence no valid example storage, all
   // reported examples are abandoned.
 
   auto* primary_user_session =
