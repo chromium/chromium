@@ -10458,29 +10458,16 @@
         {
             "platforms": [
                 "android",
+                "android_webview",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "PersistentOnly_20230605",
+                    "name": "Enabled",
                     "enable_features": [
                         "PersistentOriginTrials"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "XRequestedWithDeprecation_20230605",
-                    "enable_features": [
-                        "PersistentOriginTrials",
-                        "WebViewXRequestedWithHeaderControl"
                     ]
                 }
             ]
@@ -15659,6 +15646,21 @@
                     "enable_features": [
                         "AndroidMetricsAsyncMetricLogging",
                         "WebViewUseMetricsUploadService"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebViewXRequestedWithHeaderControl": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewXRequestedWithHeaderControl"
                     ]
                 }
             ]
