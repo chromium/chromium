@@ -29,15 +29,7 @@ using ::chromeos::settings::mojom::Setting;
 
 class SettingsUserActionTrackerTest : public testing::Test {
  protected:
-  SettingsUserActionTrackerTest()
-      : fake_hierarchy_(&fake_sections_),
-        tracker_(&fake_hierarchy_, &fake_sections_, GetTestProfilePref()) {
-    // Initialize per_session_tracker_ manually since BindInterface is never
-    // called on tracker_.
-    tracker_.per_session_tracker_ =
-        std::make_unique<PerSessionSettingsUserActionTracker>(
-            testing_profile_->GetPrefs());
-  }
+  SettingsUserActionTrackerTest() = default;
   ~SettingsUserActionTrackerTest() override = default;
 
   void SetUpTestingProfile() {
@@ -47,45 +39,49 @@ class SettingsUserActionTrackerTest : public testing::Test {
     testing_profile_ = profile_manager_->CreateTestingProfile(kProfileName);
   }
 
-  PrefService* GetTestProfilePref() {
-    SetUpTestingProfile();
-    test_pref_service_ = testing_profile_->GetPrefs();
-    return test_pref_service_;
-  }
-
   // testing::Test:
   void SetUp() override {
-    fake_hierarchy_.AddSettingMetadata(mojom::Section::kBluetooth,
-                                       mojom::Setting::kBluetoothOnOff);
-    fake_hierarchy_.AddSettingMetadata(mojom::Section::kDevice,
-                                       mojom::Setting::kKeyboardFunctionKeys);
-    fake_hierarchy_.AddSettingMetadata(mojom::Section::kDevice,
-                                       mojom::Setting::kTouchpadSpeed);
-    fake_hierarchy_.AddSettingMetadata(mojom::Section::kPeople,
-                                       mojom::Setting::kAddAccount);
-    fake_hierarchy_.AddSettingMetadata(mojom::Section::kPrinting,
-                                       mojom::Setting::kScanningApp);
-    fake_hierarchy_.AddSettingMetadata(mojom::Section::kNetwork,
-                                       mojom::Setting::kWifiAddNetwork);
-  }
+    fake_sections_ = std::make_unique<FakeOsSettingsSections>();
+    fake_hierarchy_ = std::make_unique<FakeHierarchy>(fake_sections_.get());
+    fake_hierarchy_->AddSettingMetadata(mojom::Section::kBluetooth,
+                                        mojom::Setting::kBluetoothOnOff);
+    fake_hierarchy_->AddSettingMetadata(mojom::Section::kDevice,
+                                        mojom::Setting::kKeyboardFunctionKeys);
+    fake_hierarchy_->AddSettingMetadata(mojom::Section::kDevice,
+                                        mojom::Setting::kTouchpadSpeed);
+    fake_hierarchy_->AddSettingMetadata(mojom::Section::kPeople,
+                                        mojom::Setting::kAddAccount);
+    fake_hierarchy_->AddSettingMetadata(mojom::Section::kPrinting,
+                                        mojom::Setting::kScanningApp);
+    fake_hierarchy_->AddSettingMetadata(mojom::Section::kNetwork,
+                                        mojom::Setting::kWifiAddNetwork);
 
-  void TearDown() override { tracker_.per_session_tracker_.reset(); }
+    SetUpTestingProfile();
+    test_pref_service_ = testing_profile_->GetPrefs();
+    tracker_ = std::make_unique<SettingsUserActionTracker>(
+        fake_hierarchy_.get(), fake_sections_.get(), test_pref_service_);
+    // Initialize per_session_tracker_ manually since BindInterface is never
+    // called on tracker_.
+    tracker_->per_session_tracker_ =
+        std::make_unique<PerSessionSettingsUserActionTracker>(
+            testing_profile_->GetPrefs());
+  }
 
   // TestingProfile is bound to the IO thread:
   // CurrentlyOn(content::BrowserThread::UI).
   content::BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-  FakeOsSettingsSections fake_sections_;
-  raw_ptr<PrefService> test_pref_service_;
-  FakeHierarchy fake_hierarchy_;
+  std::unique_ptr<FakeOsSettingsSections> fake_sections_;
+  std::unique_ptr<FakeHierarchy> fake_hierarchy_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  SettingsUserActionTracker tracker_;
-  TestingProfile* testing_profile_;
+  raw_ptr<TestingProfile> testing_profile_;
+  raw_ptr<PrefService> test_pref_service_;
+  std::unique_ptr<SettingsUserActionTracker> tracker_;
 };
 
 TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedBool) {
   // Record that the bluetooth enabled setting was toggled off.
-  tracker_.RecordSettingChangeWithDetails(
+  tracker_->RecordSettingChangeWithDetails(
       mojom::Setting::kBluetoothOnOff,
       mojom::SettingChangeValue::NewBoolValue(false));
 
@@ -100,14 +96,14 @@ TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedBool) {
   // The LogMetric fn in the Blutooth section should have been called.
   const FakeOsSettingsSection* bluetooth_section =
       static_cast<const FakeOsSettingsSection*>(
-          fake_sections_.GetSection(mojom::Section::kBluetooth));
+          fake_sections_->GetSection(mojom::Section::kBluetooth));
   EXPECT_TRUE(bluetooth_section->logged_metrics().back() ==
               mojom::Setting::kBluetoothOnOff);
 }
 
 TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedString) {
   // Record that the user tried to add a 3rd account.
-  tracker_.RecordSettingChangeWithDetails(
+  tracker_->RecordSettingChangeWithDetails(
       mojom::Setting::kWifiAddNetwork,
       mojom::SettingChangeValue::NewStringValue("guid"));
 
@@ -122,14 +118,14 @@ TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedString) {
   // The LogMetric fn in the People section should have been called.
   const FakeOsSettingsSection* network_section =
       static_cast<const FakeOsSettingsSection*>(
-          fake_sections_.GetSection(mojom::Section::kNetwork));
+          fake_sections_->GetSection(mojom::Section::kNetwork));
   EXPECT_TRUE(network_section->logged_metrics().back() ==
               mojom::Setting::kWifiAddNetwork);
 }
 
 TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedInt) {
   // Record that the user tried to add a 3rd account.
-  tracker_.RecordSettingChangeWithDetails(
+  tracker_->RecordSettingChangeWithDetails(
       mojom::Setting::kAddAccount, mojom::SettingChangeValue::NewIntValue(3));
 
   // The umbrella metric for which setting was changed should be updated. Note
@@ -143,7 +139,7 @@ TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedInt) {
   // The LogMetric fn in the People section should have been called.
   const FakeOsSettingsSection* people_section =
       static_cast<const FakeOsSettingsSection*>(
-          fake_sections_.GetSection(mojom::Section::kPeople));
+          fake_sections_->GetSection(mojom::Section::kPeople));
   EXPECT_TRUE(people_section->logged_metrics().back() ==
               mojom::Setting::kAddAccount);
 }
@@ -152,7 +148,7 @@ TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedBoolPref) {
   // Record that the keyboard function keys setting was toggled off. This
   // setting is controlled by a pref and uses the pref-to-setting-metric
   // converter flow.
-  tracker_.RecordSettingChangeWithDetails(
+  tracker_->RecordSettingChangeWithDetails(
       mojom::Setting::kKeyboardFunctionKeys,
       mojom::SettingChangeValue::NewBoolValue(false));
 
@@ -167,7 +163,7 @@ TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedBoolPref) {
   // The LogMetric fn in the Device section should have been called.
   const FakeOsSettingsSection* device_section =
       static_cast<const FakeOsSettingsSection*>(
-          fake_sections_.GetSection(mojom::Section::kDevice));
+          fake_sections_->GetSection(mojom::Section::kDevice));
   EXPECT_TRUE(device_section->logged_metrics().back() ==
               mojom::Setting::kKeyboardFunctionKeys);
 }
@@ -176,7 +172,7 @@ TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedIntPref) {
   // Record that the touchpad speed slider was changed by the user. This
   // setting is controlled by a pref and uses the pref-to-setting-metric
   // converter flow.
-  tracker_.RecordSettingChangeWithDetails(
+  tracker_->RecordSettingChangeWithDetails(
       mojom::Setting::kTouchpadSpeed,
       mojom::SettingChangeValue::NewIntValue(4));
 
@@ -191,15 +187,15 @@ TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedIntPref) {
   // The LogMetric fn in the Device section should have been called.
   const FakeOsSettingsSection* device_section =
       static_cast<const FakeOsSettingsSection*>(
-          fake_sections_.GetSection(mojom::Section::kDevice));
+          fake_sections_->GetSection(mojom::Section::kDevice));
   EXPECT_TRUE(device_section->logged_metrics().back() ==
               mojom::Setting::kTouchpadSpeed);
 }
 
 TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedNullValue) {
   // Record that the Scan app is opened.
-  tracker_.RecordSettingChangeWithDetails(mojom::Setting::kScanningApp,
-                                          nullptr);
+  tracker_->RecordSettingChangeWithDetails(mojom::Setting::kScanningApp,
+                                           nullptr);
 
   // The umbrella metric for which setting was changed should be updated. Note
   // that kScanningApp has enum value of 1403.
@@ -212,7 +208,7 @@ TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedNullValue) {
   // The LogMetric fn in the Printing section should have been called.
   const FakeOsSettingsSection* printing_section =
       static_cast<const FakeOsSettingsSection*>(
-          fake_sections_.GetSection(mojom::Section::kPrinting));
+          fake_sections_->GetSection(mojom::Section::kPrinting));
   EXPECT_TRUE(printing_section->logged_metrics().back() ==
               mojom::Setting::kScanningApp);
 }

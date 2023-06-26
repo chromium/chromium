@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/search/per_session_settings_user_action_tracker.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -34,15 +35,6 @@ class PerSessionSettingsUserActionTrackerTest : public testing::Test {
         test_pref_service_);
   }
 
-  void TearDown() override {
-    if (tracker_) {
-      tracker_.reset();
-    }
-    profile_manager_->DeleteTestingProfile(kProfileName);
-    testing_profile_ = nullptr;
-    profile_manager_.reset();
-  }
-
   std::string SettingAsIntString(Setting setting) {
     return base::NumberToString(static_cast<int>(setting));
   }
@@ -50,9 +42,9 @@ class PerSessionSettingsUserActionTrackerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
-  TestingProfile* testing_profile_;
-  raw_ptr<PrefService> test_pref_service_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfile> testing_profile_;
+  raw_ptr<PrefService> test_pref_service_;
   std::unique_ptr<PerSessionSettingsUserActionTracker> tracker_;
 };
 
