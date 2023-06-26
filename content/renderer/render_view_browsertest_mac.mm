@@ -19,6 +19,10 @@
 #include <Carbon/Carbon.h>  // for the kVK_* constants.
 #include <Cocoa/Cocoa.h>
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using blink::TestWebFrameContentDumper;
 
 namespace content {

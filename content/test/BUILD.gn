@@ -1615,10 +1615,6 @@ test("content_browsertests") {
     sources += [ "../browser/network/address_map_linux_browsertest.cc" ]
   }
 
-  if (is_mac) {
-    sources +=
-        [ "../app_shim_remote_cocoa/window_occlusion_browsertest_mac.mm" ]
-  }
   if (enable_reporting) {
     sources += [
       "../browser/network/cross_origin_opener_policy_reporting_browsertest.cc",
@@ -2032,8 +2028,13 @@ test("content_browsertests") {
     ]
   }
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   if (is_mac) {
     sources += [
+      "../app_shim_remote_cocoa/window_occlusion_browsertest_mac.mm",
       "../browser/accessibility/ax_tree_formatter_mac_browsertest.mm",
       "../browser/accessibility/browser_accessibility_cocoa_browsertest.mm",
       "../browser/accessibility/hit_testing_mac_browsertest.mm",
