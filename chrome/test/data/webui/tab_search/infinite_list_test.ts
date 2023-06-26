@@ -82,13 +82,22 @@ suite('InfiniteListTest', () => {
 
     assertEquals(0, infiniteList.scrollTop);
 
+    const paddingBottomStyle =
+        getComputedStyle(infiniteList).getPropertyValue('padding-bottom');
+    assertTrue(paddingBottomStyle.endsWith('px'));
+
+    const paddingBottom = Number.parseInt(
+        paddingBottomStyle.substring(0, paddingBottomStyle.length - 2), 10);
+
     const itemHeightStyle =
         getComputedStyle(document.head).getPropertyValue('--mwb-item-height');
     assertTrue(itemHeightStyle.endsWith('px'));
 
     const tabItemHeight = Number.parseInt(
         itemHeightStyle.substring(0, itemHeightStyle.length - 2), 10);
-    assertEquals(tabItemHeight * tabItems.length, infiniteList.scrollHeight);
+    assertEquals(
+        tabItemHeight * tabItems.length + paddingBottom,
+        infiniteList.scrollHeight);
   });
 
   test('ListUpdates', async () => {
