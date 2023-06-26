@@ -1112,6 +1112,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUIGpuURL),
     GURL(chrome::kChromeUIHistogramsURL),
     GURL(chrome::kChromeUIInvalidationsUrl),
+    GURL(chrome::kChromeUIManagementURL),
     GURL(chrome::kChromeUIPrefsInternalsURL),
     GURL(chrome::kChromeUIRestartURL),
     GURL(chrome::kChromeUISignInInternalsUrl),
@@ -1211,7 +1212,6 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     // Pages that only exist in Lacros, where they are reachable via chrome://.
     // TODO(neis): Some of these still exist in Ash (but are inaccessible) and
     // should be removed.
-    GURL(chrome::kChromeUIManagementURL),
     GURL(chrome::kChromeUIPolicyURL),
     GURL(chrome::kChromeUISettingsURL),
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
