@@ -1653,7 +1653,6 @@ This builder measures build performance for Windows developer builds, by simulat
 
 build_perf_builder(
     name = "linux-chromeos-build-perf",
-    branch_selector = branches.selector.CROS_LTS_BRANCHES,
     description_html = """\
 This builder measures ChromeOS build performance with and without remote caches.<br/>\
 The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-rel-compilator">linux-chromeos-rel-compilator</a>.\
@@ -1683,7 +1682,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
 
 build_perf_builder(
     name = "linux-chromeos-build-perf-siso",
-    branch_selector = branches.selector.CROS_LTS_BRANCHES,
     description_html = """\
 This builder measures ChromeOS build performance with Siso.<br/>\
 The build configs and the bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-rel-compilator">linux-chromeos-rel-compilator</a>.\
