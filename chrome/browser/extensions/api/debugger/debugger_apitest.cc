@@ -402,7 +402,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   EXPECT_EQ(1u, manager3->infobar_count());
 
   // Closing tab should not affect anything.
-  ASSERT_TRUE(another_browser->tab_strip_model()->CloseWebContentsAt(1, 0));
+  EXPECT_EQ(2, another_browser->tab_strip_model()->count());
+  another_browser->tab_strip_model()->CloseWebContentsAt(1, 0);
+  EXPECT_EQ(1, another_browser->tab_strip_model()->count());
   manager3 = nullptr;
   EXPECT_EQ(1u, manager1->infobar_count());
   EXPECT_EQ(1u, manager2->infobar_count());

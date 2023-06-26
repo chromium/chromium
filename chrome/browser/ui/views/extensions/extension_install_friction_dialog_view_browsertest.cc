@@ -107,8 +107,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallFrictionDialogViewTest,
     int tab1_idx = tab_strip_model->GetIndexOfWebContents(originator_contents);
     content::WebContentsDestroyedWatcher tab_destroyed_watcher(
         tab_strip_model->GetWebContentsAt(tab1_idx));
-    EXPECT_TRUE(tab_strip_model->CloseWebContentsAt(tab1_idx,
-                                                    TabCloseTypes::CLOSE_NONE));
+    int previous_tab_count = tab_strip_model->count();
+    tab_strip_model->CloseWebContentsAt(tab1_idx, TabCloseTypes::CLOSE_NONE);
+    EXPECT_EQ(previous_tab_count - 1, tab_strip_model->count());
     tab_destroyed_watcher.Wait();
   }
 

@@ -622,8 +622,9 @@ TEST_F(TabStripModelTest, TestBasicAPI) {
 
   // Test CloseWebContentsAt
   {
-    EXPECT_TRUE(tabstrip.CloseWebContentsAt(2, TabCloseTypes::CLOSE_NONE));
-    EXPECT_EQ(2, tabstrip.count());
+    int previous_tab_count = tabstrip.count();
+    tabstrip.CloseWebContentsAt(2, TabCloseTypes::CLOSE_NONE);
+    EXPECT_EQ(previous_tab_count - 1, tabstrip.count());
 
     EXPECT_EQ(5, observer.GetStateCount());
     State s1(raw_contents3, 2, MockTabStripModelObserver::CLOSE);
@@ -1065,9 +1066,11 @@ TEST_F(TabStripModelTest, TestInsertionIndexDeterminationNestedOpener) {
   EXPECT_EQ(2, tabstrip.GetIndexOfLastWebContentsOpenedBy(raw_child11, 1));
 
   // Closing a tab should cause its children to inherit the tab's opener.
-  EXPECT_EQ(true, tabstrip.CloseWebContentsAt(
-                      1, TabCloseTypes::CLOSE_USER_GESTURE |
-                             TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB));
+  int previous_tab_count = tabstrip.count();
+  tabstrip.CloseWebContentsAt(1,
+                              TabCloseTypes::CLOSE_USER_GESTURE |
+                                  TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+  EXPECT_EQ(previous_tab_count - 1, tabstrip.count());
   EXPECT_EQ("1 111 12 2", GetTabStripStateString(tabstrip));
   EXPECT_EQ(1, GetID(tabstrip.GetActiveWebContents()));
   // opener1 is now the opener of 111, so has two adjacent descendants (111, 12)
@@ -1983,7 +1986,9 @@ TEST_F(TabStripModelTest, AppendContentsReselectionTest) {
   // and make sure the correct tab gets selected when the new tab is closed.
   tabstrip.AppendWebContents(CreateWebContents(), true);
   EXPECT_EQ(2, tabstrip.active_index());
+  int previous_tab_count = tabstrip.count();
   tabstrip.CloseWebContentsAt(2, TabCloseTypes::CLOSE_NONE);
+  EXPECT_EQ(previous_tab_count - 1, tabstrip.count());
   EXPECT_EQ(0, tabstrip.active_index());
 
   // Clean up after ourselves.
