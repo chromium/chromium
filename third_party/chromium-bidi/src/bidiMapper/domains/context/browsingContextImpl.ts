@@ -619,16 +619,30 @@ export class BrowsingContextImpl {
         'Emulation.clearDeviceMetricsOverride'
       );
     } else {
-      await this.#cdpTarget.cdpClient.sendCommand(
-        'Emulation.setDeviceMetricsOverride',
-        {
-          width: viewport.width,
-          height: viewport.height,
-          deviceScaleFactor: 0,
-          mobile: false,
-          dontSetVisibleSize: true,
+      try {
+        await this.#cdpTarget.cdpClient.sendCommand(
+          'Emulation.setDeviceMetricsOverride',
+          {
+            width: viewport.width,
+            height: viewport.height,
+            deviceScaleFactor: 0,
+            mobile: false,
+            dontSetVisibleSize: true,
+          }
+        );
+      } catch (err) {
+        if (
+          (err as Error).message.startsWith(
+            // https://crsrc.org/c/content/browser/devtools/protocol/emulation_handler.cc;l=257;drc=2f6eee84cf98d4227e7c41718dd71b82f26d90ff
+            'Width and height values must be positive'
+          )
+        ) {
+          throw new Message.UnsupportedOperationException(
+            'Provided viewport dimensions are not supported'
+          );
         }
-      );
+        throw err;
+      }
     }
   }
 
