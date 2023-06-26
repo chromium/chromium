@@ -218,11 +218,6 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordParallelizableDownloadCount(
     DownloadCountTypes type,
     bool is_parallel_download_enabled);
 
-// Records the actual total number of requests sent for a parallel download,
-// including the initial request.
-COMPONENTS_DOWNLOAD_EXPORT void RecordParallelDownloadRequestCount(
-    int request_count);
-
 // Record the result of a download file rename.
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadFileRenameResultAfterRetry(
     base::TimeDelta time_since_first_failure,

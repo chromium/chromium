@@ -877,15 +877,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.ParallelDownloadRequestCount" units="requests"
-    expires_after="2022-04-01">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    The total number of requests sent for a parallel download, including the
-    initial request.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Download.PathGenerationEvent"
     enum="DownloadPathGenerationEvent" expires_after="never">
 <!-- expires-never: Monitors download system health. -->

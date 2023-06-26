@@ -560,11 +560,6 @@ void RecordParallelizableDownloadCount(DownloadCountTypes type,
                                 DOWNLOAD_COUNT_TYPES_LAST_ENTRY);
 }
 
-void RecordParallelDownloadRequestCount(int request_count) {
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Download.ParallelDownloadRequestCount",
-                              request_count, 1, 10, 11);
-}
-
 void RecordParallelRequestCreationFailure(DownloadInterruptReason reason) {
   base::UmaHistogramSparse("Download.ParallelDownload.CreationFailureReason",
                            reason);
