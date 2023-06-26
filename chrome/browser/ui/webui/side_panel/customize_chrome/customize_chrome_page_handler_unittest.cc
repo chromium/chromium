@@ -413,14 +413,15 @@ TEST_F(CustomizeChromePageHandlerTest, GetOverviewChromeColorsGM3) {
   // Test with Dark Mode on.
   handler().GetOverviewChromeColors(true, callback.Get());
 
-  ASSERT_EQ(kCustomizeChromeColors.size(), colors.size());
-  for (size_t i = 0; i < kCustomizeChromeColors.size(); i++) {
+  ASSERT_EQ(kDynamicCustomizeChromeColors.size(), colors.size());
+  for (size_t i = 0; i < kDynamicCustomizeChromeColors.size(); i++) {
     auto palette =
-        ui::GeneratePalette(kCustomizeChromeColors[i].color,
-                            ui::ColorProviderKey::SchemeVariant::kTonalSpot);
-    EXPECT_EQ(l10n_util::GetStringUTF8(kCustomizeChromeColors[i].label_id),
-              colors[i]->name);
-    EXPECT_EQ(kCustomizeChromeColors[i].color, colors[i]->seed);
+        ui::GeneratePalette(kDynamicCustomizeChromeColors[i].color,
+                            kDynamicCustomizeChromeColors[i].variant);
+    EXPECT_EQ(
+        l10n_util::GetStringUTF8(kDynamicCustomizeChromeColors[i].label_id),
+        colors[i]->name);
+    EXPECT_EQ(kDynamicCustomizeChromeColors[i].color, colors[i]->seed);
     EXPECT_EQ(palette->primary().get(80), colors[i]->background);
     EXPECT_EQ(palette->primary().get(30), colors[i]->foreground);
     EXPECT_EQ(palette->secondary().get(50), colors[i]->base);
@@ -429,14 +430,15 @@ TEST_F(CustomizeChromePageHandlerTest, GetOverviewChromeColorsGM3) {
   // Test with Dark Mode off.
   handler().GetOverviewChromeColors(false, callback.Get());
 
-  ASSERT_EQ(kCustomizeChromeColors.size(), colors.size());
-  for (size_t i = 0; i < kCustomizeChromeColors.size(); i++) {
+  ASSERT_EQ(kDynamicCustomizeChromeColors.size(), colors.size());
+  for (size_t i = 0; i < kDynamicCustomizeChromeColors.size(); i++) {
     auto palette =
-        ui::GeneratePalette(kCustomizeChromeColors[i].color,
-                            ui::ColorProviderKey::SchemeVariant::kTonalSpot);
-    EXPECT_EQ(l10n_util::GetStringUTF8(kCustomizeChromeColors[i].label_id),
-              colors[i]->name);
-    EXPECT_EQ(kCustomizeChromeColors[i].color, colors[i]->seed);
+        ui::GeneratePalette(kDynamicCustomizeChromeColors[i].color,
+                            kDynamicCustomizeChromeColors[i].variant);
+    EXPECT_EQ(
+        l10n_util::GetStringUTF8(kDynamicCustomizeChromeColors[i].label_id),
+        colors[i]->name);
+    EXPECT_EQ(kDynamicCustomizeChromeColors[i].color, colors[i]->seed);
     EXPECT_EQ(palette->primary().get(40), colors[i]->background);
     EXPECT_EQ(palette->primary().get(90), colors[i]->foreground);
     EXPECT_EQ(palette->primary().get(80), colors[i]->base);

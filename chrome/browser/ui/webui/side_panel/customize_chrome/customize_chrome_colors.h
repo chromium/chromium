@@ -8,6 +8,7 @@
 #include <array>
 
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
+#include "ui/color/color_provider_key.h"
 
 // The customize chrome side panel only uses the chrome colors with the
 // following ids, which is a subset of all chrome colors.
@@ -33,5 +34,17 @@ constexpr int kCustomizeChromeColorIds[] = {
 extern const std::array<chrome_colors::ColorInfo,
                         std::size(kCustomizeChromeColorIds)>
     kCustomizeChromeColors;
+
+struct DynamicColorInfo {
+  constexpr DynamicColorInfo(SkColor color,
+                             int label_id,
+                             ui::ColorProviderKey::SchemeVariant variant)
+      : color(color), label_id(label_id), variant(variant) {}
+  SkColor color;
+  int label_id;
+  ui::ColorProviderKey::SchemeVariant variant;
+};
+
+extern const std::array<DynamicColorInfo, 13> kDynamicCustomizeChromeColors;
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_COLORS_H_

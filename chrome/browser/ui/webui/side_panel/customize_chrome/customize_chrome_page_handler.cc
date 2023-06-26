@@ -55,11 +55,11 @@ side_panel::mojom::ChromeColorPtr CreateChromeColor(
 
 // Create a GM3 chrome color that takes color scheme into account.
 side_panel::mojom::ChromeColorPtr CreateDynamicChromeColor(
-    chrome_colors::ColorInfo color_info,
+    DynamicColorInfo color_info,
     bool is_dark_mode) {
   auto color = side_panel::mojom::ChromeColor::New();
-  auto color_palette = ui::GeneratePalette(
-      color_info.color, ui::ColorProviderKey::SchemeVariant::kTonalSpot);
+  auto color_palette =
+      ui::GeneratePalette(color_info.color, color_info.variant);
   color->name = l10n_util::GetStringUTF8(color_info.label_id);
   color->seed = color_info.color;
   color->background = is_dark_mode ? color_palette->primary().get(80)
@@ -189,8 +189,7 @@ void CustomizeChromePageHandler::GetOverviewChromeColors(
     GetOverviewChromeColorsCallback callback) {
   std::vector<side_panel::mojom::ChromeColorPtr> colors;
   if (features::IsChromeWebuiRefresh2023()) {
-    // TODO(crbug/1430277): Loop through new list of seed colors for GM3.
-    for (const auto& color_info : kCustomizeChromeColors) {
+    for (const auto& color_info : kDynamicCustomizeChromeColors) {
       colors.push_back(CreateDynamicChromeColor(color_info, is_dark_mode));
     }
   } else {
