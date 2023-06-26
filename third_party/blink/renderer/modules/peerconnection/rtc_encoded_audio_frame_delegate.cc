@@ -99,11 +99,7 @@ absl::optional<uint64_t> RTCEncodedAudioFrameDelegate::AbsCaptureTime() const {
         static_cast<webrtc::TransformableAudioFrameInterface*>(
             webrtc_frame_.get());
 
-    auto abs_capture_time_struct =
-        incoming_audio_frame->GetHeader().extension.absolute_capture_time;
-    if (abs_capture_time_struct) {
-      return abs_capture_time_struct->absolute_capture_timestamp;
-    }
+    return incoming_audio_frame->AbsoluteCaptureTimestamp();
   }
 
   return absl::nullopt;
