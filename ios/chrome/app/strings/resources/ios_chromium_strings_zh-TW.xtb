@@ -45,6 +45,7 @@
 <translation id="3256316712990552818">已複製到 Chromium</translation>
 <translation id="3344973607274501920">Chromium 無法檢查你的密碼，請查看網際網路連線狀態。</translation>
 <translation id="3472200483164753384">Chromium Canary 不支援這項功能</translation>
+<translation id="3478750326643748149">隱藏「充分運用 Chromium 的各項功能」</translation>
 <translation id="3567399274263440288">如要充分運用 Chromium 的所有功能，請透過 Google 帳戶登入 Chromium。</translation>
 <translation id="3639997914391704523">如果你使用 Google 帳戶登入，Chromium 可以檢查你的密碼。</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> 原本使用 Chromium，並將書籤、密碼和其他設定儲存在裝置上。</translation>
@@ -78,6 +79,7 @@
 <translation id="5521125884468363740">登入帳戶並開啟同步功能後，不論從何處使用 Chromium 都能查看你的分頁</translation>
 <translation id="5522297504975449419">部分 Chromium 功能將無法再使用。</translation>
 <translation id="5573014823074921752">Chromium 提示。如需更多分頁選項，請輕觸並按住工具列 (位於畫面底部或頂端) 中的 [顯示分頁] 按鈕。</translation>
+<translation id="5688047395118852662">這張資訊卡會建議你如何充分運用 Chromium 的各項功能。</translation>
 <translation id="5700709190537129682">Chromium 無法檢查你的密碼</translation>
 <translation id="5777187867430702742">Chromium 頁面</translation>
 <translation id="5925698807555796756">開啟「關閉 Chromium 時鎖定無痕分頁」。</translation>

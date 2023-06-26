@@ -61,6 +61,7 @@
 <translation id="1283039547216852943">ແຕະເພື່ອຂະຫຍາຍ</translation>
 <translation id="1289059016768036948">ລະບົບຈະຂໍໃຫ້ທ່ານເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="1291207594882862231">ລຶບລ້າງປະຫວັດ, ຄຸກກີ້, ຂໍ້ມູນເວັບໄຊ, ແຄສ…</translation>
+<translation id="1293898515599432175">ລະຫັດຜ່ານຂອງທ່ານຈະຖືກລຶບອອກຈາກຕົວຈັດການລະຫັດຜ່ານ Google ສຳລັບ Chrome <ph name="CHROME_CHANNEL" />. ທ່ານຈະເກັບຮັກສາໄຟລ໌ລະຫັດຜ່ານທີ່ທ່ານຫາກໍດາວໂຫຼດໄປໄວ້.</translation>
 <translation id="129553762522093515">ປິດ​ບໍ່​ດົນ​ມາ​ນີ້</translation>
 <translation id="1298077576058087471">ປະຢັດອິນເຕີເນັດສູງສຸດ 60%, ອ່ານຂ່າວຂອງມື້ນີ້</translation>
 <translation id="1303339473099049190">ບໍ່ສາມາດຊອກເຫັນລະຫັດຜ່ານນັ້ນ. ກະລຸນາກວດການສະກົດຄຳຂອງທ່ານ ແລ້ວລອງໃໝ່.</translation>
@@ -510,6 +511,7 @@
 <translation id="3795154175078851242">ສຳເນົາຮູບພ້ອມລິ້ງ</translation>
 <translation id="3810838688059735925">ວິ​ດີ​ໂອ</translation>
 <translation id="3810973564298564668">ຈັດການ</translation>
+<translation id="381861209280417772">ລຶບລະຫັດຜ່ານອອກບໍ?</translation>
 <translation id="3819178904835489326">ລຶບ <ph name="NUMBER_OF_DOWNLOADS" /> ການດາວໂຫຼດແລ້ວ</translation>
 <translation id="3819183753496523827">ທ່ານອອບລາຍຢູ່. ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານແລ້ວລອງໃໝ່.</translation>
 <translation id="3830886834687455630">ອັບເດດບໍລິການ Google Play ເພື່ອກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານ</translation>
@@ -594,6 +596,7 @@
 <translation id="4249955472157341256">ຈັດຮຽງຕາມຫຼ້າສຸດ</translation>
 <translation id="4250229828105606438">ຮູບຖ່າຍໜ້າຈໍ</translation>
 <translation id="4256782883801055595">ໃບ​ອະ​ນຸ​ຍາດ Open source</translation>
+<translation id="4257230861809842349">ລຶບລະຫັດຜ່ານອອກຈາກຕົວຈັດການລະຫັດຜ່ານ Google ບໍ?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />ມີການໃຊ້ຂໍ້ມູນໃດ:<ph name="END_BOLD" /> ປະຫວັດການທ່ອງເວັບຂອງທ່ານ, ບັນທຶກຂອງເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງໂດຍໃຊ້ Chrome ຢູ່ອຸປະກອນນີ້.</translation>
 <translation id="4269820728363426813">ກັອບປີ້ທີ່ຢູ່ລິ້ງ</translation>
 <translation id="4283102315569707115">ຮ້ອງຂໍເວັບໄຊເດັສທັອບຕາມຄ່າເລີ່ມຕົ້ນບໍ?</translation>

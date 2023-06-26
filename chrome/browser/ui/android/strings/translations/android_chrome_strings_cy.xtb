@@ -61,6 +61,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1283039547216852943">Tapiwch i ehangu</translation>
 <translation id="1289059016768036948">Bydd gofyn i chi fewngofnodi i'ch Cyfrif Google</translation>
 <translation id="1291207594882862231">Clirio hanes, cwcis, data gwefan, storfa…</translation>
+<translation id="1293898515599432175">Bydd eich cyfrineiriau'n cael eu dileu o Rheolwr Cyfrineiriau Google ar gyfer Chrome <ph name="CHROME_CHANNEL" />. Byddwch yn cadw'r ffeil cyfrineiriau rydych newydd ei lawrlwytho.</translation>
 <translation id="129553762522093515">Wedi'u cau'n ddiweddar</translation>
 <translation id="1298077576058087471">Arbedwch hyd at 60% o ddata, darllenwch newyddion heddiw</translation>
 <translation id="1303339473099049190">Methu â dod o hyd i'r cyfrinair hwnnw. Gwiriwch eich sillafu a rhowch gynnig arall arni.</translation>
@@ -510,6 +511,7 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="3795154175078851242">Copïo llun gyda dolen</translation>
 <translation id="3810838688059735925">Fideo</translation>
 <translation id="3810973564298564668">Rheoli</translation>
+<translation id="381861209280417772">Dileu cyfrineiriau</translation>
 <translation id="3819178904835489326">Mae <ph name="NUMBER_OF_DOWNLOADS" /> lawrlwythiad wedi'u dileu</translation>
 <translation id="3819183753496523827">Rydych chi all-lein. Gwiriwch eich cysylltiad rhyngrwyd a rhowch gynnig arall arni.</translation>
 <translation id="3830886834687455630">Diweddarwch wasanaethau Google Play i wirio'ch cyfrineiriau</translation>
@@ -594,6 +596,7 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="4249955472157341256">Trefnu yn ôl Diweddaraf</translation>
 <translation id="4250229828105606438">Sgrinlun</translation>
 <translation id="4256782883801055595">Trwyddedau ffynhonnell agored</translation>
+<translation id="4257230861809842349">Dileu cyfrineiriau o Rheolwr Cyfrineiriau Google?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Pa ddata a ddefnyddir:<ph name="END_BOLD" /> Eich hanes pori, cofnod o wefannau rydych wedi ymweld â nhw drwy ddefnyddio Chrome ar y ddyfais hon.</translation>
 <translation id="4269820728363426813">Copïo cyfeiriad y ddolen</translation>
 <translation id="4283102315569707115">Gofyn am wefannau bwrdd gwaith yn ddiofyn?</translation>

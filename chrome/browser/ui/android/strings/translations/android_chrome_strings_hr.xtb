@@ -61,6 +61,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="1283039547216852943">Dodirnite za proširivanje</translation>
 <translation id="1289059016768036948">Od vas će se tražiti da se prijavite na Google račun.</translation>
 <translation id="1291207594882862231">Brisanje povijesti, kolačića, podataka web-lokacija, predmemorije...</translation>
+<translation id="1293898515599432175">Vaše će se zaporke izbrisati s Google upravitelja zaporki za Chrome <ph name="CHROME_CHANNEL" />. Zadržat ćete datoteku sa zaporkama koju ste upravo preuzeli.</translation>
 <translation id="129553762522093515">Nedavno zatvoreno</translation>
 <translation id="1298077576058087471">Uštedite do 60% podataka, pročitajte današnje vijesti</translation>
 <translation id="1303339473099049190">Ta zaporka nije pronađena. Provjerite jeste li je točno napisali pa pokušajte ponovno.</translation>
@@ -510,6 +511,7 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="3795154175078851242">Kopiranje slike s vezom</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Upravljanje</translation>
+<translation id="381861209280417772">Izbriši zaporke</translation>
 <translation id="3819178904835489326">Izbrisano preuzimanja: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3819183753496523827">Niste povezani s internetom. Provjerite internetsku vezu i pokušajte ponovo.</translation>
 <translation id="3830886834687455630">Ažurirajte usluge za Google Play da biste provjerili svoje zaporke</translation>
@@ -594,6 +596,7 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="4249955472157341256">Poredaj po najnovijem</translation>
 <translation id="4250229828105606438">Snimka zaslona</translation>
 <translation id="4256782883801055595">Licence otvorenog koda</translation>
+<translation id="4257230861809842349">Želite li izbrisati zaporke s Google upravitelja zaporki?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Koji se podaci upotrebljavaju<ph name="END_BOLD" />: vaša povijest pregledavanja, zapisnik web-lokacija koje ste posjetili u Chromeu na ovom uređaju.</translation>
 <translation id="4269820728363426813">Kopiraj adresu veze</translation>
 <translation id="4283102315569707115">Želite li prema zadanim postavkama tražiti web-lokacije za stolna računala?</translation>

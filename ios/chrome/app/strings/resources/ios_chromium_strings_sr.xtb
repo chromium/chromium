@@ -46,6 +46,7 @@
 <translation id="3256316712990552818">Копирана у Chromium</translation>
 <translation id="3344973607274501920">Chromium није успео да вам провери лозинке. Проверите интернет везу.</translation>
 <translation id="3472200483164753384">Није подржано у верзији Chromium Canary</translation>
+<translation id="3478750326643748149">Сакријте „Искористите Chromium на најбољи начин“</translation>
 <translation id="3567399274263440288">Да бисте користили Chromium на најбољи начин, пријавите се на Chromium помоћу Google налога.</translation>
 <translation id="3639997914391704523">Chromium може да вам проверава лозинке када се пријавите помоћу Google налога.</translation>
 <translation id="3650632991272923014">Корисник <ph name="USER_EMAIL1" /> је користио Chromium и оставио обележиваче, лозинке и друга подешавања на овом уређају.</translation>
@@ -79,6 +80,7 @@
 <translation id="5521125884468363740">Да бисте видели картице на било којем уређају на ком користите Chromium, пријавите се и укључите синхронизацију</translation>
 <translation id="5522297504975449419">Неке Chromium функције више неће бити доступне.</translation>
 <translation id="5573014823074921752">Савет за Chromium. Ако желите више опција за картице, додирните и задржите дугме Прикажи картице на траци с алаткама, која се налази у дну или врху екрана.</translation>
+<translation id="5688047395118852662">Ова картица вам приказује предлоге о томе како да искористите Chromium-а на најбољи начин.</translation>
 <translation id="5700709190537129682">Chromium не може да вам проверава лозинке</translation>
 <translation id="5777187867430702742">Chromium страница</translation>
 <translation id="5925698807555796756">Укључите Закључај картице без архивирања после затварања Chromium-а.</translation>
