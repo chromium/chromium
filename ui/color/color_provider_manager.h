@@ -31,16 +31,6 @@ class ColorProvider;
 // necessary to construct a ColorProviderManager manually.
 class COMPONENT_EXPORT(COLOR) ColorProviderManager {
  public:
-  // TODO(b/286952053): Remove these aliases once the migration is complete.
-  using Key = ColorProviderKey;
-  using ColorMode = ColorProviderKey::ColorMode;
-  using ContrastMode = ColorProviderKey::ContrastMode;
-  using ElevationMode = ColorProviderKey::ElevationMode;
-  using FrameType = ColorProviderKey::FrameType;
-  using SchemeVariant = ColorProviderKey::SchemeVariant;
-  using InitializerSupplier = ColorProviderKey::InitializerSupplier;
-  using ThemeInitializerSupplier = ColorProviderKey::ThemeInitializerSupplier;
-
   using ColorProviderInitializerList =
       base::RepeatingCallbackList<void(ColorProvider*,
                                        const ColorProviderKey&)>;
