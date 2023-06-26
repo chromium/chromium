@@ -19,18 +19,7 @@ system_image_name: "system-images;android-34;google_apis_playstore;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-34/google_apis_playstore/x86_64"
+  version: "JEE3FdVhwg_68dww3eGfdJadh_VQVGK5odRys38jioYC"  # created in bb_id 8777600060006860961
   dest_path: "generic_playstore_android34"
 }
 avd_name: "android_34_google_apis_playstore_x86_64"
-
-avd_settings {
-  screen {
-    density: 480
-    height: 1920
-    width: 1080
-  }
-  advanced_features {
-    key: "GLESDynamicVersion"
-    value: "on"
-  }
-}
