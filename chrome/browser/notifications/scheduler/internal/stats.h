@@ -70,13 +70,6 @@ void LogNotificationShow(const NotificationData& notification_data,
 // Logs scheduled notification life cycle event.
 void LogNotificationLifeCycleEvent(NotificationLifeCycleEvent event,
                                    SchedulerClientType client_type);
-
-// Logs png icon converter encode result.
-void LogPngIconConverterEncodeResult(bool success);
-
-// Logs png icon converter decode result.
-void LogPngIconConverterDecodeResult(bool success);
-
 }  // namespace stats
 }  // namespace notifications
 

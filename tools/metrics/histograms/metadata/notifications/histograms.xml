@@ -916,30 +916,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.Scheduler.PngIconConverter.DecodeResult"
-    enum="BooleanSuccess" expires_after="2022-12-31">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    Records the result of png icon converter decoding process in icon store for
-    the notification scheduling system. It will be logged typically when
-    scheduling system trying to display the notification to the client - the
-    icon store will load entries, and decode icons to PNG format for delivery.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.Scheduler.PngIconConverter.EncodeResult"
-    enum="BooleanSuccess" expires_after="2022-12-31">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    Records the result of png icon converter encoding process in icon store for
-    the notification scheduling system. It will be logged typically when the
-    client scheduled notification with icons - the icon store will then encode
-    icons to string and store them in protodb.
-  </summary>
-</histogram>
-
 <histogram name="Notifications.Scheduler.UserAction"
     enum="NotificationSchedulerUserActionType" expires_after="2022-12-31">
 <!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
