@@ -133,6 +133,9 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                    GLenum texture_target,
                    const SkPixmap& src_sk_pixmap) override;
 
+  void WritePixelsYUV(const gpu::Mailbox& dest_mailbox,
+                      const SkYUVAPixmaps& src_yuv_pixmap) override;
+
   void ConvertYUVAMailboxesToRGB(
       const gpu::Mailbox& dest_mailbox,
       SkYUVColorSpace planes_yuv_color_space,

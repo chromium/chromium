@@ -32,13 +32,14 @@
   OP(ClearPaintCacheINTERNAL)                     /* 273 */ \
   OP(CopySharedImageINTERNALImmediate)            /* 274 */ \
   OP(WritePixelsINTERNALImmediate)                /* 275 */ \
-  OP(ReadbackARGBImagePixelsINTERNALImmediate)    /* 276 */ \
-  OP(ReadbackYUVImagePixelsINTERNALImmediate)     /* 277 */ \
-  OP(ConvertYUVAMailboxesToRGBINTERNALImmediate)  /* 278 */ \
-  OP(ConvertRGBAToYUVAMailboxesINTERNALImmediate) /* 279 */ \
-  OP(TraceBeginCHROMIUM)                          /* 280 */ \
-  OP(TraceEndCHROMIUM)                            /* 281 */ \
-  OP(SetActiveURLCHROMIUM)                        /* 282 */
+  OP(WritePixelsYUVINTERNALImmediate)             /* 276 */ \
+  OP(ReadbackARGBImagePixelsINTERNALImmediate)    /* 277 */ \
+  OP(ReadbackYUVImagePixelsINTERNALImmediate)     /* 278 */ \
+  OP(ConvertYUVAMailboxesToRGBINTERNALImmediate)  /* 279 */ \
+  OP(ConvertRGBAToYUVAMailboxesINTERNALImmediate) /* 280 */ \
+  OP(TraceBeginCHROMIUM)                          /* 281 */ \
+  OP(TraceEndCHROMIUM)                            /* 282 */ \
+  OP(SetActiveURLCHROMIUM)                        /* 283 */
 
 enum CommandId {
   kOneBeforeStartPoint =

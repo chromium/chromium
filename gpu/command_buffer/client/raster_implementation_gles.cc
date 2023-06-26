@@ -221,6 +221,12 @@ void RasterImplementationGLES::WritePixels(const gpu::Mailbox& dest_mailbox,
   DeleteGpuRasterTexture(texture_id);
 }
 
+void RasterImplementationGLES::WritePixelsYUV(
+    const gpu::Mailbox& dest_mailbox,
+    const SkYUVAPixmaps& src_yuv_pixmap) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
 void RasterImplementationGLES::ConvertYUVAMailboxesToRGB(
     const gpu::Mailbox& dest_mailbox,
     SkYUVColorSpace planes_yuv_color_space,

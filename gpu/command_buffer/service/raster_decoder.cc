@@ -657,6 +657,21 @@ class RasterDecoderImpl final : public RasterDecoder,
                              GLuint shm_offset,
                              GLuint shm_size,
                              const volatile GLbyte* mailbox);
+  void DoWritePixelsYUVINTERNAL(GLuint src_width,
+                                GLuint src_height,
+                                GLuint src_row_bytes_plane1,
+                                GLuint src_row_bytes_plane2,
+                                GLuint src_row_bytes_plane3,
+                                GLuint src_row_bytes_plane4,
+                                GLuint src_yuv_plane_config,
+                                GLuint src_yuv_subsampling,
+                                GLuint src_yuv_color_space,
+                                GLint shm_id,
+                                GLuint shm_offset,
+                                GLuint plane2_offset,
+                                GLuint plane3_offset,
+                                GLuint plane4_offset,
+                                const volatile GLbyte* mailbox);
   bool DoWritePixelsINTERNALDirectTextureUpload(
       SkiaImageRepresentation* dest_shared_image,
       const SkImageInfo& src_info,
@@ -2123,6 +2138,25 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
     dest_shared_image->SetClearedRect(
         gfx::Rect(x_offset, y_offset, src_width, src_height));
   }
+}
+
+void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
+    GLuint src_width,
+    GLuint src_height,
+    GLuint src_row_bytes_plane1,
+    GLuint src_row_bytes_plane2,
+    GLuint src_row_bytes_plane3,
+    GLuint src_row_bytes_plane4,
+    GLuint src_yuv_plane_config,
+    GLuint src_yuv_subsampling,
+    GLuint src_yuv_datatype,
+    GLint shm_id,
+    GLuint shm_offset,
+    GLuint plane2_offset,
+    GLuint plane3_offset,
+    GLuint plane4_offset,
+    const volatile GLbyte* mailbox) {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(

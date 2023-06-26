@@ -17,6 +17,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 
 namespace cc {
@@ -73,6 +74,14 @@ class RasterInterface : public InterfaceBase {
                            int dst_plane_index,
                            GLenum texture_target,
                            const SkPixmap& src_sk_pixmap) = 0;
+
+  // Asynchronously writes YUV pixels from caller-owned memory inside
+  // |src_yuv_pixmaps| into |dest_mailbox| for all planes. Should be used only
+  // with YUV source images.
+  // NOTE: This does not perform color space conversions and just uploads
+  // pixesl. For color space conversions (if needed), perform a CopySharedImage.
+  virtual void WritePixelsYUV(const gpu::Mailbox& dest_mailbox,
+                              const SkYUVAPixmaps& src_yuv_pixmap) = 0;
 
   // Copy `yuva_plane_mailboxes` to `dest_mailbox`. The color space for the
   // source of the copy is split into `planes_yuv_color_space` which converts

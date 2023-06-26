@@ -181,6 +181,14 @@ _FUNCTION_INFO = {
     'unit_test': False,
     'trace_level': 2,
   },
+  'WritePixelsYUVINTERNAL': {
+    'decoder_func': 'DoWritePixelsYUVINTERNAL',
+    'internal': True,
+    'type': 'PUT',
+    'count': 16,  # GL_MAILBOX_SIZE_CHROMIUM
+    'unit_test': False,
+    'trace_level': 2,
+  },
   'ReadbackARGBImagePixelsINTERNAL': {
     'decoder_func': 'DoReadbackARGBImagePixelsINTERNAL',
     'internal': True,
