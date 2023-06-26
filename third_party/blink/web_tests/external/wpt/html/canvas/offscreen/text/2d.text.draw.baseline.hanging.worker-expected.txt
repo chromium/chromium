@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL 2d assert_approx_equals: Red channel of the pixel at (5, 5) expected 0 +/- 2 but got 255
+Harness: the test ran to completion.
+

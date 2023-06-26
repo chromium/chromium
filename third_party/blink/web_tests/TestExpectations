@@ -2820,6 +2820,7 @@ crbug.com/626703 [ Mac10.15 ] external/wpt/workers/modules/shared-worker-import-
 crbug.com/626703 [ Mac12 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=FailToParseSpeculationRulesHeader [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/view-timelines/view-timeline-inset.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/view-timelines/view-timeline-range.html [ Timeout ]
+crbug.com/626703 [ Mac13 ] virtual/threaded/external/wpt/scroll-animations/view-timelines/view-timeline-range.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-counter-styles/cjk-earthly-branch/css3-counter-styles-202.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/cjk-heavenly-stem/css3-counter-styles-205.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-backgrounds/border-image-002.html [ Failure ]
