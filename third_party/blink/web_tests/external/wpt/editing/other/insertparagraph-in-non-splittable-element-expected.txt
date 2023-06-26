@@ -1,17 +1,17 @@
 This is a testharness.js-based test.
-FAIL insertParagraph in button of <div><button>abc</button></div> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL insertParagraph in caption of <div><table><caption>abc</caption><tbody><tr><td>abc</td></tr></tbody></table></div> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL insertParagraph in col of <div><table><colgroup><col></colgroup><tbody><tr><td>abc</td></tr></tbody></table></div> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL insertParagraph in colgroup of <div><table><colgroup><col></colgroup><tbody><tr><td>abc</td></tr></tbody></table></div> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL insertParagraph in iframe of <div><iframe srcdoc="abc"></iframe></div> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL insertParagraph in legend of <div><fieldset><legend>abc</legend></fieldset></div> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL insertParagraph in meter of <div><meter max="100" value="50">abc</meter></div> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL insertParagraph in optgroup of <div><select><optgroup><option>abc</option></optgroup></select></div> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL insertParagraph in option of <div><select><option>abc</option></select></div> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL insertParagraph in progress of <div><progress max="100" value="50">abc</progress></div> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL insertParagraph in select of <div><select><option>abc</option></select></div> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL insertParagraph in table of <div><table><tbody><tr><td>abc</td></tr></tbody></table></div> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL insertParagraph in tbody of <div><table><tbody><tr><td>abc</td></tr></tbody></table></div> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL insertParagraph in tr of <div><table><tbody><tr><td>abc</td></tr></tbody></table></div> promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL insertParagraph in button of <div><button>abc</button></div> assert_equals: expected "<div><button><br>abc</button></div>" but got "<div><button><br></button></div><div><button>abc</button></div>"
+FAIL insertParagraph in caption of <div><table><caption>abc</caption><tbody><tr><td>abc</td></tr></tbody></table></div> assert_in_array: value "<div><table><caption><br></caption><caption>abc</caption><tbody><tr><td>abc</td></tr></tbody></table></div>" not in array ["<div><table><caption><br><div>abc</div></caption><tbody><tr><td>abc</td></tr></tbody></table></div>", "<div><table><caption><div><br></div><div>abc</div></caption><tbody><tr><td>abc</td></tr></tbody></table></div>"]
+PASS insertParagraph in col of <div><table><colgroup><col></colgroup><tbody><tr><td>abc</td></tr></tbody></table></div>
+PASS insertParagraph in colgroup of <div><table><colgroup><col></colgroup><tbody><tr><td>abc</td></tr></tbody></table></div>
+PASS insertParagraph in iframe of <div><iframe srcdoc="abc"></iframe></div>
+FAIL insertParagraph in legend of <div><fieldset><legend>abc</legend></fieldset></div> assert_equals: expected "<div><fieldset><legend><br>abc</legend></fieldset></div>" but got "<div><fieldset><legend><br></legend><legend>abc</legend></fieldset></div>"
+FAIL insertParagraph in meter of <div><meter max="100" value="50">abc</meter></div> assert_equals: expected "<div><br></div><div><meter max=\"100\" value=\"50\">abc</meter></div>" but got "<div><br><meter max=\"100\" value=\"50\">abc</meter></div>"
+FAIL insertParagraph in optgroup of <div><select><optgroup><option>abc</option></optgroup></select></div> assert_equals: expected "<div><br></div><div><select><optgroup><option>abc</option></optgroup></select></div>" but got "<div><select><optgroup><option>abc</option></optgroup></select></div>"
+PASS insertParagraph in option of <div><select><option>abc</option></select></div>
+PASS insertParagraph in progress of <div><progress max="100" value="50">abc</progress></div>
+PASS insertParagraph in select of <div><select><option>abc</option></select></div>
+FAIL insertParagraph in table of <div><table><tbody><tr><td>abc</td></tr></tbody></table></div> assert_in_array: value "<div><br><table><tbody><tr><td>abc</td></tr></tbody></table></div>" not in array ["<div><table><tbody><tr><td><br>abc</td></tr></tbody></table></div>", "<div><br></div><div><table><tbody><tr><td>abc</td></tr></tbody></table></div>"]
+PASS insertParagraph in tbody of <div><table><tbody><tr><td>abc</td></tr></tbody></table></div>
+PASS insertParagraph in tr of <div><table><tbody><tr><td>abc</td></tr></tbody></table></div>
 Harness: the test ran to completion.
 

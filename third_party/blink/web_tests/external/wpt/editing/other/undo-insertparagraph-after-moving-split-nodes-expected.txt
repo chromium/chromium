@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL Undo insertParagraph after moving right node to different paragraph promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Undo insertParagraph after moving left node to different paragraph promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Undo insertParagraph after moving right node into the left node promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-FAIL Undo insertParagraph after moving left node into the right node promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
-Harness: the test ran to completion.
-

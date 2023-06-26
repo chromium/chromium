@@ -127,6 +127,8 @@
             eventSenderKeys = "Escape";
           } else if (charCode == 0xE003) {
             eventSenderKeys = "Backspace";
+          } else if (charCode == 0xE017) {
+            eventSenderKeys = "Delete";
           } else if (charCode == 0xE009) {
             eventSenderKeys = "ControlLeft";
             modifierValue = "ctrlKey";
