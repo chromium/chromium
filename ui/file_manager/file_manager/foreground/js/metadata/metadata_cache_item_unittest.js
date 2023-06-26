@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MetadataCacheItem} from './metadata_cache_item.js';
 import {MetadataItem} from './metadata_item.js';
@@ -13,7 +13,6 @@ import {MetadataItem} from './metadata_item.js';
 const metadataA = new MetadataItem();
 metadataA.contentMimeType = 'value';
 
-const CONTENT_MIME_TYPE_SET = new Set(['contentMimeType']);
 
 export function testMetadataCacheItemBasic() {
   const item = new MetadataCacheItem();
@@ -22,7 +21,7 @@ export function testMetadataCacheItemBasic() {
   assertEquals('contentMimeType', loadRequested[0]);
 
   item.startRequests(1, loadRequested);
-  assertDeepEquals(item.storeProperties(1, metadataA), CONTENT_MIME_TYPE_SET);
+  assertTrue(item.storeProperties(1, metadataA));
 
   const result = item.get(['contentMimeType']);
   assertEquals('value', result.contentMimeType);
@@ -35,7 +34,7 @@ export function testMetadataCacheItemAvoidDoubleLoad() {
   assertEquals(0, loadRequested.length);
 
   item.startRequests(2, loadRequested);
-  assertDeepEquals(item.storeProperties(1, metadataA), CONTENT_MIME_TYPE_SET);
+  assertTrue(item.storeProperties(1, metadataA));
 
   const result = item.get(['contentMimeType']);
   assertEquals('value', result.contentMimeType);
@@ -45,7 +44,7 @@ export function testMetadataCacheItemInvalidate() {
   const item = new MetadataCacheItem();
   item.startRequests(1, item.createRequests(['contentMimeType']));
   item.invalidate(2);
-  assertDeepEquals(item.storeProperties(1, metadataA), new Set());
+  assertFalse(item.storeProperties(1, metadataA));
 
   const loadRequested = item.createRequests(['contentMimeType']);
   assertEquals(1, loadRequested.length);
@@ -59,8 +58,8 @@ export function testMetadataCacheItemStoreInReverseOrder() {
   const metadataB = new MetadataItem();
   metadataB.contentMimeType = 'value2';
 
-  assertDeepEquals(item.storeProperties(2, metadataB), CONTENT_MIME_TYPE_SET);
-  assertDeepEquals(item.storeProperties(1, metadataA), new Set());
+  assertTrue(item.storeProperties(2, metadataB));
+  assertFalse(item.storeProperties(1, metadataA));
 
   const result = item.get(['contentMimeType']);
   assertEquals('value2', result.contentMimeType);
