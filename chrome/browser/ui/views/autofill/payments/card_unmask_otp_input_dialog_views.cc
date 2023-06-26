@@ -113,7 +113,7 @@ std::u16string CardUnmaskOtpInputDialogViews::GetWindowTitle() const {
 
 void CardUnmaskOtpInputDialogViews::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAfterLabelView>(
+      std::make_unique<TitleWithIconAndSeparatorView>(
           GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
 }
 
