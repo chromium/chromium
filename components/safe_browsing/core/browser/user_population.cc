@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/user_population.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial.h"
 #include "base/strings/strcat.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -74,6 +75,24 @@ ChromeUserPopulation GetUserPopulation(
   population.set_is_signed_in(is_signed_in);
 
   return population;
+}
+
+void GetExperimentStatus(const std::vector<const base::Feature*>& experiments,
+                         ChromeUserPopulation* population) {
+  for (const base::Feature* feature : experiments) {
+    base::FieldTrial* field_trial = base::FeatureList::GetFieldTrial(*feature);
+    if (!field_trial) {
+      continue;
+    }
+    const std::string& trial = field_trial->trial_name();
+    const std::string& group = field_trial->GetGroupNameWithoutActivation();
+    bool is_experimental = group.find("Enabled") != std::string::npos ||
+                           group.find("Control") != std::string::npos;
+    bool is_preperiod = group.find("Preperiod") != std::string::npos;
+    if (is_experimental && !is_preperiod) {
+      population->add_finch_active_groups(trial + "." + group);
+    }
+  }
 }
 
 }  // namespace safe_browsing
