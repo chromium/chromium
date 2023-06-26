@@ -559,19 +559,26 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
   EXPECT_NE(gfx::RectF(),
             parent_view->selection_controller()->GetVisibleRectBetweenBounds());
 
-  // Tap inside/outside the iframe and make sure the selection handles go away.
+  // Check that selection handles are cleared after tapping inside/outside the
+  // iframe.
   parent_selection_controller_client->InitWaitForSelectionEvent(
       ui::SELECTION_HANDLES_CLEARED);
+  const gfx::RectF rect_between_selection_bounds =
+      parent_view->selection_controller()->GetRectBetweenBounds();
   if (GetParam()) {
-    gfx::PointF point_outside_iframe =
-        child_view->TransformPointToRootCoordSpaceF(gfx::PointF(-1.f, -1.f));
-    SimpleTap(gfx::Point(point_outside_iframe.x(), point_outside_iframe.y()),
-              parent_view);
+    // Tap a point outside the iframe that doesn't overlap with the selection
+    // handles or menu.
+    const gfx::Point point_outside_iframe(
+        child_view->TransformPointToRootCoordSpaceF(gfx::PointF(-20.f, 0)).x(),
+        rect_between_selection_bounds.left_center().y());
+    SimpleTap(point_outside_iframe, parent_view);
   } else {
-    gfx::PointF point_inside_iframe =
-        child_view->TransformPointToRootCoordSpaceF(gfx::PointF(+1.f, +1.f));
-    SimpleTap(gfx::Point(point_inside_iframe.x(), point_inside_iframe.y()),
-              child_view);
+    // Tap a point inside the iframe that doesn't overlap with the selection
+    // handles or menu.
+    const gfx::Point point_inside_iframe(
+        rect_between_selection_bounds.right_center().x() + 10,
+        rect_between_selection_bounds.right_center().y());
+    SimpleTap(point_inside_iframe, child_view);
   }
   parent_selection_controller_client->Wait();
 

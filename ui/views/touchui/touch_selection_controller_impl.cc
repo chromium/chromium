@@ -721,9 +721,14 @@ gfx::Rect TouchSelectionControllerImpl::GetQuickMenuAnchorRect() const {
   else
     return menu_anchor;
 
-  // Enlarge the anchor rect so that the menu is offset from the text at least
-  // by the same distance the handles are offset from the text.
-  menu_anchor.Inset(gfx::Insets::VH(-kSelectionHandleVerticalVisualOffset, 0));
+  if (!::features::IsTouchTextEditingRedesignEnabled()) {
+    // Enlarge the anchor rect so that the menu is offset from the text at least
+    // by the same distance the handles are offset from the text. This is not
+    // needed when the touch text editing redesign is enabled, since the menu
+    // will already apply padding in that case.
+    menu_anchor.Inset(
+        gfx::Insets::VH(-kSelectionHandleVerticalVisualOffset, 0));
+  }
 
   return menu_anchor;
 }
