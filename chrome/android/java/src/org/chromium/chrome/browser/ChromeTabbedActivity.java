@@ -1759,7 +1759,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // TODO(sinansahin): This currently only checks for incognito extras in the intent.
                 // We should make it more robust by using more signals.
                 IntentHandler.hasAnyIncognitoExtra(getIntent().getExtras()), mBackPressManager,
-                this::getSavedInstanceState);
+                getSavedInstanceState());
     }
 
     @Override
