@@ -201,10 +201,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
 
   RenderFrameHost* iframe =
       CreateChildIframe(main_rfh(), GetNonAppURL("/corp-cross-origin.html"));
+  const blink::LocalFrameToken iframe_token = iframe->GetFrameToken();
 
   std::unique_ptr<TestNavigationObserver> navigation_observer =
       SelfNavigateIframeToURL(iframe, app_url);
-  EXPECT_EQ(iframe->GetFrameToken(),
+  EXPECT_EQ(iframe_token,
             navigation_observer->last_initiator_frame_token().value());
   EXPECT_FALSE(navigation_observer->last_navigation_succeeded());
   EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,

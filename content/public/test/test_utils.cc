@@ -227,6 +227,10 @@ bool WillSameSiteNavigationsChangeRenderFrameHosts() {
   return ShouldCreateNewHostForAllFrames();
 }
 
+bool WillSameSiteSubframeNavigationsChangeRenderFrameHosts() {
+  return ShouldCreateNewHostForSameSiteSubframe();
+}
+
 bool CanSameSiteMainFrameNavigationsChangeSiteInstances() {
   return IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled() ||
          IsBackForwardCacheEnabled();

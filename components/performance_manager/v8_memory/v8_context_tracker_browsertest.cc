@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameSiteNavigation) {
       rfhb, base::StringPrintf("location.href = \"%s\"", urlb.spec().c_str())));
   WaitForLoad(contents);
 
-  if (content::WillSameSiteNavigationsChangeRenderFrameHosts()) {
+  if (content::WillSameSiteSubframeNavigationsChangeRenderFrameHosts()) {
     // When RenderDocument is enabled, a new RenderFrameHost will be created for
     // the navigation to `urlb`. Both a new V8 context and ExecutionContext are
     // created, and the old ExecutionContext is destroyed.

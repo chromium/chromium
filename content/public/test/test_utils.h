@@ -126,6 +126,10 @@ bool CanSameSiteMainFrameNavigationsChangeRenderFrameHosts();
 // only a subset that satisfies some conditions, e.g. BFCache eligibilty.
 bool WillSameSiteNavigationsChangeRenderFrameHosts();
 
+// Same as above but also returns true even if only subframe navigations will
+// change RenderFrameHosts (main frame navigations might reuse RFHs still).
+bool WillSameSiteSubframeNavigationsChangeRenderFrameHosts();
+
 // Whether same-site navigations might result in a change of SiteInstances -
 // this will happen when ProactivelySwapBrowsingInstance or back-forward cache
 // is enabled on same-site main frame navigations.
