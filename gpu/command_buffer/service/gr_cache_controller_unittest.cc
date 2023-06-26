@@ -6,11 +6,13 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -50,6 +52,11 @@ class GrCacheControllerTest : public testing::Test {
 
     controller_ = base::WrapUnique(
         new GrCacheController(context_state_.get(), task_runner_));
+  }
+
+  void CreateControllerWithoutTaskRunner() {
+    controller_ =
+        base::WrapUnique(new GrCacheController(context_state_.get(), nullptr));
   }
 
   void TearDown() override {
@@ -120,6 +127,16 @@ TEST_F(GrCacheControllerTest, ResetPurgeGrCacheOnReuse) {
   // cleared.
   task_runner_->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(gr_context()->getResourceCachePurgeableBytes(), 0u);
+}
+
+TEST_F(GrCacheControllerTest, NoTaskRunner) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeature(features::kAggressiveSkiaGpuResourcePurge);
+  CreateControllerWithoutTaskRunner();
+
+  EXPECT_FALSE(context_state_->need_context_state_reset());
+  controller_->ScheduleGrContextCleanup();
+  EXPECT_TRUE(context_state_->need_context_state_reset());
 }
 
 }  // namespace raster

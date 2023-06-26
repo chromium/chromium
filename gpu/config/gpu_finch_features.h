@@ -28,6 +28,8 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kWebViewThreadSafeMediaDefault);
 GPU_EXPORT BASE_DECLARE_FEATURE(kIncreaseBufferCountForHighFrameRate);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+GPU_EXPORT BASE_DECLARE_FEATURE(kAggressiveSkiaGpuResourcePurge);
+
 GPU_EXPORT BASE_DECLARE_FEATURE(kDefaultEnableGpuRasterization);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasOopRasterization);

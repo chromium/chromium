@@ -405,7 +405,7 @@ class GPU_GLES2_EXPORT SharedContextState
   std::unique_ptr<ExternalSemaphorePool> external_semaphore_pool_;
 #endif
 
-  absl::optional<raster::GrCacheController> gr_cache_controller_;
+  raster::GrCacheController gr_cache_controller_{this};
 
   base::WeakPtrFactory<SharedContextState> weak_ptr_factory_{this};
 };

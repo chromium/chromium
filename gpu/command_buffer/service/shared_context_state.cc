@@ -215,9 +215,6 @@ SharedContextState::SharedContextState(
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
         this, "SharedContextState",
         base::SingleThreadTaskRunner::GetCurrentDefault());
-
-    // Create |gr_cache_controller_| only if we have task runner.
-    gr_cache_controller_.emplace(this);
   }
   // Initialize the scratch buffer to some small initial size.
   scratch_deserialization_buffer_.resize(
@@ -968,8 +965,7 @@ bool SharedContextState::CheckResetStatus(bool need_gl) {
 }
 
 void SharedContextState::ScheduleGrContextCleanup() {
-  if (gr_cache_controller_)
-    gr_cache_controller_->ScheduleGrContextCleanup();
+  gr_cache_controller_.ScheduleGrContextCleanup();
 }
 
 int32_t SharedContextState::GetMaxTextureSize() const {
