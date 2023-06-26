@@ -625,6 +625,19 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
   s->BindString16(index++, credit_card.nickname());
 }
 
+void BindLocalStoredCvcToStatement(const CreditCard& credit_card,
+                                   const base::Time& modification_date,
+                                   sql::Statement* s,
+                                   const AutofillTableEncryptor& encryptor) {
+  CHECK(credit_card.record_type() == CreditCard::LOCAL_CARD);
+  DCHECK(base::Uuid::ParseCaseInsensitive(credit_card.guid()).is_valid());
+  int index = 0;
+  s->BindString(index++, credit_card.guid());
+
+  BindEncryptedValueToColumn(s, index++, credit_card.cvc(), encryptor);
+  s->BindInt64(index++, modification_date.ToTimeT());
+}
+
 void BindIBANToStatement(const IBAN& iban,
                          sql::Statement* s,
                          const AutofillTableEncryptor& encryptor) {
@@ -677,27 +690,35 @@ std::u16string UnencryptValueFromColumn(
 }
 
 std::unique_ptr<CreditCard> CreditCardFromStatement(
-    sql::Statement& s,
+    sql::Statement& card_statement,
+    absl::optional<std::reference_wrapper<sql::Statement>> cvc_statement,
     const AutofillTableEncryptor& encryptor) {
   auto credit_card = std::make_unique<CreditCard>();
 
   int index = 0;
-  credit_card->set_guid(s.ColumnString(index++));
+  credit_card->set_guid(card_statement.ColumnString(index++));
   DCHECK(base::Uuid::ParseCaseInsensitive(credit_card->guid()).is_valid());
 
   for (ServerFieldType type : {CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_MONTH,
                                CREDIT_CARD_EXP_4_DIGIT_YEAR}) {
-    credit_card->SetRawInfo(type, s.ColumnString16(index++));
+    credit_card->SetRawInfo(type, card_statement.ColumnString16(index++));
   }
-  credit_card->SetRawInfo(CREDIT_CARD_NUMBER,
-                          UnencryptValueFromColumn(s, index++, encryptor));
-  credit_card->set_use_count(s.ColumnInt64(index++));
-  credit_card->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
+  credit_card->SetRawInfo(
+      CREDIT_CARD_NUMBER,
+      UnencryptValueFromColumn(card_statement, index++, encryptor));
+  credit_card->set_use_count(card_statement.ColumnInt64(index++));
+  credit_card->set_use_date(
+      base::Time::FromTimeT(card_statement.ColumnInt64(index++)));
   credit_card->set_modification_date(
-      base::Time::FromTimeT(s.ColumnInt64(index++)));
-  credit_card->set_origin(s.ColumnString(index++));
-  credit_card->set_billing_address_id(s.ColumnString(index++));
-  credit_card->SetNickname(s.ColumnString16(index++));
+      base::Time::FromTimeT(card_statement.ColumnInt64(index++)));
+  credit_card->set_origin(card_statement.ColumnString(index++));
+  credit_card->set_billing_address_id(card_statement.ColumnString(index++));
+  credit_card->SetNickname(card_statement.ColumnString16(index++));
+  // Only set cvc if we retrieve cvc from local_stored_cvc table.
+  if (cvc_statement) {
+    credit_card->set_cvc(
+        UnencryptValueFromColumn(cvc_statement.value(), 0, encryptor));
+  }
   return credit_card;
 }
 
@@ -1902,18 +1923,36 @@ bool AutofillTable::GetIBANs(std::vector<std::unique_ptr<IBAN>>* ibans) {
 }
 
 bool AutofillTable::AddCreditCard(const CreditCard& credit_card) {
-  sql::Statement s;
-  InsertBuilder(db_, s, kCreditCardsTable,
+  // We have 2 independent DB operations:
+  // 1. Insert a credit_card
+  // 2. Insert a CVC.
+  // We don't wrap these in a transaction because a credit_card without a CVC is
+  // a valid record, we are OK that the CC is stored but the CVC fails silently.
+  // We only return false if credit_card insert fails.
+  sql::Statement card_statement;
+  InsertBuilder(db_, card_statement, kCreditCardsTable,
                 {kGuid, kNameOnCard, kExpirationMonth, kExpirationYear,
                  kCardNumberEncrypted, kUseCount, kUseDate, kDateModified,
                  kOrigin, kBillingAddressId, kNickname});
-  BindCreditCardToStatement(credit_card, AutofillClock::Now(), &s,
+  BindCreditCardToStatement(credit_card, AutofillClock::Now(), &card_statement,
                             *autofill_table_encryptor_);
 
-  if (!s.Run())
+  if (!card_statement.Run()) {
     return false;
+  }
 
   DCHECK_GT(db_->GetLastChangeCount(), 0);
+
+  // If credit card contains cvc, will store cvc in local_stored_cvc table.
+  if (!credit_card.cvc().empty()) {
+    sql::Statement cvc_statement;
+    InsertBuilder(db_, cvc_statement, kLocalStoredCvcTable,
+                  {kGuid, kValueEncrypted, kLastUpdatedTimestamp});
+    BindLocalStoredCvcToStatement(credit_card, AutofillClock::Now(),
+                                  &cvc_statement, *autofill_table_encryptor_);
+    cvc_statement.Run();
+  }
+
   return true;
 }
 
@@ -1979,18 +2018,31 @@ bool AutofillTable::AddFullServerCreditCard(const CreditCard& credit_card) {
 std::unique_ptr<CreditCard> AutofillTable::GetCreditCard(
     const std::string& guid) {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
-  sql::Statement s;
-  SelectBuilder(db_, s, kCreditCardsTable,
+  sql::Statement card_statement;
+  SelectBuilder(db_, card_statement, kCreditCardsTable,
                 {kGuid, kNameOnCard, kExpirationMonth, kExpirationYear,
                  kCardNumberEncrypted, kUseCount, kUseDate, kDateModified,
                  kOrigin, kBillingAddressId, kNickname},
                 "WHERE guid = ?");
-  s.BindString(0, guid);
+  card_statement.BindString(0, guid);
 
-  if (!s.Step())
+  if (!card_statement.Step()) {
     return nullptr;
+  }
 
-  return CreditCardFromStatement(s, *autofill_table_encryptor_);
+  // Get cvc from local_stored_cvc table.
+  sql::Statement cvc_statement;
+  SelectBuilder(db_, cvc_statement, kLocalStoredCvcTable, {kValueEncrypted},
+                "WHERE guid = ?");
+  cvc_statement.BindString(0, guid);
+
+  bool has_cvc = cvc_statement.Step();
+  return CreditCardFromStatement(
+      card_statement,
+      has_cvc ? absl::optional<
+                    std::reference_wrapper<sql::Statement>>{cvc_statement}
+              : absl::nullopt,
+      *autofill_table_encryptor_);
 }
 
 bool AutofillTable::GetCreditCards(

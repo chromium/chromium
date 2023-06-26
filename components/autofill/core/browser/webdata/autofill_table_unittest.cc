@@ -1119,6 +1119,7 @@ TEST_F(AutofillTableTest, CreditCard) {
   work_creditcard.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"04");
   work_creditcard.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2013");
   work_creditcard.SetNickname(u"Corporate card");
+  work_creditcard.set_cvc(u"123");
 
   Time pre_creation_time = AutofillClock::Now();
   EXPECT_TRUE(table_->AddCreditCard(work_creditcard));
@@ -1129,16 +1130,27 @@ TEST_F(AutofillTableTest, CreditCard) {
       table_->GetCreditCard(work_creditcard.guid());
   ASSERT_TRUE(db_creditcard);
   EXPECT_EQ(work_creditcard, *db_creditcard);
-  sql::Statement s_work(db_->GetSQLConnection()->GetUniqueStatement(
+  // Check GetCreditCard statement
+  sql::Statement s_credit_card_work(db_->GetSQLConnection()->GetUniqueStatement(
       "SELECT guid, name_on_card, expiration_month, expiration_year, "
       "card_number_encrypted, date_modified, nickname "
       "FROM credit_cards WHERE guid=?"));
-  s_work.BindString(0, work_creditcard.guid());
-  ASSERT_TRUE(s_work.is_valid());
-  ASSERT_TRUE(s_work.Step());
-  EXPECT_GE(s_work.ColumnInt64(5), pre_creation_time.ToTimeT());
-  EXPECT_LE(s_work.ColumnInt64(5), post_creation_time.ToTimeT());
-  EXPECT_FALSE(s_work.Step());
+  s_credit_card_work.BindString(0, work_creditcard.guid());
+  ASSERT_TRUE(s_credit_card_work.is_valid());
+  ASSERT_TRUE(s_credit_card_work.Step());
+  EXPECT_GE(s_credit_card_work.ColumnInt64(5), pre_creation_time.ToTimeT());
+  EXPECT_LE(s_credit_card_work.ColumnInt64(5), post_creation_time.ToTimeT());
+  EXPECT_FALSE(s_credit_card_work.Step());
+  // Check GetLocalStoredCvc statement
+  sql::Statement s_cvc_work(db_->GetSQLConnection()->GetUniqueStatement(
+      "SELECT value_encrypted,  last_updated_timestamp "
+      "FROM local_stored_cvc WHERE guid=?"));
+  s_cvc_work.BindString(0, work_creditcard.guid());
+  ASSERT_TRUE(s_cvc_work.is_valid());
+  ASSERT_TRUE(s_cvc_work.Step());
+  EXPECT_GE(s_cvc_work.ColumnInt64(1), pre_creation_time.ToTimeT());
+  EXPECT_LE(s_cvc_work.ColumnInt64(1), post_creation_time.ToTimeT());
+  EXPECT_FALSE(s_cvc_work.Step());
 
   // Add a 'Target' credit card.
   CreditCard target_creditcard;
@@ -1148,6 +1160,7 @@ TEST_F(AutofillTableTest, CreditCard) {
   target_creditcard.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"06");
   target_creditcard.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2012");
   target_creditcard.SetNickname(u"Grocery card");
+  target_creditcard.set_cvc(u"234");
 
   pre_creation_time = AutofillClock::Now();
   EXPECT_TRUE(table_->AddCreditCard(target_creditcard));
@@ -1155,21 +1168,34 @@ TEST_F(AutofillTableTest, CreditCard) {
   db_creditcard = table_->GetCreditCard(target_creditcard.guid());
   ASSERT_TRUE(db_creditcard);
   EXPECT_EQ(target_creditcard, *db_creditcard);
-  sql::Statement s_target(db_->GetSQLConnection()->GetUniqueStatement(
-      "SELECT guid, name_on_card, expiration_month, expiration_year, "
-      "card_number_encrypted, date_modified, nickname "
-      "FROM credit_cards WHERE guid=?"));
-  s_target.BindString(0, target_creditcard.guid());
-  ASSERT_TRUE(s_target.is_valid());
-  ASSERT_TRUE(s_target.Step());
-  EXPECT_GE(s_target.ColumnInt64(5), pre_creation_time.ToTimeT());
-  EXPECT_LE(s_target.ColumnInt64(5), post_creation_time.ToTimeT());
-  EXPECT_FALSE(s_target.Step());
+  // Check GetCreditCard statement.
+  sql::Statement s_credit_card_target(
+      db_->GetSQLConnection()->GetUniqueStatement(
+          "SELECT guid, name_on_card, expiration_month, expiration_year, "
+          "card_number_encrypted, date_modified, nickname "
+          "FROM credit_cards WHERE guid=?"));
+  s_credit_card_target.BindString(0, target_creditcard.guid());
+  ASSERT_TRUE(s_credit_card_target.is_valid());
+  ASSERT_TRUE(s_credit_card_target.Step());
+  EXPECT_GE(s_credit_card_target.ColumnInt64(5), pre_creation_time.ToTimeT());
+  EXPECT_LE(s_credit_card_target.ColumnInt64(5), post_creation_time.ToTimeT());
+  EXPECT_FALSE(s_credit_card_target.Step());
+  // Check GetLocalStoredCvc statement
+  sql::Statement s_cvc_target(db_->GetSQLConnection()->GetUniqueStatement(
+      "SELECT value_encrypted,  last_updated_timestamp "
+      "FROM local_stored_cvc WHERE guid=?"));
+  s_cvc_target.BindString(0, target_creditcard.guid());
+  ASSERT_TRUE(s_cvc_target.is_valid());
+  ASSERT_TRUE(s_cvc_target.Step());
+  EXPECT_GE(s_cvc_target.ColumnInt64(1), pre_creation_time.ToTimeT());
+  EXPECT_LE(s_cvc_target.ColumnInt64(1), post_creation_time.ToTimeT());
+  EXPECT_FALSE(s_cvc_target.Step());
 
   // Update the 'Target' credit card.
   target_creditcard.set_origin("Interactive Autofill dialog");
   target_creditcard.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Charles Grady");
   target_creditcard.SetNickname(u"Supermarket");
+  target_creditcard.set_cvc(u"234");
   Time pre_modification_time = AutofillClock::Now();
   EXPECT_TRUE(table_->UpdateCreditCard(target_creditcard));
   Time post_modification_time = AutofillClock::Now();
