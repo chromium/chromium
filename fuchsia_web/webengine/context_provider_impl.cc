@@ -12,7 +12,8 @@
 
 ContextProviderImpl::ContextProviderImpl(
     sys::OutgoingDirectory& outgoing_directory)
-    : web_instance_host_(outgoing_directory) {}
+    : web_instance_host_(outgoing_directory,
+                         /*is_web_instance_component_in_same_package=*/true) {}
 
 ContextProviderImpl::~ContextProviderImpl() = default;
 

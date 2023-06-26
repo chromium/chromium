@@ -472,11 +472,14 @@ fuchsia_component("web_instance_with_svc_directory_component") {
 }
 
 # Component definition for the legacy fuchsia.web.ContextProvider service.
-# TODO(crbug.com/1010222): Remove once all callers have migrated to launching
+# TODO(crbug.com/1443560): Remove once all callers have migrated to launching
 # instances directly as Components.
 fuchsia_component("context_provider_component") {
   manifest = "context_provider.cml"
   data_deps = [ ":web_engine_exe" ]
+
+  # Context Provider launches Web Instances from the same package.
+  deps = [ ":web_instance_with_svc_directory_component" ]
 }
 
 fuchsia_package("web_engine") {
@@ -484,7 +487,6 @@ fuchsia_package("web_engine") {
   deps = [
     ":context_provider_component",
     ":web_instance_component",
-    ":web_instance_with_svc_directory_component",
   ]
   excluded_files = _web_engine_excluded_files
   excluded_dirs = FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS

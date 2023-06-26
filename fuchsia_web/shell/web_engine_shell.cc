@@ -220,7 +220,8 @@ int main(int argc, char** argv) {
     // created web_instances.
     web_instance_host =
         std::make_unique<WebInstanceHostWithServicesFromThisComponent>(
-            *base::ComponentContextForProcess()->outgoing());
+            *base::ComponentContextForProcess()->outgoing(),
+            /*is_web_instance_component_in_same_package=*/false);
     if (enable_web_instance_tmp) {
       const zx_status_t status = fdio_open(
           "/tmp",
