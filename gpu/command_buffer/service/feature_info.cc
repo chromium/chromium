@@ -1249,8 +1249,8 @@ void FeatureInfo::InitializeFeatures() {
   }
 
 #if BUILDFLAG(IS_APPLE)
-  // Mac can create GLImages out of AR30 IOSurfaces only after 10.13 which is
-  // required for Chromium. iOS based devices seem to handle well also.
+  // Macs can create GLImages out of AR30 IOSurfaces. iOS based devices seem to
+  // handle well also.
   feature_flags_.chromium_image_ar30 = true;
 #elif !BUILDFLAG(IS_WIN)
   // TODO(mcasas): connect in Windows, https://crbug.com/803451

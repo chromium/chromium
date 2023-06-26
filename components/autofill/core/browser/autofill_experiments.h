@@ -51,7 +51,7 @@ bool IsInAutofillSuggestionsDisabledExperiment();
 
 // Returns true if the feature is explicitly enabled by the corresponding Finch
 // flag, or if launched in general for this platform, which is true for Windows,
-// Android, and Mac OS X >= 10.13.
+// Android, and macOS.
 bool IsCreditCardFidoAuthenticationEnabled();
 
 // Returns true if IBAN is enabled and at least one of the two conditions below

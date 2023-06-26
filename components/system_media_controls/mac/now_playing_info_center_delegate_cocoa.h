@@ -8,7 +8,6 @@
 #import <Cocoa/Cocoa.h>
 #import <MediaPlayer/MediaPlayer.h>
 
-API_AVAILABLE(macos(10.13.1))
 @interface NowPlayingInfoCenterDelegateCocoa : NSObject
 
 - (instancetype)init;

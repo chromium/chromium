@@ -248,18 +248,6 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         }
       }
 
-      if (base::mac::IsOS10_13()) {
-        // Use the announcement API to get around OS <= 10.13 VoiceOver bug
-        // where it stops announcing live regions after the first time focus
-        // leaves any content area.
-        // Unfortunately this produces an annoying boing sound with each live
-        // announcement, but the alternative is almost no live region support.
-        PostAnnouncementNotification(
-            base::SysUTF16ToNSString(wrapper->GetTextContentUTF16()),
-            [NSApp mainWindow], NSAccessibilityPriorityLow);
-        return;
-      }
-
       // Use native VoiceOver support for live regions.
       base::scoped_nsobject<BrowserAccessibilityCocoa> retained_node(
           [native_node retain]);

@@ -139,19 +139,9 @@ TEST(IcnsEncoderTest, RoundTrip) {
         SkColor expected_c = reference.getColor(x, y);
         uint8_t alpha = SkColorGetA(expected_c);
         expected_a.push_back(testing::Eq(alpha));
-        // Mac OS older than 10.14 slightly messes up pixel values of pixels
-        // that aren't fully opaque nor fully transparent. So in that case
-        // don't test for equality, but rather check if they are somewhere in
-        // the ballpark.
-        if (!base::mac::IsOS10_13() || alpha == 0xff || alpha == 0) {
-          expected_r.push_back(testing::Eq(SkColorGetR(expected_c)));
-          expected_g.push_back(testing::Eq(SkColorGetG(expected_c)));
-          expected_b.push_back(testing::Eq(SkColorGetB(expected_c)));
-        } else {
-          expected_r.push_back(ValueIsNear(SkColorGetR(expected_c)));
-          expected_g.push_back(ValueIsNear(SkColorGetG(expected_c)));
-          expected_b.push_back(ValueIsNear(SkColorGetB(expected_c)));
-        }
+        expected_r.push_back(testing::Eq(SkColorGetR(expected_c)));
+        expected_g.push_back(testing::Eq(SkColorGetG(expected_c)));
+        expected_b.push_back(testing::Eq(SkColorGetB(expected_c)));
 
         SkColor bitmap_c = bitmap.getColor(x, y);
         bitmap_a.push_back(SkColorGetA(bitmap_c));

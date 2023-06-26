@@ -21,7 +21,6 @@ namespace system_media_controls::internal {
 
 namespace {
 
-API_AVAILABLE(macos(10.13.1))
 MPNowPlayingPlaybackState PlaybackStatusToMPNowPlayingPlaybackState(
     SystemMediaControls::PlaybackStatus status) {
   switch (status) {
