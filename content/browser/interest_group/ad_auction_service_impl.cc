@@ -225,6 +225,11 @@ void AdAuctionServiceImpl::RunAdAuction(
     const blink::AuctionConfig& config,
     mojo::PendingReceiver<blink::mojom::AbortableAdAuction> abort_receiver,
     RunAdAuctionCallback callback) {
+  // Ensure the page is not in prerendering as code belows expect it, i.e.
+  // GetPageUkmSourceId() doesn't work with prerendering pages.
+  CHECK(!render_frame_host().IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kPrerendering));
+
   // If the run ad auction API is not allowed for this context by Permissions
   // Policy, do nothing
   if (!render_frame_host().IsFeatureEnabled(
@@ -426,6 +431,11 @@ AdAuctionServiceImpl::GetFrameURLLoaderFactory() {
 
 network::mojom::URLLoaderFactory*
 AdAuctionServiceImpl::GetTrustedURLLoaderFactory() {
+  // Ensure the page is not in prerendering as code belows expect it, i.e.
+  // GetPageUkmSourceId() doesn't work with prerendering pages.
+  CHECK(!render_frame_host().IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kPrerendering));
+
   if (!trusted_url_loader_factory_ ||
       !trusted_url_loader_factory_.is_connected()) {
     trusted_url_loader_factory_.reset();
