@@ -401,7 +401,6 @@ crbug.com/866850 [ Release Win ] virtual/gpu/fast/canvas/canvas-blend-image.html
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-color-over-image.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-color-over-pattern.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-image.html [ Slow ]
-crbug.com/866850 [ Debug Mac13 ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-image.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-image-over-image.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-image-over-pattern.html [ Slow ]
@@ -1446,6 +1445,14 @@ crbug.com/1271091 http/tests/security/frameNavigation/xss-ALLOWED-same-etld-plus
 
 crbug.com/1453341 fast/frames/frame-limit.html [ Slow ]
 
-crbug.com/626703 external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Slow ]
+crbug.com/626703 [ Debug ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Slow ]
+crbug.com/626703 [ Linux Release ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Slow ]
+crbug.com/626703 [ Mac10.15 Release ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Slow ]
+crbug.com/626703 [ Mac11 Release ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Slow ]
+crbug.com/626703 [ Mac11-arm64 Release ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Slow ]
+crbug.com/626703 [ Mac12 Release ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Slow ]
+crbug.com/626703 [ Mac13 Release ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Slow ]
+crbug.com/626703 [ Mac13-arm64 Release ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Slow ]
+crbug.com/626703 [ Release Win ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Slow ]
 
 crbug.com/1457660 external/wpt/editing/other/white-spaces-after-execCommand-forwarddelete.tentative.html [ Slow ]

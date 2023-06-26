@@ -214,7 +214,6 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 
 # Sheriff on 2020-09-03
 crbug.com/1124352 media/picture-in-picture/controls/picture-in-picture-button.html [ Crash Pass ]
-crbug.com/1124352 external/wpt/picture-in-picture/exit-picture-in-picture.html [ Crash Pass ]
 
 # These fail due to subtle anti-aliasing differences cause by the fact that
 # <canvas> renders via IOSurface and OffscreenCanvas does not.
@@ -3045,7 +3044,6 @@ crbug.com/626703 [ Linux ] external/wpt/webxr/ar-module/xrSession_interactionMod
 crbug.com/626703 [ Linux ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/hit-test/ar_hittest_source_cancel.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/hit-test/ar_hittest_subscription_inputSources.https.html [ Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/webxr/hit-test/ar_hittest_subscription_refSpaces.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/render_state_update.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
@@ -5078,9 +5076,7 @@ crbug.com/1249176 [ Mac11-arm64 ] paint/markers/document-markers-font-8px.html [
 crbug.com/1249176 [ Mac12-arm64 ] paint/markers/document-markers-font-8px.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] paint/markers/document-markers-zoom-2000.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] paint/markers/document-markers-zoom-2000.html [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
-crbug.com/1249176 [ Mac13-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/layout-fonts/lang-fallback.js [ Failure Pass ]
@@ -5290,7 +5286,6 @@ crbug.com/1256763 virtual/gpu-rasterization/images/color-profile-background-imag
 
 # Sheriff 2022-01-18
 crbug.com/1288264 [ Win ] http/tests/fetch/serviceworker-proxied/thorough/redirect-loop-base-https-other-https.html [ Pass Timeout ]
-crbug.com/1288264 [ Win ] http/tests/fetch/window/thorough/cors-preflight2-base-https-other-https.html [ Pass Timeout ]
 crbug.com/1288264 [ Win ] http/tests/fetch/serviceworker/thorough/nocors-base-https-other-https.html [ Pass Timeout ]
 crbug.com/1288264 [ Win ] http/tests/security/aboutBlank/xss-DENIED-navigate-opener-document-write.html [ Pass Timeout ]
 
