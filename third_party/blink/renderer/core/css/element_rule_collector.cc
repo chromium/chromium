@@ -472,7 +472,8 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       selector_statistics_collector.EndCollectionForCurrentRule();
       selector_statistics_collector.BeginCollectionForRule(&rule_data);
     }
-    if (!is_initial && rule_data.IsStartingStyle()) {
+    if ((!is_initial || mode_ != SelectorChecker::kResolvingStyle) &&
+        rule_data.IsStartingStyle()) {
       continue;
     }
     if (can_use_fast_reject_ &&

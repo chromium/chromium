@@ -3406,4 +3406,77 @@ TEST_F(StyleResolverTest, HasAutoAnchorPositioning) {
   EXPECT_TRUE(fallback4.HasAutoAnchorPositioningInYAxisFromTryBlock());
 }
 
+TEST_F(StyleResolverTest, CssRulesForElementExcludeStartingStyle) {
+  ScopedCSSStartingStyleForTest enabled(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @starting-style {
+        #target {
+          color: red;
+        }
+      }
+    </style>
+    <div id="wrapper" hidden>
+      <span id="target"></span>
+    </div>
+  )HTML");
+
+  Element* target = GetDocument().getElementById("target");
+  EXPECT_EQ(target->GetComputedStyle(), nullptr);
+  EXPECT_EQ(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
+            nullptr);
+
+  GetDocument().getElementById("wrapper")->removeAttribute("hidden");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_NE(target->GetComputedStyle(), nullptr);
+  EXPECT_EQ(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
+            nullptr);
+}
+
+TEST_F(StyleResolverTest, PseudoCSSRulesForElementExcludeStartingStyle) {
+  ScopedCSSStartingStyleForTest enabled(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @starting-style {
+        #target::before {
+          color: red;
+        }
+      }
+      #target::before {
+        content: "X";
+        color: green;
+      }
+    </style>
+    <div id="wrapper" hidden>
+      <span id="target"></span>
+    </div>
+  )HTML");
+
+  Element* target = GetDocument().getElementById("target");
+  EXPECT_EQ(target->GetComputedStyle(), nullptr);
+  EXPECT_EQ(target->GetPseudoElement(kPseudoIdBefore), nullptr);
+
+  RuleIndexList* pseudo_rules =
+      GetStyleEngine().GetStyleResolver().PseudoCSSRulesForElement(
+          target, kPseudoIdBefore, g_null_atom);
+  ASSERT_NE(pseudo_rules, nullptr);
+  EXPECT_EQ(pseudo_rules->size(), 1u);
+
+  GetDocument().getElementById("wrapper")->removeAttribute("hidden");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_NE(target->GetComputedStyle(), nullptr);
+  EXPECT_NE(target->GetPseudoElement(kPseudoIdBefore), nullptr);
+
+  pseudo_rules = GetStyleEngine().GetStyleResolver().PseudoCSSRulesForElement(
+      target, kPseudoIdBefore, g_null_atom);
+  ASSERT_NE(pseudo_rules, nullptr);
+  EXPECT_EQ(pseudo_rules->size(), 1u);
+  EXPECT_EQ(pseudo_rules->at(0).first->cssText(),
+            "#target::before { content: \"X\"; color: green; }");
+}
+
 }  // namespace blink
