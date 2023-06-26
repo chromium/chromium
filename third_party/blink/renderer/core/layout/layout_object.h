@@ -3820,10 +3820,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   ALWAYS_INLINE
   StyleDifference AdjustStyleDifference(StyleDifference) const;
 
-#if DCHECK_IS_ON()
-  void CheckBlockPositionedObjectsNeedLayout();
-#endif
-
   bool IsTextOrSVGChild() const {
     NOT_DESTROYED();
     return IsText() || IsSVGChild();
@@ -4505,10 +4501,6 @@ inline void LayoutObject::ClearNeedsLayoutWithoutPaintInvalidation() {
     DCHECK(context);
     context->NotifyChildLayoutWasBlocked();
   }
-
-#if DCHECK_IS_ON()
-  CheckBlockPositionedObjectsNeedLayout();
-#endif
 
   SetScrollAnchorDisablingStyleChanged(false);
 

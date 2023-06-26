@@ -1240,10 +1240,6 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
   LayoutBlock* block = DynamicTo<LayoutBlock>(box_.Get());
   bool needs_full_invalidation = false;
   if (LIKELY(block)) {
-#if DCHECK_IS_ON()
-    block->CheckPositionedObjectsNeedLayout();
-#endif
-
     if (UNLIKELY(flow_thread && Style().HasColumnRule())) {
       // Issue full invalidation, in case the number of column rules have
       // changed.
@@ -1854,14 +1850,6 @@ void NGBlockNode::UpdateShapeOutsideInfoIfNeeded(
                                                   : box_size.TransposedSize());
   shape_outside->SetPercentageResolutionInlineSize(
       percentage_resolution_inline_size);
-}
-
-void NGBlockNode::InsertIntoLegacyPositionedObjectsOf(
-    LayoutBlock* containing_block) const {
-  DCHECK(box_->IsOutOfFlowPositioned());
-  DCHECK(containing_block);
-  DCHECK_EQ(containing_block, box_->ContainingBlock());
-  containing_block->InsertPositionedObject(box_);
 }
 
 void NGBlockNode::StoreMargins(const NGConstraintSpace& constraint_space,

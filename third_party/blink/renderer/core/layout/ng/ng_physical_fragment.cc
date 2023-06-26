@@ -190,16 +190,6 @@ class FragmentTreeDumper {
   void AppendLegacySubtree(const LayoutObject& layout_object, unsigned indent) {
     for (const LayoutObject* descendant = &layout_object; descendant;) {
       if (!IsNGRootWithFragments(*descendant)) {
-        if (const auto* block = DynamicTo<LayoutBlock>(descendant)) {
-          if (const auto* positioned_descendants = block->PositionedObjects()) {
-            for (const auto& positioned_object : *positioned_descendants) {
-              if (IsNGRootWithFragments(*positioned_object))
-                AppendNGRootInLegacySubtree(*positioned_object, indent);
-              else
-                AppendLegacySubtree(*positioned_object, indent);
-            }
-          }
-        }
         if (descendant->IsOutOfFlowPositioned() && descendant != &layout_object)
           descendant = descendant->NextInPreOrderAfterChildren(&layout_object);
         else

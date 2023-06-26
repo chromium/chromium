@@ -124,34 +124,21 @@ TEST_F(LayoutBlockTest, ContainmentStyleChange) {
 
   Element* target_element = GetDocument().getElementById("target");
   auto* target = To<LayoutBlockFlow>(target_element->GetLayoutObject());
-  auto* contained = GetLayoutBoxByElementId("contained");
-  if (target->IsLayoutNGObject()) {
-    EXPECT_TRUE(target->GetSingleCachedLayoutResult()
-                    ->PhysicalFragment()
-                    .HasOutOfFlowFragmentChild());
-  } else {
-    EXPECT_TRUE(target->PositionedObjects()->Contains(contained));
-  }
+  EXPECT_TRUE(target->GetSingleCachedLayoutResult()
+                  ->PhysicalFragment()
+                  .HasOutOfFlowFragmentChild());
 
   // Remove layout containment. This should cause |contained| to now be
   // in the positioned objects set for the LayoutView, not |target|.
   target_element->setAttribute(html_names::kStyleAttr, "contain:style");
   UpdateAllLifecyclePhasesForTest();
-  if (target->IsLayoutNGObject()) {
-    EXPECT_FALSE(target->GetSingleCachedLayoutResult()
-                     ->PhysicalFragment()
-                     .HasOutOfFlowFragmentChild());
-  } else {
-    EXPECT_FALSE(target->PositionedObjects());
-  }
+  EXPECT_FALSE(target->GetSingleCachedLayoutResult()
+                   ->PhysicalFragment()
+                   .HasOutOfFlowFragmentChild());
   const LayoutView* view = GetDocument().GetLayoutView();
-  if (view->IsLayoutNGObject()) {
-    EXPECT_TRUE(view->GetSingleCachedLayoutResult()
-                    ->PhysicalFragment()
-                    .HasOutOfFlowFragmentChild());
-  } else {
-    EXPECT_TRUE(view->PositionedObjects()->Contains(contained));
-  }
+  EXPECT_TRUE(view->GetSingleCachedLayoutResult()
+                  ->PhysicalFragment()
+                  .HasOutOfFlowFragmentChild());
 }
 
 }  // namespace blink

@@ -522,9 +522,6 @@ void LayoutBox::WillBeDestroyed() {
   NOT_DESTROYED();
   ClearOverrideContainingBlockContentSize();
 
-  if (IsOutOfFlowPositioned())
-    LayoutBlock::RemovePositionedObject(this);
-
   ShapeOutsideInfo::RemoveInfo(*this);
 
   if (!DocumentBeingDestroyed()) {

@@ -96,10 +96,6 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
   DCHECK_EQ(this, owner->VirtualChildren());
 
   if (!owner->DocumentBeingDestroyed()) {
-    if (old_child->IsOutOfFlowPositioned()) {
-      LayoutBlock::RemovePositionedObject(To<LayoutBox>(old_child));
-    }
-
     // So that we'll get the appropriate dirty bit set (either that a normal
     // flow child got yanked or that a positioned child got yanked). We also
     // issue paint invalidations, so that the area exposed when the child

@@ -154,23 +154,8 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
 
-  void InsertPositionedObject(LayoutBox*);
-  static void RemovePositionedObject(LayoutBox*);
   void RemovePositionedObjects(LayoutObject*,
                                ContainingBlockState = kSameContainingBlock);
-
-  TrackedLayoutBoxLinkedHashSet* PositionedObjects() const {
-    NOT_DESTROYED();
-    return UNLIKELY(HasPositionedObjects()) ? PositionedObjectsInternal()
-                                            : nullptr;
-  }
-  bool HasPositionedObjects() const {
-    NOT_DESTROYED();
-    DCHECK(has_positioned_objects_ ? (PositionedObjectsInternal() &&
-                                      !PositionedObjectsInternal()->empty())
-                                   : !PositionedObjectsInternal());
-    return has_positioned_objects_;
-  }
 
   void AddSvgTextDescendant(LayoutBox& svg_text);
   void RemoveSvgTextDescendant(LayoutBox& svg_text);
@@ -189,10 +174,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject* parent) const override;
-
-#if DCHECK_IS_ON()
-  void CheckPositionedObjectsNeedLayout();
-#endif
 
   // This method returns the size that percentage logical heights should
   // resolve against *if* this LayoutBlock is the containing block for the
@@ -300,8 +281,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   virtual void RemoveLeftoverAnonymousBlock(LayoutBlock* child);
 
-  TrackedLayoutBoxLinkedHashSet* PositionedObjectsInternal() const;
-
  protected:
   void InvalidatePaint(const PaintInvalidatorContext&) const override;
 
@@ -323,7 +302,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   LayoutObjectChildList children_;
 
-  unsigned has_positioned_objects_ : 1;
   unsigned has_svg_text_descendants_ : 1;
 
   // FIXME: This is temporary as we move code that accesses block flow
