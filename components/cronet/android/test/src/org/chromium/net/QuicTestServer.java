@@ -5,11 +5,8 @@
 package org.chromium.net;
 
 import android.content.Context;
-import android.os.ConditionVariable;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.UrlUtils;
@@ -19,7 +16,6 @@ import org.chromium.base.test.util.UrlUtils;
  */
 @JNINamespace("cronet")
 public final class QuicTestServer {
-    private static final ConditionVariable sBlock = new ConditionVariable();
     private static final String TAG = QuicTestServer.class.getSimpleName();
 
     private static final String CERT_USED = "quic-chain.pem";
@@ -38,8 +34,6 @@ public final class QuicTestServer {
         TestFilesInstaller.installIfNeeded(context);
         QuicTestServerJni.get().startQuicTestServer(
                 TestFilesInstaller.getInstalledPath(context), UrlUtils.getIsolatedTestRoot());
-        sBlock.block();
-        sBlock.close();
         sServerRunning = true;
     }
 
@@ -79,15 +73,18 @@ public final class QuicTestServer {
         return MockCertVerifier.createMockCertVerifier(CERTS_USED, true);
     }
 
-    @CalledByNative
-    private static void onServerStarted() {
-        Log.i(TAG, "Quic server started.");
-        sBlock.open();
-    }
-
     @NativeMethods("cronet_tests")
     interface Natives {
+        /*
+         * Runs a quic test server synchronously.
+         */
         void startQuicTestServer(String filePath, String testDataDir);
+        /*
+         * Shutdowns the quic test-server synchronously.
+         *
+         * Calling this without calling startQuicTestServer first will lead to unexpected
+         * behavior if not compiled in debug mode.
+         */
         void shutdownQuicTestServer();
         int getServerPort();
     }

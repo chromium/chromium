@@ -50,16 +50,16 @@ public class CronetTestRule implements TestRule {
     }
 
     /**
-     * Starts the Cronet engine automatically for each test case, but doesn't allow any
-     * customizations to the builder.
+     * Requires the user to call {@code CronetTestFramework.startEngine()} but allows to customize
+     * the builder parameters.
      */
     public static CronetTestRule withManualEngineStartup() {
         return new CronetTestRule(EngineStartupMode.MANUAL);
     }
 
     /**
-     * Requires the user to call {@code CronetTestFramework.startEngine()} but allows to customize
-     * the builder parameters.
+     * Starts the Cronet engine automatically for each test case, but doesn't allow any
+     * customizations to the builder.
      */
     public static CronetTestRule withAutomaticEngineStartup() {
         return new CronetTestRule(EngineStartupMode.AUTOMATIC);

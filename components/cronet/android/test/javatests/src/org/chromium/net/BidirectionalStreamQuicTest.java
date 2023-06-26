@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 
 import java.nio.ByteBuffer;
@@ -25,6 +26,7 @@ import java.util.Date;
  * Tests functionality of BidirectionalStream's QUIC implementation.
  */
 @RunWith(AndroidJUnit4.class)
+@Batch(Batch.UNIT_TESTS)
 public class BidirectionalStreamQuicTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
