@@ -142,7 +142,11 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       if jvm_args:
         cmd += ['--jvm-args', '"%s"' % ' '.join(jvm_args)]
       AddPropertiesJar([cmd], temp_dir, self._test_instance.resource_apk)
-      lines = subprocess.check_output(cmd, encoding='utf8').splitlines()
+      try:
+        lines = subprocess.check_output(cmd, encoding='utf8').splitlines()
+      except subprocess.CalledProcessError:
+        # Will get an error later on from testrunner from having no tests.
+        return []
 
     PREFIX = '#TEST# '
     prefix_len = len(PREFIX)
@@ -151,17 +155,9 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
   # override
   def RunTests(self, results, raw_logs_fh=None):
-    # This avoids searching through the classparth jars for tests classes,
-    # which takes about 2-3 seconds.
-    if (self._test_instance.shards == 1
-        # TODO(crbug.com/1383650): remove this
-        or self._test_instance.has_literal_filters or
-        self._test_instance.suite in _EXCLUDED_SUITES):
-      test_classes = []
-      shards = 1
-    else:
-      test_classes = _GetTestClasses(self.GetTestsForListing())
-      shards = ChooseNumOfShards(test_classes, self._test_instance.shards)
+    # Takes .5-3 seconds to list tests, depending on the number of tests.
+    test_classes = _GetTestClasses(self.GetTestsForListing())
+    shards = ChooseNumOfShards(test_classes, self._test_instance.shards)
 
     grouped_tests = GroupTestsForShard(shards, test_classes)
     shard_list = list(range(shards))
