@@ -815,14 +815,6 @@
       'mac-release/sizes',
     ],
   },
-  'mac_10.13': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'os': 'Mac-10.13.6',
-      },
-    },
-  },
   'mac_10.14': {
     'swarming': {
       'dimensions': {

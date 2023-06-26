@@ -5823,38 +5823,6 @@
       'mac-updater-builder-rel': {
         'additional_compile_targets': ['chrome/updater:all'],
       },
-      'mac10.13-updater-tester-dbg': {
-        'mixins': [
-          'mac_10.13',
-        ],
-        'test_suites': {
-          'gtest_tests': 'updater_gtests_mac',
-        },
-      },
-      'mac10.13-updater-tester-rel': {
-        'mixins': [
-          'mac_10.13',
-        ],
-        'test_suites': {
-          'gtest_tests': 'updater_gtests_mac',
-        },
-      },
-      'mac10.14-updater-tester-dbg': {
-        'mixins': [
-          'mac_10.14',
-        ],
-        'test_suites': {
-          'gtest_tests': 'updater_gtests_mac',
-        },
-      },
-      'mac10.14-updater-tester-rel': {
-        'mixins': [
-          'mac_10.14',
-        ],
-        'test_suites': {
-          'gtest_tests': 'updater_gtests_mac',
-        },
-      },
       'mac10.15-updater-tester-dbg': {
         'mixins': [
           'mac_10.15',
