@@ -18,6 +18,7 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.profiles.ProfileKey;
@@ -66,17 +67,21 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
      * the system downloads path.
      * @param expectedContents Expected contents of the file, or null if the contents should not be
      * checked.
-     * @throws IOException if there is a problem accessing the file.
      */
-    public boolean hasDownloaded(String fileName, String expectedContents) throws IOException {
-        File downloadedFile = getDownloadedPath(fileName);
-        if (!downloadedFile.exists()) {
+    public boolean hasDownloaded(String fileName, String expectedContents) {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+            File downloadedFile = getDownloadedPath(fileName);
+            if (!downloadedFile.exists()) {
+                return false;
+            }
+            if (expectedContents != null) {
+                checkFileContents(downloadedFile.getAbsolutePath(), expectedContents);
+            }
+            return true;
+        } catch (IOException e) {
+            Assert.fail("IOException when opening file " + fileName);
             return false;
         }
-        if (expectedContents != null) {
-            checkFileContents(downloadedFile.getAbsolutePath(), expectedContents);
-        }
-        return true;
     }
 
     /**
