@@ -105,9 +105,11 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
           KioskAppLauncher::NetworkDelegate*)>;
 
   explicit KioskLaunchController(OobeUI* oobe_ui);
-  KioskLaunchController(LoginDisplayHost* host,
-                        AppLaunchSplashScreenView* splash_screen,
-                        KioskAppLauncherFactory app_launcher_factory);
+  KioskLaunchController(
+      LoginDisplayHost* host,
+      AppLaunchSplashScreenView* splash_screen,
+      KioskAppLauncherFactory app_launcher_factory,
+      std::unique_ptr<NetworkUiController::NetworkMonitor> network_monitor);
   KioskLaunchController(const KioskLaunchController&) = delete;
   KioskLaunchController& operator=(const KioskLaunchController&) = delete;
   ~KioskLaunchController() override;

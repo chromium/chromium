@@ -210,6 +210,50 @@ void DeleteSoon(std::unique_ptr<T> pointer) {
       FROM_HERE, std::move(pointer));
 }
 
+// Returns network name by service path.
+std::string ServicePathToNetworkName(const std::string& service_path) {
+  const ash::NetworkState* network =
+      ash::NetworkHandler::Get()->network_state_handler()->GetNetworkState(
+          service_path);
+  if (!network) {
+    return std::string();
+  }
+  return network->name();
+}
+
+class DefaultNetworkMonitor : public NetworkUiController::NetworkMonitor {
+ public:
+  using State = NetworkStateInformer::State;
+  using Observer = NetworkStateInformer::NetworkStateInformerObserver;
+
+  DefaultNetworkMonitor()
+      : network_state_informer_(base::MakeRefCounted<NetworkStateInformer>()) {
+    network_state_informer_->Init();
+  }
+
+  DefaultNetworkMonitor(const DefaultNetworkMonitor&) = delete;
+  DefaultNetworkMonitor& operator=(const DefaultNetworkMonitor&) = delete;
+  ~DefaultNetworkMonitor() override = default;
+
+  void AddObserver(Observer* observer) override {
+    network_state_informer_->AddObserver(observer);
+  }
+
+  void RemoveObserver(Observer* observer) override {
+    network_state_informer_->RemoveObserver(observer);
+  }
+
+  State GetState() const override { return network_state_informer_->state(); }
+
+  std::string GetNetworkName() const override {
+    return ::ash::ServicePathToNetworkName(
+        network_state_informer_->network_path());
+  }
+
+ private:
+  scoped_refptr<NetworkStateInformer> network_state_informer_;
+};
+
 }  // namespace
 
 using NetworkUIState = NetworkUiController::NetworkUIState;
@@ -241,15 +285,22 @@ void SetKioskLaunchStateCrashKey(KioskLaunchState state) {
 KioskLaunchController::KioskLaunchController(OobeUI* oobe_ui)
     : KioskLaunchController(LoginDisplayHost::default_host(),
                             oobe_ui->GetView<AppLaunchSplashScreenHandler>(),
-                            base::BindRepeating(&BuildKioskAppLauncher)) {}
+                            base::BindRepeating(&BuildKioskAppLauncher),
+                            std::make_unique<DefaultNetworkMonitor>()) {}
 
 KioskLaunchController::KioskLaunchController(
     LoginDisplayHost* host,
     AppLaunchSplashScreenView* splash_screen,
-    KioskAppLauncherFactory app_launcher_factory)
+    KioskAppLauncherFactory app_launcher_factory,
+    std::unique_ptr<NetworkUiController::NetworkMonitor> network_monitor)
     : host_(host),
       splash_screen_view_(splash_screen),
-      app_launcher_factory_(std::move(app_launcher_factory)) {}
+      app_launcher_factory_(std::move(app_launcher_factory)),
+      network_ui_controller_(
+          std::make_unique<NetworkUiController>(*this,
+                                                host_,
+                                                splash_screen_view_,
+                                                std::move(network_monitor))) {}
 
 KioskLaunchController::~KioskLaunchController() = default;
 
@@ -278,8 +329,7 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
     }
   }
 
-  network_ui_controller_ =
-      std::make_unique<NetworkUiController>(*this, host_, splash_screen_view_);
+  network_ui_controller_->Start();
 
   splash_screen_view_->Show(GetAppData());
 

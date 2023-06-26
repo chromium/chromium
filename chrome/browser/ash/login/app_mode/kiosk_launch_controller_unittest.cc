@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ash/crosapi/force_installed_tracker_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
+#include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -45,6 +47,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/sync_wifi/network_test_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
@@ -71,6 +75,7 @@ const char kInvalidExtensionId[] = "invalid-extension-id";
 const char kExtensionName[] = "extension_name";
 const char kTestDomain[] = "test.com";
 const char kDeviceId[] = "123";
+const char kDefaultNetwork[] = "default-network";
 
 // URL of Chrome Web Store.
 const char kWebStoreExtensionUpdateUrl[] =
@@ -84,6 +89,42 @@ auto BuildExtension(std::string extension_name, std::string extension_id) {
       .SetID(extension_id)
       .Build();
 }
+
+class FakeNetworkMonitor : public ash::NetworkUiController::NetworkMonitor {
+ public:
+  using Observer = ash::NetworkUiController::NetworkMonitor::Observer;
+  using State = ash::NetworkUiController::NetworkMonitor::State;
+
+  FakeNetworkMonitor() = default;
+  ~FakeNetworkMonitor() override = default;
+
+  void AddObserver(Observer* observer) override { observer_ = observer; }
+
+  void RemoveObserver(Observer* observer) override { observer_ = nullptr; }
+
+  State GetState() const override {
+    return online_ ? State::ONLINE : State::OFFLINE;
+  }
+
+  std::string GetNetworkName() const override { return kDefaultNetwork; }
+
+  void SetOnline(bool online) {
+    online_ = online;
+    if (observer_) {
+      observer_->UpdateState(
+          NetworkError::ErrorReason::ERROR_REASON_NETWORK_STATE_CHANGED);
+    }
+  }
+
+  base::WeakPtr<FakeNetworkMonitor> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  bool online_ = false;
+  ash::NetworkUiController::NetworkMonitor::Observer* observer_;
+  base::WeakPtrFactory<FakeNetworkMonitor> weak_ptr_factory_{this};
+};
 
 }  // namespace
 
@@ -130,11 +171,14 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
         KioskLaunchController::DisableLoginOperationsForTesting();
 
     view_ = std::make_unique<FakeAppLaunchSplashScreenHandler>();
+    auto network_monitor_unique = std::make_unique<FakeNetworkMonitor>();
+    network_monitor_ = network_monitor_unique->GetWeakPtr();
     controller_ = std::make_unique<KioskLaunchController>(
         /*host=*/nullptr, view_.get(),
         base::BindRepeating(
             &KioskLaunchControllerTest::BuildFakeKioskAppLauncher,
-            base::Unretained(this)));
+            base::Unretained(this)),
+        std::move(network_monitor_unique));
 
     // We can't call `crash_reporter::ResetCrashKeysForTesting()` to reset crash
     // keys since it destroys the storage for static crash keys. Instead we set
@@ -191,7 +235,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     task_environment()->FastForwardBy(kDefaultKioskSplashScreenMinTime);
   }
 
-  void SetOnline(bool online) { view_->SetNetworkReady(online); }
+  void SetOnline(bool online) { network_monitor_->SetOnline(online); }
 
   void OnNetworkConfigRequested() { controller().OnNetworkConfigRequested(); }
 
@@ -252,20 +296,12 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   std::unique_ptr<FakeAppLaunchSplashScreenHandler> view_;
   raw_ptr<FakeKioskAppLauncher, ExperimentalAsh> app_launcher_ =
       nullptr;  // owned by `controller_`.
+  base::WeakPtr<FakeNetworkMonitor>
+      network_monitor_;  // owned by `controller_`.
   int app_launchers_created_ = 0;
   std::unique_ptr<KioskLaunchController> controller_;
   KioskAppId kiosk_app_id_;
 };
-
-TEST_F(KioskLaunchControllerTest,
-       ReceivingCallbacksAfterCleanupShouldNotCrash) {
-  controller().Start(kiosk_app_id(), /*auto_launch=*/false);
-  CancelAppLaunch();
-  task_environment()->RunUntilIdle();
-
-  SetOnline(false);
-  // We should not crash
-}
 
 TEST_F(KioskLaunchControllerTest, StartShouldShowAppDataOnSplashScreen) {
   controller().Start(kiosk_app_id(), /*auto_launch=*/false);
@@ -804,7 +840,8 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
         /*host=*/nullptr, view_.get(),
         base::BindRepeating(
             &KioskLaunchControllerUsingLacrosTest::BuildFakeKioskAppLauncher,
-            base::Unretained(this)));
+            base::Unretained(this)),
+        std::make_unique<FakeNetworkMonitor>());
 
     SetUpKioskAppInAppManager();
   }

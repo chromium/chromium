@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 
+#include <memory>
+
 #include "base/functional/callback.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
@@ -11,6 +13,7 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/network_service_instance.h"
@@ -64,13 +67,21 @@ namespace ash {
 NetworkUiController::NetworkUiController(
     Observer& observer,
     LoginDisplayHost* host,
-    AppLaunchSplashScreenView* splash_screen)
-    : observer_(observer), host_(host), splash_screen_view_(splash_screen) {
+    AppLaunchSplashScreenView* splash_screen,
+    std::unique_ptr<NetworkMonitor> network_monitor)
+    : observer_(observer),
+      host_(host),
+      splash_screen_view_(splash_screen),
+      network_monitor_(std::move(network_monitor)) {
   splash_screen_view_->SetDelegate(this);
 }
 
 NetworkUiController::~NetworkUiController() {
   splash_screen_view_->SetDelegate(nullptr);
+}
+
+void NetworkUiController::Start() {
+  network_observation_.Observe(network_monitor_.get());
 }
 
 void NetworkUiController::SetProfile(Profile* profile) {
@@ -118,7 +129,7 @@ void NetworkUiController::InitializeNetwork() {
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kPreparingNetwork);
 
-  if (splash_screen_view_->IsNetworkReady()) {
+  if (IsNetworkReady()) {
     OnNetworkOnline();
   }
 }
@@ -144,11 +155,21 @@ void NetworkUiController::OnNetworkConfigFinished() {
   observer_->OnNetworkConfigureUiFinished();
 }
 
+void NetworkUiController::UpdateState(NetworkError::ErrorReason) {
+  OnNetworkStateChanged(IsNetworkReady());
+}
+
 void NetworkUiController::OnNetworkStateChanged(bool online) {
   if (online) {
     OnNetworkOnline();
   } else {
     OnNetworkOffline();
+  }
+
+  // If the network configure UI is currently showing, redraw it to reflect the
+  // changed network state.
+  if (network_ui_state_ == kShowing) {
+    ShowNetworkConfigureUI();
   }
 }
 
@@ -184,7 +205,7 @@ void NetworkUiController::CloseNetworkConfigureUI() {
 }
 
 bool NetworkUiController::IsNetworkReady() const {
-  return splash_screen_view_ && splash_screen_view_->IsNetworkReady();
+  return network_monitor_->GetState() == NetworkStateInformer::ONLINE;
 }
 
 void NetworkUiController::MaybeShowNetworkConfigureUI() {
@@ -211,7 +232,14 @@ void NetworkUiController::ShowNetworkConfigureUI() {
   // configure UI.
   network_wait_timer_.Stop();
   network_ui_state_ = NetworkUIState::kShowing;
-  splash_screen_view_->ShowNetworkConfigureUI();
+  NetworkStateInformer::State state = network_monitor_->GetState();
+  // We should not block users when the network was not required by the
+  // controller.
+  if (!network_required_) {
+    state = NetworkStateInformer::ONLINE;
+  }
+  splash_screen_view_->ShowNetworkConfigureUI(
+      state, network_monitor_->GetNetworkName());
 
   observer_->OnNetworkConfigureUiShowing();
 }

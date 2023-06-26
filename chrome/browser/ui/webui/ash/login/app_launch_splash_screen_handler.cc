@@ -14,11 +14,11 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,17 +28,6 @@
 namespace ash {
 
 namespace {
-
-// Returns network name by service path.
-std::string GetNetworkName(const std::string& service_path) {
-  const NetworkState* network =
-      NetworkHandler::Get()->network_state_handler()->GetNetworkState(
-          service_path);
-  if (!network) {
-    return std::string();
-  }
-  return network->name();
-}
 
 base::Value::Dict ConvertAppToDict(KioskAppManagerBase::App app) {
   base::Value::Dict out_info;
@@ -68,15 +57,9 @@ base::Value::Dict ConvertAppToDict(KioskAppManagerBase::App app) {
 AppLaunchSplashScreenHandler::AppLaunchSplashScreenHandler(
     const scoped_refptr<NetworkStateInformer>& network_state_informer,
     ErrorScreen* error_screen)
-    : BaseScreenHandler(kScreenId),
-      network_state_informer_(network_state_informer),
-      error_screen_(error_screen) {
-  network_state_informer_->AddObserver(this);
-}
+    : BaseScreenHandler(kScreenId), error_screen_(error_screen) {}
 
-AppLaunchSplashScreenHandler::~AppLaunchSplashScreenHandler() {
-  network_state_informer_->RemoveObserver(this);
-}
+AppLaunchSplashScreenHandler::~AppLaunchSplashScreenHandler() = default;
 
 void AppLaunchSplashScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -104,9 +87,6 @@ void AppLaunchSplashScreenHandler::Show(KioskAppManagerBase::App app_data) {
   if (toggle_network_config_on_show_.has_value()) {
     DoToggleNetworkConfig(toggle_network_config_on_show_.value());
     toggle_network_config_on_show_.reset();
-  }
-  if (network_config_shown_) {
-    ShowNetworkConfigureUI();
   }
 }
 
@@ -144,25 +124,14 @@ void AppLaunchSplashScreenHandler::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }
 
-void AppLaunchSplashScreenHandler::ShowNetworkConfigureUI() {
+void AppLaunchSplashScreenHandler::ShowNetworkConfigureUI(
+    NetworkStateInformer::State network_state,
+    const std::string& network_name) {
   network_config_shown_ = true;
-
-  NetworkStateInformer::State state = network_state_informer_->state();
-
-  // We should not block users when the network was not required by the
-  // controller.
-  if (!is_network_required_) {
-    state = NetworkStateInformer::ONLINE;
-  }
-
-  const std::string network_path = network_state_informer_->network_path();
-  const std::string network_name = GetNetworkName(network_path);
-
   error_screen_->SetUIState(NetworkError::UI_STATE_KIOSK_MODE);
   error_screen_->AllowGuestSignin(false);
   error_screen_->AllowOfflineLogin(false);
-
-  switch (state) {
+  switch (network_state) {
     case NetworkStateInformer::CAPTIVE_PORTAL: {
       error_screen_->SetErrorState(NetworkError::ERROR_STATE_PORTAL,
                                    network_name);
@@ -202,25 +171,6 @@ void AppLaunchSplashScreenHandler::ShowErrorMessage(
     KioskAppLaunchError::Error error) {
   LoginScreen::Get()->ShowKioskAppError(
       KioskAppLaunchError::GetErrorMessage(error));
-}
-
-bool AppLaunchSplashScreenHandler::IsNetworkReady() {
-  return network_state_informer_->state() == NetworkStateInformer::ONLINE;
-}
-
-void AppLaunchSplashScreenHandler::UpdateState(
-    NetworkError::ErrorReason reason) {
-  if (!delegate_) {
-    return;
-  }
-  bool new_online_state =
-      network_state_informer_->state() == NetworkStateInformer::ONLINE;
-  delegate_->OnNetworkStateChanged(new_online_state);
-
-  // Redraw network configure UI when the network state changes.
-  if (network_config_shown_) {
-    ShowNetworkConfigureUI();
-  }
 }
 
 void AppLaunchSplashScreenHandler::SetLaunchText(const std::string& text) {
