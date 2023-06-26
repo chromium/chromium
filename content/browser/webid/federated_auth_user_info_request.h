@@ -70,6 +70,8 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
   void MaybeReturnAccounts(
       const IdpNetworkRequestManager::AccountList& accounts);
 
+  bool IsReturningAccount(const IdentityRequestAccount& account);
+
   void Complete(
       blink::mojom::RequestUserInfoStatus status,
       absl::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info,

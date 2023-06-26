@@ -461,4 +461,24 @@ TEST_F(FederatedAuthUserInfoRequestTest,
   }
 }
 
+// Tests that returning accounts are returned first in the user info response.
+TEST_F(FederatedAuthUserInfoRequestTest, ReturningAccountsFirst) {
+  const char kAccount1Id[] = "account1";
+  const char kAccount2Id[] = "account2";
+  const char kAccount3Id[] = "account3";
+  const char kAccount4Id[] = "account4";
+
+  Config config = kValidConfig;
+  config.accounts = {{kAccount1Id, /*login_state=*/LoginState::kSignUp,
+                      /*was_granted_sharing_permission=*/false},
+                     {kAccount2Id, /*login_state=*/LoginState::kSignIn,
+                      /*was_granted_sharing_permission=*/true},
+                     {kAccount3Id, /*login_state=*/LoginState::kSignUp,
+                      /*was_granted_sharing_permission=*/false},
+                     {kAccount4Id, /*login_state=*/LoginState::kSignIn,
+                      /*was_granted_sharing_permission=*/true}};
+  RunUserInfoTest(config, RequestUserInfoStatus::kSuccess,
+                  {kAccount2Id, kAccount4Id, kAccount1Id, kAccount3Id});
+}
+
 }  // namespace content
