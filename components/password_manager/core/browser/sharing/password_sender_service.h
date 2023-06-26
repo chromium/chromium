@@ -11,7 +11,7 @@ namespace password_manager {
 
 // Struct representing information about the recipient of a password.
 struct PasswordRecipient {
-  // The `user_id` of the receiver.
+  // Recipient's user identifier (obfuscated Gaia ID).
   std::string user_id;
 
   // TODO(crbug.com/1456309): Add a field for the public key of the receiver
