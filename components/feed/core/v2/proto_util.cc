@@ -139,7 +139,8 @@ feedwire::Request CreateFeedQueryRequest(
         Capability::OPEN_IN_INCOGNITO, Capability::DISMISS_COMMAND,
         Capability::INFINITE_FEED, Capability::PREFETCH_METADATA,
         Capability::REQUEST_SCHEDULE, Capability::UI_THEME_V2,
-        Capability::UNDO_FOR_DISMISS_COMMAND}) {
+        Capability::UNDO_FOR_DISMISS_COMMAND,
+        Capability::SYNC_STRING_REMOVAL}) {
     feed_request.add_client_capability(capability);
   }
 

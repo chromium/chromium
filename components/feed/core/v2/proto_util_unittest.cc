@@ -91,7 +91,8 @@ TEST(ProtoUtilTest, DefaultCapabilities) {
            feedwire::Capability::UNDO_FOR_DISMISS_COMMAND,
            feedwire::Capability::PREFETCH_METADATA, feedwire::Capability::SHARE,
            feedwire::Capability::CONTENT_LIFETIME,
-           feedwire::Capability::INFO_CARD_ACKNOWLEDGEMENT_TRACKING}));
+           feedwire::Capability::INFO_CARD_ACKNOWLEDGEMENT_TRACKING,
+           feedwire::Capability::SYNC_STRING_REMOVAL}));
 }
 
 TEST(ProtoUtilTest, HeartsEnabled) {
