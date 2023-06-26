@@ -20,7 +20,7 @@ found in the LICENSE file.
         style="@style/AlertDialogContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/autofill_payments_authenticator_selection_dialog_header"/>
+        android:text="@string/autofill_card_unmask_authentication_selection_dialog_issuer_confirmation_text"/>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/authenticator_options_view"
         style="@style/AlertDialogContent"
