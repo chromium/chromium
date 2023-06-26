@@ -170,10 +170,26 @@ LacrosAvailability GetLacrosAvailability(const user_manager::User* user,
   }
 }
 
+// Returns true if `kDisallowLacros` is set by command line.
+bool IsLacrosDisallowedByCommand() {
+  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  return cmdline->HasSwitch(ash::switches::kDisallowLacros);
+}
+
 // Returns whether or not lacros is allowed for the Primary user,
 // with given LacrosAvailability policy.
 bool IsLacrosAllowedInternal(const User* user,
                              LacrosAvailability lacros_availability) {
+  if (IsLacrosDisallowedByCommand()) {
+    // This happens when Ash is restarted in multi-user session, meaning there
+    // are more than two users logged in to the device. This will not cause an
+    // accidental removal of Lacros data because for the primary user, the fact
+    // that the device is in multi-user session means that Lacros was not
+    // enabled beforehand. And for secondary users, data removal does not happen
+    // even if Lacros is disabled.
+    return false;
+  }
+
   if (!user) {
     // User is not available. Practically, this is accidentally happening
     // if related function is called before session, or in testing.

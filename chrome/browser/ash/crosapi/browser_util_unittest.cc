@@ -219,6 +219,18 @@ TEST_F(BrowserUtilTest, LacrosEnabledByFlag) {
   }
 }
 
+TEST_F(BrowserUtilTest, LacrosDisallowedByCommandLineFlag) {
+  AddRegularUser("user@test.com");
+
+  EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
+
+  base::test::ScopedCommandLine cmd_line;
+  cmd_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kDisallowLacros);
+
+  EXPECT_FALSE(browser_util::IsLacrosAllowedToBeEnabled());
+}
+
 TEST_F(BrowserUtilTest, LacrosDisabledWithoutMigration) {
   // This sets `g_browser_process->local_state()` which activates the check
   // `IsProfileMigrationCompletedForUser()` inside `IsLacrosEnabled()`.

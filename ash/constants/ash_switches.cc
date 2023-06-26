@@ -740,6 +740,10 @@ const char kLoginProfile[] = "login-profile";
 // Specifies the user which is already logged in.
 const char kLoginUser[] = "login-user";
 
+// This flag is set if lacros is not allowed. Specifically this flag is set if
+// there are more than two signed in users i.e. inside multi-user session.
+const char kDisallowLacros[] = "disallow-lacros";
+
 // Specifies the user that the browser data migration should happen for.
 const char kBrowserDataMigrationForUser[] = "browser-data-migration-for-user";
 
