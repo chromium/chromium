@@ -111,8 +111,8 @@ public class TabGridThumbnailView extends ImageView {
         a.recycle();
 
         setRoundedCorners(radiusTopStart, radiusTopEnd, radiusBottomStart, radiusBottomEnd);
-        setBackground(mBackgroundDrawable);
         mInitialized = true;
+        updateImage();
     }
 
     @Override
@@ -293,8 +293,9 @@ public class TabGridThumbnailView extends ImageView {
 
     private void resizeIconDrawable() {
         if (mIconDrawable != null) {
-            final int width = getWidth();
-            final int height = getHeight();
+            // Called in onMeasure() so getWidth() and getHeight() may not be ready yet.
+            final int width = getMeasuredWidth();
+            final int height = getMeasuredHeight();
 
             // Vector graphic is square so width or height doesn't matter.
             final int vectorEdgeLength = mIconDrawable.getIntrinsicWidth();
