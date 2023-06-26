@@ -360,8 +360,12 @@ export const MainPageMixin = dedupingMixin(
                 // focus the nested subpage's entry point.
                 return;
 
+              // Happens when the user navigates to a subpage via the search box
+              // on the root page, and then clicks the back button.
               case RouteState.ROOT:
-                this.enterMainPage_(oldRoute);
+                this.enterMainPage_(oldRoute).then(() => {
+                  this.activateInitialPage();
+                });
                 return;
 
               // This is a supported case but there are currently no known

@@ -149,7 +149,7 @@ suite('<main-page-container> Route Navigation', () => {
   });
 
   suite('From Page', () => {
-    setup(async () => {
+    setup(() => {
       // Simulate current route is A11y page
       Router.getInstance().navigateTo(routes.OS_ACCESSIBILITY);
     });
@@ -175,6 +175,22 @@ suite('<main-page-container> Route Navigation', () => {
 
     test('to Root should activate Network page', async () => {
       // Simulate navigating from A11y page to root
+      await runAndWaitForContainerShown(() => {
+        Router.getInstance().navigateTo(routes.BASIC);
+      });
+
+      assertOnlyVisiblePage(Section.kNetwork);
+    });
+  });
+
+  suite('From Subpage', () => {
+    setup(() => {
+      // Simulate current route is A11y page
+      Router.getInstance().navigateTo(routes.ABOUT_DETAILED_BUILD_INFO);
+    });
+
+    test('to Root should activate Network page', async () => {
+      // Simulate navigating from A11y page to Bluetooth page
       await runAndWaitForContainerShown(() => {
         Router.getInstance().navigateTo(routes.BASIC);
       });
