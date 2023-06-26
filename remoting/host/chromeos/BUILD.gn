@@ -78,6 +78,7 @@ source_set("remoting_service") {
     "remote_support_host_ash.h",
     "remoting_service.cc",
     "remoting_service.h",
+    "session_id.h",
   ]
 
   public_deps = [

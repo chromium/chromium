@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "remoting/host/chromeos/session_id.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_ash.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -38,12 +39,16 @@ class RemoteSupportHostAsh {
   // Returns a structure which includes the host version and supported features.
   static mojom::SupportHostDetailsPtr GetHostDetails();
 
-  // Allows the caller to start a new remote support session.  |callback| is
+  // Allows the caller to start a new remote support session. `callback` is
   // called with the result.
   void StartSession(
       mojom::SupportSessionParamsPtr params,
       const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
       StartSessionCallback callback);
+
+  // Allows the caller to resume the given remote support session.
+  // `callback` is called with the result.
+  void ReconnectToSession(SessionId session_id, StartSessionCallback callback);
 
  private:
   void OnSessionDisconnected();
