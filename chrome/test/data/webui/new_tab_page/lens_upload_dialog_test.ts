@@ -165,6 +165,23 @@ suite('LensUploadDialogTest', () => {
         document.hasFocus = nativeHasFocus;
       });
 
+  test('focusout that occurs during drag does not close dialog', async () => {
+    // Arrange.
+    const focusEvent = new FocusEvent('focusout', {relatedTarget: null});
+    const dragEvent = new DragEvent('dragenter');
+    // Act.
+    uploadDialog.$.dragDropArea.dispatchEvent(dragEvent);
+    uploadDialog.$.dialog.dispatchEvent(focusEvent);
+
+    // Assert.
+    assertFalse(uploadDialog.$.dialog.hidden);
+    assertEquals(
+        0,
+        metrics.count(
+            'NewTabPage.Lens.UploadDialog.DialogAction',
+            LensUploadDialogAction.DIALOG_CLOSED));
+  });
+
   test('clicking esc key closes the dialog', async () => {
     // Act.
     document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
