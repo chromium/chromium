@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
-#include "third_party/blink/renderer/modules/payments/html_iframe_element_payments.h"
 #include "third_party/blink/renderer/modules/payments/payment_address.h"
 #include "third_party/blink/renderer/modules/payments/payment_method_change_event.h"
 #include "third_party/blink/renderer/modules/payments/payment_request_update_event.h"
