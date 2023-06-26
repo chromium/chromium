@@ -507,8 +507,6 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
                                                       bool force_pop_up) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const bool was_suppressed = suppressed_;
-
   // When holding space in-progress downloads notification suppression is
   // enabled, eligible download notifications should be suppressed. Note that
   // download notifications associated with an incognito profile are only
@@ -523,8 +521,6 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
   }
 
   if (suppressed_) {
-    if (!was_suppressed)
-      RecordDownloadNotificationSuppressed();
     CloseNotification();
     return;
   }

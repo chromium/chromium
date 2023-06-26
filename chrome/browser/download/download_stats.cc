@@ -101,12 +101,6 @@ void RecordDownloadPromptStatus(DownloadPromptStatus status) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
-void RecordDownloadNotificationSuppressed() {
-  base::UmaHistogramBoolean("Download.Notification.Suppressed", true);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 DownloadShelfContextMenuAction DownloadCommandToShelfAction(
     DownloadCommands::Command download_command,
     bool clicked) {
