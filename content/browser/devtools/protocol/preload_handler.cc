@@ -9,6 +9,8 @@
 
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/preloading_config.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -449,19 +451,28 @@ void PreloadHandler::SendInitialPreloadEnabledState() {
   PrefetchService* prefetch_service = PrefetchService::GetFromFrameTreeNodeId(
       web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId());
 
-  if (prefetch_service && prefetch_service->GetPrefetchServiceDelegate()) {
-    // TODO(https://crbug.com/1384419): Add more grainularity to
-    // PreloadingEligibility to distinguish PreloadHoldback and
-    // DisabledByPreference for PreloadingEligibility::kPreloadingDisabled.
-    // Use more general method to check status of Preloading instead of
-    // relying on PrefetchService.
-    frontend_->PreloadEnabledStateUpdated(
-        !prefetch_service->GetPrefetchServiceDelegate()
-             ->IsPreloadingPrefEnabled(),
-        prefetch_service->GetPrefetchServiceDelegate()->IsDataSaverEnabled(),
-        prefetch_service->GetPrefetchServiceDelegate()
-            ->IsBatterySaverEnabled());
+  if (!prefetch_service || !prefetch_service->GetPrefetchServiceDelegate()) {
+    return;
   }
+
+  auto* delegate = prefetch_service->GetPrefetchServiceDelegate();
+  auto& config = PreloadingConfig::GetInstance();
+
+  // TODO(https://crbug.com/1384419): Add more grainularity to
+  // PreloadingEligibility to distinguish PreloadHoldback and
+  // DisabledByPreference for PreloadingEligibility::kPreloadingDisabled.
+  // Use more general method to check status of Preloading instead of
+  // relying on PrefetchService.
+  frontend_->PreloadEnabledStateUpdated(
+      !delegate->IsPreloadingPrefEnabled(), delegate->IsDataSaverEnabled(),
+      delegate->IsBatterySaverEnabled(),
+      // Keep them in alphabetical order.
+      config.ShouldHoldback(
+          PreloadingType::kPrefetch,
+          content::content_preloading_predictor::kSpeculationRules),
+      config.ShouldHoldback(
+          PreloadingType::kPrerender,
+          content::content_preloading_predictor::kSpeculationRules));
 }
 
 }  // namespace content::protocol

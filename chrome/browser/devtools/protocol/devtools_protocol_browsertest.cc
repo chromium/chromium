@@ -42,6 +42,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -223,9 +224,24 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(nullptr, DevToolsWindow::FindDevToolsWindow(agent_host_.get()));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CheckReportedPreloadingState) {
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       PreloadEnabledStateUpdatedDefault) {
   Attach();
-  SendCommandSync("Runtime.enable");
+
+  SendCommandAsync("Preload.enable");
+  const base::Value::Dict result =
+      WaitForNotification("Preload.preloadEnabledStateUpdated", true);
+
+  EXPECT_THAT(result.FindBool("disabledByPreference"), false);
+  EXPECT_THAT(result.FindBool("disabledByHoldbackPrefetchSpeculationRules"),
+              false);
+  EXPECT_THAT(result.FindBool("disabledByHoldbackPrerenderSpeculationRules"),
+              false);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       PreloadEnabledStateUpdatedDisabledByPreference) {
+  Attach();
 
   prefetch::SetPreloadPagesState(browser()->profile()->GetPrefs(),
                                  prefetch::PreloadPagesState::kNoPreloading);
@@ -235,6 +251,47 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CheckReportedPreloadingState) {
       WaitForNotification("Preload.preloadEnabledStateUpdated", true);
 
   EXPECT_THAT(result.FindBool("disabledByPreference"), true);
+}
+
+class DevToolsProtocolTest_PreloadEnabledStateUpdatedDisabledByHoldback
+    : public DevToolsProtocolTest {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPreloadingConfig, {{"preloading_config", R"(
+      [{
+        "preloading_type": "Prefetch",
+        "preloading_predictor": "SpeculationRules",
+        "sampling_likelihood": 0.0,
+        "holdback": true
+      }, {
+        "preloading_type": "Prerender",
+        "preloading_predictor": "SpeculationRules",
+        "sampling_likelihood": 0.0,
+        "holdback": true
+      }]
+    )"}});
+
+    DevToolsProtocolTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsProtocolTest_PreloadEnabledStateUpdatedDisabledByHoldback,
+    PreloadEnabledStateUpdatedDisabledByHoldback) {
+  Attach();
+
+  SendCommandAsync("Preload.enable");
+  const base::Value::Dict result =
+      WaitForNotification("Preload.preloadEnabledStateUpdated", true);
+
+  EXPECT_THAT(result.FindBool("disabledByHoldbackPrefetchSpeculationRules"),
+              true);
+  EXPECT_THAT(result.FindBool("disabledByHoldbackPrerenderSpeculationRules"),
+              true);
 }
 
 IN_PROC_BROWSER_TEST_F(
