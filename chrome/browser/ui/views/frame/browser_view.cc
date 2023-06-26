@@ -2236,6 +2236,10 @@ bool BrowserView::AppUsesBorderlessMode() const {
          browser()->app_controller()->AppUsesBorderlessMode();
 }
 
+bool BrowserView::AreDraggableRegionsEnabled() const {
+  return IsWindowControlsOverlayEnabled() || IsBorderlessModeEnabled();
+}
+
 void BrowserView::UpdateSidePanelHorizontalAlignment() {
   const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
       prefs::kSidePanelHorizontalAlignment);
@@ -3750,9 +3754,7 @@ bool BrowserView::ShouldDescendIntoChildForEventHandling(
   // Window for PWAs with window-controls-overlay display override should claim
   // mouse events that fall within the draggable region.
   web_app::AppBrowserController* controller = browser()->app_controller();
-  bool is_wco_or_borderless_mode =
-      IsWindowControlsOverlayEnabled() || IsBorderlessModeEnabled();
-  if (is_wco_or_borderless_mode && controller &&
+  if (AreDraggableRegionsEnabled() && controller &&
       controller->draggable_region().has_value()) {
     // Draggable regions are defined relative to the web contents.
     gfx::Point point_in_contents_web_view_coords(location);

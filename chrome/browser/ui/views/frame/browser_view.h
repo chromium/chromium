@@ -393,6 +393,9 @@ class BrowserView : public BrowserWindow,
   // Returns true when an app's effective display mode is borderless.
   bool AppUsesBorderlessMode() const;
 
+  // Returns whether any of the features enabling draggable regions is enabled.
+  bool AreDraggableRegionsEnabled() const;
+
   // Returns true when the window controls overlay should be displayed instead
   // of a full titlebar. This is only supported for desktop web apps.
   bool IsWindowControlsOverlayEnabled() const;
