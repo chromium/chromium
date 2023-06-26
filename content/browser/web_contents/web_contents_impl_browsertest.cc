@@ -3660,7 +3660,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC) {
 
   // Delete an iframe when the page is active(not frozen), which should succeed.
   rfh_b->GetMojomFrameInRenderer()->Delete(
-      mojom::FrameDeleteIntention::kNotMainFrame);
+      mojom::FrameDeleteIntention::kNotMainFrame, mojo::NullRemote());
   delete_rfh_b.WaitUntilDeleted();
   EXPECT_TRUE(delete_rfh_b.deleted());
   EXPECT_FALSE(delete_rfh_c.deleted());
@@ -3671,7 +3671,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC) {
 
   // Try to delete an iframe, and succeeds because the message is unfreezable.
   rfh_c->GetMojomFrameInRenderer()->Delete(
-      mojom::FrameDeleteIntention::kNotMainFrame);
+      mojom::FrameDeleteIntention::kNotMainFrame, mojo::NullRemote());
   delete_rfh_c.WaitUntilDeleted();
   EXPECT_TRUE(delete_rfh_c.deleted());
 }
