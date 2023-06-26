@@ -184,11 +184,6 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
                  blink::features::kStorageAccessAPIImplicitGrantLimit.name,
                  "0",
              },
-             {
-                 blink::features::
-                     kStorageAccessAPIRefreshGrantsOnUserInteraction.name,
-                 "false",
-             },
          }},
     });
     if (is_storage_partitioned_) {
