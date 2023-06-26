@@ -124,6 +124,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 @end
 
 @implementation ContentSuggestionsViewController {
+  // Width Anchor of the Return To Recent Tab tile.
+  NSLayoutConstraint* _returnToRecentTabWidthAnchor;
   UIScrollView* _magicStackScrollView;
   UIStackView* _magicStack;
   BOOL _shouldShowMagicStack;
@@ -184,17 +186,10 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   ]];
 
   if (self.returnToRecentTabTile) {
-    UIView* parentView = self.returnToRecentTabTile;
     [self addUIElement:self.returnToRecentTabTile
         withCustomBottomSpacing:content_suggestions::
                                     kReturnToRecentTabSectionBottomMargin];
-    CGFloat cardWidth = content_suggestions::SearchFieldWidth(
-        self.view.bounds.size.width, self.traitCollection);
-    [NSLayoutConstraint activateConstraints:@[
-      [parentView.widthAnchor constraintEqualToConstant:cardWidth],
-      [parentView.heightAnchor
-          constraintEqualToConstant:ReturnToRecentTabHeight()]
-    ]];
+    [self layoutReturnToRecentTabTile];
   }
   if ([self.mostVisitedViews count] > 0) {
     [self createAndInsertMostVisitedModule];
@@ -273,20 +268,13 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   // If the Content Suggestions is already shown, add the Return to Recent Tab
   // tile to the StackView, otherwise, add to the verticalStackView.
   if (self.isViewLoaded) {
-    UIView* parentView = self.returnToRecentTabTile;
     [self.verticalStackView insertArrangedSubview:self.returnToRecentTabTile
                                           atIndex:0];
     [self.verticalStackView
         setCustomSpacing:content_suggestions::
                              kReturnToRecentTabSectionBottomMargin
                afterView:self.returnToRecentTabTile];
-    CGFloat cardWidth = content_suggestions::SearchFieldWidth(
-        self.view.bounds.size.width, self.traitCollection);
-    [NSLayoutConstraint activateConstraints:@[
-      [parentView.widthAnchor constraintEqualToConstant:cardWidth],
-      [parentView.heightAnchor
-          constraintEqualToConstant:ReturnToRecentTabHeight()]
-    ]];
+    [self layoutReturnToRecentTabTile];
     [self.audience returnToRecentTabWasAdded];
   }
   // Trigger a relayout so that the Return To Recent Tab view will be counted in
@@ -715,9 +703,18 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   [super traitCollectionDidChange:previousTraitCollection];
   if (content_suggestions::ShouldShowWiderMagicStackLayer(self.traitCollection,
                                                           self.view.window)) {
+    if (_returnToRecentTabWidthAnchor) {
+      // Match Module width when Magic Stack is enabled.
+      _returnToRecentTabWidthAnchor.constant = kMagicStackWideWidth;
+    }
     _magicStackScrollView.clipsToBounds = YES;
     _magicStackScrollViewWidthAnchor.constant = kMagicStackWideWidth;
   } else {
+    if (_returnToRecentTabWidthAnchor) {
+      _returnToRecentTabWidthAnchor.constant =
+          content_suggestions::SearchFieldWidth(self.view.bounds.size.width,
+                                                self.traitCollection);
+    }
     _magicStackScrollView.clipsToBounds = NO;
     _magicStackScrollViewWidthAnchor.constant = [MagicStackModuleContainer
         moduleWidthForHorizontalTraitCollection:self.traitCollection];
@@ -772,6 +769,24 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   if (spacing > 0) {
     [self.verticalStackView setCustomSpacing:spacing afterView:view];
   }
+}
+
+- (void)layoutReturnToRecentTabTile {
+  CGFloat cardWidth = content_suggestions::SearchFieldWidth(
+      self.view.bounds.size.width, self.traitCollection);
+  if (IsMagicStackEnabled() &&
+      content_suggestions::ShouldShowWiderMagicStackLayer(self.traitCollection,
+                                                          self.view.window)) {
+    // Match Module width when Magic Stack is enabled.
+    cardWidth = kMagicStackWideWidth;
+  }
+  _returnToRecentTabWidthAnchor =
+      [_returnToRecentTabTile.widthAnchor constraintEqualToConstant:cardWidth];
+  [NSLayoutConstraint activateConstraints:@[
+    _returnToRecentTabWidthAnchor,
+    [_returnToRecentTabTile.heightAnchor
+        constraintEqualToConstant:ReturnToRecentTabHeight()]
+  ]];
 }
 
 - (void)createAndInsertMostVisitedModule {
