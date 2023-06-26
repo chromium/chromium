@@ -48,6 +48,8 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/containers/adapters.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
@@ -1358,8 +1360,15 @@ PaintLayer* PaintLayer::HitTestLayer(
 
   if (UNLIKELY(layout_object.NeedsLayout() &&
                !layout_object.ChildLayoutBlockedByDisplayLock())) {
-    // Skip if we need layout. This should never happen. See crbug.com/1244130
-    NOTREACHED();
+    // Skip if we need layout. This should never happen. See crbug.com/1423308.
+
+    // Record whether the LayoutView exists and if it needs layout.
+    LayoutView* view = layout_object.GetFrameView()->GetLayoutView();
+    SCOPED_CRASH_KEY_BOOL("Crbug1423308", "ViewExists", !!view);
+    SCOPED_CRASH_KEY_BOOL("Crbug1423308", "ViewNeedsLayout",
+                          view && view->NeedsLayout());
+    base::debug::DumpWithoutCrashing();
+
     return nullptr;
   }
 
