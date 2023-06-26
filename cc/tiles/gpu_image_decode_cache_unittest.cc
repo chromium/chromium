@@ -4637,6 +4637,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 class GpuImageDecodeCachePurgeOnTimerTest : public GpuImageDecodeCacheTest {
  public:
+  static GpuImageDecodeCachePurgeOnTimerTest* last_setup_test_;
+
   void SetUp() override {
     GpuImageDecodeCacheTest::SetUp();
 
@@ -4648,14 +4650,18 @@ class GpuImageDecodeCachePurgeOnTimerTest : public GpuImageDecodeCacheTest {
     cache_ = CreateCache();
     client_id_ = cache_->GenerateClientId();
 
-    // We can't convert a lambda with capture to a raw function pointer, so we
-    // use a static variable here.
-    static auto lambda = [this]() {
-      return task_runner_->GetMockTickClock()->NowTicks();
-    };
-
+    last_setup_test_ = this;
     time_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
-        nullptr, []() { return lambda(); }, nullptr);
+        nullptr,
+        []() {
+          return last_setup_test_->task_runner_->GetMockTickClock()->NowTicks();
+        },
+        nullptr);
+  }
+
+  void TearDown() override {
+    last_setup_test_ = nullptr;
+    GpuImageDecodeCacheTest::TearDown();
   }
 
   void FastForwardBy(base::TimeDelta t) { task_runner_->FastForwardBy(t); }
@@ -4684,6 +4690,9 @@ class GpuImageDecodeCachePurgeOnTimerTest : public GpuImageDecodeCacheTest {
   uint32_t client_id_;
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_override_;
 };
+
+GpuImageDecodeCachePurgeOnTimerTest*
+    GpuImageDecodeCachePurgeOnTimerTest::last_setup_test_ = nullptr;
 
 TEST_P(GpuImageDecodeCachePurgeOnTimerTest, SimplePurgeOneImage) {
   base::test::ScopedFeatureList fl;
