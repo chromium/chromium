@@ -257,11 +257,13 @@ const MINIMUM_HEIGHT_MICRONS: number = 25400;
  * @param defaultMode Duplex default mode set by policy.
  */
 function getDuplexDefaultValue(
-    allowedMode: DuplexModeRestriction,
+    allowedMode: DuplexModeRestriction|undefined,
     defaultMode: DuplexModeRestriction): DuplexModeRestriction {
   if (allowedMode !== DuplexModeRestriction.DUPLEX) {
-    return allowedMode === DuplexModeRestriction.UNSET ? defaultMode :
-                                                         allowedMode;
+    return (allowedMode === undefined ||
+            allowedMode === DuplexModeRestriction.UNSET) ?
+        defaultMode :
+        allowedMode;
   }
 
   // If allowedMode === DUPLEX, then we need to use defaultMode as the
