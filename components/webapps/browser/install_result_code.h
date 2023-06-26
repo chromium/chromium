@@ -92,7 +92,11 @@ enum class InstallResultCode {
 
   kCancelledDueToMainFrameNavigation = 31,
 
-  kMaxValue = kCancelledDueToMainFrameNavigation,
+  // No valid icons were provided in the manifest in an installation method
+  // which requires non-generated icons.
+  kNoValidIconsInManifest = 32,
+
+  kMaxValue = kNoValidIconsInManifest,
 };
 
 // Checks if InstallResultCode is not a failure.

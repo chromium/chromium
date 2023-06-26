@@ -162,13 +162,10 @@ void InstallPreloadedVerifiedAppCommand::OnManifestParsed(
   });
 
   if (icon_urls.empty()) {
-    // TODO(melzhang): Add a new InstallResultCode for this error.
-    //
-    // Abort as "not a valid manifest" if there are no icons to download, so we
-    // can distinguish this case from having icons but failing to download
-    // them.
+    // Abort if there are no icons to download, so we can distinguish this case
+    // from having icons but failing to download them.
     Abort(CommandResult::kFailure,
-          webapps::InstallResultCode::kNotValidManifestForWebApp);
+          webapps::InstallResultCode::kNoValidIconsInManifest);
     return;
   }
 

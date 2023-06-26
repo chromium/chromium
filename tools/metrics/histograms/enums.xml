@@ -111251,6 +111251,7 @@ others/histograms.xml -->
   <int value="29" label="kInstallURLInvalid"/>
   <int value="30" label="kIconDownloadingFailed"/>
   <int value="31" label="kCancelledDueToMainFrameNavigation"/>
+  <int value="32" label="kNoValidIconsInManifest"/>
 </enum>
 
 <enum name="WebAppInstallSource">
