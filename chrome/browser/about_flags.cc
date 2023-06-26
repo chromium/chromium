@@ -3395,16 +3395,14 @@ const FeatureEntry::FeatureVariation kHeuristicMemorySaverVariations[] = {
 };
 
 const FeatureEntry::FeatureParam
-    kHighEfficiencyMultistateModeDefaultHeuristic[] = {
-        {"default_heuristic_mode", "true"},
+    kHighEfficiencyMultistateModeShowRecommendedBadge[] = {
+        {"show_recommended_badge", "true"},
 };
-// TODO(charlesmeng): rename option after default_heuristic_mode feature param
-// actually sets the default pref value
 const FeatureEntry::FeatureVariation kHighEfficiencyMultistateModeVariations[] =
     {
         {"With Recommended Badge",
-         kHighEfficiencyMultistateModeDefaultHeuristic,
-         std::size(kHighEfficiencyMultistateModeDefaultHeuristic), nullptr},
+         kHighEfficiencyMultistateModeShowRecommendedBadge,
+         std::size(kHighEfficiencyMultistateModeShowRecommendedBadge), nullptr},
 };
 
 const FeatureEntry::FeatureParam kDiscardedTabTreatmentWithRing30Opacity[] = {

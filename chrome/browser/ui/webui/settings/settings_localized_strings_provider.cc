@@ -714,8 +714,8 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean(
-      "highEfficiencyDefaultHeuristicMode",
-      performance_manager::features::kHighEfficiencyDefaultHeuristicMode.Get());
+      "highEfficiencyShowRecommendedBadge",
+      performance_manager::features::kHighEfficiencyShowRecommendedBadge.Get());
 
   html_source->AddString(
       "tabDiscardTimerFiveMinutes",
