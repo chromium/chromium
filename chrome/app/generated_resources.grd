@@ -3693,6 +3693,14 @@ You can send it to Google Safe Browsing to check if it's unsafe. Scans usually t
         Cookies are files created by websites. There are two types of cookies: First-party cookies are created by the site you visit. The site is shown on the address bar. Third-party cookies are created by other sites. These sites own some of the content, like ads or images, that you see on the website you visit.
       </message>
 
+      <!-- User Bypass Bubble -->
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE" translateable="false"  desc="">
+        Third-party cookies blocked
+      </message>
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE" translateable="false"  desc="">
+        Third-party cookies allowed
+      </message>
+
       <!-- Win certificate selector dialog strings.  -->
       <if expr="toolkit_views">
         <message name="IDS_CERT_SELECTOR_SUBJECT_COLUMN" desc="The text of the header for the certificate subject column in the certificate selector dialog.">

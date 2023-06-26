@@ -12,6 +12,8 @@ namespace content {
 class WebContents;
 }
 
+namespace {}  // namespace
+
 CookieControlsBubbleCoordinator::CookieControlsBubbleCoordinator(
     views::View* anchor_view)
     : anchor_view_(anchor_view) {}
@@ -31,10 +33,11 @@ void CookieControlsBubbleCoordinator::ShowBubble(
   bubble_view_->View::AddObserver(this);
 
   view_controller_ = std::make_unique<CookieControlsBubbleViewController>(
-      bubble_view_, controller);
+      bubble_view_, controller, web_contents);
 
   views::Widget* const widget =
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
+  controller->Update(web_contents);
   widget->Show();
 }
 

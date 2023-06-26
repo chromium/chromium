@@ -23,9 +23,13 @@ class CookieControlsBubbleView : public LocationBarBubbleDelegateView {
 
   ~CookieControlsBubbleView() override;
 
+  void UpdateTitle(const std::u16string& title);
+
+  void UpdateSubtitle(const std::u16string& subtitle);
+
  private:
   // LocationBarBubbleDelegateView:
-  std::u16string GetWindowTitle() const override;
+  void Init() override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_BUBBLE_VIEW_H_

@@ -20,7 +20,8 @@ class CookieControlsBubbleViewController
  public:
   CookieControlsBubbleViewController(
       CookieControlsBubbleView* bubble_view,
-      content_settings::CookieControlsController* controller);
+      content_settings::CookieControlsController* controller,
+      content::WebContents* web_contents);
   ~CookieControlsBubbleViewController() override;
 
   explicit CookieControlsBubbleViewController(
@@ -37,6 +38,8 @@ class CookieControlsBubbleViewController
  private:
   raw_ptr<CookieControlsBubbleView> bubble_view_;
   base::WeakPtr<content_settings::CookieControlsController> controller_;
+
+  std::u16string GetSubjectUrlName(content::WebContents* web_contents);
 
   base::ScopedObservation<content_settings::CookieControlsController,
                           content_settings::CookieControlsObserver>
