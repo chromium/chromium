@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/child_process_termination_info.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,28 +57,30 @@ bool NoRendererCrashesAssertion::Suspensions::IsSuspended(int process_id) {
 }
 
 NoRendererCrashesAssertion::NoRendererCrashesAssertion() {
-  registrar_.Add(this, NOTIFICATION_RENDERER_PROCESS_CLOSED,
-                 NotificationService::AllSources());
+  for (auto iter = RenderProcessHost::AllHostsIterator(); !iter.IsAtEnd();
+       iter.Advance()) {
+    process_observations_.AddObservation(iter.GetCurrentValue());
+  }
 }
 
 NoRendererCrashesAssertion::~NoRendererCrashesAssertion() = default;
 
-void NoRendererCrashesAssertion::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  if (type != NOTIFICATION_RENDERER_PROCESS_CLOSED)
-    return;
+void NoRendererCrashesAssertion::OnRenderProcessHostCreated(
+    RenderProcessHost* host) {
+  if (!process_observations_.IsObservingSource(host)) {
+    process_observations_.AddObservation(host);
+  }
+}
 
-  content::RenderProcessHost* process =
-      content::Source<content::RenderProcessHost>(source).ptr();
+void NoRendererCrashesAssertion::RenderProcessExited(
+    RenderProcessHost* host,
+    const ChildProcessTerminationInfo& info) {
   if (NoRendererCrashesAssertion::Suspensions::GetInstance().IsSuspended(
-          process->GetID()))
+          host->GetID())) {
     return;
+  }
 
-  ChildProcessTerminationInfo* process_info =
-      content::Details<content::ChildProcessTerminationInfo>(details).ptr();
-  switch (process_info->status) {
+  switch (info.status) {
     case base::TERMINATION_STATUS_LAUNCH_FAILED:
     case base::TERMINATION_STATUS_NORMAL_TERMINATION:
     case base::TERMINATION_STATUS_STILL_RUNNING:
@@ -88,20 +89,25 @@ void NoRendererCrashesAssertion::Observe(
       break;  // Crash - need to trigger a test failure below.
   }
 
-  const auto exit_code = process_info->exit_code;
+  const auto exit_code = info.exit_code;
   // Windows error codes such as 0xC0000005 and 0xC0000409 are much easier
   // to recognize and differentiate in hex.
   if (static_cast<int>(exit_code) < -100) {
     FAIL() << "Unexpected termination of a renderer process"
-           << "; status: " << process_info->status << ", exit_code: 0x"
-           << std::hex << exit_code;
+           << "; status: " << info.status << ", exit_code: 0x" << std::hex
+           << exit_code;
   } else {
     // Print other error codes as a signed integer so that small negative
     // numbers are also recognizable.
     FAIL() << "Unexpected termination of a renderer process"
-           << "; status: " << process_info->status
-           << ", exit_code: " << exit_code;
+           << "; status: " << info.status << ", exit_code: " << exit_code;
   }
+}
+
+void NoRendererCrashesAssertion::RenderProcessHostDestroyed(
+    RenderProcessHost* host) {
+  CHECK(process_observations_.IsObservingSource(host));
+  process_observations_.RemoveObservation(host);
 }
 
 ScopedAllowRendererCrashes::ScopedAllowRendererCrashes()

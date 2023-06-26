@@ -42,6 +42,7 @@
 #include "components/account_id/account_id.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"

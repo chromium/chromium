@@ -112,6 +112,7 @@
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"

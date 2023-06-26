@@ -14,6 +14,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"

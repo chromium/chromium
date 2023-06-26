@@ -26,6 +26,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"

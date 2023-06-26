@@ -39,6 +39,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"

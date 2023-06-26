@@ -58,6 +58,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/page_zoom.h"
