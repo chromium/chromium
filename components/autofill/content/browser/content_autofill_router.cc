@@ -441,7 +441,7 @@ void ContentAutofillRouter::DidEndTextFieldEditing(
   ForEachFrame(form_forest_, callback);
 }
 
-void ContentAutofillRouter::SelectFieldOptionsDidChange(
+void ContentAutofillRouter::SelectOrSelectMenuFieldOptionsDidChange(
     ContentAutofillDriver* source,
     FormData form,
     void (*callback)(ContentAutofillDriver* target, const FormData& form)) {

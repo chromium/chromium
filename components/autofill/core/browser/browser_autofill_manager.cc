@@ -1736,7 +1736,7 @@ void BrowserAutofillManager::SetDataList(
   external_delegate_->SetCurrentDataListValues(values, labels);
 }
 
-void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
+void BrowserAutofillManager::OnSelectOrSelectMenuFieldOptionsDidChangeImpl(
     const FormData& form) {
   FormStructure* form_structure = FindCachedFormById(form.global_id());
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {

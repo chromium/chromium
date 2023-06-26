@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
@@ -24,12 +25,32 @@ void CheckOptions(HeapVector<Member<HTMLOptionElement>> options,
   }
 }
 
+// ChromeClient which counts invocations of
+// SelectOrSelectMenuFieldOptionsChanged().
+class OptionsChangedCounterChromeClient : public EmptyChromeClient {
+ public:
+  OptionsChangedCounterChromeClient() = default;
+  ~OptionsChangedCounterChromeClient() override = default;
+
+  void SelectOrSelectMenuFieldOptionsChanged(HTMLFormControlElement&) override {
+    ++option_change_notification_count_;
+  }
+
+  size_t GetOptionChangeNotificationCount() const {
+    return option_change_notification_count_;
+  }
+
+ private:
+  size_t option_change_notification_count_{0u};
+};
+
 }  // anonymous namespace
 
 class HTMLSelectMenuElementTest : public PageTestBase {
  public:
   void SetUp() override {
-    PageTestBase::SetUp();
+    chrome_client_ = MakeGarbageCollected<OptionsChangedCounterChromeClient>();
+    SetupPageWithClients(chrome_client_);
     GetDocument().SetMimeType("text/html");
     GetFrame().GetSettings()->SetScriptEnabled(true);
   }
@@ -38,6 +59,9 @@ class HTMLSelectMenuElementTest : public PageTestBase {
     ClassicScript::CreateUnspecifiedScript(WebString::FromUTF8(js))
         ->RunScript(GetFrame().DomWindow());
   }
+
+ protected:
+  Persistent<OptionsChangedCounterChromeClient> chrome_client_;
 };
 
 // Tests that HtmlSelectMenuElement::SetAutofillValue() doesn't change the
@@ -98,6 +122,58 @@ TEST_F(HTMLSelectMenuElementTest, GetListItemsRemove) {
       "let second_option = document.getElementById('second_option');"
       "selectmenu.removeChild(second_option);");
   CheckOptions(element->GetListItems(), {"First"});
+}
+
+// Test that blink::ChromeClient::SelectOrSelectMenuFieldOptionsChanged() is
+// called when <option> is added to <selectmenu>.
+TEST_F(HTMLSelectMenuElementTest, NotifyClientListItemAdd) {
+  SetHtmlInnerHTML(R"HTML(
+    <selectmenu id='selectmenu'>
+    <option selected>Default</option>
+    </selectmenu>
+  )HTML");
+  HTMLSelectMenuElement* element =
+      To<HTMLSelectMenuElement>(GetElementById("selectmenu"));
+
+  EXPECT_EQ(1u, element->GetListItems().size());
+  size_t num_notifications_before_change =
+      chrome_client_->GetOptionChangeNotificationCount();
+
+  ExecuteJs(
+      "let selectmenu = document.getElementById('selectmenu');"
+      "let option = document.createElement('option');"
+      "option.textContent = 'New';"
+      "selectmenu.appendChild(option);");
+  EXPECT_EQ(2u, element->GetListItems().size());
+
+  EXPECT_EQ(num_notifications_before_change + 1,
+            chrome_client_->GetOptionChangeNotificationCount());
+}
+
+// Test that blink::ChromeClient::SelectOrSelectMenuFieldOptionsChanged() is
+// called when <option> is removed from <selectmenu>.
+TEST_F(HTMLSelectMenuElementTest, NotifyClientListItemRemove) {
+  SetHtmlInnerHTML(R"HTML(
+    <selectmenu id='selectmenu'>
+    <option selected>First</option>
+    <option id="second_option">Second</option>
+    </selectmenu>
+  )HTML");
+  HTMLSelectMenuElement* element =
+      To<HTMLSelectMenuElement>(GetElementById("selectmenu"));
+
+  EXPECT_EQ(2u, element->GetListItems().size());
+  size_t num_notifications_before_change =
+      chrome_client_->GetOptionChangeNotificationCount();
+
+  ExecuteJs(
+      "let selectmenu = document.getElementById('selectmenu');"
+      "let second_option = document.getElementById('second_option');"
+      "selectmenu.removeChild(second_option);");
+  EXPECT_EQ(1u, element->GetListItems().size());
+
+  EXPECT_EQ(num_notifications_before_change + 1,
+            chrome_client_->GetOptionChangeNotificationCount());
 }
 
 }  // namespace blink

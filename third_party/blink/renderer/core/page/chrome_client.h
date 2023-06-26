@@ -502,7 +502,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation
   virtual void DidChangeSelectionInSelectControl(HTMLFormControlElement&) {}
 
-  virtual void SelectFieldOptionsChanged(HTMLFormControlElement&) {}
+  virtual void SelectOrSelectMenuFieldOptionsChanged(HTMLFormControlElement&) {}
   virtual void AjaxSucceeded(LocalFrame*) {}
   // Called when |element| is in autofilled state and the value has been changed
   // by JavaScript. |old_value| contains the value before being changed.

@@ -129,7 +129,8 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
   void DidEndTextFieldEditing() override {}
 
-  void SelectFieldOptionsDidChange(const autofill::FormData& form) override {}
+  void SelectOrSelectMenuFieldOptionsDidChange(
+      const autofill::FormData& form) override {}
 
   std::unique_ptr<base::RunLoop> forms_seen_run_loop_ =
       std::make_unique<base::RunLoop>();

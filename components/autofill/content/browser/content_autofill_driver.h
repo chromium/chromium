@@ -294,7 +294,7 @@ class ContentAutofillDriver : public AutofillDriver,
                                base::TimeTicks timestamp) override;
   void DidPreviewAutofillFormData() override;
   void DidEndTextFieldEditing() override;
-  void SelectFieldOptionsDidChange(const FormData& form) override;
+  void SelectOrSelectMenuFieldOptionsDidChange(const FormData& form) override;
   void JavaScriptChangedAutofilledValue(
       const FormData& form,
       const FormFieldData& field,

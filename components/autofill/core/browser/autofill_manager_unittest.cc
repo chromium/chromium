@@ -117,7 +117,7 @@ class MockAutofillManager : public AutofillManager {
   MOCK_METHOD(void, OnDidEndTextFieldEditingImpl, (), (override));
   MOCK_METHOD(void, OnHidePopupImpl, (), (override));
   MOCK_METHOD(void,
-              OnSelectFieldOptionsDidChangeImpl,
+              OnSelectOrSelectMenuFieldOptionsDidChangeImpl,
               (const FormData& form),
               (override));
   MOCK_METHOD(void,

@@ -62,7 +62,8 @@ class AndroidAutofillManager : public AutofillManager {
   void OnDidPreviewAutofillFormDataImpl() override {}
   void OnDidEndTextFieldEditingImpl() override {}
   void OnHidePopupImpl() override;
-  void OnSelectFieldOptionsDidChangeImpl(const FormData& form) override {}
+  void OnSelectOrSelectMenuFieldOptionsDidChangeImpl(
+      const FormData& form) override {}
 
   void Reset() override;
   void OnContextMenuShownInField(const FormGlobalId& form_global_id,

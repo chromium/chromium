@@ -182,8 +182,9 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
     DeferMsg(&mojom::AutofillDriver::SelectControlDidChange, form, field,
              bounding_box);
   }
-  void SelectFieldOptionsDidChange(const FormData& form) override {
-    DeferMsg(&mojom::AutofillDriver::SelectFieldOptionsDidChange, form);
+  void SelectOrSelectMenuFieldOptionsDidChange(const FormData& form) override {
+    DeferMsg(&mojom::AutofillDriver::SelectOrSelectMenuFieldOptionsDidChange,
+             form);
   }
   void AskForValuesToFill(
       const FormData& form,
@@ -1216,13 +1217,14 @@ void AutofillAgent::SelectControlDidChange(
   form_tracker_.SelectControlDidChange(element);
 }
 
-// Notifies the AutofillDriver about changes in the <select> options in batches.
+// Notifies the AutofillDriver about changes in the <select> or <selectmenu>
+// options in batches.
 //
 // A batch ends if no event occurred for `kWaitTimeForOptionsChangesMs`
 // milliseconds. For a given batch, the AutofillDriver is informed only about
 // the last FormData. That is, if within one batch the options of different
 // forms changed, all but one of these events will be lost.
-void AutofillAgent::SelectFieldOptionsChanged(
+void AutofillAgent::SelectOrSelectMenuFieldOptionsChanged(
     const blink::WebFormControlElement& element) {
   DCHECK(!unsafe_render_frame() ||
          IsOwnedByFrame(element, unsafe_render_frame()));
@@ -1230,16 +1232,17 @@ void AutofillAgent::SelectFieldOptionsChanged(
   if (!was_last_action_fill_ || element_.IsNull())
     return;
 
-  if (select_option_change_batch_timer_.IsRunning())
-    select_option_change_batch_timer_.AbandonAndStop();
+  if (select_or_selectmenu_option_change_batch_timer_.IsRunning()) {
+    select_or_selectmenu_option_change_batch_timer_.AbandonAndStop();
+  }
 
-  select_option_change_batch_timer_.Start(
+  select_or_selectmenu_option_change_batch_timer_.Start(
       FROM_HERE, base::Milliseconds(kWaitTimeForOptionsChangesMs),
-      base::BindRepeating(&AutofillAgent::BatchSelectOptionChange,
+      base::BindRepeating(&AutofillAgent::BatchSelectOrSelectMenuOptionChange,
                           weak_ptr_factory_.GetWeakPtr(), element));
 }
 
-void AutofillAgent::BatchSelectOptionChange(
+void AutofillAgent::BatchSelectOrSelectMenuOptionChange(
     const blink::WebFormControlElement& element) {
   if (element.GetDocument().IsNull()) {
     return;
@@ -1253,7 +1256,7 @@ void AutofillAgent::BatchSelectOptionChange(
                                             &form, &field) &&
       !field.options.empty()) {
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->SelectFieldOptionsDidChange(form);
+      autofill_driver->SelectOrSelectMenuFieldOptionsDidChange(form);
     }
   }
 }

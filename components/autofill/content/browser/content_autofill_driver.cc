@@ -606,15 +606,15 @@ void ContentAutofillDriver::DidEndTextFieldEditing() {
       });
 }
 
-void ContentAutofillDriver::SelectFieldOptionsDidChange(
+void ContentAutofillDriver::SelectOrSelectMenuFieldOptionsDidChange(
     const FormData& raw_form) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
   }
-  autofill_router().SelectFieldOptionsDidChange(
+  autofill_router().SelectOrSelectMenuFieldOptionsDidChange(
       this, GetFormWithFrameAndFormMetaData(raw_form),
       [](ContentAutofillDriver* target, const FormData& form) {
-        target->autofill_manager_->OnSelectFieldOptionsDidChange(
+        target->autofill_manager_->OnSelectOrSelectMenuFieldOptionsDidChange(
             WithNewVersion(form));
       });
 }

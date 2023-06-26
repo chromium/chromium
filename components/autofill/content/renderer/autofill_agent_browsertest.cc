@@ -89,7 +89,7 @@ class MockAutofillDriver : public mojom::AutofillDriver {
                const gfx::RectF& bounding_box),
               (override));
   MOCK_METHOD(void,
-              SelectFieldOptionsDidChange,
+              SelectOrSelectMenuFieldOptionsDidChange,
               (const FormData& form),
               (override));
   MOCK_METHOD(void,

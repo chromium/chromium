@@ -1247,11 +1247,13 @@ void ChromeClientImpl::DidChangeSelectionInSelectControl(
     fill_client->SelectControlDidChange(WebFormControlElement(&element));
 }
 
-void ChromeClientImpl::SelectFieldOptionsChanged(
+void ChromeClientImpl::SelectOrSelectMenuFieldOptionsChanged(
     HTMLFormControlElement& element) {
   Document& doc = element.GetDocument();
-  if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame()))
-    fill_client->SelectFieldOptionsChanged(WebFormControlElement(&element));
+  if (auto* fill_client = AutofillClientFromFrame(doc.GetFrame())) {
+    fill_client->SelectOrSelectMenuFieldOptionsChanged(
+        WebFormControlElement(&element));
+  }
 }
 
 void ChromeClientImpl::AjaxSucceeded(LocalFrame* frame) {

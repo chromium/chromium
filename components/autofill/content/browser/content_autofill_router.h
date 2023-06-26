@@ -262,7 +262,7 @@ class ContentAutofillRouter {
       void (*callback)(ContentAutofillDriver* target));
   void DidEndTextFieldEditing(ContentAutofillDriver* source,
                               void (*callback)(ContentAutofillDriver* target));
-  void SelectFieldOptionsDidChange(
+  void SelectOrSelectMenuFieldOptionsDidChange(
       ContentAutofillDriver* source,
       FormData form,
       void (*callback)(ContentAutofillDriver* target, const FormData& form));

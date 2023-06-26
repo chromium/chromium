@@ -759,6 +759,14 @@ void HTMLSelectMenuElement::OptionPartInserted(
   }
   SetNeedsValidityCheck();
   should_recalc_list_items_ = true;
+
+  if (GetDocument().IsActive()) {
+    GetDocument()
+        .GetFrame()
+        ->GetPage()
+        ->GetChromeClient()
+        .SelectOrSelectMenuFieldOptionsChanged(*this);
+  }
 }
 
 void HTMLSelectMenuElement::OptionPartRemoved(HTMLOptionElement* option_part) {
@@ -775,6 +783,14 @@ void HTMLSelectMenuElement::OptionPartRemoved(HTMLOptionElement* option_part) {
   }
   SetNeedsValidityCheck();
   should_recalc_list_items_ = true;
+
+  if (GetDocument().IsActive()) {
+    GetDocument()
+        .GetFrame()
+        ->GetPage()
+        ->GetChromeClient()
+        .SelectOrSelectMenuFieldOptionsChanged(*this);
+  }
 }
 
 HTMLOptionElement* HTMLSelectMenuElement::FirstOptionPart() const {

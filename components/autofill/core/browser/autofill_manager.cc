@@ -552,16 +552,18 @@ void AutofillManager::OnHidePopup() {
   OnHidePopupImpl();
 }
 
-void AutofillManager::OnSelectFieldOptionsDidChange(const FormData& form) {
+void AutofillManager::OnSelectOrSelectMenuFieldOptionsDidChange(
+    const FormData& form) {
   if (!IsValidFormData(form))
     return;
 
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
-    OnSelectFieldOptionsDidChangeImpl(form);
+    OnSelectOrSelectMenuFieldOptionsDidChangeImpl(form);
     return;
   }
   ParseFormAsync(
-      form, ParsingCallback(&AutofillManager::OnSelectFieldOptionsDidChangeImpl)
+      form, ParsingCallback(
+                &AutofillManager::OnSelectOrSelectMenuFieldOptionsDidChangeImpl)
                 .Then(NotifyNoObserversCallback()));
 }
 

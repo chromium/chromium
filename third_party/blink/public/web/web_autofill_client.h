@@ -81,7 +81,8 @@ class WebAutofillClient {
   virtual void SelectControlDidChange(const WebFormControlElement&) {}
 
   // Called when the options of a select control change.
-  virtual void SelectFieldOptionsChanged(const WebFormControlElement&) {}
+  virtual void SelectOrSelectMenuFieldOptionsChanged(
+      const WebFormControlElement&) {}
 
   // Called when the user interacts with the page after a load.
   virtual void UserGestureObserved() {}
