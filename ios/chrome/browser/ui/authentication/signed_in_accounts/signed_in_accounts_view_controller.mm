@@ -49,8 +49,13 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
 
 @interface SignedInAccountsViewController () <
     IdentityManagerObserverBridgeDelegate,
-    UIViewControllerTransitioningDelegate> {
+    UIViewControllerTransitioningDelegate>
+@end
+
+@implementation SignedInAccountsViewController {
   ChromeBrowserState* _browserState;  // Weak.
+  id<ApplicationSettingsCommands> _dispatcher;
+  signin::IdentityManager* _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
 
@@ -60,12 +65,6 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   UIButton* _primaryButton;
   UIButton* _secondaryButton;
 }
-@property(nonatomic, readonly, weak) id<ApplicationSettingsCommands> dispatcher;
-@property(nonatomic, assign) signin::IdentityManager* identityManager;
-@end
-
-@implementation SignedInAccountsViewController
-@synthesize dispatcher = _dispatcher;
 
 + (BOOL)shouldBePresentedForBrowserState:(ChromeBrowserState*)browserState {
   if (!browserState || browserState->IsOffTheRecord()) {
@@ -87,7 +86,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   if (self) {
     _browserState = browserState;
     _dispatcher = dispatcher;
-    self.identityManager =
+    _identityManager =
         IdentityManagerFactory::GetForBrowserState(_browserState);
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
@@ -135,7 +134,9 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
                 forControlEvents:UIControlEventTouchDown];
   _primaryButton = nil;
   _secondaryButton = nil;
-  self.identityManager = nullptr;
+  _identityManager = nullptr;
+  _identityManagerObserver.reset();
+  _dispatcher = nil;
 }
 
 #pragma mark UIViewController
@@ -146,7 +147,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
                            2 * kViewControllerHorizontalPadding);
   int shownAccounts =
       std::min(kMaxShownAccounts,
-               self.identityManager->GetAccountsWithRefreshTokens().size());
+               _identityManager->GetAccountsWithRefreshTokens().size());
   CGSize maxSize = CGSizeMake(width - 2 * kHorizontalPadding, CGFLOAT_MAX);
   CGSize buttonSize = [_primaryButton sizeThatFits:maxSize];
   CGSize infoSize = [_infoLabel sizeThatFits:maxSize];
@@ -176,7 +177,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState);
   _accountTableView = [[SignedInAccountsTableViewController alloc]
-      initWithIdentityManager:self.identityManager
+      initWithIdentityManager:_identityManager
         accountManagerService:accountManagerService];
   _accountTableView.view.translatesAutoresizingMaskIntoConstraints = NO;
   [self addChildViewController:_accountTableView];
@@ -321,7 +322,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
 }
 
 - (void)onSecondaryButtonPressed:(id)sender {
-  __weak id<ApplicationSettingsCommands> weakDispatcher = self.dispatcher;
+  __weak id<ApplicationSettingsCommands> weakDispatcher = _dispatcher;
   __weak UIViewController* weakPresentingViewController =
       self.presentingViewController;
   [self dismissWithCompletion:^{
@@ -333,7 +334,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
 #pragma mark IdentityManagerObserverBridgeDelegate
 
 - (void)onEndBatchOfRefreshTokenStateChanges {
-  if (self.identityManager->GetAccountsWithRefreshTokens().empty()) {
+  if (_identityManager->GetAccountsWithRefreshTokens().empty()) {
     [self dismissWithCompletion:nil];
     return;
   }
