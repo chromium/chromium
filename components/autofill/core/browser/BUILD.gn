@@ -390,6 +390,8 @@ static_library("browser") {
     "personal_data_manager_observer.h",
     "profile_requirement_utils.cc",
     "profile_requirement_utils.h",
+    "profile_token_quality.cc",
+    "profile_token_quality.h",
     "randomized_encoder.cc",
     "randomized_encoder.h",
     "rationalization_util.cc",
