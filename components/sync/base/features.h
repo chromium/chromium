@@ -209,6 +209,8 @@ BASE_DECLARE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay);
 // If enabled, uses a JsonPrefStore for account preferences.
 BASE_DECLARE_FEATURE(kSyncEnablePersistentStorageForAccountPreferences);
 
+// Flag to stop call to reconfiguration of datatypes if it's already stopping.
+BASE_DECLARE_FEATURE(kSyncAvoidReconfigurationIfAlreadyStopping);
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_
