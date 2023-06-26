@@ -578,6 +578,19 @@ TEST_F(ClipboardHistoryControllerObserverTest, AddAndRemoveItem) {
   GetClipboardHistoryController()->FireItemUpdateNotificationTimerForTest();
 }
 
+// Verifies that when the clipboard history is cleared, the controller notifies
+// observers of clipboard history item updates as expected when removing items.
+TEST_F(ClipboardHistoryControllerObserverTest, ClearHistory) {
+  MockObserver mock_observer;
+  EXPECT_CALL(mock_observer, OnClipboardHistoryItemsUpdated).Times(3);
+  WriteTextToClipboardAndConfirm(u"A");
+  WriteTextToClipboardAndConfirm(u"B");
+
+  // Clear the system clipboard, which causes clipboard history to clear.
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+  GetClipboardHistoryController()->FireItemUpdateNotificationTimerForTest();
+}
+
 // Verifies that clipboard history controller notifies observers once when
 // clipboard history item addition causes overflow.
 TEST_F(ClipboardHistoryControllerObserverTest, Overflow) {

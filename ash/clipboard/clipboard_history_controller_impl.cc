@@ -640,13 +640,18 @@ void ClipboardHistoryControllerImpl::OnClipboardHistoryItemRemoved(
 }
 
 void ClipboardHistoryControllerImpl::OnClipboardHistoryCleared() {
-  // Prevent clipboard contents getting restored if the Clipboard is cleared
-  // soon after a `PasteMenuItemData()`.
+  // Prevent clipboard contents from being restored if the clipboard history is
+  // cleared shortly after pasting an item.
   weak_ptr_factory_.InvalidateWeakPtrs();
-  if (!IsMenuShowing())
-    return;
 
-  context_menu_->Cancel(/*will_paste_item=*/false);
+  // Notify observers of the history being cleared after invalidating weak
+  // pointers.
+  PostItemUpdateNotificationTask();
+
+  // Make sure the menu is closed now that there are no items to show.
+  if (IsMenuShowing()) {
+    context_menu_->Cancel(/*will_paste_item=*/false);
+  }
 }
 
 void ClipboardHistoryControllerImpl::OnOperationConfirmed(bool copy) {
