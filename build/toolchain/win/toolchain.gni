@@ -272,7 +272,7 @@ template("single_msvc_toolchain") {
 
       if (toolchain_args.current_cpu == "arm64") {
         if (toolchain_is_clang) {
-          ml = "${cl_prefix}${_clang_bin_path}/clang-cl${_exe} --target=arm64-windows"
+          ml = "${cl_prefix}${_clang_bin_path}/clang-cl${_exe} --target=aarch64-pc-windows"
           if (host_os == "win") {
             # Flip the slashes so that copy/paste of the command works.
             ml = string_replace(ml, "/", "\\")
