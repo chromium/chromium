@@ -73,6 +73,7 @@
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
@@ -389,6 +390,20 @@ class RasterQueryManager : public QueryManager {
  private:
   const scoped_refptr<SharedContextState> shared_context_state_;
 };
+
+SkYUVAPixmapInfo::DataType ToSkYUVADataType(viz::SharedImageFormat format) {
+  switch (format.channel_format()) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      return SkYUVAPixmapInfo::DataType::kUnorm8;
+    case viz::SharedImageFormat::ChannelFormat::k10:
+      return SkYUVAPixmapInfo::DataType::kUnorm10_Unorm2;
+    case viz::SharedImageFormat::ChannelFormat::k16:
+      return SkYUVAPixmapInfo::DataType::kUnorm16;
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      return SkYUVAPixmapInfo::DataType::kFloat16;
+  }
+  NOTREACHED_NORETURN();
+}
 
 }  // namespace
 
@@ -2087,6 +2102,10 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
       DoWritePixelsINTERNALDirectTextureUpload(dest_shared_image.get(),
                                                src_info, plane_index,
                                                pixel_data, row_bytes)) {
+    if (!dest_shared_image->IsCleared()) {
+      dest_shared_image->SetClearedRect(
+          gfx::Rect(src_info.width(), src_info.height()));
+    }
     return;
   }
 
@@ -2156,7 +2175,152 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
     GLuint plane3_offset,
     GLuint plane4_offset,
     const volatile GLbyte* mailbox) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  TRACE_EVENT0("gpu", "RasterDecoderImpl::DoWritePixelsYUVINTERNAL");
+  if (src_yuv_plane_config < 0 ||
+      src_yuv_plane_config > static_cast<int>(SkYUVAInfo::PlaneConfig::kLast)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, "WritePixelsYUV",
+                       "src_yuv_plane_config must be a valid PlaneConfig");
+    return;
+  }
+  if (src_yuv_subsampling < 0 ||
+      src_yuv_subsampling > static_cast<int>(SkYUVAInfo::Subsampling::kLast)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, "WritePixelsYUV",
+                       "src_yuv_subsampling must be a valid Subsampling");
+    return;
+  }
+  if (src_yuv_datatype < 0 ||
+      src_yuv_datatype > static_cast<int>(SkYUVAPixmapInfo::DataType::kLast)) {
+    LOCAL_SET_GL_ERROR(
+        GL_INVALID_ENUM, "WritePixelsYUV",
+        "src_yuv_datatype must be a valid SkYUVAPixmapInfo::DataType");
+    return;
+  }
+
+  Mailbox dest_mailbox = Mailbox::FromVolatile(
+      *reinterpret_cast<const volatile Mailbox*>(mailbox));
+  DLOG_IF(ERROR, !dest_mailbox.Verify())
+      << "WritePixelsYUV was passed an invalid mailbox";
+  auto dest_shared_image = shared_image_representation_factory_.ProduceSkia(
+      dest_mailbox, shared_context_state_);
+  if (!dest_shared_image) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixelsYUV",
+                       "Attempting to write to unknown mailbox.");
+    return;
+  }
+
+  SkYUVAInfo::PlaneConfig src_plane_config =
+      static_cast<SkYUVAInfo::PlaneConfig>(src_yuv_plane_config);
+  SkYUVAInfo::Subsampling src_subsampling =
+      static_cast<SkYUVAInfo::Subsampling>(src_yuv_subsampling);
+  SkYUVAPixmapInfo::DataType src_datatype =
+      static_cast<SkYUVAPixmapInfo::DataType>(src_yuv_datatype);
+  viz::SharedImageFormat dest_format = dest_shared_image->format();
+  if (!dest_format.is_multi_plane()) {
+    LOCAL_SET_GL_ERROR(
+        GL_INVALID_OPERATION, "glWritePixelsYUV",
+        "dest_format must be a valid multiplanar SharedImageFormat.");
+    return;
+  }
+  if (src_plane_config != ToSkYUVAPlaneConfig(dest_format)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixelsYUV",
+                       "PlaneConfig mismatch between source texture format and "
+                       "the destination shared image format");
+    return;
+  }
+  if (src_subsampling != ToSkYUVASubsampling(dest_format)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixelsYUV",
+                       "Subsampling mismatch between source texture format and "
+                       "the destination shared image format");
+    return;
+  }
+  if (src_datatype != ToSkYUVADataType(dest_format)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixelsYUV",
+                       "ChannelFormat mismatch between source texture format "
+                       "and the destination shared image format");
+    return;
+  }
+
+  SkYUVAInfo yuv_info(SkISize::Make(src_width, src_height), src_plane_config,
+                      src_subsampling,
+                      SkYUVColorSpace::kIdentity_SkYUVColorSpace);
+  if (yuv_info.numPlanes() != dest_format.NumberOfPlanes()) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixelsYUV",
+                       "Planes mismatch between source texture format and the "
+                       "destination shared image format");
+    return;
+  }
+
+  if (gfx::Size(src_width, src_height) != dest_shared_image->size()) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixelsYUV",
+                       "Unexpected size for multiplanar shared image");
+    return;
+  }
+
+  size_t row_bytes[SkYUVAInfo::kMaxPlanes];
+  row_bytes[0] = src_row_bytes_plane1;
+  row_bytes[1] = src_row_bytes_plane2;
+  row_bytes[2] = src_row_bytes_plane3;
+  row_bytes[3] = src_row_bytes_plane4;
+
+  size_t plane_offsets[SkYUVAInfo::kMaxPlanes];
+  plane_offsets[0] = 0;
+  plane_offsets[1] = plane2_offset;
+  plane_offsets[2] = plane3_offset;
+  plane_offsets[3] = plane4_offset;
+
+  for (int plane = 0; plane < yuv_info.numPlanes(); plane++) {
+    auto color_type = viz::ToClosestSkColorType(true, dest_format, plane);
+    auto plane_size =
+        dest_format.GetPlaneSize(plane, gfx::Size(src_width, src_height));
+    SkImageInfo src_info =
+        SkImageInfo::Make(gfx::SizeToSkISize(plane_size), color_type,
+                          SkAlphaType::kPremul_SkAlphaType, nullptr);
+
+    if (row_bytes[plane] < src_info.minRowBytes()) {
+      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glWritePixelsYUV",
+                         "row_bytes must be >= "
+                         "SkImageInfo::minRowBytes() for source image.");
+      return;
+    }
+
+    size_t byte_size = src_info.computeByteSize(row_bytes[plane]);
+    if (byte_size > UINT32_MAX) {
+      LOCAL_SET_GL_ERROR(
+          GL_INVALID_VALUE, "glWritePixelsYUV",
+          "Cannot request a memory chunk larger than UINT32_MAX bytes");
+      return;
+    }
+    if (plane > 0 &&
+        plane_offsets[plane] < plane_offsets[plane - 1] + byte_size) {
+      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glWritePixelsYUV",
+                         "plane_offsets[plane] must be >= plane_offsets[plane "
+                         "- 1] + byte_size");
+      return;
+    }
+
+    // The pixels are stored contiguously for all the planes one after another
+    // with padding.
+    void* pixel_data = GetSharedMemoryAs<void*>(
+        shm_id, shm_offset + plane_offsets[plane], byte_size);
+    if (!pixel_data) {
+      LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixelsYUV",
+                         "Couldn't retrieve pixel data.");
+      return;
+    }
+
+    // Try a direct texture upload without using SkSurface.
+    if (!DoWritePixelsINTERNALDirectTextureUpload(dest_shared_image.get(),
+                                                  src_info, plane, pixel_data,
+                                                  row_bytes[plane])) {
+      LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixelsYUV",
+                         "Failed to upload pixels to dest shared image");
+      return;
+    }
+  }
+
+  if (!dest_shared_image->IsCleared()) {
+    dest_shared_image->SetClearedRect(gfx::Rect(src_width, src_height));
+  }
 }
 
 bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
@@ -2173,7 +2337,7 @@ bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
       dest_scoped_access = dest_shared_image->BeginScopedWriteAccess(
           &begin_semaphores, &end_semaphores,
           SharedImageRepresentation::AllowUnclearedAccess::kYes,
-          false /*use_sk_surface*/);
+          /*use_sk_surface=*/false);
   if (!dest_scoped_access) {
     return false;
   }
@@ -2209,10 +2373,6 @@ bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
   }
 
   SubmitIfNecessary(std::move(end_semaphores));
-  if (written && !dest_shared_image->IsCleared()) {
-    dest_shared_image->SetClearedRect(
-        gfx::Rect(src_info.width(), src_info.height()));
-  }
   return written;
 }
 
