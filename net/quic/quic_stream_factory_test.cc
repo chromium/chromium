@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "net/quic/quic_stream_factory.h"
+#include <sys/types.h>
 
 #include <memory>
 #include <ostream>
@@ -11,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -26,6 +28,7 @@
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/mock_network_change_notifier.h"
+#include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/cert/ct_policy_enforcer.h"
@@ -921,6 +924,9 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
       IoMode write_error_mode,
       bool disconnect_before_connect);
   void TestNoAlternateNetworkBeforeHandshake(quic::QuicErrorCode error);
+  void
+  TestThatBlackHoleIsDisabledOnNoNewNetworkThenResumedAfterConnectingToANetwork(
+      bool is_blackhole_disabled_after_disconnecting);
   void TestNewConnectionOnAlternateNetworkBeforeHandshake(
       quic::QuicErrorCode error);
   void TestOnNetworkMadeDefaultNonMigratableStream(bool migrate_idle_sessions);
@@ -5568,6 +5574,154 @@ TEST_P(QuicStreamFactoryTest,
       ->NotifyNetworkMadeDefault(kDefaultNetworkForTests);
 
   TestSimplePortMigrationOnPathDegrading();
+}
+
+void QuicStreamFactoryTestBase::
+    TestThatBlackHoleIsDisabledOnNoNewNetworkThenResumedAfterConnectingToANetwork(
+        bool is_blackhole_disabled_after_disconnecting) {
+  scoped_mock_network_change_notifier_ =
+      std::make_unique<ScopedMockNetworkChangeNotifier>();
+  MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier_->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+  mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
+  // Enable migration on network change.
+  quic_params_->migrate_sessions_on_network_change_v2 = true;
+  socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  // Using a testing task runner so that we can control time.
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  QuicStreamFactoryPeer::SetTaskRunner(factory_.get(), task_runner.get());
+
+  int packet_num = 1;
+  MockQuicData quic_data(version_);
+  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(packet_num++));
+  quic_data.AddWrite(
+      SYNCHRONOUS,
+      ConstructGetRequestPacket(
+          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
+  quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  MockQuicData quic_data2(version_);
+  quic::QuicConnectionId cid_on_new_path =
+      quic::test::TestConnectionId(12345678);
+  client_maker_.set_connection_id(cid_on_new_path);
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakePingPacket(packet_num++));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
+                                       packet_num++, /*sequence_number=*/0u));
+
+  quic_data2.AddRead(
+      ASYNC, ConstructOkResponsePacket(
+                 1, GetNthClientInitiatedBidirectionalStreamId(0), false));
+  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddWrite(SYNCHRONOUS,
+                      client_maker_.MakeDataPacket(
+                          packet_num++, GetQpackDecoderStreamId(), false,
+                          StreamCancellationQpackDecoderInstruction(0)));
+  quic_data2.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.MakeRstPacket(packet_num++,
+                                  GetNthClientInitiatedBidirectionalStreamId(0),
+                                  quic::QUIC_STREAM_CANCELLED));
+
+  quic_data.AddSocketDataToFactory(socket_factory_.get());
+  quic_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  EXPECT_TRUE(stream.get());
+
+  // Cause QUIC stream to be created.
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = url_;
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
+
+  // Ensure that session is alive and active.
+  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(scheme_host_port_));
+  MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session);
+  // Send GET request on stream.
+  HttpResponseInfo response;
+  HttpRequestHeaders request_headers;
+  EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
+                                    callback_.callback()));
+  handles::NetworkHandle old_network = session->GetCurrentNetwork();
+  // Forcefully disconnect the current network. This should stop the blackhole
+  // detector since there is no other available network.
+  mock_ncn->NotifyNetworkDisconnected(kDefaultNetworkForTests);
+
+  if (is_blackhole_disabled_after_disconnecting) {
+    EXPECT_FALSE(
+        session->connection()->blackhole_detector().IsDetectionInProgress());
+  } else {
+    EXPECT_TRUE(
+        session->connection()->blackhole_detector().IsDetectionInProgress());
+  }
+
+  // This will fire migrateImmediately which will connect to a new socket on the
+  // new network.
+  mock_ncn->NotifyNetworkConnected(kNewNetworkForTests);
+
+  // Execute the tasks that are added to the task runner from
+  // NotifyNetworkConnected.
+  task_runner->RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that we are on the new network.
+  EXPECT_TRUE(old_network != session->GetCurrentNetwork());
+  EXPECT_TRUE(session->GetCurrentNetwork() == kNewNetworkForTests);
+
+  // Verify that blackhole detector is still active.
+  EXPECT_TRUE(
+      session->connection()->blackhole_detector().IsDetectionInProgress());
+
+  // Verify that we also received the response on the new path.
+  EXPECT_EQ(OK, stream->ReadResponseHeaders(callback_.callback()));
+  EXPECT_EQ(200, response.headers->response_code());
+}
+// When the feature is disabled, the blackhole detector should stay enabled
+// when there is no available network. resumed once a new network has been
+// connected to.
+TEST_P(
+    QuicStreamFactoryTest,
+    VerifyThatBlackHoleIsDisabledOnNoAvailableNetworkThenResumedAfterConnectingToNewNetwork_FeatureDisabled) {
+  TestThatBlackHoleIsDisabledOnNoNewNetworkThenResumedAfterConnectingToANetwork(
+      false);
+}
+
+// When the feature is enabled, the blackhole detector should be disabled
+// when there is no available network. resumed once a new network has been
+// connected to.
+TEST_P(
+    QuicStreamFactoryTest,
+    VerifyThatBlackHoleIsDisabledOnNoAvailableNetworkThenResumedAfterConnectingToNewNetwork_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      // enabled_features
+      {features::kDisableBlackholeOnNoNewNetwork},
+      // disabled_features
+      {});
+  TestThatBlackHoleIsDisabledOnNoNewNetworkThenResumedAfterConnectingToANetwork(
+      true);
 }
 
 void QuicStreamFactoryTestBase::TestSimplePortMigrationOnPathDegrading() {

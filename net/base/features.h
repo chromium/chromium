@@ -378,6 +378,10 @@ NET_EXPORT extern const base::FeatureParam<std::string>
 // but not on WebView (until crbug.com/1430082 has been fixed).
 NET_EXPORT BASE_DECLARE_FEATURE(kMigrateSessionsOnNetworkChangeV2);
 
+// Enables whether blackhole detector should be disabled during connection
+// migration and there is no available network.
+NET_EXPORT BASE_DECLARE_FEATURE(kDisableBlackholeOnNoNewNetwork);
+
 #if BUILDFLAG(IS_LINUX)
 // AddressTrackerLinux will not run inside the network service in this
 // configuration, which will improve the Linux network service sandbox.

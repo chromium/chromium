@@ -353,6 +353,10 @@ BASE_FEATURE(kMigrateSessionsOnNetworkChangeV2,
              "MigrateSessionsOnNetworkChangeV2",
              kMigrateSessionsOnNetworkChangeV2Default);
 
+BASE_FEATURE(kDisableBlackholeOnNoNewNetwork,
+             "DisableBlackHoleOnNoNewNetwork",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kAddressTrackerLinuxIsProxied,
              "AddressTrackerLinuxIsProxied",
