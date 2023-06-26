@@ -412,7 +412,10 @@ IN_PROC_BROWSER_TEST_P(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
   if (ShouldError()) {
     EXPECT_EQ(-2, EvalJs(remote_child, await_change_width));
   } else {
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/1297812): Fix flaky timeouts on ChromeOS.
     EXPECT_EQ(803, EvalJs(remote_child, await_change_width));
+#endif
   }
 
   // Update the second display to have a height of 300.  Validate that a change
