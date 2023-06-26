@@ -7434,7 +7434,7 @@
   {
     "name": "tab-hover-card-images",
     "owners": [ "dfried", "estalin" ],
-    "expiry_milestone": 116
+    "expiry_milestone": 117
   },
   {
     "name": "tab-inactivity-threshold",
