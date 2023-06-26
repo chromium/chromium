@@ -12,6 +12,10 @@
 #include "ui/webui/examples/browser/content_browser_client.h"
 #include "ui/webui/examples/common/content_client.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/webui/examples/app/mac_init.h"
+#endif
+
 namespace webui_examples {
 
 MainDelegate::MainDelegate() = default;
@@ -40,6 +44,13 @@ void MainDelegate::PreSandboxStartup() {
 content::ContentBrowserClient* MainDelegate::CreateContentBrowserClient() {
   content_browser_client_ = std::make_unique<ContentBrowserClient>();
   return content_browser_client_.get();
+}
+
+absl::optional<int> MainDelegate::PreBrowserMain() {
+#if BUILDFLAG(IS_MAC)
+  MacPreBrowserMain();
+#endif
+  return content::ContentMainDelegate::PreBrowserMain();
 }
 
 }  // namespace webui_examples

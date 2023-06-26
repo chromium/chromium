@@ -11,6 +11,8 @@ static_library("webui_examples_lib") {
   testonly = true
 
   sources = [
+    "app/mac_init.h",
+    "app/mac_init.mm",
     "app/main_delegate.cc",
     "app/main_delegate.h",
     "browser/browser_context.cc",
@@ -69,8 +71,16 @@ static_library("webui_examples_lib") {
   }
 
   if (is_mac) {
-    sources += [ "browser/browser_main_parts_mac.mm" ]
+    sources += [
+      "browser/browser_main_parts_mac.mm",
+      "browser/ui/cocoa/content_ns_window.h",
+      "browser/ui/cocoa/content_ns_window.mm",
+    ]
     configs += [ "//build/config/compiler:enable_arc" ]
+    frameworks = [
+      "AppKit.framework",
+      "Cocoa.framework",
+    ]
   }
 }
 

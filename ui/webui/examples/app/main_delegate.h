@@ -26,6 +26,7 @@ class MainDelegate : public content::ContentMainDelegate {
   absl::optional<int> BasicStartupComplete() override;
   void PreSandboxStartup() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;
+  absl::optional<int> PreBrowserMain() override;
 
   std::unique_ptr<content::ContentClient> content_client_;
   std::unique_ptr<content::ContentBrowserClient> content_browser_client_;
