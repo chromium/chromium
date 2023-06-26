@@ -63,6 +63,10 @@ const int k3GThroughput = 750 * 1024;
 const int k2GLatency = 300;
 const int k2GThroughput = 250 * 1024;
 
+Status EnsureErrorCode(StatusCode code, Status status) {
+  return status.code() == code ? status : Status{code, status};
+}
+
 Status EvaluateScriptAndIgnoreResult(Session* session,
                                      std::string expression,
                                      const bool await_promise = false) {
@@ -705,6 +709,7 @@ Status ExecuteInitSession(const InitSessionParams& bound_params,
                           std::unique_ptr<base::Value>* value) {
   Status status = InitSessionHelper(bound_params, session, params, value);
   if (status.IsError()) {
+    status = EnsureErrorCode(kSessionNotCreated, status);
     session->quit = true;
     if (session->chrome != nullptr)
       session->chrome->Quit();
