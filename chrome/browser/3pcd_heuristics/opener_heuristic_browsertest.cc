@@ -5,6 +5,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/3pcd_heuristics/opener_heuristic_metrics.h"
 #include "chrome/browser/3pcd_heuristics/opener_heuristic_tab_helper.h"
 #include "chrome/browser/3pcd_heuristics/opener_heuristic_utils.h"
@@ -275,8 +276,16 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
               ElementsAre(Pair("HoursSinceLastInteraction", 3)));
 }
 
+// TODO(crbug.com/1457925): Test is flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PopupPastInteractionIsReported_ServerRedirect \
+  DISABLED_PopupPastInteractionIsReported_ServerRedirect
+#else
+#define MAYBE_PopupPastInteractionIsReported_ServerRedirect \
+  PopupPastInteractionIsReported_ServerRedirect
+#endif
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
-                       PopupPastInteractionIsReported_ServerRedirect) {
+                       MAYBE_PopupPastInteractionIsReported_ServerRedirect) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL popup_url =
       embedded_test_server()->GetURL("a.test", "/server-redirect?title1.html");
