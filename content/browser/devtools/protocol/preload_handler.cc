@@ -389,7 +389,8 @@ void PreloadHandler::DidUpdatePrerenderStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prerender_url,
     PreloadingTriggeringOutcome status,
-    absl::optional<PrerenderFinalStatus> prerender_status) {
+    absl::optional<PrerenderFinalStatus> prerender_status,
+    absl::optional<std::string> disallowed_mojo_interface) {
   if (!enabled_) {
     return;
   }
@@ -404,11 +405,16 @@ void PreloadHandler::DidUpdatePrerenderStatus(
       prerender_status.has_value()
           ? PrerenderFinalStatusToProtocol(prerender_status.value())
           : Maybe<Preload::PrerenderFinalStatus>();
+  Maybe<std::string> protocol_disallowed_mojo_interface =
+      disallowed_mojo_interface.has_value()
+          ? Maybe<std::string>(disallowed_mojo_interface.value())
+          : Maybe<std::string>();
   if (PreloadingTriggeringOutcomeSupportedByPrerender(status)) {
     frontend_->PrerenderStatusUpdated(
         std::move(preloading_attempt_key),
         PreloadingTriggeringOutcomeToProtocol(status),
-        std::move(protocol_prerender_status));
+        std::move(protocol_prerender_status),
+        std::move(protocol_disallowed_mojo_interface));
   }
 }
 

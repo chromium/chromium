@@ -223,6 +223,16 @@ std::string PrerenderCancellationReason::ToDevtoolReasonString() const {
   }
 }
 
+absl::optional<std::string>
+PrerenderCancellationReason::DisallowedMojoInterface() const {
+  switch (final_status_) {
+    case PrerenderFinalStatus::kMojoBinderPolicy:
+      return absl::get<std::string>(explanation_);
+    default:
+      return absl::nullopt;
+  }
+}
+
 void RecordPrerenderTriggered(ukm::SourceId ukm_id) {
   ukm::builders::PrerenderPageLoad(ukm_id).SetTriggeredPrerender(true).Record(
       ukm::UkmRecorder::Get());

@@ -220,7 +220,8 @@ void DidUpdatePrerenderStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prerender_url,
     PreloadingTriggeringOutcome status,
-    absl::optional<PrerenderFinalStatus> prerender_status);
+    absl::optional<PrerenderFinalStatus> prerender_status,
+    absl::optional<std::string> disallowed_mojo_interface);
 
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,

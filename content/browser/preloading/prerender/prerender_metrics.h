@@ -53,6 +53,7 @@ enum class PrerenderCrossOriginRedirectionMismatch {
 // some explanations can be attached to the status.
 class PrerenderCancellationReason {
  public:
+  // Tagged by `final_status_`. See `BuildFor*` and `ToDevtoolReasonString`.
   using DetailedReasonVariant =
       absl::variant<absl::monostate, int32_t, uint64_t, std::string>;
 
@@ -77,6 +78,9 @@ class PrerenderCancellationReason {
 
   // This is mainly used for displaying a detailed reason on devtools panel.
   std::string ToDevtoolReasonString() const;
+  // Returns disallowed Mojo interface name iff final status is
+  // `kMojoBinderPolicy`.
+  absl::optional<std::string> DisallowedMojoInterface() const;
 
  private:
   PrerenderCancellationReason(PrerenderFinalStatus final_status,
