@@ -30,8 +30,7 @@ namespace autofill {
 
 namespace {
 
-constexpr int kCloseIconSize = 20;
-
+constexpr int kCloseIconSize = 16;
 }
 
 PopupAutocompleteCellView::PopupAutocompleteCellView(
@@ -162,7 +161,18 @@ void PopupAutocompleteCellView::CreateDeleteButton() {
           base::BindRepeating(&PopupAutocompleteCellView::DeleteAutocomplete,
                               base::Unretained(this)),
           views::kIcCloseIcon, kCloseIconSize);
-  InstallCircleHighlightPathGenerator(button.get());
+
+  CHECK(GetLayoutManager());
+  views::BoxLayout* layout = static_cast<views::BoxLayout*>(GetLayoutManager());
+  // We are making sure that the vertical distance from the delete button edges
+  // to the cell border is the same as the horizontal distance.
+  // 1. Take the current horizontal distance.
+  int horizontal_margin = layout->inside_border_insets().right();
+  // 2. Take the height of the cell.
+  int cell_height = layout->minimum_cross_axis_size();
+  // 3. The diameter needs to be the height - 2 * the desired margin.
+  int radius = (cell_height - horizontal_margin * 2) / 2;
+  InstallFixedSizeCircleHighlightPathGenerator(button.get(), radius);
   button->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
   button->SetAccessibleRole(ax::mojom::Role::kMenuItem);
@@ -173,8 +183,6 @@ void PopupAutocompleteCellView::CreateDeleteButton() {
   button->SetVisible(false);
 
   // Make child view grow to fill the space and align the button to the right.
-  CHECK(GetLayoutManager());
-  views::BoxLayout* layout = static_cast<views::BoxLayout*>(GetLayoutManager());
   for (views::View* child : children()) {
     layout->SetFlexForView(child, 1);
   }
