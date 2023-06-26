@@ -20068,6 +20068,19 @@
         {}
        ]
       ],
+      "static-fixed-inside-abspos.html": [
+       "e3c3aa450d42505557b1f3eefd0aee8ea63fa4d6",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "static-inside-inline-block.html": [
        "327e8e6dacdeabb4d2d57ab700d80f966ccde76b",
        [
