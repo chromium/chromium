@@ -125,7 +125,7 @@ using signin_metrics::PromoAction;
                          browser:browser
                      accessPoint:accessPoint
                      promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
-                    signinIntent:AddAccountSigninIntent::kAddNewAccount];
+                    signinIntent:AddAccountSigninIntent::kAddAccount];
 }
 
 + (instancetype)

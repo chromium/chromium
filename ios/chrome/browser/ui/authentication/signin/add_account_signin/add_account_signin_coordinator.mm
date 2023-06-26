@@ -124,7 +124,7 @@ using signin_metrics::PromoAction;
           << base::SysNSStringToUTF8([self description]);
       userEmail = base::SysUTF8ToNSString(primaryAccount.email);
       break;
-    case AddAccountSigninIntent::kAddNewAccount:
+    case AddAccountSigninIntent::kAddAccount:
       // The user wants to add a new account, don't pre-fill any email.
       break;
     case AddAccountSigninIntent::kSigninAndSyncReauth:
@@ -216,7 +216,7 @@ using signin_metrics::PromoAction;
     case AddAccountSigninIntent::kSigninAndSyncReauth:
       [self presentUserConsentWithIdentity:identity];
       break;
-    case AddAccountSigninIntent::kAddNewAccount:
+    case AddAccountSigninIntent::kAddAccount:
     case AddAccountSigninIntent::kPrimaryAccountReauth:
       [self addAccountDoneWithSigninResult:signinResult identity:identity];
       break;
