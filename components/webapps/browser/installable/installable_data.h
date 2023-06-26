@@ -44,9 +44,6 @@ struct InstallableData {
                   const GURL& primary_icon_url,
                   const SkBitmap* primary_icon,
                   bool has_maskable_primary_icon,
-                  const GURL& splash_icon_url,
-                  const SkBitmap* splash_icon,
-                  bool has_maskable_splash_icon,
                   const std::vector<Screenshot>& screenshots,
                   bool valid_manifest,
                   bool worker_check_passed);
@@ -98,21 +95,6 @@ struct InstallableData {
   // Whether the primary icon had the 'maskable' purpose, meaningless if no
   // primary_icon was requested.
   const bool has_maskable_primary_icon;
-
-  // The URL of the chosen splash icon.
-  const raw_ref<const GURL, DanglingUntriaged> splash_icon_url;
-
-  // nullptr if the most appropriate splash icon couldn't be determined or
-  // downloaded. The underlying splash icon is owned by the InstallableManager;
-  // clients must copy the bitmap if they want to use it. Since the splash
-  // icon is optional, no error code is set if it cannot be fetched, and clients
-  // specifying |valid_splash_icon| must check that the bitmap exists before
-  // using it.
-  raw_ptr<const SkBitmap, DanglingUntriaged> splash_icon;
-
-  // Whether the splash icon had the 'maskable' purpose, meaningless if no
-  // splash_icon was requested.
-  const bool has_maskable_splash_icon;
 
   // The screenshots to show in the install UI.
   const raw_ref<const std::vector<Screenshot>, DanglingUntriaged> screenshots;

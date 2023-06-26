@@ -68,10 +68,10 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     const JavaParamRef<jstring>& java_manifest_id,
     const JavaParamRef<jstring>& java_app_key,
     const JavaParamRef<jstring>& java_primary_icon_url,
-    const JavaParamRef<jstring>& java_primary_icon_data,
+    const JavaParamRef<jbyteArray>& java_primary_icon_data,
     jboolean java_is_primary_icon_maskable,
     const JavaParamRef<jstring>& java_splash_icon_url,
-    const JavaParamRef<jstring>& java_splash_icon_data,
+    const JavaParamRef<jbyteArray>& java_splash_icon_data,
     jboolean java_is_splash_icon_maskable,
     const JavaParamRef<jobjectArray>& java_icon_urls,
     const JavaParamRef<jobjectArray>& java_icon_hashes,
@@ -172,10 +172,12 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
         webapps::WebApkIconHasher::Icon{/* data= */ "", icon_hashes[i]};
   }
 
-  std::string primary_icon_data =
-      ConvertJavaStringToUTF8(env, java_primary_icon_data);
-  std::string splash_icon_data =
-      ConvertJavaStringToUTF8(env, java_splash_icon_data);
+  std::string primary_icon_data;
+  base::android::JavaByteArrayToString(env, java_primary_icon_data,
+                                       &primary_icon_data);
+  std::string splash_icon_data;
+  base::android::JavaByteArrayToString(env, java_splash_icon_data,
+                                       &splash_icon_data);
 
   std::string webapk_package;
   ConvertJavaStringToUTF8(env, java_webapk_package, &webapk_package);

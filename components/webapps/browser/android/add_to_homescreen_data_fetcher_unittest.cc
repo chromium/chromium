@@ -175,8 +175,7 @@ class TestInstallableManager : public InstallableManager {
         {std::move(errors), GURL(kDefaultManifestUrl), *manifest_,
          params.valid_primary_icon ? primary_icon_url_ : GURL(),
          params.valid_primary_icon ? primary_icon_.get() : nullptr,
-         params.prefer_maskable_icon, GURL() /* splash_icon_url */,
-         nullptr /* splash_icon */, params.prefer_maskable_icon,
+         params.prefer_maskable_icon,
          std::vector<webapps::Screenshot>() /* screenshots */,
          params.valid_manifest ? is_installable : false,
          params.has_worker ? is_installable : true});

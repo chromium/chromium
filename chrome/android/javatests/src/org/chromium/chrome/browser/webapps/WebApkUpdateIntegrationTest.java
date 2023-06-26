@@ -5,12 +5,15 @@
 package org.chromium.chrome.browser.webapps;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -24,7 +27,6 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -60,8 +62,6 @@ public class WebApkUpdateIntegrationTest {
     @Rule
     public RuleChain mRuleChain =
             RuleChain.emptyRuleChain().around(mActivityTestRule).around(mCertVerifierRule);
-
-    private static final String TAG = "WebApkIntegratTest";
 
     private static final String WEBAPK_PACKAGE_NAME = "org.chromium.webapk.test";
 
@@ -104,7 +104,6 @@ public class WebApkUpdateIntegrationTest {
                         }
                         return ai;
                     } catch (Exception e) {
-                        Log.e(TAG, "Failed to get application info for %s", packageName, e);
                     }
                     return null;
                 }
@@ -113,7 +112,7 @@ public class WebApkUpdateIntegrationTest {
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         mActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
         mContextToRestore = ContextUtils.getApplicationContext();
         mTestContext = new TestContext(mContextToRestore);
@@ -132,7 +131,7 @@ public class WebApkUpdateIntegrationTest {
         }
     }
 
-    private Bundle defaultMetaData() {
+    private Bundle defaultMetaData() throws Exception {
         Bundle bundle = new Bundle();
         bundle.putString(WebApkMetaDataKeys.NAME, WEBAPK_NAME);
         bundle.putString(WebApkMetaDataKeys.SHORT_NAME, WEBAPK_SHORT_NAME);
@@ -145,6 +144,13 @@ public class WebApkUpdateIntegrationTest {
                 WebApkMetaDataKeys.WEB_MANIFEST_URL, mTestServer.getURL(WEBAPK_MANIFEST_URL));
         bundle.putString(WebApkMetaDataKeys.START_URL, mTestServer.getURL(WEBAPK_START_URL));
         bundle.putString(WebApkMetaDataKeys.SCOPE, mTestServer.getURL(WEBAPK_SCOPE_URL));
+        Resources res =
+                mTestContext.getPackageManager().getResourcesForApplication(WEBAPK_PACKAGE_NAME);
+        bundle.putInt(WebApkMetaDataKeys.ICON_ID,
+                res.getIdentifier("app_icon", "mipmap", WEBAPK_PACKAGE_NAME));
+        bundle.putInt(WebApkMetaDataKeys.SPLASH_ID,
+                res.getIdentifier("splash_icon", "drawable", WEBAPK_PACKAGE_NAME));
+
         bundle.putString(WebApkMetaDataKeys.ICON_URLS_AND_ICON_MURMUR2_HASHES,
                 ICON_URL + " " + ICON_MURMUR2_HASH);
         return bundle;
@@ -205,8 +211,20 @@ public class WebApkUpdateIntegrationTest {
         assertEquals(proto.getManifest().getStartUrl(), mTestServer.getURL(WEBAPK_START_URL));
         assertEquals(proto.getManifest().getScopes(0), mTestServer.getURL(WEBAPK_SCOPE_URL));
         assertEquals(proto.getManifest().getId(), mTestServer.getURL(WEBAPK_START_URL));
-        assertEquals(proto.getManifest().getIconsCount(), 2);
         assertEquals(proto.getManifest().getOrientation(), "landscape");
         assertEquals(proto.getManifest().getDisplayMode(), "standalone");
+
+        assertEquals(proto.getManifest().getIconsCount(), 2);
+        // First icon from old shell icon, has image data but no hash.
+        WebApkProto.Image icon1 = proto.getManifest().getIconsList().get(0);
+        assertFalse(icon1.hasSrc());
+        assertFalse(icon1.hasHash());
+        assertTrue(icon1.hasImageData());
+        assertFalse(icon1.getImageData().isEmpty());
+        // 2nd icon from the url to hash map, has url and hash but no data.
+        WebApkProto.Image icon2 = proto.getManifest().getIconsList().get(1);
+        assertTrue(icon2.hasSrc());
+        assertTrue(icon2.hasHash());
+        assertFalse(icon2.hasImageData());
     }
 }

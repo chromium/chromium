@@ -159,8 +159,8 @@ public class WebApkUpdateManagerUnitTest {
         @Override
         public void storeWebApkUpdateRequestToFile(String updateRequestPath, String startUrl,
                 String scope, String name, String shortName, String manifestId, String appKey,
-                String primaryIconUrl, String primaryIconData, boolean isPrimaryIconMaskable,
-                String splashIconUrl, String splashIconData, boolean isSplashIconMaskable,
+                String primaryIconUrl, byte[] primaryIconData, boolean isPrimaryIconMaskable,
+                String splashIconUrl, byte[] splashIconData, boolean isSplashIconMaskable,
                 String[] iconUrls, String[] iconHashes, @DisplayMode.EnumType int displayMode,
                 int orientation, long themeColor, long backgroundColor, String shareTargetAction,
                 String shareTargetParamTitle, String shareTargetParamText,
@@ -285,9 +285,9 @@ public class WebApkUpdateManagerUnitTest {
                 String primaryIconUrl, String splashIconUrl, boolean isManifestStale,
                 boolean isAppIdentityUpdateSupported, List<Integer> updateReasons,
                 Callback<Boolean> callback) {
-            storeWebApkUpdateRequestToFile(updateRequestPath, info, primaryIconUrl, "",
-                    splashIconUrl, "", isManifestStale, isAppIdentityUpdateSupported, updateReasons,
-                    callback);
+            storeWebApkUpdateRequestToFile(updateRequestPath, info, primaryIconUrl, new byte[] {},
+                    splashIconUrl, new byte[] {}, isManifestStale, isAppIdentityUpdateSupported,
+                    updateReasons, callback);
         }
 
         @Override
@@ -298,8 +298,8 @@ public class WebApkUpdateManagerUnitTest {
 
         @Override
         protected void storeWebApkUpdateRequestToFile(String updateRequestPath, WebappInfo info,
-                String primaryIconUrl, String primaryIconData, String splashIconUrl,
-                String splashIconData, boolean isManifestStale,
+                String primaryIconUrl, byte[] primaryIconData, String splashIconUrl,
+                byte[] splashIconData, boolean isManifestStale,
                 boolean isAppIdentityUpdateSupported, List<Integer> updateReasons,
                 Callback<Boolean> callback) {
             mStoreUpdateRequestCallback = callback;

@@ -708,16 +708,16 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
             String primaryIconUrl, String splashIconUrl, boolean isManifestStale,
             boolean isAppIdentityUpdateSupported, List<Integer> updateReasons,
             Callback<Boolean> callback) {
-        new AsyncTask<Pair<String, String>>() {
+        new AsyncTask<Pair<byte[], byte[]>>() {
             @Override
-            protected Pair<String, String> doInBackground() {
-                String primaryIconData = info.icon().encoded();
-                String splashIconData = info.splashIcon().encoded();
+            protected Pair<byte[], byte[]> doInBackground() {
+                byte[] primaryIconData = info.icon().data();
+                byte[] splashIconData = info.splashIcon().data();
                 return Pair.create(primaryIconData, splashIconData);
             }
 
             @Override
-            protected void onPostExecute(Pair<String, String> result) {
+            protected void onPostExecute(Pair<byte[], byte[]> result) {
                 storeWebApkUpdateRequestToFile(updateRequestPath, info, primaryIconUrl,
                         result.first, splashIconUrl, result.second, isManifestStale,
                         isAppIdentityUpdateSupported, updateReasons, callback);
@@ -726,8 +726,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     }
 
     protected void storeWebApkUpdateRequestToFile(String updateRequestPath, WebappInfo info,
-            String primaryIconUrl, String primaryIconData, String splashIconUrl,
-            String splashIconData, boolean isManifestStale, boolean isAppIdentityUpdateSupported,
+            String primaryIconUrl, byte[] primaryIconData, String splashIconUrl,
+            byte[] splashIconData, boolean isManifestStale, boolean isAppIdentityUpdateSupported,
             List<Integer> updateReasons, Callback<Boolean> callback) {
         int versionCode = info.webApkVersionCode();
         int size = info.iconUrlToMurmur2HashMap().size();
@@ -792,8 +792,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     interface Natives {
         public void storeWebApkUpdateRequestToFile(String updateRequestPath, String startUrl,
                 String scope, String name, String shortName, String manifestId, String appKey,
-                String primaryIconUrl, String primaryIconData, boolean isPrimaryIconMaskable,
-                String splashIconUrl, String splashIconData, boolean isSplashIconMaskable,
+                String primaryIconUrl, byte[] primaryIconData, boolean isPrimaryIconMaskable,
+                String splashIconUrl, byte[] splashIconData, boolean isSplashIconMaskable,
                 String[] iconUrls, String[] iconHashes, @DisplayMode.EnumType int displayMode,
                 int orientation, long themeColor, long backgroundColor, String shareTargetAction,
                 String shareTargetParamTitle, String shareTargetParamText,

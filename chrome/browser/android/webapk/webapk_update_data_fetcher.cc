@@ -94,9 +94,7 @@ WebApkUpdateDataFetcher::WebApkUpdateDataFetcher(JNIEnv* env,
       scope_(scope),
       web_manifest_url_(web_manifest_url),
       web_manifest_id_(web_manifest_id),
-      info_(GURL()),
-      is_primary_icon_maskable_(false),
-      is_splash_icon_maskable_(false) {
+      info_(GURL()) {
   java_ref_.Reset(env, obj);
 }
 
@@ -149,7 +147,6 @@ void WebApkUpdateDataFetcher::FetchInstallableData() {
   params.has_worker = false;
   params.wait_for_worker = false;
   params.valid_primary_icon = true;
-  params.valid_splash_icon = true;
   webapps::InstallableManager* installable_manager =
       webapps::InstallableManager::FromWebContents(web_contents());
   installable_manager->GetData(
@@ -207,14 +204,9 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
   info_.UpdateFromManifest(*data.manifest);
   info_.manifest_url = *data.manifest_url;
   info_.best_primary_icon_url = *data.primary_icon_url;
+  info_.is_primary_icon_maskable = data.has_maskable_primary_icon;
   primary_icon_ = *data.primary_icon;
-  is_primary_icon_maskable_ = data.has_maskable_primary_icon;
-
-  if (data.splash_icon && !data.splash_icon->drawsNothing()) {
-    info_.splash_image_url = *data.splash_icon_url;
-    splash_icon_ = *data.splash_icon;
-    is_splash_icon_maskable_ = data.has_maskable_splash_icon;
-  }
+  info_.UpdateBestSplashIcon(*data.manifest);
 
   std::vector<webapps::WebappIcon> icons = info_.GetWebApkIcons();
 
@@ -251,6 +243,7 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
       base::android::ConvertUTF8ToJavaString(env, info_.manifest_url.spec());
   ScopedJavaLocalRef<jstring> java_manifest_id =
       base::android::ConvertUTF8ToJavaString(env, info_.manifest_id.spec());
+
   ScopedJavaLocalRef<jstring> java_primary_icon_url =
       base::android::ConvertUTF8ToJavaString(
           env, info_.best_primary_icon_url.spec());
@@ -259,17 +252,19 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
           env, (*hashes)[info_.best_primary_icon_url.spec()].hash);
   ScopedJavaLocalRef<jobject> java_primary_icon =
       gfx::ConvertToJavaBitmap(primary_icon_);
-  jboolean java_is_primary_icon_maskable = is_primary_icon_maskable_;
+  jboolean java_is_primary_icon_maskable = info_.is_primary_icon_maskable;
+
   ScopedJavaLocalRef<jstring> java_splash_icon_url =
       base::android::ConvertUTF8ToJavaString(env,
                                              info_.splash_image_url.spec());
   ScopedJavaLocalRef<jstring> java_splash_icon_murmur2_hash =
       base::android::ConvertUTF8ToJavaString(
           env, (*hashes)[info_.splash_image_url.spec()].hash);
-  jboolean java_is_splash_icon_maskable = is_splash_icon_maskable_;
-  ScopedJavaLocalRef<jobject> java_splash_icon;
-  if (!splash_icon_.drawsNothing())
-    java_splash_icon = gfx::ConvertToJavaBitmap(splash_icon_);
+  jboolean java_is_splash_icon_maskable = info_.is_splash_image_maskable;
+  base::android::ScopedJavaLocalRef<jbyteArray> java_splash_icon_data =
+      base::android::ToJavaByteArray(
+          env, (*hashes)[info_.splash_image_url.spec()].unsafe_data);
+
   ScopedJavaLocalRef<jobjectArray> java_icon_urls =
       base::android::ToJavaArrayOfStrings(env, info_.icon_urls);
 
@@ -342,7 +337,7 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
       java_manifest_url, java_manifest_id, java_primary_icon_url,
       java_primary_icon_murmur2_hash, java_primary_icon,
       java_is_primary_icon_maskable, java_splash_icon_url,
-      java_splash_icon_murmur2_hash, java_splash_icon,
+      java_splash_icon_murmur2_hash, java_splash_icon_data,
       java_is_splash_icon_maskable, java_icon_urls,
       static_cast<int>(info_.display), static_cast<int>(info_.orientation),
       ui::OptionalSkColorToJavaColor(info_.theme_color),

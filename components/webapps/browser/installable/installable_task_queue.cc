@@ -74,7 +74,6 @@ void InstallableTaskQueue::ResetWithError(InstallableStatusCode code) {
     if (task.callback) {
       std::move(task.callback)
           .Run(InstallableData({code}, GURL(), manifest, GURL(), nullptr, false,
-                               GURL(), nullptr, false,
                                std::vector<Screenshot>(), false, false));
     }
   }
@@ -82,7 +81,6 @@ void InstallableTaskQueue::ResetWithError(InstallableStatusCode code) {
     if (task.callback) {
       std::move(task.callback)
           .Run(InstallableData({code}, GURL(), manifest, GURL(), nullptr, false,
-                               GURL(), nullptr, false,
                                std::vector<Screenshot>(), false, false));
     }
   }
