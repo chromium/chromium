@@ -284,8 +284,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'InternetPage', 'internet_page_tests.js', {
      enabled: [
-       'ash::features::kApnRevamp', 'ash::features::kPasspointSettings',
-       'ash::features::kPasspointARCSupport'
+       'ash::features::kApnRevamp',
+       'ash::features::kHotspot',
+       'ash::features::kPasspointSettings',
+       'ash::features::kPasspointARCSupport',
      ]
    }
  ],

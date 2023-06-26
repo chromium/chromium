@@ -174,12 +174,13 @@
   </template>
 
   <template is="dom-if" route-path="/hotspotDetail" restamp>
-    <os-settings-subpage page-title="$i18n{hotspotPageTitle}">
-        <div id="hotspotSubtitle">
-          <localized-link
-              localized-string="[[i18nAdvanced('hotspotSubpageSubtitle')]]">
-          </localized-link>
-        </div>
+    <os-settings-subpage id="hotspotSubpage" page-title="$i18n{hotspotPageTitle}"
+        show-spinner="[[showHotspotSpinner_(hotspotInfo.state)]]">
+      <div id="hotspotSubtitle">
+        <localized-link
+            localized-string="[[i18nAdvanced('hotspotSubpageSubtitle')]]">
+        </localized-link>
+      </div>
       <settings-hotspot-subpage hotspot-info="[[hotspotInfo]]">
       </settings-hotspot-subpage>
     </os-settings-subpage>

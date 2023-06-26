@@ -34,7 +34,7 @@ import './network_summary.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {getNumESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
 import {PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
-import {HotspotInfo} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
+import {HotspotInfo, HotspotState} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {hasActiveCellularNetwork, isConnectedToNonCellularNetwork} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
@@ -979,6 +979,14 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       return subscription.friendlyName;
     }
     return subscription.domains[0];
+  }
+
+  private showHotspotSpinner_(): boolean {
+    if (!this.hotspotInfo) {
+      return false;
+    }
+    return this.hotspotInfo.state === HotspotState.kEnabling ||
+        this.hotspotInfo.state === HotspotState.kDisabling;
   }
 }
 
