@@ -142,6 +142,12 @@ class StateClearer : public content::BrowsingDataRemover::Observer {
       base::OnceClosure callback) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+    // Note: we prevent deletion in this case because of crbug.com/1457600.
+    if (filter->MatchesAllOriginsAndDomains()) {
+      std::move(callback).Run();
+      return;
+    }
+
     // StateClearer manages its own lifetime and deletes itself when finished.
     auto* state_clearer = new StateClearer(remover, std::move(callback));
 
@@ -527,7 +533,6 @@ void DIPSService::DeleteDIPSEligibleState(
         .Record(ukm::UkmRecorder::Get());
   }
 
-  base::OnceClosure finish_callback;
   if (ShouldBlockThirdPartyCookies() && dips::kDeletionEnabled.Get()) {
     std::vector<std::string> excepted_sites;
     std::vector<std::string> non_excepted_sites;
@@ -550,21 +555,40 @@ void DIPSService::DeleteDIPSEligibleState(
       }
     }
 
-    finish_callback = base::BindOnce(
+    base::OnceClosure finish_callback = base::BindOnce(
         std::move(callback), std::vector<std::string>(non_excepted_sites));
+    if (non_excepted_sites.empty() && excepted_sites.empty()) {
+      std::move(finish_callback).Run();
+      return;
+    }
 
+    // We have sites with exceptions, but no sites to delete state for. Just
+    // remove their entries from the database.
+    if (non_excepted_sites.empty()) {
+      storage_.AsyncCall(&DIPSStorage::RemoveRows)
+          .WithArgs(std::move(excepted_sites))
+          .Then(base::BindOnce(&OnDeletionFinished, std::move(finish_callback),
+                               deletion_start));
+      return;
+    }
+
+    // We have sites to delete state for, but no sites with exceptions. Just
+    // perform state deletion.
     if (excepted_sites.empty()) {
       PostDeletionTaskToUIThread(std::move(finish_callback), deletion_start,
                                  std::move(non_excepted_sites));
-    } else {
-      // Storage init should be finished by now, so no need to delay until then.
-      storage_.AsyncCall(&DIPSStorage::RemoveRows)
-          .WithArgs(std::move(excepted_sites))
-          .Then(base::BindOnce(&DIPSService::PostDeletionTaskToUIThread,
-                               weak_factory_.GetWeakPtr(),
-                               std::move(finish_callback), deletion_start,
-                               std::move(non_excepted_sites)));
+      return;
     }
+
+    // We have both sites with exceptions to remove from the database and sites
+    // to actually delete state for. Do both operations in sequence.
+    storage_.AsyncCall(&DIPSStorage::RemoveRows)
+        .WithArgs(std::move(excepted_sites))
+        .Then(base::BindOnce(&DIPSService::PostDeletionTaskToUIThread,
+                             weak_factory_.GetWeakPtr(),
+                             std::move(finish_callback), deletion_start,
+                             std::move(non_excepted_sites)));
+
   } else {
     for (auto it = sites_to_clear.begin(); it != sites_to_clear.end(); it++) {
       // TODO(crbug.com/1447035): Investigate and fix the presence of empty
@@ -577,14 +601,13 @@ void DIPSService::DeleteDIPSEligibleState(
       UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kDisallowed);
     }
 
-    finish_callback = base::BindOnce(std::move(callback),
-                                     std::vector<std::string>(sites_to_clear));
-
     // Storage init should be finished by now, so no need to delay until then.
     storage_.AsyncCall(&DIPSStorage::RemoveRows)
         .WithArgs(std::move(sites_to_clear))
-        .Then(base::BindOnce(&OnDeletionFinished, std::move(finish_callback),
-                             deletion_start));
+        .Then(base::BindOnce(
+            &OnDeletionFinished,
+            base::BindOnce(std::move(callback), std::vector<std::string>()),
+            deletion_start));
   }
 }
 

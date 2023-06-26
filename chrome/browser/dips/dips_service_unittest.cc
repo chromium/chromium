@@ -421,6 +421,34 @@ TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Disabled) {
               EntryUrlsAre("DIPS.Deletion", {"http://example.com/"}));
 }
 
+TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_DoesNotMatchAll) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      dips::kFeature, {{"delete", "true"}, {"triggering_action", "bounce"}});
+
+  // Record a bounce.
+  GURL url;
+  base::Time bounce = base::Time::FromDoubleT(2);
+  GetService()->RecordBounceForTesting(
+      url, GURL("https://initial.com"), GURL("https://final.com"), bounce,
+      false, base::BindRepeating([](const GURL& final_url) {}));
+  WaitOnStorage();
+
+  // Verify that a DIPS record actually exists for the empty URL.
+  EXPECT_TRUE(GetDIPSState(url).has_value());
+
+  // Time-travel to after the grace period has ended for the bounce.
+  AdvanceTimeTo(bounce + grace_period + tiny_delta);
+  FireDIPSTimer();
+  task_environment_.RunUntilIdle();
+
+  // Verify a removal task was not posted to the BrowsingDataRemover(Delegate).
+  delegate_.VerifyAndClearExpectations();
+
+  EXPECT_THAT(ukm_recorder, EntryUrlsAre("DIPS.Deletion", {}));
+}
+
 TEST_F(DIPSServiceStateRemovalTest,
        BrowsingDataDeletion_Respects3PExceptionsFor3PC) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;

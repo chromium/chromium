@@ -33,6 +33,8 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -405,12 +407,21 @@ class DevToolsProtocolTest_BounceTrackingMitigations
     DevToolsProtocolTest::SetUp();
   }
 
+  void SetBlockThirdPartyCookies(bool value) {
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            value ? content_settings::CookieControlsMode::kBlockThirdParty
+                  : content_settings::CookieControlsMode::kOff));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_BounceTrackingMitigations,
                        RunBounceTrackingMitigations) {
+  SetBlockThirdPartyCookies(true);
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
