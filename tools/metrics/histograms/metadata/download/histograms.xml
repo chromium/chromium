@@ -955,15 +955,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.SavePackage" enum="DownloadSavePackageEvent"
-    expires_after="M77">
-  <owner>dtrainor@chromium.org</owner>
-  <summary>
-    Events (e.g. Started, Cancelled, Finished, Write to Completed file, Write to
-    Failed file) occuring within the state machine of a SavePackage operation.
-  </summary>
-</histogram>
-
 <histogram name="Download.Service.Complete.FileSize.{DownloadClient}"
     units="KB" expires_after="never">
 <!-- expires-never: Download service stability metric. -->

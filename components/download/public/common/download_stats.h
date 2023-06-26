@@ -223,31 +223,6 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadFileRenameResultAfterRetry(
     base::TimeDelta time_since_first_failure,
     DownloadInterruptReason interrupt_reason);
 
-enum SavePackageEvent {
-  // The user has started to save a page as a package.
-  SAVE_PACKAGE_STARTED,
-
-  // The save package operation was cancelled.
-  SAVE_PACKAGE_CANCELLED,
-
-  // The save package operation finished without being cancelled.
-  SAVE_PACKAGE_FINISHED,
-
-  // The save package tried to write to an already completed file.
-  SAVE_PACKAGE_WRITE_TO_COMPLETED,
-
-  // The save package tried to write to an already failed file.
-  SAVE_PACKAGE_WRITE_TO_FAILED,
-
-  // Instead of using save package API, used download API to save non HTML
-  // format files.
-  SAVE_PACKAGE_DOWNLOAD_ON_NON_HTML,
-
-  SAVE_PACKAGE_LAST_ENTRY
-};
-
-COMPONENTS_DOWNLOAD_EXPORT void RecordSavePackageEvent(SavePackageEvent event);
-
 // Enumeration for histogramming purposes.
 // These values are written to logs.  New enum values can be added, but existing
 // enums must never be renumbered or deleted and reused.

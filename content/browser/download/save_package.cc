@@ -265,7 +265,6 @@ void SavePackage::Cancel(bool user_action, bool cancel_download_item) {
       disk_error_occurred_ = true;
     Stop(cancel_download_item);
   }
-  download::RecordSavePackageEvent(download::SAVE_PACKAGE_CANCELLED);
 }
 
 // Init() can be called directly, or indirectly via GetSaveInfo(). In both
@@ -280,8 +279,6 @@ void SavePackage::InternalInit() {
   download_manager_ = static_cast<DownloadManagerImpl*>(
       page_->GetMainDocument().GetBrowserContext()->GetDownloadManager());
   DCHECK(download_manager_);
-
-  download::RecordSavePackageEvent(download::SAVE_PACKAGE_STARTED);
 
   ukm_source_id_ = page_->GetMainDocument().GetPageUkmSourceId();
   ukm_download_id_ = download::GetUniqueDownloadId();
@@ -770,19 +767,9 @@ void SavePackage::Finish() {
     download::DownloadSaveItemData::AttachItemData(download_, std::move(files));
   }
 
-  // Record finish.
-  download::RecordSavePackageEvent(download::SAVE_PACKAGE_FINISHED);
-
   // TODO(qinmin): report the actual file size and duration for the download.
   download::DownloadUkmHelper::RecordDownloadCompleted(ukm_download_id_, 1,
                                                        base::TimeDelta(), 0);
-
-  // Record any errors that occurred.
-  if (wrote_to_completed_file_)
-    download::RecordSavePackageEvent(download::SAVE_PACKAGE_WRITE_TO_COMPLETED);
-
-  if (wrote_to_failed_file_)
-    download::RecordSavePackageEvent(download::SAVE_PACKAGE_WRITE_TO_FAILED);
 
   // This vector contains the save ids of the save files which SaveFileManager
   // needs to remove from its |save_file_map_|.

@@ -565,11 +565,6 @@ void RecordParallelRequestCreationFailure(DownloadInterruptReason reason) {
                            reason);
 }
 
-void RecordSavePackageEvent(SavePackageEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("Download.SavePackage", event,
-                            SAVE_PACKAGE_LAST_ENTRY);
-}
-
 DownloadConnectionSecurity CheckDownloadConnectionSecurity(
     const GURL& download_url,
     const std::vector<GURL>& url_chain) {
