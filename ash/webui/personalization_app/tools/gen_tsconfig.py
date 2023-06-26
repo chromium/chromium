@@ -105,7 +105,7 @@ def main(args):
     }
 
     #TODO(xiaohuic): remove special case for ChromeOS Settings below.
-    if '/settings/chromeos' in arguments.gn_target:
+    if '/ash/settings' in arguments.gn_target:
         # ChromeOS Settings app setup is special, the ts input dir root is not
         # matching the source code root. It uses the browser Settings app
         # source code root instead because of sharing some browser Settings

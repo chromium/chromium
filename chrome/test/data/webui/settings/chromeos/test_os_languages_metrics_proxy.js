@@ -8,7 +8,7 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
  * A test version of LanguagesMetricsProxy.
  */
 // This class implements LanguagesMetricsProxy from
-// c/b/r/settings/chromeos/os_languages_page/languages_metrics_proxy.ts.
+// c/b/r/ash/settings/os_languages_page/languages_metrics_proxy.ts.
 export class TestLanguagesMetricsProxy extends TestBrowserProxy {
   constructor() {
     super([

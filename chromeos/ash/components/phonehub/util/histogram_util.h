@@ -84,7 +84,7 @@ enum class PhoneHubMessageResult {
 // numeric values should never be reused.
 // Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
 // Keep in sync with PhoneHubPermissionsSetupFlowScreens in
-// chrome/browser/resources/settings/chromeos/multidevice_page/
+// chrome/browser/resources/ash/settings/multidevice_page/
 // multidevice_constants.js
 enum class PermissionsOnboardingSetUpMode {
   kNone = 0,
@@ -99,7 +99,7 @@ enum class PermissionsOnboardingSetUpMode {
 };
 
 // Keep in sync with PhoneHubPermissionsSetupFlowScreens in
-// chrome/browser/resources/settings/chromeos/multidevice_page/
+// chrome/browser/resources/ash/settings/multidevice_page/
 // multidevice_constants.js
 enum class PermissionsOnboardingStep {
   kUnknown = 0,
@@ -116,7 +116,7 @@ enum class PermissionsOnboardingStep {
 // numeric values should never be reused.
 // Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
 // Keep in sync with PhoneHubPermissionsSetupAction in
-// chrome/browser/resources/settings/chromeos/multidevice_page/
+// chrome/browser/resources/ash/settings/multidevice_page/
 // multidevice_constants.js
 enum class PermissionsOnboardingScreenEvent {
   kUnknown = 0,

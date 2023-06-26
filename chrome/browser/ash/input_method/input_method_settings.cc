@@ -29,7 +29,7 @@ constexpr char kJapaneseEngineId[] = "nacl_mozc_jp";
 
 // This should be kept in sync with the values on the settings page's
 // InputMethodOptions. This should match
-// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.js;l=71-88;drc=6c88edbfe6096489ccac66b3ef5c84d479892181.
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/ash/settings/os_languages_page/input_method_util.js;l=71-88;drc=6c88edbfe6096489ccac66b3ef5c84d479892181.
 constexpr char kJapaneseAutomaticallySwitchToHalfwidth[] =
     "AutomaticallySwitchToHalfwidth";
 constexpr char kJapaneseShiftKeyModeStyle[] = "ShiftKeyModeStyle";
@@ -48,7 +48,7 @@ constexpr char kJapaneseAutomaticallySendStatisticsToGoogle[] =
     "AutomaticallySendStatisticsToGoogle";
 
 // This should match the strings listed here:
-// https://crsrc.org/c/chrome/browser/resources/settings/chromeos/os_languages_page/input_method_types.js;l=8-71;drc=7df206933530e6ac65a7e17a88757cbb780c829e
+// https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_types.js;l=8-71;drc=7df206933530e6ac65a7e17a88757cbb780c829e
 // These are possible values for their corresponding enum type.
 constexpr char kJapaneseInputModeKana[] = "Kana";
 constexpr char kJapaneseInputModeRomaji[] = "Romaji";
@@ -79,7 +79,7 @@ constexpr char kJapaneseShiftKeyModeStyleAlphanumeric[] = "Alphanumeric";
 constexpr char kJapaneseShiftKeyModeStyleKatakana[] = "Katakana";
 
 // The values here should be kept in sync with
-// chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.js
+// chrome/browser/resources/ash/settings/os_languages_page/input_method_util.js
 // Although these strings look like UI strings, they are the actual internal
 // values stored inside prefs. Therefore, it is important to make sure these
 // strings match the settings page exactly.
@@ -95,19 +95,19 @@ constexpr char kKoreanPrefsLayoutSebeolsikOldHangeul[] =
     "3 Set (Old Hangul) / 세벌식 (옛글)";
 
 // The values here should be kept in sync with
-// chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.js
+// chrome/browser/resources/ash/settings/os_languages_page/input_method_util.js
 constexpr char kPinyinPrefsLayoutUsQwerty[] = "US";
 constexpr char kPinyinPrefsLayoutDvorak[] = "Dvorak";
 constexpr char kPinyinPrefsLayoutColemak[] = "Colemak";
 
 // The values here should be kept in sync with
-// chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.js
+// chrome/browser/resources/ash/settings/os_languages_page/input_method_util.js
 constexpr char kZhuyinPrefsLayoutStandard[] = "Default";
 constexpr char kZhuyinPrefsLayoutIbm[] = "IBM";
 constexpr char kZhuyinPrefsLayoutEten[] = "Eten";
 
 // The values here should be kept in sync with
-// chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.js
+// chrome/browser/resources/ash/settings/os_languages_page/input_method_util.js
 constexpr char kZhuyinPrefsSelectionKeys1234567890[] = "1234567890";
 constexpr char kZhuyinPrefsSelectionKeysAsdfghjkl[] = "asdfghjkl;";
 constexpr char kZhuyinPrefsSelectionKeysAsdfzxcv89[] = "asdfzxcv89";
@@ -115,7 +115,7 @@ constexpr char kZhuyinPrefsSelectionKeysAsdfjkl789[] = "asdfjkl789";
 constexpr char kZhuyinPrefsSelectionKeys1234Qweras[] = "1234qweras";
 
 // The values here should be kept in sync with
-// chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.js
+// chrome/browser/resources/ash/settings/os_languages_page/input_method_util.js
 constexpr char kZhuyinPrefsPageSize10[] = "10";
 constexpr char kZhuyinPrefsPageSize9[] = "9";
 constexpr char kZhuyinPrefsPageSize8[] = "8";
@@ -375,7 +375,7 @@ const base::Value::Dict& GetPrefsDictionaryForEngineId(
 
 // Port the Prefs settings onto a Dict object for setting the user Prefs.
 // This converts the code in the corresponding pages:
-// https://crsrc.org/c/chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.js;drc=6c88edbfe6096489ccac66b3ef5c84d479892181;l=72
+// https://crsrc.org/c/chrome/browser/resources/ash/settings/os_languages_page/input_method_util.js;drc=6c88edbfe6096489ccac66b3ef5c84d479892181;l=72
 // https://crsrc.org/c/chromeos/ash/services/ime/public/mojom/japanese_settings.mojom;drc=e250164fc5bdefca32cb94157e9835ff8c2c9ee6;l=73
 base::Value::Dict ConvertConfigToJapaneseSettings(
     const ime::mojom::JapaneseConfig config) {

@@ -7,7 +7,7 @@ import {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 // This class implements LanguagesBrowserProxy from
-// c/b/r/settings/chromeos/os_languages_page/languages_browser_proxy.ts.
+// c/b/r/ash/settings/os_languages_page/languages_browser_proxy.ts.
 export class TestLanguagesBrowserProxy extends TestBrowserProxy {
   constructor() {
     const methodNames = [];

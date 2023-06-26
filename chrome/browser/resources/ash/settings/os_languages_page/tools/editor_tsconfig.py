@@ -36,17 +36,17 @@ is provided to remove lazy_load.ts from the resulting tsconfig.json.
 
 
 Example invocations:
-$ ./chrome/browser/resources/settings/chromeos/os_languages_page/tools/\
+$ ./chrome/browser/resources/ash/settings/os_languages_page/tools/\
 editor_tsconfig.py \
 --remove_lazy_load \
 ./out/Debug/gen/chrome/browser/resources/settings/tsconfig_build_ts.json
-$ ./chrome/browser/resources/settings/chromeos/os_languages_page/tools/\
+$ ./chrome/browser/resources/ash/settings/os_languages_page/tools/\
 editor_tsconfig.py \
 --root_dir=".." \
 --remove_lazy_load \
-./out/Debug/gen/chrome/browser/resources/settings/chromeos/\
+./out/Debug/gen/chrome/browser/resources/ash/settings/\
 tsconfig_build_ts.json
-$ ./chrome/browser/resources/settings/chromeos/os_languages_page/tools/\
+$ ./chrome/browser/resources/ash/settings/os_languages_page/tools/\
 editor_tsconfig.py \
 ./out/Debug/gen/ui/webui/resources/cr_components/most_visited/\
 tsconfig_build_ts.json
@@ -79,20 +79,20 @@ def _relative_to_with_parents(path: pathlib.Path, other: pathlib.Path) -> str:
 
 
 def _rebase_relative_path(
-        path: str,
-        originally_relative_to: pathlib.Path,
-        newly_relative_to: pathlib.Path,
+    path: str,
+    originally_relative_to: pathlib.Path,
+    newly_relative_to: pathlib.Path,
 ) -> str:
     original_path = originally_relative_to.joinpath(path).resolve()
     return _relative_to_with_parents(original_path, newly_relative_to)
 
 
 def _convert_tsconfig_for_editor(
-        tsconfig: dict,
-        original_dir: pathlib.Path,
-        editor_dir: pathlib.Path,
-        editor_root_dir: str,
-        remove_lazy_load: bool,
+    tsconfig: dict,
+    original_dir: pathlib.Path,
+    editor_dir: pathlib.Path,
+    editor_root_dir: str,
+    remove_lazy_load: bool,
 ) -> dict:
     original_dir = original_dir.resolve()
     editor_dir = editor_dir.resolve()
