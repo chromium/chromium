@@ -35,7 +35,7 @@ namespace {
 
 using ::testing::UnorderedPointwise;
 
-enum PrefState { kDefault, kDisabled, kEnabled };
+enum class PrefState { kDefault, kDisabled, kEnabled };
 
 const char* kHostA = "a.test";
 const char* kHostB = "b.test";
@@ -62,8 +62,7 @@ class EnabledPolicyBrowsertest
       public ::testing::WithParamInterface<std::tuple<bool, PrefState>> {
  public:
   EnabledPolicyBrowsertest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
-        pref_enabled_(GetPrefState() != PrefState::kDisabled) {
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     if (IsFeatureEnabled()) {
       scoped_feature_list_.InitWithFeatures(
           {features::kFirstPartySets,
@@ -77,22 +76,23 @@ class EnabledPolicyBrowsertest
   void SetUpOnMainThread() override {
     PolicyTest::SetUpOnMainThread();
     // Add content/test/data for cross_site_iframe_factory.html
-    https_server()->ServeFilesFromSourceDirectory("content/test/data");
-    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    https_server()->AddDefaultHandlers(GetChromeTestDataDir());
-    ASSERT_TRUE(https_server()->Start());
+    https_server_.ServeFilesFromSourceDirectory("content/test/data");
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
   }
 
   void SetUpInProcessBrowserTestFixture() override {
     PolicyTest::SetUpInProcessBrowserTestFixture();
-    SetUpPolicyMapWithOverridesPolicy();
-    // POLICY_LEVEL_MANDATORY - since administrators will control FPS policy
-    // POLICY_SCOPE_USER - since this policy is per profile, not on local state
-    // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise policy
+
+    if (absl::optional<std::string> policy = GetOverridesPolicy();
+        policy.has_value()) {
+      SetPolicyValue(policy::key::kFirstPartySetsOverrides,
+                     base::JSONReader::Read(policy.value()));
+    }
     if (GetPrefState() != PrefState::kDefault) {
-      policies_.Set(policy::key::kFirstPartySetsEnabled, POLICY_LEVEL_MANDATORY,
-                    POLICY_SCOPE_USER, POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                    base::Value(IsPrefEnabled()), nullptr);
+      SetPolicyValue(policy::key::kFirstPartySetsEnabled,
+                     base::Value(GetPrefState() == PrefState::kEnabled));
     }
 
     provider_.UpdateChromePolicy(policies_);
@@ -113,85 +113,77 @@ class EnabledPolicyBrowsertest
   }
 
  protected:
-  content::WebContents* web_contents() {
-    return chrome_test_utils::GetActiveWebContents(this);
+  virtual absl::optional<std::string> GetOverridesPolicy() {
+    return absl::nullopt;
   }
 
-  GURL SetSamePartyCookiesUrl(const std::string& host) {
-    return https_server()->GetURL(host, kSetSamePartyCookiesURL);
+  // Sets the state of the First-Party Sets enabled preference.
+  void SetEnabledPolicyState(bool enabled) {
+    SetPolicyValue(policy::key::kFirstPartySetsEnabled, base::Value(enabled));
+
+    provider_.UpdateChromePolicy(policies_);
   }
 
-  virtual void SetUpPolicyMapWithOverridesPolicy() {}
-
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
-  PolicyMap& policy_map() { return policies_; }
-
-  // Reverses the state of the First-Party Sets enabled preference.
-  void FlipEnabledPolicy() {
-    pref_enabled_ = !pref_enabled_;
-    policy_map().Set(policy::key::kFirstPartySetsEnabled,
-                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                     POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                     base::Value(pref_enabled_), nullptr);
-
-    provider_.UpdateChromePolicy(policy_map());
-  }
-
-  bool IsFirstPartySetsEnabled() {
-    return IsFeatureEnabled() && IsPrefEnabled();
-  }
-
-  // Clear cookies for the current browser context, returning the number
-  // cleared.
-  uint32_t ClearCookies() {
-    return content::DeleteCookies(web_contents()->GetBrowserContext(),
-                                  network::mojom::CookieDeletionFilter());
+  // Returns whether or not First-Party Sets was enabled at the start of the
+  // test. This does not account for calls to `SetEnabledPolicyState`.
+  bool IsFirstPartySetsEnabledInitially() {
+    return IsFeatureEnabled() && GetPrefState() != PrefState::kDisabled;
   }
 
   bool AreSitesInSameFirstPartySet(const std::string& first_host,
                                    const std::string& second_host) {
+    content::WebContents* web_contents =
+        chrome_test_utils::GetActiveWebContents(this);
     std::vector<net::CanonicalCookie> cookies =
         ArrangeFramesAndGetCanonicalCookiesForLeaf(
-            web_contents(), https_server(),
+            web_contents, &https_server_,
             base::StringPrintf("%s(%%s)", first_host.c_str()),
-            SetSamePartyCookiesUrl(second_host));
-    ClearCookies();
+            https_server_.GetURL(second_host, kSetSamePartyCookiesURL));
+    content::DeleteCookies(web_contents->GetBrowserContext(),
+                           network::mojom::CookieDeletionFilter());
     return testing::Value(
         cookies, UnorderedPointwise(net::CanonicalCookieNameIs(), kAllCookies));
   }
 
- private:
   bool IsFeatureEnabled() { return std::get<0>(GetParam()); }
   PrefState GetPrefState() { return std::get<1>(GetParam()); }
-  bool IsPrefEnabled() { return pref_enabled_; }
+
+ private:
+  void SetPolicyValue(const char* key, absl::optional<base::Value> value) {
+    // POLICY_LEVEL_MANDATORY - since administrators will control FPS policy
+    // POLICY_SCOPE_USER - since this policy is per profile, not on local state
+    // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise policy
+    policies_.Set(key, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                  POLICY_SOURCE_ENTERPRISE_DEFAULT, std::move(value), nullptr);
+  }
 
   net::test_server::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList scoped_feature_list_;
   PolicyMap policies_;
-  bool pref_enabled_;
 };
 
-IN_PROC_BROWSER_TEST_P(
-    EnabledPolicyBrowsertest,
-    ToggleFeature_Memberships) {
-  EXPECT_EQ(IsFirstPartySetsEnabled(),
+IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest, ToggleFeature_Memberships) {
+  const bool feature_enabled = IsFeatureEnabled();
+  const bool pref_initially_enabled = GetPrefState() != PrefState::kDisabled;
+
+  EXPECT_EQ(feature_enabled && pref_initially_enabled,
             AreSitesInSameFirstPartySet(kHostA, kHostC));
-  EXPECT_EQ(IsFirstPartySetsEnabled(),
+  EXPECT_EQ(feature_enabled && pref_initially_enabled,
             AreSitesInSameFirstPartySet(kHostA, kHostB));
 
-  FlipEnabledPolicy();
+  SetEnabledPolicyState(!pref_initially_enabled);
 
-  EXPECT_EQ(IsFirstPartySetsEnabled(),
+  EXPECT_EQ(feature_enabled && !pref_initially_enabled,
             AreSitesInSameFirstPartySet(kHostA, kHostC));
-  EXPECT_EQ(IsFirstPartySetsEnabled(),
+  EXPECT_EQ(feature_enabled && !pref_initially_enabled,
             AreSitesInSameFirstPartySet(kHostA, kHostB));
 }
 
-IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
-                        ToggleFeature_NonMemberships) {
+IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest, ToggleFeature_NonMemberships) {
   EXPECT_FALSE(AreSitesInSameFirstPartySet(kHostD, kHostA));
 
-  FlipEnabledPolicy();
+  const bool pref_initially_enabled = GetPrefState() != PrefState::kDisabled;
+  SetEnabledPolicyState(!pref_initially_enabled);
 
   EXPECT_FALSE(AreSitesInSameFirstPartySet(kHostD, kHostA));
 }
@@ -206,28 +198,20 @@ INSTANTIATE_TEST_SUITE_P(
 
 class OverridesPolicyEmptyBrowsertest : public EnabledPolicyBrowsertest {
  public:
-  void SetUpPolicyMapWithOverridesPolicy() override {
-    // POLICY_LEVEL_MANDATORY - since administrators will control FPS policy
-    // POLICY_SCOPE_USER - since this policy is per profile, not on local state
-    // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise
-    // policy
-    policy_map().Set(policy::key::kFirstPartySetsOverrides,
-                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                     POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                     base::JSONReader::Read(R"( {} )"), nullptr);
+  absl::optional<std::string> GetOverridesPolicy() override {
+    return R"( {} )";
   }
 };
 
-IN_PROC_BROWSER_TEST_P(OverridesPolicyEmptyBrowsertest,
-                       CheckMemberships) {
+IN_PROC_BROWSER_TEST_P(OverridesPolicyEmptyBrowsertest, CheckMemberships) {
   // The initial First-Party Sets were:
   // {primary: A, associatedSites: [B, C]}
   //
   // After the Overrides policy is applied, the expected First-Party Sets are:
   // {primary: A, associatedSites: [B, C]} (unchanged)
-  EXPECT_EQ(IsFirstPartySetsEnabled(),
+  EXPECT_EQ(IsFirstPartySetsEnabledInitially(),
             AreSitesInSameFirstPartySet(kHostC, kHostA));
-  EXPECT_EQ(IsFirstPartySetsEnabled(),
+  EXPECT_EQ(IsFirstPartySetsEnabledInitially(),
             AreSitesInSameFirstPartySet(kHostB, kHostA));
 }
 
@@ -241,27 +225,18 @@ INSTANTIATE_TEST_SUITE_P(
 
 class OverridesPolicyReplacementBrowsertest : public EnabledPolicyBrowsertest {
  public:
-  void SetUpPolicyMapWithOverridesPolicy() override {
-    // POLICY_LEVEL_MANDATORY - since administrators will control FPS policy
-    // POLICY_SCOPE_USER - since this policy is per profile, not on local state
-    // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise
-    // policy
-    policy_map().Set(policy::key::kFirstPartySetsOverrides,
-                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                     POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                     base::JSONReader::Read(R"(
-                              {
-                                "replacements": [
-                                  {
-                                    "primary": "https://d.test",
-                                    "associatedSites": ["https://b.test",
-                                    "https://a.test"]
-                                  }
-                                ],
-                                "additions": []
-                              }
-                            )"),
-                     nullptr);
+  absl::optional<std::string> GetOverridesPolicy() override {
+    return R"(
+        {
+          "replacements": [
+            {
+              "primary": "https://d.test",
+              "associatedSites": ["https://b.test", "https://a.test"]
+            }
+          ],
+          "additions": []
+        }
+      )";
   }
 };
 
@@ -272,9 +247,9 @@ IN_PROC_BROWSER_TEST_P(OverridesPolicyReplacementBrowsertest,
   //
   // After the Overrides policy is applied, the expected First-Party Sets are:
   // {primary: D, associatedSites: [A, B]}
-  EXPECT_EQ(IsFirstPartySetsEnabled(),
+  EXPECT_EQ(IsFirstPartySetsEnabledInitially(),
             AreSitesInSameFirstPartySet(kHostA, kHostB));
-  EXPECT_EQ(IsFirstPartySetsEnabled(),
+  EXPECT_EQ(IsFirstPartySetsEnabledInitially(),
             AreSitesInSameFirstPartySet(kHostA, kHostD));
   EXPECT_FALSE(AreSitesInSameFirstPartySet(kHostA, kHostC));
 }
@@ -289,41 +264,32 @@ INSTANTIATE_TEST_SUITE_P(
 
 class OverridesPolicyAdditionBrowsertest : public EnabledPolicyBrowsertest {
  public:
-  void SetUpPolicyMapWithOverridesPolicy() override {
-    // POLICY_LEVEL_MANDATORY - since administrators will control FPS policy
-    // POLICY_SCOPE_USER - since this policy is per profile, not on local state
-    // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise
-    // policy
-    policy_map().Set(policy::key::kFirstPartySetsOverrides,
-                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                     POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                     base::JSONReader::Read(R"(
-                              {
-                                "replacements": [],
-                                "additions": [
-                                  {
-                                    "primary": "https://a.test",
-                                    "associatedSites": ["https://d.test"]
-                                  }
-                                ]
-                              }
-                            )"),
-                     nullptr);
+  absl::optional<std::string> GetOverridesPolicy() override {
+    return R"(
+        {
+          "replacements": [],
+          "additions": [
+            {
+              "primary": "https://a.test",
+              "associatedSites": ["https://d.test"]
+            }
+          ]
+        }
+      )";
   }
 };
 
-IN_PROC_BROWSER_TEST_P(OverridesPolicyAdditionBrowsertest,
-                       CheckMemberships) {
+IN_PROC_BROWSER_TEST_P(OverridesPolicyAdditionBrowsertest, CheckMemberships) {
   // The initial First-Party Sets were:
   // {primary: A, associatedSites: [B, C]}
   //
   // After the Overrides policy is applied, the expected First-Party Sets are:
   // {primary: A, associatedSites: [B, C, D]}}
-  EXPECT_EQ(IsFirstPartySetsEnabled(),
+  EXPECT_EQ(IsFirstPartySetsEnabledInitially(),
             AreSitesInSameFirstPartySet(kHostA, kHostD));
-  EXPECT_EQ(IsFirstPartySetsEnabled(),
+  EXPECT_EQ(IsFirstPartySetsEnabledInitially(),
             AreSitesInSameFirstPartySet(kHostA, kHostB));
-  EXPECT_EQ(IsFirstPartySetsEnabled(),
+  EXPECT_EQ(IsFirstPartySetsEnabledInitially(),
             AreSitesInSameFirstPartySet(kHostA, kHostC));
 }
 
@@ -338,31 +304,23 @@ INSTANTIATE_TEST_SUITE_P(
 class OverridesPolicyReplacementAndAdditionBrowsertest
     : public EnabledPolicyBrowsertest {
  public:
-  void SetUpPolicyMapWithOverridesPolicy() override {
-    // POLICY_LEVEL_MANDATORY - since administrators will control FPS policy
-    // POLICY_SCOPE_USER - since this policy is per profile, not on local state
-    // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise
-    // policy
-    policy_map().Set(policy::key::kFirstPartySetsOverrides,
-                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                     POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                     base::JSONReader::Read(R"(
-                              {
-                                "replacements": [
-                                  {
-                                    "primary": "https://a.test",
-                                    "associatedSites": ["https://d.test"]
-                                  }
-                                ],
-                                "additions": [
-                                  {
-                                    "primary": "https://b.test",
-                                    "associatedSites": ["https://c.test"]
-                                  }
-                                ]
-                              }
-                            )"),
-                     nullptr);
+  absl::optional<std::string> GetOverridesPolicy() override {
+    return R"(
+        {
+          "replacements": [
+            {
+              "primary": "https://a.test",
+              "associatedSites": ["https://d.test"]
+            }
+          ],
+          "additions": [
+            {
+              "primary": "https://b.test",
+              "associatedSites": ["https://c.test"]
+            }
+          ]
+        }
+      )";
   }
 };
 
@@ -374,9 +332,9 @@ IN_PROC_BROWSER_TEST_P(OverridesPolicyReplacementAndAdditionBrowsertest,
   // After the Overrides policy is applied, the expected First-Party Sets are:
   // {primary: A, associatedSites: [D]} and {primary: B, associatedSites: [C]}.
   EXPECT_FALSE(AreSitesInSameFirstPartySet(kHostB, kHostA));
-  EXPECT_EQ(IsFirstPartySetsEnabled(),
+  EXPECT_EQ(IsFirstPartySetsEnabledInitially(),
             AreSitesInSameFirstPartySet(kHostD, kHostA));
-  EXPECT_EQ(IsFirstPartySetsEnabled(),
+  EXPECT_EQ(IsFirstPartySetsEnabledInitially(),
             AreSitesInSameFirstPartySet(kHostC, kHostB));
 }
 
