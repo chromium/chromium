@@ -44,11 +44,6 @@ struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
     return r.available_rect;
   }
 
-  static const absl::optional<gfx::Size>& size_override(
-      const display::ScreenInfo& r) {
-    return r.size_override;
-  }
-
   static display::mojom::ScreenOrientation orientation_type(
       const display::ScreenInfo& r) {
     return r.orientation_type;

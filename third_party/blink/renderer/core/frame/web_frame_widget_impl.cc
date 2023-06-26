@@ -4311,8 +4311,7 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
   const bool window_screen_has_changed =
       !Screen::AreWebExposedScreenPropertiesEqual(
           previous_original_screen_infos.current(),
-          original_screen_infos.current(),
-          !RuntimeEnabledFeatures::FullscreenScreenSizeMatchesDisplayEnabled());
+          original_screen_infos.current());
 
   // Update Screens interface data before firing any events. The API is designed
   // to offer synchronous access to the most up-to-date cached screen

@@ -55,12 +55,6 @@ struct DISPLAY_EXPORT ScreenInfo {
   //   some of the rectangle's coordinates may be negative values".
   gfx::Rect available_rect;
 
-  // This lets `window.screen` provide viewport dimensions while the frame is
-  // fullscreen as a speculative site compatibility measure, because web authors
-  // may assume that screen dimensions match window.innerWidth/innerHeight while
-  // a page is fullscreen, but that is not always true. crbug.com/1367416
-  absl::optional<gfx::Size> size_override;
-
   // This is the orientation 'type' or 'name', as in landscape-primary or
   // portrait-secondary for examples.
   // See ui/display/mojom/screen_orientation.mojom for the full list.

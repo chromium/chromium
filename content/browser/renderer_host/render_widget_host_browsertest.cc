@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -38,7 +37,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -649,33 +647,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
 }
 #endif
 
-class RenderWidgetHostFullscreenScreenSizeBrowserTest
-    : public RenderWidgetHostBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  RenderWidgetHostFullscreenScreenSizeBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        blink::features::kFullscreenScreenSizeMatchesDisplay,
-        FullscreenScreenSizeMatchesDisplayEnabled());
-  }
-  bool FullscreenScreenSizeMatchesDisplayEnabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         RenderWidgetHostFullscreenScreenSizeBrowserTest,
-                         testing::Bool());
-
-// Tests `window.screen` dimensions in fullscreen. Note that Content Shell does
-// not resize the viewport to fill the screen in fullscreen on some platforms.
-// `window.screen` may provide viewport dimensions while the frame is fullscreen
-// as a speculative site compatibility measure, because web authors may assume
-// that screen dimensions match window.innerWidth/innerHeight while a page is
-// fullscreen, but that is not always true. crbug.com/1367416
-IN_PROC_BROWSER_TEST_P(RenderWidgetHostFullscreenScreenSizeBrowserTest,
-                       FullscreenSize) {
+// Tests that `window.screen` dimensions match the display, not the viewport,
+// while the frame is fullscreen. See crbug.com/1367416
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostBrowserTest, FullscreenSize) {
   // Check initial dimensions before entering fullscreen.
   ASSERT_FALSE(shell()->IsFullscreenForTabOrPending(web_contents()));
   ASSERT_FALSE(web_contents()->IsFullscreen());
@@ -692,15 +666,9 @@ IN_PROC_BROWSER_TEST_P(RenderWidgetHostFullscreenScreenSizeBrowserTest,
   )JS";
   ASSERT_TRUE(EvalJs(web_contents(), kEnterFullscreenScript).ExtractBool());
 
-  if (FullscreenScreenSizeMatchesDisplayEnabled()) {
-    // `window.screen` dimensions match the display size.
-    EXPECT_EQ(host()->GetScreenInfo().rect.size().ToString(),
-              EvalJs(web_contents(), "`${screen.width}x${screen.height}`"));
-  } else {
-    // `window.screen` dimensions match the potentially smaller viewport size.
-    EXPECT_EQ(view()->GetRequestedRendererSize().ToString(),
-              EvalJs(web_contents(), "`${screen.width}x${screen.height}`"));
-  }
+  // `window.screen` dimensions match the display size.
+  EXPECT_EQ(host()->GetScreenInfo().rect.size().ToString(),
+            EvalJs(web_contents(), "`${screen.width}x${screen.height}`"));
 
   // Check dimensions again after exiting fullscreen.
   constexpr char kExitFullscreenScript[] = R"JS(

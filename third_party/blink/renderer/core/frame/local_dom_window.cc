@@ -1086,9 +1086,7 @@ Screen* LocalDOMWindow::screen() {
     int64_t display_id =
         frame ? frame->GetChromeClient().GetScreenInfo(*frame).display_id
               : Screen::kInvalidDisplayId;
-    screen_ = MakeGarbageCollected<Screen>(
-        this, display_id, /*use_size_override=*/
-        !RuntimeEnabledFeatures::FullscreenScreenSizeMatchesDisplayEnabled());
+    screen_ = MakeGarbageCollected<Screen>(this, display_id);
   }
   return screen_.Get();
 }

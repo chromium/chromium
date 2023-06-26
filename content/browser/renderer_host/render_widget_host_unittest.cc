@@ -1133,32 +1133,9 @@ TEST_F(RenderWidgetHostTest, ResizeScreenInfo) {
   EXPECT_FALSE(host_->visual_properties_ack_pending_);
 }
 
-class RenderWidgetHostFullscreenScreenSizeTest
-    : public RenderWidgetHostTest,
-      public testing::WithParamInterface<bool> {
- public:
-  RenderWidgetHostFullscreenScreenSizeTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        blink::features::kFullscreenScreenSizeMatchesDisplay,
-        FullscreenScreenSizeMatchesDisplayEnabled());
-  }
-  bool FullscreenScreenSizeMatchesDisplayEnabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         RenderWidgetHostFullscreenScreenSizeTest,
-                         testing::Bool());
-
-// Test that VisualProperties conveys a ScreenInfo size override with the view's
-// size for the current screen, when the frame is fullscreen.
-// This lets `window.screen` provide viewport dimensions while the frame is
-// fullscreen as a speculative site compatibility measure, because web authors
-// may assume that screen dimensions match window.innerWidth/innerHeight while
-// a page is fullscreen, but that is not always true. crbug.com/1367416
-TEST_P(RenderWidgetHostFullscreenScreenSizeTest, ScreenSizeInFullscreen) {
+// Ensure VisualProperties continues reporting the size of the current screen,
+// not the viewport, when the frame is fullscreen. See crbug.com/1367416.
+TEST_F(RenderWidgetHostTest, ScreenSizeInFullscreen) {
   const gfx::Rect kScreenBounds(0, 0, 800, 600);
   const gfx::Rect kViewBounds(55, 66, 600, 500);
 
@@ -1179,7 +1156,6 @@ TEST_P(RenderWidgetHostFullscreenScreenSizeTest, ScreenSizeInFullscreen) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, widget_.ReceivedVisualProperties().size());
   blink::VisualProperties props = widget_.ReceivedVisualProperties().at(0);
-  EXPECT_EQ(absl::nullopt, props.screen_infos.current().size_override);
   EXPECT_EQ(kScreenBounds, props.screen_infos.current().rect);
   EXPECT_EQ(kScreenBounds, props.screen_infos.current().available_rect);
   EXPECT_EQ(kViewBounds.size(), props.new_size);
@@ -1191,10 +1167,6 @@ TEST_P(RenderWidgetHostFullscreenScreenSizeTest, ScreenSizeInFullscreen) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2u, widget_.ReceivedVisualProperties().size());
   props = widget_.ReceivedVisualProperties().at(1);
-  if (FullscreenScreenSizeMatchesDisplayEnabled())
-    EXPECT_EQ(absl::nullopt, props.screen_infos.current().size_override);
-  else
-    EXPECT_EQ(kViewBounds.size(), props.screen_infos.current().size_override);
   EXPECT_EQ(kScreenBounds, props.screen_infos.current().rect);
   EXPECT_EQ(kScreenBounds, props.screen_infos.current().available_rect);
   EXPECT_EQ(kViewBounds.size(), props.new_size);
@@ -1206,7 +1178,6 @@ TEST_P(RenderWidgetHostFullscreenScreenSizeTest, ScreenSizeInFullscreen) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(3u, widget_.ReceivedVisualProperties().size());
   props = widget_.ReceivedVisualProperties().at(2);
-  EXPECT_EQ(absl::nullopt, props.screen_infos.current().size_override);
   EXPECT_EQ(kScreenBounds, props.screen_infos.current().rect);
   EXPECT_EQ(kScreenBounds, props.screen_infos.current().available_rect);
   EXPECT_EQ(kViewBounds.size(), props.new_size);

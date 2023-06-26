@@ -1838,15 +1838,6 @@
       base_feature: "FullscreenPopupWindows"
     },
     {
-      // If enabled, `window.screen` always provides display dimensions.
-      // Otherwise, `window.screen` provides viewport dimensions in fullscreen
-      // as a speculative site compatibility measure, because web authors may
-      // assume that screen dimensions match window.innerWidth/innerHeight while
-      // a page is fullscreen, but that is not always true. crbug.com/1367416
-      name: "FullscreenScreenSizeMatchesDisplay",
-      status: "stable",
-    },
-    {
       name: "GamepadButtonAxisEvents",
       status: "experimental",
       base_feature: "none",

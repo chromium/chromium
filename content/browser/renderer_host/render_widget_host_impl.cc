@@ -1034,17 +1034,6 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
 
   visual_properties.new_size = view_->GetRequestedRendererSize();
 
-  // While in fullscreen, provide the view size as a ScreenInfo size override.
-  // This lets `window.screen` provide viewport dimensions while the frame is
-  // fullscreen as a speculative site compatibility measure, because web authors
-  // may assume that screen dimensions match window.innerWidth/innerHeight while
-  // a page is fullscreen, but that is not always true. crbug.com/1367416
-  if (visual_properties.is_fullscreen_granted &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kFullscreenScreenSizeMatchesDisplay)) {
-    current_screen_info.size_override = visual_properties.new_size;
-  }
-
   // This widget is for a frame that is the main frame of the outermost frame
   // tree. That makes it the top-most frame. OR this is a non-frame widget.
   const bool is_top_most_widget = !view_->IsRenderWidgetHostViewChildFrame();

@@ -14,7 +14,6 @@ bool StructTraits<display::mojom::ScreenInfoDataView, display::ScreenInfo>::
   if (!data.ReadDisplayColorSpaces(&out->display_color_spaces) ||
       !data.ReadRect(&out->rect) ||
       !data.ReadAvailableRect(&out->available_rect) ||
-      !data.ReadSizeOverride(&out->size_override) ||
       !data.ReadLabel(&out->label)) {
     return false;
   }
