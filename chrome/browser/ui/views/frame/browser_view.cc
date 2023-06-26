@@ -2204,17 +2204,19 @@ void BrowserView::ToggleWindowControlsOverlayEnabled(base::OnceClosure done) {
           .Then(std::move(done)));
 }
 
-bool BrowserView::ChildOfAnchorWidgetContainsPoint(
+bool BrowserView::WidgetOwnedByAnchorContainsPoint(
     const gfx::Point& point_in_browser_view_coords) {
-  auto* parent_widget = GetWidgetForAnchoring();
-  views::Widget::Widgets widgets;
-  views::Widget::GetAllChildWidgets(parent_widget->GetNativeView(), &widgets);
+  const auto point_in_screen_coords =
+      views::View::ConvertPointToScreen(this, point_in_browser_view_coords);
 
-  return base::ranges::any_of(widgets, [&](auto* widget) {
-    return widget != parent_widget && widget->IsVisible() &&
-           widget->GetWindowBoundsInScreen().Contains(
-               views::View::ConvertPointToScreen(this,
-                                                 point_in_browser_view_coords));
+  auto* anchor_widget = GetWidgetForAnchoring();
+
+  views::Widget::Widgets widgets;
+  views::Widget::GetAllOwnedWidgets(anchor_widget->GetNativeView(), &widgets);
+  return base::ranges::any_of(widgets, [point_in_screen_coords,
+                                        anchor_widget](auto* widget) {
+    return widget != anchor_widget && widget->IsVisible() &&
+           widget->GetWindowBoundsInScreen().Contains(point_in_screen_coords);
   });
 }
 
@@ -3758,12 +3760,12 @@ bool BrowserView::ShouldDescendIntoChildForEventHandling(
                                       contents_web_view_,
                                       &point_in_contents_web_view_coords);
 
-    // Draggable regions should be ignored for clicks into any child widgets,
-    // for example alerts or find bar.
+    // Draggable regions should be ignored for clicks into any browser view's
+    // owned widgets, for example alerts, permission prompts or find bar.
     return !controller->draggable_region()->contains(
                point_in_contents_web_view_coords.x(),
                point_in_contents_web_view_coords.y()) ||
-           ChildOfAnchorWidgetContainsPoint(point_in_contents_web_view_coords);
+           WidgetOwnedByAnchorContainsPoint(point_in_contents_web_view_coords);
   }
 
   return true;
