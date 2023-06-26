@@ -4050,6 +4050,9 @@
   <message name="IDS_SETTINGS_ADD_SITE_TITLE" desc="Title for the Add Site dialog">
     Add a site
   </message>
+  <message name="IDS_SETTINGS_ADD_SITES_TITLE" desc="Title for the Add Sites dialog">
+    Add sites
+  </message>
   <message name="IDS_SETTINGS_EDIT_SITE_TITLE" desc="Title for the Edit Site dialog">
     Edit site
   </message>
