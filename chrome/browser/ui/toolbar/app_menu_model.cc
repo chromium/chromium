@@ -926,7 +926,20 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.RestoreTab", delta);
       LogMenuAction(MENU_ACTION_RESTORE_TAB);
       break;
-
+    case IDC_OPEN_RECENT_TAB:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.OpenRecentTab",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_RECENT_TAB);
+      break;
+    case IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.LoginForDeviceTabs",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_RECENT_TABS_LOGIN_FOR_DEVICE_TABS);
+      break;
     case IDC_DISTILL_PAGE:
       if (!uma_action_recorded_) {
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.DistillPage",
@@ -1118,7 +1131,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_FULLSCREEN);
       break;
-
     case IDC_SHOW_HISTORY:
       if (!uma_action_recorded_) {
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowHistory",
@@ -1417,8 +1429,11 @@ void AppMenuModel::Build() {
   }
 
   if (!browser_->profile()->IsOffTheRecord()) {
-    sub_menus_.push_back(
-        std::make_unique<RecentTabsSubMenuModel>(provider_, browser_));
+    auto recent_tabs_sub_menu =
+        std::make_unique<RecentTabsSubMenuModel>(provider_, browser_);
+    recent_tabs_sub_menu->RegisterLogMenuMetricsCallback(base::BindRepeating(
+        &AppMenuModel::LogMenuMetrics, base::Unretained(this)));
+    sub_menus_.push_back(std::move(recent_tabs_sub_menu));
     AddSubMenuWithStringId(IDC_RECENT_TABS_MENU, IDS_HISTORY_MENU,
                            sub_menus_.back().get());
     SetElementIdentifierAt(GetIndexOfCommandId(IDC_RECENT_TABS_MENU).value(),

@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/recent_tabs_builder_test_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -108,8 +109,7 @@ void VerifyModel(const ui::MenuModel* model, base::span<const ModelData> data) {
 
 }  // namespace
 
-class RecentTabsSubMenuModelTest
-    : public BrowserWithTestWindowTest {
+class RecentTabsSubMenuModelTest : public BrowserWithTestWindowTest {
  public:
   RecentTabsSubMenuModelTest() = default;
   RecentTabsSubMenuModelTest(const RecentTabsSubMenuModelTest&) = delete;
@@ -177,6 +177,64 @@ class RecentTabsSubMenuModelTest
       session_sync_service_;
   std::unique_ptr<syncer::ModelTypeProcessor> sync_processor_;
 };
+
+class TestLogMetricsAppMenuModel : public AppMenuModel {
+ public:
+  using AppMenuModel::AppMenuModel;
+
+  void LogMenuAction(AppMenuAction action_id) override {
+    ++log_metrics_call_count_;
+  }
+
+  void CallLogMenuMetrics(int command_id) { LogMenuMetrics(command_id); }
+
+  int log_metrics_call_count() const { return log_metrics_call_count_; }
+
+ private:
+  int log_metrics_call_count_ = 0;
+};
+
+class FakeIconDelegate : public AppMenuIconController::Delegate {
+ public:
+  void UpdateTypeAndSeverity(
+      AppMenuIconController::TypeAndSeverity type_and_severity) override {}
+  SkColor GetDefaultColorForSeverity(
+      AppMenuIconController::Severity severity) const override {
+    return gfx::kPlaceholderColor;
+  }
+};
+
+TEST_F(RecentTabsSubMenuModelTest, LogMenuMetricsForShowHistory) {
+  FakeIconDelegate fake_delegate;
+  AppMenuIconController app_menu_icon_controller(browser()->profile(),
+                                                 &fake_delegate);
+  TestLogMetricsAppMenuModel app_menu_model(nullptr, browser(),
+                                            &app_menu_icon_controller);
+  app_menu_model.Init();
+  RecentTabsSubMenuModel recent_tab_sub_menu_model(nullptr, browser());
+  recent_tab_sub_menu_model.RegisterLogMenuMetricsCallback(
+      base::BindRepeating(&TestLogMetricsAppMenuModel::CallLogMenuMetrics,
+                          base::Unretained(&app_menu_model)));
+  recent_tab_sub_menu_model.ExecuteCommand(IDC_SHOW_HISTORY, 0);
+  EXPECT_EQ(1, app_menu_model.log_metrics_call_count());
+}
+
+TEST_F(RecentTabsSubMenuModelTest,
+       LogMenuMetricsForRecentTabsLoginForDeviceTabs) {
+  FakeIconDelegate fake_delegate;
+  AppMenuIconController app_menu_icon_controller(browser()->profile(),
+                                                 &fake_delegate);
+  TestLogMetricsAppMenuModel app_menu_model(nullptr, browser(),
+                                            &app_menu_icon_controller);
+  app_menu_model.Init();
+  RecentTabsSubMenuModel recent_tab_sub_menu_model(nullptr, browser());
+  recent_tab_sub_menu_model.RegisterLogMenuMetricsCallback(
+      base::BindRepeating(&TestLogMetricsAppMenuModel::CallLogMenuMetrics,
+                          base::Unretained(&app_menu_model)));
+  recent_tab_sub_menu_model.ExecuteCommand(
+      IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS, 0);
+  EXPECT_EQ(1, app_menu_model.log_metrics_call_count());
+}
 
 // Test disabled "Recently closed" header with no foreign tabs.
 TEST_F(RecentTabsSubMenuModelTest, NoTabs) {

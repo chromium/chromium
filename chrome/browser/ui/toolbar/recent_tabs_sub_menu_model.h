@@ -51,6 +51,8 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
                                public ui::SimpleMenuModel::Delegate,
                                public sessions::TabRestoreServiceObserver {
  public:
+  using LogMenuMetricsCallback = base::RepeatingCallback<void(int)>;
+
   // Command ID for recently closed items header or disabled item to which the
   // accelerator string will be appended.
   static constexpr int kDisabledRecentlyClosedHeaderCommandId =
@@ -77,6 +79,8 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
+
+  void RegisterLogMenuMetricsCallback(LogMenuMetricsCallback callback);
 
  private:
   struct TabNavigationItem;
@@ -212,6 +216,8 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
 
   const raw_ptr<Browser> browser_;  // Weak.
 
+  LogMenuMetricsCallback log_menu_metrics_callback_;
+
   const raw_ptr<sync_sessions::SessionSyncService>
       session_sync_service_;  // Weak.
 
@@ -255,9 +261,6 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   size_t last_local_model_index_ = kHistorySeparatorIndex;
 
   base::CancelableTaskTracker local_tab_cancelable_task_tracker_;
-
-  // Time the menu is open for until a recent tab is selected.
-  base::ElapsedTimer menu_opened_timer_;
 
   base::ScopedObservation<sessions::TabRestoreService,
                           sessions::TabRestoreServiceObserver>

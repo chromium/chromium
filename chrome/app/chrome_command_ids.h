@@ -264,6 +264,7 @@
 #define IDC_SHOW_SEARCH_COMPANION       40275
 #define IDC_SHOW_CHROME_LABS            40276
 #define IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS  40277
+#define IDC_OPEN_RECENT_TAB             40278
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.

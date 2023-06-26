@@ -216,13 +216,12 @@ bool RecentTabsSubMenuModel::GetAcceleratorForCommandId(
 }
 
 void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction",
-                             menu_opened_timer_.Elapsed());
   if (command_id == IDC_SHOW_HISTORY) {
     UMA_HISTOGRAM_ENUMERATION("WrenchMenu.RecentTabsSubMenu", SHOW_MORE,
                               LIMIT_RECENT_TAB_ACTION);
-    UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowHistory",
-                               menu_opened_timer_.Elapsed());
+    if (!log_menu_metrics_callback_.is_null()) {
+      log_menu_metrics_callback_.Run(command_id);
+    }
     LogWrenchMenuAction(MENU_ACTION_SHOW_HISTORY);
     // We show all "other devices" on the history page.
     chrome::ExecuteCommandWithDisposition(
@@ -230,8 +229,9 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
     return;
   }
   if (command_id == IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.LoginForDeviceTabs",
-                               menu_opened_timer_.Elapsed());
+    if (!log_menu_metrics_callback_.is_null()) {
+      log_menu_metrics_callback_.Run(command_id);
+    }
     chrome::ExecuteCommandWithDisposition(
         browser_, IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
         ui::DispositionFromEventFlags(event_flags));
@@ -298,14 +298,18 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
     return;
   }
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.OpenRecentTab",
-                             menu_opened_timer_.Elapsed());
-  UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction", MENU_ACTION_RECENT_TAB,
-                            LIMIT_MENU_ACTION);
+  if (!log_menu_metrics_callback_.is_null()) {
+    log_menu_metrics_callback_.Run(IDC_OPEN_RECENT_TAB);
+  }
 }
 
 int RecentTabsSubMenuModel::GetFirstRecentTabsCommandId() {
   return local_window_items_.begin()->first;
+}
+
+void RecentTabsSubMenuModel::RegisterLogMenuMetricsCallback(
+    LogMenuMetricsCallback callback) {
+  log_menu_metrics_callback_ = std::move(callback);
 }
 
 void RecentTabsSubMenuModel::Build() {
