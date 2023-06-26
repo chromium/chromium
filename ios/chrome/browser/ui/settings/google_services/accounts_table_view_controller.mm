@@ -132,11 +132,11 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
   std::unique_ptr<SyncObserverBridge> _syncObserver;
 
-  // The type of account error that is being displayed in the error section.
-  // Is set to kNone when there is no error section.
+  // The type of account error that is being displayed in the error section for
+  // syncing accounts. Is set to kNone when there is no error section.
   syncer::SyncService::UserActionableError _diplayedAccountErrorType;
 
-  // The type of actionable the user needs to take to resolve the error.
+  // The type of actionable the syncing user needs to take to resolve the error.
   AccountErrorUserActionableType _accountErrorUserActionableType;
 }
 
@@ -464,6 +464,11 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 // updated without reloading the view. Can refresh, add or remove the error
 // section when an update is needed.
 - (void)updateErrorSectionModelAndReloadViewIfNeeded:(BOOL)reloadViewIfNeeded {
+  if ([self isAccountSignedInNotSyncing]) {
+    // If the account is signed in not syncing, the error handling will be shown
+    // previously in account settings page and no need to load it in this view.
+    return;
+  }
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(_browser->GetBrowserState());
   DCHECK(syncService);
