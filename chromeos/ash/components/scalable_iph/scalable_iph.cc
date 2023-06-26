@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
@@ -177,7 +178,10 @@ void ScalableIph::CheckTriggerConditions() {
 }
 
 bool ScalableIph::CheckCustomConditions(const base::Feature& feature) {
-  // NetworkConnection:
+  return CheckNetworkConnection(feature) && CheckClientAge(feature);
+}
+
+bool ScalableIph::CheckNetworkConnection(const base::Feature& feature) {
   std::string connection_condition = base::GetFieldTrialParamValueByFeature(
       feature, kCustomConditionNetworkConnectionParamName);
   if (connection_condition.empty()) {
@@ -187,10 +191,44 @@ bool ScalableIph::CheckCustomConditions(const base::Feature& feature) {
   // If an invalid value is provided, does not satisfy a condition for a
   // fail-safe behavior.
   if (connection_condition != kCustomConditionNetworkConnectionOnline) {
+    DLOG(WARNING) << "Only " << kCustomConditionNetworkConnectionOnline
+                  << " is the valid value for network connection condition";
     return false;
   }
 
   return online_;
+}
+
+bool ScalableIph::CheckClientAge(const base::Feature& feature) {
+  std::string client_age_condition = base::GetFieldTrialParamValueByFeature(
+      feature, kCustomConditionClientAgeInDaysParamName);
+  if (client_age_condition.empty()) {
+    return true;
+  }
+
+  // Use `DLOG`s for logging instead of `DCHECK(false)` as we want to test those
+  // fail-safe behaviors in browser_tests.
+  int max_client_age = 0;
+  if (!base::StringToInt(client_age_condition, &max_client_age)) {
+    DLOG(WARNING)
+        << "Failed to parse client age condition. It must be an integer.";
+    return false;
+  }
+
+  if (max_client_age < 0) {
+    DLOG(WARNING) << "Client age condition must be a positive integer value.";
+    return false;
+  }
+
+  int client_age = delegate_->ClientAgeInDays();
+  if (client_age < 0) {
+    DLOG(WARNING) << "Client age is a negative number. This can happen if a "
+                     "user changes time zone, etc. Condition is not satisfied "
+                     "for a fail safe behavior.";
+    return false;
+  }
+
+  return client_age <= max_client_age;
 }
 
 const std::vector<const base::Feature*>& ScalableIph::GetFeatureList() const {

@@ -49,6 +49,14 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
 
   void AddOnlineNetwork();
 
+  void EnableTestIphFeature();
+  const base::Feature& TestIphFeature() const;
+
+  // Triggers a conditions check with a fake event, which is a five min time
+  // tick event. Note that this will make the count of the five min time tick
+  // event incorrect if you are testing it.
+  void TriggerConditionsCheckWithAFakeEvent();
+
   // A sub-class might override this from `InitializeScopedFeatureList`.
   base::test::ScopedFeatureList scoped_feature_list_;
 

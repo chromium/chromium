@@ -37,6 +37,7 @@ class ScalableIphDelegateImpl
   void RemoveObserver(
       scalable_iph::ScalableIphDelegate::Observer* observer) override;
   bool IsOnline() override;
+  int ClientAgeInDays() override;
 
   // chromeos::network_config::CrosNetworkConfigObserver:
   void OnActiveNetworksChanged(

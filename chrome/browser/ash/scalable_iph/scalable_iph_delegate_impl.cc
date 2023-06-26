@@ -71,6 +71,12 @@ bool ScalableIphDelegateImpl::IsOnline() {
   return has_online_network_;
 }
 
+int ScalableIphDelegateImpl::ClientAgeInDays() {
+  const base::Time& creation_time = profile_->GetCreationTime();
+  const base::TimeDelta& delta = base::Time::Now() - creation_time;
+  return delta.InDaysFloored();
+}
+
 void ScalableIphDelegateImpl::OnActiveNetworksChanged(
     std::vector<NetworkStatePropertiesPtr> networks) {
   SetHasOnlineNetwork(HasOnlineNetwork(networks));

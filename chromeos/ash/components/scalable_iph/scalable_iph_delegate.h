@@ -96,6 +96,11 @@ class ScalableIphDelegate {
 
   // Returns true if a device is online.
   virtual bool IsOnline() = 0;
+
+  // Returns client age in days. The day count starts from 0. Day 0 means the
+  // first 24 hours. Note that this can return a negative number if a profile
+  // creation time is in a future time for some reason, e.g. Clock has changed.
+  virtual int ClientAgeInDays() = 0;
 };
 
 }  // namespace scalable_iph

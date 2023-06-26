@@ -37,6 +37,10 @@ std::set<std::string> mock_delegate_created_;
 
 constexpr char kTestWiFiId[] = "test-wifi-id";
 
+BASE_FEATURE(kScalableIphTest,
+             "ScalableIphTest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace
 
 ScalableIphBrowserTestBase::ScalableIphBrowserTestBase() = default;
@@ -139,6 +143,30 @@ bool ScalableIphBrowserTestBase::IsMockDelegateCreatedFor(Profile* profile) {
   return mock_delegate_created_.contains(profile->GetProfileUserName());
 }
 
+void ScalableIphBrowserTestBase::EnableTestIphFeature() {
+  ON_CALL(*mock_tracker(), ShouldTriggerHelpUI)
+      .WillByDefault([](const base::Feature& feature) {
+        return &feature == &kScalableIphTest;
+      });
+
+  // `OverrideFeatureListForTesting` prohibits calling it twice and it has a
+  // check. We don't need to do another check for `EnableTestIphFeature` being
+  // called twice.
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForBrowserContext(browser()->profile());
+  scalable_iph->OverrideFeatureListForTesting({&kScalableIphTest});
+}
+
+const base::Feature& ScalableIphBrowserTestBase::TestIphFeature() const {
+  return kScalableIphTest;
+}
+
+void ScalableIphBrowserTestBase::TriggerConditionsCheckWithAFakeEvent() {
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForBrowserContext(browser()->profile());
+  scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
+}
+
 void ScalableIphBrowserTestBase::ShutdownScalableIph() {
   scalable_iph::ScalableIph* scalable_iph =
       ScalableIphFactory::GetForBrowserContext(browser()->profile());
@@ -198,8 +226,12 @@ ScalableIphBrowserTestBase::CreateMockDelegate(Profile* profile) {
 
   std::unique_ptr<test::MockScalableIphDelegate> delegate =
       std::make_unique<test::MockScalableIphDelegate>();
-  delegate->DelegateObserverWith(
-      std::make_unique<ScalableIphDelegateImpl>(profile));
+  delegate->SetDelegate(std::make_unique<ScalableIphDelegateImpl>(profile));
+
+  // Fake behaviors of observers must be set at an early stage as those methods
+  // are called from constructors, i.e. Set up phases of test fixtures.
+  delegate->FakeObservers();
+
   return delegate;
 }
 

@@ -10,11 +10,17 @@ namespace test {
 MockScalableIphDelegate::MockScalableIphDelegate() = default;
 MockScalableIphDelegate::~MockScalableIphDelegate() = default;
 
-void MockScalableIphDelegate::DelegateObserverWith(
+void MockScalableIphDelegate::SetDelegate(
     std::unique_ptr<scalable_iph::ScalableIphDelegate> delegate) {
   CHECK(!delegate_) << "You are NOT allowed to set a delegate object twice";
 
   delegate_ = std::move(delegate);
+}
+
+void MockScalableIphDelegate::FakeObservers() {
+  CHECK(delegate_) << "Delegate must be set to enable fake behaviors";
+  CHECK(!observers_fake_enabled_) << "Fake is already set for observers";
+  observers_fake_enabled_ = true;
 
   ON_CALL(*this, AddObserver).WillByDefault([this](Observer* observer) {
     delegate_->AddObserver(observer);
@@ -26,6 +32,16 @@ void MockScalableIphDelegate::DelegateObserverWith(
 
   ON_CALL(*this, IsOnline).WillByDefault([this]() {
     return delegate_->IsOnline();
+  });
+}
+
+void MockScalableIphDelegate::FakeClientAgeInDays() {
+  CHECK(delegate_) << "Delegate must be set to enable fake behaviors";
+  CHECK(!client_age_fake_enabled_) << "Fake is already set for client age";
+  client_age_fake_enabled_ = true;
+
+  ON_CALL(*this, ClientAgeInDays).WillByDefault([this]() {
+    return delegate_->ClientAgeInDays();
   });
 }
 

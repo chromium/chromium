@@ -34,18 +34,21 @@ class MockScalableIphDelegate : public scalable_iph::ScalableIphDelegate {
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
   MOCK_METHOD(bool, IsOnline, (), (override));
+  MOCK_METHOD(int, ClientAgeInDays, (), (override));
 
-  // Use a delegate object for observer related behaviors, i.e. Events from Ash.
-  // A delegate object can be a fake object. We will want a fake behavior for
-  // the most of cases, i.e. Unlike `ShowBubble` etc, we won't test `IsOnline`
-  // called but we simulate/fake events/states. For now, we simply use a real
-  // object as `ScalableIphDelegateImpl` works as a fake easily for now and it
-  // can increases test coverage easily.
-  void DelegateObserverWith(
-      std::unique_ptr<scalable_iph::ScalableIphDelegate> delegate);
+  // Specify a delegate object and enable fake behaviors. We will want a fake
+  // behavior for the most of cases, i.e. Unlike `ShowBubble` etc, we won't test
+  // `IsOnline` called but we simulate/fake events/states. For now, we simply
+  // use a real object as `ScalableIphDelegateImpl` works as a fake easily for
+  // now and it's an easy way to increases test coverage.
+  void SetDelegate(std::unique_ptr<scalable_iph::ScalableIphDelegate> delegate);
+  void FakeObservers();
+  void FakeClientAgeInDays();
 
  private:
   std::unique_ptr<scalable_iph::ScalableIphDelegate> delegate_;
+  bool observers_fake_enabled_ = false;
+  bool client_age_fake_enabled_ = false;
 };
 
 }  // namespace test

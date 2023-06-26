@@ -32,11 +32,21 @@ constexpr char kEventNameFiveMinTick[] = "ScalableIphFiveMinTick";
 // Example:
 // "x_CustomConditionsNetworkConnection": "Online"
 
-// `NetworkConnection` conditions is satisfied if a device is online. For now,
-// we only support `Online` as the expected condition.
+// `NetworkConnection` condition is satisfied if a device is online. For now, we
+// only support `Online` as the expected condition.
 constexpr char kCustomConditionNetworkConnectionParamName[] =
     "x_CustomConditionNetworkConnection";
 constexpr char kCustomConditionNetworkConnectionOnline[] = "Online";
+
+// `ClientAgeInDays` condition is satisfied if a device's client age is on or
+// below the specified number of days. The number must be a positive integer
+// including 0.
+// - The day count starts from 0. For example, if you specify 0 as a value, it
+//   means that a profile is created in the last 24 hours.
+// - The day in this condition does not match with the calendar day. If a
+//   profile is created at 3 pm on May 1st, the day 0 ends at 3 pm on May 2nd.
+constexpr char kCustomConditionClientAgeInDaysParamName[] =
+    "x_CustomConditionClientAgeInDays";
 
 }  // namespace scalable_iph
 

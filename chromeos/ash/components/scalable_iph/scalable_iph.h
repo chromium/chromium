@@ -60,6 +60,8 @@ class ScalableIph : public KeyedService, public ScalableIphDelegate::Observer {
   // conditions are valid and satisfied. Otherwise false including an invalid
   // config case.
   bool CheckCustomConditions(const base::Feature& feature);
+  bool CheckNetworkConnection(const base::Feature& feature);
+  bool CheckClientAge(const base::Feature& feature);
 
   const std::vector<const base::Feature*>& GetFeatureList() const;
 
