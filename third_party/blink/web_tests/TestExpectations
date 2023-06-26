@@ -6619,3 +6619,5 @@ crbug.com/1456779 [ Win11-arm64 ] http/tests/svg/svgimage-revalidation.html [ Fa
 # Sheriff 2023-06-21
 crbug.com/1456821 [ Linux ] fast/forms/accent-color/range-accent-color-hover-dark-appearance.html [ Failure Pass ]
 crbug.com/1456514 [ Linux ] fast/forms/number/number-appearance-spinbutton-disabled-readonly.html [ Failure Pass ]
+
+crbug.com/1457660 external/wpt/editing/other/white-spaces-after-execCommand-forwarddelete.tentative.html [ Pass Timeout ]
