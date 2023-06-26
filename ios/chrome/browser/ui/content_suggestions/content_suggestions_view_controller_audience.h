@@ -27,6 +27,10 @@
 // Notifies the audience to present the Set Up List Show More Menu.
 - (void)showSetUpListShowMoreMenu;
 
+// Notifies the audience that the module of `type` should be never shown
+// anymore.
+- (void)neverShowModuleType:(ContentSuggestionsModuleType)type;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_AUDIENCE_H_
