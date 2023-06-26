@@ -160,6 +160,50 @@ TextVector KeyboardShortcutResult::CreateTextVectorFromTemplateString(
   return text_vector;
 }
 
+void KeyboardShortcutResult::PopulateTextVector(
+    TextVector* text_vector,
+    const ui::Accelerator& accelerator) {
+  CHECK(text_vector);
+
+  std::vector<KeyboardCode> key_codes;
+  // Insert keys by the order of CTRL, ALT, SHIFT, SEARCH, and then key, to be
+  // consistent with existing hardcoded shortcuts search.
+  if (accelerator.IsCtrlDown()) {
+    key_codes.push_back(KeyboardCode::VKEY_CONTROL);
+  }
+  if (accelerator.IsAltDown()) {
+    key_codes.push_back(KeyboardCode::VKEY_LMENU);
+  }
+  if (accelerator.IsShiftDown()) {
+    key_codes.push_back(KeyboardCode::VKEY_SHIFT);
+  }
+  if (accelerator.IsCmdDown()) {
+    key_codes.push_back(KeyboardCode::VKEY_COMMAND);
+  }
+  key_codes.push_back(accelerator.key_code());
+
+  int counter = 0;
+  for (auto key_code : key_codes) {
+    if (++counter > 1) {
+      // Add a + between two keys.
+      text_vector->push_back(CreateStringTextItem(u" + "));
+    }
+    const absl::optional<IconCode> icon_code =
+        GetIconCodeFromKeyboardCode(key_code);
+    if (icon_code) {
+      // The KeyboardCode has a corresponding IconCode, and therefore an
+      // icon image is supported by the front-end.
+      text_vector->push_back(CreateIconCodeTextItem(icon_code.value()));
+    } else {
+      // KeyboardCode does not have a corresponding IconCode. The
+      // key text will be styled to look like an icon ("iconified
+      // text").
+      text_vector->push_back(
+          CreateIconifiedTextTextItem(ash::GetStringForKeyboardCode(key_code)));
+    }
+  }
+}
+
 KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
                                                const KeyboardShortcutData& data,
                                                double relevance)
@@ -280,8 +324,57 @@ KeyboardShortcutResult::KeyboardShortcutResult(
     Profile* profile,
     const ash::shortcut_customization::mojom::SearchResultPtr& search_result)
     : profile_(profile) {
+  // TODO(xiangdongkong): implement set_id.
   set_relevance(search_result->relevance_score);
-  // TODO(xiangdongkong): Populate other properties.
+  SetTitle(search_result->accelerator_layout_info->description);
+  SetResultType(ResultType::kKeyboardShortcut);
+  SetMetricsType(ash::KEYBOARD_SHORTCUT);
+  SetDisplayType(DisplayType::kList);
+  SetCategory(Category::kHelp);
+  UpdateIcon();
+
+  // Set the details to the display name of the Keyboard Shortcut Viewer app.
+  std::u16string sanitized_name = base::CollapseWhitespace(
+      l10n_util::GetStringUTF16(IDS_INTERNAL_APP_KEYBOARD_SHORTCUT_VIEWER),
+      true);
+  base::i18n::SanitizeUserSuppliedString(&sanitized_name);
+  SetDetails(sanitized_name);
+
+  // TODO(xiangdongkong): generate the accessible_string.
+  std::u16string accessible_string;
+  TextVector text_vector;
+
+  int counter = 0;
+  for (auto& accelerator_info : search_result->accelerator_infos) {
+    if (++counter > 1) {
+      // TODO(xiangdongkong): localize the separator.
+      // Add a separator when there are multiple accelerators.
+      text_vector.push_back(CreateStringTextItem(u" or "));
+    }
+    if (accelerator_info->layout_properties->is_standard_accelerator()) {
+      ash::mojom::StandardAcceleratorPropertiesPtr& standard_accelerator =
+          accelerator_info->layout_properties->get_standard_accelerator();
+      PopulateTextVector(&text_vector, standard_accelerator->accelerator);
+    } else {
+      ash::mojom::TextAcceleratorPropertiesPtr& text_accelerator =
+          accelerator_info->layout_properties->get_text_accelerator();
+      // Example:
+      //  press
+      //  ctrl
+      //  shift
+      //   and click a link
+      //
+      // TODO(xiangdongkong): Generate text vector. For now, just show the
+      // shortcut text.
+      for (auto& part : text_accelerator->parts) {
+        text_vector.push_back(CreateStringTextItem(part->text));
+      }
+    }
+  }
+
+  SetAccessibleName(
+      base::StrCat({title(), u", ", details(), u", ", accessible_string}));
+  SetKeyboardShortcutTextVector(text_vector);
 }
 
 KeyboardShortcutResult::~KeyboardShortcutResult() = default;

@@ -64,6 +64,10 @@ class KeyboardShortcutResult : public ChromeSearchResult {
       const std::vector<std::u16string>& replacement_strings,
       const std::vector<ui::KeyboardCode>& shortcut_key_codes);
 
+  // Add the |accelerator| to the |text_vector|.
+  void PopulateTextVector(TextVector* text_vector,
+                          const ui::Accelerator& accelerator);
+
   void UpdateIcon();
 
   raw_ptr<Profile, ExperimentalAsh> profile_;

@@ -16,7 +16,9 @@
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace app_list::test {
@@ -25,6 +27,8 @@ using ::ash::string_matching::TokenizedString;
 using ::ui::KeyboardCode;
 using TextVector = ChromeSearchResult::TextVector;
 using TextType = ::ash::SearchResultTextItemType;
+using ash::shortcut_customization::mojom::SearchResult;
+using ash::shortcut_customization::mojom::SearchResultPtr;
 
 class KeyboardShortcutResultTest : public ChromeAshTestBase {
  public:
@@ -34,6 +38,50 @@ class KeyboardShortcutResultTest : public ChromeAshTestBase {
       const std::vector<ui::KeyboardCode>& shortcut_key_codes) {
     return KeyboardShortcutResult::CreateTextVectorFromTemplateString(
         template_string, replacement_strings, shortcut_key_codes);
+  }
+
+  void PopulateTextVector(TextVector* text_vector,
+                          const ui::Accelerator& accelerator) {
+    auto shortcut_result = CreateKeyboardShortcutResult();
+    shortcut_result->PopulateTextVector(text_vector, accelerator);
+  }
+
+  std::unique_ptr<KeyboardShortcutResult> CreateKeyboardShortcutResult() {
+    const auto& search_results =
+        ash::shortcut_ui::fake_search_data::CreateFakeSearchResultList();
+    return std::make_unique<KeyboardShortcutResult>(
+        /* profile= */ nullptr, search_results.at(0));
+  }
+
+  void VerifyTextItem(const ash::SearchResultTextItem& item,
+                      const std::u16string& expected_text,
+                      TextType expected_type) {
+    EXPECT_EQ(item.GetText(), expected_text);
+    // Cast to int to see actual values when not matched.
+    EXPECT_EQ(static_cast<int>(item.GetType()),
+              static_cast<int>(expected_type));
+  }
+
+  ash::mojom::AcceleratorInfoPtr CreateFakeStandardAcceleratorInfo(
+      const ui::Accelerator& accelerator) {
+    return ash::mojom::AcceleratorInfo::New(
+        /*type=*/ash::mojom::AcceleratorType::kDefault,
+        /*state=*/ash::mojom::AcceleratorState::kEnabled,
+        /*locked=*/true,
+        /*layout_properties=*/
+        ash::mojom::LayoutStyleProperties::NewStandardAccelerator(
+            ash::mojom::StandardAcceleratorProperties::New(accelerator,
+                                                           u"FakeKey")));
+  }
+
+  std::vector<ash::mojom::AcceleratorInfoPtr> CreateFakeAcceleratorInfoList(
+      const std::vector<ui::Accelerator>& accelerators) {
+    std::vector<ash::mojom::AcceleratorInfoPtr> accelerator_info_list;
+    for (const auto& accelerator : accelerators) {
+      accelerator_info_list.push_back(
+          CreateFakeStandardAcceleratorInfo(accelerator));
+    }
+    return accelerator_info_list;
   }
 };
 
@@ -137,16 +185,99 @@ TEST_F(KeyboardShortcutResultTest,
   EXPECT_EQ(text_vector[4].GetText(), u", and release");
 }
 
-// Test that KeyBoardShortCutResult can take search results.
-TEST_F(KeyboardShortcutResultTest, ExpectedPropertiesSetCorrectly) {
+// Test that KeyBoardShortCutResult can take search results with standard
+// accelerators.
+TEST_F(KeyboardShortcutResultTest, StandardAcceleratorToResult) {
   const auto& search_results =
       ash::shortcut_ui::fake_search_data::CreateFakeSearchResultList();
   const auto& search_result0 = search_results[0];
 
   auto result = std::make_unique<KeyboardShortcutResult>(
       /* profile= */ nullptr, search_result0);
+
+  EXPECT_TRUE(search_result0->accelerator_infos.at(0)
+                  ->layout_properties->is_standard_accelerator());
+
   EXPECT_EQ(0.5, result->relevance());
-  // TODO(xiangdongkong): Verify more properties as they are implemented.
+  EXPECT_EQ(u"first result", result->title());
+  EXPECT_EQ(KeyboardShortcutResult::ResultType::kKeyboardShortcut,
+            result->result_type());
+  EXPECT_EQ(ash::KEYBOARD_SHORTCUT, result->metrics_type());
+  EXPECT_EQ(KeyboardShortcutResult::DisplayType::kList, result->display_type());
+  EXPECT_EQ(ash::AppListSearchResultCategory::kHelp, result->category());
+  EXPECT_EQ(u"Shortcuts", result->details());
+
+  // TODO(xiangdongkong): Verify the following checks as they are populated.
+  //   - id
+  //   - accessible name
+  //   - icon
+
+  // Verify TextVector size.
+  const TextVector text_vector = result->keyboard_shortcut_text_vector();
+  ASSERT_EQ(text_vector.size(), 1u);
+}
+
+TEST_F(KeyboardShortcutResultTest, PopulateTextVector_One_Key) {
+  ui::Accelerator accelerator(/*key_code=*/ui::KeyboardCode::VKEY_SPACE,
+                              /*modifiers=*/0);
+  TextVector text_vector;
+  PopulateTextVector(&text_vector, accelerator);
+
+  ASSERT_EQ(text_vector.size(), 1u);
+  VerifyTextItem(text_vector[0], u"Space", TextType::kIconifiedText);
+}
+
+TEST_F(KeyboardShortcutResultTest, PopulateTextVector_ModifierKeysOrder) {
+  ui::Accelerator accelerator(/*key_code=*/ui::KeyboardCode::VKEY_F,
+                              /*modifiers=*/ui::EF_ALT_DOWN |
+                                  ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN |
+                                  ui::EF_CONTROL_DOWN);
+  TextVector text_vector;
+  PopulateTextVector(&text_vector, accelerator);
+
+  ASSERT_EQ(text_vector.size(), 9u);
+  VerifyTextItem(text_vector[0], u"Ctrl", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[1], u" + ", TextType::kString);
+  VerifyTextItem(text_vector[2], u"Alt", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[3], u" + ", TextType::kString);
+  VerifyTextItem(text_vector[4], u"Shift", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[5], u" + ", TextType::kString);
+  VerifyTextItem(text_vector[6], u"Search", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[7], u" + ", TextType::kString);
+  VerifyTextItem(text_vector[8], u"f", TextType::kIconifiedText);
+}
+
+TEST_F(KeyboardShortcutResultTest,
+       OneActionWithTwoAccelerators_ShouldBeSeparatedBy_Or) {
+  std::vector<ui::Accelerator> accelerators;
+  accelerators.emplace_back(/*key_code=*/ui::KeyboardCode::VKEY_F,
+                            /*modifiers=*/ui::EF_ALT_DOWN);
+  accelerators.emplace_back(/*key_code=*/ui::KeyboardCode::VKEY_G,
+                            /*modifiers=*/ui::EF_CONTROL_DOWN);
+  auto list = CreateFakeAcceleratorInfoList(accelerators);
+
+  SearchResultPtr search_result_ptr = SearchResult::New(
+      /*accelerator_layout_info=*/CreateFakeAcceleratorLayoutInfo(
+          /*description=*/u"fake action",
+          /*source=*/ash::mojom::AcceleratorSource::kAsh,
+          /*action=*/
+          ash::shortcut_ui::fake_search_data::FakeActionIds::kAction1,
+          /*style=*/ash::mojom::AcceleratorLayoutStyle::kDefault),
+      /*accelerator_infos=*/
+      CreateFakeAcceleratorInfoList(accelerators),
+      /*relevance_score=*/0.9);
+
+  auto result = std::make_unique<KeyboardShortcutResult>(
+      /* profile= */ nullptr, search_result_ptr);
+  const auto& text_vector = result->keyboard_shortcut_text_vector();
+  ASSERT_EQ(text_vector.size(), 7u);
+  VerifyTextItem(text_vector[0], u"Alt", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[1], u" + ", TextType::kString);
+  VerifyTextItem(text_vector[2], u"f", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[3], u" or ", TextType::kString);
+  VerifyTextItem(text_vector[4], u"Ctrl", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[5], u" + ", TextType::kString);
+  VerifyTextItem(text_vector[6], u"g", TextType::kIconifiedText);
 }
 
 }  // namespace app_list::test
