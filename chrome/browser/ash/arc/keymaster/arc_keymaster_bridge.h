@@ -49,7 +49,7 @@ class ArcKeymasterBridge : public KeyedService, public mojom::KeymasterHost {
   // Return the factory instance for this class.
   static BrowserContextKeyedServiceFactory* GetFactory();
 
-  // Update the list of placeholder keys to be instlaled in arc-keymasterd.
+  // Update the list of placeholder keys to be installed in arc-keymasterd.
   //
   // Made virtual for override in tests.
   virtual void UpdatePlaceholderKeys(
