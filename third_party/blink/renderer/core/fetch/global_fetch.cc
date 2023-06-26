@@ -45,14 +45,16 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
     GlobalFetchImpl* supplement =
         Supplement<T>::template From<GlobalFetchImpl>(supplementable);
     if (!supplement) {
-      supplement = MakeGarbageCollected<GlobalFetchImpl>(execution_context);
+      supplement = MakeGarbageCollected<GlobalFetchImpl>(supplementable,
+                                                         execution_context);
       Supplement<T>::ProvideTo(supplementable, supplement);
     }
     return supplement;
   }
 
-  explicit GlobalFetchImpl(ExecutionContext* execution_context)
-      : Supplement<T>(nullptr),
+  explicit GlobalFetchImpl(T& supplementable,
+                           ExecutionContext* execution_context)
+      : Supplement<T>(supplementable),
         fetch_manager_(MakeGarbageCollected<FetchManager>(execution_context)) {}
 
   ScriptPromise Fetch(ScriptState* script_state,
