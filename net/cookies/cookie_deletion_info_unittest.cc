@@ -443,8 +443,7 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchesDomainList) {
                          CookieSamePartyStatus::kNoSamePartyEnforcement}));
 
   // With only an "to_delete" list.
-  delete_info.domains_and_ips_to_delete =
-      std::set<std::string>({"includea.com", "includeb.com"});
+  delete_info.domains_and_ips_to_delete = {"includea.com", "includeb.com"};
   EXPECT_TRUE(delete_info.Matches(
       create_cookie("includea.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
@@ -462,8 +461,8 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchesDomainList) {
                          CookieSamePartyStatus::kNoSamePartyEnforcement}));
 
   // With only an "to_ignore" list.
-  delete_info.domains_and_ips_to_delete.clear();
-  delete_info.domains_and_ips_to_ignore.insert("exclude.com");
+  delete_info.domains_and_ips_to_delete.reset();
+  delete_info.domains_and_ips_to_ignore = {"exclude.com"};
   EXPECT_TRUE(delete_info.Matches(
       create_cookie("anything.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
@@ -487,10 +486,8 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchesDomainList) {
   //              |           right.com |
   //              |                     |
   //              +---------------------+
-  delete_info.domains_and_ips_to_delete =
-      std::set<std::string>({"left.com", "mid.com"});
-  delete_info.domains_and_ips_to_ignore =
-      std::set<std::string>({"mid.com", "right.com"});
+  delete_info.domains_and_ips_to_delete = {"left.com", "mid.com"};
+  delete_info.domains_and_ips_to_ignore = {"mid.com", "right.com"};
 
   EXPECT_TRUE(delete_info.Matches(
       create_cookie("left.com"),
@@ -509,6 +506,24 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchesDomainList) {
                          CookieSamePartyStatus::kNoSamePartyEnforcement}));
   EXPECT_FALSE(delete_info.Matches(
       create_cookie("outside.com"),
+      CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         /*delegate_treats_url_as_trustworthy=*/false,
+                         CookieSamePartyStatus::kNoSamePartyEnforcement}));
+
+  // An empty list of deleted domains shouldn't delete anything.
+  delete_info.domains_and_ips_to_delete = std::set<std::string>();
+  delete_info.domains_and_ips_to_ignore.reset();
+  EXPECT_FALSE(delete_info.Matches(
+      create_cookie("outside.com"),
+      CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
+                         /*delegate_treats_url_as_trustworthy=*/false,
+                         CookieSamePartyStatus::kNoSamePartyEnforcement}));
+
+  // An empty list of ignored domains should delete everything.
+  delete_info.domains_and_ips_to_delete.reset();
+  delete_info.domains_and_ips_to_ignore = std::set<std::string>();
+  EXPECT_TRUE(delete_info.Matches(
+      create_cookie("inside.com"),
       CookieAccessParams{net::CookieAccessSemantics::UNKNOWN,
                          /*delegate_treats_url_as_trustworthy=*/false,
                          CookieSamePartyStatus::kNoSamePartyEnforcement}));

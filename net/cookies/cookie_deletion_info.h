@@ -120,7 +120,7 @@ struct NET_EXPORT CookieDeletionInfo {
   // included for a request of |url|.
   absl::optional<GURL> url;
 
-  // If this is not empty then any cookie with a domain/ip contained in this
+  // If has a value then any cookie with a domain/ip contained in this set
   // will be deleted (assuming other fields match).
   // Domains must not have a leading period. e.g "example.com" and not
   // ".example.com".
@@ -128,15 +128,15 @@ struct NET_EXPORT CookieDeletionInfo {
   // Note: |domains_and_ips_to_ignore| takes precedence. For example if this
   // has a value of ["A", "B"] and |domains_and_ips_to_ignore| is ["B", "C"]
   // then only "A" will be deleted.
-  std::set<std::string> domains_and_ips_to_delete;
+  absl::optional<std::set<std::string>> domains_and_ips_to_delete;
 
-  // If this is not empty then any cookie with a domain/ip contained in this
+  // If has a value then any cookie with a domain/ip contained in this set
   // will be ignored (and not deleted).
   // Domains must not have a leading period. e.g "example.com" and not
   // ".example.com".
   //
   // See precedence note above.
-  std::set<std::string> domains_and_ips_to_ignore;
+  absl::optional<std::set<std::string>> domains_and_ips_to_ignore;
 
   // Used only for testing purposes.
   absl::optional<std::string> value_for_testing;

@@ -1609,6 +1609,40 @@ TEST_F(CookieManagerTest, DeleteByIncludingDomains) {
   EXPECT_EQ("A2", cookies[0].Name());
 }
 
+TEST_F(CookieManagerTest, DeleteByEmptyIncludingDomains) {
+  // Create one cookies and keep it.
+  EXPECT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "A1", "val", "foo_host1", "/", base::Time(), base::Time(),
+          base::Time(), base::Time(), /*secure=*/false,
+          /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false),
+      "https", true));
+  ASSERT_EQ(1u, service_wrapper()->GetAllCookies().size());
+
+  mojom::CookieDeletionFilter filter;
+  filter.including_domains = std::vector<std::string>();
+  EXPECT_EQ(0u, service_wrapper()->DeleteCookies(filter));
+  ASSERT_EQ(1u, service_wrapper()->GetAllCookies().size());
+}
+
+TEST_F(CookieManagerTest, DeleteByEmptyExcludingDomains) {
+  // Create one cookies and delete it.
+  EXPECT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "A1", "val", "foo_host1", "/", base::Time(), base::Time(),
+          base::Time(), base::Time(), /*secure=*/false,
+          /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false),
+      "https", true));
+  ASSERT_EQ(1u, service_wrapper()->GetAllCookies().size());
+
+  mojom::CookieDeletionFilter filter;
+  filter.excluding_domains = std::vector<std::string>();
+  EXPECT_EQ(1u, service_wrapper()->DeleteCookies(filter));
+  ASSERT_EQ(0u, service_wrapper()->GetAllCookies().size());
+}
+
 // Confirm deletion is based on eTLD+1
 TEST_F(CookieManagerTest, DeleteDetails_eTLD) {
   // Two domains on different levels of the same eTLD both get deleted.
@@ -2788,8 +2822,8 @@ TEST_F(FlushableCookieManagerTest, DeletionFilterToInfo) {
   EXPECT_FALSE(delete_info.host.has_value());
   EXPECT_FALSE(delete_info.name.has_value());
   EXPECT_FALSE(delete_info.url.has_value());
-  EXPECT_TRUE(delete_info.domains_and_ips_to_delete.empty());
-  EXPECT_TRUE(delete_info.domains_and_ips_to_ignore.empty());
+  EXPECT_FALSE(delete_info.domains_and_ips_to_delete.has_value());
+  EXPECT_FALSE(delete_info.domains_and_ips_to_ignore.has_value());
   EXPECT_FALSE(delete_info.value_for_testing.has_value());
   EXPECT_TRUE(delete_info.cookie_partition_key_collection.ContainsAllKeys());
 
@@ -2825,18 +2859,19 @@ TEST_F(FlushableCookieManagerTest, DeletionFilterToInfo) {
   EXPECT_EQ("cookie-name", delete_info.name.value());
   EXPECT_EQ("cookie-host", delete_info.host.value());
   EXPECT_EQ(GURL("https://www.example.com"), delete_info.url.value());
-  EXPECT_EQ(3u, delete_info.domains_and_ips_to_delete.size());
-  EXPECT_NE(delete_info.domains_and_ips_to_delete.find("first.com"),
-            delete_info.domains_and_ips_to_delete.end());
-  EXPECT_NE(delete_info.domains_and_ips_to_delete.find("second.com"),
-            delete_info.domains_and_ips_to_delete.end());
-  EXPECT_NE(delete_info.domains_and_ips_to_delete.find("third.com"),
-            delete_info.domains_and_ips_to_delete.end());
-  EXPECT_EQ(2u, delete_info.domains_and_ips_to_ignore.size());
-  EXPECT_NE(delete_info.domains_and_ips_to_ignore.find("ten.com"),
-            delete_info.domains_and_ips_to_ignore.end());
-  EXPECT_NE(delete_info.domains_and_ips_to_ignore.find("twelve.com"),
-            delete_info.domains_and_ips_to_ignore.end());
+  ASSERT_TRUE(delete_info.domains_and_ips_to_delete.has_value());
+  EXPECT_EQ(3u, delete_info.domains_and_ips_to_delete->size());
+  EXPECT_NE(delete_info.domains_and_ips_to_delete->find("first.com"),
+            delete_info.domains_and_ips_to_delete->end());
+  EXPECT_NE(delete_info.domains_and_ips_to_delete->find("second.com"),
+            delete_info.domains_and_ips_to_delete->end());
+  EXPECT_NE(delete_info.domains_and_ips_to_delete->find("third.com"),
+            delete_info.domains_and_ips_to_delete->end());
+  EXPECT_EQ(2u, delete_info.domains_and_ips_to_ignore->size());
+  EXPECT_NE(delete_info.domains_and_ips_to_ignore->find("ten.com"),
+            delete_info.domains_and_ips_to_ignore->end());
+  EXPECT_NE(delete_info.domains_and_ips_to_ignore->find("twelve.com"),
+            delete_info.domains_and_ips_to_ignore->end());
   EXPECT_FALSE(delete_info.value_for_testing.has_value());
   EXPECT_FALSE(delete_info.cookie_partition_key_collection.ContainsAllKeys());
   EXPECT_THAT(
