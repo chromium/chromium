@@ -38,9 +38,9 @@ class MockAutofillPopupController
   MOCK_METHOD(gfx::Rect, popup_bounds, (), (const override));
   MOCK_METHOD(gfx::NativeView, container_view, (), (const override));
   MOCK_METHOD(content::WebContents*, GetWebContents, (), (const override));
-  const gfx::RectF& element_bounds() const override {
-    static const gfx::RectF bounds(100, 100, 250, 50);
-    return bounds;
+  const gfx::RectF& element_bounds() const override { return element_bounds_; }
+  void set_element_bounds(const gfx::RectF& bounds) {
+    element_bounds_ = bounds;
   }
   MOCK_METHOD(base::i18n::TextDirection,
               GetElementTextDirection,
@@ -87,6 +87,8 @@ class MockAutofillPopupController
   MOCK_METHOD(PopupType, GetPopupType, (), (const override));
 
   void set_suggestions(const std::vector<PopupItemId>& ids) {
+    suggestions_.clear();
+
     for (const auto& id : ids) {
       // Accessibility requires all focusable AutofillPopupItemView to have
       // ui::AXNodeData with non-empty names. We specify dummy values and labels
@@ -104,6 +106,7 @@ class MockAutofillPopupController
  private:
   std::vector<autofill::Suggestion> suggestions_;
   gfx::ScopedDefaultFontDescription default_font_desc_setter_;
+  gfx::RectF element_bounds_ = {100, 100, 250, 50};
 
   base::WeakPtrFactory<MockAutofillPopupController> weak_ptr_factory_{this};
 };

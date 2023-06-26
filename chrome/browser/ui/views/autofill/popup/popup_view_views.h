@@ -69,6 +69,8 @@ class PopupViewViews : public PopupBaseView,
   // PopupBaseView:
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
+  bool CanShowDropdownInBoundsForTesting(const gfx::Rect& bounds) const;
+
  private:
   friend class PopupViewViewsBrowsertest;
   friend class PopupViewViewsTest;
@@ -128,6 +130,8 @@ class PopupViewViews : public PopupBaseView,
   // PopupBaseView:
   bool DoUpdateBoundsAndRedrawPopup() override;
 
+  bool CanShowDropdownInBounds(const gfx::Rect& bounds) const;
+
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;
   // The index of the row with a selected cell.
@@ -135,6 +139,7 @@ class PopupViewViews : public PopupBaseView,
   std::vector<RowPointer> rows_;
   raw_ptr<views::ScrollView, DanglingUntriaged> scroll_view_ = nullptr;
   raw_ptr<views::BoxLayoutView, DanglingUntriaged> body_container_ = nullptr;
+  raw_ptr<views::BoxLayoutView, DanglingUntriaged> footer_container_ = nullptr;
 
   base::WeakPtrFactory<AutofillPopupView> weak_ptr_factory_{this};
 };

@@ -213,6 +213,40 @@ TEST_F(PopupViewViewsTest, ShowHideTest) {
   view().Hide();
 }
 
+TEST_F(PopupViewViewsTest, CanShowDropdownInBounds) {
+  CreateAndShowView({PopupItemId::kAutocompleteEntry, PopupItemId::kSeparator,
+                     PopupItemId::kAutofillOptions});
+
+  const int kSingleItemPopupHeight = view().GetPreferredSize().height();
+  const int kElementY = 10;
+  const int kElementHeight = 15;
+  controller().set_element_bounds({10, kElementY, 100, kElementHeight});
+
+  EXPECT_FALSE(view().CanShowDropdownInBoundsForTesting({0, 0, 100, 35}));
+
+  // Test a smaller than the popup height (-10px) available space.
+  EXPECT_FALSE(view().CanShowDropdownInBoundsForTesting(
+      {0, 0, 100, kElementY + kElementHeight + kSingleItemPopupHeight - 10}));
+
+  // Test a larger than the popup height (+10px) available space.
+  EXPECT_TRUE(view().CanShowDropdownInBoundsForTesting(
+      {0, 0, 100, kElementY + kElementHeight + kSingleItemPopupHeight + 10}));
+
+  view().Hide();
+
+  // Repeat the same tests as for the single-suggestion popup above,
+  // the list is scrollable so that the same restrictions apply.
+  CreateAndShowView({PopupItemId::kAutocompleteEntry,
+                     PopupItemId::kAutocompleteEntry,
+                     PopupItemId::kAutocompleteEntry, PopupItemId::kSeparator,
+                     PopupItemId::kAutofillOptions});
+  EXPECT_FALSE(view().CanShowDropdownInBoundsForTesting({0, 0, 100, 35}));
+  EXPECT_FALSE(view().CanShowDropdownInBoundsForTesting(
+      {0, 0, 100, kElementY + kElementHeight + kSingleItemPopupHeight - 10}));
+  EXPECT_TRUE(view().CanShowDropdownInBoundsForTesting(
+      {0, 0, 100, kElementY + kElementHeight + kSingleItemPopupHeight + 10}));
+}
+
 // This is a regression test for crbug.com/1113255.
 TEST_F(PopupViewViewsTest, ShowViewWithOnlyFooterItemsShouldNotCrash) {
   // Set suggestions to have only a footer item.

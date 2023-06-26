@@ -363,6 +363,11 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
       feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature);
 }
 
+bool PopupViewViews::CanShowDropdownInBoundsForTesting(
+    const gfx::Rect& bounds) const {
+  return CanShowDropdownInBounds(bounds);
+}
+
 bool PopupViewViews::HasPopupRowViewAt(size_t index) const {
   return index < rows_.size() &&
          absl::holds_alternative<PopupRowView*>(rows_[index]);
@@ -464,28 +469,26 @@ void PopupViewViews::CreateChildViews() {
   // Footer items need to be in their own container because they should not be
   // affected by scrolling behavior (they are "sticky" at the bottom) and
   // because they have a special background color
-  std::unique_ptr<views::BoxLayoutView> footer_container =
+  footer_container_ = content_view->AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetBackground(
               views::CreateThemedSolidBackground(ui::kColorDropdownBackground))
-          .Build();
+          .Build());
+  content_view->SetFlexForView(footer_container_, 0);
 
   for (; current_line_number < kSuggestions.size(); ++current_line_number) {
     DCHECK(IsFooterItem(kSuggestions, current_line_number));
     // The footer can contain either footer views or separator lines.
     if (kSuggestions[current_line_number].popup_item_id ==
         PopupItemId::kSeparator) {
-      rows_.push_back(footer_container->AddChildView(
+      rows_.push_back(footer_container_->AddChildView(
           std::make_unique<PopupSeparatorView>()));
     } else {
-      rows_.push_back(footer_container->AddChildView(
+      rows_.push_back(footer_container_->AddChildView(
           PopupRowView::Create(*this, current_line_number)));
     }
   }
-
-  content_view->SetFlexForView(
-      content_view->AddChildView(std::move(footer_container)), 0);
 }
 
 int PopupViewViews::AdjustWidth(int width) const {
@@ -538,22 +541,13 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
   element_bounds.Inset(
       gfx::Insets::VH(/*vertical=*/-kElementBorderPadding, /*horizontal=*/0));
 
-  // At least first and last rows of the popup -- a suggestion and, if present,
-  // the footer -- should be shown in the bounds of the content area so that the
-  // user notices the presence of the popup and, in particular, the first
-  // suggestion.
-  int min_height = std::numeric_limits<int>::max();
-  if (body_container_) {
-    const View::Views& children = body_container_->children();
-    if (!children.empty()) {
-      min_height = children.front()->GetPreferredSize().height();
-      if (children.size() > 1) {
-        min_height += children.back()->GetPreferredSize().height();
-      }
-    }
+  if ((!body_container_ || body_container_->children().empty()) &&
+      (!footer_container_ || footer_container_->children().empty())) {
+    controller_->Hide(PopupHidingReason::kNoSuggestions);
+    return false;
   }
 
-  if (!CanShowDropdownHere(min_height, max_bounds_for_popup, element_bounds)) {
+  if (!CanShowDropdownInBounds(max_bounds_for_popup)) {
     controller_->Hide(PopupHidingReason::kInsufficientSpace);
     return false;
   }
@@ -625,6 +619,24 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
 
   SchedulePaint();
   return true;
+}
+
+bool PopupViewViews::CanShowDropdownInBounds(const gfx::Rect& bounds) const {
+  gfx::Rect element_bounds =
+      gfx::ToEnclosingRect(controller_->element_bounds());
+
+  // At least one suggestion and the sticky footer should be shown in the bounds
+  // of the content area so that the user notices the presence of the popup.
+  int min_height = 0;
+  if (body_container_ && !body_container_->children().empty()) {
+    min_height += body_container_->children()[0]->GetPreferredSize().height();
+  }
+  if (footer_container_ && !footer_container_->children().empty()) {
+    // The footer is not scrollable, its full height should be considered.
+    min_height += footer_container_->GetPreferredSize().height();
+  }
+
+  return CanShowDropdownHere(min_height, bounds, element_bounds);
 }
 
 base::WeakPtr<AutofillPopupView> PopupViewViews::GetWeakPtr() {
