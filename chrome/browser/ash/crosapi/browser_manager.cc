@@ -218,7 +218,9 @@ void PreloadLacrosFiles(const base::FilePath& lacros_dir) {
   // These files are the Lacros equivalent of Ash's files preloaded at boot by
   // ureadahead.
   static constexpr const char* kPreloadFiles[] = {
+#if BUILDFLAG(ENABLE_WIDEVINE)
     "WidevineCdm/manifest.json",
+#endif
     "chrome",
     "chrome_100_percent.pak",
     "chrome_200_percent.pak",
@@ -245,6 +247,7 @@ void PreloadLacrosFiles(const base::FilePath& lacros_dir) {
   PreloadFile(locale_path);
 
   // Preload Widevine for the right architecture.
+#if BUILDFLAG(ENABLE_WIDEVINE)
 #if defined(ARCH_CPU_ARM_FAMILY)
   base::FilePath libwidevine_path = lacros_dir.Append(
       "WidevineCdm/_platform_specific/cros_arm/libwidevinecdm.so");
@@ -253,6 +256,7 @@ void PreloadLacrosFiles(const base::FilePath& lacros_dir) {
       "WidevineCdm/_platform_specific/cros_x64/libwidevinecdm.so");
 #endif
   PreloadFile(libwidevine_path);
+#endif
 }
 
 ResourcesFileSharingMode ClearOrMoveSharedResourceFileInternal(
