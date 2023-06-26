@@ -16,10 +16,10 @@
 @property(nonatomic, strong) UIWindow* window;
 
 // The object that holds the state of the scene associated with this delegate.
-@property(nonatomic, strong) SceneState* sceneState;
+@property(nonatomic, readonly) SceneState* sceneState;
 
 // The controller created and owned by this object.
-@property(nonatomic, strong) SceneController* sceneController;
+@property(nonatomic, readonly) SceneController* sceneController;
 
 @end
 

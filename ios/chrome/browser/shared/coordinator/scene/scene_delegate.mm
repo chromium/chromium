@@ -47,6 +47,9 @@ NSString* const kOriginDetectedKey = @"OriginDetectedKey";
 
 @implementation SceneDelegate
 
+@synthesize sceneState = _sceneState;
+@synthesize sceneController = _sceneController;
+
 - (SceneState*)sceneState {
   if (!_sceneState) {
     MainApplicationDelegate* appDelegate =
