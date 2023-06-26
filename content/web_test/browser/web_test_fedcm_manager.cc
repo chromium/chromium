@@ -1,0 +1,82 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/web_test/browser/web_test_fedcm_manager.h"
+
+#include "content/browser/webid/federated_auth_request_impl.h"
+#include "content/browser/webid/federated_auth_request_page_data.h"
+#include "content/public/browser/identity_request_dialog_controller.h"
+#include "content/public/browser/page.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace content {
+
+WebTestFedCmManager::WebTestFedCmManager(RenderFrameHost* render_frame_host)
+    : render_frame_host_(render_frame_host) {}
+
+WebTestFedCmManager::~WebTestFedCmManager() = default;
+
+void WebTestFedCmManager::GetFedCmDialogTitle(
+    blink::test::mojom::FederatedAuthRequestAutomation::
+        GetFedCmDialogTitleCallback callback) {
+  FederatedAuthRequestPageData* page_data =
+      PageUserData<FederatedAuthRequestPageData>::GetForPage(
+          render_frame_host_->GetPage());
+  if (!page_data) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  FederatedAuthRequestImpl* auth_request =
+      page_data->PendingWebIdentityRequest();
+  if (!auth_request) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  IdentityRequestDialogController* controller =
+      auth_request->GetDialogController();
+  if (!controller) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  std::move(callback).Run(controller->GetTitle());
+}
+
+void WebTestFedCmManager::SelectFedCmAccount(
+    uint32_t account_index,
+    SelectFedCmAccountCallback callback) {
+  FederatedAuthRequestPageData* page_data =
+      PageUserData<FederatedAuthRequestPageData>::GetForPage(
+          render_frame_host_->GetPage());
+  if (!page_data) {
+    std::move(callback).Run(false);
+    return;
+  }
+  FederatedAuthRequestImpl* auth_request =
+      page_data->PendingWebIdentityRequest();
+  if (!auth_request) {
+    std::move(callback).Run(false);
+    return;
+  }
+  const std::vector<IdentityProviderData>& idp_data =
+      auth_request->GetSortedIdpData();
+  if (idp_data.empty()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  uint32_t current = 0;
+  for (const auto& data : idp_data) {
+    for (const IdentityRequestAccount& account : data.accounts) {
+      if (current == account_index) {
+        auth_request->AcceptAccountsDialogForDevtools(
+            data.idp_metadata.config_url, account);
+        std::move(callback).Run(true);
+        return;
+      }
+      ++current;
+    }
+  }
+  std::move(callback).Run(false);
+}
+
+}  // namespace content

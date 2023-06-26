@@ -476,8 +476,11 @@
   };
 
   window.test_driver_internal.get_fedcm_dialog_title = async function() {
-    // TODO(crbug.com/1453691): implement the title getter.
-    return "";
+    return internals.getFedCmTitle();
+  }
+
+  window.test_driver_internal.select_fedcm_account = async function(account_index) {
+    return internals.selectFedCmAccount(account_index);
   }
 
   // Enable automation so we don't wait for user input on unimplemented APIs

@@ -216,6 +216,8 @@ source_set("modules_testing") {
   sources = [
     "accessibility/testing/internals_accessibility.cc",
     "accessibility/testing/internals_accessibility.h",
+    "credentialmanagement/testing/internals_fed_cm.cc",
+    "credentialmanagement/testing/internals_fed_cm.h",
     "mediastream/testing/internals_media_stream.cc",
     "mediastream/testing/internals_media_stream.h",
     "netinfo/testing/internals_net_info.cc",

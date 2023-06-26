@@ -52,6 +52,7 @@
 #include "content/web_test/browser/web_test_browser_main_parts.h"
 #include "content/web_test/browser/web_test_control_host.h"
 #include "content/web_test/browser/web_test_cookie_manager.h"
+#include "content/web_test/browser/web_test_fedcm_manager.h"
 #include "content/web_test/browser/web_test_origin_trial_throttle.h"
 #include "content/web_test/browser/web_test_permission_manager.h"
 #include "content/web_test/browser/web_test_storage_access_manager.h"
@@ -537,6 +538,9 @@ void WebTestContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   map->Add<blink::test::mojom::CookieManagerAutomation>(base::BindRepeating(
       &WebTestContentBrowserClient::BindCookieManagerAutomation,
       base::Unretained(this)));
+  map->Add<blink::test::mojom::FederatedAuthRequestAutomation>(
+      base::BindRepeating(&WebTestContentBrowserClient::BindFedCmAutomation,
+                          base::Unretained(this)));
 }
 
 bool WebTestContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
@@ -587,6 +591,14 @@ void WebTestContentBrowserClient::BindCookieManagerAutomation(
                                ->GetCookieManagerForBrowserProcess(),
                            render_frame_host->GetLastCommittedURL()),
                        std::move(receiver));
+}
+
+void WebTestContentBrowserClient::BindFedCmAutomation(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::test::mojom::FederatedAuthRequestAutomation>
+        receiver) {
+  fedcm_managers_.Add(std::make_unique<WebTestFedCmManager>(render_frame_host),
+                      std::move(receiver));
 }
 
 std::unique_ptr<LoginDelegate> WebTestContentBrowserClient::CreateLoginDelegate(

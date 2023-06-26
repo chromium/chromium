@@ -10,7 +10,7 @@
 namespace content {
 class FederatedAuthRequestImpl;
 
-class FederatedAuthRequestPageData
+class CONTENT_EXPORT FederatedAuthRequestPageData
     : public PageUserData<FederatedAuthRequestPageData> {
  public:
   ~FederatedAuthRequestPageData() override;

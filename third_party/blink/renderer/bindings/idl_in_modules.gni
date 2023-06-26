@@ -1307,6 +1307,7 @@ if (target_os != "android") {
 static_idl_files_in_modules_for_testing = get_path_info(
         [
           "//third_party/blink/renderer/modules/accessibility/testing/internals_accessibility.idl",
+          "//third_party/blink/renderer/modules/credentialmanagement/testing/internals_fed_cm.idl",
           "//third_party/blink/renderer/modules/mediastream/testing/internals_media_stream.idl",
           "//third_party/blink/renderer/modules/netinfo/testing/internals_net_info.idl",
           "//third_party/blink/renderer/modules/peerconnection/testing/internals_rtc_certificate.idl",
