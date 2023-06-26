@@ -45,6 +45,7 @@
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -142,6 +143,7 @@ void SurfaceTreeHost::SetRootSurface(Surface* root_surface) {
     // Force recreating resources when the surface is added to a tree again.
     root_surface_->SurfaceHierarchyResourcesLost();
     root_surface_ = nullptr;
+    previous_content_bounds_ = absl::nullopt;
   }
 
   if (root_surface) {
@@ -398,13 +400,20 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
   aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
 
   const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
-  if (bounds != host_window_->bounds()) {
-    float device_scale_factor = GetScaleFactor();
+  if (previous_content_bounds_ != bounds) {
+    previous_content_bounds_ = bounds;
     gfx::Size size = bounds.size();
     if (client_submits_surfaces_in_pixel_coordinates_) {
-      size = gfx::ScaleToCeiledSize(size, 1.0f / device_scale_factor);
+      size = gfx::ScaleToCeiledSize(size, 1.0f / GetScaleFactor());
     }
-    host_window_->SetBounds({host_window_->bounds().origin(), size});
+    gfx::Rect scaled_bounds(bounds.origin(), size);
+    if (scaled_bounds != host_window_->bounds()) {
+      // DP size has changed, set new bounds.
+      host_window_->SetBounds({host_window_->bounds().origin(), size});
+    } else {
+      // DP size has not changed, but pixel size has - allocate new surface id.
+      host_window_->AllocateLocalSurfaceId();
+    }
   }
 
   // TODO(yjliu): a) consolidate with ClientControlledShellSurface. b) use the

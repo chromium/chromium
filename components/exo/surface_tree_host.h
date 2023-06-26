@@ -252,6 +252,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   bool bounds_is_dirty_ = true;
 
+  absl::optional<gfx::Rect> previous_content_bounds_;
+
   base::WeakPtrFactory<SurfaceTreeHost> weak_ptr_factory_{this};
 };
 
