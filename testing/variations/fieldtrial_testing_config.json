@@ -6238,6 +6238,21 @@
             ]
         }
     ],
+    "GpuInfoCollectionSeparatePrefetch": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GpuInfoCollectionSeparatePrefetch"
+                    ]
+                }
+            ]
+        }
+    ],
     "GridTabSwitcherTablet": [
         {
             "platforms": [
