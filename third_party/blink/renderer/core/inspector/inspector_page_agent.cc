@@ -561,6 +561,7 @@ protocol::Response InspectorPageAgent::addScriptToEvaluateOnNewDocument(
     const String& source,
     Maybe<String> world_name,
     Maybe<bool> include_command_line_api,
+    Maybe<bool> runImmediately,
     String* identifier) {
   Vector<WTF::String> keys = scripts_to_evaluate_on_load_.Keys();
   auto* result = std::max_element(
@@ -578,10 +579,12 @@ protocol::Response InspectorPageAgent::addScriptToEvaluateOnNewDocument(
   include_command_line_api_for_scripts_to_evaluate_on_load_.Set(
       *identifier, include_command_line_api.fromMaybe(false));
 
-  if (client_->IsPausedForNewWindow()) {
-    // When opening a new popup, Page.addScriptToEvaluateOnNewDocument could be
-    // called after Runtime.enable that forces main context creation. In this
-    // case, we would not normally evaluate the script, but we should.
+  if (client_->IsPausedForNewWindow() ||
+      runImmediately.fromMaybe(false)) {
+    // client_->IsPausedForNewWindow(): When opening a new popup,
+    // Page.addScriptToEvaluateOnNewDocument could be called after
+    // Runtime.enable that forces main context creation. In this case, we would
+    // not normally evaluate the script, but we should.
     for (LocalFrame* frame : *inspected_frames_) {
       EvaluateScriptOnNewDocument(*frame, *identifier);
     }
@@ -604,6 +607,7 @@ protocol::Response InspectorPageAgent::addScriptToEvaluateOnLoad(
     const String& source,
     String* identifier) {
   return addScriptToEvaluateOnNewDocument(source, Maybe<String>(""),
+                                          Maybe<bool>(false),
                                           Maybe<bool>(false), identifier);
 }
 
