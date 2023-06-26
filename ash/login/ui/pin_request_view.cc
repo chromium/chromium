@@ -231,12 +231,12 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
 
   views::ImageView* icon = new views::ImageView();
 
-  const ui::ColorId lock_icon_color_id =
+  const ui::ColorId icon_color_id =
       is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
                : kColorAshIconColorPrimary;
 
   icon->SetImage(ui::ImageModel::FromVectorIcon(
-      kPinRequestLockIcon, lock_icon_color_id, kLockIconSizeDp));
+      kPinRequestLockIcon, icon_color_id, kLockIconSizeDp));
   icon_view->AddChildView(icon);
 
   // Back button. Note that it should be the last view added to |header| in
@@ -261,8 +261,8 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
       gfx::Size(kBackButtonSizeDp, kBackButtonSizeDp));
   back_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(views::kIcCloseIcon,
-                                     kColorAshIconColorPrimary, kCrossSizeDp));
+      ui::ImageModel::FromVectorIcon(views::kIcCloseIcon, icon_color_id,
+                                     kCrossSizeDp));
   back_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   back_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   back_button_->SetAccessibleName(
@@ -281,7 +281,12 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   auto decorate_label = [](views::Label* label) {
     label->SetSubpixelRenderingEnabled(false);
     label->SetAutoColorReadabilityEnabled(false);
-    label->SetEnabledColorId(kColorAshTextColorPrimary);
+
+    const ui::ColorId text_color_id =
+        chromeos::features::IsJellyEnabled()
+            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+            : kColorAshTextColorPrimary;
+    label->SetEnabledColorId(text_color_id);
     label->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   };
 
@@ -507,15 +512,23 @@ void PinRequestView::UpdateState(PinRequestViewState state,
   title_label_->SetText(title);
   description_label_->SetText(description);
   UpdatePreferredSize();
+
+  const bool is_jelly = chromeos::features::IsJellyEnabled();
   switch (state_) {
     case PinRequestViewState::kNormal: {
-      access_code_view_->SetInputColorId(kColorAshTextColorPrimary);
-      title_label_->SetEnabledColorId(kColorAshTextColorPrimary);
+      const ui::ColorId normal_color_id =
+          is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+                   : kColorAshTextColorPrimary;
+      access_code_view_->SetInputColorId(normal_color_id);
+      title_label_->SetEnabledColorId(normal_color_id);
       return;
     }
     case PinRequestViewState::kError: {
-      access_code_view_->SetInputColorId(kColorAshTextColorAlert);
-      title_label_->SetEnabledColorId(kColorAshTextColorAlert);
+      const ui::ColorId error_color_id =
+          is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysError)
+                   : kColorAshTextColorAlert;
+      access_code_view_->SetInputColorId(error_color_id);
+      title_label_->SetEnabledColorId(error_color_id);
       // Read out the error.
       title_label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
       return;

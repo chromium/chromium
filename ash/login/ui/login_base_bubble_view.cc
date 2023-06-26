@@ -174,7 +174,7 @@ void LoginBaseBubbleView::EnsureLayer() {
   layer()->SetFillsBoundsOpaquely(false);
 
   // Set shadow
-  if (chromeos::features::IsJellyrollEnabled()) {
+  if (chromeos::features::IsJellyrollEnabled() && GetVisible()) {
     shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
         SystemShadow::Type::kElevation12);
     shadow_->SetRoundedCornerRadius(kBubbleBorderRadius);
