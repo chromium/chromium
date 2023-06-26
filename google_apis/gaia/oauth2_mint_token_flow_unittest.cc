@@ -96,6 +96,11 @@ static const char kInvalidRemoteConsentResponse[] =
     "  }"
     "}";
 
+constexpr base::StringPiece kVersion = "test_version";
+constexpr base::StringPiece kChannel = "test_channel";
+constexpr base::StringPiece kScopes[] = {"http://scope1", "http://scope2"};
+constexpr base::StringPiece kClientId = "client1";
+
 static RemoteConsentResolutionData CreateRemoteConsentResolutionData() {
   RemoteConsentResolutionData resolution_data;
   resolution_data.url = GURL("https://test.com/consent?param=value");
@@ -138,6 +143,11 @@ class MockMintTokenFlow : public OAuth2MintTokenFlow {
 
   MOCK_METHOD0(CreateAccessTokenFetcher,
                std::unique_ptr<OAuth2AccessTokenFetcher>());
+
+  // Moves the method to the public section to make it available for tests.
+  std::string CreateApiCallBody() override {
+    return OAuth2MintTokenFlow::CreateApiCallBody();
+  }
 };
 
 }  // namespace
@@ -182,18 +192,19 @@ class OAuth2MintTokenFlowTest : public testing::Test {
                   const std::string& device_id,
                   const std::string& selected_user_id,
                   const std::string& consent_result) {
-    std::string ext_id = "ext1";
-    std::string client_id = "client1";
-    std::string version = "test_version";
-    std::string channel = "test_channel";
-    std::vector<std::string> scopes = {"http://scope1", "http://scope2"};
+    const base::StringPiece kExtensionId = "ext1";
     flow_ = std::make_unique<MockMintTokenFlow>(
         delegate,
         OAuth2MintTokenFlow::Parameters::CreateForExtensionFlow(
-            ext_id, client_id,
-            std::vector<const base::StringPiece>(scopes.begin(), scopes.end()),
-            mode, enable_granular_permissions, version, channel, device_id,
-            selected_user_id, consent_result));
+            kExtensionId, kClientId, kScopes, mode, enable_granular_permissions,
+            kVersion, kChannel, device_id, selected_user_id, consent_result));
+  }
+
+  void CreateClientFlow() {
+    const base::StringPiece kDeviceId = "test_device_id";
+    flow_ = std::make_unique<MockMintTokenFlow>(
+        &delegate_, OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
+                        kClientId, kScopes, kVersion, kChannel, kDeviceId));
   }
 
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
@@ -212,123 +223,145 @@ class OAuth2MintTokenFlowTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(OAuth2MintTokenFlowTest, CreateApiCallBody) {
-  {  // Issue advice mode.
-    CreateFlow(OAuth2MintTokenFlow::MODE_ISSUE_ADVICE);
-    std::string body = flow_->CreateApiCallBody();
-    std::string expected_body(
-        "force=false"
-        "&response_type=none"
-        "&scope=http://scope1+http://scope2"
-        "&enable_granular_permissions=false"
-        "&client_id=client1"
-        "&origin=ext1"
-        "&lib_ver=test_version"
-        "&release_channel=test_channel");
-    EXPECT_EQ(expected_body, body);
-  }
-  {  // Record grant mode.
-    CreateFlow(OAuth2MintTokenFlow::MODE_RECORD_GRANT);
-    std::string body = flow_->CreateApiCallBody();
-    std::string expected_body(
-        "force=true"
-        "&response_type=none"
-        "&scope=http://scope1+http://scope2"
-        "&enable_granular_permissions=false"
-        "&client_id=client1"
-        "&origin=ext1"
-        "&lib_ver=test_version"
-        "&release_channel=test_channel");
-    EXPECT_EQ(expected_body, body);
-  }
-  {  // Mint token no force mode.
-    CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
-    std::string body = flow_->CreateApiCallBody();
-    std::string expected_body(
-        "force=false"
-        "&response_type=token"
-        "&scope=http://scope1+http://scope2"
-        "&enable_granular_permissions=false"
-        "&client_id=client1"
-        "&origin=ext1"
-        "&lib_ver=test_version"
-        "&release_channel=test_channel");
-    EXPECT_EQ(expected_body, body);
-  }
-  {  // Mint token force mode.
-    CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_FORCE);
-    std::string body = flow_->CreateApiCallBody();
-    std::string expected_body(
-        "force=true"
-        "&response_type=token"
-        "&scope=http://scope1+http://scope2"
-        "&enable_granular_permissions=false"
-        "&client_id=client1"
-        "&origin=ext1"
-        "&lib_ver=test_version"
-        "&release_channel=test_channel");
-    EXPECT_EQ(expected_body, body);
-  }
-  {  // Mint token with granular permissions enabled.
-    CreateFlowWithEnableGranularPermissions(true);
-    std::string body = flow_->CreateApiCallBody();
-    std::string expected_body(
-        "force=false"
-        "&response_type=none"
-        "&scope=http://scope1+http://scope2"
-        "&enable_granular_permissions=true"
-        "&client_id=client1"
-        "&origin=ext1"
-        "&lib_ver=test_version"
-        "&release_channel=test_channel");
-    EXPECT_EQ(expected_body, body);
-  }
-  {  // Mint token with device_id.
-    CreateFlowWithDeviceId("device_id1");
-    std::string body = flow_->CreateApiCallBody();
-    std::string expected_body(
-        "force=false"
-        "&response_type=none"
-        "&scope=http://scope1+http://scope2"
-        "&enable_granular_permissions=false"
-        "&client_id=client1"
-        "&origin=ext1"
-        "&lib_ver=test_version"
-        "&release_channel=test_channel"
-        "&device_id=device_id1"
-        "&device_type=chrome");
-    EXPECT_EQ(expected_body, body);
-  }
-  {
-    CreateFlowWithSelectedUserId("user_id1");
-    std::string body = flow_->CreateApiCallBody();
-    std::string expected_body(
-        "force=false"
-        "&response_type=none"
-        "&scope=http://scope1+http://scope2"
-        "&enable_granular_permissions=false"
-        "&client_id=client1"
-        "&origin=ext1"
-        "&lib_ver=test_version"
-        "&release_channel=test_channel"
-        "&selected_user_id=user_id1");
-    EXPECT_EQ(expected_body, body);
-  }
-  {
-    CreateFlowWithConsentResult("consent1");
-    std::string body = flow_->CreateApiCallBody();
-    std::string expected_body(
-        "force=false"
-        "&response_type=token"
-        "&scope=http://scope1+http://scope2"
-        "&enable_granular_permissions=false"
-        "&client_id=client1"
-        "&origin=ext1"
-        "&lib_ver=test_version"
-        "&release_channel=test_channel"
-        "&consent_result=consent1");
-    EXPECT_EQ(expected_body, body);
-  }
+TEST_F(OAuth2MintTokenFlowTest, CreateApiCallBodyIssueAdviceMode) {
+  CreateFlow(OAuth2MintTokenFlow::MODE_ISSUE_ADVICE);
+  std::string body = flow_->CreateApiCallBody();
+  std::string expected_body(
+      "force=false"
+      "&response_type=none"
+      "&scope=http://scope1+http://scope2"
+      "&enable_granular_permissions=false"
+      "&client_id=client1"
+      "&lib_ver=test_version"
+      "&release_channel=test_channel"
+      "&origin=ext1");
+  EXPECT_EQ(expected_body, body);
+}
+
+TEST_F(OAuth2MintTokenFlowTest, CreateApiCallBodyRecordGrantMode) {
+  CreateFlow(OAuth2MintTokenFlow::MODE_RECORD_GRANT);
+  std::string body = flow_->CreateApiCallBody();
+  std::string expected_body(
+      "force=true"
+      "&response_type=none"
+      "&scope=http://scope1+http://scope2"
+      "&enable_granular_permissions=false"
+      "&client_id=client1"
+      "&lib_ver=test_version"
+      "&release_channel=test_channel"
+      "&origin=ext1");
+  EXPECT_EQ(expected_body, body);
+}
+
+TEST_F(OAuth2MintTokenFlowTest, CreateApiCallBodyMintTokenNoForceMode) {
+  CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
+  std::string body = flow_->CreateApiCallBody();
+  std::string expected_body(
+      "force=false"
+      "&response_type=token"
+      "&scope=http://scope1+http://scope2"
+      "&enable_granular_permissions=false"
+      "&client_id=client1"
+      "&lib_ver=test_version"
+      "&release_channel=test_channel"
+      "&origin=ext1");
+  EXPECT_EQ(expected_body, body);
+}
+
+TEST_F(OAuth2MintTokenFlowTest, CreateApiCallBodyMintTokenForceMode) {
+  CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_FORCE);
+  std::string body = flow_->CreateApiCallBody();
+  std::string expected_body(
+      "force=true"
+      "&response_type=token"
+      "&scope=http://scope1+http://scope2"
+      "&enable_granular_permissions=false"
+      "&client_id=client1"
+      "&lib_ver=test_version"
+      "&release_channel=test_channel"
+      "&origin=ext1");
+  EXPECT_EQ(expected_body, body);
+}
+
+TEST_F(OAuth2MintTokenFlowTest,
+       CreateApiCallBodyMintTokenWithGranularPermissionsEnabled) {
+  CreateFlowWithEnableGranularPermissions(true);
+  std::string body = flow_->CreateApiCallBody();
+  std::string expected_body(
+      "force=false"
+      "&response_type=none"
+      "&scope=http://scope1+http://scope2"
+      "&enable_granular_permissions=true"
+      "&client_id=client1"
+      "&lib_ver=test_version"
+      "&release_channel=test_channel"
+      "&origin=ext1");
+  EXPECT_EQ(expected_body, body);
+}
+
+TEST_F(OAuth2MintTokenFlowTest, CreateApiCallBodyMintTokenWithDeviceId) {
+  CreateFlowWithDeviceId("device_id1");
+  std::string body = flow_->CreateApiCallBody();
+  std::string expected_body(
+      "force=false"
+      "&response_type=none"
+      "&scope=http://scope1+http://scope2"
+      "&enable_granular_permissions=false"
+      "&client_id=client1"
+      "&lib_ver=test_version"
+      "&release_channel=test_channel"
+      "&origin=ext1"
+      "&device_id=device_id1"
+      "&device_type=chrome");
+  EXPECT_EQ(expected_body, body);
+}
+
+TEST_F(OAuth2MintTokenFlowTest, CreateApiCallBodyMintTokenWithSelectedUserId) {
+  CreateFlowWithSelectedUserId("user_id1");
+  std::string body = flow_->CreateApiCallBody();
+  std::string expected_body(
+      "force=false"
+      "&response_type=none"
+      "&scope=http://scope1+http://scope2"
+      "&enable_granular_permissions=false"
+      "&client_id=client1"
+      "&lib_ver=test_version"
+      "&release_channel=test_channel"
+      "&origin=ext1"
+      "&selected_user_id=user_id1");
+  EXPECT_EQ(expected_body, body);
+}
+
+TEST_F(OAuth2MintTokenFlowTest, CreateApiCallBodyMintTokenWithConsentResult) {
+  CreateFlowWithConsentResult("consent1");
+  std::string body = flow_->CreateApiCallBody();
+  std::string expected_body(
+      "force=false"
+      "&response_type=token"
+      "&scope=http://scope1+http://scope2"
+      "&enable_granular_permissions=false"
+      "&client_id=client1"
+      "&lib_ver=test_version"
+      "&release_channel=test_channel"
+      "&origin=ext1"
+      "&consent_result=consent1");
+  EXPECT_EQ(expected_body, body);
+}
+
+TEST_F(OAuth2MintTokenFlowTest, CreateApiCallBodyClientAccessTokenFlow) {
+  CreateClientFlow();
+  std::string body = flow_->CreateApiCallBody();
+  std::string expected_body(
+      "force=false"
+      "&response_type=token"
+      "&scope=http://scope1+http://scope2"
+      "&enable_granular_permissions=false"
+      "&client_id=client1"
+      "&lib_ver=test_version"
+      "&release_channel=test_channel"
+      "&device_id=test_device_id"
+      "&device_type=chrome");
+  EXPECT_EQ(expected_body, body);
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ParseMintTokenResponse) {

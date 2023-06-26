@@ -43,9 +43,9 @@ const char kOAuth2IssueTokenBodyFormat[] =
     "&scope=%s"
     "&enable_granular_permissions=%s"
     "&client_id=%s"
-    "&origin=%s"
     "&lib_ver=%s"
     "&release_channel=%s";
+const char kOAuth2IssueTokenBodyFormatExtensionIdAddendum[] = "&origin=%s";
 const char kOAuth2IssueTokenBodyFormatSelectedUserIdAddendum[] =
     "&selected_user_id=%s";
 const char kOAuth2IssueTokenBodyFormatDeviceIdAddendum[] =
@@ -243,9 +243,13 @@ std::string OAuth2MintTokenFlow::CreateApiCallBody() {
       base::EscapeUrlEncodedData(enable_granular_permissions_value, true)
           .c_str(),
       base::EscapeUrlEncodedData(parameters_.client_id, true).c_str(),
-      base::EscapeUrlEncodedData(parameters_.extension_id, true).c_str(),
       base::EscapeUrlEncodedData(parameters_.version, true).c_str(),
       base::EscapeUrlEncodedData(parameters_.channel, true).c_str());
+  if (!parameters_.extension_id.empty()) {
+    body.append(base::StringPrintf(
+        kOAuth2IssueTokenBodyFormatExtensionIdAddendum,
+        base::EscapeUrlEncodedData(parameters_.extension_id, true).c_str()));
+  }
   if (!parameters_.device_id.empty()) {
     body.append(base::StringPrintf(
         kOAuth2IssueTokenBodyFormatDeviceIdAddendum,

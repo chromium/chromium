@@ -175,7 +175,6 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
 
  private:
   friend class OAuth2MintTokenFlowTest;
-  FRIEND_TEST_ALL_PREFIXES(OAuth2MintTokenFlowTest, CreateApiCallBody);
   FRIEND_TEST_ALL_PREFIXES(OAuth2MintTokenFlowTest, ParseIssueAdviceResponse);
   FRIEND_TEST_ALL_PREFIXES(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse);
   FRIEND_TEST_ALL_PREFIXES(OAuth2MintTokenFlowTest,
