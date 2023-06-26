@@ -188,6 +188,7 @@ Op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> en <ph name="LINUX_OS_NA
       * Legacy (Verouderd), is alleen het RC4-type toegestaan. RC4 is onbeveiligd. Deze optie zou alleen nodig moeten zijn in zeer specifieke situaties. Stel de server waar mogelijk opnieuw in om ondersteuning te bieden voor AES-versleuteling.
 
       Bekijk voor meer informatie het volgende artikel: https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_client_encryption_types.</translation>
+<translation id="1173493742686115032"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> aanzetten op alle webpagina's</translation>
 <translation id="1177567780207290133">Als je dit beleid instelt, wordt de toepassing van het SafeSites URL-filter beheerd. Dit filter gebruikt de Google Safe Search API om URL's al dan niet te classificeren als pornografisch.
 
       Als dit beleid is ingesteld op:
@@ -7596,6 +7597,7 @@ Met dit bedrijfsbeleid kunnen beheerders bepalen of hun gebruikers de extra thro
 <translation id="7976157349247117979">Naam van de bestemming van <ph name="PRODUCT_NAME" /></translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7986473886676689183">Android-rapporten aanzetten</translation>
+<translation id="7990280274626154329"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> aanzetten</translation>
 <translation id="7991022023019679916">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Specificeert de tijdsduur zonder gebruikersinvoer waarna het scherm wordt uitgezet als er op netstroom wordt gewerkt.
@@ -7660,6 +7662,7 @@ Het gebruik van <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> of <ph name="LA
 <translation id="8028814157747157754">De standaard zoekprovider aanzetten en toestaan dat gebruikers de lijst met zoekproviders wijzigen</translation>
 <translation id="8029201909194194377">Maximale toegestane sessieduur voor verbindingen voor externe toegang</translation>
 <translation id="8035570672225663428">Het model voor aangepast opladen aanzetten om het oplaadproces te onderbreken om de batterijduur te verlengen</translation>
+<translation id="8038007682032315784"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> uitzetten op alle webpagina's</translation>
 <translation id="8044493735196713914">Opstartmodus van apparaat melden</translation>
 <translation id="8044720778481009876">De bestemmingen <ph name="CLOUD_PRINT_NAME" /> en Opslaan in Google Drive (beëindigd)</translation>
 <translation id="80453040817068401">De <ph name="LACROS_NAME" />-browser beschikbaar maken</translation>
@@ -8525,6 +8528,9 @@ Als je het beleid niet instelt of niet toepast, worden de gegevens van deze zoek
       Als gebruikers het dialoogvenster voor importeren openen, is het selectievakje voor bookmarks aan- of uitgevinkt in overeenstemming met de waarde van dit beleid.</translation>
 <translation id="8858642179038618439">Beperkte modus van YouTube afdwingen</translation>
 <translation id="8860342862142842017">Handhaving van Certificaattransparantie voor een lijst met subjectPublicKeyInfo-hashes</translation>
+<translation id="8860474826929590628">Als je dit beleid toepast of niet instelt, is <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> toegestaan op alle webpagina's.
+
+Als je dit beleid niet toepast, is <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> op geen enkele webpagina beschikbaar.</translation>
 <translation id="8860894781631833477">Gebruikers kunnen het releasekanaal voor <ph name="PRODUCT_OS_NAME" /> instellen</translation>
 <translation id="8864975621965365890">Hiermee onderdruk je de prompt die je ziet als een site wordt weergegeven door <ph name="PRODUCT_FRAME_NAME" />.</translation>
 <translation id="8866430022832109569">Rapportage van app-voorraad</translation>

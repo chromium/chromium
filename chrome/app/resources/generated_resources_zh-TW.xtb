@@ -2742,7 +2742,7 @@
 <translation id="3343046414300263892">放大字體</translation>
 <translation id="3345634917232014253">剛才已執行安全檢查</translation>
 <translation id="3345886924813989455">找不到支援的瀏覽器</translation>
-<translation id="3347086966102161372">複製圖片位址(&amp;O)</translation>
+<translation id="3347086966102161372">複製圖片網址(&amp;O)</translation>
 <translation id="3348038390189153836">偵測到卸除式裝置</translation>
 <translation id="3348131053948466246">已提供表情符號建議。使用向上鍵或向下鍵進行瀏覽，按下 Enter 鍵即可插入表情符號。</translation>
 <translation id="3349933790966648062">記憶體使用量</translation>
@@ -7994,7 +7994,7 @@
 <translation id="7963001036288347286">觸控板加速</translation>
 <translation id="7963608432878156675">這個名稱會向其他使用藍牙和網路連線的裝置顯示</translation>
 <translation id="7963826112438303517">Google 助理會使用這些錄音檔案和你的語音要求，建立及更新你的語音模型；語音模型只會儲存在已啟用 Voice Match 的裝置上。你可在 Google 助理設定頁面中查看或重新調校語音活動。</translation>
-<translation id="7966241909927244760">複製圖片位址(&amp;O)</translation>
+<translation id="7966241909927244760">複製圖片網址(&amp;O)</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{書籤清單中有 1 個項目}other{書籤清單中有 {COUNT} 個項目}}</translation>
 <translation id="7968072247663421402">供應商選項</translation>
 <translation id="7968742106503422125">讀取及修改你複製和貼上的資料</translation>
