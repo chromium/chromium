@@ -215,4 +215,10 @@
       <property name="message" value="&#xA;&#xA;Please use inclusive language where possible.&#xA;&#xA;Instead of 'dummy', use a term such as placeholder or empty (e.g. PlaceholderImpl, not DummyImpl).&#xA;Instead of 'sanity', use a term such as 'confidence' (e.g. confidence check, not sanity check).&#xA;Instead of 'blind', use a term such as unaware (e.g. being unaware of, not being blind to. unconfirmed change, not blind change).&#xA;&#xA;For more info see: https://developers.google.com/style/word-list&#xA;"/>
     </module>
   </module>
+  <module name="RegexpMultiline">
+    <property name="id" value="VisibleForTestingForTesting"/>
+    <property name="severity" value="warning"/>
+    <property name="format" value="@VisibleForTesting.*\n.*ForTests?(ing)\("/>
+    <property name="message" value="There is no need to add @VisibleForTesting to test-only methods (those with &quot;ForTesting&quot; suffix)."/>
+  </module>
 </module>

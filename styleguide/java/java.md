@@ -198,35 +198,6 @@ Values of `Integer` type are also supported, which allows using a sentinel
 [@IntDef annotation]: https://developer.android.com/studio/write/annotations#enum-annotations
 [Android lint]: https://chromium.googlesource.com/chromium/src/+/HEAD/build/android/docs/lint.md
 
-## Tools
-
-### Automatically Formatting Edited Files
-
-A checkout should give you clang-format to automatically format Java code.
-It is suggested that Clang's formatting of code should be accepted in code
-reviews.
-
-You can run `git cl format` to apply the automatic formatting.
-
-### IDE Setup
-
-For automatically using the correct style, follow the guide to set up your
-favorite IDE:
-
-* [Android Studio](https://chromium.googlesource.com/chromium/src/+/main/docs/android_studio.md)
-* [Eclipse](https://chromium.googlesource.com/chromium/src/+/main/docs/eclipse.md)
-
-### Checkstyle
-
-Checkstyle is automatically run by the build bots, and to ensure you do not have
-any surprises, you can also set up checkstyle locally using [this
-guide](https://sites.google.com/a/chromium.org/dev/developers/checkstyle).
-
-### Lint
-
-Lint is run as part of the build. For more information, see
-[here](https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md).
-
 ## Style / Formatting
 
 ### File Headers
@@ -290,16 +261,29 @@ This is the order of the import groups:
 
 ## Test-only Code
 
-Functions used only for testing should be restricted to test-only usages
-with the testing suffixes supported [PRESUMBIT.py](https://chromium.googlesource.com/chromium/src/+/main/PRESUBMIT.py).
-`ForTesting` is the conventional suffix although similar patterns, such as
-`ForTest`, are also accepted. These suffixes are checked at presubmit time
-to ensure the functions are called only by test files.
+Functions and fields used only for testing should have `ForTesting` as a
+suffix so that:
 
-It's generally bad practice to directly call test-only methods from
-non-test-only code. However, occasionally it has to be done, and if so, you
-should guard the check with an `if (BuildConfig.IS_FOR_TEST)` so that our Java
-optimizer can still remove the call in non-test builds.
+1. The `android-binary-size` trybot can [ensure they are removed] in
+   non-test optimized builds (by R8).
+2. [`PRESUMBIT.py`] can ensure no calls are made to such methods outside of
+   tests, and
+
+`ForTesting` methods that are `@CalledByNative` should use
+`@CalledByNativeForTesting` instead.
+
+Symbols that are made public (or package-private) for the sake of tests
+should be annotated with [`@VisibleForTesting`]. Android Lint will check
+that calls from non-test code respect the "otherwise" visibility.
+
+Symbols with a `ForTesting` suffix should **not** be annotated with
+`@VisibleForTesting`. While `otherwise=VisibleForTesting.NONE` exists, it
+is redundant given the "ForTesting" suffix and the associated lint check
+is redundant given our trybot check.
+
+[ensure they are removed]: /docs/speed/binary_size/android_binary_size_trybot.md#Added-Symbols-named-ForTest
+[`PRESUMBIT.py`]: https://chromium.googlesource.com/chromium/src/+/main/PRESUBMIT.py
+[`@VisibleForTesting`]: https://developer.android.com/reference/androidx/annotation/VisibleForTesting
 
 ## Location
 
@@ -325,6 +309,35 @@ For example, top level directory `//base` might contain a file named
 New `<top level directory>/android` directories should have an `OWNERS` file
 much like
 [//base/android/OWNERS](https://chromium.googlesource.com/chromium/src/+/main/base/android/OWNERS).
+
+## Tools
+
+### Automatically Formatting Edited Files
+
+A checkout should give you clang-format to automatically format Java code.
+It is suggested that Clang's formatting of code should be accepted in code
+reviews.
+
+You can run `git cl format` to apply the automatic formatting.
+
+### IDE Setup
+
+For automatically using the correct style, follow the guide to set up your
+favorite IDE:
+
+* [Android Studio](https://chromium.googlesource.com/chromium/src/+/main/docs/android_studio.md)
+* [Eclipse](https://chromium.googlesource.com/chromium/src/+/main/docs/eclipse.md)
+
+### Checkstyle
+
+Checkstyle is automatically run by the build bots, and to ensure you do not have
+any surprises, you can also set up checkstyle locally using [this
+guide](https://sites.google.com/a/chromium.org/dev/developers/checkstyle).
+
+### Lint
+
+Lint is run as part of the build. For more information, see
+[here](https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md).
 
 ## Miscellany
 
