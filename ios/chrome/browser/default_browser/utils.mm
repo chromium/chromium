@@ -124,6 +124,10 @@ const char kAppearAction[] = "Appear";
 // Maximum number of past event timestamps to record.
 const size_t kMaxPastTimestampsToRecord = 10;
 
+// Maximum number of past event timestamps to record for trigger criteria
+// experiment.
+const size_t kMaxPastTimestampsToRecordForTriggerCriteriaExperiment = 50;
+
 // Time threshold before activity timestamps should be removed.
 constexpr base::TimeDelta kUserActivityTimestampExpiration = base::Days(21);
 
@@ -154,6 +158,14 @@ const DefaultPromoType kDefaultPromoTypes[] = {
     DefaultPromoTypeAllTabs,
     DefaultPromoTypeMadeForIOS,
 };
+
+// Returns maximum number of past event timestamps to record.
+size_t GetMaxPastTimestampsToRecord() {
+  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    return kMaxPastTimestampsToRecordForTriggerCriteriaExperiment;
+  }
+  return kMaxPastTimestampsToRecord;
+}
 
 // Creates storage object from legacy keys.
 NSMutableDictionary<NSString*, NSObject*>* CreateStorageObjectFromLegacyKeys() {
@@ -276,9 +288,10 @@ void StoreTimestampsForPromoType(DefaultPromoType type,
   NSMutableArray<NSDate*>* dates =
       [[NSMutableArray alloc] initWithCapacity:times.size()];
 
-  // Only record up to kMaxPastTimestampsToRecord timestamps.
-  if (times.size() > kMaxPastTimestampsToRecord) {
-    const size_t count_to_erase = times.size() - kMaxPastTimestampsToRecord;
+  // Only record up to maxPastTimestampsToRecord timestamps.
+  size_t maxPastTimestampsToRecord = GetMaxPastTimestampsToRecord();
+  if (times.size() > maxPastTimestampsToRecord) {
+    const size_t count_to_erase = times.size() - maxPastTimestampsToRecord;
     times.erase(times.begin(), times.begin() + count_to_erase);
   }
 
