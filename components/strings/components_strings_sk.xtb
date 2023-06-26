@@ -1331,7 +1331,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3962859241508114581">Predchádzajúca stopa</translation>
 <translation id="3963721102035795474">Režim čítačky</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Žiadne}=1{Z 1 webu }few{Z # webov }many{Z # webu }other{Z # webov }}</translation>
-<translation id="3969052498612555048">Neviete kód nájsť? <ph name="BEGIN_LINK" />Získať nový kód<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Prebieha výpočet...</translation>
 <translation id="3973234410852337861">Web <ph name="HOST_NAME" /> je zablokovaný</translation>
 <translation id="3984581365661308170">Obálka č. 11</translation>
@@ -2720,7 +2719,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7064443976734085921">Autá nižšej strednej triedy</translation>
 <translation id="7064851114919012435">Kontaktné údaje</translation>
 <translation id="7067633076996245366">Soul a R&amp;B</translation>
-<translation id="7068733155164172741">Zadajte <ph name="OTP_LENGTH" />-miestny kód</translation>
 <translation id="70705239631109039">Vaše pripojenie nie je úplne zabezpečené</translation>
 <translation id="7075452647191940183">Žiadosť je príliš veľká</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3276,6 +3274,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8246482227229072868">Prstene</translation>
 <translation id="8249296373107784235">Prerušiť</translation>
 <translation id="8249463483885748674">Štandardizované a vstupné testy</translation>
+<translation id="824968735947741546">Jazyk <ph name="SOURCE" /> (rozpoznáva sa automaticky) sa prekladá do jazyka <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Táto adresa je momentálne uložená v tomto zariadení. Ak ju chcete používať v službách Googlu, uložte si ju do účtu Google <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Tlačidlo na správu nastavení dostupnosti, stlačením klávesa Enter si prispôsobte nástroje dostupnosti v nastaveniach systému Chrome OS</translation>
 <translation id="8253091569723639551">Fakturačná adresa je povinná</translation>

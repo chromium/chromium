@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">Скорошни приложения</translation>
 <translation id="1252999807265626933">Зарежда се от <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">„What's the weather?“ („Какво е времето?“)</translation>
-<translation id="1267032506238418139">Промяна на клавишната комбинация</translation>
 <translation id="1269405891096105529">Периферното устройство не се поддържа в режим на гост</translation>
 <translation id="1270290102613614947">Екранната клавиатура е деактивирана</translation>
 <translation id="1272079795634619415">Стоп</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">Наскоро инсталирано</translation>
 <translation id="1915307458270490472">Затваряне</translation>
 <translation id="1918022425394817322">Картината от камерата е прилепена към горния десен ъгъл</translation>
-<translation id="1919743966458266018">Комбинацията за отваряне на диспечера на задачите е променена. Моля, използвайте „<ph name="NEW_SHORTCUT" />“ вместо „<ph name="OLD_SHORTCUT" />“.</translation>
 <translation id="1923539912171292317">Автоматични кликвания</translation>
 <translation id="1928739107511554905">За да инсталирате актуализацията, използвайте сензорния екран да рестартирате своя Chromebook, докато клавиатурата е прикачена.</translation>
 <translation id="1948405482892809935">Превключване към следващия потребител</translation>
@@ -976,7 +974,6 @@
 <translation id="5283198616748585639">Добавяне на 1 мин</translation>
 <translation id="528468243742722775">Край</translation>
 <translation id="5286194356314741248">Сканира се</translation>
-<translation id="5293671101077843611">Няма събития днес</translation>
 <translation id="5297423144044956168">Няма намерени мобилни устройства</translation>
 <translation id="5297704307811127955">Изключено</translation>
 <translation id="5300589172476337783">Показване</translation>
@@ -1760,7 +1757,6 @@
 <translation id="8834539327799336565">Свързани сега</translation>
 <translation id="8841375032071747811">Бутон за връщане назад</translation>
 <translation id="8843682306134542540">Превключване на функцията за заключване на завъртането. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">търсене + Esc</translation>
 <translation id="8853703225951107899">ПИН кодът или паролата ви пак не бяха потвърдени. Забележка: Ако наскоро сте променили паролата си, използвайте старата. Новата ще бъде приложена, щом излезете от профила си.</translation>
 <translation id="8855885154700222542">Клавиш за цял екран</translation>
 <translation id="8858369206579825206">Контроли за поверителност</translation>

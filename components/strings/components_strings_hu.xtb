@@ -1333,7 +1333,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3962859241508114581">Előző szám</translation>
 <translation id="3963721102035795474">Olvasási mód</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Nincs}=1{ 1 webhelyről }other{# webhelyről }}</translation>
-<translation id="3969052498612555048">Nem találja a kódját? <ph name="BEGIN_LINK" />Új kód igénylése<ph name="END_LINK" />.</translation>
 <translation id="397105322502079400">Számítás…</translation>
 <translation id="3973234410852337861">A(z) <ph name="HOST_NAME" /> le van tiltva</translation>
 <translation id="3984581365661308170">11. boríték</translation>
@@ -2723,7 +2722,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7064443976734085921">Kompakt autók</translation>
 <translation id="7064851114919012435">Kapcsolatfelvételi adatok</translation>
 <translation id="7067633076996245366">Soul és R&amp;B</translation>
-<translation id="7068733155164172741">Adja meg a kapott, <ph name="OTP_LENGTH" /> számjegyből álló kódot</translation>
 <translation id="70705239631109039">Kapcsolata nem teljesen biztonságos</translation>
 <translation id="7075452647191940183">A kérés túl nagy</translation>
 <translation id="7078665357168027058">RA3</translation>

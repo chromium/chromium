@@ -1330,7 +1330,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3962859241508114581">Avvalgi trek</translation>
 <translation id="3963721102035795474">O‘qish rejimi</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Yo‘q}=1{1 ta saytdan }other{# ta saytdan }}</translation>
-<translation id="3969052498612555048">Kodingizni topa olmadingizmi? <ph name="BEGIN_LINK" />Yangi kod oling<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Hisoblanmoqda...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> saytiga kirish taqiqlangan</translation>
 <translation id="3984581365661308170">Envelope #11</translation>
@@ -2719,7 +2718,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7064443976734085921">Ixcham avtomobillar</translation>
 <translation id="7064851114919012435">Aloqa ma’lumoti</translation>
 <translation id="7067633076996245366">Soul va R&amp;B</translation>
-<translation id="7068733155164172741"><ph name="OTP_LENGTH" /> xonali kodni kiriting</translation>
 <translation id="70705239631109039">Saytga ulanish butunlay xavfsiz emas</translation>
 <translation id="7075452647191940183">Yuborilgan soʻrov juda katta</translation>
 <translation id="7078665357168027058">RA3</translation>

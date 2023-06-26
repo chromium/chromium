@@ -1335,7 +1335,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3962859241508114581">Poprzedni utwór</translation>
 <translation id="3963721102035795474">Tryb czytnika</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Brak}=1{Z 1 witryny }few{Z # witryn }many{Z # witryn }other{Z # witryny }}</translation>
-<translation id="3969052498612555048">Nie możesz znaleźć kodu? <ph name="BEGIN_LINK" />Uzyskaj nowy kod<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Obliczanie...</translation>
 <translation id="3973234410852337861">Strona <ph name="HOST_NAME" /> jest zablokowana</translation>
 <translation id="3984581365661308170">Koperta nr 11</translation>
@@ -2725,7 +2724,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7064443976734085921">Samochody kompaktowe</translation>
 <translation id="7064851114919012435">Dane kontaktowe</translation>
 <translation id="7067633076996245366">Soul i R&amp;B</translation>
-<translation id="7068733155164172741">Wpisz <ph name="OTP_LENGTH" />-cyfrowy kod</translation>
 <translation id="70705239631109039">Połączenie nie jest całkowicie bezpieczne</translation>
 <translation id="7075452647191940183">Żądanie jest za duże</translation>
 <translation id="7078665357168027058">RA3</translation>

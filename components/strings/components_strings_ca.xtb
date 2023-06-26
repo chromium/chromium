@@ -1335,7 +1335,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3963721102035795474">Mode de lector</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Cap}=1{D'1 lloc }other{De # llocs }}</translation>
-<translation id="3969052498612555048">No trobes el codi? <ph name="BEGIN_LINK" />Obtén un codi nou<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">S’està calculant...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> està bloquejat</translation>
 <translation id="3984581365661308170">Sobre número 11</translation>
@@ -2725,7 +2724,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7064443976734085921">Cotxes compactes</translation>
 <translation id="7064851114919012435">Informació de contacte</translation>
 <translation id="7067633076996245366">Soul i rhythm and blues</translation>
-<translation id="7068733155164172741">Introdueix el codi de <ph name="OTP_LENGTH" /> dígits</translation>
 <translation id="70705239631109039">La connexió no és del tot segura</translation>
 <translation id="7075452647191940183">La sol·licitud és massa llarga</translation>
 <translation id="7078665357168027058">RA3</translation>

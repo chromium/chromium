@@ -69,7 +69,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1247519845643687288">Azken aplikazioak</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> gailutik kargatzen</translation>
 <translation id="1255033239764210633">Zer eguraldi dago?</translation>
-<translation id="1267032506238418139">Aldatu egin da lasterbidea</translation>
 <translation id="1269405891096105529">Gailu periferikoa ez da onartzen gonbidatu moduan</translation>
 <translation id="1270290102613614947">Pantailako teklatua desgaitu egin da</translation>
 <translation id="1272079795634619415">Gelditu</translation>
@@ -218,7 +217,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1908992311423394684">Berriki instalatu da</translation>
 <translation id="1915307458270490472">Amaitu deia</translation>
 <translation id="1918022425394817322">Atxiki egin da kamera goiko eskuinaldeko izkinan</translation>
-<translation id="1919743966458266018">Aldatu egin da ataza-kudeatzailea irekitzeko lasterbidea. Erabili <ph name="NEW_SHORTCUT" />, eta ez <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Klik automatikoak</translation>
 <translation id="1928739107511554905">Eguneratzea eskuratzeko, erabili ukipen-pantaila Chromebook-a berrabiarazteko teklatua konektatuta daukala.</translation>
 <translation id="1948405482892809935">Aldatu hurrengo erabiltzailera</translation>
@@ -977,7 +975,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5283198616748585639">Gehitu 1 minutu</translation>
 <translation id="528468243742722775">Amaitu</translation>
 <translation id="5286194356314741248">Bilatzen</translation>
-<translation id="5293671101077843611">Gaur ez dago gertaerarik</translation>
 <translation id="5297423144044956168">Ez da aurkitu gailu mugikorrik</translation>
 <translation id="5297704307811127955">Desaktibatuta</translation>
 <translation id="5300589172476337783">Erakutsi</translation>
@@ -1760,7 +1757,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8834539327799336565">Konektatuta daudenak</translation>
 <translation id="8841375032071747811">Atzera botoia</translation>
 <translation id="8843682306134542540">Aldatu biratzearen blokeoa. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Bilaketa + Ihes</translation>
 <translation id="8853703225951107899">Oraindik ezin izan da egiaztatu PINa edo pasahitza. Oharra: pasahitza duela gutxi aldatu baduzu, erabili pasahitz zaharra. Saioa amaitu eta gero aplikatuko da pasahitz berria.</translation>
 <translation id="8855885154700222542">Pantaila osoaren tekla</translation>
 <translation id="8858369206579825206">Pribatutasun-ezarpenak</translation>

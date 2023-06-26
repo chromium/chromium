@@ -69,7 +69,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1247519845643687288">Viimeisimmät sovellukset</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> lataa laitetta.</translation>
 <translation id="1255033239764210633">Miltä päivän sää näyttää?</translation>
-<translation id="1267032506238418139">Pikanäppäimen muutos</translation>
 <translation id="1269405891096105529">Lisälaitetta ei tueta vierastilassa</translation>
 <translation id="1270290102613614947">Ruutunäppäimistö poistettiin käytöstä</translation>
 <translation id="1272079795634619415">Pysäytä</translation>
@@ -218,7 +217,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1908992311423394684">Uusi asennus</translation>
 <translation id="1915307458270490472">Katkaise puhelu</translation>
 <translation id="1918022425394817322">Kamera kohdistettu oikeaan yläkulmaan</translation>
-<translation id="1919743966458266018">Tehtävänhallinnan avaamisen pikanäppäin on muuttunut. Käytä uutta pikanäppäintä <ph name="NEW_SHORTCUT" /> vanhan (<ph name="OLD_SHORTCUT" />) sijaan.</translation>
 <translation id="1923539912171292317">Automaattiset klikkaukset</translation>
 <translation id="1928739107511554905">Voit asentaa päivityksen käynnistämällä Chromebookisi uudelleen kosketusnäytön avulla niin, että näppäimistö on kytkettynä.</translation>
 <translation id="1948405482892809935">Vaihda seuraavaan käyttäjään</translation>
@@ -976,7 +974,6 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="5283198616748585639">Lisää 1 min</translation>
 <translation id="528468243742722775">Loppu</translation>
 <translation id="5286194356314741248">Etsitään</translation>
-<translation id="5293671101077843611">Ei tapahtumia tänään</translation>
 <translation id="5297423144044956168">Mobiililaitteita ei löytynyt</translation>
 <translation id="5297704307811127955">Poissa päältä</translation>
 <translation id="5300589172476337783">Näytä</translation>
@@ -1759,7 +1756,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8834539327799336565">Yhdistetty tällä hetkellä</translation>
 <translation id="8841375032071747811">Takaisin-painike</translation>
 <translation id="8843682306134542540">Laita kierron lukitus päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Haku+Esc</translation>
 <translation id="8853703225951107899">PIN-koodiasi tai salasanaasi ei voitu vieläkään vahvistaa. Huom. Jos vaihdoit salasanasi äskettäin, käytä vanhaa salasanaa. Uusi salasana otetaan käyttöön kirjauduttuasi ulos.</translation>
 <translation id="8855885154700222542">Koko näyttö ‑näppäin</translation>
 <translation id="8858369206579825206">Yksityisyysasetukset</translation>

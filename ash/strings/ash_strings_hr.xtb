@@ -69,7 +69,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1247519845643687288">Nedavne aplikacije</translation>
 <translation id="1252999807265626933">Izvor punjenja: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Kakvo je vrijeme?</translation>
-<translation id="1267032506238418139">Promjena prečaca</translation>
 <translation id="1269405891096105529">Periferni uređaj nije podržan u načinu rada za goste</translation>
 <translation id="1270290102613614947">Zaslonska tipkovnica onemogućena je</translation>
 <translation id="1272079795634619415">Zaustavi</translation>
@@ -218,7 +217,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1908992311423394684">Novo instaliranje</translation>
 <translation id="1915307458270490472">Prekini vezu</translation>
 <translation id="1918022425394817322">Kamera je poravnata s gornjim desnim kutom</translation>
-<translation id="1919743966458266018">Promijenio se prečac za otvaranje upravitelja zadataka. Upotrijebite <ph name="NEW_SHORTCUT" /> umjesto <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatski klikovi</translation>
 <translation id="1928739107511554905">Da biste preuzeli ažuriranje, ponovo pokrenite Chromebook pomoću dodirnog zaslona dok je tipkovnica priključena.</translation>
 <translation id="1948405482892809935">Prelazak na sljedećeg korisnika</translation>
@@ -975,7 +973,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5283198616748585639">Dodaj 1 min</translation>
 <translation id="528468243742722775">Završi</translation>
 <translation id="5286194356314741248">Skeniranje</translation>
-<translation id="5293671101077843611">Danas nema događaja</translation>
 <translation id="5297423144044956168">Nije pronađen nijedan mobilni uređaj</translation>
 <translation id="5297704307811127955">Isključeno</translation>
 <translation id="5300589172476337783">Prikaži</translation>
@@ -1277,6 +1274,7 @@ Novo instaliranje</translation>
 <translation id="6597278316891651699">Kamera je poravnata s donjim lijevim kutom. Došlo je do sukoba s površinom sustava.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
 <translation id="6612802754306526077">Odabran je način snimanja zaslona</translation>
+<translation id="6613765291890844037">Pohrana <ph name="STORAGE_IN_USE_SIZE" /> u upotrebi | <ph name="STORAGE_TOTAL_SIZE" /> ukupno</translation>
 <translation id="6614169507485700968">Uključen je zaslon privatnosti</translation>
 <translation id="6625718907317144388">Obavijesti aplikacija <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> i drugih aplikacija skrivene su jer je uključena zaštita prikaza.</translation>
 <translation id="6627638273713273709">Pretraži + Shift + K</translation>
@@ -1759,7 +1757,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8834539327799336565">Trenutačno povezano</translation>
 <translation id="8841375032071747811">Gumb Natrag</translation>
 <translation id="8843682306134542540">Prebacivanje zaključavanja rotacije. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Pretraživanje + Esc</translation>
 <translation id="8853703225951107899">Bez obzira na to, vaš PIN ili zaporku nije bilo moguće potvrditi. Napomena: ako ste nedavno promijenili zaporku, upotrijebite staru zaporku. Vaša nova zaporka primijenit će se nakon što se odjavite.</translation>
 <translation id="8855885154700222542">tipka cijelog zaslona</translation>
 <translation id="8858369206579825206">Kontrole privatnosti</translation>

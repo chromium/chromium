@@ -69,7 +69,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1247519845643687288">Hiljutised rakendused</translation>
 <translation id="1252999807265626933">Laadimine toiteallikast <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Milline on ilm?</translation>
-<translation id="1267032506238418139">Otsetee on muutunud</translation>
 <translation id="1269405891096105529">Välisseadet külalisrežiimis ei toetata</translation>
 <translation id="1270290102613614947">Ekraanil kuvatav klaviatuur on keelatud</translation>
 <translation id="1272079795634619415">Peata</translation>
@@ -218,7 +217,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1908992311423394684">Uus installimine</translation>
 <translation id="1915307458270490472">Lõpeta kõne</translation>
 <translation id="1918022425394817322">Kaamera kinnitati paremasse ülanurka</translation>
-<translation id="1919743966458266018">Tegumihalduri avamise otseteed on muudetud. Kasutage vana otsetee <ph name="OLD_SHORTCUT" /> asemel uut otseteed <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automaatsed klikid</translation>
 <translation id="1928739107511554905">Värskenduse hankimiseks kasutage puuteekraani, et oma Chromebook koos ühendatud klaviatuuriga taaskäivitada.</translation>
 <translation id="1948405482892809935">Aktiveeri järgmine kasutaja</translation>
@@ -977,7 +975,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5283198616748585639">Lisa 1 min</translation>
 <translation id="528468243742722775">Lõpeta</translation>
 <translation id="5286194356314741248">Skaneering</translation>
-<translation id="5293671101077843611">Täna pole ühtegi sündmust</translation>
 <translation id="5297423144044956168">Mobiilseadmeid ei leitud</translation>
 <translation id="5297704307811127955">Väljas</translation>
 <translation id="5300589172476337783">Kuva</translation>
@@ -1761,7 +1758,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8834539327799336565">Praegu ühendatud</translation>
 <translation id="8841375032071747811">Nupp Tagasi</translation>
 <translation id="8843682306134542540">Lülitab pööramisluku sisse või välja. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Otsing + ESC</translation>
 <translation id="8853703225951107899">Teie PIN-koodi või parooli ei saanud ikka kinnitada. Märkus. Kui muutsite hiljuti parooli, siis kasutage vana parooli. Uus parool rakendatakse väljalogimisel.</translation>
 <translation id="8855885154700222542">Täisekraani klahv</translation>
 <translation id="8858369206579825206">Privaatsuse seaded</translation>

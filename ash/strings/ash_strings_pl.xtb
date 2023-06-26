@@ -69,7 +69,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1247519845643687288">Ostatnie aplikacje</translation>
 <translation id="1252999807265626933">Trwa ładowanie z: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Jaka jest pogoda?</translation>
-<translation id="1267032506238418139">Zmiana skrótu klawiszowego</translation>
 <translation id="1269405891096105529">Urządzenia peryferyjnego nie można używać w trybie gościa</translation>
 <translation id="1270290102613614947">Klawiatura ekranowa wyłączona</translation>
 <translation id="1272079795634619415">Zatrzymaj</translation>
@@ -218,7 +217,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1908992311423394684">Nowa instalacja</translation>
 <translation id="1915307458270490472">Rozłącz</translation>
 <translation id="1918022425394817322">Podgląd z kamery został przyciągnięty do prawego górnego rogu</translation>
-<translation id="1919743966458266018">Zmieniliśmy skrót, który otwiera menedżera zadań. Zamiast <ph name="OLD_SHORTCUT" /> używaj teraz <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatyczne kliknięcia</translation>
 <translation id="1928739107511554905">Aby pobrać aktualizację, użyj ekranu dotykowego, by uruchomić Chromebooka ponownie z podłączoną klawiaturą.</translation>
 <translation id="1948405482892809935">Przełącz na następnego użytkownika</translation>
@@ -976,7 +974,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5283198616748585639">Dodaj 1 min</translation>
 <translation id="528468243742722775">Zakończ</translation>
 <translation id="5286194356314741248">Skanowanie</translation>
-<translation id="5293671101077843611">Brak wydarzeń na dziś</translation>
 <translation id="5297423144044956168">Nie znaleziono urządzeń mobilnych</translation>
 <translation id="5297704307811127955">Wyłączono</translation>
 <translation id="5300589172476337783">Pokaż</translation>
@@ -1760,7 +1757,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8834539327799336565">Obecnie połączone</translation>
 <translation id="8841375032071747811">Przycisk Wstecz</translation>
 <translation id="8843682306134542540">Włącz lub wyłącz blokadę obracania. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Szukaj+Esc</translation>
 <translation id="8853703225951107899">Nadal nie udało się zweryfikować Twojego hasła ani kodu PIN. Uwaga: jeśli Twoje hasło zostało ostatnio zmienione, użyj starego hasła. Nowe hasło zacznie obowiązywać, gdy się wylogujesz.</translation>
 <translation id="8855885154700222542">Klawisz trybu pełnoekranowego</translation>
 <translation id="8858369206579825206">Ustawienia prywatności</translation>

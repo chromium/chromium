@@ -69,7 +69,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1247519845643687288">Apiau diweddar</translation>
 <translation id="1252999807265626933">Wrthi'n newid o <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Beth yw'r tywydd?</translation>
-<translation id="1267032506238418139">Newid llwybr byr</translation>
 <translation id="1269405891096105529">Ni chefnogir y perifferol yn y modd Gwestai</translation>
 <translation id="1270290102613614947">Analluogwyd y bysellfwrdd ar y sgrîn</translation>
 <translation id="1272079795634619415">Stopio</translation>
@@ -218,7 +217,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1908992311423394684">Gosodiad newydd</translation>
 <translation id="1915307458270490472">Dod â'r sgwrs i ben</translation>
 <translation id="1918022425394817322">Mae'r camera wedi'i snapio i'r gornel dde uchaf</translation>
-<translation id="1919743966458266018">Mae'r llwybr byr i agor y rheolwr tasgau wedi newid. Defnyddiwch <ph name="NEW_SHORTCUT" /> yn lle <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Cliciau awtomatig</translation>
 <translation id="1928739107511554905">I gael y diweddariad, defnyddiwch y sgrîn gyffwrdd i ailgychwyn eich Chromebook gyda'r bysellfwrdd wedi'i atodi.</translation>
 <translation id="1948405482892809935">Newid i'r defnyddiwr nesaf</translation>
@@ -976,7 +974,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5283198616748585639">Ychwanegwch 1 fun</translation>
 <translation id="528468243742722775">Diwedd</translation>
 <translation id="5286194356314741248">Wrthi'n sganio</translation>
-<translation id="5293671101077843611">Dim digwyddiadau heddiw</translation>
 <translation id="5297423144044956168">Ni chanfuwyd unrhyw ddyfeisiau symudol</translation>
 <translation id="5297704307811127955">Diffodd</translation>
 <translation id="5300589172476337783">Arddangos</translation>
@@ -1278,6 +1275,7 @@ Gosodiad newydd</translation>
 <translation id="6597278316891651699">Mae'r camera wedi'i snapio i'r gornel chwith isaf. Gwrthdaro ag arwyneb y system.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />, Rheolir gan eich Gweinyddwr</translation>
 <translation id="6612802754306526077">Dewiswyd y modd recordio sgrîn</translation>
+<translation id="6613765291890844037">Mae storfa <ph name="STORAGE_IN_USE_SIZE" /> yn cael ei defnyddio | <ph name="STORAGE_TOTAL_SIZE" /> mewn cyfanswm</translation>
 <translation id="6614169507485700968">Mae'r sgrîn preifatrwydd ymlaen</translation>
 <translation id="6625718907317144388">Mae hysbysiadau <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ac eraill wedi'u cuddio oherwydd bod amddiffyniad gwylio ymlaen</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1760,7 +1758,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8834539327799336565">Wedi'i gysylltu ar hyn o bryd</translation>
 <translation id="8841375032071747811">Botwm mynd yn ôl</translation>
 <translation id="8843682306134542540">Toglo'r clo cylchdro. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Ni ellid dilysu eich PIN neu gyfrinair o hyd. Sylwer: Os gwnaethoch newid eich cyfrinair yn ddiweddar, defnyddiwch eich hen gyfrinair. Bydd eich cyfrinair newydd yn gweithio ar ôl i chi allgofnodi.</translation>
 <translation id="8855885154700222542">Bysell sgrîn lawn</translation>
 <translation id="8858369206579825206">Rheolyddion preifatrwydd</translation>

@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Scheda di nuovo attiva</translation>
 <translation id="1003088604756913841">Apri link in nuova finestra di <ph name="APP" /></translation>
 <translation id="100323615638474026">Dispositivo USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google Navigazione sicura</translation>
 <translation id="1004218526896219317">Accesso al sito</translation>
 <translation id="1005274289863221750">Utilizzo del microfono e della fotocamera</translation>
 <translation id="1005333234656240382">Attivare il debug ADB?</translation>
@@ -521,6 +520,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1434886155212424586">La pagina iniziale è la pagina Nuova scheda</translation>
 <translation id="1435940442311036198">Usa una passkey su un altro dispositivo</translation>
 <translation id="1436390408194692385">Validità per <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Continua configurazione</translation>
 <translation id="1436784010935106834">Rimosso</translation>
 <translation id="1437986450143295708">Descrivi il problema in modo dettagliato</translation>
 <translation id="1439671507542716852">assistenza a lungo termine</translation>
@@ -1937,7 +1937,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2577446426265992344">senza Omnibox</translation>
 <translation id="257779572837908839">Configura come Chromebox per videoconferenze</translation>
 <translation id="2579309488038515659">Hotspot attivata</translation>
-<translation id="2579596474754516455">Scansione le immagini PDF per convertire il testo per lo screen reader quando necessario</translation>
 <translation id="2580889980133367162">Consenti sempre a <ph name="HOST" /> di scaricare più file</translation>
 <translation id="258095186877893873">Lungo</translation>
 <translation id="2581455244799175627">Scopri di più sull'autorizzazione dei cookie di terze parti</translation>
@@ -5422,9 +5421,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5602765853043467355">Cancella preferiti, cronologia, password e altro da questo dispositivo</translation>
 <translation id="5605758115928394442">È stata inviata una notifica al tuo telefono per verificare la tua identità.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Questa estensione è bloccata}other{Queste estensioni sono bloccate}}</translation>
-<translation id="560743070587960985">Questo file potrebbe essere un virus o un malware.
-
-Puoi inviarlo a Google per verificare se non è sicuro. In genere l'analisi richiede alcuni secondi.</translation>
 <translation id="560834977503641186">Sync Wi-Fi, Ulteriori informazioni</translation>
 <translation id="5608580678041221894">Tocca i seguenti tasti per regolare o spostare l'area di ritaglio</translation>
 <translation id="5609231933459083978">L'applicazione non sembra essere valida.</translation>
@@ -6186,6 +6182,7 @@ Puoi inviarlo a Google per verificare se non è sicuro. In genere l'analisi rich
 <translation id="6263082573641595914">Versione CA Microsoft</translation>
 <translation id="6263284346895336537">Non critica</translation>
 <translation id="6264365405983206840">Seleziona &amp;tutto</translation>
+<translation id="6264376385120300461">Scarica comunque</translation>
 <translation id="6265687851677020761">Rimuovi porta</translation>
 <translation id="6266532094411434237">Connessione a <ph name="DEVICE" /> in corso…</translation>
 <translation id="6267166720438879315">Seleziona un certificato per autenticarti a <ph name="HOST_NAME" /></translation>
@@ -7212,7 +7209,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7149839598364933473">Converti questo dispositivo in un dispositivo <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Ultimo giorno</translation>
 <translation id="7152478047064750137">Questa estensione non richiede autorizzazioni speciali</translation>
-<translation id="7153309176431047193">Converti le immagini in testo</translation>
 <translation id="7154130902455071009">Cambio della pagina iniziale con: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Converti immagine in testo</translation>
 <translation id="7159953856712257647">Estensione installata per impostazione predefinita</translation>
@@ -7767,7 +7763,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7634280112532283638">Riduzione di spam e attività fraudolente</translation>
 <translation id="7634337648687970851">Il recupero dei dati locali non è attualmente supportato.</translation>
 <translation id="7634566076839829401">Si è verificato un errore. Riprova.</translation>
-<translation id="763472884969134151">Analisi eseguita da <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Bloccata dall'amministratore</translation>
 <translation id="7635711411613274199">Mentre navighi, l'eventuale visualizzazione di un annuncio personalizzato dipende da questa impostazione, dagli <ph name="BEGIN_LINK1" />argomenti degli annunci<ph name="LINK_END1" />, dalle <ph name="BEGIN_LINK2" />impostazioni dei cookie<ph name="LINK_END2" /> e dal fatto che il sito che stai visualizzando possa personalizzare gli annunci</translation>
 <translation id="7636919061354591437">Installa su questo dispositivo</translation>

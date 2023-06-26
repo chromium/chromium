@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">标签页重新变为活动状态</translation>
 <translation id="1003088604756913841">在<ph name="APP" />的新窗口中打开链接</translation>
 <translation id="100323615638474026">USB 设备 (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google 安全浏览</translation>
 <translation id="1004218526896219317">有权访问的网站</translation>
 <translation id="1005274289863221750">使用您的麦克风和摄像头</translation>
 <translation id="1005333234656240382">启用 ADB 调试？</translation>
@@ -520,6 +519,7 @@
 <translation id="1434886155212424586">首页是新标签页</translation>
 <translation id="1435940442311036198">使用另一部设备上的通行密钥</translation>
 <translation id="1436390408194692385">有效期：<ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">继续设置</translation>
 <translation id="1436784010935106834">已删除</translation>
 <translation id="1437986450143295708">请详细描述您遇到的问题</translation>
 <translation id="1439671507542716852">长期支持</translation>
@@ -1924,7 +1924,6 @@
 <translation id="2577446426265992344">不包括多功能框</translation>
 <translation id="257779572837908839">设为 Chromebox 会易设备</translation>
 <translation id="2579309488038515659">热点启用</translation>
-<translation id="2579596474754516455">必要时扫描 PDF 图片以转换成文字供屏幕阅读器读取</translation>
 <translation id="2580889980133367162">始终允许 <ph name="HOST" /> 下载多个文件</translation>
 <translation id="258095186877893873">长</translation>
 <translation id="2581455244799175627">详细了解如何允许第三方 Cookie</translation>
@@ -5396,9 +5395,6 @@
 <translation id="5602765853043467355">清除此设备上的书签、历史记录、密码等信息</translation>
 <translation id="5605758115928394442">系统向您的手机发送了一条通知，以确认您的身份。</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{这个扩展程序已被屏蔽}other{这些扩展程序已被屏蔽}}</translation>
-<translation id="560743070587960985">此文件可能是病毒或恶意软件。
-
-您可将它发送给 Google 以检查它是否安全。扫描通常需要几秒钟的时间。</translation>
 <translation id="560834977503641186">Wi-Fi 同步，了解详情</translation>
 <translation id="5608580678041221894">按以下键可调整或移动剪裁区域</translation>
 <translation id="5609231933459083978">该应用似乎无效。</translation>
@@ -6155,6 +6151,7 @@
 <translation id="6263082573641595914">Microsoft CA 版本</translation>
 <translation id="6263284346895336537">非关键</translation>
 <translation id="6264365405983206840">全选(&amp;A)</translation>
+<translation id="6264376385120300461">仍然下载</translation>
 <translation id="6265687851677020761">移除此端口</translation>
 <translation id="6266532094411434237">正在连接到<ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">请选择证书，以在 <ph name="HOST_NAME" /> 上对您本人进行身份验证</translation>
@@ -7178,7 +7175,6 @@
 <translation id="7149839598364933473">将此设备转换成一部 <ph name="DEVICE_OS" /> 设备。</translation>
 <translation id="7149893636342594995">过去 24 小时</translation>
 <translation id="7152478047064750137">此扩展程序无需任何特殊权限</translation>
-<translation id="7153309176431047193">将图片转换成文字</translation>
 <translation id="7154130902455071009">将您的初始页更改为：<ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">将图片转换为文字</translation>
 <translation id="7159953856712257647">默认安装</translation>
@@ -7730,7 +7726,6 @@
 <translation id="7634280112532283638">垃圾内容和欺诈行为削减</translation>
 <translation id="7634337648687970851">目前不支持本地数据恢复。</translation>
 <translation id="7634566076839829401">出了点问题，请重试。</translation>
-<translation id="763472884969134151">已由 <ph name="LINK" />完成分析</translation>
 <translation id="7635048370253485243">已被您的管理员固定</translation>
 <translation id="7635711411613274199">您在浏览时是否会看到个性化广告取决于此设置、<ph name="BEGIN_LINK1" />广告主题<ph name="LINK_END1" />、您的 <ph name="BEGIN_LINK2" />Cookie 设置<ph name="LINK_END2" />，以及您正查看的网站是否会展示个性化广告</translation>
 <translation id="7636919061354591437">在此设备上安装</translation>

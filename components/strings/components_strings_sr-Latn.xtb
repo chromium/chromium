@@ -1335,7 +1335,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3962859241508114581">Prethodna pesma</translation>
 <translation id="3963721102035795474">Režim čitaoca</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{None}=1{Sa 1 sajta }one{Sa # sajta }few{Sa # sajta }other{Sa # sajtova }}</translation>
-<translation id="3969052498612555048">Ne možete da pronađete kôd? <ph name="BEGIN_LINK" />Preuzmite nov kôd<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Izračunavanje...</translation>
 <translation id="3973234410852337861">Host <ph name="HOST_NAME" /> je blokiran</translation>
 <translation id="3984581365661308170">Koverta br. 11</translation>
@@ -2724,7 +2723,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="7064443976734085921">Kompaktni automobili</translation>
 <translation id="7064851114919012435">Kontakt informacije</translation>
 <translation id="7067633076996245366">Soul i ritam i bluz</translation>
-<translation id="7068733155164172741">Unesite <ph name="OTP_LENGTH" />-cifreni kôd</translation>
 <translation id="70705239631109039">Veza nije potpuno bezbedna</translation>
 <translation id="7075452647191940183">Zahtev je prevelik</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3280,6 +3278,7 @@ Dodatni detalji:
 <translation id="8246482227229072868">Prstenje</translation>
 <translation id="8249296373107784235">Otkaži</translation>
 <translation id="8249463483885748674">Standardni i prijemni testovi</translation>
+<translation id="824968735947741546">Prevodi se <ph name="SOURCE" /> (automatski otkriveno) na <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Ova adresa je trenutno sačuvana na ovom uređaju. Da biste je koristili u svim Google proizvodima, sačuvajte je na Google nalogu, <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Dugme Upravljajte podešavanjima pristupačnosti, pritisnite Enter da biste personalizovali alatke za pristupačnost u podešavanjima Chrome OS-a</translation>
 <translation id="8253091569723639551">Adresa za obračun je obavezna</translation>

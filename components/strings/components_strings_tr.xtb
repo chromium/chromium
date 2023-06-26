@@ -1335,7 +1335,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3962859241508114581">Önceki Parça</translation>
 <translation id="3963721102035795474">Okuyucu Modu</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Yok}=1{1 siteden }other{# siteden }}</translation>
-<translation id="3969052498612555048">Kodunuzu bulamıyor musunuz? <ph name="BEGIN_LINK" />Yeni kod al<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Hesaplanıyor...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> engellendi</translation>
 <translation id="3984581365661308170">Zarf #11</translation>
@@ -2725,7 +2724,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7064443976734085921">Kompakt Otomobiller</translation>
 <translation id="7064851114919012435">İletişim bilgileri</translation>
 <translation id="7067633076996245366">Soul ve R&amp;B</translation>
-<translation id="7068733155164172741"><ph name="OTP_LENGTH" /> haneli kodu girin</translation>
 <translation id="70705239631109039">Bağlantınız tam olarak güvenli değil</translation>
 <translation id="7075452647191940183">İstek çok büyük</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3281,6 +3279,7 @@ Ek ayrıntılar:
 <translation id="8246482227229072868">Yüzükler</translation>
 <translation id="8249296373107784235">İptal Et</translation>
 <translation id="8249463483885748674">Standart testler ve giriş sınavları</translation>
+<translation id="824968735947741546"><ph name="SOURCE" /> dilindeki metin (otomatik algılandı) <ph name="TARGET" /> diline çevriliyor</translation>
 <translation id="8250094606476360498">Bu adres şu anda bu cihazda kayıtlı. Adresi diğer Google ürünlerinde kullanmak için Google Hesabınıza (<ph name="ACCOUNT" />) kaydedin.</translation>
 <translation id="8252991034201168845">Erişilebilirlik ayarlarını yönetin düğmesi, ChromeOS ayarlarında erişilebilirlik araçlarınızı kişiselleştirmek için Enter'a basın</translation>
 <translation id="8253091569723639551">Fatura adresi gerekli</translation>

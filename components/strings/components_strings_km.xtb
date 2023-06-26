@@ -1338,7 +1338,6 @@
 <translation id="3962859241508114581">សំនៀងមុន</translation>
 <translation id="3963721102035795474">របៀបកម្មវិធីអាន</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{គ្មាន}=1{ពីទំព័រ 1 }other{ពីទំព័រ # }}</translation>
-<translation id="3969052498612555048">រកមិនឃើញលេខកូដរបស់អ្នកឬ? <ph name="BEGIN_LINK" />យកលេខកូដថ្មី<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">កំពុងគណនា...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ត្រូវបានរារាំង</translation>
 <translation id="3984581365661308170">ស្រោមសំបុត្រ #11</translation>
@@ -2729,7 +2728,6 @@
 <translation id="7064443976734085921">រថយន្ត​ធុនតូច</translation>
 <translation id="7064851114919012435">ព័ត៌មានទំនាក់ទំនង</translation>
 <translation id="7067633076996245366">សូល និង R&amp;B</translation>
-<translation id="7068733155164172741">បញ្ចូលលេខកូដ <ph name="OTP_LENGTH" /> ខ្ទង់</translation>
 <translation id="70705239631109039">ការតភ្ជាប់របស់អ្នក​មិនមានសុវត្ថិភាពពេញលេញទេ</translation>
 <translation id="7075452647191940183">សំណើមាន​ទំហំធំពេក</translation>
 <translation id="7078665357168027058">RA3</translation>

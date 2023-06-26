@@ -1335,7 +1335,6 @@
 <translation id="3962859241508114581">Претходна песма</translation>
 <translation id="3963721102035795474">Режим читаоца</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{None}=1{Са 1 сајта }one{Са # сајта }few{Са # сајта }other{Са # сајтова }}</translation>
-<translation id="3969052498612555048">Не можете да пронађете кôд? <ph name="BEGIN_LINK" />Преузмите нов кôд<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Израчунавање...</translation>
 <translation id="3973234410852337861">Хост <ph name="HOST_NAME" /> је блокиран</translation>
 <translation id="3984581365661308170">Коверта бр. 11</translation>
@@ -2724,7 +2723,6 @@
 <translation id="7064443976734085921">Компактни аутомобили</translation>
 <translation id="7064851114919012435">Контакт информације</translation>
 <translation id="7067633076996245366">Соул и ритам и блуз</translation>
-<translation id="7068733155164172741">Унесите <ph name="OTP_LENGTH" />-цифрени кôд</translation>
 <translation id="70705239631109039">Веза није потпуно безбедна</translation>
 <translation id="7075452647191940183">Захтев је превелик</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3280,6 +3278,7 @@
 <translation id="8246482227229072868">Прстење</translation>
 <translation id="8249296373107784235">Откажи</translation>
 <translation id="8249463483885748674">Стандардни и пријемни тестови</translation>
+<translation id="824968735947741546">Преводи се <ph name="SOURCE" /> (аутоматски откривено) на <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Ова адреса је тренутно сачувана на овом уређају. Да бисте је користили у свим Google производима, сачувајте је на Google налогу, <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Дугме Управљајте подешавањима приступачности, притисните Enter да бисте персонализовали алатке за приступачност у подешавањима Chrome ОС-а</translation>
 <translation id="8253091569723639551">Адреса за обрачун је обавезна</translation>

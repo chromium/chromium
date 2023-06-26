@@ -3626,7 +3626,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Se você definir a política, ela não poderá ser mudada pelos usuários. Se a política for deixada sem definição, o teclado na tela ficará inicialmente desativado, mas ele poderá ser ativado pelos usuários a qualquer momento.</translation>
 <translation id="412697421478384751">Permitir que os usuários definam PINs fracos para a tela de bloqueio</translation>
-<translation id="4132809439883883106">Usar o valor padrão para o contrato de chave Kyber pós-quântico ativado para TLS</translation>
 <translation id="4136603825567209889">Ativar relatórios sobre informações de identificação do usuário</translation>
 <translation id="4138655880188755661">Limite de tempo</translation>
 <translation id="4140646780789794190">Desativar o compartilhamento de dados de diagnósticos com o PluginVm</translation>
@@ -4195,7 +4194,6 @@ essas APIs.</translation>
       Se a política não for definida, não haverá seleção automática para nenhum site.</translation>
 <translation id="4611983465824842867">Não mostrar avisos nem desativar o preenchimento automático em formulários não seguros</translation>
 <translation id="4615003180013429835">Modo de análise da lista de sites</translation>
-<translation id="4616706248182656871">Desativar o contrato de chave Kyber pós-quântico ativado para TLS</translation>
 <translation id="4617338332148204752">Ignorar a verificação de metatags em <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Recurso NewBaseUrlInheritanceBehavior disponível</translation>
 <translation id="4624006912948309924">A definição da política estabelece quais identificadores de aplicativo do <ph name="PRODUCT_OS_NAME" /> são mostrados como apps fixados na barra de acesso rápido, e eles não podem ser editados pelos usuários.
@@ -7363,7 +7361,6 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 <translation id="7421230730436851224">Nunca colocar o processo de áudio no sandbox</translation>
 <translation id="7421483919690710988">Define o tamanho do cache de disco de mídia em bytes</translation>
 <translation id="7424751532654212117">Lista de exceções à lista de plug-ins desativados</translation>
-<translation id="7425076578809444474">Ativar o acordo de chave pós-quântico ativado para TLS</translation>
 <translation id="7426112309807051726">Especifica se a otimização <ph name="TLS_FALSE_START" /> deve ser desativada. Por razões históricas, essa política é chamada de DisableSSLRecordSplitting.
 
       Se a política não for configurada ou se for definida como "false", <ph name="TLS_FALSE_START" /> será ativada. Se for definida como "true", <ph name="TLS_FALSE_START" /> será desativada.</translation>
@@ -8646,7 +8643,6 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
           Quando esta política não é definida, um período padrão é usado.
 
           O valor da política precisa ser especificado em milissegundos.</translation>
-<translation id="859316804517480666">Ativar o contrato de chave Kyber pós-quântico ativado para TLS</translation>
 <translation id="859579553230883285">Desativar a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> de anúncios sugeridos pelo site para os usuários.</translation>
 <translation id="8597758693275075382">Strings OEM da SMBIOS a serem transmitidas para a VM durante a instalação. O padrão é a lista vazia.</translation>
 <translation id="8598786284856179541">Ativar relatórios sobre informações de versão</translation>

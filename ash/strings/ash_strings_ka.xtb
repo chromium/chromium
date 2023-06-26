@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">ბოლოდროინდელი აპები</translation>
 <translation id="1252999807265626933">იტენება წყაროდან: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">რა ამინდია?</translation>
-<translation id="1267032506238418139">მალსახმობის ცვლილება</translation>
 <translation id="1269405891096105529">პერიფერიული მოწყობილობა მხარდაუჭერელია სტუმრის რეჟიმში</translation>
 <translation id="1270290102613614947">ეკრანული კლავიატურა გამორთულია</translation>
 <translation id="1272079795634619415">შეწყვეტა</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">ახალდაინსტალირებული</translation>
 <translation id="1915307458270490472">გათიშვა</translation>
 <translation id="1918022425394817322">კამერა მიზიდულია ზედა მარჯვენა კუთხეში</translation>
-<translation id="1919743966458266018">ამოცანების მმართველის გახსნის მალსახმობი შეიცვალა. გთხოვთ, <ph name="OLD_SHORTCUT" />-ის ნაცვლად გამოიყენოთ <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">ავტომატური დაწკაპუნებები</translation>
 <translation id="1928739107511554905">განახლების ჩამოსატვირთად გადატვირთეთ თქვენი Chromebook სენსორული ეკრანის მეშვეობით და არ გამოართოთ კლავიატურა.</translation>
 <translation id="1948405482892809935">შემდეგ მომხმარებელზე გადართვა</translation>
@@ -976,7 +974,6 @@
 <translation id="5283198616748585639">1 წუთის დამატება</translation>
 <translation id="528468243742722775">დასასრული</translation>
 <translation id="5286194356314741248">მიმდინარეობს სკანირება</translation>
-<translation id="5293671101077843611">დღეს მოვლენები არ არის</translation>
 <translation id="5297423144044956168">მობილური მოწყობილობები ვერ მოიძებნა</translation>
 <translation id="5297704307811127955">გამორთვა</translation>
 <translation id="5300589172476337783">ჩვენება</translation>
@@ -1761,7 +1758,6 @@
 <translation id="8834539327799336565">ამჟამად დაკავშირებული</translation>
 <translation id="8841375032071747811">ღილაკი „უკან“</translation>
 <translation id="8843682306134542540">ბრუნვის ჩაკეტვის გადართვა. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">თქვენი PIN-კოდის ან პაროლის დადასტურება კვლავ ვერ მოხერხდა. გაითვალისწინეთ: თუ ახლახან შეცვალეთ პაროლი, გამოიყენეთ თქვენი ძველი პაროლი. ახალი პაროლი ძალაში შევა, როცა სისტემიდან გახვალთ.</translation>
 <translation id="8855885154700222542">სრულეკრანიან რეჟიმზე გადართვის კლავიში</translation>
 <translation id="8858369206579825206">კონფიდენციალურობის მართვის პარამეტრები</translation>

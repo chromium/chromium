@@ -1335,7 +1335,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3962859241508114581">Vorige snit</translation>
 <translation id="3963721102035795474">Lesermodus</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Geen}=1{Van 1 werf af }other{Van # werwe af }}</translation>
-<translation id="3969052498612555048">Kan jy nie jou kode kry nie? <ph name="BEGIN_LINK" />Kry nuwe kode<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Bereken tans …</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> is geblokkeer</translation>
 <translation id="3984581365661308170">Koevert #11</translation>
@@ -2725,7 +2724,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7064443976734085921">Middelslagmotors</translation>
 <translation id="7064851114919012435">Kontakinligting</translation>
 <translation id="7067633076996245366">Soul en R&amp;B</translation>
-<translation id="7068733155164172741">Voer <ph name="OTP_LENGTH" />-syferkode in</translation>
 <translation id="70705239631109039">Jou verbinding is nie heeltemal veilig nie</translation>
 <translation id="7075452647191940183">Versoek is te groot</translation>
 <translation id="7078665357168027058">RA3</translation>

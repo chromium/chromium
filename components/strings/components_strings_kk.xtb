@@ -1242,7 +1242,6 @@
 <translation id="3962859241508114581">Алдыңғы аудиотрек</translation>
 <translation id="3963721102035795474">Оқу құралы режимі</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Жоқ}=1{1 сайттан }other{# сайттан }}</translation>
-<translation id="3969052498612555048">Кодты таба алмай жатырсыз ба? <ph name="BEGIN_LINK" />Жаңа код алу<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Есептелуде…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> блокталған</translation>
 <translation id="3984581365661308170">#11 хатқалта</translation>
@@ -2529,7 +2528,6 @@
 <translation id="706295145388601875">Chrome параметрлері арқылы мекенжайларды қосу және басқару</translation>
 <translation id="7064851114919012435">Байланыс ақпараты</translation>
 <translation id="7067633076996245366">Соул және R&amp;B</translation>
-<translation id="7068733155164172741"><ph name="OTP_LENGTH" /> цифрлық кодты енгізіңіз</translation>
 <translation id="70705239631109039">Байланысыңыз толықтай қауіпсіз емес</translation>
 <translation id="7075452647191940183">Сұрау өлшемі өте үлкен.</translation>
 <translation id="7078665357168027058">RA3</translation>

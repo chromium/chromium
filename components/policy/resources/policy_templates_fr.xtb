@@ -3531,7 +3531,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, le clavier à l'écran est désactivé par défaut, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="412697421478384751">Autoriser les utilisateurs à définir des codes ayant un niveau de sécurité faible pour le code de l'écran de verrouillage</translation>
-<translation id="4132809439883883106">Utiliser la valeur par défaut pour le contrat de clé post-quantique Kyber activé pour TLS</translation>
 <translation id="4136603825567209889">Activer les rapports sur les informations d'identification des utilisateurs</translation>
 <translation id="4138655880188755661">Période limite</translation>
 <translation id="4140646780789794190">Désactiver le partage des données de diagnostic avec Plugin VM</translation>
@@ -4072,7 +4071,6 @@ Si cette règle n'est pas configurée, toutes les origines nécessitent un geste
       Si cette règle n'est pas configurée, aucune sélection automatique n'est effectuée pour aucun site.</translation>
 <translation id="4611983465824842867">Ne pas afficher d'avertissements ni désactiver la saisie automatique sur les formulaires non sécurisés</translation>
 <translation id="4615003180013429835">Mode d'analyse de la liste des sites</translation>
-<translation id="4616706248182656871">Désactiver l'accord de clé post-quantique Kyber pour TLS</translation>
 <translation id="4617338332148204752">Ignorer la vérification des balises Meta dans <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Fonctionnalité NewBaseUrlInheritanceBehavior disponible</translation>
 <translation id="4624006912948309924">Permet de définir quels identifiants d'appli <ph name="PRODUCT_OS_NAME" /> affiche en tant qu'applis épinglées dans la barre du Lanceur d'applis. Notez que les utilisateurs ne peuvent pas les modifier.
@@ -7133,7 +7131,6 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="7421230730436851224">Ne jamais utiliser de bac à sable pour le processus audio</translation>
 <translation id="7421483919690710988">Définir la taille du cache du disque de support en octets</translation>
 <translation id="7424751532654212117">Liste des exceptions à la liste des plug-ins désactivés</translation>
-<translation id="7425076578809444474">Activer l'accord de clé post-quantique pour TLS</translation>
 <translation id="7426112309807051726">Indique si l'optimisation de <ph name="TLS_FALSE_START" /> doit être désactivée. Pour des raisons historiques, cette règle se nomme DisableSSLRecordSplitting.
 
       Si cette règle n'est pas configurée, ou si elle est définie sur "False", <ph name="TLS_FALSE_START" /> est activé. Si elle est définie sur "True", <ph name="TLS_FALSE_START" /> est désactivé.</translation>
@@ -8386,7 +8383,6 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
           Si cette règle n'est pas configurée, un délai par défaut est utilisé.
 
           La valeur de la règle doit être indiquée en millisecondes.</translation>
-<translation id="859316804517480666">Activer l'accord de clé post-quantique Kyber pour TLS</translation>
 <translation id="859579553230883285">Désactivez le paramètre des annonces suggérées par le site de <ph name="PRIVACY_SANDBOX_NAME" /> pour vos utilisateurs.</translation>
 <translation id="8597758693275075382">Chaînes OEM SMBIOS à transmettre à la VM lors de l'installation. La liste vide est utilisée par défaut.</translation>
 <translation id="8598786284856179541">Activer les rapports sur les informations liées à la version</translation>

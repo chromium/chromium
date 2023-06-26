@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">ትሩ እንደገና ገቢር ሆኗል</translation>
 <translation id="1003088604756913841">አገናኝ በአዲስ የ<ph name="APP" /> መስኮት ውስጥ ይክፈቱ</translation>
 <translation id="100323615638474026">የዩኤስቢ መሣሪያ (<ph name="VENDOR_ID" />፦<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">የGoogle ጥንቃቄ አሰሳ</translation>
 <translation id="1004218526896219317">የጣቢያ መዳረሻ</translation>
 <translation id="1005274289863221750">ማይክሮፎንዎን እና ካሜራዎን ይጠቀማል</translation>
 <translation id="1005333234656240382">የADB ስህተት ማረሚያ ይንቃ?</translation>
@@ -522,6 +521,7 @@
 <translation id="1434886155212424586">መነሻ ገፅ አዲሱ የትር ገፅ ነው</translation>
 <translation id="1435940442311036198">አንድ የይለፍ ቁልፍን በተለየ መሣሪያ ላይ ይጠቀሙ</translation>
 <translation id="1436390408194692385">ለ<ph name="TICKET_TIME_LEFT" /> የሚሰራ</translation>
+<translation id="1436671784520050284">ማዋቀር ቀጥል</translation>
 <translation id="1436784010935106834">ተወግዷል</translation>
 <translation id="1437986450143295708">ችግሩን በዝርዝር ይግለጹ</translation>
 <translation id="1439671507542716852">የረጅም ጊዜ ድጋፍ</translation>
@@ -1946,7 +1946,6 @@
 <translation id="2577446426265992344">ያለ Omnibox</translation>
 <translation id="257779572837908839">እንደ Chromebox ለስብሰባዎች ያዋቅሩ</translation>
 <translation id="2579309488038515659">መገናኛ ነጥብን ያንቁ</translation>
-<translation id="2579596474754516455">ሲያስፈልግ ለማያ ገፅ አንባቢ ጽሑፍን ለመቀየር የPDF ምስሎችን ይቃኙ</translation>
 <translation id="2580889980133367162">ሁልጊዜም <ph name="HOST" /> ከአንድ በላይ ፋይሎችን እንዲያወርድ ይፍቀዱ</translation>
 <translation id="258095186877893873">ረጅም</translation>
 <translation id="2581455244799175627">የሦስተኛ ወገን ኩኪዎችን ስለመፍቀድ ተጨማሪ</translation>
@@ -3460,6 +3459,7 @@
 <translation id="3888586133700543064">ይህ መረጃ የረዳትዎን ችግር በተሻለ ሁኔታ እንድንረዳ ያግዘናል። እስከ 90 ቀኖች ድረስ የሚከማች ሲሆን መዳረሻ አግባብ ለሆኑ የምሕንድስና እና የግብረመልስ ቡድኖች የተገደበ ነው።</translation>
 <translation id="3890064827463908288">የWi-Fi ስምረትን ለመጠቀም የChrome ስምረትን ያብሩ</translation>
 <translation id="389313931326656921">ለ«ቀጣይ« መቀየሪያ ይመድቡ</translation>
+<translation id="3893268973182382220">አሁን ይህን ፓነል መጫን አንችልም</translation>
 <translation id="3893295674388762059">ውሂብን ለማጽዳት ሁሉንም ማንነት የማያሳውቁ መስኮቶችን ይዝጉ</translation>
 <translation id="3893536212201235195">የተደራሽነት ቅንብሮችዎን ያነብባል እና ይቀይራል</translation>
 <translation id="3893630138897523026">ChromeVox (የሚነገር ግብረመልስ)</translation>
@@ -5421,9 +5421,6 @@
 <translation id="5602765853043467355">ዕልባቶችን፣ ታሪክ፣ የይለፍ ቃላት እና ተጨማሪ ነገሮችን ከዚህ መሣሪያ ላይ አጽዳ</translation>
 <translation id="5605758115928394442">እርስዎ መሆንዎን ለማረጋገጥ አንድ ማሳወቂያ ወደ ስልክዎ ተልኳል።</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ይህ ቅጥያ ታግዷል}one{እነዚህ ቅጥያዎች ታግደዋል}other{እነዚህ ቅጥያዎች ታግደዋል}}</translation>
-<translation id="560743070587960985">ይህ ፋይል ቫይረስ ወይም ተንኮል አዘል ዌር ሊሆን ይችላል።
-
-ደህንነቱ ያልተጠበቀ መሆኑን ለማረጋገጥ ለGoogle ሊልኩት ይችላሉ። ቅኝቶች በተለምዶ ጥቂት ሴኮንዶችን ይወስዳሉ።</translation>
 <translation id="560834977503641186">የWi-Fi ስምረት፣ የበለጠ ለመረዳት</translation>
 <translation id="5608580678041221894">የመከርከሚያ አካባቢውን ለማስተካከል ወይም ለመውሰድ የሚከተሉትን ቁልፎች መታ ያድርጉ</translation>
 <translation id="5609231933459083978">መተግበሪያው ልክ ያልሆነ ይመስላል።</translation>
@@ -6188,6 +6185,7 @@
 <translation id="6263082573641595914">Microsoft CA ቅጂ</translation>
 <translation id="6263284346895336537">ዋነኛ ያልሆነ</translation>
 <translation id="6264365405983206840">&amp;ሁሉንም ምረጥ</translation>
+<translation id="6264376385120300461">ለማንኛውም አውርድ</translation>
 <translation id="6265687851677020761">ወደብን አስወግድ</translation>
 <translation id="6266532094411434237">ወደ <ph name="DEVICE" /> በመገናኘት ላይ</translation>
 <translation id="6267166720438879315">ራስዎን ለ<ph name="HOST_NAME" /> ለማረጋገጥ  ሰርቲፊኬት ይምረጡ</translation>
@@ -7213,7 +7211,6 @@
 <translation id="7149839598364933473">ይህን መሣሪያ ወደ <ph name="DEVICE_OS" /> መሣሪያ ይቀይሩት።</translation>
 <translation id="7149893636342594995">ባለፉት 24 ሰዓቶች</translation>
 <translation id="7152478047064750137">ይህ ቅጥያ ምንም ልዩ ፈቃዶችን አይፈልግም</translation>
-<translation id="7153309176431047193">ምስሎችን ወደ ጽሑፍ ይቀይሩ</translation>
 <translation id="7154130902455071009">የመጀመሪያ ገጽዎን ወደሚከተለው ይቀይሩ፦ <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">ምስልን ወደ ጽሑፍ ቀይር</translation>
 <translation id="7159953856712257647">በነባሪነት የተጫነ</translation>
@@ -7768,7 +7765,6 @@
 <translation id="7634280112532283638">የአይፈለጌ መልዕክት እና የመጭበርበር ቅነሳ</translation>
 <translation id="7634337648687970851">የአካባቢያዊ ውሂብ መልሶ ማግኛ በአሁኑ ጊዜ አይደገፍም።</translation>
 <translation id="7634566076839829401">የሆነ ችግር ተፈጥሯል። እባክዎ እንደገና ይሞክሩ።</translation>
-<translation id="763472884969134151">ትንታኔ በ<ph name="LINK" /> ተሰርቷል</translation>
 <translation id="7635048370253485243">በእርስዎ አስተዳዳሪ ተሰክቷል</translation>
 <translation id="7635711411613274199">በሚያስሱበት ጊዜ የሚያዩት ማስታወቂያ ግላዊነት የተላበሰ መሆን አለመሆኑ በዚህ ቅንብር <ph name="BEGIN_LINK1" />የማስታወቂያ ርዕሶች<ph name="LINK_END1" />፣ በእርስዎ <ph name="BEGIN_LINK2" />የኩኪ ቅንብሮች<ph name="LINK_END2" /> ላይ እና እየተመለከቱት ያለው ጣቢያ ማስታወቂያዎችን ግላዊነት የሚያላብስ ከሆነ ይወሰናል</translation>
 <translation id="7636919061354591437">በዚህ መሣሪያ ላይ ጫን</translation>

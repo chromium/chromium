@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">最近用过的应用</translation>
 <translation id="1252999807265626933">正在通过“<ph name="POWER_SOURCE" />”充电</translation>
 <translation id="1255033239764210633">天气怎么样？</translation>
-<translation id="1267032506238418139">该快捷键发生了变化</translation>
 <translation id="1269405891096105529">在访客模式下，无法使用外围设备</translation>
 <translation id="1270290102613614947">屏幕键盘已停用</translation>
 <translation id="1272079795634619415">停止</translation>
@@ -217,7 +216,6 @@
 <translation id="1908992311423394684">新安装</translation>
 <translation id="1915307458270490472">中止</translation>
 <translation id="1918022425394817322">相机已对准右上角</translation>
-<translation id="1919743966458266018">用于打开任务管理器的快捷键已更改。请使用 <ph name="NEW_SHORTCUT" />，而不是 <ph name="OLD_SHORTCUT" />。</translation>
 <translation id="1923539912171292317">自动点击</translation>
 <translation id="1928739107511554905">要想获取此项更新，请在已连接该键盘的情况下使用触摸屏重新启动您的 Chromebook。</translation>
 <translation id="1948405482892809935">切换到下一个用户</translation>
@@ -973,7 +971,6 @@
 <translation id="5283198616748585639">加 1 分钟</translation>
 <translation id="528468243742722775">结束</translation>
 <translation id="5286194356314741248">正在扫描</translation>
-<translation id="5293671101077843611">今日无活动</translation>
 <translation id="5297423144044956168">找不到任何移动设备</translation>
 <translation id="5297704307811127955">已关闭</translation>
 <translation id="5300589172476337783">显示</translation>
@@ -1752,7 +1749,6 @@
 <translation id="8834539327799336565">目前已连接</translation>
 <translation id="8841375032071747811">“返回”按钮</translation>
 <translation id="8843682306134542540">切换旋转锁定设置。<ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">仍然无法验证您的 PIN 码或密码。注意：如果您最近更改了密码，请使用旧密码。待您退出登录后，系统才会应用新密码。</translation>
 <translation id="8855885154700222542">全屏键</translation>
 <translation id="8858369206579825206">隐私控制</translation>

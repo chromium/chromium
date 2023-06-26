@@ -69,7 +69,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1247519845643687288">Nedavne aplikacije</translation>
 <translation id="1252999807265626933">Polnjenje iz: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Kakšno je vreme?</translation>
-<translation id="1267032506238418139">Sprememba bližnjice</translation>
 <translation id="1269405891096105529">Dodatna oprema v načinu za goste ni podprta.</translation>
 <translation id="1270290102613614947">Zaslonska tipkovnica onemogočena</translation>
 <translation id="1272079795634619415">Ustavi</translation>
@@ -218,7 +217,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1908992311423394684">Nova namestitev</translation>
 <translation id="1915307458270490472">Prekini</translation>
 <translation id="1918022425394817322">Fotoaparat je pripet v zgornji desni kot</translation>
-<translation id="1919743966458266018">Bližnjica za odpiranje upravitelja opravil je spremenjena. Uporabite <ph name="NEW_SHORTCUT" /> namesto <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Samodejni kliki</translation>
 <translation id="1928739107511554905">Če želite prejeti posodobitev, uporabite zaslon na dotik, da znova zaženete Chromebook s priklopljeno tipkovnico.</translation>
 <translation id="1948405482892809935">Preklop na naslednjega uporabnika</translation>
@@ -976,7 +974,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5283198616748585639">Dodaj 1 min</translation>
 <translation id="528468243742722775">Konec</translation>
 <translation id="5286194356314741248">Pregledovanje</translation>
-<translation id="5293671101077843611">Danes ni dogodkov</translation>
 <translation id="5297423144044956168">Ni mobilnih naprav</translation>
 <translation id="5297704307811127955">Izklopljeno</translation>
 <translation id="5300589172476337783">Pokaži</translation>
@@ -1278,6 +1275,7 @@ Nova namestitev</translation>
 <translation id="6597278316891651699">Fotoaparat je pripet v spodnji levi kot. To je v navzkrižju s sistemskim okoljem.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" />, upravlja ga vaš skrbnik</translation>
 <translation id="6612802754306526077">Način snemanja zaslona je izbran</translation>
+<translation id="6613765291890844037">Količina shrambe v uporabi: <ph name="STORAGE_IN_USE_SIZE" /> | Skupna shramba: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Zaslon za zasebnost je vklopljen</translation>
 <translation id="6625718907317144388">Obvestili aplikacij <ph name="APP_1_TITLE" /> in <ph name="APP_2_TITLE" /> ter druga obvestila so skrita zaradi vklopljene zaščite pred ogledovanjem.</translation>
 <translation id="6627638273713273709">Tipka za iskanje + Shift + K</translation>
@@ -1760,7 +1758,6 @@ Nova namestitev</translation>
 <translation id="8834539327799336565">Trenutno povezano</translation>
 <translation id="8841375032071747811">Gumb za nazaj</translation>
 <translation id="8843682306134542540">Preklop zaklepanja zasuka. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Iskanje + Esc</translation>
 <translation id="8853703225951107899">Vaše kode PIN ali gesla še vedno ni bilo mogoče preveriti. Opomba: Če ste nedavno spremenili geslo, uporabite staro. Novo geslo bo začelo veljati, ko se odjavite.</translation>
 <translation id="8855885154700222542">Tipka za celozaslonski način</translation>
 <translation id="8858369206579825206">Nastavitve zasebnosti</translation>

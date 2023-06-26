@@ -69,7 +69,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1247519845643687288">Recent apps</translation>
 <translation id="1252999807265626933">Charging from <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">What's the weather?</translation>
-<translation id="1267032506238418139">Shortcut change</translation>
 <translation id="1269405891096105529">Peripheral not supported in Guest Mode</translation>
 <translation id="1270290102613614947">On-screen keyboard disabled</translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -218,7 +217,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1908992311423394684">New install</translation>
 <translation id="1915307458270490472">Hang up</translation>
 <translation id="1918022425394817322">Camera snapped to the top-right corner</translation>
-<translation id="1919743966458266018">The shortcut to open the task manager has changed. Please use <ph name="NEW_SHORTCUT" /> instead of <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatic clicks</translation>
 <translation id="1928739107511554905">To get the update, use the touchscreen to restart your Chromebook with the keyboard attached.</translation>
 <translation id="1948405482892809935">Switch to next user</translation>
@@ -976,7 +974,6 @@ Connect your device to power.</translation>
 <translation id="5283198616748585639">Add 1 min</translation>
 <translation id="528468243742722775">End</translation>
 <translation id="5286194356314741248">Scanning</translation>
-<translation id="5293671101077843611">No events today</translation>
 <translation id="5297423144044956168">No mobile devices found</translation>
 <translation id="5297704307811127955">Off</translation>
 <translation id="5300589172476337783">Show</translation>
@@ -1761,7 +1758,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8834539327799336565">Currently connected</translation>
 <translation id="8841375032071747811">Back button</translation>
 <translation id="8843682306134542540">Toggle rotation lock. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Your PIN or password still couldn't be verified. Note: If you recently changed your password, use your old password. Your new password will be applied once you've signed out.</translation>
 <translation id="8855885154700222542">Full-screen key</translation>
 <translation id="8858369206579825206">Privacy controls</translation>

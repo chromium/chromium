@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">讓分頁恢復「使用中」狀態</translation>
 <translation id="1003088604756913841">在新的「<ph name="APP" />」視窗中開啟連結</translation>
 <translation id="100323615638474026">USB 裝置 (<ph name="VENDOR_ID" />：<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google 安全瀏覽</translation>
 <translation id="1004218526896219317">網站存取權</translation>
 <translation id="1005274289863221750">使用你的麥克風和相機</translation>
 <translation id="1005333234656240382">是否要啟用 ADB 偵錯？</translation>
@@ -520,6 +519,7 @@
 <translation id="1434886155212424586">首頁是新分頁</translation>
 <translation id="1435940442311036198">在其他裝置上使用密碼金鑰</translation>
 <translation id="1436390408194692385">有效期間：<ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">繼續設定</translation>
 <translation id="1436784010935106834">已移除</translation>
 <translation id="1437986450143295708">請詳細說明問題</translation>
 <translation id="1439671507542716852">長期支援</translation>
@@ -1933,7 +1933,6 @@
 <translation id="2577446426265992344">沒有網址列</translation>
 <translation id="257779572837908839">設為 Chromebox 視訊會議解決方案</translation>
 <translation id="2579309488038515659">啟用無線基地台</translation>
-<translation id="2579596474754516455">你可以視需要掃描 PDF 圖片並轉成文字，讓螢幕閱讀器朗讀當中的內容</translation>
 <translation id="2580889980133367162">永遠允許 <ph name="HOST" /> 下載多個檔案</translation>
 <translation id="258095186877893873">長</translation>
 <translation id="2581455244799175627">進一步瞭解允許第三方 Cookie</translation>
@@ -2802,7 +2801,7 @@
 <translation id="3343046414300263892">放大字體</translation>
 <translation id="3345634917232014253">剛才已執行安全檢查</translation>
 <translation id="3345886924813989455">找不到支援的瀏覽器</translation>
-<translation id="3347086966102161372">複製圖片位址(&amp;O)</translation>
+<translation id="3347086966102161372">複製圖片網址(&amp;O)</translation>
 <translation id="3348038390189153836">偵測到卸除式裝置</translation>
 <translation id="3348131053948466246">已提供表情符號建議。使用向上鍵或向下鍵進行瀏覽，按下 Enter 鍵即可插入表情符號。</translation>
 <translation id="3349933790966648062">記憶體使用量</translation>
@@ -5410,7 +5409,6 @@
 <translation id="5602765853043467355">清除這個裝置的書籤、歷史記錄、密碼和其他設定</translation>
 <translation id="5605758115928394442">為了確認你的身分，系統已傳送通知到你的手機。</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{已封鎖這個擴充功能}other{已封鎖這些擴充功能}}</translation>
-<translation id="560743070587960985">這個檔案可能是病毒或惡意軟體。你可以將該檔案傳送給 Google，檢查是否安全。掃描通常需要幾秒鐘的時間。</translation>
 <translation id="560834977503641186">Wi-Fi 同步功能，瞭解詳情</translation>
 <translation id="5608580678041221894">輕觸下列按鍵可調整或移動裁剪區域</translation>
 <translation id="5609231933459083978">這似乎是無效的應用程式。</translation>
@@ -6171,6 +6169,7 @@
 <translation id="6263082573641595914">Microsoft CA 版本</translation>
 <translation id="6263284346895336537">非重要</translation>
 <translation id="6264365405983206840">選取全部(&amp;A)</translation>
+<translation id="6264376385120300461">仍要下載</translation>
 <translation id="6265687851677020761">移除連接埠</translation>
 <translation id="6266532094411434237">正在連線到 <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">請選取你在 <ph name="HOST_NAME" /> 的驗證憑證</translation>
@@ -7197,7 +7196,6 @@
 <translation id="7149839598364933473">在這部裝置上安裝 <ph name="DEVICE_OS" />。</translation>
 <translation id="7149893636342594995">過去 24 小時</translation>
 <translation id="7152478047064750137">這個擴充功能不需要特殊權限</translation>
-<translation id="7153309176431047193">將圖片轉成文字</translation>
 <translation id="7154130902455071009">將你的起始網頁變更為：<ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">將圖片轉成文字</translation>
 <translation id="7159953856712257647">已安裝 (預設)</translation>
@@ -7751,7 +7749,6 @@
 <translation id="7634280112532283638">減少垃圾內容和詐欺情形</translation>
 <translation id="7634337648687970851">目前不支援本機資料復原。</translation>
 <translation id="7634566076839829401">發生錯誤，請再試一次。</translation>
-<translation id="763472884969134151">由 <ph name="LINK" />提供的分析結果</translation>
 <translation id="7635048370253485243">已由系統管理員固定</translation>
 <translation id="7635711411613274199">上網時是否會看到個人化廣告，取決於這項設定、<ph name="BEGIN_LINK1" />廣告主題<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie 設定<ph name="LINK_END2" />，以及網站是否顯示個人化廣告</translation>
 <translation id="7636919061354591437">安裝到這部裝置</translation>
@@ -8175,7 +8172,7 @@
 <translation id="7963001036288347286">觸控板加速</translation>
 <translation id="7963608432878156675">這個名稱會向其他使用藍牙和網路連線的裝置顯示</translation>
 <translation id="7963826112438303517">Google 助理會使用這些錄音檔案和你的語音要求，建立及更新你的語音模型；語音模型只會儲存在已啟用 Voice Match 的裝置上。你可在 Google 助理設定頁面中查看或重新調校語音活動。</translation>
-<translation id="7966241909927244760">複製圖片位址(&amp;O)</translation>
+<translation id="7966241909927244760">複製圖片網址(&amp;O)</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{書籤清單中有 1 個項目}other{書籤清單中有 {COUNT} 個項目}}</translation>
 <translation id="7968072247663421402">供應商選項</translation>
 <translation id="7968742106503422125">讀取及修改你複製和貼上的資料</translation>

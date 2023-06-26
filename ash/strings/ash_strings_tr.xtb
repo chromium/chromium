@@ -69,7 +69,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1247519845643687288">Son uygulamalar</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> güç kaynağından şarj ediliyor</translation>
 <translation id="1255033239764210633">Hava nasıl?</translation>
-<translation id="1267032506238418139">Kısayol değişikliği</translation>
 <translation id="1269405891096105529">Çevre birimi, Misafir modunda desteklenmiyor</translation>
 <translation id="1270290102613614947">Dokunmatik klavye devre dışı</translation>
 <translation id="1272079795634619415">Durdur</translation>
@@ -218,7 +217,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1908992311423394684">Yeni yükleme</translation>
 <translation id="1915307458270490472">Kapat</translation>
 <translation id="1918022425394817322">Kamera sağ üst köşeye tutturuldu</translation>
-<translation id="1919743966458266018">Görev yöneticisini açma kısayolu değişti. Lütfen <ph name="OLD_SHORTCUT" /> yerine <ph name="NEW_SHORTCUT" /> kısayolunu kullanın.</translation>
 <translation id="1923539912171292317">Otomatik tıklamalar</translation>
 <translation id="1928739107511554905">Güncellemeyi almak için dokunmatik ekranı kullanarak Chromebook'unuzu klavye takılıyken yeniden başlatın.</translation>
 <translation id="1948405482892809935">Sonraki kullanıcıya geçin</translation>
@@ -976,7 +974,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5283198616748585639">1 dk ekle</translation>
 <translation id="528468243742722775">Son</translation>
 <translation id="5286194356314741248">Taranıyor</translation>
-<translation id="5293671101077843611">Bugün için etkinlik yok</translation>
 <translation id="5297423144044956168">Mobil cihaz bulunamadı</translation>
 <translation id="5297704307811127955">Kapalı</translation>
 <translation id="5300589172476337783">Göster</translation>
@@ -1278,6 +1275,7 @@ Yeni yüklenmiş</translation>
 <translation id="6597278316891651699">Kamera sol alt köşeye tutturuldu. Sistem yüzeyi ile çakışıyor.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="6612802754306526077">Ekran kaydetme modu seçildi</translation>
+<translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> depolama alanı kullanılıyor | Toplam <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Gizlilik ekranı açık</translation>
 <translation id="6625718907317144388">Görüntüleme koruması açık olduğundan <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ve diğer bildirimler gösterilmiyor</translation>
 <translation id="6627638273713273709">Ara+Üst Karakter+K</translation>
@@ -1760,7 +1758,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8834539327799336565">Şu anda bağlı</translation>
 <translation id="8841375032071747811">Geri düğmesi</translation>
 <translation id="8843682306134542540">Döndürme kilidini aç/kapat. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Ara+Esc</translation>
 <translation id="8853703225951107899">PIN'iniz veya şifreniz hâlâ doğrulanamadı. Not: Şifrenizi yakın zamanda değiştirdiyseniz eski şifrenizi kullanın. Yeni şifreniz, oturumunuzu kapattıktan sonra geçerli olacaktır.</translation>
 <translation id="8855885154700222542">Tam ekran tuşu</translation>
 <translation id="8858369206579825206">Gizlilik denetimleri</translation>

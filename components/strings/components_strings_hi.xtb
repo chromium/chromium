@@ -1331,7 +1331,6 @@
 <translation id="3962859241508114581">पिछला ट्रैक</translation>
 <translation id="3963721102035795474">रीडर मोड</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{कुछ नहीं}=1{1 साइट से }one{# साइटों से }other{# साइटों से }}</translation>
-<translation id="3969052498612555048">क्या आपको ओटीपी कोड नहीं मिला? <ph name="BEGIN_LINK" />नया कोड पाएं<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">गणना की जा रही है...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> को ब्लॉक किया गया है</translation>
 <translation id="3984581365661308170">#11 साइज़ का लिफ़ाफ़ा</translation>
@@ -2720,7 +2719,6 @@
 <translation id="7064443976734085921">कॉम्पैक्ट कारें</translation>
 <translation id="7064851114919012435">संपर्क जानकारी</translation>
 <translation id="7067633076996245366">सोल और आर ऐंड बी</translation>
-<translation id="7068733155164172741"><ph name="OTP_LENGTH" />-अंकों वाला कोड डालें</translation>
 <translation id="70705239631109039">आपका कनेक्शन पूरी तरह सुरक्षित नहीं है</translation>
 <translation id="7075452647191940183">अनुरोध में बहुत ज़्यादा डेटा भेजा गया है</translation>
 <translation id="7078665357168027058">RA3</translation>

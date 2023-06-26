@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Tab active again</translation>
 <translation id="1003088604756913841">Open Link in New <ph name="APP" /> Window</translation>
 <translation id="100323615638474026">USB device (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google Safe Browsing</translation>
 <translation id="1004218526896219317">Site access</translation>
 <translation id="1005274289863221750">Use your microphone and camera</translation>
 <translation id="1005333234656240382">Enable ADB debugging?</translation>
@@ -523,6 +522,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1434886155212424586">Homepage is the New Tab page</translation>
 <translation id="1435940442311036198">Use a passkey on a different device</translation>
 <translation id="1436390408194692385">Valid for <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Continue setup</translation>
 <translation id="1436784010935106834">Removed</translation>
 <translation id="1437986450143295708">Describe the issue in detail</translation>
 <translation id="1439671507542716852">long-term support</translation>
@@ -1952,7 +1952,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2577446426265992344">without Omnibox</translation>
 <translation id="257779572837908839">Set up as Chromebox for meetings</translation>
 <translation id="2579309488038515659">Hotspot enable</translation>
-<translation id="2579596474754516455">Scan PDF images to convert text for screen reader when necessary</translation>
 <translation id="2580889980133367162">Always allow <ph name="HOST" /> to download multiple files</translation>
 <translation id="258095186877893873">Long</translation>
 <translation id="2581455244799175627">More about allowing third-party cookies</translation>
@@ -2387,6 +2386,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2942279350258725020">Android messages</translation>
 <translation id="2942560570858569904">Waiting...</translation>
 <translation id="2942581856830209953">Customise this page</translation>
+<translation id="2942707801577151363">Open, edit and save Word, Excel and PowerPoint files. A subscription may be required for some features.</translation>
 <translation id="2943268899142471972">Select an Ansible playbook or Crostini backup file</translation>
 <translation id="2944060181911631861">Send usage and diagnostic data. Help improve your Android experience by automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. <ph name="BEGIN_LINK1" />Find out more<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">Go to files</translation>
@@ -3472,6 +3472,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3888586133700543064">This information helps us better understand your Assistant issue. It's stored for up to 90 days and access is restricted to appropriate engineering and feedback teams.</translation>
 <translation id="3890064827463908288">Turn on Chrome Sync to use Wi-Fi Sync</translation>
 <translation id="389313931326656921">Assign switch for 'Next'</translation>
+<translation id="3893268973182382220">Can't load this panel right now</translation>
 <translation id="3893295674388762059">To clear data, close all incognito windows</translation>
 <translation id="3893536212201235195">Read and change your accessibility settings</translation>
 <translation id="3893630138897523026">ChromeVox (spoken feedback)</translation>
@@ -5438,9 +5439,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5602765853043467355">Clear bookmarks, history, passwords and more from this device</translation>
 <translation id="5605758115928394442">A notification was sent to your phone to confirm that it's you.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{This extension is blocked}other{These extensions are blocked}}</translation>
-<translation id="560743070587960985">This file might be a virus or malware.
-
-You can send it to Google to check if it's unsafe. Scans usually take a few seconds.</translation>
 <translation id="560834977503641186">Wi-Fi Sync, learn more</translation>
 <translation id="5608580678041221894">Tap the following keys to adjust or move the cropping area</translation>
 <translation id="5609231933459083978">The application appears to be invalid.</translation>
@@ -6205,6 +6203,7 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
 <translation id="6263082573641595914">Microsoft CA Version</translation>
 <translation id="6263284346895336537">Not Critical</translation>
 <translation id="6264365405983206840">Select &amp;All</translation>
+<translation id="6264376385120300461">Download anyway</translation>
 <translation id="6265687851677020761">Remove port</translation>
 <translation id="6266532094411434237">Connecting to <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Select a certificate to which you want to authenticate <ph name="HOST_NAME" /></translation>
@@ -7231,7 +7230,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7149839598364933473">Convert this device into a <ph name="DEVICE_OS" /> device.</translation>
 <translation id="7149893636342594995">Last 24 Hours</translation>
 <translation id="7152478047064750137">This extension requires no special permissions</translation>
-<translation id="7153309176431047193">Convert images to text</translation>
 <translation id="7154130902455071009">Change your start page to: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Convert image to text</translation>
 <translation id="7159953856712257647">Installed by default</translation>
@@ -7786,7 +7784,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7634280112532283638">Spam and fraud reduction</translation>
 <translation id="7634337648687970851">Local data recovery is currently not supported.</translation>
 <translation id="7634566076839829401">Something went wrong. Please try again.</translation>
-<translation id="763472884969134151">Analysis done by <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Pinned by your Administrator</translation>
 <translation id="7635711411613274199">As you browse, whether an ad that you see is personalised depends on this setting, <ph name="BEGIN_LINK1" />ad topics<ph name="LINK_END1" />, your <ph name="BEGIN_LINK2" />cookie settings<ph name="LINK_END2" />, and if the site that you're viewing personalises ads</translation>
 <translation id="7636919061354591437">Install on this Device</translation>
@@ -8605,6 +8602,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8293206222192510085">Add Bookmark</translation>
 <translation id="8294431847097064396">Source</translation>
 <translation id="8295449579927246485">Live Translate</translation>
+<translation id="8295450130892483256">Install Microsoft 365</translation>
 <translation id="8297292446125062288">HID settings</translation>
 <translation id="8298429963694909221">You can now receive notifications from your phone on your <ph name="DEVICE_TYPE" />. Dismissing notifications on your <ph name="DEVICE_TYPE" /> will also dismiss them on your phone. Make sure that your phone is nearby and has Bluetooth and Wi-Fi turned on.</translation>
 <translation id="8299319456683969623">You are currently offline.</translation>

@@ -1235,7 +1235,6 @@
 <translation id="3962859241508114581">上一首</translation>
 <translation id="3963721102035795474">阅读器模式</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{无}=1{来自 1 个网站}other{来自 # 个网站}}</translation>
-<translation id="3969052498612555048">找不到动态密码？<ph name="BEGIN_LINK" />获取新的动态密码<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 已被屏蔽</translation>
 <translation id="3984581365661308170">#11 信封</translation>
@@ -2520,7 +2519,6 @@
 <translation id="706295145388601875">在 Chrome 设置中添加和管理地址</translation>
 <translation id="7064851114919012435">联系信息</translation>
 <translation id="7067633076996245366">灵魂乐与 R&amp;B</translation>
-<translation id="7068733155164172741">输入 <ph name="OTP_LENGTH" /> 位数的动态密码</translation>
 <translation id="70705239631109039">您的连接存在安全隐患</translation>
 <translation id="7075452647191940183">请求过大</translation>
 <translation id="7078665357168027058">RA3</translation>

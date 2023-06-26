@@ -3608,7 +3608,6 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
 
       Nếu bạn đặt chính sách này, người dùng sẽ không thay đổi được. Nếu bạn không đặt chính sách này, thì ban đầu, bàn phím ảo sẽ tắt, nhưng người dùng có thể bật bất cứ lúc nào.</translation>
 <translation id="412697421478384751">Cho phép người dùng đặt mã PIN yếu cho mã PIN màn hình khóa.</translation>
-<translation id="4132809439883883106">Sử dụng Giá trị mặc định cho Đã cho phép thoả thuận về khoá hậu lượng tử Kyber cho TLS</translation>
 <translation id="4136603825567209889">Bật chính sách báo cáo thông tin nhận dạng người dùng</translation>
 <translation id="4138655880188755661">Giới hạn thời gian</translation>
 <translation id="4140646780789794190">Tắt chính sách chia sẻ dữ liệu chẩn đoán cho PluginVm</translation>
@@ -4175,7 +4174,6 @@ các API này.</translation>
       Nếu bạn không đặt chính sách này, thì sẽ không có trang web nào được thực hiện thao tác tự động chọn.</translation>
 <translation id="4611983465824842867">Không hiện cảnh báo hay tắt tính năng tự động điền trên các biểu mẫu không an toàn</translation>
 <translation id="4615003180013429835">Chế độ phân tích cú pháp danh sách trang web</translation>
-<translation id="4616706248182656871">Đã cho phép vô hiệu hoá thoả thuận về khoá hậu lượng tử Kyber cho TLS</translation>
 <translation id="4617338332148204752">Bỏ qua kiểm tra thẻ meta trong <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Có thể sử dụng tính năng NewBaseUrlInheritanceBehavior</translation>
 <translation id="4624006912948309924">Việc đặt chính sách này sẽ cố định giá trị nhận dạng của ứng dụng mà <ph name="PRODUCT_OS_NAME" /> hiển thị dưới dạng ứng dụng được ghim trong thanh trình chạy và người dùng không thể thay đổi được các mã nhận dạng đó.
@@ -7320,7 +7318,6 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
 <translation id="7421230730436851224">Không bao giờ chạy quy trình âm thanh trong hộp cát</translation>
 <translation id="7421483919690710988">Đặt kích thước bộ nhớ đệm của đĩa phương tiện theo byte</translation>
 <translation id="7424751532654212117">Danh sách các trường hợp ngoại lệ của danh sách plugin bị vô hiệu hóa</translation>
-<translation id="7425076578809444474">Đã cho phép kích hoạt thoả thuận về khoá hậu lượng tử cho TLS</translation>
 <translation id="7426112309807051726">Chỉ định xem có nên tắt tính năng tối ưu hóa <ph name="TLS_FALSE_START" /> hay không. Do các nguyên nhân trước đây, chính sách này được đặt tên là DisableSSLRecordSplitting.
 
       Nếu chính sách này chưa được đặt hoặc được đặt thành false, <ph name="TLS_FALSE_START" /> sẽ được bật. Nếu chính sách này được đặt thành true, <ph name="TLS_FALSE_START" /> sẽ bị tắt.</translation>
@@ -8594,7 +8591,6 @@ Nếu đặt chính sách này, thì bạn cần đặt chính sách <ph name="P
           Khi bạn không đặt chính sách này, khoảng thời gian mặc định sẽ được sử dụng.
 
           Bạn phải chỉ định giá trị của chính sách bằng mili giây.</translation>
-<translation id="859316804517480666">Đã cho phép kích hoạt thoả thuận về khoá hậu lượng tử Kyber cho TLS</translation>
 <translation id="859579553230883285">Tắt chế độ cài đặt Quảng cáo do trang web đề xuất của <ph name="PRIVACY_SANDBOX_NAME" /> cho người dùng.</translation>
 <translation id="8597758693275075382">Chuỗi SMBIOS của OEM (Nhà sản xuất thiết bị gốc) được truyền đến máy ảo trong quá trình cài đặt. Giá trị mặc định là danh sách trống.</translation>
 <translation id="8598786284856179541">Bật chính sách báo cáo thông tin phiên bản</translation>

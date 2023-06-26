@@ -69,7 +69,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1247519845643687288">Aplicacions recents</translation>
 <translation id="1252999807265626933">S'està carregant amb: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Quin temps fa?</translation>
-<translation id="1267032506238418139">Canvi de drecera</translation>
 <translation id="1269405891096105529">Aquest perifèric no s'admet en mode de convidat</translation>
 <translation id="1270290102613614947">Teclat en pantalla desactivat</translation>
 <translation id="1272079795634619415">Atura</translation>
@@ -218,7 +217,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1908992311423394684">Instal·lació nova</translation>
 <translation id="1915307458270490472">Penja</translation>
 <translation id="1918022425394817322">La càmera s'ha ajustat a l'extrem superior dret</translation>
-<translation id="1919743966458266018">La drecera per obrir el gestor de tasques ha canviat. Utilitzeu <ph name="NEW_SHORTCUT" /> en lloc de la drecera <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clics automàtics</translation>
 <translation id="1928739107511554905">Per obtenir l'actualització, utilitza la pantalla tàctil per reiniciar Chromebook amb el teclat connectat.</translation>
 <translation id="1948405482892809935">Canvia a l'usuari següent</translation>
@@ -976,7 +974,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5283198616748585639">Afegeix 1 minut</translation>
 <translation id="528468243742722775">Finalitza</translation>
 <translation id="5286194356314741248">S'està cercant</translation>
-<translation id="5293671101077843611">Avui no hi ha esdeveniments</translation>
 <translation id="5297423144044956168">No s'ha trobat cap dispositiu mòbil</translation>
 <translation id="5297704307811127955">Desactivada</translation>
 <translation id="5300589172476337783">Mostra</translation>
@@ -1757,7 +1754,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8834539327799336565">Connectats actualment</translation>
 <translation id="8841375032071747811">Botó Enrere</translation>
 <translation id="8843682306134542540">Activa o desactiva el bloqueig de rotació. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Cerca + Esc</translation>
 <translation id="8853703225951107899">El PIN o la contrasenya continuen sense poder-se verificar. Nota: si fa poc que has canviat la contrasenya, fes servir l'antiga. La contrasenya nova s'aplicarà un cop hagis tancat la sessió.</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8858369206579825206">Controls de privadesa</translation>

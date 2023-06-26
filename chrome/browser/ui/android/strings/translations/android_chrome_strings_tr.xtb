@@ -61,6 +61,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1283039547216852943">Genişletmek için dokunun</translation>
 <translation id="1289059016768036948">Google Hesabınızda oturum açmanız istenebilir</translation>
 <translation id="1291207594882862231">Geçmişi, çerezleri, site verilerini, önbelleği temizleyin…</translation>
+<translation id="1293898515599432175">Chrome <ph name="CHROME_CHANNEL" /> şifreleriniz, Google Şifre Yöneticisi'nden silinecek. Az önce indirdiğiniz şifre dosyasını saklayabilirsiniz.</translation>
 <translation id="129553762522093515">Son kapatılan</translation>
 <translation id="1298077576058087471">Veriden %60'a varan oranda tasarruf edin, bugünkü haberleri okuyun</translation>
 <translation id="1303339473099049190">Şifre bulunamıyor. Adresi doğru yazıp yazmadığınızı kontrol edip tekrar deneyin.</translation>
@@ -510,6 +511,7 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="3795154175078851242">Resmi bağlantıyla birlikte kopyala</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Yönet</translation>
+<translation id="381861209280417772">Şifreler silinsin mi?</translation>
 <translation id="3819178904835489326">İndirilen <ph name="NUMBER_OF_DOWNLOADS" /> dosya silindi</translation>
 <translation id="3819183753496523827">Çevrimdışısınız. İnternet bağlantınızı kontrol edip tekrar deneyin.</translation>
 <translation id="3830886834687455630">Şifrelerinizi kontrol etmek için Google Play Hizmetleri'ni güncelleyin</translation>
@@ -594,6 +596,7 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="4249955472157341256">En güncel tarihe göre sırala</translation>
 <translation id="4250229828105606438">Ekran görüntüsü</translation>
 <translation id="4256782883801055595">Açık kaynak lisansları</translation>
+<translation id="4257230861809842349">Şifreler, Google Şifre Yöneticisi'nden silinsin mi?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Kullanılan veriler:<ph name="END_BOLD" /> Tarama geçmişiniz ve bu cihazda Chrome'u kullanarak ziyaret ettiğiniz sitelerin kaydı.</translation>
 <translation id="4269820728363426813">Bağlantı adresini kopyala</translation>
 <translation id="4283102315569707115">Varsayılan olarak masaüstü siteleri istensin mi?</translation>

@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Вкладка вновь активна</translation>
 <translation id="1003088604756913841">Открыть ссылку в новом окне приложения "<ph name="APP" />"</translation>
 <translation id="100323615638474026">USB-устройство (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google Безопасный просмотр</translation>
 <translation id="1004218526896219317">Доступ к сайтам</translation>
 <translation id="1005274289863221750">Использование микрофона и камеры</translation>
 <translation id="1005333234656240382">Включить отладку с ADB?</translation>
@@ -524,6 +523,7 @@
 <translation id="1434886155212424586">В качестве главной страницы установлена страница быстрого доступа.</translation>
 <translation id="1435940442311036198">Использовать ключ доступа на другом устройстве</translation>
 <translation id="1436390408194692385">До окончания срока действия: <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Продолжить настройку</translation>
 <translation id="1436784010935106834">Удалено</translation>
 <translation id="1437986450143295708">Подробно опишите проблему</translation>
 <translation id="1439671507542716852">долгосрочная поддержка</translation>
@@ -1938,7 +1938,6 @@
 <translation id="2577446426265992344">без изменений в дизайне омнибокса</translation>
 <translation id="257779572837908839">Использовать в качестве Chromebox для видеоконференций</translation>
 <translation id="2579309488038515659">Включить точку доступа</translation>
-<translation id="2579596474754516455">При необходимости сканировать PDF-изображения и конвертировать их в текст для программы чтения с экрана</translation>
 <translation id="2580889980133367162">Всегда разрешать <ph name="HOST" /> скачивать несколько файлов</translation>
 <translation id="258095186877893873">долгая</translation>
 <translation id="2581455244799175627">Подробнее о разрешении сторонних файлов cookie</translation>
@@ -5418,9 +5417,6 @@
 <translation id="5602765853043467355">Удалить с устройства закладки, пароли, данные о работе в браузере и т. д.</translation>
 <translation id="5605758115928394442">На ваш телефон отправлено уведомление для подтверждения личности.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Это расширение заблокировано}one{Эти расширения заблокированы}few{Эти расширения заблокированы}many{Эти расширения заблокированы}other{Эти расширения заблокированы}}</translation>
-<translation id="560743070587960985">Этот файл может оказаться вирусом или вредоносным ПО.
-
-Вы можете отправить его в Google, чтобы проверить, безопасен ли он. Обычно сканирование занимает несколько секунд.</translation>
 <translation id="560834977503641186">Узнать больше о функции "Синхронизация Wi-Fi"</translation>
 <translation id="5608580678041221894">Чтобы двигать рамку кадрирования, нажимайте на следующие кнопки</translation>
 <translation id="5609231933459083978">Неизвестное название приложения</translation>
@@ -6180,6 +6176,7 @@
 <translation id="6263082573641595914">Версия ЦС Microsoft</translation>
 <translation id="6263284346895336537">Не критично</translation>
 <translation id="6264365405983206840">Выделить все</translation>
+<translation id="6264376385120300461">Все равно скачать</translation>
 <translation id="6265687851677020761">Удалить порт</translation>
 <translation id="6266532094411434237">Подключение к устройству "<ph name="DEVICE" />"</translation>
 <translation id="6267166720438879315">Выберите сертификат для аутентификации на <ph name="HOST_NAME" /></translation>
@@ -7209,7 +7206,6 @@
 <translation id="7149839598364933473">Установить <ph name="DEVICE_OS" /> на устройстве</translation>
 <translation id="7149893636342594995">Последние 24 часа</translation>
 <translation id="7152478047064750137">Расширению не требуются особые разрешения</translation>
-<translation id="7153309176431047193">Конвертация изображений в текст</translation>
 <translation id="7154130902455071009">Смена стартовой страницы на <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Распознать текст на изображении</translation>
 <translation id="7159953856712257647">Установлено по умолчанию</translation>
@@ -7761,7 +7757,6 @@
 <translation id="7634280112532283638">Противодействие спаму и мошенничеству</translation>
 <translation id="7634337648687970851">Восстановление локальных данных сейчас не поддерживается.</translation>
 <translation id="7634566076839829401">Произошла ошибка. Повторите попытку.</translation>
-<translation id="763472884969134151">Анализ выполнен сервисом <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Закреплено администратором</translation>
 <translation id="7635711411613274199">Персонализация рекламы зависит от этого параметра, <ph name="BEGIN_LINK1" />тем<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />настроек файлов cookie<ph name="LINK_END2" />, а также от параметров сайта, который вы просматриваете.</translation>
 <translation id="7636919061354591437">Установить на этом устройстве</translation>

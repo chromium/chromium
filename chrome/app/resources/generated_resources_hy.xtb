@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Ներդիրը կրկին ակտիվ է</translation>
 <translation id="1003088604756913841">Բացել հղումը նոր <ph name="APP" /> պատուհանում</translation>
 <translation id="100323615638474026">USB սարք (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google Ապահով դիտարկում</translation>
 <translation id="1004218526896219317">Կայքի հասանելիություն</translation>
 <translation id="1005274289863221750">Օգտագործել ձեր խոսափողը և տեսախցիկը</translation>
 <translation id="1005333234656240382">Միացնե՞լ ADB վրիպազերծումը</translation>
@@ -523,6 +522,7 @@
 <translation id="1434886155212424586">Գլխավոր էջը Նոր ներդիրի էջն է</translation>
 <translation id="1435940442311036198">Օգտագործել անցաբառ մեկ այլ սարքում</translation>
 <translation id="1436390408194692385">Վավեր է դեռ <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Շարունակել կարգավորումը</translation>
 <translation id="1436784010935106834">Հեռացված</translation>
 <translation id="1437986450143295708">Մանրամասն նկարագրեք խնդիրը</translation>
 <translation id="1439671507542716852">երկարաժամկետ աջակցություն</translation>
@@ -1939,7 +1939,6 @@
 <translation id="2577446426265992344">առանց Omnibox-ի</translation>
 <translation id="257779572837908839">Կարգավորել «Chromebox տեսաժողովների համար» ռեժիմը</translation>
 <translation id="2579309488038515659">Միացնել/անջատել թեժ կետը</translation>
-<translation id="2579596474754516455">Սկանավորեք PDF պատկերները, որպեսզի անհրաժեշտության դեպքում փոխարկեք դրանք էկրանից հեշտ ընթերցվող տեքստի</translation>
 <translation id="2580889980133367162">Միշտ թույլ տալ <ph name="HOST" />-ին ներբեռնել մի քանի ֆայլ</translation>
 <translation id="258095186877893873">Երկար</translation>
 <translation id="2581455244799175627">Մանրամասն երրորդ կողմի քուքիները թույլատրելու մասին</translation>
@@ -5419,9 +5418,6 @@
 <translation id="5602765853043467355">Մաքրել այս սարքի էջանիշները, պատմությունը, գաղտնաբառերն ու մյուս տվյալները</translation>
 <translation id="5605758115928394442">Ձեր ինքնությունը հաստատելու համար ձեր հեռախոսին ծանուցում է ուղարկվել:</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Այս ընդլայնումն արգելափակված է}one{Այս ընդլայնումն արգելափակված է}other{Այս ընդլայնումներն արգելափակված են}}</translation>
-<translation id="560743070587960985">Այս ֆայլը կարող է վիրուս կամ վնասագիր լինել։
-
-Ուղարկեք Google-ին՝ ստուգելու, թե արդյոք ֆայլն անվտանգ է։ Սկանավորումը սովորաբար մի քանի վայրկյան է տևում։</translation>
 <translation id="560834977503641186">Մանրամասն Wi-Fi համաժամացման մասին</translation>
 <translation id="5608580678041221894">Սեղմեք հետևյալ ստեղները` եզրատվող տարածքը ճշգրտելու կամ տեղաշարժելու համար</translation>
 <translation id="5609231933459083978">Հավելվածն անվավեր է:</translation>
@@ -6183,6 +6179,7 @@
 <translation id="6263082573641595914">Microsoft-ի CA-ի տարբերակ</translation>
 <translation id="6263284346895336537">Ոչ վճռական</translation>
 <translation id="6264365405983206840">Ընտրել &amp;բոլորը</translation>
+<translation id="6264376385120300461">Ներբեռնել</translation>
 <translation id="6265687851677020761">Հեռացնել միացքը</translation>
 <translation id="6266532094411434237">Միացում <ph name="DEVICE" /> սարքին</translation>
 <translation id="6267166720438879315">Ընտրեք վկայագիր՝ <ph name="HOST_NAME" />-ում իսկորոշվելու համար</translation>
@@ -7208,7 +7205,6 @@
 <translation id="7149839598364933473">Տեղադրել <ph name="DEVICE_OS" />-ն այս սարքում</translation>
 <translation id="7149893636342594995">Վերջին 24 ժամվա</translation>
 <translation id="7152478047064750137">Այս ընդլայնումը հատուկ թույլտվություն չի պահանջում</translation>
-<translation id="7153309176431047193">Պատկերների փոխարկում տեքստի</translation>
 <translation id="7154130902455071009">Դարձնել <ph name="START_PAGE" />-ը սկզբնական էջը</translation>
 <translation id="7156231244155528270">Պատկերը վերածել տեքստի</translation>
 <translation id="7159953856712257647">Տեղադրված է ըստ կանխադրման</translation>
@@ -7763,7 +7759,6 @@
 <translation id="7634280112532283638">Պայքար սպամի և խարդախության դեմ</translation>
 <translation id="7634337648687970851">Սարքի տվյալների վերականգնումն այս պահին չի աջակցվում։</translation>
 <translation id="7634566076839829401">Ինչ-որ սխալ առաջացավ: Նորից փորձեք:</translation>
-<translation id="763472884969134151">Վերլուծությունը կատարվել է <ph name="LINK" />-ի կողմից</translation>
 <translation id="7635048370253485243">Ամրացվել է ադմինիստրատորի կողմից</translation>
 <translation id="7635711411613274199">Գովազդի անհատականացումը կախված է այս կարգավորումից, <ph name="BEGIN_LINK1" />գովազդի թեմաներից<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />քուքիների կարգավորումներից<ph name="LINK_END2" /> և այն կայքի կարգավորումներից, որը դուք դիտում եք</translation>
 <translation id="7636919061354591437">Տեղադրել այս սարքում</translation>

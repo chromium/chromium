@@ -63,6 +63,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich c
 <translation id="1291506870746876680">Bydd caniatadau <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> yn ailosod i wedi'u diffodd pan fyddwch yn gadael y wefan hon.</translation>
 <translation id="1305822519689023679">I wneud yn siŵr y gallwch bob amser ddefnyddio'r cyfrineiriau yn eich Cyfrif Google, cadarnhewch mai chi sydd yno.</translation>
 <translation id="1312721752506309252">Mae gwell amddiffyniad wedi'i droi ymlaen</translation>
+<translation id="1316466854070752597">Gweler yr holl dabiau sydd ar agor</translation>
 <translation id="1321993286294231467">Bu gwall wrth gadw'r llun.</translation>
 <translation id="1322735045095424339">Mae eich sefydliad yn gofyn am y Modd Anhysbys</translation>
 <translation id="1323735185997015385">Dileu</translation>
@@ -438,6 +439,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3656645960301737801">Cwblhau'r digwyddiad a chadw</translation>
 <translation id="3661160521073045932">Mae Proffil Ffurfweddiad Ar Gael</translation>
 <translation id="3670030362669914947">Rhif</translation>
+<translation id="368329460027487650">Rydych wedi'ch allgofnodi. Yn agor opsiynau i fewngofnodi.</translation>
 <translation id="3700134753671613714">Mewngofnodwch i gael eich nodau tudalen ar eich holl ddyfeisiau.</translation>
 <translation id="3709582977625132201">Marcio ei fod Heb ei Ddarllen</translation>
 <translation id="371230970611282515">Mae'n rhagfynegi digwyddiadau peryglus ac yn eich rhybuddio amdanynt cyn iddynt ddigwydd.</translation>
@@ -666,6 +668,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5190835502935405962">Bar Nodau Tudalen</translation>
 <translation id="519530786644929958">Lawrlwytho wedi methu ac ni ellir rhoi cynni arall arni.</translation>
 <translation id="5197255632782567636">Rhyngrwyd</translation>
+<translation id="5209674813563615506">Agor tab newydd</translation>
 <translation id="5211488077761630279">Caniatáu i "<ph name="SITE_NAME" />" ddefnyddio eich <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Helpwch i Wella Diogelwch ar y We i Bawb</translation>
 <translation id="5221339005270097309">Wrthi'n Gwirio Cyfrineiriau…</translation>
@@ -941,6 +944,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="6684906340059221832">Olrhain Prisiau</translation>
 <translation id="6710079714193676716">Rheolir gan eich sefydliad. Mae'n bosib na fydd rhai nodweddion ar gael. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Apiau Google</translation>
+<translation id="672735642903863329">Cael eich nodau tudalen, eich cyfrineiriau a rhagor ar eich holl ddyfeisiau.</translation>
 <translation id="6730682669179532099">Methu ag Allforio Cyfrineiriau</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6748108480210050150">O</translation>

@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Skeda është përsëri aktive</translation>
 <translation id="1003088604756913841">Hape lidhjen në një dritare të re të <ph name="APP" /></translation>
 <translation id="100323615638474026">Pajisja USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Shfletimi i sigurt i Google</translation>
 <translation id="1004218526896219317">Qasja në sajt</translation>
 <translation id="1005274289863221750">Përdor mikrofonin dhe kamerën</translation>
 <translation id="1005333234656240382">Të aktivizohet korrigjimi i ADB-së?</translation>
@@ -520,6 +519,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1434886155212424586">Faqja kryesore është faqja "Skedë e re"</translation>
 <translation id="1435940442311036198">Përdor një çelës kalimi në një pajisje tjetër</translation>
 <translation id="1436390408194692385">E vlefshme për <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Vazhdo konfigurimin</translation>
 <translation id="1436784010935106834">U hoq</translation>
 <translation id="1437986450143295708">Përshkruaj problemin në detaje</translation>
 <translation id="1439671507542716852">mbështetje afatgjatë</translation>
@@ -1931,7 +1931,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2577446426265992344">pa omnibox</translation>
 <translation id="257779572837908839">Konfiguroje si "Chromebox për takime"</translation>
 <translation id="2579309488038515659">Aktivizo zonën e qasjes për internet</translation>
-<translation id="2579596474754516455">Skano imazhet në PDF për ta konvertuar tekstin për lexuesit e ekranit kur është e nevojshme</translation>
 <translation id="2580889980133367162">Lejo gjithmonë që <ph name="HOST" /> të shkarkojë shumë skedarë</translation>
 <translation id="258095186877893873">E gjatë</translation>
 <translation id="2581455244799175627">Më shumë rreth lejimit të kukive të palëve të treta</translation>
@@ -5403,9 +5402,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5602765853043467355">Pastro faqeshënuesit, historikun, fjalëkalimet dhe më shumë nga kjo pajisje</translation>
 <translation id="5605758115928394442">Një njoftim është dërguar te telefoni yt për të konfirmuar që je ti.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Kjo shtesë është bllokuar}other{Këto shtesa janë bllokuar}}</translation>
-<translation id="560743070587960985">Ky skedar mund të jetë një virus ose softuer keqdashës.
-
-Mund ta dërgosh atë te Google për të kontrolluar nëse nuk është i sigurt. Skanimet zakonisht zgjasin disa sekonda.</translation>
 <translation id="560834977503641186">"Sinkronizimi i Wi-Fi", Mëso më shumë</translation>
 <translation id="5608580678041221894">Trokit te tastet e mëposhtme për të rregulluar ose zhvendosur zonën e prerjes</translation>
 <translation id="5609231933459083978">Aplikacioni duket se është i pavlefshëm.</translation>
@@ -6170,6 +6166,7 @@ Mund ta dërgosh atë te Google për të kontrolluar nëse nuk është i sigurt.
 <translation id="6263082573641595914">Versioni i autoritetit të certifikimit të Microsoft</translation>
 <translation id="6263284346895336537">Jo vendimtare</translation>
 <translation id="6264365405983206840">Zgjidh të &amp;gjitha</translation>
+<translation id="6264376385120300461">Shkarkoje gjithsesi</translation>
 <translation id="6265687851677020761">Hiq portën</translation>
 <translation id="6266532094411434237">Po lidhet me <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Zgjidh një certifikatë për të verifikuar veten te <ph name="HOST_NAME" /></translation>
@@ -7193,7 +7190,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7149839598364933473">Konvertoje këtë pajisje në një pajisje <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">24 orët e fundit</translation>
 <translation id="7152478047064750137">Kjo shtesë nuk kërkon leje të veçanta</translation>
-<translation id="7153309176431047193">Konverto imazhet në tekst</translation>
 <translation id="7154130902455071009">Ndrysho faqen tënde të nisjes te: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Konvertoje imazhin në tekst</translation>
 <translation id="7159953856712257647">Instaluar si parazgjedhje</translation>
@@ -7747,7 +7743,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7634280112532283638">Reduktimi i mesazheve të bezdisshme dhe mashtrimit</translation>
 <translation id="7634337648687970851">Rikuperimi i të dhënave lokale nuk mbështetet aktualisht.</translation>
 <translation id="7634566076839829401">Ndodhi një gabim. Provo përsëri.</translation>
-<translation id="763472884969134151">Analiza e kryer nga <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Gozhduar nga administratori yt</translation>
 <translation id="7635711411613274199">Kur shfleton, nëse një reklamë që shikon është e personalizuar, kjo varet nga ky cilësim, nga <ph name="BEGIN_LINK1" />Temat e reklamave<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />cilësimet e tua të kukive<ph name="LINK_END2" /> dhe nëse sajti që po shikon ti i personalizon reklamat</translation>
 <translation id="7636919061354591437">Instaloje në këtë pajisje</translation>

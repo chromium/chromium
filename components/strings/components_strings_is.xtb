@@ -1335,7 +1335,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3962859241508114581">Fyrra lag</translation>
 <translation id="3963721102035795474">Lestrarstilling</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ekkert}=1{Frá einu vefsvæði }one{Frá # vefsvæði }other{Frá # vefsvæðum }}</translation>
-<translation id="3969052498612555048">Finnurðu ekki kóðann? <ph name="BEGIN_LINK" />Fá nýjan kóða<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Reiknar...</translation>
 <translation id="3973234410852337861">Lokað er fyrir <ph name="HOST_NAME" /></translation>
 <translation id="3984581365661308170">Umslag: #11</translation>
@@ -2725,7 +2724,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7064443976734085921">Litlir bílar</translation>
 <translation id="7064851114919012435">Samskiptaupplýsingar</translation>
 <translation id="7067633076996245366">Sálar- og R&amp;B-tónlist</translation>
-<translation id="7068733155164172741">Sláðu inn <ph name="OTP_LENGTH" /> stafa kóða</translation>
 <translation id="70705239631109039">Tengingin er ekki alveg örugg</translation>
 <translation id="7075452647191940183">Beiðnin er of stór</translation>
 <translation id="7078665357168027058">RA3</translation>

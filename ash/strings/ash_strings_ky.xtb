@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">Акыркы колдонмолор</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> аркылуу кубатталууда</translation>
 <translation id="1255033239764210633">Аба ырайы кандай?</translation>
-<translation id="1267032506238418139">Кыска жол өзгөртүлдү</translation>
 <translation id="1269405891096105529">Сырткы түзмөктөр Конок режиминде колдоого алынбайт</translation>
 <translation id="1270290102613614947">Экрандагы баскычтоп өчүрүлдү</translation>
 <translation id="1272079795634619415">Токтотуу</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">Жаңы колдонмо орнотулду</translation>
 <translation id="1915307458270490472">Жогоруда кадоо</translation>
 <translation id="1918022425394817322">Камера жогорку оң бурчка кадалды</translation>
-<translation id="1919743966458266018">Тапшырмалар башкаргычын ача турган кыска жол өзгөргөн. <ph name="OLD_SHORTCUT" /> ордуна <ph name="NEW_SHORTCUT" /> колдонуңуз.</translation>
 <translation id="1923539912171292317">Автоматтык чыкылдатуулар</translation>
 <translation id="1928739107511554905">Жаңыртуу үчүн, туташкан баскычтопту үзбөй туруп, сенсордук экрандын жардамы менен, Chromebook'ту өчүрүп-күйгүзүңүз.</translation>
 <translation id="1948405482892809935">Кийинки колдонуучуга которуу</translation>
@@ -976,7 +974,6 @@
 <translation id="5283198616748585639">1 мүн. кошуу</translation>
 <translation id="528468243742722775">Бүтүрүү</translation>
 <translation id="5286194356314741248">Текшерилүүдө</translation>
-<translation id="5293671101077843611">Бүгүн эч нерсе жок</translation>
 <translation id="5297423144044956168">Мобилдик түзмөктөр табылган жок</translation>
 <translation id="5297704307811127955">Өчүк</translation>
 <translation id="5300589172476337783">Көрсөтүү</translation>
@@ -1760,7 +1757,6 @@
 <translation id="8834539327799336565">Учурда туташып турган түзмөктөр</translation>
 <translation id="8841375032071747811">Артка баскычы</translation>
 <translation id="8843682306134542540">Буруу кулпусун өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN кодуңуз же сырсөзүңүз дагы эле ырасталган жок. Эскертүү: Эгер жакында сырсөзүңүздү өзгөрткөн болсоңуз, эски сырсөзүңүздү колдонуңуз. Жаңы сырсөзүңүз аккаунтуңуздан чыккандан кийин колдонулат.</translation>
 <translation id="8855885154700222542">Толук экран режиминин ачкычы</translation>
 <translation id="8858369206579825206">Купуялык параметрлери</translation>

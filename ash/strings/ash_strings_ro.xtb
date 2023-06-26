@@ -69,7 +69,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1247519845643687288">Aplicații recente</translation>
 <translation id="1252999807265626933">Se încarcă de la <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Cum este vremea?</translation>
-<translation id="1267032506238418139">Modificarea comenzii rapide</translation>
 <translation id="1269405891096105529">Dispozitivul periferic nu este acceptat în modul pentru invitați</translation>
 <translation id="1270290102613614947">Tastatură pe ecran dezactivată</translation>
 <translation id="1272079795634619415">Oprește</translation>
@@ -218,7 +217,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1908992311423394684">Instalare nouă</translation>
 <translation id="1915307458270490472">Încheie apelul</translation>
 <translation id="1918022425394817322">Camera foto este aliniată cu colțul din dreapta sus</translation>
-<translation id="1919743966458266018">Comanda rapidă pentru a deschide managerul de activități a fost modificată. Folosește <ph name="NEW_SHORTCUT" /> în loc de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clicuri automate</translation>
 <translation id="1928739107511554905">Pentru a obține actualizarea, folosește ecranul tactil ca să repornești Chromebookul cu tastatura atașată.</translation>
 <translation id="1948405482892809935">Comută la următorul utilizator</translation>
@@ -976,7 +974,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5283198616748585639">Adaugă 1 min.</translation>
 <translation id="528468243742722775">Oprește</translation>
 <translation id="5286194356314741248">Scanare</translation>
-<translation id="5293671101077843611">Niciun eveniment astăzi</translation>
 <translation id="5297423144044956168">Nu s-au găsit dispozitive mobile</translation>
 <translation id="5297704307811127955">Dezactivată</translation>
 <translation id="5300589172476337783">Afișează</translation>
@@ -1761,7 +1758,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8834539327799336565">Conectat</translation>
 <translation id="8841375032071747811">Butonul Înapoi</translation>
 <translation id="8843682306134542540">Comută blocarea rotației. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Tasta de căutare + Esc</translation>
 <translation id="8853703225951107899">Codul PIN sau parola tot nu au putut fi confirmate. Notă: dacă ai schimbat parola recent, folosește vechea parolă. Noua parolă se va aplica după ce te deconectezi.</translation>
 <translation id="8855885154700222542">Tasta pentru ecran complet</translation>
 <translation id="8858369206579825206">Opțiuni de confidențialitate</translation>

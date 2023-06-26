@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Oortjie is weer beskikbaar</translation>
 <translation id="1003088604756913841">Maak skakel in nuwe <ph name="APP" />-venster oop</translation>
 <translation id="100323615638474026">USB-toestel (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google Veiligblaai</translation>
 <translation id="1004218526896219317">Werftoegang</translation>
 <translation id="1005274289863221750">Gebruik jou mikrofoon en kamera</translation>
 <translation id="1005333234656240382">Aktiveer ADB-ontfouting?</translation>
@@ -523,6 +522,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1434886155212424586">Tuisblad is die Nuwe oortjie-bladsy</translation>
 <translation id="1435940442311036198">Gebruik ’n wagwoordsleutel op ’n ander toestel</translation>
 <translation id="1436390408194692385">Geldig vir <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Gaan voort met opstelling</translation>
 <translation id="1436784010935106834">Verwyder</translation>
 <translation id="1437986450143295708">Beskryf die kwessie uitvoerig</translation>
 <translation id="1439671507542716852">langtermynsteundienste</translation>
@@ -1952,7 +1952,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2577446426265992344">sonder omniboks</translation>
 <translation id="257779572837908839">Stel op as Chromebox vir vergaderings</translation>
 <translation id="2579309488038515659">Warmkol geaktiveer</translation>
-<translation id="2579596474754516455">Skandeer PDF-prente om teks vir skermleser om te skakel, wanneer nodig</translation>
 <translation id="2580889980133367162">Laat <ph name="HOST" /> altyd toe om veelvuldige lêers af te laai</translation>
 <translation id="258095186877893873">Lank</translation>
 <translation id="2581455244799175627">Meer oor die opsie om derdepartywebkoekies toe te laat</translation>
@@ -5438,9 +5437,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5602765853043467355">Vee boekmerke, geskiedenis, wagwoorde en meer van hierdie toestel af uit</translation>
 <translation id="5605758115928394442">'n Kennisgewing is na jou foon toe gestuur om te bevestig dat dit jy is.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Hierdie uitbreiding is geblokkeer}other{Hierdie uitbreidings is geblokkeer}}</translation>
-<translation id="560743070587960985">Hierdie lêer kan ’n virus of wanware hê.
-
-Jy kan dit na Google stuur om te kontroleer of dit onveilig is. Skanderings neem gewoonlik ’n paar sekondes.</translation>
 <translation id="560834977503641186">Wi-fi-sinkronisering, kom meer te wete</translation>
 <translation id="5608580678041221894">Tik op die volgende sleutels om die snoei-area te verstel of te skuif</translation>
 <translation id="5609231933459083978">Dit lyk of die program ongeldig is.</translation>
@@ -6206,6 +6202,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6263082573641595914">Microsoft CA-weergawe</translation>
 <translation id="6263284346895336537">Nie kritiek nie</translation>
 <translation id="6264365405983206840">Kies alles</translation>
+<translation id="6264376385120300461">Laai in elk geval af</translation>
 <translation id="6265687851677020761">Verwyder poort</translation>
 <translation id="6266532094411434237">Koppel tans aan <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Kies 'n sertifikaat om jouself vir <ph name="HOST_NAME" /> te staaf</translation>
@@ -7232,7 +7229,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7149839598364933473">Skakel hierdie toestel om in 'n <ph name="DEVICE_OS" />-toestel.</translation>
 <translation id="7149893636342594995">Afgelope 24 uur</translation>
 <translation id="7152478047064750137">Hierdie uitbreiding vereis geen spesiale toestemmings nie</translation>
-<translation id="7153309176431047193">Skakel prente om in teks</translation>
 <translation id="7154130902455071009">Verander jou beginblad na: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Skakel prent oor na teks</translation>
 <translation id="7159953856712257647">By verstel geïnstalleer</translation>
@@ -7787,7 +7783,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7634280112532283638">Vermindering van strooipos en bedrog</translation>
 <translation id="7634337648687970851">Plaaslike dataterugstelling word nie tans gesteun nie.</translation>
 <translation id="7634566076839829401">Iets het verkeerd geloop. Probeer asseblief weer.</translation>
-<translation id="763472884969134151">Ontleding gedoen deur <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Vasgespeld deur jou administrateur</translation>
 <translation id="7635711411613274199">Terwyl jy blaai, sal hierdie instelling, <ph name="BEGIN_LINK1" />advertensie-onderwerpe<ph name="LINK_END1" />, jou <ph name="BEGIN_LINK2" />webkoekie-instellings<ph name="LINK_END2" />, en óf die werf wat jy tans bekyk advertensies personaliseer, bepaal of ’n advertensie wat jy sien, gepersonaliseer word</translation>
 <translation id="7636919061354591437">Installeer op hierdie toestel</translation>

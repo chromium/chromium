@@ -1335,7 +1335,6 @@
 <translation id="3962859241508114581">آهنگ قبلی</translation>
 <translation id="3963721102035795474">حالت «خواننده»</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{هیچ‌کدام}=1{از ۱ سایت }one{از # سایت }other{از # سایت }}</translation>
-<translation id="3969052498612555048">نمی‌توانید کدتان را پیدا کنید؟ <ph name="BEGIN_LINK" />کد جدید دریافت کنید<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">در حال محاسبه…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> مسدود شده است</translation>
 <translation id="3984581365661308170">پاکت شماره ۱۱</translation>
@@ -2725,7 +2724,6 @@
 <translation id="7064443976734085921">خودروهای کوچک</translation>
 <translation id="7064851114919012435">اطلاعات تماس</translation>
 <translation id="7067633076996245366">سول و آر اَند بی</translation>
-<translation id="7068733155164172741">کد <ph name="OTP_LENGTH" /> رقمی را وارد کنید</translation>
 <translation id="70705239631109039">اتصال شما کاملاً ایمن نیست</translation>
 <translation id="7075452647191940183">درخواست خیلی بزرگ است</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3281,6 +3279,7 @@
 <translation id="8246482227229072868">حلقه</translation>
 <translation id="8249296373107784235">لغو</translation>
 <translation id="8249463483885748674">آزمون استاندارد و پذیرش</translation>
+<translation id="824968735947741546">درحال ترجمه از <ph name="SOURCE" /> (به‌طور خودکار شناسایی شده) به <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">‏این نشانی درحال‌حاضر در این دستگاه ذخیره شده است. برای استفاده از این نشانی در محصولات Google، آن را در «حساب Google» خود (<ph name="ACCOUNT" />) ذخیره کنید.</translation>
 <translation id="8252991034201168845">‏دکمه «مدیریت تنظیمات دسترس‌پذیری»؛ برای شخصی کردن ابزارهای دسترس‌پذیری در تنظیمات ChromeOS، کلید «ورود» را فشار دهید</translation>
 <translation id="8253091569723639551">نشانی صورت‌حساب لازم است</translation>

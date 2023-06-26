@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">பக்கம் மீண்டும் இயக்கப்பட்டது</translation>
 <translation id="1003088604756913841">புதிய <ph name="APP" /> சாளரத்தில் இணைப்பைத் திற</translation>
 <translation id="100323615638474026">USB சாதனம் (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google பாதுகாப்பு உலாவல்</translation>
 <translation id="1004218526896219317">தள அணுகல்</translation>
 <translation id="1005274289863221750">உங்கள் மைக்ரோஃபோன் மற்றும் கேமராவைப் பயன்படுத்தலாம்</translation>
 <translation id="1005333234656240382">ADB பிழைதிருத்தத்தை இயக்கவா?</translation>
@@ -523,6 +522,7 @@
 <translation id="1434886155212424586">புதிய தாவல் பக்கமே முகப்புப் பக்கமாகும்</translation>
 <translation id="1435940442311036198">வேறொரு சாதனத்தில் கடவுக்குறியீட்டைப் பயன்படுத்து</translation>
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> வரை செல்லுபடியாகும்</translation>
+<translation id="1436671784520050284">அமைவைத் தொடர்க</translation>
 <translation id="1436784010935106834">அகற்றப்பட்டது</translation>
 <translation id="1437986450143295708">சிக்கல் குறித்து விரிவாக விளக்கவும்</translation>
 <translation id="1439671507542716852">நீண்டகால உதவி</translation>
@@ -1952,7 +1952,6 @@
 <translation id="2577446426265992344">ஆம்னிபாக்ஸ் இல்லாமல்</translation>
 <translation id="257779572837908839">மீட்டிங்குகளுக்கான Chromebox சாதனமாக அமை</translation>
 <translation id="2579309488038515659">ஹாட்ஸ்பாட்டை இயக்கும்</translation>
-<translation id="2579596474754516455">தேவைப்படும்போது PDF படங்களை ஸ்கேன் செய்து ஸ்கிரீன் ரீடருக்கு வார்த்தைகளாக மாற்றும்</translation>
 <translation id="2580889980133367162">பல ஃபைல்களைப் பதிவிறக்க எப்போதும் <ph name="HOST" /> ஐ அனுமதி</translation>
 <translation id="258095186877893873">நீண்ட</translation>
 <translation id="2581455244799175627">மூன்றாம் தரப்புக் குக்கீகளை அனுமதிப்பது குறித்து மேலும் அறியலாம்</translation>
@@ -5430,9 +5429,6 @@
 <translation id="5602765853043467355">இந்தச் சாதனத்திலிருந்து புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள் மற்றும் பலவற்றை அழிக்கவும்</translation>
 <translation id="5605758115928394442">அது நீங்கள்தான் என்பதை உறுதிப்படுத்த உங்கள் ஃபோனுக்கு ஓர் அறிவிப்பு அனுப்பப்பட்டுள்ளது.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{இந்த நீட்டிப்பு தடுக்கப்பட்டுள்ளது}other{இந்த நீட்டிப்புகள் தடுக்கப்பட்டுள்ளன}}</translation>
-<translation id="560743070587960985">இந்த ஃபைல் வைரஸ் அல்லது மால்வேராக இருக்கலாம்.
-
-இது பாதுகாப்பற்றதா எனச் சரிபார்க்க இதை நீங்கள் Googleளுக்கு அனுப்பலாம். ஸ்கேன் செய்ய வழக்கமாகச் சில வினாடிகள் ஆகும்.</translation>
 <translation id="560834977503641186">வைஃபை ஒத்திசைவு, மேலும் அறிக</translation>
 <translation id="5608580678041221894">செதுக்கும் பகுதியைச் சரிசெய்ய அல்லது நகர்த்த, பின்வரும் விசைகளைத் தட்டவும்</translation>
 <translation id="5609231933459083978">ஆப்ஸ் தவறானது என்பதுபோல் தெரிகிறது.</translation>
@@ -6198,6 +6194,7 @@
 <translation id="6263082573641595914">Microsoft CA பதிப்பு</translation>
 <translation id="6263284346895336537">சிக்கலானதல்ல</translation>
 <translation id="6264365405983206840">அ&amp;னைத்தையும் தேர்ந்தெடு</translation>
+<translation id="6264376385120300461">பரவாயில்லை, பதிவிறக்கு</translation>
 <translation id="6265687851677020761">போர்ட்டை அகற்று</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> உடன் இணைக்கிறது</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> க்கு உங்களை அங்கீகரிக்க ஒரு சான்றிதழைத் தேர்ந்தெடுங்கள்</translation>
@@ -7221,7 +7218,6 @@
 <translation id="7149839598364933473">இந்தச் சாதனத்தை <ph name="DEVICE_OS" /> சாதனமாக மாற்றலாம்.</translation>
 <translation id="7149893636342594995">கடந்த 24 மணிநேரம்</translation>
 <translation id="7152478047064750137">இந்த நீட்டிப்பிற்குச் சிறப்பு அனுமதிகள் தேவையில்லை</translation>
-<translation id="7153309176431047193">படங்களை வார்த்தைகளாக மாற்றும்</translation>
 <translation id="7154130902455071009">உங்கள் தொடக்கப் பக்கத்தை இதற்கு மாற்றவும்: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">படத்தை வார்த்தைகளாக மாற்று</translation>
 <translation id="7159953856712257647">இயல்பாக நிறுவப்பட்டது</translation>
@@ -7776,7 +7772,6 @@
 <translation id="7634280112532283638">ஸ்பேம் &amp; மோசடியைக் குறைத்தல்</translation>
 <translation id="7634337648687970851">தற்சமயம் அகத் தரவு மீட்டெடுப்பு ஆதரிக்கப்படவில்லை.</translation>
 <translation id="7634566076839829401">ஏதோ தவறாகிவிட்டது. மீண்டும் முயற்சிக்கவும்.</translation>
-<translation id="763472884969134151">பகுப்பாய்வு செய்தது: <ph name="LINK" /></translation>
 <translation id="7635048370253485243">உங்கள் நிர்வாகி பின் (pin) செய்துள்ளார்</translation>
 <translation id="7635711411613274199">நீங்கள் உலாவும்போது காட்டப்படும் விளம்பரம் பிரத்தியேகமானதா என்பது இந்த அமைப்பு, <ph name="BEGIN_LINK1" />விளம்பரத் தலைப்புகள்<ph name="LINK_END1" />, உங்கள் <ph name="BEGIN_LINK2" />குக்கீ அமைப்புகள்<ph name="LINK_END2" /> ஆகியவற்றையும் நீங்கள் பார்க்கும் தளம் விளம்பரங்களைப் பிரத்தியேகப்படுத்துகிறதா என்பதையும் பொறுத்து இருக்கும்</translation>
 <translation id="7636919061354591437">இந்தச் சாதனத்தில் நிறுவு</translation>

@@ -1241,7 +1241,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3962859241508114581">Vorheriger Titel</translation>
 <translation id="3963721102035795474">Lesemodus</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Keine}=1{Von 1 Website }other{Von # Websites }}</translation>
-<translation id="3969052498612555048">Du kannst deinen Code nicht finden? <ph name="BEGIN_LINK" />Neuen Code anfordern<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ist gesperrt</translation>
 <translation id="3984581365661308170">Umschlag Nr. 11</translation>
@@ -2528,7 +2527,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="706295145388601875">Adressen in den Chrome-Einstellungen hinzufügen und verwalten</translation>
 <translation id="7064851114919012435">Kontaktdaten</translation>
 <translation id="7067633076996245366">Soul und R&amp;B</translation>
-<translation id="7068733155164172741"><ph name="OTP_LENGTH" />-stelligen Code eingeben</translation>
 <translation id="70705239631109039">Deine Verbindung ist nicht uneingeschränkt sicher</translation>
 <translation id="7075452647191940183">Die Anfrage ist zu groß</translation>
 <translation id="7078665357168027058">RA3</translation>

@@ -1336,7 +1336,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3962859241508114581">Edellinen kappale</translation>
 <translation id="3963721102035795474">Lukijatila</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ei mitään}=1{1 sivustolta }other{# sivustolta }}</translation>
-<translation id="3969052498612555048">Etkö löydä koodiasi? <ph name="BEGIN_LINK" />Pyydä uusi koodi<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Lasketaan...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> on estetty</translation>
 <translation id="3984581365661308170">Kirjekuori #11</translation>
@@ -2726,7 +2725,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7064443976734085921">Pienet auto</translation>
 <translation id="7064851114919012435">Yhteystiedot</translation>
 <translation id="7067633076996245366">Soul ja R&amp;B</translation>
-<translation id="7068733155164172741">Lisää <ph name="OTP_LENGTH" />-numeroinen koodi</translation>
 <translation id="70705239631109039">Yhteytesi ei ole täysin suojattu</translation>
 <translation id="7075452647191940183">Pyyntö on liian suuri</translation>
 <translation id="7078665357168027058">RA3</translation>

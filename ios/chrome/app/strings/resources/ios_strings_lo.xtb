@@ -63,6 +63,7 @@
 <translation id="1291506870746876680">ການອະນຸຍາດ <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> ຈະຖືກຣີເຊັດໄປເປັນປິດເມື່ອທ່ານອອກຈາກເວັບໄຊນີ້.</translation>
 <translation id="1305822519689023679">ເພື່ອກວດສອບໃຫ້ແນ່ໃຈວ່າທ່ານສາມາດໃຊ້ລະຫັດຜ່ານໃນບັນຊີ Google ຂອງທ່ານໄດ້ສະເໝີ, ກະລຸນາຢັ້ງຢືນວ່າແມ່ນທ່ານ.</translation>
 <translation id="1312721752506309252">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນເປີດຢູ່</translation>
+<translation id="1316466854070752597">ເບິ່ງແຖບທີ່ເປີດຢູ່ທັງໝົດ</translation>
 <translation id="1321993286294231467">ຜິດພາດໃນການບັນທຶກຮູບພາບ.</translation>
 <translation id="1322735045095424339">ອົງການຂອງທ່ານກຳນົດໃຫ້ໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="1323735185997015385">ລຶບ</translation>
@@ -438,6 +439,7 @@
 <translation id="3656645960301737801">ສຳເລັດນັດໝາຍ ແລະ ບັນທຶກ</translation>
 <translation id="3661160521073045932">ມີໂປຣໄຟລ໌ການຕັ້ງຄ່າທີ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="3670030362669914947">ໝາຍເລກ</translation>
+<translation id="368329460027487650">ອອກຈາກລະບົບແລ້ວ. ເປີດຕົວເລືອກເພື່ອເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="3700134753671613714">ເຂົ້າ​ສູ່​ລະ​ບົບເພື່ອ​ຮັບເອົາບຸກມາກ​ສ໌ຂອງທ່ານຢູ່ເທິງທຸກອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="3709582977625132201">ໝາຍວ່າຍັງບໍ່ໄດ້ອ່ານ</translation>
 <translation id="371230970611282515">ຄາດເດົາ ແລະ ເຕືອນທ່ານກ່ຽວກັບເຫດການອັນຕະລາຍກ່ອນທີ່ພວກມັນຈະເກີດຂຶ້ນ.</translation>
@@ -666,6 +668,7 @@
 <translation id="5190835502935405962">ແຖບບຸກມາກສ໌</translation>
 <translation id="519530786644929958">ດາວໂຫຼດບໍ່ສຳເລັດ ແລະ ບໍ່ສາມາດລອງໃໝ່ໄດ້.</translation>
 <translation id="5197255632782567636">ອິນ​ເຕີ​ເນັດ</translation>
+<translation id="5209674813563615506">ເປີດແຖບໃໝ່</translation>
 <translation id="5211488077761630279">ອະນຸຍາດໃຫ້ "<ph name="SITE_NAME" />" ໃຊ້ <ph name="PERMISSION" /> ຂອງທ່ານບໍ?</translation>
 <translation id="5219295696240154694">ຊ່ວຍປັບປຸງຄວາມປອດໄພຢູ່ເວັັບສຳລັບທຸກຄົນ</translation>
 <translation id="5221339005270097309">ກຳລັງກວດສອບລະຫັດຜ່ານ…</translation>
@@ -941,6 +944,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6684906340059221832">ກຳລັງຕິດຕາມລາຄາ</translation>
 <translation id="6710079714193676716">ຈັດການໂດຍອົງການຂອງທ່ານ. ບາງຄຸນສົມບັດອາດຈະບໍ່ພ້ອມໃຫ້ນຳໃຊ້. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="672735642903863329">ໃຊ້ບຸກມາກ, ລະຫັດຜ່ານ ແລະ ອື່ນໆຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ.</translation>
 <translation id="6730682669179532099">ບໍ່ສາມາດສົ່ງລະຫັດຜ່ານອອກໄດ້</translation>
 <translation id="6732087373923685049">ກ້ອງຖ່າຍຮູບ</translation>
 <translation id="6748108480210050150">ຈາກ</translation>

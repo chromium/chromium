@@ -1242,7 +1242,6 @@
 <translation id="3962859241508114581">上一首曲目</translation>
 <translation id="3963721102035795474">閱讀器模式</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{無}=1{來自 1 個網站}other{來自 # 個網站}}</translation>
-<translation id="3969052498612555048">找不到驗證碼嗎？<ph name="BEGIN_LINK" />取得新的驗證碼<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">計算中…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 已遭封鎖</translation>
 <translation id="3984581365661308170">#11 信封</translation>
@@ -2529,7 +2528,6 @@
 <translation id="706295145388601875">在 Chrome 設定中新增並管理地址</translation>
 <translation id="7064851114919012435">聯絡人資訊</translation>
 <translation id="7067633076996245366">騷靈音樂和 R&amp;B</translation>
-<translation id="7068733155164172741">請輸入 <ph name="OTP_LENGTH" /> 位數驗證碼</translation>
 <translation id="70705239631109039">您的連線並非完全安全</translation>
 <translation id="7075452647191940183">要求過大</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3045,6 +3043,7 @@
 <translation id="8245703462678310750">按住 |<ph name="ACCELERATOR" />| 鍵即可結束全螢幕模式並查看下載內容。</translation>
 <translation id="8249296373107784235">取消</translation>
 <translation id="8249463483885748674">資格測驗和入學考試</translation>
+<translation id="824968735947741546">正在將<ph name="SOURCE" /> (自動偵測) 的內容翻譯成<ph name="TARGET" /></translation>
 <translation id="8250094606476360498">此地址目前已儲存在此裝置上。如要在各項 Google 產品中使用此資料，請儲存至 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
 <translation id="8252991034201168845">管理無障礙設定按鈕，㩒一下 Enter 鍵就可以喺 Chrome OS 設定度個人化您嘅無障礙工具</translation>
 <translation id="8253091569723639551">必須提供帳單地址</translation>

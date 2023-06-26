@@ -69,7 +69,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1247519845643687288">Recente apps</translation>
 <translation id="1252999807265626933">Opladen via <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Wat voor weer is het?</translation>
-<translation id="1267032506238418139">Sneltoets gewijzigd</translation>
 <translation id="1269405891096105529">Randapparaat wordt niet ondersteund in de gastmodus</translation>
 <translation id="1270290102613614947">Schermtoetsenbord staat uit</translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -218,7 +217,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1908992311423394684">Nieuwe installatie</translation>
 <translation id="1915307458270490472">Ophangen</translation>
 <translation id="1918022425394817322">Camera uitgelijnd op de rechterbovenhoek</translation>
-<translation id="1919743966458266018">De sneltoets om Taakbeheer te openen is gewijzigd. Gebruik <ph name="NEW_SHORTCUT" /> in plaats van <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatische klikken</translation>
 <translation id="1928739107511554905">Als je de update wilt downloaden, sluit je het toetsenbord aan en start je je Chromebook opnieuw op via het touchscreen.</translation>
 <translation id="1948405482892809935">Overschakelen naar volgende gebruiker</translation>
@@ -976,7 +974,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5283198616748585639">1 min toevoegen</translation>
 <translation id="528468243742722775">Beëindigen</translation>
 <translation id="5286194356314741248">Scannen</translation>
-<translation id="5293671101077843611">Geen afspraken vandaag</translation>
 <translation id="5297423144044956168">Geen mobiele apparaten gevonden</translation>
 <translation id="5297704307811127955">Uit</translation>
 <translation id="5300589172476337783">Tonen</translation>
@@ -1278,6 +1275,7 @@ Nieuwe installatie</translation>
 <translation id="6597278316891651699">Camera uitgelijnd op de linkerbenedenhoek. Conflict met systeemoppervlak.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, beheerd door je beheerder</translation>
 <translation id="6612802754306526077">Schermopnamemodus geselecteerd</translation>
+<translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> opslag in gebruik | totaal <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Privacyscherm staat aan</translation>
 <translation id="6625718907317144388">Meldingen van <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> en andere apps zijn verborgen omdat weergavebeveiliging aanstaat</translation>
 <translation id="6627638273713273709">Zoeken+Shift+K</translation>
@@ -1757,7 +1755,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8834539327799336565">Momenteel verbonden</translation>
 <translation id="8841375032071747811">Knop Terug</translation>
 <translation id="8843682306134542540">Draaivergrendeling aan- of uitzetten. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Zoeken+Esc</translation>
 <translation id="8853703225951107899">Je pincode of wachtwoord kan nog steeds niet worden geverifieerd. Opmerking: Als je onlangs je wachtwoord hebt gewijzigd, gebruik je je oude wachtwoord. Je nieuwe wachtwoord wordt toegepast zodra je uitlogt.</translation>
 <translation id="8855885154700222542">Toets voor volledig scherm</translation>
 <translation id="8858369206579825206">Privacyopties</translation>

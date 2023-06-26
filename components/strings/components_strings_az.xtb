@@ -1331,7 +1331,6 @@
 <translation id="3962859241508114581">Əvvəlki trek</translation>
 <translation id="3963721102035795474">Oxu Rejimi</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Yoxdur}=1{1 saytdan }other{# saytdan }}</translation>
-<translation id="3969052498612555048">Kodunuzu tapa bilmirsiniz? <ph name="BEGIN_LINK" />Yeni kod əldə edin<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Hesablanır...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> blok edilib</translation>
 <translation id="3984581365661308170">Zərf #11</translation>
@@ -2721,7 +2720,6 @@
 <translation id="7064443976734085921">Kompakt avtomobillər</translation>
 <translation id="7064851114919012435">Kontakt məlumatı</translation>
 <translation id="7067633076996245366">Soul və R&amp;B</translation>
-<translation id="7068733155164172741"><ph name="OTP_LENGTH" /> rəqəmli kodu daxil edin</translation>
 <translation id="70705239631109039">Bağlantınız tam təhlükəsiz deyil</translation>
 <translation id="7075452647191940183">Sorğu çox uzundur</translation>
 <translation id="7078665357168027058">RA3</translation>

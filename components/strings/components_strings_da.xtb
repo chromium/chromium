@@ -1335,7 +1335,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3962859241508114581">Forrige nummer</translation>
 <translation id="3963721102035795474">Læser-tilstand</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ingen}=1{1 website }one{# website }other{# websites }}</translation>
-<translation id="3969052498612555048">Kan du ikke finde din kode? <ph name="BEGIN_LINK" />Få en ny kode<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Beregner...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> er blokeret</translation>
 <translation id="3984581365661308170">Konvolut nr. 11</translation>
@@ -2725,7 +2724,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7064443976734085921">Mindre biler</translation>
 <translation id="7064851114919012435">Kontaktoplysninger</translation>
 <translation id="7067633076996245366">Soul og R&amp;B</translation>
-<translation id="7068733155164172741">Angiv <ph name="OTP_LENGTH" />-cifret kode</translation>
 <translation id="70705239631109039">Din forbindelse er ikke 100 % sikker</translation>
 <translation id="7075452647191940183">Anmodningen er for stor</translation>
 <translation id="7078665357168027058">RA3</translation>

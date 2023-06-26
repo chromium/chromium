@@ -1334,7 +1334,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3962859241508114581">Iepriekšējais ieraksts</translation>
 <translation id="3963721102035795474">Lasītāja režīms</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Nav}=1{No 1 vietnes }zero{No # vietnēm }one{No # vietnes }other{No # vietnēm }}</translation>
-<translation id="3969052498612555048">Vai nevarat atrast kodu? <ph name="BEGIN_LINK" />Iegūt jaunu kodu<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Aprēķina...</translation>
 <translation id="3973234410852337861">Vietne <ph name="HOST_NAME" /> ir bloķēta</translation>
 <translation id="3984581365661308170">Aploksne 11</translation>
@@ -2724,7 +2723,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7064443976734085921">Kompaktās automašīnas</translation>
 <translation id="7064851114919012435">Kontaktinformācija</translation>
 <translation id="7067633076996245366">Soula un R&amp;B mūzika</translation>
-<translation id="7068733155164172741">Ievadiet <ph name="OTP_LENGTH" /> ciparu kodu</translation>
 <translation id="70705239631109039">Jūsu savienojums nav pilnīgi drošs</translation>
 <translation id="7075452647191940183">Pieprasījums ir pārāk liels</translation>
 <translation id="7078665357168027058">RA3</translation>

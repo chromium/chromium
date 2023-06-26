@@ -1334,7 +1334,6 @@
 <translation id="3962859241508114581">แทร็กก่อนหน้า</translation>
 <translation id="3963721102035795474">โหมดนักอ่าน</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{ไม่มี}=1{จากเว็บไซต์ 1 แห่ง }other{จากเว็บไซต์ #  แห่ง }}</translation>
-<translation id="3969052498612555048">หากไม่พบรหัส <ph name="BEGIN_LINK" />ขอรหัสใหม่<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">กำลังคำนวณ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ถูกบล็อก</translation>
 <translation id="3984581365661308170">Envelope #11</translation>
@@ -2724,7 +2723,6 @@
 <translation id="7064443976734085921">รถขนาดเล็ก</translation>
 <translation id="7064851114919012435">ข้อมูลติดต่อ</translation>
 <translation id="7067633076996245366">โซลและอาร์แอนด์บี</translation>
-<translation id="7068733155164172741">ป้อนรหัส <ph name="OTP_LENGTH" /> หลัก</translation>
 <translation id="70705239631109039">การเชื่อมต่อไม่ปลอดภัยอย่างสมบูรณ์</translation>
 <translation id="7075452647191940183">คำขอมีขนาดใหญ่เกินไป</translation>
 <translation id="7078665357168027058">RA3</translation>

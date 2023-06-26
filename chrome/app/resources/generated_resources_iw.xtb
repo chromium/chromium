@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">הכרטיסייה חזרה לפעול</translation>
 <translation id="1003088604756913841">פתיחת הקישור בחלון חדש של <ph name="APP" /></translation>
 <translation id="100323615638474026">‏התקן USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">‏גלישה בטוחה של Google</translation>
 <translation id="1004218526896219317">גישה לאתרים</translation>
 <translation id="1005274289863221750">להשתמש במיקרופון ובמצלמה</translation>
 <translation id="1005333234656240382">‏להפעיל ניפוי באגים באמצעות ADB?</translation>
@@ -524,6 +523,7 @@
 <translation id="1434886155212424586">דף הבית הוא הדף 'כרטיסייה חדשה'</translation>
 <translation id="1435940442311036198">שימוש במפתח גישה במכשיר אחר</translation>
 <translation id="1436390408194692385">תקף למשך <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">להמשך ההגדרה</translation>
 <translation id="1436784010935106834">הוסר</translation>
 <translation id="1437986450143295708">יש לתאר את הבעיה בפירוט</translation>
 <translation id="1439671507542716852">‏תמיכה לטווח ארוך (LTS)</translation>
@@ -1945,7 +1945,6 @@
 <translation id="2577446426265992344">ללא סרגל הכתובות</translation>
 <translation id="257779572837908839">‏הגדרה כ-Chromebox לניהול פגישות</translation>
 <translation id="2579309488038515659">הפעלת הנקודה לשיתוף האינטרנט</translation>
-<translation id="2579596474754516455">‏במקרה הצורך, ניתן לסרוק תמונות ב-PDF כדי להמיר טקסט לקורא המסך</translation>
 <translation id="2580889980133367162">תמיד אפשר ל-<ph name="HOST" /> להוריד קבצים מרובים</translation>
 <translation id="258095186877893873">ארוכה</translation>
 <translation id="2581455244799175627">‏מידע נוסף על הרשאת השימוש בקובצי cookie של צדדים שלישיים</translation>
@@ -5414,9 +5413,6 @@
 <translation id="5602765853043467355">ניקוי הסימניות, ההיסטוריה, הסיסמאות ונתונים נוספים מהמכשיר הזה</translation>
 <translation id="5605758115928394442">הודעה נשלחה לטלפון שלך כדי לאשר את זהותך.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{התוסף הזה נחסם}one{התוספים האלה נחסמו}two{התוספים האלה נחסמו}other{התוספים האלה נחסמו}}</translation>
-<translation id="560743070587960985">‏הקובץ עשוי להיות וירוס או תוכנה זדונית.
-
-ניתן לשלוח אותו ל-Google כדי לבדוק אם הוא לא בטוח. בדרך כלל סריקות נמשכות כמה שניות.</translation>
 <translation id="560834977503641186">‏מידע נוסף על סנכרון Wi-Fi</translation>
 <translation id="5608580678041221894">יש להקיש על המקשים הבאים כדי לשנות או להזיז את אזור החיתוך</translation>
 <translation id="5609231933459083978">נראה שהיישום אינו חוקי.</translation>
@@ -6176,6 +6172,7 @@
 <translation id="6263082573641595914">‏גרסת רשות אישורים של Microsoft</translation>
 <translation id="6263284346895336537">לא קריטי</translation>
 <translation id="6264365405983206840">בחירת &amp;הכול</translation>
+<translation id="6264376385120300461">להוריד בכל זאת</translation>
 <translation id="6265687851677020761">הסרת היציאה</translation>
 <translation id="6266532094411434237">מתבצעת התחברות אל <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">יש לבחור אישור כדי לאמת את עצמך מול <ph name="HOST_NAME" /></translation>
@@ -7200,7 +7197,6 @@
 <translation id="7149839598364933473">אפשר להמיר את המכשיר הזה למכשיר <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">מהיום האחרון</translation>
 <translation id="7152478047064750137">אין צורך בהרשאות מיוחדות כדי להשתמש בתוסף זה</translation>
-<translation id="7153309176431047193">המרת תמונות לטקסט</translation>
 <translation id="7154130902455071009">שינוי דף הפתיחה ל: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">המרת התמונה לטקסט</translation>
 <translation id="7159953856712257647">מותקן כברירת מחדל</translation>
@@ -7750,7 +7746,6 @@
 <translation id="7634280112532283638">הפחתת ספאם והונאות</translation>
 <translation id="7634337648687970851">בשלב זה, אין תמיכה בשחזור נתונים מקומיים.</translation>
 <translation id="7634566076839829401">משהו השתבש. יש לנסות שוב.</translation>
-<translation id="763472884969134151">הניתוח בוצע על ידי <ph name="LINK" /></translation>
 <translation id="7635048370253485243">מנהל המערכת הצמיד את התוסף הזה</translation>
 <translation id="7635711411613274199">‏במהלך הגלישה, יוצגו מודעות עם או בלי התאמה אישית בהתאם להגדרה הזו, <ph name="BEGIN_LINK1" />לנושאים של המודעות<ph name="LINK_END1" />, ל<ph name="BEGIN_LINK2" />הגדרות קובצי ה-cookie<ph name="LINK_END2" /> ולמצב ההתאמה האישית של מודעות באתר (פעילה או מושבתת)</translation>
 <translation id="7636919061354591437">התקנה במכשיר זה</translation>

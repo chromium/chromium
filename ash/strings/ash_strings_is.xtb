@@ -69,7 +69,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1247519845643687288">Nýleg forrit</translation>
 <translation id="1252999807265626933">Verið er að hlaða með <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hvernig er veðrið?</translation>
-<translation id="1267032506238418139">Breyting á flýtileið</translation>
 <translation id="1269405891096105529">Jaðartæki ekki stutt í gestastillingu</translation>
 <translation id="1270290102613614947">Skjályklaborð óvirkt</translation>
 <translation id="1272079795634619415">Stöðva</translation>
@@ -218,7 +217,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1908992311423394684">Ný uppsetning</translation>
 <translation id="1915307458270490472">Leggja á</translation>
 <translation id="1918022425394817322">Myndavél fest við efra horn hægra megin</translation>
-<translation id="1919743966458266018">Flýtileiðinni til að opna verkstjórn hefur verið breytt. Notaðu <ph name="NEW_SHORTCUT" /> í staðinn fyrir <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Sjálfvirkir smellir</translation>
 <translation id="1928739107511554905">Til að fá uppfærsluna skaltu nota snertiskjáinn til að endurræsa Chromebook með lyklaborðið tengt.</translation>
 <translation id="1948405482892809935">Skipta yfir í næsta notanda</translation>
@@ -976,7 +974,6 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5283198616748585639">Bæta 1 mín. við</translation>
 <translation id="528468243742722775">Ljúka</translation>
 <translation id="5286194356314741248">Leit</translation>
-<translation id="5293671101077843611">Engir viðburðir í dag</translation>
 <translation id="5297423144044956168">Engin fartæki fundust</translation>
 <translation id="5297704307811127955">Slökkt</translation>
 <translation id="5300589172476337783">Sýna</translation>
@@ -1760,7 +1757,6 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8834539327799336565">Tengt núna</translation>
 <translation id="8841375032071747811">Bakkhnappur</translation>
 <translation id="8843682306134542540">Víxla snúningslás. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Enn tókst ekki að staðfesta PIN-númerið eða aðgangsorðið. Athugaðu: Ef þú skiptir nýlega um aðgangsorð skaltu nota gamla aðgangsorðið. Nýja aðgangsorðið tekur gildi þegar þú hefur skráð þig út.</translation>
 <translation id="8855885154700222542">Lykill fyrir allan skjáinn</translation>
 <translation id="8858369206579825206">Persónuverndarstillingar</translation>

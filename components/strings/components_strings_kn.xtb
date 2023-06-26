@@ -1332,7 +1332,6 @@
 <translation id="3962859241508114581">ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="3963721102035795474">ರೀಡರ್‌ ಮೋಡ್‌</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{ಯಾವುದೂ ಇಲ್ಲ}=1{1 ಸೈಟ್‌ನಿಂದ }one{# ಸೈಟ್‌ಗಳಿಂದ }other{# ಸೈಟ್‌ಗಳಿಂದ }}</translation>
-<translation id="3969052498612555048">ನಿಮ್ಮ ಕೋಡ್ ಹುಡುಕಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲವೇ? <ph name="BEGIN_LINK" />ಹೊಸ ಕೋಡ್ ಅನ್ನು ಪಡೆದುಕೊಳ್ಳಿ<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">ಎಣಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="3984581365661308170">ಎನ್ವಲಪ್ #11</translation>
@@ -2722,7 +2721,6 @@
 <translation id="7064443976734085921">ಕಾಂಪ್ಯಾಕ್ಟ್ ಕಾರುಗಳು</translation>
 <translation id="7064851114919012435">ಸಂಪರ್ಕ ಮಾಹಿತಿ</translation>
 <translation id="7067633076996245366">ಸೋಲ್ ಮತ್ತು R&amp;B</translation>
-<translation id="7068733155164172741"><ph name="OTP_LENGTH" />-ಅಂಕಿಯ ಕೋಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="70705239631109039">ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಪೂರ್ಣ ಸುರಕ್ಷತೆಯನ್ನು ಹೊಂದಿಲ್ಲ</translation>
 <translation id="7075452647191940183">ವಿನಂತಿಯು ತೀರಾ ದೊಡ್ಡದಾಗಿದೆ</translation>
 <translation id="7078665357168027058">RA3</translation>

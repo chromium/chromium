@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Onglet de nouveau actif</translation>
 <translation id="1003088604756913841">Ouvrir le lien dans une nouvelle fenêtre <ph name="APP" /></translation>
 <translation id="100323615638474026">Appareil USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Navigation sécurisée Google</translation>
 <translation id="1004218526896219317">Accès au site</translation>
 <translation id="1005274289863221750">Utiliser votre micro et votre caméra</translation>
 <translation id="1005333234656240382">Activer le débogage ADB ?</translation>
@@ -522,6 +521,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1434886155212424586">La page Nouvel onglet est la page d'accueil.</translation>
 <translation id="1435940442311036198">Utiliser une clé d'accès sur un autre appareil</translation>
 <translation id="1436390408194692385">Valide pendant <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Poursuivre la configuration</translation>
 <translation id="1436784010935106834">Supprimé</translation>
 <translation id="1437986450143295708">Décrivez en détail le problème rencontré</translation>
 <translation id="1439671507542716852">support à long terme</translation>
@@ -1938,7 +1938,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2577446426265992344">sans omnibox</translation>
 <translation id="257779572837908839">Configurer en tant que Chromebox pour la visioconférence</translation>
 <translation id="2579309488038515659">Activation du point d'accès</translation>
-<translation id="2579596474754516455">Scannez des images PDF afin de convertir le texte pour un lecteur d'écran, si nécessaire</translation>
 <translation id="2580889980133367162">Toujours autoriser <ph name="HOST" /> à télécharger plusieurs fichiers</translation>
 <translation id="258095186877893873">Long</translation>
 <translation id="2581455244799175627">En savoir plus sur l'autorisation des cookies tiers</translation>
@@ -3452,6 +3451,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3888586133700543064">Ces informations nous aident à mieux comprendre le problème que vous rencontrez avec l'Assistant. Elles sont conservées pendant 90 jours au maximum et ne peuvent être consultées que par nos ingénieurs et nos équipes responsables du traitement des commentaires.</translation>
 <translation id="3890064827463908288">Activer la synchronisation Chrome pour utiliser Sync Wi-Fi</translation>
 <translation id="389313931326656921">Associer un contacteur à "Suivant"</translation>
+<translation id="3893268973182382220">Impossible de charger ce panneau pour le moment</translation>
 <translation id="3893295674388762059">Pour supprimer les données, fermez toutes les fenêtres de navigation privée</translation>
 <translation id="3893536212201235195">Consulter et modifier vos paramètres d'accessibilité</translation>
 <translation id="3893630138897523026">ChromeVox (commentaires audio)</translation>
@@ -5415,9 +5415,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5602765853043467355">Effacer les favoris, l'historique, les mots de passe et autres paramètres de cet appareil</translation>
 <translation id="5605758115928394442">Une notification a été envoyée à votre téléphone pour que vous puissiez confirmer votre identité.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Cette extension est bloquée}one{Cette extension est bloquée}other{Ces extensions sont bloquées}}</translation>
-<translation id="560743070587960985">Ce fichier est peut-être un virus ou un logiciel malveillant.
-
-Vous pouvez l'envoyer à Google pour vérifier s'il est dangereux. Les analyses prennent généralement quelques secondes.</translation>
 <translation id="560834977503641186">Sync Wi-Fi (en savoir plus)</translation>
 <translation id="5608580678041221894">Appuyez sur les touches suivantes pour ajuster ou déplacer la zone de recadrage</translation>
 <translation id="5609231933459083978">L'application ne semble pas valide.</translation>
@@ -6183,6 +6180,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6263082573641595914">Version de l'autorité de certification Microsoft</translation>
 <translation id="6263284346895336537">Non essentielle</translation>
 <translation id="6264365405983206840">Tout &amp;sélectionner</translation>
+<translation id="6264376385120300461">Télécharger quand même</translation>
 <translation id="6265687851677020761">Supprimer le port</translation>
 <translation id="6266532094411434237">Connexion à <ph name="DEVICE" />…</translation>
 <translation id="6267166720438879315">Sélectionnez un certificat pour vous authentifier sur <ph name="HOST_NAME" />.</translation>
@@ -7208,7 +7206,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7149839598364933473">Installez <ph name="DEVICE_OS" /> sur l'appareil.</translation>
 <translation id="7149893636342594995">Dernières 24 heures</translation>
 <translation id="7152478047064750137">Cette extension ne nécessite aucune autorisation spéciale</translation>
-<translation id="7153309176431047193">Convertir les images en texte</translation>
 <translation id="7154130902455071009">Utiliser l'adresse <ph name="START_PAGE" /> comme page de démarrage ?</translation>
 <translation id="7156231244155528270">Convertir l'image en texte</translation>
 <translation id="7159953856712257647">Installée par défaut</translation>
@@ -7763,7 +7760,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7634280112532283638">Réduction du spam et de la fraude</translation>
 <translation id="7634337648687970851">La récupération de données locales n'est pas disponible pour le moment.</translation>
 <translation id="7634566076839829401">Une erreur s'est produite. Veuillez réessayer.</translation>
-<translation id="763472884969134151">Analyse effectuée par <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Épinglée par votre administrateur</translation>
 <translation id="7635711411613274199">Lorsque vous naviguez, ce paramètre, de même que les <ph name="BEGIN_LINK1" />thèmes des annonces<ph name="LINK_END1" />, vos <ph name="BEGIN_LINK2" />paramètres de cookies<ph name="LINK_END2" /> et le fait que le site que vous consultez personnalise ou non les annonces, déterminent si l'annonce que vous voyez est personnalisée ou pas</translation>
 <translation id="7636919061354591437">Installer sur cet appareil</translation>

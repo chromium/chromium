@@ -1335,7 +1335,6 @@
 <translation id="3962859241508114581">පෙර ඛණ්ඩය</translation>
 <translation id="3963721102035795474">කියවීම් ප්‍රකාරය</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{කිසිවක් නැත}=1{1 අඩවියකින් }one{අඩවි #කින් }other{අඩවි #කින් }}</translation>
-<translation id="3969052498612555048">ඔබගේ කේතය සොයා ගත නොහැකිද? <ph name="BEGIN_LINK" />නව කේතය ලබා ගන්න<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">ගණනය කරමින්...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> අවහිර කර ඇත</translation>
 <translation id="3984581365661308170">ලියුම් කවරය #11</translation>
@@ -2725,7 +2724,6 @@
 <translation id="7064443976734085921">සංයුක්ත මෝටර් රථ</translation>
 <translation id="7064851114919012435">සම්බන්ධතා තතු</translation>
 <translation id="7067633076996245366">සෝල් සහ ආර් ඇන්ඩ් බී</translation>
-<translation id="7068733155164172741">ඉලක්කම්-<ph name="OTP_LENGTH" /> කේතය ඇතුළු කරන්න</translation>
 <translation id="70705239631109039">ඔබේ සම්බන්ධතාව සම්පූර්ණයෙන් සුරක්‍ෂිත නොවේ</translation>
 <translation id="7075452647191940183">ඉල්ලීම විශාල වැඩියි</translation>
 <translation id="7078665357168027058">RA3</translation>

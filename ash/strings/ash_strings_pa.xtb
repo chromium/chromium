@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">ਹਾਲੀਆ ਐਪਾਂ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> ਤੋਂ ਚਾਰਜ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="1255033239764210633">ਮੌਸਮ ਕਿਹੋ ਜਿਹਾ ਹੈ?</translation>
-<translation id="1267032506238418139">ਸ਼ਾਰਟਕੱਟ ਵਿੱਚ ਬਦਲਾਅ</translation>
 <translation id="1269405891096105529">ਮਹਿਮਾਨ ਮੋਡ ਵਿੱਚ ਪੈਰੀਫੈਰਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="1270290102613614947">ਔਨ-ਸਕ੍ਰੀਨ ਕੀ-ਬੋਰਡ ਅਸਮਰਥਿਤ</translation>
 <translation id="1272079795634619415">ਰੋਕੋ</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">ਨਵੀਂ ਸਥਾਪਤ ਕੀਤੀ ਗਈ</translation>
 <translation id="1915307458270490472">ਸਮਾਪਤ ਕਰੋ</translation>
 <translation id="1918022425394817322">ਕੈਮਰੇ ਨੂੰ ਉੱਪਰਲੇ ਸੱਜੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="1919743966458266018">ਕਾਰਜ ਪ੍ਰਬੰਧਕ ਖੋਲ੍ਹਣ ਲਈ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ <ph name="OLD_SHORTCUT" /> ਦੀ ਥਾਂ <ph name="NEW_SHORTCUT" /> ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="1923539912171292317">ਆਟੋਮੈਟਿਕ ਕਲਿਕ</translation>
 <translation id="1928739107511554905">ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਅਟੈਚ ਕੀਤੇ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਆਪਣੀ Chromebook ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰਨ ਲਈ ਟੱਚਸਕ੍ਰੀਨ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="1948405482892809935">ਅਗਲੇ ਵਰਤੋਂਕਾਰ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
@@ -977,7 +975,6 @@
 <translation id="5283198616748585639">1 ਮਿੰਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="528468243742722775">ਸਮਾਪਤੀ</translation>
 <translation id="5286194356314741248">ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
-<translation id="5293671101077843611">ਅੱਜ ਕੋਈ ਇਵੈਂਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="5297423144044956168">ਕੋਈ ਮੋਬਾਈਲ ਡੀਵਾਈਸ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="5297704307811127955">ਬੰਦ</translation>
 <translation id="5300589172476337783">ਦਿਖਾਓ</translation>
@@ -1761,7 +1758,6 @@
 <translation id="8834539327799336565">ਇਸ ਵੇਲੇ ਕਨੈਕਟ ਹੈ</translation>
 <translation id="8841375032071747811">'ਪਿੱਛੇ' ਬਟਨ</translation>
 <translation id="8843682306134542540">ਘੁਮਾਅ ਸੰਬੰਧੀ ਲਾਕ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">ਤੁਹਾਡੇ ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ ਦੀ ਹਾਲੇ ਵੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਨੋਟ ਕਰੋ: ਜੇ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲਿਆ ਹੈ, ਤਾਂ ਆਪਣਾ ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਵਰਤੋ। ਇੱਕ ਵਾਰ ਸਾਈਨ-ਆਊਟ ਕਰਨ 'ਤੇ ਤੁਹਾਡਾ ਨਵਾਂ ਪਾਸਵਰਡ ਲਾਗੂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="8855885154700222542">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਕੁੰਜੀ</translation>
 <translation id="8858369206579825206">ਪਰਦੇਦਾਰੀ ਕੰਟਰੋਲ</translation>

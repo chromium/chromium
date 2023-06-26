@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">हालसालै चलाइएका एपहरू</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> द्वारा चार्ज हुँदै</translation>
 <translation id="1255033239764210633">मौसम कस्तो छ?</translation>
-<translation id="1267032506238418139">सर्टकट परिवर्तन</translation>
 <translation id="1269405891096105529">गेस्ट मोड अन हुँदा सहायक डिभाइसहरूले काम गर्दैनन्</translation>
 <translation id="1270290102613614947">अन-स्क्रिन किबोर्ड अक्षम गरियो</translation>
 <translation id="1272079795634619415">रोक्नुहोस्</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">भर्खरै इन्स्टल गरिएको</translation>
 <translation id="1915307458270490472">ह्याङ्ग अप</translation>
 <translation id="1918022425394817322">क्यामेरा सिरानको दायाँ कुनामा स्न्याप गरियो</translation>
-<translation id="1919743966458266018">कार्य प्रबन्धक खोल्ने सर्टकटमा परिवर्तन भएको छ। कृपया <ph name="OLD_SHORTCUT" />को सट्टामा <ph name="NEW_SHORTCUT" /> प्रयोग गर्नुहोस्।</translation>
 <translation id="1923539912171292317">स्वचालित क्लिकहरू</translation>
 <translation id="1928739107511554905">उक्त अद्यावधिक प्राप्त गर्न, किबोर्ड जोडिएकै अवस्थामा आफ्नो Chromebook लाई पुनः सुचारु गर्न टचस्क्रिनको प्रयोग गर्नुहोस्।</translation>
 <translation id="1948405482892809935">अर्को प्रयोगकर्ताका रूपमा साइन इन गर्नुहोस्</translation>
@@ -976,7 +974,6 @@
 <translation id="5283198616748585639">१ मिनट थप्नुहोस्</translation>
 <translation id="528468243742722775">समाप्त</translation>
 <translation id="5286194356314741248">स्क्यान गर्दै</translation>
-<translation id="5293671101077843611">आज कुनै पनि कार्यक्रम छैन</translation>
 <translation id="5297423144044956168">कुनै पनि मोबाइल फोन वा ट्याब्लेट भेटिएन</translation>
 <translation id="5297704307811127955">अफ</translation>
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
@@ -1278,6 +1275,7 @@
 <translation id="6597278316891651699">क्यामेरा पुछारको बायाँ कुनामा स्न्याप गरियो। सिस्टमको सतहसँग बाझियो।</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="6612802754306526077">स्क्रिन रेकर्डिङ मोड चयन गरियो</translation>
+<translation id="6613765291890844037">कुल भण्डारण <ph name="STORAGE_TOTAL_SIZE" /> मध्ये <ph name="STORAGE_IN_USE_SIZE" /> प्रयोग भइरहेको छ</translation>
 <translation id="6614169507485700968">गोपनीयताको स्क्रिन सक्रिय छ</translation>
 <translation id="6625718907317144388">सुरक्षित रूपमा हेर्ने सुविधा अन गरिएको हुनाले <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> र अन्य एपसम्बन्धी सूचनाहरू लुकाइएका छन्</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1760,7 +1758,6 @@
 <translation id="8834539327799336565">हाल कनेक्ट गरिएका डिभाइस</translation>
 <translation id="8841375032071747811">पछाडि नामक बटन</translation>
 <translation id="8843682306134542540">परिक्रमासम्बन्धी लक टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">तपाईंको PIN वा पासवर्ड अझै पनि पुष्टि गर्न सकिएन। याद राख्नुहोस्: तपाईंले हालसालै आफ्नो पासवर्ड बदल्नुभएको छ भने आफ्नो पुरानो पासवर्ड प्रयोग गरी साइन इन गर्नुहोस्। तपाईं साइन आउट हुनेबित्तिकै तपाईंको नयाँ पासवर्डले काम गर्न थाल्ने छ।</translation>
 <translation id="8855885154700222542">फुल स्क्रिन नामक कुञ्जी</translation>
 <translation id="8858369206579825206">गोपनीयतासम्बन्धी सेटिङ</translation>

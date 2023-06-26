@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Karta je opět aktivní</translation>
 <translation id="1003088604756913841">Otevřít odkaz v novém okně aplikace <ph name="APP" /></translation>
 <translation id="100323615638474026">Zařízení USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Bezpečné prohlížení Google</translation>
 <translation id="1004218526896219317">Přístup k webu</translation>
 <translation id="1005274289863221750">Používat mikrofon a fotoaparát</translation>
 <translation id="1005333234656240382">Aktivovat ladění ADB?</translation>
@@ -523,6 +522,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1434886155212424586">Domovská stránka je stránka nové karty</translation>
 <translation id="1435940442311036198">Použití přístupového klíče na jiném zařízení</translation>
 <translation id="1436390408194692385">Platné ještě <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Pokračovat v nastavování</translation>
 <translation id="1436784010935106834">Odebráno</translation>
 <translation id="1437986450143295708">Podrobně popište problém</translation>
 <translation id="1439671507542716852">dlouhodobá podpora</translation>
@@ -1941,7 +1941,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2577446426265992344">bez omniboxu</translation>
 <translation id="257779572837908839">Nastavit jako Chromebox pro videokonference</translation>
 <translation id="2579309488038515659">Zapnutí hotspotu</translation>
-<translation id="2579596474754516455">V případě potřeby skenovat obrázky PDF a převádět je na text pro čtečku obrazovky</translation>
 <translation id="2580889980133367162">Vždy povolit hostiteli <ph name="HOST" /> stahování několika souborů</translation>
 <translation id="258095186877893873">Dlouhé</translation>
 <translation id="2581455244799175627">Další informace o povolení souborů cookie třetích stran</translation>
@@ -5422,9 +5421,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5602765853043467355">Vymazat z tohoto zařízení záložky, historii, hesla a další údaje</translation>
 <translation id="5605758115928394442">Odeslali jsme vám na telefon oznámení, abychom si ověřili, zda jste to skutečně vy.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Toto rozšíření je blokováno}few{Tato rozšíření jsou blokována}many{Tato rozšíření jsou blokována}other{Tato rozšíření jsou blokována}}</translation>
-<translation id="560743070587960985">Tento soubor může být vir nebo malware.
-
-Můžete ho odeslat do Googlu ke kontrole, zda je bezpečný. Kontrola obvykle trvá několik sekund.</translation>
 <translation id="560834977503641186">Synchronizace Wi-Fi, další informace</translation>
 <translation id="5608580678041221894">Oblast oříznutí můžete upravit nebo přesunout klepnutím na následující klávesy</translation>
 <translation id="5609231933459083978">Aplikace je pravděpodobně neplatná.</translation>
@@ -6188,6 +6184,7 @@ Můžete ho odeslat do Googlu ke kontrole, zda je bezpečný. Kontrola obvykle t
 <translation id="6263082573641595914">Verze CA Microsoft</translation>
 <translation id="6263284346895336537">Nekritický</translation>
 <translation id="6264365405983206840">Vybr&amp;at vše</translation>
+<translation id="6264376385120300461">Přesto stáhnout</translation>
 <translation id="6265687851677020761">Odebrat port</translation>
 <translation id="6266532094411434237">Připojování k zařízení <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Vyberte certifikát pro ověření na serveru <ph name="HOST_NAME" /></translation>
@@ -7215,7 +7212,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7149839598364933473">Převeďte toto zařízení na systém <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Posledních 24 hodin</translation>
 <translation id="7152478047064750137">Toto rozšíření nevyžaduje žádná speciální oprávnění.</translation>
-<translation id="7153309176431047193">Převést obrázky na text</translation>
 <translation id="7154130902455071009">Změnit úvodní stránku na: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Převést obrázek na text</translation>
 <translation id="7159953856712257647">Nainstalováno ve výchozím nastavení</translation>
@@ -7769,7 +7765,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7634280112532283638">Omezení spamu a podvodů</translation>
 <translation id="7634337648687970851">Obnovení místních dat aktuálně není podporováno.</translation>
 <translation id="7634566076839829401">Něco se pokazilo. Zkuste to znovu.</translation>
-<translation id="763472884969134151">Analýzu provedla služba <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Připnuto administrátorem</translation>
 <translation id="7635711411613274199">Když procházíte internet, závisí personalizace reklam na tomto nastavení, <ph name="BEGIN_LINK1" />tématech reklam<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />nastavení souborů cookie<ph name="LINK_END2" /> a na tom, zda zobrazená stránka personalizuje reklamy.</translation>
 <translation id="7636919061354591437">Nainstalovat na toto zařízení</translation>

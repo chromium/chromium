@@ -69,7 +69,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1247519845643687288">Zuletzt verwendete Apps</translation>
 <translation id="1252999807265626933">Wird über ein <ph name="POWER_SOURCE" /> aufgeladen</translation>
 <translation id="1255033239764210633">Wie ist das Wetter?</translation>
-<translation id="1267032506238418139">Änderung der Tastenkombination</translation>
 <translation id="1269405891096105529">Peripheriegerät wird im Gastmodus nicht unterstützt</translation>
 <translation id="1270290102613614947">Bildschirmtastatur deaktiviert</translation>
 <translation id="1272079795634619415">Stoppen</translation>
@@ -218,7 +217,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1908992311423394684">Neuinstallation</translation>
 <translation id="1915307458270490472">Auflegen</translation>
 <translation id="1918022425394817322">Kamera ist an der oberen rechten Ecke angepinnt</translation>
-<translation id="1919743966458266018">Die Tastenkombination zum Öffnen des Task-Managers hat sich geändert. Bitte drücke <ph name="NEW_SHORTCUT" /> statt <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatische Klicks</translation>
 <translation id="1928739107511554905">Du kannst das Update vornehmen, indem du den Touchscreen verwendest, um dein Chromebook mit angeschlossener Tastatur neu zu starten.</translation>
 <translation id="1948405482892809935">Zum nächsten Nutzer wechseln</translation>
@@ -973,7 +971,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5283198616748585639">1 min hinzufügen</translation>
 <translation id="528468243742722775">Ende</translation>
 <translation id="5286194356314741248">Durchsuchen</translation>
-<translation id="5293671101077843611">Heute keine Termine</translation>
 <translation id="5297423144044956168">Keine Mobilgeräte gefunden</translation>
 <translation id="5297704307811127955">Aus</translation>
 <translation id="5300589172476337783">Anzeigen</translation>
@@ -1757,7 +1754,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8834539327799336565">Derzeit verbunden</translation>
 <translation id="8841375032071747811">Schaltfläche "Zurück"</translation>
 <translation id="8843682306134542540">Rotationssperre an/aus. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Suche + Esc</translation>
 <translation id="8853703225951107899">Deine PIN oder dein Passwort konnten noch immer nicht bestätigt werden. Hinweis: Wenn du kürzlich dein Passwort geändert hast, verwende dein altes Passwort. Dein neues Passwort wird übernommen, sobald du dich abmeldest.</translation>
 <translation id="8855885154700222542">Taste für Vollbildmodus</translation>
 <translation id="8858369206579825206">Datenschutzeinstellungen</translation>

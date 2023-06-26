@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">Недавние приложения</translation>
 <translation id="1252999807265626933">Подключен источник питания: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Какая сейчас погода?</translation>
-<translation id="1267032506238418139">Изменение сочетания клавиш</translation>
 <translation id="1269405891096105529">Периферийные устройства в гостевом режиме не поддерживаются.</translation>
 <translation id="1270290102613614947">Экранная клавиатура отключена</translation>
 <translation id="1272079795634619415">Остановить</translation>
@@ -217,7 +216,6 @@
 <translation id="1908992311423394684">Недавно установленное приложение</translation>
 <translation id="1915307458270490472">Закрыть</translation>
 <translation id="1918022425394817322">Окно предварительного просмотра камеры привязано к правому верхнему углу</translation>
-<translation id="1919743966458266018">Изменились быстрые клавиши для запуска диспетчера задач. Используйте <ph name="NEW_SHORTCUT" /> вместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Автоматическое нажатие</translation>
 <translation id="1928739107511554905">Чтобы выполнить обновление, перезагрузите устройство Chromebook с помощью сенсорной панели, не отключая от него клавиатуру.</translation>
 <translation id="1948405482892809935">Переключиться на следующего пользователя</translation>
@@ -975,7 +973,6 @@
 <translation id="5283198616748585639">Добавить 1 мин.</translation>
 <translation id="528468243742722775">Завершить</translation>
 <translation id="5286194356314741248">Сканирование...</translation>
-<translation id="5293671101077843611">Сегодня мероприятий нет</translation>
 <translation id="5297423144044956168">Мобильные устройства не найдены.</translation>
 <translation id="5297704307811127955">Отключено</translation>
 <translation id="5300589172476337783">Показать</translation>
@@ -1275,6 +1272,7 @@
 <translation id="6597278316891651699">Окно предварительного просмотра камеры привязано к левому нижнему углу, так как перекрывало элементы системного интерфейса</translation>
 <translation id="661203523074512333">Статус защиты – "<ph name="SECURITY_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="6612802754306526077">Выбран режим записи видео с экрана</translation>
+<translation id="6613765291890844037">В хранилище используется <ph name="STORAGE_IN_USE_SIZE" /> | Общий объем: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Экран конфиденциальности включен</translation>
 <translation id="6625718907317144388">Уведомления "<ph name="APP_1_TITLE" />", "<ph name="APP_2_TITLE" />" и других приложений скрыты, потому что включен режим безопасного просмотра.</translation>
 <translation id="6627638273713273709">Поиск + Shift + K</translation>
@@ -1756,7 +1754,6 @@
 <translation id="8834539327799336565">Текущие подключения</translation>
 <translation id="8841375032071747811">Назад</translation>
 <translation id="8843682306134542540">Изменить настройки автоповорота экрана. <ph name="STATE_TEXT" />.</translation>
-<translation id="8850991929411075241">Клавиша поиска + Esc</translation>
 <translation id="8853703225951107899">Введенный PIN-код или пароль снова оказался недействительным. Если вы недавно меняли пароль, введите прежний. Новый пароль вступит в силу после того, как вы выйдете из аккаунта.</translation>
 <translation id="8855885154700222542">Клавиша полноэкранного режима</translation>
 <translation id="8858369206579825206">Настройки конфиденциальности</translation>

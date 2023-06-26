@@ -1332,7 +1332,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3962859241508114581">Předchozí skladba</translation>
 <translation id="3963721102035795474">Režim čtečky</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Žádné}=1{Z 1 webu }few{Z # webů }many{Z # webu }other{Z # webů }}</translation>
-<translation id="3969052498612555048">Nemůžete kód najít? <ph name="BEGIN_LINK" />Vygenerovat nový kód<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Probíhá výpočet…</translation>
 <translation id="3973234410852337861">Web <ph name="HOST_NAME" /> je blokován</translation>
 <translation id="3984581365661308170">Obálka č. 11</translation>
@@ -2722,7 +2721,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7064443976734085921">Vozy nižší střední třídy</translation>
 <translation id="7064851114919012435">Kontaktní údaje</translation>
 <translation id="7067633076996245366">Soul a R&amp;B</translation>
-<translation id="7068733155164172741">Zadejte <ph name="OTP_LENGTH" />místný kód</translation>
 <translation id="70705239631109039">Vaše připojení není plně zabezpečené</translation>
 <translation id="7075452647191940183">Požadavek je příliš velký</translation>
 <translation id="7078665357168027058">RA3</translation>

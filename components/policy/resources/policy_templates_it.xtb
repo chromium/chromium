@@ -3563,7 +3563,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Se il criterio viene configurato, gli utenti non possono modificarlo. Se non viene configurato, la tastiera sullo schermo è disattivata all'inizio, ma gli utenti possono attivarla in qualsiasi momento.</translation>
 <translation id="412697421478384751">Consenti agli utenti di impostare PIN non sicuri per la schermata di blocco</translation>
-<translation id="4132809439883883106">Utilizza il valore predefinito per l'accordo chiave post-quantistico Kyber abilitato per TLS</translation>
 <translation id="4136603825567209889">Attiva la generazione di report sulle informazioni di identificazione degli utenti</translation>
 <translation id="4138655880188755661">Limite di tempo</translation>
 <translation id="4140646780789794190">Disattiva la condivisione dei dati diagnostici con PluginVm</translation>
@@ -4106,7 +4105,6 @@ Se questo criterio non viene configurato, tutte le origini richiederanno un gest
       Se il criterio non viene configurato, non viene eseguita la selezione automatica per nessun sito.</translation>
 <translation id="4611983465824842867">Non mostrare avvisi o non disattivare la compilazione automatica sui moduli non sicuri</translation>
 <translation id="4615003180013429835">Modalità di analisi degli elenchi dei siti</translation>
-<translation id="4616706248182656871">Disattiva l'accordo chiave post-quantistico Kyber abilitato per TLS</translation>
 <translation id="4617338332148204752">Salta il controllo dei metatag in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Funzionalità NewBaseUrlInheritanceBehavior disponibile</translation>
 <translation id="4624006912948309924">La configurazione del criterio consente di correggere quali identificatori di applicazioni vengono mostrati da <ph name="PRODUCT_OS_NAME" /> come app bloccate nella barra Avvio app e gli utenti non possono modificarli.
@@ -7202,7 +7200,6 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
 <translation id="7421230730436851224">Non limitare mai il processo audio tramite sandbox</translation>
 <translation id="7421483919690710988">Imposta le dimensioni della cache su disco multimediale in byte</translation>
 <translation id="7424751532654212117">Elenco delle eccezioni all'elenco dei plug-in disattivati</translation>
-<translation id="7425076578809444474">Attiva accordo chiave post-quantistico per TLS</translation>
 <translation id="7426112309807051726">Consente di specificare se disattivare o meno l'ottimizzazione <ph name="TLS_FALSE_START" />. Il nome di questa norma è DisableSSLRecordSplitting per motivi storici.
 
       Se la norma non viene impostata, o viene impostata su false, l'ottimizzazione <ph name="TLS_FALSE_START" /> viene attivata. Se viene impostata su true, l'ottimizzazione <ph name="TLS_FALSE_START" /> viene disattivata.</translation>
@@ -8453,7 +8450,6 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
           Se questo criterio non viene impostato, viene usato un periodo di tempo predefinito.
 
           Il valore del criterio deve essere specificato in millisecondi.</translation>
-<translation id="859316804517480666">Attiva l'accordo chiave post-quantistico Kyber abilitato per TLS</translation>
 <translation id="859579553230883285">Disattiva l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli annunci suggeriti dai siti per i tuoi utenti.</translation>
 <translation id="8597758693275075382">Le stringhe OEM SMBIOS da passare alla VM durante l'installazione. Il valore predefinito è l'elenco vuoto.</translation>
 <translation id="8598786284856179541">Attiva la generazione di report sulle informazioni di versione</translation>

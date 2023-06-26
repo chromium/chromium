@@ -69,7 +69,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1247519845643687288">Apps recentes</translation>
 <translation id="1252999807265626933">A carregar a partir de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Como está o tempo?</translation>
-<translation id="1267032506238418139">Alteração do atalho</translation>
 <translation id="1269405891096105529">Periférico não suportado no Modo convidado</translation>
 <translation id="1270290102613614947">Teclado no ecrã desativado</translation>
 <translation id="1272079795634619415">Parar</translation>
@@ -218,7 +217,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1908992311423394684">Nova instalação</translation>
 <translation id="1915307458270490472">Desligar</translation>
 <translation id="1918022425394817322">Câmara ajustada ao canto superior direito</translation>
-<translation id="1919743966458266018">O atalho para abrir o Gestor de tarefas foi alterado. Utilize <ph name="NEW_SHORTCUT" /> em vez de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Cliques automáticos</translation>
 <translation id="1928739107511554905">Para obter a atualização, utilize o ecrã tátil para reiniciar o Chromebook com o teclado ligado.</translation>
 <translation id="1948405482892809935">Mudar para o utilizador seguinte</translation>
@@ -976,7 +974,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5283198616748585639">Adicionar 1 min</translation>
 <translation id="528468243742722775">Sair</translation>
 <translation id="5286194356314741248">A procurar</translation>
-<translation id="5293671101077843611">Sem eventos hoje</translation>
 <translation id="5297423144044956168">Não foram encontrados dispositivos móveis</translation>
 <translation id="5297704307811127955">Desativada</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -1761,7 +1758,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8834539327799336565">Atualmente ligados</translation>
 <translation id="8841375032071747811">Botão Anterior</translation>
 <translation id="8843682306134542540">Ativar/desativar bloqueio de rotação. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Pesquisa+Esc</translation>
 <translation id="8853703225951107899">Ainda não foi possível validar o seu PIN ou palavra-passe. Nota: se alterou a sua palavra-passe recentemente, utilize a palavra-passe antiga. A nova palavra-passe será aplicada quando terminar sessão.</translation>
 <translation id="8855885154700222542">Tecla de ecrã inteiro</translation>
 <translation id="8858369206579825206">Controlos de privacidade</translation>

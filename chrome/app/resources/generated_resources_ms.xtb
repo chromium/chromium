@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Tab aktif semula</translation>
 <translation id="1003088604756913841">Buka Pautan dalam Tetingkap <ph name="APP" /> baharu</translation>
 <translation id="100323615638474026">Peranti USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Penyemakan Imbas Selamat Google</translation>
 <translation id="1004218526896219317">Akses tapak</translation>
 <translation id="1005274289863221750">Gunakan mikrofon dan kamera anda</translation>
 <translation id="1005333234656240382">Dayakan penyahpepijatan ADB?</translation>
@@ -523,6 +522,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1434886155212424586">Halaman utama ialah halaman Tab Baharu</translation>
 <translation id="1435940442311036198">Gunakan kunci laluan pada peranti lain</translation>
 <translation id="1436390408194692385">Sah selama <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Teruskan persediaan</translation>
 <translation id="1436784010935106834">Dibuang</translation>
 <translation id="1437986450143295708">Terangkan isu itu secara terperinci</translation>
 <translation id="1439671507542716852">sokongan jangka panjang</translation>
@@ -1952,7 +1952,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2577446426265992344">tanpa Omnibox</translation>
 <translation id="257779572837908839">Sediakan Chromebox untuk mesyuarat</translation>
 <translation id="2579309488038515659">Tempat liputan didayakan</translation>
-<translation id="2579596474754516455">Imbas imej PDF untuk menukar teks untuk pembaca skrin apabila perlu</translation>
 <translation id="2580889980133367162">Sentiasa benarkan <ph name="HOST" /> memuat turun berbilang fail</translation>
 <translation id="258095186877893873">Lama</translation>
 <translation id="2581455244799175627">Lagi tentang membenarkan kuki pihak ketiga</translation>
@@ -2387,6 +2386,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2942279350258725020">Android Messages</translation>
 <translation id="2942560570858569904">Menunggu...</translation>
 <translation id="2942581856830209953">Peribadikan halaman ini</translation>
+<translation id="2942707801577151363">Buka, edit dan simpan fail Word, Excel dan PowerPoint. Langganan mungkin diperlukan untuk menggunakan sesetengah ciri.</translation>
 <translation id="2943268899142471972">Pilih Panduan Ansible atau fail sandaran Crostini</translation>
 <translation id="2944060181911631861">Hantar data penggunaan dan diagnostik. Bantu kami meningkatkan pengalaman Android anda dengan menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Google Account anda. <ph name="BEGIN_LINK1" />Ketahui Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">Pergi ke fail</translation>
@@ -5438,9 +5438,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5602765853043467355">Kosongkan penanda halaman, sejarah, kata laluan dan pelbagai lagi daripada peranti ini</translation>
 <translation id="5605758115928394442">Pemberitahuan telah dihantar ke telefon anda untuk mengesahkan orang itu ialah anda.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Sambungan ini disekat}other{Sambungan ini disekat}}</translation>
-<translation id="560743070587960985">Fail ini mungkin virus atau perisian hasad.
-
-Anda boleh menghantar fail ini kepada Google untuk menyemak sama ada fail tersebut tidak selamat. Biasanya imbasan ini mengambil masa beberapa minit.</translation>
 <translation id="560834977503641186">Penyegerakan Wi-Fi, Ketahui Lebih Lanjut</translation>
 <translation id="5608580678041221894">Ketik kekunci berikut untuk melaras atau mengalihkan kawasan pemangkasan</translation>
 <translation id="5609231933459083978">Apl kelihatan tidak sah.</translation>
@@ -6205,6 +6202,7 @@ Anda boleh menghantar fail ini kepada Google untuk menyemak sama ada fail terseb
 <translation id="6263082573641595914">Versi Microsoft CA</translation>
 <translation id="6263284346895336537">Tidak Kritikal</translation>
 <translation id="6264365405983206840">Pilih &amp;Semua</translation>
+<translation id="6264376385120300461">Muat turun juga</translation>
 <translation id="6265687851677020761">Alih keluar port</translation>
 <translation id="6266532094411434237">Menyambung kepada <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Pilih sijil untuk mengesahkan dengan sendiri pada <ph name="HOST_NAME" /></translation>
@@ -7231,7 +7229,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7149839598364933473">Tukar peranti ini kepada peranti <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">24 jam yang lalu</translation>
 <translation id="7152478047064750137">Sambungan ini tidak memerlukan kebenaran khas</translation>
-<translation id="7153309176431047193">Tukar imej kepada teks</translation>
 <translation id="7154130902455071009">Tukar halaman permulaan anda kepada: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Tukar imej kepada teks</translation>
 <translation id="7159953856712257647">Dipasang secara lalai</translation>
@@ -7786,7 +7783,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7634280112532283638">Pengurangan spam &amp; penipuan</translation>
 <translation id="7634337648687970851">Pemulihan data setempat tidak disokong pada masa ini.</translation>
 <translation id="7634566076839829401">Sesuatu yang tidak kena telah berlaku. Sila cuba lagi.</translation>
-<translation id="763472884969134151">Analisis dibuat oleh <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Disemat oleh Pentadbir anda</translation>
 <translation id="7635711411613274199">Semasa anda menyemak imbas, sama ada iklan yang anda lihat diperibadikan atau tidak adalah bergantung pada tetapan ini, <ph name="BEGIN_LINK1" />Topik iklan<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />tetapan kuki<ph name="LINK_END2" /> anda dan sama ada laman yang anda lihat memeribadikan iklan atau tidak</translation>
 <translation id="7636919061354591437">Pasang pada Peranti ini</translation>
@@ -8605,6 +8601,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8293206222192510085">Tambah Penanda Halaman</translation>
 <translation id="8294431847097064396">Sumber</translation>
 <translation id="8295449579927246485">Terjemahan Langsung</translation>
+<translation id="8295450130892483256">Pasang Microsoft 365</translation>
 <translation id="8297292446125062288">Tetapan HID</translation>
 <translation id="8298429963694909221">Kini anda boleh menerima pemberitahuan daripada telefon pada <ph name="DEVICE_TYPE" /> anda. Tindakan mengetepikan pemberitahuan pada <ph name="DEVICE_TYPE" /> anda akan mengetepikan pemberitahuan tersebut pada telefon anda juga. Pastikan telefon anda berada berdekatan dan Bluetooth serta Wi-Fi dihidupkan.</translation>
 <translation id="8299319456683969623">Anda kini di luar talian.</translation>

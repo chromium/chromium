@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">Неодамнешни апликации</translation>
 <translation id="1252999807265626933">Се полни од <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Какво е времето?</translation>
-<translation id="1267032506238418139">Промена на кратенка</translation>
 <translation id="1269405891096105529">Периферниот уред не е поддржан во режим на гостин</translation>
 <translation id="1270290102613614947">Тастатурата на екранот е оневозможена</translation>
 <translation id="1272079795634619415">Запри</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">Нова инсталација</translation>
 <translation id="1915307458270490472">Спушти</translation>
 <translation id="1918022425394817322">Камерата е поставена во горниот десен агол</translation>
-<translation id="1919743966458266018">Кратенката за отворање на управникот со задачи се промени. Користете <ph name="NEW_SHORTCUT" /> наместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Автоматско кликнување</translation>
 <translation id="1928739107511554905">За да го добиете ажурирањето, користете го екранот на допир за да го рестартирате Chromebook додека тастатурата е прикачена.</translation>
 <translation id="1948405482892809935">Префрлете на следниот корисник</translation>
@@ -977,7 +975,6 @@
 <translation id="5283198616748585639">Додај 1 мин.</translation>
 <translation id="528468243742722775">Крај</translation>
 <translation id="5286194356314741248">Скенирање</translation>
-<translation id="5293671101077843611">Нема настани денес</translation>
 <translation id="5297423144044956168">Не се најдени мобилни уреди</translation>
 <translation id="5297704307811127955">Исклучено</translation>
 <translation id="5300589172476337783">Прикажи</translation>
@@ -1761,7 +1758,6 @@
 <translation id="8834539327799336565">Моментално поврзани</translation>
 <translation id="8841375032071747811">Копче за назад</translation>
 <translation id="8843682306134542540">Заклучи/отклучи ротација. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Пребарај+Esc</translation>
 <translation id="8853703225951107899">Сѐ уште не може да се потврди PIN-кодот или лозинката. Забелешка: ако неодамна сте ја промениле лозинката, користете ја вашата стара лозинка. Новата лозинка ќе се примени откако ќе се одјавите.</translation>
 <translation id="8855885154700222542">Копче за цел екран</translation>
 <translation id="8858369206579825206">Контроли на приватноста</translation>

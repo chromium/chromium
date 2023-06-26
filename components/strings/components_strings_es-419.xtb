@@ -1240,7 +1240,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3963721102035795474">Modo de lectura</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ninguno}=1{De 1 sitio }other{De # sitios }}</translation>
-<translation id="3969052498612555048">¿No encuentras el código? <ph name="BEGIN_LINK" />Obtener un código nuevo<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861">Se bloqueó <ph name="HOST_NAME" /></translation>
 <translation id="3984581365661308170">Sobre n.º 11</translation>
@@ -2526,7 +2525,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="706295145388601875">Agrega y administra direcciones en la configuración de Chrome</translation>
 <translation id="7064851114919012435">Información de contacto</translation>
 <translation id="7067633076996245366">Soul y R&amp;B</translation>
-<translation id="7068733155164172741">Ingresa un código de <ph name="OTP_LENGTH" /> dígitos</translation>
 <translation id="70705239631109039">La conexión no es completamente segura</translation>
 <translation id="7075452647191940183">La solicitud es demasiado grande</translation>
 <translation id="7078665357168027058">RA3</translation>

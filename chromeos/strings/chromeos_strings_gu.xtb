@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">વૉલપેપર બદલો</translation>
 <translation id="360565022852130722">વાઇ-ફાઇ નેટવર્કની સુરક્ષા પ્રમાણમાં નબળા WEP 802.1x પ્રોટોકૉલ વડે કરવામાં આવી છે</translation>
 <translation id="3606583719724308068">HTTPS વેબસાઇટ માટે વિલંબતાનો સમય ઘણો વધુ છે</translation>
+<translation id="3607216139080387279">સ્ક્રીન સેવર બતાવો</translation>
 <translation id="361575905210396100">તમારા પ્રતિસાદ બદલ આભાર</translation>
 <translation id="3632579075709132555">પ્રાઇવસી સ્ક્રીન ટૉગલ કરો</translation>
 <translation id="3639846061339007994">સૌથી ઉપર</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> રિવ્યૂ)</translation>
 <translation id="3748026146096797577">કનેક્ટેડ નથી</translation>
 <translation id="3749289110408117711">ફાઇલનું નામ</translation>
+<translation id="3766934827878963937">1 કલાક માટે</translation>
 <translation id="3771294271822695279">વીડિયો ફાઇલો</translation>
 <translation id="3784455785234192852">લૉક છે</translation>
 <translation id="380097101658023925">RGBના નિયંત્રણો</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">કીબોર્ડ ડિમ કરવું</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />નું પરીક્ષણ રદ કરવામાં આવ્યું</translation>
 <translation id="631063167932043783">Explore ઍપ</translation>
+<translation id="6318437367327684789">કાયમ માટે</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> પર ફર્મવેયર અપડેટ કરો</translation>
 <translation id="6321407676395378991">સ્ક્રીન સેવર ચાલુ કરો</translation>
 <translation id="6325525973963619867">નિષ્ફળ થયું</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">એક PDFમાં એકથી વધુ પેજ સાચવો</translation>
 <translation id="9137526406337347448">Google સેવાઓ</translation>
 <translation id="9138630967333032450">ડાબી Shift કી</translation>
+<translation id="9143347780818904997"><ph name="MINUTES" /> મિનિટ માટે</translation>
 <translation id="9149391708638971077">મેમરીનું પરીક્ષણ ચાલુ કરો</translation>
 <translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">એક મિનિટ કરતાં ઓછો સમય બાકી છે</translation>

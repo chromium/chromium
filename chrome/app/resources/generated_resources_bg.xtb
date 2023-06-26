@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Разделът отново е активен</translation>
 <translation id="1003088604756913841">Отваряне на връзката в нов прозорец на <ph name="APP" /></translation>
 <translation id="100323615638474026">USB устройство (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google Безопасно сърфиране</translation>
 <translation id="1004218526896219317">Достъп до сайтове</translation>
 <translation id="1005274289863221750">Използване на микрофона и камерата ви</translation>
 <translation id="1005333234656240382">Да се активира ли отстраняването на грешки през ADB?</translation>
@@ -523,6 +522,7 @@
 <translation id="1434886155212424586">Началната страница е новият раздел</translation>
 <translation id="1435940442311036198">Използване на код за достъп на друго устройство</translation>
 <translation id="1436390408194692385">Срок на валидност: <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Продължаване с настройването</translation>
 <translation id="1436784010935106834">Премахнато</translation>
 <translation id="1437986450143295708">Опишете проблема подробно</translation>
 <translation id="1439671507542716852">дългосрочна поддръжка (LTS)</translation>
@@ -1948,7 +1948,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2577446426265992344">без поле за всичко</translation>
 <translation id="257779572837908839">Настройване като Chromebox за срещи</translation>
 <translation id="2579309488038515659">Активиране на точката за достъп</translation>
-<translation id="2579596474754516455">Сканирайте изображенията в PDF формат, така че при необходимост да ги преобразувате в текст, подходящ за екранен четец</translation>
 <translation id="2580889980133367162">Винаги да е разрешено на <ph name="HOST" /> да изтегля няколко файла</translation>
 <translation id="258095186877893873">Дълго</translation>
 <translation id="2581455244799175627">Още за разрешаването на „бисквитки“ на трети страни</translation>
@@ -5435,9 +5434,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5602765853043467355">Изчистване на отметките, историята, паролите и др. от това устройство</translation>
 <translation id="5605758115928394442">На телефона ви бе изпратено известие, за да потвърдите, че това сте вие.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Това разширение е блокирано}other{Тези разширения са блокирани}}</translation>
-<translation id="560743070587960985">Този файл може да е вирус или злонамерен софтуер.
-
-Можете да го изпратите до Google, за да проверите дали е опасен. Сканирането обикновено отнема няколко секунди.</translation>
 <translation id="560834977503641186">Синхронизиране на Wi-Fi, научете повече</translation>
 <translation id="5608580678041221894">Докоснете следните клавиши, за да коригирате или преместите областта за подрязване</translation>
 <translation id="5609231933459083978">Изглежда, че приложението е невалидно.</translation>
@@ -6203,6 +6199,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6263082573641595914">Версия на сертифициращ орган от Microsoft</translation>
 <translation id="6263284346895336537">Не е критично</translation>
 <translation id="6264365405983206840">Избиране на &amp;всички</translation>
+<translation id="6264376385120300461">Изтегляне въпреки това</translation>
 <translation id="6265687851677020761">Премахване на порта</translation>
 <translation id="6266532094411434237">Установява се връзка с(ъс) <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Изберете сертификат, за удостоверите самоличността си пред <ph name="HOST_NAME" /></translation>
@@ -7229,7 +7226,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7149839598364933473">Преобразуване на това устройство в такова с <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Последните 24 часа</translation>
 <translation id="7152478047064750137">Това разширение не изисква специални разрешения</translation>
-<translation id="7153309176431047193">Преобразуване на изображенията в текст</translation>
 <translation id="7154130902455071009">Промяна на началната ви страница на <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Преобразуване на изображението в текст</translation>
 <translation id="7159953856712257647">Инсталирано по подразбиране</translation>
@@ -7784,7 +7780,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7634280112532283638">Намаляване на спама и измамите</translation>
 <translation id="7634337648687970851">Понастоящем не се поддържа възстановяване на локални данни.</translation>
 <translation id="7634566076839829401">Нещо се обърка. Моля, опитайте отново.</translation>
-<translation id="763472884969134151">Анализът е направен от <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Фиксирано от администратора ви</translation>
 <translation id="7635711411613274199">Рекламите, които виждате по време на сърфиране, могат да бъдат персонализирани. Това зависи от тази настройка, <ph name="BEGIN_LINK1" />рекламните теми<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />настройките ви за „бисквитките“<ph name="LINK_END2" />, както и от това дали сайтът, който преглеждате, персонализира рекламите</translation>
 <translation id="7636919061354591437">Инсталиране на това устройство</translation>

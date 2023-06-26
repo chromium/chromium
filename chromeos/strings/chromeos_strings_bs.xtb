@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">Promijenite pozadinsku sliku</translation>
 <translation id="360565022852130722">WiFi mreža je zaštićena slabim protokolom WEP 802.1x</translation>
 <translation id="3606583719724308068">Visoka latentnost za HTTPS web lokacije</translation>
+<translation id="3607216139080387279">Prikaži čuvar zaslona</translation>
 <translation id="361575905210396100">Hvala vam na povratnim informacijama</translation>
 <translation id="3632579075709132555">Uključivanje/isključivanje Ekrana privatnosti</translation>
 <translation id="3639846061339007994">gornjem</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (broj recenzija: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nije povezano</translation>
 <translation id="3749289110408117711">Naziv fajla</translation>
+<translation id="3766934827878963937">na 1 sat</translation>
 <translation id="3771294271822695279">Video fajlovi</translation>
 <translation id="3784455785234192852">Zaključano</translation>
 <translation id="380097101658023925">kontrole RGB-a</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">zatamnjenje tastature</translation>
 <translation id="6302401976930124515">Test "<ph name="TEST_NAME" />" je otkazan</translation>
 <translation id="631063167932043783">Aplikacija Istraži</translation>
+<translation id="6318437367327684789">zauvijek</translation>
 <translation id="6319207335391420837">Ažurirajte firmver na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Uključite čuvara ekrana</translation>
 <translation id="6325525973963619867">Neuspješno</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">Sačuvajte više stranica u jedan PDF</translation>
 <translation id="9137526406337347448">Googleove usluge</translation>
 <translation id="9138630967333032450">Lijeva tipka Shift</translation>
+<translation id="9143347780818904997">na <ph name="MINUTES" /> min</translation>
 <translation id="9149391708638971077">Pokreni test memorije</translation>
 <translation id="9161276708550942948">razmak</translation>
 <translation id="9173638680043580060">Preostalo je manje od minute</translation>

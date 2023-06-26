@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">最近使用的應用程式</translation>
 <translation id="1252999807265626933">正在使用 <ph name="POWER_SOURCE" />充電</translation>
 <translation id="1255033239764210633">天氣點樣？</translation>
-<translation id="1267032506238418139">快速鍵有變動</translation>
 <translation id="1269405891096105529">訪客模式不支援周邊裝置</translation>
 <translation id="1270290102613614947">屏幕鍵盤已停用</translation>
 <translation id="1272079795634619415">停止</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">新安裝</translation>
 <translation id="1915307458270490472">結束通話</translation>
 <translation id="1918022425394817322">攝錄機已經對齊右上角</translation>
-<translation id="1919743966458266018">開啟工作管理員的快速鍵已變更，請改用 <ph name="NEW_SHORTCUT" /> 取代 <ph name="OLD_SHORTCUT" /> 。</translation>
 <translation id="1923539912171292317">自動按一下</translation>
 <translation id="1928739107511554905">如要下載更新，請連接鍵盤並使用觸控螢幕重新啟動 Chromebook。</translation>
 <translation id="1948405482892809935">切換至下一位使用者</translation>
@@ -973,7 +971,6 @@
 <translation id="5283198616748585639">增加 1 分鐘</translation>
 <translation id="528468243742722775">結束</translation>
 <translation id="5286194356314741248">正在掃瞄</translation>
-<translation id="5293671101077843611">今天沒有任何活動</translation>
 <translation id="5297423144044956168">找不到流動裝置</translation>
 <translation id="5297704307811127955">已關閉</translation>
 <translation id="5300589172476337783">顯示</translation>
@@ -1274,6 +1271,7 @@
 <translation id="6597278316891651699">攝錄機已經對齊左下角，同系統平台有衝突。</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
 <translation id="6612802754306526077">揀咗螢幕錄影模式</translation>
+<translation id="6613765291890844037">已使用 <ph name="STORAGE_IN_USE_SIZE" /> 的儲存空間 | 共 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">已啟用私隱保護畫面</translation>
 <translation id="6625718907317144388">檢視保護功能已開啟，因此系統已隱藏 <ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" /> 和其他應用程式的通知</translation>
 <translation id="6627638273713273709">搜尋鍵 + Shift + K 鍵</translation>
@@ -1756,7 +1754,6 @@
 <translation id="8834539327799336565">目前已連接的裝置</translation>
 <translation id="8841375032071747811">[返回] 按鈕</translation>
 <translation id="8843682306134542540">切換旋轉鎖定。<ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">搜尋鍵 + Esc 鍵</translation>
 <translation id="8853703225951107899">系統仍然無法驗證您的 PIN 或密碼。注意：如果您最近變更過密碼，請嘗試使用舊密碼，新密碼會在您登出後立即生效。</translation>
 <translation id="8855885154700222542">全螢幕鍵</translation>
 <translation id="8858369206579825206">私隱權設定</translation>

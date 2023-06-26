@@ -1335,7 +1335,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3962859241508114581">Y Trac Blaenorol</translation>
 <translation id="3963721102035795474">Modd Darllenydd</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Dim}=1{O 1 wefan }two{O # wefan }few{O # gwefan }many{O # gwefan }other{O # gwefan }}</translation>
-<translation id="3969052498612555048">Methu â dod o hyd i'ch cod? <ph name="BEGIN_LINK" />Cael cod newydd<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Wrthi'n cyfrifo…</translation>
 <translation id="3973234410852337861">Mae <ph name="HOST_NAME" /> wedi'i rwystro</translation>
 <translation id="3984581365661308170">Amlen #11</translation>
@@ -2725,7 +2724,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7064443976734085921">Ceir Compact</translation>
 <translation id="7064851114919012435">Manylion cyswllt</translation>
 <translation id="7067633076996245366">Canu'r enaid ac R&amp;B</translation>
-<translation id="7068733155164172741">Rhowch y cod <ph name="OTP_LENGTH" /> digid</translation>
 <translation id="70705239631109039">Nid yw'ch cysylltiad yn gwbl ddiogel</translation>
 <translation id="7075452647191940183">Mae'r cais yn rhy fawr</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3281,6 +3279,7 @@ Manylion ychwanegol:
 <translation id="8246482227229072868">Cylchoedd</translation>
 <translation id="8249296373107784235">Terfynu</translation>
 <translation id="8249463483885748674">Profion safonol a mynediad</translation>
+<translation id="824968735947741546">Wrthi'n cyfieithu <ph name="SOURCE" /> (awto-ganfod) i <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Mae'r cyfeiriad hwn wedi'i gadw i'r ddyfais hon ar hyn o bryd. Er mwyn ei ddefnyddio ar draws cynhyrchion Google, cadwch ef yn eich Cyfrif Google, <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Botwm rheoli gosodiadau hygyrchedd, pwyswch Enter i bersonoleiddio'ch offer hygyrchedd yng ngosodiadau ChromeOS</translation>
 <translation id="8253091569723639551">Mae angen cyfeiriad bilio</translation>

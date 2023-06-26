@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">배경화면 변경</translation>
 <translation id="360565022852130722">Wi-Fi 네트워크가 약한 프로토콜 WEP 802.1x로 보호되었습니다.</translation>
 <translation id="3606583719724308068">HTTPS 웹사이트 연결의 지연 시간이 깁니다.</translation>
+<translation id="3607216139080387279">화면 보호기 표시</translation>
 <translation id="361575905210396100">의견을 보내 주셔서 감사합니다</translation>
 <translation id="3632579075709132555">개인 정보 보호 화면 전환</translation>
 <translation id="3639846061339007994">상단</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572">★ <ph name="AVERAGE_SCORE" />개(리뷰 <ph name="AGGREGATED_COUNT" />개)</translation>
 <translation id="3748026146096797577">연결되어 있지 않음</translation>
 <translation id="3749289110408117711">파일 이름</translation>
+<translation id="3766934827878963937">1시간 동안</translation>
 <translation id="3771294271822695279">동영상 파일</translation>
 <translation id="3784455785234192852">잠금</translation>
 <translation id="380097101658023925">RGB 제어</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">키보드 밝기 낮추기</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> 테스트가 취소됨</translation>
 <translation id="631063167932043783">탐색 앱</translation>
+<translation id="6318437367327684789">계속</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> 펌웨어 업데이트</translation>
 <translation id="6321407676395378991">화면 보호기 사용 설정</translation>
 <translation id="6325525973963619867">실패</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">여러 페이지를 하나의 PDF로 저장</translation>
 <translation id="9137526406337347448">Google 서비스</translation>
 <translation id="9138630967333032450">왼쪽 시프트</translation>
+<translation id="9143347780818904997"><ph name="MINUTES" />분 동안</translation>
 <translation id="9149391708638971077">메모리 테스트 실행</translation>
 <translation id="9161276708550942948">스페이스</translation>
 <translation id="9173638680043580060">1분 미만 남음</translation>

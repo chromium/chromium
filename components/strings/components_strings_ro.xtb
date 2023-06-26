@@ -1335,7 +1335,6 @@
 <translation id="3962859241508114581">Melodia anterioară</translation>
 <translation id="3963721102035795474">Modul Cititor</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Niciunul}=1{De la 1 site }few{De la # site-uri }other{De la # de site-uri }}</translation>
-<translation id="3969052498612555048">Nu găsești codul? <ph name="BEGIN_LINK" />Obține un cod nou<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Se calculează...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> este blocat</translation>
 <translation id="3984581365661308170">Plic 11</translation>
@@ -2725,7 +2724,6 @@
 <translation id="7064443976734085921">Mașini compacte</translation>
 <translation id="7064851114919012435">Informații de contact</translation>
 <translation id="7067633076996245366">Soul și R&amp;B</translation>
-<translation id="7068733155164172741">Introdu codul de <ph name="OTP_LENGTH" /> cifre</translation>
 <translation id="70705239631109039">Conexiunea nu este complet sigură</translation>
 <translation id="7075452647191940183">Solicitarea este prea mare</translation>
 <translation id="7078665357168027058">RA3</translation>

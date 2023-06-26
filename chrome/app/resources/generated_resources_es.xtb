@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Pestaña activa de nuevo</translation>
 <translation id="1003088604756913841">Abrir enlace en una ventana nueva de <ph name="APP" /></translation>
 <translation id="100323615638474026">Dispositivo USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Navegación segura de Google</translation>
 <translation id="1004218526896219317">Acceso al sitio web</translation>
 <translation id="1005274289863221750">Utilizar el micrófono y la cámara</translation>
 <translation id="1005333234656240382">¿Quieres habilitar la depuración ADB?</translation>
@@ -520,6 +519,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1434886155212424586">La página de inicio es la página Nueva pestaña</translation>
 <translation id="1435940442311036198">Usar una llave de acceso en otro dispositivo</translation>
 <translation id="1436390408194692385">Validez: <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Continuar con la configuración</translation>
 <translation id="1436784010935106834">Eliminado</translation>
 <translation id="1437986450143295708">Describe el problema detalladamente</translation>
 <translation id="1439671507542716852">asistencia a largo plazo</translation>
@@ -1934,7 +1934,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2577446426265992344">sin omnibox</translation>
 <translation id="257779572837908839">Configurar como Chromebox para reuniones</translation>
 <translation id="2579309488038515659">Habilitar punto de acceso</translation>
-<translation id="2579596474754516455">Escanea imágenes de PDFs para convertirlas en texto para el lector de pantalla cuando sea necesario</translation>
 <translation id="2580889980133367162">Permitir siempre a <ph name="HOST" /> descargar varios archivos</translation>
 <translation id="258095186877893873">Largo</translation>
 <translation id="2581455244799175627">Más información sobre permitir las cookies de terceros</translation>
@@ -3452,6 +3451,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3888586133700543064">Esta información nos ayudará a entender mejor tu problema con el Asistente. Se almacena durante un máximo de 90 días y solo podrán acceder a estos datos los equipos correspondientes de ingeniería y sugerencias.</translation>
 <translation id="3890064827463908288">Activa la Sincronización de Chrome para usar la Sincronización Wi‑Fi</translation>
 <translation id="389313931326656921">Asignar interruptor para "Siguiente"</translation>
+<translation id="3893268973182382220">No se puede cargar este panel ahora</translation>
 <translation id="3893295674388762059">Para borrar los datos, cierra todas las ventanas de Incógnito</translation>
 <translation id="3893536212201235195">Leer y cambiar tu configuración de accesibilidad</translation>
 <translation id="3893630138897523026">ChromeVox (conversión de texto a voz)</translation>
@@ -5413,9 +5413,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5602765853043467355">Borrar marcadores, historial, contraseñas, etc. de este dispositivo</translation>
 <translation id="5605758115928394442">Se ha enviado una notificación a tu teléfono para confirmar que eres tú.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Esta extensión está bloqueada}other{Estas extensiones están bloqueadas}}</translation>
-<translation id="560743070587960985">Este archivo podría ser un virus o malware.
-
-Puedes enviarlo a Google para comprobar si no es seguro. Los análisis suelen tardar unos segundos.</translation>
 <translation id="560834977503641186">Más información sobre Sincronización Wi‑Fi</translation>
 <translation id="5608580678041221894">Toca las siguientes teclas para ajustar o mover la zona para recortar</translation>
 <translation id="5609231933459083978">Parece que la aplicación no es válida.</translation>
@@ -6180,6 +6177,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6263082573641595914">Versión de entidad emisora de certificados de Microsoft</translation>
 <translation id="6263284346895336537">No crítica</translation>
 <translation id="6264365405983206840">Seleccionar &amp;todo</translation>
+<translation id="6264376385120300461">Descargar de todos modos</translation>
 <translation id="6265687851677020761">Quitar puerto</translation>
 <translation id="6266532094411434237">Conectando a <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Selecciona un certificado para autenticar tu identidad en <ph name="HOST_NAME" />.</translation>
@@ -7206,7 +7204,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7149839598364933473">Convierte este dispositivo en un dispositivo <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7152478047064750137">Esta extensión no requiere permisos especiales</translation>
-<translation id="7153309176431047193">Convertir imágenes en texto</translation>
 <translation id="7154130902455071009">Cambiar página de inicio por: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Convertir imagen a texto</translation>
 <translation id="7159953856712257647">Instalada de forma predeterminada</translation>
@@ -7760,7 +7757,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7634280112532283638">Reducción del spam y el fraude</translation>
 <translation id="7634337648687970851">Actualmente no se admite la recuperación de datos locales.</translation>
 <translation id="7634566076839829401">Se ha producido un error. Vuelve a intentarlo.</translation>
-<translation id="763472884969134151">Análisis realizado por <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Fijada por tu administrador</translation>
 <translation id="7635711411613274199">Mientras navegas, la personalización de los anuncios que ves depende de esta opción, de los <ph name="BEGIN_LINK1" />temas de anuncios<ph name="LINK_END1" />, de la <ph name="BEGIN_LINK2" />configuración de las cookies<ph name="LINK_END2" /> y de si el sitio que estás viendo personaliza los anuncios.</translation>
 <translation id="7636919061354591437">Instalar en este dispositivo</translation>

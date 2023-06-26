@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">Нещодавні додатки</translation>
 <translation id="1252999807265626933">Джерело заряджання: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Який прогноз погоди?</translation>
-<translation id="1267032506238418139">Зміна комбінацій клавіш</translation>
 <translation id="1269405891096105529">Периферійні пристрої не підтримуються в режимі гостя</translation>
 <translation id="1270290102613614947">Екранну клавіатуру вимкнено</translation>
 <translation id="1272079795634619415">Зупинити</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">Нещодавно встановлений додаток</translation>
 <translation id="1915307458270490472">Закрити</translation>
 <translation id="1918022425394817322">Зображення з камери закріплено у верхньому правому куті</translation>
-<translation id="1919743966458266018">Комбінація клавіш для запуску Диспетчера завдань змінилася. Тепер це <ph name="NEW_SHORTCUT" />, а не <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Автоматичні кліки</translation>
 <translation id="1928739107511554905">Щоб завантажити оновлення, перезапустіть Chromebook із під’єднаною клавіатурою, використовуючи сенсорний екран.</translation>
 <translation id="1948405482892809935">Перейти в наступний профіль користувача</translation>
@@ -976,7 +974,6 @@
 <translation id="5283198616748585639">Додати 1 хв</translation>
 <translation id="528468243742722775">Завершити</translation>
 <translation id="5286194356314741248">Сканування</translation>
-<translation id="5293671101077843611">Сьогодні немає подій</translation>
 <translation id="5297423144044956168">Мобільних пристроїв не знайдено</translation>
 <translation id="5297704307811127955">Вимкнено</translation>
 <translation id="5300589172476337783">Показати</translation>
@@ -1760,7 +1757,6 @@
 <translation id="8834539327799336565">Підключено</translation>
 <translation id="8841375032071747811">Кнопка "Назад"</translation>
 <translation id="8843682306134542540">Заблокувати/розблокувати обертання. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search (Пошук)+Esc</translation>
 <translation id="8853703225951107899">PIN-код або пароль усе ще не вдається підтвердити. Примітка: якщо ви нещодавно змінювали пароль, введіть старий. Новий пароль буде застосовано, щойно ви вийдете з облікового запису.</translation>
 <translation id="8855885154700222542">Клавіша повноекранного режиму</translation>
 <translation id="8858369206579825206">Налаштування конфіденційності</translation>

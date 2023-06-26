@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">ٹیب دوبارہ فعال ہے</translation>
 <translation id="1003088604756913841">لنک کو نئی <ph name="APP" /> ونڈو میں کھولیں</translation>
 <translation id="100323615638474026">‏USB آلہ (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">‏Google محفوظ براؤزنگ</translation>
 <translation id="1004218526896219317">سائٹ تک رسائی</translation>
 <translation id="1005274289863221750">اپنا مائیکروفون اور کیمرا استعمال کریں</translation>
 <translation id="1005333234656240382">‏ADB ڈیبگنگ فعال کریں؟</translation>
@@ -521,6 +520,7 @@
 <translation id="1434886155212424586">ہوم صفحہ نیا ٹیب صفحہ ہے</translation>
 <translation id="1435940442311036198">کسی دوسرے آلے پر پاس کی استعمال کریں</translation>
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> کیلئے کارآمد ہے</translation>
+<translation id="1436671784520050284">سیٹ اپ جاری رکھیں</translation>
 <translation id="1436784010935106834">ہٹا دیا گیا</translation>
 <translation id="1437986450143295708">مسئلے کو تفصیل سے بیان کریں</translation>
 <translation id="1439671507542716852">طویل مدتی سپورٹ</translation>
@@ -1939,7 +1939,6 @@
 <translation id="2577446426265992344">‏Omnibox کے بغیر</translation>
 <translation id="257779572837908839">‏Chromebox برائے میٹنگز کے طور پر سیٹ کریں</translation>
 <translation id="2579309488038515659">ہاٹ اسپاٹ کو فعال کریں</translation>
-<translation id="2579596474754516455">‏ضرورت پڑنے پر اسکرین ریڈر کے لیے ٹیکسٹ تبدیل کرنے کے لیے PDF تصاویر کو اسکین کریں</translation>
 <translation id="2580889980133367162"><ph name="HOST" /> کو ہمیشہ متعدد فائلیں ڈاؤن لوڈ کرنے کی اجازت دیں</translation>
 <translation id="258095186877893873">طویل</translation>
 <translation id="2581455244799175627">فریق ثالث کوکیز کی اجازت دینے کے بارے میں مزید</translation>
@@ -3459,6 +3458,7 @@
 <translation id="3888586133700543064">اس معلومات سے آپ کی اسسٹنٹ سے متعلق مسئلے کو بہتر طریقے سے سمجھنے میں ہمیں مدد ملتی ہے۔ اسے 90 دنوں تک کیلئے اسٹور کیا جاتا ہے اور اس تک رسائی انجینیئرنگ اور تاثرات کی مناسب ٹیموں تک محدود ہوتی ہے۔</translation>
 <translation id="3890064827463908288">‏Wi-Fi سِنک استعمال کرنے کے لئے Chrome Sync کو آن کریں</translation>
 <translation id="389313931326656921">سوئچ کو "اگلے" کیلئے تفویض کریں</translation>
+<translation id="3893268973182382220">اس پینل کو ابھی لوڈ نہیں کیا جا سکتا</translation>
 <translation id="3893295674388762059">ڈیٹا صاف کرنے کے ليے سبھی پوشیدگی ونڈوز بند کریں</translation>
 <translation id="3893536212201235195">اپنی ایکسیسبیلٹی کی ترتیبات پڑھیں اور تبدیل کریں</translation>
 <translation id="3893630138897523026">‏ChromeVox (صوتی تاثرات)</translation>
@@ -5423,9 +5423,6 @@
 <translation id="5602765853043467355">بُک مارکس، سرگزشت، پاس ورڈز وغیرہ اس آلہ سے صاف کريں</translation>
 <translation id="5605758115928394442">اس بات کی تصدیق کرنے کیلئے کہ یہ آپ ہی ہیں، آپ کے فون پر ایک اطلاع بھیجی گئی۔</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{یہ ایکسٹینشن مسدود ہے}other{یہ ایکسٹینشنز مسدود ہیں}}</translation>
-<translation id="560743070587960985">‏یہ فائل وائرس یا میلوئیر ہو سکتی ہے۔
-
-آپ اسے Google کو بھیج سکتے ہیں کہ آیا یہ غیر محفوظ ہے۔ اسکینز میں عام طور پر چند سیکنڈ لگتے ہیں۔</translation>
 <translation id="560834977503641186">‏Wi-Fi سِنک، مزید جانیں</translation>
 <translation id="5608580678041221894">تراشنے کے علاقہ کو ایڈجسٹ یا منتقل کرنے کیلئے درج ذیل کلیدوں کو تھپتھپائیں</translation>
 <translation id="5609231933459083978">ایپلیکیشن غلط معلوم پڑتی ہے۔</translation>
@@ -6190,6 +6187,7 @@
 <translation id="6263082573641595914">‏Microsoft CA ورژن</translation>
 <translation id="6263284346895336537">اہم نہیں</translation>
 <translation id="6264365405983206840">&amp;سبھی کو منتخب کریں</translation>
+<translation id="6264376385120300461">بہر حال ڈاؤن لوڈ کریں</translation>
 <translation id="6265687851677020761">پورٹ ہٹائیں</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> سے منسلک ہو رہا ہے</translation>
 <translation id="6267166720438879315">اپنی <ph name="HOST_NAME" /> پر توثیق کرنے کیلئے ایک سرٹیفیکیٹ منتخب کریں</translation>
@@ -7216,7 +7214,6 @@
 <translation id="7149839598364933473">اس آلے کو ایک <ph name="DEVICE_OS" /> آلے میں تبدیل کریں۔</translation>
 <translation id="7149893636342594995">آخری 72 گھنٹے</translation>
 <translation id="7152478047064750137">اس ایکسٹینشن کو کوئی خاص اجازتیں درکار نہیں ہیں</translation>
-<translation id="7153309176431047193">ٹیکسٹ کو تصاویر میں تبدیل کریں</translation>
 <translation id="7154130902455071009">اپنے شروعاتی صفحہ کو اس پر تبدیل کریں: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">تصویر کو ٹیکسٹ میں تبدیل کریں</translation>
 <translation id="7159953856712257647">بطور ڈیفالٹ انسٹال ہے</translation>
@@ -7771,7 +7768,6 @@
 <translation id="7634280112532283638">اسپام اور دھوکہ دہی میں تخفیف</translation>
 <translation id="7634337648687970851">مقامی ڈیٹا کی بازیابی فی الحال تعاون یافتہ نہیں ہے۔</translation>
 <translation id="7634566076839829401">کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
-<translation id="763472884969134151"><ph name="LINK" /> نے تجزیہ کیا</translation>
 <translation id="7635048370253485243">آپ کے منتظم کے ذریعے پن کردہ</translation>
 <translation id="7635711411613274199">براؤز کرتے وقت، آپ جو اشتہار دیکھتے ہیں وہ ذاتی نوعیت کے ہیں یا نہیں اس کا انحصار اس ترتیب پر ہوتا ہے، <ph name="BEGIN_LINK1" />اشتہار کے موضوعات<ph name="LINK_END1" /> آپ کی<ph name="BEGIN_LINK2" /> کوکی کی ترتیبات<ph name="LINK_END2" /> اور آیا آپ جو سائٹ دیکھ رہے ہیں وہ اشتہارات کو ذاتی بناتی ہے یا نہیں</translation>
 <translation id="7636919061354591437">اس آلہ پر انسٹال کریں</translation>

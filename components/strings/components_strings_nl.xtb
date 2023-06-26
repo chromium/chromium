@@ -1330,7 +1330,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3962859241508114581">Vorig nummer</translation>
 <translation id="3963721102035795474">Lezermodus</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Geen}=1{Van één site }other{Van # sites }}</translation>
-<translation id="3969052498612555048">Kun je de code niet vinden? <ph name="BEGIN_LINK" />Nieuwe code ophalen<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Berekenen...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> wordt geblokkeerd</translation>
 <translation id="3984581365661308170">Envelop #11</translation>
@@ -2719,7 +2718,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7064443976734085921">Compacte auto's</translation>
 <translation id="7064851114919012435">Contactgegevens</translation>
 <translation id="7067633076996245366">Soul en R&amp;B</translation>
-<translation id="7068733155164172741">Geef de <ph name="OTP_LENGTH" />-cijferige code op</translation>
 <translation id="70705239631109039">Je verbinding is niet volledig beveiligd</translation>
 <translation id="7075452647191940183">Verzoek is te groot</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3275,6 +3273,7 @@ Aanvullende informatie:
 <translation id="8246482227229072868">Ringen</translation>
 <translation id="8249296373107784235">Annuleren</translation>
 <translation id="8249463483885748674">Gestandaardiseerde tests en toelatingsexamens</translation>
+<translation id="824968735947741546"><ph name="SOURCE" /> (automatisch gedetecteerd) vertalen naar het <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Dit adres is momenteel opgeslagen op dit apparaat. Als je het wilt gebruiken in andere Google-producten, sla je het op in je Google-account (<ph name="ACCOUNT" />).</translation>
 <translation id="8252991034201168845">De knop Toegankelijkheidsinstellingen beheren, druk op Enter om je toegankelijkheidstools te personaliseren in de Chrome OS-instellingen</translation>
 <translation id="8253091569723639551">Factuuradres vereist</translation>

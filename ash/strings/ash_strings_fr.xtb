@@ -69,7 +69,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1247519845643687288">Applis récentes</translation>
 <translation id="1252999807265626933">Charge à partir de la source "<ph name="POWER_SOURCE" />"</translation>
 <translation id="1255033239764210633">Quel temps fait-il ?</translation>
-<translation id="1267032506238418139">Modification du raccourci</translation>
 <translation id="1269405891096105529">Périphérique non accepté en mode Invité</translation>
 <translation id="1270290102613614947">Clavier à l'écran désactivé</translation>
 <translation id="1272079795634619415">Arrêter</translation>
@@ -218,7 +217,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1908992311423394684">Nouvelle installation</translation>
 <translation id="1915307458270490472">Raccrocher</translation>
 <translation id="1918022425394817322">Appareil photo aligné sur l'angle supérieur droit</translation>
-<translation id="1919743966458266018">Le raccourci permettant d'ouvrir le gestionnaire de tâches a été modifié. Utilisez "<ph name="NEW_SHORTCUT" />" au lieu de "<ph name="OLD_SHORTCUT" />".</translation>
 <translation id="1923539912171292317">Clics automatiques</translation>
 <translation id="1928739107511554905">Pour télécharger la mise à jour, utilisez l'écran tactile pour redémarrer votre Chromebook avec le clavier branché.</translation>
 <translation id="1948405482892809935">Passer à l'utilisateur suivant</translation>
@@ -975,7 +973,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5283198616748585639">Ajouter une minute</translation>
 <translation id="528468243742722775">Fin</translation>
 <translation id="5286194356314741248">Recherche…</translation>
-<translation id="5293671101077843611">Aucun événement aujourd'hui</translation>
 <translation id="5297423144044956168">Aucun appareil mobile détecté</translation>
 <translation id="5297704307811127955">Désactivé</translation>
 <translation id="5300589172476337783">Afficher</translation>
@@ -1758,7 +1755,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8834539327799336565">Actuellement connectés</translation>
 <translation id="8841375032071747811">Bouton Retour</translation>
 <translation id="8843682306134542540">Activer/Désactiver le verrouillage de la rotation. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Recherche+Échap</translation>
 <translation id="8853703225951107899">Impossible de valider votre code ou votre mot de passe pour la deuxième fois. Remarque : si vous avez modifié votre mot de passe récemment, utilisez l'ancien. Votre nouveau mot de passe ne sera appliqué qu'une fois que vous serez déconnecté.</translation>
 <translation id="8855885154700222542">Touche de plein écran</translation>
 <translation id="8858369206579825206">Paramètres de confidentialité</translation>

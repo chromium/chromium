@@ -564,6 +564,7 @@
 <translation id="5422221874247253874">Titik Akses</translation>
 <translation id="5428105026674456456">Bahasa Sepanyol</translation>
 <translation id="5438282218546237410">Tiada hasil carian untuk <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Storan tidak mencukupi.</translation>
 <translation id="5449551289610225147">Kata laluan tidak sah</translation>
 <translation id="5459064203055649751">Fail yang bernama "<ph name="FILENAME" />" sudah wujud. Adakah anda mahu menggantikan fail tersebut dengan fail yang sedang anda alihkan?</translation>
 <translation id="5463231940765244860">Masuk</translation>
@@ -691,6 +692,7 @@
 <translation id="6423031066725912715">Vietnam dengan papan kekunci TCVN</translation>
 <translation id="6430271654280079150">Anda mempunyai 1 percubaan lagi.</translation>
 <translation id="643243556292470964">Fail yang dipadamkan kini dialihkan ke sampah</translation>
+<translation id="6438480100790416671">Menyemak ruang storan…</translation>
 <translation id="6485131920355264772">Gagal mendapatkan maklumat ruang</translation>
 <translation id="6495925982925244349">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Diurus oleh Pentadbir anda, Butiran</translation>
 <translation id="649877868557234318">Mengekstrak <ph name="FILE_NAME" /> ke <ph name="FOLDER_NAME" /></translation>
@@ -893,6 +895,7 @@
 <translation id="8000066093800657092">Tiada rangkaian</translation>
 <translation id="8008366997883261463">Anjing Jack Russel Terrier</translation>
 <translation id="8028993641010258682">Saiz</translation>
+<translation id="8034974485549318493">Untuk persediaan permulaan, anda perlukan sambungan Internet supaya fail dapat disegerakkan.</translation>
 <translation id="803771048473350947">Fail</translation>
 <translation id="8038111231936746805">(lalai)</translation>
 <translation id="8042602468072383151">Audio <ph name="AUDIO_TYPE" /></translation>

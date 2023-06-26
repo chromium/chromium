@@ -1334,7 +1334,6 @@
 <translation id="3962859241508114581">മുമ്പത്തെ ട്രാക്ക്</translation>
 <translation id="3963721102035795474">റീഡർ മോഡ്</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു സൈറ്റിൽ നിന്ന് }other{# സൈറ്റുകളിൽ നിന്ന് }}</translation>
-<translation id="3969052498612555048">നിങ്ങളുടെ കോഡ് കണ്ടെത്താനാകുന്നില്ലേ? <ph name="BEGIN_LINK" />പുതിയ കോഡ് നേടുക<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">കണക്കാക്കുന്നു...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ബ്ലോക്കുചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="3984581365661308170">Envelope #11</translation>
@@ -2724,7 +2723,6 @@
 <translation id="7064443976734085921">കോംപാക്റ്റ് കാറുകൾ</translation>
 <translation id="7064851114919012435">കോണ്‍ടാക്റ്റ് വിവരം</translation>
 <translation id="7067633076996245366">സോൾ, R&amp;B</translation>
-<translation id="7068733155164172741"><ph name="OTP_LENGTH" />-അക്ക കോഡ് നൽകുക</translation>
 <translation id="70705239631109039">നിങ്ങളുടെ കണക്ഷൻ പൂർണ്ണമായും സുരക്ഷിതമല്ല</translation>
 <translation id="7075452647191940183">അഭ്യർത്ഥന വളരെ വലുതാണ്</translation>
 <translation id="7078665357168027058">RA3</translation>

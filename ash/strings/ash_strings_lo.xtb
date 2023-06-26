@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">ແອັບຫຼ້າສຸດ</translation>
 <translation id="1252999807265626933">ກຳລັງສາກຈາກ <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">ສະພາບອາກາດເປັນແນວໃດ?</translation>
-<translation id="1267032506238418139">ການປ່ຽນແປງທາງລັດ</translation>
 <translation id="1269405891096105529">ບໍ່ຮອງຮັບອຸປະກອນຕໍ່ພ່ວງໃນໂໝດແຂກ</translation>
 <translation id="1270290102613614947">ແປ້ນພິມ​ເທິງ​ໜ້າ​ຈໍ​ປິດ​ໃຊ້​ງານ​ແລ້ວ</translation>
 <translation id="1272079795634619415">ຢຸດ</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">ຕິດຕັ້ງໃໝ່</translation>
 <translation id="1915307458270490472">ວາງສາຍ</translation>
 <translation id="1918022425394817322">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຂວາເທິງແລ້ວ</translation>
-<translation id="1919743966458266018">ປ່ຽນທາ​ງລັດ​ເພື່ອ​ເປີດ​ຕົວ​ຈັດການ​ໜ້າ​ວຽກ​ແລ້ວ. ກະລຸນາ​ໃຊ້ <ph name="NEW_SHORTCUT" /> ​ແທນ <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">ຄລິກອັດ​ຕະ​ໂນ​ມັດ</translation>
 <translation id="1928739107511554905">ເພື່ອຮັບເອົາການອັບເດດ, ກະລຸນາໃຊ້ຈໍສຳຜັດເພື່ອປິດເປີດ Chromebook ຂອງທ່ານຄືນໃໝ່ທີ່ມີແປ້ນພິມເຊື່ອມຕໍ່ແລ້ວ.</translation>
 <translation id="1948405482892809935">ສະຫຼັບໄປເປັນຜູ້ໃຊ້ຕໍ່ໄປ</translation>
@@ -976,7 +974,6 @@
 <translation id="5283198616748585639">ເພີ່ມ 1 ນາທີ</translation>
 <translation id="528468243742722775">ສິ້ນສຸດ</translation>
 <translation id="5286194356314741248">ກຳລັງສະແກນ</translation>
-<translation id="5293671101077843611">ບໍ່ມີນັດໝາຍມື້ນີ້</translation>
 <translation id="5297423144044956168">ບໍ່ພົບອຸປະກອນມືຖື</translation>
 <translation id="5297704307811127955">ປິດ</translation>
 <translation id="5300589172476337783">ສະ​ແດງ​</translation>
@@ -1278,6 +1275,7 @@
 <translation id="6597278316891651699">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຊ້າຍລຸ່ມແລ້ວ. ຂັດແຍ້ງກັບພື້ນຜິວຂອງລະບົບ.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="6612802754306526077">ເລືອກໂໝດການບັນທຶກໜ້າຈໍແລ້ວ</translation>
+<translation id="6613765291890844037">ໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນໄປແລ້ວ <ph name="STORAGE_IN_USE_SIZE" /> | ທັງໝົດມີ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">ໜ້າຈໍຄວາມເປັນສ່ວນຕົວເປີດຢູ່</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ແລະ ການແຈ້ງເຕືອນອື່ນໆຖືກເຊື່ອງໄວ້ເນື່ອງຈາກເປີດໃຊ້ການປົກປ້ອງການເບິ່ງຢູ່</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1760,7 +1758,6 @@
 <translation id="8834539327799336565">ຕອນນີ້ເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="8841375032071747811">ປຸ່ມກັບຄືນ</translation>
 <translation id="8843682306134542540">ປິດເປີດການລັອກການໝຸນ. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">ຍັງບໍ່ສາມາດຢັ້ງຢືນ PIN ຫຼື ລະຫັດຜ່ານຂອງທ່ານໄດ້. ໝາຍເຫດ: ຖ້າທ່ານໄດ້ປ່ຽນລະຫັດຜ່ານຂອງທ່ານເມື່ອບໍ່ດົນມານີ້, ກະລຸນາໃຊ້ລະຫັດຜ່ານເກົ່າຂອງທ່ານ. ຈະມີການນຳໃຊ້ລະຫັດຜ່ານໃໝ່ຂອງທ່ານເມື່ອທ່ານອອກຈາກລະບົບແລ້ວ.</translation>
 <translation id="8855885154700222542">ປຸ່ມເຕັມຈໍ</translation>
 <translation id="8858369206579825206">ການຄວບຄຸມຄວາມເປັນສ່ວນຕົວ</translation>

@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">แท็บกลับมาทำงานอีกครั้ง</translation>
 <translation id="1003088604756913841">เปิดลิงก์ในหน้าต่าง <ph name="APP" /> ใหม่</translation>
 <translation id="100323615638474026">อุปกรณ์ USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google Safe Browsing</translation>
 <translation id="1004218526896219317">สิทธิ์เข้าถึงเว็บไซต์</translation>
 <translation id="1005274289863221750">ใช้ไมโครโฟนและกล้องถ่ายรูปของคุณ</translation>
 <translation id="1005333234656240382">เปิดใช้การแก้ไขข้อบกพร่อง ADB ใช่ไหม</translation>
@@ -521,6 +520,7 @@
 <translation id="1434886155212424586">หน้าแรกคือหน้าแท็บใหม่</translation>
 <translation id="1435940442311036198">ใช้พาสคีย์ในอุปกรณ์อื่น</translation>
 <translation id="1436390408194692385">ใช้ได้เป็นเวลา <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">ตั้งค่าต่อ</translation>
 <translation id="1436784010935106834">ลบออกแล้ว</translation>
 <translation id="1437986450143295708">อธิบายปัญหาอย่างละเอียด</translation>
 <translation id="1439671507542716852">การสนับสนุนระยะยาว</translation>
@@ -1937,7 +1937,6 @@
 <translation id="2577446426265992344">ไม่มีแถบอเนกประสงค์</translation>
 <translation id="257779572837908839">ตั้งค่าเป็น Chromebox สำหรับการประชุม</translation>
 <translation id="2579309488038515659">เปิดใช้ฮอตสปอต</translation>
-<translation id="2579596474754516455">สแกนรูปภาพที่เป็นไฟล์ PDF เพื่อแปลงข้อความสำหรับโปรแกรมอ่านหน้าจอเมื่อจำเป็น</translation>
 <translation id="2580889980133367162">อนุญาตให้ <ph name="HOST" /> ดาวน์โหลดไฟล์หลายไฟล์เสมอ</translation>
 <translation id="258095186877893873">ยาว</translation>
 <translation id="2581455244799175627">ข้อมูลเพิ่มเติมเกี่ยวกับการอนุญาตคุกกี้ของบุคคลที่สาม</translation>
@@ -5422,9 +5421,6 @@
 <translation id="5602765853043467355">ล้างบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และอื่นๆ จากอุปกรณ์นี้</translation>
 <translation id="5605758115928394442">เราส่งการแจ้งเตือนให้คุณทางโทรศัพท์แล้วเพื่อยืนยันตัวตน</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ส่วนขยายนี้ถูกบล็อก}other{ส่วนขยายเหล่านี้ถูกบล็อก}}</translation>
-<translation id="560743070587960985">ไฟล์นี้อาจเป็นไวรัสหรือมัลแวร์
-
-คุณสามารถส่งไฟล์ไปยัง Google เพื่อตรวจสอบว่าปลอดภัยหรือไม่ โดยปกติแล้ว การสแกนจะใช้เวลา 2-3 วินาที</translation>
 <translation id="560834977503641186">การซิงค์ Wi-Fi ดูข้อมูลเพิ่มเติม</translation>
 <translation id="5608580678041221894">แตะแป้นต่อไปนี้เพื่อปรับหรือเลื่อนพื้นที่ครอบตัด</translation>
 <translation id="5609231933459083978">ดูเหมือนแอปพลิเคชันไม่ถูกต้อง</translation>
@@ -6186,6 +6182,7 @@
 <translation id="6263082573641595914">รุ่นของผู้มีสิทธิ์ออกใบรับรองของ Microsoft</translation>
 <translation id="6263284346895336537">ไม่สำคัญ</translation>
 <translation id="6264365405983206840">เลือก&amp;ทั้งหมด</translation>
+<translation id="6264376385120300461">ดาวน์โหลดต่อไป</translation>
 <translation id="6265687851677020761">นำพอร์ตออก</translation>
 <translation id="6266532094411434237">กำลังเชื่อมต่อกับ <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">เลือกใบรับรองเพื่อตรวจสอบตัวคุณเองต่อ <ph name="HOST_NAME" /></translation>
@@ -7212,7 +7209,6 @@
 <translation id="7149839598364933473">เปลี่ยนอุปกรณ์นี้เป็นอุปกรณ์ <ph name="DEVICE_OS" /></translation>
 <translation id="7149893636342594995">24 ชั่วโมงที่แล้ว</translation>
 <translation id="7152478047064750137">ส่วนขยายนี้ไม่จำเป็นต้องมีสิทธิ์พิเศษ</translation>
-<translation id="7153309176431047193">แปลงรูปภาพเป็นข้อความ</translation>
 <translation id="7154130902455071009">เปลี่ยนหน้าเริ่มต้นของคุณเป็น: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">แปลงรูปภาพเป็นข้อความ</translation>
 <translation id="7159953856712257647">ติดตั้งโดยค่าเริ่มต้นแล้ว</translation>
@@ -7766,7 +7762,6 @@
 <translation id="7634280112532283638">การลดจำนวนสแปมและการประพฤติมิชอบ</translation>
 <translation id="7634337648687970851">ขณะนี้ยังไม่รองรับการกู้คืนข้อมูลในเครื่อง</translation>
 <translation id="7634566076839829401">เกิดข้อผิดพลาดบางอย่าง โปรดลองอีกครั้ง</translation>
-<translation id="763472884969134151">วิเคราะห์โดย <ph name="LINK" /></translation>
 <translation id="7635048370253485243">ผู้ดูแลระบบปักหมุดไว้</translation>
 <translation id="7635711411613274199">ขณะที่คุณท่องเว็บ จะมีการปรับโฆษณาที่แสดงให้เหมาะกับคุณหรือไม่นั้นขึ้นอยู่กับการตั้งค่านี้ รวมถึง<ph name="BEGIN_LINK1" />หัวข้อโฆษณา<ph name="LINK_END1" /> <ph name="BEGIN_LINK2" />การตั้งค่าคุกกี้<ph name="LINK_END2" /> และเว็บไซต์ที่คุณดูมีการปรับโฆษณาตามโปรไฟล์ของผู้ใช้ไหม</translation>
 <translation id="7636919061354591437">ติดตั้งในอุปกรณ์นี้</translation>

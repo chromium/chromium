@@ -69,7 +69,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1247519845643687288">Apps recentes</translation>
 <translation id="1252999807265626933">Carregando a partir de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Como está o tempo?</translation>
-<translation id="1267032506238418139">Mudança de atalho</translation>
 <translation id="1269405891096105529">O periférico não é compatível com o modo visitante</translation>
 <translation id="1270290102613614947">Teclado na tela desativado</translation>
 <translation id="1272079795634619415">Parar</translation>
@@ -218,7 +217,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1908992311423394684">Nova instalação</translation>
 <translation id="1915307458270490472">Desligar</translation>
 <translation id="1918022425394817322">Câmera alinhada ao canto direito de cima</translation>
-<translation id="1919743966458266018">O atalho para abrir o gerenciador de tarefas foi alterado. Use <ph name="NEW_SHORTCUT" /> em vez de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Cliques automáticos</translation>
 <translation id="1928739107511554905">Para receber a atualização, use a touchscreen para reiniciar o Chromebook com o teclado conectado.</translation>
 <translation id="1948405482892809935">Mudar para o próximo usuário</translation>
@@ -976,7 +974,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5283198616748585639">Adicionar 1 min</translation>
 <translation id="528468243742722775">Fim</translation>
 <translation id="5286194356314741248">Verificando</translation>
-<translation id="5293671101077843611">Não há eventos hoje</translation>
 <translation id="5297423144044956168">Nenhum dispositivo móvel encontrado</translation>
 <translation id="5297704307811127955">Desativado</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -1761,7 +1758,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8834539327799336565">Conectados no momento</translation>
 <translation id="8841375032071747811">Botão "Voltar"</translation>
 <translation id="8843682306134542540">Alternar bloqueio de rotação. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Pesquisa+Esc</translation>
 <translation id="8853703225951107899">Ainda não foi possível verificar seu PIN ou sua senha. Observação: se você mudou a senha recentemente, use a antiga. A nova senha será aplicada depois que você sair.</translation>
 <translation id="8855885154700222542">Tecla de tela cheia</translation>
 <translation id="8858369206579825206">Controles de privacidade</translation>

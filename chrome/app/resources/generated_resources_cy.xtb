@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Tab yn weithredol eto</translation>
 <translation id="1003088604756913841">Agor dolen mewn ffenestr <ph name="APP" /> newydd</translation>
 <translation id="100323615638474026">Dyfais USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Pori'n Ddiogel gyda Google</translation>
 <translation id="1004218526896219317">Mynediad gwefannau</translation>
 <translation id="1005274289863221750">Defnyddio'ch meicroffon a'ch camera</translation>
 <translation id="1005333234656240382">Galluogi dadfygio ADB?</translation>
@@ -527,6 +526,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1434886155212424586">Y dudalen hafan yw'r dudalen Tab Newydd</translation>
 <translation id="1435940442311036198">Defnyddio cod pas ar ddyfais wahanol</translation>
 <translation id="1436390408194692385">Yn ddilys am <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Parhau i osod</translation>
 <translation id="1436784010935106834">Tynnwyd</translation>
 <translation id="1437986450143295708">Disgrifiwch y broblem yn fanwl</translation>
 <translation id="1439671507542716852">cymorth hirdymor</translation>
@@ -1955,7 +1955,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2577446426265992344">heb Omniflwch</translation>
 <translation id="257779572837908839">Gosod fel Chromebox ar gyfer cyfarfodydd</translation>
 <translation id="2579309488038515659">Galluogi poethfan</translation>
-<translation id="2579596474754516455">Sganiwch luniau PDF i drosi testun ar gyfer darllenydd sgrîn pan fo angen</translation>
 <translation id="2580889980133367162">Caniatáu i <ph name="HOST" /> lawrlwytho mwy nag un ffeil bob amser</translation>
 <translation id="258095186877893873">Hir</translation>
 <translation id="2581455244799175627">Rhagor am ganiatáu cwcis trydydd parti</translation>
@@ -5433,9 +5432,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5602765853043467355">Clirio nodau tudalen, hanes, cyfrineiriau a rhagor o'r ddyfais hon</translation>
 <translation id="5605758115928394442">Anfonwyd hysbysiad i'ch ffôn i gadarnhau mai chi sydd yno.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Mae'r estyniad hwn wedi'i rwystro}zero{Mae'r estyniadau hyn wedi'u rhwystro}two{Mae'r estyniadau hyn wedi'u rhwystro}few{Mae'r estyniadau hyn wedi'u rhwystro}many{Mae'r estyniadau hyn wedi'u rhwystro}other{Mae'r estyniadau hyn wedi'u rhwystro}}</translation>
-<translation id="560743070587960985">Gall y ffeil hon fod yn feirws neu'n ddrwgwedd.
-
-Gallwch ei hanfon at Google i wirio a yw'n anniogel. Mae sganiau fel arfer yn cymryd ychydig eiliadau.</translation>
 <translation id="560834977503641186">Cysoni Wi-Fi, Dysgu Rhagor</translation>
 <translation id="5608580678041221894">Tapiwch y bysellau canlynol i addasu neu symud yr ardal docio</translation>
 <translation id="5609231933459083978">Mae'n ymddangos bod y cais yn annilys.</translation>
@@ -6200,6 +6196,7 @@ Gallwch ei hanfon at Google i wirio a yw'n anniogel. Mae sganiau fel arfer yn cy
 <translation id="6263082573641595914">Fersiwn Microsoft CA</translation>
 <translation id="6263284346895336537">Ddim yn Gritigol</translation>
 <translation id="6264365405983206840">Dewis y &amp;Cyfan</translation>
+<translation id="6264376385120300461">Lawrlwytho beth bynnag</translation>
 <translation id="6265687851677020761">Tynnu'r porth</translation>
 <translation id="6266532094411434237">Wrthi'n cysylltu â <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Dewiswch dystysgrif i ddilysu'ch hun i <ph name="HOST_NAME" /></translation>
@@ -7231,7 +7228,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7149839598364933473">Trosi'r ddyfais hon i ddyfais <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">24 awr ddiwethaf</translation>
 <translation id="7152478047064750137">Nid oes angen caniatadau arbennig ar gyfer yr estyniad hwn</translation>
-<translation id="7153309176431047193">Trosi llun i destun</translation>
 <translation id="7154130902455071009">Newid eich tudalen gychwynnol i: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Trosi llun i destun</translation>
 <translation id="7159953856712257647">Gosodwyd yn ddiofyn</translation>
@@ -7786,7 +7782,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7634280112532283638">Lleihau sothach a thwyll</translation>
 <translation id="7634337648687970851">Ni chefnogir adfer data lleol ar hyn o bryd.</translation>
 <translation id="7634566076839829401">Aeth rywbeth o'i le. Rhowch gynnig arall arni.</translation>
-<translation id="763472884969134151">Dadansoddiad wedi'i wneud gan <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Piniwyd gan eich Gweinyddwr</translation>
 <translation id="7635711411613274199">Wrth i chi bori, mae p'un a yw hysbyseb a welwch wedi'i phersonoleiddio yn dibynnu ar y gosodiad hwn, <ph name="BEGIN_LINK1" />Pynciau hysbysebion<ph name="LINK_END1" />, eich <ph name="BEGIN_LINK2" />gosodiadau cwcis<ph name="LINK_END2" />, ac os yw'r wefan rydych yn edrych arni yn personoleiddio hysbysebion</translation>
 <translation id="7636919061354591437">Gosod ar y Ddyfais hon</translation>

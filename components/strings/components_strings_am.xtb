@@ -1334,7 +1334,6 @@
 <translation id="3962859241508114581">ቀዳሚ ትራክ</translation>
 <translation id="3963721102035795474">የአንባቢ ሁነታ</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{ምንም}=1{ከ1 ጣቢያ }one{ከ# ጣቢያዎች }other{ከ# ጣቢያዎች }}</translation>
-<translation id="3969052498612555048">ኮድዎን ማግኘት አልቻሉም? <ph name="BEGIN_LINK" />አዲስ ኮድ ያግኙ<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">በማስላት ላይ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ታግዷል</translation>
 <translation id="3984581365661308170">#11 ፖስታ</translation>
@@ -2724,7 +2723,6 @@
 <translation id="7064443976734085921">ኮምፓክት መኪናዎች</translation>
 <translation id="7064851114919012435">የእውቂያ መረጃ</translation>
 <translation id="7067633076996245366">ሶል እና አር ኤንድ ቢ</translation>
-<translation id="7068733155164172741">ባለ<ph name="OTP_LENGTH" />-አሃዝ ኮድ ያስገቡ</translation>
 <translation id="70705239631109039">የእርስዎ ግንኙነት ደህንነት ሙሉ ለሙሉ አይደለም የተጠበቀው</translation>
 <translation id="7075452647191940183">ጥያቄ ከልክ በላይ ግዙፍ ነው</translation>
 <translation id="7078665357168027058">RA3</translation>

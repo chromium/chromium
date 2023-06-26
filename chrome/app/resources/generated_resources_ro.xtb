@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Fila este din nou activă</translation>
 <translation id="1003088604756913841">Deschide linkul într-o fereastră nouă în <ph name="APP" /></translation>
 <translation id="100323615638474026">Dispozitiv USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Navigare sigură Google</translation>
 <translation id="1004218526896219317">Acces la site</translation>
 <translation id="1005274289863221750">Utilizează microfonul și camera foto</translation>
 <translation id="1005333234656240382">Activezi remedierea erorilor prin ADB?</translation>
@@ -522,6 +521,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1434886155212424586">Pagina de pornire este pagina Filă nouă</translation>
 <translation id="1435940442311036198">Folosește o cheie de acces pe alt dispozitiv</translation>
 <translation id="1436390408194692385">Valabil timp de <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Continuă configurarea</translation>
 <translation id="1436784010935106834">Eliminat</translation>
 <translation id="1437986450143295708">Descrie problema detaliat</translation>
 <translation id="1439671507542716852">asistență pe durată extinsă</translation>
@@ -1938,7 +1938,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2577446426265992344">fără caseta polivalentă</translation>
 <translation id="257779572837908839">Configurează ca Chromebox pentru videoconferințe</translation>
 <translation id="2579309488038515659">Activează hotspotul</translation>
-<translation id="2579596474754516455">Scanează imagini PDF pentru a face conversia textului pentru cititorul de ecran atunci când este necesar</translation>
 <translation id="2580889980133367162">Permiteți întotdeauna <ph name="HOST" /> să descarce mai multe fișiere</translation>
 <translation id="258095186877893873">Lungă</translation>
 <translation id="2581455244799175627">Mai multe despre permiterea cookie-urilor terță parte</translation>
@@ -5423,9 +5422,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5602765853043467355">Șterge marcajele, istoricul, parolele și altele de pe acest dispozitiv</translation>
 <translation id="5605758115928394442">Ți s-a trimis o notificare pe telefon pentru a-ți confirma identitatea.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Extensia este blocată}few{Extensiile sunt blocate}other{Extensiile sunt blocate}}</translation>
-<translation id="560743070587960985">Fișierul poate fi un virus sau un program malware.
-
-Poți să îl trimiți la Google pentru a verifica dacă este nesigur. De obicei, verificările durează câteva secunde.</translation>
 <translation id="560834977503641186">Sincronizare Wi-Fi, află mai multe</translation>
 <translation id="5608580678041221894">Atinge următoarele taste ca să ajustezi sau să muți zona de decupare</translation>
 <translation id="5609231933459083978">Aplicația pare să nu fie validă.</translation>
@@ -6190,6 +6186,7 @@ Poți să îl trimiți la Google pentru a verifica dacă este nesigur. De obicei
 <translation id="6263082573641595914">Versiune CA Microsoft</translation>
 <translation id="6263284346895336537">Non-critic</translation>
 <translation id="6264365405983206840">Select&amp;ează tot</translation>
+<translation id="6264376385120300461">Descarcă oricum</translation>
 <translation id="6265687851677020761">Elimină portul</translation>
 <translation id="6266532094411434237">Se conectează la <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Selectează un certificat pentru a te autentifica pe <ph name="HOST_NAME" /></translation>
@@ -7218,7 +7215,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7149839598364933473">Transformă dispozitivul într-un dispozitiv <ph name="DEVICE_OS" /></translation>
 <translation id="7149893636342594995">Ultimele 24 de ore</translation>
 <translation id="7152478047064750137">Această extensie nu necesită permisiuni speciale</translation>
-<translation id="7153309176431047193">Fă conversia imaginilor în text</translation>
 <translation id="7154130902455071009">Schimbați pagina de start la: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Convertește imaginea în text</translation>
 <translation id="7159953856712257647">Instalat în mod prestabilit</translation>
@@ -7773,7 +7769,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7634280112532283638">Reducerea spamului și a fraudei</translation>
 <translation id="7634337648687970851">Recuperarea datelor locale nu este acceptată momentan.</translation>
 <translation id="7634566076839829401">A apărut o eroare. Încearcă din nou.</translation>
-<translation id="763472884969134151">Analiză efectuată de <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Fixată de administrator</translation>
 <translation id="7635711411613274199">În timp ce navighezi, personalizarea anunțurilor se bazează pe această setare, pe <ph name="BEGIN_LINK1" />Subiectele anunțurilor<ph name="LINK_END1" />, pe <ph name="BEGIN_LINK2" />setările pentru cookie-uri<ph name="LINK_END2" /> și pe capacitatea site-ului pe care îl accesezi de a personaliza anunțurile</translation>
 <translation id="7636919061354591437">Instalează pe acest dispozitiv</translation>

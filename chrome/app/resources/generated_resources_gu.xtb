@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">ટૅબ ફરી સક્રિય કરો</translation>
 <translation id="1003088604756913841">નવી <ph name="APP" /> વિંડોમાં લિંક ખોલો</translation>
 <translation id="100323615638474026">USB ડિવાઇસ (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google Safe Browsing</translation>
 <translation id="1004218526896219317">સાઇટ ઍક્સેસ</translation>
 <translation id="1005274289863221750">તમારા માઇક્રોફોનનો અને કૅમેરાનો ઉપયોગ કરો</translation>
 <translation id="1005333234656240382">ADB ડિબગીંગ ચાલુ કરીએ?</translation>
@@ -522,6 +521,7 @@
 <translation id="1434886155212424586">હોમપેજ એ નવું ટૅબ પેજ છે</translation>
 <translation id="1435940442311036198">કોઈ બીજા ડિવાઇસ પર પાસકીનો ઉપયોગ કરો</translation>
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> માટે માન્ય</translation>
+<translation id="1436671784520050284">સેટઅપ ચાલુ રાખો</translation>
 <translation id="1436784010935106834">દૂર કરેલું</translation>
 <translation id="1437986450143295708">સમસ્યાનું વિગતવાર વર્ણન કરો</translation>
 <translation id="1439671507542716852">લૉન્ગ-ટર્મ સપોર્ટ</translation>
@@ -1935,7 +1935,6 @@
 <translation id="2577446426265992344">ઑમ્નિબૉક્સ વિના</translation>
 <translation id="257779572837908839">મીટિંગ માટે Chromebox તરીકે સેટ કરો</translation>
 <translation id="2579309488038515659">હૉટસ્પૉટ ચાલુ</translation>
-<translation id="2579596474754516455">જ્યારે જરૂરી હોય ત્યારે સ્ક્રીન રીડર માટે ટેક્સ્ટમાં બદલવા, PDF છબીઓને સ્કૅન કરો</translation>
 <translation id="2580889980133367162">એકથી વધુ ફાઇલો ડાઉનલોડ કરવા માટે હંમેશાં <ph name="HOST" />ને મંજૂરી આપો</translation>
 <translation id="258095186877893873">લાંબો</translation>
 <translation id="2581455244799175627">ત્રીજા પક્ષની કુકીને મંજૂરી આપવા વિશે વધુ</translation>
@@ -3455,6 +3454,7 @@
 <translation id="3888586133700543064">તમારા Assistant સંબંધિત સમસ્યાને વધુ સારી રીતે સમજવામાં આ માહિતી અમને સહાય કરે છે. તેને વધુમાં વધુ 90 દિવસ સુધી સ્ટોર કરવામાં આવે છે અને તેનો ઍક્સેસ એન્જિનિયરિંગ તેમજ પ્રતિસાદ ટીમ સુધી મર્યાદિત હોય છે.</translation>
 <translation id="3890064827463908288">વાઇ-ફાઇ સિંકનો ઉપયોગ કરવા માટે 'Chrome સિંક' ચાલુ કરો</translation>
 <translation id="389313931326656921">“આગળ” માટે સ્વિચની સોંપણી કરો</translation>
+<translation id="3893268973182382220">આ પૅનલને અત્યારે લોડ કરી શકતા નથી</translation>
 <translation id="3893295674388762059">ડેટા સાફ કરવા માટે, બધી છુપી વિન્ડો બંધ કરો</translation>
 <translation id="3893536212201235195">તમારા ઍક્સેસિબિલિટી સેટિંગને વાંચો અને બદલો</translation>
 <translation id="3893630138897523026">ChromeVox (બોલાયેલો પ્રતિસાદ)</translation>
@@ -5420,9 +5420,6 @@
 <translation id="5602765853043467355">આ ડિવાઇસમાંથી બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને વધુ સાફ કરો</translation>
 <translation id="5605758115928394442">તમે જ છો તે કન્ફર્મ કરવા માટે તમારા ફોન પર નોટિફિકેશન મોકલવામાં આવ્યું હતું.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યું છે}one{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યું છે}other{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યા છે}}</translation>
-<translation id="560743070587960985">આ ફાઇલ વાયરસ અથવા માલવેર હોઈ શકે છે.
-
-તે અસુરક્ષિત છે કે કેમ તે ચેક કરવા માટે તમે તેને Googleને મોકલી શકો છો. સ્કૅન કરવામાં સામાન્ય રીતે થોડી સેકન્ડ લાગે છે.</translation>
 <translation id="560834977503641186">વાઇ-ફાઇ સિંક, વધુ જાણો</translation>
 <translation id="5608580678041221894">કાપવા માટેના ક્ષેત્રને સમાયોજિત કરવા અથવા ખસેડવા માટે નીચેની કીને ટૅપ કરો</translation>
 <translation id="5609231933459083978">ઍપ્લિકેશન અમાન્ય હોય તેવું લાગે છે.</translation>
@@ -6189,6 +6186,7 @@ USB ડિવાઇસ</translation>
 <translation id="6263082573641595914">Microsoft CA વર્ઝન</translation>
 <translation id="6263284346895336537">મહત્વપૂર્ણ નથી</translation>
 <translation id="6264365405983206840">&amp;બધા પસંદ કરો</translation>
+<translation id="6264376385120300461">તેમ છતાં ડાઉનલોડ કરો</translation>
 <translation id="6265687851677020761">પોર્ટ કાઢી નાખો</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" />થી કનેક્ટ કરી રહ્યાં છીએ</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> પર પોતાને પ્રમાણિત કરવા માટે એક પ્રમાણપત્ર પસંદ કરો</translation>
@@ -7217,7 +7215,6 @@ USB ડિવાઇસ</translation>
 <translation id="7149839598364933473">આ ડિવાઇસને <ph name="DEVICE_OS" /> ડિવાઇસમાં રૂપાંતરિત કરો.</translation>
 <translation id="7149893636342594995">છેલ્લા 24 કલાક</translation>
 <translation id="7152478047064750137">આ એક્સટેન્શનને કોઈ વિશિષ્ટ પરવાનગીઓની જરૂર નથી</translation>
-<translation id="7153309176431047193">છબીઓને ટેક્સ્ટમાં બદલો</translation>
 <translation id="7154130902455071009">તમારા શરૂઆતના પેજને આનાથી બદલો: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">છબીનું રૂપાંતરણ ટેક્સ્ટમાં કરો</translation>
 <translation id="7159953856712257647">ડિફૉલ્ટ તરીકે ઇન્સ્ટૉલ કરેલું</translation>
@@ -7772,7 +7769,6 @@ USB ડિવાઇસ</translation>
 <translation id="7634280112532283638">સ્પામ અને કપટમાં ઘટાડો</translation>
 <translation id="7634337648687970851">સ્થાનિક ડેટા રિકવરીને હાલમાં સપોર્ટ કરવામાં આવતો નથી.</translation>
 <translation id="7634566076839829401">કંઈક ખોટું થયું હતું. કૃપા કરીને ફરીથી પ્રયાસ કરો.</translation>
-<translation id="763472884969134151"><ph name="LINK" /> દ્વારા વિશ્લેષણ કરવામાં આવેલું છે</translation>
 <translation id="7635048370253485243">તમારા વ્યવસ્થાપકે પિન કરેલું છે</translation>
 <translation id="7635711411613274199">જેમ-જેમ તમે બ્રાઉઝ કરો, તેમ-તેમ તમને દેખાતી જાહેરાત મનગમતી બનાવેલી હોય કે નહીં અને તમે જોઈ રહ્યાં હો તે સાઇટ જાહેરાતોને મનગમતી બનાવે છે કે નહીં એ બાબત આ સેટિંગ, <ph name="BEGIN_LINK1" />જાહેરાતના વિષયો<ph name="LINK_END1" /> તથા તમારી <ph name="BEGIN_LINK2" />કુકીના સેટિંગ<ph name="LINK_END2" /> પર આધારિત હોય છે</translation>
 <translation id="7636919061354591437">આ ડિવાઇસ પર ઇન્સ્ટૉલ કરો</translation>

@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">टॅब पुन्हा अ‍ॅक्टिव्ह केला आहे</translation>
 <translation id="1003088604756913841">लिंक नवीन <ph name="APP" /> विंडोमध्ये उघडा</translation>
 <translation id="100323615638474026">USB डिव्हाइस (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google सुरक्षित ब्राउझिंग</translation>
 <translation id="1004218526896219317">साइट अ‍ॅक्सेस</translation>
 <translation id="1005274289863221750">तुमचा मायक्रोफोन आणि कॅमेरा वापरा</translation>
 <translation id="1005333234656240382">ADB डीबगिंग सुरू करायचे?</translation>
@@ -523,6 +522,7 @@
 <translation id="1434886155212424586">होमपेज हे नवीन टॅब पेज आहे</translation>
 <translation id="1435940442311036198">वेगळ्या डिव्हाइसवर पासकी वापरा</translation>
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> पर्यंत वैध आहे</translation>
+<translation id="1436671784520050284">सेटअप सुरू ठेवा</translation>
 <translation id="1436784010935106834">काढली</translation>
 <translation id="1437986450143295708">समस्येचे तपशीलवार वर्णन करा</translation>
 <translation id="1439671507542716852">दीर्घकालीन सपोर्ट</translation>
@@ -1951,7 +1951,6 @@
 <translation id="2577446426265992344">ओम्निबॉक्स शिवाय</translation>
 <translation id="257779572837908839">मीटिंगसाठी Chromebox म्हणून सेट अप करा</translation>
 <translation id="2579309488038515659">हॉटस्पॉट सुरू केला</translation>
-<translation id="2579596474754516455">आवश्यक असेल, तेव्हा स्क्रीन रीडरसाठी मजकूर रूपांतरित करण्यासाठी PDF इमेज स्कॅन करा</translation>
 <translation id="2580889980133367162">एकापेक्षा जास्त फाइल डाउनलोड करण्यास <ph name="HOST" /> ला नेहमी अनुमती द्या</translation>
 <translation id="258095186877893873">दीर्घ</translation>
 <translation id="2581455244799175627">तृतीय पक्ष कुकीना अनुमती देण्याबद्दल अधिक</translation>
@@ -3471,6 +3470,7 @@
 <translation id="3888586133700543064">Assistant शी संबंधित तुमच्या समस्या आणखी चांगल्या प्रकारे समजून घेण्यात ही माहिती आम्हाला मदत करते. ती ९० दिवसांपर्यंत स्टोअर केली जाते आणि तिचा अ‍ॅक्सेस योग्य इंजिनीयरिंग आणि फीडबॅक टीमपुरता मर्यादित असतो.</translation>
 <translation id="3890064827463908288">वाय-फाय सिंक वापरणासाठी Chrome सिंक सुरू करा</translation>
 <translation id="389313931326656921">“पुढील” साठी स्विच असाइन करा</translation>
+<translation id="3893268973182382220">हे पॅनल आता लोड करू शकत नाही</translation>
 <translation id="3893295674388762059">डेटा साफ करण्यासाठी, सर्व गुप्त विंडो बंद करा</translation>
 <translation id="3893536212201235195">तुमच्या ॲक्सेसिबिलिटी सेटिंग्ज जोडा आणि बदला</translation>
 <translation id="3893630138897523026">ChromeVox (वाचिक अभिप्राय)</translation>
@@ -5435,9 +5435,6 @@
 <translation id="5602765853043467355">या डिव्हाइसमधून बुकमार्क, इतिहास, पासवर्ड आणि बरेच काही साफ करा</translation>
 <translation id="5605758115928394442">ते तुम्हीच आहात हे निश्चित करण्यासाठी तुमच्या फोनवर सूचना पाठवली होती.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{हे एक्स्टेंशन ब्लॉक केले आहे}other{ही एक्स्टेंशन ब्लॉक केली आहेत}}</translation>
-<translation id="560743070587960985">या फाइलमध्ये व्हायरस किंवा मालवेअर असू शकते.
-
-ती असुरक्षित आहे की नाही हे तपासण्यासाठी तुम्ही ती Google कडे पाठवू शकता. स्कॅनला काही सेकंद लागू शकतात.</translation>
 <translation id="560834977503641186">वाय-फाय सिंक, अधिक जाणून घ्या</translation>
 <translation id="5608580678041221894">क्रॉप करण्‍याचे क्षेत्र समायोजित करण्‍यासाठी किंवा हलविण्‍यासाठी खालील की टॅप करा</translation>
 <translation id="5609231933459083978">ॲप्लिकेशन चुकीचे असल्याचे दिसते.</translation>
@@ -6203,6 +6200,7 @@
 <translation id="6263082573641595914">Microsoft CA आवृत्ती</translation>
 <translation id="6263284346895336537">गंभीर नाही</translation>
 <translation id="6264365405983206840">&amp;सर्व निवडा</translation>
+<translation id="6264376385120300461">तरीही डाउनलोड करा</translation>
 <translation id="6265687851677020761">पोर्ट काढून टाका</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> शी कनेक्ट करत आहे</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> वर तुमच्या स्वतःस प्रमाणीकृत करण्यासाठी एक सर्टिफिकेट निवडा</translation>
@@ -7229,7 +7227,6 @@
 <translation id="7149839598364933473">हे डिव्हाइस <ph name="DEVICE_OS" /> डिव्हाइसमध्ये रूपांतरित करा.</translation>
 <translation id="7149893636342594995">शेवटच्या 72 तासांमधील</translation>
 <translation id="7152478047064750137">या एक्स्टेंशनला कोणत्याही विशिष्ट परवानग्यांची आवश्यकता नाही</translation>
-<translation id="7153309176431047193">इमेज मजकुरात रूपांतरित करा</translation>
 <translation id="7154130902455071009">तुमचे स्टार्ट पेज यावर बदला: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">इमेज ही मजकूरामध्ये रूपांतरित करा</translation>
 <translation id="7159953856712257647">बाय डीफॉल्ट इंस्टॉल केले</translation>
@@ -7784,7 +7781,6 @@
 <translation id="7634280112532283638">स्पॅम आणि घोटाळा कमी करणे</translation>
 <translation id="7634337648687970851">स्थानिक डेटा रिकव्हरी सध्या सपोर्ट करत नाही.</translation>
 <translation id="7634566076839829401">काहीतरी चूक झाली, कृपया पुन्हा प्रयत्न करा.</translation>
-<translation id="763472884969134151"><ph name="LINK" /> द्वारे विश्लेषण केले</translation>
 <translation id="7635048370253485243">तुमच्या अ‍ॅडमिनिस्ट्रेटरने पिन केले</translation>
 <translation id="7635711411613274199">तुम्ही ब्राउझ करत असताना, तुम्ही पाहत असलेली जाहिरात पर्सनलाइझ केलेली आहे की नाही ते हे सेटिंग, <ph name="BEGIN_LINK1" />जाहिरातीचे विषय<ph name="LINK_END1" />, तुमची <ph name="BEGIN_LINK2" />कुकी सेटिंग्ज<ph name="LINK_END2" /> आणि तुम्ही पाहत असलेली साइट जाहिराती पर्सनलाइझ करते की नाही त्यावर अवलंबून असते</translation>
 <translation id="7636919061354591437">या डिव्हाइसवर इंस्टॉल करा</translation>

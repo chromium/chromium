@@ -1337,7 +1337,6 @@
 <translation id="3962859241508114581">پچھلا ٹریک</translation>
 <translation id="3963721102035795474">ریڈر وض‏ع</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{کوئی سائٹ نہیں}=1{1 سائٹ سے }other{# سائٹس سے }}</translation>
-<translation id="3969052498612555048">آپ کا کوڈ نہیں مل سکا؟ <ph name="BEGIN_LINK" />نیا کوڈ حاصل کریں<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">حساب لگایا جا رہا ہے…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> مسدود ہے</translation>
 <translation id="3984581365661308170">#11 لفافہ</translation>
@@ -2728,7 +2727,6 @@
 <translation id="7064443976734085921">چھوٹی کاریں</translation>
 <translation id="7064851114919012435">رابطہ کی معلومات</translation>
 <translation id="7067633076996245366">‏سول اور R&amp;B</translation>
-<translation id="7068733155164172741"><ph name="OTP_LENGTH" /> ہندسے والا کوڈ درج کریں</translation>
 <translation id="70705239631109039">آپ کا کنکشن مکمل طور پر محفوظ نہیں ہے</translation>
 <translation id="7075452647191940183">درخواست کافی بڑی ہے</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3284,6 +3282,7 @@
 <translation id="8246482227229072868">رِنگز</translation>
 <translation id="8249296373107784235">منسوخ کریں</translation>
 <translation id="8249463483885748674">معیار بند اور داخلہ ٹیسٹس</translation>
+<translation id="824968735947741546"><ph name="SOURCE" /> (خودکار طور پر شناخت کردہ) کا <ph name="TARGET" /> میں ترجمہ کیا جا رہا ہے</translation>
 <translation id="8250094606476360498">‏یہ پتہ فی الحال اس آلے میں محفوظ ہے۔ اسے تمام Google پروڈکٹس میں استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ <ph name="ACCOUNT" /> میں محفوظ کریں۔</translation>
 <translation id="8252991034201168845">‏ایکسیسبیلٹی کی ترتیبات کے بٹن کا نظم کریں ChromeOS کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنانے کے لیے Enter دبائیں</translation>
 <translation id="8253091569723639551">بلنگ پتہ درکار ہے</translation>

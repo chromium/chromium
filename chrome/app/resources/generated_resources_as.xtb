@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">আকৌ সক্ৰিয় কৰকত টিপক</translation>
 <translation id="1003088604756913841">নতুন <ph name="APP" /> Windowত লিংকটো খোলক</translation>
 <translation id="100323615638474026">ইউএছবি ডিভাইচ (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Googleৰ সুৰক্ষিত ব্ৰাউজিং</translation>
 <translation id="1004218526896219317">ছাইটলৈ এক্সেছ</translation>
 <translation id="1005274289863221750">আপোনাৰ মাইক্ৰ’ফ’ন আৰু কেমেৰা ব্যৱহাৰ কৰক</translation>
 <translation id="1005333234656240382">ADB ডিবাগিং সক্ষম কৰিবনে?</translation>
@@ -524,6 +523,7 @@
 <translation id="1434886155212424586">গৃহপৃষ্ঠা হৈছে নতুন টেবযুক্ত পৃষ্ঠা</translation>
 <translation id="1435940442311036198">অন্য এটা ডিভাইচত এটা পাছকী ব্যৱহাৰ কৰক</translation>
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" />ৰ বাবে মান্য</translation>
+<translation id="1436671784520050284">ছেট আপ অব্যাহত ৰাখক</translation>
 <translation id="1436784010935106834">আঁতৰোৱা হ’ল</translation>
 <translation id="1437986450143295708">সমস্যাটোৰ সবিশেষ বৰ্ণনা কৰক</translation>
 <translation id="1439671507542716852">দীৰ্ঘম্যাদী সমৰ্থন</translation>
@@ -1950,7 +1950,6 @@
 <translation id="2577446426265992344">Omniboxৰ অবিহনে</translation>
 <translation id="257779572837908839">বৈঠকৰ বাবে Chromebox হিচাপে ছেট আপ কৰক</translation>
 <translation id="2579309488038515659">হটস্পট সক্ষম</translation>
-<translation id="2579596474754516455">প্ৰয়োজন হ’লে স্ক্ৰীন ৰীডাৰৰ বাবে পাঠ ৰূপান্তৰ কৰিবলৈ PDF প্ৰতিচ্ছবি স্কেন কৰক</translation>
 <translation id="2580889980133367162"><ph name="HOST" />ক সদায় একাধিক ফাইল ডাউনল’ড কৰিবলৈ অনুমতি দিয়ক</translation>
 <translation id="258095186877893873">দীঘল</translation>
 <translation id="2581455244799175627">তৃতীয় পক্ষৰ কুকিৰ অনুমতি দিয়াৰ বিষয়ে অধিক</translation>
@@ -3470,6 +3469,7 @@
 <translation id="3888586133700543064">এই তথ্যখিনিয়ে আমাক আপোনাৰ Assistantৰ সমস্যা ভালকৈ বুজি পোৱাত সহায় কৰে। ইয়াক ৯০ দিন পৰ্যন্ত ষ্ট’ৰ কৰি ৰখা হয় আৰু ইয়াৰ এক্সেছ সঠিক অভিযান্ত্রিক আৰু মতামতৰ সৈতে জড়িত দলতে সীমিত।</translation>
 <translation id="3890064827463908288">ৱাই-ফাই ছিংক ব্যৱহাৰ কৰিবলৈ Chrome ছিংক অন কৰক</translation>
 <translation id="389313931326656921">"পৰৱৰ্তী"ৰ বাবে ছুইচ আবণ্টন কৰক</translation>
+<translation id="3893268973182382220">এই মুহূৰ্তত এই পেনেলটো ল’ড কৰিব নোৱাৰি</translation>
 <translation id="3893295674388762059">ডেটা মচিবলৈ আটাইবোৰ ইনক’গনিট’ ৱিণ্ড’ বন্ধ কৰক</translation>
 <translation id="3893536212201235195">আপোনাৰ সাধ্য সুবিধাৰ ছেটিংসমূহ পঢ়ক আৰু সলনি কৰক</translation>
 <translation id="3893630138897523026">ChromeVox (কথিত মতামত)</translation>
@@ -5435,9 +5435,6 @@
 <translation id="5602765853043467355">এই ডিভাইচৰ পৰা বুকমার্ক, ইতিহাস, পাছৱর্ড আৰু অধিক তথ্য মচক</translation>
 <translation id="5605758115928394442">এইগৰাকী আপুনিয়েই হয় বুলি নিশ্চিত কৰিবলৈ আপোনাৰ ফ'নলৈ এটা জাননী পঠিওৱা হৈছে।</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশ্বনটো অৱৰোধ কৰা হৈছে}one{এই এক্সটেনশ্বনসমূহ অৱৰোধ কৰা হৈছে}other{এই এক্সটেনশ্বনসমূহ অৱৰোধ কৰা হৈছে}}</translation>
-<translation id="560743070587960985">এই ফাইলটো এটা ভাইৰাছ অথবা মালৱেৰ হ’ব পাৰে।
-
-এই অসুৰক্ষিত নেকি সেয়া পৰীক্ষা কৰিবলৈ আপুনি ইয়াক Googleলৈ পঠিয়াব পাৰে। স্কেনৰ বাবে সাধাৰণতে কেইছেকেণ্ডমান সময় লয়।</translation>
 <translation id="560834977503641186">ৱাই-ফাই ছিংক, অধিক জানক</translation>
 <translation id="5608580678041221894">ক্ৰপ কৰা অংশ মিলাবলৈ বা আঁতৰাবলৈ তলত উল্লেখ কৰা চাবিসমূহ টিপক</translation>
 <translation id="5609231933459083978">এই এপ্লিকেশ্বনটো অমান্য যেন লাগিছে।</translation>
@@ -6202,6 +6199,7 @@
 <translation id="6263082573641595914">Microsoft CA সংস্কৰণ</translation>
 <translation id="6263284346895336537">সংকটজনক নহয়</translation>
 <translation id="6264365405983206840">&amp;সকলো বাছনি কৰক</translation>
+<translation id="6264376385120300461">তথাপি ডাউনল’ড কৰক</translation>
 <translation id="6265687851677020761">প’ৰ্টটো আঁতৰাওক</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" />ৰ সৈতে সংযোগ কৰি থকা হৈছে</translation>
 <translation id="6267166720438879315">নিজকে <ph name="HOST_NAME" />লৈ সত্যাপন কৰিবলৈ এখন প্ৰমাণপত্ৰ বাছনি কৰক</translation>
@@ -7230,7 +7228,6 @@
 <translation id="7149839598364933473">এই ডিভাইচটো এটা <ph name="DEVICE_OS" /> ডিভাইচলৈ ৰূপান্তৰ কৰক।</translation>
 <translation id="7149893636342594995">যোৱা ২৪ ঘণ্টাত</translation>
 <translation id="7152478047064750137">এই এক্সটেনশ্বনটোৰ বাবে কোনো বিশেষ অনুমতি ল’ব নালাগে</translation>
-<translation id="7153309176431047193">প্ৰতিচ্ছবিক পাঠলৈ ৰূপান্তৰ কৰক</translation>
 <translation id="7154130902455071009">আপোনাৰ আৰম্ভণিৰ পৃষ্ঠা ইয়ালৈ সলনি কৰক: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">প্ৰতিচ্ছবিক পাঠলৈ ৰূপান্তৰ কৰক</translation>
 <translation id="7159953856712257647">ডিফ’ল্ট হিচাপে ইনষ্টল কৰা</translation>
@@ -7785,7 +7782,6 @@
 <translation id="7634280112532283638">স্পাম আৰু প্ৰৱঞ্চনা হ্ৰাসকৰণ</translation>
 <translation id="7634337648687970851">স্থানীয় ডেটা পুনৰুদ্ধাৰৰ সুবিধাটো বৰ্তমান সমৰ্থিত নহয়।</translation>
 <translation id="7634566076839829401">কিবা ভুল হ’ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।</translation>
-<translation id="763472884969134151"><ph name="LINK" />এ বিশ্লেষণ কৰিছে</translation>
 <translation id="7635048370253485243">আপোনাৰ প্ৰশাসকে পিন কৰিছে</translation>
 <translation id="7635711411613274199">আপুনি ব্ৰাউজ কৰি থাকোঁতে, আপুনি দেখা পোৱা কোনো বিজ্ঞাপন ব্যক্তিগতকৃত হয়নে নহয় সেয়া এই ছেটিংটো, <ph name="BEGIN_LINK1" />বিজ্ঞাপনৰ বিষয়বস্তু<ph name="LINK_END1" />, আপোনাৰ <ph name="BEGIN_LINK2" />কুকিৰ ছেটিং<ph name="LINK_END2" /> আৰু আপুনি চাই থকা ছাইটটোৱে বিজ্ঞাপন ব্যক্তিগতকৰণ কৰেনে নকৰে তাৰ ওপৰত নিৰ্ভৰ কৰে</translation>
 <translation id="7636919061354591437">এই ডিভাইচটোত ইনষ্টল কৰক</translation>

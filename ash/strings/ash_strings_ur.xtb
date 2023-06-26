@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">حالیہ ایپس</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> سے چارج ہو رہا ہے</translation>
 <translation id="1255033239764210633">موسم کیسا ہے؟</translation>
-<translation id="1267032506238418139">شارکٹ میں تبدیلی</translation>
 <translation id="1269405891096105529">پیریفرل مہمان وضع میں تعاون یافتہ نہیں ہے</translation>
 <translation id="1270290102613614947">آن اسکرین کی بورڈ غیر فعال کر دیا گیا</translation>
 <translation id="1272079795634619415">روکیں</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">نئی انسٹال کردہ ایپ</translation>
 <translation id="1915307458270490472">کال منقطع کریں</translation>
 <translation id="1918022425394817322">کیمرا اوپری دائیں کونے میں اسنیپ کیا گیا ہے</translation>
-<translation id="1919743966458266018">ٹاسک مینیجر کھولنے کے شارٹ کٹ کو تبدیل کر دیا گیا ہے۔ براہ کرم <ph name="OLD_SHORTCUT" /> کی بجائے <ph name="NEW_SHORTCUT" /> استعمال کریں۔</translation>
 <translation id="1923539912171292317">خودکار کلکس</translation>
 <translation id="1928739107511554905">‏اپ ڈیٹ حاصل کرنے کیلئے، ٹچ اسکرین استعمال کر کے منسلک شدہ کی بورڈ سے اپنا Chromebook دوبارہ شروع کریں۔</translation>
 <translation id="1948405482892809935">اگلے صارف پر سوئچ کریں</translation>
@@ -976,7 +974,6 @@
 <translation id="5283198616748585639">1 منٹ شامل کریں</translation>
 <translation id="528468243742722775">اختتام</translation>
 <translation id="5286194356314741248">اسکین کی جا رہی ہیں</translation>
-<translation id="5293671101077843611">آج کوئی ایونٹ نہیں ہے</translation>
 <translation id="5297423144044956168">کوئی موبائل آلہ نہیں ملا</translation>
 <translation id="5297704307811127955">آف</translation>
 <translation id="5300589172476337783">دکھائیں</translation>
@@ -1277,6 +1274,7 @@
 <translation id="6597278316891651699">کیمرا نیچے بائیں کونے میں اسنیپ کیا گیا ہے۔ سسٹم کی سطح سے متصادم ہے۔</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="6612802754306526077">اسکرین ریکارڈنگ موڈ کا انتخاب کیا گیا</translation>
+<translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> اسٹوریج استعمال میں ہے | کل <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">رازداری کی اسکرین آن ہے</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />، <ph name="APP_2_TITLE" /> اور دیگر اطلاعات پوشیدہ ہیں کیونکہ دیکھنے کا تحفظ آن ہے</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1759,7 +1757,6 @@
 <translation id="8834539327799336565">فی الحال منسلک ہے</translation>
 <translation id="8841375032071747811">'پیچھے' بٹن</translation>
 <translation id="8843682306134542540">گردش لاک ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">‏آپ کے PIN یا پاس ورڈ کی توثیق ابھی بھی نہیں کی جا سکی۔ نوٹ: اگر آپ نے حال ہی میں اپنا پاس ورڈ تبدیل کیا ہے تو اپنا پرانا پاس ورڈ استعمال کریں۔ آپ کے سائن آؤٹ ہونے کے بعد آپ کا نیا پاس ورڈ لاگو ہوگا۔</translation>
 <translation id="8855885154700222542">پوری اسکرین کی کلید</translation>
 <translation id="8858369206579825206">رازداری سے متعلق کنٹرولز</translation>

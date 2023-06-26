@@ -1213,7 +1213,6 @@
 <translation id="3962859241508114581">Chanson précédente</translation>
 <translation id="3963721102035795474">Mode Lecteur</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Aucun}=1{À partir de 1 site }one{À partir de # site }other{À partir de # sites }}</translation>
-<translation id="3969052498612555048">Vous ne trouvez pas votre code? <ph name="BEGIN_LINK" />Obtenir un nouveau code<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> est bloquée</translation>
 <translation id="3984581365661308170">Enveloppe nᵒ 11</translation>
@@ -2477,7 +2476,6 @@
 <translation id="706295145388601875">Ajoutez et gérez les adresses dans les paramètres de Chrome</translation>
 <translation id="7064851114919012435">Coordonnées</translation>
 <translation id="7067633076996245366">Soul et R&amp;B</translation>
-<translation id="7068733155164172741">Entrez le code à <ph name="OTP_LENGTH" /> chiffres</translation>
 <translation id="70705239631109039">Votre connexion n'est pas parfaitement sécurisée</translation>
 <translation id="7075452647191940183">La taille de la requête est trop grande</translation>
 <translation id="7078665357168027058">RA3</translation>

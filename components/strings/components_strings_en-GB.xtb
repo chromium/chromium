@@ -1335,7 +1335,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3962859241508114581">Previous track</translation>
 <translation id="3963721102035795474">Reader Mode</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{None}=1{From 1 site }other{From # sites }}</translation>
-<translation id="3969052498612555048">Can't find your code? <ph name="BEGIN_LINK" />Get new code<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calculating...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> is blocked</translation>
 <translation id="3984581365661308170">Envelope no.11</translation>
@@ -2725,7 +2724,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7064443976734085921">Compact Cars</translation>
 <translation id="7064851114919012435">Contact info</translation>
 <translation id="7067633076996245366">Soul and R&amp;B</translation>
-<translation id="7068733155164172741">Enter <ph name="OTP_LENGTH" />-digit code</translation>
 <translation id="70705239631109039">Your connection is not fully secure</translation>
 <translation id="7075452647191940183">Request is too large</translation>
 <translation id="7078665357168027058">RA3</translation>

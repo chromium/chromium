@@ -1335,7 +1335,6 @@
 <translation id="3962859241508114581">Претходна песна</translation>
 <translation id="3963721102035795474">Режим на читач</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ниту еден}=1{Од 1 сајт }one{Од # сајт }other{Од # сајтови }}</translation>
-<translation id="3969052498612555048">Не можете да го најдете кодот? <ph name="BEGIN_LINK" />Преземете нов код<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Се пресметува…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> е блокиран</translation>
 <translation id="3984581365661308170">Плик #11</translation>
@@ -2725,7 +2724,6 @@
 <translation id="7064443976734085921">Компактни автомобили</translation>
 <translation id="7064851114919012435">Податоци за контакт</translation>
 <translation id="7067633076996245366">Соул и R&amp;B</translation>
-<translation id="7068733155164172741">Внесете го <ph name="OTP_LENGTH" />-цифрениот код</translation>
 <translation id="70705239631109039">Вашата врска не е потполно безбедна</translation>
 <translation id="7075452647191940183">Барањето е предолго</translation>
 <translation id="7078665357168027058">RA3</translation>

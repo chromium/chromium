@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">التطبيقات المستخدمة مؤخرًا</translation>
 <translation id="1252999807265626933">جارٍ الشحن من <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">ما حالة الطقس؟</translation>
-<translation id="1267032506238418139">تغيير الاختصار</translation>
 <translation id="1269405891096105529">الأجهزة الملحقة غير متاحة للاستخدام في وضع الضيف.</translation>
 <translation id="1270290102613614947">تم إيقاف لوحة المفاتيح على الشاشة</translation>
 <translation id="1272079795634619415">إيقاف</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">مثبَّت حديثًا</translation>
 <translation id="1915307458270490472">قطع الاتصال</translation>
 <translation id="1918022425394817322">تم توجيه الكاميرا إلى الزاوية العلوية اليمنى.</translation>
-<translation id="1919743966458266018">لقد تغيّر اختصار فتح إدارة المهام. يُرجى استخدام <ph name="NEW_SHORTCUT" /> بدلاً من <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">النقرات التلقائية</translation>
 <translation id="1928739107511554905">‏للحصول على التحديث، استخدم الشاشة التي تعمل باللمس لإعادة تشغيل جهاز Chromebook، مع توصيل لوحة المفاتيح المرفقة.</translation>
 <translation id="1948405482892809935">التبديل إلى المستخدم التالي</translation>
@@ -975,7 +973,6 @@
 <translation id="5283198616748585639">إضافة دقيقة واحدة</translation>
 <translation id="528468243742722775">‏مفتاح End</translation>
 <translation id="5286194356314741248">جارٍ البحث</translation>
-<translation id="5293671101077843611">ما مِن أحداث اليوم.</translation>
 <translation id="5297423144044956168">لم يتم العثور على أي أجهزة جوّالة.</translation>
 <translation id="5297704307811127955">غير مُفعَّلة</translation>
 <translation id="5300589172476337783">عرض</translation>
@@ -1275,6 +1272,7 @@
 <translation id="6597278316891651699">تم توجيه الكاميرا إلى الزاوية السفلية اليسرى. هناك تعارض مع مساحة عرض نظام آخر.</translation>
 <translation id="661203523074512333">حالة الأمان <ph name="SECURITY_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
 <translation id="6612802754306526077">تم اختيار وضع تسجيل الشاشة.</translation>
+<translation id="6613765291890844037">مساحة التخزين المستخدَمة: <ph name="STORAGE_IN_USE_SIZE" /> | إجمالي مساحة التخزين: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">تم تفعيل شاشة الخصوصية.</translation>
 <translation id="6625718907317144388">‏تم حجب إشعارات التطبيقين <ph name="APP_1_TITLE" /> و<ph name="APP_2_TITLE" /> وغيرها من الإشعارات بسبب تفعيل ميزة Viewing Protection.</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1756,7 +1754,6 @@
 <translation id="8834539327799336565">الأجهزة المتصلة حاليًا</translation>
 <translation id="8841375032071747811">زر الرجوع</translation>
 <translation id="8843682306134542540">تبديل قفل التدوير. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">يتعذّر حتى الآن التحقُّق من رقم التعريف الشخصي أو كلمة المرور الخاصّة بك. ملاحظة: في حال تم تغيير كلمة المرور الخاصّة بك مؤخرًا، يمكنك تسجيل الدخول باستخدام كلمة المرور القديمة. وسيتم تطبيق كلمة المرور الجديدة بعد تسجيل الخروج.</translation>
 <translation id="8855885154700222542">مفتاح ملء الشاشة</translation>
 <translation id="8858369206579825206">عناصر التحكّم في الخصوصية</translation>

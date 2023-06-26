@@ -1335,7 +1335,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3962859241508114581">Föregående spår</translation>
 <translation id="3963721102035795474">Läsarläge</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ingen}=1{Från 1 webbplats }other{Från # webbplatser }}</translation>
-<translation id="3969052498612555048">Kan du inte hitta koden? <ph name="BEGIN_LINK" />Få en ny kod<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Beräknar ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> har blockerats</translation>
 <translation id="3984581365661308170">Kuvert nr 11</translation>
@@ -2725,7 +2724,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7064443976734085921">Kompaktbilar</translation>
 <translation id="7064851114919012435">Kontaktuppgifter</translation>
 <translation id="7067633076996245366">Soul och R&amp;B</translation>
-<translation id="7068733155164172741">Ange den <ph name="OTP_LENGTH" />-siffriga koden</translation>
 <translation id="70705239631109039">Anslutningen är inte helt säker</translation>
 <translation id="7075452647191940183">Begäran är för stor</translation>
 <translation id="7078665357168027058">RA3</translation>

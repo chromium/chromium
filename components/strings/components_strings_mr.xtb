@@ -1334,7 +1334,6 @@
 <translation id="3962859241508114581">मागील ट्रॅक</translation>
 <translation id="3963721102035795474">वाचक मोड</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{काहीही नाही}=1{1 साइटकडून }other{# साइटकडून }}</translation>
-<translation id="3969052498612555048">तुमचा कोड सापडत नाही का? <ph name="BEGIN_LINK" />नवीन कोड मिळवा<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">गणना करत आहे...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ब्लॉक केले आहे</translation>
 <translation id="3984581365661308170">एन्व्हलप #११</translation>
@@ -2725,7 +2724,6 @@
 <translation id="7064443976734085921">कॉम्पॅक्ट कार</translation>
 <translation id="7064851114919012435">संपर्क माहिती</translation>
 <translation id="7067633076996245366">सोल आणि आर अँड बी</translation>
-<translation id="7068733155164172741"><ph name="OTP_LENGTH" /> - अंकी कोड एंटर करा</translation>
 <translation id="70705239631109039">तुमचे कनेक्शन पूर्णपणे सुरक्षित नाही</translation>
 <translation id="7075452647191940183">विनंती खूपच मोठी आहे</translation>
 <translation id="7078665357168027058">RA3</translation>

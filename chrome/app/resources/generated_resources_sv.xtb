@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Fliken är aktiv igen</translation>
 <translation id="1003088604756913841">Öppna länken i ett nytt fönster i <ph name="APP" /></translation>
 <translation id="100323615638474026">USB-enhet (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google Säker webbsökning</translation>
 <translation id="1004218526896219317">Tillgång till webbplatsen</translation>
 <translation id="1005274289863221750">Använd mikrofonen och kameran</translation>
 <translation id="1005333234656240382">Vill du aktivera felsökning med ADB?</translation>
@@ -523,6 +522,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1434886155212424586">Startsidan är sidan Ny flik</translation>
 <translation id="1435940442311036198">Använd en nyckel på en annan enhet</translation>
 <translation id="1436390408194692385">Giltigt i <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Fortsätt med konfigurationen</translation>
 <translation id="1436784010935106834">Borttagna</translation>
 <translation id="1437986450143295708">Beskriv problemet utförligt</translation>
 <translation id="1439671507542716852">långsiktig support</translation>
@@ -1952,7 +1952,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2577446426265992344">utan adressfält</translation>
 <translation id="257779572837908839">Konfigurera som Chromebox för möten</translation>
 <translation id="2579309488038515659">Aktivera surfzon</translation>
-<translation id="2579596474754516455">Skanna PDF-bilder för att konvertera text till skärmläsare vid behov</translation>
 <translation id="2580889980133367162">Tillåt alltid att <ph name="HOST" /> laddar flera filer</translation>
 <translation id="258095186877893873">Lång</translation>
 <translation id="2581455244799175627">Mer om att tillåta tredjepartscookies</translation>
@@ -5430,9 +5429,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5602765853043467355">Rensa bokmärken, historik , lösenord med mera från den här enheten</translation>
 <translation id="5605758115928394442">En avisering har skickats till din mobil för att bekräfta att det är du.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Detta tillägg har blockerats}other{Dessa tillägg har blockerats}}</translation>
-<translation id="560743070587960985">Den här filen kan innehålla ett virus eller skadlig programvara.
-
-Du kan skicka den till Google för att kontrollera om den är säker. Genomsökningen tar vanligtvis några sekunder.</translation>
 <translation id="560834977503641186">wifi-synkronisering, läs mer</translation>
 <translation id="5608580678041221894">Tryck på följande knappar för att justera eller flytta beskärningsområdet</translation>
 <translation id="5609231933459083978">Appen ser ut att vara ogiltig.</translation>
@@ -6197,6 +6193,7 @@ Du kan skicka den till Google för att kontrollera om den är säker. Genomsökn
 <translation id="6263082573641595914">Microsofts version av certifikatutfärdare</translation>
 <translation id="6263284346895336537">Inte kritiskt</translation>
 <translation id="6264365405983206840">Markera &amp;alla</translation>
+<translation id="6264376385120300461">Ladda ned ändå</translation>
 <translation id="6265687851677020761">Ta bort port</translation>
 <translation id="6266532094411434237">Ansluter till <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Välj ett certifikat för att styrka din identitet för <ph name="HOST_NAME" /></translation>
@@ -7220,7 +7217,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7149839598364933473">Konvertera den här enheten till en <ph name="DEVICE_OS" />-enhet.</translation>
 <translation id="7149893636342594995">Senaste 24 timmarna</translation>
 <translation id="7152478047064750137">Det här tillägget kräver inga särskilda behörigheter</translation>
-<translation id="7153309176431047193">Konvertera bilder till text</translation>
 <translation id="7154130902455071009">Ändra startsida till: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Konvertera bild till text</translation>
 <translation id="7159953856712257647">Installerat som standard</translation>
@@ -7775,7 +7771,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7634280112532283638">Motverka spam och bedrägerier</translation>
 <translation id="7634337648687970851">Återställning av lokal data stöds inte för närvarande.</translation>
 <translation id="7634566076839829401">Ett fel uppstod. Försök igen.</translation>
-<translation id="763472884969134151">Analysen utfördes av <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Fäst av administratören</translation>
 <translation id="7635711411613274199">Huruvida annonser som visas när du surfar anpassas eller inte beror på den här inställningen, <ph name="BEGIN_LINK1" />annonsämnen<ph name="LINK_END1" />, dina <ph name="BEGIN_LINK2" />cookieinställningar<ph name="LINK_END2" /> och om webbplatsen du besöker anpassar annonser</translation>
 <translation id="7636919061354591437">Installera på den här enheten</translation>

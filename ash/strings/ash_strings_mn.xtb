@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">Саяхны аппууд</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />-с цэнэглэж байна</translation>
 <translation id="1255033239764210633">Цаг агаар ямар байна вэ?</translation>
-<translation id="1267032506238418139">Товчлолыг өөрчлөх</translation>
 <translation id="1269405891096105529">Зочны горимд нэмэлтийг дэмждэггүй</translation>
 <translation id="1270290102613614947">Дэлгэцэн дээрх гарыг идэвхгүй болгосон байна</translation>
 <translation id="1272079795634619415">Зогс</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">Шинээр суулгасан</translation>
 <translation id="1915307458270490472">Таслах</translation>
 <translation id="1918022425394817322">Камерыг баруун дээд булан руу зэрэгцүүлсэн</translation>
-<translation id="1919743966458266018">Ажлын менежерийг нээх товчлолын арга өөрчлөгдсөн. <ph name="OLD_SHORTCUT" />-н оронд <ph name="NEW_SHORTCUT" />-г ашиглана уу.</translation>
 <translation id="1923539912171292317">Автомат даралтууд</translation>
 <translation id="1928739107511554905">Хавсаргасан гараар Chromebook ээ дахин эхлүүлэхийн тулд мэдрэгч дэлгэцийг ашиглан шинэчлэлт авна уу.</translation>
 <translation id="1948405482892809935">Дараагийн хэрэглэгч рүү сэлгэх</translation>
@@ -977,7 +975,6 @@
 <translation id="5283198616748585639">1 минут нэмэх</translation>
 <translation id="528468243742722775">Төгсгөл</translation>
 <translation id="5286194356314741248">Скан хийж байна</translation>
-<translation id="5293671101077843611">Өнөөдөр арга хэмжээ байхгүй</translation>
 <translation id="5297423144044956168">Мобайл төхөөрөмж олдсонгүй</translation>
 <translation id="5297704307811127955">Унтраалттай</translation>
 <translation id="5300589172476337783">Харуулах</translation>
@@ -1763,7 +1760,6 @@
 <translation id="8834539327799336565">Одоогоор холбогдсон</translation>
 <translation id="8841375032071747811">Буцах товчлуур</translation>
 <translation id="8843682306134542540">Эргүүлэлтийн түгжээг унтрааж/асаана уу. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Таны ПИН эсвэл нууц үгийг баталгаажуулж чадаагүй хэвээрээ байна. Тайлбар: Хэрэв та нууц үгээ саяхан сольсон бол хуучин нууц үгээ ашиглана уу. Таныг гарсны дараа, шинэ нууц үгийг ашиглах боломжтой болно.</translation>
 <translation id="8855885154700222542">Бүтэн дэлгэцийн түлхүүр</translation>
 <translation id="8858369206579825206">Нууцлалын тохиргоо</translation>

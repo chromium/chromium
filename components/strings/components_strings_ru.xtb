@@ -1330,7 +1330,6 @@
 <translation id="3962859241508114581">Предыдущий трек</translation>
 <translation id="3963721102035795474">Режим чтения</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Нет}=1{С 1 сайта }one{С # сайта }few{С # сайтов }many{С # сайтов }other{С # сайта }}</translation>
-<translation id="3969052498612555048">Не можете найти код? <ph name="BEGIN_LINK" />Получить новый<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Вычисление…</translation>
 <translation id="3973234410852337861">Сайт <ph name="HOST_NAME" /> заблокирован</translation>
 <translation id="3984581365661308170">Конверт 11</translation>
@@ -2719,7 +2718,6 @@
 <translation id="7064443976734085921">Компактные автомобили</translation>
 <translation id="7064851114919012435">Контактные данные</translation>
 <translation id="7067633076996245366">Соул и R&amp;B</translation>
-<translation id="7068733155164172741">Введите <ph name="OTP_LENGTH" />-значный код</translation>
 <translation id="70705239631109039">Подключение к сайту небезопасно</translation>
 <translation id="7075452647191940183">Запрос слишком велик.</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3275,6 +3273,7 @@
 <translation id="8246482227229072868">Кольца</translation>
 <translation id="8249296373107784235">Отмена</translation>
 <translation id="8249463483885748674">Стандартные и вступительные экзамены</translation>
+<translation id="824968735947741546">Перевод: <ph name="SOURCE" /> (распознан автоматически) – <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Адрес добавлен на это устройство. Сохраните его в аккаунте Google (<ph name="ACCOUNT" />), чтобы использовать в других продуктах Google.</translation>
 <translation id="8252991034201168845">Кнопка "Открыть настройки специальных возможностей". Нажмите Ввод, чтобы войти в эти настройки.</translation>
 <translation id="8253091569723639551">Необходимо указать платежный адрес</translation>

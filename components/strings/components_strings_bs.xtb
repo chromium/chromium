@@ -1335,7 +1335,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3962859241508114581">Prethodna numera</translation>
 <translation id="3963721102035795474">Način rada za čitanje</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ništa}=1{S jedne web lokacije }one{S # web lokacije }few{S # web lokacije }other{S # web lokacija }}</translation>
-<translation id="3969052498612555048">Ne možete pronaći kôd? <ph name="BEGIN_LINK" />Preuzmite novi kȏd<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Računanje…</translation>
 <translation id="3973234410852337861">Host <ph name="HOST_NAME" /> je blokiran</translation>
 <translation id="3984581365661308170">Koverta #11</translation>
@@ -2725,7 +2724,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7064443976734085921">Kompaktni automobili</translation>
 <translation id="7064851114919012435">Podaci za kontakt</translation>
 <translation id="7067633076996245366">Soul i R&amp;B muzika</translation>
-<translation id="7068733155164172741">Unesite <ph name="OTP_LENGTH" />-cifreni kôd</translation>
 <translation id="70705239631109039">Vaša veza nije u potpunosti sigurna</translation>
 <translation id="7075452647191940183">Zahtjev je prevelik</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3281,6 +3279,7 @@ Dodatni detalji:
 <translation id="8246482227229072868">Prstenje</translation>
 <translation id="8249296373107784235">Prekini</translation>
 <translation id="8249463483885748674">Standardizirani prijemni testovi</translation>
+<translation id="824968735947741546">Prevodi se <ph name="SOURCE" /> (automatski otkriveno) na <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Adresa je trenutno sačuvana na ovom uređaju. Da je koristite na Googleovim proizvodima, sačuvajte je na Google računu <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Dugme za upravljanje postavkama pristupačnosti, pritisnite Enter da personalizirate alate za pristupačnost u postavkama ChromeOS-a</translation>
 <translation id="8253091569723639551">Potrebno je navesti adresu za naplatu</translation>

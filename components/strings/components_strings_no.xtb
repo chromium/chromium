@@ -1335,7 +1335,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3962859241508114581">Forrige spor</translation>
 <translation id="3963721102035795474">Lesermodus</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ingen}=1{Fra 1 nettsted }other{Fra # nettsteder }}</translation>
-<translation id="3969052498612555048">Finner du ikke koden? <ph name="BEGIN_LINK" />Få en ny kode<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Beregner …</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> er blokkert</translation>
 <translation id="3984581365661308170">Konvolutt nr. 11</translation>
@@ -2725,7 +2724,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7064443976734085921">Kompaktbiler</translation>
 <translation id="7064851114919012435">Kontaktinformasjon</translation>
 <translation id="7067633076996245366">Soul og R&amp;B</translation>
-<translation id="7068733155164172741">Skriv inn den <ph name="OTP_LENGTH" />-sifrede koden</translation>
 <translation id="70705239631109039">Tilkoblingen er ikke helt sikker</translation>
 <translation id="7075452647191940183">Forespørselen er for stor</translation>
 <translation id="7078665357168027058">RA3</translation>

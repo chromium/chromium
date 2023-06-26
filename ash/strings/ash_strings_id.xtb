@@ -69,7 +69,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1247519845643687288">Aplikasi terbaru</translation>
 <translation id="1252999807265626933">Mengisi daya dari <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Gimana kondisi cuaca?</translation>
-<translation id="1267032506238418139">Perubahan pintasan</translation>
 <translation id="1269405891096105529">Periferal tidak didukung dalam mode Tamu</translation>
 <translation id="1270290102613614947">Keyboard di layar dinonaktifkan</translation>
 <translation id="1272079795634619415">Berhenti</translation>
@@ -218,7 +217,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1908992311423394684">Baru diinstal</translation>
 <translation id="1915307458270490472">Akhiri</translation>
 <translation id="1918022425394817322">Kamera dipaskan ke pojok kanan atas</translation>
-<translation id="1919743966458266018">Pintasan untuk membuka pengelola tugas telah berubah. Gunakan <ph name="NEW_SHORTCUT" /> sebagai ganti <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Klik otomatis</translation>
 <translation id="1928739107511554905">Untuk mendapatkan update, gunakan layar sentuh untuk menyalakan ulang Chromebook dengan keyboard yang disertakan.</translation>
 <translation id="1948405482892809935">Beralih ke pengguna berikutnya</translation>
@@ -976,7 +974,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5283198616748585639">Tambahkan 1 mnt</translation>
 <translation id="528468243742722775">Berakhir</translation>
 <translation id="5286194356314741248">Memindai</translation>
-<translation id="5293671101077843611">Tidak ada acara hari ini</translation>
 <translation id="5297423144044956168">Perangkat seluler tidak ditemukan</translation>
 <translation id="5297704307811127955">Nonaktif</translation>
 <translation id="5300589172476337783">Tampilkan</translation>
@@ -1760,7 +1757,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8834539327799336565">Saat ini terhubung</translation>
 <translation id="8841375032071747811">Tombol kembali</translation>
 <translation id="8843682306134542540">Alihkan kunci rotasi. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN atau sandi Anda belum dapat diverifikasi. Catatan: Jika Anda baru-baru ini mengubah sandi, gunakan sandi lama Anda. Sandi baru akan diterapkan setelah Anda logout.</translation>
 <translation id="8855885154700222542">Tombol layar penuh</translation>
 <translation id="8858369206579825206">Kontrol privasi</translation>

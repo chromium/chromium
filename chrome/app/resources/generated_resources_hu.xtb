@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">A lap újra aktív</translation>
 <translation id="1003088604756913841">Link megnyitása új <ph name="APP" />-ablakban</translation>
 <translation id="100323615638474026">USB-eszköz (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google Biztonságos Böngészés</translation>
 <translation id="1004218526896219317">Webhelyhozzáférés</translation>
 <translation id="1005274289863221750">Mikrofon és kamera használata</translation>
 <translation id="1005333234656240382">Engedélyezi az ADB-hibakeresést?</translation>
@@ -523,6 +522,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1434886155212424586">Az Új lap oldal a kezdőlap</translation>
 <translation id="1435940442311036198">Azonosítókulcs használata másik eszközön</translation>
 <translation id="1436390408194692385">Érvényesség: <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Beállítás folytatása</translation>
 <translation id="1436784010935106834">Eltávolítva</translation>
 <translation id="1437986450143295708">Ismertesse részletesen a problémát</translation>
 <translation id="1439671507542716852">hosszú távú terméktámogatás</translation>
@@ -1951,7 +1951,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2577446426265992344">cím- és keresősáv nélkül</translation>
 <translation id="257779572837908839">Beállítás videokonferenciákhoz készült Chromebox eszközként</translation>
 <translation id="2579309488038515659">Hotspot engedélyezése</translation>
-<translation id="2579596474754516455">Beolvasással a PDF formátumú képeket a képernyőolvasó számára olvasható szöveggé alakíthatja szükség esetén</translation>
 <translation id="2580889980133367162">A(z) <ph name="HOST" /> mindig letölthet több fájlt</translation>
 <translation id="258095186877893873">Hosszú</translation>
 <translation id="2581455244799175627">További információ a harmadik féltől származó cookie-k engedélyezéséről</translation>
@@ -5429,9 +5428,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5602765853043467355">Könyvjelzők, előzmények, jelszavak és egyebek törlése erről az eszközről</translation>
 <translation id="5605758115928394442">A rendszer értesítést küldött az Ön telefonjára, hogy segítségével igazolhassa személyazonosságát.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Ez a bővítmény le van tiltva}other{Ezek a bővítmények le vannak tiltva}}</translation>
-<translation id="560743070587960985">Lehet, hogy ez a fájl vírus vagy rosszindulatú program.
-
-Elküldheti a Google-nak biztonsági ellenőrzésre. A vizsgálat általában néhány másodpercet vesz igénybe.</translation>
 <translation id="560834977503641186">Wi-Fi szinkronizálása, további információ</translation>
 <translation id="5608580678041221894">Az alábbi kulcsokra koppintva módosítható vagy mozgatható a körbevágás területe</translation>
 <translation id="5609231933459083978">Úgy tűnik, hogy az alkalmazás érvénytelen.</translation>
@@ -6197,6 +6193,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6263082573641595914">Microsoft CA verzió</translation>
 <translation id="6263284346895336537">Nem fontos</translation>
 <translation id="6264365405983206840">Össz&amp;es kiválasztása</translation>
+<translation id="6264376385120300461">Letöltés mindenképpen</translation>
 <translation id="6265687851677020761">Port eltávolítása</translation>
 <translation id="6266532094411434237">Csatlakozás a következőhöz: <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Válasszon tanúsítványt a <ph name="HOST_NAME" /> hitelesítéséhez</translation>
@@ -7220,7 +7217,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7149839598364933473">Eszköz konvertálása a következő rendszert használó eszközzé: <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Az elmúlt 24 órából</translation>
 <translation id="7152478047064750137">A bővítmény nem igényel különleges engedélyeket</translation>
-<translation id="7153309176431047193">Képek konvertálása szöveggé</translation>
 <translation id="7154130902455071009">Kezdőoldal módosítása a következőre: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Kép átalakítása szöveggé</translation>
 <translation id="7159953856712257647">Alapértelmezés szerint telepítve</translation>
@@ -7774,7 +7770,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7634280112532283638">A spamek és a csalás visszaszorítása</translation>
 <translation id="7634337648687970851">A helyi adatok helyreállítása jelenleg nem támogatott.</translation>
 <translation id="7634566076839829401">Hiba történt. Próbálkozzon újra.</translation>
-<translation id="763472884969134151">Az elemzést a(z) <ph name="LINK" /> végezte</translation>
 <translation id="7635048370253485243">A rendszergazda tűzte ki</translation>
 <translation id="7635711411613274199">Az, hogy böngészés közben a megjelenő hirdetések személyre vannak-e szabva, ettől a beállítástól, a <ph name="BEGIN_LINK1" />hirdetéstémáktól<ph name="LINK_END1" />, a <ph name="BEGIN_LINK2" />cookie-beállításaitól<ph name="LINK_END2" /> és attól függ, hogy a felkeresett webhely személyre szabja-e a hirdetéseket.</translation>
 <translation id="7636919061354591437">Telepítés ezen az eszközön</translation>

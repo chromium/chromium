@@ -69,7 +69,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1247519845643687288">Seneste apps</translation>
 <translation id="1252999807265626933">Oplader fra <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hvordan er vejret?</translation>
-<translation id="1267032506238418139">Ændring af genvej</translation>
 <translation id="1269405891096105529">Eksternt tilbehør understøttes ikke i gæstetilstand</translation>
 <translation id="1270290102613614947">Skærmtastaturet er deaktiveret</translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -218,7 +217,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1908992311423394684">Installeret for nylig</translation>
 <translation id="1915307458270490472">Læg på</translation>
 <translation id="1918022425394817322">Kameraet er fastgjort til hjørnet øverst til højre</translation>
-<translation id="1919743966458266018">Genvejen til at åbne Jobliste er ændret. Brug <ph name="NEW_SHORTCUT" /> i stedet for <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatiske klik</translation>
 <translation id="1928739107511554905">Brug touchskærmen til at genstarte din Chromebook med det tilsluttede tastatur for at hente opdateringen.</translation>
 <translation id="1948405482892809935">Skift til næste bruger</translation>
@@ -976,7 +974,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5283198616748585639">Tilføj 1 minut</translation>
 <translation id="528468243742722775">Afslut</translation>
 <translation id="5286194356314741248">Søger</translation>
-<translation id="5293671101077843611">Ingen begivenheder i dag</translation>
 <translation id="5297423144044956168">Der blev ikke fundet nogen mobilenheder</translation>
 <translation id="5297704307811127955">Fra</translation>
 <translation id="5300589172476337783">Vis</translation>
@@ -1760,7 +1757,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8834539327799336565">Forbundet lige nu</translation>
 <translation id="8841375032071747811">Knappen Tilbage</translation>
 <translation id="8843682306134542540">Slå Lås rotation til eller fra. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Søg+Esc</translation>
 <translation id="8853703225951107899">Din pin- eller adgangskode kan stadig ikke verificeres. Bemærk! Hvis du har ændret din adgangskode for nylig, skal du bruge din gamle adgangskode. Den nye adgangskode anvendes, når du har logget ud.</translation>
 <translation id="8855885154700222542">Tast til fuld skærm</translation>
 <translation id="8858369206579825206">Privatlivsindstillinger</translation>

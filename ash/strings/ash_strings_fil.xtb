@@ -69,7 +69,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1247519845643687288">Mga kamakailang app</translation>
 <translation id="1252999807265626933">Nagcha-charge mula sa <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Ano'ng lagay ng panahon?</translation>
-<translation id="1267032506238418139">Pagbabago ng shortcut</translation>
 <translation id="1269405891096105529">Hindi sinusuportahan ang peripheral sa Guest mode</translation>
 <translation id="1270290102613614947">Naka-disable ang on-screen na keyboard</translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -218,7 +217,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1908992311423394684">Kaka-install lang</translation>
 <translation id="1915307458270490472">Ibaba</translation>
 <translation id="1918022425394817322">Nag-snap ang camera sa kanang sulok sa itaas</translation>
-<translation id="1919743966458266018">Napalitan na ang shortcut para sa pagbubukas sa task manager. Mangyaring gamitin ang <ph name="NEW_SHORTCUT" /> sa halip na gamitin ang <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Mga awtomatikong pag-click</translation>
 <translation id="1928739107511554905">Para makuha ang update, gamitin ang touchscreen para i-restart ang iyong Chromebook nang nakakabit ang keyboard.</translation>
 <translation id="1948405482892809935">Lumipat sa susunod na user</translation>
@@ -976,7 +974,6 @@ Isaksak ang iyong device.</translation>
 <translation id="5283198616748585639">Magdagdag ng 1 minuto</translation>
 <translation id="528468243742722775">Tapusin</translation>
 <translation id="5286194356314741248">Nagsa-scan</translation>
-<translation id="5293671101077843611">Walang event ngayon</translation>
 <translation id="5297423144044956168">Walang nakitang mobile device</translation>
 <translation id="5297704307811127955">Naka-off</translation>
 <translation id="5300589172476337783">Ipakita</translation>
@@ -1186,6 +1183,7 @@ Isaksak ang iyong device.</translation>
 <translation id="6165508094623778733">Matuto pa</translation>
 <translation id="6166852626429024716">Maghanap sa iyong device, mga app, mga setting, web...</translation>
 <translation id="6168318496333165060">Buksan ang Diagnostics app</translation>
+<translation id="6173151025443907148">Hindi sinusuportahan ang pag-sign in ng pangalawang user kung naka-enable ang Lacros. Gumamit na lang ng pangalawang profile ng browser sa Lacros o i-disable ang Lacros at subukan ulit.</translation>
 <translation id="6179832488876878285">Puwede mong i-pin ang iyong mahahalagang file dito. Buksan ang app na Mga File para magsimula.</translation>
 <translation id="6182592640011875895">Buksan ang desk</translation>
 <translation id="6185696379715117369">Pataas sa pahina</translation>
@@ -1760,7 +1758,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8834539327799336565">Kasalukuyang nakakonekta</translation>
 <translation id="8841375032071747811">Button na Bumalik</translation>
 <translation id="8843682306134542540">I-toggle ang lock ng pag-rotate. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Hindi pa rin ma-verify ang iyong PIN o password. Tandaan: Kung pinalitan mo kamakailan ang iyong password, gamitin ang lumang password mo. Malalapat ang iyong bagong password kapag nag-sign out ka.</translation>
 <translation id="8855885154700222542">Key ng fullscreen</translation>
 <translation id="8858369206579825206">Mga kontrol sa privacy</translation>

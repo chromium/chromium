@@ -3614,7 +3614,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika kebijakan disetel, pengguna tidak dapat mengubahnya. Jika kebijakan tidak disetel, keyboard virtual mula-mula akan dinonaktifkan, tetapi pengguna dapat mengaktifkannya kapan saja.</translation>
 <translation id="412697421478384751">Izinkan pengguna menyetel PIN lemah untuk PIN layar kunci</translation>
-<translation id="4132809439883883106">Gunakan Nilai Default untuk perjanjian kunci pasca-kuantum Kyber yang diaktifkan untuk TLS</translation>
 <translation id="4136603825567209889">Aktifkan pelaporan informasi identifikasi pengguna</translation>
 <translation id="4138655880188755661">Batas Waktu</translation>
 <translation id="4140646780789794190">Nonaktifkan berbagi data diagnostik ke PluginVm</translation>
@@ -4182,7 +4181,6 @@ API ini.</translation>
       Jika kebijakan tidak disetel, tidak akan ada pemilihan otomatis untuk situs apa pun.</translation>
 <translation id="4611983465824842867">Jangan menampilkan peringatan atau menonaktifkan isi otomatis pada formulir yang tidak aman</translation>
 <translation id="4615003180013429835">Mode penguraian sitelist</translation>
-<translation id="4616706248182656871">Nonaktifkan perjanjian kunci pasca-kuantum Kyber untuk TLS</translation>
 <translation id="4617338332148204752">Lewati pemeriksaan tag meta pada <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Fitur NewBaseUrlInheritanceBehavior tersedia</translation>
 <translation id="4624006912948309924">Menyetel kebijakan akan menetapkan ID aplikasi mana yang ditampilkan oleh <ph name="PRODUCT_OS_NAME" /> sebagai aplikasi tersemat di kotak peluncur, dan pengguna tidak dapat mengubahnya.
@@ -7347,7 +7345,6 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 <translation id="7421230730436851224">Jangan pernah melakukan sandbox proses audio</translation>
 <translation id="7421483919690710988">Setel ukuran cache disk media dalam bita</translation>
 <translation id="7424751532654212117">Daftar pengecualian untuk daftar plugin yang dinonaktifkan</translation>
-<translation id="7425076578809444474">Mengaktifkan perjanjian kunci pasca-kuantum untuk TLS</translation>
 <translation id="7426112309807051726">Menentukan apakah pengoptimalan <ph name="TLS_FALSE_START" /> harus dinonaktifkan atau tidak. Karena alasan historis, kebijakan ini diberi nama DisableSSLRecordSplitting.
 
       Jika kebijakan tidak disetel, atau disetel ke False, <ph name="TLS_FALSE_START" /> akan diaktifkan. Jika disetel ke True, <ph name="TLS_FALSE_START" /> akan dinonaktifkan.</translation>
@@ -8618,7 +8615,6 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
           Jika kebijakan ini tidak ditetapkan, durasi waktu default akan digunakan.
 
           Nilai kebijakan harus ditentukan dalam milidetik.</translation>
-<translation id="859316804517480666">Aktifkan perjanjian kunci pasca-kuantum Kyber untuk TLS</translation>
 <translation id="859579553230883285">Nonaktifkan setelan Iklan yang disarankan situs <ph name="PRIVACY_SANDBOX_NAME" /> untuk pengguna Anda.</translation>
 <translation id="8597758693275075382">String OEM SMBIOS yang akan diteruskan ke VM selama penginstalan. Default-nya adalah daftar kosong.</translation>
 <translation id="8598786284856179541">Aktifkan pelaporan informasi versi</translation>

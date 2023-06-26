@@ -69,7 +69,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1247519845643687288">Poslední aplikace</translation>
 <translation id="1252999807265626933">Zdroj nabíjení: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Jaké je počasí?</translation>
-<translation id="1267032506238418139">Změna klávesové zkratky</translation>
 <translation id="1269405891096105529">Periferní zařízení není v režimu hosta podporováno</translation>
 <translation id="1270290102613614947">Softwarová klávesnice je deaktivována</translation>
 <translation id="1272079795634619415">Zastavit</translation>
@@ -218,7 +217,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1908992311423394684">Nová instalace</translation>
 <translation id="1915307458270490472">Zavěsit</translation>
 <translation id="1918022425394817322">Kamera byla připnuta do pravého horního rohu</translation>
-<translation id="1919743966458266018">Zkratka k otevření správce úloh se změnila. Namísto zkratky <ph name="OLD_SHORTCUT" /> používejte zkratku <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatická kliknutí</translation>
 <translation id="1928739107511554905">K získání aktualizace Chromebook pomocí dotykové obrazovky restartujte s připojenou klávesnicí.</translation>
 <translation id="1948405482892809935">Přepnout na dalšího uživatele</translation>
@@ -976,7 +974,6 @@ Připojte zařízení k napájení.</translation>
 <translation id="5283198616748585639">Přidat 1 min</translation>
 <translation id="528468243742722775">Konec</translation>
 <translation id="5286194356314741248">Skenování</translation>
-<translation id="5293671101077843611">Dnes nemáte žádné události</translation>
 <translation id="5297423144044956168">Nebyla nalezena žádná mobilní zařízení</translation>
 <translation id="5297704307811127955">Vypnuto</translation>
 <translation id="5300589172476337783">Zobrazit</translation>
@@ -1760,7 +1757,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8834539327799336565">Momentálně připojeno</translation>
 <translation id="8841375032071747811">Tlačítko Zpět</translation>
 <translation id="8843682306134542540">Přepnout zámek otáčení. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Hledat+Esc</translation>
 <translation id="8853703225951107899">Váš PIN nebo heslo se stále nepodařilo ověřit. Poznámka: Pokud jste heslo nedávno změnili, použijte staré heslo. Nové heslo bude možné použít až po odhlášení.</translation>
 <translation id="8855885154700222542">Tlačítko celé obrazovky</translation>
 <translation id="8858369206579825206">Nastavení ochrany soukromí</translation>

@@ -63,6 +63,7 @@
 <translation id="1291506870746876680">Dovoljenja za spletno mesto <ph name="BEGIN_BOLD" />»<ph name="SITE_NAME" />«<ph name="END_BOLD" /> bodo ponastavljena na izklopljena, ko zapustite to spletno mesto.</translation>
 <translation id="1305822519689023679">Če želite zagotoviti, da boste lahko v računu Google vedno uporabljali gesla, potrdite, da ste to vi.</translation>
 <translation id="1312721752506309252">Izboljšana zaščita je vklopljena.</translation>
+<translation id="1316466854070752597">Ogled vseh odprtih zavihkov</translation>
 <translation id="1321993286294231467">Napaka pri shranjevanju slike.</translation>
 <translation id="1322735045095424339">Vaša organizacija zahteva anonimni način.</translation>
 <translation id="1323735185997015385">Izbriši</translation>
@@ -438,6 +439,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3656645960301737801">Dokončajte dogodek in ga shranite</translation>
 <translation id="3661160521073045932">Profil konfiguracije je na voljo</translation>
 <translation id="3670030362669914947">Številka</translation>
+<translation id="368329460027487650">Odjavljen. Odpre možnosti za prijavo.</translation>
 <translation id="3700134753671613714">Prijavite se, da boste lahko dostopali do zaznamkov v vseh napravah.</translation>
 <translation id="3709582977625132201">Označi kot neprebrano</translation>
 <translation id="371230970611282515">Predvideva nevarne dogodke, preden se zgodijo, in vas opozarja nanje.</translation>
@@ -666,6 +668,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="5190835502935405962">Vrstica z zaznamki</translation>
 <translation id="519530786644929958">Prenos ni uspel in ga ni mogoče poskusiti znova.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5209674813563615506">Odpiranje novega zavihka</translation>
 <translation id="5211488077761630279">Ali spletnemu mestu »<ph name="SITE_NAME" />« dovolite uporabo dovoljenja za <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Pomagajte izboljšati varnost v spletu za vse</translation>
 <translation id="5221339005270097309">Preverjanje gesel …</translation>
@@ -941,6 +944,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="6684906340059221832">Spremljanje cen</translation>
 <translation id="6710079714193676716">Upravlja vaša organizacija. Nekatere funkcije morda niso na voljo. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="672735642903863329">Dostop do zaznamkov, gesel in drugih podatkov v vseh vaših napravah.</translation>
 <translation id="6730682669179532099">Gesel ni mogoče izvoziti</translation>
 <translation id="6732087373923685049">fotoaparat</translation>
 <translation id="6748108480210050150">Od</translation>

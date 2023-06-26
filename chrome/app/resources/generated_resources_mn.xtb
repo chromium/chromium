@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Таб дахин идэвхэжсэн</translation>
 <translation id="1003088604756913841">Холбоосыг шинэ <ph name="APP" /> цонхонд нээх</translation>
 <translation id="100323615638474026">USB төхөөрөмж (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google-н аюулгүй хөтөч</translation>
 <translation id="1004218526896219317">Сайтын хандалт</translation>
 <translation id="1005274289863221750">Микрофон болон камераа ашиглана уу</translation>
 <translation id="1005333234656240382">ADB алдаа засахыг идэвхжүүлэх үү?</translation>
@@ -523,6 +522,7 @@
 <translation id="1434886155212424586">Нүүр хуудас нь шинэ цонхтой хуудас юм</translation>
 <translation id="1435940442311036198">Өөр төхөөрөмж дээрх passkey ашиглах</translation>
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" />-н турш хүчинтэй</translation>
+<translation id="1436671784520050284">Тохируулгыг үргэлжлүүлэх</translation>
 <translation id="1436784010935106834">Устгасан</translation>
 <translation id="1437986450143295708">Асуудлыг дэлгэрэнгүй тайлбарлана уу</translation>
 <translation id="1439671507542716852">урт хугацааны тусламж</translation>
@@ -1948,7 +1948,6 @@
 <translation id="2577446426265992344">Omnibox-гүй</translation>
 <translation id="257779572837908839">Уулзалтад зориулсан Chromebox-р тохируулах</translation>
 <translation id="2579309488038515659">Сүлжээний цэгийг идэвхжүүлэх</translation>
-<translation id="2579596474754516455">Шаардлагатай үед дэлгэц уншигчид зориулж PDF зургийг текст болгон хөрвүүлэхийн тулд скан хийгээрэй</translation>
 <translation id="2580889980133367162"><ph name="HOST" />-ийг хэд хэдэн файл татаж авахыг үргэлж зөвшөөрөх</translation>
 <translation id="258095186877893873">Урт</translation>
 <translation id="2581455244799175627">Гуравдагч талын күүкиг зөвшөөрөх тухай дэлгэрэнгүй</translation>
@@ -5434,9 +5433,6 @@
 <translation id="5602765853043467355">Энэ төхөөрөмжөөс хавчуурга, түүх, нууц үг болон бусад зүйлийг устгах</translation>
 <translation id="5605758115928394442">Таныг мөн эсэхийг баталгаажуулах зорилгоор таны утсанд мэдэгдэл илгээсэн болно.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Энэ өргөтгөлийг блоклосон байна}other{Эдгээр өргөтгөлийг блоклосон байна}}</translation>
-<translation id="560743070587960985">Энэ файл вирус эсвэл хортой программ байж магадгүй.
-
-Та үүнийг аюултай эсэхийг шалгуулахаар Google рүү илгээх боломжтой. Скан хийхэд ихэвчлэн хэдэн секунд зарцуулдаг.</translation>
 <translation id="560834977503641186">Wi-Fi синк, Нэмэлт мэдээлэл авах</translation>
 <translation id="5608580678041221894">Тайрсан хэсгийг тохируулах эсвэл зөөхийн тулд дараах түлхүүрийг товшино уу</translation>
 <translation id="5609231933459083978">Энэхүү апп нь хүчин төгөлдөр бус апп байж болзошгүй байна.</translation>
@@ -6201,6 +6197,7 @@
 <translation id="6263082573641595914">Microsoft-ийн CA хувилбар</translation>
 <translation id="6263284346895336537">Чухал биш</translation>
 <translation id="6264365405983206840">Бүгдийг сонгох</translation>
+<translation id="6264376385120300461">Ямартай ч татах</translation>
 <translation id="6265687851677020761">Портыг хасах</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" />-д холбогдож байна</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" />-д өөрийгөө баталгаажуулахын тулд гэрчилгээгээ сонгон оруулна уу</translation>
@@ -7227,7 +7224,6 @@
 <translation id="7149839598364933473">Энэ төхөөрөмжийг <ph name="DEVICE_OS" /> төхөөрөмж болгож хөрвүүлээрэй.</translation>
 <translation id="7149893636342594995">Сүүлийн 24 цаг</translation>
 <translation id="7152478047064750137">Энэ өргөтгөл ямар нэгэн тусгай зөвшөөрөл шаарддаггүй</translation>
-<translation id="7153309176431047193">Зургийг текст болгон хөрвүүлэх</translation>
 <translation id="7154130902455071009">Өөрийн эхлэх хуудсыг :<ph name="START_PAGE" /> болгож өөрчлөх</translation>
 <translation id="7156231244155528270">Зургийг текст рүү хөрвүүлэх</translation>
 <translation id="7159953856712257647">Өгөгдмөлөөр суулгасан</translation>
@@ -7782,7 +7778,6 @@
 <translation id="7634280112532283638">Спам болон залиланг бууруулах</translation>
 <translation id="7634337648687970851">Дотоод өгөгдлийг сэргээхийг одоогоор дэмждэггүй.</translation>
 <translation id="7634566076839829401">Алдаа гарлаа. Дахин ачаална уу.</translation>
-<translation id="763472884969134151">Задлан шинжлэлийг <ph name="LINK" />-с хийдэг</translation>
 <translation id="7635048370253485243">Таны администратор бэхэлсэн</translation>
 <translation id="7635711411613274199">Таныг үзэх явцад таны харж буй зарыг хувийн болгосон эсэх нь энэ тохиргоо, <ph name="BEGIN_LINK1" />Зарын сэдэв<ph name="LINK_END1" />, таны <ph name="BEGIN_LINK2" />күүкиний тохиргоо<ph name="LINK_END2" /> болон таны үзэж буй сайт зарыг хувийн болгосон эсэхээс хамаарна</translation>
 <translation id="7636919061354591437">Энэ төхөөрөмж дээр суулгах</translation>

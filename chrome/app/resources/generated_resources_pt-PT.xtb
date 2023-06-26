@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Separador novamente ativo</translation>
 <translation id="1003088604756913841">Abrir link numa nova janela da aplicação <ph name="APP" /></translation>
 <translation id="100323615638474026">Dispositivo USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Navegação segura do Google</translation>
 <translation id="1004218526896219317">Acesso a sites</translation>
 <translation id="1005274289863221750">Usar o seu microfone e a câmara</translation>
 <translation id="1005333234656240382">Ativar a depuração do adb?</translation>
@@ -521,6 +520,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1434886155212424586">A Página inicial é a página Novo separador</translation>
 <translation id="1435940442311036198">Usar uma token de acesso num dispositivo diferente</translation>
 <translation id="1436390408194692385">Válido por <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Continuar configuração</translation>
 <translation id="1436784010935106834">Removido</translation>
 <translation id="1437986450143295708">Descreva o problema detalhadamente</translation>
 <translation id="1439671507542716852">apoio técnico a longo prazo</translation>
@@ -1937,7 +1937,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2577446426265992344">sem caixa geral</translation>
 <translation id="257779572837908839">Configurar como Chromebox para reuniões</translation>
 <translation id="2579309488038515659">Ativar zona Wi-Fi</translation>
-<translation id="2579596474754516455">Digitalize imagens em PDF para converter texto para o leitor de ecrã quando precisar</translation>
 <translation id="2580889980133367162">Permitir sempre que o <ph name="HOST" /> transfira vários ficheiros</translation>
 <translation id="258095186877893873">Longo</translation>
 <translation id="2581455244799175627">Mais informações sobre a autorização de cookies de terceiros</translation>
@@ -3458,6 +3457,7 @@ Pretende pará-lo?</translation>
 <translation id="3888586133700543064">Estas informações ajudam-nos a compreender melhor o seu problema com o Assistente. Ficam armazenadas durante, no máximo, 90 dias e o acesso está restrito às equipas de engenharia e feedback dedicadas.</translation>
 <translation id="3890064827463908288">Ative a Sincronização do Chrome para utilizar o Sync Wi-Fi</translation>
 <translation id="389313931326656921">Atribua um interruptor para "Seguinte"</translation>
+<translation id="3893268973182382220">Não é possível carregar este painel neste momento</translation>
 <translation id="3893295674388762059">Para limpar os dados, feche todas as janelas de navegação anónima</translation>
 <translation id="3893536212201235195">Ler e alterar as suas definições de acessibilidade</translation>
 <translation id="3893630138897523026">ChromeVox (respostas faladas)</translation>
@@ -5423,9 +5423,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5602765853043467355">Limpar os marcadores, o histórico, as palavras-passe e mais dados deste dispositivo</translation>
 <translation id="5605758115928394442">Foi enviada uma notificação para o seu telemóvel para confirmar a sua identidade.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Esta extensão está bloqueada}other{Estas extensões estão bloqueadas}}</translation>
-<translation id="560743070587960985">Este ficheiro pode ser um vírus ou software malicioso.
-
-Pode enviá-lo para a Google para verificar se é inseguro. Normalmente, as análises demoram alguns segundos.</translation>
 <translation id="560834977503641186">Sync Wi-Fi, saiba mais</translation>
 <translation id="5608580678041221894">Toque nas teclas seguintes para ajustar ou mover a área de recorte</translation>
 <translation id="5609231933459083978">A aplicação parece ser inválida.</translation>
@@ -6191,6 +6188,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6263082573641595914">Versão de AC Microsoft</translation>
 <translation id="6263284346895336537">Não crítica</translation>
 <translation id="6264365405983206840">Seleccion&amp;ar Tudo</translation>
+<translation id="6264376385120300461">Transferir mesmo assim</translation>
 <translation id="6265687851677020761">Remover porta</translation>
 <translation id="6266532094411434237">A ligar ao dispositivo <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Selecione um certificado para se autenticar perante <ph name="HOST_NAME" /></translation>
@@ -7217,7 +7215,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7149839598364933473">Converta este dispositivo num dispositivo <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7152478047064750137">Esta extensão não requer autorizações especiais.</translation>
-<translation id="7153309176431047193">Converter imagens em texto</translation>
 <translation id="7154130902455071009">Alterar a página de início para: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Converter imagem em texto</translation>
 <translation id="7159953856712257647">Instalada por predefinição</translation>
@@ -7772,7 +7769,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7634280112532283638">Redução de spam e fraudes</translation>
 <translation id="7634337648687970851">De momento, a recuperação de dados locais não é suportada.</translation>
 <translation id="7634566076839829401">Algo correu mal. Tente mais tarde.</translation>
-<translation id="763472884969134151">Análise concluída por <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Afixada pelo seu administrador.</translation>
 <translation id="7635711411613274199">À medida que navega, a personalização de um anúncio que lhe é mostrado depende desta definição, dos <ph name="BEGIN_LINK1" />tópicos de anúncios<ph name="LINK_END1" />, das <ph name="BEGIN_LINK2" />definições de cookies<ph name="LINK_END2" /> e de se o site que está a ver personaliza anúncios</translation>
 <translation id="7636919061354591437">Instalar neste dispositivo</translation>

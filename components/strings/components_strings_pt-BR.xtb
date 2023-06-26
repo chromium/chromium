@@ -1335,7 +1335,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3962859241508114581">Faixa anterior</translation>
 <translation id="3963721102035795474">Modo leitor</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Nenhum}=1{1 site }one{# site }other{# sites }}</translation>
-<translation id="3969052498612555048">Não encontrou o código? <ph name="BEGIN_LINK" />Gerar outro<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
 <translation id="3984581365661308170">Envelope 11</translation>
@@ -2725,7 +2724,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7064443976734085921">Carros compactos</translation>
 <translation id="7064851114919012435">Dados de contato</translation>
 <translation id="7067633076996245366">Soul e R&amp;B</translation>
-<translation id="7068733155164172741">Insira o código de <ph name="OTP_LENGTH" /> dígitos</translation>
 <translation id="70705239631109039">Sua conexão não é totalmente segura</translation>
 <translation id="7075452647191940183">A solicitação é muito grande</translation>
 <translation id="7078665357168027058">RA3</translation>

@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">সাম্প্রতিক অ্যাপ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> থেকে চার্জ হচ্ছে</translation>
 <translation id="1255033239764210633">আবহাওয়া কি রকম?</translation>
-<translation id="1267032506238418139">শর্টকাটে পরিবর্তন</translation>
 <translation id="1269405891096105529">গেস্ট মোডে পেরিফেরাল কাজ করে না</translation>
 <translation id="1270290102613614947">অন-স্ক্রিন কীবোর্ড অক্ষম করা রয়েছে</translation>
 <translation id="1272079795634619415">বন্ধ</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">নতুন ইনস্টল</translation>
 <translation id="1915307458270490472">কল নামিয়ে রাখুন</translation>
 <translation id="1918022425394817322">ক্যামেরাটি উপরে ডানদিকের কোণে স্ন্যাপ করা হয়েছে</translation>
-<translation id="1919743966458266018">কার্য পরিচালক খোলার শর্টকাটটি পরিবর্তিত হয়েছে। <ph name="OLD_SHORTCUT" /> এর পরিবর্তে দয়া করে <ph name="NEW_SHORTCUT" /> ব্যবহার করুন।</translation>
 <translation id="1923539912171292317">স্বয়ংক্রিয় ক্লিকগুলি</translation>
 <translation id="1928739107511554905">আপডেট পেতে, অ্যাটাচ করা কীবোর্ডের মাধ্যমে আপনার Chromebook রিস্টার্ট করার জন্য টাচস্ক্রিন ব্যবহার করুন।</translation>
 <translation id="1948405482892809935">পরের ব্যবহারকারীতে সুইচ করুন</translation>
@@ -976,7 +974,6 @@
 <translation id="5283198616748585639">১ মিনিট যোগ করুন</translation>
 <translation id="528468243742722775">শেষ</translation>
 <translation id="5286194356314741248">স্ক্যান হচ্ছে</translation>
-<translation id="5293671101077843611">আজ কোনও ইভেন্ট নেই</translation>
 <translation id="5297423144044956168">কোনও মোবাইল ডিভাইস খুঁজে পাওয়া যায়নি</translation>
 <translation id="5297704307811127955">বন্ধ করা আছে</translation>
 <translation id="5300589172476337783">দেখান</translation>
@@ -1761,7 +1758,6 @@
 <translation id="8834539327799336565">এখন কানেক্ট করা রয়েছে</translation>
 <translation id="8841375032071747811">ফিরে যাওয়ার বোতাম</translation>
 <translation id="8843682306134542540">রোটেশন লক টগল করুন। <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">আপনার পিন বা পাসওয়ার্ড এখনও যাচাই করা যায়নি। মনে রাখবেন: আপনি সম্প্রতি পাসওয়ার্ড পরিবর্তন করে থাকলে, পুরনো পাসওয়ার্ড ব্যবহার করুন। আপনি সাইন-আউট করলে নতুন পাসওয়ার্ড প্রয়োগ করা হবে।</translation>
 <translation id="8855885154700222542">ফুলস্ক্রিন করার বোতাম</translation>
 <translation id="8858369206579825206">গোপনীয়তা নিয়ন্ত্রণ</translation>

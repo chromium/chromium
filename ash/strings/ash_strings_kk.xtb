@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">Соңғы қолданбалар</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> арқылы зарядтау</translation>
 <translation id="1255033239764210633">Ауа райы қандай?</translation>
-<translation id="1267032506238418139">Таңбаша өзгерісі</translation>
 <translation id="1269405891096105529">Қонақ режимінде перифериялық құрылғыға қолдау көрсетілмейді.</translation>
 <translation id="1270290102613614947">Экрандағы пернетақта өшірілді</translation>
 <translation id="1272079795634619415">Тоқтату</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">Жаңадан орнатылған</translation>
 <translation id="1915307458270490472">Жабу</translation>
 <translation id="1918022425394817322">Камера жоғарғы оң жақ бұрышқа ауыстырылды.</translation>
-<translation id="1919743966458266018">Тапсырмалар реттегішін ашатын пернелер тіркесімі өзгертілді. <ph name="OLD_SHORTCUT" /> орнына <ph name="NEW_SHORTCUT" /> пайдаланыңыз.</translation>
 <translation id="1923539912171292317">Автоматты басу әрекеттері</translation>
 <translation id="1928739107511554905">Жаңартылған нұсқаны алу үшін, пернетақта жалғанған күйі Chromebook ноутбугын сенсорлық экран арқылы қайта қосыңыз.</translation>
 <translation id="1948405482892809935">Келесі пайдаланушыға ауысу</translation>
@@ -974,7 +972,6 @@
 <translation id="5283198616748585639">1 мин қосу</translation>
 <translation id="528468243742722775">Соңы</translation>
 <translation id="5286194356314741248">Ізделіп жатыр</translation>
-<translation id="5293671101077843611">Бүгінге ешқандай іс-шара жоқ.</translation>
 <translation id="5297423144044956168">Ешқандай мобильдік құрылғы табылмады.</translation>
 <translation id="5297704307811127955">Өшірулі</translation>
 <translation id="5300589172476337783">Көрсету</translation>
@@ -1758,7 +1755,6 @@
 <translation id="8834539327799336565">Қазір жалғанғандар</translation>
 <translation id="8841375032071747811">"Артқа" түймесі</translation>
 <translation id="8843682306134542540">Бұру құлпын ашу/жабу. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN кодыңыз не құпия сөзіңіз әлі расталмады. Ескертпе: құпия сөзіңізді жақында өзгерткен болсаңыз, бұрынғы құпия сөзіңізді пайдаланыңыз. Жаңа құпия сөз, аккаунттан шыққаннан кейін, күшіне енеді.</translation>
 <translation id="8855885154700222542">Толық экран пернесі</translation>
 <translation id="8858369206579825206">Құпиялық параметрлері</translation>

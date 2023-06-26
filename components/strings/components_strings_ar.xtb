@@ -1241,7 +1241,6 @@
 <translation id="3962859241508114581">المقطع الصوتي السابق</translation>
 <translation id="3963721102035795474">وضع القارئ</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{بدون}=1{من موقع واحد }two{من موقعين (#) }few{من # مواقع }many{من # موقعًا }other{من # موقع }}</translation>
-<translation id="3969052498612555048">ألا يمكنك العثور على الرمز؟ <ph name="BEGIN_LINK" />الحصول على رمز جديد<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
 <translation id="3973234410852337861">تم حظر <ph name="HOST_NAME" /></translation>
 <translation id="3984581365661308170">ظرف رقم 11</translation>
@@ -2529,7 +2528,6 @@
 <translation id="706295145388601875">‏إضافة عناوين وإدارتها في إعدادات متصفّح Chrome</translation>
 <translation id="7064851114919012435">معلومات الاتصال</translation>
 <translation id="7067633076996245366">موسيقى "سول" وموسيقى "آر آند بي"</translation>
-<translation id="7068733155164172741">أدخِل الرمز الذي يبلغ عدد أرقامه <ph name="OTP_LENGTH" />.</translation>
 <translation id="70705239631109039">اتصالك بهذا الموقع تتخلله ثغرات أمنية.</translation>
 <translation id="7075452647191940183">الطلب كبير جدًا</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3046,6 +3044,7 @@
 <translation id="8245703462678310750">اضغط مع الاستمرار على |<ph name="ACCELERATOR" />| للخروج من وضع "ملء الشاشة" والاطّلاع على عملية التنزيل.</translation>
 <translation id="8249296373107784235">إلغاء</translation>
 <translation id="8249463483885748674">اختبارات موحَّدة واختبارات قبول</translation>
+<translation id="824968735947741546">جارٍ ترجمة اللغة <ph name="SOURCE" /> (التي تم رصدها تلقائيًا) إلى اللغة <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">‏تم حفظ هذا العنوان حاليًا على هذا الجهاز. لاستخدامه في جميع منتجات Google، عليك حفظه في حسابك على Google، <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">‏زر إدارة إعدادات تسهيل الاستخدام، اضغط على المفتاح Enter لتخصيص أدوات تسهيل الاستخدام في إعدادات نظام التشغيل Chrome.</translation>
 <translation id="8253091569723639551">عنوان إرسال الفواتير مطلوب</translation>

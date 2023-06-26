@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">તાજેતરની ઍપ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> પરથી ચાર્જ કરી રહ્યાં છે</translation>
 <translation id="1255033239764210633">હવામાન કેવું છે?</translation>
-<translation id="1267032506238418139">શૉર્ટકટ ફેરફાર</translation>
 <translation id="1269405891096105529">અતિથિ મોડમાં પેરિફેરલને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="1270290102613614947">ઓન-સ્ક્રીન કીબોર્ડ અક્ષમ કર્યું</translation>
 <translation id="1272079795634619415">રોકો</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">નવી ઇન્સ્ટૉલ કરી છે</translation>
 <translation id="1915307458270490472">સમાપ્ત કરો</translation>
 <translation id="1918022425394817322">કૅમેરાને ઉપરના જમણા ખૂણામાં સ્નેપ કર્યો</translation>
-<translation id="1919743966458266018">Tasks સંચાલક ખોલવાનો શોર્ટકટ બદલાયો છે. કૃપા કરીને <ph name="NEW_SHORTCUT" /> ની બદલે <ph name="OLD_SHORTCUT" /> નો ઉપયોગ કરો.</translation>
 <translation id="1923539912171292317">ઑટોમૅટિક રીતે ક્લિક</translation>
 <translation id="1928739107511554905">અપડેટ મેળવવા માટે, તમારી Chromebookને જોડાયેલ કીબોર્ડ સાથે ફરીથી શરૂ કરવા માટે ટચસ્કીનનો ઉપયોગ કરો.</translation>
 <translation id="1948405482892809935">આગલા વપરાશકર્તા પર સ્વિચ કરો</translation>
@@ -976,7 +974,6 @@
 <translation id="5283198616748585639">1 મિનિટ ઉમેરો</translation>
 <translation id="528468243742722775">સમાપ્ત</translation>
 <translation id="5286194356314741248">સ્કેનિંગ</translation>
-<translation id="5293671101077843611">આજે કોઈ ઇવેન્ટ નથી</translation>
 <translation id="5297423144044956168">કોઈ મોબાઇલ ડિવાઇસ મળ્યા નથી</translation>
 <translation id="5297704307811127955">બંધ</translation>
 <translation id="5300589172476337783">બતાવો</translation>
@@ -1278,6 +1275,7 @@
 <translation id="6597278316891651699">કૅમેરાને નીચેના ડાબા ખૂણામાં સ્નેપ કર્યો. સિસ્ટમની સપાટીને ઓવરલેપ કરે છે.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="6612802754306526077">સ્ક્રીન રેકોર્ડિંગ મોડ પસંદ કર્યો</translation>
+<translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> સંગ્રહ ઉપયોગમાં છે | કુલ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">પ્રાઇવસી સ્ક્રીન ચાલુ છે</translation>
 <translation id="6625718907317144388">જોવા સંબંધિત સુરક્ષા પ્રણાલી ચાલુ હોવાને કારણે <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> અને અન્ય નોટિફિકેશન છુપાવેલા છે</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1760,7 +1758,6 @@
 <translation id="8834539327799336565">હાલમાં કનેક્ટેડ</translation>
 <translation id="8841375032071747811">પાછળ બટન</translation>
 <translation id="8843682306134542540">રોટેશન લૉક ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">તમારો પિન કે પાસવર્ડ હજી પણ ચકાસી શકાયો નથી. નોંધ: જો તમે તમારો પાસવર્ડ તાજેતરમાં બદલ્યો હોય, તો તમારા જૂના પાસવર્ડનો ઉપયોગ કરો. એકવાર તમે સાઇન આઉટ કરો, તે પછી તમારો નવો પાસવર્ડ લાગુ કરવામાં આવશે.</translation>
 <translation id="8855885154700222542">પૂર્ણસ્ક્રીન કી</translation>
 <translation id="8858369206579825206">પ્રાઇવસીને લગતાં નિયંત્રણ</translation>

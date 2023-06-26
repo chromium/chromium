@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">برگه دوباره فعال شد</translation>
 <translation id="1003088604756913841">باز کردن پیوند در پنجره جدید <ph name="APP" /></translation>
 <translation id="100323615638474026">‏دستگاه USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">‏مرور ایمن Google</translation>
 <translation id="1004218526896219317">دسترسی به سایت</translation>
 <translation id="1005274289863221750">استفاده از میکروفون و دوربین شما</translation>
 <translation id="1005333234656240382">‏اشکال‌زدایی ADB (پل اشکال‌زدایی Android) فعال شود؟</translation>
@@ -524,6 +523,7 @@
 <translation id="1434886155212424586">صفحه اصلی، صفحه برگه جدید است</translation>
 <translation id="1435940442311036198">استفاده از گذرکلید در دستگاهی دیگر</translation>
 <translation id="1436390408194692385">معتبر تا <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">ادامه راه‌اندازی</translation>
 <translation id="1436784010935106834">حذف شد</translation>
 <translation id="1437986450143295708">مشکل را با ذکر جزئیات شرح دهید</translation>
 <translation id="1439671507542716852">پشتیبانی بلندمدت</translation>
@@ -1949,7 +1949,6 @@
 <translation id="2577446426265992344">‏بدون Omnibox</translation>
 <translation id="257779572837908839">‏راه‌اندازی به‌عنوان Chromebox برای جلسات</translation>
 <translation id="2579309488038515659">نقطه اتصال فعال شد</translation>
-<translation id="2579596474754516455">‏تصاویر PDF را اسکن کنید تا درصورت لزوم بتوانید نوشتار را برای صفحه‌خوان تبدیل کنید</translation>
 <translation id="2580889980133367162">همیشه به <ph name="HOST" /> اجازه داده شود چند فایل را بارگیری کند</translation>
 <translation id="258095186877893873">طولانی</translation>
 <translation id="2581455244799175627">اطلاعات بیشتر درباره مجاز کردن کوکی‌های شخص ثالث</translation>
@@ -5435,9 +5434,6 @@
 <translation id="5602765853043467355">نشانک‌ها، سابقه، گذرواژه‌ها و موارد دیگر از این دستگاه پاک شود</translation>
 <translation id="5605758115928394442">برای تأیید اینکه خودتان هستید، اعلانی به تلفنتان ارسال شد.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{این افزونه مسدود شده است}one{این افزونه‌ها مسدود شده‌اند}other{این افزونه‌ها مسدود شده‌اند}}</translation>
-<translation id="560743070587960985">‏این فایل ممکن است ویروس یا بدافزار باشد.
-
-می‌توانید آن را برای Google ارسال کنید تا بررسی کند که ایمن است یا نه. اسکن معمولاً چند ثانیه طول می‌کشد.</translation>
 <translation id="560834977503641186">‏«همگام‌سازی Wi-Fi»، بیشتر بدانید</translation>
 <translation id="5608580678041221894">برای تنظیم یا انتقال ناحیه بریده‌شده، روی کلیدهای زیر ضربه بزنید</translation>
 <translation id="5609231933459083978">به نظر می‌رسد این برنامه معتبر نیست.</translation>
@@ -6202,6 +6198,7 @@
 <translation id="6263082573641595914">‏نسخه CA Microsoft</translation>
 <translation id="6263284346895336537">غیر مهم</translation>
 <translation id="6264365405983206840">انتخاب &amp;همه</translation>
+<translation id="6264376385120300461">به‌هرحال بارگیری شود</translation>
 <translation id="6265687851677020761">برداشتن درگاه</translation>
 <translation id="6266532094411434237">درحال اتصال به <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">انتخاب گواهی برای راستی‌آزمایی خودتان در <ph name="HOST_NAME" /></translation>
@@ -7230,7 +7227,6 @@
 <translation id="7149839598364933473">تبدیل این دستگاه به دستگاه <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">۲۴ ساعت گذشته</translation>
 <translation id="7152478047064750137">این افزونه به مجوز خاصی نیاز ندارد</translation>
-<translation id="7153309176431047193">تبدیل تصاویر به نوشتار</translation>
 <translation id="7154130902455071009">تغییر صفحه شروعتان به: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">تبدیل تصویر به نوشتار</translation>
 <translation id="7159953856712257647">نصب‌شده به‌طور پیش‌فرض</translation>
@@ -7785,7 +7781,6 @@
 <translation id="7634280112532283638">کاهش هرزنامه و تقلب</translation>
 <translation id="7634337648687970851">درحال‌حاضر از بازیابی داده‌های محلی پشتیبانی نمی‌شود.</translation>
 <translation id="7634566076839829401">مشکلی پیش آمد. لطفاً دوباره امتحان کنید.</translation>
-<translation id="763472884969134151">تجزیه‌وتحلیل توسط <ph name="LINK" /> انجام شده است</translation>
 <translation id="7635048370253485243">سرپرستتان آن را پین کرده است</translation>
 <translation id="7635711411613274199">درحین مرور، شخصی شدن یا نشدن آگهی‌هایی که می‌بینید به این تنظیم، <ph name="BEGIN_LINK1" />موضوع‌های آگهی<ph name="LINK_END1" />، <ph name="BEGIN_LINK2" />تنظیمات کوکی<ph name="LINK_END2" /> شما، و اینکه آیا سایتی که مشاهده می‌کنید آگهی‌ها را شخصی‌سازی می‌کند یا نه بستگی دارد</translation>
 <translation id="7636919061354591437">نصب در این دستگاه</translation>

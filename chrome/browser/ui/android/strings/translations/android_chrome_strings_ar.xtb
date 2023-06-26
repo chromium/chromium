@@ -61,6 +61,7 @@
 <translation id="1283039547216852943">النقر للتوسيع</translation>
 <translation id="1289059016768036948">‏سيُطلب منك تسجيل الدخول إلى حسابك على Google.</translation>
 <translation id="1291207594882862231">محو السجل وملفات تعريف الارتباط وبيانات المواقع الإلكترونية وذاكرة التخزين المؤقت…</translation>
+<translation id="1293898515599432175">‏سيتم حذف كلمات المرور من "مدير كلمات المرور في Google" في <ph name="CHROME_CHANNEL" /> من Chrome. وستتمكَّن من الاحتفاظ بملف كلمات المرور الذي نزّلته.</translation>
 <translation id="129553762522093515">المغلقة حديثًا</translation>
 <translation id="1298077576058087471">توفير ما يصل إلى 60% من البيانات والاطّلاع على أخبار اليوم</translation>
 <translation id="1303339473099049190">يتعذّر العثور على كلمة المرور هذه. يجب إجراء تدقيق إملائي وإعادة المحاولة.</translation>
@@ -512,6 +513,7 @@
 <translation id="3795154175078851242">نسخ الصورة مع الرابط</translation>
 <translation id="3810838688059735925">الفيديوهات</translation>
 <translation id="3810973564298564668">إدارة</translation>
+<translation id="381861209280417772">حذف كلمات المرور</translation>
 <translation id="3819178904835489326">تم إلغاء <ph name="NUMBER_OF_DOWNLOADS" /> من عمليات التنزيل</translation>
 <translation id="3819183753496523827">لا يتوفّر اتصال بالإنترنت. يُرجى التحقّق من الاتصال بالإنترنت ثم إعادة المحاولة.</translation>
 <translation id="3830886834687455630">‏يجب تحديث "خدمات Google Play" للتحقّق من كلمات المرور.</translation>
@@ -596,6 +598,7 @@
 <translation id="4249955472157341256">الترتيب حسب الأحدث</translation>
 <translation id="4250229828105606438">لقطة شاشة</translation>
 <translation id="4256782883801055595">تراخيص البرامج المفتوحة المصدر</translation>
+<translation id="4257230861809842349">‏هل تريد حذف كلمات المرور من "مدير كلمات المرور في Google"؟</translation>
 <translation id="4262915912852657291">‏<ph name="BEGIN_BOLD" />البيانات المستخدَمة:<ph name="END_BOLD" /> سجلّ تصفُّحك، بالإضافة إلى سجلّ بالمواقع الإلكترونية التي زرتها باستخدام Chrome على هذا الجهاز</translation>
 <translation id="4269820728363426813">نسخ عنوان الرابط</translation>
 <translation id="4283102315569707115">هل تريد طلب عرض النسخة المتوافقة مع أجهزة الكمبيوتر المكتبي من المواقع الإلكترونية تلقائيًا؟</translation>

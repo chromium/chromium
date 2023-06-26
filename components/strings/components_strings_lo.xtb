@@ -1335,7 +1335,6 @@
 <translation id="3962859241508114581">ເພງກ່ອນນີ້</translation>
 <translation id="3963721102035795474">ໂໝດເຄື່ອງອ່ານ</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{ບໍ່ມີ}=1{ຈາກ 1 ເວັບໄຊ }other{ຈາກ # ເວັບໄຊ }}</translation>
-<translation id="3969052498612555048">ບໍ່ພົບລະຫັດຂອງທ່ານບໍ? <ph name="BEGIN_LINK" />ຂໍລະຫັດໃໝ່<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">ກໍາລັງຄິດ​ໄລ່...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ຖືກບລັອກໄວ້</translation>
 <translation id="3984581365661308170">Envelope #11</translation>
@@ -2725,7 +2724,6 @@
 <translation id="7064443976734085921">ລົດຂະໜາດນ້ອຍ</translation>
 <translation id="7064851114919012435">ຂໍ້​ມູນ​ຕິດ​ຕໍ່</translation>
 <translation id="7067633076996245366">ໂຊ ແລະ ອາແອນບີ</translation>
-<translation id="7068733155164172741">ລະບຸລະຫັດ <ph name="OTP_LENGTH" /> ຕົວເລກ</translation>
 <translation id="70705239631109039">ການເຊື່ອມຕໍ່ຂອງທ່ານບໍ່ປອດໄພຢ່າງສົມບູນ</translation>
 <translation id="7075452647191940183">ຄຳຂໍໃຫຍ່ເກີນໄປ</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3281,6 +3279,7 @@
 <translation id="8246482227229072868">ແຫວນ</translation>
 <translation id="8249296373107784235">ຍົກເລີກ</translation>
 <translation id="8249463483885748674">ການກວດສອບມາດຕະຖານ ແລະ ການຮັບສະໝັກ</translation>
+<translation id="824968735947741546">ກຳລັງແປພາສາ <ph name="SOURCE" /> (ກວດພົບອັດຕະໂນມັດ) ເປັນ <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">ປັດຈຸບັນນີ້ທີ່ຢູ່ນີ້ຖືກບັນທຶກໃສ່ອຸປະກອນນີ້ແລ້ວ. ເພື່ອໃຊ້ມັນທົ່ວຜະລິດຕະພັນ Google, ໃຫ້ບັນທຶກມັນໃສ່ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">ປຸ່ມຈັດການການຕັ້ງຄ່າການຊ່ວຍເຂົ້າເຖິງ, ກົດ Enter ເພື່ອປັບແຕ່ງເຄື່ອງມືການຊ່ວຍເຂົ້າເຖິງຂອງທ່ານໃນການຕັ້ງຄ່າ ChromeOS ໃຫ້ເປັນສ່ວນຕົວ</translation>
 <translation id="8253091569723639551">ຈຳເປັນຕ້ອງມີທີ່ຢູ່ຮຽກເກັບເງິນ</translation>

@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Se volvió a activar la pestaña</translation>
 <translation id="1003088604756913841">Abrir vínculo en una ventana nueva de <ph name="APP" /></translation>
 <translation id="100323615638474026">Dispositivo USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Navegación segura de Google</translation>
 <translation id="1004218526896219317">Acceso al sitio</translation>
 <translation id="1005274289863221750">Usar tu micrófono y tu cámara</translation>
 <translation id="1005333234656240382">¿Quieres habilitar la depuración de adb?</translation>
@@ -520,6 +519,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1434886155212424586">La página Nueva pestaña es la nueva página principal.</translation>
 <translation id="1435940442311036198">Usar una clave de acceso en otro dispositivo</translation>
 <translation id="1436390408194692385">Período de validez: <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Continuar con la configuración</translation>
 <translation id="1436784010935106834">Eliminado</translation>
 <translation id="1437986450143295708">Describe el problema de forma detallada</translation>
 <translation id="1439671507542716852">asistencia a largo plazo</translation>
@@ -1929,7 +1929,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2577446426265992344">sin cuadro multifunción</translation>
 <translation id="257779572837908839">Configurar como Chromebox para reuniones</translation>
 <translation id="2579309488038515659">Habilitación de hotspot</translation>
-<translation id="2579596474754516455">Escanea imágenes de PDF a fin de convertir el texto para el lector de pantalla cuando sea necesario.</translation>
 <translation id="2580889980133367162">Siempre permitir que <ph name="HOST" /> descargue varios archivos</translation>
 <translation id="258095186877893873">Largo</translation>
 <translation id="2581455244799175627">Más información para permitir cookies de terceros</translation>
@@ -5396,9 +5395,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5602765853043467355">Borrar favoritos, historial, contraseñas y otras opciones de configuración de este dispositivo</translation>
 <translation id="5605758115928394442">Se envió una notificación a tu teléfono para confirmar que eres tú</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Se bloqueó esta extensión}other{Se bloquearon estas extensiones}}</translation>
-<translation id="560743070587960985">Este archivo puede ser un virus o software malicioso.
-
-Puedes enviarlo a Google para comprobar que sea seguro. Los análisis suelen tardar unos segundos.</translation>
 <translation id="560834977503641186">Sincronización Wi-Fi, Más información</translation>
 <translation id="5608580678041221894">Presionar las siguientes teclas para ajustar o mover el área recortada</translation>
 <translation id="5609231933459083978">Parece que la aplicación no es válida.</translation>
@@ -6158,6 +6154,7 @@ Puedes enviarlo a Google para comprobar que sea seguro. Los análisis suelen tar
 <translation id="6263082573641595914">Versión de entidad de certificación de Microsoft</translation>
 <translation id="6263284346895336537">No crítico</translation>
 <translation id="6264365405983206840">Seleccion&amp;ar todo</translation>
+<translation id="6264376385120300461">Descargar de todos modos</translation>
 <translation id="6265687851677020761">Quitar puerto</translation>
 <translation id="6266532094411434237">Conectando a <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Seleccionar un certificado para autenticarte como <ph name="HOST_NAME" /></translation>
@@ -7178,7 +7175,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7149839598364933473">Convierte este dispositivo en un dispositivo <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7152478047064750137">Esta extensión no requiere permisos especiales</translation>
-<translation id="7153309176431047193">Convertir imágenes a texto</translation>
 <translation id="7154130902455071009">Cambiar la página de inicio por <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Convertir imagen a texto</translation>
 <translation id="7159953856712257647">Instalada de forma predeterminada</translation>
@@ -7730,7 +7726,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7634280112532283638">Reducción de spam y fraude</translation>
 <translation id="7634337648687970851">Por el momento, no se admite la recuperación de datos locales.</translation>
 <translation id="7634566076839829401">Se produjo un error. Vuelve a intentarlo.</translation>
-<translation id="763472884969134151"><ph name="LINK" /> realizó el análisis</translation>
 <translation id="7635048370253485243">Fijado por tu administrador</translation>
 <translation id="7635711411613274199">Mientras navegas, la personalización de un anuncio que ves depende de este parámetro de configuración, los <ph name="BEGIN_LINK1" />temas de los anuncios<ph name="LINK_END1" />, tu <ph name="BEGIN_LINK2" />configuración de cookies<ph name="LINK_END2" /> y si el sitio que estás viendo personaliza los anuncios.</translation>
 <translation id="7636919061354591437">Instalar en este dispositivo</translation>

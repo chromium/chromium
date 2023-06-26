@@ -1335,7 +1335,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3962859241508114581">Faixa anterior</translation>
 <translation id="3963721102035795474">Modo de leitor</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Nenhum}=1{De 1 site }other{De # sites }}</translation>
-<translation id="3969052498612555048">Não consegue encontrar o seu código? <ph name="BEGIN_LINK" />Obtenha um novo código<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">A calcular...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
 <translation id="3984581365661308170">Envelope n.º 11</translation>
@@ -2725,7 +2724,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7064443976734085921">Carros compactos</translation>
 <translation id="7064851114919012435">Informações de contacto</translation>
 <translation id="7067633076996245366">Soul e R&amp;B</translation>
-<translation id="7068733155164172741">Introduza um código de <ph name="OTP_LENGTH" /> dígitos</translation>
 <translation id="70705239631109039">A sua ligação não é totalmente segura</translation>
 <translation id="7075452647191940183">O pedido é demasiado grande.</translation>
 <translation id="7078665357168027058">RA3</translation>

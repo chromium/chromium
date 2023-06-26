@@ -1239,7 +1239,6 @@
 <translation id="3962859241508114581">הטראק הקודם</translation>
 <translation id="3963721102035795474">מצב קורא</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{ללא}=1{מאתר אחד }one{מ-# אתרים }two{משני אתרים }other{מ-# אתרים }}</translation>
-<translation id="3969052498612555048">הקוד לא נמצא? <ph name="BEGIN_LINK" />אני רוצה לקבל קוד חדש<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> חסום</translation>
 <translation id="3984581365661308170">מעטפה 11</translation>
@@ -2530,7 +2529,6 @@ Del</translation>
 <translation id="706295145388601875">‏ניתן להוסיף ולנהל כתובות בהגדרות Chrome</translation>
 <translation id="7064851114919012435">פרטים ליצירת קשר</translation>
 <translation id="7067633076996245366">מוזיקת נשמה ואר-אנד-בי</translation>
-<translation id="7068733155164172741">יש להזין קוד בן <ph name="OTP_LENGTH" /> ספרות</translation>
 <translation id="70705239631109039">החיבור שלך לא מאובטח לחלוטין</translation>
 <translation id="7075452647191940183">הבקשה גדולה מדי</translation>
 <translation id="7078665357168027058">RA3</translation>

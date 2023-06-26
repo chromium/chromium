@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">टैब फिर से चालू हो गया</translation>
 <translation id="1003088604756913841">नई <ph name="APP" /> विंडो में लिंक खोलें</translation>
 <translation id="100323615638474026">यूएसबी डिवाइस (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google सुरक्षित ब्राउज़िंग</translation>
 <translation id="1004218526896219317">साइट ऐक्सेस</translation>
 <translation id="1005274289863221750">अपना माइक्रोफ़ोन और कैमरा उपयोग करें</translation>
 <translation id="1005333234656240382">ADB डीबग करने की सुविधा चालू करें?</translation>
@@ -524,6 +523,7 @@
 <translation id="1434886155212424586">मुख्यपेज, नया टैब पेज है</translation>
 <translation id="1435940442311036198">Use a passkey on a different device</translation>
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> के लिए मान्य</translation>
+<translation id="1436671784520050284">सेटअप जारी रखें</translation>
 <translation id="1436784010935106834">निकाला गया</translation>
 <translation id="1437986450143295708">समस्या के बारे में ज़्यादा जानकारी दें</translation>
 <translation id="1439671507542716852">लंबे समय तक सहायता</translation>
@@ -1952,7 +1952,6 @@
 <translation id="2577446426265992344">खोज बार (खोज क्वेरी डालने वाला बार) के बिना</translation>
 <translation id="257779572837908839">मीटिंग के लिए Chromebox के रूप में सेट अप करें</translation>
 <translation id="2579309488038515659">हॉटस्पॉट चालू करें</translation>
-<translation id="2579596474754516455">PDF इमेज को स्क्रीन रीडर के लिए स्कैन करें, ताकि ज़रूरत पड़ने पर, इमेज से टेक्स्ट निकाला जा सके</translation>
 <translation id="2580889980133367162"><ph name="HOST" /> को एकाधिक फ़ाइलें हमेशा डाउनलोड करने दें</translation>
 <translation id="258095186877893873">लंबा</translation>
 <translation id="2581455244799175627">तीसरे पक्ष की कुकी को अनुमति देने के बारे में ज़्यादा जानकारी</translation>
@@ -5432,9 +5431,6 @@
 <translation id="5602765853043467355">इस डिवाइस से बुकमार्क, इतिहास, पासवर्ड वगैरह मिटाएं</translation>
 <translation id="5605758115928394442">आपकी पहचान की पुष्टि करने के लिए, आपके फ़ोन पर एक सूचना भेजी गई थी.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{इस एक्सटेंशन को ब्लॉक किया गया है}one{इस एक्सटेंशन को ब्लॉक किया गया है}other{इन एक्सटेंशन को ब्लॉक किया गया है}}</translation>
-<translation id="560743070587960985">यह फ़ाइल कोई वायरस या मैलवेयर हो सकती है.
-
-यह सुरक्षित है या नहीं, यह जांचने के लिए इसे Google को भेजें. आम तौर पर, स्कैन करने में कुछ सेकंड लगते हैं.</translation>
 <translation id="560834977503641186">'वाई-फ़ाई सिंक' के बारे में ज़्यादा जानें</translation>
 <translation id="5608580678041221894">काटे जाने वाले क्षेत्र को एडजस्ट करने या उसकी जगह बदलने के लिए इन कुंजियों पर टैप करें</translation>
 <translation id="5609231933459083978">ऐप्लिकेशन अमान्य मालूम होता है.</translation>
@@ -6194,6 +6190,7 @@
 <translation id="6263082573641595914">Microsoft CA Version</translation>
 <translation id="6263284346895336537">महत्वपूर्ण नहीं</translation>
 <translation id="6264365405983206840">&amp;सभी को चुनें</translation>
+<translation id="6264376385120300461">फिर भी डाउनलोड करें</translation>
 <translation id="6265687851677020761">पोर्ट हटाएं</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> से कनेक्ट किया जा रहा है</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> पर अपना प्रमाणन करने के लिए किसी प्रमाणपत्र को चुनें</translation>
@@ -7219,7 +7216,6 @@
 <translation id="7149839598364933473">इस डिवाइस को <ph name="DEVICE_OS" /> डिवाइस में बदलें.</translation>
 <translation id="7149893636342594995">पिछले 24 घंटे</translation>
 <translation id="7152478047064750137">इस एक्‍सटेंशन को कोई खास अनुमति नहीं चाहिए</translation>
-<translation id="7153309176431047193">इमेज से टेक्स्ट निकालें</translation>
 <translation id="7154130902455071009">अपना आरंभ पेज इसमें बदलें: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">इमेज को टेक्स्ट में बदलें</translation>
 <translation id="7159953856712257647">डिफ़ॉल्ट रूप से इंस्टॉल किया गया</translation>
@@ -7771,7 +7767,6 @@
 <translation id="7634280112532283638">स्पैम और धोखाधड़ी को कम करना</translation>
 <translation id="7634337648687970851">फ़िलहाल, लोकल डेटा रिकवरी की सुविधा उपलब्ध नहीं है.</translation>
 <translation id="7634566076839829401">कुछ गलत हो गया है. कृपय फिर से प्रयास करें.</translation>
-<translation id="763472884969134151">विश्लेषण <ph name="LINK" /> ने किया है</translation>
 <translation id="7635048370253485243">आपके एडमिन ने पिन किया</translation>
 <translation id="7635711411613274199">इस सेटिंग, <ph name="BEGIN_LINK1" />विज्ञापन के विषय<ph name="LINK_END1" />, और आपकी <ph name="BEGIN_LINK2" />कुकी सेटिंग<ph name="LINK_END2" /> के आधार पर यह तय होता है कि ब्राउज़ करते समय दिखने वाला विज्ञापन आपकी पसंद के मुताबिक है या नहीं. इनके अलावा, यह इससे भी तय होता है कि आप जिस साइट पर हैं वह, दिलचस्पी के मुताबिक विज्ञापन दिखाने की सुविधा देती है या नहीं</translation>
 <translation id="7636919061354591437">इस डिवाइस पर इंस्टॉल करें</translation>

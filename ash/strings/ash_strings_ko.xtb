@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">최근 앱</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />에서 충전 중</translation>
 <translation id="1255033239764210633">날씨가 어때?</translation>
-<translation id="1267032506238418139">단축키 변경</translation>
 <translation id="1269405891096105529">게스트 모드에서는 주변기기가 지원되지 않습니다.</translation>
 <translation id="1270290102613614947">터치 키보드 사용 중지됨</translation>
 <translation id="1272079795634619415">중지</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">새로 설치됨</translation>
 <translation id="1915307458270490472">종료</translation>
 <translation id="1918022425394817322">카메라 미리보기가 오른쪽 상단으로 맞춰졌습니다</translation>
-<translation id="1919743966458266018">작업 관리자를 여는 단축키가 변경되었습니다. <ph name="OLD_SHORTCUT" /> 대신 <ph name="NEW_SHORTCUT" />을(를) 사용하세요.</translation>
 <translation id="1923539912171292317">자동 클릭</translation>
 <translation id="1928739107511554905">업데이트하려면 키보드가 연결된 상태로 터치스크린을 사용하여 Chromebook을 다시 시작하세요.</translation>
 <translation id="1948405482892809935">다음 사용자로 전환</translation>
@@ -976,7 +974,6 @@
 <translation id="5283198616748585639">1분 추가</translation>
 <translation id="528468243742722775">종료</translation>
 <translation id="5286194356314741248">검색 중</translation>
-<translation id="5293671101077843611">오늘 일정 없음</translation>
 <translation id="5297423144044956168">휴대기기를 찾을 수 없습니다.</translation>
 <translation id="5297704307811127955">사용 안함</translation>
 <translation id="5300589172476337783">표시</translation>
@@ -1278,6 +1275,7 @@
 <translation id="6597278316891651699">카메라 미리보기가 왼쪽 하단으로 맞춰졌습니다. 시스템 표시 경로와 충돌합니다.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />, 관리자가 관리함</translation>
 <translation id="6612802754306526077">화면 녹화 모드 선택됨</translation>
+<translation id="6613765291890844037">저장용량 <ph name="STORAGE_IN_USE_SIZE" /> 사용 중 | 총 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">개인 정보 보호 화면이 켜져 있습니다</translation>
 <translation id="6625718907317144388">사생활 보호가 켜져 있으므로 <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> 및 기타 알림이 숨겨집니다.</translation>
 <translation id="6627638273713273709">검색+Shift+K</translation>
@@ -1760,7 +1758,6 @@
 <translation id="8834539327799336565">현재 연결된 기기</translation>
 <translation id="8841375032071747811">뒤로 버튼</translation>
 <translation id="8843682306134542540">회전 잠금을 전환합니다. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">여전히 PIN 또는 비밀번호를 확인할 수 없습니다. 참고: 최근에 비밀번호를 변경한 경우 이전 비밀번호를 사용해 보세요. 로그아웃하고 나면 새로운 비밀번호가 적용됩니다.</translation>
 <translation id="8855885154700222542">전체화면 키</translation>
 <translation id="8858369206579825206">개인 정보 보호 설정</translation>

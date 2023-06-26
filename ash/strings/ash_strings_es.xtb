@@ -69,7 +69,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1247519845643687288">Aplicaciones recientes</translation>
 <translation id="1252999807265626933">Cargando a través de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">¿Qué tiempo hace?</translation>
-<translation id="1267032506238418139">Cambio de la combinación de teclas</translation>
 <translation id="1269405891096105529">No se puede usar el periférico en el modo Invitado</translation>
 <translation id="1270290102613614947">Teclado en pantalla inhabilitado</translation>
 <translation id="1272079795634619415">Detener</translation>
@@ -218,7 +217,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1908992311423394684">Nueva instalación</translation>
 <translation id="1915307458270490472">Colgar</translation>
 <translation id="1918022425394817322">Cámara ajustada a la esquina superior derecha</translation>
-<translation id="1919743966458266018">La combinación de teclas para abrir el Administrador de tareas ha cambiado. Utiliza <ph name="NEW_SHORTCUT" /> en lugar de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clics automáticos</translation>
 <translation id="1928739107511554905">Para recibir la actualización, usa la pantalla táctil para reiniciar tu Chromebook con el teclado conectado.</translation>
 <translation id="1948405482892809935">Cambiar a siguiente usuario</translation>
@@ -975,7 +973,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5283198616748585639">Añadir 1 minuto</translation>
 <translation id="528468243742722775">Finalizar</translation>
 <translation id="5286194356314741248">Buscando</translation>
-<translation id="5293671101077843611">No hay eventos hoy</translation>
 <translation id="5297423144044956168">No se han encontrado dispositivos móviles</translation>
 <translation id="5297704307811127955">Desactivada</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -1759,7 +1756,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8834539327799336565">Conectado ahora</translation>
 <translation id="8841375032071747811">Botón Atrás</translation>
 <translation id="8843682306134542540">Activa o desactiva el bloqueo. <ph name="STATE_TEXT" />.</translation>
-<translation id="8850991929411075241">Buscar+Esc</translation>
 <translation id="8853703225951107899">Todavía no se ha podido verificar tu PIN o contraseña. Nota: Si has cambiado la contraseña recientemente, utiliza la contraseña anterior. La nueva contraseña se aplicará cuando hayas cerrado la sesión.</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8858369206579825206">Controles de privacidad</translation>

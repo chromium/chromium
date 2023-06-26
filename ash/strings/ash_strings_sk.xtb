@@ -69,7 +69,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1247519845643687288">Nedávne aplikácie</translation>
 <translation id="1252999807265626933">Nabíja sa zo <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Aké je počasie?</translation>
-<translation id="1267032506238418139">Zmena skratky</translation>
 <translation id="1269405891096105529">Periféria nie je v režime pre hostí podporovaná</translation>
 <translation id="1270290102613614947">Klávesnica na obrazovke je zakázaná</translation>
 <translation id="1272079795634619415">Zastaviť</translation>
@@ -218,7 +217,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1908992311423394684">Nová inštalácia</translation>
 <translation id="1915307458270490472">Zložiť</translation>
 <translation id="1918022425394817322">Kamera bola prichytená do pravého horného rohu</translation>
-<translation id="1919743966458266018">Skratka otvorenia správcu úloh bola zmenená. Namiesto skratky <ph name="OLD_SHORTCUT" /> používajte kombináciu klávesov <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatické kliknutia</translation>
 <translation id="1928739107511554905">Ak chcete získať aktualizáciu, reštartuje Chromebook s pripojenou klávesnicou pomocou dotykovej obrazovky.</translation>
 <translation id="1948405482892809935">Prepnutie na ďalšieho používateľa</translation>
@@ -976,7 +974,6 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="5283198616748585639">Pridať 1 minútu</translation>
 <translation id="528468243742722775">Koniec</translation>
 <translation id="5286194356314741248">Prebieha vyhľadávanie</translation>
-<translation id="5293671101077843611">Dnes žiadne udalosti</translation>
 <translation id="5297423144044956168">Nenašli sa žiadne mobilné zariadenia</translation>
 <translation id="5297704307811127955">Vypnuté</translation>
 <translation id="5300589172476337783">Zobraziť</translation>
@@ -1278,6 +1275,7 @@ Nová inštalácia</translation>
 <translation id="6597278316891651699">Kamera bola prichytená do ľavého dolného rohu. Konflikt s platformou systému.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>
 <translation id="6612802754306526077">Bol vybraný režim nahrávania obrazovky</translation>
+<translation id="6613765291890844037">Využitý priestor: <ph name="STORAGE_IN_USE_SIZE" /> | Celkový priestor: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Obrazovka ochrany súkromia je zapnutá</translation>
 <translation id="6625718907317144388">Upozornenia z aplikácií <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> a ďalších sú skryté, pretože je zapnutá ochrana pred zobrazením</translation>
 <translation id="6627638273713273709">Hľadať+Shift+K</translation>
@@ -1759,7 +1757,6 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8834539327799336565">Aktuálne pripojené</translation>
 <translation id="8841375032071747811">Tlačidlo Späť</translation>
 <translation id="8843682306134542540">Prepnúť uzamknutie otočenia. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Hľadať+Esc</translation>
 <translation id="8853703225951107899">Váš kód PIN alebo heslo sa stále nepodarilo overiť. Poznámka: Ak ste nedávno zmenili svoje heslo, použite predchádzajúce. Nové heslo bude uplatnené až po odhlásení.</translation>
 <translation id="8855885154700222542">Kláves celej obrazovky</translation>
 <translation id="8858369206579825206">Nastavenia ochrany súkromia</translation>

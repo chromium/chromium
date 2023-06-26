@@ -1335,7 +1335,6 @@
 <translation id="3962859241508114581">წინა ჩანაწერი</translation>
 <translation id="3963721102035795474">წამკითხველის რეჟიმი</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{არცერთი}=1{1 საიტიდან }other{# საიტიდან }}</translation>
-<translation id="3969052498612555048">ვერ პოულობთ თქვენს კოდს? <ph name="BEGIN_LINK" />მიიღეთ ახალი კოდი<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">ანგარიშობს…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> დაბლოკილია</translation>
 <translation id="3984581365661308170">კონვერტი 11</translation>
@@ -2725,7 +2724,6 @@
 <translation id="7064443976734085921">კომპაქტური მანქანები</translation>
 <translation id="7064851114919012435">საკონტაქტო ინფორმაცია</translation>
 <translation id="7067633076996245366">სოული და რიტმ-ენდ-ბლუზი</translation>
-<translation id="7068733155164172741">შეიყვანეთ <ph name="OTP_LENGTH" />-ციფრიანი კოდი</translation>
 <translation id="70705239631109039">თქვენი კავშირი სრულად დაცული არ არის</translation>
 <translation id="7075452647191940183">მოთხოვნა მეტისმეტად დიდია</translation>
 <translation id="7078665357168027058">RA3</translation>

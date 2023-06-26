@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">हाल ही में इस्तेमाल किए गए ऐप्लिकेशन</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> से चार्ज हो रहा है</translation>
 <translation id="1255033239764210633">मौसम कैसा है?</translation>
-<translation id="1267032506238418139">शॉर्टकट में बदलाव</translation>
 <translation id="1269405891096105529">मेहमान मोड चालू होने पर, सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) काम नहीं करते.</translation>
 <translation id="1270290102613614947">ऑन-स्‍क्रीन कीबोर्ड अक्षम है</translation>
 <translation id="1272079795634619415">रोकें</translation>
@@ -217,7 +216,6 @@
 <translation id="1908992311423394684">अभी इंस्टॉल किया गया है</translation>
 <translation id="1915307458270490472">कॉल खत्म करें</translation>
 <translation id="1918022425394817322">कैमरा इनपुट की झलक, अब ऊपर दाएं कोने में दिखेगी</translation>
-<translation id="1919743966458266018">काम के मैनेजर को खोलने का शॉर्टकट बदल गया है. कृपया <ph name="OLD_SHORTCUT" /> के बजाय <ph name="NEW_SHORTCUT" /> का उपयोग करें.</translation>
 <translation id="1923539912171292317">अपने-आप क्‍लिक</translation>
 <translation id="1928739107511554905">अपडेट पाने के लिए, अटैच किए गए कीबोर्ड से अपने Chromebook को रीस्टार्ट करने के लिए टचस्क्रीन का इस्तेमाल करें.</translation>
 <translation id="1948405482892809935">अगले उपयोगकर्ता पर स्विच करने के लिए</translation>
@@ -976,7 +974,6 @@
 <translation id="5283198616748585639">एक मिनट जोड़ें</translation>
 <translation id="528468243742722775">खत्म</translation>
 <translation id="5286194356314741248">स्‍कैन हो रहा है</translation>
-<translation id="5293671101077843611">आज कोई इवेंट नहीं है</translation>
 <translation id="5297423144044956168">कोई मोबाइल डिवाइस नहीं मिला</translation>
 <translation id="5297704307811127955">बंद है</translation>
 <translation id="5300589172476337783">दिखाएं</translation>
@@ -1757,7 +1754,6 @@
 <translation id="8834539327799336565">फ़िलहाल, कनेक्ट किए गए डिवाइस</translation>
 <translation id="8841375032071747811">वापस जाएं बटन</translation>
 <translation id="8843682306134542540">रोटेशन लॉक को टॉगल करें. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">अब भी आपके पिन या पासवर्ड की पुष्टि नहीं की जा सकी. ध्यान दें: अगर आपने हाल ही में अपना पासवर्ड बदला है, तो पुराना पासवर्ड इस्तेमाल करें. नया पासवर्ड आपके साइन आउट करने के बाद लागू होगा.</translation>
 <translation id="8855885154700222542">फ़ुलस्क्रीन कुंजी</translation>
 <translation id="8858369206579825206">निजता सेटिंग</translation>

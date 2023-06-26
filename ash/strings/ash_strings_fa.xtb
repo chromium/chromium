@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">برنامه‌های اخیر</translation>
 <translation id="1252999807265626933">در حال شارژ شدن از <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">‏?‎What's the weather (آب‌وهوا چطور است؟)</translation>
-<translation id="1267032506238418139">تغییر میان‌بر</translation>
 <translation id="1269405891096105529">دستگاه جانبی در «حالت مهمان» پشتیبانی نمی‌شود</translation>
 <translation id="1270290102613614947">صفحه‌کلید مجازی غیرفعال شد</translation>
 <translation id="1272079795634619415">توقف</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">نصب جدید</translation>
 <translation id="1915307458270490472">قطع تماس</translation>
 <translation id="1918022425394817322">دوربین به گوشه بالا سمت راست چسبید</translation>
-<translation id="1919743966458266018">کلیدهای میان‌بر باز کردن مدیر وظایف تغییر کرده است. لطفاً از <ph name="NEW_SHORTCUT" /> به‌جای <ph name="OLD_SHORTCUT" /> استفاده کنید.</translation>
 <translation id="1923539912171292317">کلیک‌های خودکار</translation>
 <translation id="1928739107511554905">‏برای دریافت به‌روزرسانی، از صفحه لمسی برای بازراه‌اندازی Chromebook خود با صفحه‌کلید متصل استفاده کنید.</translation>
 <translation id="1948405482892809935">جابه‌جایی به کاربر بعدی</translation>
@@ -975,7 +973,6 @@
 <translation id="5283198616748585639">افزودن ۱ دقیقه</translation>
 <translation id="528468243742722775">پایان</translation>
 <translation id="5286194356314741248">اسکن کردن</translation>
-<translation id="5293671101077843611">رویدادی برای امروز موجود نیست</translation>
 <translation id="5297423144044956168">دستگاه همراهی پیدا نشد</translation>
 <translation id="5297704307811127955">خاموش</translation>
 <translation id="5300589172476337783">نمایش</translation>
@@ -1162,7 +1159,7 @@
 <translation id="6059276912018042191">‏برگه‌های اخیر Chrome</translation>
 <translation id="6062360702481658777">به صورت خودکار در عرض <ph name="LOGOUT_TIME_LEFT" /> از سیستم خارج می‌شوید.</translation>
 <translation id="6064463340679478396">کارم با این فایل تمام شده است</translation>
-<translation id="6068258534237496331">کنترل‌های تماس ویدیویی</translation>
+<translation id="6068258534237496331">کنترل‌های تماس تصویری</translation>
 <translation id="6073451960410192870">توقف ضبط</translation>
 <translation id="6074087755403037157">کانال بتا</translation>
 <translation id="6093867385179428431">توسط سرپرست غیرفعال شده است</translation>
@@ -1277,6 +1274,7 @@
 <translation id="6597278316891651699">دوربین به گوشه پایین سمت چپ چسبید. تداخلی با سطح سیستم روی داد.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>
 <translation id="6612802754306526077">حالت ضبط صفحه‌نمایش انتخاب شد</translation>
+<translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> از فضای ذخیره‌سازی درحال استفاده است | مجموع <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">صفحه حریم خصوصی روشن است</translation>
 <translation id="6625718907317144388">اعلان‌های <ph name="APP_1_TITLE" />، <ph name="APP_2_TITLE" />، و اعلان‌های دیگر پنهان شده است، زیرا «محافظت دربرابر مشاهده» روشن است</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
@@ -1758,7 +1756,6 @@
 <translation id="8834539327799336565">درحال‌حاضر متصل</translation>
 <translation id="8841375032071747811">دکمه برگشت</translation>
 <translation id="8843682306134542540">تغییر وضعیت قفل چرخش. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">همچنان نمی‌توان پین یا گذرواژه را تأیید کرد. توجه: اگر اخیراً گذرواژه‌تان را تغییر داده‌اید، از گذرواژه قدیمی‌تان استفاده کنید. گذرواژه جدیدتان بعد از خروج شما از سیستم اعمال می‌شود.</translation>
 <translation id="8855885154700222542">کلید تمام‌صفحه</translation>
 <translation id="8858369206579825206">تنظیمات حریم خصوصی</translation>

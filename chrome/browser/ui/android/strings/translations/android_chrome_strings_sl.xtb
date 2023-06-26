@@ -61,6 +61,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1283039547216852943">Dotaknite se za razširitev</translation>
 <translation id="1289059016768036948">Pozvani boste k prijavi v račun Google</translation>
 <translation id="1291207594882862231">Izbris zgodovine, piškotkov, podatkov spletnih mest, predpomnilnika …</translation>
+<translation id="1293898515599432175">Gesla bodo izbrisana iz Googlovega upravitelja gesel za Chrome <ph name="CHROME_CHANNEL" />. Obdržali boste datoteko z gesli, ki ste jo pravkar prenesli.</translation>
 <translation id="129553762522093515">Nedavno zaprto</translation>
 <translation id="1298077576058087471">Prihranite do 60 % pri prenosu podatkov, preberite današnje novice</translation>
 <translation id="1303339473099049190">Tega gesla ni mogoče najti. Preverite črkovanje in poskusite znova.</translation>
@@ -510,6 +511,7 @@ Zasebni žetoni stanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabi
 <translation id="3795154175078851242">Kopiranje slike s povezavo</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
+<translation id="381861209280417772">Izbriši gesla</translation>
 <translation id="3819178904835489326">Št. izbrisanih prenosov: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3819183753496523827">Niste povezani v internet. Preverite internetno povezavo in poskusite znova.</translation>
 <translation id="3830886834687455630">Posodobite Storitve Google Play, če želite preveriti gesla.</translation>
@@ -594,6 +596,7 @@ Zasebni žetoni stanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabi
 <translation id="4249955472157341256">Razvrsti glede na najnovejše</translation>
 <translation id="4250229828105606438">Posnetek zaslona</translation>
 <translation id="4256782883801055595">Odprtokodne licence</translation>
+<translation id="4257230861809842349">Želite izbrisati gesla iz Googlovega upravitelja gesel?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Kateri podatki se uporabljajo:<ph name="END_BOLD" /> Zgodovina brskanja, evidenca spletnih mest, ki ste jih obiskali s Chromom v tej napravi.</translation>
 <translation id="4269820728363426813">Kopiraj naslov povezave</translation>
 <translation id="4283102315569707115">Želite privzeto zahtevati namizna spletna mesta?</translation>

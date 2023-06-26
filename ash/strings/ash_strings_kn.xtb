@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">ಇತ್ತೀಚಿನ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> ನಿಂದ ಚಾರ್ಜ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1255033239764210633">ಹವಾಮಾನ ಹೇಗಿದೆ?</translation>
-<translation id="1267032506238418139">ಶಾರ್ಟ್‌ಕಟ್‌ ಬದಲಾವಣೆ</translation>
 <translation id="1269405891096105529">ಅತಿಥಿ ಮೋಡ್‌ನಲ್ಲಿ ಪೆರಿಫೆರಲ್ ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
 <translation id="1270290102613614947">ಆನ್ ಸ್ಕ್ರೀನ್ ಕೀಬೋರ್ಡ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1272079795634619415">ನಿಲ್ಲಿಸಿ</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">ಹೊಸ ಇನ್‌ಸ್ಟಾಲ್</translation>
 <translation id="1915307458270490472">ಹ್ಯಾಂಗ್ ಅಪ್ ಮಾಡಿ</translation>
 <translation id="1918022425394817322">ಕ್ಯಾಮರಾವನ್ನು ಮೇಲಿನ ಬಲ ಮೂಲೆಯಲ್ಲಿ ಸ್ನ್ಯಾಪ್ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="1919743966458266018">ಕಾರ್ಯ ನಿರ್ವಾಹಕರನ್ನು ತೆರೆಯಲು ಶಾರ್ಟ್‌ಕಟ್ ಬದಲಾಗಿದೆ. ದಯವಿಟ್ಟು <ph name="OLD_SHORTCUT" /> ಬದಲಿಗೆ <ph name="NEW_SHORTCUT" /> ಬಳಸಿ.</translation>
 <translation id="1923539912171292317">ಸ್ವಯಂಚಾಲಿತ ಕ್ಲಿಕ್‌ಗಳು</translation>
 <translation id="1928739107511554905">ಅಪ್‌ಡೇಟ್‌ ಅನ್ನು ಪಡೆಯಲು, ಕೀಬೋರ್ಡ್ ಲಗತ್ತಿನೊಂದಿಗೆ ನಿಮ್ಮ Chromebook ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಲು ಟಚ್‌ಸ್ಕ್ರೀನ್ ಅನ್ನು ಬಳಸಿ.</translation>
 <translation id="1948405482892809935">ಮುಂದಿನ ಬಳಕೆದಾರರಿಗೆ ಬದಲಿಸಿ</translation>
@@ -976,7 +974,6 @@
 <translation id="5283198616748585639">1 ನಿಮಿಷ ಸೇರಿಸಿ</translation>
 <translation id="528468243742722775">ಅಂತ್ಯ</translation>
 <translation id="5286194356314741248">ಸ್ಕ್ಯಾನಿಂಗ್</translation>
-<translation id="5293671101077843611">ಇಂದು ಯಾವುದೇ ಈವೆಂಟ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="5297423144044956168">ಯಾವುದೇ ಮೊಬೈಲ್ ಸಾಧನಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="5297704307811127955">ಆಫ್</translation>
 <translation id="5300589172476337783">ತೋರಿಸಿ</translation>
@@ -1761,7 +1758,6 @@
 <translation id="8834539327799336565">ಪ್ರಸ್ತುತ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8841375032071747811">ಹಿಂದೆ ಬಟನ್</translation>
 <translation id="8843682306134542540">ಪರದೆ ತಿರುಗಿಸುವಿಕೆಯ ಲಾಕ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">ಹುಡುಕಾಟ+Esc</translation>
 <translation id="8853703225951107899">ನಿಮ್ಮ ಪಿನ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಇನ್ನೂ ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಗಮನಿಸಿ: ನೀವು ಇತ್ತೀಚೆಗೆ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಿದ್ದರೆ, ನಿಮ್ಮ ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಿ. ನೀವು ಸೈನ್ ಔಟ್ ಮಾಡಿದ ನಂತರ ನಿಮ್ಮ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಅನ್ವಯಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="8855885154700222542">ಪೂರ್ಣಪರದೆ ಕೀ</translation>
 <translation id="8858369206579825206">ಗೌಪ್ಯತೆ ನಿಯಂತ್ರಣಗಳು</translation>

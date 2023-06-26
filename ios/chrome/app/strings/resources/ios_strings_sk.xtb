@@ -63,6 +63,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="1291506870746876680">Keď web <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> opustíte, povolenia preň sa resetujú na možnosť Vypnuté.</translation>
 <translation id="1305822519689023679">Ak sa chcete uistiť, že vo svojom účte Google môžete kedykoľvek použiť heslá, overte svoju totožnosť.</translation>
 <translation id="1312721752506309252">Je zapnutá rozšírená ochrana</translation>
+<translation id="1316466854070752597">Zobraziť všetky otvorené karty</translation>
 <translation id="1321993286294231467">Chyba pri ukladaní obrázka.</translation>
 <translation id="1322735045095424339">Vaša organizácia vyžaduje režim inkognito</translation>
 <translation id="1323735185997015385">Odstrániť</translation>
@@ -438,6 +439,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3656645960301737801">Dokončite udalosť a uložte</translation>
 <translation id="3661160521073045932">K dispozícii je profil konfigurácie</translation>
 <translation id="3670030362669914947">Číslo</translation>
+<translation id="368329460027487650">Účet je odhlásený. Otvoria sa možnosti na prihlásenie.</translation>
 <translation id="3700134753671613714">Ak chcete mať záložky vo všetkých svojich zariadeniach, prihláste sa.</translation>
 <translation id="3709582977625132201">Označiť ako neprečítané</translation>
 <translation id="371230970611282515">Predpovedá nebezpečné udalosti a upozorní vás, než k nim dôjde.</translation>
@@ -666,6 +668,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5190835502935405962">Panel so záložkami</translation>
 <translation id="519530786644929958">Súbor sa nestiahol. Pokus sa nedá zopakovať.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5209674813563615506">Otvorenie novej karty</translation>
 <translation id="5211488077761630279">Chcete povoliť webu <ph name="SITE_NAME" /> používať povolenie <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Pomôžte zlepšiť zabezpečenie na internete pre všetkých</translation>
 <translation id="5221339005270097309">Kontrolujú sa heslá…</translation>
@@ -941,6 +944,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="6684906340059221832">Ceny sa sledujú</translation>
 <translation id="6710079714193676716">Spravuje vaša organizácia. Niektoré funkcie nemusia byť k dispozícii. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="672735642903863329">Majte k dispozícii svoje záložky, heslá a ďalší obsah vo všetkých zariadeniach.</translation>
 <translation id="6730682669179532099">Heslá sa nedajú exportovať</translation>
 <translation id="6732087373923685049">fotoaparát</translation>
 <translation id="6748108480210050150">Od</translation>

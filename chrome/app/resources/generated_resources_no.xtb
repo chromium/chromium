@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Fanen er aktiv igjen</translation>
 <translation id="1003088604756913841">Åpne linken i et nytt <ph name="APP" />-vindu</translation>
 <translation id="100323615638474026">USB-enhet (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google Safe Browsing</translation>
 <translation id="1004218526896219317">Nettstedstilgang</translation>
 <translation id="1005274289863221750">bruke mikrofonen din og kameraet ditt</translation>
 <translation id="1005333234656240382">Vil du slå på ADB-feilsøking?</translation>
@@ -523,6 +522,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1434886155212424586">Startsiden er Ny fane-siden</translation>
 <translation id="1435940442311036198">Bruk en tilgangsnøkkel på en annen enhet</translation>
 <translation id="1436390408194692385">Gyldig i <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Fortsett konfigureringen</translation>
 <translation id="1436784010935106834">Fjernet</translation>
 <translation id="1437986450143295708">Beskriv problemet i detalj</translation>
 <translation id="1439671507542716852">langtidsstøtte</translation>
@@ -1947,7 +1947,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2577446426265992344">uten multifunksjonsfelt</translation>
 <translation id="257779572837908839">Konfigurer som en Chromebox for møter</translation>
 <translation id="2579309488038515659">Slå på wifi-sone</translation>
-<translation id="2579596474754516455">Skann PDF-bilder for å konvertere tekst for skjermleseren når det er nødvendig</translation>
 <translation id="2580889980133367162">Tillat alltid at <ph name="HOST" /> laster ned flere filer</translation>
 <translation id="258095186877893873">Lang</translation>
 <translation id="2581455244799175627">Mer om å tillate informasjonskapsler fra tredjeparter</translation>
@@ -2382,6 +2381,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2942279350258725020">Android-meldinger</translation>
 <translation id="2942560570858569904">Venter …</translation>
 <translation id="2942581856830209953">Tilpass denne siden</translation>
+<translation id="2942707801577151363">Åpne, rediger og lagre Word-, Excel- og PowerPoint-filer. Det kan være nødvendig med abonnement for enkelte funksjoner.</translation>
 <translation id="2943268899142471972">Velg en Ansible Playbook-fil eller Crostini-sikkerhetskopifil</translation>
 <translation id="2944060181911631861">Send bruks- og diagnostikkdata. Hjelp til med å gjøre Android-opplevelsen din bedre ved å sende diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din. <ph name="BEGIN_LINK1" />Finn ut mer<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">Gå til filer</translation>
@@ -5429,9 +5429,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5602765853043467355">Slett bokmerker, logger, passord og annet fra denne enheten</translation>
 <translation id="5605758115928394442">Vi har sendt et varsel til telefonen din for å bekrefte at det er deg.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Denne utvidelsen er blokkert}other{Disse utvidelsene er blokkert}}</translation>
-<translation id="560743070587960985">Denne filen kan være et virus eller skadelig programvare.
-
-Du kan sende den til Google for å sjekke om den er utrygg. Skanninger tar vanligvis noen sekunder.</translation>
 <translation id="560834977503641186">Wifi-synkronisering – finn ut mer</translation>
 <translation id="5608580678041221894">Trykk på de følgende tastene for å justere eller flytte beskjæringsområdet</translation>
 <translation id="5609231933459083978">Appen ser ut til å være ugyldig.</translation>
@@ -6196,6 +6193,7 @@ Du kan sende den til Google for å sjekke om den er utrygg. Skanninger tar vanli
 <translation id="6263082573641595914">Microsoft sertifiseringsinstansversjon</translation>
 <translation id="6263284346895336537">Ikke kritisk</translation>
 <translation id="6264365405983206840">Velg &amp;alle</translation>
+<translation id="6264376385120300461">Last ned likevel</translation>
 <translation id="6265687851677020761">Fjern porten</translation>
 <translation id="6266532094411434237">Kobler til <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Velg sertifikat for å autentisere deg selv til <ph name="HOST_NAME" /></translation>
@@ -7222,7 +7220,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7149839598364933473">Konverter denne enheten til en <ph name="DEVICE_OS" />-enhet.</translation>
 <translation id="7149893636342594995">Siste døgn</translation>
 <translation id="7152478047064750137">Denne utvidelsen krever ingen spesielle tillatelser</translation>
-<translation id="7153309176431047193">Konverter bilder til tekst</translation>
 <translation id="7154130902455071009">endre startsiden din til: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Konverter bildet til tekst</translation>
 <translation id="7159953856712257647">Installert som standard</translation>
@@ -7777,7 +7774,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7634280112532283638">Reduksjon i nettsøppel og svindel</translation>
 <translation id="7634337648687970851">Gjenoppretting av lokale data støttes ikke for øyeblikket.</translation>
 <translation id="7634566076839829401">Noe gikk galt. Prøv på nytt.</translation>
-<translation id="763472884969134151">Analysen er utført av <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Festet av administratoren din</translation>
 <translation id="7635711411613274199">Om en annonse du ser har et personlig preg avhenger av denne innstillingen, <ph name="BEGIN_LINK1" />Annonseemner<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />innstillingene for informasjonskapsler<ph name="LINK_END2" /> og om nettstedet du ser på viser personlig tilpassede annonser</translation>
 <translation id="7636919061354591437">Installer på denne enheten</translation>
@@ -8596,6 +8592,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8293206222192510085">Legg til bokmerke</translation>
 <translation id="8294431847097064396">Kilde</translation>
 <translation id="8295449579927246485">Direkteoversetting</translation>
+<translation id="8295450130892483256">Installer Microsoft 365</translation>
 <translation id="8297292446125062288">HID-innstillinger</translation>
 <translation id="8298429963694909221">Du kan nå motta varsler fra telefonen din på <ph name="DEVICE_TYPE" />. Hvis du lukker varsler på <ph name="DEVICE_TYPE" />, blir de også lukket på telefonen. Sørg for at telefonen er i nærheten, og at Bluetooth og wifi er slått på.</translation>
 <translation id="8299319456683969623">Du er for øyeblikket ikke på nett.</translation>

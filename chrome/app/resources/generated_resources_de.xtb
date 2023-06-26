@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Tab wieder aktiv</translation>
 <translation id="1003088604756913841">Link in neuem <ph name="APP" />-Fenster öffnen</translation>
 <translation id="100323615638474026">USB-Gerät (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google Safe Browsing</translation>
 <translation id="1004218526896219317">Websitezugriff</translation>
 <translation id="1005274289863221750">Dein Mikrofon und deine Kamera verwenden</translation>
 <translation id="1005333234656240382">ADB-Fehlerbehebung aktivieren?</translation>
@@ -520,6 +519,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1434886155212424586">Die "Neuer Tab"-Seite ist die Startseite.</translation>
 <translation id="1435940442311036198">Passkey auf einem anderen Gerät verwenden</translation>
 <translation id="1436390408194692385">Gültig für <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Einrichtung fortsetzen</translation>
 <translation id="1436784010935106834">Entfernt</translation>
 <translation id="1437986450143295708">Beschreibe ausführlich das Problem</translation>
 <translation id="1439671507542716852">Langzeitsupport</translation>
@@ -1930,7 +1930,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2577446426265992344">ohne Omnibox</translation>
 <translation id="257779572837908839">Als Chromebox für Meetings einrichten</translation>
 <translation id="2579309488038515659">Hotspot aktivieren</translation>
-<translation id="2579596474754516455">Du kannst PDF-Bilder scannen, um Text bei Bedarf für Screenreader konvertieren zu lassen</translation>
 <translation id="2580889980133367162"><ph name="HOST" /> immer das Herunterladen mehrerer Dateien gestatten</translation>
 <translation id="258095186877893873">Lang</translation>
 <translation id="2581455244799175627">Weitere Informationen zum Zulassen von Drittanbieter-Cookies</translation>
@@ -2097,6 +2096,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2727744317940422214">Ein Fehler ist aufgetreten. Gib bitte Feedback und verwende #bruschetta in der Beschreibung. Fehlercode: <ph name="ERROR" /> Die Bereinigung ist fehlgeschlagen. Du musst sie gegebenenfalls manuell vornehmen.</translation>
 <translation id="2729314457178420145">Auch Browserdaten (<ph name="URL" />) löschen, wodurch du möglicherweise von Google.com abgemeldet wirst. <ph name="LEARN_MORE" /></translation>
 <translation id="2729327310379176711">Chrome entwickelt neue Möglichkeiten, das Tracking zu reduzieren und beim Surfen zu deinem Schutz beizutragen. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> und ermöglicht es dir, sie zu verwalten Anschließend können Websites, die du besuchst, Chrome nach deinen Interessen fragen, um dir Werbung anzuzeigen.</translation>
+<translation id="2729577602370119849">Einfach auf deine Drucker zugreifen und diese verwalten</translation>
 <translation id="2730029791981212295">Linux-Apps und -Dateien werden gesichert</translation>
 <translation id="2730901670247399077">Emoji-Vorschläge</translation>
 <translation id="273093730430620027">Diese Seite greift auf deine Kamera zu.</translation>
@@ -2417,6 +2417,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2996286169319737844">Daten sind mit deiner Synchronisierungspassphrase verschlüsselt. Davon ausgenommen sind Zahlungsmethoden oder Adressen von Google Pay.</translation>
 <translation id="2996722619877761919">Entlang der langen Seite wenden</translation>
 <translation id="2996932914629936323">Löscht den Verlauf auf allen synchronisierten Geräten</translation>
+<translation id="2998097899774209901">Aktiviert • Diese Erweiterung verletzt die Chrome Web Store-Richtlinien</translation>
 <translation id="2998267783395280091">Netzwerk gefunden</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> zugelassen</translation>
 <translation id="3000461861112256445">Mono-Audio</translation>
@@ -2449,6 +2450,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3012631534724231212">(iFrame)</translation>
 <translation id="3012804260437125868">Nur bei sicheren Verbindungen zur gleichen Website</translation>
 <translation id="3012917896646559015">Wende dich bitte umgehend an deinen Hardware-Hersteller, um deinen Computer an einen Reparaturservice zu senden.</translation>
+<translation id="3013652227108802944">Deaktiviert • Diese Erweiterung verstößt gegen die Chrome Web Store-Richtlinien</translation>
 <translation id="3014717196148502230">Chrome lädt noch mehr Seiten vorab, die du wahrscheinlich besuchen wirst, sodass sie dann schneller zur Verfügung stehen.</translation>
 <translation id="301525898020410885">Die Sprache wird von deiner Organisation festgelegt</translation>
 <translation id="3015639418649705390">Jetzt neu starten</translation>
@@ -2516,6 +2518,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3072775339180057696">Website erlauben, <ph name="FILE_NAME" /> zu lesen?</translation>
 <translation id="3074499504015191586">Ganze Seite übersetzen</translation>
 <translation id="3075144191779656260">Lege einen Finger auf den Fingerabdrucksensor links an deinem <ph name="DEVICE_TYPE" />. Dein Fingerabdruck wird sicher gespeichert und verlässt dein <ph name="DEVICE_TYPE" /> nie.</translation>
+<translation id="3075740753681485522">Deaktiviert • Diese Erweiterung enthält Malware</translation>
 <translation id="3075874217500066906">Zu Beginn des Powerwashs ist ein Neustart erforderlich. Nach dem Neustart wirst du gefragt, ob der Vorgang fortgesetzt werden soll.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Nur auf diesem Gerät speichern</translation>
@@ -2678,6 +2681,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3243017971870859287">Seriennummern von ChromeOS Flex-Geräten und -Komponenten lesen</translation>
 <translation id="324366796737464147">Geräuschunterdrückung</translation>
 <translation id="3244294424315804309">Töne weiterhin stummschalten</translation>
+<translation id="3247649647204519958">Hier kannst du die Erweiterungsberechtigungen für die aktuelle Website ansehen und verwalten</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Netzwerkfehler</translation>
 <translation id="3248902735035392926">Sicherheit ist wichtig. Nimm dir einen Moment Zeit, um deine <ph name="BEGIN_LINK" />Erweiterungen zu prüfen<ph name="END_LINK" /></translation>
 <translation id="3249323165366527554">Du kannst dich schneller registrieren und anmelden, wenn du dein Passwort für <ph name="EMAIL" /> automatisch in <ph name="GOOGLE_PASSWORD_MANAGER" /> speichern lässt.</translation>
@@ -2770,6 +2774,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3320271870899888245">Es kann keine Verbindung zu OneDrive hergestellt werden. Versuche es noch einmal.</translation>
 <translation id="3320630259304269485">Safe Browsing (Schutz vor schädlichen Websites) und andere Sicherheitseinstellungen</translation>
 <translation id="3321460131042519426">Zeilenumbruch aktivieren</translation>
+<translation id="3321494112580110651">Wird dein Drucker nicht angezeigt?</translation>
 <translation id="3323521181261657960">Bonus! Bildschirmzeit verlängert</translation>
 <translation id="3323577066981719144">Änderungen, die du hier vornimmst, werden nur auf den Chrome-Browser angewendet. Wenn du die Einstellungen des Lacros Chrome-Browsers ändern möchtest, öffne den Lacros Chrome-Browser und rufe die Einstellungen auf.</translation>
 <translation id="3325804108816646710">Es wird nach verfügbaren Profilen gesucht…</translation>
@@ -3630,6 +3635,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Seite verlassen}other{Seiten verlassen}}</translation>
 <translation id="4042941173059740150">Weiter zu <ph name="SITE_ETLD_PLUS_ONE" /> mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4043267180218562935">Cursorgröße</translation>
+<translation id="4043620984511647481">Drucker manuell hinzufügen</translation>
 <translation id="4044612648082411741">Du musst dein Zertifikatspasswort eingeben</translation>
 <translation id="4044708573046946214">Passwort für die Displaysperre</translation>
 <translation id="404493185430269859">Standardsuchmaschine</translation>
@@ -4458,6 +4464,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="477647109558161443">Desktopverknüpfung erstellen</translation>
 <translation id="4776594120007763294">Wenn du eine Seite zum späteren Lesen hinzufügen möchtest, klicke auf die Schaltfläche</translation>
 <translation id="4777458362738635055">Andere Nutzer dieses Geräts können dieses Netzwerk verwenden</translation>
+<translation id="4777813841994368231">Aktiviert • Die Veröffentlichung dieser Erweiterung wurde vom Entwickler aufgehoben</translation>
 <translation id="4777825441726637019">Google Play Store</translation>
 <translation id="4777943778632837590">Netzwerk-Nameserver konfigurieren</translation>
 <translation id="4778653490315793244">Noch keine Inhalte vorhanden</translation>
@@ -5402,9 +5409,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5602765853043467355">Lesezeichen, Verlauf, Passwörter und weitere Daten von diesem Gerät löschen</translation>
 <translation id="5605758115928394442">An dein Smartphone wurde eine Benachrichtigung gesendet, um deine Identität zu bestätigen.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Diese Erweiterung ist blockiert}other{Diese Erweiterungen sind blockiert}}</translation>
-<translation id="560743070587960985">Bei dieser Datei handelt es sich möglicherweise um einen Virus oder Malware.
-
-Du kannst sie an Google senden, um zu überprüfen, ob sie unsicher ist. Der Scan dauert in der Regel einige Sekunden.</translation>
 <translation id="560834977503641186">Weitere Informationen zur WLAN-Synchronisation</translation>
 <translation id="5608580678041221894">Tippe auf die folgenden Tasten, um den Overscan-Bereich anzupassen oder zu verschieben</translation>
 <translation id="5609231933459083978">Die Anwendung ist anscheinend ungültig.</translation>
@@ -6166,6 +6170,7 @@ Du kannst sie an Google senden, um zu überprüfen, ob sie unsicher ist. Der Sca
 <translation id="6263082573641595914">Microsoft - Version der Zertifizierungsstelle</translation>
 <translation id="6263284346895336537">Nicht kritisch</translation>
 <translation id="6264365405983206840">&amp;Alles auswählen</translation>
+<translation id="6264376385120300461">Trotzdem herunterladen</translation>
 <translation id="6265687851677020761">Port entfernen</translation>
 <translation id="6266532094411434237">Verbindung zu <ph name="DEVICE" /> wird hergestellt</translation>
 <translation id="6267166720438879315">Wähle ein Zertifikat für die Authentifizierung bei <ph name="HOST_NAME" /> aus.</translation>
@@ -6373,6 +6378,7 @@ Du kannst sie an Google senden, um zu überprüfen, ob sie unsicher ist. Der Sca
 <translation id="6453191633103419909">Projektionsqualität auf Tab oder Bildschirm</translation>
 <translation id="6453921811609336127">Wenn du zur nächsten Eingabemethode wechseln möchtest, drücke <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Strg<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Umschalttaste<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Leertaste<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Auf bestimmten Websites</translation>
+<translation id="6455521402703088376">Deaktiviert • Die Veröffentlichung dieser Erweiterung wurde vom Entwickler aufgehoben</translation>
 <translation id="6455894534188563617">&amp;Neuer Ordner</translation>
 <translation id="645705751491738698">JavaScript weiterhin blockieren</translation>
 <translation id="6458347417133445570">Informationen zum Zulassen aller Cookies aufrufen</translation>
@@ -6581,6 +6587,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6633126565486451781">Diese Datei wurde möglicherweise ausgelesen oder bearbeitet, weil diese Website keine sichere Verbindung verwendet</translation>
 <translation id="6635362468090274700">Andere Personen können nur Daten mit dir teilen, wenn du dich sichtbar machst.<ph name="BR" /><ph name="BR" />Wenn du dich vorübergehend sichtbar machen möchtest, öffne den Statusbereich und schalte „Nearby-Sichtbarkeit“ ein.</translation>
 <translation id="6635674640674343739">Netzwerkverbindung kann nicht hergestellt werden. Prüfe deine Netzwerkverbindung und versuche es noch einmal.</translation>
+<translation id="663569763553406962">Erweiterungen, die eine Website lesen oder ändern können</translation>
 <translation id="6635944431854494329">Diese Funktion kann vom Inhaber über "Einstellungen" &gt; "Erweitert" &gt; "Diagnose- und Nutzungsdaten automatisch an Google senden" gesteuert werden.</translation>
 <translation id="6636623428211296678">Weitere Einstellungen ansehen oder Überprüfung jetzt beenden</translation>
 <translation id="6639554308659482635">SQLite-Speicher</translation>
@@ -6826,6 +6833,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6833996806551876956">Privacy Sandbox-Testmodus</translation>
 <translation id="6835712061486505758">Du kannst einen WLAN-Hotspot erstellen, um anderen Geräten eine Internetverbindung zur Verfügung zu stellen. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6835762382653651563">Stelle eine Internetverbindung her, um dein Gerät (<ph name="DEVICE_TYPE" />) zu aktualisieren.</translation>
+<translation id="6836688241291438278">Der Drucker muss mit demselben WLAN wie dein Chromebook verbunden sein. Du kannst stattdessen auch ein USB-Kabel verwenden. Weitere Informationen zur Kompatibilität</translation>
 <translation id="6839225236531462745">Fehler beim Löschen des Zertifikats</translation>
 <translation id="6839916869147598086">Anmeldung hat sich geändert</translation>
 <translation id="6840155290835956714">Vor dem Senden nachfragen</translation>
@@ -7189,7 +7197,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7149839598364933473">Mache aus diesem Gerät ein <ph name="DEVICE_OS" />-Gerät.</translation>
 <translation id="7149893636342594995">Letzte 24 Stunden</translation>
 <translation id="7152478047064750137">Diese Erweiterung erfordert keine speziellen Berechtigungen</translation>
-<translation id="7153309176431047193">Bilder in Text konvertieren</translation>
 <translation id="7154130902455071009">Startseite in <ph name="START_PAGE" /> ändern</translation>
 <translation id="7156231244155528270">Bild in Text umwandeln</translation>
 <translation id="7159953856712257647">Standardmäßig installiert</translation>
@@ -7743,7 +7750,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7634280112532283638">Spam- und Betrugsreduzierung</translation>
 <translation id="7634337648687970851">Die Wiederherstellung lokaler Daten wird derzeit nicht unterstützt.</translation>
 <translation id="7634566076839829401">Ein Problem ist aufgetreten. Bitte versuche es erneut.</translation>
-<translation id="763472884969134151">Analyse durch <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Von deinem Administrator angepinnt</translation>
 <translation id="7635711411613274199">Ob du beim Surfen personalisierte Werbung siehst, hängt von dieser Einstellung, <ph name="BEGIN_LINK1" />den Werbethemen<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />deinen Cookie-Einstellungen<ph name="LINK_END2" /> und davon ab, ob die besuchte Website Werbung personalisiert</translation>
 <translation id="7636919061354591437">Auf diesem Gerät installieren</translation>
@@ -8545,6 +8551,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8275080796245127762">Über mein Gerät anrufen</translation>
 <translation id="8275339871947079271">Wenn du mit allen Geräten, auf denen du angemeldet bist, sicher auf dein Passwort zugreifen möchtest, verschiebe es in dein Google-Konto.</translation>
 <translation id="8276560076771292512">Cache leeren und vollständig aktualisieren</translation>
+<translation id="828180235270931531">Weitere verfügbare Drucker</translation>
 <translation id="8281886186245836920">Überspringen</translation>
 <translation id="8284279544186306258">alle <ph name="WEBSITE_1" />-Websites</translation>
 <translation id="8284326494547611709">Untertitel</translation>
@@ -9286,6 +9293,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8930622219860340959">Drahtlos</translation>
 <translation id="8931076093143205651">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Du kannst uns helfen, Android zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google nützlich, beispielsweise Android-Entwickler. Diese Einstellung wird vom Inhaber erzwungen. Der Inhaber kann festlegen, ob Diagnose- und Nutzungsdaten von diesem Gerät an Google gesendet werden. Wenn die Einstellung "Zusätzliche Web- &amp; App-Aktivitäten" aktiviert ist, werden diese Daten möglicherweise in deinem Google-Konto gespeichert.</translation>
 <translation id="8931475688782629595">Verwalten, welche Daten synchronisiert werden</translation>
+<translation id="8931713990831679796">Diese Drucker sind verbunden und einsatzbereit. Du kannst sie in deinem Profil speichern, um einfacher darauf zuzugreifen.</translation>
 <translation id="8932654652795262306">Instant Tethering-Details</translation>
 <translation id="893298445929867520">Einkaufswagen ausgeblendet. Sie werden wieder angezeigt, wenn du Änderungen vornimmst.</translation>
 <translation id="8933960630081805351">Im Finder &amp;anzeigen</translation>

@@ -1335,7 +1335,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3962859241508114581">Prejšnja skladba</translation>
 <translation id="3963721102035795474">Način bralnika</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Brez}=1{1 spletno mesto }one{# spletno mesto }two{# spletni mesti }few{# spletna mesta }other{# spletnih mest }}</translation>
-<translation id="3969052498612555048">Ne najdete kode? <ph name="BEGIN_LINK" />Pošiljanje nove kode<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Izračunavanje …</translation>
 <translation id="3973234410852337861">Spletno mesto <ph name="HOST_NAME" /> je blokirano</translation>
 <translation id="3984581365661308170">Kuverta št. 11</translation>
@@ -2725,7 +2724,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7064443976734085921">Manjši družinski avtomobili</translation>
 <translation id="7064851114919012435">Podatki o stiku</translation>
 <translation id="7067633076996245366">Soul in R&amp;B</translation>
-<translation id="7068733155164172741">Vnesite <ph name="OTP_LENGTH" />-mestno kodo</translation>
 <translation id="70705239631109039">Povezava ni v celoti varna</translation>
 <translation id="7075452647191940183">Zahteva je prevelika</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3281,6 +3279,7 @@ Dodatne podrobnosti:
 <translation id="8246482227229072868">Obroči</translation>
 <translation id="8249296373107784235">Prekini</translation>
 <translation id="8249463483885748674">Standardizirani sprejemni preizkusi</translation>
+<translation id="824968735947741546">Prevajanje iz (samodejno zaznanega) jezika <ph name="SOURCE" /> v jezik <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Ta naslov je trenutno shranjen v tej napravi. Če ga želite uporabiti v Googlovih izdelkih, ga shranite v računu Google (<ph name="ACCOUNT" />).</translation>
 <translation id="8252991034201168845">Gumb za upravljanje nastavitev funkcij za ljudi s posebnimi potrebami, pritisnite Enter, če želite osebno prilagoditi orodja za ljudi s posebnimi potrebami v nastavitvah sistema Chrome OS.</translation>
 <translation id="8253091569723639551">Naslov za izstavitev računa je obvezen</translation>

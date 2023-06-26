@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">Πρόσφατες εφαρμογές</translation>
 <translation id="1252999807265626933">Φόρτιση από <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Τι καιρό κάνει;</translation>
-<translation id="1267032506238418139">Αλλαγή συντόμευσης</translation>
 <translation id="1269405891096105529">Το περιφερειακό δεν υποστηρίζεται στη λειτουργία επισκέπτη</translation>
 <translation id="1270290102613614947">Το πληκτρολόγιο οθόνης είναι απενεργοποιημένο</translation>
 <translation id="1272079795634619415">Διακοπή</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">Νέα εγκατάσταση</translation>
 <translation id="1915307458270490472">Τερματισμός κλήσης</translation>
 <translation id="1918022425394817322">Η προεπισκόπηση κάμερας τοποθετήθηκε στην επάνω δεξιά γωνία</translation>
-<translation id="1919743966458266018">Η συντόμευση για το άνοιγμα της Διαχείρισης Εργασιών άλλαξε. Χρησιμοποιήστε το <ph name="NEW_SHORTCUT" /> αντί για το <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Αυτόματα κλικ</translation>
 <translation id="1928739107511554905">Για να λάβετε την ενημέρωση, χρησιμοποιήστε την οθόνη αφής για να επανεκκινήσετε το Chromebook με το συνδεδεμένο πληκτρολόγιο.</translation>
 <translation id="1948405482892809935">Εναλλαγή στον επόμενο χρήστη</translation>
@@ -976,7 +974,6 @@
 <translation id="5283198616748585639">Προσθήκη 1 λεπτού</translation>
 <translation id="528468243742722775">Τέλος</translation>
 <translation id="5286194356314741248">Σάρωση</translation>
-<translation id="5293671101077843611">Δεν υπάρχουν συμβάντα σήμερα</translation>
 <translation id="5297423144044956168">Δεν βρέθηκαν κινητές συσκευές.</translation>
 <translation id="5297704307811127955">Ανενεργό</translation>
 <translation id="5300589172476337783">Εμφάνιση</translation>
@@ -1761,7 +1758,6 @@
 <translation id="8834539327799336565">Συνδεδεμένες αυτήν τη στιγμή</translation>
 <translation id="8841375032071747811">Κουμπί "Πίσω"</translation>
 <translation id="8843682306134542540">Εναλλαγή κλειδώματος περιστροφής. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Πλήκτρο αναζήτησης+Esc</translation>
 <translation id="8853703225951107899">Η επαλήθευση του PIN ή του κωδικού πρόσβασής σας εξακολουθεί να μην είναι δυνατή. Σημείωση: Εάν πρόσφατα αλλάξατε τον κωδικό πρόσβασής σας, χρησιμοποιήστε τον παλιό κωδικό πρόσβασης. Ο νέος κωδικός πρόσβασης θα εφαρμοστεί αφού αποσυνδεθείτε.</translation>
 <translation id="8855885154700222542">Πλήκτρο πλήρους οθόνης</translation>
 <translation id="8858369206579825206">Στοιχεία ελέγχου απορρήτου</translation>

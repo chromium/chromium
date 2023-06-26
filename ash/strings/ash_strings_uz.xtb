@@ -69,7 +69,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1247519845643687288">Oxirgi ilovalar</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> orqali quvvat olmoqda</translation>
 <translation id="1255033239764210633">Ob-havo qanday?</translation>
-<translation id="1267032506238418139">Tugmalar birikmasini o‘zgartirish</translation>
 <translation id="1269405891096105529">Mehmon rejimida tashqi qurilmalar ishlamaydi</translation>
 <translation id="1270290102613614947">Ekran klaviaturasi o‘chirib qo‘yilgan</translation>
 <translation id="1272079795634619415">To‘xtatish</translation>
@@ -218,7 +217,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1908992311423394684">Yangi oʻrnatilgan</translation>
 <translation id="1915307458270490472">Tugatish</translation>
 <translation id="1918022425394817322">Kamera yuqori oʻng burchakka joylandi</translation>
-<translation id="1919743966458266018">Vazifalar menejerini ishga tushirish uchun tugmalar birikmasi o‘zgardi. Endi “<ph name="OLD_SHORTCUT" />” o‘rniga “<ph name="NEW_SHORTCUT" />” birikmasidan foydalaning.</translation>
 <translation id="1923539912171292317">Avtomatik bosishlar</translation>
 <translation id="1928739107511554905">Yangilanishni o‘rnatish uchun Chromebook qurilmangizni klaviaturani uzmasdan sensor paneli orqali o‘chirib yoqing.</translation>
 <translation id="1948405482892809935">Keyingi foydalanuvchiga almashish</translation>
@@ -976,7 +974,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5283198616748585639">1 daqiqa qoʻshish</translation>
 <translation id="528468243742722775">Tugatish</translation>
 <translation id="5286194356314741248">Qidiruv</translation>
-<translation id="5293671101077843611">Bugun hech qanday tadbir yoʻq</translation>
 <translation id="5297423144044956168">Mobil qurilmalar topilmadi</translation>
 <translation id="5297704307811127955">Oʻchiq</translation>
 <translation id="5300589172476337783">Ko‘rsatish</translation>
@@ -1761,7 +1758,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8834539327799336565">Hozirda ulangan</translation>
 <translation id="8841375032071747811">Orqaga tugmasi</translation>
 <translation id="8843682306134542540">Burishni qulflash/qulfdan chiqarish. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search + Esc</translation>
 <translation id="8853703225951107899">PIN kod yoki parolingiz haligacha tekshirilmadi. Eslatma: Parol yaqinda almashtirilgan boʻlsa, eskisini kiriting. Yangi parolingiz hisobdan chiqqaningizda kuchga kiradi.</translation>
 <translation id="8855885154700222542">Butun ekran rejimi tugmasi</translation>
 <translation id="8858369206579825206">Maxfiylik sozlamalari</translation>

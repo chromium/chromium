@@ -1243,7 +1243,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3962859241508114581">Kënga e mëparshme</translation>
 <translation id="3963721102035795474">Modaliteti i lexuesit</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Asnjë}=1{Nga 1 sajt }other{Nga # sajte }}</translation>
-<translation id="3969052498612555048">Nuk mund ta gjesh kodin tënd? <ph name="BEGIN_LINK" />Merr kod të ri<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Po llogarit...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> është bllokuar</translation>
 <translation id="3984581365661308170">Zarf nr. 11</translation>
@@ -2529,7 +2528,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="706295145388601875">Shto dhe menaxho adresat te cilësimet e Chrome</translation>
 <translation id="7064851114919012435">Informacionet e kontaktit</translation>
 <translation id="7067633076996245366">Soul dhe R&amp;B</translation>
-<translation id="7068733155164172741">Fut kodin <ph name="OTP_LENGTH" />-shifror</translation>
 <translation id="70705239631109039">Lidhja jote nuk është plotësisht e sigurt</translation>
 <translation id="7075452647191940183">Kërkesa është tepër e madhe</translation>
 <translation id="7078665357168027058">RA3</translation>

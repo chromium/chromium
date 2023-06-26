@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">ఇటీవలి యాప్‌లు</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> నుండి ఛార్జ్ అవుతోంది</translation>
 <translation id="1255033239764210633">వాతావరణం ఎలా ఉంది?</translation>
-<translation id="1267032506238418139">షార్ట్‌కట్ మార్పు</translation>
 <translation id="1269405891096105529">గెస్ట్ మోడ్‌లో పెరిఫెరల్ సపోర్ట్ చేయదు</translation>
 <translation id="1270290102613614947">స్క్రీన్‌పై కనిపించే కీబోర్డ్ నిలిపివేయబడింది</translation>
 <translation id="1272079795634619415">ఆపు</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">కొత్తగా ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="1915307458270490472">కాల్‌ను ముగించు</translation>
 <translation id="1918022425394817322">కెమెరా ఎగువ కుడి మూలకు స్నాప్ చేయబడింది</translation>
-<translation id="1919743966458266018">టాస్క్ మేనేజర్‌ను తెరిచే షార్ట్‌కట్ మార్చబడింది. దయచేసి <ph name="OLD_SHORTCUT" />కు బదులుగా <ph name="NEW_SHORTCUT" />ను ఉపయోగించండి.</translation>
 <translation id="1923539912171292317">ఆటోమేటిక్‌ క్లిక్‌లు</translation>
 <translation id="1928739107511554905">అప్‌డేట్‌ను పొందడానికి, కీబోర్డ్‌ను అలానే జోడించి ఉంచి మీ Chromebookను పునఃప్రారంభించడం కోసం టచ్‌స్క్రీన్‌ను ఉపయోగించండి.</translation>
 <translation id="1948405482892809935">తర్వాతి యూజర్‌కు మారండి</translation>
@@ -977,7 +975,6 @@
 <translation id="5283198616748585639">1 నిమి జోడించండి</translation>
 <translation id="528468243742722775">ముగించు</translation>
 <translation id="5286194356314741248">స్కాన్ చేస్తోంది</translation>
-<translation id="5293671101077843611">ఈ రోజు ఈవెంట్‌లు ఏవీ లేవు</translation>
 <translation id="5297423144044956168">మొబైల్ పరికరాలేవీ కనుగొనబడలేదు</translation>
 <translation id="5297704307811127955">ఆఫ్</translation>
 <translation id="5300589172476337783">చూపించు</translation>
@@ -1762,7 +1759,6 @@
 <translation id="8834539327799336565">ప్రస్తుతం కనెక్ట్ చేయబడింది</translation>
 <translation id="8841375032071747811">వెనుకకు బటన్</translation>
 <translation id="8843682306134542540">భ్రమణం లాక్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">మీ పిన్ లేదా పాస్‌వర్డ్‌ను వెరిఫై చేయడం ఇంకా సాధ్యం కాలేదు. గమనిక: మీరు ఇటీవలే మీ పాస్‌వర్డ్‌ను మార్చి ఉంటే, మీ పాత పాస్‌వర్డ్‌ను ఉపయోగించండి. మీరు ఖాతా నుంచి సైన్ అవుట్ చేసిన తర్వాత మీ కొత్త పాస్‌వర్డ్ వర్తిస్తుంది.</translation>
 <translation id="8855885154700222542">పూర్తిస్క్రీన్ కీ</translation>
 <translation id="8858369206579825206">గోప్యతా కంట్రోల్స్</translation>
@@ -1828,7 +1824,7 @@
 <translation id="9133335900048457298">రక్షిత కంటెంట్‌ను రికార్డ్ చేయడం సాధ్యం కాదు</translation>
 <translation id="9139720510312328767">తర్వాతి అక్షరాన్ని తొలగించండి</translation>
 <translation id="9161053988251441839">సూచించబడిన యాప్‌లు</translation>
-<translation id="9168436347345867845">దీనిని తర్వాత చేయి</translation>
+<translation id="9168436347345867845">తర్వాత చేయండి</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> కోసం 1 ఫలితాన్ని ప్రదర్శిస్తోంది</translation>
 <translation id="9179259655489829027">ఈ ఫీచర్ ద్వారా పాస్‌వర్డ్ అవసరం లేకుండానే మీరు సైన్ ఇన్ చేసిన ఏ వినియోగదారునైనా త్వరగా యాక్సెస్ చేయగలుగుతారు. ఈ ఫీచర్‌ను మీరు విశ్వసించే ఖాతాలతో మాత్రమే ఉపయోగించండి.</translation>
 <translation id="9183456764293710005">పూర్తి-స్క్రీన్‌ మ్యాగ్నిఫైయర్</translation>

@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Fitxa aktibo dago berriro</translation>
 <translation id="1003088604756913841">Ireki esteka <ph name="APP" /> aplikazioaren beste leiho batean</translation>
 <translation id="100323615638474026">USB bidezko gailua (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google-ren Arakatze segurua</translation>
 <translation id="1004218526896219317">Webgunerako sarbidea</translation>
 <translation id="1005274289863221750">Erabili mikrofonoa eta kamera</translation>
 <translation id="1005333234656240382">ADB arazketa gaitu nahi duzu?</translation>
@@ -521,6 +520,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1434886155212424586">Hasierako orria fitxa berriaren orria da</translation>
 <translation id="1435940442311036198">Erabili sarbide-gako bat beste gailu batean</translation>
 <translation id="1436390408194692385">Balio-aldia: <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Jarraitu konfiguratzen</translation>
 <translation id="1436784010935106834">Kendu egin da</translation>
 <translation id="1437986450143295708">Azaldu arazoa xehetasun osoz</translation>
 <translation id="1439671507542716852">epe luzerako bateragarritasuna</translation>
@@ -1937,7 +1937,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2577446426265992344">arakatzaileko barrarik gabe</translation>
 <translation id="257779572837908839">Konfiguratu bileretarako Chromebox gisa</translation>
 <translation id="2579309488038515659">Gaitu wifi-gunea</translation>
-<translation id="2579596474754516455">Eskaneatu PDF irudiak pantaila-irakurgailuetarako testu bihurtzeko beharrezkoa denean</translation>
 <translation id="2580889980133367162">Eman beti hainbat fitxategi deskargatzeko baimena <ph name="HOST" /> ostalariari</translation>
 <translation id="258095186877893873">Luzea</translation>
 <translation id="2581455244799175627">Hirugarrenen cookieak onartzeari buruzko informazio gehiago</translation>
@@ -5414,9 +5413,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5602765853043467355">Ezabatu gailu honetako laster-markak, historia, pasahitzak eta beste</translation>
 <translation id="5605758115928394442">Jakinarazpen bat bidali dizugu telefonora zeu zarela berresteko.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Luzapena blokeatuta dago}other{Luzapenak blokeatuta daude}}</translation>
-<translation id="560743070587960985">Baliteke fitxategi hau birusa edo malwarea izatea.
-
-Segurua den ala ez egiaztatzeko, Google-ri bidal diezaiokezu. Segundo gutxi batzuk behar izaten dira egiaztatzeko.</translation>
 <translation id="560834977503641186">Wifi-sinkronizazioa, Lortu informazio gehiago</translation>
 <translation id="5608580678041221894">Sakatu tekla hauek ebaki beharreko eremua doitzeko edo mugitzeko</translation>
 <translation id="5609231933459083978">Dirudienez, aplikazioak ez du balio.</translation>
@@ -6178,6 +6174,7 @@ Segurua den ala ez egiaztatzeko, Google-ri bidal diezaiokezu. Segundo gutxi batz
 <translation id="6263082573641595914">Microsoft CA bertsioa</translation>
 <translation id="6263284346895336537">Ez da kritikoa</translation>
 <translation id="6264365405983206840">Hautatu &amp;guztiak</translation>
+<translation id="6264376385120300461">Deskargatu halere</translation>
 <translation id="6265687851677020761">Kendu ataka</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> gailura konektatzen</translation>
 <translation id="6267166720438879315">Hautatu ziurtagiria zeure burua <ph name="HOST_NAME" /> ostalarian egiaztatzeko</translation>
@@ -7201,7 +7198,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7149839598364933473">Bihurtu gailu hau <ph name="DEVICE_OS" /> darabilen gailu.</translation>
 <translation id="7149893636342594995">Azken 24 orduetakoak</translation>
 <translation id="7152478047064750137">Luzapen honek ez du baimen berezirik behar</translation>
-<translation id="7153309176431047193">Bihurtu irudiak testu</translation>
 <translation id="7154130902455071009">Aldatu hasiera-orria hau izan dadin: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Bihurtu irudia testu</translation>
 <translation id="7159953856712257647">Modu lehenetsian instalatuta</translation>
@@ -7755,7 +7751,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7634280112532283638">Spama eta iruzurrak murriztea</translation>
 <translation id="7634337648687970851">Oraingoz ez da onartzen gailuko datuak berreskuratzea.</translation>
 <translation id="7634566076839829401">Arazoren bat izan da. Saiatu berriro geroago.</translation>
-<translation id="763472884969134151"><ph name="LINK" /> tresnak egin du analisia</translation>
 <translation id="7635048370253485243">Administratzaileak ainguratu du</translation>
 <translation id="7635711411613274199">Arakatzen duzunean, hainbat faktorek zehazten dute ikusten dituzun iragarkiak pertsonalizatuta dauden ala ez: ezarpen hau, <ph name="BEGIN_LINK1" />Iragarkien gaiak<ph name="LINK_END1" /> ezarpena, <ph name="BEGIN_LINK2" />cookieen ezarpenak<ph name="LINK_END2" /> eta ikusten dituzun webguneek iragarkiak pertsonalizatzen dituzten ala ez</translation>
 <translation id="7636919061354591437">Instalatu gailu honetan</translation>

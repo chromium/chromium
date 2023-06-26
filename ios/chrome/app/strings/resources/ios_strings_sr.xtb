@@ -63,6 +63,7 @@
 <translation id="1291506870746876680">Дозволе за <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> ће се ресетовати и искључити кад напустите овај сајт.</translation>
 <translation id="1305822519689023679">Да бисте били сигурни да увек можете да користите лозинке на Google налогу, потврдите свој идентитет.</translation>
 <translation id="1312721752506309252">Побољшана заштита је укључена</translation>
+<translation id="1316466854070752597">Прегледајте све отворене картице</translation>
 <translation id="1321993286294231467">Дошло је до грешке при чувању слике.</translation>
 <translation id="1322735045095424339">Организација захтева режим без архивирања</translation>
 <translation id="1323735185997015385">Избриши</translation>
@@ -438,6 +439,7 @@
 <translation id="3656645960301737801">Завршите догађај и сачувајте</translation>
 <translation id="3661160521073045932">Доступан профил конфигурације</translation>
 <translation id="3670030362669914947">Број</translation>
+<translation id="368329460027487650">Одјављени сте. Отвара опције за пријављивање.</translation>
 <translation id="3700134753671613714">Пријавите се да би вам обележивачи били доступни на свим уређајима.</translation>
 <translation id="3709582977625132201">Означи као непрочитано</translation>
 <translation id="371230970611282515">Открива опасне догађаје пре него што се догоде и упозорава вас на њих.</translation>
@@ -666,6 +668,7 @@
 <translation id="5190835502935405962">Трака са обележивачима</translation>
 <translation id="519530786644929958">Неуспело преузимање. Не можете да поновите.</translation>
 <translation id="5197255632782567636">Интернет</translation>
+<translation id="5209674813563615506">Отворите нову картицу</translation>
 <translation id="5211488077761630279">Желите да дозволите да <ph name="SITE_NAME" /> користи дозволу <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Побољшајте безбедност на вебу за свакога</translation>
 <translation id="5221339005270097309">Проверавају се лозинке…</translation>
@@ -941,6 +944,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6684906340059221832">Цене се прате</translation>
 <translation id="6710079714193676716">Овим управља организација. Неке функције можда нису доступне. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="672735642903863329">Приступајте обележивачима, лозинкама и другом садржају на свим уређајима.</translation>
 <translation id="6730682669179532099">Извоз лозинки није успео</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6748108480210050150">Од</translation>

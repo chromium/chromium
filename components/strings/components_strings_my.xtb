@@ -1145,6 +1145,7 @@
 <translation id="3550112004925580947">ဧည့်ဝတ်ပြုခြင်းဆိုင်ရာ လုပ်ငန်း</translation>
 <translation id="3552297013052089404">Sans-serif ဖောင့်</translation>
 <translation id="3558573058928565255">နေ့အချိန်</translation>
+<translation id="355995771319966853">အော်တိုဖြည့်ကို နောက်ပြန်ခြင်း</translation>
 <translation id="3560824484345057728">ဆက်စပ်ဝဘ်ဆိုက်များ ကြည့်ရန်</translation>
 <translation id="3566021033012934673">သင်၏ ချိတ်ဆက်မှုမှာ ကိုယ်ပိုင် မဟုတ်ပါ</translation>
 <translation id="3566336457819493938">၂၁၅ x ၃၁၅ မီလီမီတာ</translation>
@@ -1335,7 +1336,6 @@
 <translation id="3962859241508114581">ယခင်တစ်ပုဒ်</translation>
 <translation id="3963721102035795474">စာဖတ်သူ မုဒ်</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{တစ်ခုမျှမရှိပါ}=1{ဝဘ်ဆိုက် ၁ ခုမှ }other{ဝဘ်ဆိုက် # ခုမှ }}</translation>
-<translation id="3969052498612555048">သင့်ကုဒ်ကို ရှာမတွေ့ဘူးလား။ <ph name="BEGIN_LINK" />ကုဒ်အသစ် ရယူရန်<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">တွက်ချက်နေ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ကိုပိတ်ဆို့ထားသည်</translation>
 <translation id="3984581365661308170">#11 စာအိတ်</translation>
@@ -2208,6 +2208,7 @@
 <translation id="5903264686717710770">ခေါင်းစဉ်-</translation>
 <translation id="5904360430676679685">မိသားစုအရေးနှင့် အချစ်ရေး</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (စင့်ခ်လုပ်ထားသည်)</translation>
+<translation id="5910140988253729859">အော်တိုဖြည့်ကို နောက်ပြန်ရန်</translation>
 <translation id="5911020115933784199">အစီအစဉ်နှင့် ဖော်ပြချက်</translation>
 <translation id="5911110632211230665">ဖွင့်ခွင့် ပိတ်ထားသည်</translation>
 <translation id="59174027418879706">ဖွင့်ထားသည်</translation>
@@ -2725,7 +2726,6 @@
 <translation id="7064443976734085921">ကားသေး</translation>
 <translation id="7064851114919012435">ဆက်သွယ်ရန်အချက်အလက်</translation>
 <translation id="7067633076996245366">ဆိုးလ်နှင့် R&amp;B</translation>
-<translation id="7068733155164172741">ဂဏန်း-<ph name="OTP_LENGTH" /> လုံးပါကုဒ် ထည့်ပါ</translation>
 <translation id="70705239631109039">သင့်ချိတ်ဆက်မှုသည် လုံခြုံမှုအပြည့်အဝမရှိပါ</translation>
 <translation id="7075452647191940183">တောင်းဆိုချက် အလွန်ကြီးနေသည်</translation>
 <translation id="7078665357168027058">RA3</translation>

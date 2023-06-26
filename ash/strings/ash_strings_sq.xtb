@@ -69,7 +69,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1247519845643687288">Aplikacionet e fundit</translation>
 <translation id="1252999807265626933">Po karikohet nga <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Si është moti?</translation>
-<translation id="1267032506238418139">Ndryshim në shkurtore</translation>
 <translation id="1269405891096105529">Pajisja periferike nuk mbështetet në modalitetin "vizitor"</translation>
 <translation id="1270290102613614947">Tastiera në ekran u çaktivizua</translation>
 <translation id="1272079795634619415">Ndalo</translation>
@@ -218,7 +217,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1908992311423394684">Instalim i ri</translation>
 <translation id="1915307458270490472">Mbyll</translation>
 <translation id="1918022425394817322">Pamja paraprake e kamerës ka kaluar në këndin e sipërm djathtas</translation>
-<translation id="1919743966458266018">Shkurtorja për të hapur menaxherin e detyrave ka ndryshuar. Përdor <ph name="NEW_SHORTCUT" /> në vend të <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Klikimet automatike</translation>
 <translation id="1928739107511554905">Për të marrë përditësimin, përdor ekranin me prekje për ta rinisur Chromebook me tastierën e lidhur.</translation>
 <translation id="1948405482892809935">Kalo te përdoruesi tjetër</translation>
@@ -974,7 +972,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5283198616748585639">Shto 1 minutë</translation>
 <translation id="528468243742722775">Fundi</translation>
 <translation id="5286194356314741248">Po skanon</translation>
-<translation id="5293671101077843611">Asnjë ngjarje sot</translation>
 <translation id="5297423144044956168">Nuk u gjet asnjë pajisje celulare</translation>
 <translation id="5297704307811127955">Joaktiv</translation>
 <translation id="5300589172476337783">Shfaq</translation>
@@ -1758,7 +1755,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8834539327799336565">Të lidhur aktualisht</translation>
 <translation id="8841375032071747811">Butoni "Prapa"</translation>
 <translation id="8843682306134542540">Aktivizo/çaktivizo kyçjen e rrotullimit. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Kërko+Esc</translation>
 <translation id="8853703225951107899">Kod yt PIN ose fjalëkalimi përsëri nuk mund të verifikoheshin. Shënim. Nëse e ke ndryshuar fjalëkalimin së fundi, përdor fjalëkalimin e vjetër. Fjalëkalimi yt i ri do të zbatohet pasi të dalësh nga llogaria.</translation>
 <translation id="8855885154700222542">Tasti i ekranit të plotë</translation>
 <translation id="8858369206579825206">Kontrollet e privatësisë</translation>

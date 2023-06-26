@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">আবার ট্যাব অ্যাক্টিভ করে</translation>
 <translation id="1003088604756913841">নতুন <ph name="APP" /> উইন্ডোতে লিঙ্ক খুলুন</translation>
 <translation id="100323615638474026">ইউএসবি ডিভাইস (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google Safe Browsing</translation>
 <translation id="1004218526896219317">অ্যাক্সেস করতে পারে এমন সাইট</translation>
 <translation id="1005274289863221750">আপনার মাইক্রোফোন ও ক্যামেরা ব্যবহার করুন</translation>
 <translation id="1005333234656240382">ADB ডিবাগিং চালু করতে চান?</translation>
@@ -524,6 +523,7 @@
 <translation id="1434886155212424586">হোমপেজ হল নতুন ট্যাব পৃষ্ঠা</translation>
 <translation id="1435940442311036198">অন্য কোনও ডিভাইসে পাসকী ব্যবহার করুন</translation>
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> ব্যবহার করা যাবে</translation>
+<translation id="1436671784520050284">সেট-আপ চালিয়ে যান</translation>
 <translation id="1436784010935106834">সরানো হয়েছে</translation>
 <translation id="1437986450143295708">সমস্যাটির বিবরণ দিন</translation>
 <translation id="1439671507542716852">দীর্ঘ মেয়াদী সহায়তা</translation>
@@ -1953,7 +1953,6 @@
 <translation id="2577446426265992344">বহুউপযোগী ক্ষেত্র ছাড়াই</translation>
 <translation id="257779572837908839">মিটিংয়ের জন্য Chromebox সেট-আপ করুন</translation>
 <translation id="2579309488038515659">হটস্পট চালু করুন</translation>
-<translation id="2579596474754516455">প্রয়োজন হলে স্ক্রিন রিডারের জন্য টেক্সট কনভার্ট করতে পিডিএফ ছবি স্ক্যান করুন</translation>
 <translation id="2580889980133367162">একাধিক ফাইল ডাউনলোড করতে <ph name="HOST" />-কে সবসময় অনুমতি দিন</translation>
 <translation id="258095186877893873">দীর্ঘ সময়</translation>
 <translation id="2581455244799175627">থার্ড-পার্টি কুকি অনুমতি দেওয়ার বিষয়ে আরও অনেক কিছু</translation>
@@ -3473,6 +3472,7 @@
 <translation id="3888586133700543064">এই তথ্য আপনার Assistant সংক্রান্ত সমস্যা আমাদের আরও ভালভাবে বুঝতে সাহায্য করে। এটি ৯০ দিন পর্যন্ত সেভ করা থাকে এবং অ্যাক্সেস যথাযথ ইঞ্জিনিয়ারিং এবং মতামত টিমের মধ্যে সীমাবদ্ধ থাকে।</translation>
 <translation id="3890064827463908288">ওয়াই-ফাই সিঙ্ক ব্যবহার করতে Chrome সিঙ্ক চালু করুন</translation>
 <translation id="389313931326656921">“পরবর্তী” বিকল্পের জন্য সুইচ অ্যাসাইন করুন</translation>
+<translation id="3893268973182382220">এই মুহূর্তে প্যানেলটি লোড করা যাচ্ছে না</translation>
 <translation id="3893295674388762059">ডেটা মুছে ফেলতে, সব ছদ্মবেশী উইন্ডো বন্ধ করুন</translation>
 <translation id="3893536212201235195">আপনার অ্যাক্সেসিবিলিটি সেটিংস পড়ুন ও পরিবর্তন করুন</translation>
 <translation id="3893630138897523026">ChromeVox (কথ্য প্রতিবার্তা)</translation>
@@ -5440,9 +5440,6 @@
 <translation id="5602765853043467355">এই ডিভাইসের বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং আরও অনেক কিছু খালি করুন</translation>
 <translation id="5605758115928394442">এটি যে আপনি তা কনফার্ম করতে আপনার ফোনে একটি বিজ্ঞপ্তি পাঠানো হয়েছে।</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশন ব্লক করা আছে}one{এই এক্সটেনশন ব্লক করা আছে}other{এই এক্সটেনশন ব্লক করা আছে}}</translation>
-<translation id="560743070587960985">এই ফাইলটি ভাইরাস বা ম্যালওয়্যার হতে পারে।
-
-আপনি এটি অসুরক্ষিত কিনা তা চেক করতে Google-এর কাছে পাঠাতে পারেন। স্ক্যান করতে সাধারণ কয়েক সেকেন্ড সময় লাগে।</translation>
 <translation id="560834977503641186">Wi-Fi সিঙ্ক, আরও জানুন</translation>
 <translation id="5608580678041221894">কাটছাঁট করার এলাকা সমন্বয় করতে বা সরাতে নীচের কী’গুলি আলতো চাপুন</translation>
 <translation id="5609231933459083978">অ্যাপটি ভুল বলে মনে হচ্ছে৷</translation>
@@ -6209,6 +6206,7 @@
 <translation id="6263082573641595914">Microsoft CA সংস্করণ</translation>
 <translation id="6263284346895336537">জটিল নয়</translation>
 <translation id="6264365405983206840">&amp;সকল বেছে নিন</translation>
+<translation id="6264376385120300461">তবুও ডাউনলোড করুন</translation>
 <translation id="6265687851677020761">পোর্ট সরান</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" />-এর সাথে কানেক্ট করা হচ্ছে</translation>
 <translation id="6267166720438879315">নিজেকে <ph name="HOST_NAME" /> এ প্রমাণীকৃত করতে একটি সার্টিফিকেট বেছে নিন</translation>
@@ -7237,7 +7235,6 @@
 <translation id="7149839598364933473">এই ডিভাইসকে <ph name="DEVICE_OS" /> ডিভাইসে রূপান্তরিত করুন।</translation>
 <translation id="7149893636342594995">গত ২৪ ঘণ্টা</translation>
 <translation id="7152478047064750137">এই এক্সটেনশনটির জন্য কোনও বিশেষ অনুমতির প্রয়োজন নেই</translation>
-<translation id="7153309176431047193">টেক্সটে ছবি কনভার্ট করুন</translation>
 <translation id="7154130902455071009">আপনার সূচনা পৃষ্ঠাকে এতে পরিবর্তন করুন: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">টেক্সটে ছবি কনভার্ট করুন</translation>
 <translation id="7159953856712257647">ডিফল্ট হিসেবে ইনস্টল করা হয়েছে</translation>
@@ -7792,7 +7789,6 @@
 <translation id="7634280112532283638">স্প্যাম এবং জালিয়াতি হ্রাস</translation>
 <translation id="7634337648687970851">স্থানীয় ডেটা আগের অবস্থায় ফেরানোর সুবিধা বর্তমানে কাজ করছে না।</translation>
 <translation id="7634566076839829401">কিছু গন্ডগোল হয়েছে৷ দয়া করে আবার চেষ্টা করুন৷</translation>
-<translation id="763472884969134151"><ph name="LINK" />-এর মাধ্যমে বিশ্লেষণ করা হয়েছে</translation>
 <translation id="7635048370253485243">আপনার অ্যাডমিনিস্ট্রেটর পিন করেছে</translation>
 <translation id="7635711411613274199">আপনি ব্রাউজ করার সময়, আপনাকে পছন্দমতো বিজ্ঞাপন দেখানো হবে কিনা তা এই সেটিংয়ের ভিত্তিতে নির্ধারিত হয়, যেমন <ph name="BEGIN_LINK1" />বিজ্ঞাপনের বিষয়<ph name="LINK_END1" />, আপনার <ph name="BEGIN_LINK2" />কুকি সেটিংস<ph name="LINK_END2" /> এবং আপনার দেখা সাইটটি পছন্দমতো বিজ্ঞাপন সাজায় কিনা</translation>
 <translation id="7636919061354591437">এই ডিভাইসে ইনস্টল করুন</translation>

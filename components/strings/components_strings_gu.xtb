@@ -1335,7 +1335,6 @@
 <translation id="3962859241508114581">પાછલું ટ્રૅક</translation>
 <translation id="3963721102035795474">રીડર મોડ</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{કોઈ નહીં}=1{1 સાઇટમાંથી }one{# સાઇટમાંથી }other{# સાઇટમાંથી }}</translation>
-<translation id="3969052498612555048">શું તમારો કોડ મળી રહ્યો નથી? <ph name="BEGIN_LINK" />નવો કોડ મેળવો<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">ગણના કરી રહ્યું છે...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> અવરોધિત છે</translation>
 <translation id="3984581365661308170">એન્વલપ #11</translation>
@@ -2725,7 +2724,6 @@
 <translation id="7064443976734085921">નાની કાર</translation>
 <translation id="7064851114919012435">સંપર્ક માહિતી</translation>
 <translation id="7067633076996245366">સોલ અને R&amp;B</translation>
-<translation id="7068733155164172741"><ph name="OTP_LENGTH" /> અંકનો કોડ દાખલ કરો</translation>
 <translation id="70705239631109039">તમારું કનેક્શન પૂર્ણપણે સુરક્ષિત નથી</translation>
 <translation id="7075452647191940183">વિનંતી ખૂબ મોટી છે.</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3281,6 +3279,7 @@
 <translation id="8246482227229072868">રિંગ</translation>
 <translation id="8249296373107784235">છોડો</translation>
 <translation id="8249463483885748674">પ્રમાણિત અને પ્રવેશ પરીક્ષાઓ</translation>
+<translation id="824968735947741546">(ઑટોમૅટિક રીતે ભાળ મેળવેલી) <ph name="SOURCE" />નો <ph name="TARGET" />માં અનુવાદ કરી રહ્યાં છીએ</translation>
 <translation id="8250094606476360498">આ સરનામું હાલમાં આ ડિવાઇસમાં સાચવેલું છે. Googleની સમગ્ર પ્રોડક્ટ પર તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="ACCOUNT" />માં સાચવો.</translation>
 <translation id="8252991034201168845">ઍક્સેસિબિલિટી સેટિંગ મેનેજ કરવા માટેનું બટન, ChromeOS સેટિંગમાં જઈને તમારા ઍક્સેસિબિલિટીના ટૂલ મનગમતા બનાવવા માટે Enter કી દબાવો</translation>
 <translation id="8253091569723639551">બિલિંગ સરનામું આવશ્યક</translation>

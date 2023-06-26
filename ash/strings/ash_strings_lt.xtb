@@ -69,7 +69,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1247519845643687288">Naujausios programos</translation>
 <translation id="1252999807265626933">Įkraunama naudojant <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">„What's the weather?“ (Koks oras?)</translation>
-<translation id="1267032506238418139">Spartusis klavišas pasikeitė</translation>
 <translation id="1269405891096105529">Išorinis įrenginys nepalaikomas naudojant svečio režimą</translation>
 <translation id="1270290102613614947">Ekrano klaviatūra išjungta</translation>
 <translation id="1272079795634619415">Sustabdyti</translation>
@@ -218,7 +217,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1908992311423394684">Naujas įdiegimas</translation>
 <translation id="1915307458270490472">Baigti</translation>
 <translation id="1918022425394817322">Fotoaparato peržiūra pridėta viršutiniame dešiniajame kampe</translation>
-<translation id="1919743966458266018">Pakeistas užduočių tvarkytuvės atidarymo spartusis klavišas. Naudokite <ph name="NEW_SHORTCUT" /> vietoje <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatiniai paspaudimai</translation>
 <translation id="1928739107511554905">Kad gautumėte naujinį, naudodami jutiklinį ekraną iš naujo paleiskite „Chromebook“ su prijungta klaviatūra.</translation>
 <translation id="1948405482892809935">Perjungti į kitą naudotoją</translation>
@@ -976,7 +974,6 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="5283198616748585639">Pridėti 1 min.</translation>
 <translation id="528468243742722775">Baigti</translation>
 <translation id="5286194356314741248">Nuskaitoma</translation>
-<translation id="5293671101077843611">Šiandien nėra jokių įvykių</translation>
 <translation id="5297423144044956168">Nerasta jokių mobiliųjų įrenginių</translation>
 <translation id="5297704307811127955">Išjungta</translation>
 <translation id="5300589172476337783">Rodyti</translation>
@@ -1761,7 +1758,6 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8834539327799336565">Šiuo metu susieti</translation>
 <translation id="8841375032071747811">Mygtukas „Atgal“</translation>
 <translation id="8843682306134542540">Perjungti pasukimo užrakinimą. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Paieškos klavišas + „Esc“</translation>
 <translation id="8853703225951107899">Vis tiek nepavyko patvirtinti PIN kodo arba slaptažodžio. Pastaba: jei neseniai pakeitėte slaptažodį, naudokite senąjį. Naujas slaptažodis bus pritaikytas atsijungus.</translation>
 <translation id="8855885154700222542">Viso ekrano klavišas</translation>
 <translation id="8858369206579825206">Privatumo valdikliai</translation>

@@ -1144,6 +1144,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3550112004925580947">Industriya ng hospitality</translation>
 <translation id="3552297013052089404">Sans-serif Font</translation>
 <translation id="3558573058928565255">Oras sa umaga</translation>
+<translation id="355995771319966853">I-undo ang Autofill</translation>
 <translation id="3560824484345057728">Tingnan ang mga kaugnay na site</translation>
 <translation id="3566021033012934673">Hindi pribado ang iyong koneksyon</translation>
 <translation id="3566336457819493938">215 x 315 mm</translation>
@@ -1335,7 +1336,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3962859241508114581">Nakaraang Track</translation>
 <translation id="3963721102035795474">Reader Mode</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Wala}=1{Mula sa 1 site }one{Mula sa # site }other{Mula sa # na site }}</translation>
-<translation id="3969052498612555048">Hindi makita ang iyong code? <ph name="BEGIN_LINK" />Kumuha ng bagong code<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Kinakalkula...</translation>
 <translation id="3973234410852337861">Naka-block ang <ph name="HOST_NAME" /></translation>
 <translation id="3984581365661308170">Envelope #11</translation>
@@ -2207,6 +2207,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5903264686717710770">Pamagat:</translation>
 <translation id="5904360430676679685">Pamilya at mga ugnayan</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (naka-sync)</translation>
+<translation id="5910140988253729859">I-undo ang autofill</translation>
 <translation id="5911020115933784199">Mga Event at Listing</translation>
 <translation id="5911110632211230665">Naka-block ang pagbubukas</translation>
 <translation id="59174027418879706">Pinagana</translation>
@@ -2725,7 +2726,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="7064443976734085921">Mga Compact na Kotse</translation>
 <translation id="7064851114919012435">Impormasyon sa pakikipag-ugnayan</translation>
 <translation id="7067633076996245366">Soul at R&amp;B</translation>
-<translation id="7068733155164172741">Ilagay ang <ph name="OTP_LENGTH" /> (na) digit na code</translation>
 <translation id="70705239631109039">Hindi ganap na ligtas ang iyong koneksyon</translation>
 <translation id="7075452647191940183">Masyadong malaki ang kahilingan</translation>
 <translation id="7078665357168027058">RA3</translation>

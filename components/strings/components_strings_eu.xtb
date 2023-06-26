@@ -1331,7 +1331,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3962859241508114581">Aurreko pista</translation>
 <translation id="3963721102035795474">Irakurgailu modua</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Bat ere ez}=1{1 webgunetatik }other{# webgunetatik }}</translation>
-<translation id="3969052498612555048">Ez duzu koderik aurkitzen? <ph name="BEGIN_LINK" />Lortu beste kode bat<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Kalkulatzen…</translation>
 <translation id="3973234410852337861">Blokeatuta dago <ph name="HOST_NAME" /></translation>
 <translation id="3984581365661308170">Gutun-azala 11</translation>
@@ -2720,7 +2719,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7064443976734085921">Auto konpaktuak</translation>
 <translation id="7064851114919012435">Harremanetarako informazioa</translation>
 <translation id="7067633076996245366">Soula eta R&amp;B-a</translation>
-<translation id="7068733155164172741">Idatzi <ph name="OTP_LENGTH" /> digituko kodea</translation>
 <translation id="70705239631109039">Konexioa ez da guztiz segurua</translation>
 <translation id="7075452647191940183">Eskaera handiegia da</translation>
 <translation id="7078665357168027058">RA3</translation>

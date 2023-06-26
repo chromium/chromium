@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Skirtukas vėl aktyvus</translation>
 <translation id="1003088604756913841">Atidarykite nuorodą naujame „<ph name="APP" />“ lange</translation>
 <translation id="100323615638474026">USB įrenginys (<ph name="VENDOR_ID" />: <ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">„Google“ saugus naršymas</translation>
 <translation id="1004218526896219317">Prieiga prie svetainės</translation>
 <translation id="1005274289863221750">Naudoti mikrofoną ir kamerą</translation>
 <translation id="1005333234656240382">Įgalinti ADB derinimą?</translation>
@@ -526,6 +525,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1434886155212424586">Pagrindinis puslapis yra naujo skirtuko puslapis</translation>
 <translation id="1435940442311036198">Naudoti slaptažodį kitame įrenginyje</translation>
 <translation id="1436390408194692385">Galioja <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Tęsti sąranką</translation>
 <translation id="1436784010935106834">Pašalinta</translation>
 <translation id="1437986450143295708">Išsamiai aprašykite problemą</translation>
 <translation id="1439671507542716852">ilgalaikis palaikymas</translation>
@@ -1955,7 +1955,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2577446426265992344">be „omnibox“</translation>
 <translation id="257779572837908839">Nustatyti kaip „Chromebox“ susitikimams</translation>
 <translation id="2579309488038515659">Viešosios interneto prieigos taško įgalinimas</translation>
-<translation id="2579596474754516455">Nuskaitykite PDF vaizdus, kad prireikus konvertuotumėte ekrano skaitytuvo tekstą</translation>
 <translation id="2580889980133367162">Visada leisti <ph name="HOST" /> atsisiųsti kelis failus</translation>
 <translation id="258095186877893873">Ilga</translation>
 <translation id="2581455244799175627">Daugiau apie trečiųjų šalių slapukų leidimą</translation>
@@ -3475,6 +3474,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3888586133700543064">Ši informacija padeda mums geriau suprasti jums iškilusią Padėjėjo problemą. Ji saugoma iki 90 dienų ir ją gali pasiekti tik atitinkami inžinierių ir atsiliepimų komandų nariai.</translation>
 <translation id="3890064827463908288">Norėdami naudoti „Wi-Fi“ sinchronizavimą, įjunkite „Chrome“ sinchronizavimo funkciją</translation>
 <translation id="389313931326656921">Veiksmo „Kitas“ jungiklio priskyrimas</translation>
+<translation id="3893268973182382220">Šiuo metu įkelti negalima</translation>
 <translation id="3893295674388762059">Norėdami pašalinti duomenis, uždarykite visus inkognito langus</translation>
 <translation id="3893536212201235195">Skaityti ir keisti pritaikymo neįgaliesiems nustatymus</translation>
 <translation id="3893630138897523026">„ChromeVox“ (ekrano skaitymas balsu)</translation>
@@ -5441,9 +5441,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5602765853043467355">Išvalyti žymes, istoriją, slaptažodžius ir kt. iš šio įrenginio</translation>
 <translation id="5605758115928394442">Pranešimas išsiųstas į jūsų telefoną norint patvirtinti, kad tai jūs.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Šis plėtinys užblokuotas}one{Šie plėtiniai užblokuoti}few{Šie plėtiniai užblokuoti}many{Šie plėtiniai užblokuoti}other{Šie plėtiniai užblokuoti}}</translation>
-<translation id="560743070587960985">Šis failas gali būti virusas arba kenkėjiška programa.
-
-Galite išsiųsti jį „Google“, kad patikrintumėte, ar jis nesaugus. Nuskaitymas paprastai trunka kelias sekundes.</translation>
 <translation id="560834977503641186">„Wi-Fi“ sinchronizavimas, sužinokite daugiau</translation>
 <translation id="5608580678041221894">Palieskite toliau nurodytus klavišus, kad koreguotumėte ar perkeltumėte apkarpomą sritį</translation>
 <translation id="5609231933459083978">Panašu, kad ši programa yra netinkama.</translation>
@@ -6209,6 +6206,7 @@ Galite išsiųsti jį „Google“, kad patikrintumėte, ar jis nesaugus. Nuskai
 <translation id="6263082573641595914">„Microsoft“ CA versija</translation>
 <translation id="6263284346895336537">Ne kritinis</translation>
 <translation id="6264365405983206840">Pasirinkti &amp;viską</translation>
+<translation id="6264376385120300461">Vis tiek atsisiųsti</translation>
 <translation id="6265687851677020761">Pašalinti prievadą</translation>
 <translation id="6266532094411434237">Prisijungiama prie „<ph name="DEVICE" />“</translation>
 <translation id="6267166720438879315">Pasirinkite sertifikatą, kad patvirtintumėte savo autentiškumą <ph name="HOST_NAME" /></translation>
@@ -7241,7 +7239,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7149839598364933473">Konvertuokite šį įrenginį į „<ph name="DEVICE_OS" />“ įrenginį.</translation>
 <translation id="7149893636342594995">Pastarosios 24 valandos</translation>
 <translation id="7152478047064750137">Šiam plėtiniui nereikia specialių leidimų</translation>
-<translation id="7153309176431047193">Konvertuokite vaizdus į tekstą</translation>
 <translation id="7154130902455071009">Pakeiskite pradžios puslapį į: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Konvertuoti vaizdą į tekstą</translation>
 <translation id="7159953856712257647">Įdiegta pagal numatytuosius nustatymus</translation>
@@ -7796,7 +7793,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7634280112532283638">Mažiau šlamšto ir apgaulių</translation>
 <translation id="7634337648687970851">Vietinių duomenų atkūrimas šiuo metu nepalaikomas.</translation>
 <translation id="7634566076839829401">Kažkas negerai. Bandykite dar kartą.</translation>
-<translation id="763472884969134151">Analizę atliko <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Prisegė jūsų administratorius</translation>
 <translation id="7635711411613274199">Tai, ar naršant rodomi suasmeninti skelbimai, priklauso nuo šio nustatymo, <ph name="BEGIN_LINK1" />skelbimų temų<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />slapukų nustatymų<ph name="LINK_END2" /> ir svetainės, kurioje lankotės, t. y. ar ji teikia suasmenintus skelbimus</translation>
 <translation id="7636919061354591437">Įdiegti šiame įrenginyje</translation>

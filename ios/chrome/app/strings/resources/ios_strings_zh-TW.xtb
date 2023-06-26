@@ -61,6 +61,7 @@
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />「<ph name="SITE_NAME" />」<ph name="END_BOLD" />的權限會在你離開該網站後重設為停用。</translation>
 <translation id="1305822519689023679">為確保你隨時可以使用 Google 帳戶中的密碼，請驗證身分。</translation>
 <translation id="1312721752506309252">已啟用強化防護功能</translation>
+<translation id="1316466854070752597">查看所有已開啟的分頁</translation>
 <translation id="1321993286294231467">儲存圖片時發生錯誤。</translation>
 <translation id="1322735045095424339">貴機構規定必須使用無痕模式</translation>
 <translation id="1323735185997015385">刪除</translation>
@@ -434,6 +435,7 @@
 <translation id="3656645960301737801">完成活動並儲存</translation>
 <translation id="3661160521073045932">有可用的設定描述檔</translation>
 <translation id="3670030362669914947">號碼</translation>
+<translation id="368329460027487650">已登出。開啟登入選項。</translation>
 <translation id="3700134753671613714">不論您使用任何裝置，只要登入帳戶即可取得自己的書籤。</translation>
 <translation id="3709582977625132201">標示為未讀取</translation>
 <translation id="371230970611282515">可預測不安全事件，並在這類事件發生前顯示警告訊息。</translation>
@@ -662,6 +664,7 @@
 <translation id="5190835502935405962">書籤列</translation>
 <translation id="519530786644929958">下載失敗且無法重試。</translation>
 <translation id="5197255632782567636">網際網路</translation>
+<translation id="5209674813563615506">開啟新分頁</translation>
 <translation id="5211488077761630279">要允許「<ph name="SITE_NAME" />」使用<ph name="PERMISSION" />嗎？</translation>
 <translation id="5219295696240154694">協助我們為所有人改善網路安全性</translation>
 <translation id="5221339005270097309">正在檢查密碼…</translation>
@@ -935,6 +938,7 @@
 <translation id="6684906340059221832">正在追蹤價格</translation>
 <translation id="6710079714193676716">由貴機構管理，部分功能可能無法使用。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="672735642903863329">在任何裝置上存取書籤、密碼及其他設定。</translation>
 <translation id="6730682669179532099">無法匯出密碼</translation>
 <translation id="6732087373923685049">攝影機</translation>
 <translation id="6748108480210050150">寄件者</translation>

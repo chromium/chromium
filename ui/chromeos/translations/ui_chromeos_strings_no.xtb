@@ -564,6 +564,7 @@
 <translation id="5422221874247253874">Tilgangspunkt</translation>
 <translation id="5428105026674456456">Spansk</translation>
 <translation id="5438282218546237410">Det er ingen resultater for <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Ikke nok lagringsplass.</translation>
 <translation id="5449551289610225147">Ugyldig passord</translation>
 <translation id="5459064203055649751">Det finnes allerede en fil med navnet «<ph name="FILENAME" />». Vil du erstatte den med filen du holder på å flytte?</translation>
 <translation id="5463231940765244860">Skriv inn</translation>
@@ -691,6 +692,7 @@
 <translation id="6423031066725912715">Vietnamesisk med TCVN-tastatur</translation>
 <translation id="6430271654280079150">Du har ett forsøk igjen.</translation>
 <translation id="643243556292470964">Slettede filer flyttes nå til papirkurven</translation>
+<translation id="6438480100790416671">Kontrollerer lagringsplass …</translation>
 <translation id="6485131920355264772">Kunne ikke hente informasjon om lagringsplass</translation>
 <translation id="6495925982925244349">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – administreres av administratoren din – detaljer</translation>
 <translation id="649877868557234318">Pakker ut <ph name="FILE_NAME" /> i <ph name="FOLDER_NAME" /></translation>
@@ -893,6 +895,7 @@
 <translation id="8000066093800657092">Ingen nettverk</translation>
 <translation id="8008366997883261463">Jack Russell-terrier</translation>
 <translation id="8028993641010258682">Størrelse</translation>
+<translation id="8034974485549318493">Ved førstegangs konfigurering må du koble enheten til internett, slik at filene kan synkroniseres.</translation>
 <translation id="803771048473350947">Fil</translation>
 <translation id="8038111231936746805">(standard)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-lyd</translation>

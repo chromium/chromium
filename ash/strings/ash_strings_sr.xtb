@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">Недавне апликације</translation>
 <translation id="1252999807265626933">Пуњење из уређаја <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Какво је време?</translation>
-<translation id="1267032506238418139">Промена пречице</translation>
 <translation id="1269405891096105529">Периферни уређај није подржан у режиму госта</translation>
 <translation id="1270290102613614947">Тастатура на екрану је онемогућена</translation>
 <translation id="1272079795634619415">Заустави</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">Ново инсталирање</translation>
 <translation id="1915307458270490472">Прекини везу</translation>
 <translation id="1918022425394817322">Камера је уклопљена у горњи десни угао</translation>
-<translation id="1919743966458266018">Пречица за отварање менаџера задатака је промењена. Користите <ph name="NEW_SHORTCUT" /> уместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Аутоматски кликови</translation>
 <translation id="1928739107511554905">Да бисте преузели ажурирање, рестартујте Chromebook са прикљученом тастатуром на додирном екрану.</translation>
 <translation id="1948405482892809935">Пређите на следећег корисника</translation>
@@ -977,7 +975,6 @@
 <translation id="5283198616748585639">Додај 1 мин</translation>
 <translation id="528468243742722775">Заврши</translation>
 <translation id="5286194356314741248">Скенирање</translation>
-<translation id="5293671101077843611">Нема догађаја данас</translation>
 <translation id="5297423144044956168">Није пронађен ниједан мобилни уређај</translation>
 <translation id="5297704307811127955">Искључено</translation>
 <translation id="5300589172476337783">Прикажи</translation>
@@ -1279,6 +1276,7 @@
 <translation id="6597278316891651699">Камера је уклопљена у доњи леви угао. Неусаглашеност са површином система.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />, управља администратор</translation>
 <translation id="6612802754306526077">Режим снимања екрана је изабран</translation>
+<translation id="6613765291890844037">Користи се <ph name="STORAGE_IN_USE_SIZE" /> меморијског простора | Укупно <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Екран за приватност је укључен</translation>
 <translation id="6625718907317144388">Обавештења апликација <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> и друга обавештења су скривена јер је заштита од прегледа укључена</translation>
 <translation id="6627638273713273709">Тастер за претрагу+Shift+K</translation>
@@ -1761,7 +1759,6 @@
 <translation id="8834539327799336565">Тренутно повезани</translation>
 <translation id="8841375032071747811">Дугме Назад</translation>
 <translation id="8843682306134542540">Укључите/искључите закључавање ротације. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Верификација PIN-а или лозинке још увек није успела. Напомена: Ако сте недавно променили лозинку, користите стару. Нова лозинка ће бити примењена када се одјавите.</translation>
 <translation id="8855885154700222542">Тастер за цео екран</translation>
 <translation id="8858369206579825206">Контроле приватности</translation>

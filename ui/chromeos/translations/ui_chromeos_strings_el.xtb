@@ -577,6 +577,7 @@
 <translation id="5428105026674456456">Ισπανικά
 </translation>
 <translation id="5438282218546237410">Δεν υπάρχουν αποτελέσματα για <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Ο αποθηκευτικός χώρος δεν επαρκεί.</translation>
 <translation id="5449551289610225147">Μη έγκυρος κωδικός πρόσβασης</translation>
 <translation id="5459064203055649751">Υπάρχει ήδη ένα αρχείο <ph name="FILENAME" />. Θέλετε να το αντικαταστήσετε με το αρχείο που μετακινείτε;</translation>
 <translation id="5463231940765244860">Εισαγωγή</translation>
@@ -704,6 +705,7 @@
 <translation id="6423031066725912715">Βιετναμικά με πληκτρολόγιο TCVN</translation>
 <translation id="6430271654280079150">Απομένει 1 ακόμη προσπάθεια.</translation>
 <translation id="643243556292470964">Τα διαγραμμένα αρχεία μετακινούνται τώρα στον κάδο</translation>
+<translation id="6438480100790416671">Έλεγχος αποθηκευτικού χώρου…</translation>
 <translation id="6485131920355264772">Αποτυχία ανάκτησης των πληροφοριών χώρου</translation>
 <translation id="6495925982925244349">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Διαχειριζόμενο από τον διαχειριστή σας, Λεπτομέρειες</translation>
 <translation id="649877868557234318">Εξαγωγή του αρχείου <ph name="FILE_NAME" /> στον φάκελο <ph name="FOLDER_NAME" /></translation>
@@ -910,6 +912,7 @@
 <translation id="8000066093800657092">Κανένα δίκτυο</translation>
 <translation id="8008366997883261463">Τεριέ Τζακ Ράσελ</translation>
 <translation id="8028993641010258682">Μέγεθος</translation>
+<translation id="8034974485549318493">Για την αρχική ρύθμιση θα πρέπει να συνδεθείτε στο διαδίκτυο προκειμένου να γίνει συγχρονισμός των αρχείων.</translation>
 <translation id="803771048473350947">Αρχείο</translation>
 <translation id="8038111231936746805">(προεπιλογή)</translation>
 <translation id="8042602468072383151">Ήχος <ph name="AUDIO_TYPE" /></translation>

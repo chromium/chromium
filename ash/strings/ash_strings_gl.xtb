@@ -69,7 +69,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1247519845643687288">Aplicacións recentes</translation>
 <translation id="1252999807265626933">Cargando a través de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Que tempo vai?</translation>
-<translation id="1267032506238418139">Cambio de atallos</translation>
 <translation id="1269405891096105529">O periférico non está dispoñible no modo de convidado</translation>
 <translation id="1270290102613614947">Teclado en pantalla desactivado</translation>
 <translation id="1272079795634619415">Deter</translation>
@@ -218,7 +217,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1908992311423394684">Instalada recentemente</translation>
 <translation id="1915307458270490472">Deter</translation>
 <translation id="1918022425394817322">Cámara axustada á esquina superior dereita</translation>
-<translation id="1919743966458266018">Cambiou o atallo que abre o xestor de tarefas. Utiliza <ph name="NEW_SHORTCUT" /> en lugar de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clics automáticos</translation>
 <translation id="1928739107511554905">Se queres recibir a actualización, usa a pantalla táctil para reiniciar o dispositivo Chromebook co teclado conectado.</translation>
 <translation id="1948405482892809935">Cambia ao seguinte usuario</translation>
@@ -977,7 +975,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5283198616748585639">Engadir 1 min</translation>
 <translation id="528468243742722775">Final</translation>
 <translation id="5286194356314741248">Buscando</translation>
-<translation id="5293671101077843611">Non hai eventos hoxe</translation>
 <translation id="5297423144044956168">Non se atoparon dispositivos móbiles</translation>
 <translation id="5297704307811127955">Desactivada</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -1761,7 +1758,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8834539327799336565">Dispositivos conectados actualmente</translation>
 <translation id="8841375032071747811">Botón Atrás</translation>
 <translation id="8843682306134542540">Activar/desactivar o bloqueo de rotación. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Busca+Esc</translation>
 <translation id="8853703225951107899">Aínda non se puido verificar o teu PIN ou contrasinal. Nota: Se cambiaches o contrasinal recentemente, utiliza o antigo. O contrasinal novo aplicarase en canto peches sesión.</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8858369206579825206">Controis de privacidade</translation>

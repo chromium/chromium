@@ -1335,7 +1335,6 @@
 <translation id="3962859241508114581">이전 트랙</translation>
 <translation id="3963721102035795474">리더 모드</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{없음}=1{사이트 1개 }other{사이트 #개 }}</translation>
-<translation id="3969052498612555048">코드를 찾을 수 없나요? <ph name="BEGIN_LINK" />새 코드 받기<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />이(가) 차단됨</translation>
 <translation id="3984581365661308170">봉투 #11</translation>
@@ -2725,7 +2724,6 @@
 <translation id="7064443976734085921">소형차</translation>
 <translation id="7064851114919012435">연락처 정보</translation>
 <translation id="7067633076996245366">소울 및 R&amp;B</translation>
-<translation id="7068733155164172741"><ph name="OTP_LENGTH" />자리 코드 입력</translation>
 <translation id="70705239631109039">연결의 보안이 완벽하지 않음</translation>
 <translation id="7075452647191940183">요청이 너무 큼</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3280,6 +3278,7 @@
 <translation id="8246482227229072868">고리</translation>
 <translation id="8249296373107784235">중단</translation>
 <translation id="8249463483885748674">표준 시험 및 입학 시험</translation>
+<translation id="824968735947741546"><ph name="SOURCE" />(자동 감지)를 <ph name="TARGET" />로 번역 중</translation>
 <translation id="8250094606476360498">이 주소는 현재 이 기기에 저장되어 있습니다. Google 제품에서 사용하려면 Google 계정(<ph name="ACCOUNT" />)에 저장하세요.</translation>
 <translation id="8252991034201168845">접근성 설정 관리 버튼, ChromeOS 설정의 접근성 도구를 맞춤설정하려면 Enter를 누르세요</translation>
 <translation id="8253091569723639551">청구지 주소 필요</translation>

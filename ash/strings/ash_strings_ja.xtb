@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">最近使ったアプリ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> から充電しています</translation>
 <translation id="1255033239764210633">今日の天気は？</translation>
-<translation id="1267032506238418139">ショートカットの変更</translation>
 <translation id="1269405891096105529">ゲストモードでは周辺機器を使用できません</translation>
 <translation id="1270290102613614947">画面キーボードは無効です</translation>
 <translation id="1272079795634619415">停止</translation>
@@ -217,7 +216,6 @@
 <translation id="1908992311423394684">新たなインストール</translation>
 <translation id="1915307458270490472">通話を終了</translation>
 <translation id="1918022425394817322">カメラは右上にスナップされています</translation>
-<translation id="1919743966458266018">タスク マネージャを起動するショートカットが変わりました。<ph name="OLD_SHORTCUT" /> ではなく <ph name="NEW_SHORTCUT" /> をご使用ください。</translation>
 <translation id="1923539912171292317">自動クリック</translation>
 <translation id="1928739107511554905">アップデートを取得するには、キーボードが接続された状態で、タッチスクリーンを使って Chromebook を再起動してください。</translation>
 <translation id="1948405482892809935">次のユーザーに切り替えます</translation>
@@ -975,7 +973,6 @@
 <translation id="5283198616748585639">1 分追加</translation>
 <translation id="528468243742722775">終了</translation>
 <translation id="5286194356314741248">スキャン中</translation>
-<translation id="5293671101077843611">今日の予定はありません</translation>
 <translation id="5297423144044956168">モバイル デバイスが見つかりませんでした</translation>
 <translation id="5297704307811127955">オフ</translation>
 <translation id="5300589172476337783">表示</translation>
@@ -1757,7 +1754,6 @@
 <translation id="8834539327799336565">現在接続中のデバイス</translation>
 <translation id="8841375032071747811">戻るボタン</translation>
 <translation id="8843682306134542540">画面の向きの固定を切り替えます。<ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN またはパスワードはまだ確認されていません。注: パスワードを最近変更した場合は、古いパスワードを使用してください。新しいパスワードはログアウトした後に適用されます。</translation>
 <translation id="8855885154700222542">全画面表示キー</translation>
 <translation id="8858369206579825206">プライバシー管理</translation>

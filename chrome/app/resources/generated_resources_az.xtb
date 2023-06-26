@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">Tab yenidən aktivdir</translation>
 <translation id="1003088604756913841">Linki yeni <ph name="APP" /> Pənəcərəsində açın</translation>
 <translation id="100323615638474026">USB cihazı (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Google Güvənli Axtarış</translation>
 <translation id="1004218526896219317">Sayt girişi</translation>
 <translation id="1005274289863221750">Mikrofonunuzu və kameranızı istifadə edin</translation>
 <translation id="1005333234656240382">ADB sazlaması aktivləşdirilsin?</translation>
@@ -519,6 +518,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1434886155212424586">Yeni Vərəqə səhifəni əsas səhifədir</translation>
 <translation id="1435940442311036198">Fərqli cihazda şifrə istifadə edin</translation>
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> ərzində etibarlıdır</translation>
+<translation id="1436671784520050284">Quraşdırmağa davam edin</translation>
 <translation id="1436784010935106834">Silindi</translation>
 <translation id="1437986450143295708">Problemi ətraflı təsvir edin</translation>
 <translation id="1439671507542716852">uzunmüddətli dəstək</translation>
@@ -1936,7 +1936,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2577446426265992344">Omnibox olmadan</translation>
 <translation id="257779572837908839">Görüşlər üçün Chromebox olaraq ayarlayın</translation>
 <translation id="2579309488038515659">Hotspot'un aktiv edilməsi</translation>
-<translation id="2579596474754516455">Lazım olduqda ekran oxuyucusuna mətni çevirmək üçün PDF şəkillərini skan edin</translation>
 <translation id="2580889980133367162"><ph name="HOST" /> hostuna çoxsaylı faylları endirməyə həmişə icazə verin</translation>
 <translation id="258095186877893873">Uzun</translation>
 <translation id="2581455244799175627">Üçüncü tərəf kukilərinə icazə vermək haqqında ətraflı</translation>
@@ -5419,9 +5418,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5602765853043467355">Bu cihazda əlfəcin, tarixçə, parollar və daha çoxunu silin</translation>
 <translation id="5605758115928394442">Kimliyinizi doğrulamaq üçün telefona bildiriş göndərildi.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Bu artırma bloklanıb}other{Bu artırmalar bloklanıb}}</translation>
-<translation id="560743070587960985">Bu fayl virus və ya zərərli proqram ola bilər.
-
-Təhlükəli olub-olmadığını yoxlamaq üçün onu Google-a göndərə bilərsiniz. Skan bir neçə saniyə çəkir.</translation>
 <translation id="560834977503641186">Wi-Fi Sinxronlaşdırması, Ətraflı Məlumat</translation>
 <translation id="5608580678041221894">Kəsilmiş hissəni tənzimləmək və ya köçürmək üçün aşağıdakı düymələrə toxunun</translation>
 <translation id="5609231933459083978">Görünür tətbiq yanlışdır.</translation>
@@ -6184,6 +6180,7 @@ Təhlükəli olub-olmadığını yoxlamaq üçün onu Google-a göndərə bilər
 <translation id="6263082573641595914">Microsoft CA Versiyası</translation>
 <translation id="6263284346895336537">Əhəmiyyətli deyil</translation>
 <translation id="6264365405983206840">Hamısını seçin</translation>
+<translation id="6264376385120300461">Hər bir halda endirin</translation>
 <translation id="6265687851677020761">Portu çıxarın</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> cihazına qoşulur</translation>
 <translation id="6267166720438879315">Özünüzü <ph name="HOST_NAME" /> üzrə doğrulamaq üçün sertifikat seçin</translation>
@@ -7210,7 +7207,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7149839598364933473">Bu cihazı <ph name="DEVICE_OS" /> cihazına çevirin.</translation>
 <translation id="7149893636342594995">Son 24 saat</translation>
 <translation id="7152478047064750137">Bu artırma xüsusi icazələr tələb etmir</translation>
-<translation id="7153309176431047193">Şəkilləri mətnə çevirin</translation>
 <translation id="7154130902455071009">Başlanğıc səhifənizi buna dəyişin: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Şəkli mətnə çevirin</translation>
 <translation id="7159953856712257647">Defolt olaraq quraşdırılıb</translation>
@@ -7765,7 +7761,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7634280112532283638">Spam və dələduzluğun azaldılması</translation>
 <translation id="7634337648687970851">Lokal data bərpası hazırda dəstəklənmir.</translation>
 <translation id="7634566076839829401">Xəta baş verdi. Yenidən cəhd edin.</translation>
-<translation id="763472884969134151">Təhlil edib: <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Administratorunuz tərəfindən bərkidilib</translation>
 <translation id="7635711411613274199">Baxış keçirdiyiniz zaman gördüyünüz reklamın fərdiləşdirilmiş olub-olmaması bu ayardan, <ph name="BEGIN_LINK1" />Reklam mövzularından<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />kuki ayarlarınızdan<ph name="LINK_END2" /> və baxdığınız saytın reklamları fərdiləşdirib-fərdiləşdirməməsindən asılıdır</translation>
 <translation id="7636919061354591437">Bu cihazda quraşdırın</translation>

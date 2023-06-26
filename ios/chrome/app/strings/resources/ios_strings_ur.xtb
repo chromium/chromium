@@ -63,6 +63,7 @@
 <translation id="1291506870746876680">جب آپ اس سائٹ کو چھوڑ دیتے ہیں تو <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> اجازتیں ری سیٹ ہو جائیں گی۔</translation>
 <translation id="1305822519689023679">‏یہ یقینی بنانے کیلئے کہ آپ ہمیشہ اپنے Google اکاؤنٹ میں پاس ورڈز استعمال کر سکتے ہیں، تصدیق کریں کہ یہ آپ ہی ہیں۔</translation>
 <translation id="1312721752506309252">بہتر کردہ تحفظ آن ہے</translation>
+<translation id="1316466854070752597">تمام کھلے ہوئے ٹیبز دیکھیں</translation>
 <translation id="1321993286294231467">تصویر محفوظ کرنے میں خرابی۔</translation>
 <translation id="1322735045095424339">آپ کی تنظیم پوشیدگی وضع چاہتی ہے</translation>
 <translation id="1323735185997015385">حذف کریں</translation>
@@ -438,6 +439,7 @@
 <translation id="3656645960301737801">ایونٹ کو مکمل کریں اور محفوظ کریں</translation>
 <translation id="3661160521073045932">کنفیگریشن پروفائل دستیاب ہے</translation>
 <translation id="3670030362669914947">نمبر</translation>
+<translation id="368329460027487650">سائن آؤٹ ہو گئے۔ سائن ان کرنے کے اختیارات کھولتا ہے۔</translation>
 <translation id="3700134753671613714">اپنے سبھی آلات پر اپنے بُک مارکس حاصل کرنے کیلئے سائن ان کریں۔</translation>
 <translation id="3709582977625132201">نہ پڑھا ہوا کے بطور نشان زد کریں</translation>
 <translation id="371230970611282515">خطرناک ایونٹس ہونے سے پہلے ان کی پیشین گوئی کرتا ہے اور آپ کو ان کے بارے میں متنبہ کرتا ہے۔</translation>
@@ -666,6 +668,7 @@
 <translation id="5190835502935405962">بُک مارکس بار</translation>
 <translation id="519530786644929958">ڈاؤن لوڈ کرنے میں ناکام اور دوبارہ کوشش نہیں کی جا سکتی۔</translation>
 <translation id="5197255632782567636">انٹرنیٹ</translation>
+<translation id="5209674813563615506">ایک نیا ٹیب کھولیں</translation>
 <translation id="5211488077761630279">اپنے <ph name="PERMISSION" /> کا استعمال کرنے کے لیے "<ph name="SITE_NAME" />" کو اجازت دیں؟</translation>
 <translation id="5219295696240154694">سبھی کے لیے ویب پر سیکیورٹی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="5221339005270097309">پاس ورڈز چیک ہو رہے ہیں…</translation>
@@ -941,6 +944,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6684906340059221832">قیمتیں ٹریک کی جا رہی ہیں</translation>
 <translation id="6710079714193676716">آپ کی تنظیم کے زیر انتظام۔ ہو سکتا ہے کہ کچھ خصوصیات دستیاب نہ ہوں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="672735642903863329">اپنے تمام آلات پر اپنے بُک مارکس، پاس ورڈز وغیرہ حاصل کریں۔</translation>
 <translation id="6730682669179532099">پاسورڈز برآمد نہیں ہو سکے</translation>
 <translation id="6732087373923685049">کیمرا</translation>
 <translation id="6748108480210050150">منجانب</translation>

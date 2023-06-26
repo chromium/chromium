@@ -69,7 +69,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1247519845643687288">Ứng dụng gần đây</translation>
 <translation id="1252999807265626933">Đang sạc từ <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Tình hình thời tiết thế nào?</translation>
-<translation id="1267032506238418139">Thay đổi phím tắt</translation>
 <translation id="1269405891096105529">Chế độ khách không hỗ trợ thiết bị ngoại vi</translation>
 <translation id="1270290102613614947">Đã tắt bàn phím ảo</translation>
 <translation id="1272079795634619415">Dừng</translation>
@@ -218,7 +217,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1908992311423394684">Mới cài đặt</translation>
 <translation id="1915307458270490472">Kết thúc</translation>
 <translation id="1918022425394817322">Máy ảnh đang bám theo góc trên bên phải</translation>
-<translation id="1919743966458266018">Phím tắt để mở trình quản lý tác vụ đã thay đổi. Vui lòng sử dụng <ph name="NEW_SHORTCUT" /> thay vì <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Nhấp chuột tự động</translation>
 <translation id="1928739107511554905">Để cập nhật, hãy dùng màn hình cảm ứng để khởi động lại Chromebook bằng bàn phím đã kết nối.</translation>
 <translation id="1948405482892809935">Chuyển sang người dùng tiếp theo</translation>
@@ -976,7 +974,6 @@ Hãy sạc thiết bị.</translation>
 <translation id="5283198616748585639">Thêm 1 phút</translation>
 <translation id="528468243742722775">Kết thúc</translation>
 <translation id="5286194356314741248">Đang quét</translation>
-<translation id="5293671101077843611">Không có sự kiện nào vào hôm nay</translation>
 <translation id="5297423144044956168">Không tìm thấy thiết bị di động nào</translation>
 <translation id="5297704307811127955">Đang tắt</translation>
 <translation id="5300589172476337783">Hiển thị</translation>
@@ -1761,7 +1758,6 @@ Mới cài đặt</translation>
 <translation id="8834539327799336565">Hiện đang kết nối</translation>
 <translation id="8841375032071747811">Nút quay lại</translation>
 <translation id="8843682306134542540">Bật/tắt khóa xoay. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Hệ thống vẫn chưa xác minh được mã PIN hoặc mật khẩu của bạn. Lưu ý: Nếu bạn đổi mật khẩu gần đây, hãy dùng mật khẩu cũ. Bạn có thể dùng mật khẩu mới sau khi đăng xuất.</translation>
 <translation id="8855885154700222542">Phím toàn màn hình</translation>
 <translation id="8858369206579825206">Chế độ kiểm soát quyền riêng tư</translation>

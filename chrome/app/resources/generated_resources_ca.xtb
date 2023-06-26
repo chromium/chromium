@@ -5,7 +5,6 @@
 <translation id="1002085272681738789">La pestanya torna a estar activa</translation>
 <translation id="1003088604756913841">Obre l'enllaç en una nova finestra de l'aplicació <ph name="APP" /></translation>
 <translation id="100323615638474026">Dispositiu USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003355351496161312">Navegació segura de Google</translation>
 <translation id="1004218526896219317">Accés al lloc web</translation>
 <translation id="1005274289863221750">Utilitzar el micròfon i la càmera</translation>
 <translation id="1005333234656240382">Vols activar la depuració d'ADB?</translation>
@@ -521,6 +520,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1434886155212424586">La pàgina d'inici és la pàgina Pestanya nova</translation>
 <translation id="1435940442311036198">Utilitza una clau d'accés en un altre dispositiu</translation>
 <translation id="1436390408194692385">Vàlid durant <ph name="TICKET_TIME_LEFT" /></translation>
+<translation id="1436671784520050284">Continua amb la configuració</translation>
 <translation id="1436784010935106834">Eliminat</translation>
 <translation id="1437986450143295708">Descriu el problema detalladament</translation>
 <translation id="1439671507542716852">assistència a llarg termini</translation>
@@ -1937,7 +1937,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2577446426265992344">sense omnibox</translation>
 <translation id="257779572837908839">Estableix com a Chromebox per a reunions</translation>
 <translation id="2579309488038515659">Activa el punt d'accés Wi‐Fi</translation>
-<translation id="2579596474754516455">Escaneja imatges en PDF per convertir-les en text per a lectors de pantalla quan sigui necessari</translation>
 <translation id="2580889980133367162">Permet sempre que <ph name="HOST" /> baixi diversos fitxers</translation>
 <translation id="258095186877893873">Llarg</translation>
 <translation id="2581455244799175627">Més informació sobre com pots permetre les galetes de tercers</translation>
@@ -3451,6 +3450,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3888586133700543064">Aquesta informació ens ajuda a entendre millor el problema que tens amb l'Assistent. S'emmagatzema durant 90 dies com a màxim i només hi poden accedir els equips corresponents d'enginyeria i suggeriments.</translation>
 <translation id="3890064827463908288">Activa l'opció Sincronització de Chrome per utilitzar la funció Sincronització Wi‑Fi</translation>
 <translation id="389313931326656921">Assigna l'interruptor a Següent</translation>
+<translation id="3893268973182382220">En aquest moment no es pot carregar el tauler</translation>
 <translation id="3893295674388762059">Per suprimir les dades, tanca totes les finestres d'incògnit</translation>
 <translation id="3893536212201235195">Llegir i canviar la configuració d'accessibilitat</translation>
 <translation id="3893630138897523026">ChromeVox (avisos de veu)</translation>
@@ -5414,9 +5414,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5602765853043467355">Esborra les adreces d'interès, l'historial, les contrasenyes i altres dades d'aquest dispositiu</translation>
 <translation id="5605758115928394442">S'ha enviat una notificació al teu telèfon per confirmar la teva identitat.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Aquesta extensió està bloquejada}other{Aquestes extensions estan bloquejades}}</translation>
-<translation id="560743070587960985">Aquest fitxer pot ser un virus o programari maliciós.
-
-Pots enviar-lo a Google per comprovar si no és segur. Les anàlisis solen tardar uns quants segons.</translation>
 <translation id="560834977503641186">Sincronització Wi‑Fi, més informació</translation>
 <translation id="5608580678041221894">Toca aquestes tecles per ajustar o moure l'àrea per retallar</translation>
 <translation id="5609231933459083978">Sembla que l'aplicació no és vàlida.</translation>
@@ -6179,6 +6176,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6263082573641595914">Versió de CA de Microsoft</translation>
 <translation id="6263284346895336537">No crítica</translation>
 <translation id="6264365405983206840">Selecciona-ho &amp;tot</translation>
+<translation id="6264376385120300461">Baixa igualment</translation>
 <translation id="6265687851677020761">Suprimeix el port</translation>
 <translation id="6266532094411434237">S'està connectant a <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Seleccioneu un certificat per autenticar-vos a <ph name="HOST_NAME" /></translation>
@@ -7202,7 +7200,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7149839598364933473">Converteix aquest dispositiu en un dispositiu <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">24 darreres hores</translation>
 <translation id="7152478047064750137">Aquesta extensió no requereix cap permís especial</translation>
-<translation id="7153309176431047193">Converteix les imatges en text</translation>
 <translation id="7154130902455071009">Canvia la pàgina d'inici per: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">Converteix la imatge a text</translation>
 <translation id="7159953856712257647">Instal·lada de manera predeterminada</translation>
@@ -7757,7 +7754,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7634280112532283638">Reducció del frau i del contingut brossa</translation>
 <translation id="7634337648687970851">Actualment no s'admet la recuperació de dades locals.</translation>
 <translation id="7634566076839829401">S'ha produït un error; torna-ho a provar.</translation>
-<translation id="763472884969134151">Anàlisi feta per <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Fixada per l'administrador</translation>
 <translation id="7635711411613274199">El fet que els anuncis que veus mentre navegues es personalitzin o no dependrà d'aquesta opció de configuració, dels <ph name="BEGIN_LINK1" />temes d'anuncis<ph name="LINK_END1" />, de la <ph name="BEGIN_LINK2" />configuració de galetes<ph name="LINK_END2" /> i de si el lloc web que estàs visitant personalitza els anuncis</translation>
 <translation id="7636919061354591437">Instal·la en aquest dispositiu</translation>

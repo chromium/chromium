@@ -69,7 +69,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1247519845643687288">Senaste apparna</translation>
 <translation id="1252999807265626933">Laddar från <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Vad är det för väder?</translation>
-<translation id="1267032506238418139">Kortkommandot har ändrats</translation>
 <translation id="1269405891096105529">Kringutrustningen stöds inte i gästläget</translation>
 <translation id="1270290102613614947">Skärmen på tangentbordet har inaktiverats</translation>
 <translation id="1272079795634619415">Stopp</translation>
@@ -218,7 +217,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1908992311423394684">Nyligen installerad</translation>
 <translation id="1915307458270490472">Lägg på</translation>
 <translation id="1918022425394817322">Kameran har fästs i det övre högra hörnet</translation>
-<translation id="1919743966458266018">Kortkommandot för att öppna aktivitetshanteraren har ändrats. Använd <ph name="NEW_SHORTCUT" /> i stället för <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatiska klick</translation>
 <translation id="1928739107511554905">Starta om Chromebook-enheten via pekskärmen med tangentbordet tillkopplat för att uppdatera.</translation>
 <translation id="1948405482892809935">Byt till nästa användare</translation>
@@ -976,7 +974,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5283198616748585639">Lägg till en min</translation>
 <translation id="528468243742722775">Avsluta</translation>
 <translation id="5286194356314741248">Skannar</translation>
-<translation id="5293671101077843611">Inga händelser i dag</translation>
 <translation id="5297423144044956168">Inga mobila enheter hittades</translation>
 <translation id="5297704307811127955">Av</translation>
 <translation id="5300589172476337783">Visa</translation>
@@ -1760,7 +1757,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8834539327799336565">Anslutna just nu</translation>
 <translation id="8841375032071747811">Bakåtknapp</translation>
 <translation id="8843682306134542540">Aktivera och inaktivera rotationslås. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Sök+Escape</translation>
 <translation id="8853703225951107899">Det gick fortfarande inte att verifiera pinkoden eller lösenordet. Obs! Om du nyligen har bytt lösenord ska du använda det gamla lösenordet. Det nya lösenordet börjar gälla när du loggar ut.</translation>
 <translation id="8855885154700222542">Tangent för helskärm</translation>
 <translation id="8858369206579825206">Integritetsinställningar</translation>

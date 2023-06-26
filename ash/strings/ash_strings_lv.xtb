@@ -69,7 +69,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1247519845643687288">Pēdējās izmantotās lietotnes</translation>
 <translation id="1252999807265626933">Uzlādes avots: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Kādi ir laikapstākļi?</translation>
-<translation id="1267032506238418139">Īsinājumtaustiņš mainīts</translation>
 <translation id="1269405891096105529">Perifērā ierīce netiek atbalstīta viesa režīmā.</translation>
 <translation id="1270290102613614947">Ekrāna tastatūra atspējota</translation>
 <translation id="1272079795634619415">Apturēt</translation>
@@ -218,7 +217,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1908992311423394684">Jauna instalācija</translation>
 <translation id="1915307458270490472">Pārtraukt</translation>
 <translation id="1918022425394817322">Kamera pārnesta uz labo augšējo stūri</translation>
-<translation id="1919743966458266018">Tika mainīti īsinājumtaustiņi, ar kuriem var atvērt uzdevumu pārvaldnieku. Lūdzu, turpmāk izmantojiet <ph name="NEW_SHORTCUT" />, nevis <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automātiskie klikšķi</translation>
 <translation id="1928739107511554905">Lai iegūtu atjauninājumu, izmantojiet skārienekrānu, lai ar pievienoto tastatūru restartētu Chromebook datoru.</translation>
 <translation id="1948405482892809935">Pāriet uz nākamo lietotāju</translation>
@@ -976,7 +974,6 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5283198616748585639">Pievienot 1 min</translation>
 <translation id="528468243742722775">Beigas</translation>
 <translation id="5286194356314741248">Notiek skenēšana</translation>
-<translation id="5293671101077843611">Šodien nav neviena pasākuma</translation>
 <translation id="5297423144044956168">Netika atrasta neviena mobilā ierīce</translation>
 <translation id="5297704307811127955">Izslēgta</translation>
 <translation id="5300589172476337783">Rādīt</translation>
@@ -1760,7 +1757,6 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8834539327799336565">Ierīces, ar kurām pašlaik izveidots savienojums</translation>
 <translation id="8841375032071747811">Poga Atpakaļ</translation>
 <translation id="8843682306134542540">Pārslēgt pagriešanas bloķēšanu. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Joprojām nevarēja verificēt jūsu PIN vai paroli. Piezīme. Ja nesen mainījāt paroli, izmantojiet iepriekšējo paroli. Jaunā parole tiks lietota pēc izrakstīšanās.</translation>
 <translation id="8855885154700222542">Pilnekrāna taustiņš</translation>
 <translation id="8858369206579825206">Konfidencialitātes vadīklas</translation>

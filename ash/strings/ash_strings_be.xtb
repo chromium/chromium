@@ -69,7 +69,6 @@
 <translation id="1247519845643687288">Нядаўнія праграмы</translation>
 <translation id="1252999807265626933">Зараджаецца ад крыніцы сілкавання <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Якое надвор'е?</translation>
-<translation id="1267032506238418139">Змяненне спалучэння клавіш</translation>
 <translation id="1269405891096105529">Перыферыйная прылада не падтрымліваецца ў гасцявым рэжыме</translation>
 <translation id="1270290102613614947">Экранная клавіятура выключана</translation>
 <translation id="1272079795634619415">Спыніць</translation>
@@ -218,7 +217,6 @@
 <translation id="1908992311423394684">Усталявана нядаўна</translation>
 <translation id="1915307458270490472">Закрыць</translation>
 <translation id="1918022425394817322">Акно перадпрагляду камеры прывязана да правага верхняга вугла</translation>
-<translation id="1919743966458266018">Спалучэнне клавіш для адкрыцця менеджара заданняў змянілася. Замест <ph name="OLD_SHORTCUT" /> выкарыстоўвайце <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Аўтаматычныя націсканні</translation>
 <translation id="1928739107511554905">Для абнаўлення падключыце клавіятуру і перазапусціце Chromebook, выкарыстоўваючы сэнсарны экран.</translation>
 <translation id="1948405482892809935">Пераключыцца на наступнага карыстальніка</translation>
@@ -974,7 +972,6 @@
 <translation id="5283198616748585639">Дадаць 1 хвіліну</translation>
 <translation id="528468243742722775">Канец</translation>
 <translation id="5286194356314741248">Праверка</translation>
-<translation id="5293671101077843611">На сёння падзей няма</translation>
 <translation id="5297423144044956168">Мабільныя прылады не знойдзены</translation>
 <translation id="5297704307811127955">Выключана</translation>
 <translation id="5300589172476337783">Паказаць</translation>
@@ -1758,7 +1755,6 @@
 <translation id="8834539327799336565">Падключаныя цяпер прылады</translation>
 <translation id="8841375032071747811">Кнопка "Назад"</translation>
 <translation id="8843682306134542540">Уключыць або выключыць блакіроўку павароту. <ph name="STATE_TEXT" /></translation>
-<translation id="8850991929411075241">Клавіша пошуку + Esc</translation>
 <translation id="8853703225951107899">Пароль або PIN-код спраўдзіць зноў не ўдалося. Заўвага: калі вы нядаўна змянілі пароль, то выкарыстайце тут стары пароль. Новы пароль будзе прыменены пасля выхаду.</translation>
 <translation id="8855885154700222542">Клавіша поўнаэкраннага рэжыму</translation>
 <translation id="8858369206579825206">Налады прыватнасці</translation>

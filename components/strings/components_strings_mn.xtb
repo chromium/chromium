@@ -1336,7 +1336,6 @@
 <translation id="3962859241508114581">Өмнөх бичлэг</translation>
 <translation id="3963721102035795474">Уншигчийн горим</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Байхгүй}=1{1 сайтаас }other{# сайтаас }}</translation>
-<translation id="3969052498612555048">Кодоо олж чадахгүй байна уу? <ph name="BEGIN_LINK" />Шинэ код авах<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Тооцоолж байна ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />-г блоклосон байна</translation>
 <translation id="3984581365661308170">Дугтуй #11</translation>
@@ -2725,7 +2724,6 @@
 <translation id="7064443976734085921">Бага оврын автомашинууд</translation>
 <translation id="7064851114919012435">Харилцагчийн мэдээлэл</translation>
 <translation id="7067633076996245366">Сөүл, R&amp;B</translation>
-<translation id="7068733155164172741"><ph name="OTP_LENGTH" /> оронтой кодыг оруулна уу</translation>
 <translation id="70705239631109039">Таны холболт бүрэн аюулгүй биш байна</translation>
 <translation id="7075452647191940183">Хүсэлт хэт том байна</translation>
 <translation id="7078665357168027058">RA3</translation>
