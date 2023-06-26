@@ -42,6 +42,7 @@ component("ax_base") {
   sources = [
     "accessibility_features.cc",
     "accessibility_features.h",
+    "accessibility_prefs.h",
     "accessibility_switches.cc",
     "accessibility_switches.h",
     "ax_action_data.cc",

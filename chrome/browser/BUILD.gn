@@ -2556,6 +2556,8 @@ static_library("browser") {
 
   if (is_android) {
     sources += [
+      "accessibility/accessibility_prefs/android/accessibility_prefs_controller.cc",
+      "accessibility/accessibility_prefs/android/accessibility_prefs_controller.h",
       "after_startup_task_utils_android.cc",
       "android/android_theme_resources.h",
       "android/autocomplete/tab_matcher_android.cc",
@@ -3414,6 +3416,7 @@ static_library("browser") {
       "//third_party/libaddressinput:util",
       "//third_party/libphonenumber",
       "//third_party/smhasher:murmurhash2",
+      "//ui/accessibility",
       "//url:gurl_android",
       "//url:origin_android",
     ]

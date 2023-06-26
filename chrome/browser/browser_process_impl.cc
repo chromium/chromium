@@ -161,6 +161,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ssl/chrome_security_state_client.h"
 #include "chrome/browser/webauthn/android/chrome_webauthn_client_android.h"
@@ -368,6 +369,9 @@ void BrowserProcessImpl::Init() {
 #if BUILDFLAG(IS_ANDROID)
   webauthn::WebAuthnClientAndroid::SetClient(
       std::make_unique<ChromeWebAuthnClientAndroid>());
+  accessibility_prefs_controller_ =
+      std::make_unique<accessibility::AccessibilityPrefsController>(
+          local_state());
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -418,6 +422,9 @@ void BrowserProcessImpl::StartTearDown() {
 
   platform_part()->BeginStartTearDown();
 
+#if BUILDFLAG(IS_ANDROID)
+  accessibility_prefs_controller_.reset();
+#endif
   metrics_services_manager_.reset();
   intranet_redirect_detector_.reset();
   if (safe_browsing_service_.get())

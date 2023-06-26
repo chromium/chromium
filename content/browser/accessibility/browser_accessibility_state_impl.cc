@@ -262,6 +262,15 @@ bool BrowserAccessibilityStateImpl::IsCaretBrowsingEnabled() const {
   return caret_browsing_enabled_;
 }
 
+void BrowserAccessibilityStateImpl::SetPerformanceFilteringAllowed(
+    bool allowed) {
+  performance_filtering_allowed_ = allowed;
+}
+
+bool BrowserAccessibilityStateImpl::IsPerformanceFilteringAllowed() {
+  return performance_filtering_allowed_;
+}
+
 void BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread() {
   for (auto& callback : ui_thread_histogram_callbacks_)
     std::move(callback).Run();

@@ -28,6 +28,7 @@
 #include "content/public/common/content_features.h"
 #include "net/base/data_url.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/accessibility_prefs.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
@@ -1530,7 +1531,8 @@ void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
 
   // The AXMode flags will be set according to enabled feature flag and what is
   // needed by the current system as indicated by the parameters.
-  if (!features::IsAccessibilityPerformanceFilteringEnabled()) {
+  if (!accessibility_state->IsPerformanceFilteringAllowed() ||
+      !features::IsAccessibilityPerformanceFilteringEnabled()) {
     // When the browser is not yet accessible, then set the AXMode to
     // |ui::kAXModeComplete| for all web contents.
     if (!accessibility_state->IsAccessibleBrowser()) {

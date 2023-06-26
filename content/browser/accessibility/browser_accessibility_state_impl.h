@@ -75,6 +75,8 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void UpdateUniqueUserHistograms() override;
   void UpdateHistogramsForTesting() override;
   void SetCaretBrowsingState(bool enabled) override;
+  void SetPerformanceFilteringAllowed(bool enabled) override;
+  bool IsPerformanceFilteringAllowed() override;
 #if BUILDFLAG(IS_ANDROID)
   void SetImageLabelsModeForProfile(bool enabled,
                                     BrowserContext* profile) override;
@@ -168,6 +170,11 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Keeps track of whether caret browsing is enabled for the most
   // recently used profile.
   bool caret_browsing_enabled_ = false;
+
+  // Keeps track of whether performance filtering is allowed for the device.
+  // Default is true to defer to feature flag. Value may be set to false by
+  // prefs.
+  bool performance_filtering_allowed_ = true;
 
   // The time of the first user input event; if we receive multiple
   // user input events within a 30-second period and no

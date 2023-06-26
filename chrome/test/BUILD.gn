@@ -1010,6 +1010,8 @@ if (is_android) {
     ]
 
     sources = [
+      "../browser/accessibility/accessibility_prefs/android/accessibility_android_policy_browsertest.cc",
+      "../browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller_browsertest.cc",
       "../browser/android/customtabs/custom_tabs_browsertest.cc",
       "../browser/android/customtabs/tab_interaction_recorder_browsertest.cc",
       "../browser/android/historical_tab_saver_browsertest.cc",
@@ -6999,6 +7001,7 @@ test("unit_tests") {
       "//components/webapps/browser",
       "//content/public/android:content_java",
       "//gin:v8_snapshot_assets",
+      "//ui/accessibility",
       "//ui/android",
       "//ui/events/devices:test_support",
     ]
