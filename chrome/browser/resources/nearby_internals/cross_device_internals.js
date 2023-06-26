@@ -57,6 +57,10 @@ Polymer({
     this.browserProxy_.SendStartScan();
   },
 
+  onStopScanClicked() {
+    this.browserProxy_.SendStopScan();
+  },
+
   onSyncCredentialsClicked() {
     this.browserProxy_.SendSyncCredentials();
   },

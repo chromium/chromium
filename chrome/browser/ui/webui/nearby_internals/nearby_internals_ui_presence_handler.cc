@@ -54,6 +54,11 @@ void NearbyInternalsPresenceHandler::RegisterMessages() {
           &NearbyInternalsPresenceHandler::HandleStartPresenceScan,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "StopPresenceScan",
+      base::BindRepeating(
+          &NearbyInternalsPresenceHandler::HandleStopPresenceScan,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "SyncPresenceCredentials",
       base::BindRepeating(
           &NearbyInternalsPresenceHandler::HandleSyncPresenceCredentials,
@@ -89,6 +94,11 @@ void NearbyInternalsPresenceHandler::HandleStartPresenceScan(
         base::BindOnce(&NearbyInternalsPresenceHandler::OnScanStarted,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+}
+
+void NearbyInternalsPresenceHandler::HandleStopPresenceScan(
+    const base::Value::List& args) {
+  scan_session_.reset();
 }
 
 void NearbyInternalsPresenceHandler::HandleSyncPresenceCredentials(

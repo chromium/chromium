@@ -46,6 +46,7 @@ class NearbyInternalsPresenceHandler
 
   void Initialize(const base::Value::List& args);
   void HandleStartPresenceScan(const base::Value::List& args);
+  void HandleStopPresenceScan(const base::Value::List& args);
   void HandleSyncPresenceCredentials(const base::Value::List& args);
   void HandleFirstTimePresenceFlow(const base::Value::List& args);
 
