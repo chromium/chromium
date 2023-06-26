@@ -773,16 +773,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.MixedContentDialog.Events"
-    enum="MixedContentDownloadDialogEvent" expires_after="2022-12-11">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Records user interactions with the insecure download (formerly the mixed
-    content download) dialog on Android. Records when the dialog is shown, or
-    when user clicks on a button or dismisses the dialog.
-  </summary>
-</histogram>
-
 <histogram name="Download.Mobile.DangerousDownloadInfobarEvent"
     enum="DangerousDownloadInfobarEvent" expires_after="2022-06-05">
   <owner>qinmin@chromium.org</owner>

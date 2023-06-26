@@ -6,10 +6,7 @@ package org.chromium.chrome.browser.download.dialogs;
 
 import android.content.Context;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -22,23 +19,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  * default model dialog from ModalDialogManager.
  */
 public class InsecureDownloadDialog {
-    /**
-     * Events related to the insecure download dialog, used for UMA reporting.
-     * These values are persisted to logs. Entries should not be renumbered and
-     * numeric values should never be reused.
-     */
-    @IntDef({InsecureDownloadDialogEvent.SHOW, InsecureDownloadDialogEvent.CONFIRM,
-            InsecureDownloadDialogEvent.CANCEL, InsecureDownloadDialogEvent.DISMISS,
-            InsecureDownloadDialogEvent.COUNT})
-    private @interface InsecureDownloadDialogEvent {
-        int SHOW = 0;
-        int CONFIRM = 1;
-        int CANCEL = 2;
-        int DISMISS = 3;
-
-        int COUNT = 4;
-    }
-
     /**
      * Called to show a warning dialog for insecure download.
      * @param context Context for showing the dialog.
@@ -70,9 +50,6 @@ public class InsecureDownloadDialog {
                                                                          .POSITIVE_BUTTON_CLICKED
                                                                : DialogDismissalCause
                                                                          .NEGATIVE_BUTTON_CLICKED);
-                                        recordInsecureDownloadDialogEvent(acceptDownload
-                                                        ? InsecureDownloadDialogEvent.CONFIRM
-                                                        : InsecureDownloadDialogEvent.CANCEL);
                                     }
 
                                     @Override
@@ -84,8 +61,6 @@ public class InsecureDownloadDialog {
                                                         != DialogDismissalCause
                                                                    .NEGATIVE_BUTTON_CLICKED) {
                                             if (callback != null) callback.onResult(false);
-                                            recordInsecureDownloadDialogEvent(
-                                                    InsecureDownloadDialogEvent.DISMISS);
                                         }
                                     }
                                 })
@@ -104,15 +79,5 @@ public class InsecureDownloadDialog {
                         .build();
 
         modalDialogManager.showDialog(propertyModel, ModalDialogManager.ModalDialogType.TAB);
-        recordInsecureDownloadDialogEvent(InsecureDownloadDialogEvent.SHOW);
-    }
-
-    /**
-     * Collects insecure download dialog UI event metrics.
-     * @param event The UI event to collect.
-     */
-    private static void recordInsecureDownloadDialogEvent(@InsecureDownloadDialogEvent int event) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Download.MixedContentDialog.Events", event, InsecureDownloadDialogEvent.COUNT);
     }
 }
