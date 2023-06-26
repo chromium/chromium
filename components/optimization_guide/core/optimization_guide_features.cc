@@ -170,6 +170,10 @@ BASE_FEATURE(kPageVisibilityBatchAnnotations,
              "PageVisibilityBatchAnnotations",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTextEmbeddingBatchAnnotations,
+             "TextEmebddingBatchAnnotations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPageContentAnnotationsValidation,
              "PageContentAnnotationsValidation",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -583,6 +587,10 @@ bool ShouldDeferStartupActiveTabsHintsFetch() {
 
 bool PageVisibilityBatchAnnotationsEnabled() {
   return base::FeatureList::IsEnabled(kPageVisibilityBatchAnnotations);
+}
+
+bool TextEmbeddingBatchAnnotationsEnabled() {
+  return base::FeatureList::IsEnabled(kTextEmbeddingBatchAnnotations);
 }
 
 size_t AnnotateVisitBatchSize() {

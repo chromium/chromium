@@ -36,7 +36,6 @@ class TextEmbeddingModelExecutorTest : public testing::Test {
     model_handler_ = std::make_unique<TextEmbeddingModelHandler>(
         optimization_guide_model_provider_.get(),
         task_environment_.GetMainThreadTaskRunner(),
-        proto::OPTIMIZATION_TARGET_TEXT_EMBEDDER,
         /*model_metadata=*/absl::nullopt);
   }
 

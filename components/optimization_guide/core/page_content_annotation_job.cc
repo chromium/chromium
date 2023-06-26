@@ -67,6 +67,11 @@ void PageContentAnnotationJob::FillWithNullOutputs() {
                           input, absl::nullopt),
                       i);
         break;
+      case AnnotationType::kTextEmbedding:
+        PostNewResult(BatchAnnotationResult::CreateTextEmbeddingResult(
+                          input, absl::nullopt),
+                      i);
+        break;
       case AnnotationType::kUnknown:
         NOTREACHED();
         PostNewResult(
@@ -116,6 +121,10 @@ bool PageContentAnnotationJob::HadAnySuccess() const {
     }
     if (result.type() == AnnotationType::kContentVisibility &&
         result.visibility_score()) {
+      return true;
+    }
+    if (result.type() == AnnotationType::kTextEmbedding &&
+        result.embeddings()) {
       return true;
     }
   }

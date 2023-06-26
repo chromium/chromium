@@ -59,6 +59,8 @@ bool BatchAnnotationResult::HasOutputForType() const {
       return !!visibility_score();
     case AnnotationType::kPageEntities:
       return !!entities();
+    case AnnotationType::kTextEmbedding:
+      return !!embeddings();
   }
 }
 
@@ -143,6 +145,17 @@ BatchAnnotationResult BatchAnnotationResult::CreateContentVisibilityResult(
   result.input_ = input;
   result.visibility_score_ = visibility_score;
   result.type_ = AnnotationType::kContentVisibility;
+  return result;
+}
+
+// static
+BatchAnnotationResult BatchAnnotationResult::CreateTextEmbeddingResult(
+    const std::string& input,
+    absl::optional<std::vector<float>> embeddings) {
+  BatchAnnotationResult result;
+  result.input_ = input;
+  result.embeddings_ = embeddings;
+  result.type_ = AnnotationType::kTextEmbedding;
   return result;
 }
 
