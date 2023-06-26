@@ -1759,10 +1759,6 @@ TEST_F(AccountReconcilorMirrorTest,
 // "Dot.S@hmail.com", as seen by the token service, will be considered the same
 // as "dots@gmail.com" as returned by gaia::ParseListAccountsData().
 TEST_F(AccountReconcilorMirrorTest, StartReconcileNoopWithDots) {
-  ASSERT_EQ(
-      identity_test_env()->identity_manager()->GetAccountIdMigrationState(),
-      signin::IdentityManager::AccountIdMigrationState::MIGRATION_DONE);
-
   AccountInfo account_info = ConnectProfileToAccount("Dot.S@gmail.com");
   signin::SetListAccountsResponseOneAccount(
       account_info.email, account_info.gaia, &test_url_loader_factory_);

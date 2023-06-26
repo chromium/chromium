@@ -390,14 +390,6 @@ void IdentityManager::OnNetworkInitialized() {
   account_fetcher_service_->OnNetworkInitialized();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IdentityManager::AccountIdMigrationState
-IdentityManager::GetAccountIdMigrationState() const {
-  return static_cast<IdentityManager::AccountIdMigrationState>(
-      account_tracker_service_->GetMigrationState());
-}
-#endif
-
 CoreAccountId IdentityManager::PickAccountIdForAccount(
     const std::string& gaia,
     const std::string& email) const {

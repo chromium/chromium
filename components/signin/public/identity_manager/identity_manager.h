@@ -379,27 +379,7 @@ class IdentityManager : public KeyedService,
   // initialized.
   void OnNetworkInitialized();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Methods related to migration of account IDs from email to Gaia ID.
-  // TODO(https://crbug.com/883272): Remove these once all platforms have
-  // migrated to the new account_id based on gaia (currently, only ChromeOS
-  // remains).
-
-  // Possible values for the account ID migration state, needs to be kept in
-  // sync with AccountTrackerService::AccountIdMigrationState.
-  enum AccountIdMigrationState {
-    MIGRATION_NOT_STARTED = 0,
-    MIGRATION_IN_PROGRESS = 1,
-    MIGRATION_DONE = 2,
-    NUM_MIGRATION_STATES
-  };
-
-  // Returns the currently saved state of the migration of account IDs.
-  AccountIdMigrationState GetAccountIdMigrationState() const;
-#endif
-
-  // Picks the correct account_id for the specified account depending on the
-  // migration state.
+  // Picks the correct account_id for account with the given gaia id and email.
   CoreAccountId PickAccountIdForAccount(const std::string& gaia,
                                         const std::string& email) const;
 
