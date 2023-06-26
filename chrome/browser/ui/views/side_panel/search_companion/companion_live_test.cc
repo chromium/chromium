@@ -35,15 +35,24 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace signin::test {
 
+namespace {
+const std::string kExpsUrl("https://labs.google.com/search/experiments/");
+const std::string kFailureUrl("https://labs.google.com/search/error");
+const std::string kGoogleUrl("https://www.google.com/");
+const std::string kLensUrl("https://lens.google.com/companion");
+const std::string kNpsUrl("https://nps.gov/articles/route-66-overview.htm");
+}  // namespace
+
 // Live tests for Companion.
 // These tests can be run with:
-// browser_tests --gtest_filter=LiveSignInTest.* --run-live-tests --run-manual
+// browser_tests --gtest_filter=CompanionLiveTest.* --run-live-tests
 class CompanionLiveTest : public signin::test::LiveTest {
  public:
   CompanionLiveTest() = default;
@@ -56,6 +65,13 @@ class CompanionLiveTest : public signin::test::LiveTest {
     // Always disable animation for stability.
     ui::ScopedAnimationDurationScaleMode disable_animation(
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    // Allowlists hosts.
+    host_resolver()->AllowDirectLookup("*.nps.gov");
+
+    LiveTest::SetUpInProcessBrowserTestFixture();
   }
 
   SidePanelCoordinator* side_panel_coordinator() {
@@ -102,11 +118,45 @@ class CompanionLiveTest : public signin::test::LiveTest {
     return content::ExecJs(iframe, code);
   }
 
-  void ClickButtonByAriaLabel(const std::string& aria_label) {
+  void ClickButtonByAriaLabel(const std::string& aria_label, int index = 0) {
     // Clicks a button in the side panel by its aria-label attribute.
     std::string js_string = "document.querySelectorAll('button[aria-label=\"" +
-                            aria_label + "\"]')[0].click();";
+                            aria_label + "\"]')[" +
+                            base::NumberToString(index) + "].click();";
     EXPECT_TRUE(ExecJs(js_string));
+  }
+
+  void ClickButtonByInnerText(const std::string& inner_text) {
+    // Clicks a button in the side panel by its inner text.
+    std::string js_string =
+        "Array.from(document.querySelectorAll('button')).find(el => "
+        "el.textContent === '" +
+        inner_text + "').click();";
+    EXPECT_TRUE(ExecJs(js_string));
+  }
+
+  void EnableExps(bool enable) {
+    // Enables or disables exps.
+    std::string button_string =
+        "document.querySelectorAll('button[aria-label=\"Switch\"]')[3]";
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExpsUrl)));
+
+    // Certain IP Addresses are restricted from exps site.
+    if (web_contents()->GetLastCommittedURL().spec() == kFailureUrl) {
+      LOG(INFO) << "Unable to access exps url from this device. Skipping.";
+      skip_test_ = true;
+      return;
+    }
+
+    // Toggle the switch if state change is desired.
+    bool already_enabled =
+        content::EvalJs(web_contents(), button_string + ".ariaChecked") ==
+        "true";
+    // If the exps state does not match the desired state, toggle.
+    if (already_enabled ^ enable) {
+      LOG(INFO) << "Toggling exps from " << already_enabled << " to " << enable;
+      EXPECT_TRUE(content::ExecJs(web_contents(), button_string + ".click();"));
+    }
   }
 
   void WaitForCompanionToBeLoaded() {
@@ -147,10 +197,12 @@ class CompanionLiveTest : public signin::test::LiveTest {
   }
 
   void WaitForHistogramSample(const std::string& histogram_name,
-                              base::HistogramBase::Sample expected_sample) {
+                              base::HistogramBase::Sample expected_sample,
+                              int expected_count = 1) {
     // Continue if histogram sample was already recorded.
     if (base::StatisticsRecorder::FindHistogram(histogram_name) &&
-        histogram_tester_->GetBucketCount(histogram_name, expected_sample)) {
+        histogram_tester_->GetBucketCount(histogram_name, expected_sample) >=
+            expected_count) {
       return;
     }
 
@@ -171,6 +223,36 @@ class CompanionLiveTest : public signin::test::LiveTest {
     }
   }
 
+  void ConfirmFeaturesShown(const std::vector<std::string>& features,
+                            int bucket_count) {
+    // For each feature, ensure the Companion.|feature|.Shown histogram
+    // populates to |bucket_count|.
+    for (const auto& feature : features) {
+      if (bucket_count) {
+        WaitForHistogramSample("Companion." + feature + ".Shown", true,
+                               bucket_count);
+      }
+      histogram_tester_->ExpectBucketCount("Companion." + feature + ".Shown",
+                                           /*sample=*/true,
+                                           /*expected_count=*/bucket_count);
+    }
+  }
+
+  void ConfirmFeaturesClicked(const std::vector<std::string>& features,
+                              int bucket_count) {
+    // For each feature, ensure the Companion.|feature|.Clicked histogram
+    // populates to |bucket_count|.
+    for (const auto& feature : features) {
+      if (bucket_count) {
+        WaitForHistogramSample("Companion." + feature + ".Clicked", true,
+                               bucket_count);
+      }
+      histogram_tester_->ExpectBucketCount("Companion." + feature + ".Clicked",
+                                           /*sample=*/true,
+                                           /*expected_count=*/bucket_count);
+    }
+  }
+
   void EnableMsbb(bool enable_msbb) {
     if (enable_msbb) {
       base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -183,32 +265,42 @@ class CompanionLiveTest : public signin::test::LiveTest {
 
   virtual void SetUpFeatureList() {
     base::FieldTrialParams params;
-    const GURL lens_url("https://lens.google.com/companion");
-    params["companion-homepage-url"] = lens_url.spec();
+    params["companion-homepage-url"] = kLensUrl;
     feature_list_.InitAndEnableFeatureWithParameters(
         companion::features::internal::kSidePanelCompanion, params);
 
     EnableMsbb(true);
   }
 
+  void TearDown() override {
+    // This test was skipped, no need to tear down.
+    if (skip_test_) {
+      return;
+    }
+    LiveTest::TearDown();
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+  bool skip_test_ = false;
 };
 
 // Test will only run when passed the --run-live-tests flag. To run, use
 // browser_tests --gtest_filter=CompanionLiveTest.* --run-live-tests
 IN_PROC_BROWSER_TEST_F(CompanionLiveTest, InitialNavigation) {
-  // Navigate to a website, open the side panel, and verify that companion
-  // experiments appear in the side panel for an opted in account.
+// Navigate to a website, open the side panel, and verify that companion
+// experiments appear in the side panel for an opted in account. Note that
+// sync and signin utilities are only supported on Windows.
+#if BUILDFLAG(IS_WIN)
   TestAccount ta;
-  // Test account is opted in to labs.
+  // Sign in to opted in test account.
   CHECK(GetTestAccountsUtil()->GetAccount("INTELLIGENCE_ACCOUNT", ta));
-  sign_in_functions.SignInFromWeb(ta, 0);
+  sign_in_functions.TurnOnSync(ta, 0);
+  EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
 
-  // Navigate to google.com and open side panel.
-  const GURL google_url("https://google.com/");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), google_url));
+  // Navigate to nps.gov article and open side panel.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kNpsUrl)));
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
 
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -218,55 +310,65 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, InitialNavigation) {
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
 
-  // Verify that CQ loads.
-  WaitForHistogram("Companion.CQ.Shown");
-  histogram_tester_->ExpectBucketCount("Companion.CQ.Shown",
-                                       /*sample=*/true, /*expected_count=*/1);
+  // Verify that experiments load.
+  std::vector<std::string> expected_features = {
+      "ATX", "CQ", "PageEntities", "RelQs", "RelQr", "RelQs"};
+  ConfirmFeaturesShown(expected_features, 1);
+
+  // Generate PH.
+  ClickButtonByInnerText("Generate");
+  ConfirmFeaturesShown({"PH"}, 1);
+  ConfirmFeaturesClicked({"PH"}, 1);
+
   // Close the side panel.
   side_panel_coordinator()->Close();
   WaitForHistogram("SidePanel.OpenDuration");
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionLiveTest, InitialNavigationNotOptedIn) {
-  // Navigate to a website, open the side panel, and verify that companion
-  // experiments do not appear in the side panel for a non-opted in account.
+// Navigate to a website, open the side panel, and verify that companion
+// experiments do not appear in the side panel for a non-opted in account.
+// Note that sync and signin utilities are only supported on Windows.
+#if BUILDFLAG(IS_WIN)
   TestAccount ta;
-  // Test account has not opted in to labs.
+  // Sign in to non-opted in test account.
   CHECK(GetTestAccountsUtil()->GetAccount("INTELLIGENCE_ACCOUNT_2", ta));
-  sign_in_functions.SignInFromWeb(ta, 0);
-
-  // Ensure sync is on.
   sign_in_functions.TurnOnSync(ta, 0);
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
 
   // Navigate to google.com and open side panel.
-  const GURL google_url("https://google.com/");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), google_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kGoogleUrl)));
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
 
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
   WaitForCompanionToBeLoaded();
 
-  // Verify the kExpsShown promo event is shown and that CQ does not load.
+  // Verify the kExpsShown promo event is shown.
   WaitForHistogramSample("Companion.PromoEvent",
                          (int)companion::PromoEvent::kExpsShown);
   histogram_tester_->ExpectBucketCount(
       "Companion.PromoEvent",
       /*sample=*/companion::PromoEvent::kExpsShown, /*expected_count=*/1);
-  histogram_tester_->ExpectTotalCount("Companion.CQ.Shown", 0);
+
+  // Verify that correct experiments load.
+  std::vector<std::string> expected = {"ATX", "PageEntities", "RelQr", "RelQs"};
+  std::vector<std::string> unexpected = {"CQ", "PH"};
+  ConfirmFeaturesShown(expected, 1);
+  ConfirmFeaturesShown(unexpected, 0);
 
   // Close the side panel.
   side_panel_coordinator()->Close();
   WaitForHistogram("SidePanel.OpenDuration");
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionLiveTest, InitialNavigationLoggedOut) {
   // Navigate to a website, open the side panel, and ensure the sign in promo is
   // shown for a logged out account. Verify the sign-in promo functionality.
   EnableMsbb(false);
-  const GURL google_url("https://google.com/");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), google_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kGoogleUrl)));
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
 
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -276,13 +378,16 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, InitialNavigationLoggedOut) {
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
 
-  // Expect the sign-in promo and no CQ shown.
+  // Expect the sign-in promo and no features shown.
   WaitForHistogramSample("Companion.PromoEvent",
                          (int)companion::PromoEvent::kSignInShown);
   histogram_tester_->ExpectBucketCount(
       "Companion.PromoEvent",
       /*sample=*/companion::PromoEvent::kSignInShown, /*expected_count=*/1);
-  histogram_tester_->ExpectTotalCount("Companion.CQ.Shown", 0);
+
+  std::vector<std::string> all_features = {"ATX", "CQ",    "PageEntities",
+                                           "PH",  "RelQr", "RelQs"};
+  ConfirmFeaturesShown(all_features, 0);
 
   // Click on sign-in promo and expect sign in site in new tab.
   int tab_count = browser()->tab_strip_model()->count();
@@ -309,14 +414,17 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, InitialNavigationLoggedOut) {
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionLiveTest, SearchBox) {
-  // Navigate to a website, open the side panel, and ensure that the multi-modal
-  // search box functions as intended.
+// Navigate to a website, open the side panel, and ensure that the multi-modal
+// search box functions as intended. Note that sync and signin utilities are
+// only supported on Windows.
+#if BUILDFLAG(IS_WIN)
   TestAccount ta;
-  // Test account has opted in to labs.
+  // Sign in to opted in test account.
   CHECK(GetTestAccountsUtil()->GetAccount("INTELLIGENCE_ACCOUNT", ta));
-  sign_in_functions.SignInFromWeb(ta, 0);
-  const GURL google_url("https://google.com/");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), google_url));
+  sign_in_functions.TurnOnSync(ta, 0);
+  EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kGoogleUrl)));
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
 
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
@@ -331,9 +439,7 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, SearchBox) {
   // Conduct a side search.
   ExecJs("document.querySelectorAll('input')[0].value = 'test search';");
   ClickButtonByAriaLabel("Search");
-  WaitForHistogram("Companion.SearchBox.Clicked");
-  histogram_tester_->ExpectBucketCount("Companion.SearchBox.Clicked",
-                                       /*sample=*/true, /*expected_count=*/1);
+  ConfirmFeaturesClicked({"SearchBox"}, 1);
 
   // Return to zero state.
   ClickButtonByAriaLabel("Back");
@@ -342,9 +448,61 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, SearchBox) {
 
   // Click the region search button.
   ClickButtonByAriaLabel("Search by image");
-  WaitForHistogram("Companion.RegionSearch.Clicked");
-  histogram_tester_->ExpectBucketCount("Companion.RegionSearch.Clicked",
-                                       /*sample=*/true, /*expected_count=*/1);
+  ConfirmFeaturesClicked({"RegionSearch"}, 1);
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionLiveTest, ToggleExps) {
+// Toggle exps, ensuring companion updates to reflect changes.
+// Note that sync and signin utilities are only supported on Windows.
+#if BUILDFLAG(IS_WIN)
+  TestAccount ta;
+  // Test account has opted in to exps.
+  CHECK(GetTestAccountsUtil()->GetAccount("INTELLIGENCE_ACCOUNT", ta));
+  sign_in_functions.TurnOnSync(ta, 0);
+  EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
+
+  // Toggle exps.
+  EnableExps(true);
+  if (skip_test_) {
+    GTEST_SKIP();
+  }
+  // Open side panel and expect experiments to load.
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  WaitForCompanionToBeLoaded();
+
+  std::vector<std::string> all_features = {"ATX", "CQ", "PageEntities", "RelQr",
+                                           "RelQs"};
+  ConfirmFeaturesShown(all_features, 1);
+  side_panel_coordinator()->Close();
+
+  // Turn off exps and expect features to not be shown.
+  EnableExps(false);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  WaitForCompanionToBeLoaded();
+
+  // Verify that new samples populate for expected features.
+  std::vector<std::string> exps = {"CQ"};
+  std::vector<std::string> non_exps = {"ATX", "PageEntities", "RelQr", "RelQs"};
+  ConfirmFeaturesShown(exps, 1);
+  ConfirmFeaturesShown(non_exps, 2);
+  side_panel_coordinator()->Close();
+
+  // Turn exps back on and open side panel again.
+  EnableExps(true);
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  WaitForCompanionToBeLoaded();
+
+  // Expect sample count increases in both groups.
+  ConfirmFeaturesShown(exps, 2);
+  ConfirmFeaturesShown(non_exps, 3);
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace signin::test
