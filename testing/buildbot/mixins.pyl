@@ -1013,13 +1013,12 @@
     },
   },
   'mac_retina_nvidia_gpu_experimental': {
-    # Currently the same as the stable version.
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
         'gpu': '10de:0fe9',
         'hidpi': '1',
-        'os': 'Mac-10.14.6',
+        'os': 'Mac-11.7.7',
         'pool': 'chromium.tests.gpu',
         'display_attached': '1',
       },

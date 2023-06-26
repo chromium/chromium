@@ -4485,6 +4485,7 @@
       'Mac FYI Retina ASAN (AMD)',
       # Not enough capacity.
       'Mac FYI Retina Release (NVIDIA)',
+      'Mac FYI Experimental Retina Release (NVIDIA)',
       # Removed from V8 builders since WebGL 1 should provide reasonable
       # upstream test coverage without the capacity hit from WebGL 2.
       'Mac V8 FYI Release (Intel)',
@@ -4591,6 +4592,7 @@
       'Mac FYI Retina ASAN (AMD)',
       # crbug.com/1158857: re-enable when switching to Metal by default.
       'Mac FYI Retina Release (NVIDIA)',
+      'Mac FYI Experimental Retina Release (NVIDIA)',
     ],
     'modifications': {
       'Mac FYI ASAN (Intel)': {

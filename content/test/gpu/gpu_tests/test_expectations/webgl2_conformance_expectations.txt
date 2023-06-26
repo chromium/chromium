@@ -449,11 +449,15 @@ crbug.com/1298619 [ mac passthrough angle-metal apple ] deqp/functional/gles3/oc
 
 crbug.com/angleproject/4242 [ angle-opengl mac mac-x86_64 oop-c ] conformance2/glsl3/matrix-row-major-dynamic-indexing.html [ Failure ]
 
-# Regressed in 10.13, still fails in 10.14
+# Regressed in 10.13, still fails in 10.14 and 11.7
 crbug.com/774827 [ mojave nvidia-0xfe9 ] deqp/functional/gles3/fborender/resize_03.html [ Failure ]
 crbug.com/774827 [ mojave nvidia-0xfe9 ] deqp/functional/gles3/shaderindexing/mat_00.html [ Failure ]
 crbug.com/774827 [ mojave nvidia-0xfe9 ] deqp/functional/gles3/shaderindexing/mat_02.html [ Failure ]
 crbug.com/774827 [ mojave nvidia-0xfe9 ] deqp/functional/gles3/texturespecification/teximage2d_pbo_cube_00.html [ Failure ]
+crbug.com/774827 [ bigsur nvidia-0xfe9 angle-opengl ] deqp/functional/gles3/fborender/resize_03.html [ Failure ]
+crbug.com/774827 [ bigsur nvidia-0xfe9 angle-opengl ] deqp/functional/gles3/shaderindexing/mat_00.html [ Failure ]
+crbug.com/774827 [ bigsur nvidia-0xfe9 angle-opengl ] deqp/functional/gles3/shaderindexing/mat_02.html [ Failure ]
+crbug.com/774827 [ bigsur nvidia-0xfe9 angle-opengl ] deqp/functional/gles3/texturespecification/teximage2d_pbo_cube_00.html [ Failure ]
 
 # Fails on multiple GPU types.
 crbug.com/844311 [ angle-opengl mac ] conformance/glsl/misc/fragcolor-fragdata-invariant.html [ Failure ]
@@ -502,10 +506,9 @@ crbug.com/1424484 [ mac nvidia-0xfe9 ] deqp/functional/gles3/multisample/fbo_max
 crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop-complex.html [ Failure ]
 crbug.com/795052 [ mac nvidia-0xfe9 ] conformance2/uniforms/draw-with-uniform-blocks.html [ Failure ]
 crbug.com/1414878 [ mac nvidia-0xfe9 ] conformance2/textures/video/* [ RetryOnFailure ]
-
 crbug.com/1338004 [ mac nvidia-0xfe9 passthrough ] deqp/functional/gles3/multisample/fbo_4_samples.html [ RetryOnFailure ]
-
 crbug.com/1446664 [ mac nvidia-0xfe9 angle-opengl passthrough ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
+crbug.com/1457723 [ bigsur nvidia-0xfe9 angle-opengl ] conformance2/textures/canvas_sub_rectangle/tex-3d-* [ Failure ]
 
 ## Mac AMD ##
 

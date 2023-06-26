@@ -372,7 +372,6 @@ gpu_mac_builder(
     pool = "luci.chromium.gpu.mac.retina.nvidia.try",
     # This bot has one machine backing its tests at the moment.
     # If it gets more, the modified execution_timeout should be removed.
-    # See crbug.com/853307 for more context.
     execution_timeout = 12 * time.hour,
 )
 
