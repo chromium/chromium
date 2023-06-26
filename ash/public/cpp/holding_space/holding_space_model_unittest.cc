@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
@@ -294,9 +295,12 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   // Update backing file.
   base::FilePath updated_file_path("updated_file_path");
   GURL updated_file_system_url("filesystem::updated_file_system_url");
+  HoldingSpaceFile::FileSystemType updated_file_system_type(
+      HoldingSpaceFile::FileSystemType::kTest);
   model()
       .UpdateItem(item_ptr->id())
-      ->SetBackingFile(updated_file_path, updated_file_system_url);
+      ->SetBackingFile(HoldingSpaceFile(updated_file_system_type),
+                       updated_file_path, updated_file_system_url);
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
   EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kBackingFile);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
@@ -355,10 +359,12 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
       CreateInProgressCommand(HoldingSpaceCommandId::kPauseItem));
   updated_file_path = base::FilePath("again_updated_file_path");
   updated_file_system_url = GURL("filesystem::again_updated_file_system_url");
+  updated_file_system_type = HoldingSpaceFile::FileSystemType::kLocal;
   model()
       .UpdateItem(item_ptr->id())
       ->SetAccessibleName(u"updated_accessible_name")
-      .SetBackingFile(updated_file_path, updated_file_system_url)
+      .SetBackingFile(HoldingSpaceFile(updated_file_system_type),
+                      updated_file_path, updated_file_system_url)
       .SetInProgressCommands(in_progress_commands)
       .SetText(u"updated_text")
       .SetSecondaryText(u"updated_secondary_text")
@@ -410,7 +416,8 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Noop) {
   model()
       .UpdateItem(item_ptr->id())
       ->SetAccessibleName(absl::nullopt)
-      .SetBackingFile(item_ptr->file_path(), item_ptr->file_system_url())
+      .SetBackingFile(item_ptr->file(), item_ptr->file_path(),
+                      item_ptr->file_system_url())
       .SetInProgressCommands({})
       .SetText(absl::nullopt)
       .SetSecondaryText(absl::nullopt)

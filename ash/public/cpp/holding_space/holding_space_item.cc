@@ -303,11 +303,15 @@ void HoldingSpaceItem::Initialize(const GURL& file_system_url) {
   file_system_url_ = file_system_url;
 }
 
-bool HoldingSpaceItem::SetBackingFile(const base::FilePath& file_path,
+bool HoldingSpaceItem::SetBackingFile(const HoldingSpaceFile& file,
+                                      const base::FilePath& file_path,
                                       const GURL& file_system_url) {
-  if (file_path_ == file_path && file_system_url_ == file_system_url)
+  if (file_ == file && file_path_ == file_path &&
+      file_system_url_ == file_system_url) {
     return false;
+  }
 
+  file_ = file;
   file_path_ = file_path;
   file_system_url_ = file_system_url;
   image_->UpdateBackingFilePath(file_path);

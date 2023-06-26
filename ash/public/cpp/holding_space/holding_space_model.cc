@@ -39,9 +39,11 @@ HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
   }
 
   // Update backing file.
-  if (file_path_ && file_system_url_) {
-    if (item_->SetBackingFile(file_path_.value(), file_system_url_.value()))
+  if (file_ && file_path_ && file_system_url_) {
+    if (item_->SetBackingFile(file_.value(), file_path_.value(),
+                              file_system_url_.value())) {
       updated_fields |= HoldingSpaceModelObserver::UpdatedField::kBackingFile;
+    }
   }
 
   // Update in-progress commands.
@@ -103,8 +105,10 @@ HoldingSpaceModel::ScopedItemUpdate::SetAccessibleName(
 
 HoldingSpaceModel::ScopedItemUpdate&
 HoldingSpaceModel::ScopedItemUpdate::SetBackingFile(
+    const HoldingSpaceFile& file,
     const base::FilePath& file_path,
     const GURL& file_system_url) {
+  file_ = file;
   file_path_ = file_path;
   file_system_url_ = file_system_url;
   return *this;

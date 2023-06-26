@@ -12,6 +12,7 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
@@ -919,7 +920,9 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
   // it should be updated immediately in persistent storage.
   file_path = downloads_mount->CreateArbitraryFile();
   holding_space_model->UpdateItem(finalized_holding_space_item_ptr->id())
-      ->SetBackingFile(file_path, GetFileSystemUrl(GetProfile(), file_path));
+      ->SetBackingFile(
+          HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest), file_path,
+          GetFileSystemUrl(GetProfile(), file_path));
 
   ASSERT_EQ(persisted_holding_space_items.size(), 2u);
   persisted_holding_space_items[1u] =
@@ -933,7 +936,9 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
   // progress, it should not be added/updated to/in persistent storage.
   file_path = downloads_mount->CreateArbitraryFile();
   holding_space_model->UpdateItem(in_progress_holding_space_item_ptr->id())
-      ->SetBackingFile(file_path, GetFileSystemUrl(GetProfile(), file_path));
+      ->SetBackingFile(
+          HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest), file_path,
+          GetFileSystemUrl(GetProfile(), file_path));
 
   EXPECT_EQ(GetProfile()->GetPrefs()->GetList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/functional/callback_forward.h"
@@ -66,6 +67,12 @@ using PartitionFilePathsByValidityCallback =
 void PartitionFilePathsByValidity(Profile*,
                                   FilePathsWithValidityRequirements,
                                   PartitionFilePathsByValidityCallback);
+
+// Resolves the file system type associated with the specified
+// `file_system_url`.
+HoldingSpaceFile::FileSystemType ResolveFileSystemType(
+    Profile* profile,
+    const GURL& file_system_url);
 
 // Resolves the file system URL associated with the specified `file_path`.
 GURL ResolveFileSystemUrl(Profile* profile, const base::FilePath& file_path);

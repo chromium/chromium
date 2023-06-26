@@ -59,8 +59,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     ScopedItemUpdate& SetAccessibleName(
         const absl::optional<std::u16string>& accessible_name);
 
+    // TODO(http://b/288471183): Remove file path and file system URL.
     // Sets the backing file for the item and returns a reference to `this`.
-    ScopedItemUpdate& SetBackingFile(const base::FilePath& file_path,
+    ScopedItemUpdate& SetBackingFile(const HoldingSpaceFile& file,
+                                     const base::FilePath& file_path,
                                      const GURL& file_system_url);
 
     // Sets the commands for an in-progress item which are shown in the item's
@@ -100,6 +102,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     const raw_ptr<HoldingSpaceItem, ExperimentalAsh> item_;
 
     absl::optional<absl::optional<std::u16string>> accessible_name_;
+    absl::optional<HoldingSpaceFile> file_;
     absl::optional<base::FilePath> file_path_;
     absl::optional<GURL> file_system_url_;
     absl::optional<std::vector<HoldingSpaceItem::InProgressCommand>>

@@ -5,11 +5,13 @@
 #ifndef ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_FILE_H_
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_FILE_H_
 
+#include "ash/public/cpp/ash_public_export.h"
+
 namespace ash {
 
 // TODO(http://b/288471183): Move file path and file system URL into this.
 // Representation of a file backing a holding space item.
-struct HoldingSpaceFile {
+struct ASH_PUBLIC_EXPORT HoldingSpaceFile {
   // Enumeration of file system types corresponding to
   // `storage::FileSystemType`. These values are persisted to logs. Entries
   // should not be renumbered and numeric values should never be reused.
@@ -40,14 +42,16 @@ struct HoldingSpaceFile {
   };
 
   explicit HoldingSpaceFile(FileSystemType file_system_type);
-  HoldingSpaceFile(const HoldingSpaceFile&) = delete;
-  HoldingSpaceFile& operator=(const HoldingSpaceFile&) = delete;
+  HoldingSpaceFile(const HoldingSpaceFile&);
+  HoldingSpaceFile(HoldingSpaceFile&&);
+  HoldingSpaceFile& operator=(const HoldingSpaceFile&);
+  HoldingSpaceFile& operator=(HoldingSpaceFile&&);
   ~HoldingSpaceFile();
 
   bool operator==(const HoldingSpaceFile&) const;
   bool operator!=(const HoldingSpaceFile&) const;
 
-  const FileSystemType file_system_type;
+  FileSystemType file_system_type;
 };
 
 }  // namespace ash

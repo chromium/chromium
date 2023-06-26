@@ -167,9 +167,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // `Deserialize()`.
   void Initialize(const GURL& file_system_url);
 
-  // Sets the file backing the item to `file_path` and `file_system_url`,
+  // TODO(http://b/288471183): Remove file path and file system URL.
+  // Sets the `file` backing the item to `file_path` and `file_system_url`,
   // returning `true` if a change occurred or `false` to indicate no-op.
-  bool SetBackingFile(const base::FilePath& file_path,
+  bool SetBackingFile(const HoldingSpaceFile& file,
+                      const base::FilePath& file_path,
                       const GURL& file_system_url);
 
   // Returns `text_`, falling back to the lossy display name of the item's

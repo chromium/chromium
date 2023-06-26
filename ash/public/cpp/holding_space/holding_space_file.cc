@@ -9,6 +9,15 @@ namespace ash {
 HoldingSpaceFile::HoldingSpaceFile(FileSystemType file_system_type)
     : file_system_type(file_system_type) {}
 
+HoldingSpaceFile::HoldingSpaceFile(const HoldingSpaceFile&) = default;
+
+HoldingSpaceFile::HoldingSpaceFile(HoldingSpaceFile&&) = default;
+
+HoldingSpaceFile& HoldingSpaceFile::operator=(const HoldingSpaceFile&) =
+    default;
+
+HoldingSpaceFile& HoldingSpaceFile::operator=(HoldingSpaceFile&&) = default;
+
 HoldingSpaceFile::~HoldingSpaceFile() = default;
 
 bool HoldingSpaceFile::operator==(const HoldingSpaceFile& rhs) const {
