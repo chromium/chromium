@@ -27,7 +27,7 @@ class CORE_EXPORT PlaceHolderBytesConsumer final : public BytesConsumer {
   void Cancel() override;
   PublicState GetPublicState() const override;
   Error GetError() const override;
-  String DebugName() const override { return "PlaceHolderBytesConsumer"; }
+  String DebugName() const override;
 
   // This function can be called at most once.
   void Update(BytesConsumer* consumer);

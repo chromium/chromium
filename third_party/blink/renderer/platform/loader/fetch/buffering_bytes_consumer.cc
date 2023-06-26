@@ -10,6 +10,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -166,6 +167,14 @@ BytesConsumer::PublicState BufferingBytesConsumer::GetPublicState() const {
 
 BytesConsumer::Error BufferingBytesConsumer::GetError() const {
   return bytes_consumer_->GetError();
+}
+
+String BufferingBytesConsumer::DebugName() const {
+  StringBuilder builder;
+  builder.Append("BufferingBytesConsumer(");
+  builder.Append(bytes_consumer_->DebugName());
+  builder.Append(")");
+  return builder.ToString();
 }
 
 void BufferingBytesConsumer::Trace(Visitor* visitor) const {

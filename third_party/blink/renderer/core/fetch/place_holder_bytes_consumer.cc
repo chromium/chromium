@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/fetch/place_holder_bytes_consumer.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -78,6 +79,14 @@ BytesConsumer::Error PlaceHolderBytesConsumer::GetError() const {
   DCHECK(underlying_);
   // We must not be in the errored state until we get updated.
   return underlying_->GetError();
+}
+
+String PlaceHolderBytesConsumer::DebugName() const {
+  StringBuilder builder;
+  builder.Append("PlaceHolderBytesConsumer(");
+  builder.Append(underlying_ ? underlying_->DebugName() : "<nullptr>");
+  builder.Append(")");
+  return builder.ToString();
 }
 
 // This function can be called at most once.

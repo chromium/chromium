@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -143,7 +144,13 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
     return bytes_consumer_->GetPublicState();
   }
   Error GetError() const override { return bytes_consumer_->GetError(); }
-  String DebugName() const override { return "DelegatingBytesConsumer"; }
+  String DebugName() const override {
+    StringBuilder builder;
+    builder.Append("DelegatingBytesConsumer(");
+    builder.Append(bytes_consumer_->DebugName());
+    builder.Append(")");
+    return builder.ToString();
+  }
 
   void Abort() {
     if (state_ != State::kLoading) {

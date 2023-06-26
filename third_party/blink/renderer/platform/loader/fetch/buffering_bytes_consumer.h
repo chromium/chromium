@@ -74,7 +74,7 @@ class PLATFORM_EXPORT BufferingBytesConsumer final
   void Cancel() override;
   PublicState GetPublicState() const override;
   Error GetError() const override;
-  String DebugName() const override { return "BufferingBytesConsumer"; }
+  String DebugName() const override;
 
   void Trace(Visitor*) const override;
 
