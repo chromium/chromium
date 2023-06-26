@@ -42,6 +42,7 @@ void AddBaselinePalette(ColorProvider* provider) {
 
   mixer[kColorRefSecondary0] = {SkColorSetRGB(0x00, 0x00, 0x00)};
   mixer[kColorRefSecondary10] = {SkColorSetRGB(0x00, 0x1D, 0x35)};
+  mixer[kColorRefSecondary12] = {SkColorSetRGB(0x00, 0x22, 0x38)};
   mixer[kColorRefSecondary15] = {SkColorSetRGB(0x00, 0x28, 0x45)};
   mixer[kColorRefSecondary20] = {SkColorSetRGB(0x00, 0x33, 0x55)};
   mixer[kColorRefSecondary25] = {SkColorSetRGB(0x00, 0x3f, 0x66)};
@@ -88,6 +89,7 @@ void AddBaselinePalette(ColorProvider* provider) {
   mixer[kColorRefNeutral0] = {SkColorSetRGB(0x00, 0x00, 0x00)};
   mixer[kColorRefNeutral4] = {SkColorSetRGB(0x0E, 0x0E, 0x0F)};
   mixer[kColorRefNeutral6] = {SkColorSetRGB(0x13, 0x13, 0x14)};
+  mixer[kColorRefNeutral8] = {SkColorSetRGB(0x16, 0x18, 0x18)};
   mixer[kColorRefNeutral10] = {SkColorSetRGB(0x1F, 0x1F, 0x1F)};
   mixer[kColorRefNeutral12] = {SkColorSetRGB(0x1F, 0x20, 0x20)};
   mixer[kColorRefNeutral15] = {SkColorSetRGB(0x28, 0x28, 0x28)};
@@ -153,6 +155,7 @@ void AddGeneratedPalette(ColorProvider* provider,
 
   mixer[kColorRefSecondary0] = {palette->secondary().get(0)};
   mixer[kColorRefSecondary10] = {palette->secondary().get(10)};
+  mixer[kColorRefSecondary12] = {palette->secondary().get(12)};
   mixer[kColorRefSecondary15] = {palette->secondary().get(15)};
   mixer[kColorRefSecondary20] = {palette->secondary().get(20)};
   mixer[kColorRefSecondary25] = {palette->secondary().get(25)};
@@ -199,6 +202,7 @@ void AddGeneratedPalette(ColorProvider* provider,
   mixer[kColorRefNeutral0] = {palette->neutral().get(0)};
   mixer[kColorRefNeutral4] = {palette->neutral().get(4)};
   mixer[kColorRefNeutral6] = {palette->neutral().get(6)};
+  mixer[kColorRefNeutral8] = {palette->neutral().get(8)};
   mixer[kColorRefNeutral10] = {palette->neutral().get(10)};
   mixer[kColorRefNeutral12] = {palette->neutral().get(12)};
   mixer[kColorRefNeutral15] = {palette->neutral().get(15)};

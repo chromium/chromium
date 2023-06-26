@@ -284,7 +284,7 @@ TEST_P(ScreenCaptureNotificationPixelTest, VerifyPopup) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       base::StrCat({"screen_capture_popup_notification_",
                     GetDisplayTypeName(GetDisplayType())}),
-      /*revision_number=*/1,
+      /*revision_number=*/2,
       test_api()->GetPopupViewForId(kScreenCaptureNotificationId)));
 }
 

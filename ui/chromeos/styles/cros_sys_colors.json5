@@ -184,19 +184,19 @@
     /* Bases */
     header: {
       light: '$cros.ref.secondary90',
-      dark:  '$cros.ref.secondary15',
+      dark:  '$cros.ref.secondary12',
     },
     'header-unfocused': {
       light: 'blend(rgba($cros.ref.secondary90.rgb, 0.28), $cros.ref.neutralvariant90)',
-      dark: 'blend(rgba($cros.ref.secondary15.rgb, 0.4), $cros.ref.neutral10)',
+      dark: 'blend(rgba($cros.ref.secondary12.rgb, 0.6), $cros.ref.neutral25)',
     },
     'app-base-shaded': {
       light: '$cros.ref.neutralvariant95',
-      dark:  'blend(rgba($black.rgb, 0.4), $cros.ref.neutral10)'
+      dark:  '$cros.ref.neutral0',
     },
     'app-base': {
       light: '$cros.ref.neutral99',
-      dark:  '$cros.ref.neutral10',
+      dark:  '$cros.ref.neutral8',
     },
     'base-elevated': {
       light: '$cros.ref.neutralvariant100',

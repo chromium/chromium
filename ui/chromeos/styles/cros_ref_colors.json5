@@ -38,6 +38,7 @@
 
     secondary0: '#000000',
     secondary10: '#001d35',
+    secondary12: '#002238',
     secondary15: '#002844',
     secondary20: '#003355',
     secondary30: '#004a77',
@@ -80,8 +81,10 @@
     error100: '#ffffff',
 
     neutral0: '#000000',
+    neutral8: '#161818',
     neutral10: '#1f1f1f',
     neutral20: '#303030',
+    neutral25: '#3c3c3c',
     neutral30: '#474747',
     neutral40: '#5e5e5e',
     neutral50: '#757575',

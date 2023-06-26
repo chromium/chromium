@@ -383,6 +383,7 @@ void AddRefPalette(ui::ColorMixer& mixer, const ui::ColorProviderKey& key) {
 
   mixer[cros_tokens::kCrosRefSecondary0] = {ui::kColorRefSecondary0};
   mixer[cros_tokens::kCrosRefSecondary10] = {ui::kColorRefSecondary10};
+  mixer[cros_tokens::kCrosRefSecondary12] = {ui::kColorRefSecondary12};
   mixer[cros_tokens::kCrosRefSecondary15] = {ui::kColorRefSecondary15};
   mixer[cros_tokens::kCrosRefSecondary20] = {ui::kColorRefSecondary20};
   mixer[cros_tokens::kCrosRefSecondary30] = {ui::kColorRefSecondary30};
@@ -425,8 +426,10 @@ void AddRefPalette(ui::ColorMixer& mixer, const ui::ColorProviderKey& key) {
   mixer[cros_tokens::kCrosRefError100] = {ui::kColorRefError100};
 
   mixer[cros_tokens::kCrosRefNeutral0] = {ui::kColorRefNeutral0};
+  mixer[cros_tokens::kCrosRefNeutral8] = {ui::kColorRefNeutral8};
   mixer[cros_tokens::kCrosRefNeutral10] = {ui::kColorRefNeutral10};
   mixer[cros_tokens::kCrosRefNeutral20] = {ui::kColorRefNeutral20};
+  mixer[cros_tokens::kCrosRefNeutral25] = {ui::kColorRefNeutral25};
   mixer[cros_tokens::kCrosRefNeutral30] = {ui::kColorRefNeutral30};
   mixer[cros_tokens::kCrosRefNeutral40] = {ui::kColorRefNeutral40};
   mixer[cros_tokens::kCrosRefNeutral50] = {ui::kColorRefNeutral50};
