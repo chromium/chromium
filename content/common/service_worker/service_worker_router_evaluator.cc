@@ -175,8 +175,15 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
       condition.Append(std::move(out_c));
     }
     for (const auto& s : r.sources) {
-      CHECK_EQ(s.type, blink::ServiceWorkerRouterSource::SourceType::kNetwork);
-      source.Append("network");
+      switch (s.type) {
+        case blink::ServiceWorkerRouterSource::SourceType::kNetwork:
+          source.Append("network");
+          break;
+        case blink::ServiceWorkerRouterSource::SourceType::kRace:
+          // TODO(crbug.com/1371756): we may need to update the name per target.
+          source.Append("race-network-and-fetch-handler");
+          break;
+      }
     }
     rule.Set("condition", std::move(condition));
     rule.Set("source", std::move(source));

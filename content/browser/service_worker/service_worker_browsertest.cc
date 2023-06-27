@@ -5950,6 +5950,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestOriginTrialBrowserTest,
 // Test class for static routing API (crbug.com/1420517) browsertest.
 class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
  public:
+  enum class TestType {
+    kNetwork,
+    kRaceNetworkAndFetch,
+  };
+
   ServiceWorkerStaticRouterBrowserTest() {
     feature_list_.InitWithFeatures({features::kServiceWorkerStaticRouter}, {});
   }
@@ -5961,7 +5966,7 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
     return web_contents()->GetPrimaryMainFrame();
   }
 
-  void SetupAndRegisterServiceWorker() {
+  void SetupAndRegisterServiceWorker(TestType type) {
     RegisterRequestMonitorForRequestCount();
     RegisterRequestHandlerForTest();
     StartServerAndNavigateToSetup();
@@ -5972,8 +5977,14 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
     // Register a service worker.
     WorkerRunningStatusObserver observer1(public_context());
     ASSERT_TRUE(NavigateToURL(shell(), create_service_worker_url));
-    ASSERT_EQ("DONE", EvalJs(GetPrimaryMainFrame(),
-                             "register('/service_worker/static_router.js')"));
+    if (type == TestType::kNetwork) {
+      ASSERT_EQ("DONE", EvalJs(GetPrimaryMainFrame(),
+                               "register('/service_worker/static_router.js')"));
+    } else if (type == TestType::kRaceNetworkAndFetch) {
+      ASSERT_EQ("DONE",
+                EvalJs(GetPrimaryMainFrame(),
+                       "register('/service_worker/race_network_request.js')"));
+    }
     observer1.WaitUntilRunning();
     active_version_ = wrapper()->GetLiveVersion(observer1.version_id());
     ASSERT_EQ(EmbeddedWorkerStatus::RUNNING, active_version_->running_status());
@@ -6015,6 +6026,17 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
                 "Response from the network");
             return http_response;
           }
+          if (base::Contains(request.GetURL().path(),
+                             "/service_worker/race_network_and_fetch")) {
+            auto http_response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            http_response->set_code(net::HTTP_OK);
+            http_response->set_content_type("text/plain");
+            http_response->set_content(
+                "[ServiceWorkerStaticRouter] "
+                "Response from the race network");
+            return http_response;
+          }
           return nullptr;
         }));
   }
@@ -6036,7 +6058,7 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
                        MainResourceNetworkFetchHandler) {
-  SetupAndRegisterServiceWorker();
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
   ReloadBlockUntilNavigationsComplete(shell(), 1);
 
   const std::string relative_url = "/service_worker/fetch_handler";
@@ -6051,7 +6073,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
                        MainResourceNetworkFallback) {
-  SetupAndRegisterServiceWorker();
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
   WorkerRunningStatusObserver observer(public_context());
   // ReloadBlockUntilNavigationsComplete(shell(), 1);
   const std::string relative_url = "/service_worker/direct";
@@ -6073,7 +6095,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
                        SubresourceNetworkFetchHandler) {
-  SetupAndRegisterServiceWorker();
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
   ReloadBlockUntilNavigationsComplete(shell(), 1);
   EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the fetch handler",
             EvalJs(GetPrimaryMainFrame(),
@@ -6086,7 +6108,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
                        SubresourceNetworkFallback) {
-  SetupAndRegisterServiceWorker();
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
   ReloadBlockUntilNavigationsComplete(shell(), 1);
   EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
             EvalJs(GetPrimaryMainFrame(),
@@ -6095,6 +6117,51 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   // The result should be got from the network.
   EXPECT_EQ(1, GetRequestCount("/service_worker/direct"));
 }
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       MainResourceRaceNetworkAndFetch) {
+  SetupAndRegisterServiceWorker(TestType::kRaceNetworkAndFetch);
+  WorkerRunningStatusObserver observer(public_context());
+  // If the race happens, we expect the network access happens twice;
+  // the browser process directly fetch from the network, and the SW fetch
+  // handler calls fetch API to fetch from the network.  The latter one
+  // can be deduped, and enforcing clone to avoid the dedupe.
+  const std::string relative_url =
+      "/service_worker/race_network_and_fetch?sw_clone_pass_through";
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the race network",
+            GetInnerText());
+
+  while (GetRequestCount(relative_url) != 2) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(2, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       SubresourceRaceNetworkAndFetch) {
+  SetupAndRegisterServiceWorker(TestType::kRaceNetworkAndFetch);
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  // If the race happens, we expect the network access happens twice;
+  // the browser process directly fetch from the network, and the SW fetch
+  // handler calls fetch API to fetch from the network.  The latter one
+  // can be deduped, and enforcing clone to avoid the dedupe.
+  const std::string relative_url =
+      "/service_worker/race_network_and_fetch?sw_clone_pass_through";
+  EXPECT_EQ(
+      "[ServiceWorkerStaticRouter] Response from the race network",
+      EvalJs(GetPrimaryMainFrame(), "fetch('" + relative_url +
+                                        "')"
+                                        ".then(response => response.text())"));
+
+  while (GetRequestCount(relative_url) != 2) {
+    base::RunLoop().RunUntilIdle();
+  }
+  EXPECT_EQ(2, GetRequestCount(relative_url));
+}
+
+// two fetches for clone.
 
 class ServiceWorkerStaticRouterOriginTrialBrowserTest
     : public ServiceWorkerStaticRouterBrowserTest {
