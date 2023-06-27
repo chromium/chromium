@@ -14,7 +14,11 @@ source_set("utils") {
 
   deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
     "//components/pref_registry",
+    "//components/prefs",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
     "//skia",
   ]
 }

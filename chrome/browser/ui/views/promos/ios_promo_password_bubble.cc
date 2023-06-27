@@ -5,11 +5,18 @@
 #include "chrome/browser/ui/views/promos/ios_promo_password_bubble.h"
 #include <memory>
 #include "base/functional/bind.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/promos/promos_pref_names.h"
+#include "chrome/browser/promos/promos_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -20,6 +27,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace constants {
 // Margin for QR code image view.
@@ -45,9 +53,7 @@ views::BubbleDialogDelegate* ios_promo_password_delegate_ = nullptr;
 class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
  public:
   explicit IOSPromoPasswordBubbleDelegate(Browser* browser)
-      : browser_(browser) {
-    qr_code_service_ = nullptr;
-  }
+      : browser_(browser) {}
 
   // Returns a new QR code generator service if one does not yet exist.
   qrcode_generator::QRImageGenerator& GetQRCodeGenerator() {
@@ -61,6 +67,37 @@ class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
   void OnWindowClosing() {
     ios_promo_password_delegate_ = nullptr;
     qr_code_service_ = nullptr;
+  }
+
+  // Callback for when the bubble is dismissed.
+  void OnDismissal() {
+    if (promos_utils::IsActivationCriteriaOverriddenIOSPasswordPromo()) {
+      return;
+    }
+
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForBrowserContext(
+            browser_->profile());
+    if (tracker) {
+      tracker->Dismissed(
+          feature_engagement::kIPHiOSPasswordPromoDesktopFeature);
+    }
+
+    // User explicitly closed the bubble by clicking "x".
+    if (ios_promo_password_delegate_->GetWidget()->closed_reason() ==
+        views::Widget::ClosedReason::kCloseButtonClicked) {
+      browser_->profile()->GetPrefs()->SetBoolean(
+          promos_prefs::kiOSPasswordPromoOptOut, true);
+      promos_utils::RecordIOSPasswordPromoUserInteractionHistogram(
+          browser_->profile()->GetPrefs()->GetInteger(
+              promos_prefs::kiOSPasswordPromoImpressionsCounter),
+          promos_utils::DesktopIOSPasswordPromoAction::kExplicitlyClosed);
+    } else {
+      promos_utils::RecordIOSPasswordPromoUserInteractionHistogram(
+          browser_->profile()->GetPrefs()->GetInteger(
+              promos_prefs::kiOSPasswordPromoImpressionsCounter),
+          promos_utils::DesktopIOSPasswordPromoAction::kDismissed);
+    }
   }
 
   // Callback passed to QR code generation for populating the QR code image in
@@ -85,10 +122,17 @@ class IOSPromoPasswordBubbleDelegate : public ui::DialogModelDelegate {
 
   // Callback for when the "Get started" button is clicked.
   void OnGetStartedButtonClicked() {
-    browser_->OpenURL(content::OpenURLParams(
-        GURL(constants::kGetStartedButtonURL), content::Referrer(),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
+    if (!promos_utils::IsActivationCriteriaOverriddenIOSPasswordPromo()) {
+      promos_utils::RecordIOSPasswordPromoUserInteractionHistogram(
+          browser_->profile()->GetPrefs()->GetInteger(
+              promos_prefs::kiOSPasswordPromoImpressionsCounter),
+          promos_utils::DesktopIOSPasswordPromoAction::kGetStartedClicked);
+
+      browser_->OpenURL(content::OpenURLParams(
+          GURL(constants::kGetStartedButtonURL), content::Referrer(),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
+    }
 
     ios_promo_password_delegate_->GetWidget()->Close();
   }
@@ -213,7 +257,11 @@ std::unique_ptr<views::View> CreateFooter(
                     .SetProperty(views::kElementIdentifierKey,
                                  IOSPromoPasswordBubble::kQRCodeView)
                     .SetVisible(true)
-                    .SetBackground(views::CreateSolidBackground(SK_ColorWHITE)))
+                    .SetBackground(views::CreateRoundedRectBackground(
+                        SK_ColorWHITE,
+                        views::LayoutProvider::Get()->GetCornerRadiusMetric(
+                            views::Emphasis::kHigh),
+                        2)))
             .AfterBuild(base::BindOnce(
                 [](views::Label* footer_description_view_ptr,
                    views::BoxLayoutView* view) {
@@ -248,6 +296,9 @@ void IOSPromoPasswordBubble::ShowBubble(views::View* anchor_view,
 
   dialog_model_builder.SetDialogDestroyingCallback(
       base::BindOnce(&IOSPromoPasswordBubbleDelegate::OnWindowClosing,
+                     base::Unretained(bubble_delegate)));
+  dialog_model_builder.SetCloseActionCallback(
+      base::BindOnce(&IOSPromoPasswordBubbleDelegate::OnDismissal,
                      base::Unretained(bubble_delegate)));
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
