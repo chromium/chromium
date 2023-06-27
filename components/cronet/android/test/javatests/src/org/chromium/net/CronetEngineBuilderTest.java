@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import java.util.List;
  */
 @RunWith(AndroidJUnit4.class)
 @OnlyRunNativeCronet
+@Batch(Batch.UNIT_TESTS)
 public class CronetEngineBuilderTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
