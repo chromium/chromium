@@ -25,6 +25,7 @@ BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
 BASE_DECLARE_FEATURE(kSupervisedPrefsControlledBySupervisedStore);
 BASE_DECLARE_FEATURE(kEnableManagedByParentUi);
 extern const base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl;
+BASE_DECLARE_FEATURE(kClearingCookiesKeepsSupervisedUsersSignedIn);
 
 // Enables inkoking the CreatePermissionRequest service through a proto fetcher.
 BASE_DECLARE_FEATURE(kEnableCreatePermissionRequestFetcher);

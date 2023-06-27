@@ -62477,6 +62477,8 @@ from previous Chrome versions.
   <int value="-679585025" label="CaptureModeSelfieCamera:disabled"/>
   <int value="-679500267" label="UseXpsForPrinting:disabled"/>
   <int value="-678281465" label="force-companion-pinned-state:enabled"/>
+  <int value="-678272527"
+      label="ClearingCookiesKeepsSupervisedUsersSignedIn:disabled"/>
   <int value="-678184617" label="TranslateSubFrames:disabled"/>
   <int value="-677978627" label="ZeroCopyTabCapture:enabled"/>
   <int value="-677938988" label="AssistantConsentSimplifiedText:disabled"/>
@@ -62700,6 +62702,8 @@ from previous Chrome versions.
   <int value="-561563844"
       label="ReduceUserAgentAndroidVersionDeviceModel:disabled"/>
   <int value="-561194974" label="AutofillExpandedPopupViews:enabled"/>
+  <int value="-560750110"
+      label="ClearingCookiesKeepsSupervisedUsersSignedIn:enabled"/>
   <int value="-560719609" label="AccessibilityOSSettingsVisibility:disabled"/>
   <int value="-560551550" label="use-memory-pressure-chromeos"/>
   <int value="-560246178" label="IwaControlledFrame:enabled"/>

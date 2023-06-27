@@ -254,7 +254,11 @@ TEST_F(
       runMochaSuite('ClearBrowsingDataDesktop');
     });
 GEN('#endif');
-
+TEST_F(
+    'CrSettingsClearBrowsingDataTest', 'ClearBrowsingDataForSupervisedUsers',
+    function() {
+      runMochaSuite('ClearBrowsingDataDesktop');
+    });
 
 var CrSettingsMainPageTest = class extends CrSettingsBrowserTest {
   /** @override */
