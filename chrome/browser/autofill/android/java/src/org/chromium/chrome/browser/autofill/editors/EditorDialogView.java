@@ -18,13 +18,11 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -82,7 +80,6 @@ public class EditorDialogView
     private final Activity mActivity;
     private final HelpAndFeedbackLauncher mHelpLauncher;
     private final Handler mHandler;
-    private final TextView.OnEditorActionListener mEditorActionListener;
     private final int mHalfRowMargin;
     private final List<FieldView> mFieldViews;
     private final List<EditText> mEditableTextFields;
@@ -123,23 +120,6 @@ public class EditorDialogView
         mHelpLauncher = helpLauncher;
         mHandler = new Handler();
         mIsDismissed = false;
-        mEditorActionListener = new TextView.OnEditorActionListener() {
-            @Override
-            @SuppressWarnings("WrongConstant") // https://crbug.com/1038784
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    mDoneButton.performClick();
-                    return true;
-                } else if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                    View next = v.focusSearch(View.FOCUS_FORWARD);
-                    if (next != null) {
-                        next.requestFocus();
-                        return true;
-                    }
-                }
-                return false;
-            }
-        };
 
         mHalfRowMargin = activity.getResources().getDimensionPixelSize(
                 R.dimen.editor_dialog_section_large_spacing);
@@ -226,6 +206,15 @@ public class EditorDialogView
 
     public void setDoneRunnable(Runnable doneRunnable) {
         mDoneRunnable = doneRunnable;
+        setDoneRunnableToFields(doneRunnable);
+    }
+
+    private void setDoneRunnableToFields(Runnable doneRunnable) {
+        for (FieldView view : mFieldViews) {
+            if (view instanceof TextFieldView) {
+                ((TextFieldView) view).setDoneRunnable(doneRunnable);
+            }
+        }
     }
 
     public void setCancelRunnable(Runnable cancelRunnable) {
@@ -460,6 +449,7 @@ public class EditorDialogView
                 i = i + 1;
             }
         }
+        setDoneRunnableToFields(mDoneRunnable);
 
         // Add the footer.
         mContentView.addView(mFooter);
@@ -507,8 +497,7 @@ public class EditorDialogView
                 break;
             }
             case TEXT_INPUT: {
-                TextFieldView inputLayout =
-                        new TextFieldView(mActivity, fieldItem.model, mEditorActionListener);
+                TextFieldView inputLayout = new TextFieldView(mActivity, fieldItem.model);
                 mFieldViews.add(inputLayout);
                 mEditableTextFields.add(inputLayout.getEditText());
                 childView = inputLayout;

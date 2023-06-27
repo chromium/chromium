@@ -28,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -56,18 +57,32 @@ class TextFieldView extends FrameLayout implements FieldView {
     @Nullable
     private static EditorObserverForTest sObserverForTest;
 
+    @Nullable
+    private Runnable mDoneRunnable;
+    @SuppressWarnings("WrongConstant") // https://crbug.com/1038784
+    private final OnEditorActionListener mEditorActionListener = (view, actionId, event) -> {
+        if (actionId == EditorInfo.IME_ACTION_DONE && mDoneRunnable != null) {
+            mDoneRunnable.run();
+            return true;
+        } else if (actionId != EditorInfo.IME_ACTION_NEXT) {
+            return false;
+        }
+        View next = view.focusSearch(View.FOCUS_FORWARD);
+        if (next == null) {
+            return false;
+        }
+        next.requestFocus();
+        return true;
+    };
     private PropertyModel mEditorFieldModel;
-    private OnEditorActionListener mEditorActionListener;
     private TextInputLayout mInputLayout;
     private AutoCompleteTextView mInput;
     private View mIconsLayer;
     private ImageView mActionIcon;
 
-    public TextFieldView(Context context, final PropertyModel fieldModel,
-            OnEditorActionListener actionListener) {
+    public TextFieldView(Context context, final PropertyModel fieldModel) {
         super(context);
         mEditorFieldModel = fieldModel;
-        mEditorActionListener = actionListener;
 
         LayoutInflater.from(context).inflate(R.layout.payments_request_editor_textview, this, true);
         mInputLayout = (TextInputLayout) findViewById(R.id.text_input_layout);
@@ -180,6 +195,10 @@ class TextFieldView extends FrameLayout implements FieldView {
                         | InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS);
                 break;
         }
+    }
+
+    void setDoneRunnable(@Nullable Runnable doneRunnable) {
+        mDoneRunnable = doneRunnable;
     }
 
     @Override
