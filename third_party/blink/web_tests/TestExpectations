@@ -6616,3 +6616,7 @@ crbug.com/1457660 external/wpt/editing/other/white-spaces-after-execCommand-forw
 
 # Gardener 2023-06-26
 crbug.com/1457850 [ Linux ] virtual/plz-dedicated-worker/http/tests/inspector-protocol/runtime/serialization_options.js [ Failure Pass ]
+
+# Fix importer 2023-06-27
+crbug.com/626703 external/wpt/css/motion/offset-path-shape-ellipse-001.html [ Failure ]
+crbug.com/626703 external/wpt/loading/early-hints/modulepreload-as-worker.h2.window.html [ Failure ]
