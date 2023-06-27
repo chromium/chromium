@@ -1377,7 +1377,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     PartnerBrowserCustomizations.logActivityFinishingOrDestroyed(
                             isActivityFinishingOrDestroyed);
                     if (!isActivityFinishingOrDestroyed) {
-                        PartnerBrowserCustomizations.getInstance().onCreateInitialTab();
                         createInitialTab();
                     }
                 }, INITIAL_TAB_CREATION_TIMEOUT_MS);
@@ -1422,9 +1421,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         // If the start surface or grid tab switcher will be shown on start, do not create a new
         // tab.
+        String url = null;
+        long createInitialTabStartTime = SystemClock.elapsedRealtime();
         boolean shouldShowOverviewPageOnStart = shouldShowOverviewPageOnStart();
         if (!shouldShowOverviewPageOnStart) {
-            String url = HomepageManager.getHomepageUri();
+            url = HomepageManager.getHomepageUri();
             if (TextUtils.isEmpty(url)) {
                 url = UrlConstants.NTP_URL;
             } else {
@@ -1436,6 +1437,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
             getTabCreator(false).launchUrl(url, TabLaunchType.FROM_STARTUP);
         }
+        PartnerBrowserCustomizations.getInstance().onCreateInitialTab(url,
+                createInitialTabStartTime, shouldShowOverviewPageOnStart, getLifecycleDispatcher(),
+                HomepageManager::getHomepageCharacterizationHelper);
 
         // If we didn't call setInitialOverviewState() in onStartWithNative() because
         // mPendingInitialTabCreation was true then do so now.

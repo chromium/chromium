@@ -8,16 +8,19 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.os.SystemClock;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -239,8 +242,8 @@ public class PartnerBrowserCustomizations {
 
             @Override
             protected void onPostExecute(Void result) {
-                onFinalized();
                 partnerCustomizationsUma.logAsyncInitCompleted();
+                onFinalized();
             }
 
             @Override
@@ -265,8 +268,8 @@ public class PartnerBrowserCustomizations {
                 if (mHomepageUriChanged && mListener != null) {
                     mListener.onHomepageUpdate();
                 }
-                PartnerCustomizationsUma.logPartnerBrowserCustomizationInitDurationWithCallbacks(
-                        mStartTime, SystemClock.elapsedRealtime());
+                partnerCustomizationsUma.logAsyncInitFinalized(
+                        mStartTime, SystemClock.elapsedRealtime(), mHomepageUriChanged);
             }
         };
 
@@ -287,13 +290,26 @@ public class PartnerBrowserCustomizations {
     }
 
     /**
-     * Called when Chrome is about to create an initial tab.
-     * This notifies the UMA instance so it tracks how much initialization has been done before new
-     * Tab creation.
+     * Called when Chrome creates an initial tab.
+     * This notifies the UMA instance so it tracks how much initialization progresses relative to
+     * initial Tab creation.
+     * @param homepageUrlCreated The URL of the initial Tab that was created or {@code null} if
+     *         something other than a Homepage was used for an initial Tab.
+     * @param createInitialTabTime The timestamp when we started to create an initial tab.
+     * @param isOverviewPageOrStartSurface indicates that there was no created Homepage because some
+     *         kind of overview page or Start Surface was presented in place of the initial Tab.
+     * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} to use to wait for
+     *         native initialization.
+     * @param homepageCharacterizationHelper A supplier to characterize a Homepage.
      */
-    public void onCreateInitialTab() {
+    public void onCreateInitialTab(@Nullable String homepageUrlCreated, long createInitialTabTime,
+            boolean isOverviewPageOrStartSurface,
+            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            @NonNull Supplier<HomepageCharacterizationHelper> homepageCharacterizationHelper) {
         if (mPartnerCustomizationsUma != null) {
-            mPartnerCustomizationsUma.onCreateInitialTab(isInitialized());
+            mPartnerCustomizationsUma.onCreateInitialTab(isInitialized(), homepageUrlCreated,
+                    createInitialTabTime, isOverviewPageOrStartSurface, activityLifecycleDispatcher,
+                    homepageCharacterizationHelper);
         }
     }
 
