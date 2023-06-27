@@ -9,10 +9,12 @@
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "ash/system/unified/tasks_combobox_model.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -32,6 +34,7 @@ constexpr int kGlanceablesTaskViewHeight = 48;
 constexpr int kGlanceablesTaskFooterHeight = 24;
 constexpr int kGlanceablesFooterMargin = 12;
 constexpr int kGlanceableTaskVerticalMargin = 2;
+constexpr int kGlanceablesActionButtonLeftRightMargin = 4;
 
 }  // namespace
 
@@ -144,6 +147,11 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
   tasks_bubble_details_->GetViewAccessibility().OverrideIsIgnored(true);
   tasks_bubble_details_->SetBackgroundColor(SK_ColorTRANSPARENT);
   tasks_bubble_details_->SetAutoColorReadabilityEnabled(false);
+  if (chromeos::features::IsJellyEnabled()) {
+    tasks_bubble_details_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
+  } else {
+    tasks_bubble_details_->SetEnabledColorId(kColorAshTextColorSecondary);
+  }
 
   // Create a transparent separator to push `action_button_` to the right-most
   // corner of the tasks_header_view_.
@@ -156,6 +164,22 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
                                views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(2));
 
+  action_button_label_ =
+      tasks_footer_view_->AddChildView(std::make_unique<views::Label>());
+  action_button_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  // Views should not be individually selected for accessibility. Accessible
+  // name and behavior comes from the parent.
+  action_button_label_->GetViewAccessibility().OverrideIsIgnored(true);
+  action_button_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
+  action_button_label_->SetAutoColorReadabilityEnabled(false);
+  action_button_label_->SetText(
+      l10n_util::GetStringUTF16(IDS_GLANCEABLES_TASKS_ACTION_BUTTON_LABEL));
+  if (chromeos::features::IsJellyEnabled()) {
+    action_button_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  } else {
+    action_button_label_->SetEnabledColorId(kColorAshTextColorPrimary);
+  }
+
   action_button_ =
       tasks_footer_view_->AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&TasksBubbleView::ActionButtonPressed,
@@ -163,6 +187,8 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
           IconButton::Type::kMediumFloating, &vector_icons::kLaunchIcon,
           u"Open tasks app", /*is_togglable=*/false,
           /*has_border=*/false));
+  action_button_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(0, kGlanceablesActionButtonLeftRightMargin)));
 
   ScheduleUpdateTasksList();
 }

@@ -6701,6 +6701,9 @@ New install
       <message name="IDS_GLANCEABLES_TASKS_DETAILS_FOOTER" desc="The glanceable displays tasks from a task list that's selected in a drop-down box within the glanceable UI. The first placeholder value is the number of tasks visible in the UI. The second placeholder value is the total number of tasks in the selected tasks list, including tasks that are not visible in the UI.">
         Showing <ph name="NUM_SHOWN_TASKS">$1<ex>5</ex></ph> out of <ph name="NUM_TOTAL_TASKS">$2<ex>10</ex></ph>
       </message>
+      <message name="IDS_GLANCEABLES_TASKS_ACTION_BUTTON_LABEL" desc="The glanceable displays tasks from a task list that's selected in a drop-down box within the glanceable UI. Interacting with the button and label at the bottom of the glanceable opens the Tasks companion app.">
+        See all
+      </message>
 
       <!-- Do not disturb notification -->
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do not disturb' feature is enabled.">

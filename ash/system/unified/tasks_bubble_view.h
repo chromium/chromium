@@ -118,6 +118,7 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_footer_view_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> tasks_bubble_details_ = nullptr;
   raw_ptr<views::View, ExperimentalAsh> separator_ = nullptr;
+  raw_ptr<views::Label, ExperimentalAsh> action_button_label_ = nullptr;
   raw_ptr<views::ImageButton, ExperimentalAsh> action_button_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> task_items_container_view_ =
       nullptr;
