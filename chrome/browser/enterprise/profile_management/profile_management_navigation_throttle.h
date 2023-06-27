@@ -62,6 +62,11 @@ class ProfileManagementNavigationThrottle : public content::NavigationThrottle {
   void OnManagementDataReceived(
       const base::flat_map<std::string, std::string>& attributes);
 
+  // `NavigateTo()` can synchronously delete the NavigationThrottle, so
+  // `PostNavigateTo()` posts the method to the current thread. This allows code
+  // to be safely added after `NavigateTo()` calls.
+  void PostNavigateTo(const GURL& url);
+  // Don't use directly. Use `PostNavigateTo()` instead.
   void NavigateTo(const GURL& url);
 
   void RegisterWithDomain(const std::string& domain);

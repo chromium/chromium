@@ -183,6 +183,8 @@ void ProfileManagementNavigationThrottle::OnManagementDataReceived(
   if (base::FeatureList::IsEnabled(features::kThirdPartyProfileManagement) &&
       base::Contains(attributes, profile_attributes.domain)) {
     RegisterWithDomain(attributes.at(profile_attributes.domain));
+    // DO NOT ADD CODE AFTER THIS, as the NavigationThrottle might have been
+    // deleted by the previous call.
     return;
   }
 
@@ -194,18 +196,27 @@ void ProfileManagementNavigationThrottle::OnManagementDataReceived(
                           ? attributes.at(profile_attributes.name)
                           : std::string(),
                       attributes.at(profile_attributes.token));
+    // DO NOT ADD CODE AFTER THIS, as the NavigationThrottle might have been
+    // deleted by the previous call.
     return;
   }
 
   if (!unmanaged_url_for_testing_.empty()) {
     // Used for testing that no profile management flow was entered.
-    NavigateTo(GURL(unmanaged_url_for_testing_));
+    PostNavigateTo(GURL(unmanaged_url_for_testing_));
     return;
   }
 
   Resume();
   // DO NOT ADD CODE AFTER THIS, as the NavigationThrottle might have been
   // deleted by the previous call.
+}
+
+void ProfileManagementNavigationThrottle::PostNavigateTo(const GURL& url) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ProfileManagementNavigationThrottle::NavigateTo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(url)));
 }
 
 void ProfileManagementNavigationThrottle::NavigateTo(const GURL& url) {
@@ -247,8 +258,8 @@ void ProfileManagementNavigationThrottle::RegisterWithDomain(
   absl::optional<std::string> management_domain =
       GetDomainFromAttributeValue(domain);
   if (management_domain) {
-    NavigateTo(GURL(base::StringPrintf(kGoogleServiceLoginUrl,
-                                       management_domain.value().c_str())));
+    PostNavigateTo(GURL(base::StringPrintf(kGoogleServiceLoginUrl,
+                                           management_domain.value().c_str())));
     return;
   }
 
@@ -265,7 +276,7 @@ void ProfileManagementNavigationThrottle::RegisterWithToken(
     const std::string& token) {
   if (!token_url_for_testing_.empty()) {
     // Used for testing that the token-based management flow was entered.
-    NavigateTo(GURL(token_url_for_testing_));
+    PostNavigateTo(GURL(token_url_for_testing_));
     return;
   }
 
