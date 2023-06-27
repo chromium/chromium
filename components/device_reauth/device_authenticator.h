@@ -86,10 +86,8 @@ class DeviceAuthenticator : public base::RefCounted<DeviceAuthenticator> {
   // Returns whether biometrics are available for a given device.
   virtual bool CanAuthenticateWithBiometrics() = 0;
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // Returns whether biometrics or screenlock are available for a given device.
   virtual bool CanAuthenticateWithBiometricOrScreenLock() = 0;
-#endif
 
   // Asks the user to authenticate. Invokes |callback| asynchronously when
   // the auth flow returns with the result.

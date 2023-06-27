@@ -37,14 +37,12 @@ bool MandatoryReauthManager::ShouldOfferOptin(
   }
 
   // If the device authenticator is not present or we can not authenticate with
-  // biometrics, there will be no way to re-auth if the user enrolls, so return
-  // that we should not offer mandatory re-auth opt-in.
-  // TODO(crbug.com/4555994): Offer opt-in if the user only has biometric or
-  // screen lock available, instead of only if the user has biometric available.
+  // biometric or screen lock, there will be no way to re-auth if the user
+  // enrolls, so return that we should not offer mandatory re-auth opt-in.
   if (scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator =
           client_->GetDeviceAuthenticator();
       !device_authenticator ||
-      !device_authenticator->CanAuthenticateWithBiometrics()) {
+      !device_authenticator->CanAuthenticateWithBiometricOrScreenLock()) {
     return false;
   }
 

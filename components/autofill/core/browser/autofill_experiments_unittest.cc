@@ -376,12 +376,13 @@ TEST_F(AutofillExperimentsTest, ShouldShowIbanOnSettingsPage_FeatureEnabled) {
   EXPECT_TRUE(ShouldShowIbanOnSettingsPage("US", &pref_service_));
 }
 
-TEST_F(AutofillExperimentsTest,
-       IsDeviceAuthAvailable_FeatureEnabledAndBiometricAvailableForMacAndWin) {
+TEST_F(
+    AutofillExperimentsTest,
+    IsDeviceAuthAvailable_FeatureEnabledAndAuthenticationAvailableForMacAndWin) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillEnablePaymentsMandatoryReauth);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometrics)
+  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
       .WillByDefault(Return(true));
 
   EXPECT_TRUE(IsDeviceAuthAvailable(mock_device_authenticator_));
@@ -390,12 +391,13 @@ TEST_F(AutofillExperimentsTest,
 #endif
 }
 
-TEST_F(AutofillExperimentsTest,
-       IsDeviceAuthAvailable_FeatureDisabledAndBiometricAvailableForMacAndWin) {
+TEST_F(
+    AutofillExperimentsTest,
+    IsDeviceAuthAvailable_FeatureDisabledAndAuthenticationAvailableForMacAndWin) {
   scoped_feature_list_.InitAndDisableFeature(
       features::kAutofillEnablePaymentsMandatoryReauth);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometrics)
+  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
       .WillByDefault(Return(true));
 #endif
   EXPECT_FALSE(IsDeviceAuthAvailable(mock_device_authenticator_));

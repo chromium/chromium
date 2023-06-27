@@ -41,12 +41,13 @@ class MandatoryReauthManagerTest : public testing::Test {
     test::SetCreditCardInfo(&server_card_, "Test User", "1111" /* Visa */,
                             test::NextMonth().c_str(), test::NextYear().c_str(),
                             "1");
-    SetCanAuthenticateWithBiometrics(true);
+    SetCanAuthenticate(true);
   }
 
  protected:
-  void SetCanAuthenticateWithBiometrics(bool value) {
-    ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometrics)
+  void SetCanAuthenticate(bool value) {
+    ON_CALL(*mock_device_authenticator_,
+            CanAuthenticateWithBiometricOrScreenLock)
         .WillByDefault(testing::Return(value));
   }
 
@@ -198,12 +199,13 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_UserAlreadyMadeDecision) {
 }
 
 // Test that the MandatoryReauthManager returns that we should not offer re-auth
-// opt-in if biometrics are not available on the device.
-TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_BiometricsNotAvailable) {
+// opt-in if authentication is not available on the device.
+TEST_F(MandatoryReauthManagerTest,
+       ShouldOfferOptin_AuthenticationNotAvailable) {
   base::test::ScopedFeatureList feature_list(
       features::kAutofillEnablePaymentsMandatoryReauth);
 
-  SetCanAuthenticateWithBiometrics(false);
+  SetCanAuthenticate(false);
 
   autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
 

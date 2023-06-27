@@ -21,6 +21,8 @@ class DeviceAuthenticatorChromeOS : public ChromeDeviceAuthenticatorCommon {
 
   bool CanAuthenticateWithBiometrics() override;
 
+  bool CanAuthenticateWithBiometricOrScreenLock() override;
+
   void Authenticate(device_reauth::DeviceAuthRequester requester,
                     AuthenticateCallback callback,
                     bool use_last_valid_auth) override;
