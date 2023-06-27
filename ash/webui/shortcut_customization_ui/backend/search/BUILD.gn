@@ -9,6 +9,8 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 mojom("mojo_bindings") {
   disable_variants = true
+  use_typescript_sources = true
+  generate_legacy_js_bindings = true
 
   sources = [ "search.mojom" ]
 

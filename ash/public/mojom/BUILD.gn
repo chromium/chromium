@@ -43,8 +43,10 @@ mojom("mojom") {
 # files for all dependencies (and their dependencies) in //ash/public/mojom.
 mojom("accelerator_info") {
   disable_variants = true
+  use_typescript_sources = true
+  generate_legacy_js_bindings = true
 
-  webui_module_path = "/ash/public/mojom"
+  webui_module_path = "/"
 
   sources = [ "accelerator_info.mojom" ]
 
@@ -69,6 +71,8 @@ mojom("input_device_settings") {
     "//mojo/public/mojom/base",
     "//ui/events/ash/mojom",
   ]
+
+  deps = [ ":accelerator_keys" ]
 }
 
 # This is a separate target so that downstream WebUI targets can take
@@ -76,8 +80,10 @@ mojom("input_device_settings") {
 # files for all dependencies (and their dependencies) in //ash/public/mojom.
 mojom("accelerator_configuration") {
   disable_variants = true
+  use_typescript_sources = true
+  generate_legacy_js_bindings = true
 
-  webui_module_path = "/ash/public/mojom"
+  webui_module_path = "/"
 
   sources = [ "accelerator_configuration.mojom" ]
 
@@ -89,8 +95,10 @@ mojom("accelerator_configuration") {
 # files for all dependencies (and their dependencies) in //ash/public/mojom.
 mojom("accelerator_keys") {
   disable_variants = true
+  use_typescript_sources = true
+  generate_legacy_js_bindings = true
 
-  webui_module_path = "/ash/public/mojom"
+  webui_module_path = "/"
 
   sources = [ "accelerator_keys.mojom" ]
 

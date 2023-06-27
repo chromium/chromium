@@ -24,7 +24,7 @@ import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_util
 import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
 import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
-import {AcceleratorCategory, AcceleratorConfig, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, LayoutStyle, Modifier, MojoLayoutInfo, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorCategory, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, LayoutStyle, Modifier, MojoAcceleratorConfig, MojoLayoutInfo, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {getSubcategoryNameStringId} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -821,7 +821,7 @@ suite('shortcutCustomizationAppTest', function() {
     // This config is constructed to match the generated mojo type for an
     // accelerator configuration. `layoutProperties` is an union type, so
     // we do not have an undefined `standardAccelerator`.
-    const testAcceleratorConfig: AcceleratorConfig = {
+    const testAcceleratorConfig: MojoAcceleratorConfig = {
       [AcceleratorSource.kAmbient]: {
         [1]: [{
           type: AcceleratorType.kDefault,

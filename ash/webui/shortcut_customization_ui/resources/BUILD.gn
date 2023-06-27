@@ -112,71 +112,58 @@ preprocess_if_expr("preprocess_generated") {
 
 # This template is used to reduce redundancy when copying generated files from
 # $root_gen_dir/mojom-webui/ into this project's preprocess directory.
-# Note that $dir is used in the output so that the output directory structure
+# Note that $in_dir is used in the output so that the output directory structure
 # matches the generated mojom-webui/ structure. This is necessary because
-# shortcut_customization.mojom-webui.js depends on
-# accelerator_info.mojom-webui.js via a relative import in the generated code.
+# shortcut_customization.mojom-webui.ts depends on
+# accelerator_info.mojom-webui.ts via a relative import in the generated code.
 template("copy_generated_mojo") {
   forward_variables_from(invoker, [ "deps" ])
 
   copy(target_name) {
-    dir = invoker.dir
+    in_dir = invoker.in_dir
+    out_dir = in_dir
+    if (defined(invoker.out_dir)) {
+      out_dir = invoker.out_dir
+    }
     sources = []
     foreach(file, invoker.mojo_files) {
-      sources += [ "$root_gen_dir/mojom-webui/$dir/$file" ]
+      sources += [ "$root_gen_dir/$in_dir/$file" ]
     }
-    outputs = [ "$target_gen_dir/$preprocess_folder/mojom-webui/$dir/{{source_file_part}}" ]
+    outputs = [ "$target_gen_dir/$preprocess_folder/mojom-webui/$out_dir/{{source_file_part}}" ]
   }
 }
 
 copy_generated_mojo("copy_shortcuts_mojo") {
-  deps = [ "//ash/webui/shortcut_customization_ui/mojom:mojom_webui_js" ]
-  dir = "ash/webui/shortcut_customization_ui/mojom"
-  mojo_files = [ "shortcut_customization.mojom-webui.js" ]
+  deps = [ "//ash/webui/shortcut_customization_ui/mojom:mojom_ts__generator" ]
+  in_dir = "ash/webui/shortcut_customization_ui/mojom"
+  mojo_files = [ "shortcut_customization.mojom-webui.ts" ]
 }
 
 copy_generated_mojo("copy_shortcuts_search_mojo") {
-  deps = [ "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings_webui_js" ]
-  dir = "ash/webui/shortcut_customization_ui/backend/search"
-  mojo_files = [ "search.mojom-webui.js" ]
+  deps = [ "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings_ts__generator" ]
+  in_dir = "ash/webui/shortcut_customization_ui/backend/search"
+  mojo_files = [ "search.mojom-webui.ts" ]
 }
 
 copy_generated_mojo("copy_accelerator_info_mojo") {
-  deps = [ "//ash/public/mojom:accelerator_info_webui_js" ]
-  dir = "ash/public/mojom"
-  mojo_files = [ "accelerator_info.mojom-webui.js" ]
+  deps = [ "//ash/public/mojom:accelerator_info_ts__generator" ]
+  in_dir = "ash/public/mojom"
+  out_dir = ""
+  mojo_files = [ "accelerator_info.mojom-webui.ts" ]
 }
 
 copy_generated_mojo("copy_accelerator_configuration_mojo") {
-  deps = [ "//ash/public/mojom:accelerator_configuration_webui_js" ]
-  dir = "ash/public/mojom"
-  mojo_files = [ "accelerator_configuration.mojom-webui.js" ]
+  deps = [ "//ash/public/mojom:accelerator_configuration_ts__generator" ]
+  in_dir = "ash/public/mojom"
+  out_dir = ""
+  mojo_files = [ "accelerator_configuration.mojom-webui.ts" ]
 }
 
 copy_generated_mojo("copy_accelerator_keys_mojo") {
-  deps = [ "//ash/public/mojom:accelerator_keys_webui_js" ]
-  dir = "ash/public/mojom"
-  mojo_files = [ "accelerator_keys.mojom-webui.js" ]
-}
-
-ts_definitions("build_mojo_dts") {
-  extra_deps = [
-    ":copy_accelerator_configuration_mojo",
-    ":copy_accelerator_info_mojo",
-    ":copy_accelerator_keys_mojo",
-    ":copy_shortcuts_mojo",
-    ":copy_shortcuts_search_mojo",
-  ]
-
-  root_dir = target_gen_dir
-  out_dir = root_dir
-
-  js_files = []
-  foreach(dep, extra_deps) {
-    js_files += rebase_path(get_target_outputs(dep), root_dir, root_build_dir)
-  }
-
-  extra_deps += [ "//ui/webui/resources/mojo:build_ts" ]
+  deps = [ "//ash/public/mojom:accelerator_keys_ts__generator" ]
+  in_dir = "ash/public/mojom"
+  out_dir = ""
+  mojo_files = [ "accelerator_keys.mojom-webui.ts" ]
 }
 
 ts_library("build_ts") {
@@ -210,17 +197,8 @@ ts_library("build_ts") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
-  definitions = []
-  foreach(file, get_target_outputs(":build_mojo_dts")) {
-    # Only take the .d.ts files, and ignoring the manifest.json that is also
-    # listed as output file.
-    if (get_path_info(file, "extension") == "ts") {
-      definitions += [ rebase_path(file) ]
-    }
-  }
 
   extra_deps = [
-    ":build_mojo_dts",
     ":copy_accelerator_configuration_mojo",
     ":copy_accelerator_info_mojo",
     ":copy_accelerator_keys_mojo",
@@ -237,11 +215,8 @@ mojo_grdp_file = "$target_gen_dir/mojo.grdp"
 generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
   input_files = static_resource_files
-  grdp_files = [ mojo_grdp_file ]
-  deps = [
-    ":build_mojo_grdp",
-    ":build_ts",
-  ]
+
+  deps = [ ":build_ts" ]
   manifest_files =
       filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
   grd_prefix = "ash_shortcut_customization_app"
@@ -250,20 +225,20 @@ generate_grd("build_grd") {
 
 generate_grd("build_mojo_grdp") {
   deps = [
-    "//ash/public/mojom:accelerator_configuration_webui_js",
-    "//ash/public/mojom:accelerator_info_webui_js",
-    "//ash/public/mojom:accelerator_keys_webui_js",
-    "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings_webui_js",
-    "//ash/webui/shortcut_customization_ui/mojom:mojom_webui_js",
+    "//ash/public/mojom:accelerator_configuration_ts__generator",
+    "//ash/public/mojom:accelerator_info_ts__generator",
+    "//ash/public/mojom:accelerator_keys_ts__generator",
+    "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings_ts__generator",
+    "//ash/webui/shortcut_customization_ui/mojom:mojom_ts__generator",
   ]
 
   input_files_base_dir = rebase_path("$root_gen_dir/", root_build_dir)
   input_files = [
-    "mojom-webui/ash/public/mojom/accelerator_configuration.mojom-webui.js",
-    "mojom-webui/ash/public/mojom/accelerator_info.mojom-webui.js",
-    "mojom-webui/ash/public/mojom/accelerator_keys.mojom-webui.js",
-    "mojom-webui/ash/webui/shortcut_customization_ui/backend/search/search.mojom-webui.js",
-    "mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js",
+    "mojom-webui/ash/public/mojom/accelerator_configuration.mojom-webui.ts",
+    "mojom-webui/ash/public/mojom/accelerator_info.mojom-webui.ts",
+    "mojom-webui/ash/public/mojom/accelerator_keys.mojom-webui.ts",
+    "mojom-webui/ash/webui/shortcut_customization_ui/backend/search/search.mojom-webui.ts",
+    "mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.ts",
   ]
 
   grd_prefix = "ash_shortcut_customization_app_mojo"
