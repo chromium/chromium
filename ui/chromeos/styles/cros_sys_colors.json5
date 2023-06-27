@@ -318,7 +318,7 @@
       dark: 'blend(rgba($cros.ref.yellow90.rgb, 0.20), $black)',
     },
     'warning': {
-      light: '$cros.ref.yellow30',
+      light: '$cros.ref.yellow50',
       dark: '$cros.ref.yellow80',
     },
 
