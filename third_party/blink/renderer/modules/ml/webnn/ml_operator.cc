@@ -121,6 +121,16 @@ void MLOperator::Connect(HeapVector<Member<const MLOperand>> inputs,
   is_connected_ = true;
 }
 
+MLConcatOperator::MLConcatOperator(MLGraphBuilder* builder, const uint32_t axis)
+    : MLOperator(builder, MLOperator::OperatorKind::kConcat, nullptr),
+      axis_(axis) {}
+
+MLConcatOperator::~MLConcatOperator() = default;
+
+uint32_t MLConcatOperator::Axis() const {
+  return axis_;
+}
+
 MLPadOperator::MLPadOperator(MLGraphBuilder* builder,
                              const Vector<uint32_t>& beginning_padding,
                              const Vector<uint32_t>& ending_padding,

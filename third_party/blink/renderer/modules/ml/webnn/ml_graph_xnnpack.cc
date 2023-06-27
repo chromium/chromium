@@ -1581,27 +1581,12 @@ xnn_status DefineXnnNodeForTranspose(
   return xnn_status_success;
 }
 
-// Helper to find the concat axis by comparing the first input shape and output
-// shape which is already calculated by `MLGraphBuilder::concat()`.
-absl::optional<uint32_t> GetConcatAxis(const MLOperator* concat) {
-  // The output tensor should has the same shape size with all the input tensors
-  const auto& output_dims = concat->Outputs()[0]->Dimensions();
-  for (const auto& input : concat->Inputs()) {
-    CHECK_EQ(input->Dimensions().size(), output_dims.size());
-  }
-  const auto& input_dims = concat->Inputs()[0]->Dimensions();
-  for (wtf_size_t i = 0; i < input_dims.size(); ++i) {
-    if (input_dims[i] != output_dims[i]) {
-      return i;
-    }
-  }
-  return absl::nullopt;
-}
-
 xnn_status DefineXnnNodeForConcat(xnn_subgraph_t subgraph,
-                                  const MLOperator* concat,
+                                  const MLOperator* ml_operator,
                                   const OperandValueIdMap& operand_value_id_map,
                                   String& error_message) {
+  const MLConcatOperator* concat =
+      static_cast<const MLConcatOperator*>(ml_operator);
   const auto inputs_size = concat->Inputs().size();
   Vector<uint32_t> input_ids(inputs_size);
   for (uint32_t i = 0; i < inputs_size; ++i) {
@@ -1616,25 +1601,20 @@ xnn_status DefineXnnNodeForConcat(xnn_subgraph_t subgraph,
         xnn_define_copy(subgraph, input_ids[0], output_id, flags));
     return xnn_status_success;
   }
-  absl::optional<uint32_t> axis = GetConcatAxis(concat);
-  if (!axis) {
-    error_message = "Can not find the concat axis.";
-    return xnn_status_unsupported_parameter;
-  }
+  const auto axis = concat->Axis();
   switch (inputs_size) {
     case 2u:
-      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
-          xnn_define_concatenate2(subgraph, axis.value(), input_ids[0],
-                                  input_ids[1], output_id, flags));
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_concatenate2(
+          subgraph, axis, input_ids[0], input_ids[1], output_id, flags));
       break;
     case 3u:
-      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_concatenate3(
-          subgraph, axis.value(), input_ids[0], input_ids[1], input_ids[2],
-          output_id, flags));
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+          xnn_define_concatenate3(subgraph, axis, input_ids[0], input_ids[1],
+                                  input_ids[2], output_id, flags));
       break;
     case 4u:
       XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_concatenate4(
-          subgraph, axis.value(), input_ids[0], input_ids[1], input_ids[2],
+          subgraph, axis, input_ids[0], input_ids[1], input_ids[2],
           input_ids[3], output_id, flags));
       break;
     default:

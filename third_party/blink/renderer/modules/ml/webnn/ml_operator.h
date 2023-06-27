@@ -108,6 +108,21 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
   HeapVector<Member<const MLOperand>> outputs_;
 };
 
+class MODULES_EXPORT MLConcatOperator : public MLOperator {
+ public:
+  MLConcatOperator(MLGraphBuilder* builder, const uint32_t axis);
+
+  MLConcatOperator(const MLConcatOperator&) = delete;
+  MLConcatOperator& operator=(const MLConcatOperator&) = delete;
+
+  ~MLConcatOperator();
+
+  uint32_t Axis() const;
+
+ private:
+  uint32_t axis_;
+};
+
 class MODULES_EXPORT MLPadOperator : public MLOperator {
  public:
   MLPadOperator(MLGraphBuilder* builder,
