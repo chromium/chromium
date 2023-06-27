@@ -1272,10 +1272,8 @@
     // https://github.com/w3c/resource-timing/pull/343
     {
       name: "DeliveryType",
-      status: "experimental",
-      implied_by: ["SpeculationRulesPrefetchFuture"],
+      status: "stable",
       base_feature: "none",
-      origin_trial_feature_name: "DeliveryType",
     },
     {
       name: "DesktopCaptureDisableLocalEchoControl",

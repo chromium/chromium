@@ -964,6 +964,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter connectEnd
 [Worker]     getter connectStart
 [Worker]     getter decodedBodySize
+[Worker]     getter deliveryType
 [Worker]     getter domainLookupEnd
 [Worker]     getter domainLookupStart
 [Worker]     getter encodedBodySize
