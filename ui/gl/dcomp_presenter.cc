@@ -172,6 +172,10 @@ bool DCompPresenter::SetDrawRectangle(const gfx::Rect& rect) {
   return true;
 }
 
+bool DCompPresenter::SupportsViewporter() const {
+  return true;
+}
+
 bool DCompPresenter::SupportsGpuVSync() const {
   return true;
 }
