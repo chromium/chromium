@@ -131,9 +131,17 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
       features::IsRenderArcNotificationsByChromeEnabled() &&
       data->render_on_chrome;
 
-  const auto notification_type = render_on_chrome
-                                     ? message_center::NOTIFICATION_TYPE_SIMPLE
-                                     : message_center::NOTIFICATION_TYPE_CUSTOM;
+  const auto notification_type =
+      render_on_chrome
+          ? ((data->indeterminate_progress || data->progress_max != -1)
+                 ? message_center::NOTIFICATION_TYPE_PROGRESS
+                 : message_center::NOTIFICATION_TYPE_SIMPLE)
+          : message_center::NOTIFICATION_TYPE_CUSTOM;
+
+  rich_data.progress = std::clamp(
+      static_cast<int>(std::round(static_cast<float>(data->progress_current) /
+                                  data->progress_max * 100)),
+      -1, 100);
 
   // Add buttons to Chrome rendered ARC notifications only, as ARC rendered
   // notifications already have buttons.
@@ -166,6 +174,10 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
 
   if (notification_type == message_center::NOTIFICATION_TYPE_CUSTOM) {
     notification->set_custom_view_type(kArcNotificationCustomViewType);
+  }
+
+  if (notification_type == message_center::NOTIFICATION_TYPE_PROGRESS) {
+    notification->set_progress_status(base::UTF8ToUTF16(data->message));
   }
 
   if (expand_state_ != ArcNotificationExpandState::FIXED_SIZE &&

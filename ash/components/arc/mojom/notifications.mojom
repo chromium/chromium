@@ -128,9 +128,10 @@ struct ArcNotificationData {
   // Timestamp related to the notification
   int64 time;
   // The current value of progress. If in progress, the value must be in
-  // [0, progress_max]. Otherwise set to -1.
+  // [0, progress_max]. Set to -1 for indeterminate progress.
   int32 progress_current;
-  // The maximum value of progress.
+  // The maximum value of progress. Set to -1 when the progress does not exist
+  // or ended.
   int32 progress_max;
   // Action buttons, provided when the notification is action enabled and
   // rendered on Chrome.
