@@ -12,8 +12,6 @@ import android.view.Window;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
@@ -428,19 +426,12 @@ public class StatusBarColorController
      * @param color The color that the status bar should be set to.
      */
     public static void setStatusBarColor(Window window, @ColorInt int color) {
-        // The status bar should always be black in automotive devices to match the black back
-        // button toolbar.
-        if (BuildInfo.getInstance().isAutomotive) {
-            ApiCompatibilityUtils.setStatusBarColor(window, Color.BLACK);
-            ApiCompatibilityUtils.setStatusBarIconColor(window.getDecorView().getRootView(), false);
-            return;
-        }
         if (UiUtils.isSystemUiThemingDisabled()) return;
 
         final View root = window.getDecorView().getRootView();
         boolean needsDarkStatusBarIcons = !ColorUtils.shouldUseLightForegroundOnBackground(color);
-        ApiCompatibilityUtils.setStatusBarIconColor(root, needsDarkStatusBarIcons);
-        ApiCompatibilityUtils.setStatusBarColor(window, color);
+        UiUtils.setStatusBarIconColor(root, needsDarkStatusBarIcons);
+        UiUtils.setStatusBarColor(window, color);
     }
 
     /**

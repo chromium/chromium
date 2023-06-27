@@ -4,15 +4,27 @@
 
 package org.chromium.webapk.shell_apk;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.openMocks;
+import static org.robolectric.Robolectric.setupActivity;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
@@ -25,6 +37,11 @@ import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class WebApkUtilsTest {
+    @Mock
+    private Context mMockApplicationContext;
+    @Mock
+    private PackageManager mMockPackageManager;
+
     protected static final String WEBAPK_PACKAGE_NAME = "org.chromium.test";
 
     private Context mContext;
@@ -98,5 +115,33 @@ public class WebApkUtilsTest {
         mPackageManager.addPackage(info);
 
         Assert.assertFalse(WebApkUtils.isInstalled(mContext.getPackageManager(), packageName));
+    }
+
+    /**
+     * Test status bar is always black in Automotive devices.
+     */
+    @Test
+    public void testStatusBarBlackInAutomotive() {
+        // Create an "automotive" Activity.
+        openMocks(this);
+        Activity testActivity = spy(setupActivity(Activity.class));
+        doReturn(mMockApplicationContext).when(testActivity).getApplicationContext();
+        when(mMockApplicationContext.getPackageManager()).thenReturn(mMockPackageManager);
+        when(mMockPackageManager.hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE))
+                .thenReturn(true);
+        View rootView = testActivity.getWindow().getDecorView().getRootView();
+
+        WebApkUtils.setStatusBarColor(testActivity, Color.RED);
+        WebApkUtils.setStatusBarIconColor(rootView, false, testActivity);
+
+        // No matter what color the status bar is being set on other form factors, it should always
+        // be black on automotive devices.
+        assertEquals("Status bar should always be black in automotive devices.", Color.BLACK,
+                testActivity.getWindow().getStatusBarColor());
+        assertEquals("Status bar should use dark theme icons in automotive devices.",
+                View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR,
+                rootView.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+
+        testActivity.finish();
     }
 }

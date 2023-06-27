@@ -25,7 +25,6 @@ import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper;
@@ -138,9 +137,8 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                         mActivity.getResources().getBoolean(R.bool.window_light_navigation_bar));
             }
             // Apply the status bar color in case the website had override them.
-            ApiCompatibilityUtils.setStatusBarColor(
-                    dialogWindow, mActivity.getWindow().getStatusBarColor());
-            ApiCompatibilityUtils.setStatusBarIconColor(dialogWindow.getDecorView().getRootView(),
+            UiUtils.setStatusBarColor(dialogWindow, mActivity.getWindow().getStatusBarColor());
+            UiUtils.setStatusBarIconColor(dialogWindow.getDecorView().getRootView(),
                     !ColorUtils.shouldUseLightForegroundOnBackground(
                             mActivity.getWindow().getStatusBarColor()));
         }

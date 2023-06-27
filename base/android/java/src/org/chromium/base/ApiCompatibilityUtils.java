@@ -27,8 +27,6 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.view.Display;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.textclassifier.TextClassifier;
 import android.widget.TextView;
 
@@ -171,31 +169,6 @@ public class ApiCompatibilityUtils {
                     "app_uid", ContextUtils.getApplicationContext().getApplicationInfo().uid);
         }
         return intent;
-    }
-
-    /**
-     * @see android.view.Window#setStatusBarColor(int color).
-     */
-    public static void setStatusBarColor(Window window, int statusBarColor) {
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(statusBarColor);
-    }
-
-    /**
-     * Sets the status bar icons to dark or light. Note that this is only valid for
-     * Android M+.
-     *
-     * @param rootView The root view used to request updates to the system UI theming.
-     * @param useDarkIcons Whether the status bar icons should be dark.
-     */
-    public static void setStatusBarIconColor(View rootView, boolean useDarkIcons) {
-        int systemUiVisibility = rootView.getSystemUiVisibility();
-        if (useDarkIcons) {
-            systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-        } else {
-            systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-        }
-        rootView.setSystemUiVisibility(systemUiVisibility);
     }
 
     /**

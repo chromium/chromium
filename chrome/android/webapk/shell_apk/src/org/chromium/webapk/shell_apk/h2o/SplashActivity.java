@@ -197,11 +197,11 @@ public class SplashActivity extends Activity {
     private void updateStatusBar(Bundle metadata) {
         int statusBarColor = (int) WebApkMetaDataUtils.getLongFromMetaData(
                 metadata, WebApkMetaDataKeys.THEME_COLOR, Color.WHITE);
-        WebApkUtils.setStatusBarColor(getWindow(), statusBarColor);
+        WebApkUtils.setStatusBarColor(this, statusBarColor);
         boolean needsDarkStatusBarIcons =
                 !WebApkUtils.shouldUseLightForegroundOnBackground(statusBarColor);
         WebApkUtils.setStatusBarIconColor(
-                getWindow().getDecorView().getRootView(), needsDarkStatusBarIcons);
+                getWindow().getDecorView().getRootView(), needsDarkStatusBarIcons, this);
     }
 
     /** Called once the host browser has been selected. */
