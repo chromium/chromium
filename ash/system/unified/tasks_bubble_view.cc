@@ -19,7 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -35,6 +35,7 @@ constexpr int kGlanceablesTaskFooterHeight = 24;
 constexpr int kGlanceablesFooterMargin = 12;
 constexpr int kGlanceableTaskVerticalMargin = 2;
 constexpr int kGlanceablesActionButtonLeftRightMargin = 4;
+constexpr int kIconSize = 24;
 
 }  // namespace
 
@@ -164,31 +165,32 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
                                views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(2));
 
-  action_button_label_ =
-      tasks_footer_view_->AddChildView(std::make_unique<views::Label>());
-  action_button_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  // Views should not be individually selected for accessibility. Accessible
-  // name and behavior comes from the parent.
-  action_button_label_->GetViewAccessibility().OverrideIsIgnored(true);
-  action_button_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  action_button_label_->SetAutoColorReadabilityEnabled(false);
-  action_button_label_->SetText(
-      l10n_util::GetStringUTF16(IDS_GLANCEABLES_TASKS_ACTION_BUTTON_LABEL));
-  if (chromeos::features::IsJellyEnabled()) {
-    action_button_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-  } else {
-    action_button_label_->SetEnabledColorId(kColorAshTextColorPrimary);
-  }
-
   action_button_ =
-      tasks_footer_view_->AddChildView(std::make_unique<IconButton>(
+      tasks_footer_view_->AddChildView(std::make_unique<views::LabelButton>(
           base::BindRepeating(&TasksBubbleView::ActionButtonPressed,
                               base::Unretained(this)),
-          IconButton::Type::kMediumFloating, &vector_icons::kLaunchIcon,
-          u"Open tasks app", /*is_togglable=*/false,
-          /*has_border=*/false));
+          l10n_util::GetStringUTF16(
+              IDS_GLANCEABLES_TASKS_ACTION_BUTTON_LABEL)));
+  action_button_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   action_button_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(0, kGlanceablesActionButtonLeftRightMargin)));
+
+  if (chromeos::features::IsJellyEnabled()) {
+    action_button_->SetTextColorId(views::Button::STATE_NORMAL,
+                                   cros_tokens::kCrosSysOnSurface);
+    action_button_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
+                                       cros_tokens::kCrosSysOnSurface,
+                                       kIconSize));
+  } else {
+    action_button_->SetTextColorId(views::Button::STATE_NORMAL,
+                                   kColorAshTextColorPrimary);
+    action_button_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
+                                       kColorAshTextColorPrimary, kIconSize));
+  }
 
   ScheduleUpdateTasksList();
 }
