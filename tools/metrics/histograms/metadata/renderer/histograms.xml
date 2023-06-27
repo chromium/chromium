@@ -461,6 +461,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Renderer.Layout.TextWrapPretty" units="ms"
+    expires_after="2023-10-20">
+  <owner>kojii@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>The time spent to optimize line breaks.</summary>
+</histogram>
+
+<histogram name="Renderer.Layout.TextWrapPretty.Fail" units="ms"
+    expires_after="2023-10-20">
+  <owner>kojii@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>The time spent to try optimizing lines breaks but failed.</summary>
+</histogram>
+
 <histogram name="Renderer.PaintPreview.Capture.MainFrameBlinkCaptureDuration"
     units="ms" expires_after="2023-11-12">
   <owner>ckitagawa@chromium.org</owner>

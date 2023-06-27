@@ -3931,6 +3931,8 @@ enum WebFeature {
   kClientHintsUAFormFactor = 4591,
   kURLSearchParamsHasFnBehaviourDiverged = 4592,
   kURLSearchParamsDeleteFnBehaviourDiverged = 4593,
+  kTextWrapPretty = 4594,
+  kTextWrapPrettyFail = 4595,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -43484,6 +43484,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4591" label="ClientHintsUAFormFactor"/>
   <int value="4592" label="URLSearchParamsHasFnBehaviourDiverged"/>
   <int value="4593" label="URLSearchParamsDeleteFnBehaviourDiverged"/>
+  <int value="4594" label="TextWrapPretty"/>
+  <int value="4595" label="TextWrapPrettyFail"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

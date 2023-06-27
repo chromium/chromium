@@ -346,7 +346,7 @@ struct DisabledByLineBreakerData {
     )HTML"},
     // `break-sapces` is not supported.
     {true, R"HTML(
-      <div id="target" style="white-space: break-spaces">0123 5678 1234 6789 23 567 90 45</div>
+      <div id="target" style="white-space: break-spaces; text-wrap: pretty">0123 5678 1234 6789 23 567 90 45</div>
     )HTML"},
     // `box-decoration-break: clone` is not supported.
     {true, R"HTML(
@@ -367,6 +367,7 @@ INSTANTIATE_TEST_SUITE_P(NGScoreLineBreakerTest,
                          testing::ValuesIn(disabled_by_line_breaker_data));
 
 TEST_P(DisabledByLineBreakerTest, Data) {
+  ScopedCSSTextWrapPrettyForTest enable(true);
   const auto& data = GetParam();
   LoadAhem();
   SetBodyInnerHTML(String(R"HTML(
@@ -376,9 +377,15 @@ TEST_P(DisabledByLineBreakerTest, Data) {
       font-family: Ahem;
       font-size: 10px;
       width: 10ch;
+      text-wrap: pretty;
     }
     </style>
   )HTML") + data.html);
+  EXPECT_NE(data.disabled,
+            GetDocument().IsUseCounted(WebFeature::kTextWrapPretty));
+  EXPECT_EQ(data.disabled,
+            GetDocument().IsUseCounted(WebFeature::kTextWrapPrettyFail));
+
   const NGInlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
@@ -461,6 +468,24 @@ TEST_F(NGScoreLineBreakerTest, Zoom) {
     }
     EXPECT_EQ(zoomed_score, scores2[i]) << i;
   }
+}
+
+TEST_F(NGScoreLineBreakerTest, UseCountNotCountedForWrap) {
+  ScopedCSSTextWrapPrettyForTest enable(true);
+  SetBodyInnerHTML(R"HTML(
+    <div>012</div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kTextWrapPretty));
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kTextWrapPrettyFail));
+}
+
+TEST_F(NGScoreLineBreakerTest, UseCountNotCountedForBalance) {
+  ScopedCSSTextWrapPrettyForTest enable(true);
+  SetBodyInnerHTML(R"HTML(
+    <div style="text-wrap: balance>012</div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kTextWrapPretty));
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kTextWrapPrettyFail));
 }
 
 }  // namespace blink

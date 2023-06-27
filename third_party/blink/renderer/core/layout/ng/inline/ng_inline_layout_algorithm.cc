@@ -202,15 +202,31 @@ class NGLineBreakStrategy {
     if (UNLIKELY(!score_line_break_context_->IsActive())) {
       return;
     }
+    const base::ElapsedTimer timer;
     NGLineWidths line_widths;
     if (UNLIKELY(!line_widths.Set(node, opportunities, break_token))) {
       // The next line may have less opportunities that keep running, without
       // suspending the context.
+      UMA_HISTOGRAM_TIMES("Renderer.Layout.TextWrapPretty.Fail",
+                          timer.Elapsed());
+      UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapPrettyFail);
       return;
     }
     NGScoreLineBreaker optimizer(node, space, line_widths, break_token,
                                  exclusion_space);
     optimizer.OptimalBreakPoints(leading_floats, *score_line_break_context_);
+    if (score_line_break_context_->IsActive()) {
+      // There are more lines until the end of a paragraph, keep looking.
+      return;
+    }
+    if (!score_line_break_context_->LineBreakPoints().empty()) {
+      UMA_HISTOGRAM_TIMES("Renderer.Layout.TextWrapPretty", timer.Elapsed());
+      UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapPretty);
+    } else {
+      UMA_HISTOGRAM_TIMES("Renderer.Layout.TextWrapPretty.Fail",
+                          timer.Elapsed());
+      UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapPrettyFail);
+    }
   }
 
   bool initiate_balancing_ = false;
