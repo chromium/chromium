@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
-#import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -33,6 +32,10 @@
 #include "ui/accelerated_widget_mac/io_surface_context.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/scoped_cgl.h"
+#endif
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
 #endif
 
 // From ANGLE's EGL/eglext_angle.h. This should be included instead of being
@@ -75,17 +78,17 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
   if (use_remote_layer_api_) {
 #if BUILDFLAG(IS_MAC)
     CGSConnectionID connection_id = CGSMainConnectionID();
-    ca_context_.reset([[CAContext contextWithCGSConnection:connection_id
-                                                   options:@{}] retain]);
+    ca_context_ = [CAContext contextWithCGSConnection:connection_id
+                                              options:@{}];
 #else
     // Use a very large display ID to ensure that the context is never put
     // on-screen without being explicitly parented.
-    ca_context_.reset([[CAContext remoteContextWithOptions:@{
+    ca_context_ = [CAContext remoteContextWithOptions:@{
       kCAContextIgnoresHitTest : @YES,
       kCAContextDisplayId : @10000
-    }] retain]);
+    }];
 #endif
-    [ca_context_ setLayer:ca_layer_tree_coordinator_->GetCALayerForDisplay()];
+    ca_context_.layer = ca_layer_tree_coordinator_->GetCALayerForDisplay();
   }
 
 #if BUILDFLAG(IS_MAC)
@@ -139,11 +142,12 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
                                  &angle_device_attrib)) {
       EGLDeviceEXT angle_device =
           reinterpret_cast<EGLDeviceEXT>(angle_device_attrib);
-      EGLAttrib metal_device = 0;
+      EGLAttrib metal_device_attrib = 0;
       if (eglQueryDeviceAttribEXT(angle_device, EGL_METAL_DEVICE_ANGLE,
-                                  &metal_device)) {
+                                  &metal_device_attrib)) {
+        id<MTLDevice> metal_device = (__bridge id)(void*)metal_device_attrib;
         ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
-            ->SetMetalDevice((id<MTLDevice>)metal_device);
+            ->SetMetalDevice(metal_device);
       }
     }
   }
@@ -227,20 +231,19 @@ bool ImageTransportSurfaceOverlayMacEGL::ScheduleOverlayPlane(
   // nearest rect as this eventually gets made into a CALayer. CALayers work in
   // floats.
   const ui::CARendererLayerParams overlay_as_calayer_params(
-      false,          // is_clipped
-      gfx::Rect(),    // clip_rect
-      gfx::RRectF(),  // rounded_corner_bounds
-      0,              // sorting_context_id
-      gfx::Transform(), image, overlay_plane_data.color_space,
-      overlay_plane_data.crop_rect,                           // contents_rect
-      gfx::ToNearestRect(overlay_plane_data.display_bounds),  // rect
-      SkColors::kTransparent,  // background_color
-      0,                       // edge_aa_mask
-      1.f,                     // opacity
-      GL_LINEAR,               // filter
-      gfx::HDRMode::kDefault,
-      absl::nullopt,                     // hdr_metadata
-      gfx::ProtectedVideoType::kClear);  // protected_video_type
+      /*is_clipped=*/false,
+      /*clip_rect=*/gfx::Rect(),
+      /*rounded_corner_bounds=*/gfx::RRectF(),
+      /*sorting_context_id=*/0, gfx::Transform(), image,
+      overlay_plane_data.color_space,
+      /*contents_rect=*/overlay_plane_data.crop_rect,
+      /*rect=*/gfx::ToNearestRect(overlay_plane_data.display_bounds),
+      /*background_color=*/SkColors::kTransparent,
+      /*edge_aa_mask=*/0,
+      /*opacity=*/1.f,
+      /*nearest_neighbor_filter=*/GL_LINEAR, gfx::HDRMode::kDefault,
+      /*hdr_metadata=*/absl::nullopt,
+      /*protected_video_type=*/gfx::ProtectedVideoType::kClear);
   return ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
       ->ScheduleCALayer(overlay_as_calayer_params);
 }

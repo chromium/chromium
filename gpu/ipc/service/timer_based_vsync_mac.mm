@@ -9,8 +9,11 @@
 #include "base/memory/singleton.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/task/single_thread_task_runner.h"
-
 #include "base/threading/platform_thread.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace gpu {
 

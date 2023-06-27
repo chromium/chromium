@@ -9,6 +9,10 @@
 #include "ui/gl/gl_surface_stub.h"
 #include "ui/gl/init/gl_factory.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace gpu {
 
 // static
