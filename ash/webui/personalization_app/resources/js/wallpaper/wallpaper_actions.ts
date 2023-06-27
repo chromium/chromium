@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
+import {CurrentAttribution, CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
 
 import {DisplayableImage} from './constants.js';
 
@@ -35,6 +35,7 @@ export enum WallpaperActionName {
   BEGIN_UPDATE_DAILY_REFRESH_IMAGE = 'begin_update_daily_refresh_image',
   CLEAR_DAILY_REFRESH_ACTION = 'clear_daily_refresh_action',
   END_SELECT_IMAGE = 'end_select_image',
+  SET_ATTRIBUTION = 'set_attribution',
   SET_COLLECTIONS = 'set_collections',
   SET_DAILY_REFRESH_COLLECTION_ID = 'set_daily_refresh_collection_id',
   SET_GOOGLE_PHOTOS_DAILY_REFRESH_ALBUM_ID =
@@ -58,10 +59,10 @@ export type WallpaperActions =
     BeginLoadImagesForCollectionsAction|BeginLoadLocalImagesAction|
     BeginLoadLocalImageDataAction|BeginUpdateDailyRefreshImageAction|
     BeginLoadSelectedImageAction|BeginSelectImageAction|ClearDailyRefreshAction|
-    EndSelectImageAction|SetCollectionsAction|SetDailyRefreshCollectionIdAction|
-    SetGooglePhotosDailyRefreshAlbumIdAction|SetGooglePhotosEnabledAction|
-    SetImagesForCollectionAction|SetDefaultImageThumbnailAction|
-    SetLocalImageDataAction|SetLocalImagesAction|
+    EndSelectImageAction|SetAttributionAction|SetCollectionsAction|
+    SetDailyRefreshCollectionIdAction|SetGooglePhotosDailyRefreshAlbumIdAction|
+    SetGooglePhotosEnabledAction|SetImagesForCollectionAction|
+    SetDefaultImageThumbnailAction|SetLocalImageDataAction|SetLocalImagesAction|
     SetUpdatedDailyRefreshImageAction|SetSelectedImageAction|
     SetFullscreenEnabledAction;
 
@@ -153,8 +154,8 @@ export type BeginLoadGooglePhotosAlbumAction = Action&{
 };
 
 /**
- * Notify that the app is loading the list of Google Photos photos for the album
- * associated with the specified id.
+ * Notifies that the app is loading the list of Google Photos photos for the
+ * album associated with the specified id.
  */
 export function beginLoadGooglePhotosAlbumAction(albumId: string):
     BeginLoadGooglePhotosAlbumAction {
@@ -166,7 +167,7 @@ export type BeginLoadGooglePhotosAlbumsAction = Action&{
 };
 
 /**
- * Notify that the app is loading the list of Google Photos albums.
+ * Notifies that the app is loading the list of Google Photos albums.
  */
 export function beginLoadGooglePhotosAlbumsAction():
     BeginLoadGooglePhotosAlbumsAction {
@@ -178,7 +179,7 @@ export type BeginLoadGooglePhotosSharedAlbumsAction = Action&{
 };
 
 /**
- * Notify that the app is loading the list of Google Photos albums.
+ * Notifies that the app is loading the list of Google Photos albums.
  */
 export function beginLoadGooglePhotosSharedAlbumsAction():
     BeginLoadGooglePhotosSharedAlbumsAction {
@@ -190,7 +191,7 @@ export type BeginLoadGooglePhotosEnabledAction = Action&{
 };
 
 /**
- * Notify that the app is loading whether the user is allowed to access Google
+ * Notifies that the app is loading whether the user is allowed to access Google
  * Photos.
  */
 export function beginLoadGooglePhotosEnabledAction():
@@ -203,7 +204,7 @@ export type BeginLoadGooglePhotosPhotosAction = Action&{
 };
 
 /**
- * Notify that the app is loading the list of Google Photos photos.
+ * Notifies that the app is loading the list of Google Photos photos.
  */
 export function beginLoadGooglePhotosPhotosAction():
     BeginLoadGooglePhotosPhotosAction {
@@ -216,7 +217,7 @@ export type BeginLoadImagesForCollectionsAction = Action&{
 };
 
 /**
- * Notify that app is loading image list for the given collection.
+ * Notifies that app is loading image list for the given collection.
  */
 export function beginLoadImagesForCollectionsAction(
     collections: WallpaperCollection[]): BeginLoadImagesForCollectionsAction {
@@ -240,7 +241,7 @@ export type BeginLoadLocalImagesAction = Action&{
 };
 
 /**
- * Notify that app is loading local image list.
+ * Notifies that app is loading local image list.
  */
 export function beginLoadLocalImagesAction(): BeginLoadLocalImagesAction {
   return {name: WallpaperActionName.BEGIN_LOAD_LOCAL_IMAGES};
@@ -252,7 +253,7 @@ export type BeginLoadLocalImageDataAction = Action&{
 };
 
 /**
- * Notify that app is loading thumbnail for the given local image.
+ * Notifies that app is loading thumbnail for the given local image.
  */
 export function beginLoadLocalImageDataAction(image: FilePath):
     BeginLoadLocalImageDataAction {
@@ -267,7 +268,7 @@ export type BeginUpdateDailyRefreshImageAction = Action&{
 };
 
 /**
- * Notify that a user has clicked on the refresh button.
+ * Notifies that a user has clicked on the refresh button.
  */
 export function beginUpdateDailyRefreshImageAction():
     BeginUpdateDailyRefreshImageAction {
@@ -281,7 +282,7 @@ export type BeginLoadSelectedImageAction = Action&{
 };
 
 /**
- * Notify that app is loading currently selected image information.
+ * Notifies that app is loading currently selected image information.
  */
 export function beginLoadSelectedImageAction(): BeginLoadSelectedImageAction {
   return {name: WallpaperActionName.BEGIN_LOAD_SELECTED_IMAGE};
@@ -293,7 +294,7 @@ export type BeginSelectImageAction = Action&{
 };
 
 /**
- * Notify that a user has clicked on an image to set as wallpaper.
+ * Notifies that a user has clicked on an image to set as wallpaper.
  */
 export function beginSelectImageAction(image: DisplayableImage):
     BeginSelectImageAction {
@@ -307,11 +308,28 @@ export type EndSelectImageAction = Action&{
 };
 
 /**
- * Notify that the user-initiated action to set image has finished.
+ * Notifies that the user-initiated action to set image has finished.
  */
 export function endSelectImageAction(
     image: DisplayableImage, success: boolean): EndSelectImageAction {
   return {name: WallpaperActionName.END_SELECT_IMAGE, image, success};
+}
+
+export type SetAttributionAction = Action&{
+  name: WallpaperActionName.SET_ATTRIBUTION,
+  attribution: CurrentAttribution | null,
+};
+
+/**
+ * Sets the attribution of the current wallpaper. May be called with null if an
+ * error occurred.
+ */
+export function setAttributionAction(attribution: CurrentAttribution|
+                                     null): SetAttributionAction {
+  return {
+    name: WallpaperActionName.SET_ATTRIBUTION,
+    attribution,
+  };
 }
 
 export type SetCollectionsAction = Action&{
@@ -320,7 +338,7 @@ export type SetCollectionsAction = Action&{
 };
 
 /**
- * Set the collections. May be called with null if an error occurred.
+ * Sets the collections. May be called with null if an error occurred.
  */
 export function setCollectionsAction(collections: WallpaperCollection[]|
                                      null): SetCollectionsAction {
@@ -336,7 +354,7 @@ export type SetDailyRefreshCollectionIdAction = Action&{
 };
 
 /**
- * Set and enable daily refresh for given collectionId.
+ * Sets and enable daily refresh for given collectionId.
  */
 export function setDailyRefreshCollectionIdAction(collectionId: string):
     SetDailyRefreshCollectionIdAction {
@@ -352,7 +370,7 @@ export type SetGooglePhotosDailyRefreshAlbumIdAction = Action&{
 };
 
 /**
- * Set and enable daily refresh for given Google Photos albumId.
+ * Sets and enable daily refresh for given Google Photos albumId.
  */
 export function setGooglePhotosDailyRefreshAlbumIdAction(albumId: string):
     SetGooglePhotosDailyRefreshAlbumIdAction {
@@ -367,7 +385,7 @@ export type ClearDailyRefreshAction = Action&{
 };
 
 /**
- * Clear the data related to daily refresh, indicating daily refresh is not
+ * Clears the data related to daily refresh, indicating daily refresh is not
  * active.
  */
 export function clearDailyRefreshAction(): ClearDailyRefreshAction {
@@ -394,7 +412,7 @@ export type SetImagesForCollectionAction = Action&{
 };
 
 /**
- * Set the images for a given collection. May be called with null if an error
+ * Sets the images for a given collection. May be called with null if an error
  * occurred.
  */
 export function setImagesForCollectionAction(
@@ -427,7 +445,7 @@ export type SetLocalImageDataAction = Action&{
 };
 
 /**
- * Set the thumbnail data for a local image.
+ * Sets the thumbnail data for a local image.
  */
 export function setLocalImageDataAction(
     filePath: FilePath, data: Url): SetLocalImageDataAction {
@@ -443,7 +461,7 @@ export type SetLocalImagesAction = Action&{
   images: FilePath[] | null,
 };
 
-/** Set the list of local images. */
+/** Sets the list of local images. */
 export function setLocalImagesAction(images: FilePath[]|
                                      null): SetLocalImagesAction {
   return {
@@ -457,7 +475,7 @@ export type SetUpdatedDailyRefreshImageAction = Action&{
 };
 
 /**
- * Notify that a image has been refreshed.
+ * Notifies that a image has been refreshed.
  */
 export function setUpdatedDailyRefreshImageAction():
     SetUpdatedDailyRefreshImageAction {
@@ -498,7 +516,7 @@ export type SetFullscreenEnabledAction = Action&{
 };
 
 /**
- * Enable/disable the fullscreen preview mode for wallpaper.
+ * Enables/disables the fullscreen preview mode for wallpaper.
  */
 export function setFullscreenEnabledAction(enabled: boolean):
     SetFullscreenEnabledAction {

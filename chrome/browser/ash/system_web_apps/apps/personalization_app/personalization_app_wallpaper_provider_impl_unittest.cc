@@ -114,6 +114,12 @@ class TestWallpaperObserver
     current_wallpaper_ = std::move(image);
   }
 
+  void OnAttributionChanged(
+      ash::personalization_app::mojom::CurrentAttributionPtr attribution)
+      override {
+    current_attribution_ = std::move(attribution);
+  }
+
   mojo::PendingRemote<ash::personalization_app::mojom::WallpaperObserver>
   pending_remote() {
     DCHECK(!wallpaper_observer_receiver_.is_bound());
@@ -134,6 +140,9 @@ class TestWallpaperObserver
       wallpaper_observer_receiver_{this};
 
   ash::personalization_app::mojom::CurrentWallpaperPtr current_wallpaper_ =
+      nullptr;
+
+  ash::personalization_app::mojom::CurrentAttributionPtr current_attribution_ =
       nullptr;
 };
 

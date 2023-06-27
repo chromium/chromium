@@ -377,6 +377,7 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
     DVLOG(1) << "No wallpaper info for active user. This should only happen in "
                 "tests.";
     NotifyWallpaperChanged(nullptr);
+    NotifyAttributionChanged(nullptr);
     return;
   }
 
@@ -401,20 +402,22 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
     case ash::WallpaperType::kCustomized: {
       base::FilePath file_name = base::FilePath(info->location).BaseName();
 
-      // Do not show file extension in user-visible selected details text.
-      std::vector<std::string> attribution = {
-          file_name.RemoveExtension().value()};
-
       // Match selected wallpaper based on full filename including extension.
       const std::string& key = info->user_file_path.empty()
                                    ? file_name.value()
                                    : info->user_file_path;
-
       NotifyWallpaperChanged(
           ash::personalization_app::mojom::CurrentWallpaper::New(
-              std::move(attribution), info->layout, info->type, key,
+              info->layout, info->type, key,
               /*description_title=*/std::string(),
               /*description_content=*/std::string()));
+
+      // Do not show file extension in user-visible selected details text.
+      std::vector<std::string> attribution = {
+          file_name.RemoveExtension().value()};
+      NotifyAttributionChanged(
+          ash::personalization_app::mojom::CurrentAttribution::New(
+              std::move(attribution), key));
 
       return;
     }
@@ -431,15 +434,18 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
     case ash::WallpaperType::kOneShot:
     case ash::WallpaperType::kOobe:
     case ash::WallpaperType::kPolicy:
-    case ash::WallpaperType::kThirdParty:
+    case ash::WallpaperType::kThirdParty: {
+      const std::string key = base::UnguessableToken::Create().ToString();
       NotifyWallpaperChanged(
           ash::personalization_app::mojom::CurrentWallpaper::New(
-              /*attribution=*/std::vector<std::string>(), info->layout,
-              info->type,
-              /*key=*/base::UnguessableToken::Create().ToString(),
+              info->layout, info->type, key,
               /*description_title=*/std::string(),
               /*description_content=*/std::string()));
+      NotifyAttributionChanged(
+          ash::personalization_app::mojom::CurrentAttribution::New(
+              std::vector<std::string>(), key));
       return;
+    }
     case ash::WallpaperType::kCount:
       break;
   }
@@ -448,12 +454,14 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
   // ChromeOS persists through an upgrade or is synced to a different
   // version of ChromeOS. Handle the error as gracefully as possible. Pick a
   // safe wallpaper type `kOneShot` to send to personalization app.
+  const std::string key = base::UnguessableToken::Create().ToString();
   NotifyWallpaperChanged(ash::personalization_app::mojom::CurrentWallpaper::New(
-      /*attribution=*/std::vector<std::string>(), info->layout,
-      ash::WallpaperType::kOneShot,
-      /*key=*/base::UnguessableToken::Create().ToString(),
+      info->layout, ash::WallpaperType::kOneShot, key,
       /*description_title=*/std::string(),
       /*description_content=*/std::string()));
+  NotifyAttributionChanged(
+      ash::personalization_app::mojom::CurrentAttribution::New(
+          std::vector<std::string>(), key));
 
   // Continue to record data on how frequently this happens.
   SCOPED_CRASH_KEY_STRING32(
@@ -977,12 +985,15 @@ void PersonalizationAppWallpaperProviderImpl::FindAttribution(
     const absl::optional<std::vector<backdrop::Collection>>& collections) {
   DCHECK(!wallpaper_attribution_info_fetcher_);
   if (!collections.has_value() || collections->empty()) {
+    const std::string key = GetOnlineWallpaperKey(info);
     NotifyWallpaperChanged(
         ash::personalization_app::mojom::CurrentWallpaper::New(
-            /*attribution=*/std::vector<std::string>(), info.layout, info.type,
-            GetOnlineWallpaperKey(info), /*description_title=*/std::string(),
+            info.layout, info.type, key,
+            /*description_title=*/std::string(),
             /*description_content=*/std::string()));
-
+    NotifyAttributionChanged(
+        ash::personalization_app::mojom::CurrentAttribution::New(
+            std::vector<std::string>(), key));
     return;
   }
 
@@ -1026,16 +1037,19 @@ void PersonalizationAppWallpaperProviderImpl::FindImageMetadataInCollection(
   }
 
   if (backend_image) {
+    NotifyWallpaperChanged(
+        ash::personalization_app::mojom::CurrentWallpaper::New(
+            info.layout, info.type,
+            /*key=*/base::NumberToString(backend_image->unit_id()),
+            backend_image->description_title(),
+            backend_image->description_content()));
     std::vector<std::string> attributions;
     for (const auto& attr : backend_image->attribution()) {
       attributions.push_back(attr.text());
     }
-    NotifyWallpaperChanged(
-        ash::personalization_app::mojom::CurrentWallpaper::New(
-            attributions, info.layout, info.type,
-            /*key=*/base::NumberToString(backend_image->unit_id()),
-            backend_image->description_title(),
-            backend_image->description_content()));
+    NotifyAttributionChanged(
+        ash::personalization_app::mojom::CurrentAttribution::New(
+            attributions, base::NumberToString(backend_image->unit_id())));
     wallpaper_attribution_info_fetcher_.reset();
     return;
   }
@@ -1043,11 +1057,15 @@ void PersonalizationAppWallpaperProviderImpl::FindImageMetadataInCollection(
   ++current_index;
 
   if (current_index >= collections->size()) {
+    const std::string key = GetOnlineWallpaperKey(info);
     NotifyWallpaperChanged(
         ash::personalization_app::mojom::CurrentWallpaper::New(
-            /*attribution=*/std::vector<std::string>(), info.layout, info.type,
-            GetOnlineWallpaperKey(info), /*description_title=*/std::string(),
+            info.layout, info.type, key,
+            /*description_title=*/std::string(),
             /*description_content=*/std::string()));
+    NotifyAttributionChanged(
+        ash::personalization_app::mojom::CurrentAttribution::New(
+            std::vector<std::string>(), key));
     wallpaper_attribution_info_fetcher_.reset();
     return;
   }
@@ -1083,18 +1101,20 @@ void PersonalizationAppWallpaperProviderImpl::SendGooglePhotosAttribution(
     return;
   }
 
+  // NOTE: Old clients may not support |dedup_key| when setting Google Photos
+  // wallpaper, so use |location| in such cases for backwards compatibility.
+  NotifyWallpaperChanged(ash::personalization_app::mojom::CurrentWallpaper::New(
+      info.layout, info.type,
+      /*key=*/info.dedup_key.value_or(info.location),
+      /*description_title=*/std::string(),
+      /*description_content=*/std::string()));
   std::vector<std::string> attribution;
   if (!photo.is_null()) {
     attribution.push_back(photo->name);
   }
-
-  // NOTE: Old clients may not support |dedup_key| when setting Google Photos
-  // wallpaper, so use |location| in such cases for backwards compatibility.
-  NotifyWallpaperChanged(ash::personalization_app::mojom::CurrentWallpaper::New(
-      attribution, info.layout, info.type,
-      /*key=*/info.dedup_key.value_or(info.location),
-      /*description_title=*/std::string(),
-      /*description_content=*/std::string()));
+  NotifyAttributionChanged(
+      ash::personalization_app::mojom::CurrentAttribution::New(
+          attribution, info.dedup_key.value_or(info.location)));
 }
 
 void PersonalizationAppWallpaperProviderImpl::SetMinimizedWindowStateForPreview(
@@ -1106,6 +1126,12 @@ void PersonalizationAppWallpaperProviderImpl::SetMinimizedWindowStateForPreview(
   } else {
     wallpaper_controller->RestoreMinimizedWindows(user_id_hash);
   }
+}
+
+void PersonalizationAppWallpaperProviderImpl::NotifyAttributionChanged(
+    ash::personalization_app::mojom::CurrentAttributionPtr attribution) {
+  DCHECK(wallpaper_observer_remote_.is_bound());
+  wallpaper_observer_remote_->OnAttributionChanged(std::move(attribution));
 }
 
 void PersonalizationAppWallpaperProviderImpl::NotifyWallpaperChanged(

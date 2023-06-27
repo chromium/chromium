@@ -16,7 +16,7 @@ import '../../css/cros_button_style.css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {CurrentWallpaper, WallpaperType} from '../../personalization_app.mojom-webui.js';
+import {CurrentAttribution, CurrentWallpaper, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -37,6 +37,10 @@ export class WallpaperPreview extends WithPersonalizationStore {
 
   static get properties() {
     return {
+      attribution_: {
+        type: Object,
+        value: null,
+      },
       image_: {
         type: Object,
         value: null,
@@ -59,6 +63,7 @@ export class WallpaperPreview extends WithPersonalizationStore {
     };
   }
 
+  private attribution_: CurrentAttribution|null;
   private image_: CurrentWallpaper|null;
   private imageLoading_: boolean;
   private loading_: boolean;
@@ -68,11 +73,13 @@ export class WallpaperPreview extends WithPersonalizationStore {
   override connectedCallback() {
     super.connectedCallback();
     WallpaperObserver.initWallpaperObserverIfNeeded();
+    this.watch('attribution_', state => state.wallpaper.attribution);
     this.watch('image_', state => state.wallpaper.currentSelected);
     this.watch(
         'imageLoading_',
         state => state.wallpaper.loading.setImage > 0 ||
-            state.wallpaper.loading.selected ||
+            state.wallpaper.loading.selected.image ||
+            state.wallpaper.loading.selected.attribution ||
             state.wallpaper.loading.refreshWallpaper);
     this.updateFromStore();
   }
@@ -89,21 +96,23 @@ export class WallpaperPreview extends WithPersonalizationStore {
     return getWallpaperSrc(image);
   }
 
-  private getImageAltDescription_(image: CurrentWallpaper|null): string {
-    if (!image) {
+  private getImageAltDescription_(
+      image: CurrentWallpaper|null,
+      attribution: CurrentAttribution|null): string {
+    if (!image || !attribution || image.key !== attribution.key) {
       return `${this.i18n('currentlySet')} ${
           this.i18n('unknownImageAttribution')}`;
     }
     if (image.type === WallpaperType.kDefault) {
       return `${this.i18n('currentlySet')} ${this.i18n('defaultWallpaper')}`;
     }
-    if (isNonEmptyArray(image.attribution)) {
-      return [this.i18n('currentlySet'), ...image.attribution].join(' ');
+    if (isNonEmptyArray(attribution.attribution)) {
+      return [this.i18n('currentlySet'), ...attribution.attribution].join(' ');
     }
     // Fallback to cached attribution.
-    const attribution = getLocalStorageAttribution(image.key);
-    if (isNonEmptyArray(attribution)) {
-      return [this.i18n('currentlySet'), ...attribution].join(' ');
+    const cachedAttribution = getLocalStorageAttribution(image.key);
+    if (isNonEmptyArray(cachedAttribution)) {
+      return [this.i18n('currentlySet'), ...cachedAttribution].join(' ');
     }
     return `${this.i18n('currentlySet')} ${
         this.i18n('unknownImageAttribution')}`;

@@ -22,7 +22,6 @@ suite('WallpaperFullscreenTest', function() {
   let personalizationStore: TestPersonalizationStore;
 
   const currentSelectedCustomImage: CurrentWallpaper = {
-    attribution: ['Custom image'],
     descriptionContent: '',
     descriptionTitle: '',
     key: 'testing',

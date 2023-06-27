@@ -398,6 +398,8 @@ export async function selectWallpaper(
   if (!success) {
     console.warn('Error setting wallpaper');
     store.dispatch(
+        action.setAttributionAction(store.data.wallpaper.attribution));
+    store.dispatch(
         action.setSelectedImageAction(store.data.wallpaper.currentSelected));
   }
   store.endBatchUpdate();
@@ -518,6 +520,7 @@ export async function updateDailyRefreshWallpaper(
   if (success) {
     store.dispatch(action.setUpdatedDailyRefreshImageAction());
   } else {
+    const currentAttribution = store.data.wallpaper.attribution;
     const currentWallpaper = store.data.wallpaper.currentSelected;
     const dailyRefresh = store.data.wallpaper.dailyRefresh;
     // Displays error if daily refresh is activated for Google Photos album
@@ -528,6 +531,7 @@ export async function updateDailyRefreshWallpaper(
     // online wallpaper collections.
     if (!!dailyRefresh && dailyRefresh.type == DailyRefreshType.GOOGLE_PHOTOS) {
       store.dispatch(action.setUpdatedDailyRefreshImageAction());
+      store.dispatch(action.setAttributionAction(currentAttribution));
       store.dispatch(action.setSelectedImageAction(currentWallpaper));
       store.dispatch(setErrorAction(
           {message: loadTimeData.getString('googlePhotosError')}));

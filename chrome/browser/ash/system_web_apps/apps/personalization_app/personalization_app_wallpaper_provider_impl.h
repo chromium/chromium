@@ -275,6 +275,9 @@ class PersonalizationAppWallpaperProviderImpl
   // minimized windows to their previous state.
   void SetMinimizedWindowStateForPreview(bool preview_mode);
 
+  void NotifyAttributionChanged(
+      ash::personalization_app::mojom::CurrentAttributionPtr attribution);
+
   void NotifyWallpaperChanged(
       ash::personalization_app::mojom::CurrentWallpaperPtr current_wallpaper);
 

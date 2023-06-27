@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CurrentWallpaper, DefaultImageSymbol, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, kDefaultImageSymbol, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverRemote, WallpaperProviderInterface, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {CurrentAttribution, CurrentWallpaper, DefaultImageSymbol, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, kDefaultImageSymbol, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverRemote, WallpaperProviderInterface, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -138,8 +138,12 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
       'LocalImage1.png': {url: 'data:image/png;base64,localimage1data'},
     };
 
-    this.currentWallpaper = {
+    this.attribution = {
       attribution: ['Image 0 light'],
+      key: '1',
+    };
+
+    this.currentWallpaper = {
       descriptionContent: 'test content',
       descriptionTitle: 'test title',
       key: '1',
@@ -171,6 +175,7 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
   localImageData: Record<string|DefaultImageSymbol, Url>;
   defaultImageThumbnail:
       Url = {url: 'data:image/png;base64,default_image_thumbnail'};
+  attribution: CurrentAttribution;
   currentWallpaper: CurrentWallpaper;
   albumId: string;
   collectionId: string;
@@ -274,6 +279,7 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
     this.wallpaperObserverRemote = remote;
     window.setTimeout(() => {
       this.wallpaperObserverRemote!.onWallpaperChanged(this.currentWallpaper);
+      this.wallpaperObserverRemote!.onAttributionChanged(this.attribution);
     }, this.wallpaperObserverUpdateTimeout);
   }
 

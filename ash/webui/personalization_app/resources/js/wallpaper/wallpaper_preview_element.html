@@ -114,7 +114,7 @@
       <div id="imageContainer" class="photo-images-container clickable"
           on-click="onClickWallpaper_" on-keypress="onClickWallpaper_">
         <div class="photo-images-border"></div>
-        <img alt$="[[getImageAltDescription_(image_)]]"
+        <img alt$="[[getImageAltDescription_(image_, attribution_)]]"
             src$="[[getWallpaperSrc_(image_)]]">
       </div>
     </template>
@@ -127,7 +127,7 @@
         </div>
         <div id="imageContainer" class="photo-images-container">
           <div class="photo-images-border"></div>
-          <img alt$="[[getImageAltDescription_(image_)]]"
+          <img alt$="[[getImageAltDescription_(image_, attribution_)]]"
               aria-description="$i18n{managedSetting}"
               src$="[[getWallpaperSrc_(image_)]]">
         </div>
@@ -141,7 +141,7 @@
         </div>
         <div id="imageContainer" class="photo-images-container">
           <div class="photo-images-border"></div>
-          <img alt$="[[getImageAltDescription_(image_)]]"
+          <img alt$="[[getImageAltDescription_(image_, attribution_)]]"
               aria-description="$i18n{managedSetting}"
               class="disabled"
               src$="[[getWallpaperSrc_(image_)]]">

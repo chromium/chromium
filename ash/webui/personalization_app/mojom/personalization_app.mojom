@@ -180,12 +180,19 @@ struct FetchGooglePhotosPhotosResponse {
     string? resume_token;
 };
 
-// Represents the currently selected wallpaper image.
-struct CurrentWallpaper {
+// Represents the attribution of the currently selected wallpaper image.
+struct CurrentAttribution {
   // Attribution text such as "Photo by John Doe" or the file name of the local
   // image.
   array<string> attribution;
 
+  // A unique identifier for the image. This is used to map the attribution to
+  // its image when a new attribution is cached to the local storage.
+  string key;
+};
+
+// Represents the currently selected wallpaper image.
+struct CurrentWallpaper {
   // The layout of the image.
   WallpaperLayout layout;
 
@@ -212,6 +219,11 @@ struct CurrentWallpaper {
 interface WallpaperObserver {
   // Triggered by |WallpaperControllerObserver::OnWallpaperPreviewEnded|.
   OnWallpaperPreviewEnded();
+
+  // Triggered by |WallpaperControllerObserver::OnAttributionChanged|. Retrieves
+  // updated attribution of the current wallpaper and calls the observer.
+  // |attribution| will be null if there is an error retrieving attribution.
+  OnAttributionChanged(CurrentAttribution? attribution);
 
   // Triggered by |WallpaperControllerObserver::OnWallpaperChanged|. Retrieves
   // updated wallpaper information and calls the observer. |image| will be null
