@@ -146,10 +146,26 @@ void SimpleMenuModel::AddSeparator(MenuSeparatorType separator_type) {
       return;
     }
     DCHECK_EQ(SPACING_SEPARATOR, separator_type);
-  } else if (items_.back().type == TYPE_SEPARATOR) {
-    DCHECK_EQ(NORMAL_SEPARATOR, separator_type);
-    DCHECK_EQ(NORMAL_SEPARATOR, items_.back().separator_type);
-    return;
+  } else {
+    size_t last_visible_item = items_.size();
+    for (auto i = items_.size(); i > 0; i--) {
+      if (IsVisibleAt(i - 1)) {
+        last_visible_item = i - 1;
+        break;
+      }
+    }
+
+    if (last_visible_item == items_.size()) {
+      // No visible items. Don't add a separator.
+      return;
+    }
+
+    if (items_.at(last_visible_item).type == TYPE_SEPARATOR) {
+      DCHECK_EQ(NORMAL_SEPARATOR, separator_type);
+      DCHECK_EQ(NORMAL_SEPARATOR, items_.at(last_visible_item).separator_type);
+      // The last item is already a separator. Don't add another.
+      return;
+    }
   }
 #if !defined(USE_AURA)
   if (separator_type == SPACING_SEPARATOR)

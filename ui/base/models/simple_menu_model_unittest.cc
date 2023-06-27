@@ -65,6 +65,32 @@ class DelegateBase : public SimpleMenuModel::Delegate {
   absl::optional<int> item_with_icon_;
 };
 
+TEST(SimpleMenuModelTest, AddSeparatorPreventsEmptySections) {
+  SimpleMenuModel simple_menu_model(nullptr);
+  simple_menu_model.AddSeparator(ui::NORMAL_SEPARATOR);
+
+  // Should return 0 since no item is present yet to be separated.
+  ASSERT_EQ(0u, simple_menu_model.GetItemCount());
+
+  simple_menu_model.AddItem(/*command_id*/ 1, u"menu item");
+  simple_menu_model.SetVisibleAt(/*index*/ 0, false);
+  simple_menu_model.AddSeparator(ui::NORMAL_SEPARATOR);
+
+  // Should return 1 since an invisible item doesn't need to be separated.
+  ASSERT_EQ(1u, simple_menu_model.GetItemCount());
+
+  simple_menu_model.SetVisibleAt(/*index*/ 0, true);
+  simple_menu_model.AddSeparator(ui::NORMAL_SEPARATOR);
+
+  // Should return 2 since a visible item should be separated.
+  ASSERT_EQ(2u, simple_menu_model.GetItemCount());
+
+  simple_menu_model.AddSeparator(ui::NORMAL_SEPARATOR);
+
+  // Should return 2 since a separator shouldn't directly precede another one.
+  ASSERT_EQ(2u, simple_menu_model.GetItemCount());
+}
+
 TEST(SimpleMenuModelTest, SetLabel) {
   SimpleMenuModel simple_menu_model(nullptr);
   simple_menu_model.AddItem(/*command_id*/ 5, u"menu item 0");
@@ -135,8 +161,8 @@ TEST(SimpleMenuModelTest, IsVisibleAtWithDelegateAndCommandVisible) {
   simple_menu_model.AddItem(/*command_id*/ 5, u"menu item");
   simple_menu_model.SetVisibleAt(/*index*/ 0, true);
 
-  // Should return false since the command_id 5 is enabled.
-  ASSERT_TRUE(simple_menu_model.IsEnabledAt(0));
+  // Should return true since the command_id 5 is visible.
+  ASSERT_TRUE(simple_menu_model.IsVisibleAt(0));
 }
 
 TEST(SimpleMenuModelTest, IsVisibleAtWithDelegateAndCommandNotVisible) {
@@ -147,7 +173,7 @@ TEST(SimpleMenuModelTest, IsVisibleAtWithDelegateAndCommandNotVisible) {
   simple_menu_model.SetVisibleAt(/*index*/ 0, true);
 
   // Should return false since the command_id 108 is not visible.
-  ASSERT_FALSE(simple_menu_model.IsEnabledAt(0));
+  ASSERT_FALSE(simple_menu_model.IsVisibleAt(0));
 }
 
 TEST(SimpleMenuModelTest, IsAlertedAtViaDelegate) {
