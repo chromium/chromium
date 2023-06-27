@@ -2603,6 +2603,25 @@ MIXIN_ARGS_NOT_LIST = """\
 }
 """
 
+MIXIN_LINUX_ARGS = """\
+{
+  'builder_mixin': {
+    'args': [ '--mixin-argument' ],
+    'linux_args': [ '--linux-mixin-argument' ],
+  },
+}
+"""
+
+MIXIN_APPEND = """\
+{
+  'builder_mixin': {
+    '$mixin_append': {
+      'args': [ '--mixin-argument' ],
+    },
+  },
+}
+"""
+
 # These mixins are invalid; if passed to check_input_file_consistency, they will
 # fail. These are used for output file consistency checks.
 SWARMING_MIXINS = """\
@@ -2645,72 +2664,6 @@ SWARMING_NAMED_CACHES = """\
           'file': 'cache_file',
         },
       ],
-    },
-  },
-}
-"""
-
-SWARMING_MIXINS_APPEND = """\
-{
-  'builder_mixin': {
-    '$mixin_append': {
-      'args': [ '--mixin-argument' ],
-      'linux_args': [ '--linux-mixin-argument' ],
-    },
-  },
-}
-"""
-
-SWARMING_MIXINS_APPEND_NOT_LIST = """\
-{
-  'builder_mixin': {
-    '$mixin_append': {
-      'args': 'I am not a list',
-    },
-  },
-}
-"""
-
-SWARMING_MIXINS_APPEND_TO_SWARMING = """\
-{
-  'builder_mixin': {
-    '$mixin_append': {
-      'swarming': [ 'swarming!' ],
-    },
-  },
-}
-"""
-
-SWARMING_MIXINS_APPEND_NAMED_CACHES = """\
-{
-  'builder_mixin': {
-    '$mixin_append': {
-      'swarming': {
-        'named_caches': [
-          {
-            'name': 'cache',
-            'file': 'cache_file',
-          },
-        ]
-      },
-    },
-  },
-}
-"""
-
-SWARMING_MIXINS_APPEND_OTHER_KEYS_WITH_NAMED_CACHES = """\
-{
-  'builder_mixin': {
-    '$mixin_append': {
-      'swarming': {
-        'named_caches': [
-          {
-            'name': 'cache',
-            'file': 'cache_file',
-          },
-        ],
-        'other_key': 'some value',
-      },
     },
   },
 }
@@ -2995,22 +2948,15 @@ class MixinTests(TestCase):
         '<snip>',
     ])
 
-  def test_mixin_append_args(self):
+  def test_mixin_append(self):
     fbb = FakeBBGen(self.args,
                     FOO_GTESTS_BUILDER_MIXIN_WATERFALL,
                     FOO_TEST_SUITE_WITH_ARGS,
                     LUCI_MILO_CFG,
-                    mixins=SWARMING_MIXINS_APPEND)
-    fbb.check_output_file_consistency(verbose=True)
-    self.assertFalse(fbb.printed_lines)
-
-  def test_mixin_append_linux_args(self):
-    fbb = FakeBBGen(self.args,
-                    FOO_LINUX_GTESTS_BUILDER_MIXIN_WATERFALL,
-                    FOO_TEST_SUITE_WITH_ARGS,
-                    LUCI_MILO_CFG,
-                    mixins=SWARMING_MIXINS_APPEND)
-    fbb.check_output_file_consistency(verbose=True)
+                    mixins=MIXIN_APPEND)
+    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
+                                r'.*\$mixin_append is no longer supported.*'):
+      fbb.check_input_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
   def test_swarming_named_caches(self):
@@ -3020,39 +2966,6 @@ class MixinTests(TestCase):
                     LUCI_MILO_CFG,
                     mixins=SWARMING_NAMED_CACHES)
     fbb.check_output_file_consistency(verbose=True)
-    self.assertFalse(fbb.printed_lines)
-
-  def test_mixin_append_swarming_named_caches(self):
-    fbb = FakeBBGen(self.args,
-                    FOO_GTESTS_BUILDER_MIXIN_WATERFALL,
-                    FOO_TEST_SUITE_WITH_SWARMING_NAMED_CACHES,
-                    LUCI_MILO_CFG,
-                    mixins=SWARMING_MIXINS_APPEND_NAMED_CACHES)
-    fbb.check_output_file_consistency(verbose=True)
-    self.assertFalse(fbb.printed_lines)
-
-  def test_mixin_append_swarming_error(self):
-    fbb = FakeBBGen(self.args,
-                    FOO_GTESTS_BUILDER_MIXIN_WATERFALL,
-                    FOO_TEST_SUITE_WITH_ARGS,
-                    LUCI_MILO_CFG,
-                    mixins=SWARMING_MIXINS_APPEND_OTHER_KEYS_WITH_NAMED_CACHES)
-    with self.assertRaisesRegex(
-        generate_buildbot_json.BBGenErr,
-        'Only named_caches is supported under swarming key in '
-        '\$mixin_append, but there are: \[\'named_caches\', \'other_key\'\]'):
-      fbb.check_output_file_consistency(verbose=True)
-    self.assertFalse(fbb.printed_lines)
-
-  def test_mixin_append_mixin_field_not_list(self):
-    fbb = FakeBBGen(self.args,
-                    FOO_GTESTS_BUILDER_MIXIN_WATERFALL,
-                    FOO_TEST_SUITE_WITH_ARGS,
-                    LUCI_MILO_CFG,
-                    mixins=SWARMING_MIXINS_APPEND_NOT_LIST)
-    with self.assertRaisesRegex(generate_buildbot_json.BBGenErr,
-                                'Key "args" in \$mixin_append must be a list.'):
-      fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
   def test_args_field_not_list(self):
@@ -3076,16 +2989,13 @@ class MixinTests(TestCase):
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
-  def test_mixin_append_test_field_not_list(self):
+  def test_linux_args_field_merging(self):
     fbb = FakeBBGen(self.args,
-                    FOO_GTESTS_BUILDER_MIXIN_WATERFALL,
-                    FOO_TEST_SUITE,
+                    FOO_LINUX_GTESTS_BUILDER_MIXIN_WATERFALL,
+                    FOO_TEST_SUITE_WITH_ARGS,
                     LUCI_MILO_CFG,
-                    mixins=SWARMING_MIXINS_APPEND_TO_SWARMING)
-    with self.assertRaisesRegex(
-        generate_buildbot_json.BBGenErr,
-        'Cannot apply \$mixin_append to non-list "swarming".'):
-      fbb.check_output_file_consistency(verbose=True)
+                    mixins=MIXIN_LINUX_ARGS)
+    fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
   def test_remove_mixin_builder_remove_waterfall(self):
