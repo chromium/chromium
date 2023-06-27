@@ -550,6 +550,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sInstanceSwitcher = new CachedFlag(INSTANCE_SWITCHER, true);
     public static final CachedFlag sInstantStart = new CachedFlag(INSTANT_START, false);
     public static final CachedFlag sInterestFeedV2 = new CachedFlag(INTEREST_FEED_V2, true);
+    public static final CachedFlag sPrivacyGuidePostMVP =
+            new CachedFlag(PRIVACY_GUIDE_POST_MVP, false);
     public static final CachedFlag sOmniboxMatchToolbarAndStatusBarColor =
             new CachedFlag(OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR, false);
     public static final CachedFlag sOmniboxModernizeVisualUpdate =
@@ -645,6 +647,7 @@ public abstract class ChromeFeatureList {
         sInstanceSwitcher,
         sInstantStart,
         sInterestFeedV2,
+        sPrivacyGuidePostMVP,
         sOmniboxMatchToolbarAndStatusBarColor,
         sOmniboxModernizeVisualUpdate,
         sOmniboxMostVisitedTilesAddRecycledViewPool,

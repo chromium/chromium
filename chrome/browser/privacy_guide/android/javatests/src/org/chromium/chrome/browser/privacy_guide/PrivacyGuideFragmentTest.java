@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.privacy_guide;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -923,6 +924,38 @@ public class PrivacyGuideFragmentTest {
                 .setInitialStateForCard(PrivacyGuideFragment.FragmentType.SAFE_BROWSING);
 
         mSettingsActivityTestRule.getFragment().setPrivacyGuideMetricsDelegateForTesting(null);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
+    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
+    public void testSafeBrowsingCard_enhancedBottomSheetBackButtonBehaviour() {
+        launchPrivacyGuide();
+        goToSafeBrowsingCard();
+
+        clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_enhanced_title);
+        onViewWaiting(withId(R.id.sb_enhanced_sheet)).check(matches(isDisplayed()));
+
+        pressBack();
+        onViewWaiting(withText(R.string.privacy_guide_safe_browsing_enhanced_title))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
+    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
+    public void testSafeBrowsingCard_standardBottomSheetBackButtonBehaviour() {
+        launchPrivacyGuide();
+        goToSafeBrowsingCard();
+
+        clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_standard_title);
+        onViewWaiting(withId(R.id.sb_standard_sheet)).check(matches(isDisplayed()));
+
+        pressBack();
+        onViewWaiting(withText(R.string.privacy_guide_safe_browsing_standard_title))
+                .check(matches(isDisplayed()));
     }
 
     @Test
