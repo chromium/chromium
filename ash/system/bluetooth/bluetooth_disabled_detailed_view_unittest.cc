@@ -6,9 +6,11 @@
 
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -25,6 +27,9 @@ namespace ash {
 class BluetoothDisabledDetailedViewTest : public AshTestBase {
  public:
   void SetUp() override {
+    // This view is only added to the non-revamped view.
+    feature_list_.InitAndDisableFeature(features::kQsRevamp);
+
     AshTestBase::SetUp();
 
     widget_ = CreateTestWidget();
@@ -68,6 +73,7 @@ class BluetoothDisabledDetailedViewTest : public AshTestBase {
   raw_ptr<views::View, ExperimentalAsh> container_;
   raw_ptr<BluetoothDisabledDetailedView, ExperimentalAsh>
       bluetooth_disabled_detailed_view_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(BluetoothDisabledDetailedViewTest, DisabledIconIsCentered) {
