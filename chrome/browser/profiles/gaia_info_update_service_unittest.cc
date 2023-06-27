@@ -263,8 +263,8 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOut) {
 
 TEST_F(GAIAInfoUpdateServiceTest, LogInLogOutLogIn) {
   std::string email1 = "pat1@example.com";
-  AccountInfo info1 = identity_test_env()->MakeAccountAvailableWithCookies(
-      email1, signin::GetTestGaiaIdForEmail(email1));
+  AccountInfo info1 =
+      identity_test_env()->MakeAccountAvailable(email1, {.set_cookie = true});
   base::RunLoop().RunUntilIdle();
   info1 = GetValidAccountInfo(info1.email, info1.account_id, "Pat 1",
                               "Pat Foo The First", kNoHostedDomainFound);
@@ -292,8 +292,8 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOutLogIn) {
       /*expected_count=*/2);
 
   std::string email2 = "pat2@example.com";
-  AccountInfo info2 = identity_test_env()->MakeAccountAvailableWithCookies(
-      email2, signin::GetTestGaiaIdForEmail(email2));
+  AccountInfo info2 =
+      identity_test_env()->MakeAccountAvailable(email2, {.set_cookie = true});
   base::RunLoop().RunUntilIdle();
   info2 = GetValidAccountInfo(info2.email, info2.account_id, "Pat 2",
                               "Pat Foo The Second", kChromiumOrgDomain);

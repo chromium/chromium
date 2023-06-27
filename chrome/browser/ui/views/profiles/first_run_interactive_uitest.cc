@@ -100,9 +100,11 @@ class FirstRunInteractiveUiTest
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
 
     // Kombucha note: This function waits on a `base::RunLoop`.
-    AccountInfo account_info = signin::MakeAccountAvailableWithCookies(
-        identity_manager, test_url_loader_factory(), account_email,
-        signin::GetTestGaiaIdForEmail(account_email));
+    AccountInfo account_info = signin::MakeAccountAvailable(
+        identity_manager,
+        signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+            .WithCookie()
+            .Build(account_email));
 
     FillNonCoreInfo(account_info, account_given_name);
     ASSERT_TRUE(account_info.IsValid());

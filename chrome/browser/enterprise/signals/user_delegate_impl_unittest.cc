@@ -121,8 +121,8 @@ TEST_F(UserDelegateImplTest, IsSameUser_NullManager) {
 TEST_F(UserDelegateImplTest, IsSameManagedUser_DifferentUser) {
   auto account = identity_test_env_.MakePrimaryAccountAvailable(
       kUserEmail, signin::ConsentLevel::kSignin);
-  auto other_account = identity_test_env_.MakeAccountAvailableWithCookies(
-      kOtherUserEmail, kOtherUserGaiaId);
+  auto other_account = identity_test_env_.MakeAccountAvailable(
+      kOtherUserEmail, {.set_cookie = true, .gaia_id = kOtherUserGaiaId});
 
   CreateDelegate();
   EXPECT_FALSE(user_delegate_->IsSameUser(kOtherUserGaiaId));
@@ -130,8 +130,8 @@ TEST_F(UserDelegateImplTest, IsSameManagedUser_DifferentUser) {
 
 // Tests that IsSameUser returns false when there is no primary user.
 TEST_F(UserDelegateImplTest, IsSameUser_NoPrimaryUser) {
-  auto other_account = identity_test_env_.MakeAccountAvailableWithCookies(
-      kOtherUserEmail, kOtherUserGaiaId);
+  auto other_account = identity_test_env_.MakeAccountAvailable(
+      kOtherUserEmail, {.set_cookie = true, .gaia_id = kOtherUserGaiaId});
 
   CreateDelegate();
   EXPECT_FALSE(user_delegate_->IsSameUser(kOtherUserGaiaId));

@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/account_manager_core/account_manager_facade.h"
@@ -50,6 +51,22 @@ namespace signin {
 
 class IdentityManagerDependenciesOwner;
 class TestIdentityManagerObserver;
+
+// Arguments for `IdentityTestEnvironment::MakeAccountAvailable()`. Keeps
+// references, so do not rely on it for storage.
+//
+// Declared here to be usable as a default value.
+struct SimpleAccountAvailabilityOptions {
+  // The requested consent level for the account. If present, the account
+  // will be set as primary at `primary_account_consent_level`.
+  absl::optional<ConsentLevel> primary_account_consent_level = absl::nullopt;
+
+  // Whether to add the account to the Gaia cookies.
+  bool set_cookie = false;
+
+  // If non-empty, the Gaia ID to use when adding the account.
+  base::StringPiece gaia_id{base::EmptyString()};
+};
 
 // Class that creates an IdentityManager for use in testing contexts and
 // provides facilities for driving that IdentityManager. The IdentityManager
@@ -100,7 +117,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   //
   // Note: at least one of |test_url_loader_factory| and |test_signin_client|
   // must be nulltpr. They cannot both be specified at the same time.
-  IdentityTestEnvironment(
+  explicit IdentityTestEnvironment(
       network::TestURLLoaderFactory* test_url_loader_factory = nullptr,
       sync_preferences::TestingPrefServiceSyncable* pref_service = nullptr,
       AccountConsistencyMethod account_consistency =
@@ -129,6 +146,10 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // in the firing of the IdentityManager and PrimaryAccountManager callbacks
   // for signin success. Blocks until the primary account is set. Returns the
   // CoreAccountInfo of the newly-set account.
+  //
+  // See `MakePrimaryAccountAvailable()` for a method that also adds a refresh
+  // token for the account, or `MakeAccountAvailable()` for the more openly
+  // configurable equivalent.
   CoreAccountInfo SetPrimaryAccount(const std::string& email,
                                     ConsentLevel consent_level);
 
@@ -156,29 +177,10 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // IdentityManager and PrimaryAccountManager callbacks for signin success. On
   // all platforms, this method blocks until the primary account is available.
   // Returns the AccountInfo of the newly-available account.
+  //
+  // See `MakeAccountAvailable()` for a more configurable equivalent.
   AccountInfo MakePrimaryAccountAvailable(const std::string& email,
                                           ConsentLevel consent_level);
-
-  // Combination of `MakeAccountAvailable()` and `SetCookieAccounts()` for a
-  // single account. It makes an account available for the given email address,
-  // and GAIA ID, setting the cookies and the refresh token that correspond
-  // uniquely to that email address. Blocks until the account is available. For
-  // multiple accounts, use `MakeAccountsAvailableWithCookies()` instead, as
-  // sequentially calling `SetCookieAccounts()` will not preserve previously set
-  // cookies.
-  // Returns the AccountInfo of the newly-available account.
-  AccountInfo MakeAccountAvailableWithCookies(const std::string& email,
-                                              const std::string& gaia_id);
-
-  // Combination of MakeAccountAvailable() and SetCookieAccounts() for a
-  // multiple accounts. It makes accounts available for the given email address,
-  // generates a GAIA ID, settings the cookies and refresh tokens that
-  // correspond to these email addresses. Blocks until the accounts are
-  // available.
-  // Returns the AccountInfo of the newly-available accounts, in the
-  // same order as the given `emails`.
-  std::vector<AccountInfo> MakeAccountsAvailableWithCookies(
-      const std::vector<std::string>& emails);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Revokes sync consent from the primary account: the primary account is left
@@ -190,11 +192,25 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // consent. Blocks until the primary account is cleared.
   void ClearPrimaryAccount();
 
-  // Makes an account available for the given email address, generating a GAIA
-  // ID and refresh token that correspond uniquely to that email address. Blocks
-  // until the account is available. Returns the AccountInfo of the
-  // newly-available account.
-  AccountInfo MakeAccountAvailable(const std::string& email);
+  // Makes an account available for the given email address, generating a
+  // refresh token that correspond uniquely to that email address. Blocks until
+  // the account is available.
+  //
+  // Returns the AccountInfo of the newly-available account.
+  //
+  // 2 variants are available:
+  // - The one accepting `SimpleAccountAvailabilityOptions` allows setting
+  //   common flags inline using designated initializers.
+  // - The one accepting `AccountAvailabilityOptions` exposes the full
+  //   configuration options and requires obtaining a builder to construct the
+  //   options object. See `CreateAccountAvailabilityOptionsBuilder()`.
+  AccountInfo MakeAccountAvailable(
+      base::StringPiece email,
+      SimpleAccountAvailabilityOptions options = {});
+
+  AccountInfo MakeAccountAvailable(const AccountAvailabilityOptions& options);
+
+  AccountAvailabilityOptionsBuilder CreateAccountAvailabilityOptionsBuilder();
 
   // Sets a refresh token for the given account (which must already be
   // available). Before updating the refresh token, blocks until refresh tokens
