@@ -15,6 +15,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "media/base/media.h"
+#include "media/base/media_serializers.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -56,154 +57,6 @@ std::unique_ptr<base::MemoryMappedFile> CreateMemoryMappedFile(size_t size) {
   return success ? std::move(mmapped_file) : nullptr;
 }
 
-void DecodeVP9Task(base::span<const uint8_t> data,
-                   const gfx::Size& resolution,
-                   const size_t num_frames,
-                   const size_t video_frame_size,
-                   uint8_t* dst_buffer,
-                   bool* success,
-                   base::WaitableEvent* done) {
-  *success = false;
-  InitializeMediaLibrary();
-
-  // Initialize ffmpeg with the compressed video data.
-  InMemoryUrlProtocol protocol(&data[0], data.size(), false);
-  FFmpegGlue glue(&protocol);
-  ASSERT_TRUE(glue.OpenContext());
-
-  // Find the first VP9 stream in the file.
-  int stream_index = -1;
-  VideoDecoderConfig config;
-  for (size_t i = 0; i < glue.format_context()->nb_streams; ++i) {
-    AVStream* stream = glue.format_context()->streams[i];
-    const AVCodecParameters* codec_parameters = stream->codecpar;
-    const AVMediaType codec_type = codec_parameters->codec_type;
-    const AVCodecID codec_id = codec_parameters->codec_id;
-    if (codec_type == AVMEDIA_TYPE_VIDEO && codec_id == AV_CODEC_ID_VP9) {
-      *success = AVStreamToVideoDecoderConfig(stream, &config) &&
-                 config.IsValidConfig();
-      stream_index = i;
-      break;
-    }
-  }
-  if (!*success) {
-    done->Signal();
-    return;
-  }
-
-  auto on_frame_decoded = [](const gfx::Size& resolution,
-                             const size_t video_frame_size,
-                             uint8_t* const dst_buffer,
-                             size_t* decode_frame_count,
-                             scoped_refptr<VideoFrame> frame) {
-    ASSERT_EQ(frame->format(), VideoPixelFormat::PIXEL_FORMAT_I420);
-    size_t num_planes = VideoFrame::NumPlanes(frame->format());
-    uint8_t* dst_plane = dst_buffer + video_frame_size * (*decode_frame_count);
-    // Copy the resolution area.
-    for (size_t plane = 0; plane < num_planes; ++plane) {
-      const int stride = frame->stride(plane);
-      const int rows =
-          VideoFrame::Rows(plane, frame->format(), resolution.height());
-      const int row_bytes =
-          VideoFrame::RowBytes(plane, frame->format(), resolution.width());
-      // VideoFrame::PlaneSize() cannot be used because it computes the
-      // plane size with resolutions aligned by two while our test code
-      // works with a succinct buffer size.
-      const uint8_t* src = frame->data(plane);
-      libyuv::CopyPlane(src, stride, dst_plane, row_bytes, row_bytes, rows);
-      dst_plane += (rows * row_bytes);
-    }
-    *decode_frame_count += 1;
-  };
-
-  size_t decode_frame_count = 0;
-  // Setup the VP9 decoder.
-  DecoderStatus init_result;
-  VpxVideoDecoder decoder(
-      media::OffloadableVideoDecoder::OffloadState::kOffloaded);
-  media::VideoDecoder::InitCB init_cb =
-      base::BindOnce([](DecoderStatus* save_to,
-                        DecoderStatus save_from) { *save_to = save_from; },
-                     &init_result);
-  decoder.Initialize(
-      config, false, nullptr, std::move(init_cb),
-      base::BindRepeating(on_frame_decoded, resolution, video_frame_size,
-                          dst_buffer, &decode_frame_count),
-      base::NullCallback());
-  if (!init_result.is_ok()) {
-    done->Signal();
-    return;
-  }
-
-  // Start decoding and wait until all frames are ready.
-  AVPacket packet = {};
-  size_t num_decoded_frames = 0;
-  while (av_read_frame(glue.format_context(), &packet) >= 0 &&
-         num_decoded_frames < num_frames) {
-    if (packet.stream_index == stream_index) {
-      media::VideoDecoder::DecodeCB decode_cb = base::BindOnce(
-          [](bool* success, DecoderStatus status) {
-            *success = (status.is_ok());
-          },
-          success);
-      decoder.Decode(DecoderBuffer::CopyFrom(packet.data, packet.size),
-                     std::move(decode_cb));
-      if (!*success) {
-        break;
-      }
-      num_decoded_frames++;
-    }
-    av_packet_unref(&packet);
-  }
-
-  done->Signal();
-}
-
-// Decode the vp9 data and returns the raw I420 data. Returns empty vector on
-// fatal.
-std::unique_ptr<base::MemoryMappedFile> DecodeAndLoadVP9Data(
-    const base::FilePath& data_file_path,
-    const gfx::Size& resolution,
-    size_t video_frame_size,
-    size_t num_read_frames) {
-  base::MemoryMappedFile compressed_data_mmap_file;
-  if (!compressed_data_mmap_file.Initialize(
-          data_file_path, base::MemoryMappedFile::READ_ONLY)) {
-    LOG(ERROR) << "Failed to read file: " << data_file_path;
-    return nullptr;
-  }
-  base::span<const uint8_t> compressed_data(compressed_data_mmap_file.data(),
-                                            compressed_data_mmap_file.length());
-
-  auto decompressed_data_mmap_file =
-      CreateMemoryMappedFile(video_frame_size * num_read_frames);
-  if (!decompressed_data_mmap_file) {
-    LOG(ERROR) << "Failed to create memory mapped file for decompressed data";
-    return nullptr;
-  }
-  // The VpxVideoDecoder requires running on a SequencedTaskRunner, so we
-  // can't decode the video on the main test thread.
-  base::Thread decode_thread("DecodeThread");
-  if (!decode_thread.Start()) {
-    LOG(ERROR) << "Failed to start decode thread";
-    return nullptr;
-  }
-
-  bool success = false;
-  base::WaitableEvent done;
-  decode_thread.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DecodeVP9Task, compressed_data, resolution,
-                     num_read_frames, video_frame_size,
-                     decompressed_data_mmap_file->data(), &success, &done));
-  done.Wait();
-  decode_thread.Stop();
-  if (!success) {
-    return nullptr;
-  }
-  return decompressed_data_mmap_file;
-}
-
 std::unique_ptr<base::MemoryMappedFile> LoadRawData(
     const base::FilePath& data_file_path,
     size_t video_frame_size,
@@ -221,6 +74,208 @@ std::unique_ptr<base::MemoryMappedFile> LoadRawData(
   return memory_mapped_file;
 }
 }  // namespace
+
+class VP9Decoder {
+ public:
+  static std::unique_ptr<VP9Decoder> Create(
+      const base::FilePath& vp9_webm_data_file_path,
+      const VideoFrameLayout& layout,
+      size_t num_read_frames);
+
+  std::vector<uint8_t> DecodeNextFrame() {
+    // If this is the first decode, then starts the thread.
+    if (!decoder_thread_.IsRunning()) {
+      LOG_IF(FATAL, !decoder_thread_.Start())
+          << "Failed to start decoder thread";
+      DecoderStatus result;
+      base::WaitableEvent event;
+      // base::Unretained(this) is safe because this is blocking call.
+      decoder_thread_.task_runner()->PostTask(
+          FROM_HERE, base::BindOnce(&VP9Decoder::InitializeTask,
+                                    base::Unretained(this), &result, &event));
+      event.Wait();
+      LOG_ASSERT(result.is_ok())
+          << "Failed to initialize VpxVideoDecoder: " << MediaSerialize(result)
+          << "with config=" << config_.AsHumanReadableString();
+    }
+
+    std::vector<uint8_t> decoded_frame_buffer;
+    base::WaitableEvent done;
+    decoder_thread_.task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&VP9Decoder::DecodeNextFrameTask, base::Unretained(this),
+                       &decoded_frame_buffer, &done));
+    done.Wait();
+    CHECK(!decoded_frame_buffer.empty());
+    return decoded_frame_buffer;
+  }
+
+  ~VP9Decoder() {
+    if (decoder_thread_.IsRunning()) {
+      decoder_thread_.task_runner()->DeleteSoon(FROM_HERE,
+                                                std::move(vpx_decoder_));
+    }
+  }
+
+ private:
+  VP9Decoder(std::unique_ptr<base::MemoryMappedFile> vp9_data_mmap_file,
+             const std::vector<base::span<const uint8_t>>& vp9_data_chunks,
+             const VideoDecoderConfig& config,
+             const VideoFrameLayout& layout)
+      : vp9_data_mmap_file_(std::move(vp9_data_mmap_file)),
+        config_(config),
+        layout_(layout),
+        decoder_thread_("VP9DecoderThread"),
+        vp9_data_chunks_(vp9_data_chunks) {
+    DETACH_FROM_SEQUENCE(decoder_sequence_);
+  }
+
+  void OnFrameDecoded(scoped_refptr<VideoFrame> frame) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
+    last_decoded_frame_ = std::move(frame);
+  }
+
+  void InitializeTask(DecoderStatus* result, base::WaitableEvent* event) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
+    vpx_decoder_ = std::make_unique<VpxVideoDecoder>(
+        OffloadableVideoDecoder::OffloadState::kOffloaded);
+    vpx_decoder_->Initialize(
+        config_,
+        /*low_delay*/ false,
+        /*CdmContext*/ nullptr,
+        base::BindOnce([](DecoderStatus* save_to,
+                          DecoderStatus save_from) { *save_to = save_from; },
+                       result),
+        // base::Unretained(this) is safe because |vpx_decoder_| is owned by
+        // this.
+        base::BindRepeating(&VP9Decoder::OnFrameDecoded,
+                            base::Unretained(this)),
+        /*waiting_cb=*/base::NullCallback());
+    event->Signal();
+  }
+
+  void DecodeNextFrameTask(std::vector<uint8_t>* decoded_frame_buffer,
+                           base::WaitableEvent* done) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_);
+    CHECK_LT(next_frame_index_, vp9_data_chunks_.size());
+    base::span<const uint8_t> chunk = vp9_data_chunks_[next_frame_index_];
+    DecoderStatus decode_status{DecoderStatus::Codes::kOk};
+    vpx_decoder_->Decode(
+        DecoderBuffer::CopyFrom(chunk.data(), chunk.size()),
+        base::BindOnce([](DecoderStatus* out_status,
+                          DecoderStatus status) { *out_status = status; },
+                       &decode_status));
+    LOG_ASSERT(decode_status.is_ok())
+        << "Failed to decode the " << next_frame_index_
+        << "-th vp9 chunk: " << MediaSerialize(decode_status);
+    LOG_ASSERT(!!last_decoded_frame_) << "|last_decoded_frame_| is not filled";
+    *decoded_frame_buffer = CreateBufferFromFrame(*last_decoded_frame_);
+    last_decoded_frame_.reset();
+    next_frame_index_++;
+    done->Signal();
+  }
+
+  std::vector<uint8_t> CreateBufferFromFrame(
+      const VideoFrame& i420_frame) const {
+    LOG_ASSERT(i420_frame.format() == VideoPixelFormat::PIXEL_FORMAT_I420);
+    std::vector<uint8_t> buffer;
+    buffer.resize(layout_.planes()[2].offset + layout_.planes()[2].size);
+    // Copy the resolution area.
+    uint8_t* dst_plane = buffer.data();
+    for (size_t plane = 0; plane < 3; ++plane) {
+      const int stride = i420_frame.stride(plane);
+      const int rows = VideoFrame::Rows(plane, i420_frame.format(),
+                                        layout_.coded_size().height());
+      const int row_bytes = VideoFrame::RowBytes(plane, i420_frame.format(),
+                                                 layout_.coded_size().width());
+      // VideoFrame::PlaneSize() cannot be used because it computes the
+      // plane size with resolutions aligned by two while our test code
+      // works with a succinct buffer size.
+      const uint8_t* src = i420_frame.data(plane);
+      libyuv::CopyPlane(src, stride, dst_plane, row_bytes, row_bytes, rows);
+      dst_plane += (rows * row_bytes);
+    }
+    return buffer;
+  }
+
+  const std::unique_ptr<base::MemoryMappedFile> vp9_data_mmap_file_;
+  const VideoDecoderConfig config_;
+  const VideoFrameLayout layout_;
+
+  base::Thread decoder_thread_;
+  const std::vector<base::span<const uint8_t>> vp9_data_chunks_
+      GUARDED_BY_CONTEXT(decoder_sequence_);
+  std::unique_ptr<VpxVideoDecoder> vpx_decoder_
+      GUARDED_BY_CONTEXT(decoder_sequence_);
+  size_t next_frame_index_ GUARDED_BY_CONTEXT(decoder_sequence_){0};
+  scoped_refptr<VideoFrame> last_decoded_frame_
+      GUARDED_BY_CONTEXT(decoder_sequence_);
+  SEQUENCE_CHECKER(decoder_sequence_);
+};
+
+// static
+std::unique_ptr<VP9Decoder> VP9Decoder::Create(
+    const base::FilePath& vp9_webm_data_file_path,
+    const VideoFrameLayout& layout,
+    size_t num_read_frames) {
+  base::MemoryMappedFile vp9_webm_data_mmap_file;
+  if (!vp9_webm_data_mmap_file.Initialize(vp9_webm_data_file_path,
+                                          base::MemoryMappedFile::READ_ONLY)) {
+    LOG(ERROR) << "Failed to read file: " << vp9_webm_data_file_path;
+    return nullptr;
+  }
+  base::span<const uint8_t> vp9_webm_data(vp9_webm_data_mmap_file.data(),
+                                          vp9_webm_data_mmap_file.length());
+
+  InitializeMediaLibrary();
+
+  // Initialize ffmpeg with the compressed video data.
+  InMemoryUrlProtocol protocol(vp9_webm_data.data(), vp9_webm_data.size(),
+                               /*streaming=*/false);
+  FFmpegGlue glue(&protocol);
+  LOG_ASSERT(glue.OpenContext()) << "Failed to open AVFormatContext";
+  // Find the first VP9 stream in the file.
+  absl::optional<size_t> vp9_stream_index;
+  VideoDecoderConfig config;
+  for (size_t i = 0; i < glue.format_context()->nb_streams; ++i) {
+    AVStream* stream = glue.format_context()->streams[i];
+    const AVCodecParameters* codec_parameters = stream->codecpar;
+    const AVMediaType codec_type = codec_parameters->codec_type;
+    const AVCodecID codec_id = codec_parameters->codec_id;
+    if (codec_type == AVMEDIA_TYPE_VIDEO && codec_id == AV_CODEC_ID_VP9 &&
+        AVStreamToVideoDecoderConfig(stream, &config) &&
+        config.IsValidConfig()) {
+      vp9_stream_index = i;
+      break;
+    }
+  }
+  if (!vp9_stream_index) {
+    return nullptr;
+  }
+
+  auto vp9_data_mmap_file = CreateMemoryMappedFile(vp9_webm_data.size());
+  uint8_t* const vp9_data = vp9_data_mmap_file->data();
+  size_t vp9_data_size = 0;
+  AVPacket packet = {};
+  size_t num_packets = 0;
+  std::vector<base::span<const uint8_t>> vp9_data_chunks(num_read_frames);
+  while (av_read_frame(glue.format_context(), &packet) >= 0 &&
+         num_packets < num_read_frames) {
+    if (base::checked_cast<size_t>(packet.stream_index) ==
+        (*vp9_stream_index)) {
+      LOG_ASSERT(vp9_data_size + packet.size <= vp9_data_mmap_file->length())
+          << "The vp9 data size must be less than webm file size";
+      std::memcpy(vp9_data + vp9_data_size, packet.data, packet.size);
+      vp9_data_chunks[num_packets] = base::span<const uint8_t>(
+          vp9_data + vp9_data_size, base::checked_cast<size_t>(packet.size));
+      vp9_data_size += packet.size;
+      num_packets++;
+    }
+    av_packet_unref(&packet);
+  }
+  return base::WrapUnique<VP9Decoder>(new VP9Decoder(
+      std::move(vp9_data_mmap_file), vp9_data_chunks, config, layout));
+}
 
 RawVideo::RawVideo(std::unique_ptr<base::MemoryMappedFile> memory_mapped_file,
                    const Metadata& metadata,
@@ -371,10 +426,18 @@ std::unique_ptr<RawVideo> RawVideo::Create(
   }
 
   std::unique_ptr<base::MemoryMappedFile> memory_mapped_file;
+
   if (is_vp9_data) {
     // If the given data is compressed video (i.e. vp9 webm), then we decode.
-    memory_mapped_file = DecodeAndLoadVP9Data(
-        data_file_path, resolution, video_frame_size, metadata.num_frames);
+    auto vp9_decoder = VP9Decoder::Create(
+        data_file_path, *metadata.frame_layout, metadata.num_frames);
+    memory_mapped_file =
+        CreateMemoryMappedFile(video_frame_size * metadata.num_frames);
+    for (size_t i = 0; i < metadata.num_frames; ++i) {
+      auto buffer = vp9_decoder->DecodeNextFrame();
+      memcpy(memory_mapped_file->data() + i * video_frame_size, buffer.data(),
+             buffer.size());
+    }
   } else {
     memory_mapped_file =
         LoadRawData(data_file_path, video_frame_size, metadata.num_frames);
@@ -390,6 +453,8 @@ std::unique_ptr<RawVideo> RawVideo::Create(
 std::unique_ptr<RawVideo> RawVideo::CreateNV12Video() const {
   LOG_ASSERT(FrameLayout().format() == PIXEL_FORMAT_I420)
       << "The pixel format of source video is not I420";
+  LOG_ASSERT(memory_mapped_file_) << "CreateNV12Video() is supported only if "
+                                  << "|memory_mapped_file_| is valid";
   auto nv12_layout = CreateVideoFrameLayout(PIXEL_FORMAT_NV12, Resolution(),
                                             1u /* alignment*/);
   LOG_ASSERT(nv12_layout) << "Failed creating VideoFrameLayout";
