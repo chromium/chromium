@@ -1623,7 +1623,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MultiDevice.DeviceSyncService.ForceSyncNow.Result"
     enum="MultiDevice_DeviceSyncService_ForceCryptAuthOperationResult"
-    expires_after="2023-10-22">
+    expires_after="2023-12-24">
   <owner>hansberry@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Result for when ForceSyncNow is called.</summary>

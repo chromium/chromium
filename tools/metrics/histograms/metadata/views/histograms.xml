@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Views.ColorProviderCacheSize" units="entries"
-    expires_after="2023-10-22">
+    expires_after="2023-12-24">
   <owner>pkasting@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>
