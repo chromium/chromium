@@ -55,7 +55,7 @@ const char* kLanguagesSupportedByStixTwoText[] = {
 }  // namespace
 
 ReadAnythingModel::ReadAnythingModel()
-    : font_name_(string_constants::kReadAnythingDefaultFontName),
+    : font_name_(string_constants::kReadAnythingPlaceholderFontName),
       font_scale_(kReadAnythingDefaultFontScale),
       font_model_(std::make_unique<ReadAnythingFontModel>()),
       colors_model_(std::make_unique<ReadAnythingColorsModel>()),

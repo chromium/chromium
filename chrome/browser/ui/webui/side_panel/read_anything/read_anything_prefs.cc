@@ -36,7 +36,7 @@ const char kAccessibilityReadAnythingLetterSpacing[] =
 void RegisterReadAnythingProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(prefs::kAccessibilityReadAnythingFontName,
-                               string_constants::kReadAnythingDefaultFontName,
+                               string_constants::kReadAnythingPlaceholderFontName,
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDoublePref(prefs::kAccessibilityReadAnythingFontScale,
                                kReadAnythingDefaultFontScale,

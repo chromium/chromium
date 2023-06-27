@@ -203,7 +203,7 @@ class ReadAnythingAppModel {
   std::set<ui::AXNodeID> selection_node_ids_;
 
   // Theme information.
-  std::string font_name_ = string_constants::kReadAnythingDefaultFontName;
+  std::string font_name_ = string_constants::kReadAnythingPlaceholderFontName;
   float font_size_ = kReadAnythingDefaultFontScale;
   float letter_spacing_ =
       (int)read_anything::mojom::LetterSpacing::kDefaultValue;

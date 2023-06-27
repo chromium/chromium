@@ -13,7 +13,7 @@
 // Various constants used throughout the Read Anything feature.
 namespace string_constants {
 
-extern const char kReadAnythingDefaultFontName[];
+extern const char kReadAnythingPlaceholderFontName[];
 extern const char kLetterSpacingHistogramName[];
 extern const char kLineSpacingHistogramName[];
 extern const char kColorHistogramName[];

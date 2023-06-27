@@ -340,7 +340,7 @@ class ReadAnythingModel {
   // State:
 
   // Members of read_anything::mojom::ReadAnythingTheme:
-  std::string font_name_ = string_constants::kReadAnythingDefaultFontName;
+  std::string font_name_ = string_constants::kReadAnythingPlaceholderFontName;
   ui::ColorId foreground_color_id_ = kColorReadAnythingForeground;
   ui::ColorId background_color_id_ = kColorReadAnythingBackground;
 
