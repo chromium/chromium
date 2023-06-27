@@ -69,7 +69,7 @@ public class StylusGestureHandlerTest {
         mRule.setUpForUrl(ImeActivityTestRule.INPUT_FORM_HTML);
         mWrappedInputConnection =
                 StylusGestureHandler.maybeProxyInputConnection(mRule.getInputConnection(),
-                        (gesture) -> mLastGestureData = gesture.getGestureData());
+                        (gesture) -> mLastGestureData = gesture.getGestureData(), new EditorInfo());
     }
 
     @Test
