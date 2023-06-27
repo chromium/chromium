@@ -9,12 +9,14 @@
 
 namespace ash {
 
-AuthPanelEventDispatcher::AuthPanelEventDispatcher() = default;
+AuthPanelEventDispatcher::AuthPanelEventDispatcher(
+    base::raw_ptr<AuthFactorStore> store)
+    : store_(store) {}
 
 AuthPanelEventDispatcher::~AuthPanelEventDispatcher() = default;
 
 void AuthPanelEventDispatcher::DispatchEvent(AshAuthFactor factor,
-                                             UserAction action) {
+                                             const UserAction& action) {
   NOTIMPLEMENTED();
 }
 

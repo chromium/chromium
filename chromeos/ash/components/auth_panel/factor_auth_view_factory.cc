@@ -10,8 +10,8 @@
 
 namespace ash {
 
-std::unique_ptr<FactorAuthView> FactorAuthViewFactory::CreateFactorAuthView(
-    AshAuthFactor factor) {
+[[nodiscard]] std::unique_ptr<FactorAuthView>
+FactorAuthViewFactory::CreateFactorAuthView(AshAuthFactor factor) {
   switch (factor) {
     case AshAuthFactor::kGaiaPassword:
       return CreatePasswordView();

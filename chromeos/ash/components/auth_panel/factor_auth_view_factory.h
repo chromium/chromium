@@ -13,11 +13,10 @@
 
 namespace ash {
 
-// This class is responsible for creating the different `FactorAuthView` objects
-// that will be owned and managed by `AuthPanel`. This is done mainly to
-// facilitate dependency injection and testing and to centralize the creation
-// logic into one class, freeing up `AuthPanel` to deal exclusively with UI
-// update logic.
+// This class is responsible for creating the different `FactorAuthView`
+// objects. This is done mainly to facilitate dependency injection and testing
+// and to centralize the creation logic into one class, freeing up `AuthPanel`
+// to deal exclusively with UI update logic.
 class FactorAuthViewFactory {
  public:
   using FactorAuthViewCreator =

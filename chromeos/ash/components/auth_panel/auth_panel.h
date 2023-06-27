@@ -5,15 +5,16 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_AUTH_PANEL_H_
 #define CHROMEOS_ASH_COMPONENTS_AUTH_PANEL_AUTH_PANEL_H_
 
-#include <memory>
+#include <vector>
 
 #include "base/containers/flat_map.h"
-#include "chromeos/ash/components/auth_panel/auth_panel_event_dispatcher.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 
 namespace ash {
 
+class AuthPanelEventDispatcher;
+class AuthFactorStore;
 class FactorAuthView;
 class FactorAuthViewFactory;
 
@@ -28,6 +29,7 @@ class FactorAuthViewFactory;
 class AuthPanel : public AuthFactorStatusConsumer {
  public:
   AuthPanel(std::unique_ptr<FactorAuthViewFactory> view_factory,
+            std::unique_ptr<AuthFactorStore> store,
             std::unique_ptr<AuthPanelEventDispatcher> event_dispatcher);
   AuthPanel(const AuthPanel&) = delete;
   AuthPanel(AuthPanel&&) = delete;
@@ -45,9 +47,10 @@ class AuthPanel : public AuthFactorStatusConsumer {
   void OnEndAuthentication() override;
 
  private:
-  base::flat_map<AshAuthFactor, std::unique_ptr<FactorAuthView>> views_;
-  std::unique_ptr<FactorAuthViewFactory> view_factory_;
   std::unique_ptr<AuthPanelEventDispatcher> event_dispatcher_;
+  std::unique_ptr<FactorAuthViewFactory> view_factory_;
+  std::unique_ptr<AuthFactorStore> store_;
+  std::vector<std::unique_ptr<FactorAuthView>> views_;
 };
 
 }  // namespace ash
