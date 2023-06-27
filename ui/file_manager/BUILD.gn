@@ -173,7 +173,11 @@ preprocess_if_expr("preprocess_generated") {
 
 ts_library("build_ts") {
   root_dir = preprocess_folder
-  out_dir = "$target_gen_dir/tsc"
+  if (enable_webui_inline_sourcemaps) {
+    out_dir = "$target_gen_dir/tsc/_tmp"
+  } else {
+    out_dir = "$target_gen_dir/tsc"
+  }
   tsconfig_base = "tsconfig_base.json"
   composite = true
 
@@ -192,8 +196,6 @@ ts_library("build_ts") {
     ":copy_fmp",
     ":generate_definitions",
     ":preprocess_generated",
-    ":preprocess_static",
-    ":preprocess_static_image_loader",
     "//ash/webui/common/resources:generate_definitions",
   ]
 
@@ -246,16 +248,17 @@ if (enable_webui_inline_sourcemaps) {
   merge_js_source_maps("merge_source_maps") {
     deps = [ ":build_ts" ]
     manifest_files =
-        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+        filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
     js_files = filter_include(get_target_outputs(":build_ts"), [ "*.js" ])
 
     sources = []
     outputs = []
 
-    out_dir = "$target_gen_dir/merge_source_maps"
+    out_dir = "$target_gen_dir/tsc"
     foreach(_js_file, js_files) {
       sources += [ _js_file ]
-      outputs += [ string_replace(_js_file, "$target_gen_dir/tsc", out_dir) ]
+      outputs +=
+          [ string_replace(_js_file, "$target_gen_dir/tsc/_tmp", out_dir) ]
     }
   }
 }
@@ -265,7 +268,7 @@ ts_library("test_build_ts") {
   root_dir = preprocess_folder
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
-  enable_source_maps = enable_webui_inline_sourcemaps
+  enable_source_maps = false
 
   in_files =
       ts_test_files + [ "file_manager/externs/test/file_manager_private.js" ]
@@ -392,7 +395,11 @@ js_library("js_from_ts") {
   foreach(_t, ts_files) {
     sources += [ "$target_gen_dir/tsc/" + string_replace(_t, ".ts", ".js") ]
   }
-  extra_deps = [ ":build_ts" ]
+  if (enable_webui_inline_sourcemaps) {
+    extra_deps = [ ":merge_source_maps" ]
+  } else {
+    extra_deps = [ ":build_ts" ]
+  }
   externs_list =
       [ "//ui/file_manager/file_manager/externs/app_window_common.js" ]
 }
@@ -445,11 +452,11 @@ generate_grd("build_grd") {
     if (enable_webui_inline_sourcemaps) {
       deps += [ ":merge_source_maps" ]
       manifest_files = filter_include(get_target_outputs(":merge_source_maps"),
-                                      [ "*_manifest.json" ])
+                                      [ "*_manifest__processed.json" ])
     } else {
       deps += [ ":build_ts" ]
       manifest_files =
-          filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
+          filter_include(get_target_outputs(":build_ts"), [ "*manifest.json" ])
     }
   }
 }
@@ -494,13 +501,18 @@ generate_grd("build_tests_gen_grdp") {
   grd_prefix = "file_manager_test"
   out_grd = "$target_gen_dir/tests_gen_resources.grdp"
 
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ]) +
-      filter_include(get_target_outputs(":test_build_ts"),
-                     [ "*_manifest.json" ])
+  deps = [ ":test_build_ts" ]
 
-  deps = [
-    ":build_ts",
-    ":test_build_ts",
-  ]
+  manifest_files = filter_include(get_target_outputs(":test_build_ts"),
+                                  [ "*_manifest.json" ])
+
+  if (enable_webui_inline_sourcemaps) {
+    deps += [ ":merge_source_maps" ]
+    manifest_files += filter_include(get_target_outputs(":merge_source_maps"),
+                                     [ "*_manifest__processed.json" ])
+  } else {
+    deps += [ ":build_ts" ]
+    manifest_files +=
+        filter_include(get_target_outputs(":build_ts"), [ "*manifest.json" ])
+  }
 }
