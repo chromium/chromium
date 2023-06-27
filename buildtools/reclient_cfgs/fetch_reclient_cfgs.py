@@ -49,7 +49,7 @@ def CipdEnsure(pkg_name, ref, directory, quiet):
     logging.info('ensure %s %s in %s' % (pkg_name, ref, directory))
     log_level = 'warning' if quiet else 'debug'
     ensure_file = """
-$ParanoidMode CheckPresence
+$ParanoidMode CheckIntegrity
 {pkg} {ref}
 """.format(pkg=pkg_name, ref=ref)
     try:
