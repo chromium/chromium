@@ -20,7 +20,7 @@
 #include "media/gpu/v4l2/test/av1_decoder.h"
 #endif
 #include "media/gpu/v4l2/test/h264_decoder.h"
-#include "media/gpu/v4l2/test/hevc_decoder.h"
+#include "media/gpu/v4l2/test/h265_decoder.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
 #include "media/gpu/v4l2/test/vp8_decoder.h"
 #include "media/gpu/v4l2/test/vp9_decoder.h"
@@ -30,7 +30,7 @@
 using media::v4l2_test::Av1Decoder;
 #endif
 using media::v4l2_test::H264Decoder;
-using media::v4l2_test::HevcDecoder;
+using media::v4l2_test::H265Decoder;
 using media::v4l2_test::VideoDecoder;
 using media::v4l2_test::Vp8Decoder;
 using media::v4l2_test::Vp9Decoder;
@@ -51,7 +51,7 @@ constexpr char kUsageMsg[] =
 constexpr char kHelpMsg[] =
     "This binary decodes the IVF video in <video> path with specified \n"
     "video <profile> via thinly wrapped v4l2 calls.\n"
-    "Supported codecs: VP9 (profile 0), AV1 (profile 0), and HEVC\n"
+    "Supported codecs: VP9 (profile 0), AV1 (profile 0), and H.265\n"
     "\nThe following arguments are supported:\n"
     "    --video=<path>\n"
     "        Required. Path to IVF-formatted video to decode.\n"
@@ -119,7 +119,7 @@ std::unique_ptr<VideoDecoder> CreateVideoDecoder(
     decoder = Vp8Decoder::Create(stream);
 
   if (!decoder) {
-    decoder = HevcDecoder::Create(stream);
+    decoder = H265Decoder::Create(stream);
   }
 
   return decoder;

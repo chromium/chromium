@@ -2,28 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/v4l2/test/hevc_decoder.h"
+#include "media/gpu/v4l2/test/h265_decoder.h"
 
 #include "base/notreached.h"
 
 namespace media {
 namespace v4l2_test {
 
-HevcDecoder::HevcDecoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
+H265Decoder::H265Decoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
                          gfx::Size display_resolution,
                          const base::MemoryMappedFile& data_stream)
     : VideoDecoder::VideoDecoder(std::move(v4l2_ioctl), display_resolution) {}
 
-HevcDecoder::~HevcDecoder() = default;
+H265Decoder::~H265Decoder() = default;
 
 // static
-std::unique_ptr<HevcDecoder> HevcDecoder::Create(
+std::unique_ptr<H265Decoder> H265Decoder::Create(
     const base::MemoryMappedFile& stream) {
   NOTIMPLEMENTED();
   return nullptr;
 }
 
-VideoDecoder::Result HevcDecoder::DecodeNextFrame(const int frame_number,
+VideoDecoder::Result H265Decoder::DecodeNextFrame(const int frame_number,
                                                   std::vector<uint8_t>& y_plane,
                                                   std::vector<uint8_t>& u_plane,
                                                   std::vector<uint8_t>& v_plane,
