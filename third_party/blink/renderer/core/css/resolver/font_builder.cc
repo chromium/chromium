@@ -483,6 +483,7 @@ void FontBuilder::CreateFont(ComputedStyle& style,
                              const ComputedStyle* parent_style) {
   DCHECK(document_);
 
+  recordreplay::Assert("[RUN-1436-2237] FontBuilder::CreateFont A %u", flags_);
   if (!flags_)
     return;
 
@@ -495,6 +496,8 @@ void FontBuilder::CreateFont(ComputedStyle& style,
   FontSelector* font_selector = ComputeFontSelector(style);
   UpdateAdjustedSize(description, style, font_selector);
 
+  recordreplay::Assert("[RUN-1436-2237] FontBuilder::CreateFont B %d",
+                       !!font_selector);
   style.SetFontInternal(Font(description, font_selector));
   flags_ = 0;
 }

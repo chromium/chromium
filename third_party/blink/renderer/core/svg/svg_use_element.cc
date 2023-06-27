@@ -328,11 +328,17 @@ SVGElement* SVGUseElement::InstanceRoot() const {
 }
 
 void SVGUseElement::BuildPendingResource() {
+  recordreplay::Assert(
+      "[RUN-1436-2237] SVGUseElement::BuildPendingResource A %d",
+      RecordReplayId());
   if (!isConnected()) {
     DCHECK(!needs_shadow_tree_recreation_);
     return;  // Already replaced by rebuilding ancestor.
   }
   CancelShadowTreeRecreation();
+
+  recordreplay::Assert(
+      "[RUN-1436-2237] SVGUseElement::BuildPendingResource B");
 
   // Check if this element is scheduled (by an ancestor) to be replaced.
   SVGUseElement* ancestor = GeneratingUseElement();
@@ -341,6 +347,8 @@ void SVGUseElement::BuildPendingResource() {
       return;
     ancestor = ancestor->GeneratingUseElement();
   }
+
+  recordreplay::Assert("[RUN-1436-2237] SVGUseElement::BuildPendingResource C");
 
   DetachShadowTree();
   ClearResourceReference();
@@ -472,6 +480,12 @@ void SVGUseElement::AttachShadowTree(SVGElement& target) {
   DCHECK(!InstanceRoot());
   DCHECK(!needs_shadow_tree_recreation_);
 
+  recordreplay::Assert(
+      "[RUN-1436-2237] SVGUseElement::AttachShadowTree A %d %d %d %d",
+      RecordReplayId(),
+      target.RecordReplayId(), IsDisallowedElement(target),
+      HasCycleUseReferencing(*this, target));
+
   // Do not allow self-referencing.
   if (IsDisallowedElement(target) || HasCycleUseReferencing(*this, target))
     return;
@@ -485,6 +499,8 @@ void SVGUseElement::AttachShadowTree(SVGElement& target) {
   PostProcessInstanceTree(target, *instance_root);
 
   // Finally attach to the tree.
+  recordreplay::Assert("[RUN-1436-2237] SVGUseElement::AttachShadowTree B %d",
+                       UseShadowRoot().RecordReplayId());
   UseShadowRoot().AppendChild(instance_root);
 
   // Assure shadow tree building was successful.
