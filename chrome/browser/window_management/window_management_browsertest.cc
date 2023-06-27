@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
     EXPECT_EQ(-2, EvalJs(remote_child, await_change_width));
   } else {
 #if !BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/1297812): Fix flaky timeouts on ChromeOS.
+    // TODO(crbug.com/1385598): Fix flaky timeouts on ChromeOS.
     EXPECT_EQ(803, EvalJs(remote_child, await_change_width));
 #endif
   }
@@ -449,7 +449,10 @@ IN_PROC_BROWSER_TEST_P(MAYBE_WindowManagementTest, OnCurrentScreenChangeEvent) {
   if (ShouldError()) {
     EXPECT_EQ(-2, EvalJs(remote_child, await_change_height));
   } else {
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/1385598): Fix flaky timeouts on ChromeOS.
     EXPECT_EQ(300, EvalJs(remote_child, await_change_height));
+#endif
   }
 }
 
