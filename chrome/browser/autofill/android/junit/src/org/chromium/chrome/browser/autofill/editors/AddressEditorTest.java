@@ -67,6 +67,8 @@ import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AddressUiCompo
 import org.chromium.chrome.browser.autofill.AutofillProfileBridgeJni;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
+import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
+import org.chromium.chrome.browser.autofill.PhoneNumberUtilJni;
 import org.chromium.chrome.browser.autofill.Source;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
@@ -155,6 +157,8 @@ public class AddressEditorTest {
 
     @Mock
     private AutofillProfileBridge.Natives mAutofillProfileBridgeJni;
+    @Mock
+    private PhoneNumberUtil.Natives mPhoneNumberUtilJni;
 
     @Mock
     private EditorDialogView mEditorDialog;
@@ -205,6 +209,8 @@ public class AddressEditorTest {
         })
                 .when(mAutofillProfileBridgeJni)
                 .getRequiredFields(anyString(), anyList());
+        mJniMocker.mock(PhoneNumberUtilJni.TEST_HOOKS, mPhoneNumberUtilJni);
+        when(mPhoneNumberUtilJni.isPossibleNumber(anyString(), anyString())).thenReturn(true);
 
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);

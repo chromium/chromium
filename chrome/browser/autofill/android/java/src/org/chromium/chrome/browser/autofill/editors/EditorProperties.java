@@ -65,11 +65,18 @@ public class EditorProperties {
 
     public static final PropertyModel.WritableBooleanPropertyKey VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey("visible");
+    /**
+     * This property is temporary way to trigger field error message update process.
+     * It also triggers field focus update.
+     * TODO(crbug.com/1435314): remove this property once fields are updated through MCP.
+     */
+    public static final PropertyModel.WritableBooleanPropertyKey FORM_VALID =
+            new PropertyModel.WritableBooleanPropertyKey("form_valid");
 
     public static final PropertyKey[] ALL_KEYS = {EDITOR_TITLE, CUSTOM_DONE_BUTTON_TEXT,
             FOOTER_MESSAGE, DELETE_CONFIRMATION_TITLE, DELETE_CONFIRMATION_TEXT,
             SHOW_REQUIRED_INDICATOR, EDITOR_FIELDS, DONE_RUNNABLE, CANCEL_RUNNABLE, ALLOW_DELETE,
-            DELETE_RUNNABLE, VISIBLE};
+            DELETE_RUNNABLE, VISIBLE, FORM_VALID};
 
     private EditorProperties() {}
 
@@ -277,6 +284,15 @@ public class EditorProperties {
         }
 
         return null;
+    }
+
+    public static boolean isFormValid(PropertyModel editorModel) {
+        for (ListItem item : editorModel.get(EditorProperties.EDITOR_FIELDS)) {
+            if (!isFieldValid(item.model)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static boolean isFieldValid(PropertyModel textField) {

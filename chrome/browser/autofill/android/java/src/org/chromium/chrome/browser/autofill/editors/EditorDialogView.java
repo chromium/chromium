@@ -56,6 +56,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * The editor dialog. Can be used for editing contact information, shipping address,
@@ -239,6 +241,31 @@ public class EditorDialogView
         }
     }
 
+    public void findAndScrollToInvalidField() {
+        // Iterate over all the fields to update what errors are displayed, which is necessary
+        // to to clear existing errors on any newly valid fields.
+        mFieldViews.forEach(view -> view.updateDisplayedError(!view.isValid()));
+
+        // Make sure that focus is on an invalid field.
+        @Nullable
+        FieldView focusedField = getTextFieldView(getCurrentFocus());
+        if (focusedField != null && !focusedField.isValid()) {
+            // The focused field is invalid, but it may be scrolled off screen. Scroll to it.
+            focusedField.scrollToAndFocus();
+        } else {
+            // Some fields are invalid, but none of the are focused. Scroll to the first invalid
+            // field and focus it.
+            Optional<FieldView> invalidField =
+                    mFieldViews.stream().filter(view -> !view.isValid()).findAny();
+            assert invalidField.isPresent();
+            invalidField.get().scrollToAndFocus();
+        }
+
+        if (sObserverForTest != null) {
+            sObserverForTest.onEditorValidationError();
+        }
+    }
+
     public void setEditorFields(
             ListModel<ListItem> editorFields, boolean shouldShowRequiredIndicator) {
         prepareEditor(editorFields, shouldShowRequiredIndicator);
@@ -299,42 +326,6 @@ public class EditorDialogView
                 SettingsUtils.getShowShadowOnScrollListener(scrollView, shadow));
     }
 
-    /**
-     * Checks if all of the fields in the form are valid and updates the displayed errors. If there
-     * are any invalid fields, makes sure that one of them is focused. Called when user taps [SAVE].
-     *
-     * @return Whether all fields contain valid information.
-     */
-    public boolean validateForm() {
-        final List<FieldView> invalidViews = getViewsWithInvalidInformation(true);
-
-        // Iterate over all the fields to update what errors are displayed, which is necessary to
-        // to clear existing errors on any newly valid fields.
-        for (int i = 0; i < mFieldViews.size(); i++) {
-            FieldView fieldView = mFieldViews.get(i);
-            fieldView.updateDisplayedError(invalidViews.contains(fieldView));
-        }
-
-        if (!invalidViews.isEmpty()) {
-            // Make sure that focus is on an invalid field.
-            FieldView focusedField = getTextFieldView(getCurrentFocus());
-            if (invalidViews.contains(focusedField)) {
-                // The focused field is invalid, but it may be scrolled off screen. Scroll to it.
-                focusedField.scrollToAndFocus();
-            } else {
-                // Some fields are invalid, but none of the are focused. Scroll to the first invalid
-                // field and focus it.
-                invalidViews.get(0).scrollToAndFocus();
-            }
-        }
-
-        if (!invalidViews.isEmpty() && sObserverForTest != null) {
-            sObserverForTest.onEditorValidationError();
-        }
-
-        return invalidViews.isEmpty();
-    }
-
     /** @return The validatable item for the given view. */
     @Nullable
     private FieldView getTextFieldView(View v) {
@@ -353,9 +344,6 @@ public class EditorDialogView
         if (mDialogInOutAnimator != null) return;
 
         if (view.getId() == R.id.editor_dialog_done_button) {
-            if (!validateForm()) {
-                return;
-            }
             mDoneRunnable.run();
         } else if (view.getId() == R.id.payments_edit_cancel_button) {
             mCancelRunnable.run();
@@ -598,7 +586,9 @@ public class EditorDialogView
             // because the user would not learn about the elements that are
             // above the focused field.
             if (!ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
-                List<FieldView> invalidViews = getViewsWithInvalidInformation(false);
+                List<FieldView> invalidViews = mFieldViews.stream()
+                                                       .filter(view -> !view.isValid())
+                                                       .collect(Collectors.toList());
                 if (!invalidViews.isEmpty()) {
                     // Immediately focus the first invalid field to make it faster to edit.
                     invalidViews.get(0).scrollToAndFocus();
@@ -657,18 +647,6 @@ public class EditorDialogView
         if (sObserverForTest != null) {
             sObserverForTest.onEditorConfirmationDialogShown();
         }
-    }
-
-    private List<FieldView> getViewsWithInvalidInformation(boolean findAll) {
-        List<FieldView> invalidViews = new ArrayList<>();
-        for (int i = 0; i < mFieldViews.size(); i++) {
-            FieldView fieldView = mFieldViews.get(i);
-            if (!fieldView.isValid()) {
-                invalidViews.add(fieldView);
-                if (!findAll) break;
-            }
-        }
-        return invalidViews;
     }
 
     /** @return The View with all fields of this editor. */

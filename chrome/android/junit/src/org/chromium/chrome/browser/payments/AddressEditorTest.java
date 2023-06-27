@@ -61,6 +61,8 @@ import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AddressUiCompo
 import org.chromium.chrome.browser.autofill.AutofillProfileBridgeJni;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
+import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
+import org.chromium.chrome.browser.autofill.PhoneNumberUtilJni;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType;
@@ -122,6 +124,8 @@ public class AddressEditorTest {
 
     @Mock
     private AutofillProfileBridge.Natives mAutofillProfileBridgeJni;
+    @Mock
+    private PhoneNumberUtil.Natives mPhoneNumberUtilJni;
 
     @Mock
     private EditorDialogView mEditorDialog;
@@ -158,6 +162,8 @@ public class AddressEditorTest {
         })
                 .when(mAutofillProfileBridgeJni)
                 .getRequiredFields(anyString(), anyList());
+        mJniMocker.mock(PhoneNumberUtilJni.TEST_HOOKS, mPhoneNumberUtilJni);
+        when(mPhoneNumberUtilJni.isPossibleNumber(anyString(), anyString())).thenReturn(true);
 
         mActivity = Robolectric.setupActivity(TestActivity.class);
 

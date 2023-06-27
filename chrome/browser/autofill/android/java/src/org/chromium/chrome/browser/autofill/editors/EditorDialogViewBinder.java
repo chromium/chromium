@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FOOTER_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FORM_VALID;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
 
@@ -57,6 +58,10 @@ public class EditorDialogViewBinder {
             view.setDeleteRunnable(model.get(DELETE_RUNNABLE));
         } else if (propertyKey == VISIBLE) {
             view.setVisible(model.get(VISIBLE));
+        } else if (propertyKey == FORM_VALID) {
+            if (!model.get(FORM_VALID)) {
+                view.findAndScrollToInvalidField();
+            }
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

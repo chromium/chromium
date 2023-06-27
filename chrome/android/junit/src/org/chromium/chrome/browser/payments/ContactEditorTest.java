@@ -392,7 +392,7 @@ public class ContactEditorTest {
                 /*saveToDisk=*/false);
         editor.setEditorDialog(mEditorDialog);
         AutofillContact contact = new AutofillContact(mActivity, new AutofillProfile(sProfile),
-                null, "Payer phone", null, ContactEditor.COMPLETE, false, true, false);
+                null, "+4900000000000", null, ContactEditor.COMPLETE, false, true, false);
         editor.edit(contact, unused -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
@@ -400,13 +400,13 @@ public class ContactEditorTest {
 
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
-        editorFields.get(0).model.set(VALUE, "Modified phone");
+        editorFields.get(0).model.set(VALUE, "+490111111111");
         editorModel.get(DONE_RUNNABLE).run();
 
         assertNull(contact.getPayerName());
-        assertEquals("Modified phone", contact.getPayerPhone());
+        assertEquals("+490111111111", contact.getPayerPhone());
         assertNull(contact.getPayerEmail());
-        assertEquals("Modified phone", contact.getProfile().getPhoneNumber());
+        assertEquals("+490111111111", contact.getProfile().getPhoneNumber());
     }
 
     @Test
@@ -418,7 +418,7 @@ public class ContactEditorTest {
                 /*saveToDisk=*/false);
         editor.setEditorDialog(mEditorDialog);
         AutofillContact contact = new AutofillContact(mActivity, new AutofillProfile(sProfile),
-                null, null, "Payer email", ContactEditor.COMPLETE, false, false, true);
+                null, null, "example@gmail.com", ContactEditor.COMPLETE, false, false, true);
         editor.edit(contact, unused -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
@@ -426,13 +426,13 @@ public class ContactEditorTest {
 
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
-        editorFields.get(0).model.set(VALUE, "Modified email");
+        editorFields.get(0).model.set(VALUE, "modified@gmail.com");
         editorModel.get(DONE_RUNNABLE).run();
 
         assertNull(contact.getPayerName());
         assertNull(contact.getPayerPhone());
-        assertEquals("Modified email", contact.getPayerEmail());
-        assertEquals("Modified email", contact.getProfile().getEmailAddress());
+        assertEquals("modified@gmail.com", contact.getPayerEmail());
+        assertEquals("modified@gmail.com", contact.getProfile().getEmailAddress());
     }
 
     @Test
@@ -443,9 +443,9 @@ public class ContactEditorTest {
                 /*requestPayerEmail=*/true,
                 /*saveToDisk=*/false);
         editor.setEditorDialog(mEditorDialog);
-        AutofillContact contact =
-                new AutofillContact(mActivity, new AutofillProfile(sProfile), "Payer name",
-                        "Payer phone", "Payer email", ContactEditor.COMPLETE, true, true, true);
+        AutofillContact contact = new AutofillContact(mActivity, new AutofillProfile(sProfile),
+                "Payer name", "+4900000000000", "example@gmail.com", ContactEditor.COMPLETE, true,
+                true, true);
         editor.edit(contact, unused -> {});
 
         PropertyModel editorModel = editor.getEditorModelForTesting();
@@ -454,15 +454,15 @@ public class ContactEditorTest {
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(3, editorFields.size());
         editorFields.get(0).model.set(VALUE, "Modified name");
-        editorFields.get(1).model.set(VALUE, "Modified phone");
-        editorFields.get(2).model.set(VALUE, "Modified email");
+        editorFields.get(1).model.set(VALUE, "+490111111111");
+        editorFields.get(2).model.set(VALUE, "modified@gmail.com");
         editorModel.get(DONE_RUNNABLE).run();
 
         assertEquals("Modified name", contact.getPayerName());
-        assertEquals("Modified phone", contact.getPayerPhone());
-        assertEquals("Modified email", contact.getPayerEmail());
+        assertEquals("+490111111111", contact.getPayerPhone());
+        assertEquals("modified@gmail.com", contact.getPayerEmail());
         assertEquals("Modified name", contact.getProfile().getFullName());
-        assertEquals("Modified phone", contact.getProfile().getPhoneNumber());
-        assertEquals("Modified email", contact.getProfile().getEmailAddress());
+        assertEquals("+490111111111", contact.getProfile().getPhoneNumber());
+        assertEquals("modified@gmail.com", contact.getProfile().getEmailAddress());
     }
 }
