@@ -188,6 +188,7 @@
       * "Застарілі", дозволено лише алгоритм шифрування RC4. Алгоритм шифрування RC4 вважається ненадійним і використовується в дуже особливих випадках. Якщо є можливість, переналаштуйте сервер так, щоб він підтримував алгоритм шифрування AES.
 
       Читайте докладніше на сторінці https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_client_encryption_types.</translation>
+<translation id="1173493742686115032">Увімкнути <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> на всіх веб-сторінках</translation>
 <translation id="1177567780207290133">Це правило керує фільтром URL-адрес SafeSites, який за допомогою Google Safe Search API класифікує URL-адреси як порнографічні.
 
       Якщо для нього встановлено значення:
@@ -7658,6 +7659,7 @@ HTTP-заголовок Origin-Agent-Cluster визначає, як ізолюв
 <translation id="7976157349247117979">Назва місця призначення <ph name="PRODUCT_NAME" /></translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7986473886676689183">Увімкнути звіти Android</translation>
+<translation id="7990280274626154329">Увімкнути <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
 <translation id="7991022023019679916">Зауважте, що це правило більше не підтримується та буде вилучене в <ph name="PRODUCT_OS_NAME" /> версії 85. Натомість використовуйте правило <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Визначає період часу неактивності користувача, після якого екран вимикається, якщо використовується живлення від мережі.
@@ -7722,6 +7724,7 @@ HTTP-заголовок Origin-Agent-Cluster визначає, як ізолюв
 <translation id="8028814157747157754">Увімкнути пошуковий сервіс за умовчанням і дозволити користувачам змінювати список пошукових сервісів</translation>
 <translation id="8029201909194194377">Максимальна дозволена тривалість сеансу віддаленого доступу</translation>
 <translation id="8035570672225663428">Увімкнути модель адаптивного заряджання, щоб призупиняти заряджання та подовжувати час роботи акумулятора</translation>
+<translation id="8038007682032315784">Вимкнути <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> на всіх веб-сторінках</translation>
 <translation id="8044493735196713914">Повідомляти про режим завантаження пристрою</translation>
 <translation id="8044720778481009876">Принтери типу <ph name="CLOUD_PRINT_NAME" /> і функція "Зберегти на Google Диску" (не підтримується)</translation>
 <translation id="80453040817068401">Зробити веб-переглядач <ph name="LACROS_NAME" /> доступним</translation>
@@ -8600,6 +8603,9 @@ HTTP-заголовок Origin-Agent-Cluster визначає, як ізолюв
       Користувачі можуть ініціювати вікно імпортування, а прапорець біля опції для закладок буде поставлено або знято відповідно до значення правила.</translation>
 <translation id="8858642179038618439">Примусово активувати Безпечний режим YouTube</translation>
 <translation id="8860342862142842017">Вимкнути застосування перевірки сертифіката для списку хешів інформації про відкритий ключ суб’єкта</translation>
+<translation id="8860474826929590628">Якщо правило не налаштувати або ввімкнути, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> зможе показуватися на всіх веб-сторінках.
+
+Якщо його вимкнути, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> не відображатиметься на жодній веб-сторінці.</translation>
 <translation id="8860894781631833477">Користувачі можуть налаштовувати версію оновлення <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8864975621965365890">Забороняє запити на вимкнення, які з’являються, коли <ph name="PRODUCT_FRAME_NAME" /> обробляє сайт.</translation>
 <translation id="8866430022832109569">Звіти про рекламні ресурси в додатку</translation>
