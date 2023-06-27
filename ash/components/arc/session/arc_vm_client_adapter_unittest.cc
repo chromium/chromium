@@ -1515,7 +1515,7 @@ TEST_F(ArcVmClientAdapterTest, KernelParam_RO) {
 
   // Check "rw" is not in |params|.
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_FALSE(request.enable_rw());
+  EXPECT_FALSE(request.rootfs_writable());
 }
 
 // Tests that the kernel parameter does include "rw" when '/' is writable and
@@ -1528,7 +1528,7 @@ TEST_F(ArcVmClientAdapterTest, KernelParam_RW) {
 
   // Check "rw" is in |params|.
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_TRUE(request.enable_rw());
+  EXPECT_TRUE(request.rootfs_writable());
 }
 
 // Tests that CreateArcVmClientAdapter() doesn't crash.
