@@ -4191,6 +4191,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter',
         ],
       },
+      'Mac13 Tests': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
       'Mac13 Tests (dbg)': {
         'swarming': {
           'shards': 2,
