@@ -97,7 +97,8 @@ history::AnnotatedVisit CreateDefaultAnnotatedVisit(int visit_id,
 history::ClusterVisit CreateClusterVisit(
     const history::AnnotatedVisit& annotated_visit,
     absl::optional<GURL> normalized_url,
-    float score) {
+    float score,
+    history::ClusterVisit::InteractionState interaction_state) {
   history::ClusterVisit cluster_visit;
   cluster_visit.annotated_visit = annotated_visit;
   cluster_visit.score = score;
@@ -107,6 +108,7 @@ history::ClusterVisit CreateClusterVisit(
       ComputeURLForDeduping(cluster_visit.normalized_url);
   cluster_visit.url_for_display =
       ComputeURLForDisplay(cluster_visit.normalized_url);
+  cluster_visit.interaction_state = interaction_state;
   return cluster_visit;
 }
 

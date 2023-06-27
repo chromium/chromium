@@ -9,6 +9,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 static_library("core") {
   sources = [
     "cluster_finalizer.h",
+    "cluster_interaction_state_processor.cc",
+    "cluster_interaction_state_processor.h",
     "cluster_metrics_utils.cc",
     "cluster_metrics_utils.h",
     "cluster_processor.h",
@@ -104,6 +106,7 @@ static_library("core") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "cluster_interaction_state_processor_unittest.cc",
     "clusterer_unittest.cc",
     "config_unittest.cc",
     "content_annotations_cluster_processor_unittest.cc",

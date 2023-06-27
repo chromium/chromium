@@ -17,6 +17,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/cluster_finalizer.h"
+#include "components/history_clusters/core/cluster_interaction_state_processor.h"
 #include "components/history_clusters/core/cluster_processor.h"
 #include "components/history_clusters/core/clusterer.h"
 #include "components/history_clusters/core/config.h"
@@ -529,6 +530,8 @@ OnDeviceClusteringBackend::GetClustersForUIOnBackgroundThread(
     bool calculate_triggerability) {
   // The cluster processors to be run.
   std::vector<std::unique_ptr<ClusterProcessor>> cluster_processors;
+  cluster_processors.push_back(
+      std::make_unique<ClusterInteractionStateProcessor>(filter_params));
   cluster_processors.push_back(
       std::make_unique<FullMembershipClusterProcessor>());
   if (GetConfig().content_clustering_enabled) {

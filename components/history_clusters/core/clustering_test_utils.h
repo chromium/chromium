@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_CLUSTERING_TEST_UTILS_H_
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_CLUSTERING_TEST_UTILS_H_
 
+#include <cstdint>
 #include <ostream>
 #include <vector>
 
@@ -57,7 +58,9 @@ history::AnnotatedVisit CreateDefaultAnnotatedVisit(
 history::ClusterVisit CreateClusterVisit(
     const history::AnnotatedVisit& annotated_visit,
     absl::optional<GURL> normalized_url = absl::nullopt,
-    float score = 1.0);
+    float score = 1.0,
+    history::ClusterVisit::InteractionState interaction_state =
+        history::ClusterVisit::InteractionState::kDefault);
 
 history::DuplicateClusterVisit ClusterVisitToDuplicateClusterVisit(
     history::ClusterVisit cluster_visit);
