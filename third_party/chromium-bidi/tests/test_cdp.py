@@ -22,7 +22,7 @@ from test_helpers import (ANY_TIMESTAMP, execute_command, read_JSON_message,
 
 
 @pytest.mark.asyncio
-async def test_cdp_sendCommand_commandResultReturned(websocket):
+async def test_cdp_sendCommand_resultReturned(websocket):
     command_result = await execute_command(
         websocket, {
             "method": "cdp.sendCommand",
@@ -36,7 +36,7 @@ async def test_cdp_sendCommand_commandResultReturned(websocket):
 
 
 @pytest.mark.asyncio
-async def test_cdp_subscribeCdpEvents_cdpEvent(websocket, context_id):
+async def test_cdp_subscribe_toSpecificEvent(websocket, context_id):
     await subscribe(websocket, "cdp.Runtime.consoleAPICalled")
 
     command_result = await execute_command(websocket, {
@@ -45,7 +45,6 @@ async def test_cdp_subscribeCdpEvents_cdpEvent(websocket, context_id):
             "context": context_id
         }
     })
-
     session_id = command_result["session"]
 
     await send_JSON_command(
@@ -59,7 +58,6 @@ async def test_cdp_subscribeCdpEvents_cdpEvent(websocket, context_id):
                 "session": session_id
             }
         })
-
     resp = await read_JSON_message(websocket)
 
     assert {

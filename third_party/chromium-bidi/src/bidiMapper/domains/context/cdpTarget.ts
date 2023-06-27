@@ -155,8 +155,8 @@ export class CdpTarget {
 
   #setEventListeners() {
     this.#cdpClient.on('*', (event, params) => {
-      // We may encounter uses for EventEmitter
-      // other then CDP events we want to skip them
+      // We may encounter uses for EventEmitter other than CDP events,
+      // which we want to skip.
       if (typeof event !== 'string') {
         return;
       }

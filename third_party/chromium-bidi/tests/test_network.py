@@ -93,7 +93,6 @@ async def test_network_specific_context_subscription_does_not_enable_cdp_network
 
     new_context_id = await create_context()
 
-    # Subscribe to all CDP events.
     await subscribe(websocket, "cdp.Network.requestWillBeSent")
 
     command_id = await send_JSON_command(

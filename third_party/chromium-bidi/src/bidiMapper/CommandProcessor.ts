@@ -17,7 +17,7 @@
 
 import {
   type BrowsingContext,
-  type CDP,
+  type Cdp,
   type Input,
   Message,
   type Script,
@@ -48,8 +48,8 @@ export interface BidiParser {
   parseCallFunctionParams(params: object): Script.CallFunctionParameters;
   parseEvaluateParams(params: object): Script.EvaluateParameters;
   parseDisownParams(params: object): Script.DisownParameters;
-  parseSendCommandParams(params: object): CDP.SendCommandParams;
-  parseGetSessionParams(params: object): CDP.GetSessionParams;
+  parseSendCommandParams(params: object): Cdp.SendCommandParams;
+  parseGetSessionParams(params: object): Cdp.GetSessionParams;
   parseSubscribeParams(params: object): Session.SubscriptionRequest;
   parseNavigateParams(params: object): BrowsingContext.NavigateParameters;
   parseReloadParams(params: object): BrowsingContext.ReloadParameters;
@@ -90,11 +90,11 @@ class BidiNoOpParser implements BidiParser {
   parseDisownParams(params: object): Script.DisownParameters {
     return params as Script.DisownParameters;
   }
-  parseSendCommandParams(params: object): CDP.SendCommandParams {
-    return params as CDP.SendCommandParams;
+  parseSendCommandParams(params: object): Cdp.SendCommandParams {
+    return params as Cdp.SendCommandParams;
   }
-  parseGetSessionParams(params: object): CDP.GetSessionParams {
-    return params as CDP.GetSessionParams;
+  parseGetSessionParams(params: object): Cdp.GetSessionParams {
+    return params as Cdp.GetSessionParams;
   }
   parseSubscribeParams(params: object): Session.SubscriptionRequest {
     return params as Session.SubscriptionRequest;

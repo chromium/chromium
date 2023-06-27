@@ -44,9 +44,9 @@ export function unrollEvents(
 ): Session.SubscriptionRequestEvent[] {
   const allEvents = new Set<Session.SubscriptionRequestEvent>();
 
-  function addEvents(events: string[]) {
+  function addEvents(events: Session.SubscriptionRequestEvent[]) {
     for (const event of events) {
-      allEvents.add(event as Session.SubscriptionRequestEvent);
+      allEvents.add(event);
     }
   }
 

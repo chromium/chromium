@@ -32,7 +32,7 @@ CdpSendCommandCommand = {
 CdpSendCommandParameters = {
    method: text,
    params: any,
-   cession?: text,
+   session?: text,
 }
 
 CdpSendCommandResult = {
@@ -43,7 +43,7 @@ CdpSendCommandResult = {
 
 The command runs the
 described [CDP command](https://chromedevtools.github.io/devtools-protocol)
-and returns result.
+and returns the result.
 
 ### Command `cdp.getSession`
 
@@ -75,7 +75,7 @@ CdpEventReceivedEvent = {
 CdpEventReceivedParameters = {
    event: text,
    params: any,
-   session: string,
+   session: text,
 }
 ```
 

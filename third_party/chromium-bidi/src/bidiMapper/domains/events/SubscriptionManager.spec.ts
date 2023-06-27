@@ -460,7 +460,13 @@ describe('SubscriptionManager', () => {
     });
 
     it('discrete events', () => {
-      expect(unrollEvents([Log.EventNames.LogEntryAddedEvent])).to.deep.equal([
+      expect(
+        unrollEvents([
+          Script.EventNames.RealmCreated,
+          Log.EventNames.LogEntryAddedEvent,
+        ])
+      ).to.deep.equal([
+        Script.EventNames.RealmCreated,
         Log.EventNames.LogEntryAddedEvent,
       ]);
     });

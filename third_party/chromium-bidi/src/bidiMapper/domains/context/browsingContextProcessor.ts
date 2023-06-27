@@ -18,7 +18,7 @@ import type Protocol from 'devtools-protocol';
 
 import {
   type BrowsingContext,
-  type CDP,
+  type Cdp,
   Input,
   Message,
   type Script,
@@ -536,8 +536,8 @@ export class BrowsingContextProcessor {
   }
 
   async process_cdp_sendCommand(
-    params: CDP.SendCommandParams
-  ): Promise<CDP.SendCommandResult> {
+    params: Cdp.SendCommandParams
+  ): Promise<Cdp.SendCommandResult> {
     const client = params.session
       ? this.#cdpConnection.getCdpClient(params.session)
       : this.#cdpConnection.browserClient();
@@ -551,7 +551,7 @@ export class BrowsingContextProcessor {
     };
   }
 
-  process_cdp_getSession(params: CDP.GetSessionParams): CDP.GetSessionResult {
+  process_cdp_getSession(params: Cdp.GetSessionParams): Cdp.GetSessionResult {
     const context = params.context;
     const sessionId =
       this.#browsingContextStorage.getContext(context).cdpTarget.cdpSessionId;

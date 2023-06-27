@@ -20,7 +20,7 @@
 import * as Parser from '../protocol-parser/protocol-parser.js';
 import {
   type BrowsingContext,
-  type CDP,
+  type Cdp,
   type Input,
   Message,
   type Script,
@@ -290,11 +290,11 @@ class BidiParserImpl implements BidiParser {
   parseDisownParams(params: object): Script.DisownParameters {
     return Parser.Script.parseDisownParams(params);
   }
-  parseSendCommandParams(params: object): CDP.SendCommandParams {
-    return Parser.CDP.parseSendCommandParams(params);
+  parseSendCommandParams(params: object): Cdp.SendCommandParams {
+    return Parser.Cdp.parseSendCommandParams(params);
   }
-  parseGetSessionParams(params: object): CDP.GetSessionParams {
-    return Parser.CDP.parseGetSessionParams(params);
+  parseGetSessionParams(params: object): Cdp.GetSessionParams {
+    return Parser.Cdp.parseGetSessionParams(params);
   }
   parseSubscribeParams(params: object): Session.SubscriptionRequest {
     return Parser.Session.parseSubscribeParams(params);

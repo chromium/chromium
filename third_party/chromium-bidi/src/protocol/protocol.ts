@@ -32,7 +32,7 @@ interface EventResponse<MethodType, ParamsType> {
 type BiDiCommand =
   // keep-sorted start
   | BrowsingContext.Command
-  | CDP.Command
+  | Cdp.Command
   | Input.Command
   | Network.Command
   | Script.Command
@@ -64,7 +64,7 @@ export namespace Message {
     | EmptyResult
     // keep-sorted start
     | BrowsingContext.Result
-    | CDP.Result
+    | Cdp.Result
     | ErrorResult
     | Network.Result
     | Script.Result
@@ -74,7 +74,7 @@ export namespace Message {
   export type EventMessage =
     // keep-sorted start
     | BrowsingContext.Event
-    | CDP.Event
+    | Cdp.Event
     | Log.Event
     | Network.Event
     | Script.Event;
@@ -83,11 +83,19 @@ export namespace Message {
   export type EventNames =
     // keep-sorted start
     | BrowsingContext.EventNames
-    | CDP.EventNames
+    | Cdp.EventNames
     | Log.EventNames
     | Network.EventNames
     | Script.EventNames;
   // keep-sorted end;
+
+  export type AllEvents =
+    // keep-sorted start
+    | typeof BrowsingContext.AllEvents
+    | typeof Log.AllEvents
+    | typeof Network.AllEvents
+    | typeof Script.AllEvents;
+  // keep-sorted end
 
   export enum ErrorCode {
     // keep-sorted start
@@ -1227,7 +1235,7 @@ export namespace Network {
   }
 }
 
-export namespace CDP {
+export namespace Cdp {
   export type Command = SendCommandCommand | GetSessionCommand;
   export type Result = SendCommandResult | GetSessionResult;
   export type Event = EventReceivedEvent;
@@ -1261,9 +1269,9 @@ export namespace CDP {
 
   export type GetSessionResult = {result: {session: string | null}};
 
-  export type EventReceivedEvent = EventResponse<EventNames, CDPEventParams>;
+  export type EventReceivedEvent = EventResponse<EventNames, EventParams>;
 
-  export type CDPEventParams<
+  export type EventParams<
     EventName extends keyof ProtocolMapping.Events = keyof ProtocolMapping.Events
   > = {
     event: EventName;
@@ -1299,12 +1307,7 @@ export namespace Session {
 
   export type SubscriptionRequestEvent =
     // keep-sorted start
-    | CDP.EventNames
-    | Message.EventNames
-    | typeof BrowsingContext.AllEvents
-    | typeof Log.AllEvents
-    | typeof Network.AllEvents
-    | typeof Script.AllEvents;
+    Cdp.EventNames | Message.EventNames | Message.AllEvents;
   // keep-sorted end;
 
   // SessionSubscriptionRequest = {
