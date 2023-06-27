@@ -5,6 +5,7 @@
 #ifndef ASH_WM_FOCUS_MODE_FOCUS_MODE_FEATURE_POD_CONTROLLER_H_
 #define ASH_WM_FOCUS_MODE_FOCUS_MODE_FEATURE_POD_CONTROLLER_H_
 
+#include "ash/ash_export.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "base/memory/raw_ptr.h"

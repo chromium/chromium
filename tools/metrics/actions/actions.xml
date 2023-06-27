@@ -34409,6 +34409,14 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="StatusArea_FocusMode_Detailed">
+  <owner>richui@chromium.org</owner>
+  <description>
+    Counts the number of times the user has clicked on the Focus Mode status
+    tray item and is now in the detail view.
+  </description>
+</action>
+
 <action name="StatusArea_HighContrastDisabled">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

@@ -17,7 +17,7 @@ namespace ash {
 
 namespace {
 
-// TODO: replace these placeholders with string ids later.
+// TODO(b/288975135): replace these placeholders with string ids later.
 constexpr const char16_t kLabelText[] = u"Focus Mode";
 constexpr const char16_t kSubLabelText[] = u"30 mins";
 
