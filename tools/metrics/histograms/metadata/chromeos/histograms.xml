@@ -192,7 +192,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.Attestation.AttestationFlowStatus"
     enum="AttestationFlowStatus" expires_after="2023-10-22">
-  <owner>cylai@chromium.org</owner>
+  <owner>chingkang@google.com</owner>
   <owner>cros-hwsec+umas@chromium.org</owner>
   <summary>
     Records the status of attestation flow. The value represents 6 flags in 6
@@ -203,12 +203,13 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.Attestation.GetCertificateStatus"
-    enum="AttestationStatus" expires_after="2022-10-08">
-  <owner>cylai@chromium.org</owner>
+    enum="AttestationStatus" expires_after="2023-12-26">
+  <owner>chingkang@google.com</owner>
   <owner>cros-hwsec+umas@chromium.org</owner>
   <summary>
     Records the status of `AttesttionClient::GetCertificate()` called by
-    `AttestationFlowIntegrated`.
+    `AttestationFlowIntegrated`. Warning: this histogram was expired from Oct 8,
+    2022 to June 26, 2023; data may be missing.
   </summary>
 </histogram>
 

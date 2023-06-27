@@ -1527,7 +1527,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2021-12-31">
   <owner>apronin@chromium.org</owner>
   <owner>mnissler@chromium.org</owner>
-  <owner>cylai@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
     The amount of time for Chrome OS mount-encrypted to take TPM ownership.
@@ -1837,28 +1836,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.AuthFailCommand.Auth2Fail"
-    enum="TPM12CommandOrdinal" expires_after="2022-10-08">
-  <owner>cylai@google.com</owner>
+    enum="TPM12CommandOrdinal" expires_after="2023-12-26">
+  <owner>yich@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
     Reporting the TPM command ordinal that results in TPM_E_AUTH2FAIL code. Note
-    that this is only applicable for TPM1.2.
+    that this is only applicable for TPM1.2. Warning: this histogram was expired
+    from Oct 8, 2022 to June 26, 2023; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Platform.TPM.AuthFailCommand.AuthFail"
-    enum="TPM12CommandOrdinal" expires_after="2022-10-08">
-  <owner>cylai@google.com</owner>
+    enum="TPM12CommandOrdinal" expires_after="2023-12-26">
+  <owner>yich@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
     Reporting the TPM command ordinal that results in TPM_E_AUTHFAIL code. Note
-    that this is only applicable for TPM1.2.
+    that this is only applicable for TPM1.2. Warning: this histogram was expired
+    from Oct 8, 2022 to June 26, 2023; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Platform.TPM.DictionaryAttackCounter" units="units"
     expires_after="2023-11-12">
-  <owner>cylai@chromium.org</owner>
+  <owner>yich@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
     Each sample is the value of the TPM dictionary attack counter reported at
@@ -1868,7 +1869,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.TPM.DictionaryAttackResetStatus"
     enum="CrosTPMDictionaryAttackResetStatusEnum" expires_after="2023-11-05">
-  <owner>cylai@chromium.org</owner>
+  <owner>yich@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
     Each sample is the status of an hourly attempt to reset the TPM dictionary
@@ -1974,7 +1975,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.TPM.TimeToTakeOwnership" units="ms"
     expires_after="2023-10-22">
   <owner>yich@google.com</owner>
-  <owner>cylai@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
     The amount of time for Chrome OS to take TPM ownership. Recorded when
@@ -1984,7 +1984,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.TPM.TpmManagerSecretStatus"
     enum="TpmManagerSecretStatus" expires_after="2023-10-22">
-  <owner>cylai@chromium.org</owner>
+  <owner>yich@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
     The status of the secrets that tpm manager holds.
@@ -2074,7 +2074,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Trunks.RecoverableWriteErrorNo" enum="PopularOSErrno"
     expires_after="2023-12-04">
-  <owner>cylai@google.com</owner>
   <owner>chingkang@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -2095,7 +2094,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Trunks.TransitionedWriteErrorNo"
     enum="PopularOSErrno" expires_after="2023-11-12">
-  <owner>cylai@google.com</owner>
   <owner>chingkang@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -2106,7 +2104,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Trunks.UnrecoverableWriteErrorNo"
     enum="PopularOSErrno" expires_after="2023-12-04">
-  <owner>cylai@google.com</owner>
   <owner>chingkang@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -2116,8 +2113,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.U2F.Command" enum="Cr50U2FCommands"
-    expires_after="2023-06-25">
-  <owner>cylai@chromium.org</owner>
+    expires_after="2023-12-26">
+  <owner>hcyang@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>Records occurrences of U2F commands sent to cr50.</summary>
 </histogram>
