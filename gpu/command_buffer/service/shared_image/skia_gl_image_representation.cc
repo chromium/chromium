@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"

@@ -12,7 +12,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_util.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/test_gpu_service_holder.h"

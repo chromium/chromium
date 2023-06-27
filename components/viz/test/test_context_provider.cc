@@ -19,7 +19,6 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "components/viz/test/test_raster_interface.h"

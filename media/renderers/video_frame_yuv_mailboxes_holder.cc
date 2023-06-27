@@ -8,7 +8,6 @@
 
 #include "base/logging.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"

@@ -11,7 +11,6 @@
 
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"

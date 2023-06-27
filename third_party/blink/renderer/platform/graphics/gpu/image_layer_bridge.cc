@@ -8,7 +8,6 @@
 #include "cc/layers/texture_layer.h"
 #include "cc/resources/cross_thread_shared_bitmap.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/resources/transferable_resource.h"

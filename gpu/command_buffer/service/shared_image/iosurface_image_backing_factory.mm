@@ -6,7 +6,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"

@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 
 namespace gpu {
 

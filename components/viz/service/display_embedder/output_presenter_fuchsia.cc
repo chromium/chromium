@@ -13,7 +13,6 @@
 #include "base/notreached.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/command_buffer/service/external_semaphore.h"
 #include "ui/gfx/geometry/rect_conversions.h"

@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/gpu/context_lost_reason.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/display/dc_layer_overlay.h"
 #include "gpu/command_buffer/common/mailbox.h"

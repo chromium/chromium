@@ -9,7 +9,6 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/resources/release_callback.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"

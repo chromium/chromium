@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "components/viz/common/resources/resource_format.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 
 namespace viz {
 

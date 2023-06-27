@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/abstract_texture_android.h"

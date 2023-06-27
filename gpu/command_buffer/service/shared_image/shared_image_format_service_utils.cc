@@ -13,7 +13,6 @@
 #include "base/notreached.h"
 #include "build/buildflag.h"
 #include "components/viz/common/resources/resource_format.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 
 namespace gpu {

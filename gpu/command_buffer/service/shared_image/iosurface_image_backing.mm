@@ -9,7 +9,6 @@
 #include "base/memory/scoped_policy.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/viz/common/gpu/metal_context_provider.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"

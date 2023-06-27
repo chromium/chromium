@@ -47,8 +47,6 @@ viz_component("resource_format_utils") {
   defines = [ "VIZ_RESOURCE_FORMAT_IMPLEMENTATION" ]
 
   sources = [
-    "resources/resource_format_utils.cc",
-    "resources/resource_format_utils.h",
     "resources/resource_sizes.h",
     "resources/shared_image_format_utils.cc",
     "resources/shared_image_format_utils.h",

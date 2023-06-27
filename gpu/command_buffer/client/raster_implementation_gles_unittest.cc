@@ -15,7 +15,6 @@
 #include "base/containers/flat_map.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/image_provider.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/client/context_support.h"
