@@ -110,6 +110,8 @@
   </span>
   <span slot="message">
     <div id="animation-container">
+      <!-- TODO(b/279667779): Remove iron-media-query and dark mode check when
+                              Jelly is fully launched. -->
       <iron-media-query query="(prefers-color-scheme: dark)"
           query-matches="{{isDarkModeActive_}}">
       </iron-media-query>

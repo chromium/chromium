@@ -24,6 +24,7 @@ import {UiPageContainerBehavior} from './ui_page_container_behavior.js';
 
 /**
  * The multidevice setup animation for light mode.
+ * TODO(b/279667779): Remove when Jelly is fully launched.
  * @type {string}
  */
 const MULTIDEVICE_ANIMATION_DARK_URL =
@@ -31,10 +32,18 @@ const MULTIDEVICE_ANIMATION_DARK_URL =
 
 /**
  * The multidevice setup animation for dark mode.
+ * TODO(b/279667779): Remove when Jelly is fully launched.
  * @type {string}
  */
 const MULTIDEVICE_ANIMATION_LIGHT_URL =
     'chrome://resources/ash/common/multidevice_setup/multidevice_setup_light.json';
+
+/**
+ * The multidevice setup animation for dynamic colors.
+ * @type {string}
+ */
+const MULTIDEVICE_ANIMATION_JELLY_URL =
+    'chrome://resources/ash/common/multidevice_setup/multidevice_setup_jelly.json';
 
 Polymer({
   _template: getTemplate(),
@@ -118,11 +127,24 @@ Polymer({
 
     /**
      * Whether the multidevice setup page is being rendered in dark mode.
+     * TODO(b/279667779): Remove when Jelly is fully launched.
      * @private {boolean}
      */
     isDarkModeActive_: {
       type: Boolean,
       value: false,
+    },
+
+    /**
+     * Whether the multidevice setup page is being rendered with dynamic colors.
+     * @private {boolean}
+     */
+    isJellyEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('isJellyEnabled') &&
+            loadTimeData.getBoolean('isJellyEnabled');
+      },
     },
 
     /**
@@ -373,6 +395,11 @@ Polymer({
    * @private
    */
   getAnimationUrl_() {
+    if (this.isJellyEnabled_) {
+      return MULTIDEVICE_ANIMATION_JELLY_URL;
+    }
+
+    // TODO(b/279667779): Remove when Jelly is fully launched.
     return this.isDarkModeActive_ ? MULTIDEVICE_ANIMATION_DARK_URL :
                                     MULTIDEVICE_ANIMATION_LIGHT_URL;
   },
