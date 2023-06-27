@@ -959,7 +959,7 @@ public class ContextualSearchInstrumentationBase {
     protected void clickWordNode(String nodeId) throws TimeoutException {
         retryPanelBarInteractions(() -> {
             clickNode(nodeId);
-            waitForPanelToPeek();
+            waitForPanelToFreshlyPeek();
         }, true);
     }
 
@@ -1136,6 +1136,21 @@ public class ContextualSearchInstrumentationBase {
      */
     protected void waitForPanelToPeek() {
         waitForPanelToEnterState(PanelState.PEEKED);
+    }
+
+    /**
+     * Waits for the Search Panel (the Search Bar) to peek up from the bottom, and asserts that it
+     * did peek. Ignores an existing Search Panel that peeked.
+     */
+    protected void waitForPanelToFreshlyPeek() {
+        int lastPeekSequence = mPanel.getLastPeekSequence();
+        final @PanelState int state = PanelState.PEEKED;
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mPanel, Matchers.notNullValue());
+            Criteria.checkThat(mPanel.getPanelState(), Matchers.is(state));
+            Criteria.checkThat(mPanel.getLastPeekSequence(), Matchers.not(lastPeekSequence));
+            Criteria.checkThat(mPanel.isHeightAnimationRunning(), Matchers.is(false));
+        }, TEST_TIMEOUT, DEFAULT_POLLING_INTERVAL);
     }
 
     /**
