@@ -139,7 +139,7 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     // For now, start the first candidate for a URL only if there are no
     // matching prerenders. We could be cleverer in the future.
     if (matching_prerenders.empty()) {
-      DCHECK_GT(matching_candidates.size(), 0u);
+      CHECK_GT(matching_candidates.size(), 0u);
       candidates_to_start.push_back(std::move(matching_candidates[0]));
     }
 
@@ -179,7 +179,11 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
 
 bool PrerendererImpl::MaybePrerender(
     const blink::mojom::SpeculationCandidatePtr& candidate) {
-  DCHECK_EQ(candidate->action, blink::mojom::SpeculationAction::kPrerender);
+  CHECK_EQ(candidate->action, blink::mojom::SpeculationAction::kPrerender);
+
+  // Prerendering frames should not trigger any prerender request.
+  CHECK(!render_frame_host_->IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kPrerendering));
 
   if (!registry_)
     return false;
