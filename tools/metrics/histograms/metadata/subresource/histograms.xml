@@ -632,17 +632,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SubresourceFilter.WriteRuleset.ReplaceFileError"
-    enum="PlatformFileError" expires_after="M90">
-  <owner>jkarlin@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    Records the exact error whenever writing a ruleset fails at the step where
-    the ruleset would be moved from the scratch directory to its final location.
-    Recorded every time the RulesetService kicks off a ruleset indexing process.
-  </summary>
-</histogram>
-
 <histogram name="SubresourceFilter.WriteRuleset.Result"
     enum="SubresourceFilterWriteRulesetResult" expires_after="2023-08-08">
   <owner>alexmt@chromium.org</owner>

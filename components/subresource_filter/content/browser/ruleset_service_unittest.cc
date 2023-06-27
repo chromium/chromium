@@ -776,8 +776,6 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_Persisted) {
       "SubresourceFilter.IndexRuleset.WallDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.IndexRuleset.NumUnsupportedRules", 0, 1);
-  histogram_tester.ExpectTotalCount(
-      "SubresourceFilter.WriteRuleset.ReplaceFileError", 0);
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
       static_cast<int>(RulesetService::IndexAndWriteRulesetResult::SUCCESS), 1);
@@ -989,9 +987,6 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_WriteFailure) {
       "SubresourceFilter.IndexRuleset.WallDuration", 1);
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.IndexRuleset.NumUnsupportedRules", 0, 1);
-  base::File::Error expected_error = base::File::FILE_ERROR_NOT_FOUND;
-  histogram_tester.ExpectUniqueSample(
-      "SubresourceFilter.WriteRuleset.ReplaceFileError", -expected_error, 1);
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
       static_cast<int>(IndexAndWriteRulesetResult::FAILED_REPLACE_FILE), 1);
