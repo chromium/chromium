@@ -71,6 +71,29 @@ constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
     true,       // Use initial delay.
 };
 
+DurationOption GetDurationMetrics(int minutes) {
+  switch (minutes) {
+    case (0): {
+      return DurationOption::kForever;
+    }
+    case (5): {
+      return DurationOption::kFiveMin;
+    }
+    case (10): {
+      return DurationOption::kTenMin;
+    }
+    case (30): {
+      return DurationOption::kThirtyMin;
+    }
+    case (60): {
+      return DurationOption::kOneHour;
+    }
+    default: {
+      return DurationOption::kError;
+    }
+  }
+}
+
 }  // namespace
 
 PersonalizationAppAmbientProviderImpl::PersonalizationAppAmbientProviderImpl(
@@ -223,6 +246,7 @@ void PersonalizationAppAmbientProviderImpl::SetScreenSaverDuration(
     int minutes) {
   Shell::Get()->ambient_controller()->SetScreenSaverDuration(minutes);
   OnScreenSaverDurationChanged();
+  LogAmbientModeScreenSaverDuration(GetDurationMetrics(minutes));
 }
 
 void PersonalizationAppAmbientProviderImpl::SetTemperatureUnit(

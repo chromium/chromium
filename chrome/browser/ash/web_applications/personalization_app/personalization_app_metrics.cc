@@ -22,6 +22,11 @@ void LogAmbientModeVideo(ash::AmbientVideo video) {
   base::UmaHistogramEnumeration(kAmbientModeVideoHistogramName, video);
 }
 
+void LogAmbientModeScreenSaverDuration(DurationOption duration_option) {
+  base::UmaHistogramEnumeration(kAmbientModeScreenSaverDurationHistogramName,
+                                duration_option);
+}
+
 void LogPersonalizationEntryPoint(ash::PersonalizationEntryPoint entry_point) {
   base::UmaHistogramEnumeration(ash::kPersonalizationEntryPointHistogramName,
                                 entry_point);

@@ -26,10 +26,22 @@ enum class ColorMode {
   kMaxValue = kAuto,
 };
 
+enum class DurationOption {
+  kForever = 0,
+  kFiveMin = 1,
+  kTenMin = 2,
+  kThirtyMin = 3,
+  kOneHour = 4,
+  kError = 5,
+  kMaxValue = kError,
+};
+
 constexpr char kAmbientModeAnimationThemeHistogramName[] =
     "Ash.Personalization.AmbientMode.AnimationTheme2";
 constexpr char kAmbientModeVideoHistogramName[] =
     "Ash.Personalization.AmbientMode.Video2";
+constexpr char kAmbientModeScreenSaverDurationHistogramName[] =
+    "Ash.Personalization.AmbientMode.ScreenSaverDuration";
 constexpr char kPersonalizationThemeColorModeHistogramName[] =
     "Ash.Personalization.Theme.ColorMode";
 constexpr char kPersonalizationKeyboardBacklightColorHistogramName[] =
@@ -44,6 +56,8 @@ void LogPersonalizationTheme(ColorMode color_mode);
 void LogAmbientModeTheme(ash::AmbientTheme animation_theme);
 
 void LogAmbientModeVideo(ash::AmbientVideo video);
+
+void LogAmbientModeScreenSaverDuration(DurationOption duration_option);
 
 void LogPersonalizationEntryPoint(ash::PersonalizationEntryPoint entry_point);
 
