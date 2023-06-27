@@ -53,6 +53,7 @@ source_set("browser_tests") {
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
     "//chromeos/crosapi/mojom",
     "//content/test:test_support",
+    "//extensions/common",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
