@@ -4817,16 +4817,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Session.Pause" enum="MediaSessionActionSource"
-    expires_after="2021-12-05">
-  <owner>steimel@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    The number of times the user paused playback of a media session using other
-    means than the pause button on the page.
-  </summary>
-</histogram>
-
 <histogram name="Media.Session.Play" enum="MediaSessionActionSource"
     expires_after="2023-10-22">
   <owner>steimel@chromium.org</owner>
@@ -4834,16 +4824,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of times the user started playback of a media session using other
     means than the play button on the page.
-  </summary>
-</histogram>
-
-<histogram name="Media.Session.Stop" enum="MediaSessionActionSource"
-    expires_after="2022-02-06">
-  <owner>steimel@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    The number of times the user stopped a media session using other means than
-    the pause button on the page.
   </summary>
 </histogram>
 
