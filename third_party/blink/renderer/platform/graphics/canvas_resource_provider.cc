@@ -1251,7 +1251,7 @@ CanvasResourceProvider::~CanvasResourceProvider() {
 }
 
 BASE_FEATURE(kCanvas2DAutoFlushParams,
-             "kCanvas2DAutoFlushParams",
+             "Canvas2DAutoFlushParams",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The following parameters attempt to reach a compromise between not flushing
