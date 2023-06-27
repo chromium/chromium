@@ -82,6 +82,9 @@ struct PageRequestSummary {
   // navigation.
   absl::optional<base::TimeTicks> first_prefetch_initiated;
 
+  // The encoded position of the previously seen LCP element in the document.
+  std::string lcp_element_locator;
+
  private:
   void UpdateOrAddToOrigins(
       const url::Origin& origin,
@@ -133,6 +136,10 @@ class LoadingDataCollector {
       NavigationId navigation_id,
       base::TimeTicks first_contentful_paint);
 
+  // Called when the main frame discovers LCP element.
+  virtual void RecordLCPElementLocator(NavigationId navigaiton_id,
+                                       base::StringPiece lcp_element_locator);
+
  private:
   using NavigationMap =
       std::map<NavigationId, std::unique_ptr<PageRequestSummary>>;
@@ -157,6 +164,7 @@ class LoadingDataCollector {
                            RecordPreconnectInitiatedNoInflightNavigation);
   FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest,
                            RecordPrefetchInitiatedNoInflightNavigation);
+  FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest, WithAndWithoutLCPPSignals);
 
   static void SetAllowPortInUrlsForTesting(bool state);
 
