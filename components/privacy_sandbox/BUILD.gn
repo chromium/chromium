@@ -29,13 +29,30 @@ component("features") {
   public_deps = [ "//base" ]
 }
 
+source_set("privacy_sandbox_settings_headers") {
+  sources = [
+    "privacy_sandbox_settings.h",
+    "privacy_sandbox_settings_impl.h",
+  ]
+
+  deps = [
+    "//components/browsing_topics/common:common",
+    "//components/keyed_service/core:core",
+    "//components/pref_registry:pref_registry",
+    "//components/prefs",
+    "//content/public/browser",
+    "//third_party/blink/public/common",
+    "//url:url",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
 source_set("privacy_sandbox") {
   sources = [
     "canonical_topic.cc",
     "canonical_topic.h",
-    "privacy_sandbox_settings.h",
     "privacy_sandbox_settings_impl.cc",
-    "privacy_sandbox_settings_impl.h",
   ]
 
   deps = [
@@ -57,7 +74,7 @@ source_set("privacy_sandbox") {
 
   public_deps = [
     ":features",
-    "//base",
+    ":privacy_sandbox_settings_headers",
   ]
 }
 

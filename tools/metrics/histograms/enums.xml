@@ -87964,6 +87964,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="4" label="Site data access blocked"/>
   <int value="5" label="Mismatched Consent"/>
   <int value="6" label="Attestation failed"/>
+  <int value="7" label="Attestations not loaded"/>
 </enum>
 
 <enum name="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus2">

@@ -6,8 +6,8 @@
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
 
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/privacy_sandbox/canonical_topic.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
+
+#include "base/time/time.h"
 
 class GURL;
 
@@ -16,6 +16,23 @@ class Origin;
 }
 
 namespace privacy_sandbox {
+
+class CanonicalTopic;
+
+// When a new enum value is added:
+// 1. Update kMaxValue to match it.
+// 2. Update `PrivacySandboxAttestationsGatedAPIProto` in
+//    `privacy_sandbox_attestations.proto`.
+// 3. Update `AllowAPI` in `privacy_sandbox_attestations_parser.cc`.
+enum class PrivacySandboxAttestationsGatedAPI {
+  kTopics,
+  kProtectedAudience,
+  kPrivateAggregation,
+  kAttributionReporting,
+  kSharedStorage,
+
+  kMaxValue = kSharedStorage,
+};
 
 // A service which acts as a intermediary between Privacy Sandbox APIs and the
 // preferences and content settings which define when they are allowed to be

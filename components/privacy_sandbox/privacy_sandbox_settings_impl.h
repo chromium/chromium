@@ -6,13 +6,13 @@
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_IMPL_H_
 
 #include "components/browsing_topics/common/common_types.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class HostContentSettingsMap;
 class PrefService;
@@ -89,6 +89,8 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
 
  private:
   friend class PrivacySandboxSettingsTest;
+  friend class PrivacySandboxAttestations;
+  friend class PrivacySandboxAttestationsTestBase;
   // Called when the First-Party Sets enabled preference is changed.
   void OnFirstPartySetsEnabledPrefChanged();
 
@@ -113,7 +115,8 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
     kSiteDataAccessBlocked = 4,
     kMismatchedConsent = 5,
     kAttestationFailed = 6,
-    kMaxValue = kAttestationFailed,
+    kAttestationsNotLoaded = 7,
+    kMaxValue = kAttestationsNotLoaded,
   };
 
   static bool IsAllowed(Status status);

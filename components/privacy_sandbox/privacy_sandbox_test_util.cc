@@ -290,8 +290,8 @@ void ApplyTestState(
       SCOPED_TRACE("State Setup: Attestations Map");
       privacy_sandbox::PrivacySandboxAttestations::GetInstance()
           ->SetAttestationsForTesting(
-              GetItemValue<privacy_sandbox::PrivacySandboxAttestationsMap>(
-                  value));
+              GetItemValue<absl::optional<
+                  privacy_sandbox::PrivacySandboxAttestationsMap>>(value));
       return;
     }
     default:

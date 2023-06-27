@@ -90,44 +90,38 @@ PrivacySandboxAttestations::CreateForTesting() {
 
 PrivacySandboxAttestations::~PrivacySandboxAttestations() = default;
 
-PrivacySandboxAttestations::PrivacySandboxAttestations(
-    PrivacySandboxAttestations&&) = default;
-
-PrivacySandboxAttestations& PrivacySandboxAttestations::operator=(
-    PrivacySandboxAttestations&&) = default;
-
-bool PrivacySandboxAttestations::IsSiteAttested(
+PrivacySandboxSettingsImpl::Status PrivacySandboxAttestations::IsSiteAttested(
     const net::SchemefulSite& site,
     PrivacySandboxAttestationsGatedAPI invoking_api) const {
   // If attestations aren't enabled, pass the check trivially.
   if (!base::FeatureList::IsEnabled(
           privacy_sandbox::kEnforcePrivacySandboxAttestations)) {
-    return true;
+    return PrivacySandboxSettingsImpl::Status::kAllowed;
   }
 
   // Pass the check if the site is in the list of devtools overrides.
   if (IsOverridden(site)) {
-    return true;
+    return PrivacySandboxSettingsImpl::Status::kAllowed;
   }
 
   // When the attesations map is not present, the behavior is default-deny.
   if (!attestations_map_.has_value()) {
-    return false;
+    return PrivacySandboxSettingsImpl::Status::kAttestationsNotLoaded;
   }
 
   // If `site` isn't enrolled at all, fail the check.
   auto it = attestations_map_->find(site);
   if (it == attestations_map_->end()) {
-    return false;
+    return PrivacySandboxSettingsImpl::Status::kAttestationFailed;
   }
 
   // If `site` is attested for `invoking_api`, pass the check.
   if (it->second.Has(invoking_api)) {
-    return true;
+    return PrivacySandboxSettingsImpl::Status::kAllowed;
   }
 
   // Otherwise, fail.
-  return false;
+  return PrivacySandboxSettingsImpl::Status::kAttestationFailed;
 }
 
 void PrivacySandboxAttestations::AddOverride(const net::SchemefulSite& site) {
@@ -140,7 +134,7 @@ bool PrivacySandboxAttestations::IsOverridden(
 }
 
 void PrivacySandboxAttestations::SetAttestationsForTesting(
-    PrivacySandboxAttestationsMap attestations_map) {
+    absl::optional<PrivacySandboxAttestationsMap> attestations_map) {
   attestations_map_ = std::move(attestations_map);
 }
 

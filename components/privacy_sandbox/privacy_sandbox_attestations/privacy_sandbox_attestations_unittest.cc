@@ -22,6 +22,9 @@ class PrivacySandboxAttestationsTestBase : public testing::Test {
   PrivacySandboxAttestationsTestBase()
       : scoped_attestations_(PrivacySandboxAttestations::CreateForTesting()) {}
 
+ protected:
+  using Status = PrivacySandboxSettingsImpl::Status;
+
  private:
   ScopedPrivacySandboxAttestations scoped_attestations_;
 };
@@ -41,8 +44,10 @@ TEST_F(PrivacySandboxAttestationsTestBase,
       privacy_sandbox::kEnforcePrivacySandboxAttestations));
   net::SchemefulSite site(GURL("https://example.com"));
 
-  EXPECT_TRUE(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-      site, PrivacySandboxAttestationsGatedAPI::kTopics));
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          site, PrivacySandboxAttestationsGatedAPI::kTopics);
+  EXPECT_EQ(attestation_status, Status::kAllowed);
 }
 
 class PrivacySandboxAttestationsFeatureEnabledTest
@@ -61,14 +66,18 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
        DefaultDenyIfAttestationsMapNotPresent) {
   net::SchemefulSite site(GURL("https://example.com"));
 
-  EXPECT_FALSE(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-      site, PrivacySandboxAttestationsGatedAPI::kTopics));
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          site, PrivacySandboxAttestationsGatedAPI::kTopics);
+  EXPECT_EQ(attestation_status, Status::kAttestationsNotLoaded);
 }
 
 TEST_F(PrivacySandboxAttestationsFeatureEnabledTest, AttestedIfOverridden) {
   net::SchemefulSite site(GURL("https://example.com"));
-  ASSERT_FALSE(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-      site, PrivacySandboxAttestationsGatedAPI::kTopics));
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          site, PrivacySandboxAttestationsGatedAPI::kTopics);
+  ASSERT_NE(attestation_status, Status::kAllowed);
 
   PrivacySandboxAttestations::GetInstance()->AddOverride(site);
   EXPECT_TRUE(PrivacySandboxAttestations::GetInstance()->IsOverridden(site));
@@ -77,27 +86,36 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest, AttestedIfOverridden) {
 TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
        EnrolledWithoutAttestations) {
   net::SchemefulSite site(GURL("https://example.com"));
-  ASSERT_FALSE(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-      site, PrivacySandboxAttestationsGatedAPI::kTopics));
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          site, PrivacySandboxAttestationsGatedAPI::kTopics);
+  ASSERT_NE(attestation_status, Status::kAllowed);
 
   PrivacySandboxAttestations::GetInstance()->SetAttestationsForTesting(
-      {{site, {}}});
+      PrivacySandboxAttestationsMap{{site, {}}});
 
-  EXPECT_FALSE(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-      site, PrivacySandboxAttestationsGatedAPI::kTopics));
+  Status new_attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          site, PrivacySandboxAttestationsGatedAPI::kTopics);
+  EXPECT_NE(new_attestation_status, Status::kAllowed);
 }
 
 TEST_F(PrivacySandboxAttestationsFeatureEnabledTest, EnrolledAndAttested) {
   net::SchemefulSite site(GURL("https://example.com"));
-  ASSERT_FALSE(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-      site, PrivacySandboxAttestationsGatedAPI::kTopics));
+  Status attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          site, PrivacySandboxAttestationsGatedAPI::kTopics);
+  ASSERT_NE(attestation_status, Status::kAllowed);
 
   PrivacySandboxAttestations::GetInstance()->SetAttestationsForTesting(
-      {{site, PrivacySandboxAttestationsGatedAPISet{
-                  PrivacySandboxAttestationsGatedAPI::kTopics}}});
+      PrivacySandboxAttestationsMap{
+          {site, PrivacySandboxAttestationsGatedAPISet{
+                     PrivacySandboxAttestationsGatedAPI::kTopics}}});
 
-  EXPECT_TRUE(PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-      site, PrivacySandboxAttestationsGatedAPI::kTopics));
+  Status new_attestation_status =
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          site, PrivacySandboxAttestationsGatedAPI::kTopics);
+  EXPECT_EQ(new_attestation_status, Status::kAllowed);
 }
 
 }  // namespace privacy_sandbox

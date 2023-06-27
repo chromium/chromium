@@ -236,14 +236,15 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
   ASSERT_TRUE(https_server_.Start());
 
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
-      ->SetAttestationsForTesting({
-          {net::SchemefulSite(https_server_.GetOrigin("a.test")),
-           {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                kProtectedAudience}},
-          {net::SchemefulSite(https_server_.GetOrigin("d.test")),
-           {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                kProtectedAudience}},
-      });
+      ->SetAttestationsForTesting(
+          privacy_sandbox::PrivacySandboxAttestationsMap{
+              {net::SchemefulSite(https_server_.GetOrigin("a.test")),
+               {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                    kProtectedAudience}},
+              {net::SchemefulSite(https_server_.GetOrigin("d.test")),
+               {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                    kProtectedAudience}},
+          });
 
   content::RenderFrameHost* fenced_frame_node = LoadAndNavigateFencedFrame();
   ASSERT_NE(fenced_frame_node, nullptr);
@@ -282,11 +283,12 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
   ASSERT_TRUE(https_server_.Start());
 
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
-      ->SetAttestationsForTesting({
-          {net::SchemefulSite(https_server_.GetOrigin("a.test")),
-           {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                kProtectedAudience}},
-      });
+      ->SetAttestationsForTesting(
+          privacy_sandbox::PrivacySandboxAttestationsMap{
+              {net::SchemefulSite(https_server_.GetOrigin("a.test")),
+               {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                    kProtectedAudience}},
+          });
 
   content::RenderFrameHost* fenced_frame_node = LoadAndNavigateFencedFrame();
   ASSERT_NE(fenced_frame_node, nullptr);
@@ -328,14 +330,15 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
   ASSERT_TRUE(https_server_.Start());
 
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
-      ->SetAttestationsForTesting({
-          {net::SchemefulSite(https_server_.GetOrigin("a.test")),
-           {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                kProtectedAudience}},
-          {net::SchemefulSite(https_server_.GetOrigin("d.test")),
-           {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                kProtectedAudience}},
-      });
+      ->SetAttestationsForTesting(
+          privacy_sandbox::PrivacySandboxAttestationsMap{
+              {net::SchemefulSite(https_server_.GetOrigin("a.test")),
+               {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                    kProtectedAudience}},
+              {net::SchemefulSite(https_server_.GetOrigin("d.test")),
+               {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                    kProtectedAudience}},
+          });
 
   content::RenderFrameHost* fenced_frame_node = LoadAndNavigateFencedFrame();
   ASSERT_NE(fenced_frame_node, nullptr);
@@ -370,14 +373,15 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
   ASSERT_TRUE(https_server_.Start());
 
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
-      ->SetAttestationsForTesting({
-          {net::SchemefulSite(https_server_.GetOrigin("a.test")),
-           {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                kProtectedAudience}},
-          {net::SchemefulSite(https_server_.GetOrigin("d.test")),
-           {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
-                kSharedStorage}},
-      });
+      ->SetAttestationsForTesting(
+          privacy_sandbox::PrivacySandboxAttestationsMap{
+              {net::SchemefulSite(https_server_.GetOrigin("a.test")),
+               {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                    kProtectedAudience}},
+              {net::SchemefulSite(https_server_.GetOrigin("d.test")),
+               {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                    kSharedStorage}},
+          });
 
   content::RenderFrameHost* fenced_frame_node = LoadAndNavigateFencedFrame();
   ASSERT_NE(fenced_frame_node, nullptr);
