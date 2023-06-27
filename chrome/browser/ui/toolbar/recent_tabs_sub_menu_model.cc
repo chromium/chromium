@@ -219,7 +219,7 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   if (command_id == IDC_SHOW_HISTORY) {
     UMA_HISTOGRAM_ENUMERATION("WrenchMenu.RecentTabsSubMenu", SHOW_MORE,
                               LIMIT_RECENT_TAB_ACTION);
-    if (!log_menu_metrics_callback_.is_null()) {
+    if (log_menu_metrics_callback_) {
       log_menu_metrics_callback_.Run(command_id);
     }
     LogWrenchMenuAction(MENU_ACTION_SHOW_HISTORY);
@@ -229,7 +229,7 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
     return;
   }
   if (command_id == IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS) {
-    if (!log_menu_metrics_callback_.is_null()) {
+    if (log_menu_metrics_callback_) {
       log_menu_metrics_callback_.Run(command_id);
     }
     chrome::ExecuteCommandWithDisposition(
@@ -298,7 +298,7 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
     return;
   }
 
-  if (!log_menu_metrics_callback_.is_null()) {
+  if (log_menu_metrics_callback_) {
     log_menu_metrics_callback_.Run(IDC_OPEN_RECENT_TAB);
   }
 }

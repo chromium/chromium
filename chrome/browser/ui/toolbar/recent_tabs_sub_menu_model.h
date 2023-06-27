@@ -11,11 +11,11 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/sessions/core/session_id.h"

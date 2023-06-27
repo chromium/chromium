@@ -116150,6 +116150,7 @@ Called by update_scheduler_enums.py.-->
   <int value="71" label="Open Guest profile"/>
   <int value="72" label="Add new profile"/>
   <int value="73" label="Manage Chrome profiles"/>
+  <int value="74" label="Open recent tabs login for device tabs"/>
 </enum>
 
 <enum name="WrongConfigurationMetric">
