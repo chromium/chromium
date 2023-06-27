@@ -4712,8 +4712,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Metrics.PackagesAllowList.ParseStatus"
-    enum="AppPackageNameAllowlistParseStatus" expires_after="2023-07-01">
-  <owner>hazems@chromium.org</owner>
+    enum="AppPackageNameAllowlistParseStatus" expires_after="2023-10-23">
+  <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the result of parsing the apps package names allowlist used to
@@ -4726,7 +4726,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.Metrics.PackagesAllowList.RecordStatus"
     enum="AppPackageNameLoggingRuleStatus" expires_after="2023-11-12">
-  <owner>hazems@chromium.org</owner>
+  <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the status of the apps package names allowlist used to populate the
@@ -4739,8 +4739,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.Metrics.PackagesAllowList.ResultReceivingDelay"
-    units="ms" expires_after="2023-07-01">
-  <owner>hazems@chromium.org</owner>
+    units="ms" expires_after="2023-10-23">
+  <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the time delta between creating a AwMetricsServiceClient instance
@@ -4752,8 +4752,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Metrics.PackagesAllowList.ThrottleStatus"
-    enum="Boolean" expires_after="2023-07-01">
-  <owner>hazems@chromium.org</owner>
+    enum="Boolean" expires_after="2023-10-23">
+  <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Whether requests to query the app package names allowlist component is
@@ -4762,8 +4762,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Metrics.PackagesAllowList.TimeToExpire"
-    units="hours" expires_after="2023-07-01">
-  <owner>hazems@chromium.org</owner>
+    units="hours" expires_after="2023-10-23">
+  <owner>avvall@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     How long before the app package names allowlist record cached in the client
