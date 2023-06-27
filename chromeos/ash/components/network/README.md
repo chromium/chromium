@@ -234,7 +234,46 @@ The `NetworkConnect` class provides APIs for:
 * Enable or disable a particular technology type (e.g., WiFi)
 * Configure a network and connect to that network
 
-TODO: Discuss NetworkConnectionHandler
+### `NetworkConnectionHandler`
+
+`NetworkConnectionHandler` is responsible for managing network connection
+requests. It is the only class that should make Shill connect calls. It
+provides APIs to:
+* Connect to a network
+* Disconnect from a network
+
+It also defines a set of results that can be returned by the connection attempt.
+
+[`NetworkConnectionHandlerImpl`](https://osscs.corp.google.com/chromium/chromium/src/+/main:chromeos/ash/components/network/network_connection_handler_impl.h;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f)
+is the class that implements `NetworkConnectionHandler`. When there is a
+connection request, it follows these steps:
+1. Determines whether or not sufficient information (e.g. passphrase) is known
+to be available to connect to the network
+2. Requests additional information (e.g. user data which contains certificate
+information) and determines whether enough information is available. If
+certificates have not been loaded yet then the connection request is queued.
+3. Possibly configures the network certificate info
+4. Sends the connect request
+5. Waits for the network state to change to a non-connecting state
+6. Invokes the appropriate callback (always) on success or failure
+
+If the network is of type `Tether`, `NetworkConnectionHandler` delegates
+actions to the [`TetherDelegate`](https://osscs.corp.google.com/chromium/chromium/src/+/main:chromeos/ash/components/network/network_connection_handler.h;l=138-159;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f).
+
+If the network is of type `Cellular`, `CellularConnectionHandler` is used to
+prepare the network before having Shill initiate the connection.
+
+Classes can observe the following network connection events by implementing
+[`NetworkConnectionObserver`](https://osscs.corp.google.com/chromium/chromium/src/+/refs/heads/main:chromeos/ash/components/network/network_connection_observer.h;l=15;drc=afec9eaf1d11cc77e8e06f06cb026fadf0dbf758):
+* When a connection to a specific network is requested
+* When a connection requests succeeds
+* When a connection requests fails
+* When a disconnection from a specific network is requested
+
+These observer methods may be preferred over the observer methods in
+[`NetworkStateHandlerObserver`](https://osscs.corp.google.com/chromium/chromium/src/+/main:chromeos/ash/components/network/network_state_handler_observer.h;drc=614b0b49c9e734fa7f6632df48542891b9f7f92a)
+when a class wishes to receive notifications for specific connect/disconnect
+operations rather than more gross network activity.
 
 ### Configuring Networks
 
