@@ -639,9 +639,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return (ClientHeight() - PaddingTop() - PaddingBottom())
         .ClampNegativeToZero();
   }
-  LayoutSize ContentSize() const {
+  PhysicalSize ContentSize() const {
     NOT_DESTROYED();
-    return LayoutSize(ContentWidth(), ContentHeight());
+    return PhysicalSize(ContentWidth(), ContentHeight());
   }
   LayoutUnit ContentLogicalWidth() const {
     NOT_DESTROYED();

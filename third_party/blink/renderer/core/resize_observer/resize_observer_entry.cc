@@ -40,8 +40,8 @@ ResizeObserverEntry::ResizeObserverEntry(Element* target) : target_(target) {
 
 void ResizeObserverEntry::PopulateFromLayoutBox(const LayoutBox& layout_box) {
   const ComputedStyle& style = layout_box.StyleRef();
-  LayoutRect content_rect(
-      LayoutPoint(layout_box.PaddingLeft(), layout_box.PaddingTop()),
+  PhysicalRect content_rect(
+      PhysicalOffset(layout_box.PaddingLeft(), layout_box.PaddingTop()),
       layout_box.ContentSize());
   content_rect_ =
       ResizeObserverUtilities::ZoomAdjustedLayoutRect(content_rect, style);

@@ -403,7 +403,7 @@ bool BoxPaintInvalidator::NeedsToSavePreviousContentBoxRect() {
   // crbug.com/490533
   if ((style.BackgroundLayers().AnyLayerUsesContentBox() ||
        style.MaskLayers().AnyLayerUsesContentBox()) &&
-      PhysicalSizeToBeNoop(box_.ContentSize()) != box_.Size()) {
+      box_.ContentSize() != box_.Size()) {
     return true;
   }
 

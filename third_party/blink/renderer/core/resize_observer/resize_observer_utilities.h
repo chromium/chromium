@@ -17,8 +17,8 @@ class ComputedStyle;
 class DOMRectReadOnly;
 class LayoutBox;
 class LayoutObject;
-class LayoutRect;
 class LayoutSize;
+struct PhysicalRect;
 
 // Helper functions for ResizeObserverEntry and ResizeObservation.
 class ResizeObserverUtilities {
@@ -38,7 +38,7 @@ class ResizeObserverUtilities {
       const LayoutObject& layout_object,
       const ComputedStyle& style);
 
-  static DOMRectReadOnly* ZoomAdjustedLayoutRect(LayoutRect content_rect,
+  static DOMRectReadOnly* ZoomAdjustedLayoutRect(PhysicalRect content_rect,
                                                  const ComputedStyle& style);
 };
 

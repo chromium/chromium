@@ -69,7 +69,7 @@ gfx::SizeF ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
 }
 
 DOMRectReadOnly* ResizeObserverUtilities::ZoomAdjustedLayoutRect(
-    LayoutRect content_rect,
+    PhysicalRect content_rect,
     const ComputedStyle& style) {
   content_rect.SetX(
       AdjustForAbsoluteZoom::AdjustLayoutUnit(content_rect.X(), style));
