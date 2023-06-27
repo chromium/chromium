@@ -583,6 +583,13 @@ void FederatedAuthRequestImpl::RequestToken(
   }
 
   if (!fedcm_metrics_) {
+    // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
+    // prerendering page. As FederatedAithRequest runs behind the
+    // BrowserInterfaceBinders, the service doesn't receive any request while
+    // prerendering, and the CHECK should always meet the condition.
+    CHECK(!render_frame_host().IsInLifecycleState(
+        RenderFrameHost::LifecycleState::kPrerendering));
+
     // TODO(crbug.com/1307709): Handle FedCmMetrics for multiple IDPs.
     fedcm_metrics_ = CreateFedCmMetrics(
         idp_get_params_ptrs[0]->providers[0]->get_federated()->config_url,
@@ -724,6 +731,12 @@ void FederatedAuthRequestImpl::RequestUserInfo(
   }
 
   if (!fedcm_metrics_) {
+    // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
+    // prerendering page. As FederatedAithRequest runs behind the
+    // BrowserInterfaceBinders, the service doesn't receive any request while
+    // prerendering, and the CHECK should always meet the condition.
+    CHECK(!render_frame_host().IsInLifecycleState(
+        RenderFrameHost::LifecycleState::kPrerendering));
     fedcm_metrics_ = CreateFedCmMetrics(
         provider->config_url, render_frame_host().GetPageUkmSourceId(),
         /*is_disabled=*/false);
