@@ -133,12 +133,12 @@ IN_PROC_BROWSER_TEST_F(AppShortcutShelfItemControllerBrowserTest,
                                          /*command_id=*/0, ui::EF_NONE,
                                          display::kInvalidDisplayId);
 
-  // Shift-clicking on an item should not close it as it is a pinned home tab.
+  // Shift-clicking on an item should close it.
   EXPECT_EQ(2u, GetAppMenuItems(0).size());
   GetShelfItemDelegate()->ExecuteCommand(/*from_context_menu=*/false,
                                          /*command_id=*/0, ui::EF_SHIFT_DOWN,
                                          display::kInvalidDisplayId);
-  EXPECT_EQ(2u, GetAppMenuItems(0).size());
+  EXPECT_EQ(1u, GetAppMenuItems(0).size());
 }
 
 // Test interacting with the app menu with shift key down: the app menu has
@@ -179,16 +179,10 @@ IN_PROC_BROWSER_TEST_F(AppShortcutShelfItemControllerBrowserTest,
                                          /*command_id=*/0, ui::EF_NONE,
                                          display::kInvalidDisplayId);
 
-  // Shift-clicking on an item should not close it if it is a pinned home tab.
+  // Shift-clicking on a item should close it.
   EXPECT_EQ(3u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
   GetShelfItemDelegate()->ExecuteCommand(/*from_context_menu=*/false,
                                          /*command_id=*/0, ui::EF_SHIFT_DOWN,
-                                         display::kInvalidDisplayId);
-  EXPECT_EQ(3u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
-
-  // Shift-clicking on an item that is not a pinned home tab should close it.
-  GetShelfItemDelegate()->ExecuteCommand(/*from_context_menu=*/false,
-                                         /*command_id=*/1, ui::EF_SHIFT_DOWN,
                                          display::kInvalidDisplayId);
   EXPECT_EQ(2u, GetAppMenuItems(ui::EF_SHIFT_DOWN).size());
 }

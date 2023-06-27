@@ -1160,9 +1160,8 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
 
   // Close the second tab.  This should return false to indicate that we're
   // waiting for the beforeunload dialog.
-  int previous_tab_count = tab_strip_model->count();
-  tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(), 0);
-  EXPECT_EQ(previous_tab_count, tab_strip_model->count());
+  EXPECT_FALSE(
+      tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(), 0));
 
   // Cancel the dialog and make sure the tab stays alive.
   auto* dialog = ui_test_utils::WaitForAppModalDialog();
@@ -1172,8 +1171,8 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 
   // Try closing the tab again.
-  tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(), 0);
-  EXPECT_EQ(previous_tab_count, tab_strip_model->count());
+  EXPECT_FALSE(
+      tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(), 0));
 
   // Accept the dialog and wait for tab close to complete.
   content::WebContentsDestroyedWatcher destroyed_watcher(second_web_contents);
@@ -1210,10 +1209,10 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   EXPECT_TRUE(ExecJs(child, "window.onbeforeunload = () => { return 'x' };"));
   content::PrepContentsForBeforeUnloadTest(second_web_contents);
 
-  // Close the second tab. This should return false to indicate that we're
+  // Close the second tab.  This should return false to indicate that we're
   // waiting for the beforeunload dialog.
-  tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(), 0);
-  EXPECT_EQ(2, tab_strip_model->count());
+  EXPECT_FALSE(
+      tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(), 0));
 
   // Cancel the dialog and make sure the tab stays alive.
   auto* dialog = ui_test_utils::WaitForAppModalDialog();
@@ -1223,8 +1222,8 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 
   // Try closing the tab again.
-  tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(), 0);
-  EXPECT_EQ(2, tab_strip_model->count());
+  EXPECT_FALSE(
+      tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(), 0));
 
   // Accept the dialog and wait for tab close to complete.
   content::WebContentsDestroyedWatcher destroyed_watcher(second_web_contents);
@@ -1276,8 +1275,8 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
 
   // Close the second tab.  This should return false to indicate that we're
   // waiting for the beforeunload dialog.
-  tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(), 0);
-  EXPECT_EQ(2, tab_strip_model->count());
+  EXPECT_FALSE(
+      tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(), 0));
 
   // From the first tab, execute window.close() on the popup and wait for the
   // second WebContents to be destroyed.
@@ -1332,8 +1331,8 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
 
   // Close the second tab.  This should return false to indicate that we're
   // waiting for the beforeunload dialog.
-  tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(), 0);
-  EXPECT_EQ(2, tab_strip_model->count());
+  EXPECT_FALSE(
+      tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(), 0));
 
   // From the first tab, execute window.close() on the popup and wait for the
   // second WebContents to be destroyed.

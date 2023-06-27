@@ -2368,7 +2368,6 @@ if (!is_android) {
       "../browser/ui/tab_modal_confirm_dialog_browsertest.h",
       "../browser/ui/tab_ui_helper_browsertest.cc",
       "../browser/ui/tabs/pinned_tab_service_browsertest.cc",
-      "../browser/ui/tabs/tab_strip_model_browsertest.cc",
       "../browser/ui/test/browser_ui_browsertest.cc",
       "../browser/ui/test/popup_browsertest.cc",
       "../browser/ui/test/popup_fullscreen_browsertest.cc",
