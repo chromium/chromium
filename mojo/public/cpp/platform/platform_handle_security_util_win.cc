@@ -5,7 +5,6 @@
 #include "mojo/public/cpp/platform/platform_handle_security_util_win.h"
 
 #include <windows.h>
-#include <winternl.h>
 
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
@@ -18,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/win/nt_status.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/security_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
@@ -48,23 +48,13 @@ std::wstring GetPathFromHandle(HANDLE handle) {
 }
 
 absl::optional<bool> IsReadOnlyHandle(HANDLE handle) {
-  static const auto nt_query_object =
-      reinterpret_cast<decltype(&NtQueryObject)>(
-          GetProcAddress(GetModuleHandle(L"ntdll.dll"), "NtQueryObject"));
-  if (!nt_query_object) {
+  absl::optional<ACCESS_MASK> flags = base::win::GetGrantedAccess(handle);
+  if (!flags.has_value()) {
     return absl::nullopt;
   }
-
-  PUBLIC_OBJECT_BASIC_INFORMATION basic_info = {};
-  if (!NT_SUCCESS(nt_query_object(handle, ObjectBasicInformation, &basic_info,
-                                  sizeof(basic_info), nullptr))) {
-    // If unable to query the object
-    return absl::nullopt;
-  }
-
   // Cannot use GENERIC_WRITE as that includes SYNCHRONIZE.
   // This is ~(all the writable permissions).
-  return !(basic_info.GrantedAccess &
+  return !(flags.value() &
            (FILE_APPEND_DATA | FILE_WRITE_ATTRIBUTES | FILE_WRITE_DATA |
             FILE_WRITE_EA | WRITE_DAC | WRITE_OWNER | DELETE));
 }
