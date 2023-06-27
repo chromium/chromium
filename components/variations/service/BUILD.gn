@@ -42,6 +42,8 @@ static_library("service") {
     "ui_string_overrider.h",
     "variations_field_trial_creator.cc",
     "variations_field_trial_creator.h",
+    "variations_field_trial_creator_base.cc",
+    "variations_field_trial_creator_base.h",
     "variations_service.cc",
     "variations_service.h",
     "variations_service_client.cc",
