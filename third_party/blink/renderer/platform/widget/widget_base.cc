@@ -637,6 +637,9 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
   const cc::LayerTreeSettings& settings = LayerTreeHost()->GetSettings();
   if (settings.disable_frame_rate_limit ||
       settings.enable_variable_refresh_rate) {
+    params->use_begin_frame_presentation_feedback =
+        base::FeatureList::IsEnabled(
+            features::kUseBeginFramePresentationFeedback);
     params->synthetic_begin_frame_source = CreateSyntheticBeginFrameSource();
   }
 

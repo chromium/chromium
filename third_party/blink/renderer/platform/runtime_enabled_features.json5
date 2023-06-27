@@ -3591,6 +3591,13 @@
       status: "stable",
     },
     {
+      name: "UseBeginFramePresentationFeedback",
+      status: {
+        "ChromeOS_Ash": "stable",
+        "ChromeOS_Lacros": "stable",
+      },
+    },
+    {
       // Makes the global root scrollbars follow the preferred color scheme
       // by default. Please see more details: crbug.com/1423087.
       name: "UsedColorSchemeRootScrollbars",

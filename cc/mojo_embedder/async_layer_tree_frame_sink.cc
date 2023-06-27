@@ -57,8 +57,9 @@ AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
       main_thread_id_(params->main_thread_id),
 #endif
       pipes_(std::move(params->pipes)),
-      wants_animate_only_begin_frames_(
-          params->wants_animate_only_begin_frames) {
+      wants_animate_only_begin_frames_(params->wants_animate_only_begin_frames),
+      use_begin_frame_presentation_feedback_(
+          params->use_begin_frame_presentation_feedback) {
   DETACH_FROM_THREAD(thread_checker_);
 }
 
@@ -274,6 +275,12 @@ void AsyncLayerTreeFrameSink::OnBeginFrame(
 
   for (const auto& pair : timing_details) {
     client_->DidPresentCompositorFrame(pair.first, pair.second);
+    if (synthetic_begin_frame_source_ &&
+        use_begin_frame_presentation_feedback_) {
+      const auto& feedback = pair.second.presentation_feedback;
+      synthetic_begin_frame_source_->OnUpdateVSyncParameters(feedback.timestamp,
+                                                             feedback.interval);
+    }
   }
 
   if (!needs_begin_frames_) {

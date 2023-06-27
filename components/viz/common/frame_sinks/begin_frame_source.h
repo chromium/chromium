@@ -312,7 +312,7 @@ class VIZ_COMMON_EXPORT BackToBackBeginFrameSource
 
   // SyntheticBeginFrameSource implementation.
   void OnUpdateVSyncParameters(base::TimeTicks timebase,
-                               base::TimeDelta interval) override {}
+                               base::TimeDelta interval) override;
   void SetMaxVrrInterval(
       const absl::optional<base::TimeDelta>& max_vrr_interval) override;
 
@@ -326,6 +326,7 @@ class VIZ_COMMON_EXPORT BackToBackBeginFrameSource
   base::flat_set<BeginFrameObserver*> observers_;
   base::flat_set<BeginFrameObserver*> pending_begin_frame_observers_;
   uint64_t next_sequence_number_;
+  base::TimeDelta vsync_interval_ = BeginFrameArgs::DefaultInterval();
   absl::optional<base::TimeDelta> max_vrr_interval_ = absl::nullopt;
   base::WeakPtrFactory<BackToBackBeginFrameSource> weak_factory_{this};
 };
