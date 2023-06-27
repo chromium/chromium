@@ -564,6 +564,7 @@
 <translation id="5422221874247253874">ઍક્સેસ પૉઇન્ટ</translation>
 <translation id="5428105026674456456">સ્પેનિશ</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> માટે કોઈ પરિણામ નથી.</translation>
+<translation id="5447680084201416734">પૂરતું સ્ટોરેજ નથી.</translation>
 <translation id="5449551289610225147">અમાન્ય પાસવર્ડ</translation>
 <translation id="5459064203055649751">"<ph name="FILENAME" />" નામની ફાઇલ પહેલેથી અસ્તિત્વમાં છે. શું તમે તે ફાઇલને, તમે ખસેડી રહ્યાં છો તે ફાઇલ વડે બદલવા માંગો છો?</translation>
 <translation id="5463231940765244860">દાખલ કરો</translation>
@@ -691,6 +692,7 @@
 <translation id="6423031066725912715">વિયેતનામીઝ, TCVN કીબોર્ડ સાથે</translation>
 <translation id="6430271654280079150">તમારો 1 પ્રયાસ બાકી છે.</translation>
 <translation id="643243556292470964">ડિલીટ કરેલી ફાઇલો હવે ટ્રેશમાં ખસેડવામાં આવી છે</translation>
+<translation id="6438480100790416671">સ્ટોરેજ સ્પેસ ચેક કરી રહ્યું છે…</translation>
 <translation id="6485131920355264772">સ્થાન માહિતી પુનર્પ્રાપ્ત કરવામાં નિષ્ફળ</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે, વિગતો</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" />ને <ph name="FOLDER_NAME" />માં એક્સટ્રેક્ટ કરી રહ્યાં છીએ</translation>
@@ -891,6 +893,7 @@
 <translation id="8000066093800657092">નેટવર્ક નથી</translation>
 <translation id="8008366997883261463">કૂતરો</translation>
 <translation id="8028993641010258682">કદ</translation>
+<translation id="8034974485549318493">પ્રારંભિક સેટઅપ માટે, તમારે ઇન્ટરનેટથી કનેક્ટ કરવાની જરૂર છે જેથી કરીને ફાઇલો સિંક થઈ શકે.</translation>
 <translation id="803771048473350947">ફાઇલ</translation>
 <translation id="8038111231936746805">(ડિફૉલ્ટ)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ઑડિયો</translation>

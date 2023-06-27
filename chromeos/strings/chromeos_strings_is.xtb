@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">Skipta um veggfóður</translation>
 <translation id="360565022852130722">Wi-Fi netið er varið með veikum samskiptareglum, WEP 802.1x</translation>
 <translation id="3606583719724308068">Langur biðtími eftir HTTPS-vefsvæðum</translation>
+<translation id="3607216139080387279">Sýna skjávara</translation>
 <translation id="361575905210396100">Takk fyrir ábendinguna</translation>
 <translation id="3632579075709132555">Rofalykill persónuverndarskjás</translation>
 <translation id="3639846061339007994">efst</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> umsagnir)</translation>
 <translation id="3748026146096797577">Ótengt</translation>
 <translation id="3749289110408117711">Skráarheiti</translation>
+<translation id="3766934827878963937">í eina klukkustund</translation>
 <translation id="3771294271822695279">Myndskeiðsskrár</translation>
 <translation id="3784455785234192852">Læsa</translation>
 <translation id="380097101658023925">rgb-stýringar</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">lyklaborð dekkt</translation>
 <translation id="6302401976930124515">Hætt var við prófunina: <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Skoða forrit</translation>
+<translation id="6318437367327684789">endalaust</translation>
 <translation id="6319207335391420837">Uppfæra fastbúnað í <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Kveikja á skjávara</translation>
 <translation id="6325525973963619867">Mistókst</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">Vista margar síður í einu PDF-skjali</translation>
 <translation id="9137526406337347448">Google þjónustur</translation>
 <translation id="9138630967333032450">Vinstri Shift-lykill</translation>
+<translation id="9143347780818904997">í <ph name="MINUTES" /> mínútur</translation>
 <translation id="9149391708638971077">Keyra minnispróf</translation>
 <translation id="9161276708550942948">bil</translation>
 <translation id="9173638680043580060">Innan við mínúta eftir</translation>

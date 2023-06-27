@@ -1687,7 +1687,7 @@
 <translation id="4729147136006144950">خیریه و نیکوکاری</translation>
 <translation id="4730977633786878901">مرورها</translation>
 <translation id="4731638775147756694">سرپرستتان این برنامه را مسدود کرده است</translation>
-<translation id="4733082559415072992"><ph name="URL" /> می‌خواهد از موقعیت مکانی دستگاهتان استفاده کند</translation>
+<translation id="4733082559415072992"><ph name="URL" /> می‌خواهد از مکان دستگاهتان استفاده کند</translation>
 <translation id="4736491186715342415">وسایل نقلیه موتوری</translation>
 <translation id="4736825316280949806">‏Chromium را راه‌اندازی مجدد کنید</translation>
 <translation id="4736934858538408121">کارت مجازی</translation>
@@ -2678,7 +2678,7 @@
 <translation id="6963574715554809750">تجارت خرده‌فروشی</translation>
 <translation id="6963693576491380224">مشاغل دولتی و بخش عمومی</translation>
 <translation id="6964255747740675745">‏پیکربندی شبکه تجزیه نشد (JSON نامعتبر).</translation>
-<translation id="6965382102122355670">قبول</translation>
+<translation id="6965382102122355670">تأیید</translation>
 <translation id="6965978654500191972">دستگاه</translation>
 <translation id="696703987787944103">حسی</translation>
 <translation id="6968269510885595029">استفاده از کلید امنیتی</translation>
@@ -2800,7 +2800,6 @@
 <translation id="7219179957768738017">اتصال از <ph name="SSL_VERSION" /> استفاده می‌کند.</translation>
 <translation id="7220786058474068424">درحال پردازش</translation>
 <translation id="7221855153210829124">نمایش اعلان‌ها</translation>
-<translation id="7221857374443660083">بانک شما می‌خواهد از هویت شما مطمئن شود</translation>
 <translation id="722454870747268814">برگه ناشناس جدید</translation>
 <translation id="7227293336683593977">سابقه قیمت</translation>
 <translation id="7233592378249864828">برگ تأیید چاپ</translation>
@@ -3481,7 +3480,6 @@
 <translation id="8718314106902482036">پرداخت کامل نشد</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />، <ph name="DESCRIPTION" />، پیشنهاد جستجو</translation>
 <translation id="8719528812645237045">چند سوراخ در بالا</translation>
-<translation id="8723535127346307411">کد درستی‌سنجی را وارد کنید</translation>
 <translation id="8724824364712796726">پاکت بی۶</translation>
 <translation id="8725066075913043281">سعی مجدد</translation>
 <translation id="8726549941689275341">اندازه صفحه:</translation>

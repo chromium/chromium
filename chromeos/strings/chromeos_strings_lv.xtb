@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">Fona tapetes mainīšana</translation>
 <translation id="360565022852130722">Wi-Fi tīklu sargā nedrošs protokols WEP 802.1x</translation>
 <translation id="3606583719724308068">Augsts latentums HTTPS vietnēs</translation>
+<translation id="3607216139080387279">Rādīt ekrānsaudzētāju</translation>
 <translation id="361575905210396100">Paldies par atsauksmēm!</translation>
 <translation id="3632579075709132555">Konfidencialitātes ekrāna slēdzis</translation>
 <translation id="3639846061339007994">augšpusē</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (atsauksmju skaits: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nav izveidots savienojums</translation>
 <translation id="3749289110408117711">Faila nosaukums</translation>
+<translation id="3766934827878963937">uz 1 stundu</translation>
 <translation id="3771294271822695279">Video faili</translation>
 <translation id="3784455785234192852">Bloķēt</translation>
 <translation id="380097101658023925">RGB vadīklas</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">tastatūras aptumšošana</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: pārbaude ir atcelta.</translation>
 <translation id="631063167932043783">Lietotne Izpēte</translation>
+<translation id="6318437367327684789">bezgalīgi</translation>
 <translation id="6319207335391420837">Ierīces “<ph name="DEVICE_NAME" />” aparātprogrammatūras atjaunināšana</translation>
 <translation id="6321407676395378991">Ieslēgt ekrānsaudzētāju</translation>
 <translation id="6325525973963619867">Neizdevās</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">Saglabāt vairākas lapas vienā PDF failā</translation>
 <translation id="9137526406337347448">Google pakalpojumi</translation>
 <translation id="9138630967333032450">Kreisais pārslēgšanas taustiņš</translation>
+<translation id="9143347780818904997">uz <ph name="MINUTES" /> minūtēm</translation>
 <translation id="9149391708638971077">Veikt atmiņas pārbaudi</translation>
 <translation id="9161276708550942948">atstarpes taustiņš</translation>
 <translation id="9173638680043580060">Atlicis mazāk par minūti</translation>

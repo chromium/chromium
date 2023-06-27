@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">Тушкагазды өзгөртүп алыңыз</translation>
 <translation id="360565022852130722">WiFi тармагынын WEP 802.1x протоколунун коопсуздугу начар</translation>
 <translation id="3606583719724308068">HTTPS вебсайттары үчүн күтүү убакыты жогору</translation>
+<translation id="3607216139080387279">Көшөгөнү көрсөтүү</translation>
 <translation id="361575905210396100">Пикириңиз үчүн рахмат</translation>
 <translation id="3632579075709132555">Купуялык экранын өчүрүү/күйгүзүү</translation>
 <translation id="3639846061339007994">жогору жагы</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> сын-пикир)</translation>
 <translation id="3748026146096797577">Интернет жок</translation>
 <translation id="3749289110408117711">Файлдын аталышы</translation>
+<translation id="3766934827878963937">1 саатка</translation>
 <translation id="3771294271822695279">Видео файлдар</translation>
 <translation id="3784455785234192852">Кулпулоо</translation>
 <translation id="380097101658023925">rgb башкаруу элементтери</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">баскычтопту күңүрт кылуу</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> сыноосу жокко чыгарылды</translation>
 <translation id="631063167932043783">Мүмкүнчүлүктөр колдонмосу</translation>
+<translation id="6318437367327684789">ар дайым</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> түзмөгүндө орнотулган программаны жаңыртуу</translation>
 <translation id="6321407676395378991">Көшөгөнү күйгүзүү</translation>
 <translation id="6325525973963619867">Аткарылган жок</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">Бир нече бетти бир PDF файлына сактаңыз</translation>
 <translation id="9137526406337347448">Google кызматтары</translation>
 <translation id="9138630967333032450">Сол жактагы Shift баскычы</translation>
+<translation id="9143347780818904997"><ph name="MINUTES" /> мүнөткө</translation>
 <translation id="9149391708638971077">Эстутумду сыноо</translation>
 <translation id="9161276708550942948">боштук</translation>
 <translation id="9173638680043580060">Бир мүнөткө жетпеген убакыт калды</translation>

@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">Змяніць шпалеры</translation>
 <translation id="360565022852130722">Сетка Wi-Fi абаронена слабым пратаколам WEP 802.1x</translation>
 <translation id="3606583719724308068">Высокая затрымка на вэб-сайтах HTTPS</translation>
+<translation id="3607216139080387279">Паказваць застаўку</translation>
 <translation id="361575905210396100">Дзякуй за водгук</translation>
 <translation id="3632579075709132555">Пераключэнне экрана прыватнасці</translation>
 <translation id="3639846061339007994">зверху</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (водгукаў: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Няма падключэння</translation>
 <translation id="3749289110408117711">Назва файла</translation>
+<translation id="3766934827878963937">цягам 1 гадзіны</translation>
 <translation id="3771294271822695279">Відэафайлы</translation>
 <translation id="3784455785234192852">Блакіроўка</translation>
 <translation id="380097101658023925">Налады RGB</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">зацямненне клавіятуры</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: тэст скасаваны</translation>
 <translation id="631063167932043783">Праграма "Агляд"</translation>
+<translation id="6318437367327684789">назаўжды</translation>
 <translation id="6319207335391420837">Абнаўленне ўбудаванага ПЗ прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6321407676395378991">Уключыць застаўку</translation>
 <translation id="6325525973963619867">Збой</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">Захаваць некалькі старонак у адзін PDF-файл</translation>
 <translation id="9137526406337347448">Сэрвісы Google</translation>
 <translation id="9138630967333032450">Shift злева</translation>
+<translation id="9143347780818904997">цягам <ph name="MINUTES" /> хв</translation>
 <translation id="9149391708638971077">Выканаць праверку памяці</translation>
 <translation id="9161276708550942948">прабел</translation>
 <translation id="9173638680043580060">Застаецца менш за хвіліну</translation>

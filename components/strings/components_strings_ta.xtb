@@ -2795,7 +2795,6 @@
 <translation id="7219179957768738017">இணைப்பு <ph name="SSL_VERSION" /> ஐப் பயன்படுத்துகிறது.</translation>
 <translation id="7220786058474068424">செயல்படுத்துகிறது</translation>
 <translation id="7221855153210829124">அறிவிப்புகளைக் காட்டுதல்</translation>
-<translation id="7221857374443660083">இது நீங்கள்தான் என்பதை உங்கள் பேங்க் உறுதிசெய்ய விரும்புகிறது</translation>
 <translation id="722454870747268814">புதிய மறைநிலைத் தாவல்</translation>
 <translation id="7227293336683593977">இதுவரையிலான விலைகள்</translation>
 <translation id="7233592378249864828">உறுதிப்படுத்தல் தாளை அச்சிடு</translation>
@@ -3274,6 +3273,7 @@
 <translation id="8246482227229072868">மோதிரங்கள்</translation>
 <translation id="8249296373107784235">கைவிடு</translation>
 <translation id="8249463483885748674">வழக்கமான &amp; சேர்க்கைகளுக்கான தேர்வுகள்</translation>
+<translation id="824968735947741546"><ph name="SOURCE" /> மொழியில் இருந்து (தானாகக் கண்டறியப்பட்டது) <ph name="TARGET" /> மொழிக்கு மொழிபெயர்க்கிறது</translation>
 <translation id="8250094606476360498">இந்த முகவரி தற்சமயம் இந்தச் சாதனத்தில் சேமிக்கப்பட்டுள்ளது. Google தயாரிப்புகள் முழுவதிலும் பயன்படுத்த, உங்கள் Google கணக்கில் (<ph name="ACCOUNT" />) அதைச் சேமிக்கவும்.</translation>
 <translation id="8252991034201168845">அணுகல்தன்மை அமைப்புகளை நிர்வகிப்பதற்கான பட்டன். ChromeOS அமைப்புகளில் அணுகல்தன்மைக் கருவிகளைப் பிரத்தியேகமாக்க, Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="8253091569723639551">பில்லிங் முகவரி தேவை</translation>
@@ -3475,7 +3475,6 @@
 <translation id="8718314106902482036">பேமெண்ட் முடியவில்லை</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, தேடல் பரிந்துரை</translation>
 <translation id="8719528812645237045">மல்டிப்பில் பஞ்ச் டாப்</translation>
-<translation id="8723535127346307411">சரிபார்ப்புக் குறியீட்டை டைப் செய்யவும்</translation>
 <translation id="8724824364712796726">என்வெலப் B6</translation>
 <translation id="8725066075913043281">மீண்டும் முயற்சிக்கவும்</translation>
 <translation id="8726549941689275341">பக்க அளவு:</translation>

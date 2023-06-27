@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">Changer de fond d'écran</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est protégé par le protocole peu sécurisé WEP 802.1x</translation>
 <translation id="3606583719724308068">Latence élevée avec les sites HTTPS</translation>
+<translation id="3607216139080387279">Afficher l'économiseur d'écran</translation>
 <translation id="361575905210396100">Merci pour vos commentaires</translation>
 <translation id="3632579075709132555">Activer/Désactiver l'écran de confidentialité</translation>
 <translation id="3639846061339007994">haut</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> avis)</translation>
 <translation id="3748026146096797577">Non connecté</translation>
 <translation id="3749289110408117711">Nom du fichier</translation>
+<translation id="3766934827878963937">pendant 1 heure</translation>
 <translation id="3771294271822695279">Fichiers vidéo</translation>
 <translation id="3784455785234192852">Verrouiller</translation>
 <translation id="380097101658023925">commandes RVB</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">diminution de la luminosité du clavier</translation>
 <translation id="6302401976930124515">Le test <ph name="TEST_NAME" /> a été annulé</translation>
 <translation id="631063167932043783">Appli Explorer</translation>
+<translation id="6318437367327684789">indéfiniment</translation>
 <translation id="6319207335391420837">Mettre à jour le micrologiciel sur <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Activer l'économiseur d'écran</translation>
 <translation id="6325525973963619867">Échec</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">Enregistrer plusieurs pages en un seul PDF</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Maj gauche</translation>
+<translation id="9143347780818904997">pendant <ph name="MINUTES" /> minutes</translation>
 <translation id="9149391708638971077">Lancer le test de mémoire</translation>
 <translation id="9161276708550942948">espace</translation>
 <translation id="9173638680043580060">Moins d'une minute restante</translation>

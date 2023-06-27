@@ -5156,6 +5156,7 @@
 <translation id="5397794290049113714">あなた</translation>
 <translation id="5398497406011404839">非表示のブックマーク</translation>
 <translation id="5398572795982417028">範囲外のページを参照しています。上限は <ph name="MAXIMUM_PAGE" /> です。</translation>
+<translation id="5400836586163650660">グレー</translation>
 <translation id="5401426944298678474">サイトのフォローを解除</translation>
 <translation id="5401851137404501592">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに名前、メールアドレス、プロフィール画像が共有されます。</translation>
 <translation id="5402367795255837559">点字</translation>
@@ -6746,6 +6747,7 @@
 <translation id="6783036716881942511">このデバイスを削除しますか？</translation>
 <translation id="6784523122863989144">プロファイルはサポートされています</translation>
 <translation id="6785739405821760313">保存したデスクを表示しています。Tab キーを押して移動できます。</translation>
+<translation id="67862343314499040">バイオレット</translation>
 <translation id="6786747875388722282">拡張機能</translation>
 <translation id="6787097042755590313">その他のタブ</translation>
 <translation id="6787839852456839824">キーボード ショートカット</translation>

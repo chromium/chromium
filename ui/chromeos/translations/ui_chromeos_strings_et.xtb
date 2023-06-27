@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">Fail või kataloog ei ole kasutatav.</translation>
 <translation id="1363028406613469049">Rada</translation>
 <translation id="1378727793141957596">Tere tulemast Google Drive'i!</translation>
+<translation id="1379156577998569384">Saate oma „Minu ketas” faile kasutada ilma võrguühenduseta</translation>
 <translation id="1379911846207762492">Teil on võimalik muuta failid võrguühenduseta kättesaadavaks ka siis, kui puudub internetiühendus.</translation>
 <translation id="1383876407941801731">Otsi</translation>
 <translation id="1388045380422025115">Kõik tüübid</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">Saksa Neo 2</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3866249974567520381">Kirjeldus</translation>
+<translation id="3866439285517092441">Aku hakkab tühjaks saama. Sünkroonimine jätkub, kui olete toiteallikaga ühendatud.</translation>
 <translation id="3899991606604168269">prantsuse (Kanada), mitmekeelse klaviatuuriga</translation>
 <translation id="3901991538546252627">Võrguga <ph name="NAME" /> ühenduse loomine</translation>
 <translation id="3906232975181435906">Mobiiliprofiili installimine, võrk <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">Vale PUK</translation>
 <translation id="4057991113334098539">Aktiveerimine ...</translation>
 <translation id="4092890906744441904">iiri</translation>
+<translation id="4124731372776320263">1 Drive'i faili sünkroonimine</translation>
 <translation id="4124935795427217608">Ükssarvik</translation>
 <translation id="4131235941541910880">Teisaldage ebavajalikud üksused prügikasti</translation>
 <translation id="4134804435730168042">Võrk <ph name="NETWORK_INDEX" />, võrke kokku <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktiveerige pärast seadme seadistust</translation>
@@ -579,6 +582,7 @@
 <translation id="5524517123096967210">Faili ei saa lugeda.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-pilt</translation>
 <translation id="5534520101572674276">Suuruse arvutamine</translation>
+<translation id="5536122250858122375">Seda failitüüpi ei saa sünkroonida</translation>
 <translation id="554153475311314364">kreeka, transliteratsioon</translation>
 <translation id="5554171655917412781">Valitud on <ph name="SELECTED_FOLDERS_COUNT" /> kausta</translation>
 <translation id="5580591966435005537">Virtuaalmasin</translation>
@@ -738,6 +742,7 @@
 <translation id="6874758081814639712">Tai chid tegev inimene</translation>
 <translation id="6876155724392614295">Jalgratas</translation>
 <translation id="6878261347041253038">Devanagari klaviatuur (foneetiline)</translation>
+<translation id="6882444584974399416">Teie seadmel ei ole piisavalt salvestusruumi, et faile võrguühenduseta kasutada. Uusi faile ei sünkroonita enam automaatselt.</translation>
 <translation id="6885780034956018177">Tigu</translation>
 <translation id="6896758677409633944">Kopeeri</translation>
 <translation id="6898028766943174120">Rohkem alamkaustu …</translation>
@@ -912,6 +917,7 @@
 <translation id="8154842056504218462">Valiti kõik kirjed.</translation>
 <translation id="8157684860301034423">Rakenduse teabe toomine nurjus.</translation>
 <translation id="8175731104491895765">prantsuse (Belgia)</translation>
+<translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive'i faili sünkroonimine</translation>
 <translation id="8179976553408161302">Sisestusklahv</translation>
 <translation id="8193175696669055101">Seadme mudel</translation>
 <translation id="8223479393428528563">Kui soovite salvestada need failid võrguühenduseta kasutamiseks, minge uuesti veebi, paremklõpsake failidel ja tehke valik <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
@@ -944,6 +950,7 @@
 <translation id="8395901698320285466">Dimensioonid</translation>
 <translation id="8404498045299006085">Jäta kõik alles</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-võrk, ühendamine</translation>
+<translation id="841387525767317275">Selles kaustas olevad failid on võrguühenduseta saadaval</translation>
 <translation id="8425213833346101688">Muuda</translation>
 <translation id="8431909052837336408">Muuda SIM-kaardi PIN-koodi</translation>
 <translation id="8437209419043462667">USA</translation>
@@ -971,6 +978,7 @@
 <translation id="8560515948038859357">kantoni</translation>
 <translation id="8561206103590473338">Elevant</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, blokeeris administraator, üksikasjad</translation>
+<translation id="8567555211227790801">Võrguühendus puudub. Sünkroonimine jätkub, kui olete Internetiga ühendatud.</translation>
 <translation id="8568374623837201676">Kas kustutada see fail jäädavalt?</translation>
 <translation id="8569764466147087991">Valige avatav fail</translation>
 <translation id="8577897833047451336">horvaadi</translation>

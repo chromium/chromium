@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">ফাইল বা ডিরেক্টরি ব্যবহারযোগ্য নয়৷</translation>
 <translation id="1363028406613469049">ট্র্যাক</translation>
 <translation id="1378727793141957596">Google ড্রাইভে স্বাগতম!</translation>
+<translation id="1379156577998569384">আপনার Google Drive ফাইল অফলাইনেও উপলভ্য হয়</translation>
 <translation id="1379911846207762492">ইন্টারনেট কানেকশন না থাকলে, ফাইল অফলাইনে অ্যাক্সেস করার জন্য উপলভ্য করতে পারেন।</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1388045380422025115">সব ধরনের</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">জার্মান নিও ২</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3866249974567520381">বর্ণনা</translation>
+<translation id="3866439285517092441">ব্যাটারিতে চার্জ কমে গেছে। আপনি পাওয়ারের সাথে কানেক্ট করলে, সিঙ্ক প্রসেস আবার চালু হবে।</translation>
 <translation id="3899991606604168269">ফরাসি (কানাডা) ভাষায় মাল্টিলিঙ্গুয়াল কীবোর্ড</translation>
 <translation id="3901991538546252627"><ph name="NAME" />-এ সংযোগ করা হচ্ছে</translation>
 <translation id="3906232975181435906">মোবাইল প্রোফাইল ইনস্টল করা হচ্ছে, <ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" /></translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">ভুল PUK দিয়েছেন</translation>
 <translation id="4057991113334098539">সক্রিয় করা হচ্ছে...</translation>
 <translation id="4092890906744441904">আইরিশ</translation>
+<translation id="4124731372776320263">১টি Drive ফাইল সিঙ্ক করা হচ্ছে</translation>
 <translation id="4124935795427217608">ইউনিকর্ন</translation>
 <translation id="4131235941541910880">অপ্রয়োজনীয় আইটেম ট্র্যাশে সরান</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ডিভাইস সেট-আপ করার পর চালু করুন</translation>
@@ -578,6 +581,7 @@
 <translation id="5524517123096967210">ফাইল পড়া যায়নি৷</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> ছবি</translation>
 <translation id="5534520101572674276">আকার গণনা করা হচ্ছে</translation>
+<translation id="5536122250858122375">এই ধরনের ফাইল সিঙ্ক করা যাবে না</translation>
 <translation id="554153475311314364">গ্রিক লিপ্যন্তর</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" />টি ফোল্ডার বেছে নেওয়া হয়েছে</translation>
 <translation id="5580591966435005537">ভার্চুয়াল মেশিন</translation>
@@ -737,6 +741,7 @@
 <translation id="6874758081814639712">তাই চি করছে এমন ব্যক্তির ছবি</translation>
 <translation id="6876155724392614295">সাইকেল</translation>
 <translation id="6878261347041253038">দেবনাগরী কীবোর্ড (ফোনেটিক)</translation>
+<translation id="6882444584974399416">আপনার ফাইল অফলাইনে উপলভ্য রাখার জন্য যে স্টোরেজের জায়গার প্রয়োজন তা ডিভাইসে নেই। নতুন ফাইল আর অটোমেটিক সিঙ্ক করা হবে না।</translation>
 <translation id="6885780034956018177">শামুক</translation>
 <translation id="6896758677409633944">কপি</translation>
 <translation id="6898028766943174120">আরও সাব-ফোল্ডার...</translation>
@@ -911,6 +916,7 @@
 <translation id="8154842056504218462">সব এন্ট্রি বেছে নেওয়া হয়েছে।</translation>
 <translation id="8157684860301034423">অ্যাপের তথ্য ফিরিয়ে আনা যায়নি।</translation>
 <translation id="8175731104491895765">ফরাসি (বেলজিয়াম)</translation>
+<translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" />টি Drive ফাইল সিঙ্ক করা হচ্ছে</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">ডিভাইস মডেল</translation>
 <translation id="8223479393428528563">অফলাইনে ব্যবহারের জন্য এই ফাইলগুলি সেভ করতে অনলাইনে ফিরে আসুন, ফাইলগুলিতে ডান-ক্লিক করুন এবং <ph name="OFFLINE_CHECKBOX_NAME" /> বিকল্পটি নির্বাচন করুন৷</translation>
@@ -943,6 +949,7 @@
 <translation id="8395901698320285466">আয়তন</translation>
 <translation id="8404498045299006085">সবগুলি রাখুন</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> নেটওয়ার্ক, কানেক্ট করা হচ্ছে</translation>
+<translation id="841387525767317275">এই ফোল্ডারে থাকা ফাইল অফলাইনেও উপলভ্য</translation>
 <translation id="8425213833346101688">পরিবর্তন</translation>
 <translation id="8431909052837336408">সিম পিন পরিবর্তন করুন</translation>
 <translation id="8437209419043462667">মার্কিন যুক্তরাষ্ট্রীয়</translation>
@@ -970,6 +977,7 @@
 <translation id="8560515948038859357">ক্যান্টনিজ</translation>
 <translation id="8561206103590473338">হাতি</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_COUNT" />টি নেটওয়ার্কের মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ব্লক করেছেন, বিবরণ</translation>
+<translation id="8567555211227790801">আপনি বর্তমানে অফলাইন আছেন। আপনি ইন্টারনেটের সাথে কানেক্ট করলে, সিঙ্ক প্রসেস আবার চালু হবে।</translation>
 <translation id="8568374623837201676">এই ফাইলটি স্থায়ীভাবে মুছে ফেলতে চান?</translation>
 <translation id="8569764466147087991">খুলতে একটি স্ক্রিপ্ট বেছে নিন</translation>
 <translation id="8577897833047451336">ক্রোয়েশিয়ান</translation>

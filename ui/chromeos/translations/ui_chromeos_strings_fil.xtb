@@ -567,6 +567,7 @@
 <translation id="5422221874247253874">Access Point</translation>
 <translation id="5428105026674456456">Spanish</translation>
 <translation id="5438282218546237410">Walang resulta para sa <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Hindi sapat ang storage.</translation>
 <translation id="5449551289610225147">Di-wastong password</translation>
 <translation id="5459064203055649751">Mayroon nang file na may pangalang "<ph name="FILENAME" />." Gusto mo ba itong palitan ng file na inililipat mo?</translation>
 <translation id="5463231940765244860">Ilagay</translation>
@@ -695,6 +696,7 @@
 <translation id="6423031066725912715">Vietnamese na may TCVN keyboard</translation>
 <translation id="6430271654280079150">Mayroon ka na lang 1 natitirang pagsubok.</translation>
 <translation id="643243556292470964">Inilipat na ngayon sa trash ang mga na-delete na file</translation>
+<translation id="6438480100790416671">Tinitingnan ang storage space…</translation>
 <translation id="6485131920355264772">Nabigong kunin ang impormasyon ng espasyo</translation>
 <translation id="6495925982925244349">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Pinapamahalaan ng iyong Administrator, Mga Detalye</translation>
 <translation id="649877868557234318">Ine-extract ang <ph name="FILE_NAME" /> sa <ph name="FOLDER_NAME" /></translation>
@@ -898,6 +900,7 @@
 <translation id="8000066093800657092">Walang network</translation>
 <translation id="8008366997883261463">Aso</translation>
 <translation id="8028993641010258682">Laki</translation>
+<translation id="8034974485549318493">Para sa paunang pag-set up, kailangan mong kumonekta sa internet para ma-sync ang mga file.</translation>
 <translation id="803771048473350947">File</translation>
 <translation id="8038111231936746805">(default)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> na audio</translation>

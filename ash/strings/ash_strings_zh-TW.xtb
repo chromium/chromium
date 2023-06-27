@@ -925,6 +925,7 @@
 <translation id="504465286040788597">上一段</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="5062496344832867502">RAM</translation>
+<translation id="5068762093486106012">如果在靜音狀態下說話，系統會傳送通知給你。音訊資料只會儲存在裝置上。</translation>
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5083553833479578423">啟用更多 Google 助理功能。</translation>
 <translation id="5092436659250499817">開啟/關閉鍵盤背光</translation>
@@ -955,6 +956,7 @@
 <translation id="5207949376430453814">醒目顯示文字插入點</translation>
 <translation id="5208059991603368177">開啟</translation>
 <translation id="5216991270656129561">關閉，直到<ph name="TIME" /></translation>
+<translation id="5221423477036820198">使用 Phone Hub 快速傳送訊息或回覆手機的訊息。</translation>
 <translation id="5222676887888702881">登出</translation>
 <translation id="5229343007215035173">開啟/關閉隱私保護功能</translation>
 <translation id="5234764350956374838">關閉</translation>
@@ -1178,6 +1180,7 @@
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6166852626429024716">搜尋你的裝置、應用程式、設定、網路...</translation>
 <translation id="6168318496333165060">開啟「診斷」應用程式</translation>
+<translation id="6173151025443907148">啟用 Lacros 後，第二位使用者就無法登入。請改為在 Lacros 中使用第二個瀏覽器設定檔，或者停用 Lacros，然後再試一次。</translation>
 <translation id="6179832488876878285">你可以將重要的檔案固定在這裡，只要開啟「檔案」應用程式即可開始使用。</translation>
 <translation id="6182592640011875895">開啟桌面</translation>
 <translation id="6185696379715117369">Page Up 鍵</translation>

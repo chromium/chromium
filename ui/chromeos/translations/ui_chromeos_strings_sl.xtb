@@ -564,6 +564,7 @@
 <translation id="5422221874247253874">Dostopna točka</translation>
 <translation id="5428105026674456456">španščina</translation>
 <translation id="5438282218546237410">Ni rezultatov za »<ph name="SEARCH_TERM" />«.</translation>
+<translation id="5447680084201416734">Ni dovolj prostora za shranjevanje.</translation>
 <translation id="5449551289610225147">Neveljavno geslo</translation>
 <translation id="5459064203055649751">Datoteka z imenom »<ph name="FILENAME" />« že obstaja. Ali jo želite zamenjati z datoteko, ki jo premikate?</translation>
 <translation id="5463231940765244860">Vnos</translation>
@@ -691,6 +692,7 @@
 <translation id="6423031066725912715">vietnamščina s tipkovnico TCVN</translation>
 <translation id="6430271654280079150">Imate še 1 poskus.</translation>
 <translation id="643243556292470964">Izbrisane datoteke so zdaj premaknjene v smetnjak.</translation>
+<translation id="6438480100790416671">Preverjanje prostora za shranjevanje …</translation>
 <translation id="6485131920355264772">Podatkov o prostoru ni bilo mogoče prenesti</translation>
 <translation id="6495925982925244349">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, upravlja ga vaš skrbnik, podrobnosti</translation>
 <translation id="649877868557234318">Razširjanje datoteke <ph name="FILE_NAME" /> v mapo <ph name="FOLDER_NAME" /></translation>
@@ -893,6 +895,7 @@
 <translation id="8000066093800657092">Ni omrežja</translation>
 <translation id="8008366997883261463">Pes</translation>
 <translation id="8028993641010258682">Velikost</translation>
+<translation id="8034974485549318493">Pri začetni nastavitvi se morate povezati v internet, da se datoteke lahko sinhronizirajo.</translation>
 <translation id="803771048473350947">Datoteka</translation>
 <translation id="8038111231936746805">(privzeto)</translation>
 <translation id="8042602468072383151">Zvok <ph name="AUDIO_TYPE" /></translation>

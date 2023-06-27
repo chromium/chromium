@@ -2800,7 +2800,6 @@
 <translation id="7219179957768738017">Оваа врска користи <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Се обработува</translation>
 <translation id="7221855153210829124">Прикажи известувања</translation>
-<translation id="7221857374443660083">Вашата банка сака да го потврди вашиот идентитет</translation>
 <translation id="722454870747268814">Нова инкогнито картичка</translation>
 <translation id="7227293336683593977">Историја на цените</translation>
 <translation id="7233592378249864828">Испечати лист за потврда</translation>
@@ -3279,6 +3278,7 @@
 <translation id="8246482227229072868">Прстени</translation>
 <translation id="8249296373107784235">Прекини</translation>
 <translation id="8249463483885748674">Стандардизирани и приемни тестови</translation>
+<translation id="824968735947741546">Се преведува од <ph name="SOURCE" /> (автоматски откриен) на <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Во моментов, адресава е зачувана на овој уред. За да ја користите на производите на Google, зачувајте ја во вашата сметка на Google, <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Копче „Управувајте со поставките за пристапност“, притиснете Enter за да ги персонализирате алатките за пристапност во поставките за Chrome OS</translation>
 <translation id="8253091569723639551">Адресата за наплата е задолжителна</translation>
@@ -3480,7 +3480,6 @@
 <translation id="8718314106902482036">Плаќањето не е завршено</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, предлог за пребарување</translation>
 <translation id="8719528812645237045">Повеќе дупки горе</translation>
-<translation id="8723535127346307411">Внесете го кодот за потврда</translation>
 <translation id="8724824364712796726">Плик B6</translation>
 <translation id="8725066075913043281">Обидете се повторно</translation>
 <translation id="8726549941689275341">Големина на страницата:</translation>

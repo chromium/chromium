@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">Plik lub katalog nie nadaje się do użycia.</translation>
 <translation id="1363028406613469049">Utwór</translation>
 <translation id="1378727793141957596">Dysk Google – witamy</translation>
+<translation id="1379156577998569384">Twoje pliki na Moim Dysku są dostępne offline</translation>
 <translation id="1379911846207762492">Możesz udostępnić pliki w trybie offline, aby móc z nich korzystać bez połączenia z internetem.</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1388045380422025115">Wszystkie rodzaje</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">niemiecka klawiatura Neo 2</translation>
 <translation id="3858860766373142691">Nazwa</translation>
 <translation id="3866249974567520381">Opis</translation>
+<translation id="3866439285517092441">Słaba bateria. Synchronizacja zostanie wznowiona po podłączeniu urządzenia do zasilania.</translation>
 <translation id="3899991606604168269">Francuski (Kanada) z klawiaturą wielojęzyczną</translation>
 <translation id="3901991538546252627">Łączę z: <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Instalowanie profilu mobilnego: sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">Nieprawidłowy kod PUK</translation>
 <translation id="4057991113334098539">Aktywowanie...</translation>
 <translation id="4092890906744441904">Irlandzki</translation>
+<translation id="4124731372776320263">Synchronizuję 1 plik z Dysku</translation>
 <translation id="4124935795427217608">Jednorożec</translation>
 <translation id="4131235941541910880">Przenieś niepotrzebne elementy do kosza</translation>
 <translation id="4134804435730168042">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktywuj po skonfigurowaniu urządzenia</translation>
@@ -564,6 +567,7 @@
 <translation id="5422221874247253874">Punkt dostępu</translation>
 <translation id="5428105026674456456">Hiszpański</translation>
 <translation id="5438282218546237410">Brak wyników dla: <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Za mało miejsca.</translation>
 <translation id="5449551289610225147">Nieprawidłowe hasło</translation>
 <translation id="5459064203055649751">Plik „<ph name="FILENAME" />” już istnieje. Czy chcesz zastąpić go tym, który przenosisz?</translation>
 <translation id="5463231940765244860">Wpisz</translation>
@@ -579,6 +583,7 @@
 <translation id="5524517123096967210">Nie można odczytać pliku.</translation>
 <translation id="5533102081734025921">Obraz <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Obliczanie rozmiaru</translation>
+<translation id="5536122250858122375">Nie można zsynchronizować tego typu pliku</translation>
 <translation id="554153475311314364">Grecki – transliteracja</translation>
 <translation id="5554171655917412781">Wybrane foldery: <ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">maszyna wirtualna</translation>
@@ -691,6 +696,7 @@
 <translation id="6423031066725912715">Wietnamski z klawiaturą TCVN</translation>
 <translation id="6430271654280079150">Pozostała 1 próba.</translation>
 <translation id="643243556292470964">Usunięte pliki zostały przeniesione do kosza</translation>
+<translation id="6438480100790416671">Sprawdzam dostępne miejsce…</translation>
 <translation id="6485131920355264772">Pobieranie informacji o wolnym miejscu nie powiodło się</translation>
 <translation id="6495925982925244349">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zarządzana przez administratora, szczegóły</translation>
 <translation id="649877868557234318">Rozpakowuję plik <ph name="FILE_NAME" /> do folderu <ph name="FOLDER_NAME" /></translation>
@@ -738,6 +744,7 @@
 <translation id="6874758081814639712">Osoba ćwicząca tai chi</translation>
 <translation id="6876155724392614295">Rower</translation>
 <translation id="6878261347041253038">klawiatura dewanagari (fonetyczna)</translation>
+<translation id="6882444584974399416">Na urządzeniu jest za mało miejsca na pliki offline. Nowe pliki nie będą już synchronizować się automatycznie.</translation>
 <translation id="6885780034956018177">Ślimak</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
 <translation id="6898028766943174120">Więcej podfolderów…</translation>
@@ -893,6 +900,7 @@
 <translation id="8000066093800657092">Brak sieci</translation>
 <translation id="8008366997883261463">Pies</translation>
 <translation id="8028993641010258682">Rozmiar</translation>
+<translation id="8034974485549318493">Aby przeprowadzić wstępną konfigurację, musisz połączyć się z internetem. Dzięki temu będzie można zsynchronizować pliki.</translation>
 <translation id="803771048473350947">Plik</translation>
 <translation id="8038111231936746805">(domyślnie)</translation>
 <translation id="8042602468072383151">Plik audio <ph name="AUDIO_TYPE" /></translation>
@@ -912,6 +920,7 @@
 <translation id="8154842056504218462">Zaznaczono wszystkie elementy.</translation>
 <translation id="8157684860301034423">Nie udało się pobrać informacji o aplikacji.</translation>
 <translation id="8175731104491895765">Francuski (Belgia)</translation>
+<translation id="8175799081768705361">Synchronizuję pliki (<ph name="NUMBER_OF_FILES_SYNCING" />) na Dysku</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model urządzenia</translation>
 <translation id="8223479393428528563">Aby zapisać te pliki i używać ich offline, przejdź do trybu online, kliknij pliki prawym przyciskiem myszy i wybierz opcję <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
@@ -944,6 +953,7 @@
 <translation id="8395901698320285466">Wymiary</translation>
 <translation id="8404498045299006085">Zachowaj wszystkie</translation>
 <translation id="8408068190360279472">Sieć <ph name="NETWORK_TYPE" />, łączę</translation>
+<translation id="841387525767317275">Pliki w tym folderze są dostępne offline</translation>
 <translation id="8425213833346101688">Zmień</translation>
 <translation id="8431909052837336408">Zmień PIN do karty SIM</translation>
 <translation id="8437209419043462667">amerykański</translation>
@@ -971,6 +981,7 @@
 <translation id="8560515948038859357">Kantoński</translation>
 <translation id="8561206103590473338">Słoń</translation>
 <translation id="8566466896628108558">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zablokowana przez administratora, szczegóły</translation>
+<translation id="8567555211227790801">Jesteś teraz offline. Synchronizacja zostanie wznowiona, gdy będziesz mieć połączenie z internetem.</translation>
 <translation id="8568374623837201676">Usunąć trwale ten plik?</translation>
 <translation id="8569764466147087991">Wybierz plik do otwarcia</translation>
 <translation id="8577897833047451336">Chorwacki</translation>

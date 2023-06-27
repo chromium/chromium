@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">Vaihda taustakuva</translation>
 <translation id="360565022852130722">Wi-Fi-verkko on suojattu heikolla WEP 802.1x -protokollalla</translation>
 <translation id="3606583719724308068">Pitkä viive HTTPS-sivustoille</translation>
+<translation id="3607216139080387279">Näytä näytönsäästäjä</translation>
 <translation id="361575905210396100">Kiitos palautteestasi</translation>
 <translation id="3632579075709132555">Yksityinen näkyvyys päälle/pois</translation>
 <translation id="3639846061339007994">yläreuna</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> arvostelua)</translation>
 <translation id="3748026146096797577">Ei yhteyttä</translation>
 <translation id="3749289110408117711">Tiedostonimi</translation>
+<translation id="3766934827878963937">yhden tunnin ajaksi</translation>
 <translation id="3771294271822695279">Videotiedostot </translation>
 <translation id="3784455785234192852">Lukitse</translation>
 <translation id="380097101658023925">rgb-asetukset</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">näppäimistön himmennys</translation>
 <translation id="6302401976930124515">Testi on peruttu: <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Tutustu sovellukseen</translation>
+<translation id="6318437367327684789">ikuisesti</translation>
 <translation id="6319207335391420837">Päivitä laiteohjelmisto: <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Laita näytönsäästäjä päälle</translation>
 <translation id="6325525973963619867">Epäonnistui</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">Tallenna useita sivuja yhteen PDF-tiedostoon</translation>
 <translation id="9137526406337347448">Googlen palvelut</translation>
 <translation id="9138630967333032450">Vasen vaihtonäppäin</translation>
+<translation id="9143347780818904997"><ph name="MINUTES" /> minuutin ajaksi</translation>
 <translation id="9149391708638971077">Suorita muistitesti</translation>
 <translation id="9161276708550942948">välilyönti</translation>
 <translation id="9173638680043580060">Alle minuutti jäljellä</translation>

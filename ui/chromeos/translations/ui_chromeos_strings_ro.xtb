@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">Fișierul sau directorul nu este utilizabil.</translation>
 <translation id="1363028406613469049">Melodia</translation>
 <translation id="1378727793141957596">Bun venit la Disc Google!</translation>
+<translation id="1379156577998569384">Fișierele din Contul meu Drive sunt disponibile offline</translation>
 <translation id="1379911846207762492">Poți face fișiere disponibile offline pentru a le accesa când nu ai conexiune la internet.</translation>
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1388045380422025115">Toate tipurile</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">Germană Neo 2</translation>
 <translation id="3858860766373142691">Nume</translation>
 <translation id="3866249974567520381">Descriere</translation>
+<translation id="3866439285517092441">Bateria este aproape descărcată. Sincronizarea va fi reluată când te conectezi la o sursă de alimentare.</translation>
 <translation id="3899991606604168269">Franceză (Canada) cu tastatură multilingvă</translation>
 <translation id="3901991538546252627">Se conectează la <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Se instalează profilul mobil, rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">Cod PUK incorect</translation>
 <translation id="4057991113334098539">Activare...</translation>
 <translation id="4092890906744441904">Irlandeză</translation>
+<translation id="4124731372776320263">Se sincronizează un fișier Drive</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Mută elementele de care nu ai nevoie în coșul de gunoi</translation>
 <translation id="4134804435730168042">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Activează după configurarea dispozitivului</translation>
@@ -579,6 +582,7 @@
 <translation id="5524517123096967210">Fișierul nu a putut fi citit.</translation>
 <translation id="5533102081734025921">Imagine <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Se calculează dimensiunea</translation>
+<translation id="5536122250858122375">Acest tip de fișier nu poate fi sincronizat</translation>
 <translation id="554153475311314364">Greacă, transliterație</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> dosare selectate</translation>
 <translation id="5580591966435005537">mașina virtuală</translation>
@@ -738,6 +742,7 @@
 <translation id="6874758081814639712">Persoană care practică tai chi</translation>
 <translation id="6876155724392614295">Bicicletă</translation>
 <translation id="6878261347041253038">Tastatură devanagari (Fonetică)</translation>
+<translation id="6882444584974399416">Dispozitivul nu are suficient spațiu de stocare pentru ca fișierele să fie disponibile offline. Fișierele noi nu vor mai fi sincronizate automat.</translation>
 <translation id="6885780034956018177">Melc</translation>
 <translation id="6896758677409633944">Copiază</translation>
 <translation id="6898028766943174120">Mai multe subdosare...</translation>
@@ -912,6 +917,7 @@
 <translation id="8154842056504218462">S-au selectat toate intrările.</translation>
 <translation id="8157684860301034423">Nu s-au putut prelua informațiile despre aplicație.</translation>
 <translation id="8175731104491895765">Franceză (Belgia)</translation>
+<translation id="8175799081768705361">Se sincronizează <ph name="NUMBER_OF_FILES_SYNCING" /> fișiere Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Modelul dispozitivului</translation>
 <translation id="8223479393428528563">Pentru a salva aceste fișiere pentru utilizare offline, revino online, dă clic dreapta pe fișiere și selectează opțiunea <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
@@ -944,6 +950,7 @@
 <translation id="8395901698320285466">Dimensiuni</translation>
 <translation id="8404498045299006085">Păstrează tot</translation>
 <translation id="8408068190360279472">Rețea <ph name="NETWORK_TYPE" />, se stabilește conexiunea</translation>
+<translation id="841387525767317275">Fișierele din acest dosar sunt disponibile offline</translation>
 <translation id="8425213833346101688">Modificați</translation>
 <translation id="8431909052837336408">Schimbă codul PIN pentru SIM</translation>
 <translation id="8437209419043462667">S.U.A.</translation>
@@ -971,6 +978,7 @@
 <translation id="8560515948038859357">Cantoneză</translation>
 <translation id="8561206103590473338">Elefant</translation>
 <translation id="8566466896628108558">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, Blocată de administrator, Detalii</translation>
+<translation id="8567555211227790801">Ești în modul offline. Sincronizarea va fi reluată când te conectezi la internet.</translation>
 <translation id="8568374623837201676">Ștergi definitiv fișierul?</translation>
 <translation id="8569764466147087991">Selectează un fișier pentru a-l deschide</translation>
 <translation id="8577897833047451336">Croată</translation>

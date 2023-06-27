@@ -2800,7 +2800,6 @@
 <translation id="7219179957768738017">З'єднання використовує версію <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Обробка</translation>
 <translation id="7221855153210829124">показувати сповіщення</translation>
-<translation id="7221857374443660083">Банку потрібне підтвердження вашої особи</translation>
 <translation id="722454870747268814">Нова анонімна вкладка</translation>
 <translation id="7227293336683593977">Історія цін</translation>
 <translation id="7233592378249864828">Друкувати аркуш підтвердження</translation>
@@ -3279,6 +3278,7 @@
 <translation id="8246482227229072868">Каблучки</translation>
 <translation id="8249296373107784235">Скасувати</translation>
 <translation id="8249463483885748674">Стандартизовані та вступні тести</translation>
+<translation id="824968735947741546">Виконується переклад. Мова оригіналу: <ph name="SOURCE" /> (визначено автоматично). Мова перекладу: <ph name="TARGET" />.</translation>
 <translation id="8250094606476360498">Ця адреса зараз зберігається на поточному пристрої. Збережіть її у своєму обліковому записі Google (<ph name="ACCOUNT" />), щоб використовувати в усіх продуктах Google.</translation>
 <translation id="8252991034201168845">Кнопка "Керувати налаштуваннями спеціальних можливостей"; натисніть Enter, щоб персоналізувати інструменти спеціальних можливостей у налаштуваннях ОС Chrome.</translation>
 <translation id="8253091569723639551">Потрібно вказати платіжну адресу</translation>
@@ -3481,7 +3481,6 @@
 <translation id="8718314106902482036">Оплату не завершено</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, пропозиція пошуку</translation>
 <translation id="8719528812645237045">Пробити кілька отворів угорі</translation>
-<translation id="8723535127346307411">Введіть код підтвердження</translation>
 <translation id="8724824364712796726">Конверт B6</translation>
 <translation id="8725066075913043281">Повторити спробу</translation>
 <translation id="8726549941689275341">Розмір сторінки:</translation>

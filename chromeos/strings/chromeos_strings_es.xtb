@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">Cambiar fondo de pantalla</translation>
 <translation id="360565022852130722">La red Wi-Fi está protegida con un protocolo poco seguro WEP 802.1x</translation>
 <translation id="3606583719724308068">Latencia alta a sitios web HTTPS</translation>
+<translation id="3607216139080387279">Mostrar salvapantallas</translation>
 <translation id="361575905210396100">Gracias por tus comentarios</translation>
 <translation id="3632579075709132555">Activar o desactivar Pantalla de privacidad</translation>
 <translation id="3639846061339007994">superior</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reseñas)</translation>
 <translation id="3748026146096797577">No conectado</translation>
 <translation id="3749289110408117711">Nombre del archivo</translation>
+<translation id="3766934827878963937">durante 1 hora</translation>
 <translation id="3771294271822695279">Archivos de vídeo</translation>
 <translation id="3784455785234192852">Bloquear</translation>
 <translation id="380097101658023925">controles RGB</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">atenuación de teclado</translation>
 <translation id="6302401976930124515">La prueba <ph name="TEST_NAME" /> se ha cancelado</translation>
 <translation id="631063167932043783">Aplicación Explorar</translation>
+<translation id="6318437367327684789">siempre</translation>
 <translation id="6319207335391420837">Actualizar el firmware de <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Activar salvapantallas</translation>
 <translation id="6325525973963619867">Se ha producido un error.</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">Guardar varias páginas en un PDF</translation>
 <translation id="9137526406337347448">Servicios de Google</translation>
 <translation id="9138630967333032450">Mayús izquierda</translation>
+<translation id="9143347780818904997">durante <ph name="MINUTES" /> minutos</translation>
 <translation id="9149391708638971077">Realizar prueba de memoria</translation>
 <translation id="9161276708550942948">barra espaciadora</translation>
 <translation id="9173638680043580060">Queda menos de 1 minuto</translation>

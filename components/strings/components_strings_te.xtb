@@ -1146,6 +1146,7 @@
 <translation id="3550112004925580947">ఆతిథ్య పరిశ్రమ</translation>
 <translation id="3552297013052089404">Sans-Serif ఫాంట్</translation>
 <translation id="3558573058928565255">రోజు, సమయం</translation>
+<translation id="355995771319966853">ఆటోఫిల్‌ను చర్య రద్దు చేయండి</translation>
 <translation id="3560824484345057728">సంబంధిత సైట్‌లను చూడండి</translation>
 <translation id="3566021033012934673">మీ కనెక్షన్ ప్రైవేట్ కాదు</translation>
 <translation id="3566336457819493938">215 x 315 మి.మీ.</translation>
@@ -2208,6 +2209,7 @@
 <translation id="5903264686717710770">శీర్షిక:</translation>
 <translation id="5904360430676679685">కుటుంబం &amp; సంబంధాలు</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (సింక్ చేయబడింది)</translation>
+<translation id="5910140988253729859">ఆటోఫిల్‌ను చర్య రద్దు చేయండి</translation>
 <translation id="5911020115933784199">ఈవెంట్‌లు &amp; లిస్టింగ్‌లు</translation>
 <translation id="5911110632211230665">తెరవకుండా బ్లాక్ చేసింది</translation>
 <translation id="59174027418879706">ప్రారంభించబడింది</translation>
@@ -2802,7 +2804,6 @@
 <translation id="7219179957768738017">కనెక్షన్ <ph name="SSL_VERSION" />ని ఉపయోగిస్తుంది.</translation>
 <translation id="7220786058474068424">ప్రాసెస్ చేస్తోంది</translation>
 <translation id="7221855153210829124">నోటిఫికేషన్‌లను చూపాలనుకుంటోంది</translation>
-<translation id="7221857374443660083">అది మీరేనని మీ బ్యాంక్ నిర్ధారించాలనుకుంటోంది</translation>
 <translation id="722454870747268814">కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="7227293336683593977">ధర హిస్టరీ</translation>
 <translation id="7233592378249864828">ప్రింట్ చేయడాన్ని నిర్ధారించే షీట్</translation>
@@ -3483,7 +3484,6 @@
 <translation id="8718314106902482036">చెల్లింపు పూర్తి కాలేదు</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, శోధన సూచన</translation>
 <translation id="8719528812645237045">ఎగువ భాగంలో అనేక రంధ్రాలు</translation>
-<translation id="8723535127346307411">వెరిఫికేషన్ కోడ్‌ను ఎంటర్ చేయండి</translation>
 <translation id="8724824364712796726">ఎన్వలప్ B6</translation>
 <translation id="8725066075913043281">మళ్ళీ ప్రయత్నించండి</translation>
 <translation id="8726549941689275341">పేజీ సైజ్:</translation>

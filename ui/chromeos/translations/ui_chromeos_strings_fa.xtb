@@ -564,6 +564,7 @@
 <translation id="5422221874247253874">نقطه دسترسی</translation>
 <translation id="5428105026674456456">اسپانیایی</translation>
 <translation id="5438282218546237410">نتیجه‌ای برای <ph name="SEARCH_TERM" /> پیدا نشد.</translation>
+<translation id="5447680084201416734">فضای ذخیره‌سازی کافی نیست.</translation>
 <translation id="5449551289610225147">گذرواژه نامعتبر است</translation>
 <translation id="5459064203055649751">فایلی با نام «<ph name="FILENAME" />» ازقبل وجود دارد. می‌خواهید آن را با فایلی که منتقل می‌کنید جایگزین کنید؟</translation>
 <translation id="5463231940765244860">وارد کردن</translation>
@@ -691,6 +692,7 @@
 <translation id="6423031066725912715">‏ویتنامی با صفحه‌کلید TCVN</translation>
 <translation id="6430271654280079150">۱ تلاش دیگر دارید.</translation>
 <translation id="643243556292470964">فایل‌های حذف‌شده اکنون به «حذف‌شده‌ها» منتقل شد</translation>
+<translation id="6438480100790416671">درحال بررسی فضای ذخیره‌سازی…</translation>
 <translation id="6485131920355264772">دریافت اطلاعات فضا انجام نشد</translation>
 <translation id="6495925982925244349">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، تحت‌مدیریت سرپرست، جزئیات</translation>
 <translation id="649877868557234318">درحال استخراج <ph name="FILE_NAME" /> در <ph name="FOLDER_NAME" /></translation>
@@ -750,7 +752,7 @@
 <translation id="69548399407432279">سال گذشته</translation>
 <translation id="6960565108681981554">فعال نیست. با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="696203921837389374">فعال کردن همگام‌سازی از طریق داده تلفن همراه</translation>
-<translation id="6965382102122355670">قبول</translation>
+<translation id="6965382102122355670">تأیید</translation>
 <translation id="6965648386495488594">درگاه</translation>
 <translation id="6970230597523682626">بلغاری</translation>
 <translation id="6973630695168034713">پوشه‌ها</translation>
@@ -893,6 +895,7 @@
 <translation id="8000066093800657092">بدون شبکه</translation>
 <translation id="8008366997883261463">جک راسل تریر</translation>
 <translation id="8028993641010258682">اندازه</translation>
+<translation id="8034974485549318493">برای راه‌اندازی اولیه، باید به اینترنت متصل شوید تا فایل‌ها همگام‌سازی شود.</translation>
 <translation id="803771048473350947">فایل</translation>
 <translation id="8038111231936746805">(پیش‌‏فرض)</translation>
 <translation id="8042602468072383151">فایل صوتی <ph name="AUDIO_TYPE" /></translation>

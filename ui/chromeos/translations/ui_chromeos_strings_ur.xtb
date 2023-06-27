@@ -563,6 +563,7 @@
 <translation id="5422221874247253874">رسائی کی جگہ</translation>
 <translation id="5428105026674456456">ہسپانوی</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> کے لیے کوئی نتیجہ نہیں ملا۔</translation>
+<translation id="5447680084201416734">اسٹوریج کافی نہیں ہے۔</translation>
 <translation id="5449551289610225147">غلط پاس ورڈ</translation>
 <translation id="5459064203055649751">"<ph name="FILENAME" />" نام کی فائل پہلے سے موجود ہے۔ کیا آپ اسے اس سے بدلنا چاہتے ہیں جسے آپ منتقل کر رہے ہیں؟</translation>
 <translation id="5463231940765244860">درج کریں</translation>
@@ -690,6 +691,7 @@
 <translation id="6423031066725912715">‏TCVN کی بورڈ کے ساتھ ویتنامی</translation>
 <translation id="6430271654280079150">آپ کے پاس 1 کوشش بچی ہے۔</translation>
 <translation id="643243556292470964">حذف کردہ فائلیں اب کوڑے دان میں منتقل کر دی گئی ہیں</translation>
+<translation id="6438480100790416671">اسٹوریج کی جگہ چیک کی جا رہی ہے…</translation>
 <translation id="6485131920355264772">اسپیس کی معلومات کی بازيابی میں ناکام ہوگیا</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" /> نیٹ ورک، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، آپ کے منتظم کے زیر انتظام ہے، تفصیلات</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> کو <ph name="FOLDER_NAME" /> میں اخذ کیا جا رہا ہے</translation>
@@ -892,6 +894,7 @@
 <translation id="8000066093800657092">کوئی نیٹ ورک نہیں ہے</translation>
 <translation id="8008366997883261463">ڈاگ</translation>
 <translation id="8028993641010258682">سائز</translation>
+<translation id="8034974485549318493">ابتدائی سیٹ اپ کے لیے، آپ کو انٹرنیٹ سے منسلک ہونے کی ضرورت ہے تاکہ فائلز مطابقت پذیر ہو سکیں۔</translation>
 <translation id="803771048473350947">فائل</translation>
 <translation id="8038111231936746805">(ڈیفالٹ)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> آڈیو</translation>

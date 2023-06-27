@@ -563,6 +563,7 @@
 <translation id="5422221874247253874">এক্সেছ পইণ্ট</translation>
 <translation id="5428105026674456456">স্পেনিশ্ব</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" />ৰ কোনো ফলাফল নাই।</translation>
+<translation id="5447680084201416734">ষ্ট’ৰেজত পৰ্যাপ্ত খালী ঠাই নাই।</translation>
 <translation id="5449551289610225147">অমান্য পাছৱৰ্ড</translation>
 <translation id="5459064203055649751">"<ph name="FILENAME" />" নামৰ এটা ফাইল ইতিমধ্যে আছেই। আপুনি স্থানান্তৰ কৰি থকাটোৰে এইটো সলনি কৰিব বিচাৰেনে?</translation>
 <translation id="5463231940765244860">দিয়ক</translation>
@@ -690,6 +691,7 @@
 <translation id="6423031066725912715">TCVN কীব’ৰ্ডৰ সৈতে ভিয়েটনামিজ</translation>
 <translation id="6430271654280079150">আপোনাৰ ১ টা প্ৰয়াস বাকী আছে।</translation>
 <translation id="643243556292470964">মচা ফাইলসমূহ এতিয়া ট্ৰেশ্বলৈ স্থানান্তৰ কৰা হয়</translation>
+<translation id="6438480100790416671">ষ্ট’ৰেজৰ ঠাই পৰীক্ষা কৰি থকা হৈছে…</translation>
 <translation id="6485131920355264772">খালী ঠাইৰ বিষয়ে তথ্য সংগ্ৰহ কৰিব পৰা নগ’ল</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে, সবিশেষ</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" />ক <ph name="FOLDER_NAME" />ত আহৰণ কৰি থকা হৈছে</translation>
@@ -892,6 +894,7 @@
 <translation id="8000066093800657092">নেটৱৰ্ক নাই</translation>
 <translation id="8008366997883261463">কুকুৰ</translation>
 <translation id="8028993641010258682">আকাৰ</translation>
+<translation id="8034974485549318493">প্ৰাৰম্ভিক ছেটআপৰ বাবে, আপুনি ইণ্টাৰনেটৰ সৈতে সংযোগ কৰিব লাগিব যাতে ফাইলসমূহ ছিংক হ’ব পাৰে।</translation>
 <translation id="803771048473350947">ফাইল</translation>
 <translation id="8038111231936746805">ডিফ’ল্ট</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> অডিঅ’</translation>

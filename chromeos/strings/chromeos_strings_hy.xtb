@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">Փոխել պաստառը</translation>
 <translation id="360565022852130722">Wi-Fi ցանցը պաշտպանված է WEP 802.1x թույլ հաղորդակարգով</translation>
 <translation id="3606583719724308068">Բարձր հապաղում HTTPS կայքերի համար</translation>
+<translation id="3607216139080387279">Ցույց տալ էկրանապահը</translation>
 <translation id="361575905210396100">Շնորհակալություն կարծիք հայտնելու համար</translation>
 <translation id="3632579075709132555">Գաղտնիության էկրանի փոխանջատիչ</translation>
 <translation id="3639846061339007994">վերև</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> կարծիք)</translation>
 <translation id="3748026146096797577">Միացված չէ</translation>
 <translation id="3749289110408117711">Ֆայլի անունը</translation>
+<translation id="3766934827878963937">1 ժամով</translation>
 <translation id="3771294271822695279">Տեսաֆայլեր</translation>
 <translation id="3784455785234192852">Կողպել</translation>
 <translation id="380097101658023925">RGB-ի կարգավորումներ</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">ստեղնաշարի լուսավորության խամրեցում</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> թեստը չեղարկվել է</translation>
 <translation id="631063167932043783">«Հնարավորություններ» հավելված</translation>
+<translation id="6318437367327684789">ընդմիշտ</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> սարքի ներկառուցված ծրագրի թարմացում</translation>
 <translation id="6321407676395378991">Միացնել էկրանապահը</translation>
 <translation id="6325525973963619867">Սխալ առաջացավ</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">Պահեք մի քանի էջ մեկ PDF ֆայլում</translation>
 <translation id="9137526406337347448">Google-ի ծառայություններ</translation>
 <translation id="9138630967333032450">Ձախ Shift</translation>
+<translation id="9143347780818904997"><ph name="MINUTES" /> րոպեով</translation>
 <translation id="9149391708638971077">Փորձարկել հիշողությունը</translation>
 <translation id="9161276708550942948">բացատ</translation>
 <translation id="9173638680043580060">Մնացել է մեկ րոպեից քիչ</translation>

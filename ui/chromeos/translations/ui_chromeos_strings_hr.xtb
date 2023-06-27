@@ -564,6 +564,7 @@
 <translation id="5422221874247253874">Pristupna točka</translation>
 <translation id="5428105026674456456">Španjolski</translation>
 <translation id="5438282218546237410">Nema rezultata za <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Nema dovoljno prostora za pohranu.</translation>
 <translation id="5449551289610225147">Nevažeća zaporka</translation>
 <translation id="5459064203055649751">Datoteka s nazivom <ph name="FILENAME" /> već postoji. Želite li je zamijeniti onom koju premještate?</translation>
 <translation id="5463231940765244860">Unos PIN-a</translation>
@@ -691,6 +692,7 @@
 <translation id="6423031066725912715">vijetnamski s tipkovnicom TCVN</translation>
 <translation id="6430271654280079150">Imate još jedan pokušaj.</translation>
 <translation id="643243556292470964">Izbrisane datoteke sad su premještene u otpad</translation>
+<translation id="6438480100790416671">Provjera prostora za pohranu…</translation>
 <translation id="6485131920355264772">Dohvaćanje informacija o prostoru nije uspjelo</translation>
 <translation id="6495925982925244349">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja administrator, pojedinosti</translation>
 <translation id="649877868557234318">Izdvajanje datoteke <ph name="FILE_NAME" /> u mapu <ph name="FOLDER_NAME" /></translation>
@@ -893,6 +895,7 @@
 <translation id="8000066093800657092">Nema mreže</translation>
 <translation id="8008366997883261463">Jack Russell terijer</translation>
 <translation id="8028993641010258682">Veličina</translation>
+<translation id="8034974485549318493">Da biste pokrenuli postavljanje, trebate se povezati s internetom kako bi se datoteke mogle sinkronizirati.</translation>
 <translation id="803771048473350947">Datoteka</translation>
 <translation id="8038111231936746805">(zadano)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> audiozapis</translation>

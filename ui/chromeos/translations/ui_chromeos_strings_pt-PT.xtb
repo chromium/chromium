@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">O ficheiro ou o diretório não pode ser utilizado.</translation>
 <translation id="1363028406613469049">Faixa</translation>
 <translation id="1378727793141957596">Bem-vindo ao Google Drive!</translation>
+<translation id="1379156577998569384">Os seus ficheiros de O meu disco estão disponíveis offline</translation>
 <translation id="1379911846207762492">Pode disponibilizar ficheiros offline para aceder quando não tiver uma ligação à Internet.</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1388045380422025115">Todos os tipos</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">Alemão Neo 2</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3866249974567520381">Descrição</translation>
+<translation id="3866439285517092441">A bateria está fraca. A sincronização é retomada quando tiver ligação à alimentação.</translation>
 <translation id="3899991606604168269">Francês (Canadá) com teclado multilingue</translation>
 <translation id="3901991538546252627">A ligar a <ph name="NAME" /></translation>
 <translation id="3906232975181435906">A instalar o perfil móvel, rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">PUK incorreto</translation>
 <translation id="4057991113334098539">A activar...</translation>
 <translation id="4092890906744441904">Irlandês</translation>
+<translation id="4124731372776320263">A sincronizar 1 ficheiro do Drive</translation>
 <translation id="4124935795427217608">Unicórnio</translation>
 <translation id="4131235941541910880">Mova os itens de que não precisa para o lixo</translation>
 <translation id="4134804435730168042">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Ativar após a configuração do dispositivo</translation>
@@ -579,6 +582,7 @@
 <translation id="5524517123096967210">Não foi possível ler o ficheiro.</translation>
 <translation id="5533102081734025921">Imagem <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">A calcular tamanho</translation>
+<translation id="5536122250858122375">Não é possível sincronizar este tipo de ficheiro</translation>
 <translation id="554153475311314364">Transliteração de grego</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> pastas selecionadas</translation>
 <translation id="5580591966435005537">máquina virtual</translation>
@@ -738,6 +742,7 @@
 <translation id="6874758081814639712">Pessoa a fazer tai chi</translation>
 <translation id="6876155724392614295">Bicicleta</translation>
 <translation id="6878261347041253038">Teclado devanagari (fonético)</translation>
+<translation id="6882444584974399416">O seu dispositivo não tem espaço de armazenamento suficiente para manter os seus ficheiros disponíveis offline. Os novos ficheiros vão deixar de ser sincronizados automaticamente.</translation>
 <translation id="6885780034956018177">Caracol</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6898028766943174120">Mais subpastas…</translation>
@@ -912,6 +917,7 @@
 <translation id="8154842056504218462">Selecionou todas as entradas.</translation>
 <translation id="8157684860301034423">Falha ao obter informações da aplicação.</translation>
 <translation id="8175731104491895765">Francês (Bélgica)</translation>
+<translation id="8175799081768705361">A sincronizar <ph name="NUMBER_OF_FILES_SYNCING" /> ficheiros do Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Modelo do dispositivo</translation>
 <translation id="8223479393428528563">Para guardar estes ficheiros para utilização offline, ligue-se novamente à Internet, clique com o botão direito do rato nos ficheiros e selecione a opção <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
@@ -944,6 +950,7 @@
 <translation id="8395901698320285466">Dimensões</translation>
 <translation id="8404498045299006085">Manter tudo</translation>
 <translation id="8408068190360279472">Rede <ph name="NETWORK_TYPE" />, a ligar…</translation>
+<translation id="841387525767317275">Os ficheiros nesta pasta estão disponíveis offline</translation>
 <translation id="8425213833346101688">Alterar</translation>
 <translation id="8431909052837336408">Alterar o PIN do cartão SIM</translation>
 <translation id="8437209419043462667">EUA</translation>
@@ -971,6 +978,7 @@
 <translation id="8560515948038859357">Cantonês</translation>
 <translation id="8561206103590473338">Elefante</translation>
 <translation id="8566466896628108558">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, Bloqueada pelo administrador, Detalhes</translation>
+<translation id="8567555211227790801">Está atualmente offline. A sincronização é retomada quando tiver ligação à Internet.</translation>
 <translation id="8568374623837201676">Apagar permanentemente este ficheiro?</translation>
 <translation id="8569764466147087991">Selecione um ficheiro para abrir</translation>
 <translation id="8577897833047451336">Croata</translation>

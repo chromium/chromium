@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">Taustapildi muutmine</translation>
 <translation id="360565022852130722">WiFi-võrk on kaitstud nõrga protokolliga (WEP 802.1x)</translation>
 <translation id="3606583719724308068">Pikk latentsusaeg HTTPS-veebisaitide puhul</translation>
+<translation id="3607216139080387279">Kuva ekraanisäästja</translation>
 <translation id="361575905210396100">Suur tänu tagasiside eest</translation>
 <translation id="3632579075709132555">Privaatsuskuva lüliti</translation>
 <translation id="3639846061339007994">ülemisele</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> arvustust)</translation>
 <translation id="3748026146096797577">Ühendus puudub</translation>
 <translation id="3749289110408117711">Faili nimi</translation>
+<translation id="3766934827878963937">1 tunniks</translation>
 <translation id="3771294271822695279">Videofailid</translation>
 <translation id="3784455785234192852">Lukusta</translation>
 <translation id="380097101658023925">RGB juhtelemendid</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">klaviatuuri hämardamine</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> tühistati</translation>
 <translation id="631063167932043783">Rakendus Avastamine</translation>
+<translation id="6318437367327684789">igavesti</translation>
 <translation id="6319207335391420837">Seadme <ph name="DEVICE_NAME" /> püsivara värskendamine</translation>
 <translation id="6321407676395378991">Ekraanisäästja sisselülitamine</translation>
 <translation id="6325525973963619867">Ebaõnnestus</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">Mitme lehe ühte PDF-faili salvestamine</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Vasakpoolne tõstuklahv</translation>
+<translation id="9143347780818904997"><ph name="MINUTES" /> minutiks</translation>
 <translation id="9149391708638971077">Käita mälutest</translation>
 <translation id="9161276708550942948">tühikuklahv</translation>
 <translation id="9173638680043580060">Jäänud on alla minuti</translation>

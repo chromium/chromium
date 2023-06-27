@@ -564,6 +564,7 @@
 <translation id="5422221874247253874">Åtkomstpunkt</translation>
 <translation id="5428105026674456456">spanska</translation>
 <translation id="5438282218546237410">Det finns inga resultat för <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Inte tillräckligt med utrymme.</translation>
 <translation id="5449551289610225147">Ogiltigt lösenord</translation>
 <translation id="5459064203055649751">Det finns redan en fil med namnet <ph name="FILENAME" />. Vill du ersätta den med filen du flyttar?</translation>
 <translation id="5463231940765244860">Ange</translation>
@@ -691,6 +692,7 @@
 <translation id="6423031066725912715">vietnamesiskt tangentbord (TCVN)</translation>
 <translation id="6430271654280079150">Du har 1 försök kvar.</translation>
 <translation id="643243556292470964">Raderade filer har nu flyttats till papperskorgen</translation>
+<translation id="6438480100790416671">Kontrollerar lagringsutrymme …</translation>
 <translation id="6485131920355264772">Det gick inte att hämta information om lagringsutrymme</translation>
 <translation id="6495925982925244349">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, hanteras av administratören, information</translation>
 <translation id="649877868557234318">Extraherar <ph name="FILE_NAME" /> till <ph name="FOLDER_NAME" /></translation>
@@ -893,6 +895,7 @@
 <translation id="8000066093800657092">Inget nätverk</translation>
 <translation id="8008366997883261463">Hund</translation>
 <translation id="8028993641010258682">Storlek</translation>
+<translation id="8034974485549318493">Under den första konfigurationen måste du ansluta till internet så att filerna kan synkroniseras.</translation>
 <translation id="803771048473350947">Arkiv</translation>
 <translation id="8038111231936746805">(standard)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-ljud</translation>

@@ -61,6 +61,7 @@
 <translation id="1283039547216852943">Жаю үшін түртіңіз</translation>
 <translation id="1289059016768036948">Сізден Google аккаунтыңызға кіру сұралады</translation>
 <translation id="1291207594882862231">Тарихты, cookie файлдарын, сайт деректерін, кэшті жою…</translation>
+<translation id="1293898515599432175">Құпия сөздеріңіз Chrome <ph name="CHROME_CHANNEL" /> бағдарламасына арналған Google Password Manager қызметінен жойылады. Жаңа ғана жүктеп алынған құпия сөздер файлын сақтайсыз.</translation>
 <translation id="129553762522093515">Жақында жабылған</translation>
 <translation id="1298077576058087471">Деректер трафигін 60%-ға дейін үнемдеңіз, бүгінгінің жаңалықтарын оқыңыз.</translation>
 <translation id="1303339473099049190">Ондай құпия сөзді табу мүмкін емес. Дұрыс жазылғанын тексеріп, қайта іздеп көріңіз.</translation>
@@ -406,7 +407,6 @@
 <translation id="3214996641768123781">Google аккаунтына кірген кезде, <ph name="BEGIN_LINK1" />Іздеу тарихы<ph name="END_LINK1" /> мен <ph name="BEGIN_LINK2" />басқа әрекет түрлері<ph name="END_LINK2" /> оған сақталуы мүмкін. Оларды кез келген уақытта жоя аласыз.</translation>
 <translation id="321773570071367578">Егер құпия фразаны ұмытып қалсаңыз немесе оны өзгерткіңіз келсе, <ph name="BEGIN_LINK" />синхрондауды қалпына келтіріңіз<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">Құпия сөздеріңізді синхрондау үшін жеке басыңызды растаңыз.</translation>
-<translation id="3223522355830797639">Банк жеке басыңызды растағысы келеді.</translation>
 <translation id="3227557059438308877">Google Chrome браузерін қауіпсіздік кілті ретінде пайдалану</translation>
 <translation id="3232754137068452469">Веб-қолданба</translation>
 <translation id="3234978181857588512">Құрылғыға сақтау</translation>
@@ -510,6 +510,7 @@
 <translation id="3795154175078851242">Суретті сілтемемен көшіру</translation>
 <translation id="3810838688059735925">Бейне</translation>
 <translation id="3810973564298564668">Басқару</translation>
+<translation id="381861209280417772">Құпия сөздерді жою</translation>
 <translation id="3819178904835489326">Жүктелген <ph name="NUMBER_OF_DOWNLOADS" /> файл жойылды</translation>
 <translation id="3819183753496523827">Офлайн режимдесіз. Интернет байланысын тексеріп, әрекетті қайталаңыз.</translation>
 <translation id="3830886834687455630">Құпия сөздерді тексеру үшін Google Play қызметтерін жаңартыңыз.</translation>
@@ -594,6 +595,7 @@
 <translation id="4249955472157341256">Соңғысы бойынша сұрыптау</translation>
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="4256782883801055595">Ашық кодты бағдарлама лицензиялары</translation>
+<translation id="4257230861809842349">Google Password Manager қызметінен құпия сөздерді жою керек пе?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Қандай дерек пайдаланылады:<ph name="END_BOLD" /> браузерді қолдану тарихы, осы құрылғыда Chrome көмегімен кірген сайттардың жазбасы.</translation>
 <translation id="4269820728363426813">Сілтеме мекенжайын көшіру</translation>
 <translation id="4283102315569707115">Әдепкісінше компьютерге арналған сайттар сұралсын ба?</translation>

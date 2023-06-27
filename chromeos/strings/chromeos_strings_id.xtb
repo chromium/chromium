@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">Ubah wallpaper</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
 <translation id="3606583719724308068">Latensi tinggi untuk situs HTTPS</translation>
+<translation id="3607216139080387279">Tampilkan screensaver</translation>
 <translation id="361575905210396100">Terima kasih atas masukan Anda</translation>
 <translation id="3632579075709132555">Beralih layar privasi</translation>
 <translation id="3639846061339007994">atas</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
 <translation id="3748026146096797577">Tidak Terhubung</translation>
 <translation id="3749289110408117711">Nama file</translation>
+<translation id="3766934827878963937">selama 1 jam</translation>
 <translation id="3771294271822695279">File Video</translation>
 <translation id="3784455785234192852">Kunci</translation>
 <translation id="380097101658023925">kontrol RGB</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">peredupan keyboard</translation>
 <translation id="6302401976930124515">Pengujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
 <translation id="631063167932043783">Aplikasi Jelajahi</translation>
+<translation id="6318437367327684789">selamanya</translation>
 <translation id="6319207335391420837">Update firmware di <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Nyalakan screen saver</translation>
 <translation id="6325525973963619867">Gagal</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">Simpan beberapa halaman ke satu PDF</translation>
 <translation id="9137526406337347448">Layanan Google</translation>
 <translation id="9138630967333032450">Shift kiri</translation>
+<translation id="9143347780818904997">selama <ph name="MINUTES" /> menit</translation>
 <translation id="9149391708638971077">Jalankan pengujian Memori</translation>
 <translation id="9161276708550942948">spasi</translation>
 <translation id="9173638680043580060">Kurang dari satu menit lagi</translation>

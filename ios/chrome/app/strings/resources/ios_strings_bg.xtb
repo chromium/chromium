@@ -63,6 +63,7 @@
 <translation id="1291506870746876680">Разрешенията за сайта <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> ще бъдат изключени, когато го напуснете.</translation>
 <translation id="1305822519689023679">Потвърдете, че това сте вие, така че винаги да можете да използвате паролите в профила си в Google.</translation>
 <translation id="1312721752506309252">Режимът за подобрена защита е включен</translation>
+<translation id="1316466854070752597">Преглед на всички отворени раздели</translation>
 <translation id="1321993286294231467">При запазване на изображението възникна грешка.</translation>
 <translation id="1322735045095424339">Организацията ви изисква да сърфирате в режим „инкогнито“</translation>
 <translation id="1323735185997015385">Изтриване</translation>
@@ -438,6 +439,7 @@
 <translation id="3656645960301737801">Завършете събитието и запазете</translation>
 <translation id="3661160521073045932">Налице е конфигурационен профил</translation>
 <translation id="3670030362669914947">Номер</translation>
+<translation id="368329460027487650">Не сте в профила си. Отваря опциите за вход.</translation>
 <translation id="3700134753671613714">Влезте в профила си, за да получите отметките си на всичките си устройства.</translation>
 <translation id="3709582977625132201">Означав. като непрочетено</translation>
 <translation id="371230970611282515">Предвижда и ви предупреждава за опасни събития, преди да се случат.</translation>
@@ -666,6 +668,7 @@
 <translation id="5190835502935405962">Лента на отметките</translation>
 <translation id="519530786644929958">Изтеглянето не успя и не може да бъде повторено.</translation>
 <translation id="5197255632782567636">Интернет</translation>
+<translation id="5209674813563615506">Отваряне на нов раздел</translation>
 <translation id="5211488077761630279">Да се разреши ли на <ph name="SITE_NAME" /> да използва <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Помогнете за всеобщото подобряване на сигурността в мрежата</translation>
 <translation id="5221339005270097309">Паролите се проверяват…</translation>
@@ -941,6 +944,7 @@
 <translation id="6684906340059221832">Следени цени</translation>
 <translation id="6710079714193676716">Управлява се от организацията ви. Някои функции може да не са достъпни. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="672735642903863329">Получавайте своите отметки, пароли и др. на всичките си устройства.</translation>
 <translation id="6730682669179532099">Паролите не могат да бъдат експортирани</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6748108480210050150">От</translation>
