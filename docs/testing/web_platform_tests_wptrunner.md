@@ -279,13 +279,22 @@ ran unexpectedly on [build 30 of
 `linux-wpt-content-shell-fyi-rel`](https://ci.chromium.org/ui/p/chromium/builders/try/linux-wpt-content-shell-fyi-rel/30/overview).
 Any updated test section will be annotated with `bug: crbug.com/123`.
 
-## Known issues
+## Debugging Support
 
-* There is no debugging support in `run_wpt_tests.py` today. In the future, we
-  intend to allow pausing the browser after each test, and (long-term) intend to
-  support hooking up `gdb` to test runs.
-* There is not yet support for non-Linux platforms. We would love for you to try
-  it on other operating systems and file bugs against us if it doesn't work!
+Passing the `--no-headless` flag to `run_wpt_tests.py` will pause execution
+after running each test headfully.
+You can interact with the paused test page afterwards, including with DevTools:
+
+![wptrunner paused](images/web-tests/wptrunner-paused.png)
+
+Closing the tab or window will unpause wptrunner and run the next test.
+
+In the future, we intend to support hooking up [text-based debuggers] like `rr`
+to test runs.
+
+[text-based debuggers]: https://crbug.com/1440021
+
+## Known issues
 
 Please [file bugs and feature requests](https://crbug.com/new) against
 `Blink>Infra`, tagging the title with `[wptrunner]`.

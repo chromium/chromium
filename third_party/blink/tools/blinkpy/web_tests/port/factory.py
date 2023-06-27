@@ -210,16 +210,17 @@ def add_configuration_options_group(parser: argparse.ArgumentParser,
                        const='Release',
                        dest='configuration',
                        help='Set the configuration to Release')
-    group.add_argument('--no-xvfb',
-                       action='store_false',
-                       dest='use_xvfb',
-                       help='Do not run tests with Xvfb')
     group.add_argument('--no-manifest-update',
                        dest='manifest_update',
                        action='store_false',
                        help=('Do not update the web-platform-tests '
                              'MANIFEST.json unless it does not exist.'))
-    if not rwt:
+    if rwt:
+        group.add_argument('--no-xvfb',
+                           action='store_false',
+                           dest='use_xvfb',
+                           help='Do not run tests with Xvfb')
+    else:
         group.add_argument(
             '-p',
             '--product',
@@ -227,10 +228,12 @@ def add_configuration_options_group(parser: argparse.ArgumentParser,
             choices=(product_choices or []),
             metavar='PRODUCT',
             help='Product (browser or browser component) to test.')
-        group.add_argument('--no-headless',
-                           action='store_false',
-                           dest='headless',
-                           help='Do not run the browser in headless mode.')
+        group.add_argument(
+            '--no-headless',
+            action='store_false',
+            dest='headless',
+            help=('Do not run the browser headlessly; pause after each test '
+                  'until the window is closed. On Linux, do not start Xvfb.'))
         group.add_argument('--webdriver-binary',
                            type=str,
                            help='Alternate path of the webdriver binary.')

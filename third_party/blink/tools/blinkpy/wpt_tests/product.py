@@ -65,10 +65,13 @@ class Product:
 
     def product_specific_options(self):
         """Product-specific wptrunner parameters needed to run tests."""
-        return {
-            'processes': (self._options.child_processes
-                          or self._port.default_child_processes()),
-        }
+        processes = self._options.child_processes
+        if not processes:
+            if self._options.headless:
+                processes = self._port.default_child_processes()
+            else:
+                processes = 1
+        return {'processes': processes}
 
     def additional_webdriver_args(self):
         """Additional webdriver parameters for the product"""

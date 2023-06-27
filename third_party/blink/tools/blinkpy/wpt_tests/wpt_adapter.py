@@ -183,7 +183,7 @@ class WPTAdapter:
         self._set_up_runner_output_options(runner_options)
         self._set_up_runner_sharding_options(runner_options)
         self._set_up_runner_config_options(runner_options)
-        # self._set_up_runner_debugging_options()
+        self._set_up_runner_debugging_options(runner_options)
         self._set_up_runner_tests(runner_options)
 
         for name, value in self.product.product_specific_options().items():
@@ -311,14 +311,16 @@ class WPTAdapter:
         # browser at Wptrunner side.
         runner_options.rerun = self.options.repeat_each
 
-    # TODO: Wptrunner's pause_after_test feature could be useful. Need to figure out
-    # the correct CLI for that.
-    # def _set_up_runner_debugging_options(self):
-    #     self.port.set_option_default('use_xvfb', self.port.get_option('headless'))
-    #     if not options.headless and options.processes is None:
-    #         logger.info('Not headless; default to 1 worker to avoid '
-    #                     'opening too many windows')
-    #         options.processes = 1
+    def _set_up_runner_debugging_options(self, runner_options):
+        self.port.set_option_default('use_xvfb',
+                                     self.port.get_option('headless'))
+        if not self.options.headless:
+            logger.info('Not headless; default to 1 worker to avoid '
+                        'opening too many windows')
+            runner_options.headless = False
+            # Force `--pause-after-test`, since it doesn't make sense to run
+            # tests headfully without giving a chance for interaction.
+            runner_options.pause_after_test = True
 
     def _set_up_runner_tests(self, runner_options):
         if self.options.gtest_filter:
@@ -621,6 +623,10 @@ def parse_arguments(argv):
     params = vars(parser.parse_args(argv))
     args = params.pop('tests')
     options = optparse.Values(params)
+    # Directly tie Xvfb usage to headless mode. Xvfb can supercede a real X
+    # server and therefore should never be started in `--no-headless` mode.
+    # Conversely, the default headless mode should always start Xvfb.
+    options.use_xvfb = options.headless
     return (options, args)
 
 
