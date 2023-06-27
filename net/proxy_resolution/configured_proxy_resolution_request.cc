@@ -18,6 +18,7 @@ namespace net {
 ConfiguredProxyResolutionRequest::ConfiguredProxyResolutionRequest(
     ConfiguredProxyResolutionService* service,
     const GURL& url,
+    const GURL& top_frame_url,
     const std::string& method,
     const NetworkAnonymizationKey& network_anonymization_key,
     ProxyInfo* results,
@@ -27,6 +28,7 @@ ConfiguredProxyResolutionRequest::ConfiguredProxyResolutionRequest(
       user_callback_(std::move(user_callback)),
       results_(results),
       url_(url),
+      top_frame_url_(top_frame_url),
       method_(method),
       network_anonymization_key_(network_anonymization_key),
       net_log_(net_log),
@@ -91,8 +93,8 @@ int ConfiguredProxyResolutionRequest::QueryDidComplete(int result_code) {
   resolve_job_.reset();
 
   // Note that DidFinishResolvingProxy might modify |results_|.
-  int rv = service_->DidFinishResolvingProxy(url_, method_, results_,
-                                             result_code, net_log_);
+  int rv = service_->DidFinishResolvingProxy(url_, top_frame_url_, method_,
+                                             results_, result_code, net_log_);
 
   // Make a note in the results which configuration was in use at the
   // time of the resolve.

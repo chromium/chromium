@@ -10,6 +10,7 @@
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "services/network/network_service_proxy_allow_list.h"
 #include "services/network/url_loader.h"
 #include "url/url_constants.h"
 
@@ -19,6 +20,7 @@ namespace {
 bool ApplyProxyConfigToProxyInfo(const net::ProxyConfig::ProxyRules& rules,
                                  const net::ProxyRetryInfoMap& proxy_retry_info,
                                  const GURL& url,
+                                 const GURL& top_frame_url,
                                  net::ProxyInfo* proxy_info) {
   DCHECK(proxy_info);
   if (rules.empty())
@@ -99,9 +101,11 @@ NetworkServiceProxyDelegate::NetworkServiceProxyDelegate(
     mojom::CustomProxyConfigPtr initial_config,
     mojo::PendingReceiver<mojom::CustomProxyConfigClient>
         config_client_receiver,
-    mojo::PendingRemote<mojom::CustomProxyConnectionObserver> observer_remote)
+    mojo::PendingRemote<mojom::CustomProxyConnectionObserver> observer_remote,
+    NetworkServiceProxyAllowList* network_service_proxy_allow_list)
     : proxy_config_(std::move(initial_config)),
-      receiver_(this, std::move(config_client_receiver)) {
+      receiver_(this, std::move(config_client_receiver)),
+      network_service_proxy_allow_list_(network_service_proxy_allow_list) {
   // Make sure there is always a valid proxy config so we don't need to null
   // check it.
   if (!proxy_config_) {
@@ -118,10 +122,11 @@ NetworkServiceProxyDelegate::NetworkServiceProxyDelegate(
   }
 }
 
-NetworkServiceProxyDelegate::~NetworkServiceProxyDelegate() {}
+NetworkServiceProxyDelegate::~NetworkServiceProxyDelegate() = default;
 
 void NetworkServiceProxyDelegate::OnResolveProxy(
     const GURL& url,
+    const GURL& top_frame_url,
     const std::string& method,
     const net::ProxyRetryInfoMap& proxy_retry_info,
     net::ProxyInfo* result) {
@@ -129,9 +134,14 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
     return;
   }
 
+  if (proxy_config_->rules.restrict_to_network_service_proxy_allow_list &&
+      !network_service_proxy_allow_list_->Matches(url, top_frame_url)) {
+    return;
+  }
+
   net::ProxyInfo proxy_info;
   if (ApplyProxyConfigToProxyInfo(proxy_config_->rules, proxy_retry_info, url,
-                                  &proxy_info)) {
+                                  top_frame_url, &proxy_info)) {
     DCHECK(!proxy_info.is_empty() && !proxy_info.is_direct());
     if (proxy_config_->should_replace_direct &&
         !proxy_config_->should_override_existing_config) {

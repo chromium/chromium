@@ -105,6 +105,8 @@ bool StructTraits<network::mojom::ProxyRulesDataView,
     Read(network::mojom::ProxyRulesDataView data,
          net::ProxyConfig::ProxyRules* out_proxy_rules) {
   out_proxy_rules->reverse_bypass = data.reverse_bypass();
+  out_proxy_rules->restrict_to_network_service_proxy_allow_list =
+      data.restrict_to_network_service_proxy_allow_list();
   return data.ReadBypassRules(&out_proxy_rules->bypass_rules) &&
          data.ReadType(&out_proxy_rules->type) &&
          data.ReadSingleProxies(&out_proxy_rules->single_proxies) &&

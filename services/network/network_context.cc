@@ -2330,7 +2330,8 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         std::make_unique<NetworkServiceProxyDelegate>(
             std::move(params_->initial_custom_proxy_config),
             std::move(params_->custom_proxy_config_client_receiver),
-            std::move(params_->custom_proxy_connection_observer_remote));
+            std::move(params_->custom_proxy_connection_observer_remote),
+            network_service_->network_service_proxy_allow_list());
     proxy_delegate_ = proxy_delegate.get();
     builder.set_proxy_delegate(std::move(proxy_delegate));
   }

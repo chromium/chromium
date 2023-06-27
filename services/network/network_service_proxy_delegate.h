@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/proxy_delegate.h"
+#include "services/network/network_service_proxy_allow_list.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace net {
@@ -32,8 +33,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
       mojom::CustomProxyConfigPtr initial_config,
       mojo::PendingReceiver<mojom::CustomProxyConfigClient>
           config_client_receiver,
-      mojo::PendingRemote<mojom::CustomProxyConnectionObserver>
-          observer_remote);
+      mojo::PendingRemote<mojom::CustomProxyConnectionObserver> observer_remote,
+      NetworkServiceProxyAllowList* network_service_proxy_allow_list);
 
   NetworkServiceProxyDelegate(const NetworkServiceProxyDelegate&) = delete;
   NetworkServiceProxyDelegate& operator=(const NetworkServiceProxyDelegate&) =
@@ -48,6 +49,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
 
   // net::ProxyDelegate implementation:
   void OnResolveProxy(const GURL& url,
+                      const GURL& top_frame_url,
                       const std::string& method,
                       const net::ProxyRetryInfoMap& proxy_retry_info,
                       net::ProxyInfo* result) override;
@@ -90,6 +92,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   mojom::CustomProxyConfigPtr proxy_config_;
   mojo::Receiver<mojom::CustomProxyConfigClient> receiver_;
   mojo::Remote<mojom::CustomProxyConnectionObserver> observer_;
+  raw_ptr<NetworkServiceProxyAllowList> network_service_proxy_allow_list_;
 
   raw_ptr<net::ProxyResolutionService, DanglingUntriaged>
       proxy_resolution_service_ = nullptr;

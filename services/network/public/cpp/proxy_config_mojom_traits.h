@@ -64,6 +64,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
   static bool reverse_bypass(const net::ProxyConfig::ProxyRules& r) {
     return r.reverse_bypass;
   }
+  static bool restrict_to_network_service_proxy_allow_list(
+      const net::ProxyConfig::ProxyRules& r) {
+    return r.restrict_to_network_service_proxy_allow_list;
+  }
   static net::ProxyConfig::ProxyRules::Type type(
       const net::ProxyConfig::ProxyRules& r) {
     return r.type;

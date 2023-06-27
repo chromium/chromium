@@ -23,6 +23,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -42,6 +43,7 @@
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_change_manager.h"
 #include "services/network/network_quality_estimator_manager.h"
+#include "services/network/network_service_proxy_allow_list.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/key_pinning.mojom.h"
@@ -209,6 +211,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void UpdateKeyPinsList(mojom::PinListPtr pin_list,
                          base::Time update_time) override;
 
+  void UpdateMaskedDomainList(const std::string& raw_mdl) override;
+
 #if BUILDFLAG(IS_ANDROID)
   void DumpWithoutCrashing(base::Time dump_request_time) override;
 #endif
@@ -249,6 +253,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   FirstPartySetsManager* first_party_sets_manager() const {
     return first_party_sets_manager_.get();
+  }
+
+  NetworkServiceProxyAllowList* network_service_proxy_allow_list() const {
+    return network_service_proxy_allow_list_.get();
   }
 
   void set_host_resolver_factory_for_testing(
@@ -394,6 +402,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // TODO(mmenke): Once the NetworkService always owns NetworkContexts, merge
   // this with |owned_network_contexts_|.
   std::set<NetworkContext*> network_contexts_;
+
+  std::unique_ptr<NetworkServiceProxyAllowList>
+      network_service_proxy_allow_list_;
 
   // A per-process_id map of origins that are white-listed to allow
   // them to request raw headers for resources they request.

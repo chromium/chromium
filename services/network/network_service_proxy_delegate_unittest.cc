@@ -17,6 +17,7 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
+#include "services/network/network_service_proxy_allow_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -75,7 +76,7 @@ class TestCustomProxyConnectionObserver
 
 class NetworkServiceProxyDelegateTest : public testing::Test {
  public:
-  NetworkServiceProxyDelegateTest() {}
+  NetworkServiceProxyDelegateTest() = default;
 
   void SetUp() override {
     context_ = net::CreateTestURLRequestContextBuilder()->Build();
@@ -84,6 +85,12 @@ class NetworkServiceProxyDelegateTest : public testing::Test {
  protected:
   std::unique_ptr<NetworkServiceProxyDelegate> CreateDelegate(
       mojom::CustomProxyConfigPtr config) {
+    return CreateDelegate(std::move(config), nullptr);
+  }
+
+  std::unique_ptr<NetworkServiceProxyDelegate> CreateDelegate(
+      mojom::CustomProxyConfigPtr config,
+      NetworkServiceProxyAllowList* network_service_proxy_allow_list) {
     std::unique_ptr<TestCustomProxyConnectionObserver> observer =
         std::make_unique<TestCustomProxyConnectionObserver>();
     observer_ = observer.get();
@@ -94,7 +101,8 @@ class NetworkServiceProxyDelegateTest : public testing::Test {
 
     auto delegate = std::make_unique<NetworkServiceProxyDelegate>(
         network::mojom::CustomProxyConfig::New(),
-        client_.BindNewPipeAndPassReceiver(), std::move(observer_remote));
+        client_.BindNewPipeAndPassReceiver(), std::move(observer_remote),
+        network_service_proxy_allow_list);
     SetConfig(std::move(config));
     return delegate;
   }
@@ -125,7 +133,8 @@ class NetworkServiceProxyDelegateTest : public testing::Test {
 TEST_F(NetworkServiceProxyDelegateTest, NullConfigDoesNotCrash) {
   mojo::Remote<mojom::CustomProxyConfigClient> client;
   auto delegate = std::make_unique<NetworkServiceProxyDelegate>(
-      nullptr, client.BindNewPipeAndPassReceiver(), mojo::NullRemote());
+      nullptr, client.BindNewPipeAndPassReceiver(), mojo::NullRemote(),
+      nullptr);
 
   net::HttpRequestHeaders headers;
   auto request = CreateRequest(GURL(kHttpUrl));
@@ -151,8 +160,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxySuccessHttpProxy) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), "GET", net::ProxyRetryInfoMap(),
-                           &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
+                           net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -167,8 +176,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxySuccessHttpsUrl) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpsUrl), "GET", net::ProxyRetryInfoMap(),
-                           &result);
+  delegate->OnResolveProxy(GURL(kHttpsUrl), GURL(), "GET",
+                           net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -183,8 +192,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxySuccessWebSocketUrl) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kWebsocketUrl), "GET", net::ProxyRetryInfoMap(),
-                           &result);
+  delegate->OnResolveProxy(GURL(kWebsocketUrl), GURL(), "GET",
+                           net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -199,8 +208,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyNoRuleForHttpsUrl) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpsUrl), "GET", net::ProxyRetryInfoMap(),
-                           &result);
+  delegate->OnResolveProxy(GURL(kHttpsUrl), GURL(), "GET",
+                           net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
 }
@@ -212,8 +221,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyLocalhost) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kLocalhost), "GET", net::ProxyRetryInfoMap(),
-                           &result);
+  delegate->OnResolveProxy(GURL(kLocalhost), GURL(), "GET",
+                           net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
 }
@@ -223,8 +232,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyEmptyConfig) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), "GET", net::ProxyRetryInfoMap(),
-                           &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
+                           net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
 }
@@ -236,8 +245,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyNonIdempotentMethod) {
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), "POST", net::ProxyRetryInfoMap(),
-                           &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "POST",
+                           net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
 }
@@ -251,8 +260,8 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), "POST", net::ProxyRetryInfoMap(),
-                           &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "POST",
+                           net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -270,8 +279,8 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kWebsocketUrl), "GET", net::ProxyRetryInfoMap(),
-                           &result);
+  delegate->OnResolveProxy(GURL(kWebsocketUrl), GURL(), "GET",
+                           net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
 }
@@ -284,8 +293,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDoesNotOverrideExisting) {
 
   net::ProxyInfo result;
   result.UsePacString("PROXY bar");
-  delegate->OnResolveProxy(GURL(kHttpUrl), "GET", net::ProxyRetryInfoMap(),
-                           &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
+                           net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -301,8 +310,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyOverridesExisting) {
 
   net::ProxyInfo result;
   result.UsePacString("PROXY bar");
-  delegate->OnResolveProxy(GURL(kHttpUrl), "GET", net::ProxyRetryInfoMap(),
-                           &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
+                           net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -318,8 +327,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyMergesDirect) {
 
   net::ProxyInfo result;
   result.UsePacString("PROXY bar; DIRECT");
-  delegate->OnResolveProxy(GURL(kHttpUrl), "GET", net::ProxyRetryInfoMap(),
-                           &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
+                           net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -333,8 +342,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyMergesDirect) {
   // the config rules specify http
   net::ProxyInfo result_https;
   result_https.UsePacString("PROXY bar; DIRECT");
-  delegate->OnResolveProxy(GURL(kHttpsUrl), "GET", net::ProxyRetryInfoMap(),
-                           &result_https);
+  delegate->OnResolveProxy(GURL(kHttpsUrl), GURL(), "GET",
+                           net::ProxyRetryInfoMap(), &result_https);
 
   net::ProxyList expected_proxy_list_https;
   expected_proxy_list_https.AddProxyServer(
@@ -354,8 +363,8 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   net::ProxyInfo result;
   result.UsePacString("PROXY bar; DIRECT");
-  delegate->OnResolveProxy(GURL(kHttpUrl), "GET", net::ProxyRetryInfoMap(),
-                           &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
+                           net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -376,8 +385,8 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDoesNotMergeDirect) {
 
   net::ProxyInfo result;
   result.UsePacString("PROXY bar; DIRECT");
-  delegate->OnResolveProxy(GURL(kHttpUrl), "GET", net::ProxyRetryInfoMap(),
-                           &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
+                           net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -396,8 +405,8 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   net::ProxyInfo result;
   result.UsePacString("PROXY bar; PROXY baz");
-  delegate->OnResolveProxy(GURL(kHttpUrl), "GET", net::ProxyRetryInfoMap(),
-                           &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
+                           net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -417,8 +426,8 @@ TEST_F(NetworkServiceProxyDelegateTest,
 
   net::ProxyInfo result;
   result.UsePacString("PROXY bar; DIRECT");
-  delegate->OnResolveProxy(GURL(kHttpsUrl), "GET", net::ProxyRetryInfoMap(),
-                           &result);
+  delegate->OnResolveProxy(GURL(kHttpsUrl), GURL(), "GET",
+                           net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -437,7 +446,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {
   net::ProxyRetryInfo& info = retry_map["foo:80"];
   info.try_while_bad = false;
   info.bad_until = base::TimeTicks::Now() + base::Days(2);
-  delegate->OnResolveProxy(GURL(kHttpUrl), "GET", retry_map, &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET", retry_map, &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
@@ -456,7 +465,76 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyAllProxiesBad) {
   net::ProxyRetryInfo& info = retry_map["foo:80"];
   info.try_while_bad = false;
   info.bad_until = base::TimeTicks::Now() + base::Days(2);
-  delegate->OnResolveProxy(GURL(kHttpUrl), "GET", retry_map, &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET", retry_map, &result);
+
+  EXPECT_TRUE(result.is_direct());
+}
+
+TEST_F(NetworkServiceProxyDelegateTest,
+       OnResolveProxyNetworkServiceProxyAllowListMatch) {
+  auto config = mojom::CustomProxyConfig::New();
+  config->rules.ParseFromString("http=foo");
+  config->rules.restrict_to_network_service_proxy_allow_list = true;
+
+  std::map<std::string, std::set<std::string>> first_party_map;
+  first_party_map["example.com"] = {};
+  auto network_service_proxy_allow_list =
+      NetworkServiceProxyAllowList::CreateForTesting(first_party_map);
+  auto delegate =
+      CreateDelegate(std::move(config), &network_service_proxy_allow_list);
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kHttpUrl), GURL("http://top.com"), "GET",
+                           net::ProxyRetryInfoMap(), &result);
+
+  net::ProxyList expected_proxy_list;
+  expected_proxy_list.AddProxyServer(
+      net::PacResultElementToProxyServer("PROXY foo"));
+  EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
+}
+
+TEST_F(
+    NetworkServiceProxyDelegateTest,
+    OnResolveProxyNetworkServiceProxyAllowListDoesNotMatch_FirstPartyException) {
+  auto config = mojom::CustomProxyConfig::New();
+  config->rules.ParseFromString("http=foo");
+  config->rules.restrict_to_network_service_proxy_allow_list = true;
+
+  std::map<std::string, std::set<std::string>> first_party_map;
+  first_party_map["example.com"] = {"top.com"};
+  auto network_service_proxy_allow_list =
+      NetworkServiceProxyAllowList::CreateForTesting(first_party_map);
+
+  auto delegate =
+      CreateDelegate(std::move(config), &network_service_proxy_allow_list);
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kHttpUrl), GURL("http://top.com"), "GET",
+                           net::ProxyRetryInfoMap(), &result);
+
+  EXPECT_TRUE(result.is_direct());
+}
+
+TEST_F(
+    NetworkServiceProxyDelegateTest,
+    OnResolveProxyNetworkServiceProxyAllowListDoesNotMatch_ResourceNotAllowed) {
+  auto config = mojom::CustomProxyConfig::New();
+  config->rules.ParseFromString("http=foo");
+  config->rules.restrict_to_network_service_proxy_allow_list = true;
+
+  std::map<std::string, std::set<std::string>> first_party_map;
+  auto network_service_proxy_allow_list =
+      NetworkServiceProxyAllowList::CreateForTesting(first_party_map);
+
+  auto delegate =
+      CreateDelegate(std::move(config), &network_service_proxy_allow_list);
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kHttpUrl), GURL("http://top.com"), "GET",
+                           net::ProxyRetryInfoMap(), &result);
 
   EXPECT_TRUE(result.is_direct());
 }
@@ -467,12 +545,12 @@ TEST_F(NetworkServiceProxyDelegateTest, InitialConfigUsedForProxy) {
   mojo::Remote<mojom::CustomProxyConfigClient> client;
   auto delegate = std::make_unique<NetworkServiceProxyDelegate>(
       std::move(config), client.BindNewPipeAndPassReceiver(),
-      mojo::NullRemote());
+      mojo::NullRemote(), nullptr);
 
   net::ProxyInfo result;
   result.UseDirect();
-  delegate->OnResolveProxy(GURL(kHttpUrl), "GET", net::ProxyRetryInfoMap(),
-                           &result);
+  delegate->OnResolveProxy(GURL(kHttpUrl), GURL(), "GET",
+                           net::ProxyRetryInfoMap(), &result);
 
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(

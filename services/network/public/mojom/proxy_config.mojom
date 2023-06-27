@@ -27,6 +27,7 @@ enum ProxyRulesType {
 struct ProxyRules {
   ProxyBypassRules bypass_rules;
   bool reverse_bypass;
+  bool restrict_to_network_service_proxy_allow_list;
   ProxyRulesType type;
   ProxyList single_proxies;
   ProxyList proxies_for_http;

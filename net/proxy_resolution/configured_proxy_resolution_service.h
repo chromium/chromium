@@ -307,6 +307,7 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // asynchronously). Handles logging the result, and cleaning out
   // bad entries from the results list.
   int DidFinishResolvingProxy(const GURL& url,
+                              const GURL& top_frame_url,
                               const std::string& method,
                               ProxyInfo* result,
                               int result_code,

@@ -7,6 +7,7 @@ module network.mojom;
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "sandbox/policy/mojom/context.mojom";
@@ -360,6 +361,15 @@ interface NetworkService {
   // Sets the list of ports which will be permitted even if they normally would
   // be restricted.
   SetExplicitlyAllowedPorts(array<uint16> ports);
+
+  // Updates the Masked Domain List data used to generate custom proxy configs
+  // for the Privacy Proxy. Any existing NetworkContexts that are using the
+  // custom proxy configs will have their configs updated.
+  //
+  // |raw_mdl| contains the byte string representation of the MaskedDomainList
+  // proto. See the proto definition at
+  // //components/privacy_sandbox/masked_domain_list/masked_domain_list.proto.
+  UpdateMaskedDomainList(mojo_base.mojom.ByteString raw_mdl);
 
   // Parses response headers and returns a structured version to the caller.
   // This call originates from the browser process. Used for navigations when

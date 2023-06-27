@@ -25,6 +25,7 @@
 #include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/mock_network_change_notifier.h"
@@ -97,7 +98,6 @@ mojom::NetworkContextParamsPtr CreateContextParams() {
       FakeTestCertVerifierParamsFactory::GetCertVerifierParams();
   return params;
 }
-
 class NetworkServiceTest : public testing::Test {
  public:
   explicit NetworkServiceTest(
@@ -106,7 +106,7 @@ class NetworkServiceTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
                           time_source),
         service_(NetworkService::CreateForTesting()) {}
-  ~NetworkServiceTest() override {}
+  ~NetworkServiceTest() override = default;
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
@@ -151,6 +151,74 @@ TEST_F(NetworkServiceTest, CreateContextWithoutChannelID) {
   mojo::Remote<mojom::NetworkContext> network_context;
   service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
                                   std::move(params));
+  network_context.reset();
+  // Make sure the NetworkContext is destroyed.
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(NetworkServiceTest, CreateContextWithMaskedDomainListProxyConfig) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+
+  masked_domain_list::MaskedDomainList mdl;
+  auto* resourceOwner = mdl.add_resource_owners();
+  resourceOwner->set_owner_name("foo");
+  resourceOwner->add_owned_resources()->set_domain("example.com");
+  service()->UpdateMaskedDomainList(mdl.SerializeAsString());
+  task_environment()->RunUntilIdle();
+
+  mojom::NetworkContextParamsPtr params = CreateContextParams();
+  mojo::Remote<mojom::NetworkContext> network_context;
+  service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
+                                  std::move(params));
+
+  // TODO(aakallam): verify that the allow list is used
+
+  network_context.reset();
+  // Make sure the NetworkContext is destroyed.
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(NetworkServiceTest,
+       CreateContextWithCustomProxyConfig_MdlConfigIsNotUsed) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+
+  masked_domain_list::MaskedDomainList mdl;
+  auto* resourceOwner = mdl.add_resource_owners();
+  resourceOwner->set_owner_name("foo");
+  resourceOwner->add_owned_resources()->set_domain("example.com");
+  service()->UpdateMaskedDomainList(mdl.SerializeAsString());
+  task_environment()->RunUntilIdle();
+
+  mojom::NetworkContextParamsPtr params = CreateContextParams();
+  params->initial_custom_proxy_config =
+      network::mojom::CustomProxyConfig::New();
+  mojo::Remote<mojom::NetworkContext> network_context;
+  service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
+                                  std::move(params));
+
+  // TODO(aakallam): verify that the allow list isn't used
+
+  network_context.reset();
+  // Make sure the NetworkContext is destroyed.
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(NetworkServiceTest, CreateContextWithoutMaskedDomainListData) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+
+  mojom::NetworkContextParamsPtr params = CreateContextParams();
+  mojo::Remote<mojom::NetworkContext> network_context;
+  service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
+                                  std::move(params));
+
+  // TODO(aakallam): verify that the allow list isn't used
+
   network_context.reset();
   // Make sure the NetworkContext is destroyed.
   base::RunLoop().RunUntilIdle();
@@ -980,6 +1048,23 @@ TEST_F(NetworkServiceTest, DisableCTEnforcement) {
 }
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
+TEST_F(NetworkServiceTest, SetMaskedDomainList) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
+
+  EXPECT_FALSE(service()->network_service_proxy_allow_list()->IsEnabled());
+
+  masked_domain_list::MaskedDomainList mdl;
+  auto* resourceOwner = mdl.add_resource_owners();
+  resourceOwner->set_owner_name("foo");
+  resourceOwner->add_owned_resources()->set_domain("example.com");
+
+  service()->UpdateMaskedDomainList(mdl.SerializeAsString());
+
+  EXPECT_TRUE(service()->network_service_proxy_allow_list()->IsEnabled());
+}
+
 class NetworkServiceTestWithService : public testing::Test {
  public:
   NetworkServiceTestWithService()
@@ -989,7 +1074,7 @@ class NetworkServiceTestWithService : public testing::Test {
   NetworkServiceTestWithService& operator=(
       const NetworkServiceTestWithService&) = delete;
 
-  ~NetworkServiceTestWithService() override {}
+  ~NetworkServiceTestWithService() override = default;
 
   void SetUp() override {
     test_server_.AddDefaultHandlers(base::FilePath(kServicesTestData));
@@ -1255,7 +1340,7 @@ class TestNetworkChangeManagerClient
   TestNetworkChangeManagerClient& operator=(
       const TestNetworkChangeManagerClient&) = delete;
 
-  ~TestNetworkChangeManagerClient() override {}
+  ~TestNetworkChangeManagerClient() override = default;
 
   // NetworkChangeManagerClient implementation:
   void OnInitialConnectionType(mojom::ConnectionType type) override {
@@ -1290,7 +1375,7 @@ class NetworkChangeTest : public testing::Test {
             net::NetworkChangeNotifier::CreateMockIfNeeded()),
         service_(NetworkService::CreateForTesting()) {}
 
-  ~NetworkChangeTest() override {}
+  ~NetworkChangeTest() override = default;
 
   NetworkService* service() const { return service_.get(); }
 
@@ -1329,7 +1414,7 @@ class NetworkServiceNetworkChangeTest : public testing::Test {
   NetworkServiceNetworkChangeTest& operator=(
       const NetworkServiceNetworkChangeTest&) = delete;
 
-  ~NetworkServiceNetworkChangeTest() override {}
+  ~NetworkServiceNetworkChangeTest() override = default;
 
   mojom::NetworkService* service() { return network_service_.get(); }
 

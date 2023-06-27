@@ -127,9 +127,6 @@ enum class NetworkSandboxState {
   kMaxValue = kDisabledBecauseOfFailedLaunch
 };
 
-// The temporary header name expected by the envoy proxy configuration.
-const char kIPAnonymizationProxyPassword[] = "password";
-
 // The global instance of the SystemNetworkContextManager.
 SystemNetworkContextManager* g_system_network_context_manager = nullptr;
 
@@ -776,48 +773,6 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
 
   if (IsCertificateTransparencyEnabled()) {
     network_context_params->enforce_chrome_ct_policy = true;
-  }
-
-  // If a custom proxy for IP protection is specified by either command line
-  // switch or Finch experiment flag, set the proxy rules
-  if (command_line.HasSwitch(network::switches::kIPAnonymizationProxyServer) ||
-      base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy)) {
-    auto proxy_config = network::mojom::CustomProxyConfig::New();
-    proxy_config->rules.type =
-        net::ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
-
-    // Command line input takes precedence over flag configuration
-    std::string ip_protection_proxy_server =
-        command_line.HasSwitch(network::switches::kIPAnonymizationProxyServer)
-            ? command_line.GetSwitchValueASCII(
-                  network::switches::kIPAnonymizationProxyServer)
-            : net::features::kIpPrivacyProxyServer.Get();
-
-    proxy_config->rules.ParseFromString(ip_protection_proxy_server);
-
-    // Get allowlist hosts, command line input takes precedence over flag
-    // configuration
-    std::string ip_protection_proxy_allow_list =
-        command_line.HasSwitch(network::switches::kIPAnonymizationProxyServer)
-            ? command_line.GetSwitchValueASCII(
-                  network::switches::kIPAnonymizationProxyAllowList)
-            : net::features::kIpPrivacyProxyAllowlist.Get();
-
-    proxy_config->rules.reverse_bypass = true;
-    proxy_config->rules.bypass_rules.ParseFromString(
-        ip_protection_proxy_allow_list);
-
-    proxy_config->should_replace_direct = true;
-    proxy_config->should_override_existing_config = false;
-    proxy_config->allow_non_idempotent_methods = true;
-    proxy_config->connect_tunnel_headers.SetHeader(
-        kIPAnonymizationProxyPassword,
-        command_line.GetSwitchValueASCII(
-            network::switches::kIPAnonymizationProxyPassword));
-
-    // Set initial custom proxy configuration
-    network_context_params->initial_custom_proxy_config =
-        std::move(proxy_config);
   }
 }
 
