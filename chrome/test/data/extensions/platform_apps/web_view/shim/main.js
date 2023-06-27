@@ -2342,7 +2342,6 @@ function testReloadAfterTerminate() {
 window.removeWebviewOnExitDoCrash = null;
 
 function testRemoveWebviewOnExit() {
-  var triggerNavUrl = 'data:text/html,trigger navigation';
   var webview = document.createElement('webview');
 
   webview.addEventListener('loadstop', function(e) {

@@ -783,9 +783,6 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestRemoveWebviewOnExit) {
   // Launch the app and wait until it's ready to load a test.
   LaunchApp("web_view/apitest");
 
-  GURL::Replacements replace_host;
-  replace_host.SetHostStr("localhost");
-
   // Run the test and wait until the guest is available and has finished
   // loading.
   ExtensionTestMessageListener guest_loaded_listener("guest-loaded");
