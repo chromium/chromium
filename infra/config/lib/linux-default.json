@@ -487,6 +487,7 @@
     "android-fieldtrial-rel": "Ubuntu-22.04",
     "android-inverse-fieldtrials-pie-x86-fyi-rel": "Ubuntu-22.04",
     "android-nougat-x86-rel": "Ubuntu-22.04",
+    "android-nougat-x86-rel-compilator": "Ubuntu-22.04",
     "android-oreo-arm64-dbg": "Ubuntu-22.04",
     "android-perfetto-rel": "Ubuntu-22.04",
     "android-pie-arm64-dbg": "Ubuntu-22.04",
