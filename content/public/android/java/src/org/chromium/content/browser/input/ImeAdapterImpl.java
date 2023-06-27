@@ -269,7 +269,8 @@ public class ImeAdapterImpl
             mWebContents.getStylusWritingHandler().updateEditorInfo(outAttrs);
         }
 
-        return StylusGestureHandler.maybeProxyInputConnection(inputConnection, this::handleGesture);
+        return StylusGestureHandler.maybeProxyInputConnection(
+                inputConnection, this::handleGesture, outAttrs);
     }
 
     private void handleGesture(OngoingGesture request) {

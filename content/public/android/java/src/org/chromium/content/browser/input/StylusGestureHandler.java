@@ -6,6 +6,7 @@ package org.chromium.content.browser.input;
 
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
 import androidx.annotation.IntDef;
@@ -31,6 +32,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.function.IntConsumer;
 
@@ -48,6 +51,8 @@ public class StylusGestureHandler implements InvocationHandler {
     static final int GRANULARITY_CHARACTER = 2;
 
     private static final String TAG = "StylusGestureHandler";
+    // Package name of the classes we're reflecting.
+    private static final String PACKAGE_NAME = "android.view.inputmethod.";
 
     // Should be kept in sync with StylusHandwritingGesture in tools/metrics/histograms/enums.xml.
     // These values are persisted to logs. Entries should not be renumbered and
@@ -89,7 +94,8 @@ public class StylusGestureHandler implements InvocationHandler {
      */
     @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     public static @Nullable InputConnection maybeProxyInputConnection(
-            @Nullable InputConnection inputConnection, Callback<OngoingGesture> onGestureCallback) {
+            @Nullable InputConnection inputConnection, Callback<OngoingGesture> onGestureCallback,
+            EditorInfo outAttrs) {
         if (inputConnection == null || !BuildCompat.isAtLeastU()
                 || !ContentFeatureMap.isEnabled(
                         org.chromium.blink_public.common.BlinkFeatures.STYLUS_RICH_GESTURES)) {
@@ -99,7 +105,7 @@ public class StylusGestureHandler implements InvocationHandler {
         InputConnection proxy = (InputConnection) Proxy.newProxyInstance(
                 InputConnection.class.getClassLoader(), new Class<?>[] {InputConnection.class},
                 new StylusGestureHandler(inputConnection, onGestureCallback));
-
+        reportSupportedGestures(outAttrs);
         return proxy;
     }
 
@@ -126,6 +132,36 @@ public class StylusGestureHandler implements InvocationHandler {
         return null;
     }
 
+    private static void reportSupportedGestures(EditorInfo outAttrs) {
+        try {
+            // Add the supported gestures to EditorInfo
+            Class gestureClass = Class.forName(PACKAGE_NAME + "HandwritingGesture");
+            // Create a new ArrayList using reflection to avoid specifying type.
+            Object gestures = ArrayList.class.newInstance();
+            String[] supportedGestures = {"SelectGesture", "InsertGesture", "DeleteGesture",
+                    "RemoveSpaceGesture", "JoinOrSplitGesture", "SelectRangeGesture",
+                    "DeleteRangeGesture"};
+            // Add each gesture type from supportedGestures to the ArrayList.
+            // eg. gestures.add(android.view.inputmethod.SelectGesture.class);
+            Method add = gestures.getClass().getMethod("add", Object.class);
+            for (String gestureName : supportedGestures) {
+                try {
+                    add.invoke(gestures,
+                            Class.forName(PACKAGE_NAME + gestureName).asSubclass(gestureClass));
+                } catch (ClassNotFoundException e) { /* Do nothing. */
+                }
+            }
+            Class editorInfoClass = EditorInfo.class;
+            // The following reflection executes:
+            // outAttrs.setSupportedHandwritingGestures(gestures);
+            Method setSupportedHandwritingGestures =
+                    editorInfoClass.getMethod("setSupportedHandwritingGestures", List.class);
+            setSupportedHandwritingGestures.invoke(outAttrs, (List) gestures);
+        } catch (IllegalAccessException | InstantiationException | ClassNotFoundException
+                | NoSuchMethodException | InvocationTargetException e) {
+        }
+    }
+
     private StylusGestureHandler(
             InputConnection fallback, Callback<OngoingGesture> onGestureCallback) {
         mFallback = fallback;
@@ -133,28 +169,27 @@ public class StylusGestureHandler implements InvocationHandler {
     }
 
     private StylusWritingGestureData createGesture(Object gesture) throws ClassNotFoundException {
-        String packageName = "android.view.inputmethod.";
         StylusWritingGestureData gestureData = null;
 
-        if (Class.forName(packageName + "SelectGesture").isInstance(gesture)) {
+        if (Class.forName(PACKAGE_NAME + "SelectGesture").isInstance(gesture)) {
             gestureData = createSelectGesture(gesture);
             logGestureType(UmaGestureType.SELECT);
-        } else if (Class.forName(packageName + "InsertGesture").isInstance(gesture)) {
+        } else if (Class.forName(PACKAGE_NAME + "InsertGesture").isInstance(gesture)) {
             gestureData = createInsertGesture(gesture);
             logGestureType(UmaGestureType.INSERT);
-        } else if (Class.forName(packageName + "DeleteGesture").isInstance(gesture)) {
+        } else if (Class.forName(PACKAGE_NAME + "DeleteGesture").isInstance(gesture)) {
             gestureData = createDeleteGesture(gesture);
             logGestureType(UmaGestureType.DELETE);
-        } else if (Class.forName(packageName + "RemoveSpaceGesture").isInstance(gesture)) {
+        } else if (Class.forName(PACKAGE_NAME + "RemoveSpaceGesture").isInstance(gesture)) {
             gestureData = createRemoveSpaceGesture(gesture);
             logGestureType(UmaGestureType.REMOVE_SPACE);
-        } else if (Class.forName(packageName + "JoinOrSplitGesture").isInstance(gesture)) {
+        } else if (Class.forName(PACKAGE_NAME + "JoinOrSplitGesture").isInstance(gesture)) {
             gestureData = createJoinOrSplitGesture(gesture);
             logGestureType(UmaGestureType.JOIN_OR_SPLIT);
-        } else if (Class.forName(packageName + "SelectRangeGesture").isInstance(gesture)) {
+        } else if (Class.forName(PACKAGE_NAME + "SelectRangeGesture").isInstance(gesture)) {
             gestureData = createSelectRangeGesture(gesture);
             logGestureType(UmaGestureType.SELECT_RANGE);
-        } else if (Class.forName(packageName + "DeleteRangeGesture").isInstance(gesture)) {
+        } else if (Class.forName(PACKAGE_NAME + "DeleteRangeGesture").isInstance(gesture)) {
             gestureData = createDeleteRangeGesture(gesture);
             logGestureType(UmaGestureType.DELETE_RANGE);
         }
@@ -231,7 +266,7 @@ public class StylusGestureHandler implements InvocationHandler {
      */
     private StylusWritingGestureData createDeleteGesture(Object gesture) {
         try {
-            Class clazz = Class.forName("android.view.inputmethod.DeleteGesture");
+            Class clazz = Class.forName(PACKAGE_NAME + "DeleteGesture");
             StylusWritingGestureData gestureData = new StylusWritingGestureData();
             gestureData.action = StylusWritingGestureAction.DELETE_TEXT;
 
@@ -264,7 +299,7 @@ public class StylusGestureHandler implements InvocationHandler {
      */
     private StylusWritingGestureData createRemoveSpaceGesture(Object gesture) {
         try {
-            Class clazz = Class.forName("android.view.inputmethod.RemoveSpaceGesture");
+            Class clazz = Class.forName(PACKAGE_NAME + "RemoveSpaceGesture");
             StylusWritingGestureData gestureData = new StylusWritingGestureData();
             gestureData.action = StylusWritingGestureAction.REMOVE_SPACES;
             gestureData.granularity = StylusWritingGestureGranularity.CHARACTER;
@@ -294,7 +329,7 @@ public class StylusGestureHandler implements InvocationHandler {
      */
     private StylusWritingGestureData createJoinOrSplitGesture(Object gesture) {
         try {
-            Class clazz = Class.forName("android.view.inputmethod.JoinOrSplitGesture");
+            Class clazz = Class.forName(PACKAGE_NAME + "JoinOrSplitGesture");
             StylusWritingGestureData gestureData = new StylusWritingGestureData();
             gestureData.action = StylusWritingGestureAction.SPLIT_OR_MERGE;
             gestureData.granularity = StylusWritingGestureGranularity.CHARACTER;
@@ -320,7 +355,7 @@ public class StylusGestureHandler implements InvocationHandler {
      */
     private StylusWritingGestureData createSelectRangeGesture(Object gesture) {
         try {
-            Class clazz = Class.forName("android.view.inputmethod.SelectRangeGesture");
+            Class clazz = Class.forName(PACKAGE_NAME + "SelectRangeGesture");
             StylusWritingGestureData gestureData = new StylusWritingGestureData();
             gestureData.action = StylusWritingGestureAction.SELECT_TEXT;
 
@@ -355,7 +390,7 @@ public class StylusGestureHandler implements InvocationHandler {
      */
     private StylusWritingGestureData createDeleteRangeGesture(Object gesture) {
         try {
-            Class clazz = Class.forName("android.view.inputmethod.DeleteRangeGesture");
+            Class clazz = Class.forName(PACKAGE_NAME + "DeleteRangeGesture");
             StylusWritingGestureData gestureData = new StylusWritingGestureData();
             gestureData.action = StylusWritingGestureAction.DELETE_TEXT;
 
