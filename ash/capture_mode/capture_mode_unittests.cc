@@ -5068,7 +5068,8 @@ TEST_F(CaptureModeCursorOverlayTest, OverlayBoundsAccountForCursorScaleFactor) {
         std::move(cursor_image), gfx::Point(), cursor_image_scale_factor);
     cursor.SetPlatformCursor(
         ui::CursorFactory::GetInstance()->CreateImageCursor(
-            cursor.type(), cursor.custom_bitmap(), cursor.custom_hotspot()));
+            cursor.type(), cursor.custom_bitmap(), cursor.custom_hotspot(),
+            cursor.image_scale_factor()));
     cursor_manager->SetCursor(std::move(cursor));
   };
 

@@ -62,8 +62,6 @@ bool CursorLoader::SetDisplay(const display::Display& display) {
       ui::GetSupportedResourceScaleFactor(scale_));
 
   UnloadCursors();
-  if (use_platform_cursors_)
-    factory_->SetDeviceScaleFactor(scale_);
   return true;
 }
 
@@ -156,11 +154,12 @@ scoped_refptr<ui::PlatformCursor> CursorLoader::LoadCursorFromAsset(
 
   if (cursor_data->bitmaps.size() == 1) {
     image_cursors_[type] = factory_->CreateImageCursor(
-        type, cursor_data->bitmaps[0], cursor_data->hotspot);
+        type, cursor_data->bitmaps[0], cursor_data->hotspot,
+        cursor_data->scale_factor);
   } else {
     image_cursors_[type] = factory_->CreateAnimatedCursor(
         type, cursor_data->bitmaps, cursor_data->hotspot,
-        kAnimatedCursorFrameDelay);
+        cursor_data->scale_factor, kAnimatedCursorFrameDelay);
   }
   return image_cursors_[type];
 }

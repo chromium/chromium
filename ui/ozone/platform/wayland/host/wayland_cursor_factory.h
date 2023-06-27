@@ -41,16 +41,16 @@ class WaylandCursorFactory : public BitmapCursorFactory,
   // CursorFactory:
   scoped_refptr<PlatformCursor> GetDefaultCursor(
       mojom::CursorType type) override;
-  scoped_refptr<PlatformCursor> CreateImageCursor(
-      mojom::CursorType type,
-      const SkBitmap& bitmap,
-      const gfx::Point& hotspot) override;
+  scoped_refptr<PlatformCursor> CreateImageCursor(mojom::CursorType type,
+                                                  const SkBitmap& bitmap,
+                                                  const gfx::Point& hotspot,
+                                                  float scale) override;
   scoped_refptr<PlatformCursor> CreateAnimatedCursor(
       mojom::CursorType type,
       const std::vector<SkBitmap>& bitmaps,
       const gfx::Point& hotspot,
+      float scale,
       base::TimeDelta frame_delay) override;
-  void SetDeviceScaleFactor(float scale) override;
 
  protected:
   // Returns the actual wl_cursor record from the currently loaded theme.
@@ -77,13 +77,15 @@ class WaylandCursorFactory : public BitmapCursorFactory,
   // WaylandCursorBufferListener:
   void OnCursorBufferAttached(wl_cursor* cursor_data) override;
 
+  // Sets device scale factor and loads the theme.
+  void SetDeviceScaleFactor(float scale);
   // Returns the theme cached for the size and scale set currently.
   // May return nullptr, which means that the data is not yet loaded.
   ThemeData* GetCurrentTheme();
   // Resets the theme cache and triggers loading the theme again, optionally
   // keeping the existing data until the cursor changes next time.
   void ReloadThemeCursors();
-  // Loads the theme with the current size and scale.  Does nothing if data
+  // Loads the theme with the current size and scale. Does nothing if data
   // already exists.
   void MaybeLoadThemeCursors();
   // Returns the cache key in theme_cache_ to be used for the current size
@@ -102,7 +104,8 @@ class WaylandCursorFactory : public BitmapCursorFactory,
   std::string name_;
   // Current size of cursors
   int size_ = 24;
-  // The current scale of the mouse cursor icon.
+  // The current scale of the mouse cursor icon (i.e. current device scale
+  // factor).
   float scale_ = 1.0f;
 
   // Maps sizes of the cursor to the cached shapes of those sizes.

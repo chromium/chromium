@@ -56,8 +56,7 @@ void WaylandCursor::UpdateBitmap(const std::vector<SkBitmap>& cursor_image,
   }
 
   buffer_scale_ = buffer_scale;
-  if (!connection_->surface_submission_in_pixel_coordinates())
-    wl_surface_set_buffer_scale(pointer_surface_.get(), buffer_scale_);
+  wl_surface_set_buffer_scale(pointer_surface_.get(), buffer_scale_);
 
   static constexpr wl_buffer_listener wl_buffer_listener{
       &WaylandCursor::OnBufferRelease};
@@ -85,8 +84,7 @@ void WaylandCursor::SetPlatformShape(wl_cursor* cursor_data, int buffer_scale) {
   buffer_scale_ = buffer_scale;
   current_image_index_ = 0;
 
-  if (!connection_->surface_submission_in_pixel_coordinates())
-    wl_surface_set_buffer_scale(pointer_surface_.get(), buffer_scale_);
+  wl_surface_set_buffer_scale(pointer_surface_.get(), buffer_scale_);
 
   SetPlatformShapeInternal();
 

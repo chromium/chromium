@@ -179,7 +179,8 @@ absl::optional<CursorData> WinCursorFactory::GetCursorData(
 scoped_refptr<PlatformCursor> WinCursorFactory::CreateImageCursor(
     mojom::CursorType type,
     const SkBitmap& bitmap,
-    const gfx::Point& hotspot) {
+    const gfx::Point& hotspot,
+    float scale) {
   return base::MakeRefCounted<WinCursor>(
       IconUtil::CreateCursorFromSkBitmap(bitmap, hotspot).release(),
       /*should_destroy=*/true);

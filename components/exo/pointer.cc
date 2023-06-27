@@ -950,7 +950,8 @@ void Pointer::UpdateCursor() {
                                     resource_scale_factor);
     cursor_.SetPlatformCursor(
         ui::CursorFactory::GetInstance()->CreateImageCursor(
-            cursor_.type(), cursor_.custom_bitmap(), cursor_.custom_hotspot()));
+            cursor_.type(), cursor_.custom_bitmap(), cursor_.custom_hotspot(),
+            cursor_.image_scale_factor()));
   }
 
   // When pointer capture is broken, use the standard system cursor instead of

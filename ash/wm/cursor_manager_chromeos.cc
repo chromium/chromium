@@ -44,7 +44,8 @@ void CursorManager::Init() {
         ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot), dsf);
     cursor.SetPlatformCursor(
         ui::CursorFactory::GetInstance()->CreateImageCursor(
-            cursor.type(), cursor.custom_bitmap(), cursor.custom_hotspot()));
+            cursor.type(), cursor.custom_bitmap(), cursor.custom_hotspot(),
+            cursor.image_scale_factor()));
 
     SetCursor(std::move(cursor));
     LockCursor();
