@@ -12,6 +12,8 @@ build_webui("build") {
   static_files = [
     "companion.html",
     "companion.css",
+    "generic-error-icon.png",
+    "generic-error-icon-dark.png",
   ]
   non_web_component_files = [
     "companion.ts",

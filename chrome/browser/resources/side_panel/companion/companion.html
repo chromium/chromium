@@ -9,6 +9,23 @@
     <meta charset="utf-8">
   </head>
   <body>
+    <!-- Network error UI that is initially hidden -->
+    <div id="network-error-page">
+      <div id="network-error-icon">
+        <picture>
+          <source srcset="generic-error-icon-dark.png"
+                  media="(prefers-color-scheme: dark)">
+          <img src="generic-error-icon.png">
+        </picture>
+      </div>
+      <div id="network-error-top-line">
+        $i18n{network_error_page_top_line}
+      </div>
+      <div id="network-error-bottom-line">
+        $i18n{network_error_page_bottom_line}
+      </div>
+    </div>
+
     <form id="image-query-form" enctype="multipart/form-data"
       target="companion" method="POST">
       <input type="file" id="image-data" name="encoded_image" multiple>

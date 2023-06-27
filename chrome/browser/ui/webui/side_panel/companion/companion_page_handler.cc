@@ -379,6 +379,10 @@ void CompanionPageHandler::OpenUrlInBrowser(
   signin_delegate_->OpenUrlInBrowser(url_to_open.value(), use_new_tab);
 }
 
+void CompanionPageHandler::OnNavigationError() {
+  page_->OnNavigationError();
+}
+
 Browser* CompanionPageHandler::GetBrowser() {
   auto* webui_contents = companion_untrusted_ui_->web_ui()->GetWebContents();
   auto* browser = companion::GetBrowserForWebContents(webui_contents);

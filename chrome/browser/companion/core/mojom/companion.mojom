@@ -229,4 +229,8 @@ interface CompanionPage {
 
   // Pass back results from visual classifier for rendering.
   OnDeviceVisualClassificationResult(array<VisualSearchResult> results);
+
+  // Called when the companion page attempts a navigation that resulted in an
+  // error page.
+  OnNavigationError();
 };
