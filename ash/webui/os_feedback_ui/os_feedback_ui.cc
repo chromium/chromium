@@ -56,6 +56,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"feedbackHelpLinkLabel", IDS_FEEDBACK_TOOL_FEEDBACK_HELP_LINK_LABEL},
       {"pageTitle", IDS_FEEDBACK_TOOL_PAGE_TITLE},
       {"privacyNote", IDS_FEEDBACK_TOOL_PRIVACY_NOTE},
+      {"mayBeShareWithPartnerNote", IDS_FEEDBACK_TOOL_MAY_BE_SHARED_NOTE},
       {"sendButtonLabel", IDS_FEEDBACK_TOOL_SEND_BUTTON_LABEL},
       // The help content strings are needed for browser tests.
       {"suggestedHelpContent", IDS_FEEDBACK_TOOL_SUGGESTED_HELP_CONTENT},
