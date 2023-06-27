@@ -2617,7 +2617,7 @@
           "--disable-field-trial-config",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
         ],
         "ci_only": true,
         "merge": {
@@ -2644,14 +2644,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android28",
-              "path": ".android_emulator/generic_android28"
+              "name": "generic_android31",
+              "path": ".android_emulator/generic_android31"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android28"
+                "caches": "generic_android31"
               }
             ]
           },
@@ -2676,19 +2676,18 @@
           "--disable-field-trial-config",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
         ],
-        "ci_only": true,
         "merge": {
           "args": [
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_cts_tests_no_field_trial"
+            "webview_trichrome_64_cts_tests_no_field_trial"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webview_cts_tests_no_field_trial",
+        "name": "webview_trichrome_64_cts_tests_no_field_trial",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2710,14 +2709,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android28",
-              "path": ".android_emulator/generic_android28"
+              "name": "generic_android31",
+              "path": ".android_emulator/generic_android31"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android28"
+                "caches": "generic_android31"
               }
             ]
           },
@@ -2734,15 +2733,15 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
-        "test": "webview_cts_tests",
-        "test_id_prefix": "ninja://android_webview/test:webview_cts_tests/"
+        "test": "webview_trichrome_64_cts_tests",
+        "test_id_prefix": "ninja://android_webview/test:webview_trichrome_64_cts_tests/"
       },
       {
         "args": [
           "--disable-field-trial-config",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
         ],
         "ci_only": true,
         "merge": {
@@ -2769,14 +2768,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_android28",
-              "path": ".android_emulator/generic_android28"
+              "name": "generic_android31",
+              "path": ".android_emulator/generic_android31"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_android28"
+                "caches": "generic_android31"
               }
             ]
           },

@@ -407,7 +407,7 @@
       'Win x64 Builder (reclient compare)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder (reclient)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'android-build-perf-developer': 'android_developer',
-      'android-fieldtrial-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
+      'android-fieldtrial-rel': 'android_release_bot_minimal_symbols_x64_fastbuild_webview_trichrome_reclient',
       'android-perfetto-rel': 'perfetto_release_bot_reclient_android',
       # Keep in sync with android-arm64-rel
       'build-perf-android': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_reclient',
@@ -1033,7 +1033,7 @@
       'android-cronet-x86-rel-kitkat-tests': 'android_cronet_release_bot_minimal_symbols_x86_reclient',
       'android-deterministic-dbg': 'android_debug_bot_reclient',
       'android-deterministic-rel': 'android_without_codecs_release_trybot_reclient',
-      'android-fieldtrial-rel': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google_reclient',
+      'android-fieldtrial-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome_reclient',
       'android-inverse-fieldtrials-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google_invert_fieldtrials_reclient',
       'android-nougat-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome_coverage_reclient',
       'android-oreo-arm64-dbg': 'android_debug_trybot_arm64_reclient',
@@ -1759,12 +1759,6 @@
     'android_release_trybot_arm64_webview_monochrome_reclient': [
       'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
       'webview_monochrome',
-    ],
-
-    'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google_reclient': [
-      'android', 'release_trybot_reclient', 'minimal_symbols',
-      'android_fastbuild', 'x86', 'strip_debug_info', 'disable_proguard',
-      'chrome_google'
     ],
 
     'android_release_trybot_reclient': [

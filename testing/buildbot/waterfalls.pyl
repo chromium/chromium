@@ -3229,9 +3229,9 @@
       },
       'android-fieldtrial-rel': {
         'mixins': [
+          '12-x64-emulator',
           'has_native_resultdb_integration',
           'finch-chromium-swarming-pool',
-          'pie-x86-emulator',
           'linux-jammy',
           'x86-64',
         ],
