@@ -7348,6 +7348,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGainmapHdrImagesDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kGainmapHdrImages)},
 
+    {"avif-gainmap-hdr-images", flag_descriptions::kAvifGainmapHdrImagesName,
+     flag_descriptions::kAvifGainmapHdrImagesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kAvifGainmapHdrImages)},
+
     {"autofill-use-improved-label-disambiguation",
      flag_descriptions::kAutofillUseImprovedLabelDisambiguationName,
      flag_descriptions::kAutofillUseImprovedLabelDisambiguationDescription,

@@ -744,6 +744,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "avif-gainmap-hdr-images",
+    "owners": [ "maryla@google.com", "avif-eng@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "back-forward-cache",
     "owners": [ "bfcache-dev@chromium.org" ],
     "expiry_milestone": 120

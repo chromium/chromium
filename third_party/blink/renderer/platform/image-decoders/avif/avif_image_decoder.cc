@@ -26,6 +26,7 @@
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/half_float_maker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/graphics/rw_buffer.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
@@ -1399,6 +1400,11 @@ void AVIFImageDecoder::ColorCorrectImage(int from_row,
 bool AVIFImageDecoder::GetGainmapInfoAndData(
     SkGainmapInfo& out_gainmap_info,
     scoped_refptr<SegmentReader>& out_gainmap_data) const {
+  CHECK(base::FeatureList::IsEnabled(blink::features::kGainmapHdrImages));
+  if (!base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages)) {
+    return false;
+  }
+
   // We already know that the file is an AVIF file so there is no need to
   // call AvifInfoIdentify(). Get the features directly.
   AvifInfoSegmentReaderStream stream;

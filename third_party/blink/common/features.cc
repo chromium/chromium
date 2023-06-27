@@ -201,6 +201,10 @@ const base::FeatureParam<AutomaticLazyFrameLoadingToEmbedLoadingStrategy>
         AutomaticLazyFrameLoadingToEmbedLoadingStrategy::kAllowList,
         &kAutomaticLazyFrameLoadingToEmbedLoadingStrategies};
 
+BASE_FEATURE(kAvifGainmapHdrImages,
+             "AvifGainmapHdrImages",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kBackForwardCacheDWCOnJavaScriptExecution,
              "BackForwardCacheDWCOnJavaScriptExecution",
              base::FEATURE_DISABLED_BY_DEFAULT);

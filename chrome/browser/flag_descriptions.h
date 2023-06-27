@@ -144,6 +144,9 @@ extern const char kForceStartupSigninPromoDescription[];
 extern const char kGainmapHdrImagesName[];
 extern const char kGainmapHdrImagesDescription[];
 
+extern const char kAvifGainmapHdrImagesName[];
+extern const char kAvifGainmapHdrImagesDescription[];
+
 extern const char kIdentityStatusConsistencyName[];
 extern const char kIdentityStatusConsistencyDescription[];
 

@@ -16,8 +16,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/libavif/src/include/avif/avif.h"
@@ -891,6 +893,12 @@ TEST(StaticAVIFTests, ValidImages) {
 }
 
 TEST(StaticAVIFTests, GetGainmapInfoAndData) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGainmapHdrImages,
+                            features::kAvifGainmapHdrImages},
+      /*disabled_features=*/{});
+
   scoped_refptr<SharedBuffer> data =
       ReadFile("/images/resources/avif/small-with-gainmap.avif");
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
@@ -941,7 +949,30 @@ TEST(StaticAVIFTests, GetGainmapInfoAndData) {
   EXPECT_TRUE(gainmap_frame);
 }
 
+TEST(StaticAVIFTests, GetGainmapInfoAndDataWithFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGainmapHdrImages},
+      /*disabled_features=*/{features::kAvifGainmapHdrImages});
+
+  scoped_refptr<SharedBuffer> data =
+      ReadFile("/images/resources/avif/small-with-gainmap.avif");
+  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
+  decoder->SetData(data, true);
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  const bool has_gainmap =
+      decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data);
+  ASSERT_FALSE(has_gainmap);
+}
+
 TEST(StaticAVIFTests, GetGainmapInfoAndDataWithTruncatedData) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGainmapHdrImages,
+                            features::kAvifGainmapHdrImages},
+      /*disabled_features=*/{});
+
   scoped_refptr<SharedBuffer> data =
       ReadFile("/images/resources/avif/small-with-gainmap.avif");
   const std::vector<char> data_vector = data->CopyAs<std::vector<char>>();

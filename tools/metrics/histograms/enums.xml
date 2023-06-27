@@ -60477,6 +60477,7 @@ from previous Chrome versions.
   <int value="-1746708491" label="RemoteCopyPersistentNotification:disabled"/>
   <int value="-1746255521" label="NewOverviewUi:enabled"/>
   <int value="-1745909884" label="LibAssistantV2:disabled"/>
+  <int value="-1745844997" label="AvifGainmapHdrImages:enabled"/>
   <int value="-1743214399" label="TrustSafetySentimentSurveyV2:disabled"/>
   <int value="-1743079191" label="SyncPseudoUSSPriorityPreferences:enabled"/>
   <int value="-1742376665" label="SyncPseudoUSSPasswords:disabled"/>
@@ -60585,6 +60586,7 @@ from previous Chrome versions.
   <int value="-1679823299"
       label="HighlightManagedPrefDisclaimerAndroid:enabled"/>
   <int value="-1679624666" label="NtpRealbox:enabled"/>
+  <int value="-1678325491" label="AvifGainmapHdrImages:disabled"/>
   <int value="-1677715989" label="UnifiedConsent:disabled"/>
   <int value="-1677516670" label="PageInfoAboutThisSiteEn:enabled"/>
   <int value="-1676256979"
