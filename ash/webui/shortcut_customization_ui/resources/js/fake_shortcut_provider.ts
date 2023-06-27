@@ -44,6 +44,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.register('restoreAllDefaults');
     this.methods.register('addObserver');
     this.methods.register('preventProcessingAccelerators');
+    this.methods.register('getConflictAccelerator');
     this.registerObservables();
   }
 
@@ -144,6 +145,12 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
       Promise<void> {
     ++this.preventProcessingAcceleratorsCallCount;
     return this.methods.resolveMethod('preventProcessingAccelerators');
+  }
+
+  getConflictAccelerator(
+      _source: AcceleratorSource, _actionId: number,
+      _accelerator: Accelerator): Promise<{result: AcceleratorResultData}> {
+    return this.methods.resolveMethod('getConflictAccelerator');
   }
 
   /**

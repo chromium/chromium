@@ -449,6 +449,64 @@ void AcceleratorConfigurationProvider::HasLauncherButton(
       Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard());
 }
 
+void AcceleratorConfigurationProvider::GetConflictAccelerator(
+    mojom::AcceleratorSource source,
+    uint32_t action_id,
+    const ui::Accelerator& accelerator,
+    GetConflictAcceleratorCallback callback) {
+  AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
+
+  // Validate the source and action.
+  absl::optional<AcceleratorConfigResult> error_result =
+      ValidateSourceAndAction(source, action_id,
+                              ash_accelerator_configuration_);
+  // `kActionLocked` from `ValidateSourceAndAction` indicates a non-ash source.
+  // We still want to check the conflict in the case its from a non-ash source.
+  if (error_result.has_value() &&
+      *error_result != AcceleratorConfigResult::kActionLocked) {
+    result_data->result = *error_result;
+    std::move(callback).Run(std::move(result_data));
+    return;
+  }
+
+  // Check if `accelerator` conflicts with non-configurable accelerators.
+  // This includes: browser, accessbility, and ambient accelerators.
+  const uint32_t* non_configurable_conflict_id =
+      non_configurable_accelerator_to_id_.Find(accelerator);
+  // If there was a conflict with a non-configurable accelerator
+  if (non_configurable_conflict_id) {
+    result_data->result = AcceleratorConfigResult::kConflict;
+    // Get the shortcut name and add it to the return struct.
+    result_data->shortcut_name = l10n_util::GetStringUTF16(
+        accelerator_layout_lookup_[GetUuid(mojom::AcceleratorSource::kAmbient,
+                                           *non_configurable_conflict_id)]
+            .description_string_id);
+    std::move(callback).Run(std::move(result_data));
+    return;
+  }
+
+  // Check if the accelerator conflicts with an existing ash accelerator.
+  const AcceleratorAction* found_ash_action =
+      ash_accelerator_configuration_->FindAcceleratorAction(accelerator);
+
+  // Conflict detected, return the conflict with an error.
+  if (found_ash_action) {
+    // At this point there is a conflict.
+    result_data->result = AcceleratorConfigResult::kConflict;
+    result_data->shortcut_name = l10n_util::GetStringUTF16(
+        accelerator_layout_lookup_[GetUuid(mojom::AcceleratorSource::kAsh,
+                                           *found_ash_action)]
+            .description_string_id);
+    std::move(callback).Run(std::move(result_data));
+    return;
+  }
+
+  // No issues detected, return success.
+  result_data->result = AcceleratorConfigResult::kSuccess;
+  std::move(callback).Run(std::move(result_data));
+  return;
+}
+
 void AcceleratorConfigurationProvider::GetAccelerators(
     GetAcceleratorsCallback callback) {
   std::move(callback).Run(CreateConfigurationMap());
