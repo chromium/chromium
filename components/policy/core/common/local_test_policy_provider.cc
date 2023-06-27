@@ -44,6 +44,7 @@ bool LocalTestPolicyProvider::IsFirstPolicyLoadComplete(
 }
 
 LocalTestPolicyProvider::LocalTestPolicyProvider() {
+  set_active(false);
   RefreshPolicies();
 }
 

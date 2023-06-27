@@ -322,6 +322,10 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   DefaultChromeAppsMigrator chrome_apps_migrator;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   for (auto* provider : providers_) {
+    if (!provider->is_active()) {
+      continue;
+    }
+
     PolicyBundle provided_bundle = provider->policies().Clone();
     IgnoreUserCloudPrecedencePolicies(&provided_bundle.Get(chrome_namespace));
     DowngradeMetricsReportingToRecommendedPolicy(
@@ -332,14 +336,14 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
     bundle.MergeFrom(provided_bundle);
   }
 
+  auto& chrome_policies = bundle.Get(chrome_namespace);
+
   // Merges all the mergeable policies
   base::flat_set<std::string> policy_lists_to_merge = GetStringListPolicyItems(
       bundle, chrome_namespace, key::kPolicyListMultipleSourceMergeList);
   base::flat_set<std::string> policy_dictionaries_to_merge =
       GetStringListPolicyItems(bundle, chrome_namespace,
                                key::kPolicyDictionaryMultipleSourceMergeList);
-
-  auto& chrome_policies = bundle.Get(chrome_namespace);
 
   // This has to be done after setting enterprise default values since it is
   // enabled by default for enterprise users.

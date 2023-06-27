@@ -218,6 +218,11 @@ void ProfilePolicyConnector::Init(
     policy_providers_.push_back(connector->command_line_policy_provider());
 #endif
 
+  if (connector->local_test_policy_provider()) {
+    local_test_policy_provider_ = connector->local_test_policy_provider();
+    policy_providers_.push_back(local_test_policy_provider_);
+  }
+
   if (configuration_policy_provider) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     AppendPolicyProviderWithSchemaTracking(configuration_policy_provider,
@@ -506,6 +511,24 @@ std::string ProfilePolicyConnector::GetTimeToFirstPolicyLoadMetricSuffix()
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
   return "Managed";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void ProfilePolicyConnector::UseLocalTestPolicyProvider() {
+  for (auto* provider : policy_providers_) {
+    provider->set_active(false);
+  }
+
+  local_test_policy_provider_->set_active(true);
+  policy_service()->RefreshPolicies(base::DoNothing());
+}
+
+void ProfilePolicyConnector::RevertUseLocalTestPolicyProvider() {
+  for (auto* provider : policy_providers_) {
+    provider->set_active(true);
+  }
+
+  local_test_policy_provider_->set_active(false);
+  policy_service()->RefreshPolicies(base::DoNothing());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

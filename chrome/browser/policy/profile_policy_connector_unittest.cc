@@ -88,12 +88,16 @@ class PolicyServiceInitializedWaiter : PolicyService::Observer {
   // PolicyService::Observer:
   void OnPolicyUpdated(const PolicyNamespace& ns,
                        const PolicyMap& previous,
-                       const PolicyMap& current) override {}
+                       const PolicyMap& current) override {
+    run_loop_.Quit();
+  }
 
   // PolicyService::Observer:
   void OnPolicyServiceInitialized(PolicyDomain domain) override {
     run_loop_.Quit();
   }
+
+  base::RunLoop* run_loop() { return &run_loop_; }
 
  private:
   raw_ptr<PolicyService> policy_service_;
@@ -388,6 +392,96 @@ TEST_F(ProfilePolicyConnectorTest, InitializationDurationUma) {
       kDelay, 1);
 
   // Cleanup.
+  connector.Shutdown();
+}
+
+TEST_F(ProfilePolicyConnectorTest, LocalTestProviderUseAndRevert) {
+  const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
+  // Set up connector
+  std::unique_ptr<MockConfigurationPolicyProvider> local_test_policy_provider =
+      std::make_unique<MockConfigurationPolicyProvider>();
+
+  g_browser_process->browser_policy_connector()
+      ->SetLocalTestPolicyProviderForTesting(local_test_policy_provider.get());
+
+  ProfilePolicyConnector connector;
+  connector.Init(/*user=*/nullptr, &schema_registry_,
+                 cloud_policy_manager_.get(), &cloud_policy_store_,
+                 g_browser_process->browser_policy_connector(),
+                 /*force_immediate_load=*/false);
+
+  // Set policy to local test policy provider.
+  PolicyBundle policy_bundle;
+  PolicyMap& policy_map = policy_bundle.Get(chrome_namespace);
+
+  policy_map.Set(key::kCloudReportingEnabled, POLICY_LEVEL_MANDATORY,
+                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
+                 nullptr);
+
+  local_test_policy_provider->UpdatePolicy(std::move(policy_bundle));
+
+  // Set the policy at the cloud provider.
+  cloud_policy_store_.policy_map_.Set(
+      key::kAutofillAddressEnabled, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  cloud_policy_store_.NotifyStoreLoaded();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(connector.IsProfilePolicy(key::kAutofillAddressEnabled));
+  const base::Value* value =
+      connector.policy_service()
+          ->GetPolicies(chrome_namespace)
+          .GetValue(key::kAutofillAddressEnabled, base::Value::Type::BOOLEAN);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(base::Value(false), *value);
+
+  // Set Local Testing to active.
+  connector.UseLocalTestPolicyProvider();
+  PolicyServiceInitializedWaiter(connector.policy_service(),
+                                 POLICY_DOMAIN_CHROME)
+      .run_loop()
+      ->Run();
+
+  // Verify other providers are inactive.
+  EXPECT_FALSE(
+      connector.IsProfilePolicy(autofill::prefs::kAutofillProfileEnabled));
+  EXPECT_FALSE(
+      connector.policy_service()
+          ->GetPolicies(chrome_namespace)
+          .GetValue(key::kAutofillAddressEnabled, base::Value::Type::BOOLEAN));
+
+  // Verify local testing policies is applied.
+  value =
+      connector.policy_service()
+          ->GetPolicies(chrome_namespace)
+          .GetValue(key::kCloudReportingEnabled, base::Value::Type::BOOLEAN);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(base::Value(false), *value);
+
+  // Revert Local Testing
+  connector.RevertUseLocalTestPolicyProvider();
+  PolicyServiceInitializedWaiter(connector.policy_service(),
+                                 POLICY_DOMAIN_CHROME)
+      .run_loop()
+      ->Run();
+
+  // Verify original policies are applied.
+  EXPECT_TRUE(connector.IsProfilePolicy(key::kAutofillAddressEnabled));
+  value =
+      connector.policy_service()
+          ->GetPolicies(chrome_namespace)
+          .GetValue(key::kAutofillAddressEnabled, base::Value::Type::BOOLEAN);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(base::Value(false), *value);
+
+  // Verify local test provider is inactive
+  ASSERT_FALSE(
+      connector.policy_service()
+          ->GetPolicies(chrome_namespace)
+          .GetValue(key::kCloudReportingEnabled, base::Value::Type::BOOLEAN));
+
+  // Cleanup.
+  g_browser_process->browser_policy_connector()
+      ->SetLocalTestPolicyProviderForTesting(nullptr);
   connector.Shutdown();
 }
 
