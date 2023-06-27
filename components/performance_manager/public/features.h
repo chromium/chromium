@@ -182,6 +182,7 @@ extern const base::FeatureParam<base::TimeDelta>
 extern const base::FeatureParam<int> kHighEfficiencyChartPmf25PercentileBytes;
 extern const base::FeatureParam<int> kHighEfficiencyChartPmf50PercentileBytes;
 extern const base::FeatureParam<int> kHighEfficiencyChartPmf75PercentileBytes;
+extern const base::FeatureParam<int> kHighEfficiencyChartPmf99PercentileBytes;
 
 // Final opacity of the favicon after the discard animation completes
 extern const base::FeatureParam<double> kDiscardedTabTreatmentOpacity;
