@@ -566,9 +566,14 @@ void SavedDeskLibraryView::Layout() {
 
   DCHECK_EQ(grid_views_.size(), grid_labels_.size());
   for (size_t i = 0; i != grid_views_.size(); ++i) {
-    // Make the grid label invisible if the corresponding grid view is
-    // empty. This will exclude it from the box layout.
-    grid_labels_[i]->SetVisible(!grid_views_[i]->grid_items().empty());
+    if (chromeos::features::IsJellyEnabled()) {
+      // Set label to be invisible to improve Jelly appearance(b/284210964).
+      grid_labels_[i]->SetVisible(false);
+    } else {
+      // Make the grid label invisible if the corresponding grid view is
+      // empty. This will exclude it from the box layout.
+      grid_labels_[i]->SetVisible(!grid_views_[i]->grid_items().empty());
+    }
     grid_labels_[i]->SetPreferredSize(landscape ? kLabelSizeLandscape
                                                 : kLabelSizePortrait);
     total_saved_desks += grid_views_[i]->grid_items().size();
