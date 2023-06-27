@@ -9,12 +9,14 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_entry_override.h"
@@ -78,12 +80,29 @@ mojom::FirstPartySetsReadyEventPtr CreateFirstPartySetsReadyEvent(
 
 }  // namespace
 
+class WaitingFeatureInitializer {
+ public:
+  explicit WaitingFeatureInitializer(bool enabled) {
+    if (enabled) {
+      features_.InitAndEnableFeature(net::features::kWaitForFirstPartySetsInit);
+    } else {
+      features_.InitAndDisableFeature(
+          net::features::kWaitForFirstPartySetsInit);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
 // No-op FirstPartySetsAccessDelegate should just pass queries to
 // FirstPartySetsManager synchronously.
-class NoopFirstPartySetsAccessDelegateTest : public ::testing::Test {
+class NoopFirstPartySetsAccessDelegateTest : public ::testing::Test,
+                                             public WaitingFeatureInitializer {
  public:
   NoopFirstPartySetsAccessDelegateTest()
-      : first_party_sets_manager_(/*enabled=*/true),
+      : WaitingFeatureInitializer(/*enabled=*/true),
+        first_party_sets_manager_(/*enabled=*/true),
         delegate_(
             /*receiver=*/mojo::NullReceiver(),
             /*params=*/nullptr,
@@ -147,10 +166,12 @@ TEST_F(NoopFirstPartySetsAccessDelegateTest, GetCacheFilterMatchInfo) {
             net::FirstPartySetsCacheFilter::MatchInfo());
 }
 
-class FirstPartySetsAccessDelegateTest : public ::testing::Test {
+class FirstPartySetsAccessDelegateTest : public ::testing::Test,
+                                         public WaitingFeatureInitializer {
  public:
-  explicit FirstPartySetsAccessDelegateTest(bool enabled)
-      : first_party_sets_manager_(/*enabled=*/true),
+  explicit FirstPartySetsAccessDelegateTest(bool enabled, bool wait_for_init)
+      : WaitingFeatureInitializer(wait_for_init),
+        first_party_sets_manager_(/*enabled=*/true),
         delegate_(delegate_remote_.BindNewPipeAndPassReceiver(),
                   CreateFirstPartySetsAccessDelegateParams(enabled),
                   &first_party_sets_manager_) {
@@ -223,7 +244,8 @@ class FirstPartySetsAccessDelegateDisabledTest
     : public FirstPartySetsAccessDelegateTest {
  public:
   FirstPartySetsAccessDelegateDisabledTest()
-      : FirstPartySetsAccessDelegateTest(false) {}
+      : FirstPartySetsAccessDelegateTest(/*enabled=*/false,
+                                         /*wait_for_init=*/true) {}
 };
 
 TEST_F(FirstPartySetsAccessDelegateDisabledTest, ComputeMetadata) {
@@ -254,7 +276,8 @@ class AsyncFirstPartySetsAccessDelegateTest
     : public FirstPartySetsAccessDelegateTest {
  public:
   AsyncFirstPartySetsAccessDelegateTest()
-      : FirstPartySetsAccessDelegateTest(true) {}
+      : FirstPartySetsAccessDelegateTest(/*enabled=*/true,
+                                         /*wait_for_init=*/true) {}
 };
 
 TEST_F(AsyncFirstPartySetsAccessDelegateTest,
@@ -403,7 +426,8 @@ class FirstPartySetsAccessDelegateSetToDisabledTest
     : public FirstPartySetsAccessDelegateTest {
  public:
   FirstPartySetsAccessDelegateSetToDisabledTest()
-      : FirstPartySetsAccessDelegateTest(/*enabled=*/true) {}
+      : FirstPartySetsAccessDelegateTest(/*enabled=*/true,
+                                         /*wait_for_init=*/true) {}
 };
 
 TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
@@ -540,7 +564,8 @@ class FirstPartySetsAccessDelegateSetToEnabledTest
     : public FirstPartySetsAccessDelegateTest {
  public:
   FirstPartySetsAccessDelegateSetToEnabledTest()
-      : FirstPartySetsAccessDelegateTest(/*enabled=*/false) {}
+      : FirstPartySetsAccessDelegateTest(/*enabled=*/false,
+                                         /*wait_for_init=*/true) {}
 };
 
 // This scenario might not be reproducible in production code but it's worth
@@ -637,6 +662,114 @@ TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
   delegate().SetEnabled(true);
 
   EXPECT_EQ(GetCacheFilterMatchInfoAndWait(kSet1AssociatedSite1), match_info);
+}
+
+class AsyncNonwaitingFirstPartySetsAccessDelegateTest
+    : public FirstPartySetsAccessDelegateTest {
+ public:
+  AsyncNonwaitingFirstPartySetsAccessDelegateTest()
+      : FirstPartySetsAccessDelegateTest(/*enabled=*/true,
+                                         /*wait_for_init=*/false) {}
+};
+
+TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
+       QueryBeforeReady_ComputeMetadata) {
+  EXPECT_EQ(
+      net::FirstPartySetMetadata(),
+      delegate().ComputeMetadata(kSet1AssociatedSite1, &kSet1AssociatedSite1,
+                                 {kSet1Primary}, base::NullCallback()));
+
+  delegate_remote()->NotifyReady(mojom::FirstPartySetsReadyEvent::New());
+  base::RunLoop().RunUntilIdle();
+
+  net::FirstPartySetEntry entry(kSet1Primary, net::SiteType::kAssociated, 0);
+  EXPECT_EQ(
+      net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
+                                 &entry, &entry),
+      delegate().ComputeMetadata(kSet1AssociatedSite1, &kSet1AssociatedSite1,
+                                 {kSet1Primary}, base::NullCallback()));
+}
+
+TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
+       QueryBeforeReady_FindEntries) {
+  EXPECT_THAT(
+      delegate().FindEntries({kSet1AssociatedSite1, kSet2AssociatedSite1},
+                             base::NullCallback()),
+      Optional(IsEmpty()));
+
+  delegate_remote()->NotifyReady(mojom::FirstPartySetsReadyEvent::New());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_THAT(
+      delegate().FindEntries({kSet1AssociatedSite1, kSet2AssociatedSite1},
+                             base::NullCallback()),
+      FirstPartySetsAccessDelegate::EntriesResult({
+          {kSet1AssociatedSite1,
+           net::FirstPartySetEntry(kSet1Primary, net::SiteType::kAssociated,
+                                   0)},
+          {kSet2AssociatedSite1,
+           net::FirstPartySetEntry(kSet2Primary, net::SiteType::kAssociated,
+                                   0)},
+      }));
+}
+
+TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
+       QueryBeforeReady_GetCacheFilterMatchInfo) {
+  EXPECT_EQ(
+      delegate().GetCacheFilterMatchInfo(kSet1Primary, base::NullCallback()),
+      net::FirstPartySetsCacheFilter::MatchInfo());
+
+  delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
+      /*config=*/absl::nullopt,
+      net::FirstPartySetsCacheFilter({{kSet1Primary, kClearAtRunId}},
+                                     kBrowserRunId)));
+  base::RunLoop().RunUntilIdle();
+
+  net::FirstPartySetsCacheFilter::MatchInfo match_info;
+  match_info.clear_at_run_id = kClearAtRunId;
+  match_info.browser_run_id = kBrowserRunId;
+  EXPECT_THAT(
+      delegate().GetCacheFilterMatchInfo(kSet1Primary, base::NullCallback()),
+      Optional(match_info));
+}
+
+TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
+       OverrideSets_ComputeMetadata) {
+  delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
+      net::FirstPartySetsContextConfig({
+          {kSet1AssociatedSite1,
+           net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+               kSet3Primary, net::SiteType::kAssociated, 0))},
+          {kSet3Primary,
+           net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+               kSet3Primary, net::SiteType::kPrimary, absl::nullopt))},
+      }),
+      /*cache_filter-*/ absl::nullopt));
+  base::RunLoop().RunUntilIdle();
+
+  net::FirstPartySetEntry primary_entry(kSet3Primary, net::SiteType::kPrimary,
+                                        absl::nullopt);
+  net::FirstPartySetEntry associated_entry(kSet3Primary,
+                                           net::SiteType::kAssociated, 0);
+  EXPECT_EQ(ComputeMetadataAndWait(kSet3Primary, &kSet1AssociatedSite1,
+                                   {kSet1AssociatedSite1}),
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
+                                       &primary_entry, &associated_entry));
+}
+
+TEST_F(AsyncNonwaitingFirstPartySetsAccessDelegateTest,
+       OverrideSets_FindEntries) {
+  delegate_remote()->NotifyReady(CreateFirstPartySetsReadyEvent(
+      net::FirstPartySetsContextConfig({
+          {kSet3Primary,
+           net::FirstPartySetEntryOverride(net::FirstPartySetEntry(
+               kSet3Primary, net::SiteType::kPrimary, absl::nullopt))},
+      }),
+      /*cache_filter-*/ absl::nullopt));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_THAT(FindEntriesAndWait({kSet3Primary}),
+              UnorderedElementsAre(Pair(kSet3Primary, _)));
 }
 
 }  // namespace network

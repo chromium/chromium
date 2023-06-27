@@ -292,6 +292,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kCookieSameSiteConsidersRedirectChain);
 // reading cookies).)
 NET_EXPORT BASE_DECLARE_FEATURE(kSamePartyAttributeEnabled);
 
+// When this feature is enabled, the network service will wait until First-Party
+// Sets are initialized before issuing requests that use the HTTP cache or
+// cookies.
+NET_EXPORT BASE_DECLARE_FEATURE(kWaitForFirstPartySetsInit);
+
 // When enabled, sites can opt-in to having their cookies partitioned by
 // top-level site with the Partitioned attribute. Partitioned cookies will only
 // be sent when the browser is on the same top-level site that it was on when
