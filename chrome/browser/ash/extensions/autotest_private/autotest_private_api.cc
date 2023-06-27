@@ -3273,7 +3273,7 @@ void AutotestPrivateLoadSmartDimComponentFunction::TryRespond() {
 
   if (ash::power::ml::SmartDimMlAgent::GetInstance()->IsDownloadWorkerReady()) {
     Respond(NoArguments());
-  } else if (timer_triggered_count_ >= 12) {
+  } else if (timer_triggered_count_ >= 48 /* 48 * 5 sec == 4 minutes */) {
     Respond(Error("Timeout occurred before SmartDim component was loaded."));
   } else {
     timer_.Reset();
