@@ -3687,9 +3687,23 @@ const FeatureEntry::FeatureParam
     kCrOSLateBootMissiveEnableStorageDegradation[] = {
         {"controlled_degradation", "true"}};
 const FeatureEntry::FeatureParam kCrOSLateBootMissiveDisableLegacyStorage[] = {
-    {"legacy_storage_enabled", "false"}};
+    {"legacy_storage_enabled",
+     "UNDEFINED_PRIORITY"}};  // All others are multi-generation action state.
 const FeatureEntry::FeatureParam kCrOSLateBootMissiveEnableLegacyStorage[] = {
-    {"legacy_storage_enabled", "true"}};
+    {"legacy_storage_enabled",
+     "SECURITY,"
+     "IMMEDIATE,"
+     "FAST_BATCH,"
+     "SLOW_BATCH,"
+     "BACKGROUND_BATCH,"
+     "MANUAL_BATCH,"
+     "MANUAL_BATCH_LACROS,"}};
+const FeatureEntry::FeatureParam kCrOSLateBootMissivePartialLegacyStorage[] = {
+    {"legacy_storage_enabled",
+     "SECURITY,"
+     "IMMEDIATE,"}};
+const FeatureEntry::FeatureParam kCrOSLateBootMissiveSecurityLegacyStorage[] = {
+    {"legacy_storage_enabled", "SECURITY,"}};
 
 const FeatureEntry::FeatureVariation
     kCrOSLateBootMissiveStorageDefaultVariations[] = {
@@ -3699,10 +3713,17 @@ const FeatureEntry::FeatureVariation
         {"Disable storage degradation",
          kCrOSLateBootMissiveDisableStorageDegradation,
          std::size(kCrOSLateBootMissiveDisableStorageDegradation), nullptr},
-        {"Enable legacy storage", kCrOSLateBootMissiveEnableLegacyStorage,
+        {"Enable all queues legacy", kCrOSLateBootMissiveEnableLegacyStorage,
          std::size(kCrOSLateBootMissiveEnableLegacyStorage), nullptr},
-        {"Disable legacy storage", kCrOSLateBootMissiveDisableLegacyStorage,
-         std::size(kCrOSLateBootMissiveDisableLegacyStorage), nullptr}};
+        {"Disable all queues legacy", kCrOSLateBootMissiveDisableLegacyStorage,
+         std::size(kCrOSLateBootMissiveDisableLegacyStorage), nullptr},
+        {"Enable SECURITY and IMMEDIATE queues legacy only",
+         kCrOSLateBootMissivePartialLegacyStorage,
+         std::size(kCrOSLateBootMissivePartialLegacyStorage), nullptr},
+        {"Enable SECURITY queues legacy only",
+         kCrOSLateBootMissiveSecurityLegacyStorage,
+         std::size(kCrOSLateBootMissiveSecurityLegacyStorage), nullptr},
+};
 #endif  // BUILDFLAG(IS_CHROME_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
