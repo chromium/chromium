@@ -70,7 +70,10 @@ struct StructTraits<
         media::VideoEncodeAccelerator::kVariableMode) {
       modes.push_back(media::VideoEncodeAccelerator::kVariableMode);
     }
-
+    if (profile.rate_control_modes &
+        media::VideoEncodeAccelerator::kExternalMode) {
+      modes.push_back(media::VideoEncodeAccelerator::kExternalMode);
+    }
     return modes;
   }
 

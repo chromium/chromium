@@ -151,6 +151,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     kNoMode = 0,  // for uninitialized profiles only
     kConstantMode = 0b0001,
     kVariableMode = 0b0010,
+    kExternalMode = 0b0100,
   };
 
   // Specification of an encoding profile supported by an encoder.

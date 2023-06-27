@@ -41,7 +41,8 @@ import "sandbox/policy/mojom/sandbox.mojom";
 enum VideoEncodeAcceleratorSupportedRateControlMode {
   kNoMode,
   kConstantMode,
-  kVariableMode
+  kVariableMode,
+  kExternalMode
 };
 
 struct VideoEncodeAcceleratorSupportedProfile {
