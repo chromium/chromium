@@ -64,4 +64,14 @@ KeyedService* VisualSearchSuggestionsServiceFactory::BuildServiceInstanceFor(
   return nullptr;
 }
 
+bool VisualSearchSuggestionsServiceFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return base::FeatureList::IsEnabled(
+      visual_search::features::kVisualSearchSuggestions);
+}
+
+bool VisualSearchSuggestionsServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}
+
 }  // namespace companion::visual_search
