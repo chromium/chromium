@@ -17,16 +17,36 @@
   video.addEventListener("canplaythrough", () => {
     video.src = "content/test.ogv";
 
+    // Use a non-zero current time so that the seek isn't elided below.
+    video.currentTime = 1;
+
     video.play().then(() => {
-      // Ensure that the frame is always the same in pixel result.
-      video.addEventListener("seeked", () => {
+      video.pause();
+
+      function endTest() {
         runAfterLayoutAndPaint(() => {
           if (window.testRunner)
-              testRunner.notifyDone();
+            testRunner.notifyDone();
         });
+      }
+
+      let haveFrame = false;
+      let haveSeek = false;
+      video.requestVideoFrameCallback(() => {
+        haveFrame = true;
+        if (haveFrame && haveSeek) {
+          endTest();
+        }
+      });
+
+      // Ensure that the frame is always the same in pixel result.
+      video.addEventListener("seeked", () => {
+        haveSeek = true;
+        if (haveFrame && haveSeek) {
+          endTest();
+        }
       }, { once: true });
 
-      video.pause();
       video.currentTime = 0;
     });
   }, { once: true });
