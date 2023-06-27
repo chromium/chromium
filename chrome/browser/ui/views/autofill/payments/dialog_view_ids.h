@@ -68,6 +68,10 @@ enum DialogViewId : int {
   EXPIRATION_DATE_LABEL,  // Appears during save offer bubble
   IBAN_VALUE_LABEL,       // Shows or hides during IBAN offer bubble
   NICKNAME_LABEL,         // Appears during manage saved IBAN bubble.
+
+  // The following are views::StyledLabel objects.
+  SETTINGS_LABEL,  // Appears in the mandatory reauth opt-in confirmation
+                   // bubble.
 };
 
 }  // namespace autofill

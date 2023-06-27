@@ -26,4 +26,11 @@ void LogMandatoryReauthOptInBubbleResult(
   base::UmaHistogramEnumeration(histogram_name, metric);
 }
 
+void LogMandatoryReauthOptInConfirmationBubbleMetric(
+    MandatoryReauthOptInConfirmationBubbleMetric metric) {
+  base::UmaHistogramEnumeration(
+      "Autofill.PaymentMethods.MandatoryReauth.OptInConfirmationBubble",
+      metric);
+}
+
 }  // namespace autofill::autofill_metrics

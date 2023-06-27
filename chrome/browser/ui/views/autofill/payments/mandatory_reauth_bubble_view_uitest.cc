@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_ui.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_confirmation_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_opt_in_bubble_view.h"
@@ -18,6 +19,7 @@
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/test/widget_test.h"
 
 namespace autofill {
@@ -146,6 +148,14 @@ class MandatoryReauthBubbleViewUiTest : public InProcessBrowserTest {
     ClickOnViewAndWait(close_button, mandatory_reauth_bubble);
   }
 
+  void ClickOnSettingsLink(
+      views::BubbleDialogDelegate* mandatory_reauth_bubble) {
+    views::View* settings_link =
+        mandatory_reauth_bubble->GetBubbleFrameView()->GetViewByID(
+            DialogViewId::SETTINGS_LABEL);
+    static_cast<views::StyledLabel*>(settings_link)->ClickFirstLinkForTesting();
+  }
+
   base::MockOnceClosure accept_callback;
   base::MockOnceClosure cancel_callback;
   base::MockRepeatingClosure close_callback;
@@ -225,6 +235,7 @@ IN_PROC_BROWSER_TEST_F(MandatoryReauthBubbleViewUiTest, ReshowOptInBubble) {
 
 IN_PROC_BROWSER_TEST_F(MandatoryReauthBubbleViewUiTest,
                        ReshowConfirmationBubble) {
+  base::HistogramTester histogram_tester;
   ShowBubble();
   ClickOnOkButton(GetReauthBubble());
   ReshowBubble();
@@ -232,6 +243,10 @@ IN_PROC_BROWSER_TEST_F(MandatoryReauthBubbleViewUiTest,
   EXPECT_TRUE(IsIconVisible());
   EXPECT_EQ(GetController()->GetBubbleType(),
             MandatoryReauthBubbleType::kConfirmation);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PaymentMethods.MandatoryReauth.OptInConfirmationBubble",
+      autofill_metrics::MandatoryReauthOptInConfirmationBubbleMetric::kShown,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(MandatoryReauthBubbleViewUiTest,
@@ -242,12 +257,33 @@ IN_PROC_BROWSER_TEST_F(MandatoryReauthBubbleViewUiTest,
   EXPECT_TRUE(GetReauthBubble());
   EXPECT_EQ(GetController()->GetBubbleType(),
             MandatoryReauthBubbleType::kConfirmation);
+  // The `close_callback` is only invoked when the opt-in bubble is explicitly
+  // closed by the user, so it should not be invoked when it transitions between
+  // the opt-in and confirmation states.
   EXPECT_CALL(close_callback, Run).Times(0);
   ClickOnCloseButton(GetReauthBubble());
   EXPECT_FALSE(GetReauthBubble());
   EXPECT_FALSE(IsIconVisible());
   EXPECT_EQ(GetController()->GetBubbleType(),
             MandatoryReauthBubbleType::kInactive);
+}
+
+IN_PROC_BROWSER_TEST_F(MandatoryReauthBubbleViewUiTest,
+                       ClickConfirmationSettingsLink) {
+  base::HistogramTester histogram_tester;
+  ShowBubble();
+  ClickOnOkButton(GetReauthBubble());
+  ReshowBubble();
+  EXPECT_TRUE(GetReauthBubble());
+  EXPECT_EQ(GetController()->GetBubbleType(),
+            MandatoryReauthBubbleType::kConfirmation);
+  EXPECT_CALL(close_callback, Run).Times(0);
+  ClickOnSettingsLink(GetReauthBubble());
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PaymentMethods.MandatoryReauth.OptInConfirmationBubble",
+      autofill_metrics::MandatoryReauthOptInConfirmationBubbleMetric::
+          kSettingsLinkClicked,
+      1);
 }
 
 }  // namespace autofill

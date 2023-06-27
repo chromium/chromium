@@ -37,6 +37,14 @@ enum class MandatoryReauthOptInBubbleResult {
   kMaxValue = kLostFocus,
 };
 
+enum class MandatoryReauthOptInConfirmationBubbleMetric {
+  // The user is shown the opt-in confirmation bubble.
+  kShown = 0,
+  // The user clicks the settings link of the opt-in confirmation bubble.
+  kSettingsLinkClicked = 1,
+  kMaxValue = kSettingsLinkClicked,
+};
+
 // Logs when the user is offered mandatory reauth.
 void LogMandatoryReauthOptInBubbleOffer(MandatoryReauthOptInBubbleOffer metric,
                                         bool is_reshow);
@@ -45,6 +53,10 @@ void LogMandatoryReauthOptInBubbleOffer(MandatoryReauthOptInBubbleOffer metric,
 void LogMandatoryReauthOptInBubbleResult(
     MandatoryReauthOptInBubbleResult metric,
     bool is_reshow);
+
+// Logs events related to the opt-in confirmation bubble.
+void LogMandatoryReauthOptInConfirmationBubbleMetric(
+    MandatoryReauthOptInConfirmationBubbleMetric metric);
 
 }  // namespace autofill::autofill_metrics
 

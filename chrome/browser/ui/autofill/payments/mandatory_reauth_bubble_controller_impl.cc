@@ -70,16 +70,22 @@ void MandatoryReauthBubbleControllerImpl::ReshowBubble() {
   }
 
   is_reshow_ = true;
-  // We don't run any callbacks in the confirmation view, so there's no need to
-  // ensure they exist.
   if (current_bubble_type_ == MandatoryReauthBubbleType::kOptIn) {
+    // Callbacks are verified here, but not the following else if block, because
+    // they can only be invoked from the opt-in bubble.
     CHECK(accept_mandatory_reauth_callback_ &&
           cancel_mandatory_reauth_callback_ &&
           close_mandatory_reauth_callback_);
+    autofill_metrics::LogMandatoryReauthOptInBubbleOffer(
+        autofill_metrics::MandatoryReauthOptInBubbleOffer::kShown,
+        /*is_reshow=*/true);
+  } else if (current_bubble_type_ == MandatoryReauthBubbleType::kConfirmation) {
+    // The confirmation bubble cannot be minimized, so it's safe to increment
+    // the shown metric when it is reshown, which is the way it transitions
+    // from opt-in to confirmation.
+    autofill_metrics::LogMandatoryReauthOptInConfirmationBubbleMetric(
+        autofill_metrics::MandatoryReauthOptInConfirmationBubbleMetric::kShown);
   }
-  autofill_metrics::LogMandatoryReauthOptInBubbleOffer(
-      autofill_metrics::MandatoryReauthOptInBubbleOffer::kShown,
-      /*is_reshow=*/true);
 
   Show();
 }

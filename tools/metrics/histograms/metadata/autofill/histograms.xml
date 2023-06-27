@@ -3355,6 +3355,21 @@ chromium-metrics-reviews@google.com.
   <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
 </histogram>
 
+<histogram
+    name="Autofill.PaymentMethods.MandatoryReauth.OptInConfirmationBubble"
+    enum="MandatoryReauthOptInConfirmationBubbleMetric"
+    expires_after="2024-04-01">
+  <owner>justinleewells@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks various events related to the mandatory reauth opt-in confirmation
+    prompt. These metrics are recorded when the prompt is displayed or the user
+    interacts with the prompt. Mandatory reauth requires the user to unlock
+    their device or pass a biometric auth when autofilling payment method
+    information.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.PerfectFilling.{FormType}" enum="Boolean"
     expires_after="M120">
   <owner>koerber@google.com</owner>

@@ -68809,6 +68809,11 @@ from previous Chrome versions.
   <int value="5" label="Lost focus"/>
 </enum>
 
+<enum name="MandatoryReauthOptInConfirmationBubbleMetric">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Settings link clicked"/>
+</enum>
+
 <enum name="ManifestFetchResultType">
   <int value="0" label="Fetch succeeded"/>
   <int value="1" label="Fetch failed because of empty URL"/>
