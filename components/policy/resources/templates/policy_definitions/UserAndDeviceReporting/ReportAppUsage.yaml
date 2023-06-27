@@ -50,8 +50,8 @@ schema:
     - browser
 supported_chrome_os_management:
 - google_cloud
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:117-
 tags:
 - admin-sharing
 type: string-enum-list
