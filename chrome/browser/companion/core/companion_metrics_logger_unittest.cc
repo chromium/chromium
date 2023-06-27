@@ -122,6 +122,8 @@ TEST_F(CompanionMetricsLoggerTest, RecordPhFeedback) {
 
   ExpectUkmEntry(ukm::builders::Companion_PageView::kPH_FeedbackName,
                  static_cast<int>(PhFeedback::kThumbsDown));
+  histogram_tester.ExpectBucketCount("Companion.PHFeedback.Result",
+                                     PhFeedback::kThumbsDown, 1);
 }
 
 TEST_F(CompanionMetricsLoggerTest, TwoSurfaces_PH_and_CQ) {
@@ -145,6 +147,8 @@ TEST_F(CompanionMetricsLoggerTest, TwoSurfaces_PH_and_CQ) {
                                      /*sample=*/true, /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Companion.CQ.ClickPosition",
                                      /*sample=*/2, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Companion.CQ.ChildElementCount",
+                                     /*sample=*/3, /*expected_count=*/1);
 
   // Destroy the logger. Verify that UKM event is recorded.
   logger_.reset();
@@ -182,6 +186,8 @@ TEST_F(CompanionMetricsLoggerTest, VQ) {
                                      /*sample=*/true, /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Companion.VQ.ClickPosition",
                                      /*sample=*/2, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Companion.VQ.ChildElementCount",
+                                     /*sample=*/3, /*expected_count=*/1);
 
   // Destroy the logger. Verify that UKM event is recorded.
   logger_.reset();
@@ -213,6 +219,8 @@ TEST_F(CompanionMetricsLoggerTest, RelQr) {
                                      /*sample=*/true, /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Companion.RelQr.ClickPosition",
                                      /*sample=*/2, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Companion.RelQr.ChildElementCount",
+                                     /*sample=*/3, /*expected_count=*/1);
 
   // Destroy the logger. Verify that UKM event is recorded.
   logger_.reset();
@@ -246,6 +254,8 @@ TEST_F(CompanionMetricsLoggerTest, RelQs) {
                                      /*sample=*/true, /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Companion.RelQs.ClickPosition",
                                      /*sample=*/2, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Companion.RelQs.ChildElementCount",
+                                     /*sample=*/3, /*expected_count=*/1);
 
   // Destroy the logger. Verify that UKM event is recorded.
   logger_.reset();
@@ -281,6 +291,8 @@ TEST_F(CompanionMetricsLoggerTest, PageEntities) {
                                      /*sample=*/true, /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Companion.PageEntities.ClickPosition",
                                      /*sample=*/2, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Companion.PageEntities.ChildElementCount",
+                                     /*sample=*/3, /*expected_count=*/1);
 
   // Destroy the logger. Verify that UKM event is recorded.
   logger_.reset();

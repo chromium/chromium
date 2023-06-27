@@ -206,10 +206,12 @@ void CompanionPageHandler::NotifyURLChanged(bool is_full_reload) {
   if (is_full_reload) {
     GURL companion_url =
         url_builder_->BuildCompanionURL(web_contents()->GetVisibleURL());
+    full_load_start_time_ = base::TimeTicks::Now();
     page_->LoadCompanionPage(companion_url);
   } else {
     auto companion_update_proto = url_builder_->BuildCompanionUrlParamProto(
         web_contents()->GetVisibleURL());
+    reload_start_time_ = base::TimeTicks::Now();
     page_->UpdateCompanionPage(companion_update_proto);
   }
 }
@@ -272,6 +274,16 @@ void CompanionPageHandler::RecordUiSurfaceShown(
     uint32_t ui_surface_position,
     uint32_t child_element_available_count,
     uint32_t child_element_shown_count) {
+  if (full_load_start_time_) {
+    base::UmaHistogramTimes("Companion.FullLoad.Latency",
+                            base::TimeTicks::Now() - *full_load_start_time_);
+    full_load_start_time_.reset();
+  }
+  if (reload_start_time_) {
+    base::UmaHistogramTimes("Companion.NavigationLoad.Latency",
+                            base::TimeTicks::Now() - *reload_start_time_);
+    reload_start_time_.reset();
+  }
   metrics_logger_->RecordUiSurfaceShown(ui_surface, ui_surface_position,
                                         child_element_available_count,
                                         child_element_shown_count);

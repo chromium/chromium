@@ -151,10 +151,10 @@ void CompanionMetricsLogger::RecordUiSurfaceShown(
   base::UmaHistogramBoolean(
       "Companion." + UiSurfaceToHistogramVariant(ui_surface) + ".Shown", true);
   if (IsListSurface(ui_surface)) {
-    base::UmaHistogramBoolean("Companion." +
-                                  UiSurfaceToHistogramVariant(ui_surface) +
-                                  ".ChildElementCount",
-                              child_element_shown_count);
+    base::UmaHistogramExactLinear(
+        "Companion." + UiSurfaceToHistogramVariant(ui_surface) +
+            ".ChildElementCount",
+        surface.child_element_shown_count, kMaxNumChildElements);
   }
 }
 
@@ -230,6 +230,8 @@ void CompanionMetricsLogger::FlushStats() {
   // PH feedback.
   if (last_ph_feedback_.has_value()) {
     ukm_builder.SetPH_Feedback(static_cast<int>(last_ph_feedback_.value()));
+    base::UmaHistogramEnumeration("Companion.PHFeedback.Result",
+                                  last_ph_feedback_.value());
   }
 
   // CQ surface.
