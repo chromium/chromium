@@ -5,6 +5,7 @@
 #import "ios/testing/earl_grey/base_earl_grey_test_case_app_interface.h"
 
 #import <UIKit/UIKit.h>
+#import <objc/runtime.h>
 
 #import "base/logging.h"
 #import "base/mac/foundation_util.h"
@@ -32,6 +33,22 @@
       [[window layer] setSpeed:100];
     }
   }
+}
+
++ (BOOL)swizzledInputUIOOP {
+  return NO;
+}
+
++ (void)swizzleKeyboardOOP {
+  Class klass = NSClassFromString(@"UIKeyboard");
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+  Method originalMethod = class_getClassMethod(klass, @selector(inputUIOOP));
+#pragma clang diagnostic pop
+
+  Method swizzledMethod =
+      class_getClassMethod([self class], @selector(swizzledInputUIOOP));
+  method_exchangeImplementations(originalMethod, swizzledMethod);
 }
 
 + (void)gracefulTerminate {

@@ -269,6 +269,12 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
       [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
     }
 
+#if !TARGET_IPHONE_SIMULATOR
+    if (@available(iOS 17, *)) {
+      [BaseEarlGreyTestCaseAppInterface swizzleKeyboardOOP];
+    }
+#endif
+
     // Wait for application to settle before continuing on with test.
     GREYWaitForAppToIdle(@"App failed to idle BEFORE test body started.\n\n"
                          @"**** Check that the prior test left the app in a"
