@@ -211,6 +211,9 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
     [locationBarViewController didMoveToParentViewController:self];
     [self.view setLocationBarView:locationBarViewController.view];
     self.view.locationBarContainer.hidden = NO;
+    // Update the constraint of the location bar view to make sure the text is
+    // centered.
+    [locationBarViewController.view updateConstraintsIfNeeded];
   } else {
     CHECK(IsBottomOmniboxSteadyStateEnabled());
     [self.view setLocationBarView:nil];
