@@ -34,24 +34,6 @@ using GoogleGroupsFunction = base::OnceCallback<base::flat_set<uint64_t>()>;
 
 // A container for all of the client state which is used for filtering studies.
 struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
-  static Study::Platform GetCurrentPlatform();
-
-  // base::Version used in {min,max}_os_version filtering.
-  static base::Version GetOSVersion();
-
-  explicit ClientFilterableState(IsEnterpriseFunction is_enterprise_function,
-                                 GoogleGroupsFunction google_groups_function);
-
-  ClientFilterableState(const ClientFilterableState&) = delete;
-  ClientFilterableState& operator=(const ClientFilterableState&) = delete;
-
-  ~ClientFilterableState();
-
-  // Whether this is an enterprise client. Always false on android, iOS, and
-  // linux. Determined by VariationsServiceClient::IsEnterprise for windows,
-  // chromeOs, and mac.
-  bool IsEnterprise() const;
-
   // The system locale.
   std::string locale;
 
@@ -94,10 +76,28 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   // The restriction applied to Chrome through the "ChromeVariations" policy.
   RestrictionPolicy policy_restriction = RestrictionPolicy::NO_RESTRICTIONS;
 
+  explicit ClientFilterableState(IsEnterpriseFunction is_enterprise_function,
+                                 GoogleGroupsFunction google_groups_function);
+
+  ClientFilterableState(const ClientFilterableState&) = delete;
+  ClientFilterableState& operator=(const ClientFilterableState&) = delete;
+
+  ~ClientFilterableState();
+
+  // Whether this is an enterprise client. Always false on Android, iOS, and
+  // Linux. Determined by VariationsServiceClient::IsEnterprise() for Windows,
+  // ChromeOS, and Mac.
+  bool IsEnterprise() const;
+
   // The list of Google groups that one of more signed-in syncing users are a
   // a member of.
   // Each value is the Gaia ID of the google group.
   base::flat_set<uint64_t> GoogleGroups() const;
+
+  static Study::Platform GetCurrentPlatform();
+
+  // base::Version used in {min,max}_os_version filtering.
+  static base::Version GetOSVersion();
 
  private:
   // Evaluating enterprise status negatively affects performance, so we only
