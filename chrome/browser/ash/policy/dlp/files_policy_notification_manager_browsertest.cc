@@ -640,11 +640,20 @@ class OnIONotificationClickedTest
   std::unique_ptr<policy::MockDlpFilesControllerAsh> files_controller_;
 };
 
+// TODO(crbug.com/1458326): Re-enable this test
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_MultiFileOKShowsDialogOverFilesApp \
+  DISABLED_MultiFileOKShowsDialogOverFilesApp
+#else
+#define MAYBE_MultiFileOKShowsDialogOverFilesApp \
+  MultiFileOKShowsDialogOverFilesApp
+#endif
+
 // Tests that clicking the OK button on a warning notification shown for copy or
 // move IO task with multiple warning files shows a dialog instead of continuing
 // the action, and opens the Files App only if there's not one opened already.
 IN_PROC_BROWSER_TEST_P(OnIONotificationClickedTest,
-                       MultiFileOKShowsDialogOverFilesApp) {
+                       MAYBE_MultiFileOKShowsDialogOverFilesApp) {
   policy::GetIOTaskController(browser()->profile())->AddObserver(&observer_);
 
   auto [type, action] = GetParam();
