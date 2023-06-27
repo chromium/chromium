@@ -78,9 +78,9 @@ void ScrollJankDroppedFrameTracker::ReportLatestPresentationData(
                                 curr_frame_missed_vsyncs, kVsyncCountsMin,
                                 kVsyncCountsMax, kVsyncCountsBuckets);
     missed_vsyncs_ += curr_frame_missed_vsyncs;
-    TRACE_EVENT_INSTANT("input", "MissedFrame", "missed_frames_",
-                        missed_frames_, "missed_vsyncs_", missed_vsyncs_,
-                        "vsync_interval", vsync_interval);
+    TRACE_EVENT_INSTANT("input,input.scrolling", "MissedFrame",
+                        "missed_frames_", missed_frames_, "missed_vsyncs_",
+                        missed_vsyncs_, "vsync_interval", vsync_interval);
   } else {
     UMA_HISTOGRAM_CUSTOM_COUNTS(kMissedVsyncsPerFrameHistogram, 0,
                                 kVsyncCountsMin, kVsyncCountsMax,
