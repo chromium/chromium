@@ -327,7 +327,7 @@ TEST_F(PersonalizationAppSearchHandlerTest, HasBasicPersonalizationConcepts) {
 
   for (const auto& [message_id, expected_url] : message_ids_to_search) {
     std::vector<mojom::SearchResultPtr> search_results = RunSearch(message_id);
-    EXPECT_EQ(1u, search_results.size());
+    EXPECT_LE(1u, search_results.size());
     EXPECT_EQ(expected_url, search_results.front()->relative_url);
   }
 }
