@@ -42,7 +42,11 @@ void IOTask::Pause(PauseParams params) {}
 
 void IOTask::Resume(ResumeParams) {}
 
-void IOTask::CompleteWithError(PolicyErrorType policy_error) {}
+void IOTask::CompleteWithError(PolicyError policy_error) {}
+
+bool PolicyError::operator==(const PolicyError& other) const = default;
+
+bool PolicyError::operator!=(const PolicyError& other) const = default;
 
 bool ConflictPauseParams::operator==(const ConflictPauseParams& other) const =
     default;
@@ -94,7 +98,8 @@ ProgressStatus::ProgressStatus(ProgressStatus&& other) = default;
 ProgressStatus& ProgressStatus::operator=(ProgressStatus&& other) = default;
 
 bool ProgressStatus::IsPaused() const {
-  return state == State::kPaused && !policy_error.has_value();
+  // Return true if paused for any reason other than policy warning.
+  return state == State::kPaused && !pause_params.policy_params.has_value();
 }
 
 bool ProgressStatus::IsCompleted() const {
@@ -188,7 +193,7 @@ void DummyIOTask::Cancel() {
   progress_.state = State::kCancelled;
 }
 
-void DummyIOTask::CompleteWithError(PolicyErrorType policy_error) {
+void DummyIOTask::CompleteWithError(PolicyError policy_error) {
   progress_.state = State::kError;
   progress_.policy_error = policy_error;
 }

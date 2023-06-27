@@ -121,9 +121,8 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   // This is set to true if `block_until_verdict` is 0.
   bool report_only_scans_ = false;
 
-  // Whether transferring at least one file was blocked after applying DLP
-  // restrictions or Enterprise Connectors scanning.
-  bool has_blocked_files_ = false;
+  // The number of files blocked by policies.
+  size_t blocked_files_ = 0;
 
   base::WeakPtrFactory<CopyOrMoveIOTaskPolicyImpl> weak_ptr_factory_{this};
 };

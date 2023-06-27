@@ -80,6 +80,17 @@ enum class PolicyErrorType {
   kDlpWarningTimeout,
 };
 
+// Holds information about data protection policy errors.
+struct PolicyError {
+  // Type of the error.
+  PolicyErrorType type;
+  // The number of files blocked by the policy.
+  size_t blocked_files = 0;
+
+  bool operator==(const PolicyError& other) const;
+  bool operator!=(const PolicyError& other) const;
+};
+
 // Unique identifier for any type of task.
 using IOTaskId = uint64_t;
 
@@ -232,10 +243,10 @@ class ProgressStatus {
   // Task state.
   State state;
 
-  // Type of policy error that occurred, if any. Empty otherwise.
+  // Information about policy errors that occurred, if any. Empty otherwise.
   // Can be set only if Data Leak Prevention or Enterprise Connectors policies
   // apply.
-  absl::optional<PolicyErrorType> policy_error;
+  absl::optional<PolicyError> policy_error;
 
   // I/O Operation type (e.g. copy, move).
   OperationType type;
@@ -318,7 +329,7 @@ class IOTask {
 
   // Aborts the task because of policy error. This should set `policy_error` in
   // the progress and complete the task setting the progress state to |kError|.
-  virtual void CompleteWithError(PolicyErrorType policy_error);
+  virtual void CompleteWithError(PolicyError policy_error);
 
   // Gets the current progress status of the task.
   const ProgressStatus& progress() { return progress_; }
@@ -351,7 +362,7 @@ class DummyIOTask : public IOTask {
   void Pause(PauseParams pause_params) override;
   void Resume(ResumeParams resume_params) override;
   void Cancel() override;
-  void CompleteWithError(PolicyErrorType policy_error) override;
+  void CompleteWithError(PolicyError policy_error) override;
 
  private:
   void DoProgress();

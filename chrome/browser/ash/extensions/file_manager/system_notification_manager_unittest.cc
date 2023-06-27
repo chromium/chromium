@@ -1168,8 +1168,9 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyError) {
 
   // Set the security error value.
   status.state = file_manager::io_task::State::kError;
-  status.policy_error =
-      file_manager::io_task::PolicyErrorType::kEnterpriseConnectors;
+  status.policy_error.emplace(
+      file_manager::io_task::PolicyErrorType::kEnterpriseConnectors,
+      /*blocked_files=*/1);
   notification_manager_->HandleIOTaskProgress(status);
 
   // Check: We have the same notification.

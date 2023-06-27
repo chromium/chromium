@@ -318,7 +318,8 @@ TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForPolicyError) {
   status.type = file_manager::io_task::OperationType::kCopy;
   status.state = file_manager::io_task::State::kError;
   status.sources = std::move(source_entries);
-  status.policy_error = io_task::PolicyErrorType::kDlp;
+  status.policy_error.emplace(io_task::PolicyErrorType::kDlp,
+                              /*blocked_files=*/1);
 
   // Expect the event to have dlp as policy error.
   base::RunLoop run_loop;

@@ -60,7 +60,7 @@ class IOTaskController {
   void ProgressPausedTasks();
 
   // Aborts a task from the queue.
-  void CompleteWithError(IOTaskId task_id, PolicyErrorType policy_error);
+  void CompleteWithError(IOTaskId task_id, PolicyError policy_error);
 
   // For tests only; returns the current wake lock counter. This counter is
   // incremented by 1 for every time we get a wake lock and decremented every

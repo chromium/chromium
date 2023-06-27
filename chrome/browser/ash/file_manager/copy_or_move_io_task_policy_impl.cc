@@ -186,10 +186,10 @@ void CopyOrMoveIOTaskPolicyImpl::Resume(ResumeParams params) {
 }
 
 void CopyOrMoveIOTaskPolicyImpl::Complete(State state) {
-  if (has_blocked_files_) {
+  if (blocked_files_ > 0) {
     // It doesn't matter here which policy error we set because the panel
     // strings in the files app are the same for all of them.
-    progress_->policy_error = PolicyErrorType::kDlp;
+    progress_->policy_error.emplace(PolicyErrorType::kDlp, blocked_files_);
     state = State::kError;
   }
 
@@ -227,7 +227,7 @@ CopyOrMoveIOTaskPolicyImpl::GetErrorBehavior() {
   // This function is called when the transfer starts and DLP restrictions are
   // applied before the transfer. If there's any file blocked by DLP, the error
   // behavior should be skip instead of abort.
-  if (report_only_scans_ && !has_blocked_files_) {
+  if (report_only_scans_ && !blocked_files_) {
     return storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT;
   }
   // For the enterprise connectors, we want files to be copied/moved if they are
@@ -328,8 +328,7 @@ void CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed(
       result ==
           enterprise_connectors::FileTransferAnalysisDelegate::RESULT_BLOCKED);
 
-  has_blocked_files_ = true;
-
+  blocked_files_++;
   std::move(callback).Run(base::File::FILE_ERROR_SECURITY);
 }
 
@@ -341,7 +340,7 @@ void CopyOrMoveIOTaskPolicyImpl::OnCheckIfTransferAllowed(
   // Connectors scanning for them.
 
   if (!blocked_entries.empty()) {
-    has_blocked_files_ = true;
+    blocked_files_ = blocked_entries.size();
   }
 
   if (settings_.empty() || report_only_scans_) {

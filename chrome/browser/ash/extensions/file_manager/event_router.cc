@@ -1260,7 +1260,11 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
   event_status.task_id = status.task_id;
   event_status.type = GetIOTaskType(status.type);
   event_status.state = GetIOTaskState(status.state);
-  event_status.policy_error = GetPolicyErrorType(status.policy_error);
+  // TODO(b/288862472): Also pass # of blocked files to the Files app.
+  event_status.policy_error =
+      status.policy_error.has_value()
+          ? GetPolicyErrorType(status.policy_error->type)
+          : file_manager_private::POLICY_ERROR_TYPE_NONE;
   event_status.sources_scanned = status.sources_scanned;
   event_status.destination_volume_id = status.GetDestinationVolumeId();
   event_status.show_notification = status.show_notification;

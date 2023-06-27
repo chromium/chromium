@@ -325,7 +325,7 @@ void FilesPolicyNotificationManager::ShowsFilesPolicyNotification(
           : dlp::FileAction::kMove;
 
   if (status.HasPolicyError() &&
-      status.policy_error ==
+      status.policy_error->type ==
           file_manager::io_task::PolicyErrorType::kDlpWarningTimeout) {
     ShowDlpWarningTimeoutNotification(action, notification_id);
     return;
@@ -346,11 +346,10 @@ void FilesPolicyNotificationManager::ShowsFilesPolicyNotification(
   optional_fields.never_timeout = true;
   const NotificationType type = status.HasWarning() ? NotificationType::kWarning
                                                     : NotificationType::kError;
-  // TODO(aidazolic): Use # blocked files for strings, not total.
   const size_t file_count =
       status.HasWarning()
           ? status.pause_params.policy_params->warning_files_count
-          : status.sources.size();
+          : status.policy_error->blocked_files;
   auto notification = file_manager::CreateSystemNotification(
       notification_id, GetNotificationTitle(action, type),
       GetNotificationMessage(file_count, type),
@@ -661,13 +660,14 @@ void FilesPolicyNotificationManager::HandleFilesPolicyErrorNotificationClick(
           GURL(dlp::kDlpLearnMoreUrl),
           ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
           ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+      // Only delete if we don't need to show the dialog.
+      io_tasks_.erase(task_id);
     } else {
       // Multiple files - review.
       ShowDialog(task_id, FilesDialogType::kError);
     }
   }
   Dismiss(context_, notification_id);
-  io_tasks_.erase(task_id);
 }
 
 void FilesPolicyNotificationManager::ShowDialogForIOTask(

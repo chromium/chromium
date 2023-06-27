@@ -60,7 +60,7 @@ class CopyOrMoveIOTask : public IOTask {
   void Cancel() override;
 
   // Aborts the copy or move because of policy error.
-  void CompleteWithError(PolicyErrorType policy_error) override;
+  void CompleteWithError(PolicyError policy_error) override;
 
  private:
   raw_ptr<Profile, ExperimentalAsh> profile_;

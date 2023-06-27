@@ -238,12 +238,14 @@ TEST_F(IOTaskControllerTest, CompleteWithError) {
 
   // CompleteWithError should synchronously send a progress status.
   EXPECT_CALL(observer,
-              OnIOTaskStatus(AllOf(
-                  Field(&ProgressStatus::state, State::kError),
-                  Field(&ProgressStatus::task_id, task_id),
-                  Field(&ProgressStatus::policy_error, PolicyErrorType::kDlp),
-                  base_matcher)));
-  io_task_controller_.CompleteWithError(task_id, PolicyErrorType::kDlp);
+              OnIOTaskStatus(AllOf(Field(&ProgressStatus::state, State::kError),
+                                   Field(&ProgressStatus::task_id, task_id),
+                                   Field(&ProgressStatus::policy_error,
+                                         PolicyError(PolicyErrorType::kDlp,
+                                                     /*blocked_files=*/2)),
+                                   base_matcher)));
+  io_task_controller_.CompleteWithError(
+      task_id, PolicyError(PolicyErrorType::kDlp, /*blocked_files=*/2));
 
   // No more observer notifications should come after CompleteWithError as the
   // task is deleted.

@@ -245,11 +245,15 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningPausesIOTask) {
                       file_manager::io_task::State::kError),
                 Field(&file_manager::io_task::ProgressStatus::task_id, task_id),
                 Field(&file_manager::io_task::ProgressStatus::policy_error,
-                      file_manager::io_task::PolicyErrorType::kDlp))))
+                      file_manager::io_task::PolicyError(
+                          file_manager::io_task::PolicyErrorType::kDlp,
+                          /*blocked_files=*/1)))))
       .Times(::testing::AtLeast(1));
 
   io_task_controller_->CompleteWithError(
-      task_id, file_manager::io_task::PolicyErrorType::kDlp);
+      task_id,
+      file_manager::io_task::PolicyError(
+          file_manager::io_task::PolicyErrorType::kDlp, /*blocked_files=*/1));
 
   base::RunLoop().RunUntilIdle();
   io_task_controller_->RemoveObserver(&observer);
@@ -525,7 +529,7 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Single) {
   status.sources.emplace_back(
       CreateFileSystemURL(kTestStorageKey, src_file_path.value()),
       absl::nullopt);
-  status.policy_error = policy;
+  status.policy_error.emplace(policy, 1);
 
   fpnm_->ShowsFilesPolicyNotification(notification_id, status);
   auto notification = display_service_tester.GetNotification(notification_id);
@@ -557,7 +561,7 @@ TEST_P(FPNMErrorStatusNotification, ErrorShowsBlockNotification_Multi) {
   status.sources.emplace_back(
       CreateFileSystemURL(kTestStorageKey, src_file_path_2.value()),
       absl::nullopt);
-  status.policy_error = policy;
+  status.policy_error.emplace(policy, 2);
 
   fpnm_->ShowsFilesPolicyNotification(notification_id, status);
   auto notification = display_service_tester.GetNotification(notification_id);
@@ -616,8 +620,8 @@ TEST_P(FPNMTimeoutStatusNotification, TimeoutErrorShowsTimeoutNotification) {
   status.sources.emplace_back(
       CreateFileSystemURL(kTestStorageKey, src_file_path_2.value()),
       absl::nullopt);
-  status.policy_error =
-      file_manager::io_task::PolicyErrorType::kDlpWarningTimeout;
+  status.policy_error.emplace(
+      file_manager::io_task::PolicyErrorType::kDlpWarningTimeout);
 
   fpnm_->ShowsFilesPolicyNotification(notification_id, status);
   auto notification = display_service_tester.GetNotification(notification_id);
