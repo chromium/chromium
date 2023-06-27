@@ -81,7 +81,8 @@ FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(
   FirstPartySetsPolicyService* service =
       FirstPartySetsPolicyServiceFactory::GetForBrowserContext(profile);
   DCHECK(service);
-  if (!features::kFirstPartySetsClearSiteDataOnChangedSets.Get() ||
+  if (features::kFirstPartySetsNavigationThrottleTimeout.Get().is_zero() ||
+      !features::kFirstPartySetsClearSiteDataOnChangedSets.Get() ||
       navigation_handle->GetParentFrameOrOuterDocument() ||
       service->is_ready()) {
     return nullptr;
