@@ -20,7 +20,6 @@ lucicfg.enable_experiment("crbug.com/1182002")
 lucicfg.config(
     config_dir = "generated",
     tracked_files = [
-        "luci/chops-weetbix-dev.cfg",
         "luci/cr-buildbucket-dev.cfg",
         "luci/luci-analysis-dev.cfg",
         "luci/luci-logdog-dev.cfg",
@@ -36,11 +35,5 @@ lucicfg.emit(
     dest = "luci/luci-analysis-dev.cfg",
     data = io.read_file("luci-analysis-dev.cfg"),
 )
-
-# TODO(b/270163072): Re-emit after staging is fixed.
-# lucicfg.emit(
-#     dest = "luci/chops-weetbix-dev.cfg",
-#     data = io.read_file("chops-weetbix-dev.cfg"),
-# )
 
 branches.exec("//dev/dev.star")
