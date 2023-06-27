@@ -346,11 +346,14 @@ void FilesPolicyNotificationManager::ShowsFilesPolicyNotification(
   optional_fields.never_timeout = true;
   const NotificationType type = status.HasWarning() ? NotificationType::kWarning
                                                     : NotificationType::kError;
-  // TODO(aidazolic): Use # warned/blocked files for strings, not total.
-  const size_t file_count = status.sources.size();
+  // TODO(aidazolic): Use # blocked files for strings, not total.
+  const size_t file_count =
+      status.HasWarning()
+          ? status.pause_params.policy_params->warning_files_count
+          : status.sources.size();
   auto notification = file_manager::CreateSystemNotification(
       notification_id, GetNotificationTitle(action, type),
-      GetNotificationMessage(status.sources.size(), type),
+      GetNotificationMessage(file_count, type),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           std::move(callback)),
       optional_fields);
@@ -1068,10 +1071,8 @@ void FilesPolicyNotificationManager::PauseIOTask(
           weak_factory_.GetWeakPtr(), task_id, warning_reason));
 
   file_manager::io_task::PauseParams pause_params;
-  pause_params.policy_params =
-      file_manager::io_task::PolicyPauseParams(Policy::kDlp);
-  // TODO(b/285880274): Pass number of files on PolicyPauseParams because it's
-  // needed for the strings.
+  pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
+      Policy::kDlp, io_tasks_.at(task_id).warning_info->files.size());
   io_task_controller->Pause(task_id, std::move(pause_params));
   // TODO(ayaelattar): Timeout after total 5 minutes.
 }

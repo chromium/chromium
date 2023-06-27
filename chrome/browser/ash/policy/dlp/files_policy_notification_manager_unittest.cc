@@ -130,7 +130,7 @@ TEST_F(FilesPolicyNotificationManagerTest, AddCopyTask) {
 
   // Pause the task. It shouldn't be removed.
   file_manager::io_task::PauseParams pause_params;
-  pause_params.policy_params.emplace(Policy::kDlp);
+  pause_params.policy_params.emplace(Policy::kDlp, /*warning_files_count=*/1);
   io_task_controller_->Pause(task_id, std::move(pause_params));
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
 
@@ -220,8 +220,7 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningPausesIOTask) {
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
 
   file_manager::io_task::PauseParams pause_params;
-  pause_params.policy_params =
-      file_manager::io_task::PolicyPauseParams(Policy::kDlp);
+  pause_params.policy_params.emplace(Policy::kDlp, /*warning_files_count=*/1);
 
   // Task is paused.
   EXPECT_CALL(
@@ -331,8 +330,8 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningCancelled) {
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
 
   file_manager::io_task::PauseParams pause_params;
-  pause_params.policy_params =
-      file_manager::io_task::PolicyPauseParams(Policy::kDlp);
+  pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
+      Policy::kDlp, /*warning_files_count=*/1);
 
   // Task is paused.
   EXPECT_CALL(
@@ -388,8 +387,8 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningResumed) {
   EXPECT_TRUE(fpnm_->HasIOTask(task_id));
 
   file_manager::io_task::PauseParams pause_params;
-  pause_params.policy_params =
-      file_manager::io_task::PolicyPauseParams(Policy::kDlp);
+  pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
+      Policy::kDlp, /*warning_files_count=*/1);
 
   // Task is paused.
   EXPECT_CALL(
@@ -437,8 +436,8 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Single) {
   status.sources.emplace_back(
       CreateFileSystemURL(kTestStorageKey, src_file_path.value()),
       absl::nullopt);
-  status.pause_params.policy_params =
-      file_manager::io_task::PolicyPauseParams(policy);
+  status.pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
+      policy, /*warning_files_count=*/1);
 
   fpnm_->ShowsFilesPolicyNotification(notification_id, status);
   auto notification = display_service_tester.GetNotification(notification_id);
@@ -470,8 +469,8 @@ TEST_P(FPNMPausedStatusNotification, PausedShowsWarningNotification_Multi) {
   status.sources.emplace_back(
       CreateFileSystemURL(kTestStorageKey, src_file_path_2.value()),
       absl::nullopt);
-  status.pause_params.policy_params =
-      file_manager::io_task::PolicyPauseParams(policy);
+  status.pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
+      policy, /*warning_files_count=*/2);
 
   fpnm_->ShowsFilesPolicyNotification(notification_id, status);
   auto notification = display_service_tester.GetNotification(notification_id);

@@ -106,6 +106,9 @@ struct ConflictPauseParams {
 struct PolicyPauseParams {
   // One of kDlp, kEnterpriseConnectors.
   policy::Policy type;
+  // The number of files under warning restriction. Needed to show correct
+  // notifications.
+  size_t warning_files_count = 0;
 
   bool operator==(const PolicyPauseParams& other) const;
 };
