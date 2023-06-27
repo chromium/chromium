@@ -20,10 +20,6 @@ namespace media {
 namespace {
 
 const std::string kRenderDelay = "Media.AudioOutputDevice.AudioServiceDelay";
-const std::string kRenderDelayDifferenceShort =
-    "Media.AudioOutputDevice.AudioServiceDelayDifference.Short";
-const std::string kRenderDelayDifferenceIntervals =
-    "Media.AudioOutputDevice.AudioServiceDelayDifference.Intervals";
 const std::string kRenderGlitchCountShort =
     "Media.AudioOutputDevice.AudioServiceGlitchCount.Short";
 const std::string kRenderGlitchCountIntervals =
@@ -34,10 +30,6 @@ const std::string kRenderGlitchDurationIntervals =
     "Media.AudioOutputDevice.AudioServiceGlitchDuration.Intervals";
 
 const std::string kCaptureDelay = "Media.AudioInputDevice.AudioServiceDelay";
-const std::string kCaptureDelayDifferenceShort =
-    "Media.AudioInputDevice.AudioServiceDelayDifference.Short";
-const std::string kCaptureDelayDifferenceIntervals =
-    "Media.AudioInputDevice.AudioServiceDelayDifference.Intervals";
 const std::string kCaptureGlitchCountShort =
     "Media.AudioInputDevice.AudioServiceGlitchCount.Short";
 const std::string kCaptureGlitchCountIntervals =
@@ -98,9 +90,6 @@ TEST_P(AudioDeviceStatsReporterOutputTest, ShortStreamTest) {
   histogram_tester_.ExpectBucketCount(kRenderDelay + latency_tag_, 60, 50);
   histogram_tester_.ExpectBucketCount(kRenderDelay, 140, 50);
   histogram_tester_.ExpectBucketCount(kRenderDelay + latency_tag_, 140, 50);
-  histogram_tester_.ExpectBucketCount(kRenderDelayDifferenceShort, 80, 1);
-  histogram_tester_.ExpectBucketCount(
-      kRenderDelayDifferenceShort + latency_tag_, 80, 1);
   histogram_tester_.ExpectBucketCount(kRenderGlitchCountShort, 50, 1);
   histogram_tester_.ExpectBucketCount(kRenderGlitchCountShort + latency_tag_,
                                       50, 1);
@@ -108,7 +97,6 @@ TEST_P(AudioDeviceStatsReporterOutputTest, ShortStreamTest) {
   histogram_tester_.ExpectBucketCount(kRenderGlitchDurationShort + latency_tag_,
                                       500, 1);
 
-  histogram_tester_.ExpectTotalCount(kRenderDelayDifferenceIntervals, 0);
   histogram_tester_.ExpectTotalCount(kRenderGlitchCountIntervals, 0);
   histogram_tester_.ExpectTotalCount(kRenderGlitchDurationIntervals, 0);
 }
@@ -152,9 +140,6 @@ TEST_P(AudioDeviceStatsReporterOutputTest, LongStreamTest) {
   histogram_tester_.ExpectBucketCount(kRenderDelay, 140, 500);
   histogram_tester_.ExpectBucketCount(kRenderDelay + latency_tag_, 140, 500);
 
-  histogram_tester_.ExpectBucketCount(kRenderDelayDifferenceIntervals, 80, 1);
-  histogram_tester_.ExpectBucketCount(
-      kRenderDelayDifferenceIntervals + latency_tag_, 80, 1);
   histogram_tester_.ExpectBucketCount(kRenderGlitchCountIntervals, 500, 1);
   histogram_tester_.ExpectBucketCount(
       kRenderGlitchCountIntervals + latency_tag_, 500, 1);
@@ -167,9 +152,6 @@ TEST_P(AudioDeviceStatsReporterOutputTest, LongStreamTest) {
   histogram_tester_.ExpectBucketCount(kRenderDelay + latency_tag_, 10, 500);
   histogram_tester_.ExpectBucketCount(kRenderDelay, 190, 500);
   histogram_tester_.ExpectBucketCount(kRenderDelay + latency_tag_, 190, 500);
-  histogram_tester_.ExpectBucketCount(kRenderDelayDifferenceIntervals, 180, 1);
-  histogram_tester_.ExpectBucketCount(
-      kRenderDelayDifferenceIntervals + latency_tag_, 180, 1);
   histogram_tester_.ExpectBucketCount(kRenderGlitchCountIntervals, 250, 1);
   histogram_tester_.ExpectBucketCount(
       kRenderGlitchCountIntervals + latency_tag_, 250, 1);
@@ -182,7 +164,6 @@ TEST_P(AudioDeviceStatsReporterOutputTest, LongStreamTest) {
   histogram_tester_.ExpectBucketCount(kRenderDelay + latency_tag_, 100, 500);
 
   reporter_.reset();
-  histogram_tester_.ExpectTotalCount(kRenderDelayDifferenceShort, 0);
   histogram_tester_.ExpectTotalCount(kRenderGlitchCountShort, 0);
   histogram_tester_.ExpectTotalCount(kRenderGlitchDurationShort, 0);
 }
@@ -238,11 +219,9 @@ TEST_F(AudioDeviceStatsReporterInputTest, ShortStreamTest) {
 
   histogram_tester_.ExpectBucketCount(kCaptureDelay, 60, 50);
   histogram_tester_.ExpectBucketCount(kCaptureDelay, 140, 50);
-  histogram_tester_.ExpectBucketCount(kCaptureDelayDifferenceShort, 80, 1);
   histogram_tester_.ExpectBucketCount(kCaptureGlitchCountShort, 50, 1);
   histogram_tester_.ExpectBucketCount(kCaptureGlitchDurationShort, 500, 1);
 
-  histogram_tester_.ExpectTotalCount(kCaptureDelayDifferenceIntervals, 0);
   histogram_tester_.ExpectTotalCount(kCaptureGlitchCountIntervals, 0);
   histogram_tester_.ExpectTotalCount(kCaptureGlitchDurationIntervals, 0);
 }
@@ -281,14 +260,12 @@ TEST_F(AudioDeviceStatsReporterInputTest, LongStreamTest) {
   histogram_tester_.ExpectBucketCount(kCaptureDelay, 60, 500);
   histogram_tester_.ExpectBucketCount(kCaptureDelay, 140, 500);
 
-  histogram_tester_.ExpectBucketCount(kCaptureDelayDifferenceIntervals, 80, 1);
   histogram_tester_.ExpectBucketCount(kCaptureGlitchCountIntervals, 500, 1);
   histogram_tester_.ExpectBucketCount(kCaptureGlitchDurationIntervals, 500, 1);
 
   // Data from the second interval.
   histogram_tester_.ExpectBucketCount(kCaptureDelay, 10, 500);
   histogram_tester_.ExpectBucketCount(kCaptureDelay, 190, 500);
-  histogram_tester_.ExpectBucketCount(kCaptureDelayDifferenceIntervals, 180, 1);
   histogram_tester_.ExpectBucketCount(kCaptureGlitchCountIntervals, 250, 1);
   histogram_tester_.ExpectBucketCount(kCaptureGlitchDurationIntervals, 250, 1);
 
@@ -296,7 +273,6 @@ TEST_F(AudioDeviceStatsReporterInputTest, LongStreamTest) {
   histogram_tester_.ExpectBucketCount(kCaptureDelay, 100, 500);
 
   reporter_.reset();
-  histogram_tester_.ExpectTotalCount(kCaptureDelayDifferenceShort, 0);
   histogram_tester_.ExpectTotalCount(kCaptureGlitchCountShort, 0);
   histogram_tester_.ExpectTotalCount(kCaptureGlitchDurationShort, 0);
 }

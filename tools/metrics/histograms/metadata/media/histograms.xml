@@ -1416,21 +1416,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.AudioInputDevice.AudioServiceDelayDifference{Duration}"
-    units="ms" expires_after="2023-08-01">
-  <owner>fhernqvist@google.com</owner>
-  <owner>olka@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    The difference between the largest and the lowest audio capture delay
-    observed during the sample interval. This stat considers the audio capture
-    delay in the Audio Service, including the IPC and the OS. Logged at the end
-    of each 1000-callback interval for Intervals. Logged at the end of the
-    stream for Short.
-  </summary>
-  <token key="Duration" variants="AudioAggregationDuration"/>
-</histogram>
-
 <histogram name="Media.AudioInputDevice.AudioServiceGlitchCount{Duration}"
     units="glitches" expires_after="2024-02-01">
   <owner>fhernqvist@google.com</owner>
@@ -1537,25 +1522,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether playback started successfully after stream startup was requested.
   </summary>
-</histogram>
-
-<histogram
-    name="Media.AudioOutputDevice.AudioServiceDelayDifference{Duration}{LatencyTag}"
-    units="ms" expires_after="2023-08-01">
-  <owner>fhernqvist@google.com</owner>
-  <owner>olka@chromium.org</owner>
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    The difference between the largest and the lowest audio playout delay
-    observed during the sample interval. This stat considers the audio playout
-    delay in the Audio Service, including the IPC and the OS. Logged at the end
-    of each 1000-callback interval for Intervals. Logged at the end of the
-    stream for Short.
-  </summary>
-  <token key="Duration" variants="AudioAggregationDuration"/>
-  <token key="LatencyTag" variants="AudioLatencyTag"/>
 </histogram>
 
 <histogram name="Media.AudioOutputDevice.AudioServiceDelay{LatencyTag}"

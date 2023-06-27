@@ -45,13 +45,6 @@ AudioDeviceStatsReporter::AudioDeviceStatsReporter(
                                   // delays up to 1s.
           /*bucket_count = */ 50,
           type)),
-      delay_difference_log_callback_(CreateAggregateCallback(
-          "DelayDifference",
-          params.latency_tag(),
-          /*max_value = */ 1000,  // Measured in ms. Allows us to differentiate
-                                  // delay differences up to 1s.
-          /*bucket_count = */ 50,
-          type)),
       glitch_count_log_callback_(CreateAggregateCallback(
           "GlitchCount",
           params.latency_tag(),
@@ -88,8 +81,6 @@ void AudioDeviceStatsReporter::ReportCallback(
   ++stats_.callback_count;
   stats_.glitch_count += glitch_info.count;
   stats_.glitch_duration += glitch_info.duration;
-  stats_.largest_delay = std::max(delay, stats_.largest_delay);
-  stats_.smallest_delay = std::min(delay, stats_.smallest_delay);
 
   if (stats_.callback_count >= 1000) {
     UploadStats(stats_, SamplingPeriod::kIntervals);
@@ -111,21 +102,13 @@ void AudioDeviceStatsReporter::UploadStats(const Stats& stats,
   int glitch_duration_permille =
       std::round(1000 * stats.glitch_duration / stats_duration);
 
-  DCHECK_NE(stats.largest_delay, base::TimeDelta::Min());
-  DCHECK_NE(stats.smallest_delay, base::TimeDelta::Max());
-  int delay_difference_ms =
-      (stats.largest_delay - stats.smallest_delay).InMilliseconds();
-
   glitch_count_log_callback_.Run(stats.glitch_count, sampling_period);
-  delay_difference_log_callback_.Run(delay_difference_ms, sampling_period);
   glitch_duration_log_callback_.Run(glitch_duration_permille, sampling_period);
 }
 
 // Used to generate callbacks for:
-// Media.AudioOutputDevice.AudioServiceDelayDifference.*.*
 // Media.AudioOutputDevice.AudioServiceGlitchCount.*.*
 // Media.AudioOutputDevice.AudioServiceDroppedAudio.*.*
-// Media.AudioInputDevice.AudioServiceDelayDifference.*
 // Media.AudioInputDevice.AudioServiceGlitchCount.*
 // Media.AudioInputDevice.AudioServiceDroppedAudio.*
 // |latency| is ignored for input.
