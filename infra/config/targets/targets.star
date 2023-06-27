@@ -2323,11 +2323,6 @@ targets.generated_script(
     ],
 )
 
-targets.windowed_test_launcher(
-    name = "weblayer_browsertests",
-    label = "//weblayer/test:weblayer_browsertests",
-)
-
 targets.script(
     name = "webview_cts_tests",
     label = "//android_webview/test:webview_cts_tests",
@@ -2390,16 +2385,6 @@ targets.script(
         "--use-apk-under-test-flags-file",
         "-v",
     ],
-)
-
-targets.console_test_launcher(
-    name = "webengine_support_instrumentation_test_apk",
-    label = "//weblayer/browser/android/javatests:webengine_support_instrumentation_test_apk",
-)
-
-targets.junit_test(
-    name = "weblayer_junit_tests",
-    label = "//weblayer/browser/java:weblayer_junit_tests",
 )
 
 targets.console_test_launcher(

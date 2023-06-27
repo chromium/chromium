@@ -4406,24 +4406,6 @@
       'linux-rel-cft',
     ],
   },
-  'webengine_support_instrumentation_test_apk': {
-    'modifications': {
-      'android-12-x64-rel': {
-        'ci_only': True,
-      },
-      # If you change this, make similar changes in android-x86-code-coverage below
-      'android-nougat-x86-rel': {
-        'ci_only': True,
-      },
-      'android-pie-arm64-rel': {
-        'ci_only': True,
-      },
-      # Keep this same as android-nougat-x86-rel above
-      'android-x86-code-coverage': {
-        'ci_only': True,
-      },
-    },
-  },
   'webgl2_conformance_d3d11_passthrough_tests': {
     'remove_from': [
       # Removed from V8 builder since WebGL 1 should provide reasonable
