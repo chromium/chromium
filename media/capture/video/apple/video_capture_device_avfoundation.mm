@@ -407,11 +407,14 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // yes/no and preserve aspect ratio yes/no when scaling. Currently we set
   // cropping and preservation.
   NSDictionary* videoSettingsDictionary = @{
+#if BUILDFLAG(IS_MAC)
     (id)kCVPixelBufferWidthKey : @(width),
     (id)kCVPixelBufferHeightKey : @(height),
-    (id)kCVPixelBufferPixelFormatTypeKey : @(best_fourcc),
-    AVVideoScalingModeKey : AVVideoScalingModeResizeAspectFill
+    AVVideoScalingModeKey : AVVideoScalingModeResizeAspectFill,
+#endif
+    (id)kCVPixelBufferPixelFormatTypeKey : @(best_fourcc)
   };
+
   _captureVideoDataOutput.videoSettings = videoSettingsDictionary;
 
 #if (!defined(__IPHONE_7_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_7_0)
