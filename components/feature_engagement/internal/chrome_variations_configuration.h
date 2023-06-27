@@ -58,11 +58,16 @@ class ChromeVariationsConfiguration : public Configuration {
                                  base::FieldTrialParams* params);
   // Attempts to get the client side config for |feature| and add its config to
   // the config store. If |is_group| is true, then |feature| refers to a group
-  // configuration instead of a feature configuration.
-  void TryAddingClientSideConfig(const base::Feature* feature, bool is_group);
+  // configuration instead of a feature configuration. |all_groups| is necessary
+  // to validate client side configs contain valid groups.
+  void TryAddingClientSideConfig(const base::Feature* feature,
+                                 bool is_group,
+                                 const GroupVector& all_groups);
   // Returns true if FeatureConfig was found with a local hard coded
-  // configuration.
-  bool MaybeAddClientSideFeatureConfig(const base::Feature* feature);
+  // configuration. Also validates that any groups in the config are found in
+  // |all_groups|.
+  bool MaybeAddClientSideFeatureConfig(const base::Feature* feature,
+                                       const GroupVector& all_groups);
   // Returns true if GroupConfig was found with a local hard coded
   // configuration.
   bool MaybeAddClientSideGroupConfig(const base::Feature* group);

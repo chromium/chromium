@@ -710,11 +710,12 @@ bool ChromeVariationsConfiguration::ShouldUseClientSideConfig(
 
 void ChromeVariationsConfiguration::TryAddingClientSideConfig(
     const base::Feature* feature,
-    bool is_group) {
+    bool is_group,
+    const GroupVector& all_groups) {
   // Try to read the client-side configuration.
-  bool added_client_config = (is_group)
-                                 ? MaybeAddClientSideGroupConfig(feature)
-                                 : MaybeAddClientSideFeatureConfig(feature);
+  bool added_client_config =
+      (is_group) ? MaybeAddClientSideGroupConfig(feature)
+                 : MaybeAddClientSideFeatureConfig(feature, all_groups);
   if (added_client_config) {
     stats::RecordConfigParsingEvent(
         stats::ConfigParsingEvent::SUCCESS_FROM_SOURCE);
@@ -751,7 +752,7 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
   DVLOG(3) << "Parsing feature config for " << feature->name;
   std::map<std::string, std::string> params;
   if (ShouldUseClientSideConfig(feature, &params)) {
-    TryAddingClientSideConfig(feature, /*is_group=*/false);
+    TryAddingClientSideConfig(feature, /*is_group=*/false, all_groups);
     return;
   }
 
@@ -796,13 +797,21 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
 }
 
 bool ChromeVariationsConfiguration::MaybeAddClientSideFeatureConfig(
-    const base::Feature* feature) {
+    const base::Feature* feature,
+    const GroupVector& all_groups) {
   if (!base::FeatureList::IsEnabled(*feature))
     return false;
 
   DCHECK(configs_.find(feature->name) == configs_.end());
   if (auto config = GetClientSideFeatureConfig(feature)) {
     configs_[feature->name] = *config;
+    // If the client-side config contains any groups, check if those groups
+    // are supported.
+    if (base::FeatureList::IsEnabled(kIPHGroups)) {
+      for (auto group_name : config->groups) {
+        CHECK(IsKnownGroup(group_name, all_groups));
+      }
+    }
     return true;
   }
   return false;
@@ -819,7 +828,7 @@ void ChromeVariationsConfiguration::ParseGroupConfig(
 
   std::map<std::string, std::string> params;
   if (ShouldUseClientSideConfig(group, &params)) {
-    TryAddingClientSideConfig(group, /*is_group=*/true);
+    TryAddingClientSideConfig(group, /*is_group=*/true, all_groups);
     return;
   }
 
