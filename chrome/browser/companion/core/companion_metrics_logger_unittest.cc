@@ -356,4 +356,43 @@ TEST_F(CompanionMetricsLoggerTest, RecordPromoEvent) {
   TestPromoEvent(PromoType::kExps, PromoAction::kShown, PromoEvent::kExpsShown);
 }
 
+TEST_F(CompanionMetricsLoggerTest, PHShown) {
+  base::HistogramTester histogram_tester;
+
+  logger_->RecordUiSurfaceShown(UiSurface::kPH, /*ui_surface_position=*/2,
+                                /*child_element_available_count=*/-1,
+                                /*child_element_shown_count=*/-1);
+  logger_->RecordUiSurfaceShown(UiSurface::kPHResult, /*ui_surface_position=*/2,
+                                /*child_element_available_count=*/3,
+                                /*child_element_shown_count=*/1);
+  logger_->RecordUiSurfaceClicked(UiSurface::kPHResult, /*click_position=*/1);
+
+  // Verify histograms for click and shown events.
+  histogram_tester.ExpectBucketCount("Companion.PH.Shown",
+                                     /*sample=*/true, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Companion.PHResult.Shown",
+                                     /*sample=*/true, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Companion.PHResult.Clicked",
+                                     /*sample=*/true, /*expected_count=*/1);
+
+  // Destroy the logger. Verify that UKM event is recorded.
+  logger_.reset();
+
+  // PH metrics.
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kPH_LastEventName,
+                 static_cast<int>(UiEvent::kShown));
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kPH_ComponentPositionName,
+                 2);
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kPHResult_LastEventName,
+                 static_cast<int>(UiEvent::kClicked));
+  ExpectUkmEntry(
+      ukm::builders::Companion_PageView::kPHResult_ComponentPositionName, 2);
+  ExpectUkmEntry(
+      ukm::builders::Companion_PageView::kPHResult_NumEntriesAvailableName, 3);
+  ExpectUkmEntry(
+      ukm::builders::Companion_PageView::kPHResult_NumEntriesShownName, 1);
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kPHResult_ClickPositionName,
+                 1);
+}
+
 }  // namespace companion

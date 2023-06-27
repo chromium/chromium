@@ -27,6 +27,7 @@ chromium-metrics-reviews@google.com.
   <variant name="CQ"/>
   <variant name="PageEntities"/>
   <variant name="PH"/>
+  <variant name="PHResult"/>
   <variant name="RegionSearch"/>
   <variant name="RelQr"/>
   <variant name="RelQs"/>

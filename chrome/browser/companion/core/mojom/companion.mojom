@@ -8,7 +8,7 @@ import "url/mojom/url.mojom";
 
 // Methods called on the browser from the companion UI.
 // Keep this file in sync with
-// google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts.
+// google3/java/com/google/lens/web/interfaces/standalone/commonweb/companionparent/companion_parent_communication_service.ts.
 enum MethodType {
   // Methods used in renderer -> browser communication.
   // Method corresponding to `CompanionPageHandler.OnPromoAction`.
@@ -120,6 +120,7 @@ struct ImageQuery {
 // google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts.
 enum UiSurface {
   kUnknown = 0,
+  // Used for when the PH initial surface is shown that allows PH to be requested by the user.
   kPH = 1,
   kCQ = 2,
   kRegionSearch = 3,
@@ -129,6 +130,8 @@ enum UiSurface {
   kRelQs = 7,
   kPageEntities = 8,
   kATX = 9,
+  // Used for when requested PH is shown to report the resulting elements and interactions.
+  kPHResult = 10
 };
 
 // Factory method for creating a new WebUI page handler.
