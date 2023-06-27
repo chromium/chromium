@@ -9,7 +9,11 @@ import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult(`Tests refreshing the database information and data views.\n`);
   await TestRunner.loadLegacyModule('console');
-    // Note: every test that uses a storage API must manually clean-up state from previous tests.
+  await TestRunner.navigatePromise('http://127.0.0.1:8000/devtools/indexeddb/resources/without-indexed-db.html');
+  await ApplicationTestRunner.setupIndexedDBHelpers();
+
+  // Note: every test that uses a storage API must manually clean-up state from
+  // previous tests.
   await ApplicationTestRunner.resetState();
 
   await TestRunner.loadLegacyModule('console');
@@ -62,13 +66,8 @@ import {ConsoleTestRunner} from 'console_test_runner';
   ApplicationTestRunner.dumpIndexedDBTree();
 
   // Create database
-  try {
-    ApplicationTestRunner.createDatabaseAsync(databaseName);
-    await new Promise(waitDatabaseAdded);
-  } catch (e) {
-    TestRunner.addResult(await TestRunnet.evaluateInPageAsync('window.location.href'));
-    throw e;
-  }
+  ApplicationTestRunner.createDatabaseAsync(databaseName);
+  await new Promise(waitDatabaseAdded);
   var idbDatabaseTreeElement = UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
   databaseId = idbDatabaseTreeElement.databaseId;
   TestRunner.addResult('Created database.');

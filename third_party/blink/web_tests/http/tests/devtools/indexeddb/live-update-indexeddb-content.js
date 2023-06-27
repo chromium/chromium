@@ -8,6 +8,8 @@ import {ApplicationTestRunner} from 'application_test_runner';
 (async function() {
   TestRunner.addResult(`Tests that the IndexedDB database content live updates.\n`);
   await TestRunner.loadLegacyModule('console');
+  await TestRunner.navigatePromise('http://127.0.0.1:8000/devtools/indexeddb/resources/without-indexed-db.html');
+  await ApplicationTestRunner.setupIndexedDBHelpers();
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
