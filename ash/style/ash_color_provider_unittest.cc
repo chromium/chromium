@@ -10,7 +10,9 @@
 #include "ash/test/ash_test_helper.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_provider_key.h"
@@ -57,7 +59,11 @@ class AshColorProviderBase
     : public testing::TestWithParam<ColorsTestCase<LayerType>> {
  public:
   AshColorProviderBase()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {
+    // Disable when Jelly is enabled since it changes all the colors (and
+    // this test verifies the old colors).
+    features_.InitAndDisableFeature(chromeos::features::kJelly);
+  }
 
   void SetUp() override {
     ash_test_helper_.SetUp();
@@ -70,6 +76,7 @@ class AshColorProviderBase
   }
 
  protected:
+  base::test::ScopedFeatureList features_;
   base::test::TaskEnvironment task_environment_;
   AshTestHelper ash_test_helper_;
   raw_ptr<AshColorProvider, ExperimentalAsh> color_provider_;
