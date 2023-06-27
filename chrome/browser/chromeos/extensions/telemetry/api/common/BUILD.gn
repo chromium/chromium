@@ -23,7 +23,6 @@ source_set("common") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/common/chromeos/extensions",
-    "//components/account_id",
     "//components/security_state/content",
     "//components/security_state/core",
     "//content/public/browser",
@@ -33,7 +32,10 @@ source_set("common") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//components/user_manager" ]
+    deps += [
+      "//components/account_id",
+      "//components/user_manager",
+    ]
   }
 
   if (is_chromeos_lacros) {

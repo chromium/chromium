@@ -29,6 +29,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -86,6 +88,10 @@ const std::vector<ExtensionInfoTestParams> kAllExtensionInfoTestParams{
         /*matches_origin=*/"https://dlcdnccls.asus.com/*",
         /*manufacturer=*/"ASUS"),
 };
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kUserEmail[] = "user@example.com";
+#endif  // IS_CHROMEOS_ASH
 
 // Tests that Chrome OS System Extensions must fulfill the requirements to
 // access Telemetry Extension APIs. All tests are parameterized with the
@@ -162,10 +168,16 @@ class ApiGuardDelegateTest
   virtual void AddUserAndLogIn() {
     auto* const user_manager = GetFakeUserManager();
     // Make sure the current user is affiliated.
-    const AccountId account_id = AccountId::FromUserEmail("user@example.com");
+    const AccountId account_id = AccountId::FromUserEmail(kUserEmail);
     user_manager->AddUser(account_id);
     user_manager->LoginUser(account_id);
     user_manager->SwitchActiveUser(account_id);
+  }
+
+  void SetUserAsOwner() {
+    auto* const user_manager = GetFakeUserManager();
+    // Make sure the current user is affiliated.
+    const AccountId account_id = AccountId::FromUserEmail(kUserEmail);
     user_manager->SetOwnerId(account_id);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -244,6 +256,24 @@ TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {
   EXPECT_EQ("This extension is not run by the device owner", error.value());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_P(ApiGuardDelegateTest, OwnershipDelayed) {
+  OpenPwaUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
+  auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
+  base::test::TestFuture<absl::optional<std::string>> future;
+
+  api_guard_delegate->CanAccessApi(profile(), extension(),
+                                   future.GetCallback());
+
+  // Trigger async ownership retrieval.
+  SetUserAsOwner();
+
+  ASSERT_TRUE(future.Wait());
+  absl::optional<std::string> error = future.Get();
+  EXPECT_FALSE(error.has_value()) << error.value();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_P(ApiGuardDelegateTest, CurrentUserOwnerButNotMainLacrosProfile) {
   // Don't set the current profile as the main profile.
@@ -263,6 +293,9 @@ TEST_P(ApiGuardDelegateTest, CurrentUserOwnerButNotMainLacrosProfile) {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_P(ApiGuardDelegateTest, PwaNotOpen) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  SetUserAsOwner();
+#endif  // IS_CHROMEOS_ASH
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
   base::test::TestFuture<absl::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
@@ -275,6 +308,9 @@ TEST_P(ApiGuardDelegateTest, PwaNotOpen) {
 }
 
 TEST_P(ApiGuardDelegateTest, PwaIsOpenButNotSecure) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  SetUserAsOwner();
+#endif  // IS_CHROMEOS_ASH
   OpenPwaUrlAndSetCertificateWithStatus(
       /*cert_status=*/net::CERT_STATUS_INVALID);
 
@@ -290,6 +326,9 @@ TEST_P(ApiGuardDelegateTest, PwaIsOpenButNotSecure) {
 }
 
 TEST_P(ApiGuardDelegateTest, ManufacturerNotAllowed) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  SetUserAsOwner();
+#endif  // IS_CHROMEOS_ASH
   OpenPwaUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
 
   // Make sure device manufacturer is not allowed.
@@ -308,6 +347,9 @@ TEST_P(ApiGuardDelegateTest, ManufacturerNotAllowed) {
 }
 
 TEST_P(ApiGuardDelegateTest, SkipManufacturerCheck) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  SetUserAsOwner();
+#endif  // IS_CHROMEOS_ASH
   OpenPwaUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
   // Append the switch to skip the manufacturer check.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -327,6 +369,9 @@ TEST_P(ApiGuardDelegateTest, SkipManufacturerCheck) {
 }
 
 TEST_P(ApiGuardDelegateTest, NoError) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  SetUserAsOwner();
+#endif  // IS_CHROMEOS_ASH
   OpenPwaUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
