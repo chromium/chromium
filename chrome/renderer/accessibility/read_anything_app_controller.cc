@@ -11,11 +11,13 @@
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
+#include "components/language/core/common/locale_util.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/converter.h"
@@ -501,6 +503,18 @@ void ReadAnythingAppController::OnAXTreeDistilled(
       base::UmaHistogramEnumeration(string_constants::kEmptyStateHistogramName,
                                     ReadAnythingEmptyState::kEmptyStateShown);
     }
+  }
+
+  // AXNode's language code is BCP 47. Only the base language is needed to
+  // record the metric.
+  std::string language = model_.GetTreeFromId(model_.active_tree_id())
+                             .get()
+                             ->root()
+                             ->GetLanguage();
+  if (!language.empty()) {
+    base::UmaHistogramSparse(
+        string_constants::kLanguageHistogramName,
+        base::HashMetricName(language::ExtractBaseLanguage(language)));
   }
 
   // Once drawing is complete, unserialize all of the pending updates on the

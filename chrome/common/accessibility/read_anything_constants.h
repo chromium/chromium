@@ -22,6 +22,7 @@ extern const char kFontScaleHistogramName[];
 extern const char kSettingsChangeHistogramName[];
 extern const char kScrollEventHistogramName[];
 extern const char kEmptyStateHistogramName[];
+extern const char kLanguageHistogramName[];
 
 extern const std::set<std::string> GetNonSelectableUrls();
 
