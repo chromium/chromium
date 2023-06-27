@@ -174,6 +174,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   syncSetupService->CommitSyncChanges();
 
   _syncObserver.reset();
+  [self.signoutActionSheetCoordinator stop];
+  _signoutActionSheetCoordinator = nil;
 }
 
 #pragma mark - Properties

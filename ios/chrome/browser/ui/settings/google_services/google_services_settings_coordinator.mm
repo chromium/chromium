@@ -108,6 +108,11 @@ using signin_metrics::PromoAction;
                                            animated:YES];
 }
 
+- (void)stop {
+  [self.signOutCoordinator stop];
+  _signOutCoordinator = nil;
+}
+
 #pragma mark - Private
 
 - (void)authenticationFlowDidComplete {

@@ -93,6 +93,10 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   self.actionSheetCoordinator = nil;
 }
 
+- (void)dealloc {
+  DCHECK(!self.actionSheetCoordinator);
+}
+
 #pragma mark - ActionSheetCoordinator properties
 
 - (NSString*)title {

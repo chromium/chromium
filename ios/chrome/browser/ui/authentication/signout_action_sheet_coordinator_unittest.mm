@@ -71,6 +71,12 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
         SyncSetupServiceFactory::GetForBrowserState(browser_state_.get()));
   }
 
+  void TearDown() override {
+    [signout_coordinator_ stop];
+    signout_coordinator_ = nil;
+    PlatformTest::TearDown();
+  }
+
   // Identity services.
   AuthenticationService* authentication_service() {
     return AuthenticationServiceFactory::GetForBrowserState(
