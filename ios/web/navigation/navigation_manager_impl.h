@@ -28,6 +28,9 @@ class ElapsedTimer;
 }
 
 namespace web {
+namespace proto {
+class NavigationStorage;
+}  // namespace proto
 class BrowserState;
 class NavigationItem;
 class NavigationManagerDelegate;
@@ -111,6 +114,12 @@ class NavigationManagerImpl final : public NavigationManager {
 
   NavigationManagerImpl(const NavigationManagerImpl&) = delete;
   NavigationManagerImpl& operator=(const NavigationManagerImpl&) = delete;
+
+  // Restores state from `storage`.
+  void RestoreFromProto(const proto::NavigationStorage& storage);
+
+  // Serializes the NavigationItemImpl into `storage`.
+  void SerializeToProto(proto::NavigationStorage& storage) const;
 
   // Setter for the callback used to fetch the native session data blob from
   // the session cache.

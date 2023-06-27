@@ -12,54 +12,12 @@
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/test/web_test.h"
-#import "ios/web/test/fakes/crw_fake_back_forward_list.h"
-#import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
+#import "ios/web/test/fakes/crw_fake_web_view_navigation_proxy.h"
 #import "ios/web/web_state/web_state_impl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-@interface CRWFakeWebViewNavigationProxy : NSObject <CRWWebViewNavigationProxy>
-
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
-
-- (void)setCurrentURL:(NSString*)currentItemURL
-         backListURLs:(NSArray<NSString*>*)backListURLs
-      forwardListURLs:(NSArray<NSString*>*)forwardListURLs;
-
-@end
-
-@implementation CRWFakeWebViewNavigationProxy {
-  NSURL* _URL;
-  CRWFakeBackForwardList* _backForwardList;
-}
-
-- (instancetype)init {
-  if ((self = [super init])) {
-    _backForwardList = [[CRWFakeBackForwardList alloc] init];
-  }
-  return self;
-}
-
-- (void)setCurrentURL:(NSString*)currentItemURL
-         backListURLs:(NSArray<NSString*>*)backListURLs
-      forwardListURLs:(NSArray<NSString*>*)forwardListURLs {
-  [_backForwardList setCurrentURL:currentItemURL
-                     backListURLs:backListURLs
-                  forwardListURLs:forwardListURLs];
-  _URL = [NSURL URLWithString:currentItemURL];
-}
-
-- (WKBackForwardList*)backForwardList {
-  return (id)_backForwardList;
-}
-
-- (NSURL*)URL {
-  return _URL;
-}
-
-@end
 
 namespace web {
 

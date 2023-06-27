@@ -8,6 +8,7 @@
 #import <string>
 
 #import "base/functional/bind.h"
+#import "base/mac/foundation_util.h"
 #import "base/strings/escape.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -20,13 +21,17 @@
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/reload_type.h"
+#import "ios/web/public/session/proto/navigation.pb.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/test/fakes/crw_fake_back_forward_list.h"
+#import "ios/web/test/fakes/crw_fake_web_view_navigation_proxy.h"
 #import "ios/web/test/test_url_constants.h"
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
+#import "ios/web/web_state/web_state_impl.h"
 #import "net/base/mac/url_conversions.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -2901,6 +2906,152 @@ TEST_F(NavigationManagerTest, TestGetVisibleWebViewOriginURLCache) {
   EXPECT_NE(gurl, cache.GetVisibleWebViewOriginURL());
   EXPECT_EQ(GURL("http://www.anotherexisting.com"),
             cache.GetVisibleWebViewOriginURL());
+}
+
+class NavigationManagerSerialisationTest : public PlatformTest {
+ public:
+  NavigationManagerSerialisationTest() {
+    web_state_ = WebStateImpl::CreateWithFakeWebViewNavigationProxyForTesting(
+        WebState::CreateParams(&browser_state_),
+        [[CRWFakeWebViewNavigationProxy alloc] init]);
+  }
+
+  ~NavigationManagerSerialisationTest() override {}
+
+  CRWFakeWebViewNavigationProxy* fake_web_view() {
+    return base::mac::ObjCCastStrict<CRWFakeWebViewNavigationProxy>(
+        web_state_->GetWebViewNavigationProxy());
+  }
+
+  WebStateImpl* web_state() { return web_state_.get(); }
+
+ private:
+  WebTaskEnvironment task_environment_;
+  FakeBrowserState browser_state_;
+  std::unique_ptr<WebStateImpl> web_state_;
+};
+
+// Tests serializing NavigationManagerImpl state for a session that is
+// longer than kMaxSessionSize with the last committed item at the end
+// of the session.
+TEST_F(NavigationManagerSerialisationTest, LargeSession) {
+  // Populate the WebState with more than kMaxSessionSize navigation items.
+  NSMutableArray<NSString*>* back_urls = [NSMutableArray array];
+  for (int i = 0; i < 3 * wk_navigation_util::kMaxSessionSize / 2; ++i) {
+    [back_urls addObject:[NSString stringWithFormat:@"http://%d.test", i]];
+  }
+  [fake_web_view() setCurrentURL:@"http://current.test"
+                    backListURLs:back_urls
+                 forwardListURLs:nil];
+  const int original_item_count = web_state()->GetNavigationItemCount();
+  EXPECT_GT(original_item_count, wk_navigation_util::kMaxSessionSize);
+
+  // Verify that the serialised state only contains kMaxSessionSize items.
+  proto::NavigationStorage storage;
+  web_state()->GetNavigationManagerImpl().SerializeToProto(storage);
+  const int storage_item_count = storage.items_size();
+  ASSERT_EQ(storage_item_count, wk_navigation_util::kMaxSessionSize);
+  const int offset = original_item_count - storage_item_count;
+
+  // Verify that the serialised items URLs match the URLs in original storage.
+  NavigationManager* navigation_manager = web_state()->GetNavigationManager();
+  for (int i = 0; i < wk_navigation_util::kMaxSessionSize; ++i) {
+    NavigationItem* item = navigation_manager->GetItemAtIndex(i + offset);
+    const proto::NavigationItemStorage& item_storage = storage.items(i);
+    EXPECT_EQ(item->GetURL(), GURL(item_storage.url()));
+  }
+}
+
+// Tests serializing NavigationManagerImpl state for a session that contain
+// items with ShouldSkipSerialization flag.
+TEST_F(NavigationManagerSerialisationTest, ShouldSkipSerializationItems) {
+  // Populate the WebState with more than kMaxSessionSize navigation items.
+  NSMutableArray<NSString*>* back_urls = [NSMutableArray array];
+  for (int i = 0; i < wk_navigation_util::kMaxSessionSize; ++i) {
+    [back_urls addObject:[NSString stringWithFormat:@"http://%d.test", i]];
+  }
+  [fake_web_view() setCurrentURL:@"http://current.test"
+                    backListURLs:back_urls
+                 forwardListURLs:nil];
+  const int original_item_count = web_state()->GetNavigationItemCount();
+
+  const int skipped_item_index =
+      original_item_count - (wk_navigation_util::kMaxSessionSize / 2);
+  web_state()
+      ->GetNavigationManagerImpl()
+      .GetNavigationItemImplAtIndex(skipped_item_index)
+      ->SetShouldSkipSerialization(true);
+
+  // Verify that the serialised state only contains kMaxSessionSize items.
+  proto::NavigationStorage storage;
+  web_state()->GetNavigationManagerImpl().SerializeToProto(storage);
+  const int storage_item_count = storage.items_size();
+  ASSERT_EQ(storage_item_count, wk_navigation_util::kMaxSessionSize);
+  const int offset = original_item_count - storage_item_count;
+
+  // Verify that URLs in the storage match original URLs without skipped item.
+  NavigationManager* navigation_manager = web_state()->GetNavigationManager();
+  for (int i = 0; i < wk_navigation_util::kMaxSessionSize; ++i) {
+    int item_index = i + offset;
+    if (item_index <= skipped_item_index) {
+      item_index -= 1;
+    }
+
+    NavigationItem* item = navigation_manager->GetItemAtIndex(item_index);
+    const proto::NavigationItemStorage& item_storage = storage.items(i);
+    EXPECT_EQ(item->GetURL(), GURL(item_storage.url()));
+  }
+}
+
+// Tests serializing NavigationManagerImpl state for a session that contain
+// items with extra long URL.
+TEST_F(NavigationManagerSerialisationTest, ExtraLongURL) {
+  // Create extra long URL.
+  NSString* long_url =
+      [@"http://" stringByPaddingToLength:(url::kMaxURLChars + 1)
+                               withString:@"a"
+                          startingAtIndex:0];
+  [fake_web_view() setCurrentURL:@"http://current.test"
+                    backListURLs:@[ long_url ]
+                 forwardListURLs:nil];
+  const int original_item_count = web_state()->GetNavigationItemCount();
+  EXPECT_EQ(original_item_count, 2);
+
+  NavigationItem* item = web_state()->GetNavigationManager()->GetItemAtIndex(1);
+  ASSERT_EQ(item->GetReferrer().url, GURL(base::SysNSStringToUTF8(long_url)));
+
+  // Verify that the serialised state only contains one item, and that the
+  // item does not have a referrer.
+  proto::NavigationStorage storage;
+  web_state()->GetNavigationManagerImpl().SerializeToProto(storage);
+  const int storage_item_count = storage.items_size();
+  ASSERT_EQ(storage_item_count, 1);
+  EXPECT_EQ(GURL(storage.items(0).referrer().url()), GURL());
+}
+
+// Tests serializing NavigationManagerImpl state for a session that contain
+// items with extra long URL as the last committed item.
+TEST_F(NavigationManagerSerialisationTest, ExtraLongURLLastCommittedItem) {
+  // Create extra long URL.
+  NSString* long_url =
+      [@"http://" stringByPaddingToLength:(url::kMaxURLChars + 1)
+                               withString:@"a"
+                          startingAtIndex:0];
+  [fake_web_view() setCurrentURL:long_url
+                    backListURLs:@[ @"http://current.test" ]
+                 forwardListURLs:nil];
+  const int original_item_count = web_state()->GetNavigationItemCount();
+  EXPECT_EQ(original_item_count, 2);
+
+  // Verify that the serialised state last committed item is correct.
+  proto::NavigationStorage storage;
+  web_state()->GetNavigationManagerImpl().SerializeToProto(storage);
+  const int storage_item_count = storage.items_size();
+  ASSERT_EQ(storage_item_count, 1);
+  ASSERT_EQ(storage.last_committed_item_index(), 0);
+
+  NavigationItem* item = web_state()->GetNavigationManager()->GetItemAtIndex(0);
+  EXPECT_EQ(item->GetURL(), GURL(storage.items(0).url()));
 }
 
 }  // namespace web

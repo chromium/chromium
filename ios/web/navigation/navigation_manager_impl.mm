@@ -9,8 +9,7 @@
 #import <memory>
 #import <utility>
 
-#import "base/apple/bundle_locations.h"
-#import "base/debug/dump_without_crashing.h"
+#import "base/containers/span.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/ios/ios_util.h"
@@ -27,6 +26,7 @@
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/session/proto/navigation.pb.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
@@ -120,6 +120,77 @@ NavigationManagerImpl::NavigationManagerImpl(
 }
 
 NavigationManagerImpl::~NavigationManagerImpl() = default;
+
+void NavigationManagerImpl::RestoreFromProto(
+    const proto::NavigationStorage& storage) {
+  std::vector<std::unique_ptr<NavigationItem>> items;
+  items.reserve(storage.items_size());
+
+  for (const auto& item_storage : storage.items()) {
+    auto item = std::make_unique<NavigationItemImpl>(item_storage);
+    RewriteItemURLIfNecessary(item.get());
+    items.push_back(std::move(item));
+  }
+
+  Restore(storage.last_committed_item_index(), std::move(items));
+}
+
+void NavigationManagerImpl::SerializeToProto(
+    proto::NavigationStorage& storage) const {
+  const int count = GetItemCount();
+
+  // The last committed item index may be equal to -1 if a session is saved
+  // during restoration. In that case use GetItemCount() - 1.
+  int last_committed_item_index = GetLastCommittedItemIndex();
+  if (last_committed_item_index == -1) {
+    last_committed_item_index = count - 1;
+  }
+
+  // As some items may be skipped during serialization (e.g. because their
+  // URL is too large, or they were marked "to skip during serialisation")
+  // collect the items that will be serialized in a first pass.
+  std::vector<const NavigationItemImpl*> items;
+  items.reserve(static_cast<size_t>(count));
+
+  for (int index = 0; index < count; ++index) {
+    const NavigationItemImpl* item =
+        GetNavigationItemImplAtIndex(static_cast<size_t>(index));
+
+    if (item->ShouldSkipSerialization()) {
+      // Update the index of the last committed item if necessary when
+      // skipping an item.
+      if (index <= last_committed_item_index) {
+        --last_committed_item_index;
+      }
+      continue;
+    }
+
+    items.push_back(item);
+  }
+
+  // Limit the number of navigation item that are serialised to prevent
+  // the storage required to grow indefinitely.
+  int offset_int = 0;
+  int length_int = 0;
+  last_committed_item_index = wk_navigation_util::GetSafeItemRange(
+      last_committed_item_index, static_cast<int>(items.size()), &offset_int,
+      &length_int);
+
+  CHECK_GE(offset_int, 0);
+  CHECK_GE(length_int, 0);
+  CHECK_LT(last_committed_item_index, length_int);
+
+  const size_t offset = static_cast<size_t>(offset_int);
+  const size_t length = static_cast<size_t>(length_int);
+
+  CHECK_LE(offset, items.size());
+  CHECK_LE(length + offset, items.size());
+
+  storage.set_last_committed_item_index(last_committed_item_index);
+  for (const auto* item : base::make_span(items.begin() + offset, length)) {
+    item->SerializeToProto(*storage.add_items());
+  }
+}
 
 void NavigationManagerImpl::SetNativeSessionFetcher(
     SessionDataBlobFetcher native_session_fetcher) {
