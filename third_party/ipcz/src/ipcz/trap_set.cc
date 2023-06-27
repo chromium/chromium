@@ -11,6 +11,7 @@
 #include "ipcz/trap_event_dispatcher.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "util/ref_counted.h"
+#include "util/safe_math.h"
 
 namespace ipcz {
 
@@ -28,9 +29,9 @@ IpczResult TrapSet::Add(const IpczTrapConditions& conditions,
                         size_t num_local_bytes,
                         IpczTrapConditionFlags* satisfied_condition_flags,
                         IpczPortalStatus* status) {
-  last_known_status_.flags = status_flags;
-  last_known_status_.num_local_parcels = num_local_parcels;
-  last_known_status_.num_local_bytes = num_local_bytes;
+  status_flags_ = status_flags;
+  num_local_parcels_ = checked_cast<uint32_t>(num_local_parcels);
+  num_local_bytes_ = checked_cast<uint32_t>(num_local_bytes);
   IpczTrapConditionFlags flags =
       GetSatisfiedConditionsForUpdate(conditions, UpdateReason::kInstallTrap);
   if (flags != 0) {
@@ -38,13 +39,13 @@ IpczResult TrapSet::Add(const IpczTrapConditions& conditions,
       *satisfied_condition_flags = flags;
     }
     if (status) {
-      // Note that we copy the minimum number of bytes between the size of our
-      // IpczPortalStatus and the size of the caller's, which may differ if
-      // coming from another version of ipcz. The `size` field is updated to
-      // reflect how many bytes are actually meaningful here.
-      const uint32_t size = std::min(status->size, sizeof(last_known_status_));
-      memcpy(status, &last_known_status_, size);
+      // The `size` field is updated to reflect how many bytes are actually
+      // meaningful here.
+      const uint32_t size = std::min(status->size, sizeof(IpczPortalStatus));
       status->size = size;
+      status->flags = status_flags_;
+      status->num_local_parcels = num_local_parcels_;
+      status->num_local_bytes = num_local_bytes_;
     }
     return IPCZ_RESULT_FAILED_PRECONDITION;
   }
@@ -74,10 +75,8 @@ void TrapSet::NotifyLocalParcelConsumed(const OperationContext& context,
 void TrapSet::NotifyPeerClosed(const OperationContext& context,
                                IpczPortalStatusFlags status_flags,
                                TrapEventDispatcher& dispatcher) {
-  UpdatePortalStatus(context, status_flags,
-                     last_known_status_.num_local_parcels,
-                     last_known_status_.num_local_bytes,
-                     UpdateReason::kPeerClosed, dispatcher);
+  UpdatePortalStatus(context, status_flags, num_local_parcels_,
+                     num_local_bytes_, UpdateReason::kPeerClosed, dispatcher);
 }
 
 void TrapSet::RemoveAll(const OperationContext& context,
@@ -86,9 +85,15 @@ void TrapSet::RemoveAll(const OperationContext& context,
   if (context.is_api_call()) {
     flags |= IPCZ_TRAP_WITHIN_API_CALL;
   }
+
+  const IpczPortalStatus status{
+      .size = sizeof(status),
+      .flags = status_flags_,
+      .num_local_parcels = num_local_parcels_,
+      .num_local_bytes = num_local_bytes_,
+  };
   for (const Trap& trap : traps_) {
-    dispatcher.DeferEvent(trap.handler, trap.context, flags,
-                          last_known_status_);
+    dispatcher.DeferEvent(trap.handler, trap.context, flags, status);
   }
   traps_.clear();
 }
@@ -98,19 +103,19 @@ IpczTrapConditionFlags TrapSet::GetSatisfiedConditionsForUpdate(
     TrapSet::UpdateReason reason) {
   IpczTrapConditionFlags event_flags = 0;
   if ((conditions.flags & IPCZ_TRAP_PEER_CLOSED) &&
-      (last_known_status_.flags & IPCZ_PORTAL_STATUS_PEER_CLOSED)) {
+      (status_flags_ & IPCZ_PORTAL_STATUS_PEER_CLOSED)) {
     event_flags |= IPCZ_TRAP_PEER_CLOSED;
   }
   if ((conditions.flags & IPCZ_TRAP_DEAD) &&
-      (last_known_status_.flags & IPCZ_PORTAL_STATUS_DEAD)) {
+      (status_flags_ & IPCZ_PORTAL_STATUS_DEAD)) {
     event_flags |= IPCZ_TRAP_DEAD;
   }
   if ((conditions.flags & IPCZ_TRAP_ABOVE_MIN_LOCAL_PARCELS) &&
-      last_known_status_.num_local_parcels > conditions.min_local_parcels) {
+      num_local_parcels_ > conditions.min_local_parcels) {
     event_flags |= IPCZ_TRAP_ABOVE_MIN_LOCAL_PARCELS;
   }
   if ((conditions.flags & IPCZ_TRAP_ABOVE_MIN_LOCAL_BYTES) &&
-      last_known_status_.num_local_bytes > conditions.min_local_bytes) {
+      num_local_bytes_ > conditions.min_local_bytes) {
     event_flags |= IPCZ_TRAP_ABOVE_MIN_LOCAL_BYTES;
   }
   if ((conditions.flags & IPCZ_TRAP_NEW_LOCAL_PARCEL) &&
@@ -126,10 +131,10 @@ void TrapSet::UpdatePortalStatus(const OperationContext& context,
                                  size_t num_local_bytes,
                                  UpdateReason reason,
                                  TrapEventDispatcher& dispatcher) {
-  last_known_status_.flags = status_flags;
-  last_known_status_.num_local_parcels = num_local_parcels;
-  last_known_status_.num_local_bytes = num_local_bytes;
-  for (auto* it = traps_.begin(); it != traps_.end();) {
+  status_flags_ = status_flags;
+  num_local_parcels_ = num_local_parcels;
+  num_local_bytes_ = num_local_bytes;
+  for (auto it = traps_.begin(); it != traps_.end();) {
     const Trap& trap = *it;
     IpczTrapConditionFlags flags =
         GetSatisfiedConditionsForUpdate(trap.conditions, reason);
@@ -141,8 +146,14 @@ void TrapSet::UpdatePortalStatus(const OperationContext& context,
     if (context.is_api_call()) {
       flags |= IPCZ_TRAP_WITHIN_API_CALL;
     }
-    dispatcher.DeferEvent(trap.handler, trap.context, flags,
-                          last_known_status_);
+
+    const IpczPortalStatus status{
+        .size = sizeof(status),
+        .flags = status_flags_,
+        .num_local_parcels = num_local_parcels_,
+        .num_local_bytes = num_local_bytes_,
+    };
+    dispatcher.DeferEvent(trap.handler, trap.context, flags, status);
     it = traps_.erase(it);
   }
 }

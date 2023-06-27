@@ -140,8 +140,7 @@ IpczResult Router::SendOutboundParcel(Parcel& parcel) {
         outbound_parcels_.GetCurrentSequenceLength();
     parcel.set_sequence_number(sequence_number);
     if (outward_edge_.primary_link() &&
-        outbound_parcels_.SkipElement(sequence_number,
-                                      parcel.data_view().size())) {
+        outbound_parcels_.SkipElement(sequence_number)) {
       link = outward_edge_.primary_link();
     } else {
       // If there are no unsent parcels ahead of this one in the outbound
@@ -587,11 +586,9 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
   {
     absl::MutexLock lock(&router->mutex_);
     router->outbound_parcels_.ResetSequence(
-        descriptor.next_outgoing_sequence_number,
-        descriptor.num_bytes_produced);
+        descriptor.next_outgoing_sequence_number);
     router->inbound_parcels_.ResetSequence(
-        descriptor.next_incoming_sequence_number,
-        descriptor.num_bytes_consumed);
+        descriptor.next_incoming_sequence_number);
     if (descriptor.peer_closed) {
       router->is_peer_closed_ = true;
       if (!router->inbound_parcels_.SetFinalSequenceLength(
@@ -766,12 +763,8 @@ bool Router::SerializeNewRouterWithLocalPeer(const OperationContext& context,
   descriptor.proxy_already_bypassed = true;
   descriptor.next_outgoing_sequence_number =
       outbound_parcels_.GetCurrentSequenceLength();
-  descriptor.num_bytes_produced =
-      outbound_parcels_.total_consumed_element_size();
   descriptor.next_incoming_sequence_number =
       inbound_parcels_.current_sequence_number();
-  descriptor.num_bytes_consumed =
-      inbound_parcels_.total_consumed_element_size();
   descriptor.decaying_incoming_sequence_length = proxy_inbound_sequence_length;
 
   DVLOG(4) << "Splitting local pair to move router with outbound sequence "
@@ -808,12 +801,8 @@ void Router::SerializeNewRouterAndConfigureProxy(
   descriptor.proxy_already_bypassed = false;
   descriptor.next_outgoing_sequence_number =
       outbound_parcels_.GetCurrentSequenceLength();
-  descriptor.num_bytes_produced =
-      outbound_parcels_.total_consumed_element_size();
   descriptor.next_incoming_sequence_number =
       inbound_parcels_.current_sequence_number();
-  descriptor.num_bytes_consumed =
-      inbound_parcels_.total_consumed_element_size();
 
   // Initialize an inward edge but with no link yet. This ensures that we
   // don't look like a terminal router while waiting for a link to be set,

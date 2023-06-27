@@ -18,6 +18,10 @@ namespace ipcz {
 // messages against other NodeLink messages from the same NodeLink endpoint.
 using SequenceNumber = StrongAlias<class SequenceNumberTag, uint64_t>;
 
+constexpr SequenceNumber NextSequenceNumber(SequenceNumber n) {
+  return SequenceNumber{n.value() + 1};
+}
+
 }  // namespace ipcz
 
 #endif  // IPCZ_SRC_IPCZ_SEQUENCE_NUMBER_H_

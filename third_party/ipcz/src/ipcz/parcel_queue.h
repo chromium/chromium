@@ -18,11 +18,7 @@ struct ParcelQueueTraits {
 
 // A ParcelQueue is a SequencedQueue of Parcel objects which also tracks the
 // total data size (in bytes) of available parcels at the head of the queue.
-//
-// The template argument N determines how much inlined storage capacity is
-// reserved by the queue.
-template <size_t N>
-using ParcelQueue = SequencedQueue<Parcel, N, ParcelQueueTraits>;
+using ParcelQueue = SequencedQueue<Parcel, ParcelQueueTraits>;
 
 }  // namespace ipcz
 

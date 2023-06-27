@@ -457,14 +457,14 @@ class Router : public RefCounted<Router> {
   // Parcels received from the other end of the route. If this is a terminal
   // router, these may be retrieved by the application via a controlling portal;
   // otherwise they will be forwarded along `inward_edge_` as soon as possible.
-  ParcelQueue<1> inbound_parcels_ ABSL_GUARDED_BY(mutex_);
+  ParcelQueue inbound_parcels_ ABSL_GUARDED_BY(mutex_);
 
   // Parcels transmitted directly from this router (if sent by a controlling
   // portal) or received from an inward peer which sent them outward toward this
   // Router. These parcels generally only accumulate if there is no outward link
   // present when attempting to transmit them, and they are forwarded along
   // `outward_edge_` as soon as possible.
-  ParcelQueue<0> outbound_parcels_ ABSL_GUARDED_BY(mutex_);
+  ParcelQueue outbound_parcels_ ABSL_GUARDED_BY(mutex_);
 
   // The set of pending get transactions in progress on the owning portal.
   std::unique_ptr<PendingTransactionSet> pending_gets_ ABSL_GUARDED_BY(mutex_);

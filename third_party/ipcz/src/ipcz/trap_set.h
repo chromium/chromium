@@ -117,9 +117,11 @@ class TrapSet {
                           UpdateReason reason,
                           TrapEventDispatcher& dispatcher);
 
-  using TrapList = absl::InlinedVector<Trap, 1>;
+  using TrapList = std::vector<Trap>;
   TrapList traps_;
-  IpczPortalStatus last_known_status_ = {.size = sizeof(last_known_status_)};
+  IpczPortalStatusFlags status_flags_ = IPCZ_NO_FLAGS;
+  uint32_t num_local_parcels_ = 0;
+  uint32_t num_local_bytes_ = 0;
 };
 
 }  // namespace ipcz
