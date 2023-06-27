@@ -65,38 +65,39 @@ SharingHubModel::SharingHubModel(content::BrowserContext* context)
 
 SharingHubModel::~SharingHubModel() = default;
 
-void SharingHubModel::GetFirstPartyActionList(
-    content::WebContents* web_contents,
-    std::vector<SharingHubAction>* list) {
+std::vector<SharingHubAction> SharingHubModel::GetFirstPartyActionList(
+    content::WebContents* web_contents) const {
+  std::vector<SharingHubAction> results;
   for (const auto& action : first_party_action_list_) {
     if (action.command_id == IDC_SEND_TAB_TO_SELF) {
       if (send_tab_to_self::ShouldDisplayEntryPoint(web_contents)) {
-        list->push_back(action);
+        results.push_back(action);
       }
     } else if (action.command_id == IDC_QRCODE_GENERATOR) {
       if (qrcode_generator::QRCodeGeneratorBubbleController::
               IsGeneratorAvailable(web_contents->GetLastCommittedURL())) {
-        list->push_back(action);
+        results.push_back(action);
       }
     } else if (action.command_id == IDC_FOLLOW) {
       TabWebFeedFollowState follow_state =
           feed::WebFeedTabHelper::GetFollowState(web_contents);
       if (follow_state == TabWebFeedFollowState::kNotFollowed)
-        list->push_back(action);
+        results.push_back(action);
     } else if (action.command_id == IDC_UNFOLLOW) {
       TabWebFeedFollowState follow_state =
           feed::WebFeedTabHelper::GetFollowState(web_contents);
       if (follow_state == TabWebFeedFollowState::kFollowed)
-        list->push_back(action);
+        results.push_back(action);
     } else if (action.command_id == IDC_SAVE_PAGE) {
       if (chrome::CanSavePage(
               chrome::FindBrowserWithWebContents(web_contents))) {
-        list->push_back(action);
+        results.push_back(action);
       }
     } else {
-      list->push_back(action);
+      results.push_back(action);
     }
   }
+  return results;
 }
 
 void SharingHubModel::PopulateFirstPartyActions() {
