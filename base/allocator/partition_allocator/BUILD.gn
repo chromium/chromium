@@ -371,6 +371,9 @@ component("partition_alloc") {
     } else if (current_cpu == "arm64") {
       assert(pcscan_stack_supported)
       sources += [ "starscan/stack/asm/arm64/push_registers_asm.cc" ]
+    } else if (current_cpu == "riscv64") {
+      assert(pcscan_stack_supported)
+      sources += [ "starscan/stack/asm/riscv64/push_registers_asm.cc" ]
     } else {
       # To support a trampoline for another arch, please refer to v8/src/heap/base.
       assert(!pcscan_stack_supported)
