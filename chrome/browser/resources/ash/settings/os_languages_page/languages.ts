@@ -384,8 +384,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
 
     // Recreate the enabled language set before updating languages.enabled.
     this.enabledLanguageSet_.clear();
-    for (let i = 0; i < enabledLanguageStates.length; i++) {
-      this.enabledLanguageSet_.add(enabledLanguageStates[i].language.code);
+    for (const enabledLanguageState of enabledLanguageStates) {
+      this.enabledLanguageSet_.add(enabledLanguageState.language.code);
     }
 
     this.set('languages.enabled', enabledLanguageStates);
@@ -416,8 +416,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     const spellCheckBlockedSet = this.makeSetFromArray_(
         this.getPref<string[]>('spellcheck.blocked_dictionaries').value);
 
-    for (let i = 0; i < this.languages.enabled.length; i++) {
-      const languageState = this.languages.enabled[i];
+    for (const [i, languageState] of this.languages.enabled.entries()) {
       const isUser = spellCheckSet.has(languageState.language.code);
       const isForced = spellCheckForcedSet.has(languageState.language.code);
       const isBlocked = spellCheckBlockedSet.has(languageState.language.code);
@@ -560,8 +559,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     const translateBlockedSet =
         this.makeSetFromArray_(translateBlockedPref.value);
 
-    for (let i = 0; i < this.languages.enabled.length; i++) {
-      const language = this.languages.enabled[i].language;
+    for (const [i, languageState] of this.languages.enabled.entries()) {
+      const language = languageState.language;
       const translateEnabled = this.isTranslateEnabled_(
           language.code, !!language.supportsTranslate, translateBlockedSet,
           this.languages.translateTarget, this.languages.prospectiveUILanguage);
@@ -585,8 +584,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
    */
   private createModel_(args: ModelArgs): void {
     // Populate the hash map of supported languages.
-    for (let i = 0; i < args.supportedLanguages.length; i++) {
-      const language = args.supportedLanguages[i];
+    for (const language of args.supportedLanguages) {
       language.supportsUI = !!language.supportsUI;
       language.supportsTranslate = !!language.supportsTranslate;
       language.supportsSpellcheck = !!language.supportsSpellcheck;
@@ -612,8 +610,8 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     const enabledLanguageStates = this.getEnabledLanguageStates_(
         args.translateTarget, prospectiveUILanguage);
     // Populate the hash set of enabled languages.
-    for (let l = 0; l < enabledLanguageStates.length; l++) {
-      this.enabledLanguageSet_.add(enabledLanguageStates[l].language.code);
+    for (const enabledLanguageState of enabledLanguageStates) {
+      this.enabledLanguageSet_.add(enabledLanguageState.language.code);
     }
 
     const {on: spellCheckOnLanguages, off: spellCheckOffLanguages} =
@@ -698,8 +696,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
 
     const enabledLanguageStates: LanguageState[] = [];
 
-    for (let i = 0; i < enabledLanguageCodes.length; i++) {
-      const code = enabledLanguageCodes[i];
+    for (const code of enabledLanguageCodes) {
       const language = this.supportedLanguageMap_.get(code);
       // Skip unsupported languages.
       if (!language) {
@@ -804,8 +801,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     // scheduled).
     this.updateEnabledInputMethods_();
 
-    for (let i = 0; i < this.languages.enabled.length; i++) {
-      const languageState = this.languages.enabled[i];
+    for (const [i, languageState] of this.languages.enabled.entries()) {
       this.set(
           'languages.enabled.' + i + '.removable',
           this.canDisableLanguage(languageState));
@@ -1057,6 +1053,10 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     }
 
     const main = languageCode.split('-')[0];
+    if (main === undefined) {
+      // The only time a split could return 0 items is if the string is empty.
+      throw new Error('languageCode cannot be empty');
+    }
     if (main === 'zh') {
       // In Translate, general Chinese is not used, and the sub code is
       // necessary as a language code for the Translate server.
@@ -1099,7 +1099,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     const result = languageCode.match(/^([^-]+)-?/)!;
     // Safety: The regex above has one non-optional capturing group.
     assert(result.length === 2);
-    return result[1];
+    return result[1]!;
   }
 
   getLanguage(languageCode: string): chrome.languageSettingsPrivate.Language
@@ -1126,16 +1126,14 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     // Populate the hash map of supported input methods.
     this.supportedInputMethodMap_.clear();
     this.languageInputMethods_.clear();
-    for (let j = 0; j < supportedInputMethods.length; j++) {
-      const inputMethod = supportedInputMethods[j];
+    for (const inputMethod of supportedInputMethods) {
       inputMethod.enabled = !!inputMethod.enabled;
       inputMethod.isProhibitedByPolicy = !!inputMethod.isProhibitedByPolicy;
       // Add the input method to the map of IDs.
       this.supportedInputMethodMap_.set(inputMethod.id, inputMethod);
       // Add the input method to the list of input methods for each language
       // it supports.
-      for (let k = 0; k < inputMethod.languageCodes.length; k++) {
-        const languageCode = inputMethod.languageCodes[k];
+      for (const languageCode of inputMethod.languageCodes) {
         if (!this.supportedLanguageMap_.has(languageCode)) {
           continue;
         }
@@ -1197,11 +1195,11 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     // TODO(b/265553377): Prove that this assertion is safe, or rewrite this to
     // avoid this assertion.
     // Safety: `LanguagesModel.inputMethods` is always defined on CrOS.
-    for (let i = 0; i < this.languages!.inputMethods!.supported.length; i++) {
+    for (const [i, inputMethod] of this.languages!.inputMethods!.supported
+             .entries()) {
       this.set(
           'languages.inputMethods.supported.' + i + '.enabled',
-          enabledInputMethodSet.has(
-              this.languages!.inputMethods!.supported[i]));
+          enabledInputMethodSet.has(inputMethod));
     }
     this.set('languages.inputMethods.enabled', enabledInputMethods);
   }

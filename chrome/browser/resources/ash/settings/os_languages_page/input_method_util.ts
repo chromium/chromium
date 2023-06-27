@@ -449,7 +449,11 @@ export function generateOptions(
               optionNames: [...optionNames],
             });
           } else {
-            options[optionsIndex].optionNames.push(...optionNames);
+            // Safety: `pushedOptions` values are always set to
+            // `options.length`, and `options` is immediately pushed to, so the
+            // values of `pushedOptions` must always be valid indices into
+            // `options`.
+            options[optionsIndex]!.optionNames.push(...optionNames);
           }
         }
       }
