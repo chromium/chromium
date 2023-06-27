@@ -140,7 +140,8 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
   bool HasPreviousSessionData() { return provider()->HasPreviousSessionData(); }
 
   void MergeHistogramDeltas() {
-    provider()->MergeHistogramDeltas();
+    provider()->MergeHistogramDeltas(/*async=*/false,
+                                     /*done_callback=*/base::DoNothing());
   }
 
   bool HasIndependentMetrics() { return provider()->HasIndependentMetrics(); }
@@ -171,7 +172,7 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
 
   size_t GetSnapshotHistogramCount() {
     // Merge the data from the allocator into the StatisticsRecorder.
-    provider()->MergeHistogramDeltas();
+    MergeHistogramDeltas();
 
     // Flatten what is known to see what has changed since the last time.
     HistogramFlattenerDeltaRecorder flattener;

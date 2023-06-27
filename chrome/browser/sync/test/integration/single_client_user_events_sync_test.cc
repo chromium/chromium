@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoQuotaApplied) {
   EXPECT_TRUE(ExpectUserEvents(expected_specifics));
 
   // Make sure the histogram gets propagated from the sync engine sequence.
-  base::StatisticsRecorder::ImportProvidedHistograms();
+  base::StatisticsRecorder::ImportProvidedHistogramsSync();
   // There is no record in the depleted quota histogram.
   histogram_tester.ExpectTotalCount("Sync.ModelTypeCommitWithDepletedQuota", 0);
 }

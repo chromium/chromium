@@ -73,7 +73,8 @@ class SubprocessMetricsProvider
   void DeregisterSubprocessAllocator(int id);
 
   // base::StatisticsRecorder::HistogramProvider:
-  void MergeHistogramDeltas() override;
+  void MergeHistogramDeltas(bool async,
+                            base::OnceClosure done_callback) override;
 
   // content::BrowserChildProcessObserver:
   void BrowserChildProcessLaunchedAndConnected(

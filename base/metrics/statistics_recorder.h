@@ -57,8 +57,19 @@ class BASE_EXPORT StatisticsRecorder {
   // histograms from providers when necessary.
   class HistogramProvider {
    public:
-    // Merges all histogram information into the global versions.
-    virtual void MergeHistogramDeltas() = 0;
+    // Merges all histogram information into the global versions. If |async| is
+    // true, the work may be done asynchronously (though this is not mandatory).
+    // If false, the work must be done ASAP/synchronously (e.g., because the
+    // browser is shutting down). |done_callback| should be called on the
+    // calling thread when all work is finished, regardless of the value of
+    // |async|.
+    //
+    // NOTE: It is possible for this to be called with |async| set to false
+    // even before a previous call with |async| set to true has finished. Hence,
+    // if the implementation allows for asynchronous work, ensure that it is
+    // done in a thread-safe way.
+    virtual void MergeHistogramDeltas(bool async,
+                                      OnceClosure done_callback) = 0;
   };
 
   // OnSampleCallback is a convenient callback type that provides information
@@ -177,10 +188,18 @@ class BASE_EXPORT StatisticsRecorder {
   // This method is thread safe.
   static HistogramBase* FindHistogram(base::StringPiece name);
 
-  // Imports histograms from providers.
+  // Imports histograms from providers. If |async| is true, the providers may do
+  // the work asynchronously (though this is not guaranteed and it is up to the
+  // providers to decide). If false, the work will be done synchronously.
+  // |done_callback| is called on the calling thread when all providers have
+  // finished.
   //
   // This method must be called on the UI thread.
-  static void ImportProvidedHistograms();
+  static void ImportProvidedHistograms(bool async, OnceClosure done_callback);
+
+  // Convenience function that calls ImportProvidedHistograms() with |async|
+  // set to false, and with a no-op |done_callback|.
+  static void ImportProvidedHistogramsSync();
 
   // Snapshots all histogram deltas via |snapshot_manager|. This marks the
   // deltas as logged. |include_persistent| determines whether histograms held

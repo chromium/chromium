@@ -79,9 +79,9 @@ class HistogramsMessageHandler : public WebUIMessageHandler {
   HistogramsMonitor histogram_monitor_;
 };
 
-HistogramsMessageHandler::HistogramsMessageHandler() {}
+HistogramsMessageHandler::HistogramsMessageHandler() = default;
 
-HistogramsMessageHandler::~HistogramsMessageHandler() {}
+HistogramsMessageHandler::~HistogramsMessageHandler() = default;
 
 JsParams HistogramsMessageHandler::AllowJavascriptAndUnpackParams(
     const base::Value::List& args_list) {
@@ -99,7 +99,7 @@ JsParams HistogramsMessageHandler::AllowJavascriptAndUnpackParams(
 void HistogramsMessageHandler::ImportHistograms(bool include_subprocesses) {
   if (include_subprocesses) {
     // Synchronously fetch subprocess histograms that live in shared memory.
-    base::StatisticsRecorder::ImportProvidedHistograms();
+    base::StatisticsRecorder::ImportProvidedHistogramsSync();
 
     // Asynchronously fetch subprocess histograms that do not live in shared
     // memory (e.g., they were emitted before the shared memory was set up).

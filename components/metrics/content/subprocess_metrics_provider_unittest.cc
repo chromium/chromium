@@ -64,7 +64,7 @@ class SubprocessMetricsProviderTest : public testing::Test {
     // macro which caches a pointer to a histogram. If not done before setting
     // a persistent global allocator, then it would point into memory that
     // will go away.
-    SubprocessMetricsProvider::GetInstance()->MergeHistogramDeltas();
+    SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
     // Create a dedicated StatisticsRecorder for this test.
     test_recorder_ = base::StatisticsRecorder::CreateTemporaryForTesting();
@@ -89,7 +89,7 @@ class SubprocessMetricsProviderTest : public testing::Test {
 
   std::vector<std::string> GetSnapshotHistogramNames() {
     // Merge the data from the allocator into the StatisticsRecorder.
-    SubprocessMetricsProvider::GetInstance()->MergeHistogramDeltas();
+    SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
     // Flatten what is known to see what has changed since the last time.
     HistogramFlattenerDeltaRecorder flattener;

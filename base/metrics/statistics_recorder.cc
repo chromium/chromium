@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/at_exit.h"
+#include "base/barrier_closure.h"
 #include "base/containers/contains.h"
 #include "base/debug/leak_annotations.h"
 #include "base/json/string_escape.h"
@@ -231,14 +232,26 @@ StatisticsRecorder::GetHistogramProviders() {
 }
 
 // static
-void StatisticsRecorder::ImportProvidedHistograms() {
+void StatisticsRecorder::ImportProvidedHistograms(bool async,
+                                                  OnceClosure done_callback) {
   // Merge histogram data from each provider in turn.
-  for (const WeakPtr<HistogramProvider>& provider : GetHistogramProviders()) {
+  HistogramProviders providers = GetHistogramProviders();
+  auto barrier_callback =
+      BarrierClosure(providers.size(), std::move(done_callback));
+  for (const WeakPtr<HistogramProvider>& provider : providers) {
     // Weak-pointer may be invalid if the provider was destructed, though they
     // generally never are.
-    if (provider)
-      provider->MergeHistogramDeltas();
+    if (!provider) {
+      barrier_callback.Run();
+      continue;
+    }
+    provider->MergeHistogramDeltas(async, barrier_callback);
   }
+}
+
+// static
+void StatisticsRecorder::ImportProvidedHistogramsSync() {
+  ImportProvidedHistograms(/*async=*/false, /*done_callback=*/DoNothing());
 }
 
 // static

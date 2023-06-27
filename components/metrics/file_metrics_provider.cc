@@ -996,12 +996,15 @@ void FileMetricsProvider::RecordInitialHistogramSnapshots(
   }
 }
 
-void FileMetricsProvider::MergeHistogramDeltas() {
+void FileMetricsProvider::MergeHistogramDeltas(
+    bool async,
+    base::OnceClosure done_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+  // TODO(crbug.com/1293026): Consider if this work can be done asynchronously.
   for (std::unique_ptr<SourceInfo>& source : sources_mapped_) {
     MergeHistogramDeltasFromSource(source.get());
   }
+  std::move(done_callback).Run();
 }
 
 bool FileMetricsProvider::SimulateIndependentMetrics() {

@@ -333,7 +333,8 @@ class FileMetricsProvider : public MetricsProvider,
       base::HistogramSnapshotManager* snapshot_manager) override;
 
   // base::StatisticsRecorder::HistogramProvider:
-  void MergeHistogramDeltas() override;
+  void MergeHistogramDeltas(bool async,
+                            base::OnceClosure done_callback) override;
 
   // The part of ProvideIndependentMetrics that runs after background task.
   void ProvideIndependentMetricsCleanup(

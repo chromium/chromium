@@ -62,7 +62,8 @@ SubprocessMetricsProvider* SubprocessMetricsProvider::GetInstance() {
 
 // static
 void SubprocessMetricsProvider::MergeHistogramDeltasForTesting() {
-  GetInstance()->MergeHistogramDeltas();
+  GetInstance()->MergeHistogramDeltas(/*async=*/false,
+                                      /*done_callback=*/base::DoNothing());
 }
 
 SubprocessMetricsProvider::SubprocessMetricsProvider() {
@@ -111,11 +112,15 @@ void SubprocessMetricsProvider::DeregisterSubprocessAllocator(int id) {
   MergeHistogramDeltasFromAllocator(id, allocator.get());
 }
 
-void SubprocessMetricsProvider::MergeHistogramDeltas() {
+void SubprocessMetricsProvider::MergeHistogramDeltas(
+    bool async,
+    base::OnceClosure done_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // TODO(crbug.com/1293026): Do this work asynchronously when |async| is true.
   for (auto& iter : allocators_by_id_) {
     MergeHistogramDeltasFromAllocator(iter.first, iter.second.get());
   }
+  std::move(done_callback).Run();
 }
 
 void SubprocessMetricsProvider::BrowserChildProcessLaunchedAndConnected(

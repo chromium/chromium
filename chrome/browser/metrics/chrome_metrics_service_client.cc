@@ -674,7 +674,7 @@ void ChromeMetricsServiceClient::MergeSubprocessHistograms() {
   // duplicate the code across different `MetricsServiceClient`s.
 
   // Synchronously fetch subprocess histograms that live in shared memory.
-  base::StatisticsRecorder::ImportProvidedHistograms();
+  base::StatisticsRecorder::ImportProvidedHistogramsSync();
 
   // Asynchronously fetch subprocess histograms that do not live in shared
   // memory (e.g., they were emitted before the shared memory was set up).
@@ -1096,10 +1096,10 @@ void ChromeMetricsServiceClient::OnMemoryDetailCollectionDone() {
   num_async_histogram_fetches_in_progress_ = 2;
 
   // Merge histograms from metrics providers into StatisticsRecorder.
-  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+  content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&base::StatisticsRecorder::ImportProvidedHistograms),
-      callback);
+      base::BindOnce(&base::StatisticsRecorder::ImportProvidedHistograms,
+                     /*async=*/true, callback));
 
   // Set up the callback task to call after we receive histograms from all
   // child processes. `timeout` specifies how long to wait before absolutely
