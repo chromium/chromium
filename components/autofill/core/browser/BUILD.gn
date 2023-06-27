@@ -975,6 +975,7 @@ source_set("unit_tests") {
     "personal_data_manager_test_base.h",
     "personal_data_manager_unittest.cc",
     "profile_requirement_utils_unittest.cc",
+    "profile_token_quality_unittest.cc",
     "randomized_encoder_unittest.cc",
     "rationalization_util_unittest.cc",
     "single_field_form_fill_router_unittest.cc",

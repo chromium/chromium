@@ -108,6 +108,9 @@ class ProfileTokenQuality {
                                     const FormData& form_data,
                                     const PersonalDataManager& pdm);
 
+  void AddObservationForTesting(ServerFieldType field_type,
+                                ObservationType observation_type);
+
   // Returns all `ObservationType`s available for the `type`. The resulting
   // vector has at most `kMaxNumberOfObservations` items. It is guaranteed that
   // no observation type is `kNone`.
@@ -137,6 +140,11 @@ class ProfileTokenQuality {
   FormAndFieldSignatureHash GetFormAndFieldSignatureHash(
       FormSignature form_signature,
       FieldSignature field_signature) const;
+
+  // Adds the `observation` to the `observations_` for the stored type of
+  // `type`. The oldest existing observation for that type is discarded, if
+  // the limit of `kMaxObservationsPerToken` is exceeded.
+  void AddObservation(ServerFieldType type, Observation observation);
 
   // The profile for which observations are collected. Not null.
   base::raw_ptr<AutofillProfile> profile_;
