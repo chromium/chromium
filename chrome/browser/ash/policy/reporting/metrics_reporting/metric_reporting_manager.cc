@@ -58,6 +58,7 @@
 #include "components/reporting/metrics/periodic_event_collector.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
+#include "components/reporting/util/rate_limiter_slide_window.h"
 #include "components/user_manager/user.h"
 
 namespace em = enterprise_management;
@@ -74,6 +75,11 @@ constexpr char kPeripheralTelemetry[] = "peripheral_telemetry";
 constexpr char kDelayedPeripheralTelemetry[] = "delayed_peripheral_telemetry";
 constexpr char kDisplaysTelemetry[] = "displays_telemetry";
 constexpr char kDeviceActivityTelemetry[] = "device_activity_telemetry";
+
+// App event rate limiter configuration.
+constexpr size_t kAppEventsTotalSize = 4096u /**bytes**/ * 1024;
+constexpr base::TimeDelta kAppEventsWindow = base::Seconds(10);
+constexpr size_t kAppEventsBucketCount = 10;
 
 }  // namespace
 
@@ -146,6 +152,12 @@ void MetricReportingManager::OnLogin(Profile* profile) {
       EventType::kUser, Destination::TELEMETRY_METRIC, Priority::MANUAL_BATCH);
   user_event_report_queue_ = delegate_->CreateMetricReportQueue(
       EventType::kUser, Destination::EVENT_METRIC, Priority::SLOW_BATCH);
+
+  auto app_event_rate_limiter = std::make_unique<RateLimiterSlideWindow>(
+      kAppEventsTotalSize, kAppEventsWindow, kAppEventsBucketCount);
+  app_event_report_queue_ = delegate_->CreateMetricReportQueue(
+      EventType::kUser, Destination::EVENT_METRIC, Priority::SLOW_BATCH,
+      std::move(app_event_rate_limiter));
   user_peripheral_events_and_telemetry_report_queue_ =
       delegate_->CreateMetricReportQueue(
           EventType::kUser, Destination::PERIPHERAL_EVENTS, Priority::SECURITY);
@@ -225,6 +237,7 @@ void MetricReportingManager::Shutdown() {
   user_telemetry_report_queue_.reset();
   event_report_queue_.reset();
   user_event_report_queue_.reset();
+  app_event_report_queue_.reset();
   user_peripheral_events_and_telemetry_report_queue_.reset();
   user_reporting_settings_.reset();
 }
@@ -528,7 +541,7 @@ void MetricReportingManager::InitAppCollectors(Profile* profile) {
     auto app_events_observer = AppEventsObserver::CreateForProfile(
         profile, user_reporting_settings_.get());
     InitEventObserverManager(
-        std::move(app_events_observer), user_event_report_queue_.get(),
+        std::move(app_events_observer), app_event_report_queue_.get(),
         user_reporting_settings_.get(),
         /*enable_setting_path=*/::ash::reporting::kReportAppInventory,
         metrics::kReportAppInventoryEnabledDefaultValue,

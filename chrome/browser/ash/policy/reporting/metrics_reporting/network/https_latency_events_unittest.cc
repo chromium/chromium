@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <sys/types.h>
+#include <memory>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -92,7 +93,8 @@ class FakeMetricReportingManagerDelegate
   std::unique_ptr<MetricReportQueue> CreateMetricReportQueue(
       EventType event_type,
       Destination destination,
-      Priority priority) override {
+      Priority priority,
+      std::unique_ptr<RateLimiterInterface> rate_limiter) override {
     if (event_type != EventType::kDevice ||
         destination != Destination::EVENT_METRIC ||
         priority != Priority::SLOW_BATCH) {
