@@ -158,7 +158,7 @@ class Bitset<Word, kNumWords, std::enable_if_t<kNumWords == 1>> {
 // representation.
 //
 // The lower and upper bounds of elements storable in a container are
-// [T(0), kMaxValue]. By default, kMaxValue is T::kMaxValue.
+// [kMinValue, kMaxValue]. The default is [0, T::kMaxValue].
 //
 // The `packed` parameter indicates whether the memory consumption of a DenseSet
 // object should be minimized. That comes at the cost of slightly larger code
@@ -167,25 +167,50 @@ class Bitset<Word, kNumWords, std::enable_if_t<kNumWords == 1>> {
 // Time and space complexity:
 // - insert(), erase(), contains() run in time O(1)
 // - empty(), size(), iteration run in time O(kMaxValue)
-// - sizeof(DenseSet) is, for N = kMaxValue + 1,
+// - sizeof(DenseSet) is, for N = `kMaxValue - kMinValue + 1,
 //   - if `!packed`: the minimum of {1, 2, 4, 8 * ceil(N / 64)} bytes that has
 //     at least N bits;
 //   - if `packed`: ceil(N / 8) bytes.
 //
 // Iterators are invalidated when the owning container is destructed or moved,
 // or when the element the iterator points to is erased from the container.
-template <typename T, T kMaxValue = T::kMaxValue, bool packed = false>
+template <typename T,
+          T kMinValue = T(0),
+          T kMaxValue = T::kMaxValue,
+          bool packed = false>
 class DenseSet {
  private:
-  // The index of a bit.
-  using Index = std::make_unsigned_t<T>;
-
   static_assert(std::is_integral<T>::value || std::is_enum<T>::value);
-  static_assert(0 <= base::checked_cast<Index>(kMaxValue) + 1);
+
+  // Needed for std::conditional_t.
+  struct Wrapper {
+    using type = T;
+  };
+
+  // For arithmetic on `T`.
+  using UnderlyingType = typename std::conditional_t<std::is_enum<T>::value,
+                                                     std::underlying_type<T>,
+                                                     Wrapper>::type;
+
+  // The index of a bit in the underlying bitset. Use
+  // value_to_index() and index_to_value() for conversion.
+  using Index = std::make_unsigned_t<UnderlyingType>;
+
+  // We can't use `base::to_underlying()` because `T` may be not an enum.
+  static constexpr UnderlyingType to_underlying(T x) {
+    return static_cast<UnderlyingType>(x);
+  }
+
+  static_assert(to_underlying(kMinValue) <= to_underlying(kMaxValue));
 
   // The maximum supported bit index. Indexing starts at 0, so kMaxBitIndex ==
-  // 63 means we need 64 bits.
-  static constexpr size_t kMaxBitIndex = base::checked_cast<Index>(kMaxValue);
+  // 63 means we need 64 bits. This is a `size_t` to avoid `kMaxBitIndex + 1`
+  // from overflowing.
+  static constexpr size_t kMaxBitIndex = base::checked_cast<Index>(
+      to_underlying(kMaxValue) - to_underlying(kMinValue));
+
+  static_assert(kMaxBitIndex <
+                std::numeric_limits<decltype(kMaxBitIndex)>::max());
 
  public:
   // The bitset is represented as array of words.
@@ -450,23 +475,17 @@ class DenseSet {
 
   using Bitset = internal::Bitset<Word, kNumWords>;
 
-  // Needed to use std::conditional_t.
-  // Must be declared outside of index_to_value() to avoid compiler errors.
-  struct Wrapper {
-    using type = T;
-  };
-
   static constexpr Index value_to_index(T x) {
-    DCHECK(index_to_value(0) <= x && x <= kMaxValue);
-    return base::checked_cast<Index>(x);
+    DCHECK_LE(kMinValue, x);
+    DCHECK_LE(x, kMaxValue);
+    return base::checked_cast<Index>(to_underlying(x) -
+                                     to_underlying(kMinValue));
   }
 
   static constexpr T index_to_value(Index i) {
     DCHECK_LE(i, base::checked_cast<Index>(kMaxValue));
-    using UnderlyingType =
-        typename std::conditional_t<std::is_enum<T>::value,
-                                    std::underlying_type<T>, Wrapper>::type;
-    return static_cast<T>(base::checked_cast<UnderlyingType>(i));
+    return static_cast<T>(base::checked_cast<UnderlyingType>(i) +
+                          to_underlying(kMinValue));
   }
 
   Bitset bitset_{};

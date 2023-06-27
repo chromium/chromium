@@ -33,7 +33,8 @@ namespace {
 // default prediction. We don't need to store it, because its meaning is that
 // there is no default prediction.
 bool IsDefaultPrediction(const FieldPrediction& prediction) {
-  constexpr DenseSet<FieldPrediction::Source, FieldPrediction::Source_MAX>
+  constexpr DenseSet<FieldPrediction::Source, FieldPrediction::Source(0),
+                     FieldPrediction::Source_MAX>
       default_sources = {FieldPrediction::SOURCE_AUTOFILL_DEFAULT,
                          FieldPrediction::SOURCE_PASSWORDS_DEFAULT,
                          FieldPrediction::SOURCE_OVERRIDE};

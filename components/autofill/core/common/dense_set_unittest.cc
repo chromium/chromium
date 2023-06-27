@@ -15,43 +15,43 @@ using ::testing::ElementsAre;
 namespace autofill {
 
 TEST(DenseSetTest, size_of) {
-  EXPECT_EQ(sizeof(DenseSet<size_t, 1>), 1u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 7>), 1u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 8>), 2u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 15>), 2u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 16>), 4u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 31>), 4u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 32>), 8u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 63>), 8u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 64>), 16u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 127>), 16u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 255>), 32u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 1>), 1u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 7>), 1u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 8>), 2u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 15>), 2u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 16>), 4u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 31>), 4u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 32>), 8u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 63>), 8u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 64>), 16u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 127>), 16u);
+  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 255>), 32u);
 }
 
 TEST(DenseSetTest, initialization) {
   enum class T : size_t {
-    One = 1,
-    Two = 2,
-    Three = 3,
-    Four = 4,
-    Five = 5,
-    kMaxValue = Five,
+    kOne = 1,
+    kTwo = 2,
+    kThree = 3,
+    kFour = 4,
+    kFive = 5,
+    kMaxValue = kFive,
   };
-  using DS = DenseSet<T, T::kMaxValue>;
+  using DS = DenseSet<T>;
 
   DS s;
   EXPECT_TRUE(s.empty());
   EXPECT_EQ(s.size(), 0u);
   EXPECT_EQ(DS(s.begin(), s.end()), s);
-  s.insert(T::Two);
-  s.insert(T::Four);
-  s.insert(T::One);
+  s.insert(T::kTwo);
+  s.insert(T::kFour);
+  s.insert(T::kOne);
   EXPECT_EQ(s.size(), 3u);
   EXPECT_EQ(DS(s.begin(), s.end()), s);
   EXPECT_EQ(DS(s.cbegin(), s.cend()), s);
   EXPECT_EQ(DS(s.rbegin(), s.rend()), s);
   EXPECT_EQ(DS(s.crbegin(), s.crend()), s);
-  EXPECT_EQ(DS({T::Four, T::Two, T::One}), s);
+  EXPECT_EQ(DS({T::kFour, T::kTwo, T::kOne}), s);
 }
 
 TEST(DenseSetTest, initializer_list) {
@@ -63,35 +63,35 @@ TEST(DenseSetTest, initializer_list) {
 
   {
     constexpr size_t kMax = 10;
-    constexpr DenseSet<size_t, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
+    constexpr DenseSet<size_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
     EXPECT_THAT(std::vector<size_t>(set.begin(), set.end()),
                 ::testing::ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
   }
 
   {
     constexpr size_t kMax = kMaxValueForConstexpr;
-    constexpr DenseSet<size_t, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
+    constexpr DenseSet<size_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
     EXPECT_THAT(std::vector<size_t>(set.begin(), set.end()),
                 ::testing::ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
   }
 
   {
     constexpr size_t kMax = kMaxValueForConstexpr + 1;
-    DenseSet<size_t, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
+    DenseSet<size_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
     EXPECT_THAT(std::vector<size_t>(set.begin(), set.end()),
                 ::testing::ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
   }
 
   {
     constexpr size_t kMax = kMaxValueForConstexpr + 2;
-    DenseSet<size_t, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
+    DenseSet<size_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
     EXPECT_THAT(std::vector<size_t>(set.begin(), set.end()),
                 ::testing::ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
   }
 
   {
     constexpr size_t kMax = kMaxValueForConstexpr + 100;
-    DenseSet<size_t, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
+    DenseSet<size_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
     EXPECT_THAT(std::vector<size_t>(set.begin(), set.end()),
                 ::testing::ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
   }
@@ -99,21 +99,21 @@ TEST(DenseSetTest, initializer_list) {
 
 TEST(DenseSetTest, data) {
   {
-    constexpr DenseSet<size_t, 23> set{0, 1, 2, 3, 4, 20, 23};
+    constexpr DenseSet<size_t, 0, 23> set{0, 1, 2, 3, 4, 20, 23};
     EXPECT_THAT(
         set.data(),
         ElementsAre((1ULL << 0) | (1ULL << 1) | (1ULL << 2) | (1ULL << 3) |
                     (1ULL << 4) | (1ULL << 20) | (1ULL << 23)));
   }
   {
-    constexpr DenseSet<size_t, 31> set{0, 1, 2, 3, 4, 20, 31};
+    constexpr DenseSet<size_t, 0, 31> set{0, 1, 2, 3, 4, 20, 31};
     EXPECT_THAT(
         set.data(),
         ElementsAre((1ULL << 0) | (1ULL << 1) | (1ULL << 2) | (1ULL << 3) |
                     (1ULL << 4) | (1ULL << 20) | (1ULL << 31)));
   }
   {
-    constexpr DenseSet<size_t, 63> set{0, 1, 63};
+    constexpr DenseSet<size_t, 0, 63> set{0, 1, 63};
     EXPECT_THAT(set.data(),
                 ElementsAre((1ULL << 0) | (1ULL << 1) | (1ULL << 63)));
   }
@@ -121,19 +121,20 @@ TEST(DenseSetTest, data) {
 
 TEST(DenseSetTest, iterators_begin_end) {
   enum class T : int {
-    One = 1,
-    Two = 2,
-    Three = 3,
-    Four = 4,
-    Five = 5,
-    kMaxValue = Five,
+    kMinusOne = -1,
+    kOne = 1,
+    kTwo = 2,
+    kThree = 3,
+    kFour = 4,
+    kFive = 5,
+    kMaxValue = kFive,
   };
-  using DS = DenseSet<T, T::kMaxValue>;
+  using DS = DenseSet<T, T::kMinusOne, T::kMaxValue>;
 
   DS s;
-  s.insert(T::Two);
-  s.insert(T::Four);
-  s.insert(T::One);
+  s.insert(T::kTwo);
+  s.insert(T::kFour);
+  s.insert(T::kOne);
   EXPECT_EQ(s.size(), 3u);
   EXPECT_EQ(std::distance(s.begin(), s.end()), 3);
 
@@ -143,9 +144,9 @@ TEST(DenseSetTest, iterators_begin_end) {
     auto x2 = *it++;
     auto x3 = *it++;
     EXPECT_EQ(it, s.end());
-    EXPECT_EQ(x1, T::One);
-    EXPECT_EQ(x2, T::Two);
-    EXPECT_EQ(x3, T::Four);
+    EXPECT_EQ(x1, T::kOne);
+    EXPECT_EQ(x2, T::kTwo);
+    EXPECT_EQ(x3, T::kFour);
   }
 
   {
@@ -154,29 +155,30 @@ TEST(DenseSetTest, iterators_begin_end) {
     auto x2 = *++it;
     auto x3 = *++it;
     EXPECT_NE(it, s.end());
-    EXPECT_EQ(x1, T::One);
-    EXPECT_EQ(x2, T::Two);
-    EXPECT_EQ(x3, T::Four);
+    EXPECT_EQ(x1, T::kOne);
+    EXPECT_EQ(x2, T::kTwo);
+    EXPECT_EQ(x3, T::kFour);
   }
 
-  EXPECT_THAT(s, ::testing::ElementsAre(T::One, T::Two, T::Four));
+  EXPECT_THAT(s, ::testing::ElementsAre(T::kOne, T::kTwo, T::kFour));
 }
 
 TEST(DenseSetTest, iterators_begin_end_reverse) {
-  enum class T : char {
-    One = 1,
-    Two = 2,
-    Three = 3,
-    Four = 4,
-    Five = 5,
-    kMaxValue = Five,
+  enum class T : int8_t {
+    kMinusOne = -1,
+    kOne = 1,
+    kTwo = 2,
+    kThree = 3,
+    kFour = 4,
+    kFive = 5,
+    kMaxValue = kFive
   };
-  using DS = DenseSet<T, T::kMaxValue>;
+  using DS = DenseSet<T, T::kMinusOne, T::kMaxValue>;
 
   DS s;
-  s.insert(T::Two);
-  s.insert(T::Four);
-  s.insert(T::One);
+  s.insert(T::kTwo);
+  s.insert(T::kFour);
+  s.insert(T::kOne);
   EXPECT_EQ(s.size(), 3u);
 
   {
@@ -186,9 +188,9 @@ TEST(DenseSetTest, iterators_begin_end_reverse) {
     auto x2 = *it--;
     auto x1 = *it;
     EXPECT_EQ(it, s.begin());
-    EXPECT_EQ(x1, T::One);
-    EXPECT_EQ(x2, T::Two);
-    EXPECT_EQ(x3, T::Four);
+    EXPECT_EQ(x1, T::kOne);
+    EXPECT_EQ(x2, T::kTwo);
+    EXPECT_EQ(x3, T::kFour);
   }
 
   {
@@ -197,27 +199,28 @@ TEST(DenseSetTest, iterators_begin_end_reverse) {
     auto x2 = *--it;
     auto x1 = *--it;
     EXPECT_EQ(it, s.begin());
-    EXPECT_EQ(x1, T::One);
-    EXPECT_EQ(x2, T::Two);
-    EXPECT_EQ(x3, T::Four);
+    EXPECT_EQ(x1, T::kOne);
+    EXPECT_EQ(x2, T::kTwo);
+    EXPECT_EQ(x3, T::kFour);
   }
 }
 
 TEST(DenseSetTest, iterators_rbegin_rend) {
   enum class T {
-    One = 1,
-    Two = 2,
-    Three = 3,
-    Four = 4,
-    Five = 5,
-    kMaxValue = Five
+    kMinusOne = -1,
+    kOne = 1,
+    kTwo = 2,
+    kThree = 3,
+    kFour = 4,
+    kFive = 5,
+    kMaxValue = kFive
   };
-  using DS = DenseSet<T, T::kMaxValue>;
+  using DS = DenseSet<T, T::kMinusOne, T::kMaxValue>;
 
   DS s;
-  s.insert(T::Two);
-  s.insert(T::Four);
-  s.insert(T::One);
+  s.insert(T::kTwo);
+  s.insert(T::kFour);
+  s.insert(T::kOne);
   EXPECT_EQ(s.size(), 3u);
   EXPECT_EQ(std::distance(s.rbegin(), s.rend()), 3);
 
@@ -227,9 +230,9 @@ TEST(DenseSetTest, iterators_rbegin_rend) {
     auto x2 = *it++;
     auto x1 = *it++;
     EXPECT_EQ(it, s.rend());
-    EXPECT_EQ(x1, T::One);
-    EXPECT_EQ(x2, T::Two);
-    EXPECT_EQ(x3, T::Four);
+    EXPECT_EQ(x1, T::kOne);
+    EXPECT_EQ(x2, T::kTwo);
+    EXPECT_EQ(x3, T::kFour);
   }
 
   {
@@ -238,62 +241,63 @@ TEST(DenseSetTest, iterators_rbegin_rend) {
     auto x2 = *++it;
     auto x1 = *++it;
     EXPECT_NE(it, s.rend());
-    EXPECT_EQ(x1, T::One);
-    EXPECT_EQ(x2, T::Two);
-    EXPECT_EQ(x3, T::Four);
+    EXPECT_EQ(x1, T::kOne);
+    EXPECT_EQ(x2, T::kTwo);
+    EXPECT_EQ(x3, T::kFour);
   }
 
   EXPECT_THAT(std::vector<T>(s.rbegin(), s.rend()),
-              ::testing::ElementsAre(T::Four, T::Two, T::One));
+              ::testing::ElementsAre(T::kFour, T::kTwo, T::kOne));
 }
 
 TEST(DenseSetTest, lookup) {
   enum class T {
-    One = 1,
-    Two = 2,
-    Three = 3,
-    Four = 4,
-    Five = 5,
-    kMaxValue = Five
+    kMinusOne = -1,
+    kOne = 1,
+    kTwo = 2,
+    kThree = 3,
+    kFour = 4,
+    kFive = 5,
+    kMaxValue = kFive
   };
-  using DS = DenseSet<T, T::kMaxValue>;
+  using DS = DenseSet<T, T::kMinusOne, T::kMaxValue>;
 
   DS s;
-  s.insert(T::Two);
-  s.insert(T::Four);
-  s.insert(T::One);
+  s.insert(T::kTwo);
+  s.insert(T::kFour);
+  s.insert(T::kOne);
 
   EXPECT_FALSE(s.contains(static_cast<T>(0)));
-  EXPECT_TRUE(s.contains(T::One));
-  EXPECT_TRUE(s.contains(T::Two));
-  EXPECT_FALSE(s.contains(T::Three));
-  EXPECT_TRUE(s.contains(T::Four));
-  EXPECT_FALSE(s.contains(T::Five));
+  EXPECT_TRUE(s.contains(T::kOne));
+  EXPECT_TRUE(s.contains(T::kTwo));
+  EXPECT_FALSE(s.contains(T::kThree));
+  EXPECT_TRUE(s.contains(T::kFour));
+  EXPECT_FALSE(s.contains(T::kFive));
 
   EXPECT_EQ(s.contains(static_cast<T>(0)), 0u);
-  EXPECT_EQ(s.contains(T::One), 1u);
-  EXPECT_EQ(s.contains(T::Two), 1u);
-  EXPECT_EQ(s.contains(T::Three), 0u);
-  EXPECT_EQ(s.contains(T::Four), 1u);
-  EXPECT_EQ(s.contains(T::Five), 0u);
+  EXPECT_EQ(s.contains(T::kOne), 1u);
+  EXPECT_EQ(s.contains(T::kTwo), 1u);
+  EXPECT_EQ(s.contains(T::kThree), 0u);
+  EXPECT_EQ(s.contains(T::kFour), 1u);
+  EXPECT_EQ(s.contains(T::kFive), 0u);
 
   EXPECT_EQ(s.find(static_cast<T>(0)), s.end());
-  EXPECT_NE(s.find(T::One), s.end());
-  EXPECT_NE(s.find(T::Two), s.end());
-  EXPECT_EQ(s.find(T::Three), s.end());
-  EXPECT_NE(s.find(T::Four), s.end());
-  EXPECT_EQ(s.find(T::Five), s.end());
+  EXPECT_NE(s.find(T::kOne), s.end());
+  EXPECT_NE(s.find(T::kTwo), s.end());
+  EXPECT_EQ(s.find(T::kThree), s.end());
+  EXPECT_NE(s.find(T::kFour), s.end());
+  EXPECT_EQ(s.find(T::kFive), s.end());
 
-  EXPECT_EQ(*s.find(T::One), T::One);
-  EXPECT_EQ(*s.find(T::Two), T::Two);
-  EXPECT_EQ(*s.find(T::Four), T::Four);
+  EXPECT_EQ(*s.find(T::kOne), T::kOne);
+  EXPECT_EQ(*s.find(T::kTwo), T::kTwo);
+  EXPECT_EQ(*s.find(T::kFour), T::kFour);
 
   EXPECT_NE(s.find(static_cast<T>(0)), s.lower_bound(static_cast<T>(0)));
-  EXPECT_EQ(s.find(T::One), s.lower_bound(T::One));
-  EXPECT_EQ(s.find(T::Two), s.lower_bound(T::Two));
-  EXPECT_NE(s.find(T::Three), s.lower_bound(T::Three));
-  EXPECT_EQ(s.find(T::Four), s.lower_bound(T::Four));
-  EXPECT_EQ(s.find(T::Five), s.lower_bound(T::Five));
+  EXPECT_EQ(s.find(T::kOne), s.lower_bound(T::kOne));
+  EXPECT_EQ(s.find(T::kTwo), s.lower_bound(T::kTwo));
+  EXPECT_NE(s.find(T::kThree), s.lower_bound(T::kThree));
+  EXPECT_EQ(s.find(T::kFour), s.lower_bound(T::kFour));
+  EXPECT_EQ(s.find(T::kFive), s.lower_bound(T::kFive));
 
   DS t;
   EXPECT_TRUE(t.empty());
@@ -323,20 +327,27 @@ TEST(DenseSetTest, lookup) {
 }
 
 TEST(DenseSetTest, iterators_lower_upper_bound) {
-  enum class T { One = 1, Two = 2, Three = 3, Four = 4, Five = 5 };
-  using DS = DenseSet<T, T::Five>;
+  enum class T {
+    kMinusOne = -1,
+    kOne = 1,
+    kTwo = 2,
+    kThree = 3,
+    kFour = 4,
+    kFive = 5
+  };
+  using DS = DenseSet<T, T::kMinusOne, T::kFive>;
 
   DS s;
-  s.insert(T::Two);
-  s.insert(T::Four);
-  s.insert(T::One);
+  s.insert(T::kTwo);
+  s.insert(T::kFour);
+  s.insert(T::kOne);
   EXPECT_EQ(s.size(), 3u);
 
   EXPECT_EQ(s.lower_bound(static_cast<T>(0)), s.begin());
-  EXPECT_EQ(s.lower_bound(T::One), s.begin());
+  EXPECT_EQ(s.lower_bound(T::kOne), s.begin());
 
-  EXPECT_EQ(s.upper_bound(T::Four), s.end());
-  EXPECT_EQ(s.upper_bound(T::Five), s.end());
+  EXPECT_EQ(s.upper_bound(T::kFour), s.end());
+  EXPECT_EQ(s.upper_bound(T::kFive), s.end());
 
   {
     auto it = s.lower_bound(static_cast<T>(0));
@@ -345,46 +356,46 @@ TEST(DenseSetTest, iterators_lower_upper_bound) {
   }
 
   {
-    auto it = s.lower_bound(T::One);
-    auto jt = s.upper_bound(T::One);
+    auto it = s.lower_bound(T::kOne);
+    auto jt = s.upper_bound(T::kOne);
     auto x1 = *it++;
     EXPECT_EQ(it, jt);
-    EXPECT_EQ(x1, T::One);
+    EXPECT_EQ(x1, T::kOne);
   }
 
   {
-    auto it = s.lower_bound(T::Four);
-    auto jt = s.upper_bound(T::Four);
+    auto it = s.lower_bound(T::kFour);
+    auto jt = s.upper_bound(T::kFour);
     auto x3 = *it++;
     EXPECT_EQ(it, jt);
-    EXPECT_EQ(x3, T::Four);
+    EXPECT_EQ(x3, T::kFour);
   }
 
   {
-    auto it = s.lower_bound(T::Five);
-    auto jt = s.upper_bound(T::Five);
+    auto it = s.lower_bound(T::kFive);
+    auto jt = s.upper_bound(T::kFive);
     EXPECT_EQ(it, jt);
   }
 
   {
-    auto it = s.lower_bound(T::One);
-    auto jt = s.upper_bound(T::Five);
+    auto it = s.lower_bound(T::kOne);
+    auto jt = s.upper_bound(T::kFive);
     auto x1 = *it++;
     auto x2 = *it++;
     auto x3 = *it++;
     EXPECT_EQ(it, jt);
-    EXPECT_EQ(x1, T::One);
-    EXPECT_EQ(x2, T::Two);
-    EXPECT_EQ(x3, T::Four);
+    EXPECT_EQ(x1, T::kOne);
+    EXPECT_EQ(x2, T::kTwo);
+    EXPECT_EQ(x3, T::kFour);
   }
 
   {
-    auto it = s.lower_bound(T::Three);
-    auto jt = s.upper_bound(T::Four);
+    auto it = s.lower_bound(T::kThree);
+    auto jt = s.upper_bound(T::kFour);
     auto x3 = *it++;
     EXPECT_EQ(jt, s.end());
     EXPECT_EQ(it, jt);
-    EXPECT_EQ(x3, T::Four);
+    EXPECT_EQ(x3, T::kFour);
   }
 
   EXPECT_EQ(static_cast<size_t>(std::distance(s.begin(), s.end())), s.size());
@@ -392,43 +403,43 @@ TEST(DenseSetTest, iterators_lower_upper_bound) {
 }
 
 TEST(DenseSetTest, max_size) {
-  const int One = 1;
-  const int Two = 2;
-  // const int Three = 3;
-  const int Four = 4;
-  // const int Five = 5;
+  const int kOne = 1;
+  const int kTwo = 2;
+  // const int kThree = 3;
+  const int kFour = 4;
+  // const int kFive = 5;
   const int kMaxValue = 5;
-  using DS = DenseSet<int, kMaxValue>;
+  using DS = DenseSet<int, 0, kMaxValue>;
 
   DS s;
   EXPECT_TRUE(s.empty());
   EXPECT_EQ(s.size(), 0u);
   EXPECT_EQ(s.max_size(), 6u);
-  s.insert(Two);
+  s.insert(kTwo);
   EXPECT_FALSE(s.empty());
   EXPECT_EQ(s.size(), 1u);
-  s.insert(Four);
+  s.insert(kFour);
   EXPECT_FALSE(s.empty());
   EXPECT_EQ(s.size(), 2u);
-  s.insert(One);
+  s.insert(kOne);
   EXPECT_FALSE(s.empty());
   EXPECT_EQ(s.size(), 3u);
   EXPECT_EQ(s.max_size(), 6u);
 }
 
 TEST(DenseSetTest, modifiers) {
-  const size_t One = 1;
-  const size_t Two = 2;
-  const size_t Three = 3;
-  const size_t Four = 4;
-  // const size_t Five = 5;
+  const size_t kOne = 1;
+  const size_t kTwo = 2;
+  const size_t kThree = 3;
+  const size_t kFour = 4;
+  // const size_t kFive = 5;
   const size_t kMaxValue = 5;
-  using DS = DenseSet<size_t, kMaxValue>;
+  using DS = DenseSet<size_t, 0, kMaxValue>;
 
   DS s;
-  s.insert(Two);
-  s.insert(Four);
-  s.insert(One);
+  s.insert(kTwo);
+  s.insert(kFour);
+  s.insert(kOne);
   EXPECT_EQ(s.size(), 3u);
 
   auto EXPECT_INSERTION = [](auto& set, auto value, bool took_place) {
@@ -438,58 +449,58 @@ TEST(DenseSetTest, modifiers) {
 
   DS t;
   EXPECT_NE(s, t);
-  EXPECT_INSERTION(t, Two, true);
-  EXPECT_INSERTION(t, Two, false);
-  EXPECT_INSERTION(t, Four, true);
-  EXPECT_INSERTION(t, Four, false);
-  EXPECT_INSERTION(t, One, true);
-  EXPECT_INSERTION(t, One, false);
+  EXPECT_INSERTION(t, kTwo, true);
+  EXPECT_INSERTION(t, kTwo, false);
+  EXPECT_INSERTION(t, kFour, true);
+  EXPECT_INSERTION(t, kFour, false);
+  EXPECT_INSERTION(t, kOne, true);
+  EXPECT_INSERTION(t, kOne, false);
   EXPECT_EQ(s, t);
   EXPECT_EQ(t.size(), 3u);
 
-  EXPECT_INSERTION(t, Three, true);
-  EXPECT_INSERTION(t, Three, false);
-  EXPECT_EQ(t.erase(Three), 1u);
-  EXPECT_EQ(t.erase(Three), 0u);
+  EXPECT_INSERTION(t, kThree, true);
+  EXPECT_INSERTION(t, kThree, false);
+  EXPECT_EQ(t.erase(kThree), 1u);
+  EXPECT_EQ(t.erase(kThree), 0u);
   EXPECT_EQ(s, t);
   EXPECT_EQ(t.size(), 3u);
 
-  EXPECT_EQ(s.erase(One), 1u);
-  EXPECT_EQ(t.erase(Four), 1u);
+  EXPECT_EQ(s.erase(kOne), 1u);
+  EXPECT_EQ(t.erase(kFour), 1u);
   EXPECT_NE(s, t);
   EXPECT_EQ(s.size(), 2u);
   EXPECT_EQ(t.size(), 2u);
 
-  EXPECT_INSERTION(s, One, true);
-  EXPECT_INSERTION(t, Four, true);
+  EXPECT_INSERTION(s, kOne, true);
+  EXPECT_INSERTION(t, kFour, true);
   EXPECT_EQ(s, t);
   EXPECT_EQ(s.size(), 3u);
   EXPECT_EQ(t.size(), 3u);
 
-  EXPECT_EQ(s.erase(s.find(One)), s.find(Two));
-  EXPECT_EQ(t.erase(t.lower_bound(One), t.upper_bound(One)), t.find(Two));
-  EXPECT_FALSE(s.contains(One));
+  EXPECT_EQ(s.erase(s.find(kOne)), s.find(kTwo));
+  EXPECT_EQ(t.erase(t.lower_bound(kOne), t.upper_bound(kOne)), t.find(kTwo));
+  EXPECT_FALSE(s.contains(kOne));
   EXPECT_EQ(s, t);
   EXPECT_EQ(s.size(), 2u);
   EXPECT_EQ(t.size(), 2u);
 
-  EXPECT_INSERTION(s, One, true);
-  EXPECT_INSERTION(t, One, true);
+  EXPECT_INSERTION(s, kOne, true);
+  EXPECT_INSERTION(t, kOne, true);
   EXPECT_EQ(s, t);
   EXPECT_EQ(s.size(), 3u);
   EXPECT_EQ(t.size(), 3u);
 
-  EXPECT_EQ(s.erase(s.find(Two), s.end()), s.end());
-  EXPECT_EQ(t.erase(t.lower_bound(Two), t.upper_bound(Four)), t.end());
-  EXPECT_TRUE(s.contains(One));
+  EXPECT_EQ(s.erase(s.find(kTwo), s.end()), s.end());
+  EXPECT_EQ(t.erase(t.lower_bound(kTwo), t.upper_bound(kFour)), t.end());
+  EXPECT_TRUE(s.contains(kOne));
   EXPECT_EQ(s, t);
   EXPECT_EQ(s.size(), 1u);
   EXPECT_EQ(t.size(), 1u);
 
-  EXPECT_INSERTION(s, Two, true);
-  EXPECT_INSERTION(t, Two, true);
-  EXPECT_INSERTION(s, Four, true);
-  EXPECT_INSERTION(t, Four, true);
+  EXPECT_INSERTION(s, kTwo, true);
+  EXPECT_INSERTION(t, kTwo, true);
+  EXPECT_INSERTION(s, kFour, true);
+  EXPECT_INSERTION(t, kFour, true);
   EXPECT_EQ(s, t);
   EXPECT_EQ(s.size(), 3u);
   EXPECT_EQ(t.size(), 3u);
@@ -498,7 +509,7 @@ TEST(DenseSetTest, modifiers) {
   EXPECT_EQ(s, DS());
   EXPECT_TRUE(s.empty());
 
-  s.insert(Three);
+  s.insert(kThree);
   s.insert_all(t);
   EXPECT_EQ(s.size(), 4u);
   EXPECT_EQ(t.size(), 3u);
@@ -506,20 +517,20 @@ TEST(DenseSetTest, modifiers) {
   EXPECT_FALSE(s.contains_none(t));
   EXPECT_TRUE(s.contains_any(t));
   EXPECT_TRUE(s.contains_all(t));
-  EXPECT_TRUE(s.contains(Three));
+  EXPECT_TRUE(s.contains(kThree));
   EXPECT_FALSE(t.contains_none(s));
   EXPECT_TRUE(t.contains_any(s));
   EXPECT_FALSE(t.contains_all(s));
 
   s.erase_all(t);
   EXPECT_EQ(s.size(), 1u);
-  EXPECT_TRUE(s.contains(Three));
+  EXPECT_TRUE(s.contains(kThree));
   EXPECT_TRUE(s.contains_none(t));
   EXPECT_FALSE(s.contains_any(t));
   EXPECT_FALSE(s.contains_all(t));
 
   s.insert_all(t);
-  s.erase(Three);
+  s.erase(kThree);
   EXPECT_EQ(s.size(), 3u);
   EXPECT_EQ(s, t);
 
@@ -527,11 +538,11 @@ TEST(DenseSetTest, modifiers) {
   EXPECT_TRUE(s.empty());
 
   EXPECT_INSERTION(s, *t.begin(), true);
-  EXPECT_TRUE(s.contains(One));
+  EXPECT_TRUE(s.contains(kOne));
   EXPECT_INSERTION(s, *std::next(t.begin()), true);
-  EXPECT_TRUE(s.contains(Two));
+  EXPECT_TRUE(s.contains(kTwo));
   EXPECT_INSERTION(s, *std::prev(t.end()), true);
-  EXPECT_TRUE(s.contains(Four));
+  EXPECT_TRUE(s.contains(kFour));
   EXPECT_EQ(s, t);
   EXPECT_EQ(s.size(), 3u);
   EXPECT_EQ(t.size(), 3u);
@@ -539,7 +550,7 @@ TEST(DenseSetTest, modifiers) {
 
 TEST(DenseSetTest, std_set) {
   constexpr size_t kMaxValue = 50;
-  DenseSet<size_t, kMaxValue> dense_set;
+  DenseSet<size_t, 0, kMaxValue> dense_set;
   std::set<size_t> std_set;
 
   auto expect_equivalence = [&] {
