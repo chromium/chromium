@@ -46,7 +46,6 @@ async def another_context_id(create_context):
 @pytest_asyncio.fixture
 def create_context(websocket):
     """Return a browsing context factory."""
-
     async def create_context():
         result = await execute_command(websocket, {
             "method": "browsingContext.create",
@@ -127,7 +126,6 @@ def url_all_origins(request):
 def read_sorted_messages(websocket):
     """Read the given number of messages from the websocket, and returns them
     in consistent order."""
-
     async def read_sorted_messages(message_count):
         messages = []
         for _ in range(message_count):
@@ -142,7 +140,6 @@ def read_sorted_messages(websocket):
 @pytest.fixture
 def html():
     """Return a factory for HTML data URL with the given content."""
-
     def html(content=""):
         return f'data:text/html,{content}'
 
@@ -152,7 +149,6 @@ def html():
 @pytest.fixture
 def iframe():
     """Return a factory for <iframe> with the given src."""
-
     def iframe(src=""):
         return f'<iframe src="{src}" />'
 
