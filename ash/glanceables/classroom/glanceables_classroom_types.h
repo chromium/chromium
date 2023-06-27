@@ -25,6 +25,9 @@ struct ASH_EXPORT GlanceablesClassroomCourse {
       delete;
   ~GlanceablesClassroomCourse() = default;
 
+  // Intended for debugging.
+  std::string ToString() const;
+
   // Identifier for this course assigned by Classroom.
   const std::string id;
 
@@ -47,6 +50,9 @@ struct ASH_EXPORT GlanceablesClassroomCourseWorkItem {
   GlanceablesClassroomCourseWorkItem& operator=(
       const GlanceablesClassroomCourseWorkItem&) = delete;
   ~GlanceablesClassroomCourseWorkItem() = default;
+
+  // Intended for debugging.
+  std::string ToString() const;
 
   // Classroom-assigned identifier of this course work, unique per course.
   const std::string id;
@@ -91,6 +97,9 @@ struct ASH_EXPORT GlanceablesClassroomStudentSubmission {
       const GlanceablesClassroomStudentSubmission&) = delete;
   ~GlanceablesClassroomStudentSubmission() = default;
 
+  // Intended for debugging.
+  std::string ToString() const;
+
   // Identifier for this student submission assigned by Classroom.
   const std::string id;
 
@@ -129,6 +138,49 @@ struct ASH_EXPORT GlanceablesClassroomStudentAssignment {
 
   // Due date and time in UTC of this course work item.
   const absl::optional<base::Time> due;
+};
+
+// Represents a single classroom assignment for teachers. This contains
+// assignment data specific to teachers. This data is aggregated from all
+// student submissions for this assignment.
+struct ASH_EXPORT GlanceablesClassroomTeacherAssignment {
+ public:
+  GlanceablesClassroomTeacherAssignment(const std::string& course_title,
+                                        const std::string& course_work_title,
+                                        const GURL& link,
+                                        const absl::optional<base::Time>& due,
+                                        int total_submission_count,
+                                        int number_turned_in,
+                                        int number_graded);
+  GlanceablesClassroomTeacherAssignment(
+      const GlanceablesClassroomTeacherAssignment&) = delete;
+  GlanceablesClassroomTeacherAssignment& operator=(
+      const GlanceablesClassroomTeacherAssignment&) = delete;
+  ~GlanceablesClassroomTeacherAssignment() = default;
+
+  // Intended for debugging.
+  std::string ToString() const;
+
+  // Title of the course this assignment belongs to.
+  const std::string course_title;
+
+  // Title of the course work item this assignment belongs to.
+  const std::string course_work_title;
+
+  // Absolute link for redirects to Classroom web UI.
+  const GURL link;
+
+  // Due date and time in UTC of this course work item.
+  const absl::optional<base::Time> due;
+
+  // The total number of students that have this assigned to them.
+  const int total_submission_count;
+
+  // The number of this assignment that has been turned in students.
+  const int number_turned_in;
+
+  // The number of this assignment that has already been graded.
+  const int number_graded;
 };
 
 }  // namespace ash

@@ -236,6 +236,77 @@ void GlanceablesClassroomClientImpl::GetStudentAssignmentsWithoutDueDate(
       std::move(submission_state_predicate), std::move(callback)));
 }
 
+void GlanceablesClassroomClientImpl::IsTeacherRoleActive(
+    IsRoleEnabledCallback callback) {
+  CHECK(callback);
+
+  InvokeOnceTeacherDataFetched(base::BindOnce(
+      [](base::WeakPtr<GlanceablesClassroomClientImpl> self,
+         base::OnceCallback<void(bool active)> callback) {
+        if (!self) {
+          std::move(callback).Run(false);
+          return;
+        }
+        std::move(callback).Run(!self->teacher_courses_.empty());
+      },
+      weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void GlanceablesClassroomClientImpl::
+    GetTeacherAssignmentsWithApproachingDueDate(
+        GetTeacherAssignmentsCallback callback) {
+  CHECK(callback);
+
+  auto due_predicate = base::BindRepeating(
+      [](const base::Time& now, const absl::optional<base::Time>& due) {
+        return due.has_value() && now < due.value();
+      },
+      base::Time::Now());
+
+  InvokeOnceTeacherDataFetched(base::BindOnce(
+      &GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments,
+      weak_factory_.GetWeakPtr(), std::move(due_predicate), /*graded=*/false,
+      std::move(callback)));
+}
+
+void GlanceablesClassroomClientImpl::GetTeacherAssignmentsRecentlyDue(
+    GetTeacherAssignmentsCallback callback) {
+  CHECK(callback);
+
+  auto due_predicate = base::BindRepeating(
+      [](const base::Time& now, const absl::optional<base::Time>& due) {
+        return due.has_value() && now > due.value();
+      },
+      base::Time::Now());
+  InvokeOnceTeacherDataFetched(base::BindOnce(
+      &GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments,
+      weak_factory_.GetWeakPtr(), std::move(due_predicate), /*graded=*/false,
+      std::move(callback)));
+}
+
+void GlanceablesClassroomClientImpl::GetTeacherAssignmentsWithoutDueDate(
+    GetTeacherAssignmentsCallback callback) {
+  CHECK(callback);
+
+  auto due_predicate = base::BindRepeating(
+      [](const absl::optional<base::Time>& due) { return !due.has_value(); });
+  InvokeOnceTeacherDataFetched(base::BindOnce(
+      &GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments,
+      weak_factory_.GetWeakPtr(), std::move(due_predicate), /*graded=*/false,
+      std::move(callback)));
+}
+
+void GlanceablesClassroomClientImpl::GetGradedTeacherAssignments(
+    GetTeacherAssignmentsCallback callback) {
+  auto due_predicate = base::BindRepeating(
+      [](const absl::optional<base::Time>& due) { return true; });
+
+  InvokeOnceTeacherDataFetched(base::BindOnce(
+      &GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments,
+      weak_factory_.GetWeakPtr(), std::move(due_predicate), /*graded=*/true,
+      std::move(callback)));
+}
+
 void GlanceablesClassroomClientImpl::FetchStudentCourses(
     FetchCoursesCallback callback) {
   CHECK(callback);
@@ -306,6 +377,27 @@ void GlanceablesClassroomClientImpl::InvokeOnceStudentDataFetched(
         &GlanceablesClassroomClientImpl::OnCoursesFetched,
         weak_factory_.GetWeakPtr(),
         base::BindOnce(&GlanceablesClassroomClientImpl::OnStudentDataFetched,
+                       weak_factory_.GetWeakPtr())));
+  }
+}
+
+void GlanceablesClassroomClientImpl::InvokeOnceTeacherDataFetched(
+    base::OnceClosure callback) {
+  CHECK(callback);
+
+  if (teacher_data_fetch_status_ == FetchStatus::kFetched) {
+    std::move(callback).Run();
+    return;
+  }
+
+  callbacks_waiting_for_teacher_data_.push_back(std::move(callback));
+
+  if (teacher_data_fetch_status_ == FetchStatus::kNotFetched) {
+    teacher_data_fetch_status_ = FetchStatus::kFetching;
+    FetchTeacherCourses(base::BindOnce(
+        &GlanceablesClassroomClientImpl::OnCoursesFetched,
+        weak_factory_.GetWeakPtr(),
+        base::BindOnce(&GlanceablesClassroomClientImpl::OnTeacherDataFetched,
                        weak_factory_.GetWeakPtr())));
   }
 }
@@ -495,6 +587,13 @@ void GlanceablesClassroomClientImpl::OnStudentDataFetched() {
   }
 }
 
+void GlanceablesClassroomClientImpl::OnTeacherDataFetched() {
+  teacher_data_fetch_status_ = FetchStatus::kFetched;
+  for (auto& cb : callbacks_waiting_for_teacher_data_) {
+    std::move(cb).Run();
+  }
+}
+
 void GlanceablesClassroomClientImpl::GetFilteredStudentAssignments(
     base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
         due_predicate,
@@ -544,6 +643,70 @@ void GlanceablesClassroomClientImpl::GetFilteredStudentAssignments(
     }
   }
 
+  std::move(callback).Run(std::move(filtered_assignments));
+}
+
+void GlanceablesClassroomClientImpl::GetFilteredTeacherAssignments(
+    base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
+        due_predicate,
+    bool graded,
+    GetTeacherAssignmentsCallback callback) {
+  CHECK(due_predicate);
+  CHECK(callback);
+
+  std::vector<std::unique_ptr<GlanceablesClassroomTeacherAssignment>>
+      filtered_assignments;
+
+  for (const auto& course : teacher_courses_) {
+    const auto course_work_iter = course_work_.find(course->id);
+    const auto submissions_iter = student_submissions_.find(course->id);
+    if (course_work_iter == course_work_.end() ||
+        submissions_iter == student_submissions_.end()) {
+      continue;
+    }
+
+    const auto submissions =
+        GroupStudentSubmissionsByCourseWorkId(submissions_iter->second);
+
+    for (const auto& course_work_item : course_work_iter->second) {
+      if (!due_predicate.Run(course_work_item->due)) {
+        continue;
+      }
+
+      const auto submission_iter = submissions.find(course_work_item->id);
+      if (submission_iter == submissions.end()) {
+        continue;
+      }
+
+      const int total_submissions = submission_iter->second.size();
+      int num_graded = 0;
+      int num_turned_in = 0;
+
+      // There can be multiple iterations, because a teachers's course work item
+      // will have a student submission for each student in the class.
+      for (const auto* const submission : submission_iter->second) {
+        if (submission->state ==
+            GlanceablesClassroomStudentSubmission::State::kGraded) {
+          num_graded++;
+          num_turned_in++;
+        } else if (submission->state ==
+                   GlanceablesClassroomStudentSubmission::State::kTurnedIn) {
+          num_turned_in++;
+        }
+      }
+
+      // When filtering by `graded`, course work is only added when every
+      // sumbission has the state `kGraded`.
+      if ((graded && num_graded == total_submissions) ||
+          (!graded && num_graded < total_submissions)) {
+        filtered_assignments.push_back(
+            std::make_unique<GlanceablesClassroomTeacherAssignment>(
+                course->name, course_work_item->title, course_work_item->link,
+                course_work_item->due, total_submissions, num_turned_in,
+                num_graded));
+      }
+    }
+  }
   std::move(callback).Run(std::move(filtered_assignments));
 }
 

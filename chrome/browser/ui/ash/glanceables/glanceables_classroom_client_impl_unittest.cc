@@ -1002,4 +1002,486 @@ TEST_F(GlanceablesClassroomClientImplTest,
   EXPECT_FALSE(assignments.at(0)->due);
 }
 
+// ----------------------------------------------------------------------------
+// Public interface, teacher assignments:
+
+TEST_F(GlanceablesClassroomClientImplTest, TeacherRoleIsActiveWithCourses) {
+  ExpectActiveCourse();
+  EXPECT_CALL(request_handler(),
+              HandleRequest(
+                  Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
+      .WillOnce(
+          Return(ByMove(TestRequestHandler::CreateSuccessfulResponse("{}"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/studentSubmissions?"))))
+      .WillOnce(
+          Return(ByMove(TestRequestHandler::CreateSuccessfulResponse("{}"))));
+
+  TestFuture<bool> future;
+  client()->IsTeacherRoleActive(future.GetCallback());
+
+  const bool active = future.Get();
+  ASSERT_TRUE(active);
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       TeacherRoleIsInactiveWithoutCourses) {
+  EXPECT_CALL(request_handler(), HandleRequest(Field(&HttpRequest::relative_url,
+                                                     HasSubstr("/courses?"))))
+      .WillOnce(Return(ByMove(
+          TestRequestHandler::CreateSuccessfulResponse(R"({"courses": []})"))));
+
+  TestFuture<bool> future;
+  client()->IsTeacherRoleActive(future.GetCallback());
+
+  const bool active = future.Get();
+  ASSERT_FALSE(active);
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       ReturnTeacherAssignmentsWithApproachingDueDate) {
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() {
+        base::Time now;
+        EXPECT_TRUE(base::Time::FromString("10 Apr 2023 00:00 GMT", &now));
+        return now;
+      },
+      nullptr, nullptr);
+
+  ExpectActiveCourse();
+  EXPECT_CALL(request_handler(),
+              HandleRequest(
+                  Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Math assignment - missed due date",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 5},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-2",
+                  "title": "Math assignment - approaching due date",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-2",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-3",
+                  "title": "Math assignment - approaching due date, completed",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-3",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-1",
+                  "courseWorkId": "course-work-item-1",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-2",
+                  "courseWorkId": "course-work-item-2",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-3",
+                  "courseWorkId": "course-work-item-3",
+                  "state": "RETURNED",
+                  "assignedGrade": 50.0
+                }
+              ]
+            })"))));
+  TestFuture<
+      std::vector<std::unique_ptr<GlanceablesClassroomTeacherAssignment>>>
+      future;
+  client()->GetTeacherAssignmentsWithApproachingDueDate(future.GetCallback());
+
+  const auto assignments = future.Take();
+  ASSERT_EQ(assignments.size(), 1u);
+
+  EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
+  EXPECT_EQ(assignments.at(0)->course_work_title,
+            "Math assignment - approaching due date");
+  EXPECT_EQ(assignments.at(0)->link,
+            "https://classroom.google.com/test-link-2");
+  EXPECT_EQ(FormatTimeAsString(assignments.at(0)->due.value()),
+            "2023-04-25T15:09:25.250Z");
+  EXPECT_EQ(assignments.at(0)->total_submission_count, 1);
+  EXPECT_EQ(assignments.at(0)->number_turned_in, 0);
+  EXPECT_EQ(assignments.at(0)->number_graded, 0);
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       ReturnsTeacherAssignmentsRecentlyDue) {
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() {
+        base::Time now;
+        EXPECT_TRUE(base::Time::FromString("10 Apr 2023 00:00 GMT", &now));
+        return now;
+      },
+      nullptr, nullptr);
+
+  ExpectActiveCourse();
+  EXPECT_CALL(request_handler(),
+              HandleRequest(
+                  Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Math assignment - missed due date",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1",
+                  "dueDate": {"year": 2023, "month": 4, "day": 5},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-2",
+                  "title": "Math assignment - approaching due date",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-2",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-3",
+                  "title": "Math assignment - missed due date, some completed",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-3",
+                  "dueDate": {"year": 2023, "month": 4, "day": 5},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-4",
+                  "title": "Math assignment - missed due date, turned in",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-4",
+                  "dueDate": {"year": 2023, "month": 4, "day": 5},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                }
+              ]
+            })"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-1",
+                  "courseWorkId": "course-work-item-1",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-2",
+                  "courseWorkId": "course-work-item-2",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-3",
+                  "courseWorkId": "course-work-item-3",
+                  "state": "RETURNED",
+                  "assignedGrade": 50.0
+                },
+                {
+                  "id": "student-submission-3-2",
+                  "courseWorkId": "course-work-item-3",
+                  "state": "TURNED_IN"
+                },
+                {
+                  "id": "student-submission-3-3",
+                  "courseWorkId": "course-work-item-3",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-3-3",
+                  "courseWorkId": "course-work-item-3",
+                  "state": "RETURNED"
+                },
+                {
+                  "id": "student-submission-4",
+                  "courseWorkId": "course-work-item-4",
+                  "state": "TURNED_IN"
+                }
+              ]
+            })"))));
+  TestFuture<
+      std::vector<std::unique_ptr<GlanceablesClassroomTeacherAssignment>>>
+      future;
+  client()->GetTeacherAssignmentsRecentlyDue(future.GetCallback());
+
+  const auto assignments = future.Take();
+  ASSERT_EQ(assignments.size(), 3u);
+
+  EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
+  EXPECT_EQ(assignments.at(0)->course_work_title,
+            "Math assignment - missed due date");
+  EXPECT_EQ(assignments.at(0)->link,
+            "https://classroom.google.com/test-link-1");
+  EXPECT_EQ(FormatTimeAsString(assignments.at(0)->due.value()),
+            "2023-04-05T15:09:25.250Z");
+  EXPECT_EQ(assignments.at(0)->total_submission_count, 1);
+  EXPECT_EQ(assignments.at(0)->number_turned_in, 0);
+  EXPECT_EQ(assignments.at(0)->number_graded, 0);
+
+  EXPECT_EQ(assignments.at(1)->course_title, "Active Course 1");
+  EXPECT_EQ(assignments.at(1)->course_work_title,
+            "Math assignment - missed due date, some completed");
+  EXPECT_EQ(assignments.at(1)->link,
+            "https://classroom.google.com/test-link-3");
+  EXPECT_EQ(FormatTimeAsString(assignments.at(1)->due.value()),
+            "2023-04-05T15:09:25.250Z");
+  EXPECT_EQ(assignments.at(1)->total_submission_count, 4);
+  EXPECT_EQ(assignments.at(1)->number_turned_in, 2);
+  EXPECT_EQ(assignments.at(1)->number_graded, 1);
+
+  EXPECT_EQ(assignments.at(2)->course_title, "Active Course 1");
+  EXPECT_EQ(assignments.at(2)->course_work_title,
+            "Math assignment - missed due date, turned in");
+  EXPECT_EQ(assignments.at(2)->link,
+            "https://classroom.google.com/test-link-4");
+  EXPECT_EQ(FormatTimeAsString(assignments.at(2)->due.value()),
+            "2023-04-05T15:09:25.250Z");
+  EXPECT_EQ(assignments.at(2)->total_submission_count, 1);
+  EXPECT_EQ(assignments.at(2)->number_turned_in, 1);
+  EXPECT_EQ(assignments.at(2)->number_graded, 0);
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       ReturnsTeacherAssignmentsWithoutDueDate) {
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() {
+        base::Time now;
+        EXPECT_TRUE(base::Time::FromString("10 Apr 2023 00:00 GMT", &now));
+        return now;
+      },
+      nullptr, nullptr);
+
+  ExpectActiveCourse();
+  EXPECT_CALL(request_handler(),
+              HandleRequest(
+                  Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Math assignment",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1"
+                },
+                {
+                  "id": "course-work-item-2",
+                  "title": "Math assignment - with due date",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-2",
+                  "dueDate": {"year": 2023, "month": 4, "day": 25},
+                  "dueTime": {
+                    "hours": 15,
+                    "minutes": 9,
+                    "seconds": 25,
+                    "nanos": 250000000
+                  }
+                },
+                {
+                  "id": "course-work-item-3",
+                  "title": "Math assignment - submission graded",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-3"
+                }
+              ]
+            })"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-1",
+                  "courseWorkId": "course-work-item-1",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-2",
+                  "courseWorkId": "course-work-item-2",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-3",
+                  "courseWorkId": "course-work-item-3",
+                  "state": "RETURNED",
+                  "assignedGrade": 50.0
+                }
+              ]
+            })"))));
+  TestFuture<
+      std::vector<std::unique_ptr<GlanceablesClassroomTeacherAssignment>>>
+      future;
+  client()->GetTeacherAssignmentsWithoutDueDate(future.GetCallback());
+
+  const auto assignments = future.Take();
+  ASSERT_EQ(assignments.size(), 1u);
+
+  EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
+  EXPECT_EQ(assignments.at(0)->course_work_title, "Math assignment");
+  EXPECT_EQ(assignments.at(0)->link,
+            "https://classroom.google.com/test-link-1");
+  EXPECT_FALSE(assignments.at(0)->due);
+  EXPECT_EQ(assignments.at(0)->total_submission_count, 1);
+  EXPECT_EQ(assignments.at(0)->number_turned_in, 0);
+  EXPECT_EQ(assignments.at(0)->number_graded, 0);
+}
+
+TEST_F(GlanceablesClassroomClientImplTest, ReturnsGradedTeacherAssignments) {
+  ExpectActiveCourse();
+  EXPECT_CALL(request_handler(),
+              HandleRequest(
+                  Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "courseWork": [
+                {
+                  "id": "course-work-item-1",
+                  "title": "Math assignment",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-1"
+                },
+                {
+                  "id": "course-work-item-2",
+                  "title": "Math assignment - submissions all graded",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-2"
+                },
+                {
+                  "id": "course-work-item-3",
+                  "title": "Math assignment - turned in but not all graded",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-3"
+                },
+                {
+                  "id": "course-work-item-4",
+                  "title": "Math assignment - turned in none graded",
+                  "state": "PUBLISHED",
+                  "alternateLink": "https://classroom.google.com/test-link-4"
+                }
+              ]
+            })"))));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-1",
+                  "courseWorkId": "course-work-item-1",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-2",
+                  "courseWorkId": "course-work-item-2",
+                  "state": "RETURNED",
+                  "assignedGrade": 50.0
+                },
+                {
+                  "id": "student-submission-2-2",
+                  "courseWorkId": "course-work-item-2",
+                  "state": "RETURNED",
+                  "assignedGrade": 90.0
+                },
+                {
+                  "id": "student-submission-3",
+                  "courseWorkId": "course-work-item-3",
+                  "state": "TURNED_IN"
+                },
+                {
+                  "id": "student-submission-3-2",
+                  "courseWorkId": "course-work-item-3",
+                  "state": "RETURNED",
+                  "assignedGrade": 74.0
+                },
+                {
+                  "id": "student-submission-4",
+                  "courseWorkId": "course-work-item-4",
+                  "state": "TURNED_IN"
+                },
+                {
+                  "id": "student-submission-4-2",
+                  "courseWorkId": "course-work-item-4",
+                  "state": "TURNED_IN"
+                }
+              ]
+            })"))));
+
+  TestFuture<
+      std::vector<std::unique_ptr<GlanceablesClassroomTeacherAssignment>>>
+      future;
+  client()->GetGradedTeacherAssignments(future.GetCallback());
+
+  const auto assignments = future.Take();
+  ASSERT_EQ(assignments.size(), 1u);
+
+  EXPECT_EQ(assignments.at(0)->course_title, "Active Course 1");
+  EXPECT_EQ(assignments.at(0)->course_work_title,
+            "Math assignment - submissions all graded");
+  EXPECT_EQ(assignments.at(0)->link,
+            "https://classroom.google.com/test-link-2");
+  EXPECT_FALSE(assignments.at(0)->due);
+  EXPECT_EQ(assignments.at(0)->total_submission_count, 2);
+  EXPECT_EQ(assignments.at(0)->number_turned_in, 2);
+  EXPECT_EQ(assignments.at(0)->number_graded, 2);
+}
+
 }  // namespace ash

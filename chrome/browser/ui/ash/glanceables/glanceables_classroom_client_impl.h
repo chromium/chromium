@@ -60,6 +60,15 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       GetStudentAssignmentsCallback callback) override;
   void GetStudentAssignmentsWithoutDueDate(
       GetStudentAssignmentsCallback callback) override;
+  void IsTeacherRoleActive(IsRoleEnabledCallback callback) override;
+  void GetTeacherAssignmentsWithApproachingDueDate(
+      GetTeacherAssignmentsCallback callback) override;
+  void GetTeacherAssignmentsRecentlyDue(
+      GetTeacherAssignmentsCallback callback) override;
+  void GetTeacherAssignmentsWithoutDueDate(
+      GetTeacherAssignmentsCallback callback) override;
+  void GetGradedTeacherAssignments(
+      GetTeacherAssignmentsCallback callback) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(GlanceablesClassroomClientImplTest, FetchCourses);
@@ -112,6 +121,9 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
 
   // Delays executing `callback` until all student data are fetched.
   void InvokeOnceStudentDataFetched(base::OnceClosure callback);
+
+  // Delays executing `callback` until all teacher data are fetched.
+  void InvokeOnceTeacherDataFetched(base::OnceClosure callback);
 
   // Fetches one page of courses.
   // `student_id`        - restricts returned courses to those having a student
@@ -206,6 +218,11 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // submissions).
   void OnStudentDataFetched();
 
+  // Invokes all pending callbacks from `callbacks_waiting_for_teacher_data_`
+  // once all teacher data are fetched (courses + course work + student
+  // submissions).
+  void OnTeacherDataFetched();
+
   // Selects student assignments that satisfy both filtering predicates below.
   // `due_predicate`              - returns `true` if passed due date/time
   //                                satisfies filtering requirements.
@@ -219,6 +236,19 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
           bool(GlanceablesClassroomStudentSubmission::State)>
           submission_state_predicate,
       GetStudentAssignmentsCallback callback);
+
+  // Selects teacher assignments that satisfy the filtering below.
+  // `due_predicate`              - returns `true` if passed due date/time
+  //                                satisfies filtering requirements.
+  // `graded`                     - whether or not we only want to include
+  //                                course work which has a grade for every
+  //                                submission.
+  // `callback`                   - invoked with filtered results.
+  void GetFilteredTeacherAssignments(
+      base::RepeatingCallback<bool(const absl::optional<base::Time>&)>
+          due_predicate,
+      bool graded,
+      GetTeacherAssignmentsCallback callback);
 
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();
@@ -251,6 +281,12 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
 
   // Pending callbacks awaiting all student data.
   std::vector<base::OnceClosure> callbacks_waiting_for_student_data_;
+
+  // Fetch status of all teacher data.
+  FetchStatus teacher_data_fetch_status_ = FetchStatus::kNotFetched;
+
+  // Pending callbacks awaiting all teacher data.
+  std::vector<base::OnceClosure> callbacks_waiting_for_teacher_data_;
 
   base::WeakPtrFactory<GlanceablesClassroomClientImpl> weak_factory_{this};
 };
