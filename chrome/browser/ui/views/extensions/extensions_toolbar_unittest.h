@@ -27,6 +27,8 @@ class ExtensionService;
 class ExtensionsToolbarUnitTest : public TestWithBrowserView {
  public:
   ExtensionsToolbarUnitTest();
+  explicit ExtensionsToolbarUnitTest(
+      base::test::TaskEnvironment::TimeSource time_source);
   ~ExtensionsToolbarUnitTest() override;
   ExtensionsToolbarUnitTest(const ExtensionsToolbarUnitTest&) = delete;
   const ExtensionsToolbarUnitTest& operator=(const ExtensionsToolbarUnitTest&) =

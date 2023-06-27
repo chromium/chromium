@@ -81,6 +81,11 @@ class ExtensionsContainer {
   virtual void UpdateToolbarActionHoverCard(
       ToolbarActionView* action_view,
       ToolbarActionHoverCardUpdateType update_type) = 0;
+
+  // Collapses the confirmation on the request access button, effectively
+  // hiding the button. Does nothing if the confirmation is not showing
+  // anymore.
+  virtual void CollapseConfirmation() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_CONTAINER_H_

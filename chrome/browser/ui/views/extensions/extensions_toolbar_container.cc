@@ -523,6 +523,35 @@ void ExtensionsToolbarContainer::OnTabStripModelChanged(
 
   extensions::MaybeShowExtensionControlledNewTabPage(browser_,
                                                      selection.new_contents);
+
+  // Request access button confirmation is tab-specific. Therefore, we need to
+  // reset if the active tab changes.
+  if (extensions_controls_ && extensions_controls_->IsShowingConfirmation()) {
+    extensions_controls_->ResetConfirmation();
+    UpdateControlsVisibility();
+  }
+}
+
+void ExtensionsToolbarContainer::TabChangedAt(content::WebContents* contents,
+                                              int index,
+                                              TabChangeType change_type) {
+  // Ignore changes that don't affect all the tab contents (e.g loading
+  // changes).
+  if (change_type != TabChangeType::kAll) {
+    return;
+  }
+
+  // Request access button confirmation is tab-specific for a specific origin.
+  // Therefore, we need to reset it if it's currently showing, we are on the
+  // same tab and we have navigated to another origin.
+  // Note: When we switch tabs, `OnTabStripModelChanged` is called before
+  // `TabChangedAt` and takes care of resetting the confirmation if shown.
+  if (extensions_controls_ && extensions_controls_->IsShowingConfirmation() &&
+      !extensions_controls_->IsShowingConfirmationFor(
+          contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
+    extensions_controls_->ResetConfirmation();
+    UpdateControlsVisibility();
+  }
 }
 
 void ExtensionsToolbarContainer::OnToolbarActionAdded(
@@ -997,6 +1026,15 @@ void ExtensionsToolbarContainer::UpdateToolbarActionHoverCard(
     ToolbarActionView* action_view,
     ToolbarActionHoverCardUpdateType update_type) {
   action_hover_card_controller_->UpdateHoverCard(action_view, update_type);
+}
+
+void ExtensionsToolbarContainer::CollapseConfirmation() {
+  if (!extensions_controls_->IsShowingConfirmation()) {
+    return;
+  }
+
+  extensions_controls_->ResetConfirmation();
+  UpdateControlsVisibility();
 }
 
 void ExtensionsToolbarContainer::OnMouseExited(const ui::MouseEvent& event) {
