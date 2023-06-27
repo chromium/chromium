@@ -245,6 +245,12 @@ void SetArcVmDataMigrationStatus(PrefService* prefs,
 // Returns whether ARCVM should use virtio-blk for /data.
 bool ShouldUseVirtioBlkData(PrefService* prefs);
 
+// Returns true if ARC should use KeyMint. Returns false if ARC should use
+// Keymaster. It is based on the lsb-release value. If missing lsb-release
+// value (e.g. in unit tests), it returns false. Use
+// `SetChromeOSVersionInfoForTest` to set ARC version in unit test, if needed.
+bool ShouldUseArcKeyMint();
+
 // Returns ARCVM /data migration should be done within how many days. When the
 // migration has not started, the value is calculated from the time when the
 // ARCVM /data migration notification is shown for the first time. When the

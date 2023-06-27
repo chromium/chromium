@@ -472,6 +472,12 @@ bool ShouldUseVirtioBlkData(PrefService* prefs) {
   return false;
 }
 
+bool ShouldUseArcKeyMint() {
+  auto version = GetArcAndroidSdkVersionAsInt();
+  return version >= kArcVersionT && version < kMaxArcVersion &&
+         base::FeatureList::IsEnabled(kSwitchToKeyMintOnT);
+}
+
 int GetDaysUntilArcVmDataMigrationDeadline(PrefService* prefs) {
   if (GetArcVmDataMigrationStatus(prefs) ==
       ArcVmDataMigrationStatus::kStarted) {
