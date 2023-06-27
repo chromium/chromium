@@ -5,21 +5,20 @@
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/content_setting_site_row_view.h"
+#include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
@@ -29,20 +28,14 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
-#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/vector_icon_types.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
-#include "ui/views/controls/button/label_button_border.h"
-#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/image_view.h"
@@ -69,6 +62,20 @@ std::u16string GetCancelButtonText(
     const ContentSettingBubbleModel::BubbleContent& content) {
   return content.is_user_modifiable ? content.cancel_button_text
                                     : std::u16string();
+}
+
+ui::ImageModel GetSiteSettingsIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      features::IsChromeRefresh2023() ? vector_icons::kSettingsChromeRefreshIcon
+                                      : vector_icons::kSettingsIcon,
+      ui::kColorIcon);
+}
+
+ui::ImageModel GetLaunchIcon() {
+  return ui::ImageModel::FromVectorIcon(
+      features::IsChromeRefresh2023() ? vector_icons::kLaunchChromeRefreshIcon
+                                      : vector_icons::kLaunchIcon,
+      ui::kColorIconSecondary);
 }
 
 bool ShouldShowMediaDeviceMenus(ContentSettingBubbleModel* model) {
@@ -490,6 +497,12 @@ void ContentSettingBubbleContents::Init() {
   const ContentSettingBubbleModel::BubbleContent& bubble_content =
       content_setting_bubble_model_->bubble_content();
 
+  if (!bubble_content.subtitle.empty()) {
+    SetSubtitle(bubble_content.subtitle);
+    auto separator = std::make_unique<views::Separator>();
+    rows.push_back({std::move(separator), LayoutRowType::FULL_WIDTH});
+  }
+
   if (!bubble_content.message.empty()) {
     auto message_label = std::make_unique<views::Label>(
         bubble_content.message, views::style::CONTEXT_LABEL,
@@ -576,6 +589,25 @@ void ContentSettingBubbleContents::Init() {
             base::Unretained(this)));
     manage_checkbox_ = manage_checkbox.get();
     rows.push_back({std::move(manage_checkbox), LayoutRowType::DEFAULT});
+  }
+
+  if (bubble_content.manage_text_style ==
+      ContentSettingBubbleModel::ManageTextStyle::kHoverButton) {
+    SetButtons(ui::DIALOG_BUTTON_NONE);
+    auto separator = std::make_unique<views::Separator>();
+    rows.push_back({std::move(separator), LayoutRowType::DEFAULT});
+
+    auto site_settings_link = std::make_unique<RichHoverButton>(
+        base::BindRepeating(
+            [](ContentSettingBubbleContents* bubble) {
+              bubble->GetWidget()->Close();
+              bubble->content_setting_bubble_model_->OnManageButtonClicked();
+            },
+            this),
+        GetSiteSettingsIcon(), bubble_content.manage_text,
+        /*secondary_text=*/std::u16string(), bubble_content.manage_tooltip,
+        /*subtitle_text=*/std::u16string(), GetLaunchIcon());
+    rows.push_back({std::move(site_settings_link), LayoutRowType::FULL_WIDTH});
   }
 
   // We have to apply the left and right margins manually, because rows using

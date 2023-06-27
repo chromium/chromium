@@ -135,6 +135,9 @@ class ContentSettingBubbleModel {
     kButton,
     // Manage text is used as a checkbox title.
     kCheckbox,
+    // Manage text is shown in a HoverButton. The "Manage" and "Done" buttons
+    // are hidden.
+    kHoverButton,
   };
 
   struct BubbleContent {
@@ -146,6 +149,7 @@ class ContentSettingBubbleModel {
     ~BubbleContent();
 
     std::u16string title;
+    std::u16string subtitle;
     std::u16string message;
     // Whether the user can modify the content of the bubble.
     // False if controlled by policy, etc.
@@ -156,6 +160,7 @@ class ContentSettingBubbleModel {
     std::u16string custom_link;
     bool custom_link_enabled = false;
     std::u16string manage_text;
+    std::u16string manage_tooltip;
     ManageTextStyle manage_text_style = ManageTextStyle::kButton;
     MediaMenuMap media_menus;
     bool show_learn_more = false;
@@ -242,6 +247,9 @@ class ContentSettingBubbleModel {
   content::Page& GetPage() const { return web_contents_->GetPrimaryPage(); }
 
   void set_title(const std::u16string& title) { bubble_content_.title = title; }
+  void set_subtitle(const std::u16string& subtitle) {
+    bubble_content_.subtitle = subtitle;
+  }
   void set_message(const std::u16string& message) {
     bubble_content_.message = message;
   }
@@ -262,6 +270,9 @@ class ContentSettingBubbleModel {
   }
   void set_manage_text(const std::u16string& text) {
     bubble_content_.manage_text = text;
+  }
+  void set_manage_tooltip(const std::u16string& text) {
+    bubble_content_.manage_tooltip = text;
   }
   void set_manage_text_style(ManageTextStyle manage_text_style) {
     bubble_content_.manage_text_style = manage_text_style;

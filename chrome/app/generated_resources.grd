@@ -9327,6 +9327,14 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         (Chrome error pages)
       </message>
 
+      <!-- TODO(crbug.com/1433644): Add final string. -->
+      <message name="IDS_STORAGE_ACCESS_MANAGE_TEXT" translateable="false" desc="The text on the button to manage the StorageAcccess permission. The StorageAccess API is called 'Embedded content' in user visible UIs">
+        Embedded content settings
+      </message>
+      <message name="IDS_STORAGE_ACCESS_MANAGE_TOOLTIP"  translateable="false" desc="The tooltip on the button to manage the StorageAcccess permission. The StorageAccess API is called 'Embedded content' in user visible UIs">
+        Go to embedded content settings
+      </message>
+
       <!-- Automatic updates -->
       <if expr="is_macosx">
         <message name="IDS_PROMOTE_INFOBAR_TEXT" desc="The text to show in the automatic update setup infobar.  Mac-only.">

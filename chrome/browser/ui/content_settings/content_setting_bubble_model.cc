@@ -703,6 +703,12 @@ ContentSettingStorageAccessBubbleModel::ContentSettingStorageAccessBubbleModel(
     WebContents* web_contents)
     : ContentSettingBubbleModel(delegate, web_contents) {
   set_title(l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS));
+
+  // TODO(crbug.com/1433644): Consider to add subtitles to all permissions.
+  set_subtitle(url_formatter::FormatUrlForSecurityDisplay(
+      web_contents->GetURL(),
+      url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+
   set_message(l10n_util::GetStringFUTF16(
       IDS_STORAGE_ACCESS_PERMISSION_BUBBLE_MESSAGE,
       url_formatter::FormatUrlForSecurityDisplay(
@@ -713,6 +719,11 @@ ContentSettingStorageAccessBubbleModel::ContentSettingStorageAccessBubbleModel(
       PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
   set_site_list(page_content_settings->GetTwoSiteRequests(
       ContentSettingsType::STORAGE_ACCESS));
+
+  set_manage_text_style(ManageTextStyle::kHoverButton);
+  set_manage_text(l10n_util::GetStringUTF16(IDS_STORAGE_ACCESS_MANAGE_TEXT));
+  set_manage_tooltip(
+      l10n_util::GetStringUTF16(IDS_STORAGE_ACCESS_MANAGE_TOOLTIP));
 }
 
 ContentSettingStorageAccessBubbleModel::
