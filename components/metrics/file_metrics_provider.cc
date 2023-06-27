@@ -27,8 +27,6 @@
 #include "base/metrics/ranges_manager.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -95,20 +93,6 @@ void DeleteFileWhenPossible(const base::FilePath& path) {
   // of the delete task.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                             base::File::FLAG_DELETE_ON_CLOSE);
-}
-
-// A task runner to use for testing.
-base::TaskRunner* g_task_runner_for_testing = nullptr;
-
-// Returns a task runner appropriate for running background tasks that perform
-// file I/O.
-scoped_refptr<base::TaskRunner> CreateBackgroundTaskRunner() {
-  if (g_task_runner_for_testing)
-    return scoped_refptr<base::TaskRunner>(g_task_runner_for_testing);
-
-  return base::ThreadPool::CreateTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
 }  // namespace
@@ -197,15 +181,15 @@ FileMetricsProvider::Params::Params(const base::FilePath& path,
                                     base::StringPiece prefs_key)
     : path(path), type(type), association(association), prefs_key(prefs_key) {}
 
-FileMetricsProvider::Params::~Params() {}
+FileMetricsProvider::Params::~Params() = default;
 
 FileMetricsProvider::FileMetricsProvider(PrefService* local_state)
-    : task_runner_(CreateBackgroundTaskRunner()), pref_service_(local_state) {
+    : pref_service_(local_state) {
   base::StatisticsRecorder::RegisterHistogramProvider(
       weak_factory_.GetWeakPtr());
 }
 
-FileMetricsProvider::~FileMetricsProvider() {}
+FileMetricsProvider::~FileMetricsProvider() = default;
 
 void FileMetricsProvider::RegisterSource(const Params& params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -247,13 +231,6 @@ void FileMetricsProvider::RegisterSourcePrefs(
 //  static
 void FileMetricsProvider::RegisterPrefs(PrefRegistrySimple* prefs) {
   prefs->RegisterListPref(metrics::prefs::kMetricsFileMetricsMetadata);
-}
-
-// static
-void FileMetricsProvider::SetTaskRunnerForTesting(
-    const scoped_refptr<base::TaskRunner>& task_runner) {
-  DCHECK(!g_task_runner_for_testing || !task_runner);
-  g_task_runner_for_testing = task_runner.get();
 }
 
 // static
@@ -781,8 +758,14 @@ void FileMetricsProvider::ScheduleSourcesCheck() {
   // because that must complete before the reply runs.
   SourceInfoList* check_list = new SourceInfoList();
   std::swap(sources_to_check_, *check_list);
-  task_runner_->PostTaskAndReplyWithResult(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       // SKIP_ON_SHUTDOWN because the task must be run to completion once
+       // started. Since the task may merge metrics from files on disk, the task
+       // should be completed so that those files are deleted (to prevent
+       // re-merging them in another session, which would cause duplication).
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(
           &FileMetricsProvider::CheckAndMergeMetricSourcesOnTaskRunner,
           base::Unretained(check_list)),
@@ -832,8 +815,16 @@ void FileMetricsProvider::RecordSourcesChecked(
 }
 
 void FileMetricsProvider::DeleteFileAsync(const base::FilePath& path) {
-  task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(DeleteFileWhenPossible, path));
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       // CONTINUE_ON_SHUTDOWN because files that are scheduled to be deleted
+       // asynchronously are not guaranteed to be deleted this session anyway,
+       // so no need to block shutdown if the task has already started running.
+       // Further, for such files, there are different ways to ensure they won't
+       // be consumed again (i.e., prefs).
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(DeleteFileWhenPossible, path));
 }
 
 void FileMetricsProvider::RecordSourceAsRead(SourceInfo* source) {
@@ -890,8 +881,13 @@ void FileMetricsProvider::ProvideIndependentMetrics(
   DCHECK(source->allocator);
 
   // Do the actual work as a background task.
-  task_runner_->PostTaskAndReplyWithResult(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       // CONTINUE_ON_SHUTDOWN because the work done is only useful once the
+       // reply task is run (and there are no side effects). So, no need to
+       // block shutdown since the reply task won't be run anyway.
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(
           &FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner,
           source_ptr, uma_proto, snapshot_manager),

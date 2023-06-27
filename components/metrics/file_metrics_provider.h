@@ -25,10 +25,6 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace base {
-class TaskRunner;
-}
-
 namespace metrics {
 
 // FileMetricsProvider gathers and logs histograms written to files on disk.
@@ -189,12 +185,9 @@ class FileMetricsProvider : public MetricsProvider,
 
   static void RegisterPrefs(PrefRegistrySimple* prefs);
 
-  // Sets the task runner to use for testing.
-  static void SetTaskRunnerForTesting(
-      const scoped_refptr<base::TaskRunner>& task_runner);
-
  private:
   friend class FileMetricsProviderTest;
+  friend class TestFileMetricsProvider;
 
   // The different results that can occur accessing a file.
   enum AccessResult {
@@ -311,9 +304,9 @@ class FileMetricsProvider : public MetricsProvider,
   void ScheduleSourcesCheck();
 
   // Takes a list of sources checked by an external task and determines what
-  // to do with each.
-  void RecordSourcesChecked(SourceInfoList* checked,
-                            std::vector<size_t> samples_counts);
+  // to do with each. Virtual for testing.
+  virtual void RecordSourcesChecked(SourceInfoList* checked,
+                                    std::vector<size_t> samples_counts);
 
   // Schedules the deletion of a file in the background using the task-runner.
   void DeleteFileAsync(const base::FilePath& path);
@@ -346,9 +339,6 @@ class FileMetricsProvider : public MetricsProvider,
   // kMetricsBrowserMetricsMetadata and updates the stability prefs accordingly,
   // return true if the pref isn't empty.
   bool SimulateIndependentMetrics();
-
-  // A task-runner capable of performing I/O.
-  scoped_refptr<base::TaskRunner> task_runner_;
 
   // A list of sources not currently active that need to be checked for changes.
   SourceInfoList sources_to_check_;
