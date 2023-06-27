@@ -196,17 +196,8 @@ class HeadlessModeDumpDomCommandBrowserTestWithTimeout
   std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
       const net::test_server::HttpRequest& request) {
     if (request.relative_url == "/page.html") {
-      // The target page is opened first from the browser startup sequence and
-      // then again from the command handler. We want to delay only the second
-      // request until the command processing is done.
-      std::unique_ptr<net::test_server::BasicHttpResponse> response;
-      if (++page_request_number_ == 2) {
-        response = std::make_unique<net::test_server::DelayedHttpResponse>(
-            timeout() * 2);
-      } else {
-        response = std::make_unique<net::test_server::BasicHttpResponse>();
-      }
-
+      auto response = std::make_unique<net::test_server::DelayedHttpResponse>(
+          timeout() * 2);
       response->set_code(net::HTTP_OK);
       response->set_content_type("text/html");
       response->set_content(R"(<div>Hi, I'm headless!</div>)");
@@ -216,8 +207,6 @@ class HeadlessModeDumpDomCommandBrowserTestWithTimeout
 
     return nullptr;
   }
-
-  int page_request_number_ = 0;
 };
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeDumpDomCommandBrowserTestWithTimeout,
@@ -277,11 +266,8 @@ class HeadlessModeDumpDomCommandBrowserTestWithSubResourceTimeout
     }
 
     if (request.relative_url == "/script.js") {
-      // The target page is opened first from the browser startup sequence and
-      // then again from the command handler. We want to delay only the second
-      // request until the command processing is done.
       std::unique_ptr<net::test_server::BasicHttpResponse> response;
-      if (++subresource_request_number_ == 2 && delay_response()) {
+      if (delay_response()) {
         response = std::make_unique<net::test_server::DelayedHttpResponse>(
             timeout() * 2);
       } else {
@@ -299,14 +285,12 @@ class HeadlessModeDumpDomCommandBrowserTestWithSubResourceTimeout
 
     return nullptr;
   }
-
-  int subresource_request_number_ = 0;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     HeadlessModeDumpDomCommandBrowserTestWithSubResourceTimeout,
-    testing::Values(false, true));
+    testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(
     HeadlessModeDumpDomCommandBrowserTestWithSubResourceTimeout,
