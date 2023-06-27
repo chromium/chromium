@@ -72,6 +72,7 @@
 #include "chrome/browser/ash/arc/intent_helper/arc_settings_service.h"
 #include "chrome/browser/ash/arc/intent_helper/chrome_arc_intent_helper_delegate.h"
 #include "chrome/browser/ash/arc/keymaster/arc_keymaster_bridge.h"
+#include "chrome/browser/ash/arc/keymint/arc_keymint_bridge.h"
 #include "chrome/browser/ash/arc/kiosk/arc_kiosk_bridge.h"
 #include "chrome/browser/ash/arc/metrics/arc_metrics_service_proxy.h"
 #include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_bridge.h"
@@ -259,7 +260,11 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
         std::make_unique<ArcIconCacheDelegateProvider>(intent_helper);
   }
   ArcKeyboardShortcutBridge::GetForBrowserContext(profile);
-  ArcKeymasterBridge::GetForBrowserContext(profile);
+  if (ShouldUseArcKeyMint()) {
+    ArcKeyMintBridge::GetForBrowserContext(profile);
+  } else {
+    ArcKeymasterBridge::GetForBrowserContext(profile);
+  }
   ArcKioskBridge::GetForBrowserContext(profile);
   ArcLockScreenBridge::GetForBrowserContext(profile);
   ArcMediaSessionBridge::GetForBrowserContext(profile);
@@ -440,7 +445,11 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcInitialOptInNotifier::EnsureFactoryBuilt();
   ArcInstanceThrottle::EnsureFactoryBuilt();
   ArcKeyboardShortcutBridge::EnsureFactoryBuilt();
-  ArcKeymasterBridge::EnsureFactoryBuilt();
+  if (ShouldUseArcKeyMint()) {
+    ArcKeyMintBridge::EnsureFactoryBuilt();
+  } else {
+    ArcKeymasterBridge::EnsureFactoryBuilt();
+  }
   ArcKioskBridge::EnsureFactoryBuilt();
   ArcLockScreenBridge::EnsureFactoryBuilt();
   ArcMediaSessionBridge::EnsureFactoryBuilt();
