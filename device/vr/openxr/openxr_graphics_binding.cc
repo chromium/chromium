@@ -29,23 +29,45 @@ SwapChainInfo& SwapChainInfo::operator=(SwapChainInfo&&) = default;
 void SwapChainInfo::Clear() {
   mailbox_holder.mailbox.SetZero();
   mailbox_holder.sync_token.Clear();
+#if BUILDFLAG(IS_ANDROID)
+  // Resetting the SharedBufferSize ensures that we will re-create the Shared
+  // Buffer if it is needed.
+  shared_buffer_size = {0, 0};
+#endif
 }
 
 bool OpenXrGraphicsBinding::Render() {
   return true;
 }
 
-gfx::Size OpenXrGraphicsBinding::GetFrameSize() {
-  return frame_size_;
+gfx::Size OpenXrGraphicsBinding::GetSwapchainImageSize() {
+  return swapchain_image_size_;
 }
 
-void OpenXrGraphicsBinding::SetFrameSize(gfx::Size frame_size) {
-  frame_size_ = frame_size;
-  OnFrameSizeChanged();
+void OpenXrGraphicsBinding::SetSwapchainImageSize(
+    const gfx::Size& swapchain_image_size) {
+  swapchain_image_size_ = swapchain_image_size;
+  OnSwapchainImageSizeChanged();
+
+  // By default assume that we're transfering something the same size as the
+  // swapchain image. However, if it's already been set, we don't want to
+  // override that.
+  if (transfer_size_.IsZero()) {
+    SetTransferSize(swapchain_image_size);
+  }
+}
+
+gfx::Size OpenXrGraphicsBinding::GetTransferSize() {
+  return transfer_size_;
+}
+
+void OpenXrGraphicsBinding::SetTransferSize(const gfx::Size& transfer_size) {
+  transfer_size_ = transfer_size;
 }
 
 XrResult OpenXrGraphicsBinding::ActivateSwapchainImage(
-    XrSwapchain color_swapchain) {
+    XrSwapchain color_swapchain,
+    gpu::SharedImageInterface* sii) {
   CHECK(!has_active_swapchain_image_);
   XrSwapchainImageAcquireInfo acquire_info = {
       XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO};
@@ -57,7 +79,7 @@ XrResult OpenXrGraphicsBinding::ActivateSwapchainImage(
   RETURN_IF_XR_FAILED(xrWaitSwapchainImage(color_swapchain, &wait_info));
 
   has_active_swapchain_image_ = true;
-  OnSwapchainImageActivated();
+  OnSwapchainImageActivated(sii);
   return XR_SUCCESS;
 }
 

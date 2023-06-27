@@ -59,7 +59,7 @@ class XRDeviceAbstraction {
   virtual bool HasSessionEnded();
   virtual bool SubmitCompositedFrame() = 0;
   virtual void HandleDeviceLost();
-  virtual void OnLayerBoundsChanged();
+  virtual void OnLayerBoundsChanged(const gfx::Size& size);
   // Sets enabled_features_ based on what features are supported
   virtual void EnableSupportedFeatures(
       const std::vector<device::mojom::XRSessionFeature>& requiredFeatures,

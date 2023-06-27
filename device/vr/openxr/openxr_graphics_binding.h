@@ -63,6 +63,12 @@ struct SwapChainInfo {
 
   uint32_t shared_buffer_texture;
 
+  // The size of the texture used for the shared buffer; which may be different
+  // than the size of the actual swapchain image, as this size is influenced by
+  // any framebuffer scale factor that the page may request.
+  // This property isn't android-specific but it is currently unused on Windows.
+  gfx::Size shared_buffer_size{0, 0};
+
   // Shared GpuMemoryBuffer
   std::unique_ptr<gpu::GpuMemoryBufferImplAndroidHardwareBuffer> gmb;
 
@@ -131,18 +137,29 @@ class OpenXrGraphicsBinding {
   // TODO(https://crbug.com/1454943): Make pure virtual
   virtual bool Render();
 
-  // Sets the size of the frame being used by the system. Does *not* cause a
-  // corresponding re-creation of the Swapchain or Shared Images; which should
-  // be driven by the caller.
-  void SetFrameSize(gfx::Size frame_size);
+  // Returns the previously set swapchain image size, or 0,0 if one is not set.
+  gfx::Size GetSwapchainImageSize();
 
-  // Returns the previously set frame size, or a size of 0,0 if one has not been
-  // set.
-  gfx::Size GetFrameSize();
+  // Sets the size of the swapchain images being used by the system. Does *not*
+  // cause a corresponding re-creation of the Swapchain or Shared Images; which
+  // should be driven by the caller. If a transfer size has not been specified
+  // yet, will also set the transfer size as well.
+  void SetSwapchainImageSize(const gfx::Size& swapchain_image_size);
+
+  // Gets the size of the texture that is shared between our process and the
+  // renderer process.
+  gfx::Size GetTransferSize();
+
+  // Sets the size of the texture being used between the renderer process and
+  // our process. This is largely driven by the page and any framebuffer scaling
+  // it may apply. When rendering to the SwapchainImage scaling will be
+  // performed as necessary.
+  void SetTransferSize(const gfx::Size& transfer_size);
 
   // Acquire and activate a Swapchain image from the OpenXr system. This is the
   // swapchain image that will be in use for the next render.
-  XrResult ActivateSwapchainImage(XrSwapchain color_swapchain);
+  XrResult ActivateSwapchainImage(XrSwapchain color_swapchain,
+                                  gpu::SharedImageInterface* sii);
 
   // Release the active swapchain image from the OpenXr system. This is called
   // before calling EndFrame and will enable acquiring a new swapchain image for
@@ -150,10 +167,13 @@ class OpenXrGraphicsBinding {
   XrResult ReleaseActiveSwapchainImage(XrSwapchain color_swapchain);
 
  protected:
-  // Will be called when SetFrameSize is called, even if a change is not made,
-  // to allow child classes/concrete implementations to override any state that
-  // they may need to override as a result of the frame size changing.
-  virtual void OnFrameSizeChanged() {}
+  // Will be called when SetSwapchainImageSize is called, even if a change is
+  // not made, to allow child classes/concrete implementations to override any
+  // state that they may need to override as a result of the swapchain image
+  // size changing. Note that the caller is responsible for recreating the
+  // swapchain in response to this call, but it likely has not been recreated
+  // yet.
+  virtual void OnSwapchainImageSizeChanged() {}
 
   // Called at the end of ActivateSwapchainImage. Allows Children to setup the
   // appropriate image to be rendered to by, e.g. Render calls, if that needs
@@ -162,7 +182,7 @@ class OpenXrGraphicsBinding {
   // actually needed prior to the draw calls happening? Could the logic be
   // condensed into Render along with the other calls needed to render to the
   // texture?
-  virtual void OnSwapchainImageActivated() {}
+  virtual void OnSwapchainImageActivated(gpu::SharedImageInterface* sii) {}
 
   // Used to access the active swapchain index as returned by the system. This
   // class does not attempt to use the index in conjunction with
@@ -176,7 +196,8 @@ class OpenXrGraphicsBinding {
   bool has_active_swapchain_image() { return has_active_swapchain_image_; }
 
  private:
-  gfx::Size frame_size_{0, 0};
+  gfx::Size swapchain_image_size_{0, 0};
+  gfx::Size transfer_size_{0, 0};
   uint32_t active_swapchain_index_;
   bool has_active_swapchain_image_ = false;
 };

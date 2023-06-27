@@ -275,6 +275,10 @@ std::vector<mojom::XRViewPtr> OpenXrRenderLoop::GetDefaultViews() const {
   return openxr_->GetDefaultViews();
 }
 
+void OpenXrRenderLoop::OnLayerBoundsChanged(const gfx::Size& source_size) {
+  graphics_binding_->SetTransferSize(source_size);
+}
+
 void OpenXrRenderLoop::OnSessionStart() {
   LogViewerType(VrViewerType::OPENXR_UNKNOWN);
 }

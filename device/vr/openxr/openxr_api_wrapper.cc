@@ -539,9 +539,9 @@ XrResult OpenXrApiWrapper::CreateSwapchain() {
   swapchain_create_info.format =
       graphics_binding_->GetSwapchainFormat(session_);
 
-  auto frame_size = graphics_binding_->GetFrameSize();
-  swapchain_create_info.width = frame_size.width();
-  swapchain_create_info.height = frame_size.height();
+  auto swapchain_image_size = graphics_binding_->GetSwapchainImageSize();
+  swapchain_create_info.width = swapchain_image_size.width();
+  swapchain_create_info.height = swapchain_image_size.height();
   swapchain_create_info.mipCount = 1;
   swapchain_create_info.faceCount = 1;
   swapchain_create_info.sampleCount = GetRecommendedSwapchainSampleCount();
@@ -600,10 +600,11 @@ bool OpenXrApiWrapper::RecomputeSwapchainSizeAndViewports() {
     }
   }
 
-  auto frame_size = graphics_binding_->GetFrameSize();
-  if (frame_size.width() != static_cast<int>(total_width) ||
-      frame_size.height() != static_cast<int>(total_height)) {
-    graphics_binding_->SetFrameSize(gfx::Size(total_width, total_height));
+  auto swapchain_image_size = graphics_binding_->GetSwapchainImageSize();
+  if (swapchain_image_size.width() != static_cast<int>(total_width) ||
+      swapchain_image_size.height() != static_cast<int>(total_height)) {
+    graphics_binding_->SetSwapchainImageSize(
+        gfx::Size(total_width, total_height));
     return true;
   }
 
@@ -804,8 +805,8 @@ XrResult OpenXrApiWrapper::BeginFrame() {
   RETURN_IF_XR_FAILED(xrBeginFrame(session_, &begin_frame_info));
   pending_frame_ = true;
 
-  RETURN_IF_XR_FAILED(
-      graphics_binding_->ActivateSwapchainImage(color_swapchain_));
+  RETURN_IF_XR_FAILED(graphics_binding_->ActivateSwapchainImage(
+      color_swapchain_, context_provider_->SharedImageInterface()));
 
   RETURN_IF_XR_FAILED(UpdateViewConfigurations());
 
@@ -923,7 +924,7 @@ XrResult OpenXrApiWrapper::PrepareViewConfigForRender(
       projection_view.fov.angleDown = view.fov.angleUp;
     } else {
       projection_view.subImage.imageRect.offset.y =
-          graphics_binding_->GetFrameSize().height() -
+          graphics_binding_->GetSwapchainImageSize().height() -
           properties.recommendedImageRectHeight;
       projection_view.fov.angleUp = view.fov.angleUp;
       projection_view.fov.angleDown = view.fov.angleDown;

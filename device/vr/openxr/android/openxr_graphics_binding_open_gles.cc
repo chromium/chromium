@@ -198,67 +198,82 @@ bool OpenXrGraphicsBindingOpenGLES::CanUseSharedImages() const {
 // This is more or less copied from XrImageTransportBase::ResizeSharedBuffer,
 // with just the types changed as needed, and logic extracted out of the
 // mailbox_to_surface_bridge.
+void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
+    SwapChainInfo& swap_chain_info,
+    gpu::SharedImageInterface* sii) {
+  CHECK(sii);
+  auto transfer_size = GetTransferSize();
+  if (!using_shared_images_ ||
+      swap_chain_info.shared_buffer_size == transfer_size) {
+    return;
+  }
+
+  // Unbind previous image (if any).
+  if (!swap_chain_info.mailbox_holder.mailbox.IsZero()) {
+    DVLOG(2) << ": DestroySharedImage, mailbox="
+             << swap_chain_info.mailbox_holder.mailbox.ToDebugString();
+    // Note: the sync token in mailbox_holder may not be accurate. See comment
+    // in TransferFrame below.
+    sii->DestroySharedImage(swap_chain_info.mailbox_holder.sync_token,
+                            swap_chain_info.mailbox_holder.mailbox);
+  }
+
+  // Remove reference to previous image (if any).
+  swap_chain_info.local_eglimage.reset();
+
+  static constexpr gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
+  static constexpr gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
+
+  glGenTextures(1, &swap_chain_info.shared_buffer_texture);
+
+  gfx::GpuMemoryBufferId kBufferId(next_memory_buffer_id++);
+  swap_chain_info.gmb = gpu::GpuMemoryBufferImplAndroidHardwareBuffer::Create(
+      kBufferId, transfer_size, format, usage,
+      gpu::GpuMemoryBufferImpl::DestructionCallback());
+  swap_chain_info.shared_buffer_size = transfer_size;
+
+  uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                                gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                gpu::SHARED_IMAGE_USAGE_GLES2;
+
+  swap_chain_info.mailbox_holder.mailbox = sii->CreateSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, swap_chain_info.gmb->GetSize(),
+      gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+      shared_image_usage, "OpenXrGraphicsBinding",
+      swap_chain_info.gmb->CloneHandle());
+  swap_chain_info.mailbox_holder.sync_token = sii->GenVerifiedSyncToken();
+  DCHECK(!gpu::NativeBufferNeedsPlatformSpecificTextureTarget(
+      swap_chain_info.gmb->GetFormat()));
+  swap_chain_info.mailbox_holder.texture_target = GL_TEXTURE_2D;
+
+  DVLOG(2) << ": CreateSharedImage, mailbox="
+           << swap_chain_info.mailbox_holder.mailbox.ToDebugString()
+           << ", SyncToken="
+           << swap_chain_info.mailbox_holder.sync_token.ToDebugString();
+
+  base::android::ScopedHardwareBufferHandle ahb =
+      swap_chain_info.gmb->CloneHandle().android_hardware_buffer;
+
+  // Create an EGLImage for the buffer.
+  auto egl_image = gpu::CreateEGLImageFromAHardwareBuffer(ahb.get());
+  if (!egl_image.is_valid()) {
+    DLOG(WARNING) << __func__ << ": ERROR: failed to initialize image!";
+    return;
+  }
+
+  glBindTexture(GL_TEXTURE_EXTERNAL_OES, swap_chain_info.shared_buffer_texture);
+  glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, egl_image.get());
+  swap_chain_info.local_eglimage = std::move(egl_image);
+}
+
 void OpenXrGraphicsBindingOpenGLES::CreateSharedImages(
     gpu::SharedImageInterface* sii) {
   CHECK(sii);
+  using_shared_images_ = true;
 
   for (auto& swap_chain_info : color_swapchain_images_) {
-    // Unbind previous image (if any).
-    if (!swap_chain_info.mailbox_holder.mailbox.IsZero()) {
-      DVLOG(2) << ": DestroySharedImage, mailbox="
-               << swap_chain_info.mailbox_holder.mailbox.ToDebugString();
-      // Note: the sync token in mailbox_holder may not be accurate. See comment
-      // in TransferFrame below.
-      sii->DestroySharedImage(swap_chain_info.mailbox_holder.sync_token,
-                              swap_chain_info.mailbox_holder.mailbox);
-    }
-
-    // Remove reference to previous image (if any).
-    swap_chain_info.local_eglimage.reset();
-
-    static constexpr gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
-    static constexpr gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
-
-    glGenTextures(1, &swap_chain_info.shared_buffer_texture);
-
-    gfx::GpuMemoryBufferId kBufferId(next_memory_buffer_id++);
-    swap_chain_info.gmb = gpu::GpuMemoryBufferImplAndroidHardwareBuffer::Create(
-        kBufferId, GetFrameSize(), format, usage,
-        gpu::GpuMemoryBufferImpl::DestructionCallback());
-
-    uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                                  gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                  gpu::SHARED_IMAGE_USAGE_GLES2;
-
-    swap_chain_info.mailbox_holder.mailbox = sii->CreateSharedImage(
-        viz::SinglePlaneFormat::kRGBA_8888, swap_chain_info.gmb->GetSize(),
-        gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        shared_image_usage, "OpenXrGraphicsBinding",
-        swap_chain_info.gmb->CloneHandle());
-    swap_chain_info.mailbox_holder.sync_token = sii->GenVerifiedSyncToken();
-    DCHECK(!gpu::NativeBufferNeedsPlatformSpecificTextureTarget(
-        swap_chain_info.gmb->GetFormat()));
-    swap_chain_info.mailbox_holder.texture_target = GL_TEXTURE_2D;
-
-    DVLOG(2) << ": CreateSharedImage, mailbox="
-             << swap_chain_info.mailbox_holder.mailbox.ToDebugString()
-             << ", SyncToken="
-             << swap_chain_info.mailbox_holder.sync_token.ToDebugString();
-
-    base::android::ScopedHardwareBufferHandle ahb =
-        swap_chain_info.gmb->CloneHandle().android_hardware_buffer;
-
-    // Create an EGLImage for the buffer.
-    auto egl_image = gpu::CreateEGLImageFromAHardwareBuffer(ahb.get());
-    if (!egl_image.is_valid()) {
-      DLOG(WARNING) << __func__ << ": ERROR: failed to initialize image!";
-      return;
-    }
-
-    glBindTexture(GL_TEXTURE_EXTERNAL_OES,
-                  swap_chain_info.shared_buffer_texture);
-    glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, egl_image.get());
-    swap_chain_info.local_eglimage = std::move(egl_image);
+    // ResizeSharedBuffer will also cause the shared buffer to be recreated.
+    ResizeSharedBuffer(swap_chain_info, sii);
   }
 }
 
@@ -283,7 +298,7 @@ bool OpenXrGraphicsBindingOpenGLES::Render() {
   // same spot in our vector.
   auto& swap_chain_info = color_swapchain_images_[active_swapchain_index()];
 
-  gfx::Size frame_size = GetFrameSize();
+  gfx::Size swapchain_image_size = GetSwapchainImageSize();
 
   if (!back_buffer_fbo_) {
     glGenFramebuffersEXT(1, &back_buffer_fbo_);
@@ -295,7 +310,7 @@ bool OpenXrGraphicsBindingOpenGLES::Render() {
   glDisable(GL_CULL_FACE);
   glDisable(GL_SCISSOR_TEST);
   glDisable(GL_POLYGON_OFFSET_FILL);
-  glViewport(0, 0, frame_size.width(), frame_size.height());
+  glViewport(0, 0, swapchain_image_size.width(), swapchain_image_size.height());
 
   gfx::Transform transform;
   float transform_floats[16];
@@ -311,6 +326,13 @@ bool OpenXrGraphicsBindingOpenGLES::WaitOnFence(gfx::GpuFence& gpu_fence) {
   local_fence->ServerWait();
 
   return true;
+}
+
+void OpenXrGraphicsBindingOpenGLES::OnSwapchainImageActivated(
+    gpu::SharedImageInterface* sii) {
+  CHECK(has_active_swapchain_image());
+  CHECK(active_swapchain_index() < color_swapchain_images_.size());
+  ResizeSharedBuffer(color_swapchain_images_[active_swapchain_index()], sii);
 }
 
 }  // namespace device

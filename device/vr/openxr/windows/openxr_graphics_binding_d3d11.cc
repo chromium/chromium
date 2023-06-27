@@ -172,6 +172,12 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
     gpu_memory_buffer_handle.dxgi_handle.Set(shared_handle);
     gpu_memory_buffer_handle.dxgi_token = gfx::DXGIHandleToken();
     gpu_memory_buffer_handle.type = gfx::DXGI_SHARED_HANDLE;
+
+    // TODO(https://crbug.com/1458256): This size is the size of the texture
+    // from the OpenXr runtime, which is fine but does not work properly if the
+    // page requests any kind of framebuffer scaling, because then the image
+    // size that the page uses would be different than this size, which can
+    // cause errors in rendering.
     gfx::Size buffer_size =
         gfx::Size(texture2d_desc.Width, texture2d_desc.Height);
 
@@ -261,11 +267,12 @@ bool OpenXrGraphicsBindingD3D11::WaitOnFence(gfx::GpuFence& gpu_fence) {
   return true;
 }
 
-void OpenXrGraphicsBindingD3D11::OnFrameSizeChanged() {
-  texture_helper_->SetDefaultSize(GetFrameSize());
+void OpenXrGraphicsBindingD3D11::OnSwapchainImageSizeChanged() {
+  texture_helper_->SetDefaultSize(GetSwapchainImageSize());
 }
 
-void OpenXrGraphicsBindingD3D11::OnSwapchainImageActivated() {
+void OpenXrGraphicsBindingD3D11::OnSwapchainImageActivated(
+    gpu::SharedImageInterface* sii) {
   CHECK(has_active_swapchain_image());
   CHECK(active_swapchain_index() < color_swapchain_images_.size());
 

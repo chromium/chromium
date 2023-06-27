@@ -41,8 +41,8 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
   bool WaitOnFence(gfx::GpuFence& gpu_fence) override;
 
  private:
-  void OnFrameSizeChanged() override;
-  void OnSwapchainImageActivated() override;
+  void OnSwapchainImageSizeChanged() override;
+  void OnSwapchainImageActivated(gpu::SharedImageInterface* sii) override;
 
   bool initialized_ = false;
   raw_ptr<D3D11TextureHelper> texture_helper_;

@@ -46,7 +46,12 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
   bool WaitOnFence(gfx::GpuFence& gpu_fence) override;
 
  private:
+  void OnSwapchainImageActivated(gpu::SharedImageInterface* sii) override;
+  void ResizeSharedBuffer(SwapChainInfo& swap_chain_info,
+                          gpu::SharedImageInterface* sii);
+
   bool initialized_ = false;
+  bool using_shared_images_ = false;
   XrGraphicsBindingOpenGLESAndroidKHR binding_{
       XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR, nullptr};
   std::vector<SwapChainInfo> color_swapchain_images_;
