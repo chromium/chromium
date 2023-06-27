@@ -484,8 +484,10 @@ void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
         GetSaveUpdatePasswordMessageDismissReason(dismiss_reason));
   }
 
-  TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
-                                    web_contents_);
+  if (dismiss_reason == messages::DismissReason::PRIMARY_ACTION) {
+    TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
+                                      web_contents_);
+  }
   ClearState();
 }
 
