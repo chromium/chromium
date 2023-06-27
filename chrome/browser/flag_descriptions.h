@@ -1724,6 +1724,9 @@ extern const char kShowPerformanceMetricsHudDescription[];
 extern const char kShowOverdrawFeedbackName[];
 extern const char kShowOverdrawFeedbackDescription[];
 
+extern const char kSiteInstanceGroupsForDataUrlsName[];
+extern const char kSiteInstanceGroupsForDataUrlsDescription[];
+
 extern const char kSkiaRendererName[];
 extern const char kSkiaRendererDescription[];
 

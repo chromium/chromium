@@ -133,6 +133,10 @@ CONTENT_EXPORT bool ShouldQueueNavigationsWhenPendingCommitRFHExists();
 // As part of the Citadel desktop protections, we want to stop allowing calls to
 // CanAccessDataForOrigin on the IO thread, and only allow it on the UI thread.
 CONTENT_EXPORT bool ShouldRestrictCanAccessDataForOriginToUIThread();
+
+// Returns true if data: URL subframes should be put in a separate SiteInstance
+// in the SiteInstanceGroup of the initiator.
+CONTENT_EXPORT bool ShouldCreateSiteInstanceForDataUrls();
 }  // namespace content
 
 #endif  // CONTENT_COMMON_CONTENT_NAVIGATION_POLICY_H_

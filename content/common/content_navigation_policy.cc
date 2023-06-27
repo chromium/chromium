@@ -241,4 +241,9 @@ bool ShouldRestrictCanAccessDataForOriginToUIThread() {
          base::FeatureList::IsEnabled(
              net::features::kSupportPartitionedBlobUrl);
 }
+
+bool ShouldCreateSiteInstanceForDataUrls() {
+  return base::FeatureList::IsEnabled(features::kSiteInstanceGroupsForDataUrls);
+}
+
 }  // namespace content
