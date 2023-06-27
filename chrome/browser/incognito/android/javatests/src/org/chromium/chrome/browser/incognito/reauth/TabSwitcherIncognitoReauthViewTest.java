@@ -14,9 +14,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabs;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.addBlankTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -38,6 +40,7 @@ import org.chromium.chrome.browser.incognito.R;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -113,7 +116,8 @@ public class TabSwitcherIncognitoReauthViewTest {
 
     private void openIncognitoReauth(ChromeTabbedActivity cta) {
         // Open incognito tab.
-        createTabs(cta, true, 1);
+        addBlankTabs(cta, true, 1);
+
         assertTrue(cta.getActivityTab().isIncognito());
 
         // Enter tab switcher in incognito mode.
@@ -153,5 +157,22 @@ public class TabSwitcherIncognitoReauthViewTest {
 
         mRenderTestRule.render(
                 cta.findViewById(R.id.action_bar_root), "incognito_reauth_view_tab_switcher");
+    }
+
+    @Test
+    @LargeTest
+    public void testIncognitoReauthViewIsRestored_WhenActivityIsKilled() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        openIncognitoReauth(cta);
+
+        // Need to wait for contentsState to be initialized for the tab to restore correctly.
+        CriteriaHelper.pollUiThread(() -> {
+            return TabStateExtractor.from(cta.getActivityTab()).contentsState != null;
+        });
+
+        mActivityTestRule.recreateActivity();
+
+        onViewWaiting(withId(R.id.incognito_reauth_unlock_incognito_button))
+                .check(matches(isDisplayed()));
     }
 }

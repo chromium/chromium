@@ -532,7 +532,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 /* statusBarColorProvider= */ this, getIntentRequestTracker(),
                 mTabReparentingControllerSupplier,
                 /*ephemeralTabCoordinatorSupplier=*/new ObservableSupplierImpl<>(),
-                false, mBackPressManager, ()->null);
+                false, mBackPressManager, null);
         // clang-format on
     }
 

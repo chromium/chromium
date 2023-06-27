@@ -254,7 +254,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param tabReparentingControllerSupplier Supplier for the {@link TabReparentingController}.
      * @param initializeUiWithIncognitoColors Whether to initialize the UI with incognito colors.
      * @param backPressManager The {@link BackPressManager} handling back press.
-     * @param savedInstanceStateSupplier Supplies the saved instance state.
+     * @param savedInstanceState The saved bundle for the last recorded state.
      */
     public TabbedRootUiCoordinator(@NonNull AppCompatActivity activity,
             @Nullable Callback<Boolean> onOmniboxFocusChangedListener,
@@ -296,7 +296,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull Function<Tab, Boolean> backButtonShouldCloseTabFn,
             OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
             boolean initializeUiWithIncognitoColors, @NonNull BackPressManager backPressManager,
-            @NonNull Supplier<Bundle> savedInstanceStateSupplier) {
+            @Nullable Bundle savedInstanceState) {
         super(activity, onOmniboxFocusChangedListener, shareDelegateSupplier, tabProvider,
                 profileSupplier, bookmarkModelSupplier, tabBookmarkerSupplier,
                 contextualSearchManagerSupplier, tabModelSelectorSupplier, startSurfaceSupplier,
@@ -310,7 +310,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 activityType, isInOverviewModeSupplier, isWarmOnResumeSupplier, appMenuDelegate,
                 statusBarColorProvider, intentRequestTracker, tabReparentingControllerSupplier,
                 ephemeralTabCoordinatorSupplier, initializeUiWithIncognitoColors, backPressManager,
-                savedInstanceStateSupplier);
+                savedInstanceState);
         mControlContainerHeightResource = controlContainerHeightResource;
         mInsetObserverViewSupplier = insetObserverViewSupplier;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;
