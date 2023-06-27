@@ -8,6 +8,7 @@ fail_early_min_fallback_ratio=0.5
 deps_cache_max_mb=256
 # TODO(b/276727504) Re-enable once noop build shutdown time bug is fixed
 # enable_deps_cache=true
+async_reproxy_termination=true
 use_unified_uploads=true
 fast_log_collection=true
 depsscanner_address=$depsscanner_address
