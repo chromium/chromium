@@ -56,8 +56,8 @@ std::unique_ptr<HoldingSpaceImage> CreateFakeHoldingSpaceImage(
 
 std::unique_ptr<HoldingSpaceItem> CreateItem(HoldingSpaceItem::Type type) {
   return HoldingSpaceItem::CreateFileBackedItem(
-      /*type=*/type, base::FilePath("file_path"),
-      GURL("filesystem::file_system_url"),
+      /*type=*/type, HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
+      base::FilePath("file_path"), GURL("filesystem::file_system_url"),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 }
 
@@ -197,8 +197,9 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_AccessibleName) {
 
   // Create a holding space `item`.
   auto item = HoldingSpaceItem::CreateFileBackedItem(
-      /*type=*/GetHoldingSpaceItemType(), base::FilePath("file_path"),
-      GURL("filesystem::file_system_url"),
+      /*type=*/GetHoldingSpaceItemType(),
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
+      base::FilePath("file_path"), GURL("filesystem::file_system_url"),
       HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
   auto* item_ptr = item.get();
@@ -274,8 +275,9 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
 
   // Create a holding space `item`.
   auto item = HoldingSpaceItem::CreateFileBackedItem(
-      /*type=*/GetHoldingSpaceItemType(), base::FilePath("file_path"),
-      GURL("filesystem::file_system_url"),
+      /*type=*/GetHoldingSpaceItemType(),
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
+      base::FilePath("file_path"), GURL("filesystem::file_system_url"),
       HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
   auto* item_ptr = item.get();
@@ -398,8 +400,10 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Noop) {
 
   // Create a holding space `item`.
   auto item = HoldingSpaceItem::CreateFileBackedItem(
-      /*type=*/GetHoldingSpaceItemType(), base::FilePath("file_path"),
-      GURL("filesystem::file_system_url"), HoldingSpaceProgress(),
+      /*type=*/GetHoldingSpaceItemType(),
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
+      base::FilePath("file_path"), GURL("filesystem::file_system_url"),
+      HoldingSpaceProgress(),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
   auto* item_ptr = item.get();
 
@@ -435,8 +439,9 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_InProgressCommands) {
 
   // Create an in-progress holding space `item`.
   auto item = HoldingSpaceItem::CreateFileBackedItem(
-      /*type=*/GetHoldingSpaceItemType(), base::FilePath("file_path"),
-      GURL("filesystem::file_system_url"),
+      /*type=*/GetHoldingSpaceItemType(),
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
+      base::FilePath("file_path"), GURL("filesystem::file_system_url"),
       HoldingSpaceProgress(/*current_bytes=*/0, /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
   auto* item_ptr = item.get();
@@ -511,8 +516,9 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Progress) {
 
   // Create a holding space `item`.
   auto item = HoldingSpaceItem::CreateFileBackedItem(
-      /*type=*/GetHoldingSpaceItemType(), base::FilePath("file_path"),
-      GURL("filesystem::file_system_url"),
+      /*type=*/GetHoldingSpaceItemType(),
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
+      base::FilePath("file_path"), GURL("filesystem::file_system_url"),
       HoldingSpaceProgress(/*current_bytes=*/absl::nullopt,
                            /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));

@@ -425,7 +425,8 @@ class HoldingSpaceTrayTestBase : public AshTestBase {
         base::StrCat({"filesystem:", path.BaseName().value()}));
     std::unique_ptr<HoldingSpaceItem> item =
         HoldingSpaceItem::CreateFileBackedItem(
-            type, path, file_system_url, progress,
+            type, HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
+            path, file_system_url, progress,
             base::BindOnce(&CreateStubHoldingSpaceImage));
     HoldingSpaceItem* item_ptr = item.get();
     target_model->AddItem(std::move(item));
@@ -438,7 +439,8 @@ class HoldingSpaceTrayTestBase : public AshTestBase {
     // dictionary.
     std::unique_ptr<HoldingSpaceItem> item =
         HoldingSpaceItem::CreateFileBackedItem(
-            type, path, GURL("filesystem:ignored"),
+            type, HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
+            path, GURL("filesystem:ignored"),
             base::BindOnce(&CreateStubHoldingSpaceImage));
     const base::Value::Dict serialized_holding_space_item = item->Serialize();
     std::unique_ptr<HoldingSpaceItem> deserialized_item =

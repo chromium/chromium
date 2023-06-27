@@ -14,6 +14,7 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
@@ -107,7 +108,8 @@ std::unique_ptr<HoldingSpaceItem> CreateHoldingSpaceItem(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path) {
   return HoldingSpaceItem::CreateFileBackedItem(
-      type, file_path,
+      type, HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
+      file_path,
       GURL(base::StrCat({"file-system:", file_path.BaseName().value()})),
       base::BindOnce(&CreateHoldingSpaceImage));
 }

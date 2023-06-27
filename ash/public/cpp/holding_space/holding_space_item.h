@@ -106,18 +106,22 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   using ImageResolver = base::OnceCallback<
       std::unique_ptr<HoldingSpaceImage>(Type, const base::FilePath&)>;
 
+  // TODO(http://b/288471183): Remove file path and file system URL.
   // Creates a HoldingSpaceItem that's backed by a file system URL.
   // NOTE: `file_system_url` is expected to be non-empty.
   static std::unique_ptr<HoldingSpaceItem> CreateFileBackedItem(
       Type type,
+      const HoldingSpaceFile& file,
       const base::FilePath& file_path,
       const GURL& file_system_url,
       ImageResolver image_resolver);
 
+  // TODO(http://b/288471183): Remove file path and file system URL.
   // Creates a HoldingSpaceItem that's backed by a file system URL.
   // NOTE: `file_system_url` is expected to be non-empty.
   static std::unique_ptr<HoldingSpaceItem> CreateFileBackedItem(
       Type type,
+      const HoldingSpaceFile& file,
       const base::FilePath& file_path,
       const GURL& file_system_url,
       const HoldingSpaceProgress& progress,
@@ -249,9 +253,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   HoldingSpaceImage& image_for_testing() { return *image_; }
 
  private:
+  // TODO(http://b/288471183): Remove file path and file system URL.
   // Constructor for file backed items.
   HoldingSpaceItem(Type type,
                    const std::string& id,
+                   const HoldingSpaceFile& file,
                    const base::FilePath& file_path,
                    const GURL& file_system_url,
                    std::unique_ptr<HoldingSpaceImage> image,

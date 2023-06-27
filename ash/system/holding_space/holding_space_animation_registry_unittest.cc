@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
@@ -55,7 +56,8 @@ class HoldingSpaceAnimationRegistryTest : public AshTestBase {
         base::StrCat({"filesystem:", path.BaseName().value()}));
     std::unique_ptr<HoldingSpaceItem> item =
         HoldingSpaceItem::CreateFileBackedItem(
-            type, path, file_system_url, progress,
+            type, HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
+            path, file_system_url, progress,
             base::BindOnce(
                 [](HoldingSpaceItem::Type type, const base::FilePath& path) {
                   return std::make_unique<HoldingSpaceImage>(

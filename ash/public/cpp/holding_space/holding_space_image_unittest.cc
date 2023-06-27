@@ -173,7 +173,9 @@ std::unique_ptr<HoldingSpaceItem> CreateTestItem(
     const gfx::Size& image_size) {
   const GURL file_system_url("filesystem:file_system_url");
   return HoldingSpaceItem::CreateFileBackedItem(
-      HoldingSpaceItem::Type::kPinnedFile, file_path, file_system_url,
+      HoldingSpaceItem::Type::kPinnedFile,
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest), file_path,
+      file_system_url,
       base::BindLambdaForTesting([&](HoldingSpaceItem::Type type,
                                      const base::FilePath& file_path) {
         return std::make_unique<HoldingSpaceImage>(
