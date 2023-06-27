@@ -1016,7 +1016,7 @@ void BrowserAutofillManager::DidSuppressPopup(const FormData& form,
   if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
     return;
 
-  auto* logger = GetEventFormLogger(autofill_field->Type().group());
+  auto* logger = GetEventFormLogger(*autofill_field);
   if (logger)
     logger->OnPopupSuppressed(*form_structure, *autofill_field);
 }
@@ -1049,7 +1049,7 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
     profile_form_bitmask = data_util::DetermineGroups(*form_structure);
   }
 
-  auto* logger = GetEventFormLogger(autofill_field->Type().group());
+  auto* logger = GetEventFormLogger(*autofill_field);
   if (!autofill_field->is_autofilled) {
     if (logger)
       logger->OnTypedIntoNonFilledField();
@@ -1580,7 +1580,7 @@ void BrowserAutofillManager::DidShowSuggestions(bool has_autofill_suggestions,
         client()->GetSecurityLevelForUmaHistograms(), profile_form_bitmask);
   }
 
-  auto* logger = GetEventFormLogger(autofill_field->Type().group());
+  auto* logger = GetEventFormLogger(*autofill_field);
   if (logger) {
     logger->OnDidShowSuggestions(*form_structure, *autofill_field,
                                  form_structure->form_parsed_timestamp(),
@@ -1712,7 +1712,7 @@ void BrowserAutofillManager::OnUserHideSuggestions(const FormData& form,
   if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
     return;
 
-  auto* logger = GetEventFormLogger(autofill_field->Type().group());
+  auto* logger = GetEventFormLogger(*autofill_field);
   if (logger)
     logger->OnUserHideSuggestions(*form_structure, *autofill_field);
 }
@@ -1877,7 +1877,7 @@ void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
   if (delta >= kLimitBeforeRefill)
     return;
 
-  auto* logger = GetEventFormLogger(autofill_field->Type().group());
+  auto* logger = GetEventFormLogger(*autofill_field);
   if (logger) {
     logger->OnAutofilledFieldWasClearedByJavaScriptShortlyAfterFill(
         *form_structure);
@@ -2026,7 +2026,7 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
     FormInteractionCounts form_interaction_counts = {};
     if (submitted_form->field_count() > 0) {
       const AutofillField* autofill_field = submitted_form->field(0);
-      auto* logger = GetEventFormLogger(autofill_field->Type().group());
+      auto* logger = GetEventFormLogger(*autofill_field);
       if (logger) {
         form_interaction_counts = logger->form_interaction_counts();
       }
@@ -3264,7 +3264,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     if (context->focused_field->Type().group() == FieldTypeGroup::kCreditCard) {
       context->is_filling_credit_card = true;
     }
-    auto* logger = GetEventFormLogger(context->focused_field->Type().group());
+    auto* logger = GetEventFormLogger(*context->focused_field);
     if (logger) {
       logger->OnDidInteractWithAutofillableForm(*(context->form_structure),
                                                 sync_state_);
@@ -3419,9 +3419,16 @@ bool BrowserAutofillManager::ShouldShowVirtualCardOption(
 #endif
 
 autofill_metrics::FormEventLoggerBase*
-BrowserAutofillManager::GetEventFormLogger(
-    FieldTypeGroup field_type_group) const {
-  switch (FieldTypeGroupToFormType(field_type_group)) {
+BrowserAutofillManager::GetEventFormLogger(const AutofillField& field) const {
+  if (field.ShouldSuppressSuggestionsAndFillingByDefault()) {
+    // Ignore ac=unrecognized fields in key metrics: Prior to
+    // `kAutofillPredictionsForAutocompleteUnrecognized`, ac=unrecognized fields
+    // did not receive a type prediction and were consequently not associated to
+    // any event logger. To retain the same baseline for key metrics, continue
+    // to exclude such fields.
+    return nullptr;
+  }
+  switch (FieldTypeGroupToFormType(field.Type().group())) {
     case FormType::kAddressForm:
       return address_form_event_logger_.get();
     case FormType::kCreditCardForm:
@@ -3430,8 +3437,7 @@ BrowserAutofillManager::GetEventFormLogger(
     case FormType::kUnknownFormType:
       return nullptr;
   }
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 void BrowserAutofillManager::PreProcessStateMatchingTypes(
@@ -3663,7 +3669,18 @@ void BrowserAutofillManager::LogEventCountsUMAMetric(
 void BrowserAutofillManager::SetFastCheckoutRunId(
     FieldTypeGroup field_type_group,
     int64_t run_id) {
-  GetEventFormLogger(field_type_group)->SetFastCheckoutRunId(run_id);
+  switch (FieldTypeGroupToFormType(field_type_group)) {
+    case FormType::kAddressForm:
+      address_form_event_logger_->SetFastCheckoutRunId(run_id);
+      return;
+    case FormType::kCreditCardForm:
+      credit_card_form_event_logger_->SetFastCheckoutRunId(run_id);
+      break;
+    case FormType::kPasswordForm:
+    case FormType::kUnknownFormType:
+      // FastCheckout only supports address and credit card forms.
+      NOTREACHED();
+  }
 }
 
 }  // namespace autofill

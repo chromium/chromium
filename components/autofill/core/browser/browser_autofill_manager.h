@@ -737,10 +737,10 @@ class BrowserAutofillManager : public AutofillManager,
   bool ShouldShowVirtualCardOption(FormStructure* form_structure);
 #endif
 
-  // Returns an appropriate EventFormLogger for the given |field_type_group|.
-  // May return nullptr.
+  // Returns an appropriate EventFormLogger, depending on the given `field`'s
+  // type. May return nullptr.
   autofill_metrics::FormEventLoggerBase* GetEventFormLogger(
-      FieldTypeGroup field_type_group) const;
+      const AutofillField& field) const;
 
   void SetDataList(const std::vector<std::u16string>& values,
                    const std::vector<std::u16string>& labels);

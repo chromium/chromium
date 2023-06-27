@@ -6783,4 +6783,22 @@ TEST_F(FormStructureTestImpl, DetermineRanks) {
               ElementsAre(0, 0, 1, 0, 0, 0));
 }
 
+// Tests that when `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,
+// forms that are completely annotated with ac=unrecognized are not classified
+// as address forms.
+TEST_F(FormStructureTestImpl, GetFormTypes_AutocompleteUnrecognized) {
+  base::test::ScopedFeatureList feature(
+      features::kAutofillPredictionsForAutocompleteUnrecognized);
+
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  for (FormFieldData& field : form.fields) {
+    field.parsed_autocomplete =
+        AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
+  }
+  FormStructure form_structure(form);
+  EXPECT_THAT(form_structure.GetFormTypes(),
+              UnorderedElementsAre(FormType::kUnknownFormType));
+}
+
 }  // namespace autofill
