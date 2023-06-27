@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_mediator.h"
@@ -51,6 +52,8 @@
       IdentityManagerFactory::GetForBrowserState(browserState);
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
   self.feedTopSectionMediator = [[FeedTopSectionMediator alloc]
       initWithConsumer:self.feedTopSectionViewController
        identityManager:identityManager
@@ -65,6 +68,7 @@
                 authService:AuthenticationServiceFactory::GetForBrowserState(
                                 browserState)
                 prefService:browserState->GetPrefs()
+                syncService:syncService
                 accessPoint:signin_metrics::AccessPoint::
                                 ACCESS_POINT_NTP_FEED_TOP_PROMO
                   presenter:self

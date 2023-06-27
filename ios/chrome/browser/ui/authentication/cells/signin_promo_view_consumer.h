@@ -26,6 +26,9 @@
 
 @optional
 
+// Called when the sign-in in progress status changes.
+- (void)promoProgressStateDidChange;
+
 // Called when the sign-in is finished.
 - (void)signinDidFinish;
 

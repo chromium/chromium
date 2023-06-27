@@ -205,12 +205,15 @@
       accountManagerService:accountManagerService
                 authService:_authService
                 prefService:_prefService
+                syncService:_syncService
                 accessPoint:signin_metrics::AccessPoint::
                                 ACCESS_POINT_READING_LIST
                   presenter:self
          baseViewController:self.tableViewController];
   _signinPromoViewMediator.signInOnly = YES;
   _signinPromoViewMediator.consumer = self;
+  [_signinPromoViewMediator
+      setDataTypeToWaitForInitialSync:syncer::ModelType::READING_LIST];
   [self updateSignInPromoVisibility];
 
   [super start];
@@ -575,6 +578,10 @@
                            identityChanged:identityChanged];
 }
 
+- (void)promoProgressStateDidChange {
+  [self updateSignInPromoVisibility];
+}
+
 - (void)signinDidFinish {
   [self updateSignInPromoVisibility];
 }
@@ -629,8 +636,12 @@
     self.shouldShowSignInPromo = NO;
     return;
   }
+
   if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    self.shouldShowSignInPromo = NO;
+    // If the user is signed-in with the promo (thus opted-in for Reading List
+    // account storage), the promo should stay visible during the initial sync
+    // and a spinner should be shown on it.
+    self.shouldShowSignInPromo = _signinPromoViewMediator.signinInProgress;
   } else {
     const std::string lastSignedInGaiaId =
         _prefService->GetString(prefs::kGoogleServicesLastGaiaId);

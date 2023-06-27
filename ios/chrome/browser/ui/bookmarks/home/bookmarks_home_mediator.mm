@@ -146,8 +146,10 @@ bool IsABookmarkNodeSectionForIdentifier(
   _syncedBookmarksObserver =
       std::make_unique<sync_bookmarks::SyncedBookmarksObserverBridge>(
           self, browserState);
+  _syncService = SyncServiceFactory::GetForBrowserState(browserState);
   _bookmarkPromoController =
       [[BookmarkPromoController alloc] initWithBrowser:_browser.get()
+                                           syncService:_syncService
                                               delegate:self
                                              presenter:self
                                     baseViewController:_baseViewController];
@@ -161,8 +163,6 @@ bool IsABookmarkNodeSectionForIdentifier(
 
   _prefObserverBridge->ObserveChangesForPreference(
       bookmarks::prefs::kManagedBookmarks, _prefChangeRegistrar.get());
-
-  _syncService = SyncServiceFactory::GetForBrowserState(browserState);
 
   [self computePromoTableViewData];
   [self computeBookmarkTableViewData];

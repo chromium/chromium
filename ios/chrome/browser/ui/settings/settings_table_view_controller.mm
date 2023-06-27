@@ -611,6 +611,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                     authService:AuthenticationServiceFactory::
                                     GetForBrowserState(_browserState)
                     prefService:_browserState->GetPrefs()
+                    syncService:SyncServiceFactory::GetForBrowserState(
+                                    _browserState)
                     accessPoint:signin_metrics::AccessPoint::
                                     ACCESS_POINT_SETTINGS
                       presenter:self

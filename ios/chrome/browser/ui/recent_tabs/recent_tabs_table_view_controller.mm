@@ -721,6 +721,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
                   authService:AuthenticationServiceFactory::GetForBrowserState(
                                   self.browserState)
                   prefService:self.browserState->GetPrefs()
+                  syncService:self.syncService
                   accessPoint:signin_metrics::AccessPoint::
                                   ACCESS_POINT_RECENT_TABS
                     presenter:self

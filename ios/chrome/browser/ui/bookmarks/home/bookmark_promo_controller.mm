@@ -42,6 +42,7 @@
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
+                    syncService:(syncer::SyncService*)syncService
                        delegate:(id<BookmarkPromoControllerDelegate>)delegate
                       presenter:(id<SigninPresenter>)presenter
              baseViewController:(UIViewController*)baseViewController {
@@ -62,11 +63,17 @@
                   authService:AuthenticationServiceFactory::GetForBrowserState(
                                   browserState)
                   prefService:browserState->GetPrefs()
+                  syncService:syncService
                   accessPoint:signin_metrics::AccessPoint::
                                   ACCESS_POINT_BOOKMARK_MANAGER
                     presenter:presenter
            baseViewController:baseViewController];
     _signinPromoViewMediator.consumer = self;
+    if (base::FeatureList::IsEnabled(
+            bookmarks::kEnableBookmarksAccountStorage)) {
+      [_signinPromoViewMediator
+          setDataTypeToWaitForInitialSync:syncer::ModelType::BOOKMARKS];
+    }
     [self updateShouldShowSigninPromo];
   }
   return self;
@@ -147,7 +154,8 @@
     _signinPromoViewMediator.signInOnly = NO;
     return;
   }
-  if ([self.delegate isPerformingInitialSync]) {
+
+  if (self.signinPromoViewMediator.signinInProgress) {
     // The user is opted into syncing bookmarks, but the first sync is not
     // finished yet - keep the promo visible to show the spinner.
     self.shouldShowSigninPromo = YES;
@@ -182,6 +190,10 @@
                              identityChanged:(BOOL)identityChanged {
   [self.delegate configureSigninPromoWithConfigurator:configurator
                                       identityChanged:identityChanged];
+}
+
+- (void)promoProgressStateDidChange {
+  [self updateShouldShowSigninPromo];
 }
 
 - (void)signinDidFinish {
