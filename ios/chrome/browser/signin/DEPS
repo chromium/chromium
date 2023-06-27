@@ -5,6 +5,14 @@ include_rules = [
   "+components/signin/internal/identity_manager/account_tracker_service.h",
   "+components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_ios.h",
   "+components/trusted_vault",
+  "+ios/chrome/browser/content_settings",
+  "+ios/chrome/browser/bookmarks",
+  "+ios/chrome/browser/crash_report",
+  "+ios/chrome/browser/policy",
+  "+ios/chrome/browser/sync",
+  "+ios/chrome/browser/web_state_list",
+  "+ios/chrome/browser/web",
+  "+ios/chrome/browser/webdata_services",
 ]
 
 specific_include_rules = {
@@ -13,8 +21,7 @@ specific_include_rules = {
     "+ios/chrome/browser/ui/authentication/signin/signin_utils.h",
   ],
   "^chrome_account_manager_service.mm": [
-    "+ios/chrome/browser/ui/util/ui_util.h",
-    "+ios/chrome/browser/ui/util/uikit_ui_util.h",
+    "+ios/chrome/browser/shared/ui/util/uikit_ui_util.h",
   ],
 }
 

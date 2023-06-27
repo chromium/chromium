@@ -1,3 +1,9 @@
+include_rules = [
+  "+ios/chrome/browser/search_engines",
+  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/metrics",
+]
+
 specific_include_rules = {
   # TODO(crbug.com/1294160): Remove this dependency.
   "^discover_feed_service_factory.mm": [

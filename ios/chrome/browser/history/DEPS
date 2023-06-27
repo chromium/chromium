@@ -1,0 +1,8 @@
+include_rules = [
+  "+ios/chrome/browser/bookmarks",
+  "+ios/chrome/browser/complex_tasks",
+  "+ios/chrome/browser/sessions",
+  "+ios/chrome/browser/translate",
+  "+ios/chrome/browser/signin",
+  "+ios/chrome/browser/sync",
+]

@@ -1,6 +1,9 @@
+include_rules = [
+  "+ios/chrome/browser/search_engines",
+]
+
 specific_include_rules = {
   "^lens_browser_agent.mm": [
     "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
-    "+ios/chrome/browser/ui/ui_feature_flags.h",
   ],
 }
