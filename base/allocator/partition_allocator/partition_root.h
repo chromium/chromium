@@ -779,13 +779,18 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   PA_ALWAYS_INLINE void* TaggedSlotStartToObject(
       void* tagged_slot_start) const {
-    // TODO(bartekn): Check that |slot_start| is indeed a slot start.
+    // TODO(bartekn): Check that |tagged_slot_start| is indeed a slot start.
     return reinterpret_cast<void*>(
         SlotStartToObjectAddr(reinterpret_cast<uintptr_t>(tagged_slot_start)));
   }
 
   PA_ALWAYS_INLINE uintptr_t ObjectToSlotStart(void* object) const {
     return UntagPtr(object) - settings.extras_offset;
+    // TODO(bartekn): Check that the result is indeed a slot start.
+  }
+
+  PA_ALWAYS_INLINE uintptr_t ObjectToTaggedSlotStart(void* object) const {
+    return reinterpret_cast<uintptr_t>(object) - settings.extras_offset;
     // TODO(bartekn): Check that the result is indeed a slot start.
   }
 
@@ -1227,9 +1232,6 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooks(void* object) {
   SlotSpan* slot_span = SlotSpan::FromObject(object);
   PA_DCHECK(PartitionRoot::FromSlotSpan(slot_span) == root);
 
-  uintptr_t slot_start = root->ObjectToSlotStart(object);
-  PA_DCHECK(slot_span == SlotSpan::FromSlotStart(slot_start));
-
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
   if (PA_LIKELY(root->IsMemoryTaggingEnabled())) {
     const size_t slot_size = slot_span->bucket->slot_size;
@@ -1241,7 +1243,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooks(void* object) {
       tag_size -= root->settings.ref_count_size;
 #endif
       void* retagged_slot_start = internal::TagMemoryRangeIncrement(
-          internal::TagAddr(slot_start), tag_size);
+          root->ObjectToTaggedSlotStart(object), tag_size);
       // Incrementing the MTE-tag in the memory range invalidates the |object|'s
       // tag, so it must be retagged.
       object = root->TaggedSlotStartToObject(retagged_slot_start);
@@ -1261,6 +1263,9 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooks(void* object) {
   // been touched above.
   PA_PREFETCH(slot_span);
 #endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+
+  uintptr_t slot_start = root->ObjectToSlotStart(object);
+  PA_DCHECK(slot_span == SlotSpan::FromSlotStart(slot_start));
 
 #if BUILDFLAG(USE_STARSCAN)
   // TODO(bikineev): Change the condition to PA_LIKELY once PCScan is enabled by
