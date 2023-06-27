@@ -30339,17 +30339,6 @@ Called by update_document_policy_enum.py.-->
   </int>
 </enum>
 
-<enum name="DownloadInProgressDBCountType">
-  <int value="0" label="In-progress DB initialization started"/>
-  <int value="1" label="In-progress DB successfully initialized"/>
-  <int value="2" label="In-progress DB failed to initialize"/>
-  <int value="3" label="In-progress DB successfully loaded"/>
-  <int value="4" label="In-progress DB failed to load"/>
-  <int value="5" label="Migration from in-progress cache required"/>
-  <int value="6" label="Migration from in-progress cache succeeded"/>
-  <int value="7" label="Migration from in-progress cache failed"/>
-</enum>
-
 <enum name="DownloadInputStreamReadErrorType">
   <int value="0" label="Invalid argument"/>
   <int value="1" label="Out of range"/>
