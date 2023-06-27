@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
@@ -540,15 +541,25 @@ void CullRectUpdater::PaintPropertiesChanged(
 
   if (object.HasLayer()) {
     To<LayoutBoxModelObject>(object).Layer()->SetNeedsCullRectUpdate();
-    if (object.IsLayoutView() &&
-        object.GetFrameView()->HasFixedPositionObjects()) {
-      // Fixed-position cull rects depend on view clip. See
-      // ComputeFragmentCullRect().
+    // Fixed-position cull rects depend on view clip. See
+    // ComputeFragmentCullRect().
+    if (const auto* layout_view = DynamicTo<LayoutView>(object)) {
       if (const auto* clip_node =
               object.FirstFragment().PaintProperties()->OverflowClip()) {
         if (clip_node->NodeChanged() != PaintPropertyChangeType::kUnchanged) {
-          for (auto fixed : *object.GetFrameView()->FixedPositionObjects())
-            To<LayoutBox>(fixed.Get())->Layer()->SetNeedsCullRectUpdate();
+          for (const auto& fragment : layout_view->PhysicalFragments()) {
+            if (!fragment.HasOutOfFlowFragmentChild()) {
+              continue;
+            }
+            for (const auto& fragment_child : fragment.Children()) {
+              if (!fragment_child->IsFixedPositioned()) {
+                continue;
+              }
+              To<LayoutBox>(fragment_child->GetLayoutObject())
+                  ->Layer()
+                  ->SetNeedsCullRectUpdate();
+            }
+          }
         }
       }
     }
