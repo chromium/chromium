@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
-#import "base/task/single_thread_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
 #import "ui/views/widget/native_widget_mac.h"
 
 #import <Cocoa/Cocoa.h>
@@ -14,11 +10,12 @@
 #include "base/functional/callback.h"
 #import "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#import "base/mac/scoped_nsobject.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
@@ -48,6 +45,10 @@
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
 #include "ui/views/window/dialog_delegate.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 // "{}" in base64encode, to create some dummy restoration data.
@@ -150,11 +151,11 @@ class TestWindowNativeWidgetMac : public NativeWidgetMac {
   }
   NativeWidgetMacNSWindow* CreateNSWindow(
       const remote_cocoa::mojom::CreateWindowParams* params) override {
-    return [[[NativeWidgetMacTestWindow alloc]
+    return [[NativeWidgetMacTestWindow alloc]
         initWithContentRect:ui::kWindowSizeDeterminedLater
                   styleMask:params->style_mask
                     backing:NSBackingStoreBuffered
-                      defer:NO] autorelease];
+                      defer:NO];
   }
 };
 
@@ -787,16 +788,16 @@ TEST_F(NativeWidgetMacTest, AccessibilityIntegration) {
 namespace {
 
 Widget* AttachPopupToNativeParent(NSWindow* native_parent) {
-  base::scoped_nsobject<NSView> anchor_view(
-      [[NSView alloc] initWithFrame:[[native_parent contentView] bounds]]);
-  [[native_parent contentView] addSubview:anchor_view];
+  NSView* anchor_view =
+      [[NSView alloc] initWithFrame:native_parent.contentView.bounds];
+  [native_parent.contentView addSubview:anchor_view];
 
   // Note: Don't use WidgetTest::CreateChildPlatformWidget because that makes
   // windows of TYPE_CONTROL which need a parent Widget to obtain the focus
   // manager.
   Widget* child = new Widget;
   Widget::InitParams init_params;
-  init_params.parent = anchor_view.get();
+  init_params.parent = anchor_view;
   init_params.child = true;
   init_params.type = Widget::InitParams::TYPE_POPUP;
   child->Init(std::move(init_params));
@@ -875,16 +876,16 @@ TEST_F(NativeWidgetMacTest, NonWidgetParent) {
 
 // Tests that CloseAllSecondaryWidgets behaves in various configurations.
 TEST_F(NativeWidgetMacTest, CloseAllSecondaryWidgetsValidState) {
-  NativeWidgetMacTestWindow* last_window = nil;
+  NativeWidgetMacTestWindow* __weak last_window_weak = nil;
   bool window_deallocated = false;
   @autoreleasepool {
     // First verify the behavior of CloseAllSecondaryWidgets in the normal case,
     // and how [NSApp windows] changes in response to Widget closure.
     Widget* widget = CreateWidgetWithTestWindow(
-        Widget::InitParams(Widget::InitParams::TYPE_WINDOW), &last_window);
-    last_window.deallocFlag = &window_deallocated;
+        Widget::InitParams(Widget::InitParams::TYPE_WINDOW), &last_window_weak);
+    last_window_weak.deallocFlag = &window_deallocated;
     TestWidgetObserver observer(widget);
-    EXPECT_TRUE([[NSApp windows] containsObject:last_window]);
+    EXPECT_TRUE([NSApp.windows containsObject:last_window_weak]);
     Widget::CloseAllSecondaryWidgets();
     EXPECT_TRUE(observer.widget_closed());
   }
@@ -892,14 +893,15 @@ TEST_F(NativeWidgetMacTest, CloseAllSecondaryWidgetsValidState) {
   EXPECT_TRUE(window_deallocated);
   window_deallocated = false;
 
+  NativeWidgetMacTestWindow* __strong last_window_strong = nil;
   @autoreleasepool {
     // Repeat, but now retain a reference and close the window before
     // CloseAllSecondaryWidgets().
     Widget* widget = CreateWidgetWithTestWindow(
-        Widget::InitParams(Widget::InitParams::TYPE_WINDOW), &last_window);
-    last_window.deallocFlag = &window_deallocated;
+        Widget::InitParams(Widget::InitParams::TYPE_WINDOW),
+        &last_window_strong);
+    last_window_strong.deallocFlag = &window_deallocated;
     TestWidgetObserver observer(widget);
-    [last_window retain];
     widget->CloseNow();
     EXPECT_TRUE(observer.widget_closed());
   }
@@ -907,7 +909,7 @@ TEST_F(NativeWidgetMacTest, CloseAllSecondaryWidgetsValidState) {
   EXPECT_FALSE(window_deallocated);
   @autoreleasepool {
     Widget::CloseAllSecondaryWidgets();
-    [last_window release];
+    last_window_strong = nil;
   }
   EXPECT_TRUE(window_deallocated);
 
@@ -936,10 +938,10 @@ TEST_F(NativeWidgetMacTest, CloseAllSecondaryWidgetsValidState) {
 TEST_F(NativeWidgetMacTest, NonWidgetParentLastReference) {
   bool child_dealloced = false;
   bool native_parent_dealloced = false;
-  NativeWidgetMacTestWindow* native_parent = nil;
+  NativeWidgetMacTestWindow* __weak native_parent = nil;
   @autoreleasepool {
     native_parent = MakeBorderlessNativeParent();
-    [native_parent setDeallocFlag:&native_parent_dealloced];
+    native_parent.deallocFlag = &native_parent_dealloced;
 
     NativeWidgetMacTestWindow* window;
     Widget::InitParams init_params =
@@ -947,15 +949,18 @@ TEST_F(NativeWidgetMacTest, NonWidgetParentLastReference) {
     init_params.parent = [native_parent contentView];
     init_params.bounds = gfx::Rect(0, 0, 100, 200);
     CreateWidgetWithTestWindow(std::move(init_params), &window);
-    [window setDeallocFlag:&child_dealloced];
+    window.deallocFlag = &child_dealloced;
   }
   @autoreleasepool {
     // On 10.11, closing a weak reference on the parent window works, but older
     // versions of AppKit get upset if things are released inside -[NSWindow
     // close]. This test tries to establish a situation where the last reference
     // to the child window is released inside WidgetOwnerNSWindowAdapter::
-    // OnWindowWillClose().
+    // OnWindowWillClose(). TODO(https://crbug.com/1280317): Is this still a
+    // useful test? There is no such thing as "WidgetOwnerNSWindowAdapter" any
+    // more.
     [native_parent close];
+    native_parent = nil;
   }
 
   // As of macOS 13 (Ventura), it seems that exiting the autoreleasepool
@@ -976,10 +981,10 @@ TEST_F(NativeWidgetMacTest, VisibleAfterNativeParentDeminiaturize) {
   NSWindow* native_parent = MakeBorderlessNativeParent();
   [native_parent makeKeyAndOrderFront:nil];
 
-  base::scoped_nsobject<WindowedNSNotificationObserver> miniaturizationObserver(
+  WindowedNSNotificationObserver* miniaturizationObserver =
       [[WindowedNSNotificationObserver alloc]
           initForNotification:NSWindowDidMiniaturizeNotification
-                       object:native_parent]);
+                       object:native_parent];
   [native_parent miniaturize:nil];
   [miniaturizationObserver wait];
   Widget* child = AttachPopupToNativeParent(native_parent);
@@ -988,10 +993,10 @@ TEST_F(NativeWidgetMacTest, VisibleAfterNativeParentDeminiaturize) {
   EXPECT_FALSE([native_parent isVisible]);
   EXPECT_FALSE(child->IsVisible());  // Parent is hidden so child is also.
 
-  base::scoped_nsobject<WindowedNSNotificationObserver>
-      deminiaturizationObserver([[WindowedNSNotificationObserver alloc]
+  WindowedNSNotificationObserver* deminiaturizationObserver =
+      [[WindowedNSNotificationObserver alloc]
           initForNotification:NSWindowDidDeminiaturizeNotification
-                       object:native_parent]);
+                       object:native_parent];
   [native_parent deminiaturize:nil];
   [deminiaturizationObserver wait];
   EXPECT_TRUE([native_parent isVisible]);
@@ -1241,16 +1246,15 @@ Widget* ShowChildModalWidgetAndWait(NSWindow* native_parent) {
   modal_dialog_widget->Show();
   // Visible immediately (although it animates from transparent).
   EXPECT_TRUE(modal_dialog_widget->IsVisible());
-  base::scoped_nsobject<NSAnimation> retained_animation(
-      test_api.show_animation(), base::scoped_policy::RETAIN);
-  EXPECT_TRUE(retained_animation);
-  EXPECT_TRUE([retained_animation isAnimating]);
+  NSAnimation* animation = test_api.show_animation();
+  EXPECT_TRUE(animation);
+  EXPECT_TRUE([animation isAnimating]);
 
   // Run the animation.
   show_waiter.WaitForMethod();
   EXPECT_TRUE(modal_dialog_widget->IsVisible());
   EXPECT_TRUE(show_waiter.method_called());
-  EXPECT_FALSE([retained_animation isAnimating]);
+  EXPECT_FALSE([animation isAnimating]);
   EXPECT_FALSE(test_api.show_animation());
   return modal_dialog_widget;
 }
@@ -1386,17 +1390,16 @@ TEST_F(NativeWidgetMacTest, ShowAnimationControl) {
   modal_dialog_widget->Show();
 
   EXPECT_TRUE(modal_dialog_widget->IsVisible());
-  base::scoped_nsobject<NSAnimation> retained_animation(
-      test_api.show_animation(), base::scoped_policy::RETAIN);
-  EXPECT_TRUE(retained_animation);
-  EXPECT_TRUE([retained_animation isAnimating]);
+  NSAnimation* animation = test_api.show_animation();
+  EXPECT_TRUE(animation);
+  EXPECT_TRUE([animation isAnimating]);
 
   // Hide without waiting for the animation to complete. Animation should cancel
   // and clear references from NativeWidgetNSWindowBridge.
   modal_dialog_widget->Hide();
-  EXPECT_FALSE([retained_animation isAnimating]);
+  EXPECT_FALSE([animation isAnimating]);
   EXPECT_FALSE(test_api.show_animation());
-  retained_animation.reset();
+  animation = nil;
 
   // Disable animations and show again.
   modal_dialog_widget->SetVisibilityAnimationTransition(Widget::ANIMATE_NONE);
@@ -1408,8 +1411,7 @@ TEST_F(NativeWidgetMacTest, ShowAnimationControl) {
   modal_dialog_widget->SetVisibilityAnimationTransition(Widget::ANIMATE_BOTH);
   modal_dialog_widget->Show();
   EXPECT_TRUE(test_api.show_animation());
-  retained_animation.reset(test_api.show_animation(),
-                           base::scoped_policy::RETAIN);
+  animation = test_api.show_animation();
 
   // Test whether disabling native animations also disables custom modal ones.
   modal_dialog_widget->SetVisibilityChangedAnimationsEnabled(false);
@@ -1420,13 +1422,12 @@ TEST_F(NativeWidgetMacTest, ShowAnimationControl) {
   modal_dialog_widget->SetVisibilityChangedAnimationsEnabled(true);
   modal_dialog_widget->Show();
   EXPECT_TRUE(test_api.show_animation());
-  retained_animation.reset(test_api.show_animation(),
-                           base::scoped_policy::RETAIN);
+  animation = test_api.show_animation();
 
   // Closing should also cancel the animation.
-  EXPECT_TRUE([retained_animation isAnimating]);
+  EXPECT_TRUE([animation isAnimating]);
   [native_parent close];
-  EXPECT_FALSE([retained_animation isAnimating]);
+  EXPECT_FALSE([animation isAnimating]);
 }
 
 // Tests behavior of window-modal dialogs, displayed as sheets.
@@ -1446,8 +1447,7 @@ TEST_F(NativeWidgetMacTest, MAYBE_WindowModalSheet) {
   WidgetChangeObserver widget_observer(sheet_widget);
 
   // Retain, to run checks after the Widget is torn down.
-  base::scoped_nsobject<NSWindow> sheet_window(
-      [sheet_widget->GetNativeWindow().GetNativeNSWindow() retain]);
+  NSWindow* sheet_window = sheet_widget->GetNativeWindow().GetNativeNSWindow();
 
   // Although there is no titlebar displayed, sheets need
   // NSWindowStyleMaskTitled in order to properly engage window-modal behavior
@@ -1584,9 +1584,8 @@ TEST_F(NativeWidgetMacTest, CloseWithWindowModalSheet) {
   // (If it did, it would be fine.)
   {
     Widget* sheet_widget = ShowWindowModalWidget(native_parent);
-    base::scoped_nsobject<NSWindow> sheet_window(
-        sheet_widget->GetNativeWindow().GetNativeNSWindow(),
-        base::scoped_policy::RETAIN);
+    NSWindow* sheet_window =
+        sheet_widget->GetNativeWindow().GetNativeNSWindow();
     EXPECT_TRUE([sheet_window isVisible]);
 
     WidgetChangeObserver widget_observer(sheet_widget);
@@ -1736,8 +1735,8 @@ class ParentCloseMonitor : public WidgetObserver {
     // NSWindow parent/child relationship should be established on Show() and
     // the parent should have a delegate. Retain the parent since it can't be
     // retrieved from the child while it is being destroyed.
-    parent_nswindow_.reset(
-        [[child->GetNativeWindow().GetNativeNSWindow() parentWindow] retain]);
+    parent_nswindow_ =
+        child->GetNativeWindow().GetNativeNSWindow().parentWindow;
     EXPECT_TRUE(parent_nswindow_);
     EXPECT_TRUE([parent_nswindow_ delegate]);
   }
@@ -1774,7 +1773,7 @@ class ParentCloseMonitor : public WidgetObserver {
   bool child_closed() const { return child_closed_; }
 
  private:
-  base::scoped_nsobject<NSWindow> parent_nswindow_;
+  NSWindow* __strong parent_nswindow_;
   bool child_closed_ = false;
 };
 
@@ -1812,7 +1811,7 @@ TEST_F(NativeWidgetMacTest, NoParentDelegateDuringTeardown) {
     parent->Show();
 
     ParentCloseMonitor monitor(parent.get());
-    parent.reset();
+    parent = nil;
     EXPECT_TRUE(monitor.child_closed());
   }
 }
@@ -1999,8 +1998,8 @@ TEST_F(NativeWidgetMacTest, ChangeFocusOnChangeFirstResponder) {
   widget->GetRootView()->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   widget->Show();
 
-  base::scoped_nsobject<NSView> child_view([[FocusableTestNSView alloc]
-      initWithFrame:[widget->GetNativeView().GetNativeNSView() bounds]]);
+  NSView* child_view = [[FocusableTestNSView alloc]
+      initWithFrame:[widget->GetNativeView().GetNativeNSView() bounds]];
   [widget->GetNativeView().GetNativeNSView() addSubview:child_view];
   EXPECT_TRUE([child_view acceptsFirstResponder]);
   EXPECT_TRUE(widget->GetRootView()->IsFocusable());
@@ -2143,7 +2142,7 @@ TEST_F(NativeWidgetMacTest, SetSizeDoesntChangeOrigin) {
   parent->CloseNow();
 }
 
-// Tests that tooltip widgets get the correct accessibilty role so that they're
+// Tests that tooltip widgets get the correct accessibility role so that they're
 // not announced as windows by VoiceOver.
 TEST_F(NativeWidgetMacTest, AccessibilityRole) {
   {
@@ -2235,7 +2234,7 @@ class NativeWidgetMacViewsOrderTest : public WidgetTest {
     NativeHostHolder(const NativeHostHolder&) = delete;
     NativeHostHolder& operator=(const NativeHostHolder&) = delete;
 
-    NSView* view() const { return view_.get(); }
+    NSView* view() const { return view_; }
     NativeViewHost* host() const { return host_; }
 
    private:
@@ -2243,7 +2242,7 @@ class NativeWidgetMacViewsOrderTest : public WidgetTest {
         : host_(host), view_([[NSView alloc] init]) {}
 
     const raw_ptr<NativeViewHost, DanglingUntriaged> host_;
-    base::scoped_nsobject<NSView> view_;
+    NSView* __strong view_;
   };
 
   // testing::Test:
@@ -2252,8 +2251,8 @@ class NativeWidgetMacViewsOrderTest : public WidgetTest {
 
     widget_ = CreateTopLevelPlatformWidget();
 
-    starting_subviews_.reset(
-        [[widget_->GetNativeView().GetNativeNSView() subviews] copy]);
+    starting_subviews_ =
+        [widget_->GetNativeView().GetNativeNSView().subviews copy];
 
     native_host_parent_ = new View();
     widget_->GetContentsView()->AddChildView(native_host_parent_.get());
@@ -2285,7 +2284,7 @@ class NativeWidgetMacViewsOrderTest : public WidgetTest {
   raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
   raw_ptr<View, DanglingUntriaged> native_host_parent_ = nullptr;
   std::vector<std::unique_ptr<NativeHostHolder>> hosts_;
-  base::scoped_nsobject<NSArray<NSView*>> starting_subviews_;
+  NSArray<NSView*>* __strong starting_subviews_;
 };
 
 // Test that NativeViewHost::Attach()/Detach() method saves the NativeView
@@ -2338,7 +2337,7 @@ TEST_F(NativeWidgetMacViewsOrderTest, ReorderViews) {
 
 // Test that unassociated native views stay on top after reordering.
 TEST_F(NativeWidgetMacViewsOrderTest, UnassociatedViewsIsAbove) {
-  base::scoped_nsobject<NSView> child_view([[NSView alloc] init]);
+  NSView* child_view = [[NSView alloc] init];
   [GetContentNativeView() addSubview:child_view];
   EXPECT_NSEQ(
       [GetContentNativeView() subviews],
@@ -2505,7 +2504,6 @@ TEST_F(NativeWidgetMacTest, FocusManagerChangeOnReparentNativeView) {
       (*[NativeWidgetMacTestWindow runLoop])->Quit();
     }
   }
-  [super dealloc];
 }
 
 - (void)invalidateShadow {

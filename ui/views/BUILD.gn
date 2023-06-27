@@ -1170,22 +1170,6 @@ source_set("test_support") {
   }
 }
 
-if (is_mac) {
-  # TODO(https://crbug.com/1280317): Merge back into views_unittests once all
-  # .mm files are ARCed.
-  source_set("views_unittests_arc") {
-    testonly = true
-    sources = [ "widget/ax_native_widget_mac_unittest.mm" ]
-    configs += [ "//build/config/compiler:enable_arc" ]
-    deps = [
-      ":views",
-      "//testing/gtest",
-      "//ui/accessibility",
-      "//ui/views:test_support",
-    ]
-  }
-}
-
 test("views_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
@@ -1423,6 +1407,7 @@ test("views_unittests") {
       "controls/native/native_view_host_mac_unittest.mm",
       "controls/tabbed_pane/tabbed_pane_accessibility_mac_unittest.mm",
       "view_unittest_mac.mm",
+      "widget/ax_native_widget_mac_unittest.mm",
       "widget/native_widget_mac_unittest.mm",
       "widget/sublevel_manager_mac_unittest.mm",
     ]
@@ -1430,8 +1415,9 @@ test("views_unittests") {
     # views_unittests not yet compiling on Mac. http://crbug.com/378134
     sources -= [ "controls/native/native_view_host_unittest.cc" ]
 
+    configs += [ "//build/config/compiler:enable_arc" ]
+
     public_deps = [
-      ":views_unittests_arc",
       "//components/remote_cocoa/app_shim",
       "//ui/accelerated_widget_mac",
     ]

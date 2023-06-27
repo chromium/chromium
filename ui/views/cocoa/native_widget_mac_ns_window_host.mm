@@ -368,12 +368,12 @@ NativeWidgetMacNSWindowHost::GetNSWindowMojo() const {
 }
 
 void NativeWidgetMacNSWindowHost::CreateInProcessNSWindowBridge(
-    base::scoped_nsobject<NativeWidgetMacNSWindow> window) {
-  in_process_ns_window_ = window;
+    NativeWidgetMacNSWindow* window) {
+  in_process_ns_window_.reset(window, base::scoped_policy::RETAIN);
   in_process_ns_window_bridge_ =
       std::make_unique<remote_cocoa::NativeWidgetNSWindowBridge>(
           widget_id_, this, this, text_input_host_.get());
-  in_process_ns_window_bridge_->SetWindow(window);
+  in_process_ns_window_bridge_->SetWindow(in_process_ns_window_);
 }
 
 void NativeWidgetMacNSWindowHost::CreateRemoteNSWindow(

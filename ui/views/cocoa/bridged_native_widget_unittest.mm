@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 
 #import <Cocoa/Cocoa.h>
 #include <objc/runtime.h>
 
 #include <memory>
+#include <string>
 
 #include "base/functional/bind.h"
 #import "base/mac/foundation_util.h"
 #import "base/mac/mac_util.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -41,6 +41,10 @@
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using base::ASCIIToUTF16;
 using base::SysNSStringToUTF8;
@@ -127,7 +131,7 @@ NSArray* const kDeleteActions = @[
 // This omits @"insertText:":. See BridgedNativeWidgetTest.NilTextInputClient.
 NSArray* const kMiscActions = @[ @"cancelOperation:", @"transpose:", @"yank:" ];
 
-// Empty range shortcut for readibility.
+// Empty range shortcut for readability.
 NSRange EmptyRange() {
   return NSMakeRange(NSNotFound, 0);
 }
@@ -259,7 +263,7 @@ NSTextInputContext* g_fake_current_input_context = nullptr;
 @end
 
 @implementation MockFindPasteboard {
-  base::scoped_nsobject<NSString> _text;
+  NSString* __strong _text;
 }
 
 + (FindPasteboard*)sharedInstance {
@@ -273,7 +277,7 @@ NSTextInputContext* g_fake_current_input_context = nullptr;
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _text.reset([[NSString alloc] init]);
+    _text = @"";
   }
   return self;
 }
@@ -283,7 +287,7 @@ NSTextInputContext* g_fake_current_input_context = nullptr;
 }
 
 - (void)setFindText:(NSString*)newText {
-  _text.reset([newText copy]);
+  _text = [newText copy];
 }
 
 - (NSString*)findText {
@@ -299,7 +303,7 @@ NSTextInputContext* g_fake_current_input_context = nullptr;
 // An NSTextStorage subclass for our DummyTextView, to work around test
 // failures with macOS 13. See crbug.com/1446817 .
 @interface DummyTextStorage : NSTextStorage {
-  base::scoped_nsobject<NSMutableAttributedString> _backingStore;
+  NSMutableAttributedString* __strong _backingStore;
 }
 @end
 
@@ -308,7 +312,7 @@ NSTextInputContext* g_fake_current_input_context = nullptr;
 - (id)init {
   self = [super init];
   if (self) {
-    _backingStore.reset([[NSMutableAttributedString alloc] init]);
+    _backingStore = [[NSMutableAttributedString alloc] init];
   }
   return self;
 }
@@ -400,12 +404,11 @@ class MockNativeWidgetMac : public NativeWidgetMac {
   void InitNativeWidget(Widget::InitParams params) override {
     ownership_ = params.ownership;
 
-    base::scoped_nsobject<NativeWidgetMacNSWindow> window(
-        [[NativeWidgetMacNSWindowForTesting alloc]
-            initWithContentRect:ui::kWindowSizeDeterminedLater
-                      styleMask:NSWindowStyleMaskBorderless
-                        backing:NSBackingStoreBuffered
-                          defer:NO]);
+    NativeWidgetMacNSWindow* window = [[NativeWidgetMacNSWindowForTesting alloc]
+        initWithContentRect:ui::kWindowSizeDeterminedLater
+                  styleMask:NSWindowStyleMaskBorderless
+                    backing:NSBackingStoreBuffered
+                      defer:NO];
     GetNSWindowHost()->CreateInProcessNSWindowBridge(window);
     if (auto* parent =
             NativeWidgetMacNSWindowHost::GetFromNativeView(params.parent)) {
@@ -607,11 +610,11 @@ class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,
 
   std::unique_ptr<views::View> view_;
 
-  // Weak. Owned by bridge().
-  BridgedContentView* ns_view_;
+  // Owned by bridge().
+  BridgedContentView* __weak ns_view_;
 
   // An NSTextView which helps set the expectations for our tests.
-  base::scoped_nsobject<NSTextView> dummy_text_view_;
+  NSTextView* __strong dummy_text_view_;
 
   HandleKeyEventCallback handle_key_event_callback_;
 
@@ -660,8 +663,8 @@ Textfield* BridgedNativeWidgetTest::InstallTextField(
 
   // Initialize the dummy text view. Initializing this with NSZeroRect causes
   // weird NSTextView behavior on OSX 10.9.
-  dummy_text_view_.reset(
-      [[DummyTextView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)]);
+  dummy_text_view_ =
+      [[DummyTextView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
   [dummy_text_view_ setString:SysUTF16ToNSString(text)];
   return textfield;
 }
@@ -734,7 +737,7 @@ void BridgedNativeWidgetTest::SetUp() {
   BridgedNativeWidgetTestBase::SetUp();
 
   view_ = std::make_unique<views::internal::RootView>(widget_.get());
-  base::scoped_nsobject<NSWindow> window([bridge_window() retain]);
+  NSWindow* window = bridge_window();
 
   // The delegate should exist before setting the root view.
   EXPECT_TRUE([window delegate]);
@@ -906,8 +909,8 @@ void BridgedNativeWidgetTest::TestEditingCommands(NSArray* selectors) {
 // these tests, the NSView bridge is a contentView, at the root. These mimic
 // what TEST_VIEW usually does.
 TEST_F(BridgedNativeWidgetTest, BridgedNativeWidgetTest_TestViewAddRemove) {
-  base::scoped_nsobject<BridgedContentView> view([bridge()->ns_view() retain]);
-  base::scoped_nsobject<NSWindow> window([bridge_window() retain]);
+  BridgedContentView* view = bridge()->ns_view();
+  NSWindow* window = bridge_window();
   EXPECT_NSEQ([window contentView], view);
   EXPECT_NSEQ(window, [view window]);
 
@@ -1761,12 +1764,12 @@ TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorPinyinSelectWord) {
   // Pinyin changes candidate word on this sequence of keys without changing the
   // composition text. At the end of this sequence, the word "啊" should be
   // selected.
-  const ui::KeyboardCode key_seqence[] = {ui::VKEY_NEXT,  ui::VKEY_PRIOR,
-                                          ui::VKEY_RIGHT, ui::VKEY_DOWN,
-                                          ui::VKEY_LEFT,  ui::VKEY_UP};
+  const ui::KeyboardCode key_sequence[] = {ui::VKEY_NEXT,  ui::VKEY_PRIOR,
+                                           ui::VKEY_RIGHT, ui::VKEY_DOWN,
+                                           ui::VKEY_LEFT,  ui::VKEY_UP};
 
   g_fake_interpret_key_events = &handle_candidate_select_in_ime;
-  for (auto key : key_seqence) {
+  for (auto key : key_sequence) {
     [ns_view_ keyDown:VkeyKeyDown(key)];
     EXPECT_EQ(base::SysNSStringToUTF16(@"ā"),
               textfield->GetText());  // No change.

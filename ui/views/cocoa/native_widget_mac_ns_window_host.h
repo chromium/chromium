@@ -69,7 +69,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   static NativeWidgetMacNSWindowHost* GetFromNativeView(gfx::NativeView view);
 
   // Key used to bind the content NSView to the widget when it becomes
-  // a child widget.
+  // a child widget. NOTE: This is unowned because it is owned by another
+  // widget; use a __bridge cast to convert to and from NSView*.
   static const char kMovedContentNSView[];
 
   // Unique integer id handles are used to bridge between the
@@ -135,8 +136,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   }
 
   // Create and set the bridge object to be in this process.
-  void CreateInProcessNSWindowBridge(
-      base::scoped_nsobject<NativeWidgetMacNSWindow> window);
+  void CreateInProcessNSWindowBridge(NativeWidgetMacNSWindow* window);
 
   // Create and set the bridge object to be potentially in another process.
   void CreateRemoteNSWindow(

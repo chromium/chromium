@@ -2,27 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
-#import "base/task/single_thread_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
 #import "ui/views/controls/menu/menu_runner_impl_cocoa.h"
 
 #import <Cocoa/Cocoa.h>
 
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #import "testing/gtest_mac.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/cocoa/menu_controller.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/events/event_utils.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/views/controls/menu/menu_cocoa_watcher_mac.h"
 #include "ui/views/controls/menu/menu_runner_impl_adapter.h"
 #include "ui/views/test/views_test_base.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace views::test {
 namespace {
@@ -241,8 +244,7 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
 
   void ModelDeleteThenSelectItemCallback() {
     // AppKit may retain a reference to the NSMenu.
-    base::scoped_nsobject<NSMenu> native_menu(GetNativeNSMenu(),
-                                              base::scoped_policy::RETAIN);
+    NSMenu* native_menu = GetNativeNSMenu();
 
     // A View showing a menu typically owns a MenuRunner unique_ptr, which will
     // will be destroyed (releasing the MenuRunnerImpl) alongside the MenuModel.
@@ -260,7 +262,7 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
       return;
     }
 
-    EXPECT_TRUE(native_menu.get());
+    EXPECT_TRUE(native_menu);
 
     // Simulate clicking the item using its accelerator.
     NSEvent* accelerator = cocoa_test_event_utils::KeyEventWithKeyCode(
