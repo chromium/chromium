@@ -11420,6 +11420,10 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
 
 void RenderFrameHostImpl::BindVideoEncoderMetricsProviderReceiver(
     mojo::PendingReceiver<media::mojom::VideoEncoderMetricsProvider> receiver) {
+  // Ensure the frame is not in the prerendering state as we don't record UKM
+  // while prerendering. This is ensured as the BrowserInterfaceBinders defers
+  // binding until the frame's activation.
+  CHECK(!IsInLifecycleState(LifecycleState::kPrerendering));
   media::VideoEncoderMetricsProvider::Create(GetPageUkmSourceId(),
                                              std::move(receiver));
 }
