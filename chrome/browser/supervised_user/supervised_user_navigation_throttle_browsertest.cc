@@ -86,8 +86,9 @@ class RenderFrameTracker : public content::WebContentsObserver {
   void FrameDeleted(int frame_tree_node_id) override;
 
   content::RenderFrameHost* GetHost(int frame_id) {
-    if (!base::Contains(render_frame_hosts_, frame_id))
+    if (!base::Contains(render_frame_hosts_, frame_id)) {
       return nullptr;
+    }
     return render_frame_hosts_[frame_id];
   }
 
@@ -102,8 +103,9 @@ void RenderFrameTracker::RenderFrameHostChanged(
 }
 
 void RenderFrameTracker::FrameDeleted(int frame_tree_node_id) {
-  if (!base::Contains(render_frame_hosts_, frame_tree_node_id))
+  if (!base::Contains(render_frame_hosts_, frame_tree_node_id)) {
     return;
+  }
 
   render_frame_hosts_.erase(frame_tree_node_id);
 }
@@ -137,8 +139,9 @@ void InnerWebContentsAttachedWaiter::InnerWebContentsAttached(
 }
 
 void InnerWebContentsAttachedWaiter::WaitForInnerWebContentsAttached() {
-  if (web_contents()->GetInnerWebContents().size() > 0u)
+  if (web_contents()->GetInnerWebContents().size() > 0u) {
     return;
+  }
   run_loop_.Run();
 }
 
@@ -175,19 +178,22 @@ NavigationFinishedWaiter::NavigationFinishedWaiter(
       url_(url) {}
 
 void NavigationFinishedWaiter::Wait() {
-  if (did_finish_)
+  if (did_finish_) {
     return;
+  }
   run_loop_.Run();
 }
 
 void NavigationFinishedWaiter::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted())
+  if (!navigation_handle->HasCommitted()) {
     return;
+  }
 
   if (navigation_handle->GetFrameTreeNodeId() != frame_id_ ||
-      navigation_handle->GetURL() != url_)
+      navigation_handle->GetURL() != url_) {
     return;
+  }
 
   did_finish_ = true;
   run_loop_.Quit();
@@ -380,9 +386,9 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
                        AllowFamiliesDotGoogleDotComAccess) {
   // Simulate families.google.com being set in the blocklist.
   BlockHost(kFamiliesHost);
-  // TODO(https://crbug.com/1174695): This test is relying on a production
-  // service being available.  It should be probably be a TAST test instead of a
-  // browsertest.
+
+  // A production endpoint is used here because a Tast test would be too
+  // expensive to be used for this specific case.
   const GURL kFamiliesDotGoogleDotComUrl =
       GURL("https://families.google.com/families");
 
@@ -474,8 +480,9 @@ std::vector<int> SupervisedUserIframeFilterTest::GetBlockedFrames() {
   std::vector<int> blocked_frames;
   blocked_frames.reserve(interstitials.size());
 
-  for (const auto& elem : interstitials)
+  for (const auto& elem : interstitials) {
     blocked_frames.push_back(elem.first);
+  }
 
   return blocked_frames;
 }
@@ -574,8 +581,9 @@ bool SupervisedUserIframeFilterTest::RunCommandAndGetBooleanFromFrame(
       SupervisedUserNavigationObserver::FromWebContents(tab);
   auto& interstitials = navigation_observer->interstitials_for_test();
 
-  if (!base::Contains(interstitials, frame_id))
+  if (!base::Contains(interstitials, frame_id)) {
     return false;
+  }
 
   auto* render_frame_host = tracker()->GetHost(frame_id);
   DCHECK(render_frame_host->IsRenderFrameLive());
