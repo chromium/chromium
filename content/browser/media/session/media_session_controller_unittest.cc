@@ -139,8 +139,6 @@ class TestMediaPlayer : public media::mojom::MediaPlayer {
 
   void RequestEnterPictureInPicture() override {}
 
-  void RequestExitPictureInPicture() override {}
-
   void RequestMute(bool mute) override {}
 
   void SetVolumeMultiplier(double multiplier) override {

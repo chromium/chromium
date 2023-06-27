@@ -106,14 +106,6 @@ void MediaSessionController::OnEnterPictureInPicture(int player_id) {
       ->RequestEnterPictureInPicture();
 }
 
-void MediaSessionController::OnExitPictureInPicture(int player_id) {
-  DCHECK_EQ(player_id_, player_id);
-
-  web_contents_->media_web_contents_observer()
-      ->GetMediaPlayerRemote(id_)
-      ->RequestExitPictureInPicture();
-}
-
 void MediaSessionController::OnSetAudioSinkId(
     int player_id,
     const std::string& raw_device_id) {

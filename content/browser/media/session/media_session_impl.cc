@@ -1041,7 +1041,8 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
   info->is_sensitive = web_contents()->GetBrowserContext()->IsOffTheRecord();
 
   info->picture_in_picture_state =
-      web_contents()->HasPictureInPictureVideo()
+      web_contents()->HasPictureInPictureVideo() ||
+              web_contents()->HasPictureInPictureDocument()
           ? media_session::mojom::MediaPictureInPictureState::
                 kInPictureInPicture
           : media_session::mojom::MediaPictureInPictureState::
@@ -1199,17 +1200,7 @@ void MediaSessionImpl::EnterPictureInPicture() {
 }
 
 void MediaSessionImpl::ExitPictureInPicture() {
-  if (ShouldRouteAction(
-          media_session::mojom::MediaSessionAction::kExitPictureInPicture)) {
-    DidReceiveAction(
-        media_session::mojom::MediaSessionAction::kExitPictureInPicture);
-    return;
-  }
-
-  // There should be one and only one player when we exit picture-in-picture.
-  DCHECK_EQ(normal_players_.size(), 1u);
-  normal_players_.begin()->first.observer->OnExitPictureInPicture(
-      normal_players_.begin()->first.player_id);
+  static_cast<WebContentsImpl*>(web_contents())->ExitPictureInPicture();
 }
 
 void MediaSessionImpl::SetAudioSinkId(const absl::optional<std::string>& id) {

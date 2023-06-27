@@ -200,7 +200,6 @@ class CORE_EXPORT HTMLVideoElement final
   // Video-specific overrides for part of the media::mojom::MediaPlayer
   // interface, fully implemented in the parent class HTMLMediaElement.
   void RequestEnterPictureInPicture() final;
-  void RequestExitPictureInPicture() final;
   void RequestMediaRemoting() final;
 
   void DidMoveToNewDocument(Document& old_document) override;

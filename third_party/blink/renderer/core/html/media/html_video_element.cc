@@ -365,11 +365,6 @@ void HTMLVideoElement::RequestEnterPictureInPicture() {
       .EnterPictureInPicture(this, /*promise=*/nullptr);
 }
 
-void HTMLVideoElement::RequestExitPictureInPicture() {
-  PictureInPictureController::From(GetDocument())
-      .ExitPictureInPicture(this, nullptr);
-}
-
 void HTMLVideoElement::RequestMediaRemoting() {
   GetWebMediaPlayer()->RequestMediaRemoting();
 }
