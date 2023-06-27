@@ -27173,12 +27173,6 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="44" label="Unknown owner no key, no policy"/>
 </enum>
 
-<enum name="DeviceSettingsFeatureFlagsMigrationStatus">
-  <int value="0" label="No feature flags present"/>
-  <int value="1" label="Migration already completed previously"/>
-  <int value="2" label="Migration has been performed"/>
-</enum>
-
 <enum name="DeviceSettingsStatus">
   <int value="0" label="STORE_SUCCESS"/>
   <int value="1" label="STORE_KEY_UNAVAILABLE"/>

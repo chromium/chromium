@@ -926,18 +926,6 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
-<histogram name="ChromeOS.DeviceSettings.FeatureFlagsMigration"
-    enum="DeviceSettingsFeatureFlagsMigrationStatus" expires_after="2022-04-10">
-  <owner>mnissler@chromium.org</owner>
-  <owner>src/chrome/browser/ash/settings/OWNERS</owner>
-  <summary>
-    Migration status for Chrome OS feature flags configuration in device
-    settings. This is intended to track migration progress in the field, so the
-    migration code can be removed when the old approach of storing bare flags is
-    no longer relevant in the field.
-  </summary>
-</histogram>
-
 <histogram
     name="ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.{ProbeErrorSourceStruct}"
     enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2024-06-15">
