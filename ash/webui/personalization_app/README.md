@@ -20,7 +20,7 @@ Personalization App takes a layered approach to testing. There are C++ unit
 tests, javascript component browser tests, and javascript full-app browsertests.
 
 * mojom handler unit tests
-  * `//chrome/browser/ash/web_applications/personalization_app/*unittest.cc`
+  * `//chrome/browser/ash/system_web_apps/apps/personalization_app/*unittest.cc`
   * `unit_tests --gtest_filter=*PersonalizationApp*`
   * primarily to test behavior of mojom handlers
   * heavily mocked out ash environment

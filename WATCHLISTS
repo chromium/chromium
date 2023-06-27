@@ -199,7 +199,7 @@
                   '|chromeos/ash/services/libassistant/'\
                   '|chromeos/services/assistant/'\
                   '|chrome/browser/ash/wallpaper_handlers/'\
-                  '|chrome/browser/ash/web_applications/personalization_app/'\
+                  '|chrome/browser/ash/system_web_apps/apps/personalization_app/'\
                   '|chrome/browser/resources/ash/settings/ambient_mode_page/'\
                   '|chrome/browser/ui/ash/.*wallpaper.*/'\
                   '|chrome/browser/ui/ash/ambient/'\
@@ -697,7 +697,7 @@
     'chrome_camera_app': {
       'filepath': # Exclude string translation .xtb files.
                   'ash/webui/camera_app_ui/.*$(?<!\.xtb)'\
-                  '|chrome/browser/ash/web_applications/camera_app'\
+                  '|chrome/browser/ash/system_web_apps/apps/camera_app'\
                   '|components/arc/intent_helper/control_camera_app_delegate.h'\
                   '|components/arc/mojom/camera_intent.mojom'\
                   '|media/capture/video/chromeos/camera_app'\
@@ -789,7 +789,7 @@
     },
     'chromeos_media_app': {
       'filepath': 'ash/webui/media_app_ui/|'\
-                  'chrome/browser/ash/web_applications/media_app/',
+                  'chrome/browser/ash/system_web_apps/apps/media_app/',
     },
     'chromeos_net': {
       'filepath': 'ash/system/network/|'\
@@ -1070,8 +1070,8 @@
     },
     'face_ml': {
       'filepath': 'ash/webui/face_ml_app_ui/|' \
-                  'chrome/browser/ash/web_applications/face_ml_system_web_app_info.*|' \
-                  'chrome/browser/ash/web_applications/face_ml/'
+                  'chrome/browser/ash/system_web_apps/apps/face_ml_system_web_app_info.*|' \
+                  'chrome/browser/ash/system_web_apps/apps/face_ml/'
     },
     'feed': {
       'filepath': 'chrome/android/feed|' \
