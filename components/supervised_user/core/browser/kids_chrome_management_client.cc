@@ -312,34 +312,49 @@ void KidsChromeManagementClient::OnAccessTokenFetchComplete(
     return;
   }
 
-  std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
-      network::SimpleURLLoader::Create(std::move(req->resource_request),
-                                       req->traffic_annotation);
+  requests_loaders_[req] = network::SimpleURLLoader::Create(
+      std::move(req->resource_request), req->traffic_annotation);
+  network::SimpleURLLoader* simple_url_loader = requests_loaders_[req].get();
 
   simple_url_loader->AttachStringForUpload(request_data,
                                            kClassifyUrlDataContentType);
 
-  auto* const simple_url_loader_ptr = simple_url_loader.get();
-  simple_url_loader_ptr->DownloadToString(
+  // `this` is guaranteed to exist when the callback is called, because the
+  // KidsChromeManagementClient class owns `simple_url_loader`, and deleting the
+  // the simple_url_loader during the request will cause the callback not to be
+  // called.
+  // TODO(https://crbug.com/1444748): Write a test making sure that this cannot
+  // cause a UAF. The test needs to:
+  // - Start a ClassifyURL request.
+  // - Start a loader and pause it before completion.
+  // - Kill the KidsChromeManagementClient. Note that this will not work unless
+  //   DCHECKs are turned off, because we otherwise check that callback_ has
+  //   been run.
+  simple_url_loader->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&KidsChromeManagementClient::OnSimpleLoaderComplete,
-                     base::UnsafeDanglingUntriaged(this), it,
-                     std::move(simple_url_loader), token_info),
+                     base::Unretained(this), it, token_info),
       /*max_body_size*/ 128);
 }
 
 void KidsChromeManagementClient::OnSimpleLoaderComplete(
     KidsChromeRequestList::iterator it,
-    std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
     signin::AccessTokenInfo token_info,
     std::unique_ptr<std::string> response_body) {
   int response_code = -1;
+
+  KidsChromeManagementRequest* req = it->get();
+
+  // Get back the SimpleURLLoader from the stored map.
+  CHECK(requests_loaders_[req]);
+  std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
+      std::move(requests_loaders_[req]);
+  requests_loaders_.erase(req);
 
   if (simple_url_loader->ResponseInfo() &&
       simple_url_loader->ResponseInfo()->headers) {
     response_code = simple_url_loader->ResponseInfo()->headers->response_code();
 
-    KidsChromeManagementRequest* req = it->get();
     // Handle first HTTP_UNAUTHORIZED response by removing access token and
     // restarting the request from the beginning (fetching access token).
     if (response_code == net::HTTP_UNAUTHORIZED && !req->access_token_expired) {
