@@ -77,6 +77,13 @@ class TestServiceWorkerContextObserver
 
   ~TestServiceWorkerContextObserver() override = default;
 
+  // Sets the ID of an already-running worker. This is handy so this observer
+  // can be instantiated after the extension has already started.
+  // NOTE: If we move this class somewhere more central, we could streamline
+  // this a bit by having it check for the state of the worker during
+  // construction.
+  void SetRunningId(int64_t version_id) { running_version_id_ = version_id; }
+
   void WaitForWorkerStart() {
     started_run_loop_.Run();
     EXPECT_TRUE(running_version_id_.has_value());
@@ -126,17 +133,16 @@ class TestServiceWorkerContextObserver
   GURL extension_url_;
 };
 
-class ServiceWorkerLifetimeStrongKeepaliveBrowsertest
-    : public ExtensionApiTest {
+class ServiceWorkerLifetimeKeepaliveBrowsertest : public ExtensionApiTest {
  public:
-  ServiceWorkerLifetimeStrongKeepaliveBrowsertest() = default;
+  ServiceWorkerLifetimeKeepaliveBrowsertest() = default;
 
-  ServiceWorkerLifetimeStrongKeepaliveBrowsertest(
-      const ServiceWorkerLifetimeStrongKeepaliveBrowsertest&) = delete;
-  ServiceWorkerLifetimeStrongKeepaliveBrowsertest& operator=(
-      const ServiceWorkerLifetimeStrongKeepaliveBrowsertest&) = delete;
+  ServiceWorkerLifetimeKeepaliveBrowsertest(
+      const ServiceWorkerLifetimeKeepaliveBrowsertest&) = delete;
+  ServiceWorkerLifetimeKeepaliveBrowsertest& operator=(
+      const ServiceWorkerLifetimeKeepaliveBrowsertest&) = delete;
 
-  ~ServiceWorkerLifetimeStrongKeepaliveBrowsertest() override = default;
+  ~ServiceWorkerLifetimeKeepaliveBrowsertest() override = default;
 
   void TriggerTimeoutAndCheckActive(content::ServiceWorkerContext* context,
                                     int64_t version_id) {
@@ -150,8 +156,8 @@ class ServiceWorkerLifetimeStrongKeepaliveBrowsertest
         content::TriggerTimeoutAndCheckRunningState(context, version_id));
   }
 
-  base::SimpleTestTickClock tick_clock_opener;
-  base::SimpleTestTickClock tick_clock_receiver;
+  base::SimpleTestTickClock tick_clock_opener_;
+  base::SimpleTestTickClock tick_clock_receiver_;
 };
 
 // The following tests are only relevant on ash.
@@ -160,7 +166,7 @@ class ServiceWorkerLifetimeStrongKeepaliveBrowsertest
 // Loads two extensions that open a persistent port connection between each
 // other and tests that their service worker will stop after kRequestTimeout (5
 // minutes).
-IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
                        ServiceWorkersTimeOutWithoutPolicy) {
   content::ServiceWorkerContext* context =
       GetServiceWorkerContext(browser()->profile());
@@ -188,13 +194,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
 
   // Advance clock and check that the receiver service worker stopped.
   content::AdvanceClockAfterRequestTimeout(context, service_worker_receiver_id,
-                                           &tick_clock_receiver);
+                                           &tick_clock_receiver_);
   TriggerTimeoutAndCheckStopped(context, service_worker_receiver_id);
   sw_observer_receiver_extension.WaitForWorkerStop();
 
   // Advance clock and check that the opener service worker stopped.
   content::AdvanceClockAfterRequestTimeout(context, service_worker_opener_id,
-                                           &tick_clock_opener);
+                                           &tick_clock_opener_);
   TriggerTimeoutAndCheckStopped(context, service_worker_opener_id);
   sw_observer_opener_extension.WaitForWorkerStop();
 }
@@ -209,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
 #define MAYBE_ServiceWorkersDoNotTimeOutWithPolicy \
   ServiceWorkersDoNotTimeOutWithPolicy
 #endif
-IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
                        MAYBE_ServiceWorkersDoNotTimeOutWithPolicy) {
   base::Value::List urls;
   // Both extensions receive extended lifetime.
@@ -247,12 +253,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
 
   // Advance clock and check that the receiver service worker did not stop.
   content::AdvanceClockAfterRequestTimeout(context, service_worker_receiver_id,
-                                           &tick_clock_receiver);
+                                           &tick_clock_receiver_);
   TriggerTimeoutAndCheckActive(context, service_worker_receiver_id);
 
   // Advance clock and check that the opener service worker did not stop.
   content::AdvanceClockAfterRequestTimeout(context, service_worker_opener_id,
-                                           &tick_clock_opener);
+                                           &tick_clock_opener_);
   TriggerTimeoutAndCheckActive(context, service_worker_opener_id);
 
   // Clean up: stop running service workers before test end.
@@ -271,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
 // port connection. If the port is closed (by one of the service workers
 // stopping), the other service worker will also stop, even if it received an
 // extended lifetime.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
                        ServiceWorkersTimeOutWhenOnlyOneHasExtendedLifetime) {
   base::Value::List urls;
   // Opener extension will receive extended lifetime because it connects to a
@@ -311,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
 
   // Advance clock and check that the receiver service worker stopped.
   content::AdvanceClockAfterRequestTimeout(context, service_worker_receiver_id,
-                                           &tick_clock_receiver);
+                                           &tick_clock_receiver_);
   TriggerTimeoutAndCheckStopped(context, service_worker_receiver_id);
 
   // Wait for the receiver SW to be closed in order for the port to be
@@ -323,14 +329,14 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
 
   // Advance clock and check that the opener service worker stopped.
   content::AdvanceClockAfterRequestTimeout(context, service_worker_opener_id,
-                                           &tick_clock_opener);
+                                           &tick_clock_opener_);
   TriggerTimeoutAndCheckStopped(context, service_worker_opener_id);
   sw_observer_opener_extension.WaitForWorkerStop();
 }
 
 // Tests that the service workers will stop if both extensions are allowlisted
 // via policy and the port is disconnected.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
                        ServiceWorkersTimeOutWhenPortIsDisconnected) {
   base::Value::List urls;
   // Both extensions receive extended lifetime.
@@ -381,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
 
   // Advance clock and check that the receiver service worker stopped.
   content::AdvanceClockAfterRequestTimeout(context, service_worker_receiver_id,
-                                           &tick_clock_receiver);
+                                           &tick_clock_receiver_);
   TriggerTimeoutAndCheckStopped(context, service_worker_receiver_id);
 
   // Wait for the receiver SW to be closed.
@@ -389,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
 
   // Advance clock and check that the opener service worker stopped.
   content::AdvanceClockAfterRequestTimeout(context, service_worker_opener_id,
-                                           &tick_clock_opener);
+                                           &tick_clock_opener_);
   TriggerTimeoutAndCheckStopped(context, service_worker_opener_id);
   sw_observer_opener_extension.WaitForWorkerStop();
 }
@@ -398,8 +404,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
 
 // Tests that certain API functions can keep the service worker alive
 // indefinitely.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
-                       StrongKeepalivesForCertainExtensionFunctions) {
+IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
+                       KeepalivesForCertainExtensionFunctions) {
   static constexpr char kManifest[] =
       R"({
            "name": "test extension",
@@ -450,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
   // extension worker alive indefinitely, advancing the clock and triggering the
   // timeout should not result in a worker kill.
   content::AdvanceClockAfterRequestTimeout(context, version_id,
-                                           &tick_clock_opener);
+                                           &tick_clock_opener_);
   TriggerTimeoutAndCheckActive(context, version_id);
 
   {
@@ -466,8 +472,65 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeStrongKeepaliveBrowsertest,
   // Advance the timer again. This should result in the worker being stopped,
   // since the permissions.request() function call is now completed.
   content::AdvanceClockAfterRequestTimeout(context, version_id,
-                                           &tick_clock_opener);
+                                           &tick_clock_opener_);
   TriggerTimeoutAndCheckStopped(context, version_id);
+}
+
+// Test the flow of an extension function resolving after an extension service
+// worker has timed out and been terminated.
+// Regression test for https://crbug.com/1453534.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerLifetimeKeepaliveBrowsertest,
+                       ExtensionFunctionGetsResolvedAfterWorkerTermination) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "test extension",
+           "manifest_version": 3,
+           "background": {"service_worker": "background.js"},
+           "version": "0.1"
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "// blank");
+
+  // Load up the extension and wait for the worker to start.
+  service_worker_test_utils::TestRegistrationObserver registration_observer(
+      profile());
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  // We explicitly wait for the worker to be activated. Otherwise, the
+  // activation event might still be running when we advance the timer, causing
+  // the worker to be killed for the activation event timing out.
+  registration_observer.WaitForWorkerActivated();
+  int64_t version_id = registration_observer.GetServiceWorkerVersionId();
+
+  // Inject a trivial script that will call test.sendMessage(). This is a handy
+  // API because, by indicating the test will reply, we control when the
+  // function is resolved.
+  static constexpr char kScript[] =
+      "chrome.test.sendMessage('hello', () => {});";
+  ExtensionTestMessageListener message_listener("hello",
+                                                ReplyBehavior::kWillReply);
+  BackgroundScriptExecutor::ExecuteScriptAsync(profile(), extension->id(),
+                                               kScript);
+
+  ASSERT_TRUE(message_listener.WaitUntilSatisfied());
+
+  content::ServiceWorkerContext* context = GetServiceWorkerContext(profile());
+  TestServiceWorkerContextObserver context_observer(context, extension->id());
+  context_observer.SetRunningId(version_id);
+
+  // Advance the request past the timeout. Since test.sendMessage() doesn't
+  // keep a worker alive indefinitely, the service worker should be terminated.
+  content::AdvanceClockAfterRequestTimeout(context, version_id,
+                                           &tick_clock_opener_);
+  TriggerTimeoutAndCheckStopped(context, version_id);
+  // Wait for the worker to fully stop.
+  context_observer.WaitForWorkerStop();
+
+  // Reply to the extension (even though the worker is gone). This triggers
+  // the completion of the extension function, which would otherwise try to
+  // decrement the keepalive count of the worker. The worker was already
+  // terminated; it should gracefully handle this case (as opposed to crash).
+  message_listener.Reply("foo");
 }
 
 }  // namespace extensions
