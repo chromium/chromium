@@ -1,4 +1,4 @@
-<style>
+<style include="sp-shared-style">
   :host {
     --cr-toolbar-field-max-width: calc(100% - 32px);
     display: flex;
@@ -20,7 +20,7 @@
   }
 
   :host-context([chrome-refresh-2023]) #history-clusters {
-    margin: 0 var(--sp-body-padding);
+    margin-inline-start: var(--sp-body-padding);
   }
 
 </style>
@@ -32,5 +32,5 @@
 <history-clusters id="history-clusters"
     query="[[query]]"
     path="journeys"
-    on-query-changed-by-user="onQueryChangedByUser_">
+    on-query-changed-by-user="onQueryChangedByUser_" class="sp-scroller">
 </history-clusters>

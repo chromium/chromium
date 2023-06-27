@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../strings.m.js';
-import 'chrome://history-clusters-side-panel.top-chrome/shared/sp_shared_vars.css.js';
+import 'chrome://history-clusters-side-panel.top-chrome/shared/sp_shared_style.css.js';
 import 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
 import 'chrome://resources/cr_components/history_clusters/clusters.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
