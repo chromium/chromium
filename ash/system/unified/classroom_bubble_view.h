@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_UNIFIED_CLASSROOM_BUBBLE_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -16,9 +15,15 @@ class Combobox;
 
 namespace ash {
 
+struct GlanceablesClassroomStudentAssignment;
+
 class ASH_EXPORT ClassroomBubbleView : public GlanceableTrayChildBubble {
  public:
   METADATA_HEADER(ClassroomBubbleView);
+
+  // Known view ids.
+  static constexpr int kComboBoxViewId = 1;
+  static constexpr int kListContainerViewId = 2;
 
   // TODO(b:283370907): Add classroom glanceable contents.
   explicit ClassroomBubbleView(DetailedViewDelegate* delegate);
@@ -29,13 +34,15 @@ class ASH_EXPORT ClassroomBubbleView : public GlanceableTrayChildBubble {
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
-  void OnGetStudentAssignmentsDueSoon(
-      std::vector<std::unique_ptr<GlanceablesClassroomStudentAssignment>>
-          assignments);
-
  private:
   // Handle switching between assignment lists.
   void SelectedAssignmentListChanged();
+
+  // Handles received student assignments by rendering them in
+  // `list_container_view_`.
+  void OnGetStudentAssignments(
+      std::vector<std::unique_ptr<GlanceablesClassroomStudentAssignment>>
+          assignments);
 
   // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> header_view_ = nullptr;

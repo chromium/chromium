@@ -3494,6 +3494,7 @@ test("ash_unittests") {
     "system/tray/tray_item_view_unittest.cc",
     "system/tray/tri_view_unittest.cc",
     "system/unified/camera_mic_tray_item_view_unittest.cc",
+    "system/unified/classroom_bubble_view_unittest.cc",
     "system/unified/date_tray_unittest.cc",
     "system/unified/feature_pods_container_view_unittest.cc",
     "system/unified/feature_tile_unittest.cc",
