@@ -162,8 +162,6 @@ bool SavedTabGroupButton::OnKeyPressed(const ui::KeyEvent& event) {
   return false;
 }
 
-void SavedTabGroupButton::OnFocus() {}
-
 void SavedTabGroupButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::MenuButton::GetAccessibleNodeData(node_data);
   node_data->SetNameChecked(GetAccessibleNameForButton());

@@ -521,16 +521,16 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
         std::make_unique<views::ToggleButton>(
             base::BindRepeating(&TabGroupEditorBubbleView::OnSaveTogglePressed,
                                 base::Unretained(this))));
-    save_group_toggle_->SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_SAVE_GROUP));
-    save_group_toggle_->SetProperty(views::kElementIdentifierKey,
-                                    kTabGroupEditorBubbleSaveToggleId);
 
     const SavedTabGroupKeyedService* const saved_tab_group_service =
         SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
+    CHECK(saved_tab_group_service);
 
     save_group_toggle_->SetIsOn(
         saved_tab_group_service->model()->Contains(group_));
+    save_group_toggle_->SetAccessibleName(GetSaveToggleAccessibleName());
+    save_group_toggle_->SetProperty(views::kElementIdentifierKey,
+                                    kTabGroupEditorBubbleSaveToggleId);
   }
 
   views::LabelButton* const new_tab_menu_item = AddChildView(CreateMenuItem(
@@ -679,6 +679,12 @@ const std::u16string TabGroupEditorBubbleView::GetTextForCloseButton() {
                    IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP);
 }
 
+const std::u16string TabGroupEditorBubbleView::GetSaveToggleAccessibleName() {
+  return l10n_util::GetStringUTF16(
+      save_group_toggle_->GetIsOn() ? IDS_TAB_GROUP_HEADER_CXMENU_UNSAVE_GROUP
+                                    : IDS_TAB_GROUP_HEADER_CXMENU_SAVE_GROUP);
+}
+
 void TabGroupEditorBubbleView::OnSaveTogglePressed() {
   SavedTabGroupKeyedService* const saved_tab_group_service =
       SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
@@ -694,6 +700,7 @@ void TabGroupEditorBubbleView::OnSaveTogglePressed() {
     saved_tab_group_service->UnsaveGroup(group_);
   }
 
+  save_group_toggle_->SetAccessibleName(GetSaveToggleAccessibleName());
   UpdateGroup();
 }
 

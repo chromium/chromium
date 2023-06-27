@@ -54,7 +54,6 @@ class SavedTabGroupButton : public views::MenuButton,
 
   // views::View
   bool OnKeyPressed(const ui::KeyEvent& event) override;
-  void OnFocus() override;
 
   // views::DragController
   void WriteDragDataForView(View* sender,

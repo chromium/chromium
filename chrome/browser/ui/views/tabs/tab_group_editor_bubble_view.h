@@ -75,6 +75,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
 
   void UpdateGroup();
   const std::u16string GetTextForCloseButton();
+  const std::u16string GetSaveToggleAccessibleName();
 
   void OnSaveTogglePressed();
   void NewTabInGroupPressed();
