@@ -78,7 +78,7 @@ class ResumeStateWatchdog {
 }
 
 /**
- * Manges usage of all camera operations.
+ * Manages usages of all camera operations.
  * TODO(b/209726472): Move more camera logic in camera view to here.
  */
 export class CameraManager implements EventListener {
@@ -119,7 +119,7 @@ export class CameraManager implements EventListener {
         modeConstraints,
     );
 
-    // Monitor the states to stop camera when locked/minimized.
+    // Monitors the states to stop camera when locked/minimized.
     const idleDetector = new IdleDetector();
     idleDetector.addEventListener('change', () => {
       this.locked = idleDetector.screenState === 'locked';
@@ -452,7 +452,7 @@ export class CameraManager implements EventListener {
   }
 
   /**
-   * Apply point of interest to the stream.
+   * Applies point of interest to the stream.
    *
    * @param point The point in normalize coordidate system, which means both
    *     |x| and |y| are in range [0, 1).

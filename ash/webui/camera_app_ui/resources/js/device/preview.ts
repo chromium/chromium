@@ -93,7 +93,7 @@ export class Preview {
   private isSupportPTZInternal = false;
 
   /**
-   * Device id to constraints to reset default PTZ setting.
+   * Map from device id to constraints to reset default PTZ setting.
    */
   private readonly deviceDefaultPTZ =
       new Map<string, MediaTrackConstraintSet>();
@@ -379,7 +379,7 @@ export class Preview {
   }
 
   /**
-   * Checks preview whether to show preview metadata or not.
+   * Updates preview whether to show preview metadata or not.
    */
   private updateShowMetadata() {
     if (expert.isEnabled(expert.ExpertOption.SHOW_METADATA)) {
@@ -622,7 +622,7 @@ export class Preview {
   }
 
   /**
-   * Hide display preview metadata on preview screen.
+   * Hides display preview metadata on preview screen.
    */
   private async disableShowMetadata(): Promise<void> {
     if (this.streamInternal === null || this.metadataObserver === null) {
@@ -654,7 +654,7 @@ export class Preview {
   }
 
   /**
-   * Apply point of interest to the stream.
+   * Applies point of interest to the stream.
    *
    * @param point The point in normalize coordidate system, which means both
    *     |x| and |y| are in range [0, 1).
@@ -701,7 +701,7 @@ export class Preview {
   }
 
   /**
-   * Cancels the current applying focus.
+   * Cancels the currently applied focus.
    */
   private cancelFocus() {
     this.focusMarker = null;

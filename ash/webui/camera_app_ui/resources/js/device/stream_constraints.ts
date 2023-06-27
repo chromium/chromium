@@ -6,9 +6,6 @@
  * Stream constraints for audio and video.
  */
 export interface StreamConstraints {
-  /**
-   * Target device id.
-   */
   deviceId: string;
 
   /**
@@ -23,8 +20,8 @@ export interface StreamConstraints {
 }
 
 /**
- * Convert this to MediaStreamConstraints that is suitable to be used in
- * getUserMedia.
+ * Converts `constraints` to MediaStreamConstraints that is suitable to be used
+ * in getUserMedia.
  */
 export function toMediaStreamConstraints(constraints: StreamConstraints):
     MediaStreamConstraints {

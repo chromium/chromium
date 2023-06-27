@@ -51,7 +51,7 @@ export class StreamManager {
   private devicesInfo: Promise<MediaDeviceInfo[]>|null = null;
 
   /**
-   * Camera3DeviceInfo of all available video devices. Is null on HALv1 device
+   * Camera3DeviceInfo of all available video devices. It's null on HALv1 device
    * without mojo api support.
    */
   private camera3DevicesInfo: Promise<DeviceInfo[]|null>|null = null;
@@ -67,23 +67,23 @@ export class StreamManager {
   private realDevices: DeviceInfo[] = [];
 
   /**
-   * Real device id and corresponding virtual devices id mapping and it is
+   * Real device id to corresponding virtual devices id mapping and it is
    * only available on HALv3.
    */
   private virtualMap: VirtualMap|null = null;
 
   /**
-   * Signal it to indicate that the virtual device is ready.
+   * Signals it to indicate that the virtual device is ready.
    */
   private waitVirtual: WaitableEvent<string>|null = null;
 
   /**
-   * Signal to indicate that the virtual device is successfully removed.
+   * Signals to indicate that the virtual device is successfully removed.
    */
   private waitVirtualRemoved: WaitableEvent|null = null;
 
   /**
-   * Filter out lagging 720p on grunt. See https://crbug.com/1122852.
+   * Filters out lagging 720p on grunt. See https://crbug.com/1122852.
    */
   private readonly videoConfigFilter: (config: VideoConfig) => boolean;
 
@@ -100,7 +100,7 @@ export class StreamManager {
 
   /**
    * Creates a new instance of StreamManager if it is not set. Returns the
-   *     exist instance.
+   *     existing instance.
    *
    * @return The singleton instance.
    */
@@ -141,7 +141,7 @@ export class StreamManager {
   }
 
   /**
-   * Closes the given capture stream.
+   * Closes the given `captureStream`.
    */
   async closeCaptureStream(captureStream: MediaStream): Promise<void> {
     assertExists(captureStream.getVideoTracks()[0]).stop();
@@ -172,7 +172,7 @@ export class StreamManager {
   }
 
   /**
-   * Gets devices information via mojo IPC.
+   * Updates devices information via mojo IPC.
    */
   private async doDeviceInfoUpdate(): Promise<DeviceInfo[]|null> {
     this.devicesInfo = this.enumerateDevices();
@@ -186,7 +186,7 @@ export class StreamManager {
   }
 
   /**
-   * Notifies device changes to listeners and create a mapping for real and
+   * Notifies device changes to listeners and creates a mapping for real and
    * virtual device.
    */
   private doDeviceNotify(devices: DeviceInfo[]) {
@@ -238,7 +238,7 @@ export class StreamManager {
   }
 
   /**
-   * Enumerates all available devices and gets their MediaDeviceInfo. Retry at
+   * Enumerates all available devices and gets their MediaDeviceInfo. Retries at
    * one-second intervals if devices length is zero.
    */
   private async enumerateDevices(): Promise<MediaDeviceInfo[]> {

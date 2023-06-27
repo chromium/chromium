@@ -210,7 +210,7 @@ class Reconfigurer {
   }
 
   /**
-   * @return If the reconfiguration finished successfully.
+   * @return If the configuration finished successfully.
    */
   async startConfigure(cameraInfo: CameraInfo): Promise<boolean> {
     if (this.shouldSuspend) {
@@ -307,7 +307,7 @@ class Reconfigurer {
   }
 
   /**
-   * Stop extra stream and preview stream.
+   * Stops extra stream and preview stream.
    */
   private async stopStreams() {
     await this.modes.clear();

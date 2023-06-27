@@ -93,7 +93,7 @@ export class Camera3DeviceInfo {
 
   private pairedPreviewCaptureResolutions(captureRs: Resolution[]):
       CapturePreviewPairs {
-    // Filter out preview resolution greater than 1920x1080 and 1600x1200 for
+    // Filters out preview resolution greater than 1920x1080 and 1600x1200 for
     // preventing performance issue.
     const previewRs = this.videoResolutions.filter(
         ({width, height}) => width <= 1920 && height <= 1200);
@@ -112,7 +112,7 @@ export class Camera3DeviceInfo {
   }
 
   /**
-   * Creates a Camera3DeviceInfo by given device info and the mojo device
+   * Creates a Camera3DeviceInfo by the given device info and the mojo device
    *     operator.
    *
    * @param deviceInfo Given device info.
