@@ -13708,6 +13708,21 @@
             ]
         }
     ],
+    "UseAAudioInput": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseAAudioInput"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseBoringSSLForRandBytes": [
         {
             "platforms": [
