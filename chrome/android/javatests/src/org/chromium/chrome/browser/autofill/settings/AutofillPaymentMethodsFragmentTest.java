@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -546,6 +547,90 @@ public class AutofillPaymentMethodsFragmentTest {
         rule.waitForFragmentToBeShown();
 
         verify(mReauthenticatorMock, never())
+                .reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
+        // Verify that the local card edit dialog was shown.
+        Assert.assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
+    public void testLocalCardEditWithReauth_turnOnReauthAndVerifyReauthOnClick() throws Exception {
+        mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
+
+        // Initial state, Reauth pref is disabled by default.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, false);
+        });
+        // Simulate the user can authenticate with biometric or screen lock.
+        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Simulate the biometric authentication will succeed.
+        setUpBiometricAuthenticationResult(/*success=*/true);
+        // Simulate click on the Reauth toggle, trying to toggle on. Now Chrome is waiting for OS
+        // authentication which should succeed.
+        TestThreadUtils.runOnUiThreadBlocking(getMandatoryReauthPreference(activity)::performClick);
+
+        // Get the local card's widget.
+        Preference cardPreference = getPreferenceScreen(activity).getPreference(2);
+        String title = cardPreference.getTitle().toString();
+        assertThat(title).contains("Visa");
+        assertThat(title).contains("1111");
+
+        // Simulate click on the local card widget. Now Chrome is waiting for OS authentication.
+        TestThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
+        // Now mReauthenticatorMock simulate success auth, which will open local card dialog
+        // afterwards. Wait for the new dialog to be rendered.
+        rule.waitForFragmentToBeShown();
+
+        // Verify there were 2 biometric authentication attempts, once for enabling mandatory
+        // reauth, and another time for opening the local card edit page.
+        verify(mReauthenticatorMock, times(2))
+                .reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
+        // Verify that the local card edit dialog was shown.
+        Assert.assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
+    public void testLocalCardEditWithReauth_turnOffReauthAndVerifyNoReauthOnClick()
+            throws Exception {
+        mAutofillTestHelper.setCreditCard(SAMPLE_LOCAL_CARD);
+
+        // Simulate Reauth pref is enabled.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
+        });
+        // Simulate the user can authenticate with biometric or screen lock.
+        when(mReauthenticatorMock.canUseAuthenticationWithBiometricOrScreenLock()).thenReturn(true);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Simulate the biometric authentication will succeed.
+        setUpBiometricAuthenticationResult(/*success=*/true);
+        // Simulate click on the Reauth toggle, trying to toggle off. Now Chrome is waiting for OS
+        // authentication which should succeed.
+        TestThreadUtils.runOnUiThreadBlocking(getMandatoryReauthPreference(activity)::performClick);
+
+        // Get the local card's widget.
+        Preference cardPreference = getPreferenceScreen(activity).getPreference(2);
+        String title = cardPreference.getTitle().toString();
+        assertThat(title).contains("Visa");
+        assertThat(title).contains("1111");
+
+        // Simulate click on the local card widget.
+        TestThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
+        // Since reauth pref is disabled, we will directly open local card dialog. Wait for the new
+        // dialog to be rendered.
+        rule.waitForFragmentToBeShown();
+
+        // Verify there was only 1 biometric authentication attempt, for disabling mandatory reauth.
+        // After disabling, biometric authentication challenge should not be presented to open the
+        // local card edit page.
+        verify(mReauthenticatorMock, times(1))
                 .reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
         // Verify that the local card edit dialog was shown.
         Assert.assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
