@@ -1999,7 +1999,7 @@ BASE_FEATURE(kProjectorUseApiKeyForTranslation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable or disable quick settings revamped view (go/qsrevamp).
-BASE_FEATURE(kQsRevamp, "QsRevamp", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kQsRevamp, "QsRevamp", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the Projector Viewer supports the user experience for
 // secondary account.
