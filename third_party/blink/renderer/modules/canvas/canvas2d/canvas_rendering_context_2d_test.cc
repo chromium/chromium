@@ -280,7 +280,8 @@ void CanvasRenderingContext2DTest::SetUp() {
   // LayoutHTMLCanvas.
   GetDocument().GetPage()->GetSettings().SetScriptEnabled(true);
 
-  canvas_element_ = To<HTMLCanvasElement>(GetDocument().getElementById("c"));
+  canvas_element_ =
+      To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
 
   ImageDataSettings* settings = ImageDataSettings::Create();
   full_image_data_ = ImageData::Create(10, 10, settings, ASSERT_NO_EXCEPTION);
@@ -844,7 +845,7 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
 
   // Creating a different accelerated image buffer
   auto* anotherCanvas =
-      To<HTMLCanvasElement>(GetDocument().getElementById("d"));
+      To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("d")));
   CanvasContextCreationAttributesCore attributes;
   anotherCanvas->GetCanvasRenderingContext("2d", attributes);
   gfx::Size size2(10, 5);

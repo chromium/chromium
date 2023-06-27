@@ -187,7 +187,7 @@ class VideoFrameCallbackRequesterImplTest : public PageTestBase {
     video_ = MakeGarbageCollected<HTMLVideoElement>(GetDocument());
     GetDocument().body()->appendChild(video_);
 
-    video()->SetSrc("http://example.com/foo.mp4");
+    video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
     test::RunPendingTasks();
     UpdateAllLifecyclePhasesForTest();
   }

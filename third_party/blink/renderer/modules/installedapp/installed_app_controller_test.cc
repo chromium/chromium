@@ -52,10 +52,12 @@ class InstalledAppControllerTest : public testing::Test {
 
     auto* link_manifest = MakeGarbageCollected<HTMLLinkElement>(
         GetDocument(), CreateElementFlags());
-    link_manifest->setAttribute(blink::html_names::kRelAttr, "manifest");
+    link_manifest->setAttribute(blink::html_names::kRelAttr,
+                                AtomicString("manifest"));
     GetDocument().head()->AppendChild(link_manifest);
-    link_manifest->setAttribute(html_names::kHrefAttr,
-                                "https://example.com/manifest.json");
+    link_manifest->setAttribute(
+        html_names::kHrefAttr,
+        AtomicString("https://example.com/manifest.json"));
 
     ManifestManager::From(*GetFrame().DomWindow())->DidChangeManifest();
   }

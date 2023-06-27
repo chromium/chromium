@@ -754,7 +754,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdUnsupportedOnAndroid) {
   )HTML");
 
   Document& document = GetDocument();
-  Element* const div = document.getElementById("test-div");
+  Element* const div = document.getElementById(AtomicString("test-div"));
   const ScriptPromise div_promise = media_devices->ProduceCropTarget(
       scope.GetScriptState(), div, scope.GetExceptionState());
   platform()->RunUntilIdle();
@@ -797,7 +797,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdWithValidElement) {
       "test-select", "test-svg",    "test-rect", "test-math"};
 
   for (const char* id : kElementIds) {
-    Element* const element = document.getElementById(id);
+    Element* const element = document.getElementById(AtomicString(id));
     dispatcher_host().SetNextCropId(
         String(base::Uuid::GenerateRandomV4().AsLowercaseString()));
     const ScriptPromise promise = media_devices->ProduceCropTarget(
@@ -823,7 +823,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdRejectedIfDifferentWindow) {
   )HTML");
 
   Document& document = GetDocument();
-  Element* const div = document.getElementById("test-div");
+  Element* const div = document.getElementById(AtomicString("test-div"));
   const ScriptPromise element_promise = media_devices->ProduceCropTarget(
       scope.GetScriptState(), div, scope.GetExceptionState());
   platform()->RunUntilIdle();
@@ -848,7 +848,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdDuplicate) {
   )HTML");
 
   Document& document = GetDocument();
-  Element* const div = document.getElementById("test-div");
+  Element* const div = document.getElementById(AtomicString("test-div"));
   const ScriptPromise first_promise = media_devices->ProduceCropTarget(
       scope.GetScriptState(), div, scope.GetExceptionState());
   ScriptPromiseTester first_tester(scope.GetScriptState(), first_promise);
@@ -880,7 +880,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdStringFormat) {
   )HTML");
 
   Document& document = GetDocument();
-  Element* const div = document.getElementById("test-div");
+  Element* const div = document.getElementById(AtomicString("test-div"));
   dispatcher_host().SetNextCropId(
       String(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   const ScriptPromise promise = media_devices->ProduceCropTarget(

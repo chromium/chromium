@@ -244,7 +244,8 @@ TEST_F(AccessibilitySelectionTest, DocumentRangeMatchesSelection) {
 TEST_F(AccessibilitySelectionTest, SetSelectionInText) {
   SetBodyInnerHTML(R"HTML(<p id="paragraph">Hello</p>)HTML");
 
-  const Node* text = GetDocument().QuerySelector("p")->firstChild();
+  const Node* text =
+      GetDocument().QuerySelector(AtomicString("p"))->firstChild();
   ASSERT_NE(nullptr, text);
   ASSERT_TRUE(text->IsTextNode());
 
@@ -276,7 +277,8 @@ TEST_F(AccessibilitySelectionTest, SetSelectionInText) {
 TEST_F(AccessibilitySelectionTest, SetSelectionInTextWithWhiteSpace) {
   SetBodyInnerHTML(R"HTML(<p id="paragraph">     Hello</p>)HTML");
 
-  const Node* text = GetDocument().QuerySelector("p")->firstChild();
+  const Node* text =
+      GetDocument().QuerySelector(AtomicString("p"))->firstChild();
   ASSERT_NE(nullptr, text);
   ASSERT_TRUE(text->IsTextNode());
 
@@ -310,13 +312,14 @@ TEST_F(AccessibilitySelectionTest, SetSelectionAcrossLineBreak) {
       <p id="paragraph">Hello<br id="br">How are you.</p>
       )HTML");
 
-  const Node* paragraph = GetDocument().QuerySelector("p");
+  const Node* paragraph = GetDocument().QuerySelector(AtomicString("p"));
   ASSERT_NE(nullptr, paragraph);
   ASSERT_TRUE(IsA<HTMLParagraphElement>(paragraph));
-  const Node* br = GetDocument().QuerySelector("br");
+  const Node* br = GetDocument().QuerySelector(AtomicString("br"));
   ASSERT_NE(nullptr, br);
   ASSERT_TRUE(IsA<HTMLBRElement>(br));
-  const Node* line2 = GetDocument().QuerySelector("p")->lastChild();
+  const Node* line2 =
+      GetDocument().QuerySelector(AtomicString("p"))->lastChild();
   ASSERT_NE(nullptr, line2);
   ASSERT_TRUE(line2->IsTextNode());
 
@@ -357,13 +360,14 @@ TEST_F(AccessibilitySelectionTest, SetSelectionAcrossLineBreakInEditableText) {
       <p contenteditable id="paragraph">Hello<br id="br">How are you.</p>
       )HTML");
 
-  const Node* paragraph = GetDocument().QuerySelector("p");
+  const Node* paragraph = GetDocument().QuerySelector(AtomicString("p"));
   ASSERT_NE(nullptr, paragraph);
   ASSERT_TRUE(IsA<HTMLParagraphElement>(paragraph));
-  const Node* br = GetDocument().QuerySelector("br");
+  const Node* br = GetDocument().QuerySelector(AtomicString("br"));
   ASSERT_NE(nullptr, br);
   ASSERT_TRUE(IsA<HTMLBRElement>(br));
-  const Node* line2 = GetDocument().QuerySelector("p")->lastChild();
+  const Node* line2 =
+      GetDocument().QuerySelector(AtomicString("p"))->lastChild();
   ASSERT_NE(nullptr, line2);
   ASSERT_TRUE(line2->IsTextNode());
 
@@ -637,7 +641,7 @@ TEST_F(AccessibilitySelectionTest, FromCurrentSelectionInTextField) {
   GetDocument().body()->AppendChild(script_element);
   UpdateAllLifecyclePhasesForTest();
 
-  const Element* input = GetDocument().QuerySelector("input");
+  const Element* input = GetDocument().QuerySelector(AtomicString("input"));
   ASSERT_NE(nullptr, input);
   ASSERT_TRUE(IsTextControl(input));
 
@@ -683,7 +687,8 @@ TEST_F(AccessibilitySelectionTest, FromCurrentSelectionInTextarea) {
   GetDocument().body()->AppendChild(script_element);
   UpdateAllLifecyclePhasesForTest();
 
-  const Element* textarea = GetDocument().QuerySelector("textarea");
+  const Element* textarea =
+      GetDocument().QuerySelector(AtomicString("textarea"));
   ASSERT_NE(nullptr, textarea);
   ASSERT_TRUE(IsTextControl(textarea));
 
@@ -720,7 +725,8 @@ TEST_F(AccessibilitySelectionTest, FromCurrentSelectionInTextareaWithAffinity) {
 
   ASSERT_FALSE(AXSelection::FromCurrentSelection(GetDocument()).IsValid());
 
-  Element* const textarea = GetDocument().QuerySelector("textarea");
+  Element* const textarea =
+      GetDocument().QuerySelector(AtomicString("textarea"));
   ASSERT_NE(nullptr, textarea);
   ASSERT_TRUE(IsTextControl(textarea));
   const TextControlElement& text_control = ToTextControl(*textarea);
@@ -770,7 +776,8 @@ TEST_F(AccessibilitySelectionTest,
 
   ASSERT_FALSE(AXSelection::FromCurrentSelection(GetDocument()).IsValid());
 
-  Element* const textarea = GetDocument().QuerySelector("textarea");
+  Element* const textarea =
+      GetDocument().QuerySelector(AtomicString("textarea"));
   ASSERT_NE(nullptr, textarea);
   ASSERT_TRUE(IsTextControl(textarea));
   const TextControlElement& text_control = ToTextControl(*textarea);
@@ -1051,7 +1058,7 @@ TEST_F(AccessibilitySelectionTest, ForwardSelectionInTextField) {
       <input id="input" value="Inside text field.">
       )HTML");
 
-  Element* const input = GetDocument().QuerySelector("input");
+  Element* const input = GetDocument().QuerySelector(AtomicString("input"));
   ASSERT_NE(nullptr, input);
   ASSERT_TRUE(IsTextControl(input));
   input->Focus(FocusOptions::Create());
@@ -1086,7 +1093,7 @@ TEST_F(AccessibilitySelectionTest, BackwardSelectionInTextField) {
       <input id="input" value="Inside text field.">
       )HTML");
 
-  Element* const input = GetDocument().QuerySelector("input");
+  Element* const input = GetDocument().QuerySelector(AtomicString("input"));
   ASSERT_NE(nullptr, input);
   ASSERT_TRUE(IsTextControl(input));
   input->Focus(FocusOptions::Create());
@@ -1123,7 +1130,7 @@ TEST_F(AccessibilitySelectionTest, SelectingTheWholeOfTheTextField) {
       <p id="after">After text field.</p>
       )HTML");
 
-  Element* const input = GetDocument().QuerySelector("input");
+  Element* const input = GetDocument().QuerySelector(AtomicString("input"));
   ASSERT_NE(nullptr, input);
   ASSERT_TRUE(IsTextControl(input));
   ASSERT_TRUE(ToTextControl(*input).SetSelectionRange(
@@ -1167,7 +1174,7 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextField) {
       <input id="input" value="Inside text field.">
       )HTML");
 
-  Element* const input = GetDocument().QuerySelector("input");
+  Element* const input = GetDocument().QuerySelector(AtomicString("input"));
   ASSERT_NE(nullptr, input);
   ASSERT_TRUE(IsTextControl(input));
   TextControlElement& text_control = ToTextControl(*input);
@@ -1240,7 +1247,7 @@ TEST_F(AccessibilitySelectionTest,
   GetDocument().body()->AppendChild(script_element);
   UpdateAllLifecyclePhasesForTest();
 
-  Element* const input = GetDocument().QuerySelector("input");
+  Element* const input = GetDocument().QuerySelector(AtomicString("input"));
   ASSERT_NE(nullptr, input);
   ASSERT_TRUE(IsTextControl(input));
   TextControlElement& text_control = ToTextControl(*input);
@@ -1300,7 +1307,7 @@ TEST_F(AccessibilitySelectionTest, InvalidSelectionInTextField) {
       <p id="after">After text field.</p>
       )HTML");
 
-  Element* const input = GetDocument().QuerySelector("input");
+  Element* const input = GetDocument().QuerySelector(AtomicString("input"));
   ASSERT_NE(nullptr, input);
   ASSERT_TRUE(IsTextControl(input));
   ASSERT_TRUE(ToTextControl(*input).SetSelectionRange(
@@ -1362,7 +1369,8 @@ TEST_F(AccessibilitySelectionTest, ForwardSelectionInTextarea) {
       </textarea>
       )HTML");
 
-  Element* const textarea = GetDocument().QuerySelector("textarea");
+  Element* const textarea =
+      GetDocument().QuerySelector(AtomicString("textarea"));
   ASSERT_NE(nullptr, textarea);
   ASSERT_TRUE(IsTextControl(textarea));
   textarea->Focus(FocusOptions::Create());
@@ -1401,7 +1409,8 @@ TEST_F(AccessibilitySelectionTest, BackwardSelectionInTextarea) {
       </textarea>
       )HTML");
 
-  Element* const textarea = GetDocument().QuerySelector("textarea");
+  Element* const textarea =
+      GetDocument().QuerySelector(AtomicString("textarea"));
   ASSERT_NE(nullptr, textarea);
   ASSERT_TRUE(IsTextControl(textarea));
   textarea->Focus(FocusOptions::Create());
@@ -1442,7 +1451,8 @@ TEST_F(AccessibilitySelectionTest, SelectTheWholeOfTheTextarea) {
       <p id="after">After textarea field.</p>
       )HTML");
 
-  Element* const textarea = GetDocument().QuerySelector("textarea");
+  Element* const textarea =
+      GetDocument().QuerySelector(AtomicString("textarea"));
   ASSERT_NE(nullptr, textarea);
   ASSERT_TRUE(IsTextControl(textarea));
   ASSERT_TRUE(ToTextControl(*textarea).SetSelectionRange(
@@ -1490,7 +1500,8 @@ TEST_F(AccessibilitySelectionTest, SelectEachConsecutiveCharacterInTextarea) {
       </textarea>
       )HTML");
 
-  Element* const textarea = GetDocument().QuerySelector("textarea");
+  Element* const textarea =
+      GetDocument().QuerySelector(AtomicString("textarea"));
   ASSERT_NE(nullptr, textarea);
   ASSERT_TRUE(IsTextControl(textarea));
   TextControlElement& text_control = ToTextControl(*textarea);
@@ -1552,7 +1563,8 @@ TEST_F(AccessibilitySelectionTest, InvalidSelectionInTextarea) {
       <p id="after">After textarea field.</p>
       )HTML");
 
-  Element* const textarea = GetDocument().QuerySelector("textarea");
+  Element* const textarea =
+      GetDocument().QuerySelector(AtomicString("textarea"));
   ASSERT_NE(nullptr, textarea);
   ASSERT_TRUE(IsTextControl(textarea));
   ASSERT_TRUE(ToTextControl(*textarea).SetSelectionRange(
@@ -1617,7 +1629,7 @@ TEST_F(AccessibilitySelectionTest,
   ASSERT_FALSE(AXSelection::FromCurrentSelection(GetDocument()).IsValid());
 
   Element* const contenteditable =
-      GetDocument().QuerySelector("div[role=textbox]");
+      GetDocument().QuerySelector(AtomicString("div[role=textbox]"));
   ASSERT_NE(nullptr, contenteditable);
 
   // This test should only be testing accessibility code. Ordinarily we should
@@ -1673,7 +1685,7 @@ TEST_F(AccessibilitySelectionTest,
       )HTML");
 
   const Element* contenteditable =
-      GetDocument().QuerySelector("div[contenteditable]");
+      GetDocument().QuerySelector(AtomicString("div[contenteditable]"));
   ASSERT_NE(nullptr, contenteditable);
   const Node* text = contenteditable->firstChild();
   ASSERT_NE(nullptr, text);

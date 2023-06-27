@@ -79,7 +79,8 @@ void CanvasRenderingContext2DAPITest::SetUp() {
   GetDocument().documentElement()->setInnerHTML(
       "<body><canvas id='c'></canvas></body>");
   UpdateAllLifecyclePhasesForTest();
-  canvas_element_ = To<HTMLCanvasElement>(GetDocument().getElementById("c"));
+  canvas_element_ =
+      To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
 }
 
 void CanvasRenderingContext2DAPITest::TearDown() {
@@ -329,7 +330,8 @@ void ResetCanvasForAccessibilityRectTest(Document& document) {
     padding:10px; margin:5px;'>
     <button id='button'></button></canvas>
   )HTML");
-  auto* canvas = To<HTMLCanvasElement>(document.getElementById("canvas"));
+  auto* canvas =
+      To<HTMLCanvasElement>(document.getElementById(AtomicString("canvas")));
 
   String canvas_type("2d");
   CanvasContextCreationAttributesCore attributes;

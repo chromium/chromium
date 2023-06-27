@@ -304,7 +304,7 @@ class PictureInPictureControllerTestWithWidget : public RenderingTest {
           dummy_tracks, dummy_tracks);
       Video()->SetSrcObjectVariant(descriptor);
     } else {
-      Video()->SetSrc("http://example.com/foo.mp4");
+      Video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
     }
 
     test::RunPendingTasks();
@@ -571,11 +571,11 @@ TEST_F(PictureInPictureControllerTestWithWidget,
 
   Element* div = GetDocument().CreateRawElement(html_names::kDivTag);
   div->setAttribute(html_names::kStyleAttr,
-                    "padding: 100px;"
-                    "width: 150px;"
-                    "height: 150px;"
-                    "padding: 100px;"
-                    "transform: scale(2)");
+                    AtomicString("padding: 100px;"
+                                 "width: 150px;"
+                                 "height: 150px;"
+                                 "padding: 100px;"
+                                 "transform: scale(2)"));
   GetDocument().body()->AppendChild(div);
   div->AppendChild(Video());
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
@@ -585,11 +585,10 @@ TEST_F(PictureInPictureControllerTestWithWidget,
   const char kPosterUrl[] = "http://example.com/foo.jpg";
   url_test_helpers::RegisterMockedErrorURLLoad(
       url_test_helpers::ToKURL(kPosterUrl));
-  Video()->setAttribute(html_names::kPosterAttr, kPosterUrl);
-  Video()->setAttribute(html_names::kStyleAttr,
-                        "object-fit: none;"
-                        "height: 150px;"
-                        "width: 150px;");
+  Video()->setAttribute(html_names::kPosterAttr, AtomicString(kPosterUrl));
+  Video()->setAttribute(html_names::kStyleAttr, AtomicString("object-fit: none;"
+                                                             "height: 150px;"
+                                                             "width: 150px;"));
   layout_image->ImageResource()->SetImageResource(image_content);
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 

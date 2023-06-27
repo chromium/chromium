@@ -239,7 +239,7 @@ TEST_F(MediaControlInputElementTest, OverflowElement_DisplayAfterInline) {
 }
 
 TEST_F(MediaControlInputElementTest, ShouldRecordDisplayStates_ReadyState) {
-  MediaElement().setAttribute(html_names::kPreloadAttr, "auto");
+  MediaElement().setAttribute(html_names::kPreloadAttr, AtomicString("auto"));
 
   SetReadyState(HTMLMediaElement::kHaveNothing);
   EXPECT_FALSE(
@@ -267,15 +267,16 @@ TEST_F(MediaControlInputElementTest, ShouldRecordDisplayStates_Preload) {
   // the result.
   SetReadyState(HTMLMediaElement::kHaveNothing);
 
-  MediaElement().setAttribute(html_names::kPreloadAttr, "none");
+  MediaElement().setAttribute(html_names::kPreloadAttr, AtomicString("none"));
   EXPECT_TRUE(
       MediaControlInputElement::ShouldRecordDisplayStates(MediaElement()));
 
-  MediaElement().setAttribute(html_names::kPreloadAttr, "preload");
+  MediaElement().setAttribute(html_names::kPreloadAttr,
+                              AtomicString("preload"));
   EXPECT_FALSE(
       MediaControlInputElement::ShouldRecordDisplayStates(MediaElement()));
 
-  MediaElement().setAttribute(html_names::kPreloadAttr, "auto");
+  MediaElement().setAttribute(html_names::kPreloadAttr, AtomicString("auto"));
   EXPECT_FALSE(
       MediaControlInputElement::ShouldRecordDisplayStates(MediaElement()));
 }

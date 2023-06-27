@@ -30,7 +30,7 @@ class OffscreenCanvasRenderingAPIUkmMetricsTest : public PageTestBase {
     GetDocument().documentElement()->setInnerHTML(
         "<body><canvas id='c'></canvas></body>");
     auto* canvas_element =
-        To<HTMLCanvasElement>(GetDocument().getElementById("c"));
+        To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
 
     DummyExceptionStateForTesting exception_state;
     offscreen_canvas_element_ =

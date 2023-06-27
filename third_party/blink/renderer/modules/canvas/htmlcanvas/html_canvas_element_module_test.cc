@@ -62,7 +62,8 @@ class HTMLCanvasElementModuleTest : public ::testing::Test,
     web_view_helper_.Initialize();
     GetDocument().documentElement()->setInnerHTML(
         String::FromUTF8("<body><canvas id='c'></canvas></body>"));
-    canvas_element_ = To<HTMLCanvasElement>(GetDocument().getElementById("c"));
+    canvas_element_ =
+        To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
   }
 
   LocalDOMWindow* GetWindow() const {

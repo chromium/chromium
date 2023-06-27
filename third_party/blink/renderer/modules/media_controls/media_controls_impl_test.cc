@@ -122,7 +122,7 @@ bool IsElementVisible(Element& element) {
   const CSSPropertyValueSet* inline_style = element.InlineStyle();
 
   if (!inline_style)
-    return element.getAttribute("class") != "transparent";
+    return element.getAttribute(html_names::kClassAttr) != "transparent";
 
   if (inline_style->GetPropertyValue(CSSPropertyID::kDisplay) == "none")
     return false;
@@ -170,7 +170,8 @@ class MediaControlsImplTest : public PageTestBase,
                          MakeGarbageCollected<StubLocalFrameClientForImpl>());
 
     GetDocument().write("<video controls>");
-    auto& video = To<HTMLVideoElement>(*GetDocument().QuerySelector("video"));
+    auto& video = To<HTMLVideoElement>(
+        *GetDocument().QuerySelector(AtomicString("video")));
     media_controls_ = static_cast<MediaControlsImpl*>(video.GetMediaControls());
 
     // Scripts are disabled by default which forces controls to be on.
@@ -277,7 +278,8 @@ class MediaControlsImplTest : public PageTestBase,
   HistogramTester& GetHistogramTester() { return histogram_tester_; }
 
   void LoadMediaWithDuration(double duration) {
-    MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+    MediaControls().MediaElement().SetSrc(
+        AtomicString("https://example.com/foo.mp4"));
     test::RunPendingTasks();
     WebTimeRange time_range(0.0, duration);
     WebMediaPlayer()->seekable_.Assign(&time_range, 1);
@@ -571,7 +573,7 @@ TEST_F(MediaControlsImplTest, CastButtonVisibilityDependsOnControlslistAttr) {
   ASSERT_TRUE(IsOverflowElementVisible(*cast_button));
 
   MediaControls().MediaElement().setAttribute(
-      blink::html_names::kControlslistAttr, "noremoteplayback");
+      blink::html_names::kControlslistAttr, AtomicString("noremoteplayback"));
   test::RunPendingTasks();
 
   // Cast button should not be displayed because of
@@ -593,7 +595,7 @@ TEST_F(MediaControlsImplTest, KeepControlsVisibleIfOverflowListVisible) {
                                               "-webkit-media-controls-panel");
   ASSERT_NE(nullptr, panel);
 
-  MediaControls().MediaElement().SetSrc("http://example.com");
+  MediaControls().MediaElement().SetSrc(AtomicString("http://example.com"));
   MediaControls().MediaElement().Play();
   test::RunPendingTasks();
 
@@ -612,7 +614,8 @@ TEST_F(MediaControlsImplTest, DownloadButtonDisplayed) {
   MediaControlDownloadButtonElement* download_button = DownloadButtonElement();
   ASSERT_NE(nullptr, download_button);
 
-  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("https://example.com/foo.mp4"));
   test::RunPendingTasks();
   SimulateLoadedMetadata();
 
@@ -627,7 +630,7 @@ TEST_F(MediaControlsImplTest, DownloadButtonNotDisplayedEmptyUrl) {
   ASSERT_NE(nullptr, download_button);
 
   // Download button should not be displayed when URL is empty.
-  MediaControls().MediaElement().SetSrc("");
+  MediaControls().MediaElement().SetSrc(g_empty_atom);
   test::RunPendingTasks();
   SimulateLoadedMetadata();
   EXPECT_FALSE(IsOverflowElementVisible(*download_button));
@@ -639,7 +642,8 @@ TEST_F(MediaControlsImplTest, DownloadButtonNotDisplayedInfiniteDuration) {
   MediaControlDownloadButtonElement* download_button = DownloadButtonElement();
   ASSERT_NE(nullptr, download_button);
 
-  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("https://example.com/foo.mp4"));
   test::RunPendingTasks();
 
   // Download button should not be displayed when duration is infinite.
@@ -662,20 +666,22 @@ TEST_F(MediaControlsImplTest, DownloadButtonNotDisplayedHLS) {
   ASSERT_NE(nullptr, download_button);
 
   // Download button should not be displayed for HLS streams.
-  MediaControls().MediaElement().SetSrc("https://example.com/foo.m3u8");
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("https://example.com/foo.m3u8"));
   test::RunPendingTasks();
   SimulateLoadedMetadata();
   EXPECT_FALSE(IsOverflowElementVisible(*download_button));
 
   MediaControls().MediaElement().SetSrc(
-      "https://example.com/foo.m3u8?title=foo");
+      AtomicString("https://example.com/foo.m3u8?title=foo"));
   test::RunPendingTasks();
   SimulateLoadedMetadata();
   EXPECT_FALSE(IsOverflowElementVisible(*download_button));
 
   // However, it *should* be displayed for otherwise valid sources containing
   // the text 'm3u8'.
-  MediaControls().MediaElement().SetSrc("https://example.com/foo.m3u8.mp4");
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("https://example.com/foo.m3u8.mp4"));
   test::RunPendingTasks();
   SimulateLoadedMetadata();
   EXPECT_TRUE(IsOverflowElementVisible(*download_button));
@@ -688,9 +694,10 @@ TEST_F(MediaControlsImplTest,
   MediaControlDownloadButtonElement* download_button = DownloadButtonElement();
   ASSERT_NE(nullptr, download_button);
 
-  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("https://example.com/foo.mp4"));
   MediaControls().MediaElement().setAttribute(
-      blink::html_names::kControlslistAttr, "nodownload");
+      blink::html_names::kControlslistAttr, AtomicString("nodownload"));
   test::RunPendingTasks();
   SimulateLoadedMetadata();
 
@@ -712,9 +719,10 @@ TEST_F(MediaControlsImplTest,
       FullscreenButtonElement();
   ASSERT_NE(nullptr, fullscreen_button);
 
-  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("https://example.com/foo.mp4"));
   MediaControls().MediaElement().setAttribute(
-      blink::html_names::kControlslistAttr, "nofullscreen");
+      blink::html_names::kControlslistAttr, AtomicString("nofullscreen"));
   test::RunPendingTasks();
   SimulateLoadedMetadata();
 
@@ -736,9 +744,10 @@ TEST_F(MediaControlsImplTest,
       PlaybackSpeedButtonElement();
   ASSERT_NE(nullptr, playback_speed_button);
 
-  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("https://example.com/foo.mp4"));
   MediaControls().MediaElement().setAttribute(
-      blink::html_names::kControlslistAttr, "noplaybackrate");
+      blink::html_names::kControlslistAttr, AtomicString("noplaybackrate"));
   test::RunPendingTasks();
   SimulateLoadedMetadata();
 
@@ -889,7 +898,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler, SeekingShowsControls) {
                                               "-webkit-media-controls-panel");
   ASSERT_NE(nullptr, panel);
 
-  MediaControls().MediaElement().SetSrc("http://example.com");
+  MediaControls().MediaElement().SetSrc(AtomicString("http://example.com"));
   MediaControls().MediaElement().Play();
 
   // Hide the controls to start.
@@ -910,7 +919,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   MediaControls().MediaElement().SetBooleanAttribute(html_names::kControlsAttr,
                                                      false);
 
-  MediaControls().MediaElement().SetSrc("http://example.com");
+  MediaControls().MediaElement().SetSrc(AtomicString("http://example.com"));
   MediaControls().MediaElement().Play();
 
   // Hide the controls to start.
@@ -929,7 +938,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
 
   Element* panel = MediaControls().PanelElement();
 
-  MediaControls().MediaElement().SetSrc("http://example.com");
+  MediaControls().MediaElement().SetSrc(AtomicString("http://example.com"));
   MediaControls().MediaElement().Play();
 
   // Controls start out visible.
@@ -937,17 +946,20 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
 
   // Tabbing between controls prevents controls from hiding.
   platform()->RunForPeriodSeconds(2);
-  MuteButtonElement()->DispatchEvent(*Event::CreateBubble("focusin"));
+  MuteButtonElement()->DispatchEvent(
+      *Event::CreateBubble(event_type_names::kFocusin));
   platform()->RunForPeriodSeconds(2);
   EXPECT_TRUE(IsElementVisible(*panel));
 
   // Seeking on the timeline or volume bar prevents controls from hiding.
-  TimelineElement()->DispatchEvent(*Event::CreateBubble("input"));
+  TimelineElement()->DispatchEvent(
+      *Event::CreateBubble(event_type_names::kInput));
   platform()->RunForPeriodSeconds(2);
   EXPECT_TRUE(IsElementVisible(*panel));
 
   // Pressing a key prevents controls from hiding.
-  MuteButtonElement()->DispatchEvent(*Event::CreateBubble("keypress"));
+  MuteButtonElement()->DispatchEvent(
+      *Event::CreateBubble(event_type_names::kKeypress));
   platform()->RunForPeriodSeconds(2);
   EXPECT_TRUE(IsElementVisible(*panel));
 
@@ -962,7 +974,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   EnsureSizing();
 
   Element* panel = MediaControls().PanelElement();
-  MediaControls().MediaElement().SetSrc("http://example.com");
+  MediaControls().MediaElement().SetSrc(AtomicString("http://example.com"));
   MediaControls().MediaElement().Play();
 
   // Controls start out visible
@@ -970,10 +982,11 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   platform()->RunForPeriodSeconds(1);
 
   // Mouse move while focused
-  MediaControls().DispatchEvent(*Event::Create("focusin"));
+  MediaControls().DispatchEvent(*Event::Create(event_type_names::kFocusin));
   MediaControls().MediaElement().SetFocused(true,
                                             mojom::blink::FocusType::kNone);
-  MediaControls().DispatchEvent(*CreatePointerEvent("pointermove"));
+  MediaControls().DispatchEvent(
+      *CreatePointerEvent(event_type_names::kPointermove));
 
   // Controls should remain visible
   platform()->RunForPeriodSeconds(2);
@@ -989,7 +1002,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   EnsureSizing();
 
   Element* panel = MediaControls().PanelElement();
-  MediaControls().MediaElement().SetSrc("http://example.com");
+  MediaControls().MediaElement().SetSrc(AtomicString("http://example.com"));
   MediaControls().MediaElement().Play();
 
   // Controls start out visible
@@ -997,17 +1010,17 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   platform()->RunForPeriodSeconds(1);
 
   // Mouse move out while focused, controls should hide
-  MediaControls().DispatchEvent(*Event::Create("focusin"));
+  MediaControls().DispatchEvent(*Event::Create(event_type_names::kFocusin));
   MediaControls().MediaElement().SetFocused(true,
                                             mojom::blink::FocusType::kNone);
-  MediaControls().DispatchEvent(*Event::Create("pointerout"));
+  MediaControls().DispatchEvent(*Event::Create(event_type_names::kPointerout));
   EXPECT_FALSE(IsElementVisible(*panel));
 }
 
 TEST_F(MediaControlsImplTestWithMockScheduler, CursorHidesWhenControlsHide) {
   EnsureSizing();
 
-  MediaControls().MediaElement().SetSrc("http://example.com");
+  MediaControls().MediaElement().SetSrc(AtomicString("http://example.com"));
 
   // Cursor is not initially hidden.
   EXPECT_FALSE(IsCursorHidden());
@@ -1015,7 +1028,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler, CursorHidesWhenControlsHide) {
   MediaControls().MediaElement().Play();
 
   // Tabbing into the controls shows the controls and therefore the cursor.
-  MediaControls().DispatchEvent(*Event::Create("focusin"));
+  MediaControls().DispatchEvent(*Event::Create(event_type_names::kFocusin));
   EXPECT_FALSE(IsCursorHidden());
 
   // Once the controls hide, the cursor is hidden.
@@ -1024,7 +1037,8 @@ TEST_F(MediaControlsImplTestWithMockScheduler, CursorHidesWhenControlsHide) {
 
   // If the mouse moves, the controls are shown and the cursor is no longer
   // hidden.
-  MediaControls().DispatchEvent(*CreatePointerEvent("pointermove"));
+  MediaControls().DispatchEvent(
+      *CreatePointerEvent(event_type_names::kPointermove));
   EXPECT_FALSE(IsCursorHidden());
 
   // Once the controls hide again, the cursor is hidden again.
@@ -1037,7 +1051,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler, AccessibleFocusShowsControls) {
 
   Element* panel = MediaControls().PanelElement();
 
-  MediaControls().MediaElement().SetSrc("http://example.com");
+  MediaControls().MediaElement().SetSrc(AtomicString("http://example.com"));
   MediaControls().MediaElement().Play();
 
   platform()->RunForPeriodSeconds(2);
@@ -1103,8 +1117,8 @@ TEST_F(MediaControlsImplTest,
   page_holder->GetDocument().write("<video controls>");
   page_holder->GetDocument().Parser()->Finish();
 
-  auto& video =
-      To<HTMLVideoElement>(*page_holder->GetDocument().QuerySelector("video"));
+  auto& video = To<HTMLVideoElement>(
+      *page_holder->GetDocument().QuerySelector(AtomicString("video")));
   WeakPersistent<HTMLMediaElement> weak_persistent_video = &video;
 
   video.remove();
@@ -1174,7 +1188,8 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   const double kTimeToShowVolumeSlider = 0.2;
 
   EnsureSizing();
-  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("https://example.com/foo.mp4"));
   platform()->RunForPeriodSeconds(1);
   SetHasAudio(true);
   SimulateLoadedMetadata();
@@ -1188,7 +1203,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   ASSERT_NE(nullptr, mute_btn);
 
   EXPECT_TRUE(IsElementVisible(*mute_btn));
-  EXPECT_TRUE(volume_slider->classList().contains("closed"));
+  EXPECT_TRUE(volume_slider->classList().contains(AtomicString("closed")));
 
   DOMRect* mute_btn_rect = mute_btn->getBoundingClientRect();
   gfx::PointF mute_btn_center(
@@ -1199,26 +1214,27 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   // Hover on mute button and stay
   MouseMoveTo(mute_btn_center);
   platform()->RunForPeriodSeconds(kTimeToShowVolumeSlider - 0.001);
-  EXPECT_TRUE(volume_slider->classList().contains("closed"));
+  EXPECT_TRUE(volume_slider->classList().contains(AtomicString("closed")));
 
   platform()->RunForPeriodSeconds(0.002);
-  EXPECT_FALSE(volume_slider->classList().contains("closed"));
+  EXPECT_FALSE(volume_slider->classList().contains(AtomicString("closed")));
 
   MouseMoveTo(edge);
-  EXPECT_TRUE(volume_slider->classList().contains("closed"));
+  EXPECT_TRUE(volume_slider->classList().contains(AtomicString("closed")));
 
   // Hover on mute button and move away before timer fired
   MouseMoveTo(mute_btn_center);
   platform()->RunForPeriodSeconds(kTimeToShowVolumeSlider - 0.001);
-  EXPECT_TRUE(volume_slider->classList().contains("closed"));
+  EXPECT_TRUE(volume_slider->classList().contains(AtomicString("closed")));
 
   MouseMoveTo(edge);
-  EXPECT_TRUE(volume_slider->classList().contains("closed"));
+  EXPECT_TRUE(volume_slider->classList().contains(AtomicString("closed")));
 }
 
 TEST_F(MediaControlsImplTestWithMockScheduler,
        VolumeSliderBehaviorWhenFocused) {
-  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("https://example.com/foo.mp4"));
   platform()->RunForPeriodSeconds(1);
   SetHasAudio(true);
 
@@ -1229,16 +1245,16 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   ASSERT_NE(nullptr, volume_slider);
 
   // Volume slider starts out hidden
-  EXPECT_TRUE(volume_slider->classList().contains("closed"));
+  EXPECT_TRUE(volume_slider->classList().contains(AtomicString("closed")));
 
   // Tab focus should open volume slider immediately.
   volume_slider->SetFocused(true, mojom::blink::FocusType::kNone);
-  volume_slider->DispatchEvent(*Event::Create("focus"));
-  EXPECT_FALSE(volume_slider->classList().contains("closed"));
+  volume_slider->DispatchEvent(*Event::Create(event_type_names::kFocus));
+  EXPECT_FALSE(volume_slider->classList().contains(AtomicString("closed")));
 
   // Unhover slider while focused should not close slider.
-  volume_slider->DispatchEvent(*Event::Create("mouseout"));
-  EXPECT_FALSE(volume_slider->classList().contains("closed"));
+  volume_slider->DispatchEvent(*Event::Create(event_type_names::kMouseout));
+  EXPECT_FALSE(volume_slider->classList().contains(AtomicString("closed")));
 }
 
 TEST_F(MediaControlsImplTest, CastOverlayDefaultHidesOnTimer) {
@@ -1253,7 +1269,7 @@ TEST_F(MediaControlsImplTest, CastOverlayDefaultHidesOnTimer) {
   EXPECT_TRUE(IsElementVisible(*cast_overlay_button));
 
   // Starts playback because overlay never hides if paused.
-  MediaControls().MediaElement().SetSrc("http://example.com");
+  MediaControls().MediaElement().SetSrc(AtomicString("http://example.com"));
   MediaControls().MediaElement().Play();
   test::RunPendingTasks();
 
@@ -1277,7 +1293,7 @@ TEST_F(MediaControlsImplTest, CastOverlayShowsOnSomeEvents) {
   EXPECT_TRUE(IsElementVisible(*cast_overlay_button));
 
   // Starts playback because overlay never hides if paused.
-  MediaControls().MediaElement().SetSrc("http://example.com");
+  MediaControls().MediaElement().SetSrc(AtomicString("http://example.com"));
   MediaControls().MediaElement().Play();
   test::RunPendingTasks();
 
@@ -1285,8 +1301,9 @@ TEST_F(MediaControlsImplTest, CastOverlayShowsOnSomeEvents) {
   SimulateHideMediaControlsTimerFired();
   EXPECT_FALSE(IsElementVisible(*cast_overlay_button));
 
-  for (const AtomicString event_name :
-       {"gesturetap", "click", "pointerover", "pointermove"}) {
+  for (const AtomicString& event_name :
+       {event_type_names::kGesturetap, event_type_names::kClick,
+        event_type_names::kPointerover, event_type_names::kPointermove}) {
     overlay_enclosure->DispatchEvent(event_name == "gesturetap"
                                          ? *Event::Create(event_name)
                                          : *CreatePointerEvent(event_name));
@@ -1342,8 +1359,10 @@ TEST_F(MediaControlsImplTest, MediaControlsDisabledWithNoSource) {
       OverflowMenuButtonElement()->FastHasAttribute(html_names::kDisabledAttr));
   EXPECT_TRUE(TimelineElement()->FastHasAttribute(html_names::kDisabledAttr));
 
-  MediaControls().MediaElement().setAttribute(html_names::kPreloadAttr, "none");
-  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().setAttribute(html_names::kPreloadAttr,
+                                              AtomicString("none"));
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("https://example.com/foo.mp4"));
   test::RunPendingTasks();
   SimulateLoadedMetadata();
 
@@ -1433,7 +1452,8 @@ TEST_F(MediaControlsImplTest, DoubleTouchChangesTimeWhenZoomed) {
 TEST_F(MediaControlsImplTest, HideControlsDefersStyleCalculationOnPlaying) {
   MediaControls().MediaElement().SetBooleanAttribute(html_names::kControlsAttr,
                                                      false);
-  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("https://example.com/foo.mp4"));
   MediaControls().MediaElement().Play();
   test::RunPendingTasks();
 
@@ -1473,7 +1493,8 @@ TEST_F(MediaControlsImplTest, HideControlsDefersStyleCalculationOnPlaying) {
 TEST_F(MediaControlsImplTest, HideControlsDefersStyleCalculationOnWaiting) {
   MediaControls().MediaElement().SetBooleanAttribute(html_names::kControlsAttr,
                                                      false);
-  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("https://example.com/foo.mp4"));
   MediaControls().MediaElement().Play();
   test::RunPendingTasks();
 
@@ -1511,7 +1532,8 @@ TEST_F(MediaControlsImplTest, HideControlsDefersStyleCalculationOnWaiting) {
 }
 
 TEST_F(MediaControlsImplTest, CheckStateOnPlayingForFutureData) {
-  MediaControls().MediaElement().SetSrc("https://example.com/foo.mp4");
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("https://example.com/foo.mp4"));
   MediaControls().MediaElement().Play();
   test::RunPendingTasks();
   UpdateAllLifecyclePhasesForTest();
@@ -1528,8 +1550,8 @@ TEST_F(MediaControlsImplTest, OverflowMenuInPaintContainment) {
   page_holder->GetDocument().Parser()->Finish();
   test::RunPendingTasks();
   UpdateAllLifecyclePhasesForTest();
-  SetMediaControlsFromElement(
-      To<HTMLMediaElement>(*page_holder->GetDocument().QuerySelector("audio")));
+  SetMediaControlsFromElement(To<HTMLMediaElement>(
+      *page_holder->GetDocument().QuerySelector(AtomicString("audio"))));
 
   MediaControls().ToggleOverflowMenu();
   UpdateAllLifecyclePhasesForTest();

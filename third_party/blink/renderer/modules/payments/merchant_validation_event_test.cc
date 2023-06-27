@@ -24,7 +24,7 @@ TEST(MerchantValidationEventTest, ValidInitializer) {
   initializer.setMethodName(kValidPaymentMethod);
   initializer.setValidationURL(kValidURL);
   MerchantValidationEvent* event = MerchantValidationEvent::Create(
-      scope.GetScriptState(), "merchantvalidation", &initializer,
+      scope.GetScriptState(), AtomicString("merchantvalidation"), &initializer,
       scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_EQ(kValidPaymentMethod, event->methodName());
@@ -37,7 +37,7 @@ TEST(MerchantValidationEventTest, EmptyPaymentMethodIsValid) {
   initializer.setMethodName("");
   initializer.setValidationURL(kValidURL);
   MerchantValidationEvent* event = MerchantValidationEvent::Create(
-      scope.GetScriptState(), "merchantvalidation", &initializer,
+      scope.GetScriptState(), AtomicString("merchantvalidation"), &initializer,
       scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(event->methodName().empty());
@@ -50,7 +50,7 @@ TEST(MerchantValidationEventTest, InvalidPaymentMethod) {
   initializer.setMethodName("-123");
   initializer.setValidationURL(kValidURL);
   MerchantValidationEvent* event = MerchantValidationEvent::Create(
-      scope.GetScriptState(), "merchantvalidation", &initializer,
+      scope.GetScriptState(), AtomicString("merchantvalidation"), &initializer,
       scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(ESErrorType::kRangeError,
@@ -64,7 +64,7 @@ TEST(MerchantValidationEventTest, InvalidValidationURL) {
   initializer.setMethodName("");
   initializer.setValidationURL("not a URL");
   MerchantValidationEvent* event = MerchantValidationEvent::Create(
-      scope.GetScriptState(), "merchantvalidation", &initializer,
+      scope.GetScriptState(), AtomicString("merchantvalidation"), &initializer,
       scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(ESErrorType::kTypeError,
@@ -78,7 +78,7 @@ TEST(MerchantValidationEventTest, EventMustBeTrusted) {
   initializer.setMethodName("");
   initializer.setValidationURL(kValidURL);
   MerchantValidationEvent* event = MerchantValidationEvent::Create(
-      scope.GetScriptState(), "merchantvalidation", &initializer,
+      scope.GetScriptState(), AtomicString("merchantvalidation"), &initializer,
       scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   ASSERT_FALSE(event->isTrusted());
