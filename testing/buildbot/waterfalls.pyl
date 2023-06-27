@@ -6225,7 +6225,7 @@
     'machines': {
       'DevTools Linux': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
@@ -6235,7 +6235,7 @@
       },
       'DevTools Linux Fastbuild': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
@@ -6292,7 +6292,7 @@
     'machines': {
       'Linux - Future': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'additional_compile_targets': ['all'],
         'test_suites': {
@@ -6302,7 +6302,7 @@
       },
       'Linux - Future (dbg)': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'additional_compile_targets': ['all'],
         'test_suites': {
@@ -6378,7 +6378,7 @@
       },
       'V8 Blink Linux': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
@@ -6388,7 +6388,7 @@
       },
       'V8 Blink Linux Debug': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
@@ -6398,7 +6398,7 @@
       },
       'V8 Blink Linux Future': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
@@ -6984,7 +6984,7 @@
     'machines': {
       'devtools_frontend_linux_blink_light_rel': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'devtools_browser_tests',
@@ -6993,7 +6993,7 @@
       },
       'devtools_frontend_linux_blink_light_rel_fastbuild': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'devtools_browser_tests',
@@ -7002,7 +7002,7 @@
       },
       'devtools_frontend_linux_blink_rel': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'isolated_scripts': 'devtools_webkit_isolated_scripts',
@@ -7017,7 +7017,7 @@
       # Should be kept in sync with linux-blink-rel in tryserver.blink
       'v8_linux_blink_rel': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'isolated_scripts': 'chromium_linux_blink_rel_isolated_scripts',
