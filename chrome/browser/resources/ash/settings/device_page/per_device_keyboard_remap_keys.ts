@@ -356,7 +356,9 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           this.setRemappedKey(originalKey);
         });
 
-    this.setSixPackKeyRemappings();
+    if (this.isAltClickAndSixPackCustomizationEnabled) {
+      this.setSixPackKeyRemappings();
+    }
     this.isInitialized = true;
   }
 
@@ -443,8 +445,14 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     this.keyboard.settings = {
       ...this.keyboard.settings,
       modifierRemappings: this.getUpdatedRemappings(),
-      sixPackKeyRemappings: this.getSixPackKeyRemappings(),
     };
+
+    if (this.isAltClickAndSixPackCustomizationEnabled) {
+      this.keyboard.settings = {
+        ...this.keyboard.settings,
+        sixPackKeyRemappings: this.getSixPackKeyRemappings(),
+      };
+    }
 
     this.inputDeviceSettingsProvider.setKeyboardSettings(
         this.keyboard.id, this.keyboard.settings);
