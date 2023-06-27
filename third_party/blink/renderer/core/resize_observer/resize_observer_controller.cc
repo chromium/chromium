@@ -16,7 +16,7 @@ ResizeObserverController* ResizeObserverController::From(
     LocalDOMWindow& window) {
   auto* controller = FromIfExists(window);
   if (!controller) {
-    controller = MakeGarbageCollected<ResizeObserverController>();
+    controller = MakeGarbageCollected<ResizeObserverController>(window);
     Supplement<LocalDOMWindow>::ProvideTo(window, controller);
   }
   return controller;
@@ -27,7 +27,8 @@ ResizeObserverController* ResizeObserverController::FromIfExists(
   return Supplement<LocalDOMWindow>::From<ResizeObserverController>(window);
 }
 
-ResizeObserverController::ResizeObserverController() : Supplement(nullptr) {}
+ResizeObserverController::ResizeObserverController(LocalDOMWindow& window)
+    : Supplement(window) {}
 
 void ResizeObserverController::AddObserver(ResizeObserver& observer) {
   switch (observer.Delivery()) {

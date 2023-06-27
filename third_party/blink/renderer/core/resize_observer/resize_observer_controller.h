@@ -32,7 +32,7 @@ class CORE_EXPORT ResizeObserverController final
   static ResizeObserverController* From(LocalDOMWindow&);
   static ResizeObserverController* FromIfExists(LocalDOMWindow&);
 
-  ResizeObserverController();
+  explicit ResizeObserverController(LocalDOMWindow&);
 
   void AddObserver(ResizeObserver&);
 
