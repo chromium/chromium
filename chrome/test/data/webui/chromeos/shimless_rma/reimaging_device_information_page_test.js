@@ -9,6 +9,7 @@ import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_se
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ReimagingDeviceInformationPage} from 'chrome://shimless-rma/reimaging_device_information_page.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
+import {FeatureLevel} from 'chrome://shimless-rma/shimless_rma_types.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -50,8 +51,7 @@ suite('reimagingDeviceInformationPageTest', function() {
     service.reset();
   });
 
-  /** @return {!Promise} */
-  async function initializeReimagingDeviceInformationPage() {
+  function initializeReimagingDeviceInformationPage() {
     assertFalse(!!component);
     service.setGetOriginalSerialNumberResult(fakeSerialNumber);
     service.setGetRegionListResult(fakeDeviceRegions);
@@ -61,7 +61,12 @@ suite('reimagingDeviceInformationPageTest', function() {
     service.setGetSkuListResult(fakeDeviceSkus);
     service.setGetOriginalSkuResult(1);
     service.setGetOriginalDramPartNumberResult(fakeDramPartNumber);
+    service.setGetOriginalFeatureLevelResult(
+        FeatureLevel.kRmadFeatureLevelUnsupported);
+  }
 
+  /** @return {!Promise} */
+  async function initializeComponent() {
     component = /** @type {!ReimagingDeviceInformationPage} */ (
         document.createElement('reimaging-device-information-page'));
     assertTrue(!!component);
@@ -75,7 +80,8 @@ suite('reimagingDeviceInformationPageTest', function() {
   }
 
   test('ReimagingDeviceInformationPageInitializes', async () => {
-    await initializeReimagingDeviceInformationPage();
+    initializeReimagingDeviceInformationPage();
+    await initializeComponent();
     await waitAfterNextRender(component);
 
     const serialNumberComponent =
@@ -105,7 +111,8 @@ suite('reimagingDeviceInformationPageTest', function() {
 
   test('ReimagingDeviceInformationPageNextReturnsInformation', async () => {
     const resolver = new PromiseResolver();
-    await initializeReimagingDeviceInformationPage();
+    initializeReimagingDeviceInformationPage();
+    await initializeComponent();
 
     const serialNumberComponent =
         component.shadowRoot.querySelector('#serialNumber');
@@ -165,7 +172,8 @@ suite('reimagingDeviceInformationPageTest', function() {
   });
 
   test('ReimagingDeviceInformationPageModifySerialNumberAndReset', async () => {
-    await initializeReimagingDeviceInformationPage();
+    initializeReimagingDeviceInformationPage();
+    await initializeComponent();
 
     component.allButtonsDisabled = false;
     const serialNumber = fakeSerialNumber + 'new serial number';
@@ -187,7 +195,8 @@ suite('reimagingDeviceInformationPageTest', function() {
   });
 
   test('ReimagingDeviceInformationPageInputsDisabled', async () => {
-    await initializeReimagingDeviceInformationPage();
+    initializeReimagingDeviceInformationPage();
+    await initializeComponent();
 
     const serialNumberInput =
         component.shadowRoot.querySelector('#serialNumber');
@@ -215,7 +224,8 @@ suite('reimagingDeviceInformationPageTest', function() {
   test(
       'ReimagingDeviceInformationPageModifyDramPartNumberAndReset',
       async () => {
-        await initializeReimagingDeviceInformationPage();
+        initializeReimagingDeviceInformationPage();
+        await initializeComponent();
 
         component.allButtonsDisabled = false;
         const dramPartNumber = fakeDramPartNumber + 'new part number';
@@ -240,7 +250,8 @@ suite('reimagingDeviceInformationPageTest', function() {
       'ReimagingDeviceInformationPageSerialNumberUpdatesNextDisable',
       async () => {
         const resolver = new PromiseResolver();
-        await initializeReimagingDeviceInformationPage();
+        initializeReimagingDeviceInformationPage();
+        await initializeComponent();
         let disableNextButtonEventFired = false;
         let disableNextButton = false;
         component.addEventListener('disable-next-button', (e) => {
@@ -266,7 +277,8 @@ suite('reimagingDeviceInformationPageTest', function() {
 
   test('ReimagingDeviceInformationPageRegionUpdatesNextDisable', async () => {
     const resolver = new PromiseResolver();
-    await initializeReimagingDeviceInformationPage();
+    initializeReimagingDeviceInformationPage();
+    await initializeComponent();
     let disableNextButtonEventFired = false;
     let disableNextButton = false;
     component.addEventListener('disable-next-button', (e) => {
@@ -298,7 +310,8 @@ suite('reimagingDeviceInformationPageTest', function() {
 
   test('ReimagingDeviceInformationPageSkuUpdatesNextDisable', async () => {
     const resolver = new PromiseResolver();
-    await initializeReimagingDeviceInformationPage();
+    initializeReimagingDeviceInformationPage();
+    await initializeComponent();
     let disableNextButtonEventFired = false;
     let disableNextButton = false;
     component.addEventListener('disable-next-button', (e) => {
@@ -331,7 +344,8 @@ suite('reimagingDeviceInformationPageTest', function() {
       'ReimagingDeviceInformationPageDramPartNumberDoesNotUpdateNextDisable',
       async () => {
         const resolver = new PromiseResolver();
-        await initializeReimagingDeviceInformationPage();
+        initializeReimagingDeviceInformationPage();
+        await initializeComponent();
         let disableNextButtonEventFired = false;
         let disableNextButton = false;
         component.addEventListener('disable-next-button', (e) => {
@@ -356,7 +370,8 @@ suite('reimagingDeviceInformationPageTest', function() {
   test('ReimagingDeviceInformationPage_ComplianceCheckDisabled', async () => {
     loadTimeData.overrideValues({complianceCheckEnabled: false});
 
-    await initializeReimagingDeviceInformationPage();
+    initializeReimagingDeviceInformationPage();
+    await initializeComponent();
 
     // Expect compliance-related fields to not be present when flag is off.
     assertFalse(
@@ -367,20 +382,99 @@ suite('reimagingDeviceInformationPageTest', function() {
         isVisible(component.shadowRoot.querySelector('#doesMeetRequirements')));
   });
 
-  test('ReimagingDeviceInformationPage_ComplianceCheckEnabled', async () => {
-    loadTimeData.overrideValues({complianceCheckEnabled: true});
+  test(
+      'ReimagingDeviceInformationPage_ComplianceCheckEnabled_Unsupported',
+      async () => {
+        loadTimeData.overrideValues({complianceCheckEnabled: true});
 
-    await initializeReimagingDeviceInformationPage();
+        initializeReimagingDeviceInformationPage();
+        service.setGetOriginalFeatureLevelResult(
+            FeatureLevel.kRmadFeatureLevelUnsupported);
+        await initializeComponent();
 
-    // Expect certain compliance-related fields to be present when flag is on.
-    // TODO(cambickel): Update this when FeatureLevel property is added.
-    assertFalse(
-        isVisible(component.shadowRoot.querySelector('#complianceWarning')));
-    assertTrue(
-        isVisible(component.shadowRoot.querySelector('#isChassisBranded')));
-    assertTrue(
-        isVisible(component.shadowRoot.querySelector('#doesMeetRequirements')));
-  });
+        // When the FeatureLevel is set to Unsupported, no compliance-related
+        // fields should be shown.
+        assertFalse(isVisible(
+            component.shadowRoot.querySelector('#complianceWarning')));
+        assertFalse(
+            isVisible(component.shadowRoot.querySelector('#isChassisBranded')));
+        assertFalse(isVisible(
+            component.shadowRoot.querySelector('#doesMeetRequirements')));
+      });
+
+  test(
+      'ReimagingDeviceInformationPage_ComplianceCheckEnabled_Unknown',
+      async () => {
+        loadTimeData.overrideValues({complianceCheckEnabled: true});
+
+        initializeReimagingDeviceInformationPage();
+        service.setGetOriginalFeatureLevelResult(
+            FeatureLevel.kRmadFeatureLevelUnknown);
+        await initializeComponent();
+
+        // When the FeatureLevel is set to Unknown, the two compliance-related
+        // questions should be shown.
+        assertFalse(isVisible(
+            component.shadowRoot.querySelector('#complianceWarning')));
+        assertTrue(
+            isVisible(component.shadowRoot.querySelector('#isChassisBranded')));
+        assertTrue(isVisible(
+            component.shadowRoot.querySelector('#doesMeetRequirements')));
+      });
+
+  test(
+      'ReimagingDeviceInformationPage_ComplianceCheckEnabled_Level0',
+      async () => {
+        loadTimeData.overrideValues({complianceCheckEnabled: true});
+
+        initializeReimagingDeviceInformationPage();
+        service.setGetOriginalFeatureLevelResult(
+            FeatureLevel.kRmadFeatureLevel0);
+        await initializeComponent();
+
+        // When the FeatureLevel is set to Level 0, the compliance warning
+        // should be shown, and the string should indicate that the device is
+        // not compliant.
+        assertTrue(isVisible(
+            component.shadowRoot.querySelector('#complianceWarning')));
+        assertFalse(
+            isVisible(component.shadowRoot.querySelector('#isChassisBranded')));
+        assertFalse(isVisible(
+            component.shadowRoot.querySelector('#doesMeetRequirements')));
+
+        const complianceStatusString =
+            component.shadowRoot.querySelector('.compliance-status-string');
+        assertEquals(
+            complianceStatusString.textContent.trim(),
+            component.i18n('confirmDeviceInfoDeviceNotCompliant'));
+      });
+
+  test(
+      'ReimagingDeviceInformationPage_ComplianceCheckEnabled_Level1',
+      async () => {
+        loadTimeData.overrideValues({complianceCheckEnabled: true});
+
+        initializeReimagingDeviceInformationPage();
+        service.setGetOriginalFeatureLevelResult(
+            FeatureLevel.kRmadFeatureLevel1);
+        await initializeComponent();
+
+        // When the FeatureLevel is set to Level 0, the compliance warning
+        // should be shown, and the string should indicate that the device is
+        // compliant.
+        assertTrue(isVisible(
+            component.shadowRoot.querySelector('#complianceWarning')));
+        assertFalse(
+            isVisible(component.shadowRoot.querySelector('#isChassisBranded')));
+        assertFalse(isVisible(
+            component.shadowRoot.querySelector('#doesMeetRequirements')));
+
+        const complianceStatusString =
+            component.shadowRoot.querySelector('.compliance-status-string');
+        assertEquals(
+            complianceStatusString.textContent.trim(),
+            component.i18n('confirmDeviceInfoDeviceCompliant'));
+      });
 
   // TODO(gavindodd): Add tests for the selection lists when they are
   // reimplemented and bound.

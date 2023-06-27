@@ -200,12 +200,12 @@
           [[i18n('confirmDeviceInfoResetButtonLabel')]]
         </cr-button>
       </div>
-      <div hidden="[[!shouldShowComplianceSection_()]]">
-        <div hidden="[[!isComplianceStatusKnown_()]]">
+      <div hidden="[[!shouldShowComplianceSection_(featureLevel_)]]">
+        <div hidden="[[!isComplianceStatusKnown_(featureLevel_)]]">
           <hr>
           <div class="input-row">
-            <div>
-              [[getComplianceStatusString_()]]
+            <div class="compliance-status-string">
+              [[getComplianceStatusString_(featureLevel_)]]
             </div>
             <div id="complianceWarning">
               <iron-icon icon="shimless-icon:info"></iron-icon>
@@ -215,7 +215,7 @@
             </div>
           </div>
         </div>
-        <div hidden="[[isComplianceStatusKnown_()]]">
+        <div hidden="[[isComplianceStatusKnown_(featureLevel_)]]">
           <div class="input-row">
             <label class="cr-form-field-label">
               [[i18n('confirmDeviceInfoDeviceQuestionIsBranded')]]

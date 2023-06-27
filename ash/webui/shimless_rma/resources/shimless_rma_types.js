@@ -367,6 +367,12 @@ export const Network = NetworkStateProperties;
 export const ShutdownMethod = ash.shimlessRma.mojom.ShutdownMethod;
 
 /**
+ * Type alias for the FeatureLevel.
+ * @typedef {ash.shimlessRma.mojom.FeatureLevel}
+ */
+export const FeatureLevel = ash.shimlessRma.mojom.FeatureLevel;
+
+/**
  * @typedef {{savePath: mojoBase.mojom.FilePath, error: RmadErrorCode}}
  */
 export let SaveLogResponse;

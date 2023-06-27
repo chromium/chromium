@@ -5,11 +5,11 @@
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import './file_path.mojom-lite.js';
 
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
 
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, ExternalDiskStateObserverRemote, FinalizationError, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningError, ProvisioningObserverRemote, ProvisioningStatus, QrCode, RmadErrorCode, ShimlessRmaServiceInterface, ShutdownMethod, State, StateResult, UpdateErrorCode, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, ExternalDiskStateObserverRemote, FeatureLevel, FinalizationError, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningError, ProvisioningObserverRemote, ProvisioningStatus, QrCode, RmadErrorCode, ShimlessRmaServiceInterface, ShutdownMethod, State, StateResult, UpdateErrorCode, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
 
 /** @implements {ShimlessRmaServiceInterface} */
 export class FakeShimlessRmaService {
@@ -581,6 +581,21 @@ export class FakeShimlessRmaService {
   setGetOriginalDramPartNumberResult(dramPartNumber) {
     this.methods_.setResult(
         'getOriginalDramPartNumber', {dramPartNumber: dramPartNumber});
+  }
+
+  /**
+   * @return {!Promise<!{originalFeatureLevel: FeatureLevel}>}
+   */
+  getOriginalFeatureLevel() {
+    return this.methods_.resolveMethod('getOriginalFeatureLevel');
+  }
+
+  /**
+   * @param {FeatureLevel} featureLevel
+   */
+  setGetOriginalFeatureLevelResult(featureLevel) {
+    this.methods_.setResult(
+        'getOriginalFeatureLevel', {originalFeatureLevel: featureLevel});
   }
 
   /**
@@ -1306,6 +1321,7 @@ export class FakeShimlessRmaService {
     this.methods_.register('getOriginalSku');
     this.methods_.register('getOriginalWhiteLabel');
     this.methods_.register('getOriginalDramPartNumber');
+    this.methods_.register('getOriginalFeatureLevel');
     this.methods_.register('setDeviceInformation');
 
     this.methods_.register('getCalibrationComponentList');
