@@ -82,7 +82,7 @@ void AssistantBrowserDelegateImpl::MaybeInit(Profile* profile) {
 
   service_ = std::make_unique<ash::assistant::Service>(
       profile->GetURLLoaderFactory()->Clone(),
-      IdentityManagerFactory::GetForProfile(profile));
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
   service_->Init();
 
   assistant_setup_ = std::make_unique<AssistantSetup>();
