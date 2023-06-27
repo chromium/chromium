@@ -27,22 +27,6 @@ class SecurityInterstitialTabHelper
       public content::WebContentsUserData<SecurityInterstitialTabHelper>,
       public security_interstitials::mojom::InterstitialCommands {
  public:
-  // Enum representing how users close the security interstitial. These values
-  // are persisted to logs. Entries should not be renumbered and numeric values
-  // should never be reused.
-  enum class InterstitialCloseReason {
-    // An interstitial is shown.
-    INTERSTITIAL_SHOWN = 0,
-    // User navigates away from the interstitial on the same tab by clicking
-    // Back to Safety, visiting unsafe website or entering a new URL in the
-    // omnibox.
-    NAVIGATE_AWAY = 1,
-    // User closes the tab that is displaying the interstitial.
-    CLOSE_TAB = 2,
-
-    kMaxValue = CLOSE_TAB
-  };
-
   SecurityInterstitialTabHelper(const SecurityInterstitialTabHelper&) = delete;
   SecurityInterstitialTabHelper& operator=(
       const SecurityInterstitialTabHelper&) = delete;

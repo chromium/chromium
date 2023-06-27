@@ -216,31 +216,14 @@ bool TriggerManager::FinishCollectingThreatDetails(
     base::UmaHistogramBoolean(
         "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab",
         has_threat_details_in_map);
-    if (trigger_type == TriggerType::SECURITY_INTERSTITIAL) {
-      base::UmaHistogramBoolean(
-          "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab."
-          "SecurityInterstitial",
-          has_threat_details_in_map);
-    }
   }
 
   // Make sure there's a ThreatDetails collector running on this tab.
   if (!has_threat_details_in_map)
     return false;
   DataCollectorsContainer* collectors = &data_collectors_map_[web_contents_key];
-  bool has_threat_details = !!collectors->threat_details;
-
-  if (should_send_report &&
-      trigger_type == TriggerType::SECURITY_INTERSTITIAL) {
-    base::UmaHistogramBoolean(
-        "SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsInContainer."
-        "SecurityInterstitial",
-        has_threat_details);
-  }
-
-  if (!has_threat_details) {
+  if (collectors->threat_details == nullptr)
     return false;
-  }
 
   if (should_send_report) {
     // Find the data collector and tell it to finish collecting data. We expect

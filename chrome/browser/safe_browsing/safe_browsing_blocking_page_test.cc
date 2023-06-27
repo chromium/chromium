@@ -159,8 +159,6 @@ const char kMaliciousFencedFrameOwner[] =
     "/safe_browsing/malware_in_fenced_frame.html";
 const char kMaliciousFencedFrame[] = "/safe_browsing/malware_fenced_frame.html";
 
-const char kInterstitialCloseHistogram[] = "interstitial.CloseReason";
-
 }  // namespace
 
 enum Visibility { VISIBILITY_ERROR = -1, HIDDEN = 0, VISIBLE = 1 };
@@ -1458,19 +1456,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   histograms.ExpectBucketCount(
       interaction_histogram,
       security_interstitials::MetricsHelper::SHOW_ENHANCED_PROTECTION, 1);
-
-  // CloseReason histograms.
-  histograms.ExpectTotalCount(kInterstitialCloseHistogram, 2);
-  histograms.ExpectBucketCount(
-      kInterstitialCloseHistogram,
-      security_interstitials::SecurityInterstitialTabHelper::
-          InterstitialCloseReason::INTERSTITIAL_SHOWN,
-      1);
-  histograms.ExpectBucketCount(
-      kInterstitialCloseHistogram,
-      security_interstitials::SecurityInterstitialTabHelper::
-          InterstitialCloseReason::NAVIGATE_AWAY,
-      1);
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
@@ -1523,19 +1508,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   histograms.ExpectBucketCount(
       interaction_histogram,
       security_interstitials::MetricsHelper::CLOSE_INTERSTITIAL_WITHOUT_UI, 0);
-
-  // CloseReason histograms.
-  histograms.ExpectTotalCount(kInterstitialCloseHistogram, 2);
-  histograms.ExpectBucketCount(
-      kInterstitialCloseHistogram,
-      security_interstitials::SecurityInterstitialTabHelper::
-          InterstitialCloseReason::INTERSTITIAL_SHOWN,
-      1);
-  histograms.ExpectBucketCount(
-      kInterstitialCloseHistogram,
-      security_interstitials::SecurityInterstitialTabHelper::
-          InterstitialCloseReason::NAVIGATE_AWAY,
-      1);
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
@@ -1566,19 +1538,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   histograms.ExpectBucketCount(
       interaction_histogram,
       security_interstitials::MetricsHelper::CLOSE_INTERSTITIAL_WITHOUT_UI, 1);
-
-  // CloseReason histograms.
-  histograms.ExpectTotalCount(kInterstitialCloseHistogram, 2);
-  histograms.ExpectBucketCount(
-      kInterstitialCloseHistogram,
-      security_interstitials::SecurityInterstitialTabHelper::
-          InterstitialCloseReason::INTERSTITIAL_SHOWN,
-      1);
-  histograms.ExpectBucketCount(
-      kInterstitialCloseHistogram,
-      security_interstitials::SecurityInterstitialTabHelper::
-          InterstitialCloseReason::CLOSE_TAB,
-      1);
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, AllowlistRevisit) {

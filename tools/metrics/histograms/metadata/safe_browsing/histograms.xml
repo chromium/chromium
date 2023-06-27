@@ -478,34 +478,15 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab{TriggerType}"
+<histogram name="SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsForTab"
     enum="BooleanAvailable" expires_after="2023-11-12">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether a threat details job is running on the current tab before
-    sending {TriggerType} client safe browsing report. The job can be already
-    deleted if the current tab is closed directly before the report is sent.
-    Only log if the report should be sent.
-  </summary>
-  <token key="TriggerType">
-    <variant name="" summary="any"/>
-    <variant name=".SecurityInterstitial" summary="security interstitial"/>
-  </token>
-</histogram>
-
-<histogram
-    name="SafeBrowsing.ClientSafeBrowsingReport.HasThreatDetailsInContainer.SecurityInterstitial"
-    enum="BooleanAvailable" expires_after="2023-09-22">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether a threat details job is found in the data collector
-    container before sending security interstitial client safe browsing report.
-    The report will not be sent if it is unavailable. Only log if the report
-    should be sent and there is an available collector in the data collector
-    map.
+    sending client safe browsing report. The job can be already deleted if the
+    current tab is closed directly before the report is sent. Only log if the
+    report should be sent.
   </summary>
 </histogram>
 
@@ -1049,16 +1030,6 @@ chromium-metrics-reviews@google.com.
 
     This is for the file types loaded from the resource bundle packaged with
     Chrome, which is always loaded at startup.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.HitReport.IsSubresource"
-    enum="BooleanIsSubresource" expires_after="2023-09-22">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether a hit report is triggered by a subresource. Logged when a
-    hit report is sent.
   </summary>
 </histogram>
 
