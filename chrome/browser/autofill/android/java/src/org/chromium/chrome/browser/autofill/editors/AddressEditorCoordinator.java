@@ -153,7 +153,7 @@ public class AddressEditorCoordinator {
      * Shows editor dialog to the user.
      */
     public void showEditorDialog() {
-        mEditorModel = mMediator.buildEditorModel();
+        mEditorModel = mMediator.getEditorModel();
         PropertyModelChangeProcessor.create(
                 mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView);
         mEditorModel.set(VISIBLE, true);

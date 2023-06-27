@@ -94,6 +94,10 @@ public class AddressEditor
     private List<AddressUiComponent> mAddressUiComponents;
     private boolean mAdminAreasLoaded;
     private String mRecentlySelectedCountry;
+    private Callback<AutofillAddress> mDoneCallback;
+    private Callback<AutofillAddress> mCancelCallback;
+    private boolean mAddressNew;
+    private AutofillAddress mAddress;
     private AutofillProfile mProfile;
     private ProgressDialog mProgressDialog;
     @Nullable
@@ -182,22 +186,23 @@ public class AddressEditor
             final Callback<AutofillAddress> doneCallback,
             final Callback<AutofillAddress> cancelCallback) {
         super.edit(toEdit, doneCallback, cancelCallback);
-
         if (mAutofillProfileBridge == null) mAutofillProfileBridge = new AutofillProfileBridge();
+        mDoneCallback = doneCallback;
+        mCancelCallback = cancelCallback;
 
         // If |toEdit| is null, we're creating a new autofill profile with the country code of the
         // default locale on this device.
         final String editTitle;
-        final AutofillAddress address;
-        if (toEdit == null) {
-            address = new AutofillAddress(mContext, AutofillProfile.builder().build());
+        mAddressNew = toEdit == null;
+        if (mAddressNew) {
+            mAddress = new AutofillAddress(mContext, AutofillProfile.builder().build());
             editTitle = mContext.getString(R.string.autofill_create_profile);
         } else {
-            address = toEdit;
+            mAddress = toEdit;
             editTitle = toEdit.getEditTitle();
         }
 
-        mProfile = address.getProfile();
+        mProfile = mAddress.getProfile();
 
         // When edit is called, a new form is started, so the country on the
         // dropdown list is not changed. => mRecentlySelectedCountry should be null.
@@ -314,44 +319,50 @@ public class AddressEditor
         // that's being edited.
         mPhoneField.set(VALUE, mProfile.getPhoneNumber());
 
-        // If the user clicks [Cancel], send |toEdit| address back to the caller, which was the
-        // original state (could be null, a complete address, a partial address).
-        Runnable onCancel = () -> {
-            // This makes sure that onSubKeysReceived returns early if it's
-            // ever called when Cancel has already occurred.
-            mAdminAreasLoaded = true;
-            PersonalDataManager.getInstance().cancelPendingGetSubKeys();
-            cancelCallback.onResult(toEdit);
-
-            // Clean up the state of this editor.
-            reset();
-        };
-
-        // If the user clicks [Done], save changes on disk, mark the address "complete" if possible,
-        // and send it back to the caller.
-        Runnable onDone = () -> {
-            mAdminAreasLoaded = true;
-            PersonalDataManager.getInstance().cancelPendingGetSubKeys();
-            commitChanges(mProfile);
-            address.completeAddress(mProfile);
-            doneCallback.onResult(address);
-
-            // Clean up the state of this editor.
-            reset();
-        };
-
         mEditorModel = new PropertyModel.Builder(ALL_KEYS)
                                .with(EDITOR_TITLE, editTitle)
                                .with(SHOW_REQUIRED_INDICATOR, true)
                                .with(EDITOR_FIELDS, new ListModel())
-                               .with(DONE_RUNNABLE, onDone)
-                               .with(CANCEL_RUNNABLE, onCancel)
+                               .with(DONE_RUNNABLE, this::onDone)
+                               .with(CANCEL_RUNNABLE, this::onCancel)
                                .build();
         mEditorMCP = PropertyModelChangeProcessor.create(
                 mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView);
 
         loadAdminAreasForCountry(mCountryField.get(VALUE));
         if (mAddressErrors != null) mEditorDialog.validateForm();
+    }
+
+    private void onDone() {
+        mEditorModel.set(VISIBLE, false);
+
+        // This makes sure that onSubKeysReceived returns early if it's
+        // ever called when Done has already occurred.
+        mAdminAreasLoaded = true;
+        PersonalDataManager.getInstance().cancelPendingGetSubKeys();
+
+        // Commit changes to the address and send modified address to the caller.
+        commitChanges(mProfile);
+        mAddress.completeAddress(mProfile);
+        mDoneCallback.onResult(mAddress);
+
+        // Clean up the state of this editor.
+        reset();
+    }
+
+    private void onCancel() {
+        mEditorModel.set(VISIBLE, false);
+
+        // This makes sure that onSubKeysReceived returns early if it's
+        // ever called when Cancel has already occurred.
+        mAdminAreasLoaded = true;
+        PersonalDataManager.getInstance().cancelPendingGetSubKeys();
+
+        // Send unchanged address to the caller.
+        mCancelCallback.onResult(mAddressNew ? null : mAddress);
+
+        // Clean up the state of this editor.
+        reset();
     }
 
     private void showProgressDialog() {

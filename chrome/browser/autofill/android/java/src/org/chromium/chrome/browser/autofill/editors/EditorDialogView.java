@@ -75,6 +75,7 @@ public class EditorDialogView
     /** Duration of the animation to hide the UI. */
     private static final int DIALOG_EXIT_ANIMATION_MS = 195;
 
+    @Nullable
     private static EditorObserverForTest sObserverForTest;
 
     private final Activity mActivity;
@@ -90,7 +91,6 @@ public class EditorDialogView
     private final ViewGroup mContentView;
     private final View mFooter;
     private Button mDoneButton;
-    private boolean mFormWasValid;
 
     private Animator mDialogInOutAnimator;
     private boolean mIsDismissed;
@@ -104,7 +104,6 @@ public class EditorDialogView
     @Nullable
     private String mDeleteConfirmationText;
 
-    private boolean mTriggerDoneCallbackBeforeCloseAnimation;
     private Runnable mDeleteRunnable;
     private Runnable mDoneRunnable;
     private Runnable mCancelRunnable;
@@ -197,11 +196,6 @@ public class EditorDialogView
         mDeleteConfirmationText = deleteConfirmationText;
     }
 
-    public void setShouldTriggerDoneCallbackBeforeCloseAnimation(
-            boolean triggerDoneCallbackBeforeCloseAnimation) {
-        mTriggerDoneCallbackBeforeCloseAnimation = triggerDoneCallbackBeforeCloseAnimation;
-    }
-
     public void setShowRequiredIndicator(boolean showRequiredIndicator) {
         for (FieldView view : mFieldViews) {
             view.setShowRequiredIndicator(showRequiredIndicator);
@@ -289,12 +283,7 @@ public class EditorDialogView
         // Cancel editing when the user hits the back arrow.
         toolbar.setNavigationContentDescription(R.string.cancel);
         toolbar.setNavigationIcon(getTintedBackIcon());
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                animateOutDialog();
-            }
-        });
+        toolbar.setNavigationOnClickListener(view -> mCancelRunnable.run());
 
         // The top shadow is handled by the toolbar, so hide the one used in the field editor.
         FadingEdgeScrollView scrollView =
@@ -347,6 +336,7 @@ public class EditorDialogView
     }
 
     /** @return The validatable item for the given view. */
+    @Nullable
     private FieldView getTextFieldView(View v) {
         if (v instanceof TextView && v.getParent() != null && v.getParent() instanceof FieldView) {
             return (FieldView) v.getParent();
@@ -363,16 +353,12 @@ public class EditorDialogView
         if (mDialogInOutAnimator != null) return;
 
         if (view.getId() == R.id.editor_dialog_done_button) {
-            if (validateForm()) {
-                if (mTriggerDoneCallbackBeforeCloseAnimation) {
-                    mDoneRunnable.run();
-                }
-                mFormWasValid = true;
-                animateOutDialog();
+            if (!validateForm()) {
                 return;
             }
+            mDoneRunnable.run();
         } else if (view.getId() == R.id.payments_edit_cancel_button) {
-            animateOutDialog();
+            mCancelRunnable.run();
         }
     }
 
@@ -415,14 +401,6 @@ public class EditorDialogView
     @Override
     public void onDismiss(DialogInterface dialog) {
         mIsDismissed = true;
-        if (mFormWasValid) {
-            if (!mTriggerDoneCallbackBeforeCloseAnimation) {
-                mDoneRunnable.run();
-            }
-            mFormWasValid = false;
-        } else {
-            mCancelRunnable.run();
-        }
         removeTextChangedListeners();
     }
 

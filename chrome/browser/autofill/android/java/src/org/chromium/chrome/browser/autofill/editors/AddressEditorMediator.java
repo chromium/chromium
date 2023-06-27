@@ -32,7 +32,6 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TRIGGER_DONE_CALLBACK_BEFORE_CLOSE_ANIMATION;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
@@ -42,6 +41,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Text
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PHONE_NUMBER_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PLAIN_TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.STREET_ADDRESS_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -111,6 +111,9 @@ class AddressEditorMediator {
     private String mCustomDoneButtonText;
     private boolean mAllowDelete;
     private boolean mShouldTriggerDoneCallbackBeforeCloseAnimation;
+
+    @Nullable
+    private PropertyModel mEditorModel;
 
     /**
      * The list of possible address fields for editing is determined statically.
@@ -305,8 +308,12 @@ class AddressEditorMediator {
      * [ email address field ] <----- only present if purpose is Purpose.AUTOFILL_SETTINGS.
      * [ address nickname    ] <----- only present if nickname support is enabled.
      */
-    PropertyModel buildEditorModel() {
-        PropertyModel editorModel =
+    PropertyModel getEditorModel() {
+        if (mEditorModel != null) {
+            return mEditorModel;
+        }
+
+        mEditorModel =
                 new PropertyModel.Builder(ALL_KEYS)
                         .with(EDITOR_TITLE, getEditorTitle())
                         .with(CUSTOM_DONE_BUTTON_TEXT, mCustomDoneButtonText)
@@ -314,8 +321,6 @@ class AddressEditorMediator {
                         .with(DELETE_CONFIRMATION_TITLE, getDeleteConfirmationTitle())
                         .with(DELETE_CONFIRMATION_TEXT, getDeleteConfirmationText())
                         .with(SHOW_REQUIRED_INDICATOR, false)
-                        .with(TRIGGER_DONE_CALLBACK_BEFORE_CLOSE_ANIMATION,
-                                mShouldTriggerDoneCallbackBeforeCloseAnimation)
                         .with(EDITOR_FIELDS,
                                 buildEditorFieldList(AutofillAddress.getCountryCode(mProfileToEdit),
                                         mProfileToEdit.getLanguageCode()))
@@ -323,7 +328,7 @@ class AddressEditorMediator {
                         // If the user clicks [Cancel], send |toEdit| address back to the caller,
                         // which was the original state (could be null, a complete address, a
                         // partial address).
-                        .with(CANCEL_RUNNABLE, mDelegate::onCancel)
+                        .with(CANCEL_RUNNABLE, this::onCancelEditing)
                         .with(ALLOW_DELETE, mAllowDelete)
                         .with(DELETE_RUNNABLE, () -> mDelegate.onDelete(mAddressToEdit))
                         .build();
@@ -334,7 +339,7 @@ class AddressEditorMediator {
              */
             @Override
             public void onResult(String countryCode) {
-                editorModel.set(EDITOR_FIELDS,
+                mEditorModel.set(EDITOR_FIELDS,
                         buildEditorFieldList(countryCode, Locale.getDefault().getLanguage()));
 
                 mPhoneFormatter.setCountryCode(countryCode);
@@ -342,7 +347,7 @@ class AddressEditorMediator {
             }
         });
 
-        return editorModel;
+        return mEditorModel;
     }
 
     private boolean shouldDisplayRequiredErrorIfFieldEmpty(AddressUiComponent component) {
@@ -418,16 +423,20 @@ class AddressEditorMediator {
     }
 
     private void onCommitChanges() {
-        // If the user clicks [Done], save changes on disk, mark the address
-        // "complete" if possible,
-        // and send it back to the caller.
-        commitChanges(mProfileToEdit);
+        mEditorModel.set(VISIBLE, false);
 
+        commitChanges(mProfileToEdit);
         // The address cannot be marked "complete" because it has not been
         // checked for all required fields.
         mAddressToEdit.updateAddress(mProfileToEdit);
 
         mDelegate.onDone(mAddressToEdit);
+    }
+
+    private void onCancelEditing() {
+        mEditorModel.set(VISIBLE, false);
+
+        mDelegate.onCancel();
     }
 
     /** Saves the edited profile on disk. */

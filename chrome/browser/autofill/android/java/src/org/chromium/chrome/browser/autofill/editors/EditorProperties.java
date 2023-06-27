@@ -49,15 +49,6 @@ public class EditorProperties {
             new PropertyModel.ReadableObjectPropertyKey<>("delete_confirmation_text");
     public static final PropertyModel.ReadableBooleanPropertyKey SHOW_REQUIRED_INDICATOR =
             new PropertyModel.ReadableBooleanPropertyKey("show_required_indicator");
-    /**
-     * If true, done callback is triggered immediately after the user clicked
-     * on the done button. Otherwise, by default, it is triggered only after the dialog is
-     * dismissed with animation.
-     */
-    public static final PropertyModel
-            .ReadableBooleanPropertyKey TRIGGER_DONE_CALLBACK_BEFORE_CLOSE_ANIMATION =
-            new PropertyModel.ReadableBooleanPropertyKey(
-                    "trigger_done_callback_before_close_animation");
 
     public static final PropertyModel.WritableObjectPropertyKey<ListModel<ListItem>> EDITOR_FIELDS =
             new PropertyModel.WritableObjectPropertyKey<>("editor_fields");
@@ -77,8 +68,8 @@ public class EditorProperties {
 
     public static final PropertyKey[] ALL_KEYS = {EDITOR_TITLE, CUSTOM_DONE_BUTTON_TEXT,
             FOOTER_MESSAGE, DELETE_CONFIRMATION_TITLE, DELETE_CONFIRMATION_TEXT,
-            SHOW_REQUIRED_INDICATOR, TRIGGER_DONE_CALLBACK_BEFORE_CLOSE_ANIMATION, EDITOR_FIELDS,
-            DONE_RUNNABLE, CANCEL_RUNNABLE, ALLOW_DELETE, DELETE_RUNNABLE, VISIBLE};
+            SHOW_REQUIRED_INDICATOR, EDITOR_FIELDS, DONE_RUNNABLE, CANCEL_RUNNABLE, ALLOW_DELETE,
+            DELETE_RUNNABLE, VISIBLE};
 
     private EditorProperties() {}
 

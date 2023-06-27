@@ -15,7 +15,6 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDIT
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FOOTER_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TRIGGER_DONE_CALLBACK_BEFORE_CLOSE_ANIMATION;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -46,9 +45,6 @@ public class EditorDialogViewBinder {
             view.setDeleteConfirmationText(model.get(DELETE_CONFIRMATION_TEXT));
         } else if (propertyKey == SHOW_REQUIRED_INDICATOR) {
             view.setShowRequiredIndicator(model.get(SHOW_REQUIRED_INDICATOR));
-        } else if (propertyKey == TRIGGER_DONE_CALLBACK_BEFORE_CLOSE_ANIMATION) {
-            view.setShouldTriggerDoneCallbackBeforeCloseAnimation(
-                    model.get(TRIGGER_DONE_CALLBACK_BEFORE_CLOSE_ANIMATION));
         } else if (propertyKey == EDITOR_FIELDS) {
             view.setEditorFields(model.get(EDITOR_FIELDS), model.get(SHOW_REQUIRED_INDICATOR));
         } else if (propertyKey == DONE_RUNNABLE) {
