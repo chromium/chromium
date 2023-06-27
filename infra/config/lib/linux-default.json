@@ -690,5 +690,15 @@
     "tricium-simple": "Ubuntu-22.04",
     "try-nougat-phone-tester": "Ubuntu-22.04",
     "win-rel": "Ubuntu-22.04"
+  },
+  "webrtc.fyi": {
+    "WebRTC Chromium FYI Android Builder": "Ubuntu-18.04|Ubuntu-22.04",
+    "WebRTC Chromium FYI Android Builder (dbg)": "Ubuntu-18.04|Ubuntu-22.04",
+    "WebRTC Chromium FYI Android Builder ARM64 (dbg)": "Ubuntu-18.04|Ubuntu-22.04",
+    "WebRTC Chromium FYI Android Tests (dbg)": "Ubuntu-18.04|Ubuntu-22.04",
+    "WebRTC Chromium FYI Android Tests ARM64 (dbg)": "Ubuntu-18.04|Ubuntu-22.04",
+    "WebRTC Chromium FYI Linux Builder": "Ubuntu-18.04|Ubuntu-22.04",
+    "WebRTC Chromium FYI Linux Builder (dbg)": "Ubuntu-18.04|Ubuntu-22.04",
+    "WebRTC Chromium FYI Linux Tester": "Ubuntu-18.04|Ubuntu-22.04"
   }
 }
