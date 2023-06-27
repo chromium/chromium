@@ -6,18 +6,25 @@
 
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/storage_access_api/storage_access_api_service_impl.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/url_constants.h"
 
 constexpr base::TimeDelta kTimerPeriod = base::Days(1);
 
 StorageAccessAPIServiceImpl::StorageAccessAPIServiceImpl(
     content::BrowserContext* browser_context)
-    : grant_refreshes_enabled_(
+    : browser_context_(
+          raw_ref<content::BrowserContext>::from_ptr(browser_context)),
+      grant_refreshes_enabled_(
           blink::features::kStorageAccessAPIRefreshGrantsOnUserInteraction
               .Get()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(browser_context);
 
   if (!grant_refreshes_enabled_) {
     return;
@@ -46,13 +53,33 @@ bool StorageAccessAPIServiceImpl::RenewPermissionGrant(
     const url::Origin& embedded_origin,
     const url::Origin& top_frame_origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!embedded_origin.opaque());
+  CHECK(!top_frame_origin.opaque());
 
   if (!grant_refreshes_enabled_ ||
+      embedded_origin.scheme() != url::kHttpsScheme ||
+      top_frame_origin.scheme() != url::kHttpsScheme ||
       !updated_grants_.Insert(embedded_origin, top_frame_origin)) {
     return false;
   }
 
-  // TODO(https://crbug.com/1450356): implement grant renewal.
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(&*browser_context_);
+  CHECK(settings_map);
+
+  if (!settings_map->RenewContentSetting(embedded_origin.GetURL(),
+                                         top_frame_origin.GetURL(),
+                                         ContentSettingsType::STORAGE_ACCESS)) {
+    return false;
+  }
+
+  ContentSettingsForOneType grants;
+  settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS,
+                                      &grants);
+  browser_context_.get()
+      .GetDefaultStoragePartition()
+      ->GetCookieManagerForBrowserProcess()
+      ->SetStorageAccessGrantSettings(grants, base::DoNothing());
   return true;
 }
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/storage_access_api/storage_access_api_service_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/storage_access_api/storage_access_api_service_impl.h"
@@ -31,7 +32,9 @@ StorageAccessAPIServiceFactory::StorageAccessAPIServiceFactory()
               .WithRegular(ProfileSelection::kOwnInstance)
               .WithGuest(ProfileSelection::kOwnInstance)
               .WithSystem(ProfileSelection::kNone)
-              .Build()) {}
+              .Build()) {
+  DependsOn(HostContentSettingsMapFactory::GetInstance());
+}
 
 StorageAccessAPIServiceFactory::~StorageAccessAPIServiceFactory() = default;
 

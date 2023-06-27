@@ -18,6 +18,8 @@ class StorageAccessAPIService {
   //
   // The implementations of this method may apply rate limiting and caching in
   // order to avoid unnecessary disk writes.
+  //
+  // `embedded_origin` and `top_frame_origin` must be non-opaque.
   virtual bool RenewPermissionGrant(const url::Origin& embedded_origin,
                                     const url::Origin& top_frame_origin) = 0;
 };

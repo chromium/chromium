@@ -746,6 +746,18 @@ void HostContentSettingsMap::UpdateLastVisitedTime(
   }
 }
 
+bool HostContentSettingsMap::RenewContentSetting(const GURL& primary_url,
+                                                 const GURL& secondary_url,
+                                                 ContentSettingsType type) {
+  bool any_updated = false;
+  for (auto* provider : user_modifiable_providers_) {
+    any_updated =
+        provider->RenewContentSetting(primary_url, secondary_url, type) ||
+        any_updated;
+  }
+  return any_updated;
+}
+
 void HostContentSettingsMap::ClearSettingsForOneType(
     ContentSettingsType content_type) {
   UsedContentSettingsProviders();
