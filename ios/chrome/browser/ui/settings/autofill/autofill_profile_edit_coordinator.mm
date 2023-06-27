@@ -45,6 +45,9 @@
 // Default NO. Yes when the country selection view has been presented.
 @property(nonatomic, assign) BOOL isCountrySelectorPresented;
 
+// If YES, a button is shown asking the user to migrate the account.
+@property(nonatomic, assign) BOOL showMigrateToAccountButton;
+
 @end
 
 @implementation AutofillProfileEditCoordinator {
@@ -57,13 +60,15 @@
     initWithBaseNavigationController:
         (UINavigationController*)navigationController
                              browser:(Browser*)browser
-                             profile:(const autofill::AutofillProfile&)profile {
+                             profile:(const autofill::AutofillProfile&)profile
+              migrateToAccountButton:(BOOL)showMigrateToAccountButton {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
     _autofillProfile = profile;
     _isCountrySelectorPresented = NO;
+    _showMigrateToAccountButton = showMigrateToAccountButton;
   }
   return self;
 }
@@ -81,11 +86,12 @@
       _autofillProfile, GetApplicationContext()->GetApplicationLocale());
 
   self.mediator = [[AutofillProfileEditMediator alloc]
-         initWithDelegate:self
-      personalDataManager:personalDataManager
-          autofillProfile:&_autofillProfile
-              countryCode:base::SysUTF8ToNSString(countryCode)
-        isMigrationPrompt:NO];
+                initWithDelegate:self
+             personalDataManager:personalDataManager
+                 autofillProfile:&_autofillProfile
+                     countryCode:base::SysUTF8ToNSString(countryCode)
+               isMigrationPrompt:NO
+      showMigrateToAccountButton:self.showMigrateToAccountButton];
 
   self.viewController = [[AutofillSettingsProfileEditTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];

@@ -30,6 +30,7 @@ class PersonalDataManager;
                  autofillProfile:(autofill::AutofillProfile*)profile
                      countryCode:(NSString*)countryCode
                isMigrationPrompt:(BOOL)isMigrationPrompt
+      showMigrateToAccountButton:(BOOL)showMigrateToAccountButton
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

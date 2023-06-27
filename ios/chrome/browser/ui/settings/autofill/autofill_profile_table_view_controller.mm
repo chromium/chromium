@@ -258,6 +258,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   item.accessibilityIdentifier = title;
   item.GUID = guid;
+  item.showMigrateToAccountButton = NO;
   if (autofillProfile.source() == autofill::AutofillProfile::Source::kAccount) {
     item.autofillProfileSource =
         AutofillAddressProfileSource::AutofillAccountProfile;
@@ -267,6 +268,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   } else {
     item.autofillProfileSource = AutofillLocalProfile;
     if ([self shouldShowCloudOffIconForProfile:autofillProfile]) {
+      item.showMigrateToAccountButton = YES;
       item.image = CustomSymbolTemplateWithPointSize(
           kCloudSlashSymbol, kCloudSlashSymbolPointSize);
     }
@@ -380,9 +382,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   AutofillProfileItem* item = base::mac::ObjCCastStrict<AutofillProfileItem>(
       [self.tableViewModel itemAtIndexPath:indexPath]);
-  [self showAddressProfileDetailsPageForProfile:_personalDataManager
-                                                    ->GetProfileByGUID(
-                                                        item.GUID)];
+  [self
+      showAddressProfileDetailsPageForProfile:_personalDataManager
+                                                  ->GetProfileByGUID(item.GUID)
+                   withMigrateToAccountButton:item.showMigrateToAccountButton];
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
@@ -749,11 +752,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)showAddressProfileDetailsPageForProfile:
-    (autofill::AutofillProfile*)profile {
+            (autofill::AutofillProfile*)profile
+                     withMigrateToAccountButton:(BOOL)migrateToAccountButton {
   self.autofillProfileEditCoordinator = [[AutofillProfileEditCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser
-                               profile:*profile];
+                               profile:*profile
+                migrateToAccountButton:migrateToAccountButton];
   self.autofillProfileEditCoordinator.delegate = self;
   [self.autofillProfileEditCoordinator start];
 }

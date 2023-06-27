@@ -50,6 +50,10 @@
 // an account profile or not.
 - (void)setAccountProfile:(BOOL)accountProfile;
 
+// If YES, a section is shown in the view, providing a button to migrate the
+// profile to Account.
+- (void)showMigrateToAccountButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_PROFILE_EDIT_CONSUMER_H_

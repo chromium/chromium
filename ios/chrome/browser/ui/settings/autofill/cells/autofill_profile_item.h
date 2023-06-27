@@ -29,6 +29,10 @@
 // Denotes whether the profile is local, syncable or account profile.
 @property(nonatomic, assign) AutofillAddressProfileSource autofillProfileSource;
 
+// If YES, a section is shown to the user containing a button to migrate the
+// profile to Account.
+@property(nonatomic, assign) BOOL showMigrateToAccountButton;
+
 @end
 
 @interface AutofillProfileCell : TableViewCell

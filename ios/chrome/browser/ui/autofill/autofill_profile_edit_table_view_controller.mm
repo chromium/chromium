@@ -349,6 +349,10 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
 }
 
+- (void)showMigrateToAccountButton {
+  // TODO(crbug.com/1407666): Show the button section.
+}
+
 #pragma mark - Actions
 
 - (void)didTapSaveButton {
