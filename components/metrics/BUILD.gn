@@ -155,6 +155,8 @@ if (!is_cronet_build || is_ios) {
       "metrics_service_client.h",
       "metrics_service_observer.cc",
       "metrics_service_observer.h",
+      "metrics_shutdown.cc",
+      "metrics_shutdown.h",
       "metrics_state_manager.cc",
       "metrics_state_manager.h",
       "metrics_switches.cc",

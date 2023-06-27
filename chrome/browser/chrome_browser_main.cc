@@ -134,11 +134,11 @@
 #include "components/language/core/common/language_util.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "components/metrics/call_stack_profile_params.h"
-#include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/expired_histogram_util.h"
 #include "components/metrics/metrics_reporting_default_state.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics/metrics_shutdown.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/nacl/browser/nacl_browser.h"
@@ -1993,16 +1993,15 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
 
   browser_process_->PostDestroyThreads();
 
-  // We need to do this check as late as possible, but due to modularity, this
+  // We need to do this call as late as possible, but due to modularity, this
   // may be the last point in Chrome. This would be more effective if done at a
   // higher level on the stack, so that it is impossible for an early return to
   // bypass this code. Perhaps we need a *final* hook that is called on all
   // paths from content/browser/browser_main.
   //
-  // Since we use |browser_process_|'s local state for this CHECK, it must be
+  // Since we use |browser_process_|'s local state for this call, it must be
   // done before |browser_process_| is released.
-  metrics::CleanExitBeacon::EnsureCleanShutdown(
-      browser_process_->local_state());
+  metrics::Shutdown(browser_process_->local_state());
 
   profile_init_manager_.reset();
 
