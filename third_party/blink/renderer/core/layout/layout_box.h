@@ -1111,19 +1111,19 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return GetDocument().InQuirksMode() && StretchesToViewportInQuirksMode();
   }
 
-  virtual LayoutSize IntrinsicSize() const {
+  virtual PhysicalSize IntrinsicSize() const {
     NOT_DESTROYED();
-    return LayoutSize();
+    return PhysicalSize();
   }
   LayoutUnit IntrinsicLogicalWidth() const {
     NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode() ? IntrinsicSize().Width()
-                                                : IntrinsicSize().Height();
+    return StyleRef().IsHorizontalWritingMode() ? IntrinsicSize().width
+                                                : IntrinsicSize().height;
   }
   LayoutUnit IntrinsicLogicalHeight() const {
     NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode() ? IntrinsicSize().Height()
-                                                : IntrinsicSize().Width();
+    return StyleRef().IsHorizontalWritingMode() ? IntrinsicSize().height
+                                                : IntrinsicSize().width;
   }
 
   bool AutoWidthShouldFitContent() const;

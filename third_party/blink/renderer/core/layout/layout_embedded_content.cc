@@ -361,7 +361,7 @@ PhysicalRect LayoutEmbeddedContent::ReplacedContentRectFrom(
     // system forwards mouse events to the child frame even when the mouse is
     // outside of the child frame. Revisit this when the input system supports
     // different |ReplacedContentRect| from |PhysicalContentBoxRect|.
-    LayoutSize frozen_layout_size = frozen_size->ToLayoutSize();
+    PhysicalSize frozen_layout_size = *frozen_size;
     content_rect =
         ComputeReplacedContentRect(size, border_padding, &frozen_layout_size);
   }

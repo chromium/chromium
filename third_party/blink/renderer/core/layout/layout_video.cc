@@ -44,8 +44,8 @@ LayoutVideo::LayoutVideo(HTMLVideoElement* video) : LayoutMedia(video) {
 
 LayoutVideo::~LayoutVideo() = default;
 
-LayoutSize LayoutVideo::DefaultSize() {
-  return LayoutSize(kDefaultWidth, kDefaultHeight);
+PhysicalSize LayoutVideo::DefaultSize() {
+  return PhysicalSize(LayoutUnit(kDefaultWidth), LayoutUnit(kDefaultHeight));
 }
 
 void LayoutVideo::IntrinsicSizeChanged() {
@@ -58,7 +58,7 @@ void LayoutVideo::IntrinsicSizeChanged() {
 void LayoutVideo::UpdateIntrinsicSize() {
   NOT_DESTROYED();
 
-  LayoutSize size = CalculateIntrinsicSize(StyleRef().EffectiveZoom());
+  PhysicalSize size = CalculateIntrinsicSize(StyleRef().EffectiveZoom());
 
   // Never set the element size to zero when in a media document.
   if (size.IsEmpty() && GetNode()->ownerDocument() &&
@@ -74,14 +74,14 @@ void LayoutVideo::UpdateIntrinsicSize() {
       layout_invalidation_reason::kSizeChanged);
 }
 
-LayoutSize LayoutVideo::CalculateIntrinsicSize(float scale) {
+PhysicalSize LayoutVideo::CalculateIntrinsicSize(float scale) {
   NOT_DESTROYED();
   HTMLVideoElement* video = VideoElement();
   DCHECK(video);
 
   if (RuntimeEnabledFeatures::ExperimentalPoliciesEnabled()) {
     if (video->IsDefaultIntrinsicSize()) {
-      LayoutSize size = DefaultSize();
+      PhysicalSize size = DefaultSize();
       size.Scale(scale);
       return size;
     }
@@ -112,7 +112,7 @@ LayoutSize LayoutVideo::CalculateIntrinsicSize(float scale) {
       if (const auto* player = MediaElement()->GetWebMediaPlayer()) {
         gfx::Size size = player->NaturalSize();
         if (!size.IsEmpty()) {
-          LayoutSize layout_size = LayoutSize(size);
+          PhysicalSize layout_size = PhysicalSize(size);
           layout_size.Scale(scale);
           return layout_size;
         }
@@ -120,7 +120,7 @@ LayoutSize LayoutVideo::CalculateIntrinsicSize(float scale) {
       break;
   }
 
-  LayoutSize size = DefaultSize();
+  PhysicalSize size = DefaultSize();
   size.Scale(scale);
   return size;
 }

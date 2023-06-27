@@ -57,7 +57,7 @@ struct IntrinsicSizingInfo;
 class CORE_EXPORT LayoutReplaced : public LayoutBox {
  public:
   LayoutReplaced(Element*);
-  LayoutReplaced(Element*, const LayoutSize& intrinsic_size);
+  LayoutReplaced(Element*, const PhysicalSize& intrinsic_size);
   ~LayoutReplaced() override;
 
   // This function returns the local rect of the replaced content. The rectangle
@@ -149,12 +149,12 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   void UpdateLayout() override;
 
-  LayoutSize IntrinsicSize() const final {
+  PhysicalSize IntrinsicSize() const final {
     NOT_DESTROYED();
     auto width_override = IntrinsicWidthOverride();
     auto height_override = IntrinsicHeightOverride();
-    return LayoutSize(width_override.value_or(intrinsic_size_.Width()),
-                      height_override.value_or(intrinsic_size_.Height()));
+    return PhysicalSize(width_override.value_or(intrinsic_size_.width),
+                        height_override.value_or(intrinsic_size_.height));
   }
 
   MinMaxSizes ComputeIntrinsicLogicalWidths() const final;
@@ -165,11 +165,11 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   PhysicalRect ComputeReplacedContentRect(
       const PhysicalSize size,
       const NGPhysicalBoxStrut& border_padding,
-      const LayoutSize* overridden_intrinsic_size = nullptr) const;
+      const PhysicalSize* overridden_intrinsic_size = nullptr) const;
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
-  void SetIntrinsicSize(const LayoutSize& intrinsic_size) {
+  void SetIntrinsicSize(const PhysicalSize& intrinsic_size) {
     NOT_DESTROYED();
     intrinsic_size_ = intrinsic_size;
   }
@@ -213,12 +213,12 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // should be used as the content source when rendering this element. This
   // value is used as the input for object-fit/object-position during painting.
   absl::optional<PhysicalRect> ComputeObjectViewBoxRect(
-      const LayoutSize* overridden_intrinsic_size = nullptr) const;
+      const PhysicalSize* overridden_intrinsic_size = nullptr) const;
 
   PhysicalRect ComputeObjectFitAndPositionRect(
       const PhysicalSize size,
       const NGPhysicalBoxStrut& border_padding,
-      const LayoutSize* overridden_intrinsic_size) const;
+      const PhysicalSize* overridden_intrinsic_size) const;
 
   absl::optional<LayoutUnit> IntrinsicWidthOverride() const {
     NOT_DESTROYED();
@@ -239,7 +239,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   // The natural/intrinsic size for this replaced element based on the natural
   // size for the element's contents.
-  mutable LayoutSize intrinsic_size_;
+  mutable PhysicalSize intrinsic_size_;
 };
 
 template <>

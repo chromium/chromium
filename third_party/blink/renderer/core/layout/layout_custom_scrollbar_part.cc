@@ -40,7 +40,7 @@ LayoutCustomScrollbarPart::LayoutCustomScrollbarPart(
     CustomScrollbar* scrollbar,
     ScrollbarPart part,
     bool suppress_use_counters)
-    : LayoutReplaced(nullptr, LayoutSize()),
+    : LayoutReplaced(nullptr, PhysicalSize()),
       scrollable_area_(scrollable_area),
       scrollbar_(scrollbar),
       part_(part),

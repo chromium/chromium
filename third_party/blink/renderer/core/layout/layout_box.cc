@@ -3586,7 +3586,7 @@ LayoutUnit LayoutBox::ComputeIntrinsicLogicalContentHeightUsing(
       logical_height_length.IsFitContent()) {
     if (IsAtomicInlineLevel() && !IsFlexibleBoxIncludingNG() &&
         !IsLayoutNGGrid()) {
-      return IntrinsicSize().Height();
+      return IntrinsicSize().height;
     }
     return intrinsic_content_height;
   }

@@ -55,7 +55,7 @@
 namespace blink {
 
 LayoutImage::LayoutImage(Element* element)
-    : LayoutReplaced(element, LayoutSize()) {}
+    : LayoutReplaced(element, PhysicalSize()) {}
 
 LayoutImage* LayoutImage::CreateAnonymous(PseudoElement& pseudo) {
   LayoutImage* image = MakeGarbageCollected<LayoutImage>(nullptr);
@@ -156,7 +156,7 @@ void LayoutImage::ImageChanged(WrappedImagePtr new_image,
   InvalidatePaintAndMarkForLayoutIfNeeded(defer);
 }
 
-void LayoutImage::UpdateIntrinsicSizeIfNeeded(const LayoutSize& new_size) {
+void LayoutImage::UpdateIntrinsicSizeIfNeeded(const PhysicalSize& new_size) {
   NOT_DESTROYED();
   if (image_resource_->ErrorOccurred())
     return;
@@ -181,9 +181,9 @@ bool LayoutImage::NeedsLayoutOnIntrinsicSizeChange() const {
 void LayoutImage::InvalidatePaintAndMarkForLayoutIfNeeded(
     CanDeferInvalidation defer) {
   NOT_DESTROYED();
-  LayoutSize old_intrinsic_size = IntrinsicSize();
+  PhysicalSize old_intrinsic_size = IntrinsicSize();
 
-  LayoutSize new_intrinsic_size = RoundedLayoutSize(
+  PhysicalSize new_intrinsic_size = PhysicalSize::FromSizeFRound(
       ImageSizeOverriddenByIntrinsicSize(StyleRef().EffectiveZoom()));
   UpdateIntrinsicSizeIfNeeded(new_intrinsic_size);
 
