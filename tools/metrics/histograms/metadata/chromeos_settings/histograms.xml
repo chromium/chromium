@@ -241,15 +241,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.Settings.Languages.SupportPageVisits"
-    enum="SettingsLanguagesSupportPage" expires_after="2022-10-12">
-  <owner>myy@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    Records when users visit a language settings support page for Chrome OS.
-  </summary>
-</histogram>
-
 <histogram base="true" name="ChromeOS.Settings.Languages.Toggle"
     enum="BooleanToggled" expires_after="2023-12-24">
 <!-- Name completed by histogram_suffixes name="SettingsLanguagesPageToggle" -->
