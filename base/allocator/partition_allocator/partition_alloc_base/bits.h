@@ -7,7 +7,6 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_BITS_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_BITS_H_
 
-#include <climits>
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
@@ -149,7 +148,7 @@ constexpr T LeftmostBit() {
   static_assert(std::is_integral<T>::value,
                 "This function can only be used with integral types.");
   T one(1u);
-  return one << ((CHAR_BIT * sizeof(T) - 1));
+  return one << (8 * sizeof(T) - 1);
 }
 
 }  // namespace partition_alloc::internal::base::bits

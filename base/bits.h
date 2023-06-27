@@ -7,7 +7,6 @@
 #ifndef BASE_BITS_H_
 #define BASE_BITS_H_
 
-#include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -134,7 +133,7 @@ constexpr T LeftmostBit() {
   static_assert(std::is_integral<T>::value,
                 "This function can only be used with integral types.");
   T one(1u);
-  return one << ((CHAR_BIT * sizeof(T) - 1));
+  return one << (8 * sizeof(T) - 1);
 }
 
 }  // namespace bits

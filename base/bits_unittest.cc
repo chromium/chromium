@@ -248,7 +248,7 @@ TEST(BitsTest, PowerOfTwo) {
 
 TEST(BitsTest, LeftMostBit) {
   // Construction of a signed type from an unsigned one of the same width
-  // preserves all bits. Explicitily confirming this behavior here to illustrate
+  // preserves all bits. Explicitly confirming this behavior here to illustrate
   // correctness of reusing unsigned literals to test behavior of signed types.
   // Using signed literals does not work with EXPECT_EQ.
   static_assert(int64_t(0xFFFFFFFFFFFFFFFFu) == 0xFFFFFFFFFFFFFFFFl,
