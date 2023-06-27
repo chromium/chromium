@@ -137,11 +137,10 @@ namespace base {
 //
 // Lists support:
 // - `empty()`, `size()`, `begin()`, `end()`, `cbegin()`, `cend()`,
-//       `front()`, `back()`, `reserve()`, `operator[]`, `clear()`, `erase()`:
-//       Identical to the STL container equivalents, with additional safety
-//       checks, e.g. `operator[]` will `CHECK()` if the index is out of range.
-// - `rbegin()` and `rend()` are also supported, but there are no safety checks
-// (see crbug.com/1446739).
+//       `rbegin()`, `rend()`, `front()`, `back()`, `reserve()`, `operator[]`,
+//       `clear()`, `erase()`: Identical to the STL container equivalents, with
+//       additional safety checks, e.g. `operator[]` will `CHECK()` if the index
+//       is out of range.
 // - `Clone()`: Create a deep copy.
 // - `Append()`: Append a value to the end of the list. Accepts `Value` or any
 //       of the subtypes that `Value` can hold.
@@ -588,6 +587,8 @@ class BASE_EXPORT GSL_OWNER Value {
    public:
     using iterator = CheckedContiguousIterator<Value>;
     using const_iterator = CheckedContiguousConstIterator<Value>;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
     using value_type = Value;
 
     // Creates a list with the given capacity reserved.
@@ -628,12 +629,12 @@ class BASE_EXPORT GSL_OWNER Value {
 
     // Returns a reverse iterator preceding the first value in this list. May
     // not be dereferenced.
-    std::vector<Value>::reverse_iterator rend();
-    std::vector<Value>::const_reverse_iterator rend() const;
+    reverse_iterator rend();
+    const_reverse_iterator rend() const;
 
     // Returns a reverse iterator to the last value in this list.
-    std::vector<Value>::reverse_iterator rbegin();
-    std::vector<Value>::const_reverse_iterator rbegin() const;
+    reverse_iterator rbegin();
+    const_reverse_iterator rbegin() const;
 
     // Returns a reference to the first value in the container. Fails with
     // `CHECK()` if the list is empty.
