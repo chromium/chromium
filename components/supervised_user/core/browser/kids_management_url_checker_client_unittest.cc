@@ -10,11 +10,11 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
+#include "components/supervised_user/core/browser/kids_chrome_management_test_utils.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -23,57 +23,7 @@
 
 using testing::_;
 
-namespace {
-
 using kids_chrome_management::ClassifyUrlResponse;
-
-ClassifyUrlResponse::DisplayClassification ConvertClassification(
-    safe_search_api::ClientClassification classification) {
-  switch (classification) {
-    case safe_search_api::ClientClassification::kAllowed:
-      return ClassifyUrlResponse::ALLOWED;
-    case safe_search_api::ClientClassification::kRestricted:
-      return ClassifyUrlResponse::RESTRICTED;
-    case safe_search_api::ClientClassification::kUnknown:
-      return ClassifyUrlResponse::UNKNOWN_DISPLAY_CLASSIFICATION;
-  }
-}
-
-// Build fake response proto with a response according to |classification|.
-std::unique_ptr<ClassifyUrlResponse> BuildResponseProto(
-    safe_search_api::ClientClassification classification) {
-  auto response_proto = std::make_unique<ClassifyUrlResponse>();
-
-  response_proto->set_display_classification(
-      ConvertClassification(classification));
-  return response_proto;
-}
-
-class KidsChromeManagementClientForTesting : public KidsChromeManagementClient {
- public:
-  using KidsChromeManagementClient::KidsChromeManagementClient;
-
-  void ClassifyURL(
-      std::unique_ptr<kids_chrome_management::ClassifyUrlRequest> request_proto,
-      KidsChromeManagementClient::KidsChromeManagementCallback callback)
-      override {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  std::move(response_proto_), error_code_));
-  }
-
-  void SetupResponse(std::unique_ptr<ClassifyUrlResponse> response_proto,
-                     KidsChromeManagementClient::ErrorCode error_code) {
-    response_proto_ = std::move(response_proto);
-    error_code_ = error_code;
-  }
-
- private:
-  std::unique_ptr<ClassifyUrlResponse> response_proto_;
-  KidsChromeManagementClient::ErrorCode error_code_;
-};
-
-}  // namespace
 
 class KidsManagementURLCheckerClientTest : public testing::Test {
  public:
@@ -86,7 +36,7 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
 
   void SetUp() override {
     test_kids_chrome_management_client_ =
-        std::make_unique<KidsChromeManagementClientForTesting>(
+        std::make_unique<kids_management::KidsChromeManagementClientForTesting>(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_),
             identity_test_env_.identity_manager());
@@ -97,7 +47,7 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
  protected:
   void SetupClientResponse(std::unique_ptr<ClassifyUrlResponse> response_proto,
                            KidsChromeManagementClient::ErrorCode error_code) {
-    test_kids_chrome_management_client_->SetupResponse(
+    test_kids_chrome_management_client_->SetResponseWithError(
         std::move(response_proto), error_code);
   }
 
@@ -127,7 +77,7 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
-  std::unique_ptr<KidsChromeManagementClientForTesting>
+  std::unique_ptr<kids_management::KidsChromeManagementClientForTesting>
       test_kids_chrome_management_client_;
   std::unique_ptr<KidsManagementURLCheckerClient> url_classifier_;
 };
@@ -141,7 +91,7 @@ TEST_F(KidsManagementURLCheckerClientTest, Simple) {
 
     EXPECT_CALL(*this, OnCheckDone(url, classification));
 
-    SetupClientResponse(BuildResponseProto(classification),
+    SetupClientResponse(kids_management::BuildResponseProto(classification),
                         KidsChromeManagementClient::ErrorCode::kSuccess);
 
     CheckURL(url);
@@ -154,7 +104,7 @@ TEST_F(KidsManagementURLCheckerClientTest, Simple) {
 
     EXPECT_CALL(*this, OnCheckDone(url, classification));
 
-    SetupClientResponse(BuildResponseProto(classification),
+    SetupClientResponse(kids_management::BuildResponseProto(classification),
                         KidsChromeManagementClient::ErrorCode::kSuccess);
     CheckURL(url);
   }
@@ -166,7 +116,7 @@ TEST_F(KidsManagementURLCheckerClientTest, AccessTokenError) {
   safe_search_api::ClientClassification classification =
       safe_search_api::ClientClassification::kUnknown;
 
-  SetupClientResponse(BuildResponseProto(classification),
+  SetupClientResponse(kids_management::BuildResponseProto(classification),
                       KidsChromeManagementClient::ErrorCode::kTokenError);
 
   EXPECT_CALL(*this, OnCheckDone(url, classification));
@@ -180,7 +130,7 @@ TEST_F(KidsManagementURLCheckerClientTest, NetworkErrors) {
     safe_search_api::ClientClassification classification =
         safe_search_api::ClientClassification::kUnknown;
 
-    SetupClientResponse(BuildResponseProto(classification),
+    SetupClientResponse(kids_management::BuildResponseProto(classification),
                         KidsChromeManagementClient::ErrorCode::kNetworkError);
 
     EXPECT_CALL(*this, OnCheckDone(url, classification));
@@ -194,7 +144,7 @@ TEST_F(KidsManagementURLCheckerClientTest, NetworkErrors) {
     safe_search_api::ClientClassification classification =
         safe_search_api::ClientClassification::kUnknown;
 
-    SetupClientResponse(BuildResponseProto(classification),
+    SetupClientResponse(kids_management::BuildResponseProto(classification),
                         KidsChromeManagementClient::ErrorCode::kHttpError);
 
     EXPECT_CALL(*this, OnCheckDone(url, classification));
@@ -209,7 +159,7 @@ TEST_F(KidsManagementURLCheckerClientTest, ServiceError) {
   safe_search_api::ClientClassification classification =
       safe_search_api::ClientClassification::kUnknown;
 
-  SetupClientResponse(BuildResponseProto(classification),
+  SetupClientResponse(kids_management::BuildResponseProto(classification),
                       KidsChromeManagementClient::ErrorCode::kServiceError);
 
   EXPECT_CALL(*this, OnCheckDone(url, classification));

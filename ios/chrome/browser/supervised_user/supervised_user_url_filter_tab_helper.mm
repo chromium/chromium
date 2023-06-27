@@ -4,15 +4,23 @@
 
 #import "ios/chrome/browser/supervised_user/supervised_user_url_filter_tab_helper.h"
 
+#import "base/functional/callback.h"
+#import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
+#import "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #import "components/supervised_user/core/browser/supervised_user_interstitial.h"
+#import "components/supervised_user/core/browser/supervised_user_service.h"
+#import "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/pref_names.h"
 #import "components/supervised_user/core/common/supervised_user_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/supervised_user/kids_chrome_management_client_factory.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_error.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_error_container.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
 #import "ios/net/protocol_handler_util.h"
 #import "net/base/mac/url_conversions.h"
 #import "net/base/net_errors.h"
@@ -22,29 +30,40 @@
 #error "This file requires ARC support."
 #endif
 
+using PolicyDecision = web::WebStatePolicyDecider::PolicyDecision;
+
 namespace {
 
-const char kFilteredURLExample[] = "/filtered";
+void OnURLFilteringDone(
+    base::WeakPtr<web::WebState> weak_web_state,
+    GURL request_url,
+    bool is_main_frame,
+    web::WebStatePolicyDecider::PolicyDecisionCallback policy_decision_callback,
+    supervised_user::SupervisedUserURLFilter::FilteringBehavior
+        filtering_behavior,
+    supervised_user::FilteringBehaviorReason reason,
+    bool uncertain /*unused*/) {
+  // Allow navigation by default.
+  PolicyDecision decision = PolicyDecision::Allow();
+  web::WebState* web_state = weak_web_state.get();
 
-// Fake supervised user custodian information displayed in the interstitial.
-// They will be fetched by the child account service once it is migrated to
-// components.
-void CreateMockData(web::WebState* web_state) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  if (!web_state) {
+    // Cancel the request if the corresponding `web_state` is destroyed.
+    decision = PolicyDecision::Cancel();
+  } else if (filtering_behavior == supervised_user::SupervisedUserURLFilter::
+                                       FilteringBehavior::BLOCK) {
+    SupervisedUserErrorContainer* container =
+        SupervisedUserErrorContainer::FromWebState(web_state);
+    CHECK(container);
+    container->SetSupervisedUserErrorInfo(
+        std::make_unique<SupervisedUserErrorContainer::SupervisedUserErrorInfo>(
+            request_url, is_main_frame,
+            // TODO(b/265761985): Update once we have this information.
+            /*is_already_requested=*/false, reason));
+    decision = CreateSupervisedUserInterstitialErrorDecision();
+  }
 
-  browser_state->GetPrefs()->SetString(prefs::kSupervisedUserCustodianEmail,
-                                       "primary@gmail.com");
-  browser_state->GetPrefs()->SetString(prefs::kSupervisedUserCustodianName,
-                                       "Primary Name");
-  browser_state->GetPrefs()->SetString(
-      prefs::kSupervisedUserSecondCustodianName, "Secondary Name");
-  browser_state->GetPrefs()->SetString(
-      prefs::kSupervisedUserSecondCustodianEmail, "secondary@gmail.com");
-  browser_state->GetPrefs()->SetString(
-      prefs::kSupervisedUserCustodianProfileImageURL, "thisurl.com");
-  browser_state->GetPrefs()->SetString(
-      prefs::kSupervisedUserSecondCustodianProfileImageURL, "otherurl.com");
+  std::move(policy_decision_callback).Run(decision);
 }
 
 }  // namespace
@@ -59,30 +78,34 @@ void SupervisedUserURLFilterTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
     web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
-  // TODO(b/265761985): integrate with SupervisedUserService::GetURLFilter().
-  if ([request.URL.absoluteString containsString:@(kFilteredURLExample)]) {
-    supervised_user::FilteringBehaviorReason reason =
-        supervised_user::FilteringBehaviorReason::
-            DEFAULT;  // TODO(b/265761985): Extract reason from filtering.
-    // TODO(b/279765349): Remove once we have real data to populate the
-    // interstitial.
-    CreateMockData(web_state());
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(web_state()->GetBrowserState());
 
-    SupervisedUserErrorContainer* container =
-        SupervisedUserErrorContainer::FromWebState(web_state());
-    CHECK(container);
-    container->SetSupervisedUserErrorInfo(
-        std::make_unique<SupervisedUserErrorContainer::SupervisedUserErrorInfo>(
-            GURL(base::SysNSStringToUTF8(request.URL.absoluteString)),
-            request_info.target_frame_is_main,
-            // TODO(b/265761985): Update once we have this information.
-            /*is_already_requested=*/false, reason));
-
-    std::move(callback).Run(CreateSupervisedUserInterstitialErrorDecision());
+  // SupervisedUserService is not created for the off-the-record browser state.
+  if (chrome_browser_state->IsOffTheRecord()) {
+    std::move(callback).Run(PolicyDecision::Allow());
     return;
   }
 
-  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
+  supervised_user::SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForBrowserState(chrome_browser_state);
+
+  if (!supervised_user_service->IsURLFilteringEnabled()) {
+    std::move(callback).Run(PolicyDecision::Allow());
+    return;
+  }
+
+  // Set up the callback taking filtering results, and perform URL filtering.
+  GURL request_url = net::GURLWithNSURL(request.URL);
+  supervised_user::SupervisedUserURLFilter::FilteringBehaviorCallback
+      filtering_behavior_callback = base::BindOnce(
+          &OnURLFilteringDone, web_state()->GetWeakPtr(), request_url,
+          request_info.target_frame_is_main, std::move(callback));
+
+  supervised_user_service->GetURLFilter()
+      ->GetFilteringBehaviorForURLWithAsyncChecks(
+          request_url, std::move(filtering_behavior_callback),
+          /*skip_manual_parent_filter=*/false);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(SupervisedUserURLFilterTabHelper)

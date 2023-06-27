@@ -46,6 +46,7 @@ source_set("supervised_user") {
     "//services/network/public/cpp",
   ]
 }
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -56,36 +57,27 @@ source_set("unit_tests") {
     "supervised_user_metrics_service_factory_unittest.mm",
     "supervised_user_service_factory_unittest.mm",
     "supervised_user_settings_service_factory_unittest.mm",
+    "supervised_user_url_filter_tab_helper_unittest.mm",
   ]
   deps = [
     ":supervised_user",
     "//base/test:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/browser:list_family_members_service",
+    "//components/supervised_user/core/browser:test_support",
     "//components/supervised_user/core/common",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/shared/model/application_context:application_context",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
+    "//services/network:test_support",
+    "//testing/gtest",
   ]
-}
-
-source_set("eg2_tests") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:xctest_config",
-  ]
-  testonly = true
-  sources = [ "supervised_user_url_filter_egtest.mm" ]
-  deps = [
-    "//base",
-    "//components/strings",
-    "//components/strings:components_strings_grit",
-    "//components/supervised_user/core/common",
-    "//ios/chrome/browser/policy:eg_test_support+eg2",
-    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/web/public/test/http_server",
-    "//net:test_support",
-    "//ui/base",
-  ]
-  frameworks = [ "UIKit.framework" ]
 }

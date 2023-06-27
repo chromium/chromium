@@ -72,6 +72,8 @@ source_set("browser_state") {
     "//components/proxy_config/ios",
     "//components/signin/ios/browser:active_state_manager",
     "//components/signin/public/identity_manager",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
     "//components/sync_preferences",
     "//components/user_prefs",
     "//components/variations/service",

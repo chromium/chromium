@@ -28,13 +28,17 @@ namespace base {
 class Version;
 }  // namespace base
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}  // namespace user_prefs
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace syncer {
 class SyncService;
 }  // namespace syncer
+
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
 
 namespace supervised_user {
 class SupervisedUserSettingsService;
@@ -152,6 +156,7 @@ class SupervisedUserService : public KeyedService,
   // an instance of this service.
   // Public to allow visibility to iOS factory.
   SupervisedUserService(
+      signin::IdentityManager* identity_manager,
       KidsChromeManagementClient* kids_chrome_management_client,
       PrefService& user_prefs,
       supervised_user::SupervisedUserSettingsService& settings_service,
@@ -199,6 +204,8 @@ class SupervisedUserService : public KeyedService,
       settings_service_;
 
   const raw_ref<syncer::SyncService> sync_service_;
+
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   raw_ptr<KidsChromeManagementClient> kids_chrome_management_client_;
 

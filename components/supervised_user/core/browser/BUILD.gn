@@ -141,8 +141,12 @@ source_set("test_support") {
   deps = [
     ":fetcher",
     "//base",
+    "//components/safe_search_api",
+    "//components/signin/public/identity_manager",
+    "//components/supervised_user/core/browser",
     "//components/supervised_user/core/browser/proto",
     "//net/traffic_annotation",
+    "//services/network/public/cpp",
     "//url",
   ]
 }
@@ -176,6 +180,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/prefs:test_support",
     "//components/resources:components_resources",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/strings:components_strings_grit",
     "//components/supervised_user/core/browser/proto",

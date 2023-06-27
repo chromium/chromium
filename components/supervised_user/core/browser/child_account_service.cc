@@ -192,7 +192,17 @@ void ChildAccountService::OnExtendedAccountInfoUpdated(
     return;
   }
 
-  SetSupervisionStatusAndNotifyObservers(info.is_child_account ==
+  signin::Tribool is_child_account = info.is_child_account;
+#if BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kEnableSupervisionOnDesktopAndIOS)) {
+    // AccountInfo::is_child_account is not set on iOS; use capabilities.
+    CHECK(is_child_account == signin::Tribool::kUnknown);
+    is_child_account = info.capabilities.is_subject_to_parental_controls();
+    CHECK(is_child_account != signin::Tribool::kUnknown);
+  }
+#endif  // BUILDFLAG(IS_IOS)
+  SetSupervisionStatusAndNotifyObservers(is_child_account ==
                                          signin::Tribool::kTrue);
 }
 
