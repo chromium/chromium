@@ -233,9 +233,6 @@ void OmniboxPopupViewViews::InvalidateLine(size_t line) {
 void OmniboxPopupViewViews::OnSelectionChanged(
     OmniboxPopupSelection old_selection,
     OmniboxPopupSelection new_selection) {
-  // TODO(crbug.com/1445142): Remove this DCHECK after refactor is complete.
-  DCHECK(!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup));
-
   // Do not invalidate the same line twice, in order to avoid redundant
   // accessibility events.
   if (old_selection.line != OmniboxPopupSelection::kNoMatch &&
@@ -302,14 +299,73 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
     popup_created = true;
   }
 
-  UpdateChildViews();
+  // Update the match cached by each row, in the process of doing so make sure
+  // we have enough row views.
+  const size_t result_size = controller()->result().size();
+  std::u16string previous_row_header = u"";
+  PrefService* const pref_service = GetPrefService();
+  for (size_t i = 0; i < result_size; ++i) {
+    // Create child views lazily.  Since especially the first result view may
+    // be expensive to create due to loading font data, this saves time and
+    // memory during browser startup. https://crbug.com/1021323
+    if (children().size() == i) {
+      AddChildView(std::make_unique<OmniboxRowView>(
+          i, /*popup_view=*/this,
+          std::make_unique<OmniboxResultView>(/*popup_view=*/this, i),
+          pref_service));
+    }
+
+    OmniboxRowView* const row_view =
+        static_cast<OmniboxRowView*>(children()[i]);
+    row_view->SetVisible(true);
+
+    // Show the header if it's distinct from the previous match's header.
+    const AutocompleteMatch& match = GetMatchAtIndex(i);
+    std::u16string current_row_header =
+        match.suggestion_group_id.has_value()
+            ? controller()->result().GetHeaderForSuggestionGroup(
+                  match.suggestion_group_id.value())
+            : u"";
+    if (!current_row_header.empty() &&
+        current_row_header != previous_row_header) {
+      row_view->ShowHeader(match.suggestion_group_id.value(),
+                           current_row_header);
+    } else {
+      row_view->HideHeader();
+    }
+    previous_row_header = current_row_header;
+
+    OmniboxResultView* const result_view = row_view->result_view();
+    result_view->SetMatch(match);
+
+    // Set visibility of the result view based on whether the group is hidden.
+    bool match_hidden = pref_service && match.suggestion_group_id.has_value() &&
+                        controller()->result().IsSuggestionGroupHidden(
+                            pref_service, match.suggestion_group_id.value());
+    result_view->SetVisible(!match_hidden);
+
+    const SkBitmap* bitmap = model()->GetPopupRichSuggestionBitmap(i);
+    if (bitmap) {
+      result_view->SetRichSuggestionImage(
+          gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
+    }
+  }
+  // If we have more views than matches, hide the surplus ones.
+  for (auto i = children().begin() + result_size; i != children().end(); ++i) {
+    (*i)->SetVisible(false);
+  }
 
   popup_->SetTargetBounds(GetTargetBounds());
 
   if (popup_created) {
     popup_->ShowAnimated();
 
-    OnPopupCreated();
+    // Popup is now expanded and first item will be selected.
+    NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+    OmniboxResultView* result_view = result_view_at(0);
+    if (result_view) {
+      FireAXEventsForNewActiveDescendant(result_view);
+    }
 
 #if BUILDFLAG(IS_MAC)
     // It's not great for promos to overlap the omnibox if the user opens the
@@ -327,9 +383,6 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
 }
 
 void OmniboxPopupViewViews::ProvideButtonFocusHint(size_t line) {
-  // TODO(crbug.com/1445142): Remove this DCHECK after refactor is complete.
-  DCHECK(!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup));
-
   DCHECK(GetSelection().IsButtonFocused());
 
   views::View* active_button = static_cast<OmniboxRowView*>(children()[line])
@@ -342,9 +395,6 @@ void OmniboxPopupViewViews::ProvideButtonFocusHint(size_t line) {
 }
 
 void OmniboxPopupViewViews::OnMatchIconUpdated(size_t match_index) {
-  // TODO(crbug.com/1445142): Remove this DCHECK after refactor is complete.
-  DCHECK(!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup));
-
   if (OmniboxResultView* result_view = result_view_at(match_index)) {
     result_view->OnMatchIconUpdated();
   }
@@ -361,9 +411,6 @@ void OmniboxPopupViewViews::GetPopupAccessibleNodeData(
 
 void OmniboxPopupViewViews::AddPopupAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  // TODO(crbug.com/1445142): Remove this DCHECK after refactor is complete.
-  DCHECK(!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup));
-
   // Establish a "CONTROLS" relationship between the omnibox and the
   // the popup. This allows a screen reader to understand the relationship
   // between the omnibox and the list of suggestions, and determine which
@@ -394,9 +441,6 @@ std::u16string OmniboxPopupViewViews::GetAccessibleButtonTextForResult(
 }
 
 bool OmniboxPopupViewViews::OnMouseDragged(const ui::MouseEvent& event) {
-  // TODO(crbug.com/1445142): Remove this DCHECK after refactor is complete.
-  DCHECK(!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup));
-
   size_t index = GetIndexForPoint(event.location());
 
   // If the drag event is over the bounds of one of the result views, pass
@@ -469,83 +513,7 @@ void OmniboxPopupViewViews::OnWidgetBoundsChanged(views::Widget* widget,
   UpdatePopupAppearance();
 }
 
-void OmniboxPopupViewViews::UpdateChildViews() {
-  // TODO(crbug.com/1445142): Remove this DCHECK after refactor is complete.
-  DCHECK(!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup));
-
-  // Update the match cached by each row, in the process of doing so make sure
-  // we have enough row views.
-  const size_t result_size = controller()->result().size();
-  std::u16string previous_row_header = u"";
-  PrefService* const pref_service = GetPrefService();
-  for (size_t i = 0; i < result_size; ++i) {
-    // Create child views lazily.  Since especially the first result view may
-    // be expensive to create due to loading font data, this saves time and
-    // memory during browser startup. https://crbug.com/1021323
-    if (children().size() == i) {
-      AddChildView(std::make_unique<OmniboxRowView>(
-          i, /*popup_view=*/this,
-          std::make_unique<OmniboxResultView>(/*popup_view=*/this, i),
-          pref_service));
-    }
-
-    OmniboxRowView* const row_view =
-        static_cast<OmniboxRowView*>(children()[i]);
-    row_view->SetVisible(true);
-
-    // Show the header if it's distinct from the previous match's header.
-    const AutocompleteMatch& match = GetMatchAtIndex(i);
-    std::u16string current_row_header =
-        match.suggestion_group_id.has_value()
-            ? controller()->result().GetHeaderForSuggestionGroup(
-                  match.suggestion_group_id.value())
-            : u"";
-    if (!current_row_header.empty() &&
-        current_row_header != previous_row_header) {
-      row_view->ShowHeader(match.suggestion_group_id.value(),
-                           current_row_header);
-    } else {
-      row_view->HideHeader();
-    }
-    previous_row_header = current_row_header;
-
-    OmniboxResultView* const result_view = row_view->result_view();
-    result_view->SetMatch(match);
-
-    // Set visibility of the result view based on whether the group is hidden.
-    bool match_hidden = pref_service && match.suggestion_group_id.has_value() &&
-                        controller()->result().IsSuggestionGroupHidden(
-                            pref_service, match.suggestion_group_id.value());
-    result_view->SetVisible(!match_hidden);
-
-    const SkBitmap* bitmap = model()->GetPopupRichSuggestionBitmap(i);
-    if (bitmap) {
-      result_view->SetRichSuggestionImage(
-          gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
-    }
-  }
-  // If we have more views than matches, hide the surplus ones.
-  for (auto i = children().begin() + result_size; i != children().end(); ++i) {
-    (*i)->SetVisible(false);
-  }
-}
-
-void OmniboxPopupViewViews::OnPopupCreated() {
-  // TODO(crbug.com/1445142): Remove this DCHECK after refactor is complete.
-  DCHECK(!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup));
-
-  // Popup is now expanded and first item will be selected.
-  NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
-  OmniboxResultView* result_view = result_view_at(0);
-  if (result_view) {
-    FireAXEventsForNewActiveDescendant(result_view);
-  }
-}
-
 gfx::Rect OmniboxPopupViewViews::GetTargetBounds() const {
-  // TODO(crbug.com/1445142): Remove this DCHECK after refactor is complete.
-  DCHECK(!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup));
-
   int popup_height = 0;
 
   DCHECK_GE(children().size(), controller()->result().size());
@@ -577,9 +545,6 @@ gfx::Rect OmniboxPopupViewViews::GetTargetBounds() const {
 }
 
 OmniboxResultView* OmniboxPopupViewViews::result_view_at(size_t i) {
-  // TODO(crbug.com/1445142): Remove this DCHECK after refactor is complete.
-  DCHECK(!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup));
-
   if (i >= children().size()) {
     return nullptr;
   }

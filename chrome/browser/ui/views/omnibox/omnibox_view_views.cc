@@ -232,12 +232,13 @@ void OmniboxViewViews::Init() {
   }
 
   if (location_bar_view_) {
-    popup_view_ =
-        popup_is_webui_
-            ? std::make_unique<OmniboxPopupViewWebUI>(
-                  /*omnibox_view=*/this, controller(), location_bar_view_)
-            : std::make_unique<OmniboxPopupViewViews>(
-                  /*omnibox_view=*/this, controller(), location_bar_view_);
+    if (popup_is_webui_) {
+      popup_view_ = std::make_unique<OmniboxPopupViewWebUI>(
+          /*omnibox_view=*/this, controller(), location_bar_view_);
+    } else {
+      popup_view_ = std::make_unique<OmniboxPopupViewViews>(
+          /*omnibox_view=*/this, controller(), location_bar_view_);
+    }
     // Set whether the text should be used to improve typing suggestions.
     SetShouldDoLearning(!location_bar_view_->profile()->IsOffTheRecord());
   }

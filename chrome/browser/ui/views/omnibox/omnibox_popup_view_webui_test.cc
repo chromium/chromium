@@ -18,10 +18,9 @@ OmniboxPopupViewWebUITest::ThemeChangeWaiter::~ThemeChangeWaiter() {
   base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed).Run();
 }
 
-views::Widget* OmniboxPopupViewWebUITest::CreatePopupForTestQuery() {
+void OmniboxPopupViewWebUITest::CreatePopupForTestQuery() {
   EXPECT_TRUE(controller()->result().empty());
   EXPECT_FALSE(popup_view()->IsOpen());
-  EXPECT_FALSE(GetPopupWidget());
 
   edit_model()->SetUserText(u"foo");
   AutocompleteInput input(
@@ -32,9 +31,6 @@ views::Widget* OmniboxPopupViewWebUITest::CreatePopupForTestQuery() {
 
   EXPECT_FALSE(controller()->result().empty());
   EXPECT_TRUE(popup_view()->IsOpen());
-  views::Widget* popup = GetPopupWidget();
-  EXPECT_TRUE(popup);
-  return popup;
 }
 
 void OmniboxPopupViewWebUITest::UseDefaultTheme() {

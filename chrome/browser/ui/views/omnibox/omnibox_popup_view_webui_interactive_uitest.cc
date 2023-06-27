@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
 
   // The background is hosted in the view that contains the results area.
   CreatePopupForTestQuery();
-  views::View* background_host = popup_view()->parent();
+  views::View* background_host = location_bar();
   EXPECT_EQ(color_after_focus, background_host->background()->get_color());
 
   // Blurring the Omnibox should restore the original colors.
@@ -51,7 +51,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
                        TestSatisfiesTestCoverageRobot) {
-  popup_view()->UpdateChildViews();
   OmniboxPopupSelection selection(OmniboxPopupSelection::kNoMatch);
   popup_view()->OnSelectionChanged(selection, selection);
   popup_view()->ProvideButtonFocusHint(0);

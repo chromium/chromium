@@ -86,15 +86,9 @@ class OmniboxPopupViewViews : public views::View,
   friend class OmniboxSuggestionButtonRowBrowserTest;
   class AutocompletePopupWidget;
 
-  // Add and update any child views; called by `UpdatePopupAppearance`.
-  virtual void UpdateChildViews();
-
-  // Called by `UpdatePopupAppearance` after popup is created.
-  virtual void OnPopupCreated();
-
   // Returns the target popup bounds in screen coordinates based on the bounds
   // of |location_bar_view_|.
-  virtual gfx::Rect GetTargetBounds() const;
+  gfx::Rect GetTargetBounds() const;
 
   // Gets the OmniboxResultView for match |i|.
   OmniboxResultView* result_view_at(size_t i);
@@ -111,7 +105,7 @@ class OmniboxPopupViewViews : public views::View,
   size_t GetIndexForPoint(const gfx::Point& point);
 
   // Update which result views are visible when the group visibility changes.
-  virtual void OnSuggestionGroupVisibilityUpdate();
+  void OnSuggestionGroupVisibilityUpdate();
 
   // Gets the pref service for this view. May return nullptr in tests.
   PrefService* GetPrefService() const;

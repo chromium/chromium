@@ -21,6 +21,9 @@
 #include "chrome/browser/ui/views/omnibox/webui_omnibox_popup_view.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/browser/ui/webui/realbox/realbox_handler.h"
+#include "components/omnibox/browser/omnibox_controller.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,14 +42,41 @@
 OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(OmniboxViewViews* omnibox_view,
                                              OmniboxController* controller,
                                              LocationBarView* location_bar_view)
-    : OmniboxPopupViewViews(omnibox_view, controller, location_bar_view),
-      webui_view_(nullptr) {}
+    : OmniboxPopupView(controller),
+      omnibox_view_(omnibox_view),
+      location_bar_view_(location_bar_view),
+      webui_view_(nullptr) {
+  model()->set_popup_view(this);
+}
+
+OmniboxPopupViewWebUI::~OmniboxPopupViewWebUI() {
+  model()->set_popup_view(nullptr);
+}
+
+bool OmniboxPopupViewWebUI::IsOpen() const {
+  return !!webui_view_;
+}
+
+void OmniboxPopupViewWebUI::InvalidateLine(size_t line) {}
 
 void OmniboxPopupViewWebUI::OnSelectionChanged(
     OmniboxPopupSelection old_selection,
     OmniboxPopupSelection new_selection) {
   if (webui_view_) {
-    webui_view_->OnSelectedLineChanged(old_selection.line, new_selection.line);
+    handler()->SelectMatchAtLine(old_selection.line, new_selection.line);
+  }
+}
+
+void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
+  if (controller()->result().empty() || omnibox_view_->IsImeShowingPopup()) {
+    if (webui_view_) {
+      webui_view_->Hide();
+    }
+  } else {
+    if (!webui_view_) {
+      webui_view_ = std::make_unique<WebUIOmniboxPopupView>(location_bar_view_);
+    }
+    webui_view_->Show();
   }
 }
 
@@ -58,49 +88,21 @@ void OmniboxPopupViewWebUI::OnMatchIconUpdated(size_t match_index) {
   // TODO(crbug.com/1396174): Not implemented for WebUI omnibox popup yet.
 }
 
+void OmniboxPopupViewWebUI::OnDragCanceled() {}
+
+void OmniboxPopupViewWebUI::GetPopupAccessibleNodeData(
+    ui::AXNodeData* node_data) {}
+
 void OmniboxPopupViewWebUI::AddPopupAccessibleNodeData(
     ui::AXNodeData* node_data) {
   // TODO(crbug.com/1396174): Not implemented for WebUI omnibox popup yet.
 }
 
-bool OmniboxPopupViewWebUI::OnMouseDragged(const ui::MouseEvent& event) {
-  // TODO(crbug.com/1396174): Not implemented for WebUI omnibox popup yet.
-  return true;
+std::u16string OmniboxPopupViewWebUI::GetAccessibleButtonTextForResult(
+    size_t line) {
+  return u"";
 }
 
-void OmniboxPopupViewWebUI::UpdateChildViews() {
-  if (!webui_view_) {
-    webui_view_ = AddChildView(std::make_unique<WebUIOmniboxPopupView>(
-        location_bar_view()->profile()));
-  }
-}
-
-void OmniboxPopupViewWebUI::OnPopupCreated() {}
-
-gfx::Rect OmniboxPopupViewWebUI::GetTargetBounds() const {
-  int popup_height = 0;
-
-  if (webui_view_) {
-    popup_height = webui_view_->GetPreferredSize().height();
-  }
-
-  // Add enough space on the top and bottom so it looks like there is the same
-  // amount of space between the text and the popup border as there is in the
-  // interior between each row of text.
-  popup_height += RoundedOmniboxResultsFrame::GetNonResultSectionHeight();
-
-  // Add 8dp at the bottom for aesthetic reasons. https://crbug.com/1076646
-  // It's expected that this space is dead unclickable/unhighlightable space.
-  constexpr int kExtraBottomPadding = 8;
-  popup_height += kExtraBottomPadding;
-
-  // The rounded popup is always offset the same amount from the omnibox.
-  gfx::Rect content_rect = location_bar_view()->GetBoundsInScreen();
-  content_rect.Inset(
-      -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
-  content_rect.set_height(popup_height);
-
-  // Finally, expand the widget to accommodate the custom-drawn shadows.
-  content_rect.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
-  return content_rect;
+RealboxHandler* OmniboxPopupViewWebUI::handler() const {
+  return webui_view_->GetWebUIHandler();
 }

@@ -43,8 +43,7 @@ class OmniboxPopupViewWebUITest : public InProcessBrowserTest {
   OmniboxPopupViewWebUITest& operator=(const OmniboxPopupViewWebUITest&) =
       delete;
 
-  views::Widget* CreatePopupForTestQuery();
-  views::Widget* GetPopupWidget() { return popup_view()->GetWidget(); }
+  void CreatePopupForTestQuery();
 
   LocationBarView* location_bar() {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
