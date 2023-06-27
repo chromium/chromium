@@ -75,6 +75,7 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
+  void HandleIdentifierEntered(const std::string& account_identifier);
 
   void OnGetAuthFactorsConfiguration(std::unique_ptr<UserContext> user_context,
                                      absl::optional<AuthenticationError> error);
@@ -82,6 +83,10 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
   void FetchGaiaReauthToken(const AccountId& account);
   void OnGaiaReauthTokenFetched(const AccountId& account,
                                 const std::string& token);
+
+  // Triggers the enrollment nudge flow and returns true if all requirements are
+  // met, otherwise does nothing and returns false.
+  bool MaybeTriggerEnrollmentNudge(const std::string& user_email);
 
   AuthFactorEditor auth_factor_editor_;
   std::unique_ptr<GaiaReauthTokenFetcher> gaia_reauth_token_fetcher_;

@@ -93,6 +93,10 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
   // for recovery.
   virtual void SetReauthRequestToken(
       const std::string& reauth_request_token) = 0;
+  // Shows pop-up saying that enrollment is required for user's managed domain.
+  virtual void ShowEnrollmentNudge(const std::string& email_domain) = 0;
+  // Checks if user's email is allowlisted.
+  virtual void CheckIfAllowlisted(const std::string& user_email) = 0;
 
   // Show sign-in screen for the given credentials. `services` is a list of
   // services returned by userInfo call as JSON array. Should be an empty array
@@ -148,6 +152,8 @@ class GaiaScreenHandler
   void ShowAllowlistCheckFailedError() override;
   void ReloadGaiaAuthenticator() override;
   void SetReauthRequestToken(const std::string& reauth_request_token) override;
+  void ShowEnrollmentNudge(const std::string& email_domain) override;
+  void CheckIfAllowlisted(const std::string& user_email) override;
 
   void ShowSigninScreenForTest(const std::string& username,
                                const std::string& password,
@@ -243,8 +249,6 @@ class GaiaScreenHandler
                                            base::Value::Dict result);
 
   void HandleGaiaUIReady();
-
-  void HandleIdentifierEntered(const std::string& account_identifier);
 
   void HandleAuthExtensionLoaded();
 
@@ -346,9 +350,6 @@ class GaiaScreenHandler
 
   void SAMLConfirmPassword(::login::StringList scraped_saml_passwords,
                            std::unique_ptr<UserContext> user_context);
-
-  bool MaybeTriggerEnrollmentNudge(const std::string& user_email);
-  void CheckIfAllowlisted(const std::string& user_email);
 
   // Current state of Gaia frame.
   FrameState frame_state_ = FRAME_STATE_UNKNOWN;

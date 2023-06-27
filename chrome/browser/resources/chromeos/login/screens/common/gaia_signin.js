@@ -856,7 +856,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @private
    */
   onIdentifierEnteredMessage_(e) {
-    chrome.send('identifierEntered', [e.detail.accountIdentifier]);
+    this.userActed(['identifierEntered', e.detail.accountIdentifier]);
   }
 
   /**
