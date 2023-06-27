@@ -4,13 +4,12 @@
 
 #include "chromeos/ui/frame/default_frame_header.h"
 
-#include "base/logging.h"  // DCHECK
+#include "base/check.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "chromeos/ui/base/window_state_type.h"
-#include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/color/color_provider.h"
@@ -18,7 +17,6 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/scoped_canvas.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/widget.h"
@@ -106,11 +104,7 @@ void DefaultFrameHeader::UpdateFrameColors() {
 // DefaultFrameHeader, protected:
 
 void DefaultFrameHeader::DoPaintHeader(gfx::Canvas* canvas) {
-  int corner_radius = IsNormalWindowStateType(GetTargetWindow()->GetProperty(
-                          chromeos::kWindowStateTypeKey))
-                          ? chromeos::kTopCornerRadiusWhenRestored
-                          : 0;
-
+  const int corner_radius = GetFrameCornerRadius(GetTargetWindow());
   cc::PaintFlags flags;
 
   if (features::IsJellyrollEnabled() &&
@@ -122,7 +116,7 @@ void DefaultFrameHeader::DoPaintHeader(gfx::Canvas* canvas) {
                                                : inactive_frame_color_);
   }
 
-  flags.setAntiAlias(true);
+  flags.setAntiAlias(corner_radius > 0);
   if (width_in_pixels_ > 0) {
     canvas->Save();
     float layer_scale =

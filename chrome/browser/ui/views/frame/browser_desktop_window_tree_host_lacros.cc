@@ -11,8 +11,8 @@
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_lacros.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
@@ -20,11 +20,6 @@
 #include "ui/platform_window/platform_window.h"
 
 namespace {
-
-bool ShouldHaveRoundedCorners(chromeos::WindowStateType window_state) {
-  return window_state == chromeos::WindowStateType::kNormal ||
-         window_state == chromeos::WindowStateType::kDefault;
-}
 
 // Returns the event source for the active tab drag session.
 absl::optional<ui::mojom::DragEventSource> GetCurrentTabDragEventSource() {
@@ -70,11 +65,12 @@ void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
   const gfx::Size widget_size_px =
       platform_window()->GetBoundsInPixels().size();
 
+  const float corner_radius =
+      chromeos::GetFrameCornerRadius(browser_view_->GetNativeWindow());
+
   std::vector<gfx::Rect> opaque_region;
-  if (showing_frame &&
-      ShouldHaveRoundedCorners(browser_view_->GetNativeWindow()->GetProperty(
-          chromeos::kWindowStateTypeKey))) {
-    const float corner_radius = chromeos::kTopCornerRadiusWhenRestored;
+  const bool should_have_rounded_corners = corner_radius > 0;
+  if (showing_frame && should_have_rounded_corners) {
     GetContentWindow()->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(corner_radius, corner_radius, 0, 0));
     GetContentWindow()->layer()->SetIsFastRoundedCorner(true);

@@ -4,10 +4,12 @@
 
 #include "chromeos/ui/frame/frame_utils.h"
 
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
@@ -107,6 +109,24 @@ SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top) {
     return is_primary_display_layout ? SnapDirection::kSecondary
                                      : SnapDirection::kPrimary;
   }
+}
+
+int GetFrameCornerRadius(const aura::Window* native_window) {
+  const chromeos::WindowStateType window_state =
+      native_window->GetProperty(chromeos::kWindowStateTypeKey);
+
+  if (window_state == chromeos::WindowStateType::kPip) {
+    return chromeos::kPipRoundedCornerRadius;
+  }
+
+  if (chromeos::IsNormalWindowStateType(
+          native_window->GetProperty(chromeos::kWindowStateTypeKey))) {
+    return chromeos::features::IsRoundedWindowsEnabled()
+               ? chromeos::features::RoundedWindowsRadius()
+               : chromeos::kTopCornerRadiusWhenRestored;
+  }
+
+  return 0;
 }
 
 }  // namespace chromeos
