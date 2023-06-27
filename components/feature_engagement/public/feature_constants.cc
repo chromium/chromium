@@ -499,6 +499,9 @@ BASE_FEATURE(kIPHiOSShareToolbarItemFeature,
 BASE_FEATURE(kIPHiOSDefaultBrowserVideoPromoTriggerFeature,
              "IPH_iOSDefaultBrowserVideoPromoTrigger",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPromoPostRestoreDefaultBrowserFeature,
+             "IPH_iOSPromoPostRestoreDefaultBrowser",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
