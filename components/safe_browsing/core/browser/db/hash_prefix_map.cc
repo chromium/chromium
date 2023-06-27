@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "components/safe_browsing/core/browser/db/prefix_iterator.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -341,13 +342,23 @@ class MmapHashPrefixMap::BufferedFileWriter {
   bool has_error_;
 };
 
-MmapHashPrefixMap::MmapHashPrefixMap(const base::FilePath& store_path,
-                                     size_t buffer_size)
-    : store_path_(store_path), buffer_size_(buffer_size) {}
+MmapHashPrefixMap::MmapHashPrefixMap(
+    const base::FilePath& store_path,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    size_t buffer_size)
+    : store_path_(store_path),
+      task_runner_(task_runner
+                       ? std::move(task_runner)
+                       : base::SequencedTaskRunner::GetCurrentDefault()),
+      buffer_size_(buffer_size) {}
 MmapHashPrefixMap::~MmapHashPrefixMap() = default;
 
 void MmapHashPrefixMap::Clear() {
-  map_.clear();
+  // Destruct the map on the db task runner, since the memory mapped files
+  // should be destroyed on the same thread they were created.
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce([](std::unordered_map<PrefixSize, FileInfo>) {},
+                                std::move(map_)));
 }
 
 HashPrefixMapView MmapHashPrefixMap::view() const {
@@ -506,6 +517,13 @@ base::FilePath MmapHashPrefixMap::GetPath(const base::FilePath& store_path,
 
 const std::string& MmapHashPrefixMap::GetExtensionForTesting(PrefixSize size) {
   return GetFileInfo(size).GetExtensionForTesting();  // IN-TEST
+}
+
+void MmapHashPrefixMap::ClearAndWaitForTesting() {
+  Clear();
+  base::RunLoop run_loop;
+  task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 MmapHashPrefixMap::FileInfo& MmapHashPrefixMap::GetFileInfo(PrefixSize size) {

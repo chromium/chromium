@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
@@ -48,6 +49,7 @@ class HashPrefixMapTest : public PlatformTest {
 
   base::Time time_ = base::Time::Now();
   base::ScopedTempDir temp_dir_;
+  base::test::SingleThreadTaskEnvironment task_env_;
 };
 
 TEST_F(HashPrefixMapTest, WriteFile) {
@@ -106,7 +108,9 @@ TEST_F(HashPrefixMapTest, WriteMultipleFiles) {
 }
 
 TEST_F(HashPrefixMapTest, BuffersWrites) {
-  MmapHashPrefixMap map(GetBasePath(), /*buffer_size=*/4);
+  MmapHashPrefixMap map(GetBasePath(),
+                        base::SequencedTaskRunner::GetCurrentDefault(),
+                        /*buffer_size=*/4);
 
   map.Append(4, "fooo");
   EXPECT_EQ(GetContents(map.GetExtensionForTesting(4)), "");
@@ -226,13 +230,15 @@ TEST_F(HashPrefixMapTest, WriteAndReadFile) {
 }
 
 TEST_F(HashPrefixMapTest, ClearingMapBeforeWriteDeletesFile) {
-  MmapHashPrefixMap map(GetBasePath(), /*buffer_size=*/1);
+  MmapHashPrefixMap map(GetBasePath(),
+                        base::SequencedTaskRunner::GetCurrentDefault(),
+                        /*buffer_size=*/1);
   map.Append(4, "foo");
 
   std::string extension = map.GetExtensionForTesting(4);
   EXPECT_EQ(GetContents(extension), "foo");
 
-  map.Clear();
+  map.ClearAndWaitForTesting();
   EXPECT_FALSE(base::PathExists(GetPath(extension)));
 }
 
@@ -325,7 +331,7 @@ TEST_F(HashPrefixMapTest, UsesFileOffsets) {
   V4StoreFileFormat file_format;
   EXPECT_TRUE(map.WriteToDisk(&file_format));
   EXPECT_EQ(map.IsValid(), APPLY_UPDATE_SUCCESS);
-  map.Clear();
+  map.ClearAndWaitForTesting();
 
   EXPECT_EQ(file_format.hash_files().size(), 1);
   const auto& hash_file = file_format.hash_files(0);
@@ -442,6 +448,7 @@ class HashPrefixMapTypedTest : public ::testing::Test {
 
   absl::optional<base::ScopedTempDir> temp_dir_;
   std::unique_ptr<HashPrefixMap> hash_prefix_map_;
+  base::test::SingleThreadTaskEnvironment task_env_;
 };
 
 template <>
