@@ -261,11 +261,21 @@ public class TabSwitcherTabletTest {
         // Assert the grid tab switcher is shown automatically, since there is no next tab.
         onView(withId(R.id.tab_switcher_view_holder))
                 .check(matches(withEffectiveVisibility(VISIBLE)));
+    }
 
-        TestThreadUtils.runOnUiThreadBlocking(()
-                                                      -> sActivityTestRule.getActivity()
-                                                                 .findViewById(R.id.new_tab_button)
-                                                                 .performClick());
+    @Test
+    @MediumTest
+    public void testGridTabSwitcherOnCloseAllTabs() throws ExecutionException {
+        // Assert the grid tab switcher is not yet showing.
+        onView(withId(R.id.tab_switcher_view_holder)).check(matches(withEffectiveVisibility(GONE)));
+
+        // Close all tabs.
+        ChromeTabUtils.closeAllTabs(InstrumentationRegistry.getInstrumentation(),
+                sActivityTestRule.getActivity().getTabModelSelectorSupplier());
+
+        // Assert the grid tab switcher is shown automatically, since there is no next tab.
+        onView(withId(R.id.tab_switcher_view_holder))
+                .check(matches(withEffectiveVisibility(VISIBLE)));
     }
 
     @Test
