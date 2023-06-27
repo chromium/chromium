@@ -280,6 +280,9 @@ void SavePackage::InternalInit() {
       page_->GetMainDocument().GetBrowserContext()->GetDownloadManager());
   DCHECK(download_manager_);
 
+  // Always constructed with the primary page that GetPageUkmSourceId()
+  // supports.
+  CHECK(page_->IsPrimary());
   ukm_source_id_ = page_->GetMainDocument().GetPageUkmSourceId();
   ukm_download_id_ = download::GetUniqueDownloadId();
   download::DownloadUkmHelper::RecordDownloadStarted(
