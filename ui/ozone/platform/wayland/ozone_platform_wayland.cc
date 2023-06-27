@@ -196,9 +196,18 @@ class OzonePlatformWayland : public OzonePlatform,
     if (path_finder_.GetDrmRenderNodePath().empty())
       return false;
 
-    if (supported_buffer_formats_.find(format) ==
-        supported_buffer_formats_.end()) {
-      return false;
+    // When OzonePlatform instance is called from GPU process,
+    // |supported_buffer_formats_| is empty. Supported buffer formats are sent
+    // to |buffer_manager_| via IPC after gpu service init in that case.
+    if (buffer_manager_) {
+      if (!buffer_manager_->SupportsFormat(format)) {
+        return false;
+      }
+    } else {
+      if (supported_buffer_formats_.find(format) ==
+          supported_buffer_formats_.end()) {
+        return false;
+      }
     }
 
     return gfx::ClientNativePixmapDmaBuf::IsConfigurationSupported(format,

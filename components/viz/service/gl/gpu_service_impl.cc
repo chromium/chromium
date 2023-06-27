@@ -426,16 +426,6 @@ GpuServiceImpl::GpuServiceImpl(
   gpu_memory_buffer_factory_ = gpu::GpuMemoryBufferFactory::CreateNativeType(
       vulkan_context_provider(), io_runner_);
 
-  if (base::FeatureList::IsEnabled(features::kUseClientGmbInterface)) {
-#if defined(USE_OZONE_PLATFORM_X11)
-    for (const auto& config : gpu_extra_info_.gpu_memory_buffer_support_x11) {
-      supported_gmb_configurations_.emplace(config);
-    }
-#else
-    supported_gmb_configurations_ =
-        gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
-#endif
-  }
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -1443,6 +1433,21 @@ void GpuServiceImpl::OnOverlayCapsChanged() {
 bool GpuServiceImpl::IsNativeBufferSupported(gfx::BufferFormat format,
                                              gfx::BufferUsage usage) {
   CHECK(base::FeatureList::IsEnabled(features::kUseClientGmbInterface));
+  // Note that we are initializing the |supported_gmb_configurations_| here to
+  // make sure gpu service have already initialized and required metadata like
+  // supported buffer configurations have already been sent from browser
+  // process to GPU process for wayland.
+  if (!supported_gmb_configurations_inited_) {
+    supported_gmb_configurations_inited_ = true;
+#if defined(USE_OZONE_PLATFORM_X11)
+    for (const auto& config : gpu_extra_info_.gpu_memory_buffer_support_x11) {
+      supported_gmb_configurations_.emplace(config);
+    }
+#else
+    supported_gmb_configurations_ =
+        gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
+#endif
+  }
   return supported_gmb_configurations_.find(gfx::BufferUsageAndFormat(
              usage, format)) != supported_gmb_configurations_.end();
 }
