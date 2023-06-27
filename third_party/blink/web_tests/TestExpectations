@@ -1310,7 +1310,6 @@ crbug.com/1377794 [ Linux ] external/wpt/css/css-fonts/font-variant-emoji-1.html
 crbug.com/1377794 [ Win ] external/wpt/css/css-fonts/font-variant-emoji-1.html [ Failure ]
 crbug.com/1377794 [ Mac ] external/wpt/css/css-fonts/font-variant-emoji-2.html [ Failure ]
 crbug.com/1375884 external/wpt/css/css-fonts/rlh-in-monospace.html [ Failure ]
-crbug.com/1456655 external/wpt/css/css-fonts/format-specifiers-variations.html [ Failure ]
 
 crbug.com/1317062 external/wpt/html/rendering/non-replaced-elements/phrasing-content-0/br-wbr-content/content-property.tentative.html [ Failure ]
 
