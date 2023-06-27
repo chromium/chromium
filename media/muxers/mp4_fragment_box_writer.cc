@@ -266,7 +266,9 @@ void Mp4MediaDataBoxWriter::Write(BoxByteStream& writer) {
 
   writer.StartBox(mp4::FOURCC_MDAT);
 
-  for (const auto& data : box_.data) {
+  for (const auto& data : box_.track_data) {
+    // Write base data offset to the entry of `base_data_offset` of the `trun`,
+    // which was set with placeholder during its write.
     writer.FlushCurrentOffset();
     writer.WriteBytes(data.data(), data.size());
   }

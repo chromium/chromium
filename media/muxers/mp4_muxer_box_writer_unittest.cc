@@ -846,11 +846,8 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4Fragments) {
   std::vector<uint8_t> video_data(kVideoDataSize, 0);
   std::vector<uint8_t> audio_data(kAudioDataSize, 1);
 
-  base::span<uint8_t> video_span(video_data);
-  base::span<uint8_t> audio_span(audio_data);
-
-  media_data.data.push_back(std::move(video_span));
-  media_data.data.push_back(std::move(audio_span));
+  media_data.track_data.push_back(std::move(video_data));
+  media_data.track_data.push_back(std::move(audio_data));
 
   // Write `moof` boxes.
   Mp4MovieFragmentBoxWriter box_writer(*context(), moof);

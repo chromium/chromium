@@ -352,7 +352,7 @@ struct MEDIA_EXPORT MediaData : Box {
   ~MediaData();
   MediaData(const MediaData&);
   MediaData& operator=(const MediaData&);
-  std::vector<base::span<uint8_t>> data;
+  std::vector<std::vector<uint8_t>> track_data;
 };
 
 }  // namespace media::mp4::writable_boxes
