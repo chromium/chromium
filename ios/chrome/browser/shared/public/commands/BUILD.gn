@@ -30,6 +30,7 @@ source_set("commands") {
     "open_lens_input_selection_command.mm",
     "open_new_tab_command.h",
     "open_new_tab_command.mm",
+    "overflow_menu_customization_commands.h",
     "page_info_commands.h",
     "password_breach_commands.h",
     "password_protection_commands.h",

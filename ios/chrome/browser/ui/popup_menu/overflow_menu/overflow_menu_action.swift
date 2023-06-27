@@ -9,4 +9,7 @@ import SwiftUI
   /// Whether the action is enabled. This does not take enterprise policies
   /// into account.
   @Published public var enabled = true
+
+  /// If true, do not override the color of the row's text with a custom color.
+  @Published public var useSystemRowColoring = false
 }

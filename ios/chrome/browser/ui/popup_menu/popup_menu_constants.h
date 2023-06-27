@@ -82,5 +82,7 @@ extern NSString* const kToolsMenuShareChromeId;
 extern NSString* const kToolsMenuWhatsNewId;
 // Open Price Notifications accessibility Identifier.
 extern NSString* const kToolsMenuPriceNotifications;
+// Edit Actions item accessibility Identifier.
+extern NSString* const kToolsMenuEditActionsId;
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_POPUP_MENU_CONSTANTS_H_

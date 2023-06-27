@@ -104,9 +104,10 @@ struct OverflowMenuDestinationButton: ButtonStyle {
       spacing = 0
       interiorPadding = Dimensions.horizontalLayoutIconPadding
     }
+    let symbolName = destination.symbolName ?? "gearshape"
     let image =
       (destination.systemSymbol
-      ? Image(systemName: destination.symbolName) : Image(destination.symbolName)).renderingMode(
+      ? Image(systemName: symbolName) : Image(symbolName)).renderingMode(
         .template)
     return iconBuilder(
       configuration: configuration, spacing: spacing, interiorPadding: interiorPadding, image: image

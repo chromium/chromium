@@ -31,6 +31,7 @@ class SyncService;
 class BrowserPolicyConnectorIOS;
 @protocol FindInPageCommands;
 class FollowBrowserAgent;
+@protocol OverflowMenuCustomizationCommands;
 class OverlayPresenter;
 @protocol PageInfoCommands;
 @protocol PopupMenuCommands;
@@ -58,6 +59,7 @@ class WebStateList;
                               ApplicationCommands,
                               BrowserCoordinatorCommands,
                               FindInPageCommands,
+                              OverflowMenuCustomizationCommands,
                               PriceNotificationsCommands,
                               TextZoomCommands>
     dispatcher;

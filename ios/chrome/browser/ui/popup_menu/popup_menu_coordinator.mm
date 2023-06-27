@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/overflow_menu_customization_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
@@ -92,7 +93,8 @@ enum class IOSOverflowMenuActionType {
 
 }  // namespace
 
-@interface PopupMenuCoordinator () <PopupMenuCommands,
+@interface PopupMenuCoordinator () <OverflowMenuCustomizationCommands,
+                                    PopupMenuCommands,
                                     PopupMenuMetricsHandler,
                                     PopupMenuPresenterDelegate,
                                     UIPopoverPresentationControllerDelegate,
@@ -148,6 +150,9 @@ enum class IOSOverflowMenuActionType {
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(PopupMenuCommands)];
+  [self.browser->GetCommandDispatcher()
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(OverflowMenuCustomizationCommands)];
   NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
   [defaultCenter addObserver:self
                     selector:@selector(applicationDidEnterBackground:)
@@ -259,6 +264,7 @@ enum class IOSOverflowMenuActionType {
       self.overflowMenuMediator.dispatcher =
           static_cast<id<ActivityServiceCommands, ApplicationCommands,
                          BrowserCoordinatorCommands, FindInPageCommands,
+                         OverflowMenuCustomizationCommands,
                          PriceNotificationsCommands, TextZoomCommands>>(
               self.browser->GetCommandDispatcher());
       self.overflowMenuMediator.bookmarksCommandsHandler = HandlerForProtocol(
@@ -543,6 +549,14 @@ enum class IOSOverflowMenuActionType {
   id<SnackbarCommands> snackbarCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);
   [snackbarCommandsHandler showSnackbarMessage:message];
+}
+
+#pragma mark - OverflowMenuCustomizationCommands
+
+- (void)showActionCustomization {
+}
+
+- (void)hideActionCustomization {
 }
 
 #pragma mark - ContainedPresenterDelegate

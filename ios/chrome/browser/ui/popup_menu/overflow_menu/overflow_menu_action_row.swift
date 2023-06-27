@@ -34,37 +34,38 @@ struct OverflowMenuActionRow: View {
             newLabelIconView()
               .accessibilityIdentifier("overflowRowIPHBadgeIdentifier")
           }
-          Spacer()
-          imageBuilder().frame(
-            width: OverflowMenuActionRow.symbolImageFrameLength,
-            height: OverflowMenuActionRow.symbolImageFrameLength, alignment: .center
-          )
-          // Without explicitly removing the image from accessibility,
-          // VoiceOver will occasionally read out icons it thinks it can
-          // recognize.
-          .accessibilityHidden(true)
+          if let symbol = actionSymbol() {
+            Spacer()
+            symbol
+              .font(Font.system(size: OverflowMenuActionRow.symbolSize, weight: .medium))
+              .imageScale(.medium)
+              .frame(
+                width: OverflowMenuActionRow.symbolImageFrameLength,
+                height: OverflowMenuActionRow.symbolImageFrameLength, alignment: .center
+              )
+              // Without explicitly removing the image from accessibility,
+              // VoiceOver will occasionally read out icons it thinks it can
+              // recognize.
+              .accessibilityHidden(true)
+          }
         }
         .contentShape(Rectangle())
       }
     ).padding([.trailing], OverflowMenuActionRow.symbolImagePadding)
       .accessibilityIdentifier(action.accessibilityIdentifier)
       .disabled(!action.enabled || action.enterpriseDisabled)
-      .accentColor(.textPrimary)
+      .if(!action.useSystemRowColoring) { view in
+        view.accentColor(.textPrimary)
+      }
       .listRowSeparatorTint(.overflowMenuSeparator)
   }
 
-  /// Build the image to be displayed, based on the configuration of the item.
-  /// TODO(crbug.com/1315544): Remove this once only the symbols are present.
-  @ViewBuilder
-  func imageBuilder() -> some View {
-    actionSymbol().font(Font.system(size: OverflowMenuActionRow.symbolSize, weight: .medium))
-      .imageScale(
-        .medium)
-  }
-
-  func actionSymbol() -> Image {
+  func actionSymbol() -> Image? {
+    guard let symbolName = action.symbolName else {
+      return nil
+    }
     let symbol =
-      action.systemSymbol ? Image(systemName: action.symbolName) : Image(action.symbolName)
+      action.systemSymbol ? Image(systemName: symbolName) : Image(symbolName)
     if action.monochromeSymbol {
       return symbol.symbolRenderingMode(.monochrome)
     }

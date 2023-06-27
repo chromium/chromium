@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/overflow_menu_customization_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
@@ -210,6 +211,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 @property(nonatomic, strong) OverflowMenuActionGroup* appActionsGroup;
 @property(nonatomic, strong) OverflowMenuActionGroup* pageActionsGroup;
 @property(nonatomic, strong) OverflowMenuActionGroup* helpActionsGroup;
+@property(nonatomic, strong) OverflowMenuActionGroup* editActionsGroup;
 
 @property(nonatomic, strong) OverflowMenuAction* reloadAction;
 @property(nonatomic, strong) OverflowMenuAction* stopLoadAction;
@@ -234,6 +236,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 @property(nonatomic, strong) OverflowMenuAction* reportIssueAction;
 @property(nonatomic, strong) OverflowMenuAction* helpAction;
 @property(nonatomic, strong) OverflowMenuAction* shareChromeAction;
+
+@property(nonatomic, strong) OverflowMenuAction* editActionsAction;
 
 @end
 
@@ -724,6 +728,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
         [weakSelf shareChromeApp];
       });
 
+  self.editActionsAction = CreateOverflowMenuAction(
+      IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS, nil, /*systemSymbol=*/NO,
+      /*monochromeSymbol=*/NO, kToolsMenuEditActionsId, ^{
+        [weakSelf beginActionEdit];
+      });
+  self.editActionsAction.useSystemRowColoring = YES;
+
   // The app actions vary based on page state, so they are set in
   // `-updateModel`.
   self.appActionsGroup =
@@ -744,14 +755,25 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                                  actions:@[]
                                                   footer:nil];
 
+  self.editActionsGroup = [[OverflowMenuActionGroup alloc]
+      initWithGroupName:@"edit_actions"
+                actions:@[ self.editActionsAction ]
+                 footer:nil];
+
+  NSMutableArray* actionGroups = [[NSMutableArray alloc] init];
+  [actionGroups addObjectsFromArray:@[
+    self.appActionsGroup,
+    self.pageActionsGroup,
+    self.helpActionsGroup,
+  ]];
+  if (IsOverflowMenuCustomizationEnabled()) {
+    [actionGroups addObject:self.editActionsGroup];
+  }
+
   // Destinations and footer vary based on state, so they're set in
   // -updateModel.
   return [[OverflowMenuModel alloc] initWithDestinations:@[]
-                                            actionGroups:@[
-                                              self.appActionsGroup,
-                                              self.pageActionsGroup,
-                                              self.helpActionsGroup,
-                                            ]];
+                                            actionGroups:actionGroups];
 }
 
 #pragma mark - Private
@@ -1554,6 +1576,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   RecordAction(UserMetricsAction("MobileMenuHelp"));
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
   [self.dispatcher showHelpPage];
+}
+
+// Begins the action edit flow.
+- (void)beginActionEdit {
+  [self.dispatcher showActionCustomization];
 }
 
 #pragma mark - Destinations Handlers
