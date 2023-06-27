@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/webdata/autocomplete_sync_bridge.h"
@@ -40,7 +40,7 @@
 namespace {
 
 void InitAutofillSyncBridgesOnDBSequence(
-    scoped_refptr<base::SingleThreadTaskRunner> db_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner,
     const scoped_refptr<autofill::AutofillWebDataService>& autofill_web_data,
     const std::string& app_locale,
     bool enable_contact_info_sync,
@@ -58,7 +58,7 @@ void InitAutofillSyncBridgesOnDBSequence(
 }
 
 void InitWalletSyncBridgesOnDBSequence(
-    scoped_refptr<base::SingleThreadTaskRunner> db_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner,
     const scoped_refptr<autofill::AutofillWebDataService>& autofill_web_data,
     const std::string& app_locale,
     autofill::AutofillWebDataBackend* autofill_backend) {
@@ -71,7 +71,7 @@ void InitWalletSyncBridgesOnDBSequence(
 }
 
 void InitWalletOfferSyncBridgeOnDBSequence(
-    scoped_refptr<base::SingleThreadTaskRunner> db_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner,
     const scoped_refptr<autofill::AutofillWebDataService>& autofill_web_data,
     autofill::AutofillWebDataBackend* autofill_backend) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
@@ -80,7 +80,7 @@ void InitWalletOfferSyncBridgeOnDBSequence(
 }
 
 void InitWalletUsageDataSyncBridgeOnDBSequence(
-    scoped_refptr<base::SingleThreadTaskRunner> db_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner,
     const scoped_refptr<autofill::AutofillWebDataService>& autofill_web_data,
     autofill::AutofillWebDataBackend* autofill_backend) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
@@ -96,13 +96,10 @@ WebDataServiceWrapper::WebDataServiceWrapper() {}
 WebDataServiceWrapper::WebDataServiceWrapper(
     const base::FilePath& context_path,
     const std::string& application_locale,
-    const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner,
+    const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,
     const ShowErrorCallback& show_error_callback) {
   base::FilePath path = context_path.Append(kWebDataFilename);
-  // TODO(pkasting): http://crbug.com/740773 This should likely be sequenced,
-  // not single-threaded; it's also possible the various uses of this below
-  // should each use their own sequences instead of sharing this one.
-  auto db_task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
+  auto db_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
   profile_database_ = base::MakeRefCounted<WebDatabaseService>(

@@ -6,7 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/template_url_data.h"
@@ -83,7 +83,7 @@ KeywordWebDataService::BatchModeScoper::~BatchModeScoper() {
 
 KeywordWebDataService::KeywordWebDataService(
     scoped_refptr<WebDatabaseService> wdbs,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : WebDataServiceBase(std::move(wdbs), std::move(ui_task_runner)),
       timer_(FROM_HERE,
              base::Seconds(5),

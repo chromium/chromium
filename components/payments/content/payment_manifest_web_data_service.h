@@ -20,7 +20,7 @@ class WDTypedResult;
 class WebDatabaseService;
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace payments {
@@ -34,7 +34,7 @@ class PaymentManifestWebDataService : public WebDataServiceBase,
  public:
   PaymentManifestWebDataService(
       scoped_refptr<WebDatabaseService> wdbs,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   PaymentManifestWebDataService(const PaymentManifestWebDataService&) = delete;
   PaymentManifestWebDataService& operator=(

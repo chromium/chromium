@@ -22,7 +22,7 @@
 #include "components/webdata/common/web_database.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 class WebDatabaseBackend;
@@ -51,8 +51,8 @@ class AutofillWebDataBackendImpl
   // times).
   AutofillWebDataBackendImpl(
       scoped_refptr<WebDatabaseBackend> web_database_backend,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> db_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> db_task_runner,
       const base::RepeatingClosure& on_changed_callback,
       const base::RepeatingClosure& on_address_conversion_completed_callback,
       const base::RepeatingCallback<void(syncer::ModelType)>&
@@ -265,7 +265,7 @@ class AutofillWebDataBackendImpl
   };
 
   // The task runner that this class uses for its UI tasks.
-  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
   // Storage for user data to be accessed only on the DB sequence. May
   // be used e.g. for SyncableService subclasses that need to be owned

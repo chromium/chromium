@@ -9,7 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/observer_list.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
@@ -29,8 +29,8 @@ namespace autofill {
 
 AutofillWebDataService::AutofillWebDataService(
     scoped_refptr<WebDatabaseService> wdbs,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> db_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner)
     : WebDataServiceBase(std::move(wdbs), ui_task_runner),
       ui_task_runner_(std::move(ui_task_runner)),
       db_task_runner_(std::move(db_task_runner)),
@@ -54,8 +54,8 @@ AutofillWebDataService::AutofillWebDataService(
 }
 
 AutofillWebDataService::AutofillWebDataService(
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> db_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner)
     : WebDataServiceBase(nullptr, ui_task_runner),
       ui_task_runner_(std::move(ui_task_runner)),
       db_task_runner_(std::move(db_task_runner)),
@@ -412,7 +412,7 @@ void AutofillWebDataService::GetAutofillBackend(
                                 base::RetainedRef(autofill_backend_)));
 }
 
-base::SingleThreadTaskRunner* AutofillWebDataService::GetDBTaskRunner() {
+base::SequencedTaskRunner* AutofillWebDataService::GetDBTaskRunner() {
   return db_task_runner_.get();
 }
 

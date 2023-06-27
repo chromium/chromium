@@ -11,8 +11,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
-#include "base/threading/thread_checker.h"
 #include "components/autofill/core/browser/contact_info_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
@@ -97,7 +97,7 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
 
   // The bridge should be used on the same sequence where it has been
   // constructed.
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // ContactInfoSyncBridge is owned by `web_data_backend_` through
   // SupportsUserData, so it's guaranteed to outlive `this`.

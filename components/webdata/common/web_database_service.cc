@@ -9,7 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/webdata/common/web_data_request_manager.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_consumer.h"
@@ -22,8 +22,7 @@ class WebDatabaseService::BackendDelegate
  public:
   BackendDelegate(const base::WeakPtr<WebDatabaseService>& web_database_service)
       : web_database_service_(web_database_service),
-        callback_task_runner_(
-            base::SingleThreadTaskRunner::GetCurrentDefault()) {}
+        callback_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
   void DBLoaded(sql::InitStatus status,
                 const std::string& diagnostics) override {
@@ -33,13 +32,13 @@ class WebDatabaseService::BackendDelegate
   }
  private:
   const base::WeakPtr<WebDatabaseService> web_database_service_;
-  scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
 };
 
 WebDatabaseService::WebDatabaseService(
     const base::FilePath& path,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> db_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner)
     : base::RefCountedDeleteOnSequence<WebDatabaseService>(ui_task_runner),
       path_(path),
       db_task_runner_(db_task_runner) {

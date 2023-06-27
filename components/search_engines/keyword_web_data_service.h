@@ -16,7 +16,7 @@
 #include "components/webdata/common/web_data_service_base.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 class WebDatabaseService;
@@ -67,7 +67,7 @@ class KeywordWebDataService : public WebDataServiceBase {
 
   KeywordWebDataService(
       scoped_refptr<WebDatabaseService> wdbs,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   KeywordWebDataService(const KeywordWebDataService&) = delete;
   KeywordWebDataService& operator=(const KeywordWebDataService&) = delete;

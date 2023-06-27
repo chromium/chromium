@@ -4,13 +4,13 @@
 
 #include "components/webdata/common/web_data_service_base.h"
 
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "components/webdata/common/web_database_service.h"
 
 WebDataServiceBase::WebDataServiceBase(
     scoped_refptr<WebDatabaseService> wdbs,
-    const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner)
+    const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner)
     : base::RefCountedDeleteOnSequence<WebDataServiceBase>(ui_task_runner),
       wdbs_(wdbs) {}
 

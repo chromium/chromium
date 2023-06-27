@@ -40,9 +40,7 @@ ContactInfoSyncBridge::ContactInfoSyncBridge(
   LoadMetadata();
 }
 
-ContactInfoSyncBridge::~ContactInfoSyncBridge() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-}
+ContactInfoSyncBridge::~ContactInfoSyncBridge() = default;
 
 // static
 void ContactInfoSyncBridge::CreateForWebDataServiceAndBackend(
@@ -67,7 +65,7 @@ syncer::ModelTypeSyncBridge* ContactInfoSyncBridge::FromWebDataService(
 
 std::unique_ptr<syncer::MetadataChangeList>
 ContactInfoSyncBridge::CreateMetadataChangeList() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
       GetAutofillTable(), syncer::CONTACT_INFO,
       base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
@@ -142,7 +140,7 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
 
 void ContactInfoSyncBridge::GetData(StorageKeyList storage_keys,
                                     DataCallback callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ranges::sort(storage_keys);
   auto filter_by_keys = base::BindRepeating(
       [](const StorageKeyList& storage_keys, const std::string& guid) {
@@ -156,7 +154,7 @@ void ContactInfoSyncBridge::GetData(StorageKeyList storage_keys,
 }
 
 void ContactInfoSyncBridge::GetAllDataForDebugging(DataCallback callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (std::unique_ptr<syncer::MutableDataBatch> batch = GetDataAndFilter(
           base::BindRepeating([](const std::string& guid) { return true; }))) {
     std::move(callback).Run(std::move(batch));
@@ -182,7 +180,7 @@ std::string ContactInfoSyncBridge::GetStorageKey(
 
 void ContactInfoSyncBridge::AutofillProfileChanged(
     const AutofillProfileChange& change) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(change.data_model());
   if (!change_processor()->IsTrackingMetadata() ||
       change.data_model()->source() != AutofillProfile::Source::kAccount) {

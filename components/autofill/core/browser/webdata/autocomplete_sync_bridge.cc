@@ -315,12 +315,12 @@ AutocompleteSyncBridge::AutocompleteSyncBridge(
 }
 
 AutocompleteSyncBridge::~AutocompleteSyncBridge() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 std::unique_ptr<MetadataChangeList>
 AutocompleteSyncBridge::CreateMetadataChangeList() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
       GetAutofillTable(), syncer::AUTOFILL,
       base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
@@ -330,7 +330,7 @@ AutocompleteSyncBridge::CreateMetadataChangeList() {
 optional<syncer::ModelError> AutocompleteSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_data) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   SyncDifferenceTracker tracker(GetAutofillTable());
   for (const auto& change : entity_data) {
@@ -351,7 +351,7 @@ optional<syncer::ModelError> AutocompleteSyncBridge::MergeFullSyncData(
 optional<ModelError> AutocompleteSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   SyncDifferenceTracker tracker(GetAutofillTable());
   for (const std::unique_ptr<EntityChange>& change : entity_changes) {
@@ -375,7 +375,7 @@ optional<ModelError> AutocompleteSyncBridge::ApplyIncrementalSyncChanges(
 void AutocompleteSyncBridge::AutocompleteSyncBridge::GetData(
     StorageKeyList storage_keys,
     DataCallback callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<AutofillEntry> entries;
   if (!GetAutofillTable()->GetAllAutofillEntries(&entries)) {
     change_processor()->ReportError(
@@ -396,7 +396,7 @@ void AutocompleteSyncBridge::AutocompleteSyncBridge::GetData(
 }
 
 void AutocompleteSyncBridge::GetAllDataForDebugging(DataCallback callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<AutofillEntry> entries;
   if (!GetAutofillTable()->GetAllAutofillEntries(&entries)) {
@@ -507,7 +507,7 @@ std::string AutocompleteSyncBridge::GetStorageKey(
 
 void AutocompleteSyncBridge::AutofillEntriesChanged(
     const AutofillChangeList& changes) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ActOnLocalChanges(changes);
 }
 

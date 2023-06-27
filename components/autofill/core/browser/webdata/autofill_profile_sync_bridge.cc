@@ -85,12 +85,12 @@ AutofillProfileSyncBridge::AutofillProfileSyncBridge(
 }
 
 AutofillProfileSyncBridge::~AutofillProfileSyncBridge() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 std::unique_ptr<MetadataChangeList>
 AutofillProfileSyncBridge::CreateMetadataChangeList() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
       GetAutofillTable(), syncer::AUTOFILL_PROFILE,
       base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
@@ -100,7 +100,7 @@ AutofillProfileSyncBridge::CreateMetadataChangeList() {
 optional<syncer::ModelError> AutofillProfileSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   AutofillProfileInitialSyncDifferenceTracker initial_sync_tracker(
       GetAutofillTable());
@@ -134,7 +134,7 @@ optional<syncer::ModelError> AutofillProfileSyncBridge::MergeFullSyncData(
 optional<ModelError> AutofillProfileSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   AutofillProfileSyncDifferenceTracker tracker(GetAutofillTable());
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
@@ -164,7 +164,7 @@ optional<ModelError> AutofillProfileSyncBridge::ApplyIncrementalSyncChanges(
 
 void AutofillProfileSyncBridge::GetData(StorageKeyList storage_keys,
                                         DataCallback callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::unique_ptr<AutofillProfile>> entries;
   if (!GetAutofillTable()->GetAutofillProfiles(
           AutofillProfile::Source::kLocalOrSyncable, &entries)) {
@@ -186,7 +186,7 @@ void AutofillProfileSyncBridge::GetData(StorageKeyList storage_keys,
 }
 
 void AutofillProfileSyncBridge::GetAllDataForDebugging(DataCallback callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<std::unique_ptr<AutofillProfile>> entries;
   if (!GetAutofillTable()->GetAutofillProfiles(
@@ -301,7 +301,7 @@ std::string AutofillProfileSyncBridge::GetStorageKey(
 
 void AutofillProfileSyncBridge::AutofillProfileChanged(
     const AutofillProfileChange& change) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ActOnLocalChange(change);
 }
 

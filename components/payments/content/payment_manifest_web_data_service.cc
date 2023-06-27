@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/payments/content/payment_method_manifest_table.h"
 #include "components/payments/content/web_app_manifest_section_table.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
@@ -19,7 +19,7 @@ namespace payments {
 
 PaymentManifestWebDataService::PaymentManifestWebDataService(
     scoped_refptr<WebDatabaseService> wdbs,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : WebDataServiceBase(std::move(wdbs), std::move(ui_task_runner)) {}
 
 PaymentManifestWebDataService::~PaymentManifestWebDataService() {}

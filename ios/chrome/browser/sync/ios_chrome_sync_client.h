@@ -9,7 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/browser_sync/browser_sync_client.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 
@@ -79,7 +79,7 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
       account_password_store_;
 
   // The task runner for the `web_data_service_`, if any.
-  scoped_refptr<base::SingleThreadTaskRunner> db_thread_;
+  scoped_refptr<base::SequencedTaskRunner> db_thread_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_IOS_CHROME_SYNC_CLIENT_H__

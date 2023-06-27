@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
@@ -112,8 +112,8 @@ WebDatabase::State DoNothingAndCommit(WebDatabase* db) {
 
 AutofillWebDataBackendImpl::AutofillWebDataBackendImpl(
     scoped_refptr<WebDatabaseBackend> web_database_backend,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> db_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner,
     const base::RepeatingClosure& on_changed_callback,
     const base::RepeatingClosure& on_address_conversion_completed_callback,
     const base::RepeatingCallback<void(syncer::ModelType)>&
