@@ -67,6 +67,8 @@ class ASH_EXPORT DeskButton : public views::Button,
 
   void SetActivation(bool is_activated);
 
+  std::u16string GetTitleForView(const views::View* view);
+
   const std::u16string& GetTextForTest() const;
 
  private:

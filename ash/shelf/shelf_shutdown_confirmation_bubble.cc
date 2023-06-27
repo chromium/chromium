@@ -58,7 +58,10 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
     ShelfAlignment alignment,
     base::OnceClosure on_confirm_callback,
     base::OnceClosure on_cancel_callback)
-    : ShelfBubble(anchor, alignment) {
+    : ShelfBubble(anchor,
+                  alignment,
+                  /*for_tooltip=*/false,
+                  /*arrow_position=*/absl::nullopt) {
   DCHECK(on_confirm_callback);
   DCHECK(on_cancel_callback);
   confirm_callback_ = std::move(on_confirm_callback);

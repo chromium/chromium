@@ -641,6 +641,11 @@ bool DesksController::HasDesk(const Desk* desk) const {
   return base::Contains(desks_, desk, &std::unique_ptr<Desk>::get);
 }
 
+Desk* DesksController::GetDeskAtIndex(size_t index) const {
+  CHECK_LT(index, desks_.size());
+  return desks_[index].get();
+}
+
 void DesksController::RemoveDesk(const Desk* desk,
                                  DesksCreationRemovalSource source,
                                  DeskCloseType close_type) {

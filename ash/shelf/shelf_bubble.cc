@@ -3,13 +3,39 @@
 // found in the LICENSE file.
 
 #include "ash/shelf/shelf_bubble.h"
+#include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 
 namespace {
+
+class ShelfTooltipBubbleFrameView : public views::BubbleFrameView {
+ public:
+  METADATA_HEADER(ShelfTooltipBubbleFrameView);
+
+  ShelfTooltipBubbleFrameView()
+      : BubbleFrameView(gfx::Insets(), gfx::Insets()) {}
+  ShelfTooltipBubbleFrameView(const ShelfTooltipBubbleFrameView&) = delete;
+  ShelfTooltipBubbleFrameView& operator=(const ShelfTooltipBubbleFrameView&) =
+      delete;
+  ~ShelfTooltipBubbleFrameView() override = default;
+
+ private:
+  // views::BubbleFrameView:
+  gfx::Rect GetAvailableScreenBounds(const gfx::Rect& rect) const override {
+    return display::Screen::GetScreen()
+        ->GetDisplayNearestPoint(rect.CenterPoint())
+        .bounds();
+  }
+};
+
+BEGIN_METADATA(ShelfTooltipBubbleFrameView, BubbleFrameView)
+END_METADATA
 
 views::BubbleBorder::Arrow GetArrow(ash::ShelfAlignment alignment) {
   switch (alignment) {
@@ -28,8 +54,15 @@ views::BubbleBorder::Arrow GetArrow(ash::ShelfAlignment alignment) {
 
 namespace ash {
 
-ShelfBubble::ShelfBubble(views::View* anchor, ShelfAlignment alignment)
-    : views::BubbleDialogDelegateView(anchor, GetArrow(alignment)),
+ShelfBubble::ShelfBubble(
+    views::View* anchor,
+    ShelfAlignment alignment,
+    bool for_tooltip,
+    absl::optional<views::BubbleBorder::Arrow> arrow_position)
+    : views::BubbleDialogDelegateView(
+          anchor,
+          arrow_position.value_or(GetArrow(alignment))),
+      for_tooltip_(for_tooltip),
       background_animator_(
           /* Don't pass the Shelf so the translucent color is always used. */
           nullptr,
@@ -66,6 +99,21 @@ void ShelfBubble::CreateBubble() {
 
 void ShelfBubble::UpdateShelfBackground(SkColor color) {
   set_color(color);
+}
+
+std::unique_ptr<views::NonClientFrameView>
+ShelfBubble::CreateNonClientFrameView(views::Widget* widget) {
+  auto frame = for_tooltip_
+                   ? std::make_unique<ShelfTooltipBubbleFrameView>()
+                   : BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+  auto* frame_ptr = static_cast<views::BubbleFrameView*>(frame.get());
+  frame_ptr->set_use_anchor_window_bounds(false);
+
+  auto border = std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
+  border->SetColor(color());
+  frame_ptr->SetBubbleBorder(std::move(border));
+
+  return frame;
 }
 
 }  // namespace ash

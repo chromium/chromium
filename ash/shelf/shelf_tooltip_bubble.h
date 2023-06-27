@@ -20,7 +20,8 @@ class ASH_EXPORT ShelfTooltipBubble : public ShelfBubble {
  public:
   ShelfTooltipBubble(views::View* anchor,
                      ShelfAlignment alignment,
-                     const std::u16string& text);
+                     const std::u16string& text,
+                     absl::optional<views::BubbleBorder::Arrow> arrow_position);
 
   ShelfTooltipBubble(const ShelfTooltipBubble&) = delete;
   ShelfTooltipBubble& operator=(const ShelfTooltipBubble&) = delete;

@@ -129,6 +129,7 @@ DeskButton::DeskButton(DeskButtonWidget* desk_button_widget)
   CHECK(!is_expanded_);
 
   desk_name_label_->SetText(abbreviated_desk_name_);
+  desk_name_label_->SetHandlesTooltips(false);
   desk_name_label_->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_CENTER);
   desk_name_label_->SetProperty(
@@ -176,6 +177,21 @@ void DeskButton::SetActivation(bool is_activated) {
   MaybeUpdateDeskSwitchButtonVisibility();
 }
 
+std::u16string DeskButton::GetTitleForView(const views::View* view) {
+  if (view == this) {
+    return desk_name_;
+  }
+
+  DesksController* desks_controller = DesksController::Get();
+  const size_t active_desk_index = desks_controller->GetActiveDeskIndex();
+
+  return view == prev_desk_button_
+             ? desks_controller->GetDeskAtIndex(active_desk_index - 1)->name()
+         : view == next_desk_button_
+             ? desks_controller->GetDeskAtIndex(active_desk_index + 1)->name()
+             : std::u16string();
+}
+
 const std::u16string& DeskButton::GetTextForTest() const {
   return desk_name_label_->GetText();
 }
@@ -200,8 +216,8 @@ void DeskButton::OnMouseEntered(const ui::MouseEvent& event) {
   }
 
   if (!is_expanded_ && !force_expanded_state_) {
-    // TODO(b/272383056): Would be better to have the widget register a callback
-    // like "preferred_expanded_state_changed".
+    // TODO(b/272383056): Would be better to have the widget register a
+    // callback like "preferred_expanded_state_changed".
     desk_button_widget_->SetExpanded(true);
   }
 
@@ -220,8 +236,8 @@ void DeskButton::OnMouseExited(const ui::MouseEvent& event) {
   }
 
   if (is_expanded_ && !force_expanded_state_) {
-    // TODO(b/272383056): Would be better to have the widget register a callback
-    // like "preferred_expanded_state_changed".
+    // TODO(b/272383056): Would be better to have the widget register a
+    // callback like "preferred_expanded_state_changed".
     desk_button_widget_->SetExpanded(false);
   }
 

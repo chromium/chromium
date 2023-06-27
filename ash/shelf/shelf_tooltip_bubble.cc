@@ -28,10 +28,12 @@ constexpr int kTooltipLeftRightMargin = 8;
 
 }  // namespace
 
-ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
-                                       ShelfAlignment alignment,
-                                       const std::u16string& text)
-    : ShelfBubble(anchor, alignment) {
+ShelfTooltipBubble::ShelfTooltipBubble(
+    views::View* anchor,
+    ShelfAlignment alignment,
+    const std::u16string& text,
+    absl::optional<views::BubbleBorder::Arrow> arrow_position)
+    : ShelfBubble(anchor, alignment, /*for_tooltip=*/true, arrow_position) {
   set_margins(
       gfx::Insets::VH(kTooltipTopBottomMargin, kTooltipLeftRightMargin));
   set_close_on_deactivate(false);

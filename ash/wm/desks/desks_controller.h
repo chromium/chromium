@@ -200,6 +200,9 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   bool HasDesk(const Desk* desk) const;
 
+  // Gives the desk with the specified index.
+  Desk* GetDeskAtIndex(size_t index) const;
+
   // Removes and deletes the given `desk`. `desk` must already exist, and
   // CanRemoveDesks() must be checked before this.
   // This will trigger the `DeskRemovalAnimation` if the active desk is being

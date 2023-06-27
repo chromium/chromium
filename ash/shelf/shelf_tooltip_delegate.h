@@ -37,8 +37,10 @@ class ASH_EXPORT ShelfTooltipDelegate {
   // Returns true if a tooltip should be shown for |view|.
   virtual bool ShouldShowTooltipForView(const views::View* view) const = 0;
 
-  // Returns true if the mouse cursor exits the area for launcher tooltip.
-  virtual bool ShouldHideTooltip(const gfx::Point& cursor_point) const = 0;
+  // Returns true if the mouse cursor exits the area for shelf tooltip, in
+  // the coordinates of the `delegate_view`.
+  virtual bool ShouldHideTooltip(const gfx::Point& cursor_point,
+                                 views::View* delegate_view) const = 0;
 
   // Returns the list of open windows that correspond to the app represented by
   // this shelf view.

@@ -16,8 +16,11 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
+#include "ash/wm/desks/desk_button/desk_button.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -267,6 +270,88 @@ TEST_F(ShelfTooltipManagerTest, ShelfTooltipClosesIfScroll) {
   generator->ScrollSequence(cursor_position_in_screen, base::TimeDelta(), 0, 3,
                             10, 1);
   EXPECT_FALSE(tooltip_manager_->IsVisible());
+}
+
+namespace {
+
+using ::testing::ValuesIn;
+
+class ShelfTooltipManagerDeskButtonTest
+    : public ShelfTooltipManagerTest,
+      public ::testing::WithParamInterface<ShelfAlignment> {
+ public:
+  ShelfTooltipManagerDeskButtonTest() = default;
+  ShelfTooltipManagerDeskButtonTest(const ShelfTooltipManagerDeskButtonTest&) =
+      delete;
+  ShelfTooltipManagerDeskButtonTest& operator=(
+      const ShelfTooltipManagerDeskButtonTest&) = delete;
+  ~ShelfTooltipManagerDeskButtonTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kDeskButton);
+    ShelfTooltipManagerTest::SetUp();
+    Shelf::ForWindow(Shell::GetPrimaryRootWindow())->SetAlignment(GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ShelfTooltipManagerDeskButtonTest,
+                         ValuesIn({ShelfAlignment::kBottom,
+                                   ShelfAlignment::kLeft,
+                                   ShelfAlignment::kRight}));
+
+}  // namespace
+
+// Verifies that tooltips for the desk button and its child views are correctly
+// centered directly above their respective views, or if that position is out of
+// the display then it verifies that they are still in bounds.
+TEST_P(ShelfTooltipManagerDeskButtonTest, TooltipPositioning) {
+  NewDesk();
+  NewDesk();
+  DesksController* desks_controller = DesksController::Get();
+  DeskSwitchAnimationWaiter waiter;
+  desks_controller->ActivateDesk(desks_controller->desks()[1].get(),
+                                 DesksSwitchSource::kDeskButtonSwitchButton);
+  waiter.Wait();
+
+  auto validate_tooltip_bounds = [&](views::View* target_view) {
+    tooltip_manager_->ShowTooltip(target_view);
+    const gfx::Rect tooltip_bounds = GetTooltip()->GetWindowBoundsInScreen();
+    const gfx::Rect target_view_bounds = target_view->GetBoundsInScreen();
+    const gfx::Rect root_window_bounds =
+        Shell::Get()->GetPrimaryRootWindow()->bounds();
+
+    // These exceptions account for out of bounds adjustments for the tooltips
+    // on the left and right shelves.
+    const bool left_alignment_exception =
+        (GetParam() == ShelfAlignment::kLeft && tooltip_bounds.x() == 0 &&
+         tooltip_bounds.bottom() == target_view_bounds.y());
+    const bool right_alignment_exception =
+        (GetParam() == ShelfAlignment::kRight &&
+         tooltip_bounds.right() == root_window_bounds.right() &&
+         tooltip_bounds.bottom() == target_view_bounds.y());
+
+    if (left_alignment_exception || right_alignment_exception) {
+      return;
+    }
+
+    ASSERT_EQ(target_view_bounds.top_center(), tooltip_bounds.bottom_center());
+  };
+
+  auto* desk_button_view =
+      GetPrimaryShelf()->desk_button_widget()->GetDeskButton();
+
+  if (GetParam() != ShelfAlignment::kBottom) {
+    GetEventGenerator()->MoveMouseTo(
+        desk_button_view->GetBoundsInScreen().CenterPoint());
+  }
+
+  validate_tooltip_bounds(desk_button_view);
+  validate_tooltip_bounds(desk_button_view->prev_desk_button());
+  validate_tooltip_bounds(desk_button_view->next_desk_button());
 }
 
 }  // namespace ash
