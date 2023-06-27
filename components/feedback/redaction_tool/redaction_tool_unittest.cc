@@ -36,8 +36,22 @@ struct StringWithRedaction {
 const StringWithRedaction kStringsWithRedactions[] = {
     {"aaaaaaaa [SSID=123aaaaaa]aaaaa",  // SSID.
      "aaaaaaaa [SSID=(SSID: 1)]aaaaa", PIIType::kSSID},
+    {"chrome://resources/foo",  // Secure chrome resource, exempt.
+     "chrome://resources/foo", PIIType::kNone},
+    {"chrome://settings/crisper.js",  // Exempt settings URLs.
+     "chrome://settings/crisper.js", PIIType::kNone},
+    // Exempt first party extension.
+    {"chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js",
+     "chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js",
+     PIIType::kNone},
     {"aaaaaaaahttp://tets.comaaaaaaa",  // URL.
      "aaaaaaaa(URL: 1)", PIIType::kURL},
+    {"chrome://resources/f?user=bar",  // Potentially PII in parameter.
+     "(URL: 2)", PIIType::kURL},
+    {"chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js?bar=x",
+     "(URL: 3)", PIIType::kURL},  // Potentially PII in parameter.
+    {"isolated-app://airugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac/",
+     "(URL: 4)", PIIType::kURL},                  // URL
     {"u:object_r:system_data_file:s0:c512,c768",  // No PII, it is an SELinux
                                                   // context.
      "u:object_r:system_data_file:s0:c512,c768", PIIType::kNone},
@@ -173,20 +187,6 @@ const StringWithRedaction kStringsWithRedactions[] = {
      "(IPv6: 18)", PIIType::kIPAddress},
     {"aa:aa:aa:aa:aa:aa",  // MAC address (BSSID).
      "(MAC OUI=aa:aa:aa IFACE=1)", PIIType::kMACAddress},
-    {"chrome://resources/foo",  // Secure chrome resource, exempt.
-     "chrome://resources/foo", PIIType::kNone},
-    {"chrome://settings/crisper.js",  // Exempt settings URLs.
-     "chrome://settings/crisper.js", PIIType::kNone},
-    // Exempt first party extension.
-    {"chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js",
-     "chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js",
-     PIIType::kNone},
-    {"chrome://resources/f?user=bar",  // Potentially PII in parameter.
-     "(URL: 2)", PIIType::kURL},
-    {"chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js?bar=x",
-     "(URL: 3)", PIIType::kURL},  // Potentially PII in parameter.
-    {"isolated-app://airugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac/",
-     "(URL: 4)", PIIType::kURL},  // URL
     {"/root/27540283740a0897ab7c8de0f809add2bacde78f/foo",
      "/root/(HASH:2754 1)/foo", PIIType::kStableIdentifier},  // Hash string.
     {"B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", "(UID: 1)",
@@ -656,11 +656,35 @@ TEST_F(RedactionToolTest, RedactChunk) {
   ExpectBucketCount(kCreditCardRedactionHistogram, kDoesntValidate, 0);
   ExpectBucketCount(kCreditCardRedactionHistogram, kValidated, 0);
 
+  for (int enum_int = static_cast<int>(PIIType::kNone) + 1;
+       enum_int <= static_cast<int>(PIIType::kMaxValue); ++enum_int) {
+    const PIIType enum_value = static_cast<PIIType>(enum_int);
+    ExpectBucketCount(kPIIRedactedHistogram, enum_value, 0);
+  }
+
   for (const auto& s : kStringsWithRedactions) {
     redaction_input.append(s.pre_redaction).append("\n");
     redaction_output.append(s.post_redaction).append("\n");
   }
   EXPECT_EQ(redaction_output, redactor_.Redact(redaction_input));
+
+  for (int enum_int = static_cast<int>(PIIType::kNone) + 1;
+       enum_int <= static_cast<int>(PIIType::kMaxValue); ++enum_int) {
+    const PIIType enum_value = static_cast<PIIType>(enum_int);
+    const size_t expected_count = base::ranges::count_if(
+        kStringsWithRedactions,
+        [enum_value](const StringWithRedaction& string_with_redaction) {
+          return string_with_redaction.pii_type == enum_value;
+        });
+    ExpectBucketCount(kPIIRedactedHistogram, enum_value, expected_count);
+  }
+  // This isn't handled by the redaction tool but rather in the
+  // `UiHierarchyDataCollector`. It's part of the enum for historical reasons.
+  ExpectBucketCount(kPIIRedactedHistogram, PIIType::kUIHierarchyWindowTitles,
+                    0);
+  // This isn't handled by the redaction tool but rather in Shill. It's part of
+  // the enum for historical reasons.
+  ExpectBucketCount(kPIIRedactedHistogram, PIIType::kEAP, 0);
 
   ExpectBucketCount(kCreditCardRedactionHistogram, kRegexMatch, 16);
   ExpectBucketCount(kCreditCardRedactionHistogram, kTimestamp, 2);

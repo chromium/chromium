@@ -886,6 +886,7 @@ std::string RedactionTool::RedactCreditCardNumbers(
       result.append(post_sequence);
       metrics_recorder_->RecordCreditCardRedactionHistogram(
           CreditCardDetection::kValidated);
+      metrics_recorder_->RecordPIIRedactedHistogram(PIIType::kCreditCard);
       continue;
     }
 
@@ -955,6 +956,7 @@ std::string RedactionTool::RedactIbans(
         previous_iban != ibans_.end()) {
       result += previous_iban->second;
       result.append(post_separating_char);
+      metrics_recorder_->RecordPIIRedactedHistogram(PIIType::kIBAN);
       continue;
     }
 
@@ -1175,45 +1177,45 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
   re2::StringPiece skipped;
   re2::StringPiece matched_id;
   while (FindAndConsumeAndGetSkipped(&text, *re, &skipped, &matched_id)) {
+    result.append(skipped);
+
     if (IsUrlExempt(matched_id, first_party_extension_ids_)) {
-      result.append(skipped);
       result.append(matched_id);
       continue;
     }
-    std::string matched_id_as_string(matched_id);
-    std::string replacement_id;
-    if (identifier_space->count(matched_id_as_string) == 0) {
-      replacement_id = MaybeScrubIPAddress(matched_id_as_string);
-      if (replacement_id != matched_id_as_string) {
-        // Double-check overly opportunistic IPv4 address matching.
-        if ((strcmp("IPv4", pattern.alias) == 0) &&
-            ShouldSkipIPAddress(skipped)) {
-          result.append(skipped);
-          result.append(matched_id);
-          continue;
-        }
 
-        // The weird NumberToString trick is because Windows does not like
-        // to deal with %zu and a size_t in printf, nor does it support %llu.
-        replacement_id = base::StringPrintf(
-            "(%s: %s)",
-            replacement_id.empty() ? pattern.alias : replacement_id.c_str(),
-            base::NumberToString(identifier_space->size() + 1).c_str());
-        (*identifier_space)[matched_id_as_string] = replacement_id;
-        if (detected != nullptr) {
-          (*detected)[pattern.pii_type].insert(matched_id_as_string);
-        }
-      }
-    } else {
-      replacement_id = (*identifier_space)[matched_id_as_string];
-      if (detected != nullptr) {
-        (*detected)[pattern.pii_type].insert(matched_id_as_string);
-      }
+    const std::string matched_id_as_string(matched_id);
+    if (const auto previous_replacement =
+            identifier_space->find(matched_id_as_string);
+        previous_replacement != identifier_space->end()) {
+      metrics_recorder_->RecordPIIRedactedHistogram(pattern.pii_type);
+      result.append(previous_replacement->second);
+      continue;
     }
 
-    result.append(skipped);
-    result += replacement_id;
+    const std::string scrubbed_match =
+        MaybeScrubIPAddress(matched_id_as_string);
+    if (scrubbed_match == matched_id_as_string ||
+        // Double-check overly opportunistic IPv4 address matching.
+        ((strcmp("IPv4", pattern.alias) == 0) &&
+         ShouldSkipIPAddress(skipped))) {
+      result.append(matched_id);
+      continue;
+    }
 
+    // The weird NumberToString trick is because Windows does not like
+    // to deal with %zu and a size_t in printf, nor does it support %llu.
+    const auto [redacted_pair, success] = identifier_space->insert_or_assign(
+        matched_id_as_string,
+        base::StringPrintf(
+            "(%s: %s)",
+            scrubbed_match.empty() ? pattern.alias : scrubbed_match.c_str(),
+            base::NumberToString(identifier_space->size() + 1).c_str()));
+    if (detected != nullptr) {
+      (*detected)[pattern.pii_type].insert(matched_id_as_string);
+    }
+
+    result += redacted_pair->second;
     metrics_recorder_->RecordPIIRedactedHistogram(pattern.pii_type);
   }
   result.append(text);
