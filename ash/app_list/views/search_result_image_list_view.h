@@ -14,7 +14,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
-class BoxLayoutView;
+class FlexLayoutView;
 class TableLayoutView;
 class Label;
 }  // namespace views
@@ -45,6 +45,10 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
   // Returns all search result image views children of this view.
   std::vector<SearchResultImageView*> GetSearchResultImageViews();
 
+  // Returns the preferred width of the image search result according to the
+  // layout.
+  void ConfigureLayoutForAvailableWidth(int width);
+
   const views::TableLayoutView* image_info_container_for_test() const {
     return image_info_container_.get();
   }
@@ -67,7 +71,7 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
 
   // Owned by views hierarchy.
   raw_ptr<views::Label> title_label_ = nullptr;
-  raw_ptr<views::BoxLayoutView> image_view_container_ = nullptr;
+  raw_ptr<views::FlexLayoutView> image_view_container_ = nullptr;
   raw_ptr<views::TableLayoutView> image_info_container_ = nullptr;
   std::vector<SearchResultImageView*> image_views_;
 };

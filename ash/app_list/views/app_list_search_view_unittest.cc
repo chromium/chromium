@@ -375,7 +375,6 @@ TEST_P(SearchResultImageViewTest, ShowContextMenu) {
       views::IsViewClass<SearchResultImageView>(search_result_image_view));
 
   // Perform a long tap on `search_result_image_view`.
-  search_result_image_view->GetWidget()->LayoutRootViewIfNecessary();
   auto image_view_center_point =
       search_result_image_view->GetBoundsInScreen().CenterPoint();
   auto* event_generator = GetEventGenerator();
@@ -421,7 +420,6 @@ TEST_P(SearchResultImageViewTest, ActivateImageResult) {
       views::IsViewClass<SearchResultImageView>(search_result_image_view));
 
   // Click/Tap on `search_result_image_view`.
-  search_result_image_view->GetWidget()->LayoutRootViewIfNecessary();
   if (tablet_mode()) {
     GestureTapOn(search_result_image_view);
   } else {
