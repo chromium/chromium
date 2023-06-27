@@ -214,7 +214,7 @@ int SharedDictionaryNetworkTransaction::Read(
     return net::ERR_IO_PENDING;
   }
 
-  if (header_status_ == HeaderStatus::kUknown) {
+  if (header_status_ == HeaderStatus::kUnknown) {
     header_status_ = ContentEncodingIsSbrOnly(
                          *network_transaction_->GetResponseInfo()->headers)
                          ? HeaderStatus::kSharedBrotliUsed

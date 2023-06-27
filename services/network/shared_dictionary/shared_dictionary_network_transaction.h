@@ -100,7 +100,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
     kFailed,
   };
   enum class HeaderStatus {
-    kUknown,
+    kUnknown,
     kSharedBrotliUsed,
     kSharedBrotliNotUsed,
   };
@@ -134,7 +134,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
       origin_check_callback_;
 
   DictionaryStatus dictionary_status_ = DictionaryStatus::kNoDictionary;
-  HeaderStatus header_status_ = HeaderStatus::kUknown;
+  HeaderStatus header_status_ = HeaderStatus::kUnknown;
 
   std::unique_ptr<PendingReadTask> pending_read_task_;
 
