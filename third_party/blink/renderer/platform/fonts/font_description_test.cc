@@ -71,11 +71,11 @@ TEST_F(FontDescriptionTest, VariationSettingsIdentical) {
 
   scoped_refptr<FontVariationSettings> settings_a =
       FontVariationSettings::Create();
-  settings_a->Append(FontVariationAxis("test", 1));
+  settings_a->Append(FontVariationAxis(AtomicString("test"), 1));
 
   scoped_refptr<FontVariationSettings> settings_b =
       FontVariationSettings::Create();
-  settings_b->Append(FontVariationAxis("test", 1));
+  settings_b->Append(FontVariationAxis(AtomicString("test"), 1));
 
   ASSERT_EQ(*settings_a, *settings_b);
 
@@ -97,11 +97,11 @@ TEST_F(FontDescriptionTest, VariationSettingsDifferent) {
 
   scoped_refptr<FontVariationSettings> settings_a =
       FontVariationSettings::Create();
-  settings_a->Append(FontVariationAxis("test", 1));
+  settings_a->Append(FontVariationAxis(AtomicString("test"), 1));
 
   scoped_refptr<FontVariationSettings> settings_b =
       FontVariationSettings::Create();
-  settings_b->Append(FontVariationAxis("0000", 1));
+  settings_b->Append(FontVariationAxis(AtomicString("0000"), 1));
 
   ASSERT_NE(*settings_a, *settings_b);
 
@@ -119,7 +119,7 @@ TEST_F(FontDescriptionTest, VariationSettingsDifferent) {
 
   scoped_refptr<FontVariationSettings> second_settings_a =
       FontVariationSettings::Create();
-  second_settings_a->Append(FontVariationAxis("test", 1));
+  second_settings_a->Append(FontVariationAxis(AtomicString("test"), 1));
 
   scoped_refptr<FontVariationSettings> second_settings_b =
       FontVariationSettings::Create();
@@ -174,7 +174,7 @@ TEST_F(FontDescriptionTest, VariantAlternatesDifferent) {
 
   scoped_refptr<FontVariantAlternates> variants_b =
       FontVariantAlternates::Create();
-  variants_b->SetStyleset({"foo", "bar"});
+  variants_b->SetStyleset({AtomicString("foo"), AtomicString("bar")});
 
   ASSERT_NE(*variants_a, *variants_b);
   ASSERT_EQ(*variants_a, *variants_a);
@@ -194,23 +194,23 @@ TEST_F(FontDescriptionTest, ToString) {
   FontDescription description;
 
   FontFamily family;
-  family.SetFamily("A", FontFamily::Type::kFamilyName);
+  family.SetFamily(AtomicString("A"), FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> b_family = SharedFontFamily::Create();
-  b_family->SetFamily("B", FontFamily::Type::kFamilyName);
+  b_family->SetFamily(AtomicString("B"), FontFamily::Type::kFamilyName);
   family.AppendFamily(b_family);
   description.SetFamily(family);
 
-  description.SetLocale(LayoutLocale::Get("no"));
+  description.SetLocale(LayoutLocale::Get(AtomicString("no")));
 
   scoped_refptr<FontVariationSettings> variation_settings =
       FontVariationSettings::Create();
-  variation_settings->Append(FontVariationAxis{"aaaa", 42});
-  variation_settings->Append(FontVariationAxis{"bbbb", 8118});
+  variation_settings->Append(FontVariationAxis{AtomicString("aaaa"), 42});
+  variation_settings->Append(FontVariationAxis{AtomicString("bbbb"), 8118});
   description.SetVariationSettings(variation_settings);
 
   scoped_refptr<FontFeatureSettings> feature_settings = FontFeatureSettings::Create();
-  feature_settings->Append(FontFeature{"cccc", 76});
-  feature_settings->Append(FontFeature{"dddd", 94});
+  feature_settings->Append(FontFeature{AtomicString("cccc"), 76});
+  feature_settings->Append(FontFeature{AtomicString("dddd"), 94});
   description.SetFeatureSettings(feature_settings);
 
   description.SetSpecifiedSize(1.1f);
@@ -260,9 +260,9 @@ TEST_F(FontDescriptionTest, DefaultHashTrait) {
   description1.SetWeight(FontSelectionValue(100));
 
   FontFamily family;
-  family.SetFamily("A", FontFamily::Type::kFamilyName);
+  family.SetFamily(AtomicString("A"), FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> b_family = SharedFontFamily::Create();
-  b_family->SetFamily("B", FontFamily::Type::kFamilyName);
+  b_family->SetFamily(AtomicString("B"), FontFamily::Type::kFamilyName);
   family.AppendFamily(b_family);
   FontDescription description3;
   description3.SetFamily(family);

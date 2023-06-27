@@ -58,13 +58,17 @@ class ShapingLineBreakerTest : public FontTestBase {
   void SelectLucidaFont() {
     FontFamily lucida_family;
     // Windows 10
-    lucida_family.SetFamily("Lucida Grande", FontFamily::Type::kFamilyName);
+    lucida_family.SetFamily(AtomicString("Lucida Grande"),
+                            FontFamily::Type::kFamilyName);
     // Windows 7
-    lucida_family.AppendFamily("Lucida Grande", FontFamily::Type::kFamilyName);
+    lucida_family.AppendFamily(AtomicString("Lucida Grande"),
+                               FontFamily::Type::kFamilyName);
     // Linux
-    lucida_family.AppendFamily("Lucida Medium", FontFamily::Type::kFamilyName);
+    lucida_family.AppendFamily(AtomicString("Lucida Medium"),
+                               FontFamily::Type::kFamilyName);
     // Mac
-    lucida_family.AppendFamily("Lucida Medium", FontFamily::Type::kFamilyName);
+    lucida_family.AppendFamily(AtomicString("Lucida Medium"),
+                               FontFamily::Type::kFamilyName);
 
     font_description.SetFamily(lucida_family);
     font = Font(font_description);
@@ -112,7 +116,8 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatin) {
       "Test run with multiple words and breaking "
       "opportunities.",
       56);
-  LazyLineBreakIterator break_iterator(string, "en-US", LineBreakType::kNormal);
+  LazyLineBreakIterator break_iterator(string, AtomicString("en-US"),
+                                       LineBreakType::kNormal);
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);
@@ -190,7 +195,8 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatin) {
 
 TEST_F(ShapingLineBreakerTest, ShapeLineLatinMultiLine) {
   String string = To16Bit("Line breaking test case.", 24);
-  LazyLineBreakIterator break_iterator(string, "en-US", LineBreakType::kNormal);
+  LazyLineBreakIterator break_iterator(string, AtomicString("en-US"),
+                                       LineBreakType::kNormal);
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);
@@ -219,7 +225,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatinMultiLine) {
 
 TEST_F(ShapingLineBreakerTest, ShapeLineLatinBreakAll) {
   String string = To16Bit("Testing break type-break all.", 29);
-  LazyLineBreakIterator break_iterator(string, "en-US",
+  LazyLineBreakIterator break_iterator(string, AtomicString("en-US"),
                                        LineBreakType::kBreakAll);
   TextDirection direction = TextDirection::kLtr;
 
@@ -245,7 +251,8 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatinBreakAll) {
 
 TEST_F(ShapingLineBreakerTest, ShapeLineZeroAvailableWidth) {
   String string(u"Testing overflow line break.");
-  LazyLineBreakIterator break_iterator(string, "en-US", LineBreakType::kNormal);
+  LazyLineBreakIterator break_iterator(string, AtomicString("en-US"),
+                                       LineBreakType::kNormal);
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);
@@ -276,7 +283,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineZeroAvailableWidth) {
 TEST_F(ShapingLineBreakerTest, DISABLED_ShapeLineArabicThaiHanLatin) {
   UChar mixed_string[] = {0x628, 0x20,   0x64A, 0x629, 0x20,
                           0xE20, 0x65E5, 0x62,  0};
-  LazyLineBreakIterator break_iterator(mixed_string, "ar_AE",
+  LazyLineBreakIterator break_iterator(mixed_string, AtomicString("ar_AE"),
                                        LineBreakType::kNormal);
   TextDirection direction = TextDirection::kRtl;
 
@@ -320,7 +327,8 @@ TEST_F(ShapingLineBreakerTest, DISABLED_ShapeLineArabicThaiHanLatin) {
 
 TEST_F(ShapingLineBreakerTest, ShapeLineRangeEndMidWord) {
   String string(u"Mid word");
-  LazyLineBreakIterator break_iterator(string, "en-US", LineBreakType::kNormal);
+  LazyLineBreakIterator break_iterator(string, AtomicString("en-US"),
+                                       LineBreakType::kNormal);
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);
@@ -345,7 +353,8 @@ TEST_F(ShapingLineBreakerTest, ShapeLineWithLucidaFont) {
 
   //              012345678901234567890123456789012345
   String string(u"Lorem ipsum, consexx porttitxx. xxx");
-  LazyLineBreakIterator break_iterator(string, "en-US", LineBreakType::kNormal);
+  LazyLineBreakIterator break_iterator(string, AtomicString("en-US"),
+                                       LineBreakType::kNormal);
   // In LayoutNG we use kAfterSpaceRun as TextBreakIterator`s default behavior.
   break_iterator.SetBreakSpace(BreakSpaceType::kAfterSpaceRun);
   TextDirection direction = TextDirection::kLtr;

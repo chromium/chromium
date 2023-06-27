@@ -25,7 +25,7 @@ class ShapeResultTest : public FontTestBase {
 
     FontDescription::VariantLigatures ligatures;
     arabic_font = blink::test::CreateTestFont(
-        "Noto",
+        AtomicString("Noto"),
         blink::test::PlatformTestDataPath(
             "third_party/Noto/NotoNaskhArabic-regular.woff2"),
         12.0, &ligatures);

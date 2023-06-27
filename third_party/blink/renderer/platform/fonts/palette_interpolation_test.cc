@@ -46,12 +46,12 @@ class PaletteInterpolationTest : public FontTestBase {
     FontDescription::VariantLigatures ligatures;
 
     Font color_palette_font = blink::test::CreateTestFont(
-        "Ahem", pathToColorPalettesTestFont(), 16, &ligatures);
+        AtomicString("Ahem"), pathToColorPalettesTestFont(), 16, &ligatures);
     color_palette_typeface_ =
         sk_ref_sp(color_palette_font.PrimaryFont()->PlatformData().Typeface());
 
     Font non_color_font = blink::test::CreateTestFont(
-        "Ahem", pathToNonColorTestFont(), 16, &ligatures);
+        AtomicString("Ahem"), pathToNonColorTestFont(), 16, &ligatures);
     non_color_ahem_typeface_ =
         sk_ref_sp(non_color_font.PrimaryFont()->PlatformData().Typeface());
   }
@@ -98,7 +98,8 @@ TEST_F(PaletteInterpolationTest, RetrievePaletteIndexFromNonColorFont) {
 TEST_F(PaletteInterpolationTest, MixCustomPalettesAtHalfTime) {
   ScopedFontPaletteAnimationForTest scoped_feature(true);
   PaletteInterpolation palette_interpolation(color_palette_typeface_);
-  scoped_refptr<FontPalette> palette_start = FontPalette::Create("palette1");
+  scoped_refptr<FontPalette> palette_start =
+      FontPalette::Create(AtomicString("palette1"));
   palette_start->SetBasePalette({FontPalette::kIndexBasePalette, 3});
   // palette_start has the following list of color records:
   // { rgba(255, 255, 0, 255) = oklab(96.8%, -17.75%, 49.75%),
@@ -110,7 +111,8 @@ TEST_F(PaletteInterpolationTest, MixCustomPalettesAtHalfTime) {
   //   rgba(255, 0, 0, 255) = oklab(62.8%, 56.25%, 31.5%),
   //   rgba(0, 255, 0, 255) = oklab(86.6%, -58.5%, 44.75%) }
 
-  scoped_refptr<FontPalette> palette_end = FontPalette::Create("palette2");
+  scoped_refptr<FontPalette> palette_end =
+      FontPalette::Create(AtomicString("palette2"));
   palette_end->SetBasePalette({FontPalette::kIndexBasePalette, 7});
   // palette_end has the following list of color records:
   // { rgba(255, 255, 255, 255) = oklab(100%, 0%, 0%),
@@ -146,7 +148,8 @@ TEST_F(PaletteInterpolationTest, MixCustomPalettesAtHalfTime) {
 TEST_F(PaletteInterpolationTest, MixCustomAndNonExistingPalettes) {
   ScopedFontPaletteAnimationForTest scoped_feature(true);
   PaletteInterpolation palette_interpolation(color_palette_typeface_);
-  scoped_refptr<FontPalette> palette_start = FontPalette::Create("palette1");
+  scoped_refptr<FontPalette> palette_start =
+      FontPalette::Create(AtomicString("palette1"));
   palette_start->SetBasePalette({FontPalette::kIndexBasePalette, 3});
   // palette_start has the following list of color records:
   // { rgba(255, 255, 0, 255) = oklab(96.8%, -17.75%, 49.75%),
@@ -158,7 +161,8 @@ TEST_F(PaletteInterpolationTest, MixCustomAndNonExistingPalettes) {
   //   rgba(255, 0, 0, 255) = oklab(62.8%, 56.25%, 31.5%),
   //   rgba(0, 255, 0, 255) = oklab(86.6%, -58.5%, 44.75%) }
 
-  scoped_refptr<FontPalette> palette_end = FontPalette::Create("palette2");
+  scoped_refptr<FontPalette> palette_end =
+      FontPalette::Create(AtomicString("palette2"));
   palette_end->SetBasePalette({FontPalette::kIndexBasePalette, 16});
   // Palette under index 16 does not exist, so instead normal palette is used.
   // Normal palette has the following list of color records:
@@ -195,11 +199,13 @@ TEST_F(PaletteInterpolationTest, MixCustomAndNonExistingPalettes) {
 TEST_F(PaletteInterpolationTest, MixNonExistingPalettes) {
   ScopedFontPaletteAnimationForTest scoped_feature(true);
   PaletteInterpolation palette_interpolation(color_palette_typeface_);
-  scoped_refptr<FontPalette> palette_start = FontPalette::Create("palette1");
+  scoped_refptr<FontPalette> palette_start =
+      FontPalette::Create(AtomicString("palette1"));
   // Palette under index 16 does not exist, so instead normal palette is used.
   palette_start->SetBasePalette({FontPalette::kIndexBasePalette, 16});
 
-  scoped_refptr<FontPalette> palette_end = FontPalette::Create("palette2");
+  scoped_refptr<FontPalette> palette_end =
+      FontPalette::Create(AtomicString("palette2"));
   // Palette under index 17 does not exist, so instead normal palette is used.
   palette_end->SetBasePalette({FontPalette::kIndexBasePalette, 17});
 
@@ -226,7 +232,8 @@ TEST_F(PaletteInterpolationTest, MixNonExistingPalettes) {
 TEST_F(PaletteInterpolationTest, MixCustomPalettesInOklab) {
   ScopedFontPaletteAnimationForTest scoped_feature(true);
   PaletteInterpolation palette_interpolation(color_palette_typeface_);
-  scoped_refptr<FontPalette> palette_start = FontPalette::Create("palette1");
+  scoped_refptr<FontPalette> palette_start =
+      FontPalette::Create(AtomicString("palette1"));
   palette_start->SetBasePalette({FontPalette::kIndexBasePalette, 3});
   // palette_start has the following list of color records:
   // { rgba(255, 255, 0, 255) = oklab(96.8%, -17.75%, 49.75%),
@@ -238,7 +245,8 @@ TEST_F(PaletteInterpolationTest, MixCustomPalettesInOklab) {
   //   rgba(255, 0, 0, 255) = oklab(62.8%, 56.25%, 31.5%),
   //   rgba(0, 255, 0, 255) = oklab(86.6%, -58.5%, 44.75%) }
 
-  scoped_refptr<FontPalette> palette_end = FontPalette::Create("palette2");
+  scoped_refptr<FontPalette> palette_end =
+      FontPalette::Create(AtomicString("palette2"));
   palette_end->SetBasePalette({FontPalette::kIndexBasePalette, 7});
   // palette_end has the following list of color records:
   // { rgba(255, 255, 255, 255) = oklab(100%, 0%, 0%),
@@ -273,7 +281,8 @@ TEST_F(PaletteInterpolationTest, MixCustomPalettesInOklab) {
 TEST_F(PaletteInterpolationTest, MixCustomPalettesInSRGB) {
   ScopedFontPaletteAnimationForTest scoped_feature(true);
   PaletteInterpolation palette_interpolation(color_palette_typeface_);
-  scoped_refptr<FontPalette> palette_start = FontPalette::Create("palette1");
+  scoped_refptr<FontPalette> palette_start =
+      FontPalette::Create(AtomicString("palette1"));
   palette_start->SetBasePalette({FontPalette::kIndexBasePalette, 3});
   // palette_start has the following list of color records:
   // { rgba(255, 255, 0, 255) = oklab(96.8%, -17.75%, 49.75%),
@@ -285,7 +294,8 @@ TEST_F(PaletteInterpolationTest, MixCustomPalettesInSRGB) {
   //   rgba(255, 0, 0, 255) = oklab(62.8%, 56.25%, 31.5%),
   //   rgba(0, 255, 0, 255) = oklab(86.6%, -58.5%, 44.75%) }
 
-  scoped_refptr<FontPalette> palette_end = FontPalette::Create("palette2");
+  scoped_refptr<FontPalette> palette_end =
+      FontPalette::Create(AtomicString("palette2"));
   palette_end->SetBasePalette({FontPalette::kIndexBasePalette, 7});
   // palette_end has the following list of color records:
   // { rgba(255, 255, 255, 255) = oklab(100%, 0%, 0%),

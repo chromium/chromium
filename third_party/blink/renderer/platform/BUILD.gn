@@ -2321,10 +2321,7 @@ source_set("blink_platform_unittests_sources") {
 
   data_deps = [ ":blink_platform_unittests_data" ]
 
-  defines = [
-    "INSIDE_BLINK",
-    "ALLOW_IMPLICIT_ATOMIC_STRING_CONVERSIONS",
-  ]
+  defines = [ "INSIDE_BLINK" ]
   if (use_minikin_hyphenation) {
     defines += [ "USE_MINIKIN_HYPHENATION" ]
   }

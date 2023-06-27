@@ -39,12 +39,12 @@ class OpenTypeCpalLookupTest : public FontTestBase {
     FontDescription::VariantLigatures ligatures;
 
     Font colr_palette_font = blink::test::CreateTestFont(
-        "Ahem", pathToColrPalettesTestFont(), 16, &ligatures);
+        AtomicString("Ahem"), pathToColrPalettesTestFont(), 16, &ligatures);
     colr_palette_typeface_ =
         sk_ref_sp(colr_palette_font.PrimaryFont()->PlatformData().Typeface());
 
     Font non_colr_font = blink::test::CreateTestFont(
-        "Ahem", pathToNonColrTestFont(), 16, &ligatures);
+        AtomicString("Ahem"), pathToNonColrTestFont(), 16, &ligatures);
     non_colr_ahem_typeface_ =
         sk_ref_sp(non_colr_font.PrimaryFont()->PlatformData().Typeface());
   }

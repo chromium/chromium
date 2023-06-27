@@ -13,12 +13,14 @@ TEST(GenericFontFamilySettingsTest, FirstAvailableFontFamily) {
   EXPECT_TRUE(settings.Standard().empty());
 
   // Returns the first available font if starts with ",".
-  settings.UpdateStandard(",not exist, Arial");
+  settings.UpdateStandard(AtomicString(",not exist, Arial"));
   EXPECT_EQ("Arial", settings.Standard());
 
   // Otherwise returns any strings as they were set.
   AtomicString non_lists[] = {
-      "Arial", "not exist", "not exist, Arial",
+      AtomicString("Arial"),
+      AtomicString("not exist"),
+      AtomicString("not exist, Arial"),
   };
   for (const AtomicString& name : non_lists) {
     settings.UpdateStandard(name);
@@ -45,21 +47,22 @@ TEST(GenericFontFamilySettingsTest, TestAllNames) {
   EXPECT_TRUE(settings.Fantasy(USCRIPT_ARABIC).empty());
   EXPECT_TRUE(settings.Math(USCRIPT_ARABIC).empty());
 
-  settings.UpdateStandard("CustomStandard");
-  settings.UpdateFixed("CustomFixed");
-  settings.UpdateSerif("CustomSerif");
-  settings.UpdateSansSerif("CustomSansSerif");
-  settings.UpdateCursive("CustomCursive");
-  settings.UpdateFantasy("CustomFantasy");
-  settings.UpdateMath("CustomMath");
+  settings.UpdateStandard(AtomicString("CustomStandard"));
+  settings.UpdateFixed(AtomicString("CustomFixed"));
+  settings.UpdateSerif(AtomicString("CustomSerif"));
+  settings.UpdateSansSerif(AtomicString("CustomSansSerif"));
+  settings.UpdateCursive(AtomicString("CustomCursive"));
+  settings.UpdateFantasy(AtomicString("CustomFantasy"));
+  settings.UpdateMath(AtomicString("CustomMath"));
 
-  settings.UpdateStandard("CustomArabicStandard", USCRIPT_ARABIC);
-  settings.UpdateFixed("CustomArabicFixed", USCRIPT_ARABIC);
-  settings.UpdateSerif("CustomArabicSerif", USCRIPT_ARABIC);
-  settings.UpdateSansSerif("CustomArabicSansSerif", USCRIPT_ARABIC);
-  settings.UpdateCursive("CustomArabicCursive", USCRIPT_ARABIC);
-  settings.UpdateFantasy("CustomArabicFantasy", USCRIPT_ARABIC);
-  settings.UpdateMath("CustomArabicMath", USCRIPT_ARABIC);
+  settings.UpdateStandard(AtomicString("CustomArabicStandard"), USCRIPT_ARABIC);
+  settings.UpdateFixed(AtomicString("CustomArabicFixed"), USCRIPT_ARABIC);
+  settings.UpdateSerif(AtomicString("CustomArabicSerif"), USCRIPT_ARABIC);
+  settings.UpdateSansSerif(AtomicString("CustomArabicSansSerif"),
+                           USCRIPT_ARABIC);
+  settings.UpdateCursive(AtomicString("CustomArabicCursive"), USCRIPT_ARABIC);
+  settings.UpdateFantasy(AtomicString("CustomArabicFantasy"), USCRIPT_ARABIC);
+  settings.UpdateMath(AtomicString("CustomArabicMath"), USCRIPT_ARABIC);
 
   EXPECT_EQ("CustomStandard", settings.Standard());
   EXPECT_EQ("CustomFixed", settings.Fixed());

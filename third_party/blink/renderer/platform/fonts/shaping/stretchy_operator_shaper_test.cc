@@ -39,7 +39,7 @@ class StretchyOperatorShaperTest : public FontTestBase {
   Font CreateMathFont(const String& name, float size = 1000) {
     FontDescription::VariantLigatures ligatures;
     return blink::test::CreateTestFont(
-        "MathTestFont",
+        AtomicString("MathTestFont"),
         blink::test::BlinkWebTestsFontsTestDataPath(String("math/") + name),
         size, &ligatures);
   }

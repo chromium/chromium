@@ -179,7 +179,7 @@ TEST_F(FontCacheTest, Locale) {
   EXPECT_EQ(key1.GetHash(), key2.GetHash());
   EXPECT_EQ(key1, key2);
 
-  key2.SetLocale("ja");
+  key2.SetLocale(AtomicString("ja"));
   EXPECT_NE(key1.GetHash(), key2.GetHash());
   EXPECT_NE(key1, key2);
 }

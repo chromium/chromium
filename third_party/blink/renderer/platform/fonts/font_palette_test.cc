@@ -78,10 +78,10 @@ TEST(FontPaletteTest, NonInterpolablePalettesNotEqual) {
   ScopedFontPaletteAnimationForTest scoped_feature(true);
   scoped_refptr<FontPalette> palette1 =
       FontPalette::Create(FontPalette::kDarkPalette);
-  palette1->SetMatchFamilyName("family1");
+  palette1->SetMatchFamilyName(AtomicString("family1"));
   scoped_refptr<FontPalette> palette2 =
       FontPalette::Create(FontPalette::kDarkPalette);
-  palette1->SetMatchFamilyName("family2");
+  palette1->SetMatchFamilyName(AtomicString("family2"));
   EXPECT_FALSE(*palette1.get() == *palette2.get());
 }
 

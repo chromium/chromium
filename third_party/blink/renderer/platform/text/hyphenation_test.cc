@@ -111,29 +111,33 @@ class HyphenationTest : public testing::Test {
 
 TEST_F(HyphenationTest, Get) {
   scoped_refptr<Hyphenation> hyphenation = base::AdoptRef(new NoHyphenation);
-  LayoutLocale::SetHyphenationForTesting("en-US", hyphenation);
-  EXPECT_EQ(hyphenation.get(), LayoutLocale::Get("en-US")->GetHyphenation());
-
-  LayoutLocale::SetHyphenationForTesting("en-UK", nullptr);
-  EXPECT_EQ(nullptr, LayoutLocale::Get("en-UK")->GetHyphenation());
+  AtomicString local_en_us("en-US");
+  LayoutLocale::SetHyphenationForTesting(local_en_us, hyphenation);
+  EXPECT_EQ(hyphenation.get(),
+            LayoutLocale::Get(local_en_us)->GetHyphenation());
+  AtomicString local_en_uk("en-UK");
+  LayoutLocale::SetHyphenationForTesting(local_en_uk, nullptr);
+  EXPECT_EQ(nullptr, LayoutLocale::Get(local_en_uk)->GetHyphenation());
 }
 
 #if defined(USE_MINIKIN_HYPHENATION)
 TEST_F(HyphenationTest, MapLocale) {
-  EXPECT_EQ(HyphenationMinikin::MapLocale("de-de"), "de-1996");
-  EXPECT_EQ(HyphenationMinikin::MapLocale("de-de-xyz"), "de-1996");
-  EXPECT_EQ(HyphenationMinikin::MapLocale("de-li"), "de-1996");
-  EXPECT_EQ(HyphenationMinikin::MapLocale("de-li-1901"), "de-ch-1901");
-  EXPECT_EQ(HyphenationMinikin::MapLocale("en"), "en-us");
-  EXPECT_EQ(HyphenationMinikin::MapLocale("en-gu"), "en-us");
-  EXPECT_EQ(HyphenationMinikin::MapLocale("en-gu-xyz"), "en-us");
-  EXPECT_EQ(HyphenationMinikin::MapLocale("en-xyz"), "en-gb");
-  EXPECT_EQ(HyphenationMinikin::MapLocale("en-xyz-xyz"), "en-gb");
-  EXPECT_EQ(HyphenationMinikin::MapLocale("fr-ca"), "fr");
-  EXPECT_EQ(HyphenationMinikin::MapLocale("fr-fr"), "fr");
-  EXPECT_EQ(HyphenationMinikin::MapLocale("fr-fr-xyz"), "fr");
-  EXPECT_EQ(HyphenationMinikin::MapLocale("mn-xyz"), "mn-cyrl");
-  EXPECT_EQ(HyphenationMinikin::MapLocale("und-Deva-xyz"), "hi");
+  EXPECT_EQ(HyphenationMinikin::MapLocale(AtomicString("de-de")), "de-1996");
+  EXPECT_EQ(HyphenationMinikin::MapLocale(AtomicString("de-de-xyz")),
+            "de-1996");
+  EXPECT_EQ(HyphenationMinikin::MapLocale(AtomicString("de-li")), "de-1996");
+  EXPECT_EQ(HyphenationMinikin::MapLocale(AtomicString("de-li-1901")),
+            "de-ch-1901");
+  EXPECT_EQ(HyphenationMinikin::MapLocale(AtomicString("en")), "en-us");
+  EXPECT_EQ(HyphenationMinikin::MapLocale(AtomicString("en-gu")), "en-us");
+  EXPECT_EQ(HyphenationMinikin::MapLocale(AtomicString("en-gu-xyz")), "en-us");
+  EXPECT_EQ(HyphenationMinikin::MapLocale(AtomicString("en-xyz")), "en-gb");
+  EXPECT_EQ(HyphenationMinikin::MapLocale(AtomicString("en-xyz-xyz")), "en-gb");
+  EXPECT_EQ(HyphenationMinikin::MapLocale(AtomicString("fr-ca")), "fr");
+  EXPECT_EQ(HyphenationMinikin::MapLocale(AtomicString("fr-fr")), "fr");
+  EXPECT_EQ(HyphenationMinikin::MapLocale(AtomicString("fr-fr-xyz")), "fr");
+  EXPECT_EQ(HyphenationMinikin::MapLocale(AtomicString("mn-xyz")), "mn-cyrl");
+  EXPECT_EQ(HyphenationMinikin::MapLocale(AtomicString("und-Deva-xyz")), "hi");
 
   const char* no_map_locales[] = {"en-us", "fr"};
   for (const char* locale_str : no_map_locales) {
@@ -147,7 +151,8 @@ TEST_F(HyphenationTest, MapLocale) {
 
 #if defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_APPLE)
 TEST_F(HyphenationTest, HyphenLocations) {
-  scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
+  scoped_refptr<Hyphenation> hyphenation =
+      GetHyphenation(AtomicString("en-us"));
 #if BUILDFLAG(IS_ANDROID)
   // Hyphenation is available only for Android M MR1 or later.
   if (!hyphenation)
@@ -200,7 +205,8 @@ TEST_F(HyphenationTest, WordToHyphenate) {
 #endif
 
 TEST_F(HyphenationTest, LeadingSpaces) {
-  scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
+  scoped_refptr<Hyphenation> hyphenation =
+      GetHyphenation(AtomicString("en-us"));
 #if BUILDFLAG(IS_ANDROID)
   // Hyphenation is available only for Android M MR1 or later.
   if (!hyphenation)
@@ -224,7 +230,8 @@ TEST_F(HyphenationTest, LeadingSpaces) {
 }
 
 TEST_F(HyphenationTest, NonLetters) {
-  scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
+  scoped_refptr<Hyphenation> hyphenation =
+      GetHyphenation(AtomicString("en-us"));
 #if BUILDFLAG(IS_ANDROID)
   // Hyphenation is available only for Android M MR1 or later.
   if (!hyphenation)
@@ -241,7 +248,8 @@ TEST_F(HyphenationTest, NonLetters) {
 }
 
 TEST_F(HyphenationTest, English) {
-  scoped_refptr<Hyphenation> hyphenation = GetHyphenation("en-us");
+  scoped_refptr<Hyphenation> hyphenation =
+      GetHyphenation(AtomicString("en-us"));
 #if BUILDFLAG(IS_ANDROID)
   // Hyphenation is available only for Android M MR1 or later.
   if (!hyphenation)
@@ -255,7 +263,8 @@ TEST_F(HyphenationTest, English) {
 }
 
 TEST_F(HyphenationTest, German) {
-  scoped_refptr<Hyphenation> hyphenation = GetHyphenation("de-1996");
+  scoped_refptr<Hyphenation> hyphenation =
+      GetHyphenation(AtomicString("de-1996"));
 #if BUILDFLAG(IS_ANDROID)
   // Hyphenation is available only for Android M MR1 or later.
   if (!hyphenation)
@@ -283,13 +292,13 @@ TEST_F(HyphenationTest, German) {
 #if defined(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_APPLE)
 TEST_F(HyphenationTest, CapitalizedWords) {
   // Avoid hyphenating capitalized words for "en".
-  if (scoped_refptr<Hyphenation> en = GetHyphenation("en-us")) {
+  if (scoped_refptr<Hyphenation> en = GetHyphenation(AtomicString("en-us"))) {
     Vector<wtf_size_t, 8> locations = en->HyphenLocations("Hyphenation");
     EXPECT_EQ(locations.size(), 0u);
   }
 
   // Hyphenate capitalized words if German.
-  if (scoped_refptr<Hyphenation> de = GetHyphenation("de-1996")) {
+  if (scoped_refptr<Hyphenation> de = GetHyphenation(AtomicString("de-1996"))) {
     Vector<wtf_size_t, 8> locations = de->HyphenLocations("Konsonantien");
     EXPECT_NE(locations.size(), 0u);
   }
@@ -298,7 +307,7 @@ TEST_F(HyphenationTest, CapitalizedWords) {
 // Test the used values of the `hyphenate-limit-chars` property.
 // https://w3c.github.io/csswg-drafts/css-text-4/#propdef-hyphenate-limit-chars
 TEST_F(HyphenationTest, SetLimits) {
-  scoped_refptr<Hyphenation> en = GetHyphenation("en-us");
+  scoped_refptr<Hyphenation> en = GetHyphenation(AtomicString("en-us"));
   if (!en)
     return;
 
@@ -341,7 +350,7 @@ TEST_F(HyphenationTest, SetLimits) {
 
 // Test the limitation with all the 3 public APIs.
 TEST_F(HyphenationTest, Limits) {
-  scoped_refptr<Hyphenation> en = GetHyphenation("en-us");
+  scoped_refptr<Hyphenation> en = GetHyphenation(AtomicString("en-us"));
   if (!en)
     return;
 
