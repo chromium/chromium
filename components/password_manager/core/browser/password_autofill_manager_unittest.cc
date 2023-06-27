@@ -2101,6 +2101,9 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
       std::vector<PasskeyCredential>{passkey};
   EXPECT_CALL(webauthn_credentials_delegate, GetPasskeys)
       .WillRepeatedly(ReturnRef(passkey_list));
+  EXPECT_CALL(webauthn_credentials_delegate,
+              OfferPasskeysFromAnotherDeviceOption)
+      .WillRepeatedly(Return(true));
 
   // Show password suggestions including WebAuthn credentials.
   autofill::AutofillClient::PopupOpenArgs open_args;
@@ -2166,6 +2169,9 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
       .WillRepeatedly(Return(&webauthn_credentials_delegate));
   EXPECT_CALL(webauthn_credentials_delegate, GetPasskeys)
       .WillRepeatedly(ReturnRef(passkeys));
+  EXPECT_CALL(webauthn_credentials_delegate,
+              OfferPasskeysFromAnotherDeviceOption)
+      .WillRepeatedly(Return(true));
 
   // Show password suggestions including WebAuthn credentials.
   autofill::AutofillClient::PopupOpenArgs open_args;
@@ -2187,6 +2193,39 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
   // Check that the button shows the correct text.
   EXPECT_EQ(open_args.suggestions[1].main_text.value,
             l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DEVICE_PASSKEY));
+}
+
+TEST_F(PasswordAutofillManagerTest, DoesntShowWebAuthnSignInWithAnotherDevice) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  MockWebAuthnCredentialsDelegate webauthn_credentials_delegate;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  // Enable WebAuthn autofill.
+  absl::optional<std::vector<PasskeyCredential>> passkeys(absl::in_place);
+  EXPECT_CALL(client, GetWebAuthnCredentialsDelegateForDriver)
+      .WillRepeatedly(Return(&webauthn_credentials_delegate));
+  EXPECT_CALL(webauthn_credentials_delegate, GetPasskeys)
+      .WillRepeatedly(ReturnRef(passkeys));
+  EXPECT_CALL(webauthn_credentials_delegate,
+              OfferPasskeysFromAnotherDeviceOption)
+      .WillRepeatedly(Return(false));
+
+  // Show password suggestions including WebAuthn credentials.
+  autofill::AutofillClient::PopupOpenArgs open_args;
+  EXPECT_CALL(autofill_client, ShowAutofillPopup)
+      .WillOnce(testing::SaveArg<0>(&open_args));
+  gfx::RectF element_bounds;
+  password_autofill_manager_->OnShowPasswordSuggestions(
+      kElementId, base::i18n::RIGHT_TO_LEFT,
+      /*typed_username=*/std::u16string(),
+      autofill::ShowPasswordSuggestionsOptions::ACCEPTS_WEBAUTHN_CREDENTIALS,
+      element_bounds);
+  ASSERT_THAT(
+      open_args.suggestions,
+      SuggestionVectorIdsAre(autofill::PopupItemId::kUsernameEntry,
+                             autofill::PopupItemId::kSeparator,
+                             autofill::PopupItemId::kAllSavedPasswordsEntry));
 }
 
 // Regression test for crbug.com/1370037.
@@ -2219,6 +2258,9 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnFaviconWithoutPasswords) {
       .WillRepeatedly(Return(&webauthn_credentials_delegate));
   EXPECT_CALL(webauthn_credentials_delegate, GetPasskeys)
       .WillRepeatedly(ReturnRef(passkeys));
+  EXPECT_CALL(webauthn_credentials_delegate,
+              OfferPasskeysFromAnotherDeviceOption)
+      .WillRepeatedly(Return(true));
 
   // Show webauthn suggestions with the correct favicon.
   autofill::AutofillClient::PopupOpenArgs open_args;
@@ -2257,6 +2299,9 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithoutPasswordData) {
       .WillRepeatedly(Return(&webauthn_credentials_delegate));
   EXPECT_CALL(webauthn_credentials_delegate, GetPasskeys)
       .WillRepeatedly(ReturnRef(passkeys));
+  EXPECT_CALL(webauthn_credentials_delegate,
+              OfferPasskeysFromAnotherDeviceOption)
+      .WillRepeatedly(Return(true));
 
   autofill::AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(autofill_client, ShowAutofillPopup)

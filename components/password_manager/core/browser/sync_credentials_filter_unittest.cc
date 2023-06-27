@@ -55,6 +55,9 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
     }
     ON_CALL(webauthn_credentials_delegate_, GetPasskeys)
         .WillByDefault(testing::ReturnRef(passkeys_));
+    ON_CALL(webauthn_credentials_delegate_,
+            OfferPasskeysFromAnotherDeviceOption)
+        .WillByDefault(testing::Return(true));
 
     // Initializes and configures prefs.
     prefs_ = std::make_unique<TestingPrefServiceSimple>();

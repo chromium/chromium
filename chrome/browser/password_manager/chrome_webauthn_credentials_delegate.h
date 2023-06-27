@@ -38,13 +38,17 @@ class ChromeWebAuthnCredentialsDelegate
   void SelectPasskey(const std::string& backend_id) override;
   const absl::optional<std::vector<password_manager::PasskeyCredential>>&
   GetPasskeys() const override;
+  bool OfferPasskeysFromAnotherDeviceOption() const override;
   void RetrievePasskeys(base::OnceClosure callback) override;
 
   // Method for providing a list of WebAuthn user entities that can be provided
   // as autofill suggestions. This is called when a WebAuthn Conditional UI
-  // request is received.
+  // request is received. The `offer_passkey_from_another_device` argument
+  // determines whether an autofill option to use a passkey from another device
+  // should be offered.
   void OnCredentialsReceived(
-      std::vector<password_manager::PasskeyCredential> credentials);
+      std::vector<password_manager::PasskeyCredential> credentials,
+      bool offer_passkey_from_another_device);
 
   // Lets the delegate know that a WebAuthn request has been aborted, and so
   // WebAuthn options should no longer show up on the autofill popup.
@@ -69,6 +73,7 @@ class ChromeWebAuthnCredentialsDelegate
   // |passkeys_| is nullopt until populated by a WebAuthn request, and reset
   // to nullopt when the request is cancelled.
   absl::optional<std::vector<password_manager::PasskeyCredential>> passkeys_;
+  bool offer_passkey_from_another_device_ = true;
 
   base::OnceClosure retrieve_passkeys_callback_;
 

@@ -463,6 +463,9 @@ class PasswordFormManagerTest : public testing::Test,
         .WillByDefault(Return(&webauthn_credentials_delegate_));
     ON_CALL(webauthn_credentials_delegate_, GetPasskeys)
         .WillByDefault(ReturnRef(passkeys_));
+    ON_CALL(webauthn_credentials_delegate_,
+            OfferPasskeysFromAnotherDeviceOption)
+        .WillByDefault(Return(true));
 
     fetcher_ = std::make_unique<FakeFormFetcher>();
     fetcher_->Fetch();

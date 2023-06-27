@@ -1125,10 +1125,25 @@ void AuthenticatorRequestDialogModel::StartConditionalMediationRequest() {
           }
           return passkey;
         });
+    bool offer_passkey_from_another_device;
+    switch (transport_availability_.conditional_ui_treatment) {
+      case TransportAvailabilityInfo::ConditionalUITreatment::kDefault:
+        offer_passkey_from_another_device = true;
+        break;
+      case TransportAvailabilityInfo::ConditionalUITreatment::
+          kDontShowEmptyConditionalUI:
+        offer_passkey_from_another_device = !credentials.empty();
+        break;
+      case TransportAvailabilityInfo::ConditionalUITreatment::
+          kNeverOfferPasskeyFromAnotherDevice:
+        offer_passkey_from_another_device = false;
+        break;
+    }
     ReportConditionalUiPasskeyCount(credentials.size());
     ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents)
         ->GetDelegateForFrame(render_frame_host)
-        ->OnCredentialsReceived(std::move(credentials));
+        ->OnCredentialsReceived(std::move(credentials),
+                                offer_passkey_from_another_device);
   }
 
   SetCurrentStep(Step::kConditionalMediation);

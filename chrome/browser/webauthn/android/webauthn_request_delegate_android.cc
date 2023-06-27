@@ -85,7 +85,9 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
     credentials_delegate->SetAndroidHybridAvailable(
         ChromeWebAuthnCredentialsDelegate::AndroidHybridAvailable(
             !hybrid_callback_.is_null()));
-    credentials_delegate->OnCredentialsReceived(std::move(display_credentials));
+    credentials_delegate->OnCredentialsReceived(
+        std::move(display_credentials),
+        /*offer_passkey_from_another_device=*/true);
     return;
   }
 

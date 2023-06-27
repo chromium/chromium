@@ -492,6 +492,8 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
       *ctap_get_assertion_options_, allow_skipping_pin_touch,
       base::BindOnce(&AuthenticatorCommonImpl::OnSignResponse,
                      weak_factory_.GetWeakPtr()));
+  request_handler->transport_availability_info().conditional_ui_treatment =
+      conditional_ui_treatment_;
 
   request_delegate_->RegisterActionCallbacks(
       base::BindOnce(&AuthenticatorCommonImpl::OnCancelFromUI,
@@ -841,6 +843,26 @@ void AuthenticatorCommonImpl::GetAssertion(
 
   if (!options->is_conditional) {
     BeginRequestTimeout(options->timeout);
+  } else if (options->timeout &&
+             base::FeatureList::IsEnabled(
+                 device::kWebAuthConditionalUIExperimentation)) {
+    // These are magic values that a site can set to experiment with different
+    // conditional UI behaviours.
+    //
+    // TODO(crbug.com/1456525): remove this and everything else from
+    // the CL that added it if this is unused by June 2024.
+    switch (options->timeout->InMilliseconds()) {
+      case 324441:
+        conditional_ui_treatment_ =
+            device::FidoRequestHandlerBase::TransportAvailabilityInfo::
+                ConditionalUITreatment::kDontShowEmptyConditionalUI;
+        break;
+      case 324442:
+        conditional_ui_treatment_ =
+            device::FidoRequestHandlerBase::TransportAvailabilityInfo::
+                ConditionalUITreatment::kNeverOfferPasskeyFromAnotherDevice;
+        break;
+    }
   }
 
   WebAuthRequestSecurityChecker::RequestType request_type =

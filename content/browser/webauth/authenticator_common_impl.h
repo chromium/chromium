@@ -240,6 +240,12 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   std::string client_data_json_;
   bool disable_ui_ = false;
   bool disable_tls_check_ = false;
+  // conditional_ui_treatment tracks any non-standard conditional UI behaviours
+  // that have been requested.
+  device::FidoRequestHandlerBase::TransportAvailabilityInfo::
+      ConditionalUITreatment conditional_ui_treatment_ =
+          device::FidoRequestHandlerBase::TransportAvailabilityInfo::
+              ConditionalUITreatment::kDefault;
   url::Origin caller_origin_;
   std::string relying_party_id_;
   scoped_refptr<WebAuthRequestSecurityChecker> security_checker_;

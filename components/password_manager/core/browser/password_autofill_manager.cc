@@ -768,7 +768,7 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
 
 #if !BUILDFLAG(IS_ANDROID)
   // Add "Sign in with another device" button.
-  if (uses_passkeys) {
+  if (uses_passkeys && delegate->OfferPasskeysFromAnotherDeviceOption()) {
     suggestions.push_back(CreateWebAuthnEntry());
   }
 #endif

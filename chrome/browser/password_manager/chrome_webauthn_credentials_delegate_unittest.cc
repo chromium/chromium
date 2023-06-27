@@ -151,11 +151,21 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentials) {
                     kUserName1),
       CreatePasskey(device::fido_parsing_utils::Materialize(kCredId2),
                     kUserName2)};
-  credentials_delegate_->OnCredentialsReceived(credentials);
+  credentials_delegate_->OnCredentialsReceived(
+      credentials, /*offer_passkey_from_another_device=*/true);
 
   auto passkeys = credentials_delegate_->GetPasskeys();
   ASSERT_TRUE(passkeys.has_value());
   EXPECT_EQ(*passkeys, credentials);
+  EXPECT_TRUE(credentials_delegate_->OfferPasskeysFromAnotherDeviceOption());
+}
+
+TEST_F(ChromeWebAuthnCredentialsDelegateTest,
+       DontOfferPasskeysFromAnotherDevice) {
+  credentials_delegate_->OnCredentialsReceived(
+      {}, /*offer_passkey_from_another_device=*/false);
+
+  EXPECT_FALSE(credentials_delegate_->OfferPasskeysFromAnotherDeviceOption());
 }
 
 // Testing retrieving suggestions when the credentials are not received until
@@ -166,7 +176,9 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentialsDelayed) {
                     kUserName1),
       CreatePasskey(device::fido_parsing_utils::Materialize(kCredId2),
                     kUserName2)};
-  credentials_delegate_->OnCredentialsReceived(credentials);
+  credentials_delegate_->OnCredentialsReceived(
+      credentials,
+      /*offer_passkey_from_another_device=*/true);
 
   auto passkeys = credentials_delegate_->GetPasskeys();
   ASSERT_TRUE(passkeys.has_value());
@@ -202,7 +214,9 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
                     kUserName1),
       CreatePasskey(device::fido_parsing_utils::Materialize(kCredId2),
                     kUserName2)};
-  credentials_delegate_->OnCredentialsReceived(credentials);
+  credentials_delegate_->OnCredentialsReceived(
+      credentials,
+      /*offer_passkey_from_another_device=*/true);
 
 #if !BUILDFLAG(IS_ANDROID)
   base::RunLoop run_loop;
@@ -225,7 +239,9 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, AbortRequest) {
   std::vector<PasskeyCredential> credentials{CreatePasskey(
       device::fido_parsing_utils::Materialize(kCredId1), kUserName1)};
-  credentials_delegate_->OnCredentialsReceived(credentials);
+  credentials_delegate_->OnCredentialsReceived(
+      credentials,
+      /*offer_passkey_from_another_device=*/true);
   credentials_delegate_->NotifyWebAuthnRequestAborted();
   EXPECT_FALSE(credentials_delegate_->GetPasskeys());
 }

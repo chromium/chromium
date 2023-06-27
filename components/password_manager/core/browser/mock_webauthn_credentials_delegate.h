@@ -32,6 +32,7 @@ class MockWebAuthnCredentialsDelegate : public WebAuthnCredentialsDelegate {
               GetPasskeys,
               (),
               (const override));
+  MOCK_METHOD(bool, OfferPasskeysFromAnotherDeviceOption, (), (const override));
   MOCK_METHOD(void, RetrievePasskeys, (base::OnceClosure), (override));
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void, ShowAndroidHybridSignIn, (), (override));

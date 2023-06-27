@@ -38,6 +38,10 @@ class WebAuthnCredentialsDelegate
   virtual const absl::optional<std::vector<PasskeyCredential>>& GetPasskeys()
       const = 0;
 
+  // Returns whether a "Use a passkey from a different device" option should
+  // be offered.
+  virtual bool OfferPasskeysFromAnotherDeviceOption() const = 0;
+
   // Initiates retrieval of passkeys from the platform authenticator.
   // |callback| is invoked when credentials have been received, which could be
   // immediately.
