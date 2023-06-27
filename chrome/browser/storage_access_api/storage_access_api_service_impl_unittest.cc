@@ -135,17 +135,18 @@ TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant_DailyCache) {
   EXPECT_TRUE(service->RenewPermissionGrant(origin_a, origin_b));
   EXPECT_FALSE(service->RenewPermissionGrant(origin_a, origin_b));
 
-  // The first cache reset should happen between 0-25 hours from test start.  (0
-  // hours because the "next midnight" might have been in just a few minutes. 25
-  // hours because today might have been the day that daylight savings time
-  // ended.)
-  env().FastForwardBy(base::Hours(25));
+  // The first cache reset should happen 24 hours after test start.
+  env().FastForwardBy(base::Days(1));
 
   EXPECT_TRUE(service->RenewPermissionGrant(origin_a, origin_b));
   EXPECT_FALSE(service->RenewPermissionGrant(origin_a, origin_b));
 
-  // The next cache reset should happen 24 hours after the first reset.
-  env().FastForwardBy(base::Days(1));
+  // The next cache reset should happen in another 24 hours.
+  env().FastForwardBy(base::Hours(23));
+
+  EXPECT_FALSE(service->RenewPermissionGrant(origin_a, origin_b));
+
+  env().FastForwardBy(base::Hours(1));
 
   EXPECT_TRUE(service->RenewPermissionGrant(origin_a, origin_b));
   EXPECT_FALSE(service->RenewPermissionGrant(origin_a, origin_b));

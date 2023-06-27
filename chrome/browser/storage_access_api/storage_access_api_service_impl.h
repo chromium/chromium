@@ -46,10 +46,6 @@ class StorageAccessAPIServiceImpl : public StorageAccessAPIService,
   bool IsTimerRunningForTesting() const;
 
  private:
-  // Starts the periodic timer. This includes an invocation of
-  // `OnPeriodicTimerFired`, for the 0th time interval.
-  void StartPeriodicTimer();
-
   // Handles state updates due to the passage of time.
   void OnPeriodicTimerFired();
 
