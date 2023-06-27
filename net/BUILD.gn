@@ -1801,10 +1801,6 @@ proto_library("isolation_info_proto") {
 
 component("extras") {
   sources = [
-    "extras/shared_dictionary/shared_dictionary_info.cc",
-    "extras/shared_dictionary/shared_dictionary_info.h",
-    "extras/shared_dictionary/shared_dictionary_isolation_key.cc",
-    "extras/shared_dictionary/shared_dictionary_isolation_key.h",
     "extras/sqlite/cookie_crypto_delegate.h",
     "extras/sqlite/sqlite_persistent_cookie_store.cc",
     "extras/sqlite/sqlite_persistent_cookie_store.h",
@@ -1820,6 +1816,7 @@ component("extras") {
     "//base",
     "//sql:sql",
   ]
+  public_deps = [ ":shared_dictionary" ]
 
   if (enable_reporting) {
     sources += [
@@ -1827,6 +1824,21 @@ component("extras") {
       "extras/sqlite/sqlite_persistent_reporting_and_nel_store.h",
     ]
   }
+}
+
+component("shared_dictionary") {
+  sources = [
+    "extras/shared_dictionary/shared_dictionary_info.cc",
+    "extras/shared_dictionary/shared_dictionary_info.h",
+    "extras/shared_dictionary/shared_dictionary_isolation_key.cc",
+    "extras/shared_dictionary/shared_dictionary_isolation_key.h",
+  ]
+  defines = [ "IS_NET_SHARED_DICTIONARY_IMPL" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  deps = [
+    ":net",
+    "//base",
+  ]
 }
 
 static_library("preload_decoder") {
