@@ -8,9 +8,10 @@
 #include <set>
 #include <utility>
 
+#include "base/location.h"
 #include "base/strings/string_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "build/chromeos_buildflags.h"
+#include "components/feedback/redaction_tool/metrics_tester.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 
 namespace redaction {
@@ -255,6 +256,12 @@ const StringWithRedaction kStringsWithRedactions[] = {
 };
 
 class RedactionToolTest : public testing::Test {
+ public:
+  RedactionToolTest()
+      : metrics_tester_(MetricsTester::Create()),
+        redactor_(kFakeFirstPartyExtensionIDs,
+                  metrics_tester_->SetupRecorder()) {}
+
  protected:
   std::string RedactMACAddresses(const std::string& input) {
     return redactor_.RedactMACAddresses(input, nullptr);
@@ -286,7 +293,21 @@ class RedactionToolTest : public testing::Test {
     return redactor_.RedactCustomPatternWithoutContext(input, pattern, nullptr);
   }
 
-  RedactionTool redactor_{kFakeFirstPartyExtensionIDs};
+  template <typename T>
+  void ExpectBucketCount(
+      const base::StringPiece histogram_name,
+      const T enum_value,
+      const size_t expected_count,
+      const base::Location location = base::Location::Current()) {
+    const size_t actual_count = metrics_tester_->GetBucketCount(
+        histogram_name, static_cast<int>(enum_value));
+
+    EXPECT_EQ(actual_count, expected_count)
+        << location.file_name() << ":" << location.line_number();
+  }
+
+  std::unique_ptr<MetricsTester> metrics_tester_;
+  RedactionTool redactor_;
 };
 
 TEST_F(RedactionToolTest, Redact) {
@@ -628,21 +649,12 @@ TEST_F(RedactionToolTest, RedactChunk) {
   redactor_.EnableCreditCardRedaction(true);
   std::string redaction_input;
   std::string redaction_output;
-  constexpr char kHistogramName[] = "Feedback.RedactionTool.CreditCardMatch";
-  enum class CreditCardDetection {
-    kRegexMatch = 1,
-    kTimestamp = 2,
-    kRepeatedChars = 3,
-    kDoesntValidate = 4,
-    kValidated = 5,
-  };
   using enum CreditCardDetection;
-  const base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(kHistogramName, kRegexMatch, 0);
-  histogram_tester.ExpectBucketCount(kHistogramName, kTimestamp, 0);
-  histogram_tester.ExpectBucketCount(kHistogramName, kRepeatedChars, 0);
-  histogram_tester.ExpectBucketCount(kHistogramName, kDoesntValidate, 0);
-  histogram_tester.ExpectBucketCount(kHistogramName, kValidated, 0);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kRegexMatch, 0);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kTimestamp, 0);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kRepeatedChars, 0);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kDoesntValidate, 0);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kValidated, 0);
 
   for (const auto& s : kStringsWithRedactions) {
     redaction_input.append(s.pre_redaction).append("\n");
@@ -650,11 +662,11 @@ TEST_F(RedactionToolTest, RedactChunk) {
   }
   EXPECT_EQ(redaction_output, redactor_.Redact(redaction_input));
 
-  histogram_tester.ExpectBucketCount(kHistogramName, kRegexMatch, 16);
-  histogram_tester.ExpectBucketCount(kHistogramName, kTimestamp, 2);
-  histogram_tester.ExpectBucketCount(kHistogramName, kRepeatedChars, 1);
-  histogram_tester.ExpectBucketCount(kHistogramName, kDoesntValidate, 8);
-  histogram_tester.ExpectBucketCount(kHistogramName, kValidated, 5);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kRegexMatch, 16);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kTimestamp, 2);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kRepeatedChars, 1);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kDoesntValidate, 8);
+  ExpectBucketCount(kCreditCardRedactionHistogram, kValidated, 5);
 }
 
 TEST_F(RedactionToolTest, RedactAndKeepSelected) {

@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/feedback/redaction_tool/pii_types.h"
+#include "components/feedback/redaction_tool/redaction_tool_metrics_recorder.h"
 
 namespace re2 {
 class RE2;
@@ -57,6 +58,10 @@ class RedactionTool {
   // party extension IDs whose URLs won't be redacted. It is OK to pass null for
   // that value if it's OK to redact those URLs or they won't be present.
   explicit RedactionTool(const char* const* first_party_extension_ids);
+  // The `metrics_recorder` is the instance of recorder that should be used on
+  // this instance instead of the default for the platform.
+  RedactionTool(const char* const* first_party_extension_ids,
+                std::unique_ptr<RedactionToolMetricsRecorder> metrics_recorder);
   ~RedactionTool();
 
   // Return a map of [PII-sensitive data type -> set of data] that are detected
@@ -192,6 +197,8 @@ class RedactionTool {
 
   bool redact_credit_cards_ = false;
 
+  std::unique_ptr<RedactionToolMetricsRecorder> metrics_recorder_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
@@ -205,6 +212,10 @@ class RedactionToolContainer
   explicit RedactionToolContainer(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       const char* const* first_party_extension_ids);
+  explicit RedactionToolContainer(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      const char* const* first_party_extension_ids,
+      std::unique_ptr<RedactionToolMetricsRecorder> metrics_recorder);
 
   // Returns a pointer to the instance of this redactor. May only be called
   // on |task_runner_|.
