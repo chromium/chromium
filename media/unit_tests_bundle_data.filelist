@@ -387,6 +387,7 @@
 //media/test/data/noise-xhe-aac.mp4
 //media/test/data/nonzero-start-time.webm
 //media/test/data/npot-video.h264
+//media/test/data/one_frame_1280x720.mjpeg
 //media/test/data/opus-trimming-test.mp4
 //media/test/data/opus-trimming-test.ogg
 //media/test/data/opus-trimming-test.webm

@@ -272,6 +272,8 @@ component("capture_lib") {
 
   if (is_linux) {
     sources += [
+      "video/linux/v4l2_capture_delegate_gpu_helper.cc",
+      "video/linux/v4l2_capture_delegate_gpu_helper.h",
       "video/linux/v4l2_gpu_memory_buffer_tracker.cc",
       "video/linux/v4l2_gpu_memory_buffer_tracker.h",
       "video/linux/video_capture_gpu_memory_buffer_manager.cc",
@@ -469,7 +471,11 @@ test("capture_unittests") {
   }
 
   if (is_linux) {
-    sources += [ "video/linux/v4l2_gpu_memory_buffer_tracker_unittest.cc" ]
+    sources += [
+      "video/linux/v4l2_capture_delegate_gpu_helper_unittest.cc",
+      "video/linux/v4l2_gpu_memory_buffer_tracker_unittest.cc",
+    ]
+    data += [ "//media/test/data/one_frame_1280x720.mjpeg" ]
   }
 
   if (is_android) {
