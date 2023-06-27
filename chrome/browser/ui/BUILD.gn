@@ -2768,6 +2768,8 @@ static_library("ui") {
       "webui/ash/emoji/emoji_ui.h",
       "webui/ash/emoji/gif_tenor_api_fetcher.cc",
       "webui/ash/emoji/gif_tenor_api_fetcher.h",
+      "webui/ash/emoji/new_window_proxy.cc",
+      "webui/ash/emoji/new_window_proxy.h",
       "webui/ash/enterprise_reporting/enterprise_reporting_ui.cc",
       "webui/ash/enterprise_reporting/enterprise_reporting_ui.h",
       "webui/ash/guest_os_installer/guest_os_installer_dialog.cc",

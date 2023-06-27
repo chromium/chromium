@@ -110,11 +110,20 @@
     width: var(--emoji-group-heading-size);
   }
 
-  #clear-recents {
+  #clear-recents-container {
+    position: absolute;
+    right: 0;
+    top: calc(var(--emoji-group-heading-padding-top)
+      + var(--emoji-group-heading-padding-bottom)
+      + var(--emoji-group-heading-size));
+    box-shadow: var(--cr-elevation-1);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  #clear-recents, #help {
     background-color: var(--cros-bg-color);
     border: 2px solid transparent;
-    border-radius: 4px;
-    box-shadow: var(--cr-elevation-1);
     color: var(--cros-text-color-secondary);
     cursor: pointer;
     font-family: 'Roboto', sans-serif;
@@ -122,18 +131,17 @@
     height: var(--emoji-size);
     outline: none;
     padding: 0;
-    position: absolute;
-    right: 0;
-    top: calc(var(--emoji-group-heading-padding-top)
-      + var(--emoji-group-heading-padding-bottom)
-      + var(--emoji-group-heading-size));
     white-space: nowrap;
-    width: fit-content;
+    width: 100%;
     z-index: 200;
+    display: block;
+    text-align: left;
   }
 
   #clear-recents:focus,
-  #clear-recents:active {
+  #clear-recents:active,
+  #help:focus,
+  #help:active {
     border: 2px solid var(--cros-toggle-color);
   }
 
@@ -227,11 +235,19 @@
   </div>
 </template>
 <template is = "dom-if" if="[[showClearRecents]]">
-  <button id="clear-recents" on-click="onClearRecentsClick">
-    <div id="clear-recents-hover">
-      Clear recently used [[formatCategory(category)]]s
-    </div>
-  </button>
+  <div id="clear-recents-container">
+    <button id="clear-recents" on-click="onClearRecentsClick">
+      <div id="clear-recents-hover">
+        Clear recently used [[formatCategory(category)]]s
+      </div>
+    </button>
+
+    <button id="help" on-click="onHelpClick">
+      <div id="clear-recents-hover">
+        Help
+      </div>
+    </button>
+</div>
 </template>
 
 <!-- Add emoji buttons.

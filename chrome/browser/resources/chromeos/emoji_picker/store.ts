@@ -152,3 +152,19 @@ export class RecentlyUsedStore {
     return updated;
   }
 }
+
+const GIF_NUDGE_SHOWN_KEY = 'emoji-picker-gif-nudge-shown';
+
+export class GifNudgeHistoryStore {
+  hasNudgeShown(): boolean {
+    return window.localStorage.getItem(GIF_NUDGE_SHOWN_KEY) === true.toString();
+  }
+
+  setNudgeShown(value: boolean): void {
+    window.localStorage.setItem(GIF_NUDGE_SHOWN_KEY, value.toString());
+  }
+
+  static getInstance(): GifNudgeHistoryStore {
+    return new GifNudgeHistoryStore();
+  }
+}

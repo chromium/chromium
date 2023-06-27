@@ -1,0 +1,13 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module new_window_proxy.mojom;
+
+import "url/mojom/url.mojom";
+
+// Used by the WebUI to open new browser windows.
+interface NewWindowProxy {
+  // Request to open a new tab in primary browser with the given url
+  OpenUrl(url.mojom.Url url);
+};
