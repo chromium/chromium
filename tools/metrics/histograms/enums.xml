@@ -19895,6 +19895,18 @@ Called by update_net_error_codes.py.-->
   <int value="15" label="UI button shown"/>
 </enum>
 
+<enum name="ConversionAndroidRegistrationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown error"/>
+  <int value="2" label="Illegal argument error"/>
+  <int value="3" label="IO error"/>
+  <int value="4" label="Illegal state error"/>
+  <int value="5" label="Security error"/>
+  <int value="6" label="Timeout error"/>
+  <int value="7" label="Limit exceeded error"/>
+  <int value="8" label="Internal error"/>
+</enum>
+
 <enum name="ConversionAssembleAggregatableReportStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Aggregation service unavailable"/>
