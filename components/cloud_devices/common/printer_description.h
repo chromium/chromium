@@ -294,7 +294,7 @@ enum class FitToPageType {
   FILL_PAGE,
 };
 
-enum class MediaType {
+enum class MediaSize {
   CUSTOM_MEDIA,
 
   // North American standard sheet media names.
@@ -475,14 +475,14 @@ enum class MediaType {
 struct Media {
   Media();
 
-  // Page size will be set to the default size um for `type`. Printable area
-  // will be set to match the page size.
-  explicit Media(MediaType type);
+  // Page size will be set to the default size um for `size_name`. Printable
+  // area will be set to match the page size.
+  explicit Media(MediaSize size_name);
 
   // Printable area will be set to `size_um`.
-  Media(MediaType type, const gfx::Size& size_um);
+  Media(MediaSize size_name, const gfx::Size& size_um);
 
-  Media(MediaType type,
+  Media(MediaSize size_name,
         const gfx::Size& size_um,
         const gfx::Rect& printable_area_um);
 
@@ -505,7 +505,7 @@ struct Media {
   bool operator==(const Media& other) const;
   bool operator!=(const Media& other) const { return !(*this == other); }
 
-  MediaType type;
+  MediaSize size_name;
   gfx::Size size_um;
   bool is_continuous_feed;
   std::string custom_display_name;

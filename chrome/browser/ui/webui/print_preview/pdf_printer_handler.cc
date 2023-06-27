@@ -105,7 +105,7 @@ gfx::Size GetDefaultPdfMediaSizeMicrons() {
 base::Value::Dict GetPdfCapabilities(
     const std::string& locale,
     PrinterSemanticCapsAndDefaults::Papers custom_papers) {
-  using cloud_devices::printer::MediaType;
+  using cloud_devices::printer::MediaSize;
 
   cloud_devices::CloudDeviceDescription description;
   cloud_devices::printer::OrientationCapability orientation;
@@ -125,23 +125,23 @@ base::Value::Dict GetPdfCapabilities(
   }
   color.SaveTo(&description);
 
-  static const MediaType kPdfMedia[] = {
-      MediaType::ISO_A0,   MediaType::ISO_A1,    MediaType::ISO_A2,
-      MediaType::ISO_A3,   MediaType::ISO_A4,    MediaType::ISO_A5,
-      MediaType::NA_LEGAL, MediaType::NA_LETTER, MediaType::NA_LEDGER};
+  static const MediaSize kPdfMedia[] = {
+      MediaSize::ISO_A0,   MediaSize::ISO_A1,    MediaSize::ISO_A2,
+      MediaSize::ISO_A3,   MediaSize::ISO_A4,    MediaSize::ISO_A5,
+      MediaSize::NA_LEGAL, MediaSize::NA_LETTER, MediaSize::NA_LEDGER};
   const gfx::Size default_media_size = GetDefaultPdfMediaSizeMicrons();
   cloud_devices::printer::Media default_media(std::string(), std::string(),
                                               default_media_size);
   if (!default_media.MatchBySize() ||
-      !base::Contains(kPdfMedia, default_media.type)) {
+      !base::Contains(kPdfMedia, default_media.size_name)) {
     default_media = cloud_devices::printer::Media(
-        locale == "en-US" ? MediaType::NA_LETTER : MediaType::ISO_A4);
+        locale == "en-US" ? MediaSize::NA_LETTER : MediaSize::ISO_A4);
   }
   cloud_devices::printer::MediaCapability media;
   for (const auto& pdf_media : kPdfMedia) {
     cloud_devices::printer::Media media_option(pdf_media);
     media.AddDefaultOption(media_option,
-                           default_media.type == media_option.type);
+                           default_media.size_name == media_option.size_name);
   }
   for (const PrinterSemanticCapsAndDefaults::Paper& paper : custom_papers) {
     cloud_devices::printer::Media media_option(paper.display_name,
