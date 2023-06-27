@@ -27,6 +27,8 @@ class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
   // Callbacks for the tiles and buttons in the main menu view.
   // Handles showing and hiding the toolbar.
   void OnToolbarTilePressed();
+  // Handles disable or enable Game Controls.
+  void OnGameControlsTilePressed();
   // Handles toggling the game recording.
   void OnRecordGameTilePressed();
   // Handles taking a screenshot of the game window when pressed.
@@ -43,6 +45,10 @@ class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
   // Adds a row of shortcut tiles to the main menu view for users to quickly
   // access common functionality.
   void AddShortcutTilesRow();
+
+  // Adds Game Controls feature tile in `container` if it is the ARC game window
+  // and Game Controls is available.
+  void MaybeAddGameControlsTile(views::View* container);
 
   // Adds a row to access a settings page controlling the screen size if the
   // given game window is an ARC app.

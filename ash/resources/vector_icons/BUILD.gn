@@ -113,6 +113,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "five_files.icon",
     "folder.icon",
     "four_files.icon",
+    "gd_game_controls.icon",
     "gif.icon",
     "global_media_controls.icon",
     "hide_closed_caption.icon",

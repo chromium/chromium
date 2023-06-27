@@ -73,10 +73,93 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     DCHECK(game_context_);
   }
 
+  // Opens the menu and checks whether the feature tile with `tile_id` is
+  // `expect_exists`, `expect_enabled` and `expect_toggled`. Then closes the
+  // menu in the end.
+  void OpenMenuCheckFeatureTileState(ViewID tile_id,
+                                     bool expect_exists,
+                                     bool expect_enabled = false,
+                                     bool expect_toggled = false) {
+    auto* menu_button = GetMainMenuButtonWidget()->GetContentsView();
+    // Opens the main menu.
+    LeftClickOn(menu_button);
+
+    auto* tile = static_cast<FeatureTile*>(GetMainMenuViewById(tile_id));
+    if (expect_exists) {
+      EXPECT_TRUE(tile);
+      EXPECT_EQ(expect_enabled, tile->GetEnabled());
+      EXPECT_EQ(expect_toggled, tile->IsToggled());
+    } else {
+      EXPECT_FALSE(tile);
+    }
+
+    // Closes the main menu.
+    LeftClickOn(menu_button);
+  }
+
  protected:
   std::unique_ptr<aura::Window> game_window_;
   raw_ptr<GameDashboardContext, ExperimentalAsh> game_context_;
 };
+
+// Verifies Game Controls tile state.
+// - The tile exists when Game Controls is available.
+// - The tile is disabled if Game Controls has empty actions.
+// - The tile can only be toggled when Game Controls has at least one action and
+//   Game Controls feature is enabled.
+TEST_F(GameDashboardContextTest, GameControlsTileState) {
+  CreateGameWindow(/*is_arc_window=*/true);
+
+  // Game controls is not available.
+  game_window_->SetProperty(kArcGameControlsFlagsKey,
+                            ArcGameControlsFlag::kKnown);
+  OpenMenuCheckFeatureTileState(VIEW_ID_GD_CONTROLS_TILE,
+                                /*expect_exists=*/false);
+
+  // Game controls is available, not empty, but not enabled.
+  game_window_->SetProperty(
+      kArcGameControlsFlagsKey,
+      static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
+                                       ArcGameControlsFlag::kAvailable));
+  OpenMenuCheckFeatureTileState(VIEW_ID_GD_CONTROLS_TILE,
+                                /*expect_exists=*/true,
+                                /*expect_enabled=*/true,
+                                /*expect_toggled=*/false);
+
+  // Game controls is available, but empty.
+  game_window_->SetProperty(
+      kArcGameControlsFlagsKey,
+      static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
+                                       ArcGameControlsFlag::kAvailable |
+                                       ArcGameControlsFlag::kEmpty));
+  OpenMenuCheckFeatureTileState(VIEW_ID_GD_CONTROLS_TILE,
+                                /*expect_exists=*/true,
+                                /*expect_enabled=*/false,
+                                /*expect_toggled=*/false);
+
+  // Game controls is available, but empty. Even Game controls is set enabled,
+  // the tile can't be toggled.
+  game_window_->SetProperty(
+      kArcGameControlsFlagsKey,
+      static_cast<ArcGameControlsFlag>(
+          ArcGameControlsFlag::kKnown | ArcGameControlsFlag::kAvailable |
+          ArcGameControlsFlag::kEmpty | ArcGameControlsFlag::kEnabled));
+  OpenMenuCheckFeatureTileState(VIEW_ID_GD_CONTROLS_TILE,
+                                /*expect_exists=*/true,
+                                /*expect_enabled=*/false,
+                                /*expect_toggled=*/false);
+
+  // Game controls is available, not empty and enabled.
+  game_window_->SetProperty(
+      kArcGameControlsFlagsKey,
+      static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
+                                       ArcGameControlsFlag::kAvailable |
+                                       ArcGameControlsFlag::kEnabled));
+  OpenMenuCheckFeatureTileState(VIEW_ID_GD_CONTROLS_TILE,
+                                /*expect_exists=*/true,
+                                /*expect_enabled=*/true,
+                                /*expect_toggled=*/true);
+}
 
 // -----------------------------------------------------------------------------
 // GameTypeGameDashboardContextTest:
@@ -138,7 +221,7 @@ TEST_P(GameTypeGameDashboardContextTest, OpenMainMenuButtonWidget) {
     EXPECT_FALSE(GetMainMenuButtonWidget()->GetContentsView()->GetEnabled());
     LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
     EXPECT_FALSE(GetMainMenuDialogWidget());
-    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
+    game_window_->SetProperty(kArcGameControlsFlagsKey,
                               ArcGameControlsFlag::kKnown);
   }
 
@@ -153,7 +236,7 @@ TEST_P(GameTypeGameDashboardContextTest, OpenMainMenuButtonWidget) {
 // it's already open.
 TEST_P(GameTypeGameDashboardContextTest, CloseMainMenuButtonWidget) {
   if (IsArcGame()) {
-    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
+    game_window_->SetProperty(kArcGameControlsFlagsKey,
                               ArcGameControlsFlag::kKnown);
   }
 
@@ -172,8 +255,10 @@ TEST_P(GameTypeGameDashboardContextTest, CloseMainMenuButtonWidget) {
 TEST_P(GameTypeGameDashboardContextTest,
        MainMenuDialogWidget_AvailabelFeatures) {
   if (IsArcGame()) {
-    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
-                              ArcGameControlsFlag::kKnown);
+    game_window_->SetProperty(
+        kArcGameControlsFlagsKey,
+        static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
+                                         ArcGameControlsFlag::kAvailable));
   }
 
   // Open the main menu.
@@ -189,8 +274,7 @@ TEST_P(GameTypeGameDashboardContextTest,
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_HELP_BUTTON));
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_GENERAL_SETTINGS_BUTTON));
   if (IsArcGame()) {
-    // TODO(b/273641402): Update Game Controls visibility once implemented.
-    EXPECT_FALSE(GetMainMenuViewById(VIEW_ID_GD_CONTROLS_TILE));
+    EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_CONTROLS_TILE));
     EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_SCREEN_SIZE_TILE));
   } else {
     EXPECT_FALSE(GetMainMenuViewById(VIEW_ID_GD_CONTROLS_TILE));
@@ -207,7 +291,7 @@ TEST_P(GameTypeGameDashboardContextTest,
       {features::kFeatureManagementGameDashboardRecordGame});
 
   if (IsArcGame()) {
-    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
+    game_window_->SetProperty(kArcGameControlsFlagsKey,
                               ArcGameControlsFlag::kKnown);
   }
 
@@ -221,7 +305,7 @@ TEST_P(GameTypeGameDashboardContextTest,
 
 TEST_P(GameTypeGameDashboardContextTest, TakeScreenshot) {
   if (IsArcGame()) {
-    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
+    game_window_->SetProperty(kArcGameControlsFlagsKey,
                               ArcGameControlsFlag::kKnown);
   }
 
@@ -242,7 +326,7 @@ TEST_P(GameTypeGameDashboardContextTest, TakeScreenshot) {
 // Verifies the main menu record game tile can video record the game window.
 TEST_P(GameTypeGameDashboardContextTest, ScreenCaptureFromMainMenu) {
   if (IsArcGame()) {
-    game_window_->SetProperty(ash::kArcGameControlsFlagsKey,
+    game_window_->SetProperty(kArcGameControlsFlagsKey,
                               ArcGameControlsFlag::kKnown);
   }
   // Retrieve the video record tile and verify the initial state.
