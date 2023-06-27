@@ -274,9 +274,13 @@ void StartWebRequestProxyingWebTransport(
   const int process_id = render_process_host.GetID();
   content::RenderFrameHost* frame =
       content::RenderFrameHost::FromID(process_id, frame_routing_id);
+  // Doesn't record UKMs if the frame is not given or in the prerendering state
+  // as the policy disallow it and GetPageUkmSourceId doesn't return a valid ID.
   const ukm::SourceIdObj& ukm_source_id =
-      frame ? ukm::SourceIdObj::FromInt64(frame->GetPageUkmSourceId())
-            : ukm::kInvalidSourceIdObj;
+      (frame && !frame->IsInLifecycleState(
+                    content::RenderFrameHost::LifecycleState::kPrerendering))
+          ? ukm::SourceIdObj::FromInt64(frame->GetPageUkmSourceId())
+          : ukm::kInvalidSourceIdObj;
 
   WebRequestInfoInitParams params =
       WebRequestInfoInitParams(request_id, process_id, frame_routing_id,
