@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -119,6 +120,27 @@ public final class TabGridViewBinderUnitTest {
 
     @Test
     @org.robolectric.annotation.Config(qualifiers = "sw348dp")
+    public void bindClosableTabWithCardWidth_updateNullFetcher() {
+        mModel.set(TabProperties.THUMBNAIL_FETCHER, null);
+        TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.THUMBNAIL_FETCHER);
+        verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
+        verify(mThumbnailView).setImageDrawable(null);
+
+        // Update width.
+        // updatedBitmapWidth = updatedCardWidth - margins = 200 - 40 = 160.
+        // updatedBitmapHeight = INIT_HEIGHT - margins = 200 - 40 - 160.
+        final int updatedCardWidth = 200;
+        mModel.set(TabProperties.GRID_CARD_SIZE, new Size(updatedCardWidth, INIT_HEIGHT));
+        TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.GRID_CARD_SIZE);
+        verify(mViewGroup).setMinimumWidth(updatedCardWidth);
+        verify(mThumbnailView, times(2)).updateThumbnailPlaceholder(false, true);
+        assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
+
+        verify(mThumbnailView, times(2)).setImageDrawable(null);
+    }
+
+    @Test
+    @org.robolectric.annotation.Config(qualifiers = "sw348dp")
     public void bindClosableTabWithCardWidth_updateCardAndThumbnail() {
         // Update width.
         // updatedBitmapWidth = updatedCardWidth - margins = 200 - 40 = 160.
@@ -129,7 +151,6 @@ public final class TabGridViewBinderUnitTest {
 
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
         verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
-        verify(mThumbnailView).setImageDrawable(null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
         verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(true));
@@ -162,7 +183,6 @@ public final class TabGridViewBinderUnitTest {
 
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
         verify(mThumbnailView).updateThumbnailPlaceholder(false, false);
-        verify(mThumbnailView).setImageDrawable(null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
         verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(false));
@@ -197,7 +217,6 @@ public final class TabGridViewBinderUnitTest {
         // Verify.
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
         verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
-        verify(mThumbnailView).setImageDrawable(null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
         verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(true));
 
@@ -232,7 +251,6 @@ public final class TabGridViewBinderUnitTest {
         // Verify.
         verify(mViewGroup).setMinimumHeight(updatedCardHeight);
         verify(mThumbnailView).updateThumbnailPlaceholder(false, true);
-        verify(mThumbnailView).setImageDrawable(null);
         assertThat(mLayoutParams.height, equalTo(updatedCardHeight));
         verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(true));
 
