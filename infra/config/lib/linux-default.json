@@ -242,6 +242,7 @@
     "android-perfetto-rel": "Ubuntu-22.04",
     "android-pie-arm64-dbg": "Ubuntu-22.04",
     "android-pie-arm64-rel": "Ubuntu-22.04",
+    "android-pie-arm64-rel-dev": "Ubuntu-22.04",
     "android-pie-x86-fyi-rel": "Ubuntu-22.04",
     "android-pie-x86-rel": "Ubuntu-22.04",
     "android-rust-arm32-rel": "Ubuntu-22.04",
