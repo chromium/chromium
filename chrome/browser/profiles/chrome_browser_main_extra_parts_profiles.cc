@@ -82,6 +82,7 @@
 #include "chrome/browser/media/media_engagement_service_factory.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/presentation/chrome_local_presentation_manager_factory.h"
+#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_keyed_service_factory.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences_factory.h"
 #include "chrome/browser/metrics/variations/google_groups_updater_service_factory.h"
@@ -195,7 +196,6 @@
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/persisted_state_db_content.pb.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
-#include "components/media_device_salt/media_device_salt_service_factory.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -742,7 +742,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   ManagedConfigurationAPIFactory::GetInstance();
 #endif
-  media_device_salt::MediaDeviceSaltServiceFactory::GetInstance();
+  MediaDeviceSaltServiceFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
   MediaDrmOriginIdManagerFactory::GetInstance();
 #endif

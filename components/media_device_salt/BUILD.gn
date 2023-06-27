@@ -8,8 +8,6 @@ static_library("media_device_salt") {
     "media_device_id_salt.h",
     "media_device_salt_service.cc",
     "media_device_salt_service.h",
-    "media_device_salt_service_factory.cc",
-    "media_device_salt_service_factory.h",
   ]
 
   deps = [

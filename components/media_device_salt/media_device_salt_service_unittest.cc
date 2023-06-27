@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/media_device_salt/media_device_salt_service_factory.h"
+#include "components/media_device_salt/media_device_salt_service.h"
 
 #include "base/test/test_future.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/media_device_salt/media_device_id_salt.h"
-#include "components/media_device_salt/media_device_salt_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/test/browser_task_environment.h"
@@ -30,16 +29,10 @@ class MediaDeviceSaltServiceTest : public testing::Test {
     ASSERT_TRUE(pref_service_.FindPreference(
         media_device_salt::prefs::kMediaDeviceIdSalt));
 
-    MediaDeviceSaltServiceFactory* factory =
-        MediaDeviceSaltServiceFactory::GetInstance();
-    ASSERT_TRUE(factory);
-
-    service_ = factory->GetForBrowserContext(&browser_context_);
-    ASSERT_TRUE(service_);
+    service_ = std::make_unique<MediaDeviceSaltService>(&pref_service_);
   }
 
   void TearDown() override {
-    service_ = nullptr;
     BrowserContextDependencyManager::GetInstance()
         ->DestroyBrowserContextServices(&browser_context_);
   }
@@ -60,7 +53,7 @@ class MediaDeviceSaltServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
-  raw_ptr<MediaDeviceSaltService> service_;
+  std::unique_ptr<MediaDeviceSaltService> service_;
 };
 
 TEST_F(MediaDeviceSaltServiceTest, GetAndResetSalt) {

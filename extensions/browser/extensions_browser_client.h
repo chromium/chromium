@@ -70,6 +70,10 @@ namespace base {
 class CancelableTaskTracker;
 }  // namespace base
 
+namespace media_device_salt {
+class MediaDeviceSaltService;
+}  // namespace media_device_salt
+
 namespace extensions {
 
 class ComponentExtensionResourceManager;
@@ -515,6 +519,11 @@ class ExtensionsBrowserClient {
   // are created.
   virtual void CreatePasswordReuseDetectionManager(
       content::WebContents* web_contents) const;
+
+  // Returns a service that provides persistent salts for generating media
+  // device IDs. Can be null if the embedder does not support persistent salts.
+  virtual media_device_salt::MediaDeviceSaltService* GetMediaDeviceSaltService(
+      content::BrowserContext* context);
 
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;

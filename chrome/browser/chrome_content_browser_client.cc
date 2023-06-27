@@ -85,6 +85,7 @@
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/chrome_screen_enumerator.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_logging_controller.h"
 #include "chrome/browser/memory/chrome_browser_main_extra_parts_memory.h"
 #include "chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.h"
@@ -226,7 +227,6 @@
 #include "components/lens/buildflags.h"
 #include "components/live_caption/caption_util.h"
 #include "components/media_device_salt/media_device_salt_service.h"
-#include "components/media_device_salt/media_device_salt_service_factory.h"
 #include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
 #include "components/media_router/browser/presentation/receiver_presentation_service_delegate_impl.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
@@ -7204,8 +7204,8 @@ void ChromeContentBrowserClient::GetMediaDeviceIDSalt(
       url, site_for_cookies, top_frame_origin,
       cookie_settings->SettingOverridesForStorage());
   media_device_salt::MediaDeviceSaltService* salt_service =
-      media_device_salt::MediaDeviceSaltServiceFactory::GetInstance()
-          ->GetForBrowserContext(browser_context);
+      MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
+          browser_context);
   if (!salt_service) {
     std::move(callback).Run(allowed, browser_context->UniqueId());
     return;

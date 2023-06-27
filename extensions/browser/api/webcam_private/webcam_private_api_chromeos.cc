@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "components/media_device_salt/media_device_salt_service.h"
-#include "components/media_device_salt/media_device_salt_service_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/media_device_id.h"
 #include "content/public/browser/resource_context.h"
@@ -17,6 +16,7 @@
 #include "extensions/browser/api/webcam_private/ip_webcam.h"
 #include "extensions/browser/api/webcam_private/v4l2_webcam.h"
 #include "extensions/browser/api/webcam_private/visca_webcam.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -114,12 +114,19 @@ void WebcamPrivateAPI::GetWebcam(const std::string& extension_id,
     return;
   }
 
-  media_device_salt::MediaDeviceSaltService* salt_service =
-      media_device_salt::MediaDeviceSaltServiceFactory::GetInstance()
-          ->GetForBrowserContext(browser_context_);
-  salt_service->GetSalt(base::BindOnce(
-      &WebcamPrivateAPI::GetDeviceIdOnUIThread, weak_ptr_factory_.GetWeakPtr(),
-      extension_id, webcam_id, std::move(callback)));
+  if (media_device_salt::MediaDeviceSaltService* salt_service =
+          ExtensionsBrowserClient::Get()->GetMediaDeviceSaltService(
+              browser_context_)) {
+    salt_service->GetSalt(
+        base::BindOnce(&WebcamPrivateAPI::GetDeviceIdOnUIThread,
+                       weak_ptr_factory_.GetWeakPtr(), extension_id, webcam_id,
+                       std::move(callback)));
+  } else {
+    // If the embedder does not provide a salt service, use the browser
+    // context's unique ID as salt.
+    GetDeviceIdOnUIThread(extension_id, webcam_id, std::move(callback),
+                          browser_context_->UniqueId());
+  }
 }
 
 void WebcamPrivateAPI::GetDeviceIdOnUIThread(
@@ -208,12 +215,18 @@ void WebcamPrivateAPI::GetWebcamId(
     const std::string& extension_id,
     const std::string& device_id,
     base::OnceCallback<void(const std::string&)> webcam_id_callback) {
-  media_device_salt::MediaDeviceSaltService* salt_service =
-      media_device_salt::MediaDeviceSaltServiceFactory::GetInstance()
-          ->GetForBrowserContext(browser_context_);
-  salt_service->GetSalt(base::BindOnce(
-      &WebcamPrivateAPI::FinalizeGetWebcamId, weak_ptr_factory_.GetWeakPtr(),
-      extension_id, device_id, std::move(webcam_id_callback)));
+  if (media_device_salt::MediaDeviceSaltService* salt_service =
+          ExtensionsBrowserClient::Get()->GetMediaDeviceSaltService(
+              browser_context_)) {
+    salt_service->GetSalt(base::BindOnce(
+        &WebcamPrivateAPI::FinalizeGetWebcamId, weak_ptr_factory_.GetWeakPtr(),
+        extension_id, device_id, std::move(webcam_id_callback)));
+  } else {
+    // If the embedder does not provide a salt service, use the browser
+    // context's unique ID as salt.
+    FinalizeGetWebcamId(extension_id, device_id, std::move(webcam_id_callback),
+                        browser_context_->UniqueId());
+  }
 }
 
 void WebcamPrivateAPI::FinalizeGetWebcamId(

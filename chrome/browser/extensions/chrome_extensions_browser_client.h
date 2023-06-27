@@ -253,6 +253,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
           callback) override;
   void CreatePasswordReuseDetectionManager(
       content::WebContents* web_contents) const override;
+  media_device_salt::MediaDeviceSaltService* GetMediaDeviceSaltService(
+      content::BrowserContext* context) override;
 
  private:
   friend struct base::LazyInstanceTraitsBase<ChromeExtensionsBrowserClient>;

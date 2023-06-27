@@ -2,23 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/media_device_salt/media_device_salt_service_factory.h"
+#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/media_device_salt/media_device_salt_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 
-namespace media_device_salt {
-
 MediaDeviceSaltServiceFactory* MediaDeviceSaltServiceFactory::GetInstance() {
   static base::NoDestructor<MediaDeviceSaltServiceFactory> factory;
   return factory.get();
 }
 
-MediaDeviceSaltService* MediaDeviceSaltServiceFactory::GetForBrowserContext(
+media_device_salt::MediaDeviceSaltService*
+MediaDeviceSaltServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<MediaDeviceSaltService*>(
+  return static_cast<media_device_salt::MediaDeviceSaltService*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
@@ -30,8 +29,6 @@ MediaDeviceSaltServiceFactory::MediaDeviceSaltServiceFactory()
 std::unique_ptr<KeyedService>
 MediaDeviceSaltServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<MediaDeviceSaltService>(
+  return std::make_unique<media_device_salt::MediaDeviceSaltService>(
       user_prefs::UserPrefs::Get(context));
 }
-
-}  // namespace media_device_salt

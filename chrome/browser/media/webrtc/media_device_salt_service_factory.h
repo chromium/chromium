@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_MEDIA_DEVICE_SALT_MEDIA_DEVICE_SALT_SERVICE_FACTORY_H_
-#define COMPONENTS_MEDIA_DEVICE_SALT_MEDIA_DEVICE_SALT_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_DEVICE_SALT_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_DEVICE_SALT_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace media_device_salt {
-
 class MediaDeviceSaltService;
+}  // namespace media_device_salt
 
 class MediaDeviceSaltServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
@@ -22,7 +22,7 @@ class MediaDeviceSaltServiceFactory : public BrowserContextKeyedServiceFactory {
   static MediaDeviceSaltServiceFactory* GetInstance();
 
   // Returns the MediaDeviceSaltService associated with |context|.
-  static MediaDeviceSaltService* GetForBrowserContext(
+  static media_device_salt::MediaDeviceSaltService* GetForBrowserContext(
       content::BrowserContext* context);
 
  private:
@@ -36,6 +36,4 @@ class MediaDeviceSaltServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
-}  // namespace media_device_salt
-
-#endif  // COMPONENTS_MEDIA_DEVICE_SALT_MEDIA_DEVICE_SALT_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_DEVICE_SALT_SERVICE_FACTORY_H_

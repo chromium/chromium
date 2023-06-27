@@ -5769,6 +5769,7 @@ test("unit_tests") {
     # as presentation_service_delegate_impl.* files.
     "../browser/media/router/presentation/presentation_service_delegate_impl_unittest.cc",
     "../browser/media/webrtc/capture_policy_utils_unittest.cc",
+    "../browser/media/webrtc/media_device_salt_service_factory_unittest.cc",
     "../browser/media/webrtc/media_stream_device_permission_context_unittest.cc",
     "../browser/metrics/chrome_browser_main_extra_parts_metrics_unittest.cc",
     "../browser/metrics/chrome_metrics_extensions_helper_unittest.cc",
@@ -6330,6 +6331,7 @@ test("unit_tests") {
     "//components/live_caption:constants",
     "//components/lookalikes/core",
     "//components/lookalikes/core:safety_tips",
+    "//components/media_device_salt",
     "//components/media_router/common/providers/cast/channel",
     "//components/media_router/common/providers/cast/channel:test_support",
     "//components/memory_pressure:test_support",

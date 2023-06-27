@@ -12,8 +12,8 @@
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "components/media_device_salt/media_device_salt_service.h"
-#include "components/media_device_salt/media_device_salt_service_factory.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -127,8 +127,8 @@ void WebrtcAudioPrivateFunction::InitDeviceIdSalt(
     base::OnceCallback<void(media::AudioDeviceDescriptions)>
         device_descriptions_callback) {
   media_device_salt::MediaDeviceSaltService* salt_service =
-      media_device_salt::MediaDeviceSaltServiceFactory::GetInstance()
-          ->GetForBrowserContext(browser_context());
+      MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
+          browser_context());
   if (!salt_service) {
     GotSalt(is_input_devices, std::move(device_descriptions_callback),
             browser_context()->UniqueId());

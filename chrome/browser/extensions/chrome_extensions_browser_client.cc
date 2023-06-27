@@ -44,6 +44,7 @@
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/updater/chrome_update_client_config.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -969,6 +970,13 @@ void ChromeExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
 void ChromeExtensionsBrowserClient::CreatePasswordReuseDetectionManager(
     content::WebContents* web_contents) const {
   ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
+}
+
+media_device_salt::MediaDeviceSaltService*
+ChromeExtensionsBrowserClient::GetMediaDeviceSaltService(
+    content::BrowserContext* context) {
+  return MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
+      context);
 }
 
 }  // namespace extensions

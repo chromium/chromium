@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
@@ -31,7 +32,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/media_device_salt/media_device_salt_service.h"
-#include "components/media_device_salt/media_device_salt_service_factory.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -127,8 +127,8 @@ class WebrtcAudioPrivateTest : public AudioWaitingExtensionTest {
 
   std::string GetMediaDeviceIDSalt() {
     media_device_salt::MediaDeviceSaltService* salt_service =
-        media_device_salt::MediaDeviceSaltServiceFactory::GetInstance()
-            ->GetForBrowserContext(profile());
+        MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
+            profile());
     base::test::TestFuture<const std::string&> future;
     salt_service->GetSalt(future.GetCallback());
     return future.Get();

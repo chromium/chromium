@@ -742,6 +742,8 @@ static_library("browser") {
     "media/webrtc/desktop_media_picker_manager.h",
     "media/webrtc/media_capture_devices_dispatcher.cc",
     "media/webrtc/media_capture_devices_dispatcher.h",
+    "media/webrtc/media_device_salt_service_factory.cc",
+    "media/webrtc/media_device_salt_service_factory.h",
     "media/webrtc/media_stream_capture_indicator.cc",
     "media/webrtc/media_stream_capture_indicator.h",
     "media/webrtc/media_stream_device_permission_context.cc",
