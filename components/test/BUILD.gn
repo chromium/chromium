@@ -98,6 +98,10 @@ if (is_ios) {
     testonly = true
     filelist_name = "data/url_rewrite/unit_tests_bundle_data.filelist"
   }
+  bundle_data_from_filelist("value_store_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/value_store/unit_tests_bundle_data.filelist"
+  }
   bundle_data_from_filelist("viz_test_bundle_data") {
     testonly = true
     filelist_name = "data/viz/unit_tests_bundle_data.filelist"
