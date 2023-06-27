@@ -139,54 +139,7 @@ CF_TO_NS_CAST_IMPL(CFURL, NSURL)
 #if BUILDFLAG(IS_IOS)
 CF_TO_NS_CAST_IMPL(CTFont, UIFont)
 #else
-// The NSFont/CTFont toll-free bridging is broken before 10.15.
-// https://openradar.appspot.com/15341349
-//
-// TODO(https://crbug.com/1076527): This is fixed in 10.15. When 10.15 is the
-// minimum OS for Chromium, remove this specialization and replace it with just:
-//
-// CF_TO_NS_CAST_IMPL(CTFont, NSFont)
-
-extern "C" {
-Boolean _CFIsObjC(CFTypeID typeID, _Nonnull CFTypeRef obj);
-}  // extern "C"
-
-namespace base::apple {
-
-inline BASE_EXPORT NSFont* _Nullable CFToNSOwnershipCast(
-    CTFontRef CF_CONSUMED _Nullable cf_val) {
-  NSFont* ns_val = (__bridge_transfer NSFont*)cf_val;
-  DCHECK(!cf_val || CTFontGetTypeID() == CFGetTypeID(cf_val) ||
-         (_CFIsObjC(CTFontGetTypeID(), cf_val) &&
-          [ns_val isKindOfClass:[NSFont class]]));
-  return ns_val;
-}
-
-inline BASE_EXPORT CF_RETURNS_RETAINED _Nullable CTFontRef NSToCFOwnershipCast(
-    NSFont* _Nullable ns_val) {
-  CTFontRef cf_val = (__bridge_retained CTFontRef)ns_val;
-  DCHECK(!cf_val || CTFontGetTypeID() == CFGetTypeID(cf_val) ||
-         [ns_val isKindOfClass:[NSFont class]]);
-  return cf_val;
-}
-
-inline BASE_EXPORT NSFont* _Nullable CFToNSPtrCast(CTFontRef _Nullable cf_val) {
-  NSFont* ns_val = (__bridge NSFont*)cf_val;
-  DCHECK(!cf_val || CTFontGetTypeID() == CFGetTypeID(cf_val) ||
-         (_CFIsObjC(CTFontGetTypeID(), cf_val) &&
-          [ns_val isKindOfClass:[NSFont class]]));
-  return ns_val;
-}
-
-inline BASE_EXPORT _Nullable CTFontRef NSToCFPtrCast(NSFont* _Nullable ns_val) {
-  CTFontRef cf_val = (__bridge CTFontRef)ns_val;
-  DCHECK(!cf_val || CTFontGetTypeID() == CFGetTypeID(cf_val) ||
-         [ns_val isKindOfClass:[NSFont class]]);
-  return cf_val;
-}
-
-}  // namespace base::apple
-
+CF_TO_NS_CAST_IMPL(CTFont, NSFont)
 #endif  // BUILDFLAG(IS_IOS)
 
 #undef CF_TO_NS_CAST_IMPL

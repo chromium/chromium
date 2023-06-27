@@ -102,12 +102,6 @@ const Feature kUserInteractiveCompositingMac{"UserInteractiveCompositingMac",
 namespace {
 
 bool IsOptimizedRealtimeThreadingMacEnabled() {
-#if BUILDFLAG(IS_MAC)
-  // There is some platform bug on 10.14.
-  if (mac::IsOS10_14())
-    return false;
-#endif
-
   return FeatureList::IsEnabled(kOptimizedRealtimeThreadingMac);
 }
 

@@ -24,8 +24,9 @@ namespace {
 // `frame_pointer`.
 uintptr_t DecodeFrame(uintptr_t frame_pointer, uintptr_t* return_address) {
 #if BUILDFLAG(IS_APPLE)
-  if (__builtin_available(macOS 10.14, iOS 12, *))
+  if (__builtin_available(iOS 12, *)) {
     return pthread_stack_frame_decode_np(frame_pointer, return_address);
+  }
 #endif
   const uintptr_t* fp = reinterpret_cast<uintptr_t*>(frame_pointer);
   uintptr_t next_frame = *fp;

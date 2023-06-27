@@ -30,14 +30,6 @@
 
 extern "C" {
 CFTypeID SecKeyGetTypeID();
-#if !BUILDFLAG(IS_IOS)
-// The NSFont/CTFont toll-free bridging is broken before 10.15.
-// https://openradar.appspot.com/15341349
-//
-// TODO(https://crbug.com/1076527): This is fixed in 10.15. When 10.15 is the
-// minimum OS for Chromium, remove this SPI declaration.
-Boolean _CFIsObjC(CFTypeID typeID, CFTypeRef obj);
-#endif
 }  // extern "C"
 
 namespace base::mac {
@@ -359,30 +351,7 @@ CF_TO_NS_CAST_DEFN(CFURL, NSURL)
 #if BUILDFLAG(IS_IOS)
 CF_TO_NS_CAST_DEFN(CTFont, UIFont)
 #else
-// The NSFont/CTFont toll-free bridging is broken before 10.15.
-// https://openradar.appspot.com/15341349
-//
-// TODO(https://crbug.com/1076527): This is fixed in 10.15. When 10.15 is the
-// minimum OS for Chromium, remove this specialization and replace it with just:
-//
-// CF_TO_NS_CAST_DEFN(CTFont, NSFont)
-NSFont* CFToNSCast(CTFontRef cf_val) {
-  NSFont* ns_val =
-      const_cast<NSFont*>(reinterpret_cast<const NSFont*>(cf_val));
-  DCHECK(!cf_val ||
-         CTFontGetTypeID() == CFGetTypeID(cf_val) ||
-         (_CFIsObjC(CTFontGetTypeID(), cf_val) &&
-          [ns_val isKindOfClass:[NSFont class]]));
-  return ns_val;
-}
-
-CTFontRef NSToCFCast(NSFont* ns_val) {
-  CTFontRef cf_val = reinterpret_cast<CTFontRef>(ns_val);
-  DCHECK(!cf_val ||
-         CTFontGetTypeID() == CFGetTypeID(cf_val) ||
-         [ns_val isKindOfClass:[NSFont class]]);
-  return cf_val;
-}
+CF_TO_NS_CAST_DEFN(CTFont, NSFont)
 #endif
 
 #undef CF_TO_NS_CAST_DEFN
@@ -422,46 +391,11 @@ CF_CAST_DEFN(CFUUID)
 
 CF_CAST_DEFN(CGColor)
 
+CF_CAST_DEFN(CTFont)
 CF_CAST_DEFN(CTFontDescriptor)
 CF_CAST_DEFN(CTRun)
 
 CF_CAST_DEFN(SecCertificate)
-
-#if BUILDFLAG(IS_IOS)
-CF_CAST_DEFN(CTFont)
-#else
-// The NSFont/CTFont toll-free bridging is broken before 10.15.
-// https://openradar.appspot.com/15341349
-//
-// TODO(https://crbug.com/1076527): This is fixed in 10.15. When 10.15 is the
-// minimum OS for Chromium, remove this specialization and the #if IOS above,
-// and rely just on the one CF_CAST_DEFN(CTFont).
-template<> CTFontRef
-CFCast<CTFontRef>(const CFTypeRef& cf_val) {
-  if (cf_val == NULL) {
-    return NULL;
-  }
-  if (CFGetTypeID(cf_val) == CTFontGetTypeID()) {
-    return (CTFontRef)(cf_val);
-  }
-
-  if (!_CFIsObjC(CTFontGetTypeID(), cf_val))
-    return NULL;
-
-  id<NSObject> ns_val = reinterpret_cast<id>(const_cast<void*>(cf_val));
-  if ([ns_val isKindOfClass:[NSFont class]]) {
-    return (CTFontRef)(cf_val);
-  }
-  return NULL;
-}
-
-template<> CTFontRef
-CFCastStrict<CTFontRef>(const CFTypeRef& cf_val) {
-  CTFontRef rv = CFCast<CTFontRef>(cf_val);
-  DCHECK(cf_val == NULL || rv);
-  return rv;
-}
-#endif
 
 #if !BUILDFLAG(IS_IOS)
 CF_CAST_DEFN(SecAccessControl)

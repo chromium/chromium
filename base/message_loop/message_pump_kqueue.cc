@@ -40,8 +40,7 @@ std::atomic_bool g_use_simplified_version = false;
 // waiting in a kevent64 invocation is still (inherently) racy.
 bool KqueueTimersSpuriouslyWakeUp() {
 #if BUILDFLAG(IS_MAC)
-  static const bool kqueue_timers_spuriously_wakeup = mac::IsAtMostOS10_13();
-  return kqueue_timers_spuriously_wakeup;
+  return false;
 #else
   // This still happens on iOS15.
   return true;
