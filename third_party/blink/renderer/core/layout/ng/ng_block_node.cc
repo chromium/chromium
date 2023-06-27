@@ -533,7 +533,7 @@ const NGLayoutResult* NGBlockNode::Layout(
       // We need to clear any previous results when scrollbars change. For
       // example - we may have stored a "measure" layout result which will be
       // incorrect if we try and reuse it.
-      LayoutSize old_box_size = box_->Size();
+      PhysicalSize old_box_size = box_->Size();
       params.previous_result = nullptr;
       box_->SetShouldSkipLayoutCache(true);
 
@@ -786,7 +786,7 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
                                const NGConstraintSpace& constraint_space,
                                const NGBlockBreakToken* break_token,
                                const NGLayoutResult* layout_result,
-                               LayoutSize old_box_size) const {
+                               PhysicalSize old_box_size) const {
   // Computing MinMax after layout. Do not modify the |LayoutObject| tree, paint
   // properties, and other global states.
   if (NGDisableSideEffectsScope::IsDisabled())
@@ -1185,8 +1185,7 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
     // work correctly (since that's still being handled by the legacy engine),
     // but at least layout, painting and hit-testing will be correct.
     if (LIKELY(physical_fragment.IsFirstForNode())) {
-      box_->SetSize(LayoutSize(physical_fragment.Size().width,
-                               physical_fragment.Size().height));
+      box_->SetSize(physical_fragment.Size());
     } else {
       // Update logical height, unless this fragment is past the block-end of
       // the generating node (happens with overflow).

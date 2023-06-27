@@ -179,9 +179,9 @@ LayoutPoint LayoutCustomScrollbarPart::Location() const {
   return overridden_rect_.Location();
 }
 
-LayoutSize LayoutCustomScrollbarPart::Size() const {
+PhysicalSize LayoutCustomScrollbarPart::Size() const {
   NOT_DESTROYED();
-  return overridden_rect_.Size();
+  return PhysicalSizeToBeNoop(overridden_rect_.Size());
 }
 
 static LayoutUnit ComputeMargin(const Length& style_margin) {

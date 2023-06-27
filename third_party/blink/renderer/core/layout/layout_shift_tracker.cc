@@ -437,10 +437,11 @@ void LayoutShiftTracker::NotifyBoxPrePaint(
     const gfx::Vector2dF& scroll_anchor_adjustment,
     const PhysicalOffset& new_paint_offset) {
   DCHECK(NeedsToTrack(box));
-  ObjectShifted(box, property_tree_state, old_rect, new_rect,
-                StartingPoint(old_paint_offset, box, box.PreviousSize()),
-                translation_delta, scroll_delta, scroll_anchor_adjustment,
-                StartingPoint(new_paint_offset, box, box.Size()));
+  ObjectShifted(
+      box, property_tree_state, old_rect, new_rect,
+      StartingPoint(old_paint_offset, box, box.PreviousSize()),
+      translation_delta, scroll_delta, scroll_anchor_adjustment,
+      StartingPoint(new_paint_offset, box, box.Size().ToLayoutSize()));
 }
 
 void LayoutShiftTracker::NotifyTextPrePaint(

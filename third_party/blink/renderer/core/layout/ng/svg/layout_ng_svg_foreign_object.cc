@@ -58,8 +58,8 @@ gfx::RectF LayoutNGSVGForeignObject::VisualRectInLocalSVGCoordinates() const {
   NOT_DESTROYED();
   if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
     PhysicalOffset offset = PhysicalLocation();
-    LayoutSize size = Size();
-    return gfx::RectF(offset.left, offset.top, size.Width(), size.Height());
+    PhysicalSize size = Size();
+    return gfx::RectF(offset.left, offset.top, size.width, size.height);
   }
   return gfx::RectF(FrameRect());
 }

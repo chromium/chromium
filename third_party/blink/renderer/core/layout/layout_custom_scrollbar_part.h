@@ -75,7 +75,7 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
   // Rerturn the overridden location set by SetOverriddenFrameRect();
   LayoutPoint Location() const override;
   // Rerturn the overridden size set by SetOverriddenFrameRect();
-  LayoutSize Size() const override;
+  PhysicalSize Size() const override;
 
   LayoutUnit MarginTop() const override;
   LayoutUnit MarginBottom() const override;

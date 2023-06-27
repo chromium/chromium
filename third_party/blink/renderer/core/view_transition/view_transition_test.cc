@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
@@ -236,13 +237,13 @@ TEST_P(ViewTransitionTest, LayoutShift) {
       kPseudoIdViewTransitionGroup, "shared");
   ASSERT_TRUE(container_pseudo);
   auto* container_box = To<LayoutBox>(container_pseudo->GetLayoutObject());
-  EXPECT_EQ(LayoutSize(100, 100), container_box->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), container_box->Size());
 
   // View transition elements should not cause a layout shift.
   auto* target =
       To<LayoutBox>(GetDocument().getElementById("target")->GetLayoutObject());
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
-  EXPECT_EQ(LayoutSize(100, 100), target->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), target->Size());
 
   FinishTransition();
   finished_tester.WaitUntilSettled();

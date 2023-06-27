@@ -269,7 +269,7 @@ class CORE_EXPORT LayoutMultiColumnFlowThread final
   explicit LayoutMultiColumnFlowThread();
 
   LayoutPoint Location() const override;
-  LayoutSize Size() const override;
+  PhysicalSize Size() const override;
 
  private:
   void CalculateColumnCountAndWidth(LayoutUnit& width, unsigned& count) const;

@@ -202,7 +202,7 @@ void LayoutVideo::InvalidateCompositing() {
 }
 
 PhysicalRect LayoutVideo::ReplacedContentRectFrom(
-    const LayoutSize size,
+    const PhysicalSize size,
     const NGPhysicalBoxStrut& border_padding) const {
   NOT_DESTROYED();
   if (GetDisplayMode() == kVideo) {

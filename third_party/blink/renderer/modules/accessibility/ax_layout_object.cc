@@ -467,8 +467,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
 
     // A 1x1 canvas is too small for the user to see and thus ignored.
     const auto* canvas = DynamicTo<LayoutHTMLCanvas>(GetLayoutObject());
-    if (canvas &&
-        (canvas->Size().Height() <= 1 || canvas->Size().Width() <= 1)) {
+    if (canvas && (canvas->Size().height <= 1 || canvas->Size().width <= 1)) {
       if (ignored_reasons)
         ignored_reasons->push_back(IgnoredReason(kAXProbablyPresentational));
       return true;
@@ -1143,9 +1142,10 @@ bool AXLayoutObject::IsDataTable() const {
 
       const LayoutBlock* cell_layout_block =
           To<LayoutBlock>(cell_layout_object);
-      if (cell_layout_block->Size().Width() < 1 ||
-          cell_layout_block->Size().Height() < 1)
+      if (cell_layout_block->Size().width < 1 ||
+          cell_layout_block->Size().height < 1) {
         continue;
+      }
 
       valid_cell_count++;
 

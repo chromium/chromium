@@ -450,14 +450,14 @@ TEST_F(LayoutBoxTest, LocationContainerOfSVG) {
 
   // The foreign object's location is not affected by SVGRoot's writing-mode.
   EXPECT_FALSE(foreign->LocationContainer());
-  EXPECT_EQ(LayoutSize(100, 80), foreign->Size());
+  EXPECT_EQ(PhysicalSize(100, 80), foreign->Size());
   EXPECT_EQ(PhysicalOffset(44, 77), foreign->PhysicalLocation());
   // The writing mode style should be still be inherited.
   EXPECT_TRUE(foreign->HasFlippedBlocksWritingMode());
 
   // The child of the foreign object is affected by writing-mode.
   EXPECT_EQ(foreign, child->LocationContainer());
-  EXPECT_EQ(LayoutSize(33, 55), child->Size());
+  EXPECT_EQ(PhysicalSize(33, 55), child->Size());
   EXPECT_EQ(PhysicalOffset(67, 0), child->PhysicalLocation());
   EXPECT_TRUE(child->HasFlippedBlocksWritingMode());
 }

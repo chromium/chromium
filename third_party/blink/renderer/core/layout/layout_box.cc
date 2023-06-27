@@ -322,7 +322,7 @@ LayoutUnit ListBoxItemHeight(const HTMLSelectElement& select,
       element = &optgroup->OptGroupLabelElement();
     LayoutUnit item_height;
     if (auto* layout_box = element->GetLayoutBox())
-      item_height = layout_box->Size().Height();
+      item_height = layout_box->Size().height;
     else
       item_height = ListBoxDefaultItemHeight(box);
     max_height = std::max(max_height, item_height);
@@ -985,7 +985,7 @@ LayoutUnit LayoutBox::ClientWidth() const {
   // border side values are currently limited to 2^20px (a recent change in the
   // code), if this limit is raised again in the future, we'd have ill effects
   // of saturated arithmetic otherwise.
-  LayoutUnit width = Size().Width();
+  LayoutUnit width = Size().width;
   if (CanSkipComputeScrollbars()) {
     return (width - BorderLeft() - BorderRight()).ClampNegativeToZero();
   } else {
@@ -1004,7 +1004,7 @@ LayoutUnit LayoutBox::ClientHeight() const {
   // currently limited to 2^20px (a recent change in the code), if this limit is
   // raised again in the future, we'd have ill effects of saturated arithmetic
   // otherwise.
-  LayoutUnit height = Size().Height();
+  LayoutUnit height = Size().height;
   if (CanSkipComputeScrollbars()) {
     return (height - BorderTop() - BorderBottom()).ClampNegativeToZero();
   } else {
@@ -1170,8 +1170,8 @@ void LayoutBox::AbsoluteQuads(Vector<gfx::QuadF>& quads,
 
 gfx::RectF LayoutBox::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
-  LayoutSize size = Size();
-  return gfx::RectF(0, 0, size.Width().ToFloat(), size.Height().ToFloat());
+  PhysicalSize size = Size();
+  return gfx::RectF(0, 0, size.width.ToFloat(), size.height.ToFloat());
 }
 
 void LayoutBox::UpdateAfterLayout() {
@@ -1758,7 +1758,7 @@ NGPhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
   // is just to make sure that left-hand scrollbars don't mess up
   // scrollWidth. For the full story, visit http://crbug.com/724255.
   if (scrollbars.left > 0 && clamp_to_content_box == kClampToContentBox) {
-    LayoutUnit max_width = Size().Width() - BorderAndPaddingWidth();
+    LayoutUnit max_width = Size().width - BorderAndPaddingWidth();
     scrollbars.left =
         std::min(scrollbars.left, max_width.ClampNegativeToZero());
   }
@@ -2428,9 +2428,10 @@ bool LayoutBox::ForegroundIsKnownToBeOpaqueInRect(
       // non-horizontal-tb writing mode but is allowed.
       return false;
     }
-    if (child_local_rect.Bottom() > child_box->Size().Height() ||
-        child_local_rect.Right() > child_box->Size().Width())
+    if (child_local_rect.Bottom() > child_box->Size().height ||
+        child_local_rect.Right() > child_box->Size().width) {
       continue;
+    }
     if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
         child->Style()->HasCurrentBackgroundColorAnimation()) {
       return false;
@@ -2749,8 +2750,8 @@ void LayoutBox::ExcludeScrollbars(
 PhysicalRect LayoutBox::ClipRect(const PhysicalOffset& location) const {
   NOT_DESTROYED();
   PhysicalRect clip_rect(location, Size());
-  LayoutUnit width = Size().Width();
-  LayoutUnit height = Size().Height();
+  LayoutUnit width = Size().width;
+  LayoutUnit height = Size().height;
 
   if (!StyleRef().ClipLeft().IsAuto()) {
     LayoutUnit c = ValueForLength(StyleRef().ClipLeft(), width);
@@ -4562,8 +4563,8 @@ LayoutRect LayoutBox::LocalCaretRect(
 
   if (extra_width_to_end_of_line) {
     *extra_width_to_end_of_line =
-        is_horizontal ? (offset.left + Size().Width() - rect.Right())
-                      : (offset.top + Size().Height() - rect.Bottom());
+        is_horizontal ? (offset.left + Size().width - rect.Right())
+                      : (offset.top + Size().height - rect.Bottom());
   }
 
   // Move to local coords
@@ -4592,11 +4593,11 @@ LayoutRect LayoutBox::FlippedLocalCaretRect(
   // FIXME: Paint the carets inside empty blocks differently than the carets
   // before/after elements.
   LayoutUnit caret_width = GetFrameView()->CaretWidth();
-  LayoutRect rect(Location(), LayoutSize(caret_width, Size().Height()));
+  LayoutRect rect(Location(), LayoutSize(caret_width, Size().height));
   bool ltr = StyleRef().IsLeftToRightDirection();
 
   if ((!caret_offset) ^ ltr)
-    rect.Move(LayoutSize(Size().Width() - caret_width, LayoutUnit()));
+    rect.Move(LayoutSize(Size().width - caret_width, LayoutUnit()));
 
   // If height of box is smaller than font height, use the latter one,
   // otherwise the caret might become invisible.
@@ -4614,7 +4615,7 @@ LayoutRect LayoutBox::FlippedLocalCaretRect(
     rect.SetHeight(font_height);
 
   if (extra_width_to_end_of_line)
-    *extra_width_to_end_of_line = Location().X() + Size().Width() - rect.MaxX();
+    *extra_width_to_end_of_line = Location().X() + Size().width - rect.MaxX();
 
   // Move to local coords
   rect.MoveBy(-Location());
@@ -4741,12 +4742,11 @@ NGPhysicalBoxStrut LayoutBox::ComputeVisualEffectOverflowOutsets() {
         OutlineRects(&info, PhysicalOffset(),
                      style.OutlineRectsShouldIncludeBlockVisualOverflow());
     PhysicalRect rect = UnionRect(outline_rects);
-    bool outline_affected = rect.size != PhysicalSizeToBeNoop(Size());
+    bool outline_affected = rect.size != Size();
     SetOutlineMayBeAffectedByDescendants(outline_affected);
     rect.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
-    outsets.Unite(NGPhysicalBoxStrut(-rect.Y(), rect.Right() - Size().Width(),
-                                     rect.Bottom() - Size().Height(),
-                                     -rect.X()));
+    outsets.Unite(NGPhysicalBoxStrut(-rect.Y(), rect.Right() - Size().width,
+                                     rect.Bottom() - Size().height, -rect.X()));
   }
 
   return outsets;
@@ -5070,10 +5070,10 @@ void LayoutBox::SetVisualOverflow(const PhysicalRect& self,
 
   const LayoutRect overflow_rect =
       overflow_->visual_overflow->SelfVisualOverflowRect();
-  const LayoutSize box_size = Size();
+  const PhysicalSize box_size = Size();
   const NGPhysicalBoxStrut outsets(
-      -overflow_rect.Y(), overflow_rect.MaxX() - box_size.Width(),
-      overflow_rect.MaxY() - box_size.Height(), -overflow_rect.X());
+      -overflow_rect.Y(), overflow_rect.MaxX() - box_size.width,
+      overflow_rect.MaxY() - box_size.height, -overflow_rect.X());
   UpdateHasSubpixelVisualEffectOutsets(outsets);
 
   // |OutlineMayBeAffectedByDescendants| is set whenever outline style
@@ -5223,7 +5223,7 @@ void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
   if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled() &&
       UNLIKELY(IsFlippedBlocksWritingMode(writing_mode))) {
     DCHECK(!blink::IsHorizontalWritingMode(writing_mode));
-    const LayoutUnit flip_offset = cb->Size().Width() - Size().Width();
+    const LayoutUnit flip_offset = cb->Size().width - Size().width;
     self_rect.offset.left += flip_offset;
     contents_rect.offset.left += flip_offset;
   }
@@ -5263,8 +5263,8 @@ bool LayoutBox::IsMonolithic() const {
 LayoutUnit LayoutBox::FirstLineHeight() const {
   if (IsAtomicInlineLevel()) {
     return FirstLineStyle()->IsHorizontalWritingMode()
-               ? MarginHeight() + Size().Height()
-               : MarginWidth() + Size().Width();
+               ? MarginHeight() + Size().height
+               : MarginWidth() + Size().width;
   }
   return LayoutUnit();
 }
@@ -5281,7 +5281,7 @@ LayoutRect LayoutBox::RectForOverflowPropagation(const LayoutRect& rect) const {
   // Convert the rect into parent's blocks direction by flipping along the y
   // axis.
   LayoutRect result = rect;
-  result.SetX(Size().Width() - rect.MaxX());
+  result.SetX(Size().width - rect.MaxX());
   return result;
 }
 
@@ -5396,7 +5396,7 @@ LayoutUnit LayoutBox::OffsetTop(const Element* parent) const {
   return OffsetPoint(parent).top;
 }
 
-LayoutSize LayoutBox::Size() const {
+PhysicalSize LayoutBox::Size() const {
   NOT_DESTROYED();
   if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled() &&
       !HasValidCachedGeometry()) {
@@ -5407,15 +5407,15 @@ LayoutSize LayoutBox::Size() const {
   return frame_size_;
 }
 
-LayoutSize LayoutBox::ComputeSize() const {
+PhysicalSize LayoutBox::ComputeSize() const {
   NOT_DESTROYED();
   const auto& results = GetLayoutResults();
   if (results.size() == 0) {
-    return LayoutSize();
+    return PhysicalSize();
   }
   const auto& first_fragment = results[0]->PhysicalFragment();
   if (results.size() == 1u) {
-    return first_fragment.Size().ToLayoutSize();
+    return first_fragment.Size();
   }
   WritingModeConverter converter(first_fragment.Style().GetWritingDirection());
   const NGBlockBreakToken* previous_break_token = nullptr;
@@ -5449,7 +5449,7 @@ LayoutSize LayoutBox::ComputeSize() const {
       break;
     }
   }
-  return converter.ToPhysical(size).ToLayoutSize();
+  return converter.ToPhysical(size);
 }
 
 LayoutBox* LayoutBox::LocationContainer() const {

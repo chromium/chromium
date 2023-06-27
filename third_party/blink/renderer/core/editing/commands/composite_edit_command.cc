@@ -971,8 +971,9 @@ HTMLBRElement* CompositeEditCommand::AddBlockPlaceholderIfNeeded(
 
   // append the placeholder to make sure it follows
   // any unrendered blocks
-  if (block->Size().Height() == 0 || IsEmptyListItem(*block))
+  if (block->Size().height == 0 || IsEmptyListItem(*block)) {
     return AppendBlockPlaceholder(container, editing_state);
+  }
 
   return nullptr;
 }

@@ -155,7 +155,7 @@ LayoutPoint LayoutMultiColumnSpannerPlaceholder::Location() const {
   return LayoutBox::Location();
 }
 
-LayoutSize LayoutMultiColumnSpannerPlaceholder::Size() const {
+PhysicalSize LayoutMultiColumnSpannerPlaceholder::Size() const {
   NOT_DESTROYED();
   if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
     return layout_object_in_flow_thread_->Size();

@@ -116,8 +116,8 @@ void SliderThumbElement::SetPositionFromPoint(const PhysicalOffset& point) {
       thumb_box->LocalToAncestorPoint(PhysicalOffset(), input_box) -
       track_box->LocalToAncestorPoint(PhysicalOffset(), input_box);
   if (is_vertical) {
-    track_size = track_box->ContentHeight() - thumb_box->Size().Height();
-    position = point_in_track.top - thumb_box->Size().Height() / 2;
+    track_size = track_box->ContentHeight() - thumb_box->Size().height;
+    position = point_in_track.top - thumb_box->Size().height / 2;
     if (is_left_to_right_direction &&
         !RuntimeEnabledFeatures::
             FormControlsVerticalWritingModeDirectionSupportEnabled()) {
@@ -128,8 +128,8 @@ void SliderThumbElement::SetPositionFromPoint(const PhysicalOffset& point) {
     }
     current_position = thumb_offset.top;
   } else {
-    track_size = track_box->ContentWidth() - thumb_box->Size().Width();
-    position = point_in_track.left - thumb_box->Size().Width() / 2;
+    track_size = track_box->ContentWidth() - thumb_box->Size().width;
+    position = point_in_track.left - thumb_box->Size().width / 2;
     position -= is_left_to_right_direction ? thumb_box->MarginLeft()
                                            : thumb_box->MarginRight();
     current_position = thumb_offset.left;

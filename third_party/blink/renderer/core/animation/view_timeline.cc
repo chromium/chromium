@@ -284,7 +284,7 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
   DCHECK(ComputeIsResolved(state->resolved_source));
   DCHECK(subject());
 
-  absl::optional<LayoutSize> subject_size = SubjectSize();
+  absl::optional<PhysicalSize> subject_size = SubjectSize();
   absl::optional<gfx::PointF> subject_position =
       SubjectPosition(state->resolved_source);
   DCHECK(subject_position);
@@ -298,10 +298,10 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
   double target_size;
   LayoutUnit viewport_size;
   if (physical_orientation == kHorizontalScroll) {
-    target_size = subject_size->Width().ToDouble();
+    target_size = subject_size->width.ToDouble();
     viewport_size = scrollable_area->LayoutContentRect().Width();
   } else {
-    target_size = subject_size->Height().ToDouble();
+    target_size = subject_size->height.ToDouble();
     viewport_size = scrollable_area->LayoutContentRect().Height();
   }
 
@@ -465,7 +465,7 @@ void ViewTimeline::ApplyStickyAdjustments(ScrollOffsets& scroll_offsets,
   }
 }
 
-absl::optional<LayoutSize> ViewTimeline::SubjectSize() const {
+absl::optional<PhysicalSize> ViewTimeline::SubjectSize() const {
   if (!subject()) {
     return absl::nullopt;
   }

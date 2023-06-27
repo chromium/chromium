@@ -340,7 +340,7 @@ CursorDirective LayoutEmbeddedContent::GetCursor(const PhysicalOffset& point,
 }
 
 PhysicalRect LayoutEmbeddedContent::ReplacedContentRectFrom(
-    const LayoutSize size,
+    const PhysicalSize size,
     const NGPhysicalBoxStrut& border_padding) const {
   NOT_DESTROYED();
   PhysicalRect content_rect = PhysicalContentBoxRectFrom(size, border_padding);

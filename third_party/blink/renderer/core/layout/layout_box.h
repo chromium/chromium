@@ -242,18 +242,18 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void SetWidth(LayoutUnit width) {
     NOT_DESTROYED();
-    if (width == frame_size_.Width()) {
+    if (width == frame_size_.width) {
       return;
     }
-    frame_size_.SetWidth(width);
+    frame_size_.width = width;
     SizeChanged();
   }
   void SetHeight(LayoutUnit height) {
     NOT_DESTROYED();
-    if (height == frame_size_.Height()) {
+    if (height == frame_size_.height) {
       return;
     }
-    frame_size_.SetHeight(height);
+    frame_size_.height = height;
     SizeChanged();
   }
 
@@ -269,13 +269,13 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   LayoutUnit LogicalWidth() const {
     NOT_DESTROYED();
-    LayoutSize size = Size();
-    return StyleRef().IsHorizontalWritingMode() ? size.Width() : size.Height();
+    PhysicalSize size = Size();
+    return StyleRef().IsHorizontalWritingMode() ? size.width : size.height;
   }
   LayoutUnit LogicalHeight() const {
     NOT_DESTROYED();
-    LayoutSize size = Size();
-    return StyleRef().IsHorizontalWritingMode() ? size.Height() : size.Width();
+    PhysicalSize size = Size();
+    return StyleRef().IsHorizontalWritingMode() ? size.height : size.width;
   }
 
   LayoutUnit ConstrainLogicalHeightByMinMax(
@@ -318,7 +318,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     auto location = Location();
     return LayoutSize(location.X(), location.Y());
   }
-  virtual LayoutSize Size() const;
+  virtual PhysicalSize Size() const;
 
   void SetLocation(const LayoutPoint& location) {
     NOT_DESTROYED();
@@ -340,7 +340,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // LayoutUnits for scrollbars.
   void SetLocationAndUpdateOverflowControlsIfNeeded(const LayoutPoint&);
 
-  void SetSize(const LayoutSize& size) {
+  void SetSize(const PhysicalSize& size) {
     NOT_DESTROYED();
     DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
     if (size == frame_size_) {
@@ -355,7 +355,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutRect FrameRect() const {
     NOT_DESTROYED();
     DCHECK(!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled());
-    return LayoutRect(Location(), Size());
+    return LayoutRect(Location(), Size().ToLayoutSize());
   }
 
   // Note that those functions have their origin at this box's CSS border box.
@@ -365,7 +365,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // FlipForWritingMode() will do nothing on it.
   LayoutRect BorderBoxRect() const {
     NOT_DESTROYED();
-    return LayoutRect(LayoutPoint(), Size());
+    return LayoutRect(LayoutPoint(), Size().ToLayoutSize());
   }
   PhysicalRect PhysicalBorderBoxRect() const {
     NOT_DESTROYED();
@@ -394,7 +394,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // correct paint offset.
   gfx::Size PixelSnappedBorderBoxSize(const PhysicalOffset& offset) const {
     NOT_DESTROYED();
-    return ToPixelSnappedSize(Size(), offset.ToLayoutPoint());
+    return ToPixelSnappedSize(Size().ToLayoutSize(), offset.ToLayoutPoint());
   }
   gfx::Rect BorderBoundingBox() const final {
     NOT_DESTROYED();
@@ -698,11 +698,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // of a single line).
   LayoutUnit OffsetWidth() const final {
     NOT_DESTROYED();
-    return Size().Width();
+    return Size().width;
   }
   LayoutUnit OffsetHeight() const final {
     NOT_DESTROYED();
-    return Size().Height();
+    return Size().height;
   }
 
   bool UsesOverlayScrollbars() const;
@@ -1352,7 +1352,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     if (LIKELY(!HasFlippedBlocksWritingMode()))
       return position;
     DCHECK(!IsHorizontalWritingMode());
-    return Size().Width() - (position + width);
+    return Size().width - (position + width);
   }
   // Inherit other flipping methods from LayoutObject.
   using LayoutObject::FlipForWritingMode;
@@ -1509,7 +1509,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   class MutableForPainting : public LayoutObject::MutableForPainting {
    public:
     void SavePreviousSize() {
-      GetLayoutBox().previous_size_ = GetLayoutBox().Size();
+      GetLayoutBox().previous_size_ = GetLayoutBox().Size().ToLayoutSize();
     }
     void ClearPreviousSize() { GetLayoutBox().previous_size_ = LayoutSize(); }
     void SavePreviousOverflowData();
@@ -1895,14 +1895,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       return PhysicalOffset(location);
 
     return PhysicalOffset(
-        container_box->Size().Width() - Size().Width() - location.X(),
+        container_box->Size().width - Size().width - location.X(),
         location.Y());
   }
 
   bool BackgroundClipBorderBoxIsEquivalentToPaddingBox() const;
 
   // Compute the border-box size from physical fragments.
-  LayoutSize ComputeSize() const;
+  PhysicalSize ComputeSize() const;
   void InvalidateCachedGeometry();
 
   // Clear LayoutObject fields of physical fragments.
@@ -1924,7 +1924,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutPoint frame_location_;
 
   // TODO(crbug.com/1353190): Remove frame_size_.
-  LayoutSize frame_size_;
+  PhysicalSize frame_size_;
 
  private:
   // Previous value of frame_size_, updated after paint invalidation.

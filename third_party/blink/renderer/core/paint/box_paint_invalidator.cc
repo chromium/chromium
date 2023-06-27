@@ -142,7 +142,7 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
   // TODO(crbug.com/1205708): Audit this.
   NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
 #endif
-  if (box_.PreviousSize() == box_.Size() &&
+  if (PhysicalSizeToBeNoop(box_.PreviousSize()) == box_.Size() &&
       box_.PreviousPhysicalSelfVisualOverflowRect() ==
           box_.PhysicalSelfVisualOverflowRect()) {
     return IsFullPaintInvalidationReason(reason)
@@ -153,17 +153,18 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
   // Incremental invalidation is not applicable if there is visual overflow.
   if (box_.PreviousPhysicalSelfVisualOverflowRect().size !=
           PhysicalSizeToBeNoop(box_.PreviousSize()) ||
-      box_.PhysicalSelfVisualOverflowRect().size !=
-          PhysicalSizeToBeNoop(box_.Size()))
+      box_.PhysicalSelfVisualOverflowRect().size != box_.Size()) {
     return PaintInvalidationReason::kLayout;
+  }
 
   // Incremental invalidation is not applicable if paint offset or size has
   // fraction.
   if (context_.old_paint_offset.HasFraction() ||
       context_.fragment_data->PaintOffset().HasFraction() ||
       PhysicalSizeToBeNoop(box_.PreviousSize()).HasFraction() ||
-      PhysicalSizeToBeNoop(box_.Size()).HasFraction())
+      box_.Size().HasFraction()) {
     return PaintInvalidationReason::kLayout;
+  }
 
   // Incremental invalidation is not applicable if there is border in the
   // direction of border box size change because we don't know the border
@@ -268,7 +269,7 @@ BoxPaintInvalidator::ComputeViewBackgroundInvalidation() {
         if (ShouldFullyInvalidateFillLayersOnSizeChange(
                 background_layers,
                 PhysicalSizeToBeNoop(root_box->PreviousSize()),
-                PhysicalSizeToBeNoop(root_box->Size()))) {
+                root_box->Size())) {
           return BackgroundInvalidationType::kFull;
         }
         if (BackgroundGeometryDependsOnLayoutOverflowRect() &&
@@ -317,8 +318,9 @@ BoxPaintInvalidator::ComputeBackgroundInvalidation(
   if (background_layers.AnyLayerHasDefaultAttachmentImage() &&
       ShouldFullyInvalidateFillLayersOnSizeChange(
           background_layers, PhysicalSizeToBeNoop(box_.PreviousSize()),
-          PhysicalSizeToBeNoop(box_.Size())))
+          box_.Size())) {
     return BackgroundInvalidationType::kFull;
+  }
 
   if (background_layers.AnyLayerUsesContentBox() &&
       box_.PreviousPhysicalContentBoxRect() != box_.PhysicalContentBoxRect())
@@ -404,8 +406,9 @@ bool BoxPaintInvalidator::NeedsToSavePreviousContentBoxRect() {
   // crbug.com/490533
   if ((style.BackgroundLayers().AnyLayerUsesContentBox() ||
        style.MaskLayers().AnyLayerUsesContentBox()) &&
-      box_.ContentSize() != box_.Size())
+      PhysicalSizeToBeNoop(box_.ContentSize()) != box_.Size()) {
     return true;
+  }
 
   return false;
 }

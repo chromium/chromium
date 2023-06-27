@@ -723,10 +723,10 @@ LayoutRect LayoutBlock::LocalCaretRect(
   }
 
   LayoutRect caret_rect =
-      LocalCaretRectForEmptyElement(Size().Width(), TextIndentOffset());
+      LocalCaretRectForEmptyElement(Size().width, TextIndentOffset());
 
   if (extra_width_to_end_of_line)
-    *extra_width_to_end_of_line = Size().Width() - caret_rect.MaxX();
+    *extra_width_to_end_of_line = Size().width - caret_rect.MaxX();
 
   return caret_rect;
 }

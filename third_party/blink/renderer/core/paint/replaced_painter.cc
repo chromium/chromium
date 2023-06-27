@@ -285,7 +285,7 @@ void ReplacedPainter::MeasureOverflowMetrics() const {
   auto overflow_area = overflow_size.width * overflow_size.height;
 
   auto content_size = layout_replaced_.Size();
-  auto content_area = content_size.Width() * content_size.Height();
+  auto content_area = content_size.width * content_size.height;
 
   DCHECK_GE(overflow_area, content_area);
   if (overflow_area == content_area)

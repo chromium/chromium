@@ -227,7 +227,7 @@ absl::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
 }
 
 PhysicalRect LayoutReplaced::ComputeReplacedContentRect(
-    const LayoutSize size,
+    const PhysicalSize size,
     const NGPhysicalBoxStrut& border_padding,
     const LayoutSize* overridden_intrinsic_size) const {
   // |intrinsic_size| provides the size of the embedded content rendered in the
@@ -297,7 +297,7 @@ PhysicalRect LayoutReplaced::ComputeReplacedContentRect(
 }
 
 PhysicalRect LayoutReplaced::ComputeObjectFitAndPositionRect(
-    const LayoutSize size,
+    const PhysicalSize size,
     const NGPhysicalBoxStrut& border_padding,
     const LayoutSize* overridden_intrinsic_size) const {
   NOT_DESTROYED();
@@ -373,17 +373,17 @@ PhysicalRect LayoutReplaced::ReplacedContentRect() const {
 }
 
 PhysicalRect LayoutReplaced::ReplacedContentRectFrom(
-    const LayoutSize size,
+    const PhysicalSize size,
     const NGPhysicalBoxStrut& border_padding) const {
   NOT_DESTROYED();
   return ComputeReplacedContentRect(size, border_padding);
 }
 
-LayoutSize LayoutReplaced::SizeFromNG() const {
+PhysicalSize LayoutReplaced::SizeFromNG() const {
   if (!GetBoxLayoutExtraInput()) {
     return Size();
   }
-  return GetBoxLayoutExtraInput()->size.ToLayoutSize();
+  return GetBoxLayoutExtraInput()->size;
 }
 
 NGPhysicalBoxStrut LayoutReplaced::BorderPaddingFromNG() const {
@@ -401,13 +401,13 @@ PhysicalRect LayoutReplaced::PhysicalContentBoxRectFromNG() const {
 }
 
 PhysicalRect LayoutReplaced::PhysicalContentBoxRectFrom(
-    const LayoutSize size,
+    const PhysicalSize size,
     const NGPhysicalBoxStrut& border_padding) const {
   NOT_DESTROYED();
   return PhysicalRect(
       border_padding.left, border_padding.top,
-      (size.Width() - border_padding.HorizontalSum()).ClampNegativeToZero(),
-      (size.Height() - border_padding.VerticalSum()).ClampNegativeToZero());
+      (size.width - border_padding.HorizontalSum()).ClampNegativeToZero(),
+      (size.height - border_padding.VerticalSum()).ClampNegativeToZero());
 }
 
 PhysicalRect LayoutReplaced::PreSnappedRectForPersistentSizing(

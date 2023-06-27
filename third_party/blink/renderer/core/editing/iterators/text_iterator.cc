@@ -758,9 +758,10 @@ bool TextIteratorAlgorithm<Strategy>::ShouldRepresentNodeOffsetZero() {
       node_->GetLayoutObject()->Style()->Visibility() !=
           EVisibility::kVisible ||
       (node_->GetLayoutObject()->IsLayoutBlockFlow() &&
-       !To<LayoutBlock>(node_->GetLayoutObject())->Size().Height() &&
-       !IsA<HTMLBodyElement>(*node_)))
+       !To<LayoutBlock>(node_->GetLayoutObject())->Size().height &&
+       !IsA<HTMLBodyElement>(*node_))) {
     return false;
+  }
 
   // The startPos.isNotNull() check is needed because the start could be before
   // the body, and in that case we'll get null. We don't want to put in newlines

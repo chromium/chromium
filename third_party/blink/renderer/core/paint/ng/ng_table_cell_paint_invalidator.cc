@@ -39,7 +39,7 @@ void NGTableCellPaintInvalidator::InvalidatePaint() {
   // changed and the containers which will paint backgrounds and/or collapsed
   // borders haven't been full invalidated, invalidate the containers.
   if (context_.old_paint_offset != context_.fragment_data->PaintOffset() ||
-      cell_.Size() != cell_.PreviousSize()) {
+      cell_.Size() != PhysicalSizeToBeNoop(cell_.PreviousSize())) {
     // Table row background is painted inside cell's geometry.
     const auto& row = *cell_.Parent();
     DCHECK(row.IsTableRow());

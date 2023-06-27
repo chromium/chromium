@@ -91,7 +91,7 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
     return MinMaxSizes();
   }
   LayoutPoint Location() const override;
-  LayoutSize Size() const override;
+  PhysicalSize Size() const override;
 
   // The actual column-span:all layoutObject inside the flow thread.
   Member<LayoutBox> layout_object_in_flow_thread_;

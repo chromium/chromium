@@ -1256,7 +1256,7 @@ LayoutPoint LayoutMultiColumnFlowThread::Location() const {
   return frame_location_;
 }
 
-LayoutSize LayoutMultiColumnFlowThread::Size() const {
+PhysicalSize LayoutMultiColumnFlowThread::Size() const {
   NOT_DESTROYED();
   if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled() &&
       !HasValidCachedGeometry() && EverHadLayout()) {
@@ -1274,7 +1274,7 @@ void LayoutMultiColumnFlowThread::UpdateGeometry() {
   LogicalSize thread_size;
   const LayoutBlockFlow* container = MultiColumnBlockFlow();
   if (container->PhysicalFragmentCount() == 0u) {
-    frame_size_ = LayoutSize();
+    frame_size_ = PhysicalSize();
     return;
   }
   const auto* first_fragment = container->GetPhysicalFragment(0);
@@ -1305,7 +1305,7 @@ void LayoutMultiColumnFlowThread::UpdateGeometry() {
       break;
     }
   }
-  frame_size_ = converter.ToPhysical(thread_size).ToLayoutSize();
+  frame_size_ = converter.ToPhysical(thread_size);
 }
 
 }  // namespace blink
