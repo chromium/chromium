@@ -29,6 +29,9 @@
 
 namespace {
 
+// static
+bool g_is_credential_manager_set_for_testing_ = false;
+
 const char kDeviceIdPrefix[] = "users/me/devices/";
 const char kFirstTimeRegistrationFieldMaskPath[] = "display_name";
 const char kUploadCredentialsFieldMaskPath[] = "certificates";
@@ -39,18 +42,100 @@ constexpr int kServerCommunicationMaxAttempts = 5;
 
 namespace ash::nearby::presence {
 
-NearbyPresenceCredentialManagerImpl::NearbyPresenceCredentialManagerImpl(
+NearbyPresenceCredentialManagerImpl::Creator::Creator() = default;
+NearbyPresenceCredentialManagerImpl::Creator::~Creator() = default;
+
+// static
+NearbyPresenceCredentialManagerImpl::Creator*
+NearbyPresenceCredentialManagerImpl::Creator::Get() {
+  static base::NoDestructor<NearbyPresenceCredentialManagerImpl::Creator>
+      creator;
+  return creator.get();
+}
+
+void NearbyPresenceCredentialManagerImpl::Creator::Create(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence)
-    : NearbyPresenceCredentialManagerImpl(
-          pref_service,
-          identity_manager,
-          url_loader_factory,
-          nearby_presence,
-          std::make_unique<LocalDeviceDataProviderImpl>(pref_service,
-                                                        identity_manager)) {}
+    const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence,
+    CreateCallback on_created) {
+  Create(pref_service, identity_manager, url_loader_factory, nearby_presence,
+         std::make_unique<LocalDeviceDataProviderImpl>(pref_service,
+                                                       identity_manager),
+         std::move(on_created));
+}
+
+void NearbyPresenceCredentialManagerImpl::Creator::Create(
+    PrefService* pref_service,
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence,
+    std::unique_ptr<LocalDeviceDataProvider> local_device_data_provider,
+    CreateCallback on_created) {
+  CHECK(!has_credential_manager_been_created_);
+  has_credential_manager_been_created_ = true;
+
+  on_created_ = (std::move(on_created));
+
+  // This can only be set via `SetCredentialManagerForTesting` since the
+  // class assumes only one CredentialManager is created per lifetime, and
+  // asserts that there isn't an existing CredentialManager outside of unit
+  // tests.
+  if (g_is_credential_manager_set_for_testing_) {
+    CHECK(credential_manager_under_initialization_);
+    std::move(on_created_)
+        .Run(std::move(credential_manager_under_initialization_));
+    return;
+  }
+
+  CHECK(!credential_manager_under_initialization_);
+  credential_manager_under_initialization_ =
+      base::WrapUnique(new NearbyPresenceCredentialManagerImpl(
+          pref_service, identity_manager, url_loader_factory, nearby_presence,
+          std::move(local_device_data_provider)));
+
+  if (!credential_manager_under_initialization_->IsLocalDeviceRegistered()) {
+    credential_manager_under_initialization_->RegisterPresence(
+        base::BindOnce(&NearbyPresenceCredentialManagerImpl::Creator::
+                           OnCredentialManagerRegistered,
+                       base::Unretained(this)));
+    return;
+  }
+
+  // TODO(b/276307539): Implement the second case where the local device
+  // is already registered and the CredentialManagerFactory needs to
+  // set the metadata.
+}
+
+// static
+void NearbyPresenceCredentialManagerImpl::Creator::
+    SetCredentialManagerForTesting(
+        std::unique_ptr<NearbyPresenceCredentialManager> credential_manager) {
+  CHECK(credential_manager);
+  CHECK(credential_manager->IsLocalDeviceRegistered());
+  CHECK(!Get()->credential_manager_under_initialization_);
+
+  g_is_credential_manager_set_for_testing_ = true;
+  Get()->credential_manager_under_initialization_ =
+      std::move(credential_manager);
+}
+
+void NearbyPresenceCredentialManagerImpl::Creator::
+    OnCredentialManagerRegistered(bool success) {
+  CHECK(credential_manager_under_initialization_);
+  CHECK(on_created_);
+
+  if (!success) {
+    // TODO(b/276307539): Add metrics to record failures.
+    std::move(on_created_).Run(nullptr);
+    return;
+  }
+
+  CHECK(credential_manager_under_initialization_->IsLocalDeviceRegistered());
+  std::move(on_created_)
+      .Run(std::move(credential_manager_under_initialization_));
+  credential_manager_under_initialization_ = nullptr;
+}
 
 NearbyPresenceCredentialManagerImpl::NearbyPresenceCredentialManagerImpl(
     PrefService* pref_service,
@@ -58,9 +143,9 @@ NearbyPresenceCredentialManagerImpl::NearbyPresenceCredentialManagerImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence,
     std::unique_ptr<LocalDeviceDataProvider> local_device_data_provider)
-    : local_device_data_provider_(std::move(local_device_data_provider)),
-      pref_service_(pref_service),
+    : pref_service_(pref_service),
       identity_manager_(identity_manager),
+      local_device_data_provider_(std::move(local_device_data_provider)),
       nearby_presence_(nearby_presence),
       url_loader_factory_(url_loader_factory) {
   CHECK(pref_service_);

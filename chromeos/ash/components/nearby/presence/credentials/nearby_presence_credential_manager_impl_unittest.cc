@@ -69,22 +69,25 @@ BuildSharedCredentials() {
 
 namespace ash::nearby::presence {
 
-class TestNearbyPresenceCredentialManagerImpl
-    : public NearbyPresenceCredentialManagerImpl {
+class TestCreator final : public NearbyPresenceCredentialManagerImpl::Creator {
  public:
-  TestNearbyPresenceCredentialManagerImpl(
+  ~TestCreator() override = default;
+
+  void Create(
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const mojo::SharedRemote<::ash::nearby::presence::mojom::NearbyPresence>&
-          nearby_presence,
-      std::unique_ptr<LocalDeviceDataProvider> local_device_data_provider)
-      : NearbyPresenceCredentialManagerImpl(
-            pref_service,
-            identity_manager,
-            url_loader_factory,
-            nearby_presence,
-            std::move(local_device_data_provider)) {}
+      const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence,
+      std::unique_ptr<LocalDeviceDataProvider> local_device_data_provider,
+      CreateCallback on_created) override {
+    NearbyPresenceCredentialManagerImpl::Creator::Create(
+        pref_service, identity_manager, url_loader_factory, nearby_presence,
+        std::move(local_device_data_provider), std::move(on_created));
+  }
+
+  void ResetHasCredentialManagerBeenCreated() {
+    has_credential_manager_been_created_ = false;
+  }
 };
 
 class NearbyPresenceCredentialManagerImplTest : public testing::Test {
@@ -103,23 +106,14 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
         &scheduler_factory_);
     NearbyPresenceServerClientImpl::Factory::SetFactoryForTesting(
         &server_client_factory_);
-    std::unique_ptr<LocalDeviceDataProvider> local_device_data_provider =
+    local_device_data_provider_ =
         std::make_unique<FakeLocalDeviceDataProvider>();
     fake_local_device_data_provider_ =
         static_cast<FakeLocalDeviceDataProvider*>(
-            local_device_data_provider.get());
-
-    credential_manager_ =
-        std::make_unique<TestNearbyPresenceCredentialManagerImpl>(
-            &pref_service_, identity_test_env_.identity_manager(),
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_),
-            fake_nearby_presence_.shared_remote(),
-            std::move(local_device_data_provider));
+            local_device_data_provider_.get());
 
     // Simulate first time registration flow.
     fake_local_device_data_provider_->SetRegistrationComplete(false);
-    EXPECT_FALSE(credential_manager_->IsLocalDeviceRegistered());
 
     // Simulate the device id which will be generated in a call to
     // |GetDeviceId|.
@@ -133,6 +127,8 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
   void TearDown() override {
     ash::nearby::NearbySchedulerFactory::SetFactoryForTesting(nullptr);
     NearbyPresenceServerClientImpl::Factory::SetFactoryForTesting(nullptr);
+    credential_manager_creator_.ResetHasCredentialManagerBeenCreated();
+    fake_local_device_data_provider_ = nullptr;
   }
 
   void TriggerFirstTimeRegistrationSuccess() {
@@ -188,51 +184,66 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
         ->InvokeListPublicCertificatesSuccessCallback({certificate_response});
   }
 
+  void CreateCredentialManager(base::OnceClosure on_created) {
+    credential_manager_creator_.Create(
+        &pref_service_, identity_test_env_.identity_manager(),
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_),
+        fake_nearby_presence_.shared_remote(),
+        std::move(local_device_data_provider_),
+        base::BindLambdaForTesting(
+            [&, callback = base::BindOnce(std::move(on_created))](
+                std::unique_ptr<NearbyPresenceCredentialManager>
+                    credential_manager) {
+              credential_manager_ = std::move(credential_manager);
+
+              // OnceCallback::Run() may only be invoked on a non-const rvalue,
+              // so we convert it here to allow the execution.
+              std::move(const_cast<base::OnceClosure&>(callback)).Run();
+            }));
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeNearbyPresence fake_nearby_presence_;
-  raw_ptr<FakeLocalDeviceDataProvider, ExperimentalAsh>
-      fake_local_device_data_provider_ = nullptr;
   TestingPrefServiceSimple pref_service_;
   signin::IdentityTestEnvironment identity_test_env_;
+  raw_ptr<FakeLocalDeviceDataProvider> fake_local_device_data_provider_ =
+      nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<LocalDeviceDataProvider> local_device_data_provider_;
+  std::unique_ptr<NearbyPresenceCredentialManager> credential_manager_;
+  TestCreator credential_manager_creator_;
   FakeNearbyPresenceServerClient::Factory server_client_factory_;
   ash::nearby::FakeNearbySchedulerFactory scheduler_factory_;
-  std::unique_ptr<NearbyPresenceCredentialManager> credential_manager_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, RegistrationSuccess) {
   // Wait until after the generated credentials are saved to continue the test.
-  base::RunLoop run_loop;
+  base::RunLoop generate_creds_run_loop;
   fake_local_device_data_provider_->SetUpdatePersistedSharedCredentialsCallback(
-      run_loop.QuitClosure());
+      generate_creds_run_loop.QuitClosure());
 
-  // Expect success on the callback.
-  base::MockCallback<base::OnceCallback<void(bool)>>
-      on_registered_mock_callback;
-  EXPECT_CALL(on_registered_mock_callback, Run(true)).Times(1);
-  credential_manager_->RegisterPresence(on_registered_mock_callback.Get());
+  base::RunLoop create_credential_manager_run_loop;
+  CreateCredentialManager(create_credential_manager_run_loop.QuitClosure());
 
   TriggerFirstTimeRegistrationSuccess();
 
-  // Required for credentials to be generated and passed over the mojo pipe.
-  run_loop.Run();
+  generate_creds_run_loop.Run();
 
   TriggerFirstTimeLocalCredentialUploadSuccess();
-
   TriggerFirstTimeDownloadRemoteCredentialSuccess();
 
+  create_credential_manager_run_loop.Run();
+  EXPECT_TRUE(credential_manager_);
   EXPECT_TRUE(credential_manager_->IsLocalDeviceRegistered());
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, ServerRegistrationTimeout) {
-  // Expect failure on the callback.
-  base::MockCallback<base::OnceCallback<void(bool)>>
-      on_registered_mock_callback;
-  EXPECT_CALL(on_registered_mock_callback, Run(false)).Times(1);
-  credential_manager_->RegisterPresence(on_registered_mock_callback.Get());
+  base::RunLoop create_credential_manager_run_loop;
+  CreateCredentialManager(create_credential_manager_run_loop.QuitClosure());
 
   // Simulate the max number of failures caused by a server response timeout.
   const raw_ptr<FakeNearbyScheduler, ExperimentalAsh>
@@ -246,15 +257,13 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, ServerRegistrationTimeout) {
   first_time_registration_scheduler->InvokeRequestCallback();
   task_environment_.FastForwardBy(kServerResponseTimeout);
 
-  EXPECT_FALSE(credential_manager_->IsLocalDeviceRegistered());
+  create_credential_manager_run_loop.Run();
+  EXPECT_FALSE(credential_manager_);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, ServerRegistrationFailure) {
-  // Expect failure on the callback.
-  base::MockCallback<base::OnceCallback<void(bool)>>
-      on_registered_mock_callback;
-  EXPECT_CALL(on_registered_mock_callback, Run(false)).Times(1);
-  credential_manager_->RegisterPresence(on_registered_mock_callback.Get());
+  base::RunLoop create_credential_manager_run_loop;
+  CreateCredentialManager(create_credential_manager_run_loop.QuitClosure());
 
   // Simulate the max number of failures caused by a RPC failure.
   const raw_ptr<FakeNearbyScheduler, ExperimentalAsh>
@@ -269,7 +278,8 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, ServerRegistrationFailure) {
   server_client_factory_.fake_server_client()->InvokeUpdateDeviceErrorCallback(
       ash::nearby::NearbyHttpError::kInternalServerError);
 
-  EXPECT_FALSE(credential_manager_->IsLocalDeviceRegistered());
+  create_credential_manager_run_loop.Run();
+  EXPECT_FALSE(credential_manager_);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, CredentialGenerationFailure) {
@@ -277,41 +287,29 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, CredentialGenerationFailure) {
   fake_nearby_presence_.SetGenerateCredentialsResponse(
       {}, mojom::StatusCode::kFailure);
 
-  // Expect failure on the callback.
-  base::RunLoop run_loop;
-  credential_manager_->RegisterPresence(
-      base::BindLambdaForTesting([&](bool result) {
-        EXPECT_FALSE(result);
-        run_loop.Quit();
-      }));
+  base::RunLoop create_credential_manager_run_loop;
+  CreateCredentialManager(create_credential_manager_run_loop.QuitClosure());
 
   TriggerFirstTimeRegistrationSuccess();
 
-  // Required for credentials to be generated and passed over the mojo pipe.
-  run_loop.Run();
-
-  // Since the user registration with the server was not successful, this will
-  // be false.
-  EXPECT_FALSE(credential_manager_->IsLocalDeviceRegistered());
+  create_credential_manager_run_loop.Run();
+  EXPECT_FALSE(credential_manager_);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest,
        UploadCredentialsServerTimeout) {
   // Wait until after the generated credentials are saved to continue the test.
-  base::RunLoop run_loop;
+  base::RunLoop generate_creds_run_loop;
   fake_local_device_data_provider_->SetUpdatePersistedSharedCredentialsCallback(
-      run_loop.QuitClosure());
+      generate_creds_run_loop.QuitClosure());
 
-  // Expect failure on the callback.
-  base::MockCallback<base::OnceCallback<void(bool)>>
-      on_registered_mock_callback;
-  EXPECT_CALL(on_registered_mock_callback, Run(false)).Times(1);
-  credential_manager_->RegisterPresence(on_registered_mock_callback.Get());
+  base::RunLoop create_credential_manager_run_loop;
+  CreateCredentialManager(create_credential_manager_run_loop.QuitClosure());
 
   TriggerFirstTimeRegistrationSuccess();
 
-  // Required for credentials to be generated and passed over the mojo pipe.
-  run_loop.Run();
+  // Required for credentials to be generated and passed over the mojo pipe
+  generate_creds_run_loop.Run();
 
   // Simulate the scheduler notifying the CredentialManager that the task is
   // ready when it has network connectivity.
@@ -327,27 +325,23 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
       kServerCommunicationMaxAttempts);
   task_environment_.FastForwardBy(kServerResponseTimeout);
 
-  // Since the user registration with the server was not successful, this will
-  // be false.
-  EXPECT_FALSE(credential_manager_->IsLocalDeviceRegistered());
+  create_credential_manager_run_loop.Run();
+  EXPECT_FALSE(credential_manager_);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, UploadCredentialsFailure) {
   // Wait until after the generated credentials are saved to continue the test.
-  base::RunLoop run_loop;
+  base::RunLoop generate_creds_run_loop;
   fake_local_device_data_provider_->SetUpdatePersistedSharedCredentialsCallback(
-      run_loop.QuitClosure());
+      generate_creds_run_loop.QuitClosure());
 
-  // Expect failure on the callback.
-  base::MockCallback<base::OnceCallback<void(bool)>>
-      on_registered_mock_callback;
-  EXPECT_CALL(on_registered_mock_callback, Run(false)).Times(1);
-  credential_manager_->RegisterPresence(on_registered_mock_callback.Get());
+  base::RunLoop create_credential_manager_run_loop;
+  CreateCredentialManager(create_credential_manager_run_loop.QuitClosure());
 
   TriggerFirstTimeRegistrationSuccess();
 
   // Required for credentials to be generated and passed over the mojo pipe.
-  run_loop.Run();
+  generate_creds_run_loop.Run();
 
   // Simulate the scheduler notifying the CredentialManager that the upload
   // task is ready when it has network connectivity.
@@ -364,26 +358,22 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, UploadCredentialsFailure) {
   server_client_factory_.fake_server_client()->InvokeUpdateDeviceErrorCallback(
       ash::nearby::NearbyHttpError::kInternalServerError);
 
-  // Since the user registration with the server was not successful, this will
-  // be false.
-  EXPECT_FALSE(credential_manager_->IsLocalDeviceRegistered());
+  create_credential_manager_run_loop.Run();
+  EXPECT_FALSE(credential_manager_);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, DownloadCredentialsFailure) {
   // Wait until after the generated credentials are saved to continue the test.
-  base::RunLoop run_loop;
+  base::RunLoop generate_creds_run_loop;
   fake_local_device_data_provider_->SetUpdatePersistedSharedCredentialsCallback(
-      run_loop.QuitClosure());
+      generate_creds_run_loop.QuitClosure());
 
-  // Expect success on the callback.
-  base::MockCallback<base::OnceCallback<void(bool)>>
-      on_registered_mock_callback;
-  EXPECT_CALL(on_registered_mock_callback, Run(false)).Times(1);
-  credential_manager_->RegisterPresence(on_registered_mock_callback.Get());
+  base::RunLoop create_credential_manager_run_loop;
+  CreateCredentialManager(create_credential_manager_run_loop.QuitClosure());
 
   TriggerFirstTimeRegistrationSuccess();
   // Required for credentials to be generated and passed over the mojo pipe.
-  run_loop.Run();
+  generate_creds_run_loop.Run();
 
   TriggerFirstTimeLocalCredentialUploadSuccess();
 
@@ -404,25 +394,23 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, DownloadCredentialsFailure) {
       ->InvokeListPublicCertificatesErrorCallback(
           ash::nearby::NearbyHttpError::kInternalServerError);
 
-  EXPECT_FALSE(credential_manager_->IsLocalDeviceRegistered());
+  create_credential_manager_run_loop.Run();
+  EXPECT_FALSE(credential_manager_);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, DownloadCredentialsTimeout) {
   // Wait until after the generated credentials are saved to continue the test.
-  base::RunLoop run_loop;
+  base::RunLoop generate_creds_run_loop;
   fake_local_device_data_provider_->SetUpdatePersistedSharedCredentialsCallback(
-      run_loop.QuitClosure());
+      generate_creds_run_loop.QuitClosure());
 
-  // Expect success on the callback.
-  base::MockCallback<base::OnceCallback<void(bool)>>
-      on_registered_mock_callback;
-  EXPECT_CALL(on_registered_mock_callback, Run(false)).Times(1);
-  credential_manager_->RegisterPresence(on_registered_mock_callback.Get());
+  base::RunLoop create_credential_manager_run_loop;
+  CreateCredentialManager(create_credential_manager_run_loop.QuitClosure());
 
   TriggerFirstTimeRegistrationSuccess();
 
   // Required for credentials to be generated and passed over the mojo pipe.
-  run_loop.Run();
+  generate_creds_run_loop.Run();
 
   TriggerFirstTimeLocalCredentialUploadSuccess();
 
@@ -440,7 +428,8 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, DownloadCredentialsTimeout) {
       kServerCommunicationMaxAttempts);
   task_environment_.FastForwardBy(kServerResponseTimeout);
 
-  EXPECT_FALSE(credential_manager_->IsLocalDeviceRegistered());
+  create_credential_manager_run_loop.Run();
+  EXPECT_FALSE(credential_manager_);
 }
 
 }  // namespace ash::nearby::presence

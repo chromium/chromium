@@ -8,6 +8,7 @@
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_credential_manager.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
@@ -41,14 +42,80 @@ namespace ash::nearby::presence {
 class LocalDeviceDataProvider;
 class NearbyPresenceServerClient;
 
+// This class is a singleton, and callers can only create one instance via
+// the Creator.
 class NearbyPresenceCredentialManagerImpl
     : public NearbyPresenceCredentialManager {
  public:
-  NearbyPresenceCredentialManagerImpl(
-      PrefService* pref_service,
-      signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence);
+  // A creator class for building a CredentialManager instance. The `Create`
+  // function is async in order to ensure a ready CredentialManager is returned
+  // to callers. A ready CredentialManager can be created by one of two flows:
+  //
+  // Case 1: First Time Registration (the case where this is the first time
+  // Nearby Presence is being run on this ChromeOS device). Before the
+  // CredentialManager is returned to callers, it completes the first time
+  // server registration flow to register with the Nearby Presence server,
+  // generate and upload local device credentials, and download remote devices'
+  // credentials.
+  //
+  // Case 2: Other cases (most common path): Before the CredentialManager is
+  // returned to callers, it sets the device metadata in the NP library over
+  // the mojo pipe.
+  //
+  // This class expects and enforces that it will only be used once to create a
+  // single CredentialManager instance during its lifetime.
+  class Creator {
+   public:
+    using CreateCallback = base::OnceCallback<void(
+        std::unique_ptr<NearbyPresenceCredentialManager>)>;
+
+    virtual ~Creator();
+    Creator(Creator&) = delete;
+    Creator& operator=(Creator&) = delete;
+
+    static Creator* Get();
+    static void SetCredentialManagerForTesting(
+        std::unique_ptr<NearbyPresenceCredentialManager> credential_manager);
+
+    void Create(
+        PrefService* pref_service,
+        signin::IdentityManager* identity_manager,
+        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+        const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence,
+        CreateCallback on_created);
+
+   protected:
+    Creator();
+
+    // For unit tests only. |local_device_data_provider| parameter is used to
+    // inject a FakeLocalDeviceDataProvider.
+    virtual void Create(
+        PrefService* pref_service,
+        signin::IdentityManager* identity_manager,
+        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+        const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence,
+        std::unique_ptr<LocalDeviceDataProvider> local_device_data_provider,
+        CreateCallback on_created);
+
+    bool has_credential_manager_been_created_ = false;
+
+   private:
+    friend class base::NoDestructor<Creator>;
+
+    void OnCredentialManagerRegistered(bool success);
+
+    // While a new CredentialManager is being initialized the factory retains a
+    // reference to it. After initialization is complete |on_created_|
+    // is run. If |credential_manager_under_initialization_| is set before the
+    // `Create` function for testing using `SetCredentialManagerForTesting`,
+    // then it will be returned on the callback, skipping all of the
+    // initialization flow, as long as the
+    // `CredentialManager::IsLocalDeviceRegistered` returns true.
+    std::unique_ptr<NearbyPresenceCredentialManager>
+        credential_manager_under_initialization_;
+
+    CreateCallback on_created_;
+  };
 
   NearbyPresenceCredentialManagerImpl(NearbyPresenceCredentialManagerImpl&) =
       delete;
@@ -63,8 +130,6 @@ class NearbyPresenceCredentialManagerImpl
   void UpdateCredentials() override;
 
  protected:
-  // For unit tests only. |local_device_data_provider| parameter is used to
-  // inject a FakeLocalDeviceDataProvider.
   NearbyPresenceCredentialManagerImpl(
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
@@ -153,14 +218,15 @@ class NearbyPresenceCredentialManagerImpl
           download_credentials_result_callback,
       ash::nearby::NearbyHttpError error);
 
+  const raw_ptr<PrefService> pref_service_ = nullptr;
+  const raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+
   // Constructed per RPC request, and destroyed on RPC response (server
   // interaction completed). This field is reused by multiple RPCs during the
   // lifetime of the NearbyPresenceCredentialManagerImpl object.
   std::unique_ptr<NearbyPresenceServerClient> server_client_;
 
   std::unique_ptr<LocalDeviceDataProvider> local_device_data_provider_;
-  const raw_ptr<PrefService> pref_service_ = nullptr;
-  const raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 
   base::OneShotTimer server_response_timer_;
   const mojo::SharedRemote<mojom::NearbyPresence>& nearby_presence_;
