@@ -5,29 +5,22 @@
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_view_controller.h"
 
 #import "base/mac/foundation_util.h"
-#import "base/memory/raw_ptr.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
-#import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_constants.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -62,7 +55,6 @@ CGFloat const kInitialHeightPadding = 5;
 
 @interface PasswordSuggestionBottomSheetViewController () <
     ConfirmationAlertActionHandler,
-    UIGestureRecognizerDelegate,
     UITableViewDataSource,
     UITableViewDelegate> {
   // If YES: the table view is currently showing a single suggestion
@@ -403,8 +395,7 @@ CGFloat const kInitialHeightPadding = 5;
 // Creates the password bottom sheet's table view, initially at minimized
 // height.
 - (UITableView*)createTableView {
-  CGRect frame = [[UIScreen mainScreen] bounds];
-  _tableView = [[UITableView alloc] initWithFrame:frame
+  _tableView = [[UITableView alloc] initWithFrame:CGRectZero
                                             style:UITableViewStylePlain];
 
   _tableView.layer.cornerRadius = kTableViewCornerRadius;
