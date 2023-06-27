@@ -7,6 +7,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -242,6 +243,25 @@ void WelcomeTourController::OnSessionStateChanged(
   MaybeShowDialog();
 }
 
+void WelcomeTourController::OnTabletControllerDestroyed() {
+  tablet_mode_observation_.Reset();
+}
+
+void WelcomeTourController::OnTabletModeStarting() {
+  auto* dialog = WelcomeTourDialog::Get();
+  auto* widget = dialog ? dialog->GetWidget() : nullptr;
+
+  if (widget && !widget->IsClosed()) {
+    // If the dialog's widget is not closed, then the tutorial hasn't started,
+    // so just close the dialog.
+    widget->Close();
+  } else {
+    // If the dialog is closed, and this event has been reached, then we can be
+    // certain the Welcome Tour is the active tutorial, so it is safe to abort.
+    UserEducationController::Get()->AbortTutorial(UserEducationPrivateApiKey());
+  }
+}
+
 void WelcomeTourController::MaybeShowDialog() {
   // NOTE: User education in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
@@ -249,9 +269,17 @@ void WelcomeTourController::MaybeShowDialog() {
     return;
   }
 
-  // We can stop observations since we only observe sessions in order to show
-  // the dialog when the primary user session is activated for the first time.
+  // We can stop observations since we only observe sessions in order to start
+  // the tutorial when the primary user session is activated for the first time.
   session_observation_.Reset();
+
+  // Welcome Tour is not supported in tablet mode.
+  if (TabletMode::IsInTabletMode()) {
+    return;
+  }
+
+  // Begin observing `TabletMode` so we can abort if it starts.
+  tablet_mode_observation_.Observe(TabletMode::Get());
 
   WelcomeTourDialog::CreateAndShow(
       /*accept_callback=*/base::BindOnce(&WelcomeTourController::StartTutorial,
@@ -297,6 +325,7 @@ void WelcomeTourController::OnWelcomeTourStarted() {
     observer.OnWelcomeTourStarted();
   }
 }
+
 // TODO(http://b/277091006): Restore app launches.
 // TODO(http://b/277091067): Restore apps in launcher.
 // TODO(http://b/277091443): Restore apps in shelf.
@@ -313,6 +342,8 @@ void WelcomeTourController::OnWelcomeTourEnded(bool completed) {
   }
 
   scrim_.reset();
+
+  tablet_mode_observation_.Reset();
 
   for (auto& observer : observer_list_) {
     observer.OnWelcomeTourEnded();

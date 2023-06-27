@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/user_education/mock_user_education_delegate.h"
@@ -46,13 +47,17 @@ namespace {
 using ::base::test::RunOnceClosure;
 using ::session_manager::SessionState;
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::IsTrue;
 using ::testing::Matches;
 using ::testing::Mock;
+using ::testing::NotNull;
 using ::testing::Pair;
+using ::testing::Property;
 using ::testing::StrictMock;
 using ::user_education::HelpBubbleArrow;
 using ::user_education::TutorialDescription;
@@ -408,6 +413,117 @@ TEST_F(WelcomeTourControllerRunTest, Scrim) {
 
   // Case: After Welcome Tour.
   ExpectScrimsOnAllRootWindows(false);
+}
+
+// WelcomeTourControllerTabletTest ---------------------------------------------
+
+// Base class for tests of the `WelcomeTourController` that verify the tour does
+// not start/will abort in tablet mode.
+class WelcomeTourControllerTabletTest : public WelcomeTourControllerTest {
+ public:
+  WelcomeTourController* controller() { return WelcomeTourController::Get(); }
+  StrictMock<MockWelcomeTourControllerObserver>* observer() {
+    return &observer_;
+  }
+
+  // WelcomeTourControllerTest:
+  void SetUp() override {
+    WelcomeTourControllerTest::SetUp();
+
+    // Observe the `WelcomeTourController` for start/end events.
+    observation_.Observe(controller());
+  }
+
+  void TearDown() override {
+    observation_.Reset();
+
+    WelcomeTourControllerTest::TearDown();
+  }
+
+ private:
+  StrictMock<MockWelcomeTourControllerObserver> observer_;
+  base::ScopedObservation<WelcomeTourController, WelcomeTourControllerObserver>
+      observation_{&observer_};
+};
+
+// Tests -----------------------------------------------------------------------
+
+// Verifies that the Welcome Tour will not start when in tablet mode.
+TEST_F(WelcomeTourControllerTabletTest, DoesNotStart) {
+  // Force tablet mode on.
+  TabletMode::Get()->SetEnabledForTest(true);
+
+  // Activate the primary user session. Since tablet mode is enabled, the
+  // Welcome Tour should not start, the dialog should not show, and no start or
+  // end calls should be made.
+  EXPECT_CALL(*user_education_delegate(), StartTutorial).Times(0);
+  SimulateUserLogin("user@test");
+  EXPECT_FALSE(WelcomeTourDialog::Get());
+  testing::Mock::VerifyAndClearExpectations(user_education_delegate());
+  testing::Mock::VerifyAndClearExpectations(observer());
+}
+
+// Verifies that the tour will abort if we enter tablet mode.
+TEST_F(WelcomeTourControllerTabletTest, TriggersAbort) {
+  // Activate the user session to trigger the Welcome Tour to start, as well as
+  // notify observers. Note that the aborted callback is cached for later
+  // verification.
+  base::OnceClosure aborted_callback;
+  EXPECT_CALL(
+      *user_education_delegate(),
+      StartTutorial(/*account_id=*/_, Eq(TutorialId::kWelcomeTourPrototype1),
+                    /*element_context=*/_,
+                    /*completed_callback=*/_,
+                    /*aborted_callback=*/_))
+      .WillOnce(MoveArgs<4>(&aborted_callback));
+  EXPECT_CALL(*observer(), OnWelcomeTourStarted);
+  SimulateUserLogin("user@test");
+
+  // Click through the opening dialog so that the actual tutorial starts.
+  const views::View* const accept_button = GetDialogAcceptButton();
+  ASSERT_TRUE(accept_button);
+  LeftClickOn(accept_button);
+
+  testing::Mock::VerifyAndClearExpectations(user_education_delegate());
+  testing::Mock::VerifyAndClearExpectations(observer());
+  ASSERT_FALSE(aborted_callback.is_null());
+
+  // Force tablet mode on, which should cause the tutorial to abort.
+  EXPECT_CALL(*user_education_delegate(), AbortTutorial)
+      .WillOnce(RunOnceClosure(std::move(aborted_callback)));
+  EXPECT_CALL(*observer(), OnWelcomeTourEnded);
+  TabletMode::Get()->SetEnabledForTest(true);
+  testing::Mock::VerifyAndClearExpectations(observer());
+  testing::Mock::VerifyAndClearExpectations(user_education_delegate());
+}
+
+// Verifies that the dialog will be closed if we enter tablet mode while it is
+// open.
+TEST_F(WelcomeTourControllerTabletTest, ClosesDialog) {
+  EXPECT_FALSE(WelcomeTourDialog::Get());
+
+  // Activate the user session to trigger the Welcome Tour to start, as well as
+  // notify observers.
+  EXPECT_CALL(*observer(), OnWelcomeTourStarted);
+  SimulateUserLogin("user@test");
+  testing::Mock::VerifyAndClearExpectations(observer());
+
+  // The dialog should exist and be visible.
+  EXPECT_THAT(
+      WelcomeTourDialog::Get(),
+      AllOf(NotNull(), Property(&WelcomeTourDialog::GetVisible, IsTrue())));
+
+  // Force tablet mode on, which should cause the tutorial to abort, in this
+  // case closing the dialog.
+  EXPECT_CALL(*observer(), OnWelcomeTourEnded);
+  TabletMode::Get()->SetEnabledForTest(true);
+
+  // Wait for the dialog widget to be destroyed.
+  views::test::WidgetDestroyedWaiter(WelcomeTourDialog::Get()->GetWidget())
+      .Wait();
+  EXPECT_FALSE(WelcomeTourDialog::Get());
+
+  testing::Mock::VerifyAndClearExpectations(observer());
 }
 
 }  // namespace ash
