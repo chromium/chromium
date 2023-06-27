@@ -861,6 +861,15 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, ReloadWillRefreshCompanion) {
   EXPECT_TRUE(proto.has_value());
   EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
 
+  // Post message so that shown events are flushed.
+  CompanionScriptBuilder builder(MethodType::kRecordUiSurfaceShown);
+  builder.ui_surface = UiSurface::kCQ;
+  builder.ui_surface_position = 3;
+  builder.child_element_available_count = 8;
+  builder.child_element_shown_count = 5;
+  EXPECT_TRUE(ExecJs(builder.Build()));
+  WaitForHistogram("Companion.CQ.Shown");
+
   // Reload the page. It should refresh the companion via postmessage.
   content::TestNavigationObserver nav_observer(web_contents(), 1);
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
@@ -869,6 +878,16 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, ReloadWillRefreshCompanion) {
   proto = GetLastCompanionProtoFromPostMessage();
   EXPECT_TRUE(proto.has_value());
   EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
+
+  CompanionScriptBuilder builder2(MethodType::kRecordUiSurfaceShown);
+  builder2.ui_surface = UiSurface::kRelQr;
+  builder.ui_surface_position = 3;
+  builder.child_element_available_count = 8;
+  builder.child_element_shown_count = 5;
+  EXPECT_TRUE(ExecJs(builder2.Build()));
+  WaitForHistogram("Companion.RelQr.Shown");
+  histogram_tester_->ExpectTotalCount("Companion.FullLoad.Latency", 1);
+  histogram_tester_->ExpectTotalCount("Companion.NavigationLoad.Latency", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
@@ -899,6 +918,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   WaitForHistogram("Companion.CQ.Shown");
   histogram_tester_->ExpectBucketCount("Companion.CQ.Shown",
                                        /*sample=*/true, /*expected_count=*/1);
+  histogram_tester_->ExpectTotalCount("Companion.FullLoad.Latency", 1);
+  histogram_tester_->ExpectTotalCount("Companion.NavigationLoad.Latency", 0);
 
   // Post message for click metrics. Verify histograms.
   CompanionScriptBuilder builder2(MethodType::kRecordUiSurfaceClicked);
@@ -959,6 +980,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   WaitForHistogram("Companion.PH.Shown");
   histogram_tester_->ExpectBucketCount("Companion.PH.Shown",
                                        /*sample=*/true, /*expected_count=*/1);
+  histogram_tester_->ExpectTotalCount("Companion.FullLoad.Latency", 1);
+  histogram_tester_->ExpectTotalCount("Companion.NavigationLoad.Latency", 0);
 
   // Post message for click metrics. Verify histograms.
   CompanionScriptBuilder builder2(MethodType::kRecordUiSurfaceClicked);

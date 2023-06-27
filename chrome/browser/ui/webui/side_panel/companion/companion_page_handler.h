@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
@@ -142,6 +143,9 @@ class CompanionPageHandler
       unified_consent::UrlKeyedDataCollectionConsentHelper,
       unified_consent::UrlKeyedDataCollectionConsentHelper::Observer>
       consent_helper_observation_{this};
+
+  absl::optional<base::TimeTicks> full_load_start_time_;
+  absl::optional<base::TimeTicks> reload_start_time_;
 
   base::WeakPtrFactory<CompanionPageHandler> weak_ptr_factory_{this};
 };
