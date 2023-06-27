@@ -166,11 +166,19 @@ void FooterView::OnThemeChanged() {
 }
 
 gfx::Size FooterView::CalculatePreferredSize() const {
-  gfx::Size preferred_size = alert_row_->CalculatePreferredSize();
-  preferred_size += performance_row_->CalculatePreferredSize();
+  const gfx::Size alert_size = alert_row_->CalculatePreferredSize();
+  const gfx::Size performance_size = performance_row_->CalculatePreferredSize();
+  gfx::Size preferred_size = alert_size + performance_size;
 
-  // Add additional margin space when the footer have content to show
+  // Add additional margin space when the footer has content to show
   if (preferred_size.width() > 0 && preferred_size.height() > 0) {
+    // When two footers are showing, add space between them.
+    if (alert_size.height() > 0 && performance_size.height() > 0) {
+      performance_row_->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::TLBR(kFooterVerticalMargins, 0, 0, 0));
+      preferred_size.Enlarge(0, kFooterVerticalMargins);
+    }
     const gfx::Insets margins = flex_layout_->interior_margin();
     preferred_size.Enlarge(margins.width(), margins.height());
   }
