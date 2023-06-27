@@ -4,10 +4,20 @@
 
 #include "chromeos/ash/services/recording/audio_capturer.h"
 
+#include "base/functional/bind.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
+#include "media/base/audio_bus.h"
 #include "services/audio/public/cpp/device_factory.h"
 
 namespace recording {
+
+namespace {
+
+constexpr int kPreAllocatedBuses = 5;
+constexpr int kMaxBusCapacity = 10;
+
+}  // namespace
 
 AudioCapturer::AudioCapturer(
     base::StringPiece device_id,
@@ -18,17 +28,23 @@ AudioCapturer::AudioCapturer(
           audio::CreateInputDevice(std::move(audio_stream_factory),
                                    std::string(device_id),
                                    audio::DeadStreamDetection::kEnabled)),
-      on_audio_captured_callback_(std::move(callback)) {
+      on_audio_captured_callback_(std::move(callback)),
+      audio_bus_pool_(audio_params, kPreAllocatedBuses, kMaxBusCapacity) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  weak_ptr_this_ = weak_ptr_factory_.GetWeakPtr();
   audio_capturer_->Initialize(audio_params, /*callback=*/this);
 }
 
 AudioCapturer::~AudioCapturer() = default;
 
 void AudioCapturer::Start() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   audio_capturer_->Start();
 }
 
 void AudioCapturer::Stop() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   audio_capturer_->Stop();
 }
 
@@ -47,13 +63,35 @@ void AudioCapturer::Capture(const media::AudioBus* audio_source,
   // `media::AudioInputDevice::AudioThreadCallback::Process()` for details). It
   // is safer that we own our AudioBuses that are kept alive until encoded and
   // flushed.
-  // TODO(b/281868597): Consider using an `AudioBusPool` to avoid doing
-  // allocation here on the realtime audio thread.
-  auto audio_data =
-      media::AudioBus::Create(audio_source->channels(), audio_source->frames());
-  audio_source->CopyTo(audio_data.get());
+  // We need to avoid allocating new audio buses here, since this is running on
+  // the realtime audio thread, hence we use the audio bus pool.
+  auto backing_audio_bus = audio_bus_pool_.GetAudioBus();
+  DCHECK_EQ(backing_audio_bus->frames(), audio_source->frames());
+  DCHECK_EQ(backing_audio_bus->channels(), audio_source->channels());
+  audio_source->CopyTo(backing_audio_bus.get());
 
-  on_audio_captured_callback_.Run(std::move(audio_data), audio_capture_time);
+  // However, the audio bus pool requires that we return back the audio bus when
+  // we're done with it, so it can be reused. Therefore we will create another
+  // audio bus that acts as a wrapper around the `backing_audio_bus` we got from
+  // the pool. The `wrapping_audio_bus` will be the one we provide to the client
+  // via `on_audio_captured_callback_`. Once the client is done with it, and it
+  // goes out of scope, the `backing_audio_bus` will be returned back to the
+  // pool in `OnAudioBusDone()`.
+  auto wrapping_audio_bus =
+      media::AudioBus::CreateWrapper(backing_audio_bus->channels());
+  wrapping_audio_bus->set_frames(backing_audio_bus->frames());
+  for (int channel = 0; channel < backing_audio_bus->channels(); ++channel) {
+    wrapping_audio_bus->SetChannelData(channel,
+                                       backing_audio_bus->channel(channel));
+  }
+  // Keep `backing_audio_bus` alive as long as `wrapping_audio_bus` by
+  // transferring its ownership to the `wrapping_audio_bus`'s deleter callback.
+  wrapping_audio_bus->SetWrappedDataDeleter(
+      base::BindOnce(&AudioCapturer::OnAudioBusDone, weak_ptr_this_,
+                     std::move(backing_audio_bus)));
+
+  on_audio_captured_callback_.Run(std::move(wrapping_audio_bus),
+                                  audio_capture_time);
 }
 
 void AudioCapturer::OnCaptureError(media::AudioCapturerSource::ErrorCode code,
@@ -63,5 +101,11 @@ void AudioCapturer::OnCaptureError(media::AudioCapturerSource::ErrorCode code,
 }
 
 void AudioCapturer::OnCaptureMuted(bool is_muted) {}
+
+void AudioCapturer::OnAudioBusDone(
+    std::unique_ptr<media::AudioBus> backing_audio_bus) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  audio_bus_pool_.InsertAudioBus(std::move(backing_audio_bus));
+}
 
 }  // namespace recording
