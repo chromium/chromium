@@ -8,32 +8,58 @@ namespace base::test {
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
+TraceConfig DefaultTraceConfig(const StringPiece& category_filter_string,
+                               bool privacy_filtering) {
+  TraceConfig trace_config;
+  auto* buffer_config = trace_config.add_buffers();
+  buffer_config->set_size_kb(4 * 1024);
+
+  auto* data_source = trace_config.add_data_sources();
+  auto* source_config = data_source->mutable_config();
+  source_config->set_name("track_event");
+  source_config->set_target_buffer(0);
+
+  perfetto::protos::gen::TrackEventConfig track_event_config;
+  base::trace_event::TraceConfigCategoryFilter category_filter;
+  category_filter.InitializeFromString(category_filter_string);
+
+  // If no categories are explicitly enabled, enable the default ones.
+  // Otherwise only matching categories are enabled.
+  if (!category_filter.included_categories().empty()) {
+    track_event_config.add_disabled_categories("*");
+  }
+  for (const auto& included_category : category_filter.included_categories()) {
+    track_event_config.add_enabled_categories(included_category);
+  }
+  for (const auto& disabled_category : category_filter.disabled_categories()) {
+    track_event_config.add_enabled_categories(disabled_category);
+  }
+  for (const auto& excluded_category : category_filter.excluded_categories()) {
+    track_event_config.add_disabled_categories(excluded_category);
+  }
+
+  source_config->set_track_event_config_raw(
+      track_event_config.SerializeAsString());
+
+  if (privacy_filtering) {
+    track_event_config.set_filter_debug_annotations(true);
+    track_event_config.set_filter_dynamic_event_names(true);
+  }
+
+  return trace_config;
+}
+
 TestTraceProcessor::TestTraceProcessor() = default;
 TestTraceProcessor::~TestTraceProcessor() = default;
 
-void TestTraceProcessor::StartTrace(const StringPiece& category_filter_string) {
-  session_ = perfetto::Tracing::NewTrace();
-  perfetto::protos::gen::TraceConfig config =
-      TracingEnvironment::GetDefaultTraceConfig();
-  for (auto& data_source : *config.mutable_data_sources()) {
-    perfetto::protos::gen::TrackEventConfig track_event_config;
-    base::trace_event::TraceConfigCategoryFilter category_filter;
-    category_filter.InitializeFromString(category_filter_string);
-    for (const auto& included_category :
-         category_filter.included_categories()) {
-      track_event_config.add_enabled_categories(included_category);
-    }
-    for (const auto& disabled_category :
-         category_filter.disabled_categories()) {
-      track_event_config.add_enabled_categories(disabled_category);
-    }
-    for (const auto& excluded_category :
-         category_filter.excluded_categories()) {
-      track_event_config.add_disabled_categories(excluded_category);
-    }
-    data_source.mutable_config()->set_track_event_config_raw(
-        track_event_config.SerializeAsString());
-  }
+void TestTraceProcessor::StartTrace(const StringPiece& category_filter_string,
+                                    bool privacy_filtering) {
+  StartTrace(DefaultTraceConfig(category_filter_string, privacy_filtering));
+}
+
+void TestTraceProcessor::StartTrace(const TraceConfig& config,
+                                    perfetto::BackendType backend) {
+  session_ = perfetto::Tracing::NewTrace(backend);
   session_->Setup(config);
   // Some tests run the tracing service on the main thread and StartBlocking()
   // can deadlock so use a RunLoop instead.

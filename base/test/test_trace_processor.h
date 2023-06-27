@@ -15,11 +15,14 @@
 #include "base/test/trace_test_utils.h"
 #include "base/types/expected.h"
 
-// TODO(rasikan): Put these functions in a class.
-
 namespace base::test {
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
+using perfetto::protos::gen::TraceConfig;
+
+TraceConfig DefaultTraceConfig(const StringPiece& category_filter_string,
+                               bool privacy_filtering);
 
 // Use TestTraceProcessor to record Perfetto traces in unit and browser tests.
 // This API can be used to start and stop traces, run SQL queries on the trace
@@ -48,7 +51,11 @@ class TestTraceProcessor {
   TestTraceProcessor();
   ~TestTraceProcessor();
 
-  void StartTrace(const StringPiece& category_filter_string);
+  void StartTrace(const StringPiece& category_filter_string,
+                  bool privacy_filtering = false);
+  void StartTrace(
+      const TraceConfig& config,
+      perfetto::BackendType backend = perfetto::kUnspecifiedBackend);
 
   absl::Status StopAndParseTrace();
 
