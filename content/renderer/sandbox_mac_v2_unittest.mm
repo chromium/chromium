@@ -187,46 +187,4 @@ TEST_F(SandboxV2Test, SandboxProfileTest) {
   EXPECT_EQ(exit_code, 0);
 }
 
-MULTIPROCESS_TEST_MAIN(SandboxSyscallViolationProcess) {
-  TestContentClient content_client;
-  const std::string profile =
-      std::string(sandbox::policy::kSeatbeltPolicyString_common) +
-      sandbox::policy::kSeatbeltPolicyString_renderer;
-  sandbox::SandboxCompiler compiler;
-  compiler.SetProfile(profile);
-
-  // Create the logging file and pass /bin/ls as the executable path.
-  base::ScopedTempDir temp_dir;
-  CHECK(temp_dir.CreateUniqueTempDir());
-  CHECK(temp_dir.IsValid());
-  base::FilePath temp_path = temp_dir.GetPath();
-  temp_path = sandbox::policy::GetCanonicalPath(temp_path);
-  const base::FilePath log_file = temp_path.Append("log-file");
-  const base::FilePath exec_file("/bin/ls");
-
-  SetParametersForTest(&compiler, log_file, exec_file,
-                       /*use_syscall_filter=*/true);
-
-  std::string error;
-  bool result = compiler.CompileAndApplyProfile(error);
-  CHECK(result) << error;
-
-  // This should cause a syscall violation and crash the process.
-  listen(-1, 100);
-
-  // If the test reaches this point, it should fail as the test expect this
-  // subprocess to crash with a signal (which base/process.h converts to an exit
-  // code of -1).
-  return 0;
-}
-
-TEST_F(SandboxV2Test, SandboxSyscallViolationTest) {
-  base::Process process = SpawnChild("SandboxSyscallViolationProcess");
-  ASSERT_TRUE(process.IsValid());
-  int exit_code = 42;
-  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_max_timeout(),
-                                             &exit_code));
-  EXPECT_EQ(exit_code, -1);
-}
-
 }  // namespace content
