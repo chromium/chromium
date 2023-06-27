@@ -1479,7 +1479,11 @@ CSSPrimitiveValue* ConsumeResolution(CSSParserTokenRange& range,
   if (const CSSParserToken& token = range.Peek();
       token.GetType() == kDimensionToken) {
     CSSPrimitiveValue::UnitType unit = token.GetUnitType();
-    if (!CSSPrimitiveValue::IsResolution(unit)) {
+    if (!CSSPrimitiveValue::IsResolution(unit) || token.NumericValue() < 0.0) {
+      // "The allowed range of <resolution> values always excludes negative
+      // values"
+      // https://www.w3.org/TR/css-values-4/#resolution-value
+
       return nullptr;
     }
 
@@ -1488,7 +1492,7 @@ CSSPrimitiveValue* ConsumeResolution(CSSParserTokenRange& range,
   }
 
   MathFunctionParser math_parser(range, context,
-                                 CSSPrimitiveValue::ValueRange::kAll);
+                                 CSSPrimitiveValue::ValueRange::kNonNegative);
   const CSSMathFunctionValue* math_value = math_parser.Value();
   if (math_value && math_value->IsResolution()) {
     return math_parser.ConsumeValue();
@@ -3568,9 +3572,6 @@ static CSSImageSetOptionValue* ConsumeImageSetOption(
   }
 
   CSSPrimitiveValue* resolution = ConsumeResolution(range, context);
-  if (resolution && resolution->GetDoubleValue() < 0.0) {
-    return nullptr;
-  }
 
   if (!type) {
     type = ConsumeImageSetType(range);
