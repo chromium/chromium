@@ -279,6 +279,14 @@ void PasswordUIViewAndroid::HandleShowBlockedCredentialView(
       context, settings_launcher);
 }
 
+void PasswordUIViewAndroid::ShowMigrationWarning(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& activity,
+    const base::android::JavaParamRef<jobject>& bottom_sheet_controller) {
+  local_password_migration::ShowWarningWithActivity(
+      activity, bottom_sheet_controller, ProfileManager::GetLastUsedProfile());
+}
+
 void PasswordUIViewAndroid::OnEditUIDismissed() {
   credential_edit_bridge_.reset();
 }
@@ -300,11 +308,6 @@ jboolean JNI_PasswordUIView_HasAccountForLeakCheckRequest(JNIEnv* env) {
           ProfileManager::GetLastUsedProfile());
   return password_manager::LeakDetectionCheckImpl::HasAccountForRequest(
       identity_manager);
-}
-
-jboolean JNI_PasswordUIView_ShouldShowMigrationWarning(JNIEnv* env) {
-  return local_password_migration::ShouldShowWarning(
-      ProfileManager::GetLastUsedProfile());
 }
 
 // static

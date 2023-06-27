@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
@@ -12,6 +13,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.IntStringCallback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
@@ -111,8 +113,11 @@ public final class PasswordUIView implements PasswordManagerHandler {
     }
 
     @Override
-    public boolean shouldShowMigrationWarning() {
-        return PasswordUIViewJni.get().shouldShowMigrationWarning();
+    public void showMigrationWarning(
+            Activity activity, BottomSheetController bottomSheetController) {
+        if (mNativePasswordUIViewAndroid == 0) return;
+        PasswordUIViewJni.get().showMigrationWarning(
+                mNativePasswordUIViewAndroid, activity, bottomSheetController);
     }
 
     /**
@@ -173,6 +178,7 @@ public final class PasswordUIView implements PasswordManagerHandler {
                 SettingsLauncher launcher, int index, PasswordUIView caller);
         void handleShowBlockedCredentialView(long nativePasswordUIViewAndroid, Context context,
                 SettingsLauncher launcher, int index, PasswordUIView caller);
-        boolean shouldShowMigrationWarning();
+        void showMigrationWarning(long nativePasswordUIViewAndroid, Activity activity,
+                BottomSheetController bottomSheetController);
     }
 }
