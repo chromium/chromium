@@ -525,6 +525,17 @@ for more thorough manual testing if needed.
 By default, histograms in unit or browser tests will not be actually uploaded.
 In general, you can rely on the UMA infrastructure to upload the metrics correctly.
 
+### Don't Use Histograms to Prove Main Logic Correctness
+
+Do not rely upon using histograms in tests as a way to prove correctness of
+your main program logic. If a unit or browser test uses a histogram count as a
+way to validate logic then that test coverage would be lost if the histogram is
+deleted after it has expired. That situation would prevent cleanup of the
+histogram. Construct your tests using other means to validate your general
+logic, and only use
+[`HistogramTester`](https://cs.chromium.org/chromium/src/base/test/metrics/histogram_tester.h)
+to verify that the histogram values are being generated as you would expect.
+
 ## Interpreting the Resulting Data
 
 The top of [go/uma-guide](http://go/uma-guide) has good advice on how to go
