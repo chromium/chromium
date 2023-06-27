@@ -294,11 +294,11 @@ bool InitializeICUFromDataFile() {
   bool result =
       InitializeICUWithFileDescriptorInternal(g_icudtl_pf, g_icudtl_region);
 
-#if BUILDFLAG(IS_WIN)
   int debug_icu_load = g_debug_icu_load;
   debug::Alias(&debug_icu_load);
   int debug_icu_last_error = g_debug_icu_last_error;
   debug::Alias(&debug_icu_last_error);
+#if BUILDFLAG(IS_WIN)
   int debug_icu_pf_last_error = g_debug_icu_pf_last_error;
   debug::Alias(&debug_icu_pf_last_error);
   int debug_icu_pf_error_details = g_debug_icu_pf_error_details;
@@ -306,8 +306,10 @@ bool InitializeICUFromDataFile() {
   wchar_t debug_icu_pf_filename[_MAX_PATH] = {0};
   wcscpy_s(debug_icu_pf_filename, g_debug_icu_pf_filename);
   debug::Alias(&debug_icu_pf_filename);
-  CHECK(result);  // TODO(brucedawson): http://crbug.com/445616
 #endif            // BUILDFLAG(IS_WIN)
+  // https://crbug.com/445616
+  // https://crbug.com/1449816
+  CHECK(result);
 
   return result;
 }

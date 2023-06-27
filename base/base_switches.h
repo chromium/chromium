@@ -29,7 +29,6 @@ extern const char kProfilingAtStart[];
 extern const char kProfilingFile[];
 extern const char kProfilingFlush[];
 extern const char kTestChildProcess[];
-extern const char kTestDoNotInitializeIcu[];
 extern const char kTraceToFile[];
 extern const char kTraceToFileName[];
 extern const char kV[];

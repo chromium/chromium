@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/scoped_native_library.h"
@@ -153,11 +152,7 @@ TEST_F(ScopedHandleDeathTest, HandleVerifierUntrackedHandle) {
 #endif
 
 TEST_F(ScopedHandleTest, MAYBE_MultiProcess) {
-  // Initializing ICU in the child process causes a scoped handle to be created
-  // before the test gets a chance to test the race condition, so disable ICU
-  // for the child process here.
   CommandLine command_line(base::GetMultiProcessTestChildBaseCommandLine());
-  command_line.AppendSwitch(switches::kTestDoNotInitializeIcu);
 
   base::Process test_child_process = base::SpawnMultiProcessTestChild(
       "HandleVerifierChildProcess", command_line, LaunchOptions());
