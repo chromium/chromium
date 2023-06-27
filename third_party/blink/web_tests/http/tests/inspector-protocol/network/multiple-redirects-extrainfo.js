@@ -4,7 +4,7 @@
 
   // Clear the cache to prevent interactions with other tests that were running
   // on the same content shell.
-  await session.protocol.Network.clearBrowserCache();
+  await dp.Network.clearBrowserCache();
   await dp.Network.enable();
 
   const requests = new Map();
