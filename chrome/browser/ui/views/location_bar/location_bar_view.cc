@@ -693,8 +693,8 @@ void LocationBarView::Layout() {
                                       chip_controller_->chip());
   }
 
-  location_icon_view_->SetVisible(false);
   if (ShouldShowKeywordBubble()) {
+    location_icon_view_->SetVisible(false);
     leading_decorations.AddDecoration(
         vertical_padding, location_height, false, kLeadingDecorationMaxFraction,
         /*intra_item_padding=*/0, icon_left, selected_keyword_view_);
@@ -722,6 +722,8 @@ void LocationBarView::Layout() {
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
                                       0, /*intra_item_padding=*/0, icon_left,
                                       location_icon_view_);
+  } else {
+    location_icon_view_->SetVisible(false);
   }
 
   auto add_trailing_decoration = [&](View* view, int intra_item_padding) {
