@@ -81,8 +81,8 @@
       std::map<promos_manager::Promo, id<StandardPromoAlertProvider>>>
       _alertProviderPromos;
 
-  // The currently displayed promo, if any.
-  absl::optional<promos_manager::Promo> current_promo;
+  // The currently displayed promo data, if any.
+  absl::optional<PromoDisplayData> _currentPromoData;
 }
 
 // A mediator that observes when it's a good time to display a promo.
@@ -170,7 +170,7 @@
 }
 
 - (void)displayPromoCallback:(BOOL)isFirstShownPromo {
-  absl::optional<promos_manager::Promo> nextPromoForDisplay =
+  absl::optional<PromoDisplayData> nextPromoForDisplay =
       [self.mediator nextPromoForDisplay:isFirstShownPromo];
 
   if (nextPromoForDisplay.has_value()) {
@@ -197,9 +197,10 @@
 }
 
 - (void)promoWasDismissed {
-  if (ShouldPromosManagerUseFET() && current_promo.has_value()) {
+  if (ShouldPromosManagerUseFET() && _currentPromoData.has_value() &&
+      !_currentPromoData.value().was_forced) {
     PromoConfigsSet configs = [self promoImpressionLimits];
-    auto it = configs.find(current_promo.value());
+    auto it = configs.find(_currentPromoData.value().promo);
     if (it == configs.end() || !it->feature_engagement_feature) {
       return;
     }
@@ -209,25 +210,27 @@
             self.browser->GetBrowserState());
     tracker->Dismissed(*it->feature_engagement_feature);
   }
-  current_promo = absl::nullopt;
+  _currentPromoData = absl::nullopt;
 }
 
-- (void)displayPromo:(promos_manager::Promo)promo {
+- (void)displayPromo:(PromoDisplayData)promoData {
   if (tests_hook::DisablePromoManagerFullScreenPromos()) {
     return;
   }
 
+  promos_manager::Promo promo = promoData.promo;
+
   // Trying to display a promo while the previous dismissal was not communicated
   // back to the promos manager.
   // TODO(crbug.com/1452233): Remove once all promos dismiss themselves.
-  if (current_promo.has_value()) {
+  if (_currentPromoData.has_value()) {
     static crash_reporter::CrashKeyString<40> key("current-promo");
     crash_reporter::ScopedCrashKeyString crashKey(
-        &key, ShortNameForPromo(current_promo.value()));
+        &key, ShortNameForPromo(_currentPromoData.value().promo));
     base::debug::DumpWithoutCrashing();
   }
 
-  current_promo = promo;
+  _currentPromoData = promoData;
 
   auto handler_it = _displayHandlerPromos.find(promo);
   auto provider_it = _viewProviderPromos.find(promo);
