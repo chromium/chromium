@@ -138,6 +138,10 @@ class FirstPartySetsManager {
 
   bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
+  // Whether this instance should wait for First-Party Sets initialization (in
+  // the browser process) before responding to queries.
+  const bool wait_for_init_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   // The queue of queries that are waiting for the instance to be initialized.
   std::unique_ptr<base::circular_deque<base::OnceClosure>> pending_queries_
       GUARDED_BY_CONTEXT(sequence_checker_);
