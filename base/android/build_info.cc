@@ -73,20 +73,19 @@ BuildInfo::BuildInfo(const std::vector<std::string>& params)
       gms_version_code_(StrDupParam(params, 15)),
       installer_package_name_(StrDupParam(params, 16)),
       abi_name_(StrDupParam(params, 17)),
-      firebase_app_id_(StrDupParam(params, 18)),
-      custom_themes_(StrDupParam(params, 19)),
-      resources_version_(StrDupParam(params, 20)),
-      target_sdk_version_(GetIntParam(params, 21)),
-      is_debug_android_(GetIntParam(params, 22)),
-      is_tv_(GetIntParam(params, 23)),
-      version_incremental_(StrDupParam(params, 24)),
-      hardware_(StrDupParam(params, 25)),
-      is_at_least_t_(GetIntParam(params, 26)),
-      is_automotive_(GetIntParam(params, 27)),
-      is_at_least_u_(GetIntParam(params, 28)),
-      targets_at_least_u_(GetIntParam(params, 29)),
-      codename_(StrDupParam(params, 30)),
-      vulkan_deqp_level_(GetIntParam(params, 31)) {}
+      custom_themes_(StrDupParam(params, 18)),
+      resources_version_(StrDupParam(params, 19)),
+      target_sdk_version_(GetIntParam(params, 20)),
+      is_debug_android_(GetIntParam(params, 21)),
+      is_tv_(GetIntParam(params, 22)),
+      version_incremental_(StrDupParam(params, 23)),
+      hardware_(StrDupParam(params, 24)),
+      is_at_least_t_(GetIntParam(params, 25)),
+      is_automotive_(GetIntParam(params, 26)),
+      is_at_least_u_(GetIntParam(params, 27)),
+      targets_at_least_u_(GetIntParam(params, 28)),
+      codename_(StrDupParam(params, 29)),
+      vulkan_deqp_level_(GetIntParam(params, 30)) {}
 
 // static
 BuildInfo* BuildInfo::GetInstance() {

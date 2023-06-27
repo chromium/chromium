@@ -63,7 +63,6 @@ import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.component_updater.ComponentLoaderPolicyBridge;
 import org.chromium.components.component_updater.EmbeddedComponentLoader;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
-import org.chromium.components.embedder_support.application.FirebaseConfig;
 import org.chromium.components.payments.PaymentDetailsUpdateService;
 import org.chromium.components.webapk.lib.client.ChromeWebApkHostSignature;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
@@ -296,8 +295,6 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                 ChromeWebApkHostSignature.EXPECTED_SIGNATURE, ChromeWebApkHostSignature.PUBLIC_KEY);
 
         BuildInfo.setBrowserPackageInfo(packageInfo);
-        BuildInfo.setFirebaseAppId(
-                FirebaseConfig.getFirebaseAppIdForPackage(packageInfo.packageName));
 
         SelectionPopupController.setMustUseWebContentsContext();
         SelectionPopupController.setShouldGetReadbackViewFromWindowAndroid();

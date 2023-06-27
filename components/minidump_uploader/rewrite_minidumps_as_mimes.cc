@@ -252,11 +252,10 @@ static void WriteAnrAsMime(crashpad::FileReader* anr_reader,
   builder.SetFormData("resources_version", info->resources_version());
   builder.SetFormData("gms_core_version", info->gms_version_code());
 
-  // The firebase package name and version are used for deobfuscation, but will
+  // The package name and version are used for deobfuscation, but will
   // only be accurate for the same version of chrome.
-  if (version_number == version_info::GetVersionNumber() &&
-      info->firebase_app_id()[0] != '\0') {
-    builder.SetFormData("package", std::string(info->firebase_app_id()) + " v" +
+  if (version_number == version_info::GetVersionNumber()) {
+    builder.SetFormData("package", std::string(info->package_name()) + " v" +
                                        info->package_version_code() + " (" +
                                        info->package_version_name() + ")");
   }

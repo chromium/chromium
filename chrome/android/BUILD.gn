@@ -2479,7 +2479,6 @@ if (current_toolchain == default_toolchain) {
       "java/src/org/chromium/chrome/browser/bookmarkswidget/BookmarkWidgetService.java",
       "java/src/org/chromium/chrome/browser/crash/ApplicationStatusTracker.java",
       "java/src/org/chromium/chrome/browser/crash/ChromeMinidumpUploadJobService.java",
-      "java/src/org/chromium/chrome/browser/crash/FirebaseConfig.java",
       "java/src/org/chromium/chrome/browser/crash/MinidumpUploadService.java",
       "java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnectionService.java",
       "java/src/org/chromium/chrome/browser/download/DownloadBroadcastManager.java",

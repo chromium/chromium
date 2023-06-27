@@ -62,7 +62,6 @@ import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
-import org.chromium.components.embedder_support.application.FirebaseConfig;
 import org.chromium.components.version_info.VersionConstants;
 import org.chromium.content_public.browser.LGEmailActionModeWorkaround;
 
@@ -419,8 +418,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
             ThreadUtils.setWillOverrideUiThread();
             BuildInfo.setBrowserPackageInfo(packageInfo);
-            BuildInfo.setFirebaseAppId(
-                    FirebaseConfig.getFirebaseAppIdForPackage(packageInfo.packageName));
             AndroidXProcessGlobalConfig androidXConfig = AndroidXProcessGlobalConfig.getConfig();
             try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                 try (ScopedSysTraceEvent e2 = ScopedSysTraceEvent.scoped(

@@ -280,11 +280,9 @@ void SetBuildInfoAnnotations(std::map<std::string, std::string>* annotations) {
   (*annotations)["resources_version"] = info->resources_version();
   (*annotations)["gms_core_version"] = info->gms_version_code();
 
-  if (info->firebase_app_id()[0] != '\0') {
-    (*annotations)["package"] = std::string(info->firebase_app_id()) + " v" +
-                                info->package_version_code() + " (" +
-                                info->package_version_name() + ")";
-  }
+  (*annotations)["package"] = std::string(info->package_name()) + " v" +
+                              info->package_version_code() + " (" +
+                              info->package_version_name() + ")";
 }
 
 // Constructs paths to a handler trampoline executable and a library exporting

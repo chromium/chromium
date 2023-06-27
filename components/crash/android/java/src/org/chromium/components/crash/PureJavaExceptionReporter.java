@@ -131,7 +131,7 @@ public abstract class PureJavaExceptionReporter
                 PiiElider.sanitizeStacktrace(Log.getStackTraceString(javaException)));
         mReportContent.put(EARLY_JAVA_EXCEPTION, "true");
         mReportContent.put(PACKAGE,
-                String.format("%s v%s (%s)", BuildInfo.getFirebaseAppId(), buildInfo.versionCode,
+                String.format("%s v%s (%s)", buildInfo.packageName, buildInfo.versionCode,
                         buildInfo.versionName));
         mReportContent.put(CUSTOM_THEMES, buildInfo.customThemes);
         mReportContent.put(RESOURCES_VERSION, buildInfo.resourcesVersion);

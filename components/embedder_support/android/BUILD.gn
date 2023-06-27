@@ -47,7 +47,6 @@ android_library("application_java") {
   ]
   sources = [
     "java/src/org/chromium/components/embedder_support/application/ClassLoaderContextWrapperFactory.java",
-    "java/src/org/chromium/components/embedder_support/application/FirebaseConfig.java",
     "java/src/org/chromium/components/embedder_support/application/FontPreloadingWorkaround.java",
   ]
 }

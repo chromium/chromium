@@ -592,7 +592,7 @@ void CrashReporterWriter::AddFileContents(const char* filename_msg,
 
 #if BUILDFLAG(IS_ANDROID)
 // Writes the "package" field, which is in the format:
-// $FIREBASE_APP_ID v$VERSION_CODE ($VERSION_NAME)
+// $PACKAGE_NAME v$VERSION_CODE ($VERSION_NAME)
 void WriteAndroidPackage(MimeWriter& writer,
                          base::android::BuildInfo* android_build_info) {
   // The actual size limits on packageId and versionName are quite generous.
@@ -601,7 +601,7 @@ void WriteAndroidPackage(MimeWriter& writer,
   char buf[kMaxSize];
 
   // Not using sprintf to ensure no heap allocations.
-  my_strlcpy(buf, android_build_info->firebase_app_id(), kMaxSize);
+  my_strlcpy(buf, android_build_info->package_name(), kMaxSize);
   my_strlcat(buf, " v", kMaxSize);
   my_strlcat(buf, android_build_info->package_version_code(), kMaxSize);
   my_strlcat(buf, " (", kMaxSize);
@@ -1796,11 +1796,8 @@ void HandleCrashDump(const BreakpadInfo& info) {
     writer.AddPairString(resources_version,
                          android_build_info->resources_version());
     writer.AddBoundary();
-    // Don't write the field if no Firebase ID is set.
-    if (android_build_info->firebase_app_id()[0] != '\0') {
-      WriteAndroidPackage(writer, android_build_info);
-      writer.AddBoundary();
-    }
+    WriteAndroidPackage(writer, android_build_info);
+    writer.AddBoundary();
     if (g_java_exception_info != nullptr) {
       writer.AddPairString(exception_info, g_java_exception_info);
       writer.AddBoundary();
