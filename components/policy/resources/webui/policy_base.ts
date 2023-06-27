@@ -54,6 +54,13 @@ export class Page {
 
     this.mainSection = getRequiredElement('main-section');
 
+    const policyElement = getRequiredElement('policy-ui');
+    // Add or remove header shadow based on scroll position.
+    policyElement.addEventListener('scroll', () => {
+      document.getElementsByTagName('header')[0]!.classList.toggle(
+          'header-shadow', policyElement.scrollTop > 0);
+    });
+
     // Place the initial focus on the search input field.
     const filterElement =
         getRequiredElement('search-field-input') as HTMLInputElement;

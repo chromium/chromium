@@ -25,6 +25,10 @@ body > main {
   padding: 12px;
 }
 
+.header-shadow {
+  box-shadow: 0 5px 6px -3px rgba(0, 0, 0, .4);
+}
+
 #status-box-container {
   display: flex;
   flex-wrap: wrap;
