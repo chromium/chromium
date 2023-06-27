@@ -20,6 +20,9 @@ namespace profile_management {
 // body of a web page.
 class SAMLResponseParser {
  public:
+  // Keys for standard attributes that are added to the map by default.
+  static constexpr char kDestinationUrl[] = "destination_url";
+
   using ResponseParserCallback =
       base::OnceCallback<void(const base::flat_map<std::string, std::string>&)>;
   // Decode SAML response from web request `body` and retrieve `attributes` from

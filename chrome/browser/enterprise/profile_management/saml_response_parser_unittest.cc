@@ -23,7 +23,7 @@ using testing::_;
 
 namespace {
 const char kValidSAMLResponse[] = R"(
-<samlp:Response ID="id" Version="2.0">
+<samlp:Response ID="id" Version="2.0" Destination="https://dest.test">
   <Issuer xmlns="urn:oasis:names:tc:SAML:2.0">https://issuer.com/</Issuer>
   <samlp:Status>
     <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
@@ -131,6 +131,8 @@ TEST_F(SAMLResponseParserTest, RetrievesSpecifiedAttributesWithValidResponse) {
   EXPECT_EQ(attributes["anotherattribute"], "anotherattributevalue");
   EXPECT_EQ(attributes.find("notattribute"), attributes.end());
   EXPECT_EQ(attributes.find("uselessattribute"), attributes.end());
+  EXPECT_EQ(attributes[SAMLResponseParser::kDestinationUrl],
+            "https://dest.test");
 }
 
 }  // namespace profile_management

@@ -146,6 +146,15 @@ void SAMLResponseParser::GetAttributesFromSAMLResponse(
     return;
   }
 
+  // Set standard attributes.
+  auto* destination_url =
+      value_or_error.value().GetDict().FindStringByDottedPath(
+          "attributes.Destination");
+  if (destination_url) {
+    result[kDestinationUrl] = *destination_url;
+  }
+
+  // Set custom attributes.
   for (const auto& attribute : attributes_) {
     const auto* value =
         GetAttributeValue(value_or_error.value().GetDict(), attribute);
