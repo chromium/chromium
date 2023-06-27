@@ -372,7 +372,7 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB, 13},
        {IDC_CONTENT_CONTEXT_OPENAVNEWTAB, 14},
        // Removed: {IDC_CONTENT_CONTEXT_PLAYPAUSE, 15},
-       {IDC_CONTENT_CONTEXT_MUTE, 16},
+       // Removed: {IDC_CONTENT_CONTEXT_MUTE, 16},
        {IDC_CONTENT_CONTEXT_LOOP, 17},
        {IDC_CONTENT_CONTEXT_CONTROLS, 18},
        {IDC_CONTENT_CONTEXT_ROTATECW, 19},
@@ -2563,11 +2563,6 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return (params_.media_flags & ContextMenuData::kMediaCanLoop) != 0 &&
              (params_.media_flags & ContextMenuData::kMediaInError) == 0;
 
-    // Mute and unmute should also be disabled if the player has no audio.
-    case IDC_CONTENT_CONTEXT_MUTE:
-      return (params_.media_flags & ContextMenuData::kMediaHasAudio) != 0 &&
-             (params_.media_flags & ContextMenuData::kMediaInError) == 0;
-
     case IDC_CONTENT_CONTEXT_CONTROLS:
       return (params_.media_flags & ContextMenuData::kMediaCanToggleControls) !=
              0;
@@ -2963,10 +2958,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       OpenURL(params_.src_url, GetDocumentURL(params_),
               WindowOpenDisposition::NEW_BACKGROUND_TAB,
               ui::PAGE_TRANSITION_LINK);
-      break;
-
-    case IDC_CONTENT_CONTEXT_MUTE:
-      ExecMute();
       break;
 
     case IDC_CONTENT_CONTEXT_LOOP:
@@ -3969,18 +3960,6 @@ void RenderViewContextMenu::ExecLoadImage() {
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &chrome_render_frame);
   chrome_render_frame->RequestReloadImageForContextNode();
-}
-
-void RenderViewContextMenu::ExecMute() {
-  bool mute = !(params_.media_flags & ContextMenuData::kMediaMuted);
-  if (mute)
-    base::RecordAction(UserMetricsAction("MediaContextMenu_Mute"));
-  else
-    base::RecordAction(UserMetricsAction("MediaContextMenu_Unmute"));
-
-  MediaPlayerActionAt(gfx::Point(params_.x, params_.y),
-                      blink::mojom::MediaPlayerAction(
-                          blink::mojom::MediaPlayerActionType::kMute, mute));
 }
 
 void RenderViewContextMenu::ExecLoop() {

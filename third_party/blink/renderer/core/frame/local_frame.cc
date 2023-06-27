@@ -3218,9 +3218,6 @@ void LocalFrame::MediaPlayerActionAtViewportPoint(
 
   auto* media_element = To<HTMLMediaElement>(node);
   switch (type) {
-    case mojom::blink::MediaPlayerActionType::kMute:
-      media_element->setMuted(enable);
-      break;
     case mojom::blink::MediaPlayerActionType::kLoop:
       media_element->SetLoop(enable);
       break;

@@ -346,7 +346,6 @@ class RenderViewContextMenu
                         bool is_google_default_search_provider);
   void ExecSearchWebForImage(bool is_image_translate);
   void ExecLoadImage();
-  void ExecMute();
   void ExecLoop();
   void ExecControls();
   void ExecCopyVideoFrame();

@@ -17953,26 +17953,6 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
-<action name="MediaContextMenu_Mute">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
-</action>
-
-<action name="MediaContextMenu_Pause">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
-</action>
-
-<action name="MediaContextMenu_Play">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
-</action>
-
-<action name="MediaContextMenu_Unmute">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
-</action>
-
 <action name="MediaIndicatorButton_Dragged">
   <obsolete>Replaced with &quot;AlertIndicatorButton_Dragged&quot;.</obsolete>
   <owner>miu@chromium.org</owner>
