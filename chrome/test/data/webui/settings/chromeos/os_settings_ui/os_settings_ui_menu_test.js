@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrSettingsPrefs, Router, routes, setNearbyShareSettingsForTesting} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, Router, routes, routesMojom, setNearbyShareSettingsForTesting} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -87,7 +87,9 @@ suite('<os-settings-ui> menu', () => {
     const router = Router.getInstance();
     router.navigateTo(routes.BASIC, urlParams);
     assertEquals(urlParams.toString(), router.getQueryParameters().toString());
-    settingsMenu.shadowRoot.querySelector('a.item[href="personalization"]')
+    settingsMenu.shadowRoot
+        .querySelector(
+            `a.item[href="/${routesMojom.PERSONALIZATION_SECTION_PATH}"]`)
         .click();
     assertEquals('', router.getQueryParameters().toString());
   });

@@ -26,9 +26,11 @@ import {isAdvancedRoute, Route, Router} from '../router.js';
 
 import {getTemplate} from './os_settings_menu.html.js';
 
+const {Section} = routesMojom;
+
 interface MenuItemData {
   pageName: routesMojom.Section;
-  path: string;
+  href: string;
   icon: string;
   label: string;
 }
@@ -88,6 +90,16 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         type: String,
         value: '',
       },
+
+      aboutMenuItemData_: {
+        type: Object,
+        value: () => {
+          return {
+            pageName: Section.kAboutChromeOs,
+            href: `/${routesMojom.ABOUT_CHROME_OS_DETAILS_SUBPAGE_PATH}`,
+          };
+        },
+      },
     };
   }
 
@@ -137,71 +149,70 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   }
 
   private computeBasicMenuItems_(): MenuItemData[] {
-    const {Section} = routesMojom;
     const basicMenuItems: MenuItemData[] = [
       {
         pageName: Section.kNetwork,
-        path: routesMojom.NETWORK_SECTION_PATH,
+        href: `/${routesMojom.NETWORK_SECTION_PATH}`,
         icon: 'os-settings:network-wifi',
         label: this.i18n('internetPageTitle'),
       },
       {
         pageName: Section.kBluetooth,
-        path: routesMojom.BLUETOOTH_SECTION_PATH,
+        href: `/${routesMojom.BLUETOOTH_SECTION_PATH}`,
         icon: 'cr:bluetooth',
         label: this.i18n('bluetoothPageTitle'),
       },
       {
         pageName: Section.kMultiDevice,
-        path: routesMojom.MULTI_DEVICE_SECTION_PATH,
+        href: `/${routesMojom.MULTI_DEVICE_SECTION_PATH}`,
         icon: 'os-settings:multidevice-better-together-suite',
         label: this.i18n('multidevicePageTitle'),
       },
       {
         pageName: Section.kPeople,
-        path: routesMojom.PEOPLE_SECTION_PATH,
+        href: `/${routesMojom.PEOPLE_SECTION_PATH}`,
         icon: 'cr:person',
         label: this.i18n('osPeoplePageTitle'),
       },
       {
         pageName: Section.kKerberos,
-        path: routesMojom.KERBEROS_SECTION_PATH,
+        href: `/${routesMojom.KERBEROS_SECTION_PATH}`,
         icon: 'os-settings:auth-key',
         label: this.i18n('kerberosPageTitle'),
       },
       {
         pageName: Section.kDevice,
-        path: routesMojom.DEVICE_SECTION_PATH,
+        href: `/${routesMojom.DEVICE_SECTION_PATH}`,
         icon: 'os-settings:laptop-chromebook',
         label: this.i18n('devicePageTitle'),
       },
       {
         pageName: Section.kPersonalization,
-        path: routesMojom.PERSONALIZATION_SECTION_PATH,
+        href: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
         icon: 'os-settings:paint-brush',
         label: this.i18n('personalizationPageTitle'),
       },
       {
         pageName: Section.kSearchAndAssistant,
-        path: routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH,
+        href: `/${routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH}`,
         icon: 'cr:search',
         label: this.i18n('osSearchPageTitle'),
       },
       {
         pageName: Section.kPrivacyAndSecurity,
-        path: routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH,
+        href: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
         icon: 'cr:security',
         label: this.i18n('privacyPageTitle'),
       },
       {
         pageName: Section.kApps,
-        path: routesMojom.APPS_SECTION_PATH,
+        href: `/${routesMojom.APPS_SECTION_PATH}`,
         icon: 'os-settings:apps',
         label: this.i18n('appsPageTitle'),
       },
       {
         pageName: Section.kAccessibility,
-        path: routesMojom.ACCESSIBILITY_SECTION_PATH,
+        href: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
         icon: 'os-settings:accessibility',
         label: this.i18n('a11yPageTitle'),
       },
@@ -212,41 +223,40 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   }
 
   private computeAdvancedMenuItems_(): MenuItemData[] {
-    const {Section} = routesMojom;
     const advancedMenuItems: MenuItemData[] = [
       {
         pageName: Section.kDateAndTime,
-        path: routesMojom.DATE_AND_TIME_SECTION_PATH,
+        href: `/${routesMojom.DATE_AND_TIME_SECTION_PATH}`,
         icon: 'os-settings:access-time',
         label: this.i18n('dateTimePageTitle'),
       },
       {
         pageName: Section.kLanguagesAndInput,
-        path: routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH,
+        href: `/${routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH}`,
         icon: 'os-settings:language',
         label: this.i18n('osLanguagesPageTitle'),
       },
       {
         pageName: Section.kFiles,
-        path: routesMojom.FILES_SECTION_PATH,
+        href: `/${routesMojom.FILES_SECTION_PATH}`,
         icon: 'os-settings:folder-outline',
         label: this.i18n('filesPageTitle'),
       },
       {
         pageName: Section.kPrinting,
-        path: routesMojom.PRINTING_SECTION_PATH,
+        href: `/${routesMojom.PRINTING_SECTION_PATH}`,
         icon: 'os-settings:print',
         label: this.i18n('printingPageTitle'),
       },
       {
         pageName: Section.kCrostini,
-        path: routesMojom.CROSTINI_SECTION_PATH,
+        href: `/${routesMojom.CROSTINI_SECTION_PATH}`,
         icon: 'os-settings:developer-tags',
         label: this.i18n('crostiniPageTitle'),
       },
       {
         pageName: Section.kReset,
-        path: routesMojom.RESET_SECTION_PATH,
+        href: `/${routesMojom.RESET_SECTION_PATH}`,
         icon: 'os-settings:restore',
         label: this.i18n('resetPageTitle'),
       },
