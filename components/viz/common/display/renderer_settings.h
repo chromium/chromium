@@ -23,7 +23,6 @@ class VIZ_COMMON_EXPORT RendererSettings {
   RendererSettings(const RendererSettings& other);
   ~RendererSettings();
 
-  bool apply_simple_frame_rate_throttling = false;
   bool allow_antialiasing = true;
   bool force_antialiasing = false;
   bool force_blending_with_shaders = false;

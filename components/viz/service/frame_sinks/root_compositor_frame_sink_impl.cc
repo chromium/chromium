@@ -223,8 +223,7 @@ RootCompositorFrameSinkImpl::Create(
       std::move(params->display_private), std::move(display_client),
       std::move(synthetic_begin_frame_source),
       std::move(external_begin_frame_source), std::move(display),
-      hw_support_for_multiple_refresh_rates,
-      params->renderer_settings.apply_simple_frame_rate_throttling));
+      hw_support_for_multiple_refresh_rates));
 
 #if !BUILDFLAG(IS_APPLE)
   // On Mac vsync parameter updates come from the browser process. We don't need
@@ -357,18 +356,6 @@ void RootCompositorFrameSinkImpl::UpdateVSyncParameters() {
                   FrameRateDecider::UnspecifiedFrameInterval()
           ? preferred_frame_interval_
           : display_frame_interval_;
-
-  // Throttle rendering to 30hz.
-  constexpr base::TimeDelta kThrottledInterval = base::Hertz(30);
-
-  // Only throttle if the frame interval is smaller than |kThrottledInterval|
-  // meaning the refresh rate is higher than the target of 30hz.
-  if (apply_simple_frame_rate_throttling_ &&
-      display_frame_interval_ <= kThrottledInterval) {
-    interval = kThrottledInterval;
-    // timebase remains constant while throttling.
-    timebase = base::TimeTicks();
-  }
 
   if (synthetic_begin_frame_source_) {
     synthetic_begin_frame_source_->OnUpdateVSyncParameters(timebase, interval);
@@ -533,8 +520,7 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
     std::unique_ptr<SyntheticBeginFrameSource> synthetic_begin_frame_source,
     std::unique_ptr<ExternalBeginFrameSource> external_begin_frame_source,
     std::unique_ptr<Display> display,
-    bool hw_support_for_multiple_refresh_rates,
-    bool apply_simple_frame_rate_throttling)
+    bool hw_support_for_multiple_refresh_rates)
     : compositor_frame_sink_client_(std::move(frame_sink_client)),
       compositor_frame_sink_receiver_(this, std::move(frame_sink_receiver)),
       display_client_(std::move(display_client)),
@@ -546,8 +532,7 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
           /*is_root=*/true)),
       synthetic_begin_frame_source_(std::move(synthetic_begin_frame_source)),
       external_begin_frame_source_(std::move(external_begin_frame_source)),
-      display_(std::move(display)),
-      apply_simple_frame_rate_throttling_(apply_simple_frame_rate_throttling) {
+      display_(std::move(display)) {
   DCHECK(display_);
   DCHECK(begin_frame_source());
   frame_sink_manager->RegisterBeginFrameSource(begin_frame_source(),

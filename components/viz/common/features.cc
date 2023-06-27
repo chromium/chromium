@@ -56,10 +56,6 @@ BASE_FEATURE(kVideoDetectorIgnoreNonVideos,
              "VideoDetectorIgnoreNonVideos",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSimpleFrameRateThrottling,
-             "SimpleFrameRateThrottling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // When wide color gamut content from the web is encountered, promote our
 // display to wide color gamut if supported.
@@ -292,10 +288,6 @@ BASE_FEATURE(kEnableADPFRendererMain,
 
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
-}
-
-bool IsSimpleFrameRateThrottlingEnabled() {
-  return base::FeatureList::IsEnabled(kSimpleFrameRateThrottling);
 }
 
 #if BUILDFLAG(IS_ANDROID)
