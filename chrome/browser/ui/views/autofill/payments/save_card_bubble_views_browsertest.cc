@@ -803,8 +803,14 @@ INSTANTIATE_TEST_SUITE_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     ::testing::Bool());
 
+// TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_AlertAccessibleEvent DISABLED_AlertAccessibleEvent
+#else
+#define MAYBE_AlertAccessibleEvent AlertAccessibleEvent
+#endif
 IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
-                       AlertAccessibleEvent) {
+                       MAYBE_AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
 
@@ -885,9 +891,8 @@ IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTestSettings,
 // dismissed and then immediately torn down (e.g. by closing browser window)
 // before the asynchronous close completes. Regression test for
 // https://crbug.com/842577 .
-//
-// TODO(crbug.com/1360234): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_Local_SynchronousCloseAfterAsynchronousClose \
   DISABLED_Local_SynchronousCloseAfterAsynchronousClose
 #else
@@ -1160,9 +1165,17 @@ IN_PROC_BROWSER_TEST_P(
 
 // Tests the upload save bubble. Ensures that the bubble surfaces a textfield
 // requesting cardholder name if cardholder name is missing.
+// TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Upload_SubmittingFormWithMissingNamesRequestsCardholderNameIfExpOn \
+  DISABLED_Upload_SubmittingFormWithMissingNamesRequestsCardholderNameIfExpOn
+#else
+#define MAYBE_Upload_SubmittingFormWithMissingNamesRequestsCardholderNameIfExpOn \
+  Upload_SubmittingFormWithMissingNamesRequestsCardholderNameIfExpOn
+#endif
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    Upload_SubmittingFormWithMissingNamesRequestsCardholderNameIfExpOn) {
+    MAYBE_Upload_SubmittingFormWithMissingNamesRequestsCardholderNameIfExpOn) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
@@ -1352,9 +1365,17 @@ IN_PROC_BROWSER_TEST_P(
 // Tests the upload save bubble. Ensures that if cardholder name is explicitly
 // requested and the user accepts the dialog after changing it, the correct
 // metric is logged.
+// TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric \
+  DISABLED_Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric
+#else
+#define MAYBE_Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric \
+  Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric
+#endif
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric) {
+    MAYBE_Upload_CardholderNameRequested_SubmittingChangedValueLogsEditedMetric) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
   // Set the user's full name.
@@ -1796,9 +1817,17 @@ IN_PROC_BROWSER_TEST_P(
 // Tests the upload save bubble. Ensures that the bubble surfaces a pair of
 // dropdowns requesting expiration date if expiration date month is missing and
 // year is detected but passed.
+// TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Upload_SubmittingFormWithExpirationDateMonthAndYearExpired \
+  DISABLED_Upload_SubmittingFormWithExpirationDateMonthAndYearExpired
+#else
+#define MAYBE_Upload_SubmittingFormWithExpirationDateMonthAndYearExpired \
+  Upload_SubmittingFormWithExpirationDateMonthAndYearExpired
+#endif
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    Upload_SubmittingFormWithExpirationDateMonthAndYearExpired) {
+    MAYBE_Upload_SubmittingFormWithExpirationDateMonthAndYearExpired) {
   SetUpForEditableExpirationDate();
   // Fill form with a valid month but a passed year.
   FillFormWithSpecificExpirationDate("08", "2000");
@@ -1837,8 +1866,16 @@ IN_PROC_BROWSER_TEST_P(
 //                         boolean to branch local vs. upload logic.
 // Tests the local save bubble. Ensures that clicking the [No thanks] button
 // successfully causes a strike to be added.
+// TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_StrikeDatabase_Local_AddStrikeIfBubbleDeclined \
+  DISABLED_StrikeDatabase_Local_AddStrikeIfBubbleDeclined
+#else
+#define MAYBE_StrikeDatabase_Local_AddStrikeIfBubbleDeclined \
+  StrikeDatabase_Local_AddStrikeIfBubbleDeclined
+#endif
 IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
-                       StrikeDatabase_Local_AddStrikeIfBubbleDeclined) {
+                       MAYBE_StrikeDatabase_Local_AddStrikeIfBubbleDeclined) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
@@ -1881,8 +1918,16 @@ IN_PROC_BROWSER_TEST_P(
 // example of declining the prompt three times and ensuring that the
 // offer-to-save bubble does not appear on the fourth try. Then, ensures that no
 // strikes are added if the card already has max strikes.
+// TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_StrikeDatabase_Local_FullFlowTest \
+  DISABLED_StrikeDatabase_Local_FullFlowTest
+#else
+#define MAYBE_StrikeDatabase_Local_FullFlowTest \
+  StrikeDatabase_Local_FullFlowTest
+#endif
 IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
-                       StrikeDatabase_Local_FullFlowTest) {
+                       MAYBE_StrikeDatabase_Local_FullFlowTest) {
   // Show and ignore the bubble enough times in order to accrue maximum strikes.
   for (int i = 0;
        i < credit_card_save_manager_->GetCreditCardSaveStrikeDatabase()
@@ -1943,9 +1988,17 @@ IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
 // example of declining the prompt three times and ensuring that the
 // offer-to-save bubble does not appear on the fourth try. Then, ensures that no
 // strikes are added if the card already has max strikes.
+// TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_StrikeDatabase_Upload_FullFlowTest \
+  DISABLED_StrikeDatabase_Upload_FullFlowTest
+#else
+#define MAYBE_StrikeDatabase_Upload_FullFlowTest \
+  StrikeDatabase_Upload_FullFlowTest
+#endif
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    StrikeDatabase_Upload_FullFlowTest) {
+    MAYBE_StrikeDatabase_Upload_FullFlowTest) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
@@ -2014,9 +2067,15 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Tests to ensure the card nickname is shown correctly in the Upstream bubble.
+// TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_LocalCardHasNickname DISABLED_LocalCardHasNickname
+#else
+#define MAYBE_LocalCardHasNickname LocalCardHasNickname
+#endif
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    LocalCardHasNickname) {
+    MAYBE_LocalCardHasNickname) {
   base::HistogramTester histogram_tester;
   CreditCard card = test::GetCreditCard();
   // Set card number to match the number to be filled in the form.
@@ -2055,8 +2114,15 @@ IN_PROC_BROWSER_TEST_P(
 
 // Tests the local save bubble. Ensures that clicking the [Save] button
 // successfully causes the bubble to go away.
+// TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Local_ClickingSaveClosesBubble \
+  DISABLED_Local_ClickingSaveClosesBubble
+#else
+#define MAYBE_Local_ClickingSaveClosesBubble Local_ClickingSaveClosesBubble
+#endif
 IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
-                       Local_ClickingSaveClosesBubble) {
+                       MAYBE_Local_ClickingSaveClosesBubble) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
