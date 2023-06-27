@@ -18,8 +18,8 @@ static_library("installer_policies_no_content_deps") {
     "autofill_states_component_installer.h",
     "client_side_phishing_component_installer_policy.cc",
     "client_side_phishing_component_installer_policy.h",
-    "masked_domain_list_component_installer.cc",
-    "masked_domain_list_component_installer.h",
+    "masked_domain_list_component_installer_policy.cc",
+    "masked_domain_list_component_installer_policy.h",
     "origin_trials_component_installer.cc",
     "origin_trials_component_installer.h",
     "safety_tips_component_installer.cc",
@@ -63,7 +63,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "autofill_states_component_installer_unittest.cc",
-    "masked_domain_list_component_installer_unittest.cc",
+    "masked_domain_list_component_installer_policy_unittest.cc",
     "optimization_hints_component_installer_unittest.cc",
     "trust_token_key_commitments_component_installer_policy_unittest.cc",
   ]

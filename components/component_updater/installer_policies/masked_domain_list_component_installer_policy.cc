@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/component_updater/installer_policies/masked_domain_list_component_installer.h"
+#include "components/component_updater/installer_policies/masked_domain_list_component_installer_policy.h"
 
 #include <utility>
 
@@ -13,12 +13,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
 #include "services/network/public/cpp/features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using component_updater::ComponentUpdateService;
 
@@ -28,7 +26,7 @@ using ListReadyRepeatingCallback = component_updater::
     MaskedDomainListComponentInstallerPolicy::ListReadyRepeatingCallback;
 
 constexpr base::FilePath::CharType kMaskedDomainListFileName[] =
-    FILE_PATH_LITERAL("list.json");
+    FILE_PATH_LITERAL("list.pb");
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
 // The extension id is: cffplpkejcbdpfnfabnjikeicbedmifn
@@ -42,18 +40,12 @@ constexpr char kMaskedDomainListManifestName[] = "Masked Domain List";
 constexpr base::FilePath::CharType kMaskedDomainListRelativeInstallDir[] =
     FILE_PATH_LITERAL("MaskedDomainListPreloaded");
 
-base::File OpenFile(const base::FilePath& pb_path) {
-  return base::File(pb_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-}
-
-bool IsMaskedDomainListEnabled() {
-  // TODO(aakallam): move this to a more accessible location.
-  return base::FeatureList::IsEnabled(network::features::kMaskedDomainList);
-}
-
-base::TaskPriority GetTaskPriority() {
-  return IsMaskedDomainListEnabled() ? base::TaskPriority::USER_BLOCKING
-                                     : base::TaskPriority::BEST_EFFORT;
+std::string ReadFile(const base::FilePath& pb_path) {
+  std::string raw_list;
+  base::ScopedFILE file(FileToFILE(
+      base::File(pb_path, base::File::FLAG_OPEN | base::File::FLAG_READ), "r"));
+  CHECK(base::ReadStreamToString(file.get(), &raw_list));
+  return raw_list;
 }
 
 }  // namespace
@@ -73,6 +65,10 @@ MaskedDomainListComponentInstallerPolicy::
 bool MaskedDomainListComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
   return true;
+}
+
+bool MaskedDomainListComponentInstallerPolicy::IsEnabled() {
+  return base::FeatureList::IsEnabled(network::features::kMaskedDomainList);
 }
 
 bool MaskedDomainListComponentInstallerPolicy::RequiresNetworkEncryption()
@@ -100,7 +96,7 @@ void MaskedDomainListComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::Value::Dict manifest) {
-  if (install_dir.empty() || !IsMaskedDomainListEnabled()) {
+  if (install_dir.empty() || !IsEnabled()) {
     return;
   }
 
@@ -108,8 +104,8 @@ void MaskedDomainListComponentInstallerPolicy::ComponentReady(
           << version.GetString() << " in " << install_dir.value();
 
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), GetTaskPriority()},
-      base::BindOnce(&OpenFile, GetInstalledPath(install_dir)),
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&ReadFile, GetInstalledPath(install_dir)),
       base::BindOnce(on_list_ready_, version));
 }
 
@@ -140,24 +136,6 @@ std::string MaskedDomainListComponentInstallerPolicy::GetName() const {
 update_client::InstallerAttributes
 MaskedDomainListComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
-}
-
-void RegisterMaskedDomainListComponent(ComponentUpdateService* cus) {
-  if (!IsMaskedDomainListEnabled()) {
-    return;
-  }
-
-  VLOG(1) << "Registering Masked Domain List component.";
-
-  auto policy = std::make_unique<MaskedDomainListComponentInstallerPolicy>(
-      /*on_list_ready=*/base::BindRepeating(
-          [](base::Version version, base::File list_file) {
-            VLOG(1) << "Received Masked Domain List";
-            // TODO(aakallam): do something with the file
-          }));
-
-  base::MakeRefCounted<ComponentInstaller>(std::move(policy))
-      ->Register(cus, base::OnceClosure(), GetTaskPriority());
 }
 
 }  // namespace component_updater

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_COMPONENT_UPDATER_INSTALLER_POLICIES_MASKED_DOMAIN_LIST_COMPONENT_INSTALLER_H_
-#define COMPONENTS_COMPONENT_UPDATER_INSTALLER_POLICIES_MASKED_DOMAIN_LIST_COMPONENT_INSTALLER_H_
+#ifndef COMPONENTS_COMPONENT_UPDATER_INSTALLER_POLICIES_MASKED_DOMAIN_LIST_COMPONENT_INSTALLER_POLICY_H_
+#define COMPONENTS_COMPONENT_UPDATER_INSTALLER_POLICIES_MASKED_DOMAIN_LIST_COMPONENT_INSTALLER_POLICY_H_
 
 #include <stdint.h>
 
@@ -32,7 +32,7 @@ class MaskedDomainListComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
   using ListReadyRepeatingCallback =
-      base::RepeatingCallback<void(base::Version, base::File)>;
+      base::RepeatingCallback<void(base::Version, std::string)>;
 
   // |on_list_ready| will be called on the UI thread when the list is ready. It
   // is exposed here for testing.
@@ -45,14 +45,18 @@ class MaskedDomainListComponentInstallerPolicy
   MaskedDomainListComponentInstallerPolicy operator=(
       const MaskedDomainListComponentInstallerPolicy&) = delete;
 
+  static bool IsEnabled();
+
+  static base::FilePath GetInstalledPath(const base::FilePath& base);
+
  private:
-  FRIEND_TEST_ALL_PREFIXES(MaskedDomainListComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(MaskedDomainListComponentInstallerPolicyTest,
                            NonexistentFile);
-  FRIEND_TEST_ALL_PREFIXES(MaskedDomainListComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(MaskedDomainListComponentInstallerPolicyTest,
                            NonexistentFile_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(MaskedDomainListComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(MaskedDomainListComponentInstallerPolicyTest,
                            LoadsFile_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(MaskedDomainListComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(MaskedDomainListComponentInstallerPolicyTest,
                            LoadsNewListWhenUpdated);
 
   // The following methods override ComponentInstallerPolicy.
@@ -72,8 +76,6 @@ class MaskedDomainListComponentInstallerPolicy
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
-  static base::FilePath GetInstalledPath(const base::FilePath& base);
-
   ListReadyRepeatingCallback on_list_ready_;
 };
 
@@ -83,4 +85,4 @@ void RegisterMaskedDomainListComponent(ComponentUpdateService* cus);
 
 }  // namespace component_updater
 
-#endif  // COMPONENTS_COMPONENT_UPDATER_INSTALLER_POLICIES_MASKED_DOMAIN_LIST_COMPONENT_INSTALLER_H_
+#endif  // COMPONENTS_COMPONENT_UPDATER_INSTALLER_POLICIES_MASKED_DOMAIN_LIST_COMPONENT_INSTALLER_POLICY_H_
