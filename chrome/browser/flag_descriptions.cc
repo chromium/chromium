@@ -3867,11 +3867,6 @@ const char kFeedBackToTopDescription[] =
     "Enables showing a callout to help users return to the top of the feeds "
     "quickly.";
 
-const char kFeedBottomSyncBannerName[] = "Show Sync Promotion";
-const char kFeedBottomSyncBannerDescription[] =
-    "Enables the Sync promo banner to be"
-    " shown at bottom of Chrome Feed.";
-
 const char kFeedBoCSigninInterstitialName[] = "Show Signin Interstitial";
 const char kFeedBoCSigninInterstitialDescription[] =
     "Enables the sign in interstitial to be"

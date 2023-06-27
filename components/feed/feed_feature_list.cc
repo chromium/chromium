@@ -76,9 +76,6 @@ BASE_FEATURE(kFeedImageMemoryCacheSizePercentage,
 BASE_FEATURE(kFeedBackToTop,
              "FeedBackToTop",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kFeedBottomSyncBanner,
-             "FeedBottomSyncBanner",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFeedBoCSigninInterstitial,
              "FeedBoCSigninInterstitial",
              base::FEATURE_DISABLED_BY_DEFAULT);
