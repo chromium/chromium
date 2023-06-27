@@ -671,11 +671,7 @@ ui::Cursor Textfield::GetCursor(const ui::MouseEvent& event) {
 bool Textfield::OnMousePressed(const ui::MouseEvent& event) {
   const bool had_focus = HasFocus();
   bool handled = controller_ && controller_->HandleMouseEvent(this, event);
-  if (::features::IsChromeRefresh2023()) {
-    // When a textfield is pressed, the hover state should be off and the
-    // background color should no longer have a mask.
-    InkDrop::Get(this)->GetInkDrop()->SetHovered(false);
-  }
+
   // If the controller triggered the focus, then record the focus reason as
   // other.
   if (!had_focus && HasFocus())
