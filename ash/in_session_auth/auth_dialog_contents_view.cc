@@ -104,8 +104,6 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     label_->SetEnabledColorId(kColorAshTextColorPrimary);
     label_->SetMultiLine(true);
     label_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-
-    DisplayCurrentState();
   }
   FingerprintView(const FingerprintView&) = delete;
   FingerprintView& operator=(const FingerprintView&) = delete;
@@ -368,7 +366,6 @@ AuthDialogContentsView::AuthDialogContentsView(
 
     fingerprint_view_ =
         container_->AddChildView(std::make_unique<FingerprintView>());
-    fingerprint_view_->SetCanUsePin(auth_methods_ & kAuthPin);
   }
 
   AddVerticalSpacing(kSpacingBeforeButtons);
@@ -399,6 +396,7 @@ void AuthDialogContentsView::RequestFocus() {
 
 void AuthDialogContentsView::AddedToWidget() {
   if (auth_methods_ & kAuthFingerprint) {
+    fingerprint_view_->SetCanUsePin(auth_methods_ & kAuthPin);
     // Inject a callback from the contents view so that we can show retry
     // prompt.
     WebAuthNDialogController::Get()->AuthenticateUserWithFingerprint(
