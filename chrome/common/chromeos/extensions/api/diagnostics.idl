@@ -31,7 +31,8 @@ namespace os.diagnostics {
     nvme_self_test,
     fingerprint_alive,
     smartctl_check_with_percentage_used,
-    emmc_lifetime
+    emmc_lifetime,
+    bluetooth_power
   };
 
   enum RoutineStatus {
@@ -167,6 +168,8 @@ namespace os.diagnostics {
                                                               RunRoutineCallback callback);
 
     [supportsPromises] static void runBatteryHealthRoutine(RunRoutineCallback callback);
+
+    [supportsPromises] static void runBluetoothPowerRoutine(RunRoutineCallback callback);
 
     [supportsPromises] static void runCpuCacheRoutine(RunCpuRoutineRequest request,
                                                       RunRoutineCallback callback);

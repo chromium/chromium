@@ -240,6 +240,15 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function runBluetoothPowerRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runBluetoothPowerRoutine(),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.runBluetoothPowerRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function runCpuCacheRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runCpuCacheRoutine(
