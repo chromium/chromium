@@ -5831,6 +5831,9 @@
                     "enable_features": [
                         "FirstPartySets",
                         "PrivacySandboxFirstPartySetsUI"
+                    ],
+                    "disable_features": [
+                        "WaitForFirstPartySetsInit"
                     ]
                 }
             ]
