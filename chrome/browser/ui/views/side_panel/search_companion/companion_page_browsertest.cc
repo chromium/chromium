@@ -1118,6 +1118,10 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, RegionSearch) {
   // Start region search. Verify histograms.
   CompanionScriptBuilder builder(MethodType::kOnRegionSearchClicked);
   EXPECT_TRUE(ExecJs(builder.Build()));
+
+  CompanionScriptBuilder builder2(MethodType::kRecordUiSurfaceClicked);
+  builder2.ui_surface = UiSurface::kRegionSearch;
+  EXPECT_TRUE(ExecJs(builder2.Build()));
   WaitForHistogram("Companion.RegionSearch.Clicked");
   histogram_tester_->ExpectBucketCount("Companion.RegionSearch.Clicked",
                                        /*sample=*/true,

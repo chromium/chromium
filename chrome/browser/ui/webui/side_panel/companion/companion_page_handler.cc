@@ -246,8 +246,6 @@ void CompanionPageHandler::OnRegionSearchClicked() {
   auto* helper = companion::CompanionTabHelper::FromWebContents(web_contents());
   CHECK(helper);
   helper->StartRegionSearch(web_contents(), /*use_fullscreen_capture=*/false);
-  metrics_logger_->RecordUiSurfaceClicked(
-      side_panel::mojom::UiSurface::kRegionSearch, kInvalidPosition);
   feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile())
       ->NotifyEvent("companion_side_panel_region_search_button_clicked");
 }
