@@ -510,7 +510,7 @@ async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
                 "params": {
                     "events": [
                         "log.entryAdded",
-                        "cdp.eventReceived",  # This event is not subscribed.
+                        "network.responseCompleted",  # This event is not subscribed.
                     ],
                     "contexts": [context_id]
                 }
@@ -518,8 +518,9 @@ async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
 
     assert {
         "error": "invalid argument",
-        "message": AnyContains("Cannot unsubscribe from cdp.eventReceived")
-                   & AnyContains("No subscription found")
+        "message":
+            AnyContains("Cannot unsubscribe from network.responseCompleted")
+            & AnyContains("No subscription found")
     } == exception_info.value.args[0]
 
     await send_JSON_command(

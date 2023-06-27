@@ -21,7 +21,7 @@ import type {ICdpClient} from '../../../cdp/cdpClient.js';
 import {LogManager} from '../log/logManager.js';
 import type {RealmStorage} from '../script/realmStorage.js';
 import type {IEventManager} from '../events/EventManager.js';
-import {CDP, type CommonDataTypes} from '../../../protocol/protocol.js';
+import type {CommonDataTypes} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {NetworkProcessor} from '../network/networkProcessor.js';
 import type {ChannelProxy} from '../script/channelProxy.js';
@@ -154,14 +154,19 @@ export class CdpTarget {
   }
 
   #setEventListeners() {
-    this.#cdpClient.on('*', (cdpMethod, params) => {
+    this.#cdpClient.on('*', (event, params) => {
+      // We may encounter uses for EventEmitter
+      // other then CDP events we want to skip them
+      if (typeof event !== 'string') {
+        return;
+      }
       this.#eventManager.registerEvent(
         {
-          method: CDP.EventNames.EventReceivedEvent,
+          method: `cdp.${event}`,
           params: {
-            cdpMethod: cdpMethod as keyof ProtocolMapping.Commands,
-            cdpParams: params ?? {},
-            cdpSession: this.#cdpSessionId,
+            event,
+            params: params as ProtocolMapping.Events[typeof event],
+            session: this.#cdpSessionId,
           },
         },
         null

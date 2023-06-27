@@ -1230,14 +1230,17 @@ export namespace CDP {
     params: SendCommandParams;
   };
 
-  export type SendCommandParams = {
-    cdpMethod: keyof ProtocolMapping.Commands;
-    cdpParams: object;
-    cdpSession?: string;
+  export type SendCommandParams<
+    Command extends keyof ProtocolMapping.Commands = keyof ProtocolMapping.Commands
+  > = {
+    method: Command;
+    params?: ProtocolMapping.Commands[Command]['paramsType'][0];
+    session?: string;
   };
 
   export type SendCommandResult = {
     result: ProtocolMapping.Commands[keyof ProtocolMapping.Commands]['returnType'];
+    session?: string;
   };
 
   export type GetSessionCommand = {
@@ -1249,24 +1252,19 @@ export namespace CDP {
     context: CommonDataTypes.BrowsingContext;
   };
 
-  export type GetSessionResult = {result: {cdpSession: string}};
+  export type GetSessionResult = {result: {session: string | null}};
 
-  export type EventReceivedEvent = EventResponse<
-    EventNames.EventReceivedEvent,
-    EventReceivedParams
-  >;
+  export type EventReceivedEvent = EventResponse<EventNames, CDPEventParams>;
 
-  export type EventReceivedParams = {
-    cdpMethod: keyof ProtocolMapping.Commands;
-    cdpParams: object;
-    cdpSession: string;
+  export type CDPEventParams<
+    EventName extends keyof ProtocolMapping.Events = keyof ProtocolMapping.Events
+  > = {
+    event: EventName;
+    params: ProtocolMapping.Events[EventName];
+    session: string;
   };
 
-  export const AllEvents = 'cdp';
-
-  export enum EventNames {
-    EventReceivedEvent = 'cdp.eventReceived',
-  }
+  export type EventNames = `cdp.${keyof ProtocolMapping.Events}`;
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-session */
@@ -1294,9 +1292,9 @@ export namespace Session {
 
   export type SubscriptionRequestEvent =
     // keep-sorted start
+    | CDP.EventNames
     | Message.EventNames
     | typeof BrowsingContext.AllEvents
-    | typeof CDP.AllEvents
     | typeof Log.AllEvents
     | typeof Network.AllEvents
     | typeof Script.AllEvents;

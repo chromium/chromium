@@ -17,7 +17,6 @@
 
 import {
   BrowsingContext,
-  CDP,
   type CommonDataTypes,
   Log,
   Message,
@@ -43,31 +42,34 @@ export function cartesianProduct(...a: any[][]) {
 export function unrollEvents(
   events: Session.SubscriptionRequestEvent[]
 ): Session.SubscriptionRequestEvent[] {
-  const allEvents: Session.SubscriptionRequestEvent[] = [];
+  const allEvents = new Set<Session.SubscriptionRequestEvent>();
+
+  function addEvents(events: string[]) {
+    for (const event of events) {
+      allEvents.add(event as Session.SubscriptionRequestEvent);
+    }
+  }
 
   for (const event of events) {
     switch (event) {
       case BrowsingContext.AllEvents:
-        allEvents.push(...Object.values(BrowsingContext.EventNames));
-        break;
-      case CDP.AllEvents:
-        allEvents.push(...Object.values(CDP.EventNames));
+        addEvents(Object.values(BrowsingContext.EventNames));
         break;
       case Log.AllEvents:
-        allEvents.push(...Object.values(Log.EventNames));
+        addEvents(Object.values(Log.EventNames));
         break;
       case Network.AllEvents:
-        allEvents.push(...Object.values(Network.EventNames));
+        addEvents(Object.values(Network.EventNames));
         break;
       case Script.AllEvents:
-        allEvents.push(...Object.values(Script.EventNames));
+        addEvents(Object.values(Script.EventNames));
         break;
       default:
-        allEvents.push(event);
+        allEvents.add(event);
     }
   }
 
-  return allEvents;
+  return [...allEvents.values()];
 }
 
 export class SubscriptionManager {
@@ -154,12 +156,6 @@ export class SubscriptionManager {
 
     if (event === BrowsingContext.AllEvents) {
       Object.values(BrowsingContext.EventNames).map((specificEvent) =>
-        this.subscribe(specificEvent, contextId, channel)
-      );
-      return;
-    }
-    if (event === CDP.AllEvents) {
-      Object.values(CDP.EventNames).map((specificEvent) =>
         this.subscribe(specificEvent, contextId, channel)
       );
       return;

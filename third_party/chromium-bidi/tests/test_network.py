@@ -94,7 +94,7 @@ async def test_network_specific_context_subscription_does_not_enable_cdp_network
     new_context_id = await create_context()
 
     # Subscribe to all CDP events.
-    await subscribe(websocket, "cdp")
+    await subscribe(websocket, "cdp.Network.requestWillBeSent")
 
     command_id = await send_JSON_command(
         websocket, {
@@ -108,10 +108,10 @@ async def test_network_specific_context_subscription_does_not_enable_cdp_network
     resp = await read_JSON_message(websocket)
     while "id" not in resp:
         # Assert CDP events are not from Network.
-        assert resp["method"] == "cdp.eventReceived"
-        assert not resp["params"]["cdpMethod"].startswith("Network"), \
+        assert resp["method"].startswith("cdp")
+        assert not resp["params"]["event"].startswith("Network"), \
             "There should be no `Network` cdp events, but was " \
-            f"`{ resp['params']['cdpMethod'] }` "
+            f"`{ resp['params']['event'] }` "
         resp = await read_JSON_message(websocket)
 
     assert resp == AnyExtending({"id": command_id})

@@ -25,7 +25,7 @@ import {
   BrowsingContext as BrowsingContextTypes,
   Script as ScriptTypes,
   Log as LogTypes,
-  CDP as CdpTypes,
+  type CDP as CdpTypes,
   Message as MessageTypes,
   type Session as SessionTypes,
   Network as NetworkTypes,
@@ -588,11 +588,11 @@ export namespace BrowsingContext {
 export namespace CDP {
   const SendCommandParamsSchema = zod.object({
     // Allowing any cdpMethod, and casting to proper type later on.
-    cdpMethod: zod.string(),
+    method: zod.string(),
     // `passthrough` allows object to have any fields.
     // https://github.com/colinhacks/zod#passthrough
-    cdpParams: zod.object({}).passthrough(),
-    cdpSession: zod.string().optional(),
+    params: zod.object({}).passthrough().optional(),
+    session: zod.string().optional(),
   });
 
   export function parseSendCommandParams(
@@ -617,17 +617,25 @@ export namespace CDP {
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-session */
 export namespace Session {
-  const SubscriptionRequestParametersEventsSchema = zod.enum([
+  // BiDi+ events
+  const CDPSubscriptionRequestParametersEventsSchema =
+    zod.custom<CdpTypes.EventNames>((value) => {
+      return typeof value === 'string' ? value.startsWith('cdp.') : false;
+    }, 'Not a CDP event');
+
+  const BiDiSubscriptionRequestParametersEventsSchema = zod.enum([
     BrowsingContextTypes.AllEvents,
     ...Object.values(BrowsingContextTypes.EventNames),
     LogTypes.AllEvents,
     ...Object.values(LogTypes.EventNames),
-    CdpTypes.AllEvents,
-    ...Object.values(CdpTypes.EventNames),
     NetworkTypes.AllEvents,
     ...Object.values(NetworkTypes.EventNames),
     ScriptTypes.AllEvents,
     ...Object.values(ScriptTypes.EventNames),
+  ]);
+  const SubscriptionRequestParametersEventsSchema = zod.union([
+    CDPSubscriptionRequestParametersEventsSchema,
+    BiDiSubscriptionRequestParametersEventsSchema,
   ]);
 
   // SessionSubscriptionRequest = {

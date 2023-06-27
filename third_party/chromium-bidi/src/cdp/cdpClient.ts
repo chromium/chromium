@@ -47,7 +47,7 @@ export interface ICdpClient extends EventEmitter<CdpEvents> {
    */
   sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(
     method: CdpMethod,
-    ...params: ProtocolMapping.Commands[CdpMethod]['paramsType']
+    params?: ProtocolMapping.Commands[CdpMethod]['paramsType'][0]
   ): Promise<ProtocolMapping.Commands[CdpMethod]['returnType']>;
 }
 

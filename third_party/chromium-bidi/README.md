@@ -30,14 +30,14 @@ CdpSendCommandCommand = {
 }
 
 CdpSendCommandParameters = {
-   cdpMethod: text,
-   cdpParams: any,
-   cdpSession?: text,
+   method: text,
+   params: any,
+   cession?: text,
 }
 
 CdpSendCommandResult = {
    result: any,
-   cdpSession: text,
+   session: text,
 }
 ```
 
@@ -58,24 +58,24 @@ CdpGetSessionParameters = {
 }
 
 CdpGetSessionResult = {
-   cdpSession: text,
+   session: text,
 }
 ```
 
 The command returns the default CDP session for the selected browsing context.
 
-### Event `cdp.eventReceived`
+### Events `cdp`
 
 ```cddl
 CdpEventReceivedEvent = {
-   method: "cdp.eventReceived",
-   params: ScriptEvaluateParameters,
+   method: "cdp.<CDP Event Name>",
+   params: CdpEventReceivedParameters,
 }
 
 CdpEventReceivedParameters = {
-   cdpMethod: text,
-   cdpParams: any,
-   cdpSession: string,
+   event: text,
+   params: any,
+   session: string,
 }
 ```
 

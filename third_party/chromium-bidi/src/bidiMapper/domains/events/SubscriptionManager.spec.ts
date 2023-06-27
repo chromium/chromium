@@ -20,7 +20,6 @@ import * as sinon from 'sinon';
 
 import {
   BrowsingContext,
-  CDP,
   type CommonDataTypes,
   Log,
   Network,
@@ -436,12 +435,6 @@ describe('SubscriptionManager', () => {
       ]);
     });
 
-    it('all CDP events', () => {
-      expect(unrollEvents([CDP.AllEvents])).to.deep.equal([
-        CDP.EventNames.EventReceivedEvent,
-      ]);
-    });
-
     it('all Log events', () => {
       expect(unrollEvents([Log.AllEvents])).to.deep.equal([
         Log.EventNames.LogEntryAddedEvent,
@@ -466,29 +459,15 @@ describe('SubscriptionManager', () => {
     });
 
     it('discrete events', () => {
-      expect(
-        unrollEvents([
-          CDP.EventNames.EventReceivedEvent,
-          Log.EventNames.LogEntryAddedEvent,
-        ])
-      ).to.deep.equal([
-        CDP.EventNames.EventReceivedEvent,
+      expect(unrollEvents([Log.EventNames.LogEntryAddedEvent])).to.deep.equal([
         Log.EventNames.LogEntryAddedEvent,
       ]);
     });
 
     it('all and discrete events', () => {
       expect(
-        unrollEvents([
-          CDP.AllEvents,
-          CDP.EventNames.EventReceivedEvent,
-          Log.EventNames.LogEntryAddedEvent,
-        ])
-      ).to.deep.equal([
-        CDP.EventNames.EventReceivedEvent,
-        CDP.EventNames.EventReceivedEvent,
-        Log.EventNames.LogEntryAddedEvent,
-      ]);
+        unrollEvents([Log.AllEvents, Log.EventNames.LogEntryAddedEvent])
+      ).to.deep.equal([Log.EventNames.LogEntryAddedEvent]);
     });
   });
 });

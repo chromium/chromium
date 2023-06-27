@@ -27,8 +27,8 @@ async def test_cdp_sendCommand_commandResultReturned(websocket):
         websocket, {
             "method": "cdp.sendCommand",
             "params": {
-                "cdpMethod": "Target.getTargets",
-                "cdpParams": {}
+                "method": "Target.getTargets",
+                "params": {}
             }
         })
 
@@ -36,8 +36,8 @@ async def test_cdp_sendCommand_commandResultReturned(websocket):
 
 
 @pytest.mark.asyncio
-async def test_cdp_subscribeCdpEvents_cdpEventReceived(websocket, context_id):
-    await subscribe(websocket, "cdp.eventReceived")
+async def test_cdp_subscribeCdpEvents_cdpEvent(websocket, context_id):
+    await subscribe(websocket, "cdp.Runtime.consoleAPICalled")
 
     command_result = await execute_command(websocket, {
         "method": "cdp.getSession",
@@ -46,27 +46,27 @@ async def test_cdp_subscribeCdpEvents_cdpEventReceived(websocket, context_id):
         }
     })
 
-    session_id = command_result["cdpSession"]
+    session_id = command_result["session"]
 
     await send_JSON_command(
         websocket, {
             "method": "cdp.sendCommand",
             "params": {
-                "cdpMethod": "Runtime.evaluate",
-                "cdpParams": {
+                "method": "Runtime.evaluate",
+                "params": {
                     "expression": "console.log(1)",
                 },
-                "cdpSession": session_id
+                "session": session_id
             }
         })
 
     resp = await read_JSON_message(websocket)
 
     assert {
-        "method": "cdp.eventReceived",
+        "method": "cdp.Runtime.consoleAPICalled",
         "params": {
-            "cdpMethod": "Runtime.consoleAPICalled",
-            "cdpParams": {
+            "event": "Runtime.consoleAPICalled",
+            "params": {
                 "type": "log",
                 "args": [{
                     "type": "number",
@@ -77,54 +77,6 @@ async def test_cdp_subscribeCdpEvents_cdpEventReceived(websocket, context_id):
                 "timestamp": ANY_TIMESTAMP,
                 "stackTrace": ANY
             },
-            "cdpSession": session_id
-        }
-    } == resp
-
-
-@pytest.mark.asyncio
-async def test_cdp_subscribeToAllCdpEvents_cdpEventReceived(
-        websocket, context_id):
-    await subscribe(websocket, "cdp")
-
-    command_result = await execute_command(websocket, {
-        "method": "cdp.getSession",
-        "params": {
-            "context": context_id
-        }
-    })
-
-    session_id = command_result["cdpSession"]
-
-    await send_JSON_command(
-        websocket, {
-            "method": "cdp.sendCommand",
-            "params": {
-                "cdpMethod": "Runtime.evaluate",
-                "cdpParams": {
-                    "expression": "console.log(1)",
-                },
-                "cdpSession": session_id
-            }
-        })
-
-    resp = await read_JSON_message(websocket)
-
-    assert {
-        "method": "cdp.eventReceived",
-        "params": {
-            "cdpMethod": "Runtime.consoleAPICalled",
-            "cdpParams": {
-                "type": "log",
-                "args": [{
-                    "type": "number",
-                    "value": 1,
-                    "description": "1"
-                }],
-                "executionContextId": ANY_INT,
-                "timestamp": ANY_TIMESTAMP,
-                "stackTrace": ANY
-            },
-            "cdpSession": session_id
+            "session": session_id
         }
     } == resp

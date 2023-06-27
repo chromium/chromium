@@ -71,21 +71,21 @@ async def test_screenshot(websocket, context_id, png_filename):
                 "context": context_id
             }
         })
-        session_id = command_result["cdpSession"]
+        session_id = command_result["session"]
 
         # Set a fixed viewport to make the test deterministic.
         await execute_command(
             websocket, {
                 "method": "cdp.sendCommand",
                 "params": {
-                    "cdpMethod": "Emulation.setDeviceMetricsOverride",
-                    "cdpParams": {
+                    "method": "Emulation.setDeviceMetricsOverride",
+                    "params": {
                         "width": 200,
                         "height": 200,
                         "deviceScaleFactor": 1.0,
                         "mobile": False,
                     },
-                    "cdpSession": session_id
+                    "session": session_id
                 }
             })
 
@@ -123,21 +123,21 @@ async def test_screenshot_oopif(websocket, context_id, html, iframe):
             "context": context_id
         }
     })
-    session_id = command_result["cdpSession"]
+    session_id = command_result["session"]
 
     # Set a fixed viewport to make the test deterministic.
     await execute_command(
         websocket, {
             "method": "cdp.sendCommand",
             "params": {
-                "cdpMethod": "Emulation.setDeviceMetricsOverride",
-                "cdpParams": {
+                "method": "Emulation.setDeviceMetricsOverride",
+                "params": {
                     "width": 200,
                     "height": 200,
                     "deviceScaleFactor": 1.0,
                     "mobile": False,
                 },
-                "cdpSession": session_id
+                "session": session_id
             }
         })
 

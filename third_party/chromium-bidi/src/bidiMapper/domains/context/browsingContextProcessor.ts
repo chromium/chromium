@@ -535,27 +535,29 @@ export class BrowsingContextProcessor {
     return ['page', 'iframe'].includes(target.type);
   }
 
-  async process_cdp_sendCommand(params: CDP.SendCommandParams) {
-    const client = params.cdpSession
-      ? this.#cdpConnection.getCdpClient(params.cdpSession)
+  async process_cdp_sendCommand(
+    params: CDP.SendCommandParams
+  ): Promise<CDP.SendCommandResult> {
+    const client = params.session
+      ? this.#cdpConnection.getCdpClient(params.session)
       : this.#cdpConnection.browserClient();
     const sendCdpCommandResult = await client.sendCommand(
-      params.cdpMethod,
-      params.cdpParams
+      params.method,
+      params.params
     );
     return {
       result: sendCdpCommandResult,
-      cdpSession: params.cdpSession,
+      session: params.session,
     };
   }
 
-  process_cdp_getSession(params: CDP.GetSessionParams) {
+  process_cdp_getSession(params: CDP.GetSessionParams): CDP.GetSessionResult {
     const context = params.context;
     const sessionId =
       this.#browsingContextStorage.getContext(context).cdpTarget.cdpSessionId;
     if (sessionId === undefined) {
-      return {result: {cdpSession: null}};
+      return {result: {session: null}};
     }
-    return {result: {cdpSession: sessionId}};
+    return {result: {session: sessionId}};
   }
 }
