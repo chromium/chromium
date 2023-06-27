@@ -23786,7 +23786,7 @@
         "policies": {},
         "prefs": {
           "arc.vm_data_migration_strategy": {
-            "value": 0
+            "default_value": 0
           }
         }
       },
