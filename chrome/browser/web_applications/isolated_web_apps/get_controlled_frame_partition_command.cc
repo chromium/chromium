@@ -33,12 +33,12 @@ base::Value GetControlledFramePartitionWithLock(
   debug_info.Set("in_memory", in_memory);
 
   if (in_memory) {
+    absl::optional<content::StoragePartitionConfig> config =
+        lock.registrar().SaveAndGetInMemoryControlledFramePartitionConfig(
+            url_info, partition_name);
+
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback),
-            lock.registrar().SaveAndGetInMemoryControlledFramePartitionConfig(
-                url_info, partition_name)));
+        FROM_HERE, base::BindOnce(std::move(callback), config));
 
     return base::Value(std::move(debug_info));
   }
@@ -48,13 +48,15 @@ base::Value GetControlledFramePartitionWithLock(
           profile, partition_name, /*in_memory=*/false);
 
   // Register the StoragePartition with the web_app system.
-  ScopedRegistryUpdate update(&lock.sync_bridge());
-  WebApp* iwa = update->UpdateApp(url_info.app_id());
-  CHECK(iwa && iwa->isolation_data().has_value());
+  {
+    ScopedRegistryUpdate update(&lock.sync_bridge());
+    WebApp* iwa = update->UpdateApp(url_info.app_id());
+    CHECK(iwa && iwa->isolation_data().has_value());
 
-  WebApp::IsolationData isolation_data = *iwa->isolation_data();
-  isolation_data.controlled_frame_partitions.insert(partition_name);
-  iwa->SetIsolationData(isolation_data);
+    WebApp::IsolationData isolation_data = *iwa->isolation_data();
+    isolation_data.controlled_frame_partitions.insert(partition_name);
+    iwa->SetIsolationData(isolation_data);
+  }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), storage_partition_config));
