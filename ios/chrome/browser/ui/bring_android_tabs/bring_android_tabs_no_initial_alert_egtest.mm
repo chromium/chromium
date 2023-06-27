@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_app_interface.h"
+#import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_test_session.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_test_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -13,6 +13,7 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -26,6 +27,13 @@
 @end
 
 @implementation BringAndroidTabsNoInitialAlertTestCase
+
+- (void)setUp {
+  [super setUp];
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  }
+}
 
 - (void)tearDown {
   CleanUp();
@@ -41,9 +49,9 @@
   AppLaunchConfiguration config = GetConfiguration(/*is_android_switcher=*/NO,
                                                    /*show_bottom_message=*/NO);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-  [BringAndroidTabsAppInterface
-      addSessionToFakeSyncServer:BringAndroidTabsAppInterfaceForeignSession::
-                                     kRecentFromAndroidPhone];
+  AddSessionToFakeSyncServerFromTestServer(
+      BringAndroidTabsTestSession::kRecentFromAndroidPhone,
+      self.testServer->base_url());
   CompleteFREWithSyncEnabled(YES);
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(NO);
@@ -59,9 +67,9 @@
   AppLaunchConfiguration config = GetConfiguration(/*is_android_switcher=*/YES,
                                                    /*show_bottom_message=*/NO);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-  [BringAndroidTabsAppInterface
-      addSessionToFakeSyncServer:BringAndroidTabsAppInterfaceForeignSession::
-                                     kRecentFromAndroidPhone];
+  AddSessionToFakeSyncServerFromTestServer(
+      BringAndroidTabsTestSession::kRecentFromAndroidPhone,
+      self.testServer->base_url());
   CompleteFREWithSyncEnabled(YES);
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(NO);
@@ -76,9 +84,9 @@
   AppLaunchConfiguration config = GetConfiguration(/*is_android_switcher=*/YES,
                                                    /*show_bottom_message=*/NO);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-  [BringAndroidTabsAppInterface
-      addSessionToFakeSyncServer:BringAndroidTabsAppInterfaceForeignSession::
-                                     kRecentFromAndroidPhone];
+  AddSessionToFakeSyncServerFromTestServer(
+      BringAndroidTabsTestSession::kRecentFromAndroidPhone,
+      self.testServer->base_url());
   CompleteFREWithSyncEnabled(NO);
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(NO);
@@ -100,9 +108,9 @@
   AppLaunchConfiguration config = GetConfiguration(/*is_android_switcher=*/YES,
                                                    /*show_bottom_message=*/NO);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-  [BringAndroidTabsAppInterface
-      addSessionToFakeSyncServer:BringAndroidTabsAppInterfaceForeignSession::
-                                     kExpiredFromAndroidPhone];
+  AddSessionToFakeSyncServerFromTestServer(
+      BringAndroidTabsTestSession::kExpiredFromAndroidPhone,
+      self.testServer->base_url());
   CompleteFREWithSyncEnabled(YES);
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(NO);
@@ -117,9 +125,9 @@
   AppLaunchConfiguration config = GetConfiguration(/*is_android_switcher=*/YES,
                                                    /*show_bottom_message=*/NO);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-  [BringAndroidTabsAppInterface
-      addSessionToFakeSyncServer:BringAndroidTabsAppInterfaceForeignSession::
-                                     kRecentFromDesktop];
+  AddSessionToFakeSyncServerFromTestServer(
+      BringAndroidTabsTestSession::kRecentFromDesktop,
+      self.testServer->base_url());
   CompleteFREWithSyncEnabled(YES);
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(NO);
@@ -136,26 +144,21 @@
                                                    /*show_bottom_message=*/NO);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   // Add all test sessions.
-  [BringAndroidTabsAppInterface
-      addSessionToFakeSyncServer:BringAndroidTabsAppInterfaceForeignSession::
-                                     kRecentFromAndroidPhone];
-  [BringAndroidTabsAppInterface
-      addSessionToFakeSyncServer:BringAndroidTabsAppInterfaceForeignSession::
-                                     kExpiredFromAndroidPhone];
-  [BringAndroidTabsAppInterface
-      addSessionToFakeSyncServer:BringAndroidTabsAppInterfaceForeignSession::
-                                     kRecentFromDesktop];
+  GURL testServer = self.testServer->base_url();
+  AddSessionToFakeSyncServerFromTestServer(
+      BringAndroidTabsTestSession::kRecentFromAndroidPhone, testServer);
+  AddSessionToFakeSyncServerFromTestServer(
+      BringAndroidTabsTestSession::kExpiredFromAndroidPhone, testServer);
+  AddSessionToFakeSyncServerFromTestServer(
+      BringAndroidTabsTestSession::kRecentFromDesktop, testServer);
   // Execute test behavior.
   CompleteFREWithSyncEnabled(YES);
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(YES);
   // Verify tab count.
-  int expectedTabCountFromDistantSessions = [BringAndroidTabsAppInterface
-      tabsCountForSession:BringAndroidTabsAppInterfaceForeignSession::
-                              kRecentFromAndroidPhone];
   NSString* expectedButtonText = l10n_util::GetPluralNSStringF(
       IDS_IOS_BRING_ANDROID_TABS_PROMPT_OPEN_TABS_BUTTON,
-      expectedTabCountFromDistantSessions);
+      GetTabCountOnPrompt());
   [[EarlGrey selectElementWithMatcher:grey_buttonTitle(expectedButtonText)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
