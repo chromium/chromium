@@ -90,7 +90,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
 
  private:
   friend class CellularESimInstallerTest;
-  friend class CellularPolicyHandlerTest;
+  friend class CellularPolicyHandlerLegacyTest;
   FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerTest,
                            InstallProfileInvalidActivationCode);
   FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerTest,

@@ -105,10 +105,10 @@ std::string GenerateCellularPolicy(
 
 }  // namespace
 
-class CellularPolicyHandlerTest : public testing::Test {
+class CellularPolicyHandlerLegacyTest : public testing::Test {
  protected:
-  CellularPolicyHandlerTest() = default;
-  ~CellularPolicyHandlerTest() override = default;
+  CellularPolicyHandlerLegacyTest() = default;
+  ~CellularPolicyHandlerLegacyTest() override = default;
 
   // testing::Test
   void SetUp() override {
@@ -345,7 +345,7 @@ class CellularPolicyHandlerTest : public testing::Test {
   TestingPrefServiceSimple device_prefs_;
 };
 
-TEST_F(CellularPolicyHandlerTest, InstallProfileSuccess) {
+TEST_F(CellularPolicyHandlerLegacyTest, InstallProfileSuccess) {
   SetupEuicc();
   const std::string policy =
       GenerateCellularPolicy(HermesEuiccClient::Get()
@@ -365,7 +365,7 @@ TEST_F(CellularPolicyHandlerTest, InstallProfileSuccess) {
   CheckHistogramState({.success_initial_count = 1});
 }
 
-TEST_F(CellularPolicyHandlerTest, InstallWaitForDeviceState) {
+TEST_F(CellularPolicyHandlerLegacyTest, InstallWaitForDeviceState) {
   SetupEuicc();
   ShillManagerClient::Get()->GetTestInterface()->ClearDevices();
   base::RunLoop().RunUntilIdle();
@@ -391,7 +391,7 @@ TEST_F(CellularPolicyHandlerTest, InstallWaitForDeviceState) {
   CheckShillConfiguration(/*is_installed=*/true);
 }
 
-TEST_F(CellularPolicyHandlerTest, InstallWaitForEuicc) {
+TEST_F(CellularPolicyHandlerLegacyTest, InstallWaitForEuicc) {
   HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
   const std::string policy =
       GenerateCellularPolicy(HermesEuiccClient::Get()
@@ -413,7 +413,7 @@ TEST_F(CellularPolicyHandlerTest, InstallWaitForEuicc) {
   CheckIccidSmdpPairInPref(/*is_installed=*/true);
 }
 
-TEST_F(CellularPolicyHandlerTest, RetryInstallProfile) {
+TEST_F(CellularPolicyHandlerLegacyTest, RetryInstallProfile) {
   SetupEuicc();
 
   const std::string policy =
@@ -484,7 +484,7 @@ TEST_F(CellularPolicyHandlerTest, RetryInstallProfile) {
   CheckHistogramState(expected_state);
 }
 
-TEST_F(CellularPolicyHandlerTest, InstallProfileFailure) {
+TEST_F(CellularPolicyHandlerLegacyTest, InstallProfileFailure) {
   SetupEuicc();
 
   // Make the first installation attempt fail, resulting in an immediate retry
@@ -523,7 +523,7 @@ TEST_F(CellularPolicyHandlerTest, InstallProfileFailure) {
   CheckIccidSmdpPairInPref(/*is_installed=*/true);
 }
 
-TEST_F(CellularPolicyHandlerTest, InstallOnSecondEUICC) {
+TEST_F(CellularPolicyHandlerLegacyTest, InstallOnSecondEUICC) {
   SetupEuicc();
   // Verify esim profile get installed successfully when installing policy
   // on the external EUICC.
@@ -543,7 +543,7 @@ TEST_F(CellularPolicyHandlerTest, InstallOnSecondEUICC) {
   CheckIccidSmdpPairInPref(/*is_installed=*/true);
 }
 
-TEST_F(CellularPolicyHandlerTest, InstallNoEUICCAvailable) {
+TEST_F(CellularPolicyHandlerLegacyTest, InstallNoEUICCAvailable) {
   SetupEuicc();
   // Verify esim profile doesn't get installed when installing policy esim
   // with no available EUICC.
@@ -562,7 +562,7 @@ TEST_F(CellularPolicyHandlerTest, InstallNoEUICCAvailable) {
   CheckIccidSmdpPairInPref(/*is_installed=*/false);
 }
 
-TEST_F(CellularPolicyHandlerTest, UpdateSMDPAddress) {
+TEST_F(CellularPolicyHandlerLegacyTest, UpdateSMDPAddress) {
   SetupEuicc();
   // Verify that the first request should be invalidated when the second
   // request is queued.
@@ -583,7 +583,7 @@ TEST_F(CellularPolicyHandlerTest, UpdateSMDPAddress) {
   CheckIccidSmdpPairInPref(/*is_installed=*/true);
 }
 
-TEST_F(CellularPolicyHandlerTest, InstallExistingESimProfileSuccess) {
+TEST_F(CellularPolicyHandlerLegacyTest, InstallExistingESimProfileSuccess) {
   SetupEuicc();
   SetupESimProfile();
 
@@ -601,7 +601,7 @@ TEST_F(CellularPolicyHandlerTest, InstallExistingESimProfileSuccess) {
   CheckIccidSmdpPairInPref(/*is_installed=*/true);
 }
 
-TEST_F(CellularPolicyHandlerTest, InstallExistingESimProfileFailure) {
+TEST_F(CellularPolicyHandlerLegacyTest, InstallExistingESimProfileFailure) {
   SetupEuicc();
   SetupESimProfile();
   ShillManagerClient::Get()->GetTestInterface()->SetSimulateConfigurationResult(
@@ -621,7 +621,7 @@ TEST_F(CellularPolicyHandlerTest, InstallExistingESimProfileFailure) {
   CheckIccidSmdpPairInPref(/*is_installed=*/false);
 }
 
-TEST_F(CellularPolicyHandlerTest, NoInternetConnection) {
+TEST_F(CellularPolicyHandlerLegacyTest, NoInternetConnection) {
   SetupEuicc();
   auto* shill_service = ShillServiceClient::Get()->GetTestInterface();
   shill_service->ClearServices();
