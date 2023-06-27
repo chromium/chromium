@@ -219,6 +219,7 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
     [self.view setLocationBarView:nil];
     self.view.locationBarContainer.hidden = YES;
   }
+  [self updateProgressBarVisibility];
 }
 
 #pragma mark - ToolbarConsumer
@@ -400,6 +401,13 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 // is expected.
 - (void)updateProgressBarVisibility {
   __weak __typeof(self) weakSelf = self;
+
+  BOOL hasOmnibox = self.locationBarViewController != nil;
+  if (!hasOmnibox) {
+    self.view.progressBar.hidden = YES;
+    return;
+  }
+
   if (self.loading && self.view.progressBar.hidden) {
     [self.view.progressBar setHidden:NO
                             animated:YES
