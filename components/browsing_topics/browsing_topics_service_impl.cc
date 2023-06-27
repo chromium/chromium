@@ -157,6 +157,8 @@ void RecordBrowsingTopicsApiResultMetrics(ApiAccessResult result,
     return;
   }
 
+  CHECK(!main_frame->IsInLifecycleState(
+      content::RenderFrameHost::LifecycleState::kPrerendering));
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
   ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult2 builder(
       main_frame->GetPageUkmSourceId());
@@ -168,6 +170,8 @@ void RecordBrowsingTopicsApiResultMetrics(ApiAccessResult result,
 void RecordBrowsingTopicsApiResultMetrics(
     const std::vector<CandidateTopic>& valid_candidate_topics,
     content::RenderFrameHost* main_frame) {
+  CHECK(!main_frame->IsInLifecycleState(
+      content::RenderFrameHost::LifecycleState::kPrerendering));
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
   ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult2 builder(
       main_frame->GetPageUkmSourceId());
