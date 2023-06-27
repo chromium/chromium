@@ -270,6 +270,12 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
         kColorNewTabPageMostVisitedTileBackgroundUnthemed};
   }
 
+  mixer[kColorNewTabPageAddShortcutBackground] = {
+      kColorNewTabPageMostVisitedTileBackground};
+  mixer[kColorNewTabPageAddShortcutForeground] =
+      ui::SelectBasedOnDarkInput(kColorNewTabPageAddShortcutBackground,
+                                 SK_ColorWHITE, gfx::kGoogleGrey900);
+
   mixer[kColorNewTabPageMostVisitedTileBackgroundUnthemed] = {
       gfx::kGoogleGrey100};
   mixer[kColorNewTabPageSectionBorder] =

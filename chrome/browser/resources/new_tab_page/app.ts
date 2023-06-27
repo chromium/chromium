@@ -98,7 +98,6 @@ function ensureLazyLoaded() {
   document.body.appendChild(script);
 }
 
-
 const AppElementBase = HelpBubbleMixin(PolymerElement) as
     {new (): PolymerElement & HelpBubbleMixinInterface};
 

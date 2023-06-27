@@ -55,6 +55,11 @@
         var(--add-shortcut-background-color, var(--tile-background-color));
   }
 
+  :host-context([chrome-refresh-2023]) #addShortcutIconContainer {
+    margin-inline-start: auto;
+    margin-inline-end: auto;
+  }
+
   #addShortcutIcon {
     -webkit-mask-image: url(chrome://resources/images/add.svg);
     background-color:

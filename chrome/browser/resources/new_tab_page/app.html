@@ -34,6 +34,13 @@
     }
   }
 
+  :host-context([chrome-refresh-2023]) cr-most-visited {
+    --add-shortcut-background-color:
+        var(--color-new-tab-page-add-shortcut-background);
+    --add-shortcut-foreground-color:
+        var(--color-new-tab-page-add-shortcut-foreground);
+  }
+
   :host([modules-redesigned-enabled_]) {
     --ntp-module-border-radius: 16px;
     --ntp-module-item-border-radius: 12px;
@@ -200,6 +207,16 @@
     height: 16px;
     margin-inline-end: 8px;
     width: 16px;
+  }
+
+  :host-context([chrome-refresh-2023]) #customizeButton {
+    --cr-button-height: 32px;
+  }
+
+  :host-context([chrome-refresh-2023]) #customizeIcon,
+  :host-context([chrome-refresh-2023]) #customizeText {
+    display: inline-block;
+    vertical-align: middle;
   }
 
   :host([show-background-image_]) #customizeIcon {
@@ -434,9 +451,7 @@
         <cr-button id="customizeButton" on-click="onCustomizeClick_"
             title="$i18n{customizeThisPage}" aria-pressed="[[showCustomize_]]">
           <div id="customizeIcon"></div>
-          <div id="customizeText">
-            $i18n{customizeButton}
-          </div>
+          <div id="customizeText">$i18n{customizeButton}</div>
         </cr-button>
       </div>
       <div id="themeAttribution"

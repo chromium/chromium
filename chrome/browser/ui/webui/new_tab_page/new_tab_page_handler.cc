@@ -70,6 +70,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -151,8 +152,15 @@ new_tab_page::mojom::ThemePtr MakeTheme(
                    ThemeProperties::NTP_LOGO_ALTERNATE) == 1) {
       theme->logo_color = color_provider.GetColor(kColorNewTabPageLogo);
     }
-    most_visited->background_color = color_provider.GetColor(
-        kColorNewTabPageMostVisitedTileBackgroundUnthemed);
+
+    // TODO(crbug.com/1375760): Post GM3 launch, we can remove the
+    // kColorNewTabPageMostVisitedTileBackgroundUnthemed color and related
+    // logic.
+    most_visited->background_color =
+        features::IsChromeWebuiRefresh2023()
+            ? color_provider.GetColor(kColorNewTabPageMostVisitedTileBackground)
+            : color_provider.GetColor(
+                  kColorNewTabPageMostVisitedTileBackgroundUnthemed);
   } else {
     text_color = color_provider.GetColor(kColorNewTabPageText);
     if (theme_provider->GetDisplayProperty(
