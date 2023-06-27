@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/style/system_dialog_delegate_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -60,6 +61,9 @@ class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
+
+  // Helper function to get the system dialog view for Jelly tests.
+  const SystemDialogDelegateView* GetSystemDialogViewForTesting() const;
 
  private:
   // Creates and shows the dialog on `root_window`.

@@ -401,6 +401,14 @@ void SavedDeskDialogController::CreateDialogWidget(
   }
 }
 
+const SystemDialogDelegateView*
+SavedDeskDialogController::GetSystemDialogViewForTesting() const {
+  CHECK(chromeos::features::IsJellyEnabled());
+  CHECK(dialog_widget_);
+  return static_cast<SystemDialogDelegateView*>(
+      dialog_widget_->GetContentsView());
+}
+
 bool SavedDeskDialogController::CanShowDialog() const {
   // Cannot show a dialog while another is active.
   return dialog_widget_ == nullptr;

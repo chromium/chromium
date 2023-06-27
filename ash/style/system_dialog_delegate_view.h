@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/style/pill_button.h"
 #include "ash/style/system_shadow.h"
 #include "base/functional/callback_forward.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -130,6 +131,10 @@ class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
   gfx::Size GetMaximumSize() const override;
   void OnWidgetInitialized() override;
   void OnWorkAreaChanged() override;
+
+  // Helper function to access buttons for tests.
+  const PillButton* GetAcceptButtonForTesting() const;
+  const PillButton* GetCancelButtonForTesting() const;
 
  protected:
   virtual void UpdateDialogSize();

@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "ui/aura/window.h"
@@ -158,6 +157,9 @@ class SystemDialogDelegateView::ButtonContainer : public views::FlexLayoutView {
   ButtonContainer(const ButtonContainer&) = delete;
   ButtonContainer& operator=(const ButtonContainer&) = delete;
   ~ButtonContainer() override = default;
+
+  const PillButton* accept_button() { return accept_button_; }
+  const PillButton* cancel_button() { return cancel_button_; }
 
   void SetAcceptText(const std::u16string& accept_text) {
     accept_button_->SetText(accept_text);
@@ -363,6 +365,14 @@ void SystemDialogDelegateView::OnWidgetInitialized() {
 
 void SystemDialogDelegateView::OnWorkAreaChanged() {
   UpdateDialogSize();
+}
+
+const PillButton* SystemDialogDelegateView::GetAcceptButtonForTesting() const {
+  return button_container_->accept_button();
+}
+
+const PillButton* SystemDialogDelegateView::GetCancelButtonForTesting() const {
+  return button_container_->cancel_button();
 }
 
 void SystemDialogDelegateView::UpdateDialogSize() {

@@ -278,6 +278,15 @@ const views::Button* GetSavedDeskItemDeleteButton(int index) {
 }
 
 const views::Button* GetSavedDeskDialogAcceptButton() {
+  if (chromeos::features::IsJellyEnabled()) {
+    const SystemDialogDelegateView* dialog_widget_view =
+        saved_desk_util::GetSavedDeskDialogController()
+            ->GetSystemDialogViewForTesting();
+    if (!dialog_widget_view) {
+      return nullptr;
+    }
+    return dialog_widget_view->GetAcceptButtonForTesting();
+  }
   const views::Widget* dialog_widget =
       saved_desk_util::GetSavedDeskDialogController()->dialog_widget();
   if (!dialog_widget)
