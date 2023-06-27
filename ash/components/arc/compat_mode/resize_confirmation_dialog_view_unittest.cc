@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,8 +41,9 @@ class ResizeConfirmationDialogViewTest : public CompatModeTestBase {
  protected:
   void ClickDialogButton(bool accept, bool with_checkbox) {
     ResizeConfirmationDialogView::TestApi dialog_view_test(dialog_view_);
-    if (with_checkbox)
-      dialog_view_test.do_not_ask_checkbox()->SetChecked(true);
+    if (with_checkbox) {
+      dialog_view_test.SelectDoNotAskCheckbox();
+    }
 
     auto* target_button = accept ? dialog_view_test.accept_button()
                                  : dialog_view_test.cancel_button();
@@ -67,6 +69,9 @@ class ResizeConfirmationDialogViewTest : public CompatModeTestBase {
 
   // A LayoutProvider must exist in scope in order to set up views.
   views::LayoutProvider layout_provider;
+
+  // An AshColorProvider must exist in scope in order to set up views.
+  ash::AshColorProvider ash_color_provider_;
 
   raw_ptr<ResizeConfirmationDialogView, ExperimentalAsh> dialog_view_;
   std::unique_ptr<views::Widget> widget_;

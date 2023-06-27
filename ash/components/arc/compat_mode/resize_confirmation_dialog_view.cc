@@ -30,6 +30,14 @@
 
 namespace arc {
 
+void ResizeConfirmationDialogView::TestApi::SelectDoNotAskCheckbox() {
+  if (chromeos::features::IsJellyEnabled()) {
+    view_->do_not_ask_checkbox_jelly_->SetSelected(true);
+  } else {
+    view_->do_not_ask_checkbox_->SetChecked(true);
+  }
+}
+
 ResizeConfirmationDialogView::ResizeConfirmationDialogView(
     ResizeConfirmationCallback callback)
     : callback_(std::move(callback)) {

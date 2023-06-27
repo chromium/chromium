@@ -40,9 +40,7 @@ class ResizeConfirmationDialogView : public views::BoxLayoutView {
 
     views::LabelButton* accept_button() const { return view_->accept_button_; }
     views::LabelButton* cancel_button() const { return view_->cancel_button_; }
-    views::Checkbox* do_not_ask_checkbox() const {
-      return view_->do_not_ask_checkbox_;
-    }
+    void SelectDoNotAskCheckbox();
 
    private:
     const raw_ptr<ResizeConfirmationDialogView, ExperimentalAsh> view_;
