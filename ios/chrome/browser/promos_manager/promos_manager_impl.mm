@@ -555,6 +555,13 @@ std::vector<promos_manager::Promo> PromosManagerImpl::SortPromos(
     if (rhs.first == Promo::Choice) {
       return false;
     }
+    // PostRestoreDefaultBrowser comes next.
+    if (lhs.first == Promo::PostRestoreDefaultBrowserAlert) {
+      return true;
+    }
+    if (rhs.first == Promo::PostRestoreDefaultBrowserAlert) {
+      return false;
+    }
     // PostRestoreSignIn types come next.
     if (lhs.first == Promo::PostRestoreSignInFullscreen ||
         lhs.first == Promo::PostRestoreSignInAlert) {
