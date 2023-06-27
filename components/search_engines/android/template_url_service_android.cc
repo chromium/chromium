@@ -324,7 +324,6 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
   if (existing_play_api_turl != template_urls.cend()) {
     // Migrate old Play API database entries that were incorrectly marked as
     // safe_for_autoreplace() before M89.
-    // TODO(tommycli): Delete this once the below metric approaches zero.
     TemplateURL* turl = *existing_play_api_turl;
     if (turl->safe_for_autoreplace()) {
       template_url_service_->ResetTemplateURL(turl, turl->short_name(),
