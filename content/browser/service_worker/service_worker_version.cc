@@ -439,8 +439,7 @@ void ServiceWorkerVersion::RegisterStatusChangeCallback(
 ServiceWorkerVersionInfo ServiceWorkerVersion::GetInfo() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   absl::optional<std::string> router_rules;
-  if (base::FeatureList::IsEnabled(features::kServiceWorkerStaticRouter) &&
-      router_evaluator_) {
+  if (router_evaluator_) {
     router_rules = router_evaluator_->ToString();
   }
   ServiceWorkerVersionInfo info(
@@ -1821,6 +1820,12 @@ void ServiceWorkerVersion::SkipWaiting(SkipWaitingCallback callback) {
 void ServiceWorkerVersion::RegisterRouter(
     const blink::ServiceWorkerRouterRules& rules,
     RegisterRouterCallback callback) {
+  if (!IsStaticRouterEnabled()) {
+    // This renderer should have called this only when the feature is enabled.
+    receiver_.ReportBadMessage(
+        "Unexpected router registration call during the feature is disabled.");
+    return;
+  }
   if (router_evaluator()) {
     // The renderer should have denied calling this twice.
     receiver_.ReportBadMessage("The ServiceWorker router rules are set twice.");
@@ -2886,6 +2891,7 @@ void ServiceWorkerVersion::SetResources(
 
 bool ServiceWorkerVersion::SetupRouterEvaluator(
     const blink::ServiceWorkerRouterRules& rules) {
+  CHECK(IsStaticRouterEnabled());
   CHECK(!router_evaluator_);
   router_evaluator_ = std::make_unique<ServiceWorkerRouterEvaluator>(rules);
   if (!router_evaluator_->IsValid()) {
@@ -2893,6 +2899,17 @@ bool ServiceWorkerVersion::SetupRouterEvaluator(
     return false;
   }
   return true;
+}
+
+bool ServiceWorkerVersion::IsStaticRouterEnabled() {
+  if (base::FeatureList::IsEnabled(features::kServiceWorkerStaticRouter)) {
+    return true;
+  }
+  if (origin_trial_tokens_ &&
+      origin_trial_tokens_->contains("ServiceWorkerStaticRouter")) {
+    return true;
+  }
+  return false;
 }
 
 base::WeakPtr<ServiceWorkerVersion> ServiceWorkerVersion::GetWeakPtr() {

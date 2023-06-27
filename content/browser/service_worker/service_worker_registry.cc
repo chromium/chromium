@@ -1104,7 +1104,7 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
           base::MakeRefCounted<PolicyContainerHost>(
               PolicyContainerPolicies(*data.policy_container_policies)));
     }
-    if (data.router_rules) {
+    if (data.router_rules && version->IsStaticRouterEnabled()) {
       bool status = version->SetupRouterEvaluator(*data.router_rules);
       DCHECK(status) << "Failed to setup RouterEvaluator from the provided "
                      << "rules. Possibly the database is corrupted.";

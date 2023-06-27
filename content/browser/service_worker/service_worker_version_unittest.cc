@@ -1938,7 +1938,17 @@ TEST_F(ServiceWorkerVersionTest, SetResources) {
             version->sha256_script_checksum());
 }
 
-TEST_F(ServiceWorkerVersionTest, SetRouterEvaluator) {
+class ServiceWorkerVersionStaticRouterTest : public ServiceWorkerVersionTest {
+ public:
+  ServiceWorkerVersionStaticRouterTest() {
+    feature_list_.InitWithFeatures({features::kServiceWorkerStaticRouter}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ServiceWorkerVersionStaticRouterTest, SetRouterEvaluator) {
   // Create a new version
   scoped_refptr<ServiceWorkerVersion> version = CreateNewServiceWorkerVersion(
       helper_->context()->registry(), registration_.get(),

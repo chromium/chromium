@@ -719,6 +719,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
     return sha256_script_checksum_;
   }
 
+  // Check if the static router API is enabled. It checks if the feature flag is
+  // enabled or having a valid trial token.
+  bool IsStaticRouterEnabled();
+
   // Timeout for a request to be handled.
   static constexpr base::TimeDelta kRequestTimeout = base::Minutes(5);
 
