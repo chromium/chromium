@@ -7,8 +7,10 @@
 #include <sstream>
 
 #include "base/command_line.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/path_service.h"
@@ -22,6 +24,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/test_scope.h"
+#include "chrome/updater/util/unittest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -112,6 +115,63 @@ TEST(Util, StreamEnumValue) {
          << ", second: " << TestEnum::kEnumValue2
          << ", third: " << TestEnum::kEnumValue3;
   EXPECT_EQ(output.str(), "First: 0, second: 5, third: 6");
+}
+
+TEST(Util, ForEachItemInPath) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const base::FilePath temp_executable(temp_dir.GetPath().Append(
+      FILE_PATH_LITERAL("temp_executable.executable")));
+  test::SetupMockUpdater(temp_executable);
+
+  const struct {
+    const base::FilePath& path;
+    bool recursive;
+    int file_type;
+    const int expected_callback_count;
+  } test_cases[] = {
+      {{}, false, base::FileEnumerator::FILES, 0},
+      {temp_dir.GetPath(), true, base::FileEnumerator::FILES, 8},
+      {temp_dir.GetPath(), false, base::FileEnumerator::DIRECTORIES, 3},
+      {temp_dir.GetPath(), true, base::FileEnumerator::DIRECTORIES, 3},
+      {temp_dir.GetPath(), false,
+       base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES, 5},
+      {temp_dir.GetPath(), true,
+       base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES, 11},
+  };
+
+  for (const auto& test_case : test_cases) {
+    int callback_count = 0;
+
+    ForEachItemInPath(
+        test_case.path, test_case.recursive, test_case.file_type,
+        base::BindRepeating(
+            [](int expected_callback_count, int& callback_count,
+               const base::FilePath& item) {
+              ++callback_count;
+              if (callback_count > expected_callback_count) {
+                ADD_FAILURE() << "Unexpected file/directory found: " << item
+                              << ": " << expected_callback_count;
+              }
+            },
+            test_case.expected_callback_count, std::ref(callback_count)));
+
+    EXPECT_EQ(callback_count, test_case.expected_callback_count);
+  }
+}
+
+TEST(Util, DeleteExcept) {
+  EXPECT_FALSE(DeleteExcept({}));
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const base::FilePath except_executable(temp_dir.GetPath().Append(
+      FILE_PATH_LITERAL("except_executable.executable")));
+  test::SetupMockUpdater(except_executable);
+  EXPECT_TRUE(DeleteExcept(except_executable));
+  test::ExpectOnlyMockUpdater(except_executable);
 }
 
 }  // namespace updater

@@ -421,20 +421,6 @@ template <typename T, typename I, typename... TArgs>
 // Does not create the directory if it does not exist.
 [[nodiscard]] absl::optional<base::FilePath> GetInstallDirectoryX86(
     UpdaterScope scope);
-
-// This is a `for...each` wrapper around `base::FileEnumerator` that calls
-// `callback` for each item in `path`. Items are enumerated based on `recursive`
-// and `file_type`. See `base::FileEnumerator` for more details on `recursive`
-// and `file_type`.
-void ForEachItemInPath(
-    const base::FilePath& path,
-    bool recursive,
-    int file_type,
-    base::RepeatingCallback<void(const base::FilePath&)> callback);
-
-// Delete everything other than `except` under `except.DirName()`.
-[[nodiscard]] bool DeleteExcept(const absl::optional<base::FilePath>& except);
-
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_WIN_UTIL_H_

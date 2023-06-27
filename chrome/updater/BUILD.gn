@@ -710,6 +710,9 @@ if (is_win || is_mac || is_linux) {
       "//testing/gtest",
       "//third_party/abseil-cpp:absl",
     ]
+    if (is_win) {
+      deps += [ "//chrome/updater/win/test:test_executables" ]
+    }
   }
 
   source_set("updater_test_sources") {

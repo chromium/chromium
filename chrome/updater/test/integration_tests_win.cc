@@ -1758,7 +1758,7 @@ void RunFakeLegacyUpdater(UpdaterScope scope) {
   for (const base::FilePath& dir :
        {exe_dir, exe_dir.Append(L"1.2.3.4"), exe_dir.Append(L"Download"),
         exe_dir.Append(L"Install")}) {
-    for (const std::wstring exe_name : {kLegacyExeName, L"mock.exe"}) {
+    for (const std::wstring exe_name : {kLegacyExeName, L"mock.executable"}) {
       const base::FilePath exe(dir.Append(exe_name));
       ASSERT_TRUE(base::PathExists(exe));
 

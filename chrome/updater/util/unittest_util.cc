@@ -11,8 +11,10 @@
 
 #include "base/base_paths.h"
 #include "base/check.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -27,6 +29,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -48,6 +51,7 @@
 #include "base/win/scoped_handle.h"
 #include "chrome/test/base/process_inspector_win.h"
 #include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/test/test_executables.h"
 #endif
 
 namespace updater::test {
@@ -478,6 +482,58 @@ void SetupFakeUpdaterVersion(UpdaterScope scope,
   ASSERT_TRUE(new_version.AssignIfValid(&components[0]));
   SetupFakeUpdater(scope, base::Version(std::move(components)),
                    should_create_updater_executable);
+}
+
+void SetupMockUpdater(const base::FilePath& mock_updater_path) {
+  const base::FilePath updater_dir(mock_updater_path.DirName());
+
+#if BUILDFLAG(IS_WIN)
+  // A valid executable is needed for Windows.
+  const base::FilePath test_executable(
+      GetTestProcessCommandLine(GetTestScope(), test::GetTestName())  // IN-TEST
+          .GetProgram());
+#else
+  // Create an empty temporary file.
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath test_executable(
+      temp_dir.GetPath().Append(mock_updater_path.BaseName()));
+  base::File file(test_executable,
+                  base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  ASSERT_TRUE(file.IsValid());
+#endif
+
+  for (const base::FilePath& dir :
+       {updater_dir, updater_dir.Append(FILE_PATH_LITERAL("1.2.3.4")),
+        updater_dir.Append(FILE_PATH_LITERAL("Download")),
+        updater_dir.Append(FILE_PATH_LITERAL("Install"))}) {
+    ASSERT_TRUE(base::CreateDirectory(dir));
+
+    for (const base::FilePath& executable_name :
+         {mock_updater_path.BaseName(),
+          base::FilePath(FILE_PATH_LITERAL("mock.executable"))}) {
+      ASSERT_TRUE(base::CopyFile(test_executable, dir.Append(executable_name)));
+    }
+  }
+}
+
+void ExpectOnlyMockUpdater(const base::FilePath& mock_updater_path) {
+  ASSERT_TRUE(base::PathExists(mock_updater_path));
+  int count_mock_updater_path = 0;
+
+  ForEachItemInPath(
+      mock_updater_path.DirName(), false,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES,
+      base::BindLambdaForTesting([&mock_updater_path, &count_mock_updater_path](
+                                     const base::FilePath& item) {
+        if (item == mock_updater_path) {
+          ++count_mock_updater_path;
+        } else {
+          ADD_FAILURE() << "Unexpected file/directory found: " << item;
+        }
+      }));
+
+  EXPECT_EQ(count_mock_updater_path, 1);
 }
 
 }  // namespace updater::test

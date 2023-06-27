@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
+#include "chrome/updater/util/util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/util/win_util.h"
@@ -28,7 +29,7 @@ void CleanupTask::Run(base::OnceClosure callback) {
 }
 
 void CleanupTask::RunCleanup() {
-  (void)RunCleanupObsoleteFiles();
+  std::ignore = RunCleanupObsoleteFiles();
 }
 
 #if BUILDFLAG(IS_WIN)

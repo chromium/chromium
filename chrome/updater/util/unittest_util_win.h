@@ -68,16 +68,6 @@ void SetupCmdExe(UpdaterScope scope,
 [[nodiscard]] bool CreateService(const std::wstring& service_name,
                                  const std::wstring& display_name,
                                  const std::wstring& command_line);
-
-// Set up a mock `mock_updater_path`, and the following mock directories under
-// `mock_updater_path.DirName()`: `Download`, `Install`, and a versioned
-// `1.2.3.4` directory.
-void SetupMockUpdater(const base::FilePath& mock_updater_path);
-
-// Expect only a single file `mock_updater_path` and nothing else under
-// `mock_updater_path.DirName()`.
-void ExpectOnlyMockUpdater(const base::FilePath& mock_updater_path);
-
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_UNITTEST_UTIL_WIN_H_

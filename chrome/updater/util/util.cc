@@ -6,6 +6,7 @@
 
 #include <cctype>
 #include <string>
+#include <utility>
 #include <vector>
 
 #if BUILDFLAG(IS_WIN)
@@ -20,6 +21,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -351,6 +353,45 @@ void InitializeThreadPool(const char* name) {
       InitParams::CommonThreadPoolEnvironment::COM_MTA;
 #endif
   base::ThreadPoolInstance::Get()->Start(init_params);
+}
+
+void ForEachItemInPath(
+    const base::FilePath& path,
+    bool recursive,
+    int file_type,
+    base::RepeatingCallback<void(const base::FilePath&)> callback) {
+  if (path.empty()) {
+    return;
+  }
+  base::FileEnumerator it(path, recursive, file_type);
+  for (base::FilePath name = it.Next(); !name.empty(); name = it.Next()) {
+    callback.Run(name);
+  }
+}
+
+bool DeleteExcept(const absl::optional<base::FilePath>& except) {
+  if (!except) {
+    return false;
+  }
+
+  bool delete_success = true;
+  ForEachItemInPath(
+      except->DirName(), false,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES,
+      base::BindRepeating(
+          [](const base::FilePath& except, bool& delete_success,
+             const base::FilePath& item) {
+            if (item != except) {
+              VLOG(2) << __func__ << ": Deleting: " << item;
+              if (!base::DeletePathRecursively(item)) {
+                LOG(ERROR) << __func__ << ": Failed to delete: " << item;
+                delete_success = false;
+              }
+            }
+          },
+          *except, std::ref(delete_success)));
+
+  return delete_success;
 }
 
 }  // namespace updater
