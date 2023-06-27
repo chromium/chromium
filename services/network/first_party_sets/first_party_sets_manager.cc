@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
@@ -19,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/optional_util.h"
+#include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
@@ -30,9 +32,12 @@ namespace network {
 
 FirstPartySetsManager::FirstPartySetsManager(bool enabled)
     : enabled_(enabled),
+      wait_for_init_(base::FeatureList::IsEnabled(
+          net::features::kWaitForFirstPartySetsInit)),
       pending_queries_(
-          enabled ? std::make_unique<base::circular_deque<base::OnceClosure>>()
-                  : nullptr) {
+          enabled && wait_for_init_
+              ? std::make_unique<base::circular_deque<base::OnceClosure>>()
+              : nullptr) {
   if (!enabled)
     SetCompleteSets(net::GlobalFirstPartySets());
 }
@@ -51,6 +56,9 @@ FirstPartySetsManager::ComputeMetadata(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!sets_.has_value()) {
+    if (!wait_for_init_) {
+      return net::FirstPartySetMetadata();
+    }
     EnqueuePendingQuery(base::BindOnce(
         &FirstPartySetsManager::ComputeMetadataAndInvoke,
         weak_factory_.GetWeakPtr(), site, base::OptionalFromPtr(top_frame_site),
@@ -117,6 +125,9 @@ FirstPartySetsManager::FindEntries(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!sets_.has_value()) {
+    if (!wait_for_init_) {
+      return {{}};
+    }
     EnqueuePendingQuery(base::BindOnce(
         &FirstPartySetsManager::FindEntriesAndInvoke,
         weak_factory_.GetWeakPtr(), sites, fps_context_config.Clone(),
