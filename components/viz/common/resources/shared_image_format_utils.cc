@@ -287,36 +287,24 @@ bool CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(
 }
 
 bool HasEquivalentBufferFormat(SharedImageFormat format) {
-  if (format.is_single_plane()) {
-    switch (format.resource_format()) {
-      case BGRA_8888:
-      case RED_8:
-      case R16_EXT:
-      case RG16_EXT:
-      case RGBA_4444:
-      case RGBA_8888:
-      case RGBA_F16:
-      case BGR_565:
-      case RG_88:
-      case RGBX_8888:
-      case BGRX_8888:
-      case RGBA_1010102:
-      case BGRA_1010102:
-      case YVU_420:
-      case YUV_420_BIPLANAR:
-      case YUVA_420_TRIPLANAR:
-      case P010:
-        return true;
-      case ETC1:
-      case ALPHA_8:
-      case LUMINANCE_8:
-      case RGB_565:
-      case LUMINANCE_F16:
-        return false;
-    }
-  }
-
-  return format == MultiPlaneFormat::kYV12 ||
+  return format == SinglePlaneFormat::kBGRA_8888 ||
+         format == SinglePlaneFormat::kR_8 ||
+         format == SinglePlaneFormat::kR_16 ||
+         format == SinglePlaneFormat::kRG_1616 ||
+         format == SinglePlaneFormat::kRGBA_4444 ||
+         format == SinglePlaneFormat::kRGBA_8888 ||
+         format == SinglePlaneFormat::kRGBA_F16 ||
+         format == SinglePlaneFormat::kBGR_565 ||
+         format == SinglePlaneFormat::kRG_88 ||
+         format == SinglePlaneFormat::kRGBX_8888 ||
+         format == SinglePlaneFormat::kBGRX_8888 ||
+         format == SinglePlaneFormat::kRGBA_1010102 ||
+         format == SinglePlaneFormat::kBGRA_1010102 ||
+         format == LegacyMultiPlaneFormat::kYV12 ||
+         format == LegacyMultiPlaneFormat::kNV12 ||
+         format == LegacyMultiPlaneFormat::kNV12A ||
+         format == LegacyMultiPlaneFormat::kP010 ||
+         format == MultiPlaneFormat::kYV12 ||
          format == MultiPlaneFormat::kNV12 ||
          format == MultiPlaneFormat::kNV12A ||
          format == MultiPlaneFormat::kP010;
