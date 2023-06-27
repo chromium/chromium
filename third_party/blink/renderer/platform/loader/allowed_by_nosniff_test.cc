@@ -114,7 +114,8 @@ TEST_P(AllowedByNosniffTest, AllowedOrNot) {
     Persistent<MockConsoleLogger> logger =
         MakeGarbageCollected<MockConsoleLogger>();
     ResourceResponse response(url);
-    response.SetHttpHeaderField("Content-Type", testcase.mimetype);
+    response.SetHttpHeaderField(http_names::kContentType,
+                                AtomicString(testcase.mimetype));
 
     EXPECT_CALL(*use_counter, CountUse(_)).Times(::testing::AnyNumber());
     if (!testcase.allowed)
@@ -212,7 +213,8 @@ TEST_P(AllowedByNosniffTest, Counters) {
         MakeGarbageCollected<MockConsoleLogger>();
     ResourceResponse response(KURL(testcase.url));
     response.SetType(testcase.response_type);
-    response.SetHttpHeaderField("Content-Type", testcase.mimetype);
+    response.SetHttpHeaderField(http_names::kContentType,
+                                AtomicString(testcase.mimetype));
 
     EXPECT_CALL(*use_counter, CountUse(testcase.expected));
     EXPECT_CALL(*use_counter, CountUse(::testing::Ne(testcase.expected)))
@@ -295,8 +297,10 @@ TEST_P(AllowedByNosniffTest, AllTheSchemes) {
     SCOPED_TRACE(testing::Message() << "\n  url: " << testcase.url
                                     << "\n  allowed: " << testcase.allowed);
     ResourceResponse response(KURL(testcase.url));
-    response.SetHttpHeaderField("Content-Type", "invalid");
-    response.SetHttpHeaderField("X-Content-Type-Options", "nosniff");
+    response.SetHttpHeaderField(http_names::kContentType,
+                                AtomicString("invalid"));
+    response.SetHttpHeaderField(http_names::kXContentTypeOptions,
+                                AtomicString("nosniff"));
     EXPECT_EQ(testcase.allowed,
               AllowedByNosniff::MimeTypeAsScript(*use_counter, logger, response,
                                                  MimeTypeCheck::kStrict));

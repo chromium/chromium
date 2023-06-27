@@ -496,8 +496,8 @@ TEST_F(ResourceLoaderTest, AuthorizationCrossOriginRedirect) {
   KURL url("https://a.test/");
   ResourceRequest request(url);
   request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
-  request.SetHttpHeaderField(net::HttpRequestHeaders::kAuthorization,
-                             "Basic foo");
+  request.SetHttpHeaderField(http_names::kAuthorization,
+                             AtomicString("Basic foo"));
 
   FetchParameters params = FetchParameters::CreateForTest(std::move(request));
   Resource* resource = RawResource::Fetch(params, fetcher, nullptr);
