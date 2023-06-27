@@ -2511,7 +2511,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
   TestRenderViewContextMenu menu(*inner_web_contents->GetPrimaryMainFrame(),
                                  context_menu_params);
   menu.Init();
-  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEAVAS, 0);
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEPLUGINAS, 0);
 
   request_waiter.Run();
 
