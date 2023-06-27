@@ -1886,8 +1886,6 @@ void DocumentLoader::WillCommitNavigation() {
 }
 
 void DocumentLoader::DidCommitNavigation() {
-  recordreplay::Assert("[RUN-1436] DocumentLoader::DidCommitNavigation");
-
   if (commit_reason_ != CommitReason::kRegular)
     return;
 
@@ -1925,8 +1923,6 @@ void DocumentLoader::DidCommitNavigation() {
 
   DEVTOOLS_TIMELINE_TRACE_EVENT("CommitLoad", inspector_commit_load_event::Data,
                                 frame_);
-
-  recordreplay::Assert("[RUN-1436] DocumentLoader::DidCommitNavigation #1");
 
   // Needs to run before dispatching preloads, as it may evict the memory cache.
   probe::DidCommitLoad(frame_, this);
@@ -2432,10 +2428,6 @@ void DocumentLoader::CommitNavigation() {
       mojom::blink::DocumentPolicyFeature::kForceLoadAtTop);
 
   WillCommitNavigation();
-
-  if (Url().ProtocolIsInHTTPFamily()) {
-    recordreplay::OnNavigationEvent(nullptr, Url().GetString().Utf8().c_str());
-  }
 
   is_prerendering_ = frame_->GetPage()->IsPrerendering();
   Document* document = frame_->DomWindow()->InstallNewDocument(

@@ -217,19 +217,29 @@ void LocalWindowProxy::Initialize() {
     SetSecurityToken(origin.get());
   }
 
-  // After creating the first context that is associated with a non-empty
-  // origin, we are ready to set up the state used to process driver commands
-  // when recording/replaying, and to create checkpoints. Create the first
-  // checkpoint at which execution can pause.
-  if (recordreplay::IsRecordingOrReplaying("checkpoints") &&
-      origin &&
-      !origin->Host().empty() &&
-      !gRecordReplayStateInitialized) {
-    gRecordReplayStateInitialized = true;
-    SetupRecordReplayCommands(GetIsolate(), GetFrame());
-    V8RecordReplaySetDefaultContext(GetIsolate(), context);
-    recordreplay::NewCheckpoint();
-    RunInitialRecordReplayScripts(GetIsolate());
+  if (origin &&
+      !origin->Host().empty()) {
+
+    // New Window (proxy) init event.
+    OnNewWindow(GetIsolate(), GetFrame());
+
+
+    if (recordreplay::IsRecordingOrReplaying("checkpoints") &&
+        !gRecordReplayStateInitialized) {
+      // After creating the first context that is associated with a non-empty
+      // origin, we are ready to set up the state used to process driver
+      // commands when recording/replaying, and to create checkpoints. Create
+      // the first checkpoint at which execution can pause.
+      gRecordReplayStateInitialized = true;
+      SetupRecordReplayCommands(GetIsolate(), GetFrame());
+      V8RecordReplaySetDefaultContext(GetIsolate(), context);
+      recordreplay::NewCheckpoint();
+    }
+
+    if (GetFrame()->IsOutermostMainFrame()) {
+      // Root-level navigation event.
+      OnNewRootFrame(GetIsolate(), GetFrame());
+    }
   }
 
   {

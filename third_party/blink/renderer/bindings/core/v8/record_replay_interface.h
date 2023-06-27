@@ -16,9 +16,11 @@ namespace blink {
 // first checkpoint in the recording is created.
 void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame);
 
-// Run any special record/replay scripts that need to happen after the first
-// checkpoint is created, so that they can be registered with the recorder.
-void RunInitialRecordReplayScripts(v8::Isolate* isolate);
+// Initialize everything that needs to be initialized with every new global window.
+void OnNewWindow(v8::Isolate* isolate, LocalFrame* localFrame);
+
+// Initialize everything that needs to be initialized with every root frame.
+void OnNewRootFrame(v8::Isolate* isolate, LocalFrame* localFrame);
 
 // Notify the driver that we're adding an error to the console.
 void RecordReplayOnErrorEvent(ErrorEvent* error_event);
