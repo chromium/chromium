@@ -27,6 +27,7 @@
 #include <tuple>
 
 #include "base/clang_profiling_buildflags.h"
+#include "base/debug/stack_trace.h"
 #include "base/files/scoped_file.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/thread.h"
@@ -503,6 +504,34 @@ BPF_DEATH_TEST_C(BaselinePolicy,
   setsockopt(fds[0], SOL_SOCKET, SO_DEBUG, &id, sizeof(id));
 }
 #endif
+
+class InProcessStackDumpBPFTesterDelegate : public BPFTesterDelegate {
+ public:
+  InProcessStackDumpBPFTesterDelegate() = default;
+
+  InProcessStackDumpBPFTesterDelegate(
+      const InProcessStackDumpBPFTesterDelegate&) = delete;
+  InProcessStackDumpBPFTesterDelegate& operator=(
+      const InProcessStackDumpBPFTesterDelegate&) = delete;
+
+  ~InProcessStackDumpBPFTesterDelegate() override = default;
+
+  std::unique_ptr<bpf_dsl::Policy> GetSandboxBPFPolicy() override {
+    // Enable in process stack dumping in the child process before instantiating
+    // the policy.
+    base::debug::EnableInProcessStackDumping();
+    return std::make_unique<BaselinePolicy>();
+  }
+  void RunTestFunction() override {
+    // The test should fail with a SIGABRT in this case.
+    abort();
+  }
+};
+
+BPF_DEATH_TEST_D(BaselinePolicy,
+                 InProcessStackDumpsDontCrashOnSandbox,
+                 DEATH_BY_SIGNAL(SIGABRT),
+                 InProcessStackDumpBPFTesterDelegate)
 
 }  // namespace
 

@@ -313,7 +313,8 @@ class SymbolContext {
 
 }  // namespace
 
-bool EnableInProcessStackDumping() {
+namespace internal {
+bool EnableInProcessStackDumpingImpl() {
   // Add stack dumping support on exception on windows. Similar to OS_POSIX
   // signal() handling in process_util_posix.cc.
   g_previous_filter = SetUnhandledExceptionFilter(&StackDumpExceptionFilter);
@@ -323,6 +324,7 @@ bool EnableInProcessStackDumping() {
   // also release x64.
   return InitializeSymbols();
 }
+}  // namespace internal
 
 NOINLINE size_t CollectStackTrace(void** trace, size_t count) {
   // When walking our own stack, use CaptureStackBackTrace().

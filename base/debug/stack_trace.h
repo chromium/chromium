@@ -41,6 +41,10 @@ namespace debug {
 // done in official builds because it has security implications).
 BASE_EXPORT bool EnableInProcessStackDumping();
 
+// Returns true if EnableInProcessStackDumping() has been called, false
+// otherwise.
+BASE_EXPORT bool IsEnabledInProcessStackDumping();
+
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 // Sets a first-chance callback for the stack dump signal handler. This callback
 // is called at the beginning of the signal handler to handle special kinds of
@@ -244,6 +248,9 @@ class BASE_EXPORT ScopedStackFrameLinker {
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
 namespace internal {
+
+// The platform-specific implementation of EnableInProcessStackdumping().
+bool EnableInProcessStackDumpingImpl();
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 // POSIX doesn't define any async-signal safe function for converting

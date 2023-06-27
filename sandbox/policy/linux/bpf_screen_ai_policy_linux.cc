@@ -61,7 +61,9 @@ ResultExpr ScreenAIProcessPolicy::EvaluateSyscall(
 
     default:
       if (SyscallSets::IsGoogle3Threading(system_call_number)) {
-        return RestrictGoogle3Threading(system_call_number);
+        return RestrictGoogle3Threading(
+            system_call_number,
+            BPFBasePolicy::EvaluateSyscall(system_call_number));
       }
 
       return BPFBasePolicy::EvaluateSyscall(system_call_number);

@@ -219,8 +219,8 @@ bool ModuleContainsFrameAddress(void* address,
 
 }  // namespace
 
-// static
-bool EnableInProcessStackDumping() {
+namespace internal {
+bool EnableInProcessStackDumpingImpl() {
   // StackTrace works to capture the current stack (e.g. for diagnostics added
   // to code), but for local capture and print of backtraces, we just let the
   // system crashlogger take over. It handles printing out a nicely formatted
@@ -228,6 +228,7 @@ bool EnableInProcessStackDumping() {
   // filter with addr2line in the run script to get file/line info.
   return true;
 }
+}  // namespace internal
 
 size_t CollectStackTrace(void** trace, size_t count) {
   size_t frame_count = 0;

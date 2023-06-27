@@ -38,6 +38,8 @@ namespace debug {
 
 namespace {
 
+bool g_in_process_stack_dumping_enabled = false;
+
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
 #if defined(__arm__) && defined(__GNUC__) && !defined(__clang__)
@@ -164,6 +166,16 @@ void* LinkStackFrames(void* fpp, void* parent_fp) {
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
 }  // namespace
+
+bool EnableInProcessStackDumping() {
+  g_in_process_stack_dumping_enabled =
+      internal::EnableInProcessStackDumpingImpl();
+  return g_in_process_stack_dumping_enabled;
+}
+
+bool IsEnabledInProcessStackDumping() {
+  return g_in_process_stack_dumping_enabled;
+}
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 uintptr_t GetStackEnd() {
