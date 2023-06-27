@@ -691,6 +691,14 @@
     "try-nougat-phone-tester": "Ubuntu-22.04",
     "win-rel": "Ubuntu-22.04"
   },
+  "webrtc": {
+    "WebRTC Chromium Android Builder": "Ubuntu-18.04|Ubuntu-22.04",
+    "WebRTC Chromium Android Tester": "Ubuntu-18.04|Ubuntu-22.04",
+    "WebRTC Chromium Linux Builder": "Ubuntu-18.04|Ubuntu-22.04",
+    "WebRTC Chromium Linux Tester": "Ubuntu-18.04|Ubuntu-22.04",
+    "WebRTC Chromium Mac Tester": "Ubuntu-18.04|Ubuntu-22.04",
+    "WebRTC Chromium Win10 Tester": "Ubuntu-18.04|Ubuntu-22.04"
+  },
   "webrtc.fyi": {
     "WebRTC Chromium FYI Android Builder": "Ubuntu-18.04|Ubuntu-22.04",
     "WebRTC Chromium FYI Android Builder (dbg)": "Ubuntu-18.04|Ubuntu-22.04",
