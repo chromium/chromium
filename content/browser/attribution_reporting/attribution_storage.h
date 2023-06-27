@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_H_
 
+#include <memory>
 #include <set>
 #include <vector>
 
@@ -20,6 +21,7 @@ class Time;
 
 namespace content {
 
+class AttributionStorageDelegate;
 class AttributionTrigger;
 class CreateReportResult;
 class StorableSource;
@@ -118,6 +120,8 @@ class AttributionStorage {
                          base::Time delete_end,
                          StoragePartition::StorageKeyMatcherFunction filter,
                          bool delete_rate_limit_data = true) = 0;
+
+  virtual void SetDelegate(std::unique_ptr<AttributionStorageDelegate>) = 0;
 };
 
 }  // namespace content

@@ -9634,6 +9634,12 @@ experimental domain Storage
     parameters
       string bucketId
 
+  # https://wicg.github.io/attribution-reporting-api/
+  experimental command setAttributionReportingLocalTestingMode
+    parameters
+      # If enabled, noise is suppressed and reports are sent immediately.
+      boolean enabled
+
 # The SystemInfo domain defines methods and events for querying low-level system information.
 experimental domain SystemInfo
 

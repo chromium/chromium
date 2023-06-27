@@ -108,6 +108,11 @@ class MockAttributionManager : public AttributionManager {
               (OsRegistration, GlobalRenderFrameHostId),
               (override));
 
+  MOCK_METHOD(void,
+              SetDebugMode,
+              (absl::optional<bool> enabled, base::OnceClosure done),
+              (override));
+
   void AddObserver(AttributionObserver*) override;
   void RemoveObserver(AttributionObserver*) override;
   AttributionDataHostManager* GetDataHostManager() override;

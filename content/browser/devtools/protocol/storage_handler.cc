@@ -18,6 +18,7 @@
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
 #include "content/browser/devtools/protocol/handler_helpers.h"
 #include "content/browser/devtools/protocol/network.h"
@@ -443,6 +444,7 @@ Response StorageHandler::Disable() {
   SetInterestGroupTracking(false);
   shared_storage_observer_.reset();
   quota_manager_observer_.reset();
+  ResetAttributionReportingLocalTestingMode();
   return Response::Success();
 }
 
@@ -1605,6 +1607,42 @@ void StorageHandler::NotifyDeleteBucket(
     const storage::BucketLocator& bucket_locator) {
   frontend_->StorageBucketDeleted(
       base::NumberToString(bucket_locator.id.value()));
+}
+
+void StorageHandler::SetAttributionReportingLocalTestingMode(
+    bool enabled,
+    std::unique_ptr<SetAttributionReportingLocalTestingModeCallback> callback) {
+  if (!storage_partition_) {
+    callback->sendFailure(Response::InternalError());
+    return;
+  }
+
+  auto* manager = static_cast<StoragePartitionImpl*>(storage_partition_)
+                      ->GetAttributionManager();
+  if (!manager) {
+    callback->sendFailure(Response::InternalError());
+    return;
+  }
+
+  manager->SetDebugMode(
+      enabled,
+      base::BindOnce(
+          &SetAttributionReportingLocalTestingModeCallback::sendSuccess,
+          std::move(callback)));
+}
+
+void StorageHandler::ResetAttributionReportingLocalTestingMode() {
+  if (!storage_partition_) {
+    return;
+  }
+
+  auto* manager = static_cast<StoragePartitionImpl*>(storage_partition_)
+                      ->GetAttributionManager();
+  if (!manager) {
+    return;
+  }
+
+  manager->SetDebugMode(/*enabled=*/absl::nullopt, base::DoNothing());
 }
 
 }  // namespace protocol

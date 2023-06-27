@@ -120,6 +120,8 @@ class CONTENT_EXPORT RateLimitTable {
   void AppendRateLimitDataKeys(sql::Database* db,
                                std::set<AttributionDataModel::DataKey>& keys);
 
+  void SetDelegate(const AttributionStorageDelegate&);
+
  private:
   [[nodiscard]] bool AddRateLimit(
       sql::Database* db,
@@ -148,7 +150,7 @@ class CONTENT_EXPORT RateLimitTable {
   [[nodiscard]] bool DeleteExpiredRateLimits(sql::Database* db)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  const raw_ref<const AttributionStorageDelegate> delegate_
+  raw_ref<const AttributionStorageDelegate> delegate_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Time at which `DeleteExpiredRateLimits()` was last called. Initialized to

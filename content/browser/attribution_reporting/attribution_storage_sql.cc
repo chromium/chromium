@@ -3135,4 +3135,12 @@ void AttributionStorageSql::DeleteByDataKey(
             /*delete_rate_limit_data=*/true);
 }
 
+void AttributionStorageSql::SetDelegate(
+    std::unique_ptr<AttributionStorageDelegate> delegate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(delegate);
+  rate_limit_table_.SetDelegate(*delegate);
+  delegate_ = std::move(delegate);
+}
+
 }  // namespace content

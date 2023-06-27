@@ -350,10 +350,8 @@ void LogMetricsOnReportSent(const AttributionReport& report) {
   }
 }
 
-std::unique_ptr<AttributionStorageDelegate> MakeStorageDelegate() {
-  bool debug_mode = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kAttributionReportingDebugMode);
-
+std::unique_ptr<AttributionStorageDelegate> MakeStorageDelegate(
+    bool debug_mode) {
   if (debug_mode) {
     return std::make_unique<AttributionStorageDelegateImpl>(
         AttributionNoiseMode::kNone, AttributionDelayMode::kNone);
@@ -468,7 +466,8 @@ AttributionManagerImpl::AttributionManagerImpl(
           user_data_directory,
           /*max_pending_events=*/1000,
           std::move(special_storage_policy),
-          MakeStorageDelegate(),
+          MakeStorageDelegate(base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kAttributionReportingDebugMode)),
           std::make_unique<AttributionCookieCheckerImpl>(storage_partition),
           std::make_unique<AttributionReportNetworkSender>(
               storage_partition->GetURLLoaderFactoryForBrowserProcess()),
@@ -1416,6 +1415,19 @@ void AttributionManagerImpl::OnOsRegistration(
   NotifyOsRegistration(registration, is_debug_key_allowed,
                        success ? OsRegistrationResult::kPassedToOs
                                : OsRegistrationResult::kRejectedByOs);
+}
+
+void AttributionManagerImpl::SetDebugMode(absl::optional<bool> enabled,
+                                          base::OnceClosure done) {
+  bool debug_mode =
+      enabled.value_or(base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAttributionReportingDebugMode));
+
+  // TODO(apaseltiner): Observers should be notified when the debug mode changes
+  // so they can re-query its value.
+  attribution_storage_.AsyncCall(&AttributionStorage::SetDelegate)
+      .WithArgs(MakeStorageDelegate(debug_mode))
+      .Then(std::move(done));
 }
 
 }  // namespace content

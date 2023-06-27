@@ -523,4 +523,9 @@ void RateLimitTable::AppendRateLimitDataKeys(
   }
 }
 
+void RateLimitTable::SetDelegate(const AttributionStorageDelegate& delegate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  delegate_ = delegate;
+}
+
 }  // namespace content

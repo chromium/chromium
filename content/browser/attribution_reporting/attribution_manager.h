@@ -16,6 +16,7 @@
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 class SuitableOrigin;
@@ -116,6 +117,12 @@ class CONTENT_EXPORT AttributionManager : public AttributionDataModel {
                          BrowsingDataFilterBuilder* filter_builder,
                          bool delete_rate_limit_data,
                          base::OnceClosure done) = 0;
+
+  // If debug mode is enabled, noise and delays are disabled to facilitate
+  // testing, whether automated or manual. If `enabled` is `absl::nullopt`,
+  // falls back to `switches::kAttributionReportingDebugMode`.
+  virtual void SetDebugMode(absl::optional<bool> enabled,
+                            base::OnceClosure done) = 0;
 };
 
 }  // namespace content

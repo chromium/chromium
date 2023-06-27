@@ -137,6 +137,11 @@ class StorageHandler
   DispatchResponse DeleteStorageBucket(
       std::unique_ptr<protocol::Storage::StorageBucket> bucket) override;
 
+  void SetAttributionReportingLocalTestingMode(
+      bool enabled,
+      std::unique_ptr<SetAttributionReportingLocalTestingModeCallback>)
+      override;
+
  private:
   // See definition for lifetime information.
   class CacheStorageObserver;
@@ -183,6 +188,8 @@ class StorageHandler
 
   Response FindStoragePartition(const Maybe<std::string>& browser_context_id,
                                 StoragePartition** storage_partition);
+
+  void ResetAttributionReportingLocalTestingMode();
 
   std::unique_ptr<Storage::Frontend> frontend_;
   StoragePartition* storage_partition_{nullptr};

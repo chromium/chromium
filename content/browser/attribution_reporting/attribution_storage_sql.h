@@ -126,6 +126,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
                  base::Time delete_end,
                  StoragePartition::StorageKeyMatcherFunction filter,
                  bool delete_rate_limit_data) override;
+  void SetDelegate(std::unique_ptr<AttributionStorageDelegate>) override;
 
   [[nodiscard]] attribution_reporting::mojom::StoreSourceResult
   CheckDestinationThrottler(const StorableSource& source);

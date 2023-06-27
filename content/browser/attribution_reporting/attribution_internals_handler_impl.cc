@@ -255,8 +255,14 @@ void AttributionInternalsHandlerImpl::IsAttributionReportingEnabled(
           ContentBrowserClient::AttributionReportingOperation::kAny,
           /*rfh=*/nullptr, /*source_origin=*/nullptr,
           /*destination_origin=*/nullptr, /*reporting_origin=*/nullptr);
+
+  // TODO(apaseltiner): This is a layering violation: The internals handler
+  // should query the manager for its configuration, not the command line,
+  // especially since `AttributionManager::SetDebugMode()` can cause its value
+  // to change after initialization.
   bool debug_mode = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kAttributionReportingDebugMode);
+
   std::move(callback).Run(attribution_reporting_enabled, debug_mode,
                           AttributionManager::GetSupport());
 }

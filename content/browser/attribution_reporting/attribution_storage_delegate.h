@@ -32,7 +32,9 @@ class CommonSourceInfo;
 class StoredSource;
 
 // Storage delegate that can supplied to extend basic attribution storage
-// functionality like annotating reports.
+// functionality like annotating reports. Users and subclasses must NOT assume
+// that the delegate has the same lifetime as the `AttributionManager` or
+// `AttributionStorage` classes.
 class CONTENT_EXPORT AttributionStorageDelegate {
  public:
   // Both bounds are inclusive.
