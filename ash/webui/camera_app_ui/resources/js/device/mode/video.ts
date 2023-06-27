@@ -384,7 +384,7 @@ export class Video extends ModeBase {
   }
 
   /**
-   * Start monitor storage status and return initial status.
+   * Starts monitor storage status and returns initial status.
    *
    * @return Promise resolved to boolean indicating whether users can
    * start/resume the recording.
@@ -803,7 +803,7 @@ export class Video extends ModeBase {
   }
 
   /**
-   * Initial time-lapse saver with specified encoder parameters. Then, Starts
+   * Creates time-lapse saver with specified encoder parameters. Then, Starts
    * recording time-lapse and waits for stop recording event.
    */
   private async captureTimeLapse(param: h264.EncoderParameters):

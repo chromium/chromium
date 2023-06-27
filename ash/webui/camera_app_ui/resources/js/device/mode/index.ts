@@ -72,7 +72,7 @@ interface CaptureParams {
 interface ModeConfig {
   /**
    * @return Resolves to boolean indicating whether the mode is supported by
-   *     video device with specified device id.
+   *     video device with specified `deviceId`.
    */
   isSupported(deviceId: string|null): Promise<boolean>;
 
@@ -128,7 +128,7 @@ export class Modes {
     }
 
     /**
-     * Prepare the device for the specific resolution and capture intent.
+     * Prepares the device for the specific `resolution` and `captureIntent`.
      */
     async function prepareDeviceForPhoto(
         constraints: StreamConstraints, resolution: Resolution,
@@ -277,7 +277,7 @@ export class Modes {
   }
 
   /**
-   * Gets factory to create mode capture object.
+   * Gets factory to create `mode` capture object.
    */
   getModeFactory(mode: Mode): ModeFactory {
     return this.allModes[mode].getCaptureFactory();

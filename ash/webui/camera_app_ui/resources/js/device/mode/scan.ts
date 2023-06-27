@@ -39,7 +39,7 @@ export function getDefaultScanCorners(size: Resolution): Point[] {
 }
 
 /**
- * Provides external dependency functions used by photo mode and handles the
+ * Provides external dependency functions used by scan mode and handles the
  * captured result photo.
  */
 export interface ScanHandler extends PhotoHandler {
@@ -64,7 +64,7 @@ class DocumentPhotoHandler implements PhotoHandler {
 }
 
 /**
- * Photo mode capture controller.
+ * Scan mode capture controller.
  */
 export class Scan extends Photo {
   constructor(
@@ -77,7 +77,7 @@ export class Scan extends Photo {
 }
 
 /**
- * Factory for creating photo mode capture object.
+ * Factory for creating scan mode capture object.
  */
 export class ScanFactory extends ModeFactory {
   /**
