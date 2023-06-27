@@ -48,7 +48,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowPackageManager;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
@@ -1110,8 +1109,6 @@ public class AppMenuPropertiesDelegateUnitTest {
             boolean isChromeRunningInAdjacentWindow, boolean isInMultiWindowMode,
             boolean isInMultiDisplayMode, boolean isMultiInstanceRunning) {
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, isAutomotive);
-        BuildInfo.resetForTesting();
-
         doReturn(isInstanceSwitcherEnabled)
                 .when(mAppMenuPropertiesDelegate)
                 .instanceSwitcherEnabled();

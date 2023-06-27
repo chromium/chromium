@@ -18,7 +18,6 @@ import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 
 import androidx.annotation.OptIn;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.os.BuildCompat;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -71,7 +70,9 @@ public class BuildInfo {
      */
     public final int vulkanDeqpLevel;
 
-    private static class Holder { private static BuildInfo sInstance = new BuildInfo(); }
+    private static class Holder {
+        private static final BuildInfo INSTANCE = new BuildInfo();
+    }
 
     @CalledByNative
     private static String[] getAll() {
@@ -79,9 +80,8 @@ public class BuildInfo {
     }
 
     /** Returns a serialized string array of all properties of this class. */
-    @VisibleForTesting
     @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
-    String[] getAllProperties() {
+    private String[] getAllProperties() {
         String hostPackageName = ContextUtils.getApplicationContext().getPackageName();
         // This implementation needs to be kept in sync with the native BuildInfo constructor.
         return new String[] {
@@ -153,13 +153,16 @@ public class BuildInfo {
     }
 
     public static BuildInfo getInstance() {
-        return Holder.sInstance;
+        // Some tests mock out things BuildInfo is based on, so disable caching in tests to ensure
+        // such mocking is not defeated by caching.
+        if (BuildConfig.IS_FOR_TEST) {
+            return new BuildInfo();
+        }
+        return Holder.INSTANCE;
     }
 
-    @VisibleForTesting
-    BuildInfo() {
+    private BuildInfo() {
         sInitialized = true;
-
         Context appContext = ContextUtils.getApplicationContext();
         String hostPackageName = appContext.getPackageName();
         PackageManager pm = appContext.getPackageManager();
@@ -328,15 +331,5 @@ public class BuildInfo {
 
     public static String getFirebaseAppId() {
         return sFirebaseAppId;
-    }
-
-    /**
-     * This operation is not thread-safe. Construction of the new BuildInfo object will
-     * happen synchronously and result in a consistent BuildInfo, but references to the static
-     * BuildInfo instance may be out of date in some threads.
-     */
-    @VisibleForTesting
-    public static void resetForTesting() {
-        Holder.sInstance = new BuildInfo();
     }
 }
