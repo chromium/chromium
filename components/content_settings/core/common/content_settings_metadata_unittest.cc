@@ -49,10 +49,10 @@ TEST(RuleMetaDataTest, ComputeMetadata) {
 }
 
 TEST(RuleMetaDataTest, ComputeMetadata_Invalid) {
-  // Supplying a lifetime but no expiration is disallowed.
-  EXPECT_CHECK_DEATH(RuleMetaData::ComputeLifetime(
-      /*lifetime=*/base::Seconds(10),
-      /*expiration=*/base::Time()));
+  // Supplying a lifetime but no expiration defers to the expiration.
+  EXPECT_EQ(base::Seconds(0), RuleMetaData::ComputeLifetime(
+                                  /*lifetime=*/base::Seconds(10),
+                                  /*expiration=*/base::Time()));
 }
 
 }  // namespace content_settings
