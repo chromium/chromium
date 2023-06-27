@@ -132,15 +132,6 @@ public class EditorProperties {
          * @return True if the value is valid.
          */
         boolean isValid(@Nullable String value);
-
-        /**
-         * Called to check whether the length of the field value is maximum.
-         *
-         * @param value The value of the field to check.
-         * @return True if the field value length is maximum among all the possible valid values in
-         *         this field.
-         */
-        boolean isLengthMaximum(@Nullable String value);
     }
 
     /**
@@ -222,23 +213,17 @@ public class EditorProperties {
      * Properties specific for the text fields.
      */
     public static class TextFieldProperties {
-        /* Indicates that the length counter is disabled. */
-        public static final int LENGTH_COUNTER_LIMIT_NONE = 0;
-
         public static final PropertyModel.ReadableIntPropertyKey TEXT_INPUT_TYPE =
                 new PropertyModel.ReadableIntPropertyKey("text_input_type");
         public static final PropertyModel.WritableObjectPropertyKey<List<String>> TEXT_SUGGESTIONS =
                 new PropertyModel.WritableObjectPropertyKey<>("suggestions");
         public static final PropertyModel.ReadableObjectPropertyKey<TextWatcher> TEXT_FORMATTER =
                 new PropertyModel.ReadableObjectPropertyKey<>("formatter");
-        public static final PropertyModel.ReadableIntPropertyKey TEXT_LENGTH_COUNTER_LIMIT =
-                new PropertyModel.ReadableIntPropertyKey("length_counter_limit");
 
         public static final PropertyKey[] TEXT_SPECIFIC_KEYS = {
                 TEXT_INPUT_TYPE,
                 TEXT_SUGGESTIONS,
                 TEXT_FORMATTER,
-                TEXT_LENGTH_COUNTER_LIMIT,
         };
 
         public static final PropertyKey[] TEXT_ALL_KEYS =
@@ -281,11 +266,6 @@ public class EditorProperties {
         if (fieldCallback != null) {
             fieldCallback.onResult(key);
         }
-    }
-
-    public static boolean hasMaximumLength(PropertyModel textField) {
-        EditorFieldValidator validator = textField.get(FieldProperties.VALIDATOR);
-        return validator != null && validator.isLengthMaximum(textField.get(FieldProperties.VALUE));
     }
 
     public static @Nullable String getValidationErrorMessage(PropertyModel textField) {

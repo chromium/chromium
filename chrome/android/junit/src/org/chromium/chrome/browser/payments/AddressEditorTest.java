@@ -30,9 +30,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.LENGTH_COUNTER_LIMIT_NONE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_LENGTH_COUNTER_LIMIT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.setDropdownKey;
 
 import android.app.Activity;
@@ -215,8 +213,8 @@ public class AddressEditorTest {
     }
 
     private static void validateTextField(ListItem fieldItem, String value,
-            @TextInputType int textInputType, String label, boolean isRequired, boolean isFullLine,
-            int lengthCounter) {
+            @TextInputType int textInputType, String label, boolean isRequired,
+            boolean isFullLine) {
         assertEquals(TEXT_INPUT, fieldItem.type);
 
         PropertyModel field = fieldItem.model;
@@ -225,7 +223,6 @@ public class AddressEditorTest {
         assertEquals(label, field.get(LABEL));
         assertEquals(isRequired, field.get(IS_REQUIRED));
         assertEquals(isFullLine, field.get(IS_FULL_LINE));
-        assertEquals(lengthCounter, field.get(TEXT_LENGTH_COUNTER_LIMIT));
     }
 
     private void validateShownFields(PropertyModel editorModel, AutofillProfile profile) {
@@ -247,15 +244,15 @@ public class AddressEditorTest {
         validateTextField(editorFields.get(1), profile.getFullName(),
                 TextInputType.PERSON_NAME_INPUT,
                 /*label=*/"full name label",
-                /*isRequired=*/true, /*isFullLine=*/true, LENGTH_COUNTER_LIMIT_NONE);
+                /*isRequired=*/true, /*isFullLine=*/true);
         validateTextField(editorFields.get(2), profile.getRegion(), TextInputType.REGION_INPUT,
                 /*label=*/"admin area label",
-                /*isRequired=*/true, /*isFullLine=*/true, LENGTH_COUNTER_LIMIT_NONE);
+                /*isRequired=*/true, /*isFullLine=*/true);
         // Locality field is forced to occupy full line.
         validateTextField(editorFields.get(3), profile.getLocality(),
                 TextInputType.PLAIN_TEXT_INPUT,
                 /*label=*/"locality label",
-                /*isRequired=*/true, /*isFullLine=*/true, LENGTH_COUNTER_LIMIT_NONE);
+                /*isRequired=*/true, /*isFullLine=*/true);
 
         // Note: dependent locality is a required field for address profiles stored in Google
         // account, but it's still marked as optional by the editor when the corresponding field in
@@ -263,26 +260,26 @@ public class AddressEditorTest {
         // profiles.
         validateTextField(editorFields.get(4), profile.getDependentLocality(),
                 TextInputType.PLAIN_TEXT_INPUT, /*label=*/"dependent locality label",
-                /*isRequired=*/true, /*isFullLine=*/true, LENGTH_COUNTER_LIMIT_NONE);
+                /*isRequired=*/true, /*isFullLine=*/true);
 
         validateTextField(editorFields.get(5), profile.getCompanyName(),
                 TextInputType.PLAIN_TEXT_INPUT,
                 /*label=*/"organization label",
-                /*isRequired=*/false, /*isFullLine=*/true, LENGTH_COUNTER_LIMIT_NONE);
+                /*isRequired=*/false, /*isFullLine=*/true);
 
         validateTextField(editorFields.get(6), profile.getSortingCode(),
                 TextInputType.ALPHA_NUMERIC_INPUT, /*label=*/"sorting code label",
-                /*isRequired=*/false, /*isFullLine=*/false, LENGTH_COUNTER_LIMIT_NONE);
+                /*isRequired=*/false, /*isFullLine=*/false);
         validateTextField(editorFields.get(7), profile.getPostalCode(),
                 TextInputType.ALPHA_NUMERIC_INPUT, /*label=*/"postal code label",
-                /*isRequired=*/true, /*isFullLine=*/false, LENGTH_COUNTER_LIMIT_NONE);
+                /*isRequired=*/true, /*isFullLine=*/false);
         validateTextField(editorFields.get(8), profile.getStreetAddress(),
                 TextInputType.STREET_ADDRESS_INPUT, /*label=*/"street address label",
-                /*isRequired=*/true, /*isFullLine=*/true, LENGTH_COUNTER_LIMIT_NONE);
+                /*isRequired=*/true, /*isFullLine=*/true);
         validateTextField(editorFields.get(9), profile.getPhoneNumber(),
                 TextInputType.PHONE_NUMBER_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number),
-                /*isRequired=*/true, /*isFullLine=*/true, LENGTH_COUNTER_LIMIT_NONE);
+                /*isRequired=*/true, /*isFullLine=*/true);
     }
 
     @Test
@@ -344,7 +341,7 @@ public class AddressEditorTest {
         validateTextField(editorFields.get(1), sProfile.getPhoneNumber(),
                 TextInputType.PHONE_NUMBER_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number),
-                /*isRequired=*/true, /*isFullLine=*/true, LENGTH_COUNTER_LIMIT_NONE);
+                /*isRequired=*/true, /*isFullLine=*/true);
     }
 
     @Test

@@ -19,9 +19,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.LENGTH_COUNTER_LIMIT_NONE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_LENGTH_COUNTER_LIMIT;
 
 import android.app.Activity;
 
@@ -97,7 +95,6 @@ public class ContactEditorTest {
         assertEquals(label, field.get(LABEL));
         assertTrue(field.get(IS_REQUIRED));
         assertTrue(field.get(IS_FULL_LINE));
-        assertEquals(LENGTH_COUNTER_LIMIT_NONE, field.get(TEXT_LENGTH_COUNTER_LIMIT));
     }
 
     @Test

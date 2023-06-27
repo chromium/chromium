@@ -8,10 +8,8 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.LENGTH_COUNTER_LIMIT_NONE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_LENGTH_COUNTER_LIMIT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_SUGGESTIONS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.ALPHA_NUMERIC_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.EMAIL_ADDRESS_INPUT;
@@ -20,19 +18,16 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Text
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.REGION_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.STREET_ADDRESS_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.getValidationErrorMessage;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.hasMaximumLength;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.isFieldValid;
 
 import android.content.Context;
 import android.text.Editable;
-import android.text.InputFilter;
 import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -115,10 +110,6 @@ class TextFieldView extends FrameLayout implements FieldView {
                     // Show no errors until the user has already tried to edit the field once.
                     updateDisplayedError(!isFieldValid(mEditorFieldModel));
                 }
-
-                if (mEditorFieldModel.get(TEXT_LENGTH_COUNTER_LIMIT) != LENGTH_COUNTER_LIMIT_NONE) {
-                    mInputLayout.setCounterEnabled(hasFocus);
-                }
             }
         });
 
@@ -130,13 +121,6 @@ class TextFieldView extends FrameLayout implements FieldView {
                 updateDisplayedError(false);
                 if (sObserverForTest != null) {
                     sObserverForTest.onEditorTextUpdate();
-                }
-                if (!hasMaximumLength(mEditorFieldModel)) return;
-                updateDisplayedError(true);
-                if (isValid()) {
-                    // Simulate editor action to select next selectable field.
-                    mEditorActionListener.onEditorAction(mInput, EditorInfo.IME_ACTION_NEXT,
-                            new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
                 }
             }
 
@@ -155,13 +139,6 @@ class TextFieldView extends FrameLayout implements FieldView {
                     new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item,
                             fieldModel.get(TEXT_SUGGESTIONS)));
             mInput.setThreshold(0);
-        }
-
-        final int lengthCounter = mEditorFieldModel.get(TEXT_LENGTH_COUNTER_LIMIT);
-        if (lengthCounter != LENGTH_COUNTER_LIMIT_NONE) {
-            // Limit input length for field and counter.
-            mInput.setFilters(new InputFilter[] {new InputFilter.LengthFilter(lengthCounter)});
-            mInputLayout.setCounterMaxLength(lengthCounter);
         }
 
         if (mEditorFieldModel.get(TEXT_FORMATTER) != null) {

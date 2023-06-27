@@ -35,9 +35,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.LENGTH_COUNTER_LIMIT_NONE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_LENGTH_COUNTER_LIMIT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.setDropdownKey;
 
 import android.app.Activity;
@@ -273,8 +271,8 @@ public class AddressEditorTest {
     }
 
     private static void validateTextField(ListItem fieldItem, String value,
-            @TextInputType int textInputType, String label, boolean isRequired, boolean isFullLine,
-            int lengthCounter) {
+            @TextInputType int textInputType, String label, boolean isRequired,
+            boolean isFullLine) {
         Assert.assertEquals(TEXT_INPUT, fieldItem.type);
 
         PropertyModel field = fieldItem.model;
@@ -283,7 +281,6 @@ public class AddressEditorTest {
         Assert.assertEquals(label, field.get(LABEL));
         Assert.assertEquals(isRequired, field.get(IS_REQUIRED));
         Assert.assertEquals(isFullLine, field.get(IS_FULL_LINE));
-        Assert.assertEquals(lengthCounter, field.get(TEXT_LENGTH_COUNTER_LIMIT));
     }
 
     private static void checkModelHasExpectedValues(PropertyModel editorModel,
@@ -327,17 +324,15 @@ public class AddressEditorTest {
         // Note: honorific prefix always comes before the full name field.
         validateTextField(editorFields.get(1), profile.getHonorificPrefix(),
                 TextInputType.PLAIN_TEXT_INPUT,
-                mActivity.getString(R.string.autofill_profile_editor_honorific_prefix), false, true,
-                LENGTH_COUNTER_LIMIT_NONE);
+                mActivity.getString(R.string.autofill_profile_editor_honorific_prefix), false,
+                true);
         validateTextField(editorFields.get(2), profile.getFullName(),
-                TextInputType.PERSON_NAME_INPUT, "full name label", shouldMarkFieldsRequired, true,
-                LENGTH_COUNTER_LIMIT_NONE);
+                TextInputType.PERSON_NAME_INPUT, "full name label", shouldMarkFieldsRequired, true);
         validateTextField(editorFields.get(3), profile.getRegion(), TextInputType.PLAIN_TEXT_INPUT,
-                "admin area label", false, true, LENGTH_COUNTER_LIMIT_NONE);
+                "admin area label", false, true);
         // Locality field is forced to occupy full line.
         validateTextField(editorFields.get(4), profile.getLocality(),
-                TextInputType.PLAIN_TEXT_INPUT, "locality label", shouldMarkFieldsRequired, true,
-                LENGTH_COUNTER_LIMIT_NONE);
+                TextInputType.PLAIN_TEXT_INPUT, "locality label", shouldMarkFieldsRequired, true);
 
         // Note: dependent locality is a required field for address profiles stored in Google
         // account, but it's still marked as optional by the editor when the corresponding field in
@@ -345,21 +340,19 @@ public class AddressEditorTest {
         // profiles.
         validateTextField(editorFields.get(5), profile.getDependentLocality(),
                 TextInputType.PLAIN_TEXT_INPUT, "dependent locality label",
-                shouldMarkFieldsRequiredWhenAddressFieldEmpty, true, LENGTH_COUNTER_LIMIT_NONE);
+                shouldMarkFieldsRequiredWhenAddressFieldEmpty, true);
 
         validateTextField(editorFields.get(6), profile.getCompanyName(),
-                TextInputType.PLAIN_TEXT_INPUT, "organization label", false, true,
-                LENGTH_COUNTER_LIMIT_NONE);
+                TextInputType.PLAIN_TEXT_INPUT, "organization label", false, true);
 
         validateTextField(editorFields.get(7), profile.getSortingCode(),
-                TextInputType.ALPHA_NUMERIC_INPUT, "sorting code label", false, false,
-                LENGTH_COUNTER_LIMIT_NONE);
+                TextInputType.ALPHA_NUMERIC_INPUT, "sorting code label", false, false);
         validateTextField(editorFields.get(8), profile.getPostalCode(),
                 TextInputType.ALPHA_NUMERIC_INPUT, "postal code label", shouldMarkFieldsRequired,
-                false, LENGTH_COUNTER_LIMIT_NONE);
+                false);
         validateTextField(editorFields.get(9), profile.getStreetAddress(),
                 TextInputType.STREET_ADDRESS_INPUT, "street address label",
-                shouldMarkFieldsRequired, true, LENGTH_COUNTER_LIMIT_NONE);
+                shouldMarkFieldsRequired, true);
     }
 
     @Test
@@ -649,12 +642,10 @@ public class AddressEditorTest {
 
         validateTextField(editorFields.get(1), sLocalProfile.getPhoneNumber(),
                 TextInputType.PHONE_NUMBER_INPUT,
-                mActivity.getString(R.string.autofill_profile_editor_phone_number), false, true,
-                LENGTH_COUNTER_LIMIT_NONE);
+                mActivity.getString(R.string.autofill_profile_editor_phone_number), false, true);
         validateTextField(editorFields.get(2), sLocalProfile.getEmailAddress(),
                 TextInputType.EMAIL_ADDRESS_INPUT,
-                mActivity.getString(R.string.autofill_profile_editor_email_address), false, true,
-                LENGTH_COUNTER_LIMIT_NONE);
+                mActivity.getString(R.string.autofill_profile_editor_email_address), false, true);
     }
 
     @Test
@@ -678,8 +669,8 @@ public class AddressEditorTest {
         // editorFields[3] - nickname field.
         Assert.assertEquals(4, editorFields.size());
 
-        validateTextField(editorFields.get(3), null, TextInputType.PLAIN_TEXT_INPUT, "Label", false,
-                true, LENGTH_COUNTER_LIMIT_NONE);
+        validateTextField(
+                editorFields.get(3), null, TextInputType.PLAIN_TEXT_INPUT, "Label", false, true);
     }
 
     @Test

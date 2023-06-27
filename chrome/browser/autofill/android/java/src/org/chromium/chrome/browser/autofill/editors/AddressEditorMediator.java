@@ -33,11 +33,9 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Item
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TRIGGER_DONE_CALLBACK_BEFORE_CLOSE_ANIMATION;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.LENGTH_COUNTER_LIMIT_NONE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_LENGTH_COUNTER_LIMIT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.ALPHA_NUMERIC_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.EMAIL_ADDRESS_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PERSON_NAME_INPUT;
@@ -232,7 +230,6 @@ class AddressEditorMediator {
                                 mContext.getString(
                                         R.string.payments_phone_invalid_validation_message))
                         .with(IS_FULL_LINE, true)
-                        .with(TEXT_LENGTH_COUNTER_LIMIT, LENGTH_COUNTER_LIMIT_NONE)
                         .build();
 
         // Phone number is present for all countries.
@@ -246,7 +243,6 @@ class AddressEditorMediator {
                                 mContext.getString(
                                         R.string.payments_email_invalid_validation_message))
                         .with(IS_FULL_LINE, true)
-                        .with(TEXT_LENGTH_COUNTER_LIMIT, LENGTH_COUNTER_LIMIT_NONE)
                         .build();
 
         // TODO(crbug.com/1445020): Use localized string.
@@ -635,11 +631,6 @@ class AddressEditorMediator {
             // updated frequently (daily) to do more strict validation.
             return TextUtils.isEmpty(value) ? mAllowEmptyValue
                                             : PhoneNumberUtil.isPossibleNumber(value, mCountryCode);
-        }
-
-        @Override
-        public boolean isLengthMaximum(@Nullable String value) {
-            return false;
         }
     }
 }
