@@ -83,12 +83,11 @@ void BindTimesOrNull(sql::Statement& statement,
 // Version number of the database.
 // NOTE: When changing the version, add a new golden file for the new version
 // and a test to verify that Init() works with it.
-const int kCurrentVersionNumber = 2;
+const int kCurrentVersionNumber = 3;
 
 // The lowest current version embedded in Chrome code that can use the current
 // version of this database.
 const int kCompatibleVersionNumber = 2;
-
 }  // namespace
 
 // See comments at declaration of these variables in dips_database.h
@@ -139,6 +138,12 @@ void DIPSDatabase::DatabaseErrorCallback(int extended_error,
 sql::InitStatus DIPSDatabase::OpenDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
+
+  // If this is not the first call to `OpenDatabase()` which can happen when
+  // retrying the DB's initialization, then the error callback would've
+  // previously been set.
+  db_->reset_error_callback();
+
   db_->set_histogram_tag("DIPS");
   db_->set_error_callback(base::BindRepeating(
       &DIPSDatabase::DatabaseErrorCallback, base::Unretained(this)));
@@ -155,38 +160,26 @@ sql::InitStatus DIPSDatabase::OpenDatabase() {
 
 bool DIPSDatabase::InitTables() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  static constexpr char kBounceSql[] =
-      // clang-format off
-      "CREATE TABLE bounces("
-          "site TEXT PRIMARY KEY NOT NULL,"
-          "first_site_storage_time INTEGER,"
-          "last_site_storage_time INTEGER,"
-          "first_user_interaction_time INTEGER,"
-          "last_user_interaction_time INTEGER,"
-          "first_stateful_bounce_time INTEGER,"
-          "last_stateful_bounce_time INTEGER,"
-          "first_bounce_time INTEGER,"
-          "last_bounce_time INTEGER)";
-  // clang-format on
+  static constexpr char kBounceSql[] = R"(
+    CREATE TABLE bounces(
+      site TEXT PRIMARY KEY NOT NULL,
+      first_site_storage_time INTEGER,
+      last_site_storage_time INTEGER,
+      first_user_interaction_time INTEGER,
+      last_user_interaction_time INTEGER,
+      first_stateful_bounce_time INTEGER,
+      last_stateful_bounce_time INTEGER,
+      first_bounce_time INTEGER,
+      last_bounce_time INTEGER,
+      first_web_authn_assertion_time INTEGER,
+      last_web_authn_assertion_time INTEGER
+    ))";
 
   DCHECK(db_->IsSQLValid(kBounceSql));
   return db_->Execute(kBounceSql);
 }
 
-bool DIPSDatabase::UpdateSchema() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (meta_table_.GetVersionNumber() == 1 && !MigrateToVersion2()) {
-    return false;
-  }
-  return true;
-}
-
 bool DIPSDatabase::MigrateToVersion2() {
-  // This migration:
-  // - Makes all timestamp columns nullable instead of using base::Time() as
-  // default.
-  // - Replaces both the first and last stateless bounce columns to track
-  // the first and last bounce times instead.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_->HasActiveTransactions());
   // First make a new table that allows for null values in the timestamps
@@ -304,6 +297,48 @@ bool DIPSDatabase::MigrateToVersion2() {
   return meta_table_.SetVersionNumber(2);
 }
 
+bool DIPSDatabase::MigrateToVersion3() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_->HasActiveTransactions());
+
+  return db_->Execute(R"(
+    ALTER TABLE bounces
+    ADD COLUMN first_web_authn_assertion_time INTEGER DEFAULT NULL)") &&
+         db_->Execute(R"(
+    ALTER TABLE bounces
+    ADD COLUMN last_web_authn_assertion_time INTEGER DEFAULT NULL)") &&
+         meta_table_.SetVersionNumber(3);
+}
+
+bool DIPSDatabase::MigrateAsNeeded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (int next_version = meta_table_.GetVersionNumber() + 1;
+       next_version <= kCurrentVersionNumber; next_version++) {
+    switch (next_version) {
+      case 2:
+        if (!MigrateToVersion2()) {
+          return false;
+        }
+        if (!meta_table_.SetCompatibleVersionNumber(
+                std::min(next_version, kCompatibleVersionNumber))) {
+          return false;
+        }
+        break;
+      case 3:
+        if (!MigrateToVersion3()) {
+          return false;
+        }
+        if (!meta_table_.SetCompatibleVersionNumber(
+                std::min(next_version, kCompatibleVersionNumber))) {
+          return false;
+        }
+        break;
+    }
+  }
+  return true;
+}
+
 sql::InitStatus DIPSDatabase::InitImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -311,12 +346,13 @@ sql::InitStatus DIPSDatabase::InitImpl() {
   if (status != sql::INIT_OK) {
     return status;
   }
-
   DCHECK(db_->is_open());
 
-  sql::MetaTable::RazeIfIncompatible(db_.get(),
-                                     sql::MetaTable::kNoLowestSupportedVersion,
-                                     kCurrentVersionNumber);
+  if (!sql::MetaTable::RazeIfIncompatible(
+          db_.get(), sql::MetaTable::kNoLowestSupportedVersion,
+          kCurrentVersionNumber)) {
+    return sql::INIT_FAILURE;
+  }
 
   // Scope initialization in a transaction so we can't be partially initialized.
   sql::Transaction transaction(db_.get());
@@ -332,14 +368,8 @@ sql::InitStatus DIPSDatabase::InitImpl() {
     return sql::INIT_FAILURE;
   }
 
-  if (!table_already_exists) {
-    if (!InitTables()) {
-      return sql::INIT_FAILURE;
-    }
-  } else {
-    if (!UpdateSchema()) {
-      return sql::INIT_FAILURE;
-    }
+  if (table_already_exists ? !MigrateAsNeeded() : !InitTables()) {
+    return sql::INIT_FAILURE;
   }
 
   // Initialization is complete.

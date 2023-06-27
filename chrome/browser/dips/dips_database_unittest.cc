@@ -36,7 +36,8 @@ class DIPSDatabase;
 
 namespace {
 
-int kCurrentVersionNumber = 2;
+const int kCurrentVersionNumber = 3;
+const int kCompatibleVersionNumber = 2;
 
 class TestDatabase : public DIPSDatabase {
  public:
@@ -909,9 +910,13 @@ class DIPSDatabaseMigrationTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList features_;
+  // Time columns root:
+  const char* kStorageTimes = "site_storage";
+  const char* kInteractionTimes = "user_interaction";
+  const char* kStatefulBounceTimes = "stateful_bounce";
+  const char* kStatelessBounceTimesV1 = "stateless_bounce";
+  const char* kBounceTimesV2ToV3 = "bounce";
 
- protected:
   void MigrateDatabase() { TestDatabase db(db_path_); }
 
   int GetDatabaseVersion(sql::Database* db) {
@@ -921,6 +926,24 @@ class DIPSDatabaseMigrationTest : public testing::Test {
       return 0;
     }
     return kGetVersionSql.ColumnInt(0);
+  }
+
+  int GetDatabaseLastCompatibleVersion(sql::Database* db) {
+    sql::Statement kGetLastCompatibleVersionSql(db->GetUniqueStatement(
+        "SELECT value FROM meta WHERE key='last_compatible_version'"));
+    if (!kGetLastCompatibleVersionSql.Step()) {
+      return 0;
+    }
+    return kGetLastCompatibleVersionSql.ColumnInt(0);
+  }
+
+  int GetDatabasePrepopulated(sql::Database* db) {
+    sql::Statement kGetPrepopulatedSql(db->GetUniqueStatement(
+        "SELECT value FROM meta WHERE key='prepopulated'"));
+    if (!kGetPrepopulatedSql.Step()) {
+      return 0;
+    }
+    return kGetPrepopulatedSql.ColumnInt(0);
   }
 
   std::vector<std::string> GetFirstAndLastColumnForSite(sql::Database* db,
@@ -938,37 +961,27 @@ class DIPSDatabaseMigrationTest : public testing::Test {
                              base::SPLIT_WANT_ALL);
   }
 
-  std::vector<std::string> GetStorageTimes(sql::Database* db,
-                                           const char* site) {
-    return GetFirstAndLastColumnForSite(db, "site_storage", site);
-  }
-
-  std::vector<std::string> GetInteractionTimes(sql::Database* db,
-                                               const char* site) {
-    return GetFirstAndLastColumnForSite(db, "user_interaction", site);
-  }
-
-  std::vector<std::string> GetStatefulBounceTimes(sql::Database* db,
-                                                  const char* site) {
-    return GetFirstAndLastColumnForSite(db, "stateful_bounce", site);
-  }
-
-  // Note: Only works if db is using the v1 schema.
-  std::vector<std::string> GetStatelessBounceTimes(sql::Database* db,
-                                                   const char* site) {
-    DCHECK(GetDatabaseVersion(db) == 1);
-    return GetFirstAndLastColumnForSite(db, "stateless_bounce", site);
-  }
-
-  // Note: Only works if db is using the v2 schema.
-  std::vector<std::string> GetBounceTimes(sql::Database* db, const char* site) {
-    DCHECK(GetDatabaseVersion(db) == 2);
-    return GetFirstAndLastColumnForSite(db, "bounce", site);
-  }
-
   base::FilePath db_path() { return db_path_; }
 
+  void LoadDatabase(const char* file_name) {
+    base::FilePath root;
+    ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root));
+    base::FilePath file_path = root.AppendASCII("chrome")
+                                   .AppendASCII("test")
+                                   .AppendASCII("data")
+                                   .AppendASCII("dips")
+                                   .AppendASCII(file_name);
+    EXPECT_TRUE(base::PathExists(file_path));
+    ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(), file_path));
+  }
+
+  std::string DbToString(sql::Database* db) {
+    return sql::test::ExecuteWithResults(
+        db, "SELECT * FROM bounces ORDER BY site", "|", "\n");
+  }
+
  private:
+  base::test::ScopedFeatureList features_;
   std::unique_ptr<TestDatabase> db_;
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
@@ -991,7 +1004,6 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateEmptyToCurrentVersion) {
   {
     sql::Database db;
     ASSERT_TRUE(db.Open(db_path()));
-
     EXPECT_EQ(GetDatabaseVersion(&db), kCurrentVersionNumber);
     EXPECT_TRUE(db.DoesTableExist("bounces"));
 
@@ -1001,30 +1013,102 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateEmptyToCurrentVersion) {
     EXPECT_FALSE(db.DoesColumnExist("bounces", "last_stateless_bounce_time"));
     EXPECT_TRUE(db.DoesColumnExist("bounces", "first_bounce_time"));
     EXPECT_TRUE(db.DoesColumnExist("bounces", "last_bounce_time"));
+    EXPECT_TRUE(
+        db.DoesColumnExist("bounces", "first_web_authn_assertion_time"));
+    EXPECT_TRUE(db.DoesColumnExist("bounces", "last_web_authn_assertion_time"));
+  }
+}
+
+TEST_F(DIPSDatabaseMigrationTest, RazeIfIncompatible_TooNew) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase("v2.sql"));
+
+  // Manipulations on the database version number are not necessary, but
+  // performed for consistency.
+  //
+  // Verify pre migration conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    // Matches what is in "v2.sql" file:
+    const auto v2sql_version_num = 2;
+    const auto v2sql_compatible_version_num = 2;
+    const auto v2sql_prepopulated = 1;
+
+    EXPECT_EQ(GetDatabaseVersion(&db), v2sql_version_num);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db),
+              v2sql_compatible_version_num);
+    EXPECT_EQ(GetDatabasePrepopulated(&db), v2sql_prepopulated);
+
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(
+        meta_table.Init(&db, v2sql_version_num, v2sql_compatible_version_num));
+
+    // Prepare simulation of raze if incompatible. by making this DB
+    // incompatible.
+    const int tiny_increment = 1;
+    ASSERT_TRUE(
+        meta_table.SetVersionNumber(kCurrentVersionNumber + tiny_increment));
+    ASSERT_TRUE(meta_table.SetCompatibleVersionNumber(kCurrentVersionNumber +
+                                                      tiny_increment));
+
+    EXPECT_EQ(GetDatabaseVersion(&db), kCurrentVersionNumber + tiny_increment);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db),
+              kCurrentVersionNumber + tiny_increment);
+
+    // These values are all set in v2.sql.
+    EXPECT_EQ(DbToString(&db),
+              "both-bounce-kinds.test|||4|4|1|4|2|6\n"
+              "stateful-bounce.test|||4|4|1|1||\n"
+              "stateless-bounce.test|||4|4|||1|1\n"
+              "storage.test|1|1|4|4||||");
+  }
+
+  MigrateDatabase();
+
+  // Verify post migration conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    // Check version.
+    EXPECT_EQ(GetDatabaseVersion(&db), kCurrentVersionNumber);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), kCompatibleVersionNumber);
+    EXPECT_EQ(GetDatabasePrepopulated(&db), 0);
+
+    ASSERT_TRUE(db.DoesTableExist("bounces"));
+
+    EXPECT_TRUE(
+        db.DoesColumnExist("bounces", "first_web_authn_assertion_time"));
+    EXPECT_TRUE(db.DoesColumnExist("bounces", "last_web_authn_assertion_time"));
+
+    // As expected the database is razed after migration.
+    EXPECT_EQ(DbToString(&db), "");
   }
 }
 
 TEST_F(DIPSDatabaseMigrationTest, MigrateV1ToCurrentVersion) {
-  base::FilePath root;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root));
-  base::FilePath path_to_v1 = root.AppendASCII("chrome")
-                                  .AppendASCII("test")
-                                  .AppendASCII("data")
-                                  .AppendASCII("dips")
-                                  .AppendASCII("v1.sql");
-  EXPECT_TRUE(base::PathExists(path_to_v1));
-  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(), path_to_v1));
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase("v1.sql"));
 
-  // Verify preconditions of the v1 database.
+  // Verify pre migration conditions.
   {
     sql::Database db;
     ASSERT_TRUE(db.Open(db_path()));
 
     EXPECT_EQ(GetDatabaseVersion(&db), 1);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 1);
+
+    EXPECT_TRUE(db.DoesColumnExist("bounces", "first_stateless_bounce_time"));
+    EXPECT_TRUE(db.DoesColumnExist("bounces", "last_stateless_bounce_time"));
+    EXPECT_FALSE(db.DoesColumnExist("bounces", "first_bounce_time"));
+    EXPECT_FALSE(db.DoesColumnExist("bounces", "last_bounce_time"));
+    EXPECT_FALSE(
+        db.DoesColumnExist("bounces", "first_web_authn_assertion_time"));
+    EXPECT_FALSE(
+        db.DoesColumnExist("bounces", "last_web_authn_assertion_time"));
 
     // These values are all set in v1.sql.
-    EXPECT_EQ(sql::test::ExecuteWithResults(
-                  &db, "SELECT * FROM bounces ORDER BY site", "|", "\n"),
+    EXPECT_EQ(DbToString(&db),
               "both-bounce-kinds.test|0|0|4|4|1|4|2|6\n"
               "stateful-bounce.test|0|0|4|4|1|1|0|0\n"
               "stateless-bounce.test|0|0|4|4|0|0|1|1\n"
@@ -1032,80 +1116,155 @@ TEST_F(DIPSDatabaseMigrationTest, MigrateV1ToCurrentVersion) {
 
     // Note: that the stateful bounce happens earlier than the stateless bounce
     // this should be reflected in the first/last bounce times for this in v2.
-    EXPECT_THAT(GetStatefulBounceTimes(&db, "both-bounce-kinds.test"),
+    EXPECT_THAT(GetFirstAndLastColumnForSite(&db, kStatefulBounceTimes,
+                                             "both-bounce-kinds.test"),
                 testing::ElementsAre("1", "4"));
-    EXPECT_THAT(GetStatelessBounceTimes(&db, "both-bounce-kinds.test"),
+    EXPECT_THAT(GetFirstAndLastColumnForSite(&db, kStatelessBounceTimesV1,
+                                             "both-bounce-kinds.test"),
                 testing::ElementsAre("2", "6"));
-    EXPECT_THAT(GetInteractionTimes(&db, "both-bounce-kinds.test"),
+    EXPECT_THAT(GetFirstAndLastColumnForSite(&db, kInteractionTimes,
+                                             "both-bounce-kinds.test"),
                 testing::ElementsAre("4", "4"));
 
-    EXPECT_THAT(GetStatefulBounceTimes(&db, "stateful-bounce.test"),
+    EXPECT_THAT(GetFirstAndLastColumnForSite(&db, kStatefulBounceTimes,
+                                             "stateful-bounce.test"),
                 testing::ElementsAre("1", "1"));
-    EXPECT_THAT(GetInteractionTimes(&db, "stateful-bounce.test"),
+    EXPECT_THAT(GetFirstAndLastColumnForSite(&db, kInteractionTimes,
+                                             "stateful-bounce.test"),
                 testing::ElementsAre("4", "4"));
 
-    EXPECT_THAT(GetStatelessBounceTimes(&db, "stateless-bounce.test"),
+    EXPECT_THAT(GetFirstAndLastColumnForSite(&db, kStatelessBounceTimesV1,
+                                             "stateless-bounce.test"),
                 testing::ElementsAre("1", "1"));
-    EXPECT_THAT(GetInteractionTimes(&db, "stateless-bounce.test"),
+    EXPECT_THAT(GetFirstAndLastColumnForSite(&db, kInteractionTimes,
+                                             "stateless-bounce.test"),
                 testing::ElementsAre("4", "4"));
 
-    EXPECT_THAT(GetStorageTimes(&db, "storage.test"),
-                testing::ElementsAre("1", "1"));
-    EXPECT_THAT(GetInteractionTimes(&db, "storage.test"),
-                testing::ElementsAre("4", "4"));
+    EXPECT_THAT(
+        GetFirstAndLastColumnForSite(&db, kStorageTimes, "storage.test"),
+        testing::ElementsAre("1", "1"));
+    EXPECT_THAT(
+        GetFirstAndLastColumnForSite(&db, kInteractionTimes, "storage.test"),
+        testing::ElementsAre("4", "4"));
   }
 
   MigrateDatabase();
 
-  // Validate aspects of the database after migrating to the current version.
+  // Verify post migration conditions.
   {
     sql::Database db;
     ASSERT_TRUE(db.Open(db_path()));
 
-    // Check version.
-    EXPECT_EQ(GetDatabaseVersion(&db), 2);
+    EXPECT_EQ(GetDatabaseVersion(&db), kCurrentVersionNumber);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), kCompatibleVersionNumber);
+
     ASSERT_TRUE(db.DoesTableExist("bounces"));
 
-    // The "stateless_bounce" columns should be removed, and replaced by
-    // just "bounce" columns.
+    // The `kStatelessBounceTimesV1` columns should be removed, and replaced by
+    // just `kBounceTimesV2ToV3` columns:
     EXPECT_FALSE(db.DoesColumnExist("bounces", "first_stateless_bounce_time"));
     EXPECT_FALSE(db.DoesColumnExist("bounces", "last_stateless_bounce_time"));
     EXPECT_TRUE(db.DoesColumnExist("bounces", "first_bounce_time"));
     EXPECT_TRUE(db.DoesColumnExist("bounces", "last_bounce_time"));
-    // Verify that data is preserved across the migration.
-    // Notably - all zeros are transformed to NULL and the final two
-    // columns represent the first & last bounce times now.
-    EXPECT_EQ(sql::test::ExecuteWithResults(
-                  &db, "SELECT * FROM bounces ORDER BY site", "|", "\n"),
-              "both-bounce-kinds.test|||4|4|1|4|1|6\n"
-              "stateful-bounce.test|||4|4|1|1|1|1\n"
-              "stateless-bounce.test|||4|4|||1|1\n"
-              "storage.test|1|1|4|4||||");
 
-    EXPECT_THAT(GetStatefulBounceTimes(&db, "both-bounce-kinds.test"),
+    // Web authn assertion time columns are added:
+    EXPECT_TRUE(
+        db.DoesColumnExist("bounces", "first_web_authn_assertion_time"));
+    EXPECT_TRUE(db.DoesColumnExist("bounces", "last_web_authn_assertion_time"));
+
+    // Verifies that data is preserved across the migration.
+    // Notably:
+    // - All zeros are transformed to NULL, and
+    // - Four extra columns were added.
+    EXPECT_EQ(DbToString(&db),
+              "both-bounce-kinds.test|||4|4|1|4|1|6||\n"
+              "stateful-bounce.test|||4|4|1|1|1|1||\n"
+              "stateless-bounce.test|||4|4|||1|1||\n"
+              "storage.test|1|1|4|4||||||");
+
+    EXPECT_THAT(GetFirstAndLastColumnForSite(&db, kStatefulBounceTimes,
+                                             "both-bounce-kinds.test"),
                 testing::ElementsAre("1", "4"));
     // The new bounce column should be populated correctly.
-    EXPECT_THAT(GetBounceTimes(&db, "both-bounce-kinds.test"),
+    EXPECT_THAT(GetFirstAndLastColumnForSite(&db, kBounceTimesV2ToV3,
+                                             "both-bounce-kinds.test"),
                 testing::ElementsAre("1", "6"));
-    EXPECT_THAT(GetInteractionTimes(&db, "both-bounce-kinds.test"),
+    EXPECT_THAT(GetFirstAndLastColumnForSite(&db, kInteractionTimes,
+                                             "both-bounce-kinds.test"),
                 testing::ElementsAre("4", "4"));
 
-    EXPECT_THAT(GetStatefulBounceTimes(&db, "stateful-bounce.test"),
+    EXPECT_THAT(GetFirstAndLastColumnForSite(&db, kStatefulBounceTimes,
+                                             "stateful-bounce.test"),
                 testing::ElementsAre("1", "1"));
     // The new bounce column should be populated correctly.
-    EXPECT_THAT(GetBounceTimes(&db, "stateful-bounce.test"),
+    EXPECT_THAT(GetFirstAndLastColumnForSite(&db, kBounceTimesV2ToV3,
+                                             "stateful-bounce.test"),
                 testing::ElementsAre("1", "1"));
-    EXPECT_THAT(GetInteractionTimes(&db, "stateful-bounce.test"),
+    EXPECT_THAT(GetFirstAndLastColumnForSite(&db, kInteractionTimes,
+                                             "stateful-bounce.test"),
                 testing::ElementsAre("4", "4"));
 
-    EXPECT_THAT(GetBounceTimes(&db, "stateless-bounce.test"),
+    EXPECT_THAT(GetFirstAndLastColumnForSite(&db, kBounceTimesV2ToV3,
+                                             "stateless-bounce.test"),
                 testing::ElementsAre("1", "1"));
-    EXPECT_THAT(GetInteractionTimes(&db, "stateful-bounce.test"),
+    EXPECT_THAT(GetFirstAndLastColumnForSite(&db, kInteractionTimes,
+                                             "stateful-bounce.test"),
                 testing::ElementsAre("4", "4"));
 
-    EXPECT_THAT(GetStorageTimes(&db, "storage.test"),
-                testing::ElementsAre("1", "1"));
-    EXPECT_THAT(GetInteractionTimes(&db, "storage.test"),
-                testing::ElementsAre("4", "4"));
+    EXPECT_THAT(
+        GetFirstAndLastColumnForSite(&db, kStorageTimes, "storage.test"),
+        testing::ElementsAre("1", "1"));
+    EXPECT_THAT(
+        GetFirstAndLastColumnForSite(&db, kInteractionTimes, "storage.test"),
+        testing::ElementsAre("4", "4"));
+  }
+}
+
+TEST_F(DIPSDatabaseMigrationTest, MigrateV2ToCurrentVersion) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase("v2.sql"));
+
+  // Verify pre migration conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    EXPECT_EQ(GetDatabaseVersion(&db), 2);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 2);
+    EXPECT_EQ(GetDatabasePrepopulated(&db), 1);
+
+    EXPECT_FALSE(
+        db.DoesColumnExist("bounces", "first_web_authn_assertion_time"));
+    EXPECT_FALSE(
+        db.DoesColumnExist("bounces", "last_web_authn_assertion_time"));
+
+    EXPECT_EQ(DbToString(&db),
+              "both-bounce-kinds.test|||4|4|1|4|2|6\n"
+              "stateful-bounce.test|||4|4|1|1||\n"
+              "stateless-bounce.test|||4|4|||1|1\n"
+              "storage.test|1|1|4|4||||");
+  }
+
+  MigrateDatabase();
+
+  // Verify post migration conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    EXPECT_EQ(GetDatabaseVersion(&db), kCurrentVersionNumber);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), kCompatibleVersionNumber);
+    EXPECT_EQ(GetDatabasePrepopulated(&db), 1);
+
+    ASSERT_TRUE(db.DoesTableExist("bounces"));
+
+    EXPECT_TRUE(
+        db.DoesColumnExist("bounces", "first_web_authn_assertion_time"));
+    EXPECT_TRUE(db.DoesColumnExist("bounces", "last_web_authn_assertion_time"));
+
+    EXPECT_EQ(DbToString(&db),
+              "both-bounce-kinds.test|||4|4|1|4|2|6||\n"
+              "stateful-bounce.test|||4|4|1|1||||\n"
+              "stateless-bounce.test|||4|4|||1|1||\n"
+              "storage.test|1|1|4|4||||||");
   }
 }

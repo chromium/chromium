@@ -35,7 +35,10 @@ source_set("unit_tests") {
 bundle_data("golden_dbs_bundle_data") {
   visibility = [ ":unit_tests" ]
   testonly = true
-  sources = [ "//chrome/test/data/dips/v1.sql" ]
+  sources = [
+    "//chrome/test/data/dips/v1.sql",
+    "//chrome/test/data/dips/v2.sql",
+  ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }

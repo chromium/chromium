@@ -36,12 +36,21 @@ class DIPSDatabase {
   DIPSDatabase(const DIPSDatabase&) = delete;
   DIPSDatabase& operator=(const DIPSDatabase&) = delete;
 
-  // Updates `db_` to use the latest schema.
-  // Returns whether the migration was successful.
-  bool UpdateSchema();
+  // Updates `db_` to use the latest schema. Returns whether the migration was
+  // successful.
+  bool MigrateAsNeeded();
 
-  // Migrates from v1 to v2 of the DIPS database schema.
+  // Migrates from v1 to v2 of the DIPS database schema. This migration:
+  // - Makes all timestamp columns nullable instead of using base::Time() as
+  // default.
+  // - Replaces both the first and last stateless bounce columns to track the
+  // first and last bounce times instead.
   bool MigrateToVersion2();
+
+  // Migrates from v2 to v3 of the DIPS database schema. This migration adds two
+  // extra columns for recording the first and last time a web authn assertion
+  // was called.
+  bool MigrateToVersion3();
 
   // DIPS Bounce table functions -----------------------------------------------
   bool Write(const std::string& site,
@@ -161,6 +170,7 @@ class DIPSDatabase {
   sql::InitStatus Init();
   sql::InitStatus InitImpl();
   sql::InitStatus OpenDatabase();
+  // Creates the bounce table following the latest schema.
   bool InitTables();
 
   // Internal utility functions ------------------------------------------------
