@@ -139,6 +139,11 @@ extern const base::FeatureParam<bool> kPrivacySandboxFirstPartySetsUISampleSets;
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kEnforcePrivacySandboxAttestations);
 
+// Gives a list of sites permission to use Privacy Sandbox features without
+// being officially enrolled.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const char kPrivacySandboxEnrollmentOverrides[];
+
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_

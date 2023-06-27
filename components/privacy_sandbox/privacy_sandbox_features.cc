@@ -102,4 +102,7 @@ BASE_FEATURE(kEnforcePrivacySandboxAttestations,
              "EnforcePrivacySandboxAttestations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kPrivacySandboxEnrollmentOverrides[] =
+    "privacy-sandbox-enrollment-overrides";
+
 }  // namespace privacy_sandbox
