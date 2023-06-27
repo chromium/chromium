@@ -67,6 +67,21 @@ void CollectParcelsToFlush(ParcelQueueType& queue,
   }
 }
 
+bool ValidateAndAcquireObjectsForTransitFrom(
+    Router& sender,
+    absl::Span<const IpczHandle> handles,
+    std::vector<Ref<APIObject>>& objects) {
+  objects.resize(handles.size());
+  for (size_t i = 0; i < handles.size(); ++i) {
+    auto* object = APIObject::FromHandle(handles[i]);
+    if (!object || !object->CanSendFrom(sender)) {
+      return false;
+    }
+    objects[i] = WrapRefCounted(object);
+  }
+  return true;
+}
+
 }  // namespace
 
 Router::Router() = default;
@@ -76,6 +91,29 @@ Router::~Router() {
   // operations clear `traps_` and imply that no further traps should be added.
   absl::MutexLock lock(&mutex_);
   ABSL_ASSERT(traps_.empty());
+}
+
+// static
+Router::Pair Router::CreatePair() {
+  Pair routers{MakeRefCounted<Router>(), MakeRefCounted<Router>()};
+  DVLOG(5) << "Created new portal pair " << routers.first.get() << " and "
+           << routers.second.get();
+
+  const OperationContext context{OperationContext::kAPICall};
+  auto links = LocalRouterLink::CreatePair(LinkType::kCentral, routers,
+                                           LocalRouterLink::kStable);
+  routers.first->SetOutwardLink(context, std::move(links.first));
+  routers.second->SetOutwardLink(context, std::move(links.second));
+  return routers;
+}
+
+IpczResult Router::Close() {
+  CloseRoute();
+  return IPCZ_RESULT_OK;
+}
+
+bool Router::CanSendFrom(Router& sender) {
+  return &sender != this && !HasLocalPeer(sender);
 }
 
 bool Router::IsPeerClosed() {
@@ -351,12 +389,121 @@ bool Router::AcceptRouteDisconnectedFrom(const OperationContext& context,
   return true;
 }
 
-IpczResult Router::GetNextInboundParcel(IpczGetFlags flags,
-                                        void* data,
-                                        size_t* num_bytes,
-                                        IpczHandle* handles,
-                                        size_t* num_handles,
-                                        IpczHandle* parcel) {
+IpczResult Router::Put(absl::Span<const uint8_t> data,
+                       absl::Span<const IpczHandle> handles) {
+  std::vector<Ref<APIObject>> objects;
+  if (!ValidateAndAcquireObjectsForTransitFrom(*this, handles, objects)) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  if (IsPeerClosed()) {
+    return IPCZ_RESULT_NOT_FOUND;
+  }
+
+  Parcel parcel;
+  const IpczResult allocate_result =
+      AllocateOutboundParcel(data.size(), /*allow_partial=*/false, parcel);
+  if (allocate_result != IPCZ_RESULT_OK) {
+    return allocate_result;
+  }
+
+  if (!data.empty()) {
+    memcpy(parcel.data_view().data(), data.data(), data.size());
+  }
+  parcel.CommitData(data.size());
+  parcel.SetObjects(std::move(objects));
+  const IpczResult result = SendOutboundParcel(parcel);
+  if (result == IPCZ_RESULT_OK) {
+    // If the parcel was sent, the sender relinquishes handle ownership and
+    // therefore implicitly releases its ref to each object.
+    for (IpczHandle handle : handles) {
+      std::ignore = APIObject::TakeFromHandle(handle);
+    }
+  }
+
+  return result;
+}
+
+IpczResult Router::BeginPut(IpczBeginPutFlags flags,
+                            volatile void** data,
+                            size_t* num_bytes,
+                            IpczTransaction* transaction) {
+  const bool allow_partial = (flags & IPCZ_BEGIN_PUT_ALLOW_PARTIAL) != 0;
+  if (IsPeerClosed()) {
+    return IPCZ_RESULT_NOT_FOUND;
+  }
+
+  const size_t num_bytes_to_request = num_bytes ? *num_bytes : 0;
+  Parcel parcel;
+  const IpczResult allocation_result =
+      AllocateOutboundParcel(num_bytes_to_request, allow_partial, parcel);
+  if (allocation_result != IPCZ_RESULT_OK) {
+    return allocation_result;
+  }
+
+  if (num_bytes) {
+    *num_bytes = parcel.data_view().size();
+  }
+  if (data) {
+    *data = parcel.data_view().data();
+  }
+  if (!pending_puts_) {
+    pending_puts_ = std::make_unique<PendingTransactionSet>();
+  }
+  *transaction = pending_puts_->Add(std::move(parcel));
+  return IPCZ_RESULT_OK;
+}
+
+IpczResult Router::EndPut(IpczTransaction transaction,
+                          size_t num_bytes_produced,
+                          absl::Span<const IpczHandle> handles,
+                          IpczEndPutFlags flags) {
+  const bool aborted = flags & IPCZ_END_PUT_ABORT;
+  std::vector<Ref<APIObject>> objects;
+  if (!aborted &&
+      !ValidateAndAcquireObjectsForTransitFrom(*this, handles, objects)) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  if (!pending_puts_) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  absl::optional<Parcel> parcel;
+  if (aborted) {
+    parcel = pending_puts_->FinalizeForPut(transaction, 0);
+  } else {
+    parcel = pending_puts_->FinalizeForPut(transaction, num_bytes_produced);
+  }
+
+  if (!parcel) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  if (aborted) {
+    return IPCZ_RESULT_OK;
+  }
+
+  parcel->CommitData(num_bytes_produced);
+  parcel->SetObjects(std::move(objects));
+  IpczResult result = SendOutboundParcel(*parcel);
+  if (result == IPCZ_RESULT_OK) {
+    // If the parcel was sent, the sender relinquishes handle ownership and
+    // therefore implicitly releases its ref to each object.
+    for (IpczHandle handle : handles) {
+      APIObject::TakeFromHandle(handle);
+    }
+  }
+
+  return result;
+}
+
+IpczResult Router::Get(IpczGetFlags flags,
+                       void* data,
+                       size_t* num_bytes,
+                       IpczHandle* handles,
+                       size_t* num_handles,
+                       IpczHandle* parcel) {
   const OperationContext context{OperationContext::kAPICall};
   TrapEventDispatcher dispatcher;
   Parcel consumed_parcel;
@@ -423,12 +570,12 @@ IpczResult Router::GetNextInboundParcel(IpczGetFlags flags,
   return IPCZ_RESULT_OK;
 }
 
-IpczResult Router::BeginGetNextInboundParcel(IpczBeginGetFlags flags,
-                                             const volatile void** data,
-                                             size_t* num_bytes,
-                                             IpczHandle* handles,
-                                             size_t* num_handles,
-                                             IpczTransaction* transaction) {
+IpczResult Router::BeginGet(IpczBeginGetFlags flags,
+                            const volatile void** data,
+                            size_t* num_bytes,
+                            IpczHandle* handles,
+                            size_t* num_handles,
+                            IpczTransaction* transaction) {
   const OperationContext context{OperationContext::kAPICall};
   TrapEventDispatcher dispatcher;
   absl::MutexLock lock(&mutex_);
@@ -489,9 +636,9 @@ IpczResult Router::BeginGetNextInboundParcel(IpczBeginGetFlags flags,
   return IPCZ_RESULT_OK;
 }
 
-IpczResult Router::EndGetNextInboundParcel(IpczTransaction transaction,
-                                           IpczEndGetFlags flags,
-                                           IpczHandle* parcel_handle) {
+IpczResult Router::EndGet(IpczTransaction transaction,
+                          IpczEndGetFlags flags,
+                          IpczHandle* parcel_handle) {
   const OperationContext context{OperationContext::kAPICall};
   TrapEventDispatcher dispatcher;
   absl::MutexLock lock(&mutex_);

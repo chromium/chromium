@@ -32,7 +32,7 @@ IpczResult Box::Close() {
   return IPCZ_RESULT_OK;
 }
 
-bool Box::CanSendFrom(Portal& sender) {
+bool Box::CanSendFrom(Router& sender) {
   return absl::visit(
       Overloaded{
           [](const Empty&) { return false; },

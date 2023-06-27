@@ -75,7 +75,7 @@ IpczResult ParcelWrapper::Get(IpczGetFlags flags,
 
   if (parcel) {
     // Allow the caller to acquire another handle to this wrapper. Not
-    // particularly useful, but consistent with Portal::Get().
+    // particularly useful, but consistent with Router::Get().
     *parcel = APIObject::ReleaseAsHandle(WrapRefCounted(this));
   }
 

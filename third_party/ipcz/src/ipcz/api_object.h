@@ -11,7 +11,7 @@
 
 namespace ipcz {
 
-class Portal;
+class Router;
 
 // Base class for any object which can be referenced by an IpczHandle.
 //
@@ -58,7 +58,7 @@ class APIObject : public RefCounted<APIObject> {
 
   // Indicates whether it's possible to send this object from `sender`. By
   // default the answer is NO.
-  virtual bool CanSendFrom(Portal& sender);
+  virtual bool CanSendFrom(Router& sender);
 
  protected:
   friend class RefCounted<APIObject>;

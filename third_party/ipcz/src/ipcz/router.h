@@ -46,16 +46,51 @@ class TrapEventDispatcher;
 //     routers.first->SetOutwardLink(std::move(links.first));
 //     routers.second->SetOutwardLink(std::move(links.second));
 //
-// Each ipcz Portal directly controls a terminal Router along its route, and
-// all routes stabilize to eventually consist of only two interconnected
+// Each ipcz portal handle directly controls a terminal Router along its route,
+// and all routes stabilize to eventually consist of only two interconnected
 // terminal Routers. When a portal moves, its side of the route is extended by
 // creating a new terminal Router at the portal's new location. The previous
 // terminal Router remains as a proxying hop to be phased out eventually.
-class Router : public RefCounted<Router> {
+class Router : public APIObjectImpl<Router, APIObject::kPortal> {
  public:
   using Pair = std::pair<Ref<Router>, Ref<Router>>;
 
   Router();
+
+  // Creates a new pair of terminal routers which are directly connected to each
+  // other by a LocalRouterLink.
+  static Pair CreatePair();
+
+  // APIObject:
+  IpczResult Close() override;
+  bool CanSendFrom(Router& sender) override;
+
+  // *Put/*Get APIs exposed through the ipcz API via portal handles.
+  IpczResult Put(absl::Span<const uint8_t> data,
+                 absl::Span<const IpczHandle> handles);
+  IpczResult BeginPut(IpczBeginPutFlags flags,
+                      volatile void** data,
+                      size_t* num_bytes,
+                      IpczTransaction* transaction);
+  IpczResult EndPut(IpczTransaction transaction,
+                    size_t num_bytes_produced,
+                    absl::Span<const IpczHandle> handles,
+                    IpczEndPutFlags flags);
+  IpczResult Get(IpczGetFlags flags,
+                 void* data,
+                 size_t* num_data_bytes,
+                 IpczHandle* handles,
+                 size_t* num_handles,
+                 IpczHandle* parcel);
+  IpczResult BeginGet(IpczBeginGetFlags flags,
+                      const volatile void** data,
+                      size_t* num_data_bytes,
+                      IpczHandle* handles,
+                      size_t* num_handles,
+                      IpczTransaction* transaction);
+  IpczResult EndGet(IpczTransaction transaction,
+                    IpczEndGetFlags flags,
+                    IpczHandle* parcel);
 
   // Indicates whether the terminal router on the other side of the central link
   // is known to be closed.
@@ -68,8 +103,7 @@ class Router : public RefCounted<Router> {
 
   // Indicates whether this Router is currently on a central link which is
   // connected to a router on another node. Used by tests to verify route
-  // reduction behavior, and may only be called on terminal Routers, i.e.
-  // Routers controlled directly by a Portal.
+  // reduction behavior, and may only be called on terminal Routers.
   bool IsOnCentralRemoteLink();
 
   // Fills in an IpczPortalStatus corresponding to the current state of this
@@ -95,8 +129,7 @@ class Router : public RefCounted<Router> {
   // portal.
   IpczResult SendOutboundParcel(Parcel& parcel);
 
-  // Closes this side of the Router's own route. Only called on a Router to
-  // which a Portal is currently attached, and only by that Portal.
+  // Closes this side of the Router's own route. Only called terminal Routers.
   void CloseRoute();
 
   // Uses `link` as this Router's new outward link. This is the primary link on
@@ -466,8 +499,11 @@ class Router : public RefCounted<Router> {
   // `outward_edge_` as soon as possible.
   ParcelQueue outbound_parcels_ ABSL_GUARDED_BY(mutex_);
 
-  // The set of pending get transactions in progress on the owning portal.
+  // The set of pending get transactions in progress on this router.
   std::unique_ptr<PendingTransactionSet> pending_gets_ ABSL_GUARDED_BY(mutex_);
+
+  // The set of pending get transactions in progress on this router.
+  std::unique_ptr<PendingTransactionSet> pending_puts_;
 };
 
 }  // namespace ipcz

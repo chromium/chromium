@@ -16,7 +16,7 @@ namespace ipcz {
 // Accumulates IpczTrapEvent dispatches to specific handlers. Handler invocation
 // is deferred until DispatchAll() is called or the TrapEventDispatcher is
 // destroyed. This allows event dispatches to be accumulated while e.g. Node and
-// Portal locks are held, and dispatched later, once such locks are released.
+// Router locks are held, and dispatched later, once such locks are released.
 //
 // This object is not thread-safe but is generally constructed on the stack and
 // passed into whatever might want to accumulate events for dispatch.

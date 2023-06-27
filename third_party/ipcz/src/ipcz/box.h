@@ -63,7 +63,7 @@ class Box : public APIObjectImpl<Box, APIObject::kBox> {
 
   // APIObject:
   IpczResult Close() override;
-  bool CanSendFrom(Portal& sender) override;
+  bool CanSendFrom(Router& sender) override;
 
  private:
   ~Box() override;

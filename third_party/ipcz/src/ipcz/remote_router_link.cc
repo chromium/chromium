@@ -15,7 +15,6 @@
 #include "ipcz/node_link_memory.h"
 #include "ipcz/node_messages.h"
 #include "ipcz/parcel.h"
-#include "ipcz/portal.h"
 #include "ipcz/router.h"
 #include "util/log.h"
 #include "util/safe_math.h"
@@ -297,7 +296,7 @@ void RemoteRouterLink::AcceptParcel(const OperationContext& context,
       case APIObject::kPortal: {
         handle_types[i] = HandleType::kPortal;
 
-        Ref<Router> router = Portal::FromObject(&object)->router();
+        Ref<Router> router = WrapRefCounted(Router::FromObject(&object));
         ABSL_ASSERT(portal_index < num_portals);
         router->SerializeNewRouter(context, *node_link(),
                                    descriptors[portal_index]);

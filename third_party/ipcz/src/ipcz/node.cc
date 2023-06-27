@@ -13,7 +13,6 @@
 #include "ipcz/node_connector.h"
 #include "ipcz/node_link.h"
 #include "ipcz/node_link_memory.h"
-#include "ipcz/portal.h"
 #include "ipcz/router.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
@@ -112,27 +111,26 @@ IpczResult Node::Close() {
 IpczResult Node::ConnectNode(IpczDriverHandle driver_transport,
                              IpczConnectNodeFlags flags,
                              absl::Span<IpczHandle> initial_portals) {
-  std::vector<Ref<Portal>> portals(initial_portals.size());
+  std::vector<Ref<Router>> routers(initial_portals.size());
   for (size_t i = 0; i < initial_portals.size(); ++i) {
-    auto portal =
-        MakeRefCounted<Portal>(WrapRefCounted(this), MakeRefCounted<Router>());
-    portals[i] = portal;
-    initial_portals[i] = Portal::ReleaseAsHandle(std::move(portal));
+    auto router = MakeRefCounted<Router>();
+    routers[i] = router;
+    initial_portals[i] = Router::ReleaseAsHandle(std::move(router));
   }
 
   auto transport =
       MakeRefCounted<DriverTransport>(DriverObject(driver_, driver_transport));
   IpczResult result = NodeConnector::ConnectNode(WrapRefCounted(this),
-                                                 transport, flags, portals);
+                                                 transport, flags, routers);
   if (result != IPCZ_RESULT_OK) {
     // On failure the caller retains ownership of `driver_transport`. Release
     // it here so it doesn't get closed when `transport` is destroyed.
     transport->Release();
 
-    // Wipe out the initial portals we created, since they are invalid and
-    // effectively not returned to the caller on failure.
-    for (Ref<Portal>& portal : portals) {
-      Ref<Portal> doomed_portal = AdoptRef(portal.get());
+    // Wipe out the routers we created, since they are invalid and effectively
+    // not returned to the caller on failure.
+    for (Ref<Router>& router : routers) {
+      Ref<Router> doomed_router = AdoptRef(router.get());
     }
     return result;
   }

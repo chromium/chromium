@@ -16,7 +16,6 @@
 #include "ipcz/node_link_memory.h"
 #include "ipcz/parcel.h"
 #include "ipcz/parcel_wrapper.h"
-#include "ipcz/portal.h"
 #include "ipcz/router.h"
 #include "util/ref_counted.h"
 
@@ -107,9 +106,9 @@ IpczResult OpenPortals(IpczHandle node_handle,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  ipcz::Portal::Pair portals = ipcz::Portal::CreatePair(WrapRefCounted(node));
-  *portal0 = ipcz::Portal::ReleaseAsHandle(std::move(portals.first));
-  *portal1 = ipcz::Portal::ReleaseAsHandle(std::move(portals.second));
+  ipcz::Router::Pair routers = ipcz::Router::CreatePair();
+  *portal0 = ipcz::Router::ReleaseAsHandle(std::move(routers.first));
+  *portal1 = ipcz::Router::ReleaseAsHandle(std::move(routers.second));
   return IPCZ_RESULT_OK;
 }
 
@@ -117,15 +116,15 @@ IpczResult MergePortals(IpczHandle portal0,
                         IpczHandle portal1,
                         uint32_t flags,
                         const void* options) {
-  ipcz::Portal* first = ipcz::Portal::FromHandle(portal0);
-  ipcz::Portal* second = ipcz::Portal::FromHandle(portal1);
+  ipcz::Router* first = ipcz::Router::FromHandle(portal0);
+  ipcz::Router* second = ipcz::Router::FromHandle(portal1);
   if (!first || !second) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  ipcz::Ref<ipcz::Portal> one(ipcz::kAdoptExistingRef, first);
-  ipcz::Ref<ipcz::Portal> two(ipcz::kAdoptExistingRef, second);
-  IpczResult result = one->Merge(*two);
+  ipcz::Ref<ipcz::Router> one(ipcz::kAdoptExistingRef, first);
+  ipcz::Ref<ipcz::Router> two(ipcz::kAdoptExistingRef, second);
+  IpczResult result = one->MergeRoute(two);
   if (result != IPCZ_RESULT_OK) {
     one.release();
     two.release();
@@ -139,15 +138,16 @@ IpczResult QueryPortalStatus(IpczHandle portal_handle,
                              uint32_t flags,
                              const void* options,
                              IpczPortalStatus* status) {
-  ipcz::Portal* portal = ipcz::Portal::FromHandle(portal_handle);
-  if (!portal) {
+  ipcz::Router* router = ipcz::Router::FromHandle(portal_handle);
+  if (!router) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
   if (!status || status->size < sizeof(IpczPortalStatus)) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  return portal->QueryStatus(*status);
+  router->QueryStatus(*status);
+  return IPCZ_RESULT_OK;
 }
 
 IpczResult Put(IpczHandle portal_handle,
@@ -157,11 +157,11 @@ IpczResult Put(IpczHandle portal_handle,
                size_t num_handles,
                uint32_t flags,
                const void* options) {
-  ipcz::Portal* portal = ipcz::Portal::FromHandle(portal_handle);
-  if (!portal) {
+  ipcz::Router* router = ipcz::Router::FromHandle(portal_handle);
+  if (!router) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
-  return portal->Put(
+  return router->Put(
       absl::MakeSpan(static_cast<const uint8_t*>(data), num_bytes),
       absl::MakeSpan(handles, num_handles));
 }
@@ -172,11 +172,11 @@ IpczResult BeginPut(IpczHandle portal_handle,
                     volatile void** data,
                     size_t* num_bytes,
                     IpczTransaction* transaction) {
-  ipcz::Portal* portal = ipcz::Portal::FromHandle(portal_handle);
-  if (!portal || !transaction) {
+  ipcz::Router* router = ipcz::Router::FromHandle(portal_handle);
+  if (!router || !transaction) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
-  return portal->BeginPut(flags, data, num_bytes, transaction);
+  return router->BeginPut(flags, data, num_bytes, transaction);
 }
 
 IpczResult EndPut(IpczHandle portal_handle,
@@ -186,11 +186,11 @@ IpczResult EndPut(IpczHandle portal_handle,
                   size_t num_handles,
                   IpczEndPutFlags flags,
                   const void* options) {
-  ipcz::Portal* portal = ipcz::Portal::FromHandle(portal_handle);
-  if (!portal || !transaction || (num_handles > 0 && !handles)) {
+  ipcz::Router* router = ipcz::Router::FromHandle(portal_handle);
+  if (!router || !transaction || (num_handles > 0 && !handles)) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
-  return portal->EndPut(transaction, num_bytes_produced,
+  return router->EndPut(transaction, num_bytes_produced,
                         absl::MakeSpan(handles, num_handles), flags);
 }
 
@@ -202,8 +202,8 @@ IpczResult Get(IpczHandle source,
                IpczHandle* handles,
                size_t* num_handles,
                IpczHandle* parcel) {
-  if (ipcz::Portal* portal = ipcz::Portal::FromHandle(source)) {
-    return portal->Get(flags, data, num_bytes, handles, num_handles, parcel);
+  if (ipcz::Router* router = ipcz::Router::FromHandle(source)) {
+    return router->Get(flags, data, num_bytes, handles, num_handles, parcel);
   }
 
   if (ipcz::ParcelWrapper* wrapper = ipcz::ParcelWrapper::FromHandle(source)) {
@@ -225,8 +225,8 @@ IpczResult BeginGet(IpczHandle source,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  if (ipcz::Portal* portal = ipcz::Portal::FromHandle(source)) {
-    return portal->BeginGet(flags, data, num_bytes, handles, num_handles,
+  if (ipcz::Router* router = ipcz::Router::FromHandle(source)) {
+    return router->BeginGet(flags, data, num_bytes, handles, num_handles,
                             transaction);
   }
 
@@ -243,8 +243,8 @@ IpczResult EndGet(IpczHandle source,
                   IpczEndGetFlags flags,
                   const void* options,
                   IpczHandle* parcel) {
-  if (ipcz::Portal* portal = ipcz::Portal::FromHandle(source)) {
-    return portal->EndGet(transaction, flags, parcel);
+  if (ipcz::Router* router = ipcz::Router::FromHandle(source)) {
+    return router->EndGet(transaction, flags, parcel);
   }
 
   if (ipcz::ParcelWrapper* wrapper = ipcz::ParcelWrapper::FromHandle(source)) {
@@ -262,8 +262,8 @@ IpczResult Trap(IpczHandle portal_handle,
                 const void* options,
                 IpczTrapConditionFlags* satisfied_condition_flags,
                 IpczPortalStatus* status) {
-  ipcz::Portal* portal = ipcz::Portal::FromHandle(portal_handle);
-  if (!portal || !handler || !conditions ||
+  ipcz::Router* router = ipcz::Router::FromHandle(portal_handle);
+  if (!router || !handler || !conditions ||
       conditions->size < sizeof(*conditions)) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
@@ -272,8 +272,8 @@ IpczResult Trap(IpczHandle portal_handle,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  return portal->router()->Trap(*conditions, handler, context,
-                                satisfied_condition_flags, status);
+  return router->Trap(*conditions, handler, context, satisfied_condition_flags,
+                      status);
 }
 
 IpczResult Reject(IpczHandle parcel_handle,

@@ -11,7 +11,6 @@
 #include "ipcz/node.h"
 #include "ipcz/node_link.h"
 #include "ipcz/node_messages.h"
-#include "ipcz/portal.h"
 #include "ipcz/router.h"
 #include "reference_drivers/sync_reference_driver.h"
 #include "test/test.h"
@@ -32,10 +31,6 @@ class NodeConnectorTest : public test::Test {
 
   Ref<Node> CreateNonBrokerNode() {
     return MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
-  }
-
-  Ref<Portal> CreatePortal(Ref<Node> node) {
-    return MakeRefCounted<Portal>(node, MakeRefCounted<Router>());
   }
 
   DriverTransport::Pair CreateTransports() {
@@ -70,9 +65,9 @@ TEST_F(NodeConnectorTest, ConnectBrokerToNonBroker) {
   // Initiate connection from the broker side. The non-broker's transport should
   // receive an appropriate connection message.
   EXPECT_FALSE(non_broker_received_connect);
-  std::vector<Ref<Portal>> initial_portals = {CreatePortal(broker)};
+  std::vector<Ref<Router>> initial_routers = {MakeRefCounted<Router>()};
   NodeConnector::ConnectNode(broker, std::move(broker_transport), IPCZ_NO_FLAGS,
-                             initial_portals);
+                             initial_routers);
   EXPECT_TRUE(non_broker_received_connect);
 }
 
@@ -93,9 +88,9 @@ TEST_F(NodeConnectorTest, ConnectNonBrokerToBroker) {
   // Initiate connection from the non-broker side. The broker's transport should
   // receive an appropriate connection message.
   EXPECT_FALSE(broker_received_connect);
-  std::vector<Ref<Portal>> initial_portals = {CreatePortal(non_broker)};
+  std::vector<Ref<Router>> initial_routers = {MakeRefCounted<Router>()};
   NodeConnector::ConnectNode(non_broker, std::move(non_broker_transport),
-                             IPCZ_CONNECT_NODE_TO_BROKER, initial_portals);
+                             IPCZ_CONNECT_NODE_TO_BROKER, initial_routers);
   EXPECT_TRUE(broker_received_connect);
 
   broker->Close();
@@ -110,9 +105,9 @@ TEST_F(NodeConnectorTest, BrokerRejectInvalidMessage) {
     auto [broker_transport, non_broker_transport] = CreateTransports();
 
     bool rejected = false;
-    std::vector<Ref<Portal>> initial_portals = {CreatePortal(broker)};
+    std::vector<Ref<Router>> initial_routers = {MakeRefCounted<Router>()};
     NodeConnector::ConnectNode(broker, std::move(broker_transport),
-                               IPCZ_NO_FLAGS, initial_portals,
+                               IPCZ_NO_FLAGS, initial_routers,
                                [&](Ref<NodeLink> link) { rejected = !link; });
 
     // Make sure we receive and deserialize the message so no driver objects are
@@ -137,9 +132,9 @@ TEST_F(NodeConnectorTest, BrokerRejectInvalidMessage) {
     auto [broker_transport, non_broker_transport] = CreateTransports();
 
     bool rejected = false;
-    std::vector<Ref<Portal>> initial_portals = {CreatePortal(broker)};
+    std::vector<Ref<Router>> initial_routers = {MakeRefCounted<Router>()};
     NodeConnector::ConnectNode(broker, std::move(broker_transport),
-                               IPCZ_NO_FLAGS, initial_portals,
+                               IPCZ_NO_FLAGS, initial_routers,
                                [&](Ref<NodeLink> link) { rejected = !link; });
 
     // Make sure we receive and deserialize the message so no driver objects are
@@ -175,9 +170,9 @@ TEST_F(NodeConnectorTest, NonBrokerRejectInvalidMessage) {
     auto [broker_transport, non_broker_transport] = CreateTransports();
 
     bool rejected = false;
-    std::vector<Ref<Portal>> initial_portals = {CreatePortal(non_broker)};
+    std::vector<Ref<Router>> initial_routers = {MakeRefCounted<Router>()};
     NodeConnector::ConnectNode(non_broker, std::move(non_broker_transport),
-                               IPCZ_CONNECT_NODE_TO_BROKER, initial_portals,
+                               IPCZ_CONNECT_NODE_TO_BROKER, initial_routers,
                                [&](Ref<NodeLink> link) { rejected = !link; });
 
     // Try sending a non-connection message, which should be rejected by the
@@ -192,9 +187,9 @@ TEST_F(NodeConnectorTest, NonBrokerRejectInvalidMessage) {
     auto [broker_transport, non_broker_transport] = CreateTransports();
 
     bool rejected = false;
-    std::vector<Ref<Portal>> initial_portals = {CreatePortal(non_broker)};
+    std::vector<Ref<Router>> initial_routers = {MakeRefCounted<Router>()};
     NodeConnector::ConnectNode(non_broker, std::move(non_broker_transport),
-                               IPCZ_CONNECT_NODE_TO_BROKER, initial_portals,
+                               IPCZ_CONNECT_NODE_TO_BROKER, initial_routers,
                                [&](Ref<NodeLink> link) { rejected = !link; });
 
     // For good measure, also try sending an inappropriate connection message,
@@ -217,19 +212,19 @@ TEST_F(NodeConnectorTest, EndToEndSuccess_BrokerFirst) {
   Ref<Node> non_broker = CreateNonBrokerNode();
   auto [broker_transport, non_broker_transport] = CreateTransports();
 
-  std::vector<Ref<Portal>> initial_broker_portals = {CreatePortal(broker)};
+  std::vector<Ref<Router>> initial_broker_routers = {MakeRefCounted<Router>()};
   Ref<NodeLink> broker_link;
   NodeConnector::ConnectNode(broker, std::move(broker_transport), IPCZ_NO_FLAGS,
-                             initial_broker_portals, [&](Ref<NodeLink> link) {
+                             initial_broker_routers, [&](Ref<NodeLink> link) {
                                broker_link = std::move(link);
                              });
 
-  std::vector<Ref<Portal>> initial_non_broker_portals = {
-      CreatePortal(non_broker)};
+  std::vector<Ref<Router>> initial_non_broker_routers = {
+      MakeRefCounted<Router>()};
   Ref<NodeLink> non_broker_link;
   NodeConnector::ConnectNode(
       non_broker, std::move(non_broker_transport), IPCZ_CONNECT_NODE_TO_BROKER,
-      initial_non_broker_portals,
+      initial_non_broker_routers,
       [&](Ref<NodeLink> link) { non_broker_link = std::move(link); });
 
   EXPECT_TRUE(broker_link);
@@ -237,13 +232,12 @@ TEST_F(NodeConnectorTest, EndToEndSuccess_BrokerFirst) {
 
   // Verify that sublink 0 on both NodeLinks corresponds to the appropriate
   // initial portals.
-  EXPECT_EQ(initial_broker_portals[0]->router(),
-            broker_link->GetRouter(SublinkId{0}));
-  EXPECT_EQ(initial_non_broker_portals[0]->router(),
+  EXPECT_EQ(initial_broker_routers[0], broker_link->GetRouter(SublinkId{0}));
+  EXPECT_EQ(initial_non_broker_routers[0],
             non_broker_link->GetRouter(SublinkId{0}));
 
-  initial_broker_portals[0]->Close();
-  initial_non_broker_portals[0]->Close();
+  initial_broker_routers[0]->Close();
+  initial_non_broker_routers[0]->Close();
   broker->Close();
   non_broker->Close();
 }
@@ -253,18 +247,18 @@ TEST_F(NodeConnectorTest, EndToEndSuccess_NonBrokerFirst) {
   Ref<Node> non_broker = CreateNonBrokerNode();
   auto [broker_transport, non_broker_transport] = CreateTransports();
 
-  std::vector<Ref<Portal>> initial_non_broker_portals = {
-      CreatePortal(non_broker)};
+  std::vector<Ref<Router>> initial_non_broker_routers = {
+      MakeRefCounted<Router>()};
   Ref<NodeLink> non_broker_link;
   NodeConnector::ConnectNode(
       non_broker, std::move(non_broker_transport), IPCZ_CONNECT_NODE_TO_BROKER,
-      initial_non_broker_portals,
+      initial_non_broker_routers,
       [&](Ref<NodeLink> link) { non_broker_link = std::move(link); });
 
-  std::vector<Ref<Portal>> initial_broker_portals = {CreatePortal(broker)};
+  std::vector<Ref<Router>> initial_broker_routers = {MakeRefCounted<Router>()};
   Ref<NodeLink> broker_link;
   NodeConnector::ConnectNode(broker, std::move(broker_transport), IPCZ_NO_FLAGS,
-                             initial_broker_portals, [&](Ref<NodeLink> link) {
+                             initial_broker_routers, [&](Ref<NodeLink> link) {
                                broker_link = std::move(link);
                              });
 
@@ -273,13 +267,12 @@ TEST_F(NodeConnectorTest, EndToEndSuccess_NonBrokerFirst) {
 
   // Verify that sublink 0 on both NodeLinks corresponds to the appropriate
   // initial portals.
-  EXPECT_EQ(initial_broker_portals[0]->router(),
-            broker_link->GetRouter(SublinkId{0}));
-  EXPECT_EQ(initial_non_broker_portals[0]->router(),
+  EXPECT_EQ(initial_broker_routers[0], broker_link->GetRouter(SublinkId{0}));
+  EXPECT_EQ(initial_non_broker_routers[0],
             non_broker_link->GetRouter(SublinkId{0}));
 
-  initial_broker_portals[0]->Close();
-  initial_non_broker_portals[0]->Close();
+  initial_broker_routers[0]->Close();
+  initial_non_broker_routers[0]->Close();
   broker->Close();
   non_broker->Close();
 }
@@ -296,25 +289,25 @@ TEST_F(NodeConnectorTest, MultipleInitialPortals) {
   static_assert(kNumBrokerPortals > kNumNonBrokerPortals,
                 "Test requires more broker portals than non-broker portals");
 
-  std::vector<Ref<Portal>> initial_broker_portals(kNumBrokerPortals);
-  for (auto& portal : initial_broker_portals) {
-    portal = CreatePortal(broker);
+  std::vector<Ref<Router>> initial_broker_routers(kNumBrokerPortals);
+  for (auto& router : initial_broker_routers) {
+    router = MakeRefCounted<Router>();
   }
-  std::vector<Ref<Portal>> initial_non_broker_portals(kNumNonBrokerPortals);
-  for (auto& portal : initial_non_broker_portals) {
-    portal = CreatePortal(broker);
+  std::vector<Ref<Router>> initial_non_broker_routers(kNumNonBrokerPortals);
+  for (auto& router : initial_non_broker_routers) {
+    router = MakeRefCounted<Router>();
   }
 
   Ref<NodeLink> broker_link;
   NodeConnector::ConnectNode(broker, std::move(broker_transport), IPCZ_NO_FLAGS,
-                             initial_broker_portals, [&](Ref<NodeLink> link) {
+                             initial_broker_routers, [&](Ref<NodeLink> link) {
                                broker_link = std::move(link);
                              });
 
   Ref<NodeLink> non_broker_link;
   NodeConnector::ConnectNode(
       non_broker, std::move(non_broker_transport), IPCZ_CONNECT_NODE_TO_BROKER,
-      initial_non_broker_portals,
+      initial_non_broker_routers,
       [&](Ref<NodeLink> link) { non_broker_link = std::move(link); });
 
   EXPECT_TRUE(broker_link);
@@ -325,22 +318,21 @@ TEST_F(NodeConnectorTest, MultipleInitialPortals) {
   // correspond to an appropriate initial portal on the broker side, but they
   // should see that their peer is closed since the non-broker established a
   // smaller set of initial portals.
-  ASSERT_LE(initial_non_broker_portals.size(), initial_broker_portals.size());
+  ASSERT_LE(initial_non_broker_routers.size(), initial_broker_routers.size());
   const size_t kNumConnectedPortals = kNumNonBrokerPortals;
   const size_t kNumDisconnectedPortals =
       kNumBrokerPortals - kNumConnectedPortals;
   for (size_t i = 0; i < kNumConnectedPortals; ++i) {
-    EXPECT_EQ(initial_broker_portals[i]->router(),
-              broker_link->GetRouter(SublinkId{i}));
-    EXPECT_EQ(initial_non_broker_portals[i]->router(),
+    EXPECT_EQ(initial_broker_routers[i], broker_link->GetRouter(SublinkId{i}));
+    EXPECT_EQ(initial_non_broker_routers[i],
               non_broker_link->GetRouter(SublinkId{i}));
-    initial_broker_portals[i]->Close();
-    initial_non_broker_portals[i]->Close();
+    initial_broker_routers[i]->Close();
+    initial_non_broker_routers[i]->Close();
   }
 
   for (size_t i = kNumConnectedPortals; i < kNumDisconnectedPortals; ++i) {
     IpczPortalStatus status;
-    initial_broker_portals[i]->router()->QueryStatus(status);
+    initial_broker_routers[i]->QueryStatus(status);
     EXPECT_TRUE((status.flags & IPCZ_PORTAL_STATUS_PEER_CLOSED) != 0);
   }
 
