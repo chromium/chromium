@@ -956,3 +956,32 @@ async def test_browsingContext_fragmentNavigated_event(websocket, context_id,
 
     assert navigation['result']['navigation'] == response['params'][
         'navigation']
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_navigationStarted_event(websocket, context_id,
+                                                       html):
+    url = html()
+
+    await subscribe(websocket, ["browsingContext.navigationStarted"])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "context": context_id,
+                "url": url,
+                "wait": "complete",
+            }
+        })
+
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "browsingContext.navigationStarted",
+        "params": {
+            "context": context_id,
+            "navigation": None,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url,
+        }
+    }

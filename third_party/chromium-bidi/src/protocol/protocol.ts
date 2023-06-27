@@ -835,7 +835,8 @@ export namespace BrowsingContext {
     | ContextDestroyedEvent
     | DomContentLoadedEvent
     | FragmentNavigatedEvent
-    | LoadEvent;
+    | LoadEvent
+    | NavigationStartedEvent;
 
   export type Navigation = string;
 
@@ -1028,6 +1029,11 @@ export namespace BrowsingContext {
     BrowsingContext.NavigationInfo
   >;
 
+  export type NavigationStartedEvent = EventResponse<
+    EventNames.NavigationStarted,
+    BrowsingContext.NavigationInfo
+  >;
+
   export enum EventNames {
     // keep-sorted start
     ContextCreatedEvent = 'browsingContext.contextCreated',
@@ -1035,6 +1041,7 @@ export namespace BrowsingContext {
     DomContentLoadedEvent = 'browsingContext.domContentLoaded',
     FragmentNavigated = 'browsingContext.fragmentNavigated',
     LoadEvent = 'browsingContext.load',
+    NavigationStarted = 'browsingContext.navigationStarted',
     // keep-sorted end
   }
 
