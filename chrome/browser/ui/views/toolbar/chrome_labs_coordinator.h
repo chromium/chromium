@@ -64,7 +64,7 @@ class ChromeLabsCoordinator : public views::ViewObserver {
 
   raw_ptr<ChromeLabsButton, DanglingUntriaged> anchor_view_;
   raw_ptr<Browser, DanglingUntriaged> browser_;
-  raw_ptr<const ChromeLabsModel, DanglingUntriaged> chrome_labs_model_;
+  raw_ptr<const ChromeLabsModel, DanglingAcrossTasks> chrome_labs_model_;
   raw_ptr<ChromeLabsBubbleView, DanglingUntriaged> chrome_labs_bubble_view_ =
       nullptr;
 

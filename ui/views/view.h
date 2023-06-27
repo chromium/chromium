@@ -2344,7 +2344,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Context menus -------------------------------------------------------------
 
   // The menu controller.
-  raw_ptr<ContextMenuController, DanglingUntriaged> context_menu_controller_ =
+  raw_ptr<ContextMenuController, DanglingAcrossTasks> context_menu_controller_ =
       nullptr;
 
   // Drag and drop -------------------------------------------------------------

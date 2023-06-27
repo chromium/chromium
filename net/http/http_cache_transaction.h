@@ -658,7 +658,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // |external_validation_| contains the value of those headers.
   ValidationHeaders external_validation_;
   base::WeakPtr<HttpCache> cache_;
-  raw_ptr<HttpCache::ActiveEntry, DanglingUntriaged> entry_ = nullptr;
+  raw_ptr<HttpCache::ActiveEntry, DanglingAcrossTasks> entry_ = nullptr;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION HttpCache::ActiveEntry* new_entry_ = nullptr;

@@ -175,8 +175,8 @@ class PreinstalledWebAppManager {
       int force_reinstall_for_milestone);
 
   raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
-  raw_ptr<const WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
-  raw_ptr<ExternallyManagedAppManager, DanglingUntriaged>
+  raw_ptr<const WebAppUiManager, DanglingAcrossTasks> ui_manager_ = nullptr;
+  raw_ptr<ExternallyManagedAppManager, DanglingAcrossTasks>
       externally_managed_app_manager_ = nullptr;
   const raw_ptr<Profile> profile_;
 

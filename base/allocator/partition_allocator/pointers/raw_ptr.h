@@ -1176,6 +1176,12 @@ constexpr auto DanglingUntriaged = base::RawPtrTraits::kMayDangle;
 // This is not meant to be added manually. You can ignore this flag.
 constexpr auto FlakyDanglingUntriaged = base::RawPtrTraits::kMayDangle;
 
+// Dangling raw_ptr that is more likely to cause UAF: its memory was freed in
+// one task, and the raw_ptr was released in a different one.
+//
+// This is not meant to be added manually. You can ignore this flag.
+constexpr auto DanglingAcrossTasks = base::RawPtrTraits::kMayDangle;
+
 // The use of pointer arithmetic with raw_ptr is strongly discouraged and
 // disabled by default. Usually a container like span<> should be used
 // instead of the raw_ptr.

@@ -242,7 +242,7 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
                                  gfx::ImageSkia converted_image);
 
   raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_;
-  raw_ptr<WebAppInstallManager, DanglingUntriaged> install_manager_;
+  raw_ptr<WebAppInstallManager, DanglingAcrossTasks> install_manager_;
   base::FilePath web_apps_directory_;
   scoped_refptr<FileUtilsWrapper> utils_;
   scoped_refptr<base::SequencedTaskRunner> icon_task_runner_;

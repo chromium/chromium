@@ -86,10 +86,10 @@ class AccountsCookieMutatorImpl : public AccountsCookieMutator {
   };
 
   raw_ptr<SigninClient> signin_client_;
-  raw_ptr<ProfileOAuth2TokenService, DanglingUntriaged> token_service_;
-  raw_ptr<GaiaCookieManagerService, DanglingUntriaged>
+  raw_ptr<ProfileOAuth2TokenService, DanglingAcrossTasks> token_service_;
+  raw_ptr<GaiaCookieManagerService, DanglingAcrossTasks>
       gaia_cookie_manager_service_;
-  raw_ptr<AccountTrackerService, DanglingUntriaged> account_tracker_service_;
+  raw_ptr<AccountTrackerService, DanglingAcrossTasks> account_tracker_service_;
 };
 
 }  // namespace signin

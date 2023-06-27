@@ -269,7 +269,7 @@ class BrowserProcessImpl : public BrowserProcess,
   const std::unique_ptr<PrefService> local_state_;
 
   // |metrics_services_manager_| owns this.
-  raw_ptr<ChromeMetricsServicesManagerClient, DanglingUntriaged>
+  raw_ptr<ChromeMetricsServicesManagerClient, DanglingAcrossTasks>
       metrics_services_manager_client_ = nullptr;
 
   // Must be destroyed before |local_state_|.

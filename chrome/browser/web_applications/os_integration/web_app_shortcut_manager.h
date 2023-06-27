@@ -173,11 +173,11 @@ class WebAppShortcutManager {
 
   const raw_ptr<Profile> profile_;
 
-  raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
-  raw_ptr<WebAppIconManager, DanglingUntriaged> icon_manager_ = nullptr;
-  raw_ptr<WebAppFileHandlerManager, DanglingUntriaged> file_handler_manager_ =
+  raw_ptr<WebAppRegistrar, DanglingAcrossTasks> registrar_ = nullptr;
+  raw_ptr<WebAppIconManager, DanglingAcrossTasks> icon_manager_ = nullptr;
+  raw_ptr<WebAppFileHandlerManager, DanglingAcrossTasks> file_handler_manager_ =
       nullptr;
-  raw_ptr<WebAppProtocolHandlerManager, DanglingUntriaged>
+  raw_ptr<WebAppProtocolHandlerManager, DanglingAcrossTasks>
       protocol_handler_manager_ = nullptr;
 
   base::WeakPtrFactory<WebAppShortcutManager> weak_ptr_factory_{this};

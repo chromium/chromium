@@ -156,13 +156,13 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // The bookmark model we are processing local changes from and forwarding
   // remote changes to. It is set during ModelReadyToSync(), which is called
   // during startup, as part of the bookmark-loading process.
-  raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> bookmark_model_ =
+  raw_ptr<bookmarks::BookmarkModel, DanglingAcrossTasks> bookmark_model_ =
       nullptr;
 
   // Used to when processing remote updates to apply favicon information. It's
   // not set at start up because it's only avialable after the bookmark model
   // has been loaded.
-  raw_ptr<favicon::FaviconService, DanglingUntriaged> favicon_service_ =
+  raw_ptr<favicon::FaviconService, DanglingAcrossTasks> favicon_service_ =
       nullptr;
 
   // Used to suspend bookmark undo when processing remote changes.

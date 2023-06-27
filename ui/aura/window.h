@@ -733,7 +733,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // parent during its parents destruction.
   bool owned_by_parent_ = true;
 
-  raw_ptr<WindowDelegate, DanglingUntriaged> delegate_;
+  raw_ptr<WindowDelegate, DanglingAcrossTasks> delegate_;
 
   // The Window's parent.
   raw_ptr<Window> parent_ = nullptr;

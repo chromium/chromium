@@ -140,7 +140,7 @@ class CHROME_DBUS_EXPORT Message {
   std::string ToStringInternal(const std::string& indent,
                                MessageReader* reader);
 
-  raw_ptr<DBusMessage, DanglingUntriaged> raw_message_;
+  raw_ptr<DBusMessage, DanglingAcrossTasks> raw_message_;
 };
 
 // MessageCall is a type of message used for calling a method via D-Bus.

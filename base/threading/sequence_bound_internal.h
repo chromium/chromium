@@ -150,7 +150,7 @@ class Storage {
   // Storage originally allocated by `AlignedAlloc()`. Maintained separately
   // from  `ptr_` since the original, unadjusted pointer needs to be passed to
   // `AlignedFree()`.
-  raw_ptr<void, DanglingUntriaged> alloc_ = nullptr;
+  raw_ptr<void, DanglingAcrossTasks> alloc_ = nullptr;
 };
 
 template <typename T, typename CrossThreadTraits>

@@ -256,9 +256,9 @@ class ExternallyManagedAppManager {
 
   base::OnceClosure registrations_complete_callback_;
 
-  raw_ptr<WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
-  raw_ptr<WebAppInstallFinalizer, DanglingUntriaged> finalizer_ = nullptr;
-  raw_ptr<WebAppCommandScheduler, DanglingUntriaged> command_scheduler_ =
+  raw_ptr<WebAppUiManager, DanglingAcrossTasks> ui_manager_ = nullptr;
+  raw_ptr<WebAppInstallFinalizer, DanglingAcrossTasks> finalizer_ = nullptr;
+  raw_ptr<WebAppCommandScheduler, DanglingAcrossTasks> command_scheduler_ =
       nullptr;
 
   const raw_ptr<Profile> profile_;

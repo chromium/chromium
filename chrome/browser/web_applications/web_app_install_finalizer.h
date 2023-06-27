@@ -243,18 +243,18 @@ class WebAppInstallFinalizer {
       const AppId& app_id,
       const WebAppInstallInfo& new_web_app_info);
 
-  raw_ptr<WebAppInstallManager, DanglingUntriaged> install_manager_ = nullptr;
+  raw_ptr<WebAppInstallManager, DanglingAcrossTasks> install_manager_ = nullptr;
   raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
   raw_ptr<WebAppSyncBridge, DanglingUntriaged> sync_bridge_ = nullptr;
-  raw_ptr<WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
-  raw_ptr<OsIntegrationManager, DanglingUntriaged> os_integration_manager_ =
+  raw_ptr<WebAppUiManager, DanglingAcrossTasks> ui_manager_ = nullptr;
+  raw_ptr<OsIntegrationManager, DanglingAcrossTasks> os_integration_manager_ =
       nullptr;
   raw_ptr<WebAppIconManager, DanglingUntriaged> icon_manager_ = nullptr;
-  raw_ptr<WebAppPolicyManager, DanglingUntriaged> policy_manager_ = nullptr;
+  raw_ptr<WebAppPolicyManager, DanglingAcrossTasks> policy_manager_ = nullptr;
   raw_ptr<WebAppTranslationManager, DanglingUntriaged> translation_manager_ =
       nullptr;
-  raw_ptr<WebAppCommandManager, DanglingUntriaged> command_manager_ = nullptr;
-  raw_ptr<WebAppOriginAssociationManager, DanglingUntriaged>
+  raw_ptr<WebAppCommandManager, DanglingAcrossTasks> command_manager_ = nullptr;
+  raw_ptr<WebAppOriginAssociationManager, DanglingAcrossTasks>
       origin_association_manager_ = nullptr;
 
   const raw_ptr<Profile> profile_;

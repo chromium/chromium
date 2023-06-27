@@ -218,7 +218,7 @@ class IdleServiceTest : public InProcessBrowserTest {
  private:
   testing::NiceMock<policy::MockConfigurationPolicyProvider>
       policy_providers_[2];
-  raw_ptr<MockIdleTimeProvider, DanglingUntriaged> idle_time_provider_;
+  raw_ptr<MockIdleTimeProvider, DanglingAcrossTasks> idle_time_provider_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   std::unique_ptr<ui::test::ScopedIdleProviderForTest> scoped_idle_provider_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;

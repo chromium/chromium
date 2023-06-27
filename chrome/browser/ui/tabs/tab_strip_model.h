@@ -114,7 +114,7 @@ class TabStripModel : public TabGroupController {
     // guaranteed to be valid for the life time of the notification (and
     // possibly longer).
     std::unique_ptr<content::WebContents> owned_contents;
-    raw_ptr<content::WebContents, DanglingUntriaged> contents;
+    raw_ptr<content::WebContents, DanglingAcrossTasks> contents;
 
     // The index of the WebContents in the original selection model of the tab
     // strip [prior to any tabs being removed, if multiple tabs are being
@@ -819,7 +819,7 @@ class TabStripModel : public TabGroupController {
   base::ObserverList<TabStripModelObserver>::Unchecked observers_;
 
   // A profile associated with this TabStripModel.
-  raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<Profile, DanglingAcrossTasks> profile_;
 
   // True if all tabs are currently being closed via CloseAllTabs.
   bool closing_all_ = false;

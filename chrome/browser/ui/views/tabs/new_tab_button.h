@@ -91,7 +91,7 @@ class NewTabButton : public views::ImageButton,
   void PaintFill(gfx::Canvas* canvas) const;
 
   // Tab strip that contains this button.
-  raw_ptr<TabStrip, DanglingUntriaged> tab_strip_;
+  raw_ptr<TabStrip, DanglingAcrossTasks> tab_strip_;
 
   // Contains our ink drop layer so it can paint above our background.
   raw_ptr<views::InkDropContainerView, DanglingUntriaged> ink_drop_container_;

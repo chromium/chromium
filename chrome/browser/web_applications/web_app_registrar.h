@@ -530,8 +530,8 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
  private:
   const raw_ptr<Profile> profile_;
-  raw_ptr<WebAppPolicyManager, DanglingUntriaged> policy_manager_ = nullptr;
-  raw_ptr<WebAppTranslationManager, DanglingUntriaged> translation_manager_ =
+  raw_ptr<WebAppPolicyManager, DanglingAcrossTasks> policy_manager_ = nullptr;
+  raw_ptr<WebAppTranslationManager, DanglingAcrossTasks> translation_manager_ =
       nullptr;
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>

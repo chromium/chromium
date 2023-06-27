@@ -96,9 +96,9 @@ class BatterySaverHelpPromoTest : public InProcessBrowserTest {
   }
 
  private:
-  raw_ptr<base::test::TestSamplingEventSource, DanglingUntriaged>
+  raw_ptr<base::test::TestSamplingEventSource, DanglingAcrossTasks>
       sampling_source_;
-  raw_ptr<base::test::TestBatteryLevelProvider, DanglingUntriaged>
+  raw_ptr<base::test::TestBatteryLevelProvider, DanglingAcrossTasks>
       battery_level_provider_;
   // Only used on platforms without a battery level provider implementation.
   std::unique_ptr<base::BatteryStateSampler> battery_state_sampler_;

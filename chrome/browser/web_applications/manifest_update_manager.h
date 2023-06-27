@@ -191,13 +191,13 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   static bool& BypassWindowCloseWaitingForTesting();
 
   raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
-  raw_ptr<WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
+  raw_ptr<WebAppUiManager, DanglingAcrossTasks> ui_manager_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   raw_ptr<const ash::SystemWebAppDelegateMap, DanglingUntriaged>
       system_web_apps_delegate_map_ = nullptr;
 #endif
-  raw_ptr<WebAppInstallManager, DanglingUntriaged> install_manager_ = nullptr;
-  raw_ptr<WebAppCommandScheduler, DanglingUntriaged> command_scheduler_ =
+  raw_ptr<WebAppInstallManager, DanglingAcrossTasks> install_manager_ = nullptr;
+  raw_ptr<WebAppCommandScheduler, DanglingAcrossTasks> command_scheduler_ =
       nullptr;
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>

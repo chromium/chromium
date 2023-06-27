@@ -111,7 +111,7 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   // living on the background thread. It will be deleted asynchronously during
   // shutdown on the background thread, so it will outlive |this| along with all
   // its in-flight tasks.
-  raw_ptr<PasswordReuseDetector, DanglingUntriaged> reuse_detector_ = nullptr;
+  raw_ptr<PasswordReuseDetector, DanglingAcrossTasks> reuse_detector_ = nullptr;
 
   // Notifies PasswordReuseManager about sign-in events.
   std::unique_ptr<PasswordStoreSigninNotifier> notifier_;

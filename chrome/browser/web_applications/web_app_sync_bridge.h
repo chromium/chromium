@@ -226,9 +226,9 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
 
   std::unique_ptr<WebAppDatabase> database_;
   const raw_ptr<WebAppRegistrarMutable, DanglingUntriaged> registrar_;
-  raw_ptr<WebAppCommandManager, DanglingUntriaged> command_manager_;
-  raw_ptr<WebAppCommandScheduler, DanglingUntriaged> command_scheduler_;
-  raw_ptr<WebAppInstallManager, DanglingUntriaged> install_manager_;
+  raw_ptr<WebAppCommandManager, DanglingAcrossTasks> command_manager_;
+  raw_ptr<WebAppCommandScheduler, DanglingAcrossTasks> command_scheduler_;
+  raw_ptr<WebAppInstallManager, DanglingAcrossTasks> install_manager_;
 
   base::OneShotEvent on_sync_connected_;
 

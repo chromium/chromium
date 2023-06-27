@@ -658,7 +658,7 @@ class ExtensionService : public ExtensionServiceInterface,
   raw_ptr<Profile> profile_ = nullptr;
 
   // The ExtensionSystem for the profile above.
-  raw_ptr<ExtensionSystem, DanglingUntriaged> system_ = nullptr;
+  raw_ptr<ExtensionSystem, DanglingAcrossTasks> system_ = nullptr;
 
   // Preferences for the owning profile.
   raw_ptr<ExtensionPrefs, DanglingUntriaged> extension_prefs_ = nullptr;

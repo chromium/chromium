@@ -137,7 +137,7 @@ class TabStyleHighlightPathGenerator : public views::HighlightPathGenerator {
   }
 
  private:
-  const raw_ptr<TabStyleViews, DanglingUntriaged> tab_style_views_;
+  const raw_ptr<TabStyleViews, DanglingAcrossTasks> tab_style_views_;
 };
 
 }  // namespace

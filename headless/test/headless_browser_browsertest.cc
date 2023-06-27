@@ -431,8 +431,9 @@ class CrashReporterTest : public HeadlessBrowserTest,
   void OnTargetCrashed(const base::Value::Dict&) { FinishAsynchronousTest(); }
 
  protected:
-  raw_ptr<HeadlessBrowserContext, DanglingUntriaged> browser_context_ = nullptr;
-  raw_ptr<HeadlessWebContents, DanglingUntriaged> web_contents_ = nullptr;
+  raw_ptr<HeadlessBrowserContext, DanglingAcrossTasks> browser_context_ =
+      nullptr;
+  raw_ptr<HeadlessWebContents, DanglingAcrossTasks> web_contents_ = nullptr;
   SimpleDevToolsProtocolClient devtools_client_;
   base::FilePath crash_dumps_dir_;
 };

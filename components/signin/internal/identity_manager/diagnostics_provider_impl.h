@@ -38,9 +38,9 @@ class DiagnosticsProviderImpl final : public DiagnosticsProvider {
   base::TimeDelta GetDelayBeforeMakingCookieRequests() const override;
 
  private:
-  raw_ptr<GaiaCookieManagerService, DanglingUntriaged>
+  raw_ptr<GaiaCookieManagerService, DanglingAcrossTasks>
       gaia_cookie_manager_service_;
-  raw_ptr<ProfileOAuth2TokenService, DanglingUntriaged>
+  raw_ptr<ProfileOAuth2TokenService, DanglingAcrossTasks>
       profile_oauth2_token_service_;
 };
 

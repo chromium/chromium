@@ -481,9 +481,9 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
             base::Unretained(this)));
   }
 
-  raw_ptr<HeadlessBrowserContext, DanglingUntriaged> browser_context_ =
+  raw_ptr<HeadlessBrowserContext, DanglingAcrossTasks> browser_context_ =
       nullptr;  // Not owned.
-  raw_ptr<HeadlessWebContentsImpl, DanglingUntriaged> web_contents_ =
+  raw_ptr<HeadlessWebContentsImpl, DanglingAcrossTasks> web_contents_ =
       nullptr;  // Not owned.
 
   bool page_ready_ = false;

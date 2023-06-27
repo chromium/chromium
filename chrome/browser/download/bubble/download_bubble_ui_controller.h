@@ -125,7 +125,7 @@ class DownloadBubbleUIController {
   // DownloadDisplayController and DownloadBubbleUIController have the same
   // lifetime. Both are owned, constructed together, and destructed together by
   // DownloadToolbarButtonView. If one is valid, so is the other.
-  raw_ptr<DownloadDisplayController, DanglingUntriaged> display_controller_;
+  raw_ptr<DownloadDisplayController, DanglingAcrossTasks> display_controller_;
 
   absl::optional<base::Time> last_partial_view_shown_time_ = absl::nullopt;
 
