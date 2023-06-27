@@ -58,8 +58,14 @@ bool EncryptKeyBag(const CryptographerImpl& cryptographer,
   sync_pb::CryptographerData proto = cryptographer.ToProto();
   DCHECK(!proto.key_bag().key().empty());
 
+  sync_pb::NigoriKeyBag keys_for_encryption;
+
+  keys_for_encryption.mutable_key()->CopyFrom(proto.key_bag().key());
+  keys_for_encryption.mutable_cross_user_sharing_private_key()->CopyFrom(
+      proto.cross_user_sharing_keys().private_key());
+
   // Encrypt the bag with the default Nigori.
-  return cryptographer.Encrypt(proto.key_bag(), encrypted);
+  return cryptographer.Encrypt(keys_for_encryption, encrypted);
 }
 
 // Writes deprecated per-type encryption fields. Can be removed once <M82

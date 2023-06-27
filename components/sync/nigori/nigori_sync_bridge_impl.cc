@@ -812,8 +812,11 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
   const std::string new_default_key_name = state_.pending_keys->key_name();
   DCHECK(key_bag.HasKey(new_default_key_name));
 
-  NigoriKeyBag new_key_bag =
-      NigoriKeyBag::CreateFromProto(decrypted_pending_keys);
+  NigoriKeyBag new_key_bag = NigoriKeyBag::CreateEmpty();
+  base::ranges::for_each(decrypted_pending_keys.key(),
+                         [&new_key_bag](sync_pb::NigoriKey key) {
+                           new_key_bag.AddKeyFromProto(key);
+                         });
 
   if (!new_key_bag.HasKey(new_default_key_name)) {
     // Protocol violation.

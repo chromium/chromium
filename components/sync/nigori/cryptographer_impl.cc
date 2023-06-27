@@ -66,10 +66,6 @@ sync_pb::CryptographerData CryptographerImpl::ToProto() const {
   *proto.mutable_key_bag() = key_bag_.ToProto();
   proto.set_default_key_name(default_encryption_key_name_);
   *proto.mutable_cross_user_sharing_keys() = cross_user_sharing_keys_.ToProto();
-  // TODO(crbug/1445056): once NigoriKeyBag is properly forked and encrypted
-  // remove the additional copy.
-  proto.mutable_key_bag()->mutable_cross_user_sharing_private_key()->CopyFrom(
-      proto.cross_user_sharing_keys().private_key());
   return proto;
 }
 

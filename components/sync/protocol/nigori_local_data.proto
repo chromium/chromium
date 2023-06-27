@@ -24,10 +24,14 @@ message CrossUserSharingKeys {
   repeated CrossUserSharingPrivateKey private_key = 1;
 }
 
+message LocalNigoriKeyBag {
+  // Used for encrypting within the sync account boundary.
+  repeated NigoriKey key = 2;
+}
+
 message CryptographerData {
   // Contains all known Nigori keys.
-  // TODO(crbug/1445056): fork the NigoriKeyBag into a local proto.
-  optional NigoriKeyBag key_bag = 1;
+  optional LocalNigoriKeyBag key_bag = 1;
 
   // Default key is the key, that should be used for encryption. Can be empty
   // in case we have pending keys (waiting for explicit passphrase, or client
