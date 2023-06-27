@@ -20,6 +20,7 @@
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_view_factory.h"
 #include "ash/system/message_center/metrics_utils.h"
+#include "ash/system/status_area_widget.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_constants.h"
@@ -34,6 +35,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
+#include "ui/message_center/views/message_popup_collection.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_types.h"
@@ -47,10 +49,6 @@ const int kPopupMarginX = 8;
 void ReportPopupAnimationSmoothness(int smoothness) {
   base::UmaHistogramPercentage("Ash.NotificationPopup.AnimationSmoothness",
                                smoothness);
-}
-
-int64_t GetDisplayIdForWindow(gfx::NativeWindow window) {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
 }
 
 }  // namespace
@@ -197,6 +195,41 @@ void AshMessagePopupCollection::NotifyPopupClosed(
     last_pop_up_added_ = nullptr;
 }
 
+void AshMessagePopupCollection::NotifyPopupCollectionHeightChanged() {
+  if (!features::IsQsRevampEnabled()) {
+    return;
+  }
+
+  AdjustBaselineBasedOnTrayBubble();
+}
+
+bool AshMessagePopupCollection::AdjustAndEvaluateShouldDisplayPopupItem(
+    const PopupItem& item) {
+  if (!features::IsQsRevampEnabled()) {
+    return message_center::MessagePopupCollection::
+        AdjustAndEvaluateShouldDisplayPopupItem(item);
+  }
+
+  // To evaluate if we should display the new popup item, we:
+  // 1. Evaluate if we have enough space. If yes, return.
+  // 2. Make room by adjusting the baseline and moving down the popups
+  // 3. After the effort, evaluate again if we have enough space.
+
+  if (!IsNextEdgeOutsideWorkArea(item)) {
+    return true;
+  }
+
+  // Reset `baseline_offset_` to zero if can to make room for displaying the new
+  // popup item. We also need to move down other popups so that the new item can
+  // be displayed on top of them.
+  if (baseline_offset_ != 0) {
+    SetBaselineOffset(0);
+    MoveDownPopups();
+  }
+
+  return !IsNextEdgeOutsideWorkArea(item);
+}
+
 void AshMessagePopupCollection::AnimationStarted() {
   if (popups_animating_ == 0 && last_pop_up_added_) {
     // Since all the popup widgets use the same compositor, we only need to set
@@ -258,7 +291,7 @@ void AshMessagePopupCollection::OnStatusAreaAnchoredBubbleVisibilityChanged(
     return;
   }
 
-  AdjustBaselineBasedOnTrayBubble(tray_bubble);
+  AdjustBaselineBasedOnTrayBubble();
 }
 
 void AshMessagePopupCollection::OnTrayBubbleBoundsChanged(
@@ -267,7 +300,7 @@ void AshMessagePopupCollection::OnTrayBubbleBoundsChanged(
     return;
   }
 
-  AdjustBaselineBasedOnTrayBubble(tray_bubble);
+  AdjustBaselineBasedOnTrayBubble();
 }
 
 bool AshMessagePopupCollection::IsWidgetAPopupNotification(
@@ -330,9 +363,11 @@ void AshMessagePopupCollection::UpdateWorkArea() {
   ResetBounds();
 }
 
-void AshMessagePopupCollection::AdjustBaselineBasedOnTrayBubble(
-    TrayBubbleView* tray_bubble) {
+void AshMessagePopupCollection::AdjustBaselineBasedOnTrayBubble() {
   CHECK(features::IsQsRevampEnabled());
+
+  auto* status_area = StatusAreaWidget::ForWindow(shelf_->GetWindow());
+  auto* tray_bubble = status_area ? status_area->open_tray_bubble() : nullptr;
 
   // The tray bubble might already be closed/deleted. We also only put the popup
   // on top of tray bubble that is anchored to the shelf corner.
@@ -341,12 +376,15 @@ void AshMessagePopupCollection::AdjustBaselineBasedOnTrayBubble(
     return;
   }
 
-  // Also reset baseline if the tray bubble is in a different display. Note that
-  // we assume if a tray bubble is open on a different display, then no tray
-  // bubble should be open on this display.
-  if (GetDisplayIdForWindow(shelf_->GetWindow()) !=
-      GetDisplayIdForWindow(tray_bubble->GetWidget()->GetNativeWindow())) {
+  // If there's not enough space above the tray bubble to display the entire
+  // popup collection (the portion of the screen from 0 to the origin of the
+  // tray bubble), we will just display the popup on top of the tray bubble
+  // (adjust the baseline back to zero and move down the popups).
+  if (tray_bubble->GetBoundsInScreen().y() -
+          message_center::kMarginBetweenPopups <
+      popup_collection_bounds().height()) {
     SetBaselineOffset(0);
+    MoveDownPopups();
     return;
   }
 

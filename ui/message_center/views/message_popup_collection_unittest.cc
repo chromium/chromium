@@ -66,6 +66,10 @@ class MockMessagePopupCollection : public DesktopMessagePopupCollection {
 
   bool popup_timer_started() const { return popup_timer_started_; }
 
+  int popup_collection_height_changed() const {
+    return popup_collection_height_changed_;
+  }
+
  protected:
   MessagePopupView* CreatePopup(const Notification& notification) override;
 
@@ -95,6 +99,10 @@ class MockMessagePopupCollection : public DesktopMessagePopupCollection {
     return is_fullscreen_;
   }
 
+  void NotifyPopupCollectionHeightChanged() override {
+    ++popup_collection_height_changed_;
+  }
+
  private:
   gfx::NativeWindow context_;
 
@@ -104,6 +112,7 @@ class MockMessagePopupCollection : public DesktopMessagePopupCollection {
   bool is_primary_display_ = true;
   bool is_fullscreen_ = false;
   int new_popup_height_ = 84;
+  int popup_collection_height_changed_ = 0;
 };
 
 class MockMessagePopupView : public MessagePopupView {
@@ -875,6 +884,30 @@ TEST_F(MessagePopupCollectionTest, PopupCollectionBounds) {
   EXPECT_EQ(gfx::Rect(r2.x(), r2.y(), kNotificationWidth,
                       r1.height() + kMarginBetweenPopups + r2.height()),
             popup_collection()->popup_collection_bounds());
+}
+
+TEST_F(MessagePopupCollectionTest, PopupCollectionHeightChanged) {
+  EXPECT_EQ(0, popup_collection()->popup_collection_height_changed());
+
+  std::string id0 = AddNotification();
+  AnimateUntilIdle();
+
+  EXPECT_EQ(1, popup_collection()->popup_collection_height_changed());
+
+  std::string id1 = AddNotification();
+  AnimateUntilIdle();
+
+  EXPECT_EQ(2, popup_collection()->popup_collection_height_changed());
+
+  std::string id2 = AddNotification();
+  AnimateUntilIdle();
+
+  EXPECT_EQ(3, popup_collection()->popup_collection_height_changed());
+
+  MessageCenter::Get()->RemoveNotification(id0, true);
+  AnimateUntilIdle();
+
+  EXPECT_EQ(4, popup_collection()->popup_collection_height_changed());
 }
 
 TEST_F(MessagePopupCollectionTest, DefaultPositioning) {

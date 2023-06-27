@@ -14,9 +14,11 @@ class Notification;
 
 namespace ash {
 
-// Creates a simple notification with the given id.
+// Creates a simple notification with the given id. If `has_image` is true, the
+// notification will contain a test image.
 std::unique_ptr<message_center::Notification> CreateSimpleNotification(
-    const std::string& id);
+    const std::string& id,
+    bool has_image = false);
 
 }  // namespace ash
 

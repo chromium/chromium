@@ -281,6 +281,12 @@ MessagePopupView* MessagePopupCollection::GetPopupViewForNotificationID(
   return nullptr;
 }
 
+bool MessagePopupCollection::AdjustAndEvaluateShouldDisplayPopupItem(
+    const PopupItem& item) {
+  // We will not display the popup if its y-edge is outside of the work area.
+  return !IsNextEdgeOutsideWorkArea(item);
+}
+
 MessagePopupView* MessagePopupCollection::CreatePopup(
     const Notification& notification) {
   bool a11_feedback_on_init =
@@ -288,6 +294,22 @@ MessagePopupView* MessagePopupCollection::CreatePopup(
           .should_make_spoken_feedback_for_popup_updates;
   return new MessagePopupView(new NotificationView(notification), this,
                               a11_feedback_on_init);
+}
+
+bool MessagePopupCollection::IsNextEdgeOutsideWorkArea(
+    const PopupItem& item) const {
+  const int next_edge = GetNextEdge(item);
+
+  const gfx::Rect work_area = GetWorkArea();
+  return IsTopDown() ? next_edge > work_area.bottom()
+                     : next_edge < work_area.y();
+}
+
+void MessagePopupCollection::MoveDownPopups() {
+  CalculateAndUpdateBounds();
+  for (auto& item : popup_items_) {
+    item.is_animating = true;
+  }
 }
 
 void MessagePopupCollection::RestartPopupTimers() {
@@ -430,9 +452,15 @@ void MessagePopupCollection::CalculateAndUpdateBounds() {
     popup_bounds_origin_y = base + kMarginBetweenPopups;
   }
 
+  int old_popup_collection_height = popup_collection_bounds_.height();
+
   popup_collection_bounds_ =
       gfx::Rect(popup_bounds_origin_x, popup_bounds_origin_y,
                 kNotificationWidth, popup_bounds_height - kMarginBetweenPopups);
+
+  if (old_popup_collection_height != popup_collection_bounds_.height()) {
+    NotifyPopupCollectionHeightChanged();
+  }
 }
 
 void MessagePopupCollection::UpdateByAnimation() {
@@ -515,7 +543,7 @@ bool MessagePopupCollection::AddPopup() {
     item.is_animating = true;
     item.popup = CreatePopup(*new_notification);
 
-    if (IsNextEdgeOutsideWorkArea(item)) {
+    if (!AdjustAndEvaluateShouldDisplayPopupItem(item)) {
       item.popup->Close();
       return false;
     }
@@ -552,12 +580,6 @@ void MessagePopupCollection::MarkRemovedPopup() {
   }
 }
 
-void MessagePopupCollection::MoveDownPopups() {
-  CalculateAndUpdateBounds();
-  for (auto& item : popup_items_)
-    item.is_animating = true;
-}
-
 int MessagePopupCollection::GetNextEdge(const PopupItem& item) const {
   const int delta =
       item.popup->GetHeightForWidth(kNotificationWidth) + kMarginBetweenPopups;
@@ -571,14 +593,6 @@ int MessagePopupCollection::GetNextEdge(const PopupItem& item) const {
   }
 
   return IsTopDown() ? base + delta : base - delta;
-}
-
-bool MessagePopupCollection::IsNextEdgeOutsideWorkArea(
-    const PopupItem& item) const {
-  const int next_edge = GetNextEdge(item);
-  const gfx::Rect work_area = GetWorkArea();
-  return IsTopDown() ? next_edge > work_area.bottom()
-                     : next_edge < work_area.y();
 }
 
 void MessagePopupCollection::CloseAnimatingPopups() {
