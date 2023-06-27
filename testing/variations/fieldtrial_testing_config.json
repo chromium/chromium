@@ -13915,32 +13915,6 @@
             ]
         }
     ],
-    "UseUtilityThreadGroup": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseUtilityThreadGroup",
-                        "V8ConcurrentMarkingHighPriorityThreads",
-                        "V8ConcurrentSparkplugHighPriorityThreads"
-                    ]
-                }
-            ]
-        }
-    ],
     "UserAgentOverrideExperiment": [
         {
             "platforms": [
