@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/browsing_data/core/browsing_data_policies_utils.h"
 #include "components/browsing_data/core/pref_names.h"
@@ -57,6 +59,7 @@
 namespace {
 
 constexpr int kInitialCleanupDelayInSeconds = 15;
+constexpr int kTestCleanupPeriodInMinutes = 5;
 constexpr int kDefaultCleanupPeriodInMinutes = 30;
 
 using ScheduledRemovalSettings =
@@ -364,12 +367,17 @@ void ChromeBrowsingDataLifetimeManager::UpdateScheduledRemovalSettings() {
 }
 
 void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
+  bool has_sim_switch = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kSimulateBrowsingDataLifetime);
+  int cleanup_period = has_sim_switch ? kTestCleanupPeriodInMinutes
+                                      : kDefaultCleanupPeriodInMinutes;
+
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostDelayedTask(FROM_HERE,
                         base::BindOnce(&ChromeBrowsingDataLifetimeManager::
                                            StartScheduledBrowsingDataRemoval,
                                        weak_ptr_factory_.GetWeakPtr()),
-                        base::Minutes(kDefaultCleanupPeriodInMinutes));
+                        base::Minutes(cleanup_period));
 
   if (!IsConditionSatisfiedForBrowsingDataRemoval(GetSyncTypesForPolicyPref(
           profile_, browsing_data::prefs::kBrowsingDataLifetime))) {
@@ -379,13 +387,17 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
   content::BrowsingDataRemover* remover = profile_->GetBrowsingDataRemover();
 
   for (auto& removal_settings : scheduled_removals_settings_) {
-    if (removal_settings.time_to_live_in_hours <= 0) {
+    if (!has_sim_switch && removal_settings.time_to_live_in_hours <= 0) {
       continue;
     }
 
-    auto deletion_end_time = end_time_for_testing_.value_or(
-        base::Time::Now() -
-        base::Hours(removal_settings.time_to_live_in_hours));
+    auto deletion_end_time =
+        has_sim_switch
+            ? base::Time::Now() - base::Minutes(3)
+            : end_time_for_testing_.value_or(
+                  base::Time::Now() -
+                  base::Hours(removal_settings.time_to_live_in_hours));
+
     auto filterable_remove_mask =
         removal_settings.remove_mask &
         chrome_browsing_data_remover::FILTERABLE_DATA_TYPES;

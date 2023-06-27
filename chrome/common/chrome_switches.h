@@ -162,6 +162,7 @@ extern const char kSavePageAsMHTML[];
 extern const char kScreenCaptureAudioDefaultUnchecked[];
 extern const char kSilentDebuggerExtensionAPI[];
 extern const char kSilentLaunch[];
+extern const char kSimulateBrowsingDataLifetime[];
 extern const char kSimulateCriticalUpdate[];
 extern const char kSimulateElevatedRecovery[];
 extern const char kSimulateOutdated[];
