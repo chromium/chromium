@@ -227,11 +227,6 @@ public abstract class FirstRunActivityBase
         if (!mNativeInitialized) return;
 
         assert mNativeInitializedTime != 0;
-        long delayAfterNative = SystemClock.elapsedRealtime() - mNativeInitializedTime;
-        String histogramName = onDevicePolicyFound
-                ? "MobileFre.PolicyServiceInitDelayAfterNative.WithPolicy2"
-                : "MobileFre.PolicyServiceInitDelayAfterNative.WithoutPolicy2";
-        RecordHistogram.recordTimesHistogram(histogramName, delayAfterNative);
     }
 
     /**

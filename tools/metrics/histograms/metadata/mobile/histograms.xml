@@ -924,24 +924,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileFre.PolicyServiceInitDelayAfterNative{PolicyPresence}2"
-    units="ms" expires_after="2022-05-01">
-  <owner>skym@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Android: The amount of time spent between native initialized and the
-    decision &quot;whether we need to wait to load policy service from
-    native&quot; has been made. The decision is made when no on-device policy is
-    found, or policy service is fully initialized. If the decision has been made
-    before native initialization, it will not be recorded. Recorded during FRE
-    only, when on-device policy is {PolicyPresence}
-  </summary>
-  <token key="PolicyPresence">
-    <variant name=".WithoutPolicy" summary="not presented."/>
-    <variant name=".WithPolicy" summary="presented."/>
-  </token>
-</histogram>
-
 <histogram name="MobileFre.Progress" enum="MobileFreProgress"
     expires_after="2023-12-04">
   <owner>bsazonov@chromium.org</owner>
