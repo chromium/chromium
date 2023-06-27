@@ -4,6 +4,8 @@
 
 #import "content/browser/speech/tts_mac.h"
 
+#import <AppKit/AppKit.h>
+
 #include "base/strings/sys_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,15 +19,12 @@ TEST(TtsMacTest, CachedVoiceData) {
   std::vector<VoiceData> voices;
   TtsPlatformImplMac::GetInstance()->GetVoices(&voices);
 
-  EXPECT_EQ(voices.size(), NSSpeechSynthesizer.availableVoices.count);
+  EXPECT_EQ(voices.size(), AVSpeechSynthesisVoice.speechVoices.count);
 
-  NSString* defaultVoice = NSSpeechSynthesizer.defaultVoice;
+  AVSpeechSynthesisVoice* defaultVoice =
+      [AVSpeechSynthesisVoice voiceWithLanguage:nil];
   if (defaultVoice) {
-    NSDictionary* attributes =
-        [NSSpeechSynthesizer attributesForVoice:defaultVoice];
-    NSString* name = attributes[NSVoiceName];
-
-    EXPECT_EQ(voices[0].name, base::SysNSStringToUTF8(name));
+    EXPECT_EQ(voices[0].name, base::SysNSStringToUTF8(defaultVoice.name));
   }
 
   // Simulate the app becoming active, as if the user switched away and back.
@@ -40,7 +39,7 @@ TEST(TtsMacTest, CachedVoiceData) {
   voices.clear();
   TtsPlatformImplMac::GetInstance()->GetVoices(&voices);
 
-  EXPECT_EQ(voices.size(), NSSpeechSynthesizer.availableVoices.count);
+  EXPECT_EQ(voices.size(), AVSpeechSynthesisVoice.speechVoices.count);
 }
 
 }  // namespace content

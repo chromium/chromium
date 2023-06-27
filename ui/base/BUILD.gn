@@ -620,11 +620,12 @@ component("base") {
     frameworks = [
       "Accelerate.framework",
       "AppKit.framework",
-      "QuartzCore.framework",
       "AudioUnit.framework",
+      "AVFAudio.framework",
       "Carbon.framework",
       "CoreVideo.framework",
       "Foundation.framework",
+      "QuartzCore.framework",
     ]
   }
 

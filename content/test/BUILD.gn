@@ -3131,9 +3131,10 @@ test("content_unittests") {
       "//ui/base/mojom",
     ]
     frameworks = [
+      "AuthenticationServices.framework",
+      "AVFAudio.framework",
       "Carbon.framework",
       "IOSurface.framework",
-      "AuthenticationServices.framework",
     ]
     weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 12.3
   }

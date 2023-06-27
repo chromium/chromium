@@ -2638,6 +2638,7 @@ source_set("browser") {
     ]
     frameworks += [
       "AppKit.framework",
+      "AVFAudio.framework",
       "Carbon.framework",
       "CoreGraphics.framework",
       "QuartzCore.framework",
