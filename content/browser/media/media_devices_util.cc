@@ -176,6 +176,13 @@ void GetMediaDeviceSaltAndOrigin(GlobalRenderFrameHostId render_frame_host_id,
     return;
   }
 
+  // Check that the frame is not in the prerendering state. Media playback is
+  // deferred while prerendering. So this check should pass and ensures the
+  // condition to call GetPageUkmSourceId below as the data collection policy
+  // disallows recording UKMs while prerendering.
+  CHECK(!frame_host->IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kPrerendering));
+
   net::SiteForCookies site_for_cookies = frame_host->ComputeSiteForCookies();
   url::Origin origin = frame_host->GetLastCommittedOrigin();
   bool has_focus = frame_host->GetView() && frame_host->GetView()->HasFocus();
