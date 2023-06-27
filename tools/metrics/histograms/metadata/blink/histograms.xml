@@ -942,6 +942,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.EnvironmentIntegrity.Latency" units="ms"
+    expires_after="2024-05-31">
+  <owner>sergeyka@google.com</owner>
+  <owner>ryankalla@google.com</owner>
+  <summary>
+    The latency of resolved calls to the navigator.getWebEnvironmentIntegrity()
+  </summary>
+</histogram>
+
+<histogram name="Blink.EnvironmentIntegrity.Result"
+    enum="EnvironmentIntegrityResult" expires_after="2024-05-31">
+  <owner>sergeyka@google.com</owner>
+  <owner>ryankalla@google.com</owner>
+  <summary>
+    The results of all calls to navigator.getWebEnvironmentIntegrity()
+  </summary>
+</histogram>
+
 <histogram name="Blink.Experimental.Cookies.CacheLookupResult2"
     enum="CookieCacheLookupResult" expires_after="2023-11-12">
   <owner>carlscab@google.com</owner>

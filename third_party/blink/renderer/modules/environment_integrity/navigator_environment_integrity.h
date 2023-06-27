@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ENVIRONMENT_INTEGRITY_NAVIGATOR_ENVIRONMENT_INTEGRITY_H_
 
 #include "third_party/blink/public/mojom/environment_integrity/environment_integrity_service.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver_with_tracker.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -17,8 +18,18 @@ namespace blink {
 
 class ExceptionState;
 class ScriptPromise;
-class ScriptPromiseResolver;
 class ScriptState;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class EnvironmentIntegrityResult {
+  kOk = 0,
+  kTimedOut = 1,
+  kUnknownError = 2,
+  kNotSupported = 3,
+  kHeldBack = 4,
+  kMaxValue = kHeldBack
+};
 
 class MODULES_EXPORT NavigatorEnvironmentIntegrity final
     : public GarbageCollected<NavigatorEnvironmentIntegrity>,
@@ -45,7 +56,8 @@ class MODULES_EXPORT NavigatorEnvironmentIntegrity final
 
 #if BUILDFLAG(IS_ANDROID)
  private:
-  void ResolveEnvironmentIntegrity(ScriptPromiseResolver* resolver);
+  void ResolveEnvironmentIntegrity(
+      ScriptPromiseResolverWithTracker<EnvironmentIntegrityResult>* resolver);
 
   HeapMojoRemote<mojom::blink::EnvironmentIntegrityService>
       remote_environment_integrity_service_;

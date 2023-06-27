@@ -50,18 +50,19 @@ ScriptPromise NavigatorEnvironmentIntegrity::getEnvironmentIntegrity(
     ScriptState* script_state,
     const String& content_binding,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolverWithTracker<EnvironmentIntegrityResult>>(
+      script_state, "Blink.EnvironmentIntegrity", base::Seconds(0));
   ScriptPromise promise = resolver->Promise();
 
 #if BUILDFLAG(IS_ANDROID)
   remote_environment_integrity_service_->GetEnvironmentIntegrity(
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          &NavigatorEnvironmentIntegrity::ResolveEnvironmentIntegrity,
-          WrapPersistent(this))));
+      WTF::BindOnce(&NavigatorEnvironmentIntegrity::ResolveEnvironmentIntegrity,
+                    WrapPersistent(this), WrapPersistent(resolver)));
 #else
-  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
-                                   "Operation not supported");
+  resolver->RecordAndThrowDOMException(
+      exception_state, DOMExceptionCode::kNotSupportedError,
+      "Operation not supported", EnvironmentIntegrityResult::kNotSupported);
 #endif
 
   return promise;
@@ -86,12 +87,13 @@ void NavigatorEnvironmentIntegrity::Trace(Visitor* visitor) const {
 
 #if BUILDFLAG(IS_ANDROID)
 void NavigatorEnvironmentIntegrity::ResolveEnvironmentIntegrity(
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolverWithTracker<EnvironmentIntegrityResult>* resolver) {
   Vector<uint8_t> empty_token;
   DOMArrayBuffer* buffer =
       DOMArrayBuffer::Create(empty_token.data(), empty_token.size());
   EnvironmentIntegrity* environment_integrity =
       MakeGarbageCollected<EnvironmentIntegrity>(buffer);
+  resolver->RecordResult(EnvironmentIntegrityResult::kOk);
   resolver->Resolve(environment_integrity);
 }
 #endif

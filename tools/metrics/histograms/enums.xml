@@ -34161,6 +34161,14 @@ Called by update_document_policy_enum.py.-->
   <int value="4" label="No result within timout"/>
 </enum>
 
+<enum name="EnvironmentIntegrityResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="Timeout"/>
+  <int value="2" label="Unknown error"/>
+  <int value="3" label="Not supported"/>
+  <int value="4" label="Held back"/>
+</enum>
+
 <enum name="EolIncentiveButtonType">
   <int value="0" label="Notification Offer Approaching"/>
   <int value="1" label="Notification No Offer Approaching"/>
