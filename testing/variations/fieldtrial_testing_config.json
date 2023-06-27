@@ -3757,9 +3757,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Dogfood",
+                    "name": "Enabled_20230627",
                     "params": {
-                        "launch_stage": "dogfood"
+                        "launch_stage": "prod"
                     },
                     "enable_features": [
                         "FederatedService",
