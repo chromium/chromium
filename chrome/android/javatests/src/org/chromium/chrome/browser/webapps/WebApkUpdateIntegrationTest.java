@@ -75,6 +75,8 @@ public class WebApkUpdateIntegrationTest {
     private static final String WEBAPK_SHORT_NAME = "Manifest test app";
     private static final String ICON_URL = "/chrome/test/data/banners/image-512px.png";
     private static final String ICON_MURMUR2_HASH = "7742433188808797392";
+    private static final String ICON_URL2 = "/chrome/test/data/banners/512x512-red.png";
+    private static final String ICON_MURMUR2_HASH2 = "7742433188808797392";
     private static final String DISPLAY_MODE = "standalone";
     private static final String ORIENTATION = "portrait";
     private static final int SHELL_APK_VERSION = 1000;
@@ -152,7 +154,8 @@ public class WebApkUpdateIntegrationTest {
                 res.getIdentifier("splash_icon", "drawable", WEBAPK_PACKAGE_NAME));
 
         bundle.putString(WebApkMetaDataKeys.ICON_URLS_AND_ICON_MURMUR2_HASHES,
-                ICON_URL + " " + ICON_MURMUR2_HASH);
+                String.join(" ", mTestServer.getURL(ICON_URL), ICON_MURMUR2_HASH,
+                        mTestServer.getURL(ICON_URL2), ICON_MURMUR2_HASH2));
         return bundle;
     }
 
@@ -214,17 +217,33 @@ public class WebApkUpdateIntegrationTest {
         assertEquals(proto.getManifest().getOrientation(), "landscape");
         assertEquals(proto.getManifest().getDisplayMode(), "standalone");
 
-        assertEquals(proto.getManifest().getIconsCount(), 2);
-        // First icon from old shell icon, has image data but no hash.
+        assertEquals(proto.getManifest().getIconsCount(), 3);
+        // 1st: primary icon from old shell icon, has image data but no hash.
         WebApkProto.Image icon1 = proto.getManifest().getIconsList().get(0);
         assertFalse(icon1.hasSrc());
         assertFalse(icon1.hasHash());
         assertTrue(icon1.hasImageData());
         assertFalse(icon1.getImageData().isEmpty());
-        // 2nd icon from the url to hash map, has url and hash but no data.
+        assertEquals(icon1.getPurposesCount(), 1);
+        assertEquals(icon1.getPurposesList().get(0), WebApkProto.Image.Purpose.ANY);
+        assertEquals(icon1.getUsagesCount(), 1);
+        assertEquals(icon1.getUsagesList().get(0), WebApkProto.Image.Usage.PRIMARY_ICON);
+
+        // 2nd: splash icon url matches the hash map. has image data and hash.
         WebApkProto.Image icon2 = proto.getManifest().getIconsList().get(1);
-        assertTrue(icon2.hasSrc());
-        assertTrue(icon2.hasHash());
-        assertFalse(icon2.hasImageData());
+        assertEquals(icon2.getSrc(), mTestServer.getURL(ICON_URL));
+        assertEquals(icon2.getHash(), ICON_MURMUR2_HASH);
+        assertTrue(icon2.hasImageData());
+        assertFalse(icon2.getImageData().isEmpty());
+        assertEquals(icon2.getPurposesCount(), 1);
+        assertEquals(icon2.getPurposesList().get(0), WebApkProto.Image.Purpose.ANY);
+        assertEquals(icon2.getUsagesCount(), 1);
+        assertEquals(icon2.getUsagesList().get(0), WebApkProto.Image.Usage.SPLASH_ICON);
+
+        // 3nd icon from the url2hash map, has url and hash but no data.
+        WebApkProto.Image icon3 = proto.getManifest().getIconsList().get(2);
+        assertEquals(icon3.getSrc(), mTestServer.getURL(ICON_URL2));
+        assertEquals(icon3.getHash(), ICON_MURMUR2_HASH2);
+        assertFalse(icon3.hasImageData());
     }
 }

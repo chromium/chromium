@@ -80,6 +80,28 @@ class BuildProtoRunner {
     run_loop.Run();
   }
 
+  void BuildForIconTestSync(
+      const GURL& icon_url,
+      std::vector<std::string> icon_urls,
+      std::map<std::string, webapps::WebApkIconHasher::Icon>
+          icon_url_to_murmur2_hash,
+      const std::string& icon_data) {
+    webapps::ShortcutInfo info(GURL::EmptyGURL());
+    info.best_primary_icon_url = icon_url;
+    info.icon_urls = std::move(icon_urls);
+    webapps::BuildProto(info, GURL() /*app_key*/, icon_data,
+                        "" /* splash_icon_data*/, "" /* package_name */,
+                        "" /* version */, std::move(icon_url_to_murmur2_hash),
+                        false /* is_manifest_stale*/,
+                        false /* is_app_identity_update_supported */,
+                        base::BindOnce(&BuildProtoRunner::OnBuiltWebApkProto,
+                                       base::Unretained(this)));
+
+    base::RunLoop run_loop;
+    on_completed_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
   webapk::WebApk* GetWebApkRequest() { return webapk_request_.get(); }
 
  private:
@@ -249,7 +271,7 @@ TEST_F(WebApkProtoBuilderTest,
   ASSERT_NE(nullptr, webapk_request);
 
   webapk::WebAppManifest manifest = webapk_request->manifest();
-  ASSERT_EQ(3, manifest.icons_size());
+  ASSERT_EQ(2, manifest.icons_size());
 
   // Check protobuf fields for icons.
   EXPECT_EQ(best_icon_url, manifest.icons(0).src());
@@ -258,22 +280,12 @@ TEST_F(WebApkProtoBuilderTest,
   EXPECT_EQ(manifest.icons(0).image_data(),
             icon_url_to_murmur2_hash[best_icon_url].unsafe_data);
   EXPECT_THAT(manifest.icons(0).usages(),
-              testing::ElementsAre(webapk::Image::PRIMARY_ICON,
-                                   webapk::Image::SPLASH_ICON));
-
-  EXPECT_EQ(best_icon_url, manifest.icons(1).src());
-  EXPECT_EQ(manifest.icons(1).hash(),
-            icon_url_to_murmur2_hash[best_icon_url].hash);
-  EXPECT_EQ(manifest.icons(1).image_data(),
-            icon_url_to_murmur2_hash[best_icon_url].unsafe_data);
-  EXPECT_THAT(manifest.icons(1).usages(),
-              testing::ElementsAre(webapk::Image::PRIMARY_ICON,
-                                   webapk::Image::SPLASH_ICON));
+              testing::ElementsAre(webapk::Image::PRIMARY_ICON));
 
   // Check protobuf fields for unused icon.
-  EXPECT_EQ(kUnusedIconPath, manifest.icons(2).src());
-  EXPECT_FALSE(manifest.icons(2).has_hash());
-  EXPECT_FALSE(manifest.icons(2).has_image_data());
+  EXPECT_EQ(kUnusedIconPath, manifest.icons(1).src());
+  EXPECT_FALSE(manifest.icons(1).has_hash());
+  EXPECT_FALSE(manifest.icons(1).has_image_data());
 
   // Check shortcut fields.
   ASSERT_EQ(manifest.shortcuts_size(), 1);
@@ -499,4 +511,129 @@ TEST_F(WebApkProtoBuilderTest, EmptyPrimaryIconUrlValidSplashIcon) {
   EXPECT_EQ(manifest.icons(1).image_data(), "splash_icon_data");
   EXPECT_THAT(manifest.icons(1).usages(),
               testing::ElementsAre(webapk::Image::SPLASH_ICON));
+}
+
+TEST_F(WebApkProtoBuilderTest, IconWithoutUrl) {
+  // Test primary icon with empty URL.
+  std::vector<std::string> icon_urls = {kUnusedIconPath};
+  std::map<std::string, webapps::WebApkIconHasher::Icon>
+      icon_url_to_murmur2_hash;
+  icon_url_to_murmur2_hash[kUnusedIconPath] = {"data2", "2"};
+
+  std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
+  runner->BuildForIconTestSync(GURL(), icon_urls, icon_url_to_murmur2_hash,
+                               "icon_data");
+
+  webapk::WebApk* webapk_request = runner->GetWebApkRequest();
+  ASSERT_NE(nullptr, webapk_request);
+  webapk::WebAppManifest manifest = webapk_request->manifest();
+  ASSERT_EQ(2, manifest.icons_size());
+  // Icon has data but no src and hash
+  EXPECT_FALSE(manifest.icons(0).has_src());
+  EXPECT_FALSE(manifest.icons(0).has_hash());
+  EXPECT_EQ(manifest.icons(0).image_data(), "icon_data");
+  EXPECT_THAT(manifest.icons(0).usages(),
+              testing::ElementsAre(webapk::Image::PRIMARY_ICON));
+  // The dummy unused icon has src and hash but no data
+  EXPECT_TRUE(manifest.icons(1).has_src());
+  EXPECT_TRUE(manifest.icons(1).has_hash());
+}
+
+TEST_F(WebApkProtoBuilderTest, IconUrlNotInListAndNotInHash) {
+  // Test primary icon has URL but NOT in list and NOT in hashmap
+  GURL test_icon_url = test_server()->GetURL(kBestPrimaryIconUrl);
+  std::vector<std::string> icon_urls = {kUnusedIconPath};
+  std::map<std::string, webapps::WebApkIconHasher::Icon>
+      icon_url_to_murmur2_hash;
+  icon_url_to_murmur2_hash[kUnusedIconPath] = {"data1", "1"};
+
+  std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
+  runner->BuildForIconTestSync(test_icon_url, icon_urls,
+                               icon_url_to_murmur2_hash, "icon_data");
+
+  webapk::WebApk* webapk_request = runner->GetWebApkRequest();
+  ASSERT_NE(nullptr, webapk_request);
+  webapk::WebAppManifest manifest = webapk_request->manifest();
+  ASSERT_EQ(2, manifest.icons_size());
+  // Icon has data and src, but no hash
+  EXPECT_EQ(manifest.icons(0).src(), test_icon_url.spec());
+  EXPECT_FALSE(manifest.icons(0).has_hash());
+  EXPECT_EQ(manifest.icons(0).image_data(), "icon_data");
+  EXPECT_THAT(manifest.icons(0).usages(),
+              testing::ElementsAre(webapk::Image::PRIMARY_ICON));
+  // The dummy unused icon has src and hash but no data
+  EXPECT_TRUE(manifest.icons(1).has_src());
+  EXPECT_TRUE(manifest.icons(1).has_hash());
+}
+
+TEST_F(WebApkProtoBuilderTest, IconUrlInListNotInHash) {
+  // Test primary icon has URL in the urls list but NOT in hashmap
+  GURL test_icon_url = test_server()->GetURL(kBestPrimaryIconUrl);
+  std::vector<std::string> icon_urls = {test_icon_url.spec()};
+  std::map<std::string, webapps::WebApkIconHasher::Icon>
+      icon_url_to_murmur2_hash;
+  icon_url_to_murmur2_hash[kUnusedIconPath] = {"data2", "hash2"};
+
+  std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
+  runner->BuildForIconTestSync(test_icon_url, icon_urls,
+                               icon_url_to_murmur2_hash, "icon_data");
+
+  webapk::WebApk* webapk_request = runner->GetWebApkRequest();
+  ASSERT_NE(nullptr, webapk_request);
+  webapk::WebAppManifest manifest = webapk_request->manifest();
+  ASSERT_EQ(1, manifest.icons_size());
+  // Icon has data, src but no hash
+  EXPECT_EQ(manifest.icons(0).src(), test_icon_url.spec());
+  EXPECT_FALSE(manifest.icons(0).has_hash());
+  EXPECT_EQ(manifest.icons(0).image_data(), "icon_data");
+  EXPECT_THAT(manifest.icons(0).usages(),
+              testing::ElementsAre(webapk::Image::PRIMARY_ICON));
+}
+
+TEST_F(WebApkProtoBuilderTest, IconUrlNotInListInHash) {
+  // Test primary icon has URL NOT in the urls list but in the hashmap
+  GURL test_icon_url = test_server()->GetURL(kBestPrimaryIconUrl);
+  std::vector<std::string> icon_urls = {};
+  std::map<std::string, webapps::WebApkIconHasher::Icon>
+      icon_url_to_murmur2_hash;
+  icon_url_to_murmur2_hash[test_icon_url.spec()] = {"data3", "hash3"};
+
+  std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
+  runner->BuildForIconTestSync(test_icon_url, icon_urls,
+                               icon_url_to_murmur2_hash, "icon_data");
+
+  webapk::WebApk* webapk_request = runner->GetWebApkRequest();
+  ASSERT_NE(nullptr, webapk_request);
+  webapk::WebAppManifest manifest = webapk_request->manifest();
+  ASSERT_EQ(1, manifest.icons_size());
+  // Icon has data, src and hash
+  EXPECT_EQ(manifest.icons(0).src(), test_icon_url.spec());
+  EXPECT_EQ(manifest.icons(0).hash(), "hash3");
+  EXPECT_EQ(manifest.icons(0).image_data(), "icon_data");
+  EXPECT_THAT(manifest.icons(0).usages(),
+              testing::ElementsAre(webapk::Image::PRIMARY_ICON));
+}
+
+TEST_F(WebApkProtoBuilderTest, IconUrlInListAndHash) {
+  // Test primary icon has URL in list and hashmap
+  GURL test_icon_url = test_server()->GetURL(kBestPrimaryIconUrl);
+  std::vector<std::string> icon_urls = {test_icon_url.spec()};
+  std::map<std::string, webapps::WebApkIconHasher::Icon>
+      icon_url_to_murmur2_hash;
+  icon_url_to_murmur2_hash[test_icon_url.spec()] = {"data4", "hash4"};
+
+  std::unique_ptr<BuildProtoRunner> runner = CreateBuildProtoRunner();
+  runner->BuildForIconTestSync(test_icon_url, icon_urls,
+                               icon_url_to_murmur2_hash, "icon_data");
+
+  webapk::WebApk* webapk_request = runner->GetWebApkRequest();
+  ASSERT_NE(nullptr, webapk_request);
+  webapk::WebAppManifest manifest = webapk_request->manifest();
+  ASSERT_EQ(1, manifest.icons_size());
+  // Icon has data, src and hash
+  EXPECT_EQ(manifest.icons(0).src(), test_icon_url.spec());
+  EXPECT_EQ(manifest.icons(0).hash(), "hash4");
+  EXPECT_EQ(manifest.icons(0).image_data(), "icon_data");
+  EXPECT_THAT(manifest.icons(0).usages(),
+              testing::ElementsAre(webapk::Image::PRIMARY_ICON));
 }
