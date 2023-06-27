@@ -4,20 +4,27 @@
 
 #include "chrome/browser/extensions/extension_util.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_service_impl.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
@@ -27,28 +34,19 @@
 
 namespace extensions {
 
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kExtensionUpdateUrl[] =
+    "https://clients2.google.com/service/update2/crx";  // URL of Chrome Web
+                                                        // Store backend.
+#endif
+
+}  // namespace
+
 class ExtensionUtilUnittest : public ExtensionServiceTestBase {
  public:
-  void SetUp() override {
-    InitializeEmptyExtensionService();
-    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal(), &testing_local_state_);
-    ASSERT_TRUE(testing_profile_manager_->SetUp());
-    signin_profile_ =
-        testing_profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
-  }
-
-  scoped_refptr<const Extension> BuildPolicyInstalledExtension() {
-    return ExtensionBuilder("foo_ext")
-        .SetLocation(mojom::ManifestLocation::kExternalPolicyDownload)
-        .Build();
-  }
-
- protected:
-  raw_ptr<TestingProfile, DanglingUntriaged> signin_profile_;
-
- private:
-  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  void SetUp() override { InitializeEmptyExtensionService(); }
 };
 
 TEST_F(ExtensionUtilUnittest, SetAllowFileAccess) {
@@ -187,17 +185,59 @@ TEST_F(ExtensionUtilUnittest, HasIsolatedStorage) {
       ExtensionBuilder("foo_ext").Build();
   EXPECT_FALSE(extension->is_platform_app());
   EXPECT_FALSE(util::HasIsolatedStorage(*extension.get(), profile()));
-
-  // Extensions running on the sign-in screen, installed by policy have isolated
-  // storage.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  scoped_refptr<const Extension> policy_extension =
-      BuildPolicyInstalledExtension();
-  EXPECT_FALSE(policy_extension->is_platform_app());
-  EXPECT_TRUE(
-      util::HasIsolatedStorage(*policy_extension.get(), signin_profile_));
-#endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class ExtensionUtilWithSigninProfileUnittest : public ExtensionUtilUnittest {
+ public:
+  void SetUp() override {
+    ExtensionUtilUnittest::SetUp();
+
+    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal(), &testing_local_state_);
+    ASSERT_TRUE(testing_profile_manager_->SetUp());
+    auto policy_service = std::make_unique<policy::PolicyServiceImpl>(
+        std::vector<policy::ConfigurationPolicyProvider*>{policy_provider()});
+    signin_profile_ = testing_profile_manager_->CreateTestingProfile(
+        chrome::kInitialProfile, /*prefs=*/nullptr,
+        base::UTF8ToUTF16(chrome::kInitialProfile), 0,
+        TestingProfile::TestingFactories(),
+        /*is_supervised_profile=*/false, /*is_new_profile=*/absl::nullopt,
+        std::move(policy_service));
+    signin_profile_prefs_ = signin_profile_->GetTestingPrefService();
+  }
+
+  void TearDown() override {
+    signin_profile_ = nullptr;
+    signin_profile_prefs_ = nullptr;
+    testing_profile_manager_->DeleteAllTestingProfiles();
+    ExtensionUtilUnittest::TearDown();
+  }
+
+  scoped_refptr<const Extension> BuildPolicyInstalledExtension() {
+    return ExtensionBuilder("foo_ext")
+        .SetLocation(mojom::ManifestLocation::kExternalPolicyDownload)
+        .Build();
+  }
+
+  void SetupForceList(const ExtensionIdList& extension_ids) {
+    base::Value::Dict dict = base::Value::Dict();
+    for (const auto& extension_id : extension_ids) {
+      dict.Set(extension_id,
+               base::Value::Dict().Set(ExternalProviderImpl::kExternalUpdateUrl,
+                                       kExtensionUpdateUrl));
+    }
+    signin_profile_prefs_->SetManagedPref(pref_names::kInstallForceList,
+                                          std::move(dict));
+  }
+
+ protected:
+  raw_ptr<TestingProfile> signin_profile_;
+
+ private:
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> signin_profile_prefs_;
+};
 
 // HasIsolatedStorage() will be called when an extension is disabled, more
 // precisely when its service worker is unregistered. At that moment the
@@ -205,8 +245,8 @@ TEST_F(ExtensionUtilUnittest, HasIsolatedStorage) {
 // The method needs to still be able to correctly specify if the extension's
 // storage is isolated or not, even if the extension is disabled.
 // Regression test for b/279763783.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(ExtensionUtilUnittest, HasIsolatedStorageOnDisabledExtension) {
+TEST_F(ExtensionUtilWithSigninProfileUnittest,
+       HasIsolatedStorageOnDisabledExtension) {
   scoped_refptr<const Extension> policy_extension =
       BuildPolicyInstalledExtension();
   const std::string& policy_extension_id = policy_extension->id();
@@ -228,7 +268,7 @@ TEST_F(ExtensionUtilUnittest, HasIsolatedStorageOnDisabledExtension) {
   EXPECT_FALSE(util::HasIsolatedStorage(policy_extension_id, signin_profile_));
 }
 
-TEST_F(ExtensionUtilUnittest,
+TEST_F(ExtensionUtilWithSigninProfileUnittest,
        HasIsolatedStorageOnTerminatedOrBlockedExtension) {
   scoped_refptr<const Extension> policy_extension =
       BuildPolicyInstalledExtension();
@@ -260,6 +300,47 @@ TEST_F(ExtensionUtilUnittest,
   extension_registry->RemoveBlocked(policy_extension_id);
   EXPECT_FALSE(util::HasIsolatedStorage(policy_extension_id, signin_profile_));
 }
+
+// Verifies that the force-installed extension policy is checked in case it
+// was not found in the extension registry. When an extension is unloaded, we
+// clean up state from the extension. For service worker-based extensions,
+// this includes unregistering the worker, which requires access to the
+// storage partition. At this point, since the extension is unloaded, it won't
+// be present in the registry, but we still need to determine if the extension
+// has isolated storage to pinpoint the correct storage partition.
+// Regression test for b/287924795.
+TEST_F(ExtensionUtilWithSigninProfileUnittest,
+       HasIsolatedStorageForForceInstalledExtensions) {
+  scoped_refptr<const Extension> extension1 = BuildPolicyInstalledExtension();
+  scoped_refptr<const Extension> extension2 = BuildPolicyInstalledExtension();
+  ExtensionRegistry* extension_registry =
+      ExtensionRegistry::Get(signin_profile_);
+  extension_registry->AddEnabled(extension1);
+  extension_registry->AddEnabled(extension2);
+
+  // Extensions are found in the registry, are policy-installed and run on the
+  // sign-in screen.
+  EXPECT_TRUE(util::HasIsolatedStorage(extension1->id(), signin_profile_));
+  EXPECT_TRUE(util::HasIsolatedStorage(extension2->id(), signin_profile_));
+
+  extension_registry->RemoveEnabled(extension1->id());
+  extension_registry->RemoveEnabled(extension2->id());
+
+  // Extensions are not found in the registry and are not force-installed.
+  EXPECT_FALSE(util::HasIsolatedStorage(extension1->id(), signin_profile_));
+  EXPECT_FALSE(util::HasIsolatedStorage(extension2->id(), signin_profile_));
+
+  ExtensionIdList extension_ids;
+  extension_ids.push_back(extension1->id());
+  extension_ids.push_back(extension2->id());
+  SetupForceList(extension_ids);
+
+  // Extensions are not found in the registry, but are force-installed and run
+  // on the sign-in screen.
+  EXPECT_TRUE(util::HasIsolatedStorage(extension1->id(), signin_profile_));
+  EXPECT_TRUE(util::HasIsolatedStorage(extension2->id(), signin_profile_));
+}
+
 #endif
 
 }  // namespace extensions
