@@ -200,6 +200,8 @@ clang_lib("compiler_builtins") {
   } else if (is_ios) {
     if (target_environment == "simulator") {
       libname = "iossim"
+    } else if (target_environment == "catalyst") {
+      libname = "osx"
     } else {
       libname = "ios"
     }
@@ -224,6 +226,11 @@ clang_lib("compiler_profile") {
   } else if (is_ios) {
     if (target_environment == "simulator") {
       libname = "profile_iossim"
+    } else if (target_environment == "catalyst") {
+      # We don't enable clang coverage on iOS device builds, and the library is
+      # not part of the Clang package tarball as a result.
+      #
+      # Don't define libname which makes this target do nothing.
     } else {
       # We don't enable clang coverage on iOS device builds, and the library is
       # not part of the Clang package tarball as a result.
