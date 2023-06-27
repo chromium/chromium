@@ -84,6 +84,8 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
                               (id<ApplicationSettingsCommands>)dispatcher {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
+    CHECK(browserState);
+    CHECK(dispatcher);
     _browserState = browserState;
     _dispatcher = dispatcher;
     _identityManager =
@@ -137,6 +139,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   _identityManager = nullptr;
   _identityManagerObserver.reset();
   _dispatcher = nil;
+  _browserState = nullptr;
 }
 
 #pragma mark UIViewController

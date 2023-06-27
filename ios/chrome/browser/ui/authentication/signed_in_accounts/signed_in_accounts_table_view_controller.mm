@@ -51,6 +51,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                       (ChromeAccountManagerService*)accountManagerService {
   self = [super initWithStyle:UITableViewStylePlain];
   if (self) {
+    CHECK(identityManager);
+    CHECK(accountManagerService);
     _identityManager = identityManager;
     _accountManagerService = accountManagerService;
     _accountManagerServiceObserver.reset(
