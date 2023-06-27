@@ -14,10 +14,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "gpu/config/gpu_finch_features.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content {
 
 bool IsProcessBackgrounded(base::ProcessId pid) {

@@ -19,10 +19,6 @@
 #include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content {
 
 namespace {

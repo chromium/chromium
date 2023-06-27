@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
+#include "base/mac/scoped_nsobject.h"
 #include "base/run_loop.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents.h"
@@ -14,10 +15,6 @@
 #include "testing/gtest_mac.h"
 #include "ui/base/cocoa/find_pasteboard.h"
 #include "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace content {
 
@@ -31,7 +28,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserMacTest,
   ASSERT_TRUE(NavigateToURL(web_contents, url));
 
   FindPasteboard* pboard = [FindPasteboard sharedInstance];
-  NSString* original_pboard_text = [[pboard findText] copy];
+  base::scoped_nsobject<NSString> original_pboard_text(
+      [[pboard findText] copy]);
 
   [pboard setFindText:@"test"];
   EXPECT_NSEQ(@"test", [pboard findText]);
@@ -44,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserMacTest,
   base::RunLoop loop;
   __block base::OnceClosure quit_closure = loop.QuitClosure();
 
-  NSNotificationCenter* center = NSNotificationCenter.defaultCenter;
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   id notification_handle =
       [center addObserverForName:kFindPasteboardChangedNotification
                           object:pboard
