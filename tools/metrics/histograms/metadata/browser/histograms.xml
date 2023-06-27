@@ -253,14 +253,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Browser.ERP.UploadEncryptedReport"
+<histogram name="Browser.ERP.{ManagementStatus}UploadEncryptedReport"
     enum="EnterpriseDMServerRequestSuccess" expires_after="2024-03-01">
-  <owner>anasr@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>jrhilke@google.com</owner>
+  <owner>src/components/reporting/OWNERS</owner>
   <summary>
-    Status of a completed ERP upload request, either successful, with a failure
-    or with a server error.
+    Status of a completed ERP upload request from a {ManagementStatus}. Either
+    successful, with a failure or with a server error. Recorded when a response
+    from the server is received.
   </summary>
+  <token key="ManagementStatus">
+    <variant name="Managed" summary="managed"/>
+    <variant name="Unmanaged" summary="unmanaged"/>
+  </token>
 </histogram>
 
 <histogram name="Browser.ERP.{Param}PayloadSizePerHour" units="KiB"

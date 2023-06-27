@@ -129,6 +129,7 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
 
  private:
   std::set<std::string> GetTopLevelKeyAllowList();
+  const bool is_device_managed_;
 
   // Parameters populated from the payload_.
   ::reporting::Priority priority_;

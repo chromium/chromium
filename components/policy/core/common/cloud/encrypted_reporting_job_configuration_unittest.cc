@@ -746,12 +746,25 @@ TEST_F(EncryptedReportingJobConfigurationTest, FailedUploadsSequenceThrottled) {
   }
 }
 
-TEST_F(EncryptedReportingJobConfigurationTest, UmaName) {
+TEST_F(EncryptedReportingJobConfigurationTest, ManagedDeviceUmaName) {
+  // Non-null cloud policy client indicates device is unmanaged.
   EncryptedReportingJobConfiguration configuration(
       shared_url_loader_factory_, DMAuth::FromDMToken(client_.dm_token()),
       kServerUrl, RequestPayloadBuilder().Build(), &client_, base::DoNothing());
 
-  EXPECT_EQ(configuration.GetUmaName(), "Browser.ERP.UploadEncryptedReport");
+  EXPECT_EQ(configuration.GetUmaName(),
+            "Browser.ERP.ManagedUploadEncryptedReport");
+}
+
+TEST_F(EncryptedReportingJobConfigurationTest, UnmanagedDeviceUmaName) {
+  // Null cloud policy client indicates device is unmanaged.
+  EncryptedReportingJobConfiguration configuration(
+      shared_url_loader_factory_, DMAuth::FromDMToken(client_.dm_token()),
+      kServerUrl, RequestPayloadBuilder().Build(),
+      /*cloud_policy_client=*/nullptr, base::DoNothing());
+
+  EXPECT_EQ(configuration.GetUmaName(),
+            "Browser.ERP.UnmanagedUploadEncryptedReport");
 }
 
 TEST_F(EncryptedReportingJobConfigurationTest, PayloadTopLevelFields) {

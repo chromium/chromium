@@ -148,8 +148,9 @@ EncryptedReportingJobConfiguration::EncryptedReportingJobConfiguration(
                                     factory,
                                     std::move(auth_data),
                                     server_url,
-                                    std::move(complete_cb)) {
-  if (cloud_policy_client) {
+                                    std::move(complete_cb)),
+      is_device_managed_(cloud_policy_client != nullptr) {
+  if (is_device_managed_) {
     // Payload for managed device
     InitializePayloadWithDeviceInfo(cloud_policy_client->dm_token(),
                                     cloud_policy_client->client_id());
@@ -311,7 +312,10 @@ void EncryptedReportingJobConfiguration::OnURLLoadComplete(
 }
 
 std::string EncryptedReportingJobConfiguration::GetUmaString() const {
-  return "Browser.ERP.";
+  if (is_device_managed_) {
+    return "Browser.ERP.Managed";
+  }
+  return "Browser.ERP.Unmanaged";
 }
 
 std::set<std::string>
