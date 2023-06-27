@@ -165,6 +165,9 @@ class NearbyConnectionsManagerImpl
   // For metrics. A set of endpoint_ids for which we have requested a bandwidth
   // upgrade.
   base::flat_set<std::string> requested_bwu_endpoint_ids_;
+  // For metrics. A set of endpoint_ids for which we have received the first
+  // OnBandwidthChanged event.
+  base::flat_set<std::string> on_bandwidth_changed_endpoint_ids_;
   // For metrics. A map of endpoint_id to current upgraded medium.
   base::flat_map<std::string, Medium> current_upgraded_mediums_;
 

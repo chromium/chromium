@@ -682,6 +682,7 @@ void NearbyConnectionsManagerImpl::OnDisconnected(
         base::Contains(current_upgraded_mediums_, endpoint_id));
   }
   requested_bwu_endpoint_ids_.erase(endpoint_id);
+  on_bandwidth_changed_endpoint_ids_.erase(endpoint_id);
   current_upgraded_mediums_.erase(endpoint_id);
 
   // TODO(crbug/1111458): Support TransferManager.
@@ -690,10 +691,22 @@ void NearbyConnectionsManagerImpl::OnDisconnected(
 void NearbyConnectionsManagerImpl::OnBandwidthChanged(
     const std::string& endpoint_id,
     Medium medium) {
-  NS_LOG(VERBOSE) << __func__ << ": Changed to medium=" << medium
-                  << "; endpoint_id=" << endpoint_id;
-  base::UmaHistogramEnumeration("Nearby.Share.Medium.ChangedToMedium", medium);
-  current_upgraded_mediums_.insert_or_assign(endpoint_id, medium);
+  // `OnBandwidthChanged` is always called for the first Medium we connected to.
+  // This is not guaranteed to be a specific Medium, but is usually Bluetooth.
+  // This may or may not be preceded by a call to `UpgradeBandwidth`. It's not
+  // useful to record this first Medium since no Bandwidth Upgrade occurred, so
+  // we ignore it.
+  if (!base::Contains(on_bandwidth_changed_endpoint_ids_, endpoint_id)) {
+    NS_LOG(VERBOSE) << __func__ << ": Initial call with medium=" << medium
+                    << "; endpoint_id=" << endpoint_id;
+    on_bandwidth_changed_endpoint_ids_.emplace(endpoint_id);
+  } else {
+    NS_LOG(VERBOSE) << __func__ << ": Changed to medium=" << medium
+                    << "; endpoint_id=" << endpoint_id;
+    base::UmaHistogramEnumeration("Nearby.Share.Medium.ChangedToMedium",
+                                  medium);
+    current_upgraded_mediums_.insert_or_assign(endpoint_id, medium);
+  }
   // TODO(crbug/1111458): Support TransferManager.
 }
 
@@ -813,6 +826,7 @@ void NearbyConnectionsManagerImpl::Reset() {
   endpoint_discovery_listener_.reset();
   connect_timeout_timers_.clear();
   requested_bwu_endpoint_ids_.clear();
+  on_bandwidth_changed_endpoint_ids_.clear();
   current_upgraded_mediums_.clear();
 
   for (auto& entry : pending_outgoing_connections_) {
