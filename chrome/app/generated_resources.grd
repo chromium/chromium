@@ -13366,7 +13366,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <ph name="WINDOW_TITLE">$1<ex>Google Hangouts</ex></ph> - Inactive tab
       </message>
       <message name="IDS_TAB_AX_MEMORY_SAVINGS" desc="Accessibility label text of how much memory was saved by the inactive tab'">
-        <ph name="WINDOW_TITLE">$1<ex>Google Hangouts</ex></ph> - Saved <ph name="MEMORY_VALUE">$2<ex>175MB</ex></ph>
+        <ph name="WINDOW_TITLE">$1<ex>Google Hangouts</ex></ph> - <ph name="MEMORY_VALUE">$2<ex>175MB</ex></ph> freed up
       </message>
       <message name="IDS_TAB_AX_MEMORY_USAGE" desc="Accessibility label text of how much memory is used by the tab'">
         <ph name="WINDOW_TITLE">$1<ex>Google Hangouts</ex></ph> - Memory usage - <ph name="MEMORY_VALUE">$2<ex>175MB</ex></ph>
