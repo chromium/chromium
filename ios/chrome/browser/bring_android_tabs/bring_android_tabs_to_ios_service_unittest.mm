@@ -276,7 +276,6 @@ TEST_F(BringAndroidTabsToIOSServiceTest, UserNotAndroidSwitcher) {
   EXPECT_EQ(NumberOfTabsLoaded(/*is_android_switcher=*/false,
                                /*tabs_recently_active=*/true),
             0);
-  ExpectHistogram(bring_android_tabs::PromptAttemptStatus::kNotAndroidSwitcher);
 }
 
 // Tests that no tabs are loaded when the user's open tabs were not recently

@@ -29,14 +29,14 @@ extern const char kPromptAttemptStatusHistogramName[];
 
 // The result of prompting the set of tabs for a user. This is
 // mapped to the IOSPromptTabsForAndroidSwitcherState enum in enums.xml for
-// metrics.
+// metrics. Starting M116, this would only be reported for Android switchers.
 enum class PromptAttemptStatus {
-  kSyncDisabled = 0,
-  kSegmentationIncomplete = 1,
+  // kSyncDisabled = 0, (no longer reported)
+  // kSegmentationIncomplete = 1, (no longer reported)
   kPromptShownAndDismissed = 2,
   kTabSyncDisabled = 3,
   kNoActiveTabs = 4,
-  kNotAndroidSwitcher = 5,
+  // kNotAndroidSwitcher = 5, (no longer reported)
   kSuccess = 6,
   kMaxValue = kSuccess,
 };

@@ -12,6 +12,10 @@
 
 class PrefService;
 
+namespace bring_android_tabs {
+enum class PromptAttemptStatus;
+}  // namespace bring_android_tabs
+
 namespace segmentation_platform {
 class DeviceSwitcherResultDispatcher;
 }  // namespace segmentation_platform
@@ -70,8 +74,9 @@ class BringAndroidTabsToIOSService : public KeyedService {
   // show again.
   bool PromptShownAndShouldNotShowAgain() const;
   // Loads the list of synced sessions and saves the positions of Android
-  // Switcher Tabs. Logs attempt status metric on UMA.
-  void LoadSyncedSessionsAndComputeTabPositions();
+  // Switcher Tabs and returns the result.
+  bring_android_tabs::PromptAttemptStatus
+  LoadSyncedSessionsAndComputeTabPositions();
 
   // Service dependencies.
   segmentation_platform::DeviceSwitcherResultDispatcher* const

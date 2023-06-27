@@ -133,7 +133,8 @@ chromium-metrics-reviews@google.com.
   <owner>bling-get-set-up@google.com</owner>
   <summary>
     The result of prompting the set of tabs for an Android switcher. Recorded
-    after the set of tabs are prompted.
+    after the set of tabs are prompted. Starting M116, this metric would be
+    logged for Android switchers only.
   </summary>
 </histogram>
 
