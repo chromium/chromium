@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.editors.EditorBase;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogViewBinder;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorFieldValidator;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType;
 import org.chromium.payments.mojom.AddressErrors;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -79,7 +80,7 @@ import java.util.UUID;
 @Deprecated
 public class AddressEditor
         extends EditorBase<AutofillAddress> implements GetSubKeysRequestDelegate {
-    private final Map<Integer, ListItem> mAddressFields = new HashMap<>();
+    private final Map<Integer, PropertyModel> mAddressFields = new HashMap<>();
     private final Set<String> mPhoneNumbers = new HashSet<>();
     private final boolean mSaveToDisk;
     private final PhoneNumberUtil.CountryAwareFormatTextWatcher mPhoneFormatter;
@@ -90,6 +91,9 @@ public class AddressEditor
     private PropertyModel mCountryField;
     @Nullable
     private PropertyModel mPhoneField;
+    @Nullable
+    private PropertyModel mAdminAreaField;
+    private @ItemType int mAdminAreaFieldType;
     @Nullable
     private List<AddressUiComponent> mAddressUiComponents;
     private boolean mAdminAreasLoaded;
@@ -250,47 +254,40 @@ public class AddressEditor
         if (mAddressFields.isEmpty()) {
             // City, dependent locality, and organization don't have any special formatting hints.
             mAddressFields.put(AddressField.LOCALITY,
-                    new ListItem(TEXT_INPUT,
-                            new PropertyModel.Builder(TEXT_ALL_KEYS)
-                                    .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
-                                    .build()));
+                    new PropertyModel.Builder(TEXT_ALL_KEYS)
+                            .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
+                            .build());
             mAddressFields.put(AddressField.DEPENDENT_LOCALITY,
-                    new ListItem(TEXT_INPUT,
-                            new PropertyModel.Builder(TEXT_ALL_KEYS)
-                                    .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
-                                    .build()));
+                    new PropertyModel.Builder(TEXT_ALL_KEYS)
+                            .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
+                            .build());
             mAddressFields.put(AddressField.ORGANIZATION,
-                    new ListItem(TEXT_INPUT,
-                            new PropertyModel.Builder(TEXT_ALL_KEYS)
-                                    .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
-                                    .build()));
+                    new PropertyModel.Builder(TEXT_ALL_KEYS)
+                            .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
+                            .build());
 
             // Sorting code and postal code (a.k.a. ZIP code) should show both letters and digits on
             // the keyboard, if possible.
             mAddressFields.put(AddressField.SORTING_CODE,
-                    new ListItem(TEXT_INPUT,
-                            new PropertyModel.Builder(TEXT_ALL_KEYS)
-                                    .with(TEXT_INPUT_TYPE, ALPHA_NUMERIC_INPUT)
-                                    .build()));
+                    new PropertyModel.Builder(TEXT_ALL_KEYS)
+                            .with(TEXT_INPUT_TYPE, ALPHA_NUMERIC_INPUT)
+                            .build());
             mAddressFields.put(AddressField.POSTAL_CODE,
-                    new ListItem(TEXT_INPUT,
-                            new PropertyModel.Builder(TEXT_ALL_KEYS)
-                                    .with(TEXT_INPUT_TYPE, ALPHA_NUMERIC_INPUT)
-                                    .build()));
+                    new PropertyModel.Builder(TEXT_ALL_KEYS)
+                            .with(TEXT_INPUT_TYPE, ALPHA_NUMERIC_INPUT)
+                            .build());
 
             // Street line field can contain \n to indicate line breaks.
             mAddressFields.put(AddressField.STREET_ADDRESS,
-                    new ListItem(TEXT_INPUT,
-                            new PropertyModel.Builder(TEXT_ALL_KEYS)
-                                    .with(TEXT_INPUT_TYPE, STREET_ADDRESS_INPUT)
-                                    .build()));
+                    new PropertyModel.Builder(TEXT_ALL_KEYS)
+                            .with(TEXT_INPUT_TYPE, STREET_ADDRESS_INPUT)
+                            .build());
 
             // Android has special formatting rules for names.
             mAddressFields.put(AddressField.RECIPIENT,
-                    new ListItem(TEXT_INPUT,
-                            new PropertyModel.Builder(TEXT_ALL_KEYS)
-                                    .with(TEXT_INPUT_TYPE, PERSON_NAME_INPUT)
-                                    .build()));
+                    new PropertyModel.Builder(TEXT_ALL_KEYS)
+                            .with(TEXT_INPUT_TYPE, PERSON_NAME_INPUT)
+                            .build());
         }
 
         // Phone number is present for all countries.
@@ -393,15 +390,17 @@ public class AddressEditor
         for (int i = 0; i < mAddressUiComponents.size(); i++) {
             AddressUiComponent component = mAddressUiComponents.get(i);
             visibleFields.add(component.id);
+            PropertyModel fieldModel = component.id == AddressField.ADMIN_AREA
+                    ? mAdminAreaField
+                    : mAddressFields.get(component.id);
             if (component.id != AddressField.COUNTRY) {
-                setProfileField(
-                        profile, component.id, mAddressFields.get(component.id).model.get(VALUE));
+                setProfileField(profile, component.id, fieldModel.get(VALUE));
             }
         }
 
         // Clear the fields that are hidden from the user interface, so
         // AutofillAddress.toPaymentAddress() will send them to the renderer as empty strings.
-        for (Map.Entry<Integer, ListItem> entry : mAddressFields.entrySet()) {
+        for (Map.Entry<Integer, PropertyModel> entry : mAddressFields.entrySet()) {
             if (!visibleFields.contains(entry.getKey())) {
                 setProfileField(profile, entry.getKey(), "");
             }
@@ -467,10 +466,11 @@ public class AddressEditor
     private void setAddressFieldValuesFromCache() {
         // Address fields are cached, so their values need to be updated for every new profile
         // that's being edited.
-        for (Map.Entry<Integer, ListItem> entry : mAddressFields.entrySet()) {
-            entry.getValue().model.set(
-                    VALUE, AutofillAddress.getProfileField(mProfile, entry.getKey()));
+        for (Map.Entry<Integer, PropertyModel> entry : mAddressFields.entrySet()) {
+            entry.getValue().set(VALUE, AutofillAddress.getProfileField(mProfile, entry.getKey()));
         }
+        mAdminAreaField.set(
+                VALUE, AutofillAddress.getProfileField(mProfile, AddressField.ADMIN_AREA));
     }
 
     @Override
@@ -483,22 +483,7 @@ public class AddressEditor
         // subkeys.
         if (mEditorDialog.isDismissed()) return;
 
-        // When there is a timeout in the subkey request process, the admin area codes/names will be
-        // null.
-        mAddressFields.put(AddressField.ADMIN_AREA,
-                (adminAreaCodes != null && adminAreaNames != null && adminAreaCodes.length != 0
-                        && adminAreaCodes.length == adminAreaNames.length)
-                        ? new ListItem(DROPDOWN,
-                                new PropertyModel.Builder(DROPDOWN_ALL_KEYS)
-                                        .with(DROPDOWN_KEY_VALUE_LIST,
-                                                AutofillProfileBridge.getAdminAreaDropdownList(
-                                                        adminAreaCodes, adminAreaNames))
-                                        .with(DROPDOWN_HINT, mContext.getString(R.string.select))
-                                        .build())
-                        : new ListItem(TEXT_INPUT,
-                                new PropertyModel.Builder(TEXT_ALL_KEYS)
-                                        .with(TEXT_INPUT_TYPE, REGION_INPUT)
-                                        .build()));
+        initializeAdminAreaField(adminAreaCodes, adminAreaNames);
 
         // Admin areas need to be fetched in two cases:
         // 1. Initial loading of the form.
@@ -520,13 +505,25 @@ public class AddressEditor
         }
     }
 
-    private static boolean contains(String[] haystack, String needle) {
-        if (haystack == null || haystack.length == 0) return false;
-        if (TextUtils.isEmpty(needle)) return true;
-        for (int i = 0; i < haystack.length; ++i) {
-            if (TextUtils.equals(haystack[i], needle)) return true;
+    private void initializeAdminAreaField(
+            @Nullable String[] adminAreaCodes, @Nullable String[] adminAreaNames) {
+        // When there is a timeout in the subkey request process, the admin area codes/names will be
+        // null.
+        if (adminAreaCodes == null || adminAreaNames == null || adminAreaCodes.length == 0
+                || adminAreaCodes.length != adminAreaNames.length) {
+            mAdminAreaField = new PropertyModel.Builder(TEXT_ALL_KEYS)
+                                      .with(TEXT_INPUT_TYPE, REGION_INPUT)
+                                      .build();
+            mAdminAreaFieldType = TEXT_INPUT;
+            return;
         }
-        return false;
+        mAdminAreaField = new PropertyModel.Builder(DROPDOWN_ALL_KEYS)
+                                  .with(DROPDOWN_KEY_VALUE_LIST,
+                                          AutofillProfileBridge.getAdminAreaDropdownList(
+                                                  adminAreaCodes, adminAreaNames))
+                                  .with(DROPDOWN_HINT, mContext.getString(R.string.select))
+                                  .build();
+        mAdminAreaFieldType = DROPDOWN;
     }
 
     /** Requests the list of admin areas. */
@@ -562,8 +559,15 @@ public class AddressEditor
         for (int i = 0; i < mAddressUiComponents.size(); i++) {
             AddressUiComponent component = mAddressUiComponents.get(i);
 
-            ListItem fieldItem = mAddressFields.get(component.id);
-            PropertyModel field = fieldItem.model;
+            final PropertyModel field;
+            final @ItemType int fieldType;
+            if (component.id == AddressField.ADMIN_AREA) {
+                field = mAdminAreaField;
+                fieldType = mAdminAreaFieldType;
+            } else {
+                field = mAddressFields.get(component.id);
+                fieldType = TEXT_INPUT;
+            }
 
             // Labels depend on country, e.g., state is called province in some countries. These are
             // already localized.
@@ -582,7 +586,7 @@ public class AddressEditor
             }
 
             field.set(CUSTOM_ERROR_MESSAGE, getAddressError(component.id));
-            editorFields.add(fieldItem);
+            editorFields.add(new ListItem(fieldType, field));
         }
         // Phone number (and email if applicable) are the last fields of the address.
         mPhoneField.set(CUSTOM_ERROR_MESSAGE, mAddressErrors != null ? mAddressErrors.phone : null);
