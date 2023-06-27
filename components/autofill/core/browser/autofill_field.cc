@@ -25,6 +25,15 @@ namespace autofill {
 using FieldPrediction =
     AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
 
+template <>
+struct DenseSetTraits<FieldPrediction::Source> {
+  static constexpr FieldPrediction::Source kMinValue =
+      FieldPrediction::Source(0);
+  static constexpr FieldPrediction::Source kMaxValue =
+      FieldPrediction::Source_MAX;
+  static constexpr bool kPacked = false;
+};
+
 namespace {
 
 // Returns true, if the prediction is non-experimental and should be used by
@@ -33,11 +42,10 @@ namespace {
 // default prediction. We don't need to store it, because its meaning is that
 // there is no default prediction.
 bool IsDefaultPrediction(const FieldPrediction& prediction) {
-  constexpr DenseSet<FieldPrediction::Source, FieldPrediction::Source(0),
-                     FieldPrediction::Source_MAX>
-      default_sources = {FieldPrediction::SOURCE_AUTOFILL_DEFAULT,
-                         FieldPrediction::SOURCE_PASSWORDS_DEFAULT,
-                         FieldPrediction::SOURCE_OVERRIDE};
+  constexpr DenseSet<FieldPrediction::Source> default_sources = {
+      FieldPrediction::SOURCE_AUTOFILL_DEFAULT,
+      FieldPrediction::SOURCE_PASSWORDS_DEFAULT,
+      FieldPrediction::SOURCE_OVERRIDE};
   return default_sources.contains(prediction.source());
 }
 

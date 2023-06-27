@@ -405,8 +405,14 @@ enum class FieldTypeGroup {
   kMaxValue = kIban,
 };
 
-using ServerFieldTypeSet =
-    DenseSet<ServerFieldType, NO_SERVER_DATA, MAX_VALID_FIELD_TYPE>;
+template <>
+struct DenseSetTraits<ServerFieldType> {
+  static constexpr ServerFieldType kMinValue = NO_SERVER_DATA;
+  static constexpr ServerFieldType kMaxValue = MAX_VALID_FIELD_TYPE;
+  static constexpr bool kPacked = false;
+};
+
+using ServerFieldTypeSet = DenseSet<ServerFieldType>;
 
 std::ostream& operator<<(std::ostream& o, ServerFieldTypeSet field_type_set);
 

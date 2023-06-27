@@ -14,18 +14,28 @@ using ::testing::ElementsAre;
 
 namespace autofill {
 
+template <auto kMinValueP, auto kMaxValueP>
+struct DenseSetTraitsWapper {
+  static constexpr auto kMinValue = kMinValueP;
+  static constexpr auto kMaxValue = kMaxValueP;
+  static constexpr bool kPacked = false;
+};
+
+template <typename T, T kMinValue = T::kMinValue, T kMaxValue = T::kMaxValue>
+using DenseSetWrapper = DenseSet<T, DenseSetTraitsWapper<kMinValue, kMaxValue>>;
+
 TEST(DenseSetTest, size_of) {
-  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 1>), 1u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 7>), 1u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 8>), 2u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 15>), 2u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 16>), 4u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 31>), 4u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 32>), 8u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 63>), 8u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 64>), 16u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 127>), 16u);
-  EXPECT_EQ(sizeof(DenseSet<size_t, 0, 255>), 32u);
+  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 1>), 1u);
+  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 7>), 1u);
+  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 8>), 2u);
+  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 15>), 2u);
+  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 16>), 4u);
+  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 31>), 4u);
+  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 32>), 8u);
+  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 63>), 8u);
+  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 64>), 16u);
+  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 127>), 16u);
+  EXPECT_EQ(sizeof(DenseSetWrapper<size_t, 0, 255>), 32u);
 }
 
 TEST(DenseSetTest, initialization) {
@@ -37,83 +47,83 @@ TEST(DenseSetTest, initialization) {
     kFive = 5,
     kMaxValue = kFive,
   };
-  using DS = DenseSet<T>;
-
-  DS s;
+  DenseSet<T> s;
   EXPECT_TRUE(s.empty());
   EXPECT_EQ(s.size(), 0u);
-  EXPECT_EQ(DS(s.begin(), s.end()), s);
+  EXPECT_EQ(DenseSet<T>(s.begin(), s.end()), s);
   s.insert(T::kTwo);
   s.insert(T::kFour);
   s.insert(T::kOne);
   EXPECT_EQ(s.size(), 3u);
-  EXPECT_EQ(DS(s.begin(), s.end()), s);
-  EXPECT_EQ(DS(s.cbegin(), s.cend()), s);
-  EXPECT_EQ(DS(s.rbegin(), s.rend()), s);
-  EXPECT_EQ(DS(s.crbegin(), s.crend()), s);
-  EXPECT_EQ(DS({T::kFour, T::kTwo, T::kOne}), s);
+  EXPECT_EQ(DenseSet<T>(s.begin(), s.end()), s);
+  EXPECT_EQ(DenseSet<T>(s.cbegin(), s.cend()), s);
+  EXPECT_EQ(DenseSet<T>(s.rbegin(), s.rend()), s);
+  EXPECT_EQ(DenseSet<T>(s.crbegin(), s.crend()), s);
+  EXPECT_EQ(DenseSet<T>({T::kFour, T::kTwo, T::kOne}), s);
 }
 
 TEST(DenseSetTest, initializer_list) {
   // The largest value so that DenseSet offers a constexpr constructor.
-  constexpr size_t kMaxValueForConstexpr = 63;
+  constexpr uint64_t kMaxValueForConstexpr = 63;
 
   // Each of the below blocks is a copy that only varies in `kMax` and whether
   // or not the `set` is `constexpr`.
 
   {
-    constexpr size_t kMax = 10;
-    constexpr DenseSet<size_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
-    EXPECT_THAT(std::vector<size_t>(set.begin(), set.end()),
+    constexpr uint64_t kMax = 10;
+    constexpr DenseSetWrapper<uint64_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1,
+                                                     kMax};
+    EXPECT_THAT(std::vector<uint64_t>(set.begin(), set.end()),
                 ::testing::ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
   }
 
   {
-    constexpr size_t kMax = kMaxValueForConstexpr;
-    constexpr DenseSet<size_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
-    EXPECT_THAT(std::vector<size_t>(set.begin(), set.end()),
+    constexpr uint64_t kMax = kMaxValueForConstexpr;
+    constexpr DenseSetWrapper<uint64_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1,
+                                                     kMax};
+    EXPECT_THAT(std::vector<uint64_t>(set.begin(), set.end()),
                 ::testing::ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
   }
 
   {
-    constexpr size_t kMax = kMaxValueForConstexpr + 1;
-    DenseSet<size_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
-    EXPECT_THAT(std::vector<size_t>(set.begin(), set.end()),
+    constexpr uint64_t kMax = kMaxValueForConstexpr + 1;
+    DenseSetWrapper<uint64_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
+    EXPECT_THAT(std::vector<uint64_t>(set.begin(), set.end()),
                 ::testing::ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
   }
 
   {
-    constexpr size_t kMax = kMaxValueForConstexpr + 2;
-    DenseSet<size_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
-    EXPECT_THAT(std::vector<size_t>(set.begin(), set.end()),
+    constexpr uint64_t kMax = kMaxValueForConstexpr + 2;
+    DenseSetWrapper<uint64_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
+    EXPECT_THAT(std::vector<uint64_t>(set.begin(), set.end()),
                 ::testing::ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
   }
 
   {
-    constexpr size_t kMax = kMaxValueForConstexpr + 100;
-    DenseSet<size_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
-    EXPECT_THAT(std::vector<size_t>(set.begin(), set.end()),
+    constexpr uint64_t kMax = kMaxValueForConstexpr + 100;
+    DenseSetWrapper<uint64_t, 0, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
+    EXPECT_THAT(std::vector<uint64_t>(set.begin(), set.end()),
                 ::testing::ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
   }
 }
 
 TEST(DenseSetTest, data) {
   {
-    constexpr DenseSet<size_t, 0, 23> set{0, 1, 2, 3, 4, 20, 23};
+    constexpr DenseSetWrapper<uint64_t, 0, 23> set{0, 1, 2, 3, 4, 20, 23};
     EXPECT_THAT(
         set.data(),
         ElementsAre((1ULL << 0) | (1ULL << 1) | (1ULL << 2) | (1ULL << 3) |
                     (1ULL << 4) | (1ULL << 20) | (1ULL << 23)));
   }
   {
-    constexpr DenseSet<size_t, 0, 31> set{0, 1, 2, 3, 4, 20, 31};
+    constexpr DenseSetWrapper<uint64_t, 0, 31> set{0, 1, 2, 3, 4, 20, 31};
     EXPECT_THAT(
         set.data(),
         ElementsAre((1ULL << 0) | (1ULL << 1) | (1ULL << 2) | (1ULL << 3) |
                     (1ULL << 4) | (1ULL << 20) | (1ULL << 31)));
   }
   {
-    constexpr DenseSet<size_t, 0, 63> set{0, 1, 63};
+    constexpr DenseSetWrapper<uint64_t, 0, 63> set{0, 1, 63};
     EXPECT_THAT(set.data(),
                 ElementsAre((1ULL << 0) | (1ULL << 1) | (1ULL << 63)));
   }
@@ -129,9 +139,7 @@ TEST(DenseSetTest, iterators_begin_end) {
     kFive = 5,
     kMaxValue = kFive,
   };
-  using DS = DenseSet<T, T::kMinusOne, T::kMaxValue>;
-
-  DS s;
+  DenseSetWrapper<T, T::kMinusOne> s;
   s.insert(T::kTwo);
   s.insert(T::kFour);
   s.insert(T::kOne);
@@ -173,9 +181,8 @@ TEST(DenseSetTest, iterators_begin_end_reverse) {
     kFive = 5,
     kMaxValue = kFive
   };
-  using DS = DenseSet<T, T::kMinusOne, T::kMaxValue>;
 
-  DS s;
+  DenseSetWrapper<T, T::kMinusOne> s;
   s.insert(T::kTwo);
   s.insert(T::kFour);
   s.insert(T::kOne);
@@ -215,9 +222,8 @@ TEST(DenseSetTest, iterators_rbegin_rend) {
     kFive = 5,
     kMaxValue = kFive
   };
-  using DS = DenseSet<T, T::kMinusOne, T::kMaxValue>;
 
-  DS s;
+  DenseSetWrapper<T, T::kMinusOne> s;
   s.insert(T::kTwo);
   s.insert(T::kFour);
   s.insert(T::kOne);
@@ -260,9 +266,8 @@ TEST(DenseSetTest, lookup) {
     kFive = 5,
     kMaxValue = kFive
   };
-  using DS = DenseSet<T, T::kMinusOne, T::kMaxValue>;
 
-  DS s;
+  DenseSetWrapper<T, T::kMinusOne> s;
   s.insert(T::kTwo);
   s.insert(T::kFour);
   s.insert(T::kOne);
@@ -299,7 +304,7 @@ TEST(DenseSetTest, lookup) {
   EXPECT_EQ(s.find(T::kFour), s.lower_bound(T::kFour));
   EXPECT_EQ(s.find(T::kFive), s.lower_bound(T::kFive));
 
-  DS t;
+  DenseSetWrapper<T, T::kMinusOne> t;
   EXPECT_TRUE(t.empty());
   EXPECT_TRUE(t.contains_none({}));
   EXPECT_FALSE(t.contains_any({}));
@@ -335,9 +340,8 @@ TEST(DenseSetTest, iterators_lower_upper_bound) {
     kFour = 4,
     kFive = 5
   };
-  using DS = DenseSet<T, T::kMinusOne, T::kFive>;
 
-  DS s;
+  DenseSetWrapper<T, T::kMinusOne, T::kFive> s;
   s.insert(T::kTwo);
   s.insert(T::kFour);
   s.insert(T::kOne);
@@ -409,9 +413,8 @@ TEST(DenseSetTest, max_size) {
   const int kFour = 4;
   // const int kFive = 5;
   const int kMaxValue = 5;
-  using DS = DenseSet<int, 0, kMaxValue>;
 
-  DS s;
+  DenseSetWrapper<int, 0, kMaxValue> s;
   EXPECT_TRUE(s.empty());
   EXPECT_EQ(s.size(), 0u);
   EXPECT_EQ(s.max_size(), 6u);
@@ -428,15 +431,14 @@ TEST(DenseSetTest, max_size) {
 }
 
 TEST(DenseSetTest, modifiers) {
-  const size_t kOne = 1;
-  const size_t kTwo = 2;
-  const size_t kThree = 3;
-  const size_t kFour = 4;
-  // const size_t kFive = 5;
-  const size_t kMaxValue = 5;
-  using DS = DenseSet<size_t, 0, kMaxValue>;
+  const uint64_t kOne = 1;
+  const uint64_t kTwo = 2;
+  const uint64_t kThree = 3;
+  const uint64_t kFour = 4;
+  // const uint64_t kFive = 5;
+  const uint64_t kMaxValue = 5;
 
-  DS s;
+  DenseSetWrapper<uint64_t, 0, kMaxValue> s;
   s.insert(kTwo);
   s.insert(kFour);
   s.insert(kOne);
@@ -447,7 +449,7 @@ TEST(DenseSetTest, modifiers) {
     EXPECT_EQ(it, std::make_pair(set.find(value), took_place));
   };
 
-  DS t;
+  DenseSetWrapper<uint64_t, 0, kMaxValue> t;
   EXPECT_NE(s, t);
   EXPECT_INSERTION(t, kTwo, true);
   EXPECT_INSERTION(t, kTwo, false);
@@ -506,7 +508,7 @@ TEST(DenseSetTest, modifiers) {
   EXPECT_EQ(t.size(), 3u);
 
   s.clear();
-  EXPECT_EQ(s, DS());
+  EXPECT_EQ(s, decltype(s){});
   EXPECT_TRUE(s.empty());
 
   s.insert(kThree);
@@ -549,9 +551,9 @@ TEST(DenseSetTest, modifiers) {
 }
 
 TEST(DenseSetTest, std_set) {
-  constexpr size_t kMaxValue = 50;
-  DenseSet<size_t, 0, kMaxValue> dense_set;
-  std::set<size_t> std_set;
+  constexpr uint64_t kMaxValue = 50;
+  DenseSetWrapper<uint64_t, 0, kMaxValue> dense_set;
+  std::set<uint64_t> std_set;
 
   auto expect_equivalence = [&] {
     EXPECT_EQ(dense_set.empty(), std_set.empty());
@@ -561,7 +563,7 @@ TEST(DenseSetTest, std_set) {
 
   auto random_insert = [&] {
     expect_equivalence();
-    size_t value = base::RandUint64() % kMaxValue;
+    uint64_t value = base::RandUint64() % kMaxValue;
     auto p = dense_set.insert(value);
     auto q = std_set.insert(value);
     EXPECT_EQ(p.second, q.second);
@@ -572,13 +574,13 @@ TEST(DenseSetTest, std_set) {
 
   auto random_erase = [&] {
     expect_equivalence();
-    size_t value = base::RandUint64() % kMaxValue;
+    uint64_t value = base::RandUint64() % kMaxValue;
     EXPECT_EQ(dense_set.erase(value), std_set.erase(value));
   };
 
   auto random_erase_iterator = [&] {
     expect_equivalence();
-    size_t value = base::RandUint64() % kMaxValue;
+    uint64_t value = base::RandUint64() % kMaxValue;
     auto it = dense_set.find(value);
     auto jt = std_set.find(value);
     EXPECT_EQ(it == dense_set.end(), jt == std_set.end());
@@ -594,8 +596,8 @@ TEST(DenseSetTest, std_set) {
 
   auto random_erase_range = [&] {
     expect_equivalence();
-    size_t min_value = base::RandUint64() % kMaxValue;
-    size_t max_value = base::RandUint64() % kMaxValue;
+    uint64_t min_value = base::RandUint64() % kMaxValue;
+    uint64_t max_value = base::RandUint64() % kMaxValue;
     min_value = std::min(min_value, max_value);
     max_value = std::max(min_value, max_value);
     dense_set.erase(dense_set.lower_bound(min_value),
@@ -604,11 +606,11 @@ TEST(DenseSetTest, std_set) {
                   std_set.upper_bound(max_value));
   };
 
-  for (size_t i = 0; i < kMaxValue; ++i) {
+  for (uint64_t i = 0; i < kMaxValue; ++i) {
     random_insert();
   }
 
-  for (size_t i = 0; i < kMaxValue / 2; ++i) {
+  for (uint64_t i = 0; i < kMaxValue / 2; ++i) {
     random_erase();
   }
 
@@ -617,11 +619,11 @@ TEST(DenseSetTest, std_set) {
   std_set.clear();
   expect_equivalence();
 
-  for (size_t i = 0; i < kMaxValue; ++i) {
+  for (uint64_t i = 0; i < kMaxValue; ++i) {
     random_insert();
   }
 
-  for (size_t i = 0; i < kMaxValue; ++i) {
+  for (uint64_t i = 0; i < kMaxValue; ++i) {
     random_erase_iterator();
   }
 
@@ -630,11 +632,11 @@ TEST(DenseSetTest, std_set) {
   std_set.clear();
   expect_equivalence();
 
-  for (size_t i = 0; i < kMaxValue; ++i) {
+  for (uint64_t i = 0; i < kMaxValue; ++i) {
     random_insert();
   }
 
-  for (size_t i = 0; i < kMaxValue; ++i) {
+  for (uint64_t i = 0; i < kMaxValue; ++i) {
     random_erase_range();
   }
 

@@ -151,6 +151,13 @@ class Bitset<Word, kNumWords, std::enable_if_t<kNumWords == 1>> {
 
 }  // namespace internal
 
+template <typename T>
+struct DenseSetTraits {
+  static constexpr T kMinValue = T(0);
+  static constexpr T kMaxValue = T::kMaxValue;
+  static constexpr bool kPacked = false;
+};
+
 // A set container with a std::set<T>-like interface for integral or enum types
 // T that have a dense and small representation as unsigned integers.
 //
@@ -158,26 +165,23 @@ class Bitset<Word, kNumWords, std::enable_if_t<kNumWords == 1>> {
 // representation.
 //
 // The lower and upper bounds of elements storable in a container are
-// [kMinValue, kMaxValue]. The default is [0, T::kMaxValue].
+// [Traits::kMinValue, Traits::kMaxValue]. The default is [T(0), T::kMaxValue].
 //
-// The `packed` parameter indicates whether the memory consumption of a DenseSet
-// object should be minimized. That comes at the cost of slightly larger code
-// size.
+// The `Traits::kPacked` parameter indicates whether the memory consumption of a
+// DenseSet object should be minimized. That comes at the cost of slightly
+// larger code size.
 //
 // Time and space complexity:
 // - insert(), erase(), contains() run in time O(1)
-// - empty(), size(), iteration run in time O(kMaxValue)
-// - sizeof(DenseSet) is, for N = `kMaxValue - kMinValue + 1,
-//   - if `!packed`: the minimum of {1, 2, 4, 8 * ceil(N / 64)} bytes that has
-//     at least N bits;
-//   - if `packed`: ceil(N / 8) bytes.
+// - empty(), size(), iteration run in time O(Traits::kMaxValue)
+// - sizeof(DenseSet) is, for N = `Traits::kMaxValue - Traits::kMinValue + 1,
+//   - if `!Traits::kPacked`: the minimum of {1, 2, 4, 8 * ceil(N / 64)} bytes
+//     that has at least N bits;
+//   - if `Traits::kPacked`: ceil(N / 8) bytes.
 //
 // Iterators are invalidated when the owning container is destructed or moved,
 // or when the element the iterator points to is erased from the container.
-template <typename T,
-          T kMinValue = T(0),
-          T kMaxValue = T::kMaxValue,
-          bool packed = false>
+template <typename T, typename Traits = DenseSetTraits<T>>
 class DenseSet {
  private:
   static_assert(std::is_integral<T>::value || std::is_enum<T>::value);
@@ -201,13 +205,14 @@ class DenseSet {
     return static_cast<UnderlyingType>(x);
   }
 
-  static_assert(to_underlying(kMinValue) <= to_underlying(kMaxValue));
+  static_assert(to_underlying(Traits::kMinValue) <=
+                to_underlying(Traits::kMaxValue));
 
   // The maximum supported bit index. Indexing starts at 0, so kMaxBitIndex ==
   // 63 means we need 64 bits. This is a `size_t` to avoid `kMaxBitIndex + 1`
   // from overflowing.
   static constexpr size_t kMaxBitIndex = base::checked_cast<Index>(
-      to_underlying(kMaxValue) - to_underlying(kMinValue));
+      to_underlying(Traits::kMaxValue) - to_underlying(Traits::kMinValue));
 
   static_assert(kMaxBitIndex <
                 std::numeric_limits<decltype(kMaxBitIndex)>::max());
@@ -215,7 +220,7 @@ class DenseSet {
  public:
   // The bitset is represented as array of words.
   using Word = std::conditional_t<
-      (packed || kMaxBitIndex < 8),
+      (Traits::kPacked || kMaxBitIndex < 8),
       uint8_t,
       std::conditional_t<
           (kMaxBitIndex < 16),
@@ -476,16 +481,16 @@ class DenseSet {
   using Bitset = internal::Bitset<Word, kNumWords>;
 
   static constexpr Index value_to_index(T x) {
-    DCHECK_LE(kMinValue, x);
-    DCHECK_LE(x, kMaxValue);
+    DCHECK_LE(Traits::kMinValue, x);
+    DCHECK_LE(x, Traits::kMaxValue);
     return base::checked_cast<Index>(to_underlying(x) -
-                                     to_underlying(kMinValue));
+                                     to_underlying(Traits::kMinValue));
   }
 
   static constexpr T index_to_value(Index i) {
-    DCHECK_LE(i, base::checked_cast<Index>(kMaxValue));
+    DCHECK_LE(i, base::checked_cast<Index>(Traits::kMaxValue));
     return static_cast<T>(base::checked_cast<UnderlyingType>(i) +
-                          to_underlying(kMinValue));
+                          to_underlying(Traits::kMinValue));
   }
 
   Bitset bitset_{};

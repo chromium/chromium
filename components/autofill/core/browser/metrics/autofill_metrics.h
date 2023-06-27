@@ -653,9 +653,16 @@ class AutofillMetrics {
     kMaxValue = kIsInSubFrame
   };
 
-  using FormEventSet = DenseSet<autofill_metrics::FormEvent,
-                                autofill_metrics::FormEvent(0),
-                                autofill_metrics::NUM_FORM_EVENTS>;
+  struct FormEventSetTraits {
+    static constexpr autofill_metrics::FormEvent kMinValue =
+        autofill_metrics::FormEvent(0);
+    static constexpr autofill_metrics::FormEvent kMaxValue =
+        autofill_metrics::NUM_FORM_EVENTS;
+    static constexpr bool kPacked = false;
+  };
+
+  using FormEventSet =
+      DenseSet<autofill_metrics::FormEvent, FormEventSetTraits>;
 
   // Utility class for determining the seamlessness of a credit card fill.
   class CreditCardSeamlessness {
