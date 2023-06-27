@@ -379,11 +379,14 @@ void ExecuteAppServiceTask(
       apps_util::kIntentActionView, std::move(intent_files));
   intent->activity_name = task.action_id;
 
+  // `window_info` as nullptr sets `display_id` to `display::kInvalidDisplayId`
+  // later, which is the default value. `display::kDefaultDisplayId` is not. The
+  // default value allows a window on any display to be reused, i.e. a wildcard.
   apps::AppServiceProxyFactory::GetForProfile(profile_with_app_service)
       ->LaunchAppWithIntent(
           task.app_id, ui::EF_NONE, std::move(intent),
           apps::LaunchSource::kFromFileManager,
-          std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId),
+          /*window_info=*/nullptr,
           base::BindOnce(
               [](FileTaskFinishedCallback done, TaskType task_type,
                  apps::LaunchResult&& result) {

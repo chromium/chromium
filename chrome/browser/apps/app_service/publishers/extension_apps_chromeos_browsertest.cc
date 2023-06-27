@@ -16,10 +16,14 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/version_info/channel.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -28,10 +32,27 @@
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/base/filename_util.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
+#include "storage/browser/test/test_file_system_context.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 
 namespace apps {
+
+namespace {
+
+// Write file to disk.
+base::FilePath WriteFile(const base::FilePath& directory,
+                         const base::StringPiece name,
+                         const base::StringPiece content) {
+  const base::FilePath path = directory.Append(base::StringPiece(name));
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::WriteFile(path, content);
+  return path;
+}
+
+}  // namespace
 
 class ExtensionAppsChromeOsBrowserTest
     : public extensions::ExtensionBrowserTest {
@@ -42,18 +63,6 @@ class ExtensionAppsChromeOsBrowserTest
   }
 
  protected:
-  base::FilePath StoreSharedFile(const base::FilePath& directory,
-                                 const base::StringPiece& name,
-                                 const base::StringPiece& content) {
-    const base::FilePath path = directory.Append(base::StringPiece(name));
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    base::File file(path,
-                    base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-    EXPECT_EQ(file.WriteAtCurrentPos(content.begin(), content.size()),
-              static_cast<int>(content.size()));
-    return path;
-  }
-
   // Launches the given extension from an intent and waits for a result from the
   // chrome.test API.
   void LaunchExtensionAndCatchResult(const extensions::Extension& extension) {
@@ -69,14 +78,23 @@ class ExtensionAppsChromeOsBrowserTest
     intent->mime_type = "text/csv";
     intent->activity_name = "open-csv.html";
     const base::FilePath file_path =
-        StoreSharedFile(scoped_temp_dir.GetPath(), "a.csv", "1,2,3");
+        WriteFile(scoped_temp_dir.GetPath(), "a.csv", "1,2,3");
 
     // Add file(s) to intent.
     int64_t file_size = 0;
     base::GetFileSize(file_path, &file_size);
-    auto file =
-        std::make_unique<apps::IntentFile>(net::FilePathToFileURL(file_path));
-    file->file_name = base::SafeBaseName::Create(file_path);
+
+    // Create a virtual file in the file system, as required for AppService.
+    scoped_refptr<storage::FileSystemContext> file_system_context =
+        storage::CreateFileSystemContextForTesting(
+            /*quota_manager_proxy=*/nullptr, base::FilePath());
+    auto file_system_url = file_system_context->CreateCrackedFileSystemURL(
+        blink::StorageKey::CreateFromStringForTesting("chrome://file-manager"),
+        storage::kFileSystemTypeTest, file_path);
+
+    // Update the intent with the file.
+    auto file = std::make_unique<apps::IntentFile>(file_system_url.ToGURL());
+    file->file_name = base::SafeBaseName::Create("a.csv");
     file->file_size = file_size;
     file->mime_type = "text/csv";
     intent->files.push_back(std::move(file));
@@ -180,6 +198,61 @@ IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, SetConsumerCalled) {
     // test, like it is when executed manually.
     LaunchExtensionAndCatchResult(*extension);
   }
+}
+
+// Verify that a new tab prefers opening in an existing window.
+IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, NavigateExisting) {
+  // Create an extension.
+  static constexpr char const kManifest[] = R"({
+    "name": "Test",
+    "version": "0.0.1",
+    "manifest_version": 3,
+    "file_handlers": [
+      {
+        "name": "Comma separated values",
+        "action": "/open-csv.html",
+        "accept": {"text/csv": [".csv"]}
+      }
+    ]
+  })";
+
+  // Load extension.
+  extensions::TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile("open-csv.js", R"(
+    chrome.test.assertTrue('launchQueue' in window);
+    launchQueue.setConsumer((launchParams) => {
+      chrome.test.assertEq(1, launchParams.files.length);
+      chrome.test.assertEq("a.csv", launchParams.files[0].name);
+      chrome.test.assertEq("file", launchParams.files[0].kind);
+      chrome.test.succeed();
+    });
+  )");
+  extension_dir.WriteFile("open-csv.html",
+                          R"(<script src="/open-csv.js"></script>"
+                            "<body>Test</body>)");
+  const extensions::Extension* extension =
+      LoadExtension(extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Open a file twice by launching the file handler each time.
+  content::WebContents* web_contents[2];
+  for (unsigned short i = 0; i < 2; i++) {
+    LaunchExtensionAndCatchResult(*extension);
+    web_contents[i] = browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  // SessionID::InvalidValue() is -1 beyond the int of GetWindowIdOfTab.
+  ASSERT_NE(extensions::ExtensionTabUtil::GetWindowIdOfTab(web_contents[0]),
+            -1);
+
+  // The Window ID should match for both launches.
+  ASSERT_EQ(extensions::ExtensionTabUtil::GetWindowIdOfTab(web_contents[0]),
+            extensions::ExtensionTabUtil::GetWindowIdOfTab(web_contents[1]));
+
+  // Tab ids should differ.
+  ASSERT_NE(extensions::ExtensionTabUtil::GetTabId(web_contents[0]),
+            extensions::ExtensionTabUtil::GetTabId(web_contents[1]));
 }
 
 }  // namespace apps
