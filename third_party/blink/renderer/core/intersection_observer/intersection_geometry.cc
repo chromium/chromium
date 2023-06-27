@@ -335,7 +335,8 @@ IntersectionGeometry::PrepareComputeGeometry(const Node* root_node,
   RootAndTarget root_and_target(root_node, target_element);
 
   if (ShouldUseCachedRects()) {
-    CHECK(!RootIsImplicit());
+    CHECK(!RootIsImplicit() ||
+          RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
     // Cached rects can only be used if there are no scrollable objects in the
     // hierarchy between target and root (a scrollable root is ok). The reason
     // is that a scroll change in an intermediate scroller would change the
@@ -356,9 +357,13 @@ IntersectionGeometry::PrepareComputeGeometry(const Node* root_node,
       return false;
     };
     if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()
-            ? (root_and_target.relationship != RootAndTarget::kNotScrollable &&
-               root_and_target.relationship !=
-                   RootAndTarget::kScrollableByRootOnly)
+            // TODO(wangxianzhu): Don't use cached rects for implicit root for
+            // now because that would expose some under-invalidaiton bugs.
+            //
+            ? (RootIsImplicit() ||
+               (root_and_target.relationship != RootAndTarget::kNotScrollable &&
+                root_and_target.relationship !=
+                    RootAndTarget::kScrollableByRootOnly))
             : !legacy_can_use_cached_rects()) {
       flags_ &= ~kShouldUseCachedRects;
     }
