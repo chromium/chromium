@@ -5590,7 +5590,7 @@ void LayoutBox::MutableForPainting::SavePreviousOverflowData() {
 
 void LayoutBox::MutableForPainting::SetPreviousGeometryForLayoutShiftTracking(
     const PhysicalOffset& paint_offset,
-    const LayoutSize& size,
+    const PhysicalSize& size,
     const PhysicalRect& visual_overflow_rect) {
   FirstFragment().SetPaintOffset(paint_offset);
   GetLayoutBox().previous_size_ = size;

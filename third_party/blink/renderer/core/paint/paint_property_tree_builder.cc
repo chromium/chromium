@@ -2857,7 +2857,7 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
   if (object_.GetFrameView()->RemovePendingOpacityUpdate(object_))
     object_.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
 
-  if (box.Size() == PhysicalSizeToBeNoop(box.PreviousSize())) {
+  if (box.Size() == box.PreviousSize()) {
     return;
   }
 

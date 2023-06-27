@@ -1509,9 +1509,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   class MutableForPainting : public LayoutObject::MutableForPainting {
    public:
     void SavePreviousSize() {
-      GetLayoutBox().previous_size_ = GetLayoutBox().Size().ToLayoutSize();
+      GetLayoutBox().previous_size_ = GetLayoutBox().Size();
     }
-    void ClearPreviousSize() { GetLayoutBox().previous_size_ = LayoutSize(); }
+    void ClearPreviousSize() { GetLayoutBox().previous_size_ = PhysicalSize(); }
     void SavePreviousOverflowData();
     void ClearPreviousOverflowData() {
       DCHECK(!GetLayoutBox().HasVisualOverflow());
@@ -1534,7 +1534,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     // original LayoutBox.
     void SetPreviousGeometryForLayoutShiftTracking(
         const PhysicalOffset& paint_offset,
-        const LayoutSize& size,
+        const PhysicalSize& size,
         const PhysicalRect& visual_overflow_rect);
 
    protected:
@@ -1551,7 +1551,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return MutableForPainting(*this);
   }
 
-  LayoutSize PreviousSize() const {
+  PhysicalSize PreviousSize() const {
     NOT_DESTROYED();
     return previous_size_;
   }
@@ -1928,7 +1928,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
  private:
   // Previous value of frame_size_, updated after paint invalidation.
-  LayoutSize previous_size_;
+  PhysicalSize previous_size_;
 
  protected:
   MinMaxSizes intrinsic_logical_widths_;

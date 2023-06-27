@@ -117,7 +117,7 @@ class CORE_EXPORT LayoutShiftTracker final
     static ReattachHookScope* top_;
     struct Geometry {
       PhysicalOffset paint_offset;
-      LayoutSize size;
+      PhysicalSize size;
       PhysicalRect visual_overflow_rect;
       bool has_paint_offset_translation;
     };

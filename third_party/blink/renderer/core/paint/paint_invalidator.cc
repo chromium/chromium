@@ -161,9 +161,8 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
       block_flow->ChildrenInline() && block_flow->FirstChild();
   if (should_create_containing_block_scope) {
     // For layout shift tracking of contained LayoutTexts.
-    context.containing_block_scope_.emplace(
-        PhysicalSizeToBeNoop(box.PreviousSize()), box.Size(), old_rect,
-        new_rect);
+    context.containing_block_scope_.emplace(box.PreviousSize(), box.Size(),
+                                            old_rect, new_rect);
   }
 
   bool should_report_layout_shift = [&]() -> bool {

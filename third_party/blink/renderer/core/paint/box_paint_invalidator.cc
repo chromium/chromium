@@ -142,7 +142,7 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
   // TODO(crbug.com/1205708): Audit this.
   NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
 #endif
-  if (PhysicalSizeToBeNoop(box_.PreviousSize()) == box_.Size() &&
+  if (box_.PreviousSize() == box_.Size() &&
       box_.PreviousPhysicalSelfVisualOverflowRect() ==
           box_.PhysicalSelfVisualOverflowRect()) {
     return IsFullPaintInvalidationReason(reason)
@@ -152,7 +152,7 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
 
   // Incremental invalidation is not applicable if there is visual overflow.
   if (box_.PreviousPhysicalSelfVisualOverflowRect().size !=
-          PhysicalSizeToBeNoop(box_.PreviousSize()) ||
+          box_.PreviousSize() ||
       box_.PhysicalSelfVisualOverflowRect().size != box_.Size()) {
     return PaintInvalidationReason::kLayout;
   }
@@ -161,8 +161,7 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
   // fraction.
   if (context_.old_paint_offset.HasFraction() ||
       context_.fragment_data->PaintOffset().HasFraction() ||
-      PhysicalSizeToBeNoop(box_.PreviousSize()).HasFraction() ||
-      box_.Size().HasFraction()) {
+      box_.PreviousSize().HasFraction() || box_.Size().HasFraction()) {
     return PaintInvalidationReason::kLayout;
   }
 
@@ -267,8 +266,7 @@ BoxPaintInvalidator::ComputeViewBackgroundInvalidation() {
         // See: https://drafts.csswg.org/css-backgrounds-3/#root-background.
         const auto& background_layers = box_.StyleRef().BackgroundLayers();
         if (ShouldFullyInvalidateFillLayersOnSizeChange(
-                background_layers,
-                PhysicalSizeToBeNoop(root_box->PreviousSize()),
+                background_layers, root_box->PreviousSize(),
                 root_box->Size())) {
           return BackgroundInvalidationType::kFull;
         }
@@ -317,8 +315,7 @@ BoxPaintInvalidator::ComputeBackgroundInvalidation(
   const auto& background_layers = box_.StyleRef().BackgroundLayers();
   if (background_layers.AnyLayerHasDefaultAttachmentImage() &&
       ShouldFullyInvalidateFillLayersOnSizeChange(
-          background_layers, PhysicalSizeToBeNoop(box_.PreviousSize()),
-          box_.Size())) {
+          background_layers, box_.PreviousSize(), box_.Size())) {
     return BackgroundInvalidationType::kFull;
   }
 
