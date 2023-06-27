@@ -639,6 +639,8 @@
     "linux-rust-x64-dbg": "Ubuntu-22.04",
     "linux-rust-x64-rel": "Ubuntu-22.04",
     "linux-ubsan-fyi-rel": "Ubuntu-22.04",
+    "linux-updater-try-builder-dbg": "Ubuntu-22.04",
+    "linux-updater-try-builder-rel": "Ubuntu-22.04",
     "linux-viz-rel": "Ubuntu-22.04",
     "linux-wayland-rel": "Ubuntu-22.04",
     "linux-wayland-rel-compilator": "Ubuntu-22.04",
