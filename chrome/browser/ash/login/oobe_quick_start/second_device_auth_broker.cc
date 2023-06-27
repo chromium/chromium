@@ -80,14 +80,8 @@ const int64_t kStartSessionTimeoutInSeconds = 60;
 constexpr char kHttpMethod[] = "POST";
 constexpr char kHttpContentType[] = "application/json";
 
-constexpr char kGetChallengeDataRequest[] = R"(
-    {
-      "target_device_type": "CHROME_OS",
-      "target_droidguard_data": {
-        "target_droidguard_response": "1",
-        "device_id": "1",
-        "timestamp": "1"
-      }
+constexpr char kGetChallengeDataRequest[] = R"({
+      "target_device_type": "CHROME_OS"
     })";
 
 constexpr auto kRejectionReasonErrorMap = base::MakeFixedFlatMap<
