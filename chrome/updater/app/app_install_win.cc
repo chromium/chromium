@@ -953,6 +953,9 @@ bool AppInstallControllerImpl::DoReboot() {
 
 void AppInstallControllerImpl::DoCancel() {
   CHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+  if (!update_service_) {
+    return;
+  }
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateService::CancelInstalls, update_service_, app_id_));
