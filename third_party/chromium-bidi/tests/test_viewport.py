@@ -18,8 +18,8 @@ from test_helpers import execute_command, goto_url
 
 
 @pytest.mark.asyncio
-async def test_set_viewport(websocket, context_id):
-    await goto_url(websocket, context_id, "about:blank")
+async def test_set_viewport(websocket, context_id, html):
+    await goto_url(websocket, context_id, html())
 
     await execute_command(
         websocket, {
@@ -56,8 +56,19 @@ async def test_set_viewport(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_set_viewport_unsupported(websocket, context_id):
-    await goto_url(websocket, context_id, "about:blank")
+@pytest.mark.parametrize("width,height", [
+    (300, 10000001),
+    (10000001, 300),
+    (10000001, 10000001),
+],
+                         ids=[
+                             "very big height",
+                             "very big width",
+                             "very big width and height",
+                         ])
+async def test_set_viewport_unsupported(websocket, context_id, html, width,
+                                        height):
+    await goto_url(websocket, context_id, html())
 
     with pytest.raises(Exception) as exception_info:
         # https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:content/browser/devtools/protocol/emulation_handler.cc;l=232;drc=1890f3f74c8100eb1a3e945d34d6fd576d2a9061
@@ -67,8 +78,8 @@ async def test_set_viewport_unsupported(websocket, context_id):
                 "params": {
                     "context": context_id,
                     "viewport": {
-                        "width": 10000001,
-                        "height": 10000001,
+                        "width": width,
+                        "height": height,
                     }
                 }
             })
