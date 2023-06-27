@@ -55,7 +55,6 @@ schema_sources_ = [
   "tab_capture.idl",
   "tab_groups.json",
   "tabs.json",
-  "types.json",
   "web_authentication_proxy.idl",
   "web_navigation.json",
 
