@@ -140,12 +140,14 @@ void DeviceStatusIconTestBase::CheckIcon(
     CheckSeparatorMenuItem(menu_item, menu_idx++);
     CheckMenuItemLabel(menu_item, menu_idx++,
                        base::UTF8ToUTF16(profile->GetProfileUserName()));
-    EXPECT_CALL(*connection_tracker, ShowContentSettingsExceptions());
+    EXPECT_CALL(*GetMockDeviceConnectionTracker(connection_tracker),
+                ShowContentSettingsExceptions());
     CheckClickableMenuItem(menu_item, menu_idx++,
                            device_content_settings_label_,
                            expected_command_id++, /*click=*/true);
     for (const auto& [origin, connection_count, name] : sorted_origin_items) {
-      EXPECT_CALL(*connection_tracker, ShowSiteSettings(origin));
+      EXPECT_CALL(*GetMockDeviceConnectionTracker(connection_tracker),
+                  ShowSiteSettings(origin));
       CheckClickableMenuItem(menu_item, menu_idx++,
                              GetExpectedOriginConnectionCountLabel(
                                  profile, origin, name, connection_count),

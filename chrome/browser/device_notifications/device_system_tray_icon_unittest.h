@@ -21,6 +21,7 @@ class MockDeviceConnectionTracker : public DeviceConnectionTracker {
   ~MockDeviceConnectionTracker() override;
   MOCK_METHOD(void, ShowContentSettingsExceptions, (), (override));
   MOCK_METHOD(void, ShowSiteSettings, (const url::Origin&), (override));
+  MOCK_METHOD(DeviceSystemTrayIcon*, GetSystemTrayIcon, (), (override));
 };
 
 class DeviceSystemTrayIconTestBase : public BrowserWithTestWindowTest {
@@ -55,9 +56,12 @@ class DeviceSystemTrayIconTestBase : public BrowserWithTestWindowTest {
   // connection tracker of the `profile`.
   virtual void SetDeviceConnectionTrackerTestingFactory(Profile* profile) = 0;
 
-  virtual MockDeviceConnectionTracker* GetDeviceConnectionTracker(
-      Profile* profile,
-      bool create) = 0;
+  virtual DeviceConnectionTracker* GetDeviceConnectionTracker(Profile* profile,
+                                                              bool create) = 0;
+
+  // Get the mock device connection tracker from the `connection_tracker`.
+  virtual MockDeviceConnectionTracker* GetMockDeviceConnectionTracker(
+      DeviceConnectionTracker* connection_tracker) = 0;
 
   // Create a testing profile with MockDeviceConnectionTracker.
   Profile* CreateTestingProfile(const std::string& profile_name);

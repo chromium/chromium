@@ -73,7 +73,8 @@ void DevicePinnedNotificationTestBase::CheckIcon(
               device_content_settings_label_);
     EXPECT_TRUE(maybe_notification->delegate());
 
-    EXPECT_CALL(*connection_tracker, ShowContentSettingsExceptions());
+    EXPECT_CALL(*GetMockDeviceConnectionTracker(connection_tracker),
+                ShowContentSettingsExceptions());
     SimulateButtonClick(profile);
   }
 }

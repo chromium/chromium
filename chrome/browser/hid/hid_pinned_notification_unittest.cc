@@ -9,6 +9,7 @@
 #include "chrome/browser/device_notifications/device_pinned_notification_unittest.h"
 #include "chrome/browser/hid/hid_connection_tracker.h"
 #include "chrome/browser/hid/hid_connection_tracker_factory.h"
+#include "chrome/browser/hid/hid_test_utils.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,19 +20,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-namespace {
-
-class MockHidConnectionTracker : public HidConnectionTracker {
- public:
-  explicit MockHidConnectionTracker(Profile* profile)
-      : HidConnectionTracker(profile) {}
-  ~MockHidConnectionTracker() override = default;
-  MOCK_METHOD(void, ShowContentSettingsExceptions, (), (override));
-  MOCK_METHOD(void, ShowSiteSettings, (const url::Origin&), (override));
-};
-
-}  // namespace
 
 class HidPinnedNotificationTest : public DevicePinnedNotificationTestBase {
  public:
@@ -66,17 +54,21 @@ class HidPinnedNotificationTest : public DevicePinnedNotificationTestBase {
         profile,
         base::BindRepeating([](content::BrowserContext* browser_context) {
           return static_cast<std::unique_ptr<KeyedService>>(
-              std::make_unique<MockHidConnectionTracker>(
+              std::make_unique<TestHidConnectionTracker>(
                   Profile::FromBrowserContext(browser_context)));
         }));
   }
 
-  MockDeviceConnectionTracker* GetDeviceConnectionTracker(
-      Profile* profile,
-      bool create) override {
-    return static_cast<MockDeviceConnectionTracker*>(
-        static_cast<DeviceConnectionTracker*>(
-            HidConnectionTrackerFactory::GetForProfile(profile, create)));
+  DeviceConnectionTracker* GetDeviceConnectionTracker(Profile* profile,
+                                                      bool create) override {
+    return static_cast<DeviceConnectionTracker*>(
+        HidConnectionTrackerFactory::GetForProfile(profile, create));
+  }
+
+  MockDeviceConnectionTracker* GetMockDeviceConnectionTracker(
+      DeviceConnectionTracker* connection_tracker) override {
+    return static_cast<TestHidConnectionTracker*>(connection_tracker)
+        ->mock_device_connection_tracker();
   }
 
   DevicePinnedNotificationRenderer* GetDevicePinnedNotificationRenderer()

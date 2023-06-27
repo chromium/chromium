@@ -12,6 +12,7 @@
 #include "chrome/browser/hid/hid_connection_tracker.h"
 #include "chrome/browser/hid/hid_connection_tracker_factory.h"
 #include "chrome/browser/hid/hid_system_tray_icon.h"
+#include "chrome/browser/hid/hid_test_utils.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,17 +23,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-namespace {
-class MockHidConnectionTracker : public HidConnectionTracker {
- public:
-  explicit MockHidConnectionTracker(Profile* profile)
-      : HidConnectionTracker(profile) {}
-  ~MockHidConnectionTracker() override = default;
-  MOCK_METHOD(void, ShowContentSettingsExceptions, (), (override));
-  MOCK_METHOD(void, ShowSiteSettings, (const url::Origin&), (override));
-};
-}  // namespace
 
 class HidStatusIconTest : public DeviceStatusIconTestBase {
  public:
@@ -68,23 +58,26 @@ class HidStatusIconTest : public DeviceStatusIconTestBase {
         profile,
         base::BindRepeating([](content::BrowserContext* browser_context) {
           return static_cast<std::unique_ptr<KeyedService>>(
-              std::make_unique<MockHidConnectionTracker>(
+              std::make_unique<TestHidConnectionTracker>(
                   Profile::FromBrowserContext(browser_context)));
         }));
   }
 
-  MockDeviceConnectionTracker* GetDeviceConnectionTracker(
-      Profile* profile,
-      bool create) override {
-    return static_cast<MockDeviceConnectionTracker*>(
-        static_cast<DeviceConnectionTracker*>(
-            HidConnectionTrackerFactory::GetForProfile(profile, create)));
+  DeviceConnectionTracker* GetDeviceConnectionTracker(Profile* profile,
+                                                      bool create) override {
+    return static_cast<DeviceConnectionTracker*>(
+        HidConnectionTrackerFactory::GetForProfile(profile, create));
+  }
+
+  MockDeviceConnectionTracker* GetMockDeviceConnectionTracker(
+      DeviceConnectionTracker* connection_tracker) override {
+    return static_cast<TestHidConnectionTracker*>(connection_tracker)
+        ->mock_device_connection_tracker();
   }
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/1457424): Re-enable this test
-TEST_F(HidStatusIconTest, DISABLED_SingleProfileEmptyNameExtentionOrigins) {
+TEST_F(HidStatusIconTest, SingleProfileEmptyNameExtentionOrigins) {
   // Current TestingProfileManager can't support empty profile name as it uses
   // profile name for profile path. Passing empty would result in a failure in
   // ProfileManager::IsAllowedProfilePath(). Changing the way
@@ -97,30 +90,27 @@ TEST_F(HidStatusIconTest, DISABLED_SingleProfileEmptyNameExtentionOrigins) {
   TestSingleProfileExtentionOrigins();
 }
 
-// TODO(crbug.com/1457424): Re-enable this test
-TEST_F(HidStatusIconTest, DISABLED_SingleProfileNonEmptyNameExtentionOrigins) {
+TEST_F(HidStatusIconTest, SingleProfileNonEmptyNameExtentionOrigins) {
   TestSingleProfileExtentionOrigins();
 }
 
-TEST_F(HidStatusIconTest, DISABLED_BounceConnectionExtensionOrigins) {
+TEST_F(HidStatusIconTest, BounceConnectionExtensionOrigins) {
   TestBounceConnectionExtensionOrigins();
 }
 
-TEST_F(HidStatusIconTest, DISABLED_MultipleProfilesExtensionOrigins) {
+TEST_F(HidStatusIconTest, MultipleProfilesExtensionOrigins) {
   TestMultipleProfilesExtensionOrigins();
 }
 
-TEST_F(HidStatusIconTest, DISABLED_NumCommandIdOverLimitExtensionOrigin) {
+TEST_F(HidStatusIconTest, NumCommandIdOverLimitExtensionOrigin) {
   TestNumCommandIdOverLimitExtensionOrigin();
 }
 
-// TODO(crbug.com/1457424): Re-enable this test
-TEST_F(HidStatusIconTest, DISABLED_ExtensionRemoval) {
+TEST_F(HidStatusIconTest, ExtensionRemoval) {
   TestExtensionRemoval();
 }
 
-// TODO(crbug.com/1457424): Re-enable this test
-TEST_F(HidStatusIconTest, DISABLED_ProfileUserNameExtensionOrigin) {
+TEST_F(HidStatusIconTest, ProfileUserNameExtensionOrigin) {
   TestProfileUserNameExtensionOrigin();
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

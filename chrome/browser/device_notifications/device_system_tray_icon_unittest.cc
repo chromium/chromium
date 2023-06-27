@@ -413,9 +413,12 @@ class DeviceSystemTrayIconTest : public DeviceSystemTrayIconTestBase {
     return u"";
   }
   void SetDeviceConnectionTrackerTestingFactory(Profile* profile) override {}
-  MockDeviceConnectionTracker* GetDeviceConnectionTracker(
-      Profile* profile,
-      bool create) override {
+  DeviceConnectionTracker* GetDeviceConnectionTracker(Profile* profile,
+                                                      bool create) override {
+    return nullptr;
+  }
+  MockDeviceConnectionTracker* GetMockDeviceConnectionTracker(
+      DeviceConnectionTracker* connection_tracker) override {
     return nullptr;
   }
 
