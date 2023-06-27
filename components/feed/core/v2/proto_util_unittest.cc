@@ -91,8 +91,7 @@ TEST(ProtoUtilTest, DefaultCapabilities) {
            feedwire::Capability::UNDO_FOR_DISMISS_COMMAND,
            feedwire::Capability::PREFETCH_METADATA, feedwire::Capability::SHARE,
            feedwire::Capability::CONTENT_LIFETIME,
-           feedwire::Capability::INFO_CARD_ACKNOWLEDGEMENT_TRACKING,
-           feedwire::Capability::SYNC_STRING_REMOVAL}));
+           feedwire::Capability::INFO_CARD_ACKNOWLEDGEMENT_TRACKING}));
 }
 
 TEST(ProtoUtilTest, HeartsEnabled) {
@@ -108,6 +107,21 @@ TEST(ProtoUtilTest, HeartsEnabled) {
 
   ASSERT_THAT(request.client_capability(),
               Contains(feedwire::Capability::HEART));
+}
+
+TEST(ProtoUtilTest, SyncRestringEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kFeedBottomSyncStringRemoval}, {});
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(
+          StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
+          /*request_metadata=*/{},
+          /*consistency_token=*/std::string(), SingleWebFeedEntryPoint::kOther,
+          /*doc_view_counts=*/{})
+          .feed_request();
+
+  ASSERT_THAT(request.client_capability(),
+              Contains(feedwire::Capability::SYNC_STRING_REMOVAL));
 }
 
 TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {

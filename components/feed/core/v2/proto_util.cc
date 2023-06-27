@@ -139,14 +139,16 @@ feedwire::Request CreateFeedQueryRequest(
         Capability::OPEN_IN_INCOGNITO, Capability::DISMISS_COMMAND,
         Capability::INFINITE_FEED, Capability::PREFETCH_METADATA,
         Capability::REQUEST_SCHEDULE, Capability::UI_THEME_V2,
-        Capability::UNDO_FOR_DISMISS_COMMAND,
-        Capability::SYNC_STRING_REMOVAL}) {
+        Capability::UNDO_FOR_DISMISS_COMMAND}) {
     feed_request.add_client_capability(capability);
   }
 
   for (auto capability : GetFeedConfig().experimental_capabilities)
     feed_request.add_client_capability(capability);
 
+  if (base::FeatureList::IsEnabled(kFeedBottomSyncStringRemoval)) {
+    feed_request.add_client_capability(Capability::SYNC_STRING_REMOVAL);
+  }
   if (base::FeatureList::IsEnabled(kInterestFeedV2Hearts)) {
     feed_request.add_client_capability(Capability::HEART);
   }
