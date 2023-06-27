@@ -1623,7 +1623,9 @@ void RenderWidgetHostViewAura::SetTextEditCommandForNextKeyEvent(
 
 ukm::SourceId RenderWidgetHostViewAura::GetClientSourceForMetrics() const {
   RenderFrameHostImpl* frame = GetFocusedFrame();
-  if (frame) {
+  // ukm::SourceId is not available while prerendering.
+  if (frame && !frame->IsInLifecycleState(
+                   RenderFrameHost::LifecycleState::kPrerendering)) {
     return frame->GetPageUkmSourceId();
   }
   return ukm::SourceId();
