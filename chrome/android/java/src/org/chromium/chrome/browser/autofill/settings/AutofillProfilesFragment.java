@@ -248,7 +248,6 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
                     HelpAndFeedbackLauncherImpl.getForProfile(mProfile), sAddressEditorDelegate,
                     mProfile,
                     /*saveToDisk=*/true);
-            mAddressEditor.setAllowDelete(true);
             mAddressEditor.showEditorDialog();
         } else {
             mAddressEditor = new AddressEditorCoordinator(getActivity(),
