@@ -42,10 +42,11 @@
 <translation id="2942241131342758843">預設使用 Chromium 來開啟連結、從小工具搜尋，以及在其他應用程式中自動填入密碼</translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
 <translation id="3102849287235003384">如要在所有網站上登出 Google 帳戶，請<ph name="BEGIN_LINK" />登出 Chromium<ph name="END_LINK" />。</translation>
+<translation id="3115956258722352278">要將 Chromium 設定為預設瀏覽器嗎？</translation>
 <translation id="3256316712990552818">已複製至 Chromium</translation>
 <translation id="3344973607274501920">Chromium 無法檢查密碼，請檢查互聯網連線。</translation>
 <translation id="3472200483164753384">Chromium Canary 上不支援此功能</translation>
-<translation id="3478750326643748149">隱藏「充分運用 Chromium 的各項功能」</translation>
+<translation id="3478750326643748149">隱藏「充分運用 Chromium 的功能」</translation>
 <translation id="3567399274263440288">如要充分運用 Chromium 的所有功能，請透過 Google 帳戶登入 Chromium。</translation>
 <translation id="3639997914391704523">Chromium 可在您使用 Google 帳戶登入時檢查密碼。</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> 之前曾在此裝置上使用 Chromium，並儲存書籤、密碼和其他設定。</translation>
@@ -79,7 +80,7 @@
 <translation id="5521125884468363740">如要在任何使用 Chromium 的裝置上查看分頁，請登入並開啟同步功能</translation>
 <translation id="5522297504975449419">部分 Chromium 功能將無法再使用。</translation>
 <translation id="5573014823074921752">Chromium 提示。如果要多啲標籤選項，請㩒住螢幕底部或者頂部工具列入面中嘅 [顯示分頁] 掣。</translation>
-<translation id="5688047395118852662">這張資訊卡會建議你如何充分運用 Chromium 的各項功能。</translation>
+<translation id="5688047395118852662">此資訊卡會建議您如何充分運用 Chromium 的功能。</translation>
 <translation id="5700709190537129682">Chromium 無法檢查密碼</translation>
 <translation id="5777187867430702742">Chromium 頁面</translation>
 <translation id="5925698807555796756">開啟「關閉 Chromium 時鎖定無痕式分頁」。</translation>

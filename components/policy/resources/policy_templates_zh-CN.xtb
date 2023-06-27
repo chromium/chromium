@@ -308,6 +308,19 @@
 <translation id="1272798957154751008">允许将 Chromad 设备迁移到云管理服务</translation>
 <translation id="1274997165432133392">Cookie 及其他网站数据</translation>
 <translation id="1277411517984768103">允许为用户运行 <ph name="BOREALIS_NAME" /></translation>
+<translation id="1280005879732594593">此政策用于配置 <ph name="PRODUCT_NAME" /> 是否在 TLS 中提供 Kyber 后量子密钥协议。这可允许支持该算法的服务器保护用户流量，以防量子计算机对流量进行解密。
+
+如果已启用此政策，<ph name="PRODUCT_NAME" /> 将在 TLS 连接中提供 Kyber。如果兼容的服务器作为通信一方在 TLS 握手期间选择提供 Kyber，TLS 连接将受到 Kyber 密钥协议的保护。
+
+如果已停用此政策，<ph name="PRODUCT_NAME" /> 将不会在 TLS 连接中提供 Kyber。系统将无法防止量子计算机对用户流量进行解密。
+
+如果未设置此政策，<ph name="PRODUCT_NAME" /> 将会按照默认发布流程提供 Kyber。
+
+提供 Kyber 是向后兼容的。现有的 TLS 服务器和网络中间件预计会忽略这个新选项，并继续选择以前的选项。
+
+但是，在提供新选项后，未正确实现 TLS 的设备可能会发生故障。例如，当遇到无法识别的选项或因引入新选项而导致长度增加的消息时，这些设备可能会断开连接。这些设备尚不支持后量子密钥协议，会妨碍企业改用该算法。如果遇到这种情况，管理员应联系供应商以寻求解决方案。
+
+此政策只是一项暂时性措施，会从 <ph name="PRODUCT_NAME" /> 的未来版本中移除。用户可将此政策设为“已启用”以测试是否存在问题，也可在解决问题期间将此政策设为“已停用”。</translation>
 <translation id="1285819498003746288">Event.path API 将不可用。</translation>
 <translation id="1290722184971934486">如果此政策设为 <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" />（值 2），默认情况下，系统会自动拒绝向网站授予窗口管理权限。此设置会限制网站的以下功能：查看设备屏幕的相关信息，以及使用该信息在特定屏幕上打开并放置窗口或者请求进入全屏模式。
 
@@ -1426,6 +1439,7 @@
 
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="2299220924812062390">指定已启用插件的列表</translation>
+<translation id="2299815818824242485">禁止以更高保护级别通过代理进行查询</translation>
 <translation id="2303795211377219696">允许使用“自动填充”功能填写信用卡信息</translation>
 <translation id="2304009805995145854">从 <ph name="PRODUCT_NAME" /> 67 版起，系统已默认在所有桌面平台上启用网站隔离功能，因此每个网站都会在自己的进程中运行。网站的网址格式为架构加上 eTLD+1（例如，https://example.com）。如果此政策已启用，系统并不会更改相应行为，只会禁止用户选择停用此功能（例如，通过使用 chrome://flags 中的“停用网站隔离”）。从 <ph name="PRODUCT_NAME" /> 76 版起，如果此政策已停用或未设置，系统将不会关闭网站隔离功能，但会允许用户选择停用此功能。
 
@@ -1831,6 +1845,7 @@
 
       如果此政策已停用，而且防火墙会阻止出站 UDP 连接，则这台计算机将只接受由本地网络内的客户端计算机发起的连接。</translation>
 <translation id="2714756912981510828">启用密码泄露检测</translation>
+<translation id="2716071441112588786">允许以更高保护级别通过代理进行查询</translation>
 <translation id="2716623398185506073">如果此政策已启用，已注册的设备将会报告与电源相关的硬件统计信息和标识符。
 
       如果此政策已停用或未设置，已注册的设备将不会报告电源统计信息。</translation>
@@ -2862,6 +2877,15 @@
 <translation id="3591584750136265240">配置登录身份验证行为</translation>
 <translation id="3593905652755912452">系统将使用针对已停用的表单控件分派事件的旧行为。</translation>
 <translation id="3596112486106491038">启用虚拟机命令行访问权限</translation>
+<translation id="3596651403637948128">此政策用于控制是否允许“安全浏览”功能的标准保护模式通过 Oblivious HTTP 代理将网址的部分哈希值发送给 Google，以确定该网址是否可安全访问。
+
+此代理允许浏览器以匿名方式将网址的部分哈希值上传到 Google。它还允许浏览器以更高的频率上传，从而增强“安全浏览”功能的保护成效。
+
+如果“安全浏览”功能已停用或已设为“增强型保护”模式，系统会忽略此政策。
+
+如果已启用或未设置此政策，系统将允许以更高保护级别通过代理进行查询。
+
+如果已停用此政策，系统将禁止以更高保护级别通过代理进行查询。网址将以低得多的频率直接上传到 Google。</translation>
 <translation id="3603469950773500315">在新版 <ph name="CORS" /> 实现方案中启用 <ph name="CORS" /> 检查缓解功能，从而允许扩展程序保持兼容的行为，并允许 <ph name="PRODUCT_NAME" /> 无需进行 <ph name="CORS" /> 检查便可发送指定标头。
 
       如果此列表设为空，<ph name="PRODUCT_NAME" /> 会尝试以兼容的方式运行扩展程序，而不会激活 <ph name="PRODUCT_NAME" /> 79 版中引入的 <ph name="API" /> 更改（如 <ph name="WEB_REQUEST_API_MANUAL" /> 所述）。
@@ -3425,6 +3449,7 @@
 
       如果您设置了此政策，用户便无法更改相关设置。如果您未设置此政策，屏幕键盘最初会处于关闭状态，但用户可随时开启它。</translation>
 <translation id="412697421478384751">允许用户设置安全性较低的锁定屏幕 PIN 码</translation>
+<translation id="4132809439883883106">使用“为 TLS 启用 Kyber 后量子密钥协议”的默认值</translation>
 <translation id="4136603825567209889">启用关于用户标识信息的报告</translation>
 <translation id="4138655880188755661">时限</translation>
 <translation id="4140646780789794190">禁止向 PluginVm 共享诊断数据</translation>
@@ -3935,6 +3960,7 @@
       如果此政策未设置，系统将不会为任何网站自动选择证书。</translation>
 <translation id="4611983465824842867">不在不安全的表单中显示警告，也不停用自动填充功能</translation>
 <translation id="4615003180013429835">Sitelist 解析模式</translation>
+<translation id="4616706248182656871">为 TLS 停用 Kyber 后量子密钥协</translation>
 <translation id="4617338332148204752">跳过“<ph name="PRODUCT_FRAME_NAME" />”中的元标记检查</translation>
 <translation id="461901491675418689">可使用 NewBaseUrlInheritanceBehavior 功能</translation>
 <translation id="4624006912948309924">设置此政策可确定 <ph name="PRODUCT_OS_NAME" /> 会将哪些应用标识符显示为启动器栏中的固定应用，而且用户无法更改相应列表。
@@ -4629,6 +4655,11 @@
 <translation id="5345910753471481870">不在“新标签页”页面上的搜索框中显示 Google 智能镜头按钮。</translation>
 <translation id="5346587320074666194">禁止在这些网站上使用传感器</translation>
 <translation id="534836255587440809">禁止在登录屏幕上自动点击</translation>
+<translation id="5348658899015174540"><ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API 允许 Web 应用一次截取多个界面。
+      此政策将为指定源的 Web 应用解锁 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 属性。
+      如果在 <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> 请求中定义了 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 属性，系统会自动截取所有屏幕界面，而无需用户明确许可。
+      如果未设置此政策，则任何 Web 应用都不能使用 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 属性。
+为了加强隐私保护，从 <ph name="PRODUCT_NAME" /> 116 版开始，此政策将不再支持动态刷新。因此，如果在会话启动时已禁止截取界面，用户可以确信在其登录后，任何其他页面都将无法截取界面。</translation>
 <translation id="5361167871898066799">控制实体键盘的自动更正功能</translation>
 <translation id="5361708558735884308">通过设置此政策，您可列出允许访问的网址，以便将这些网址作为 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外情况。有关此列表所含条目的格式，请参阅 URLBlocklist 政策的说明。例如，将 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 设置为 * 会屏蔽所有请求，但您可以通过此政策来允许访问您所列出的部分网址。您可借助此政策为某些 scheme、其他网域的子网域、端口或特定路径设置例外情况（需使用指定格式，详见 https://support.google.com/chrome/a?p=url_blocklist_filter_format）。系统是会屏蔽还是会允许某个网址取决于最具体的过滤条件。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的优先级高于 <ph name="URL_BLOCKLIST_POLICY_NAME" />。此政策最多只能包含 1,000 个条目。
 
@@ -5711,6 +5742,12 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       系统不会加载也无法导航到使用此列表所含协议的网址。
 
       如果此政策未设置或列表为空，则意味着所有协议在 <ph name="PRODUCT_NAME" /> 中都可用。</translation>
+<translation id="6338831500376286321">为 <ph name="PRODUCT_OS_NAME" /> 系统设置设备级地理定位访问权限级别。此设置在用户登录前有效。登录后，用户可以通过按用户进行的设置来控制地理定位访问权限级别。
+
+如果此政策未设置或设为“<ph name="ALLOW" />”，受管设备将可以在登录界面上访问地理定位。如果发送的政策值无效，则访问权限会回退到“<ph name="DISALLOW" />”。对于非受管设备，政策值始终为“<ph name="ALLOW" />”。
+
+警告：更改此设置时应小心谨慎，因为它可能会破坏其他与地理定位相关的政策（例如 <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />）！
+具体而言，当此政策设为“<ph name="DISALLOW" />”时，<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> 政策的 <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> 和 <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> 选项将会失效，导致在<ph name="LOG_IN" />界面上只能使用基于 <ph name="IP" /> 的位置解析方法。</translation>
 <translation id="6338982178236723271">报告系统信息</translation>
 <translation id="6339355882150329269">视频播放时不将用户视为空闲</translation>
 <translation id="6352714113109004581">通过设置此政策，您可以罗列一些网址格式，从而指定哪些网站可以请求用户授权其访问 HID 设备。
@@ -6920,6 +6957,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7421230730436851224">一律不在沙盒中处理音频</translation>
 <translation id="7421483919690710988">设置媒体磁盘缓存大小（字节）</translation>
 <translation id="7424751532654212117">已停用插件列表的例外情况</translation>
+<translation id="7425076578809444474">为 TLS 启用后量子密钥协议</translation>
 <translation id="7426112309807051726">指定是否停用 <ph name="TLS_FALSE_START" /> 优化。由于历史原因，此政策被命名为 DisableSSLRecordSplitting。
 
       如果此政策未设置或设为 false，系统将启用 <ph name="TLS_FALSE_START" />。如果此政策设为 true，系统将停用 <ph name="TLS_FALSE_START" />。</translation>
@@ -6929,6 +6967,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7434202861148928348">为远程访问客户端配置所需的域名</translation>
 <translation id="7436939516497076240">禁止在浏览器侧边栏中显示默认搜索引擎的搜索结果页面。</translation>
 <translation id="7443356543619955157">通过设置此政策，您可以允许向某部 <ph name="PRODUCT_OS_NAME" />设备推送要用于其所有用户的网络配置。网络配置是 JSON 格式的字符串，如 Open Network Configuration 格式所定义。</translation>
+<translation id="7446978687387327623">允许“安全浏览”功能通过代理进行实时检查</translation>
 <translation id="7448430478749155471">在登录屏幕上启用“随选朗读”</translation>
 <translation id="7456922722153109956">此政策用于控制是否在“新标签页”页面上显示中间槽通知。
 
@@ -8149,6 +8188,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
           如果您未设置此政策，系统将使用默认时长。
 
           指定的政策值应以毫秒为单位。</translation>
+<translation id="859316804517480666">为 TLS 启用 Kyber 后量子密钥协议</translation>
 <translation id="859579553230883285">为您的用户停用 <ph name="PRIVACY_SANDBOX_NAME" /> 网站建议采用的广告设置。</translation>
 <translation id="8597758693275075382">要在安装过程中向虚拟机传递的 SMBIOS OEM 字符串。默认为空列表。</translation>
 <translation id="8598786284856179541">启用关于版本信息的报告</translation>

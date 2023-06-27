@@ -42,9 +42,11 @@
 <translation id="2942241131342758843">Usa Chromium como tu navegador predeterminado para abrir vínculos, realizar búsquedas desde widgets y autocompletar contraseñas en otras apps</translation>
 <translation id="2977470724722393594">Chromium está actualizado.</translation>
 <translation id="3102849287235003384">Para salir de tu Cuenta de Google en todos los sitios web, debes <ph name="BEGIN_LINK" />salir de Chromium<ph name="END_LINK" />.</translation>
+<translation id="3115956258722352278">¿Quieres establecer Chromium como navegador predeterminado?</translation>
 <translation id="3256316712990552818">Se copió en Chromium.</translation>
 <translation id="3344973607274501920">Chromium no pudo revisar las contraseñas. Revisa la conexión a Internet.</translation>
 <translation id="3472200483164753384">No es compatible en Chromium Canary</translation>
+<translation id="3478750326643748149">Ocultar "Aprovecha Chromium al máximo"</translation>
 <translation id="3567399274263440288">Para aprovechar Chromium al maximo, accede al navegador con tu Cuenta de Google.</translation>
 <translation id="3639997914391704523">Chromium puede revisar las contraseñas cuando accedes con tu Cuenta de Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> usó Chromium y dejó favoritos, contraseñas y otros parámetros de configuración en este dispositivo.</translation>
@@ -78,6 +80,7 @@
 <translation id="5521125884468363740">Para ver tus pestañas donde sea que uses Chromium, accede a tu cuenta y activa la sincronización</translation>
 <translation id="5522297504975449419">Algunas funciones de Chromium ya no estarán disponibles.</translation>
 <translation id="5573014823074921752">Sugerencia de Chromium: Para obtener más opciones de pestañas, mantén presionado el botón Mostrar pestañas de la barra de herramientas, que se encuentra en la parte inferior o superior de la pantalla.</translation>
+<translation id="5688047395118852662">En esta tarjeta, se muestran sugerencias para aprovechar Chromium al máximo.</translation>
 <translation id="5700709190537129682">Chromium no puede revisar las contraseñas</translation>
 <translation id="5777187867430702742">Página de Chromium</translation>
 <translation id="5925698807555796756">Activa "Bloquear las pestañas de incógnito cuando cierras Chromium".</translation>

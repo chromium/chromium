@@ -61,6 +61,7 @@
 <translation id="1283039547216852943">Торкніться, щоб розгорнути</translation>
 <translation id="1289059016768036948">Для цього вам потрібно ввійти у свій обліковий запис Google</translation>
 <translation id="1291207594882862231">Очистити історію, файли cookie, дані сайтів, кеш…</translation>
+<translation id="1293898515599432175">Ваші паролі буде видалено з Google Менеджера паролів для Chrome <ph name="CHROME_CHANNEL" />. Файл із паролями, який ви щойно завантажили, буде збережено.</translation>
 <translation id="129553762522093515">Нещодавно закриті</translation>
 <translation id="1298077576058087471">Заощаджуйте до 60% даних і читайте сьогоднішні новини</translation>
 <translation id="1303339473099049190">Не вдалося знайти такий пароль. Перевірте правильність написання та повторіть спробу.</translation>
@@ -510,6 +511,7 @@
 <translation id="3795154175078851242">Копіювати зображення з посиланням</translation>
 <translation id="3810838688059735925">Відео</translation>
 <translation id="3810973564298564668">Керувати</translation>
+<translation id="381861209280417772">Видалити паролі</translation>
 <translation id="3819178904835489326">Видалено завантажених файлів: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3819183753496523827">Ви не в мережі. Перевірте інтернет-з’єднання й повторіть спробу.</translation>
 <translation id="3830886834687455630">Щоб перевірити паролі, оновіть сервіси Google Play</translation>
@@ -594,6 +596,7 @@
 <translation id="4249955472157341256">Сортувати за категорією "Останні"</translation>
 <translation id="4250229828105606438">Знімок екрана</translation>
 <translation id="4256782883801055595">Ліцензії ПЗ з відкритим кодом</translation>
+<translation id="4257230861809842349">Видалити паролі з Google Менеджера паролів?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Які дані використовуються<ph name="END_BOLD" />. Ваша історія веб-перегляду – перелік сайтів, які ви відвідали через Chrome на цьому пристрої.</translation>
 <translation id="4269820728363426813">Копіювати адресу посилання</translation>
 <translation id="4283102315569707115">Запитувати версію сайту для комп’ютера за умовчанням?</translation>

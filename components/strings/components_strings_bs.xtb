@@ -3281,7 +3281,7 @@ Dodatni detalji:
 <translation id="8246482227229072868">Prstenje</translation>
 <translation id="8249296373107784235">Prekini</translation>
 <translation id="8249463483885748674">Standardizirani prijemni testovi</translation>
-<translation id="824968735947741546">Prevodi se <ph name="SOURCE" /> (automatski otkriveno) na <ph name="TARGET" /></translation>
+<translation id="824968735947741546">Prevođenje s jezika <ph name="SOURCE" /> (automatski prepoznato) na jezik <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Adresa je trenutno sačuvana na ovom uređaju. Da je koristite na Googleovim proizvodima, sačuvajte je na Google računu <ph name="ACCOUNT" />.</translation>
 <translation id="8252991034201168845">Dugme za upravljanje postavkama pristupačnosti, pritisnite Enter da personalizirate alate za pristupačnost u postavkama ChromeOS-a</translation>
 <translation id="8253091569723639551">Potrebno je navesti adresu za naplatu</translation>

@@ -70,6 +70,7 @@
 <translation id="1358214951266274152">访问您复制的链接</translation>
 <translation id="1360432990279830238">退出帐号并关闭同步功能？</translation>
 <translation id="1363028406613469049">曲目</translation>
+<translation id="1365106417372288489">您最近恢复过您的 iPhone，这可能更改了您的默认浏览器设置。</translation>
 <translation id="1375321115329958930">已保存的密码</translation>
 <translation id="1377255359165588604">同步功能已停止工作。</translation>
 <translation id="1377321085342047638">卡号</translation>
@@ -146,6 +147,7 @@
 <translation id="1872096359983322073">闪光灯</translation>
 <translation id="1883255238294161206">收起列表</translation>
 <translation id="1894023287452300670">在此处跟踪价格</translation>
+<translation id="189531189292803889">您最近恢复过您的 iPad，这可能更改了您的默认浏览器设置。</translation>
 <translation id="1910975740091000991">Chrome（iOS 版）</translation>
 <translation id="1911619930368729126">上传到Google云端硬盘</translation>
 <translation id="1923342640370224680">过去 1 小时</translation>
@@ -1037,6 +1039,7 @@
 <translation id="750493650310597496">未选中任何项</translation>
 <translation id="7508728395076009983">如需锁定您的无痕式标签页，请设置触控 ID、面容 ID 或密码。</translation>
 <translation id="7514365320538308">下载</translation>
+<translation id="7524055474074101597">获取您为各种应用保存的密码和其他信息。</translation>
 <translation id="7531345132340165516">当前网站</translation>
 <translation id="7537586195939242955">抱歉，目前无法将您的票证添加到 Passbook。</translation>
 <translation id="754655535278952384">上次检查时间：<ph name="TIME" /></translation>

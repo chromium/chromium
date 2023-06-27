@@ -61,6 +61,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1283039547216852943">Tryck och utöka</translation>
 <translation id="1289059016768036948">Du blir ombedd att logga in på Google-kontot</translation>
 <translation id="1291207594882862231">Rensa historiken, cookies, webbplatsdata, cacheminnet …</translation>
+<translation id="1293898515599432175">Dina lösenord raderas från Google Lösenordshantering för Chrome <ph name="CHROME_CHANNEL" />. Lösenordsfilen som du precis laddade ned finns kvar.</translation>
 <translation id="129553762522093515">Nyligen stängda</translation>
 <translation id="1298077576058087471">Spara upp till 60 % data och läs dagens nyheter</translation>
 <translation id="1303339473099049190">Det gick inte att hitta lösenordet. Kontrollera stavningen och försök igen.</translation>
@@ -510,6 +511,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="3795154175078851242">Kopiera bild med länk</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Hantera</translation>
+<translation id="381861209280417772">Radera lösenord</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> nedladdningar har raderats</translation>
 <translation id="3819183753496523827">Du är offline. Kontrollera internetanslutningen och försök igen.</translation>
 <translation id="3830886834687455630">Uppdatera Google Play-tjänster för att kontrollera dina lösenord</translation>
@@ -595,6 +597,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="4249955472157341256">Sortera efter senaste</translation>
 <translation id="4250229828105606438">Skärmbild</translation>
 <translation id="4256782883801055595">Licenser för öppen källkod</translation>
+<translation id="4257230861809842349">Vill du radera lösenord från Google Lösenordshantering?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Vilken data används:<ph name="END_BOLD" /> Webbhistoriken, där webbplatser som du besökt i Chrome på den här enheten registreras.</translation>
 <translation id="4269820728363426813">Kopiera länkadress</translation>
 <translation id="4283102315569707115">Vill du begära webbplatser för dator som standard?</translation>

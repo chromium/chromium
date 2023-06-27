@@ -42,9 +42,11 @@
 <translation id="2942241131342758843">Зрабіце Chromium стандартным браўзерам, каб адкрываць спасылкі, шукаць інфармацыю праз віджэты і аўтаматычна запаўняць паролі ў іншых праграмах</translation>
 <translation id="2977470724722393594">Chromium абноўлены</translation>
 <translation id="3102849287235003384">Каб выйсці з Уліковага запісу Google на ўсіх вэб-сайтах, <ph name="BEGIN_LINK" />выйдзіце з Chromium<ph name="END_LINK" />.</translation>
+<translation id="3115956258722352278">Зрабіць Chromium стандартным браўзерам?</translation>
 <translation id="3256316712990552818">Скапіравана ў Chromium</translation>
 <translation id="3344973607274501920">Браўзеру Chromium не ўдалося праверыць паролі. Паспрабуйце праверыць падключэнне да інтэрнэту.</translation>
 <translation id="3472200483164753384">Не падтрымліваецца ў Chromium Canary</translation>
+<translation id="3478750326643748149">Схавайце “Карыстацца ўсімі магчымасцямі Chromium”</translation>
 <translation id="3567399274263440288">Каб карыстацца ўсімі магчымасцямі браўзера Chromium, увайдзіце ў яго праз свой Уліковы запіс Google.</translation>
 <translation id="3639997914391704523">Chromium зможа праверыць паролі толькі пасля таго, як вы ўвойдзеце ва Уліковы запіс Google.</translation>
 <translation id="3650632991272923014">Карыстальнік <ph name="USER_EMAIL1" />, папрацаваўшы ў браўзеры Chromium, пакінуў на гэтай прыладзе закладкі, паролі і іншыя налады.</translation>
@@ -78,6 +80,7 @@
 <translation id="5521125884468363740">Каб мець доступ да сваіх укладак з усіх прылад, на якіх вы выкарыстоўваеце Chromium, увайдзіце на іх ва ўліковы запіс і ўключыце сінхранізацыю</translation>
 <translation id="5522297504975449419">Некаторыя функцыі Chromium перастануць быць даступнымі.</translation>
 <translation id="5573014823074921752">Падказка Chromium. Каб адкрыць больш параметраў укладкі, націсніце і ўтрымлівайце кнопку "Паказваць укладкі" на панэлі інструментаў, якая знаходзіцца ўнізе або ўверсе экрана.</translation>
+<translation id="5688047395118852662">На гэтай картцы паказаны прапановы, як карыстацца ўсімі магчымасцямі Chromium.</translation>
 <translation id="5700709190537129682">Браўзеру Chromium не ўдаецца праверыць паролі</translation>
 <translation id="5777187867430702742">Старонка Chromium</translation>
 <translation id="5925698807555796756">Уключыце параметр Lock Incognito Tabs When You Close Chromium ("Блакіраваць укладкі ў рэжыме інкогніта пры закрыцці Chromium").</translation>

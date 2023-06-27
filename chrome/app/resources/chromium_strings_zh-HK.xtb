@@ -10,6 +10,7 @@
 <translation id="1104942323762546749">Chromium 想匯出您的密碼。請輸入 Windows 密碼以允許此操作。</translation>
 <translation id="113122355610423240">Chromium 現為您的預設瀏覽器</translation>
 <translation id="1131805035311359397">如要檢查密碼是否安全，且未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chromium<ph name="END_LINK" />。</translation>
+<translation id="1153368717515616349">按一下 Chromium 選單</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium 擴充程式當時正在存取 HID 裝置}=1{Chromium 擴充程式正在存取 HID 裝置}other{Chromium 擴充程式正在存取 # 部 HID 裝置}}</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1203500561924088507">多謝安裝。您必須先重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
@@ -59,6 +60,7 @@
 <translation id="2384373936468275798">您的帳戶登入詳情已過時，因此 Chromium 作業系統無法同步處理您的資料。</translation>
 <translation id="2396765026452590966">擴充功能「<ph name="EXTENSION_NAME" />」已變更 Chromium 啟動時所顯示的網頁。</translation>
 <translation id="2401032172288869980">Chromium 需要相機權限和麥克風權限，才能執行此網站要求的功能</translation>
+<translation id="2451727308784734061">透過捷徑快速開啟「密碼管理工具」。您可將捷徑移至電腦的主畫面或應用程式啟動器。</translation>
 <translation id="2478295928299953161">Chromium 即將關閉</translation>
 <translation id="2483889755041906834">在 Chromium 中</translation>
 <translation id="2485422356828889247">解除安裝</translation>
@@ -250,6 +252,7 @@
 <translation id="6333502561965082103">Chromium 正在執行另一項操作，請稍後再試。</translation>
 <translation id="6334986366598267305">無論是登入 Google 帳戶使用 Chromium，還是以 Google 帳戶使用共用電腦，現在都更輕而易舉。</translation>
 <translation id="6373523479360886564">您確定要解除安裝 Chromium 嗎？</translation>
+<translation id="6375219077595103062">新增「密碼管理工具」的捷徑</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />我們如何使用這項資料：<ph name="END_BOLD" />Chromium 可以推測您的興趣。您日後瀏覽的網站可向 Chromium 要求查看您的興趣，以便向您顯示個人化廣告。</translation>
 <translation id="6403826409255603130">Chromium 網絡瀏覽器可快速開啟網頁和執行應用程式。除了迅速、穩定和易於使用外，Chromium 的內置惡意軟件與網絡釣魚防護功能，可讓您安心瀏覽網絡。</translation>
 <translation id="6442900851116057561">重新啟動 Chromium 作業系統</translation>
@@ -373,6 +376,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8697124171261953979">這個擴充功能也會控管 Chromium 啟動時或您使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="8704119203788522458">這是您專屬的 Chromium</translation>
 <translation id="8796602469536043152">Chromium 需要取得權限，才能讓這個網站存取您的相機和麥克風</translation>
+<translation id="8826492472752484139">按一下 [密碼管理工具]</translation>
 <translation id="8833697763442816810">Chromium 作業系統</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />需要使用什麼資料：<ph name="END_BOLD" />您的瀏覽記錄，亦即您在此裝置上使用 Chromium 瀏覽過的網站記錄。</translation>
 <translation id="8862326446509486874">您沒有在系統層級進行安裝的權限，請以管理員的身分執行安裝程式。</translation>

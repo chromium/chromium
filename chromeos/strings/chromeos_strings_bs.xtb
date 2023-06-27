@@ -240,7 +240,7 @@
 <translation id="2873483161362553159">Kretanje u pregledniku</translation>
 <translation id="2874939134665556319">Prethodna numera</translation>
 <translation id="2878387241690264070">Ispražnjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> sek.</translation>
-<translation id="2880569433548999039">Čuvar ekrana sa oblacima</translation>
+<translation id="2880569433548999039">Čuvar ekrana s oblacima</translation>
 <translation id="2926057806159140518">Unesite korisničko ime i lozinku ili skenirajte QR kôd</translation>
 <translation id="2940811910881150316">Nije moguće testirati uređaj. Ponovo otvorite poklopac da testirate.</translation>
 <translation id="3008341117444806826">OSVJEŽI</translation>
@@ -328,7 +328,7 @@
 <translation id="3639846061339007994">gornjem</translation>
 <translation id="3651050199673793219">Odaberite jedinicu temperature</translation>
 <translation id="3663574643422533538">Odaberite ekskluzivne ilustracije za <ph name="PRODUCT_NAME" /></translation>
-<translation id="3668449597372804501">Pozadinska slika sa oblacima</translation>
+<translation id="3668449597372804501">Pozadinska slika s oblacima</translation>
 <translation id="3689839747745352263">Test: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Učitavanje...</translation>
 <translation id="3708186454126126312">Prethodno povezano</translation>
@@ -340,7 +340,7 @@
 <translation id="380097101658023925">kontrole RGB-a</translation>
 <translation id="38114475217616659">Obriši svu historiju</translation>
 <translation id="3820172043799983114">Nevažeći PIN.</translation>
-<translation id="382043424867370667">Pozadinska slika zalazak sunca</translation>
+<translation id="382043424867370667">Pozadinska slika zalaska sunca</translation>
 <translation id="3824259034819781947">Prilaganje fajlova</translation>
 <translation id="3838338534323494292">Nova lozinka</translation>
 <translation id="3845880861638660475">Pritisnite <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> i <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> da zatvorite dijaloški okvir.</translation>
@@ -538,7 +538,7 @@
 <translation id="5275828089655680674">Ponovo pokreni rutine</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">boja pozadinskog svjetla</translation>
-<translation id="5292579816060236070">Pozadinska slika izlazak sunca</translation>
+<translation id="5292579816060236070">Pozadinska slika izlaska sunca</translation>
 <translation id="5294769550414936029">verzija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Premjesti prozor na radnu površinu</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> ekskluzivna pozadinska slika</translation>

@@ -61,6 +61,7 @@
 <translation id="1283039547216852943">יש להקיש כדי להרחיב</translation>
 <translation id="1289059016768036948">‏תוצג בקשה להיכנס לחשבון Google.</translation>
 <translation id="1291207594882862231">‏ניקוי ההיסטוריה, קובצי ה-Cookie, נתוני האתרים, המטמון…</translation>
+<translation id="1293898515599432175">‏הסיסמאות יימחקו ממנהל הסיסמאות של Google ב-Chrome <ph name="CHROME_CHANNEL" />. קובץ הסיסמאות שהורדת עכשיו יישאר אצלך.</translation>
 <translation id="129553762522093515">נסגרו לאחרונה</translation>
 <translation id="1298077576058087471">קראת חדשות היום? אפשר לחסוך עד 60% בניצול חבילת הגלישה</translation>
 <translation id="1303339473099049190">לא ניתן למצוא את הסיסמה. יש לבדוק את האיות ולנסות שוב.</translation>
@@ -510,6 +511,7 @@
 <translation id="3795154175078851242">העתקת התמונה עם הקישור</translation>
 <translation id="3810838688059735925">סרטון</translation>
 <translation id="3810973564298564668">ניהול</translation>
+<translation id="381861209280417772">מחיקת הסיסמאות</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> הורדות נמחקו</translation>
 <translation id="3819183753496523827">אין לך חיבור לאינטרנט. צריך לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
 <translation id="3830886834687455630">‏כדי לבדוק את הסיסמאות, יש לעדכן את Google Play Services</translation>
@@ -594,6 +596,7 @@
 <translation id="4249955472157341256">מיון לפי 'האחרון'</translation>
 <translation id="4250229828105606438">צילום מסך</translation>
 <translation id="4256782883801055595">רישיונות קוד פתוח</translation>
+<translation id="4257230861809842349">‏למחוק את הסיסמאות ממנהל הסיסמאות של Google?</translation>
 <translation id="4262915912852657291">‏<ph name="BEGIN_BOLD" />באילו נתונים נעשה שימוש:<ph name="END_BOLD" /> היסטוריית הגלישה – תיעוד האתרים שביקרת בהם באמצעות Chrome במכשיר הזה.</translation>
 <translation id="4269820728363426813">העתקת כתובת של קישור</translation>
 <translation id="4283102315569707115">לבקש אתרים שמותאמים למחשב כברירת מחדל?</translation>

@@ -61,6 +61,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1283039547216852943">Appuyer pour développer</translation>
 <translation id="1289059016768036948">Vous serez invité à vous connecter à votre compte Google</translation>
 <translation id="1291207594882862231">Effacez l'historique, vider le cache, supprimer les cookies et les données des sites…</translation>
+<translation id="1293898515599432175">Vos mots de passe seront supprimés du Gestionnaire de mots de passe de Google pour Chrome <ph name="CHROME_CHANNEL" />. Vous conserverez le fichier de mots de passe que vous venez de télécharger.</translation>
 <translation id="129553762522093515">Récemment fermés</translation>
 <translation id="1298077576058087471">Économisez jusqu'à 60 % de données mobiles, découvrez les actualités du jour</translation>
 <translation id="1303339473099049190">Ce mot de passe est introuvable. Vérifiez l'orthographe, puis réessayez.</translation>
@@ -510,6 +511,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="3795154175078851242">Copier l'image avec le lien</translation>
 <translation id="3810838688059735925">Vidéo</translation>
 <translation id="3810973564298564668">Gérer</translation>
+<translation id="381861209280417772">Supprimer les mots de passe</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> téléchargements supprimés</translation>
 <translation id="3819183753496523827">Vous êtes hors connexion. Vérifiez votre connexion Internet, puis réessayez.</translation>
 <translation id="3830886834687455630">Mettez à jour les services Google Play pour vérifier vos mots de passe</translation>
@@ -594,6 +596,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="4249955472157341256">Trier par "Les plus récents"</translation>
 <translation id="4250229828105606438">Capture d'écran</translation>
 <translation id="4256782883801055595">Licences Open Source</translation>
+<translation id="4257230861809842349">Supprimer les mots de passe du Gestionnaire de mots de passe de Google ?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Quelles sont les données utilisées<ph name="END_BOLD" /> : votre historique de navigation, qui liste tous les sites que vous avez consultés dans Chrome sur cet appareil.</translation>
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
 <translation id="4283102315569707115">Demander les versions pour ordinateur par défaut ?</translation>

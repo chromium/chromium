@@ -79,6 +79,7 @@
 <translation id="1061130374843955397">欢迎使用 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">为此链接创建二维码</translation>
 <translation id="1061904396131502319">快到休息时间了</translation>
+<translation id="10619348099955377">复制显示名称</translation>
 <translation id="1062407476771304334">替换</translation>
 <translation id="1062628064301375934">帮助我们打造私密性更好的网络环境</translation>
 <translation id="1066964438793906105">不妨扫描以检测是否有恶意软件</translation>
@@ -576,6 +577,7 @@
 <translation id="1481537595330271162">调整磁盘大小时出错</translation>
 <translation id="1482626744466814421">为此标签页添加书签…</translation>
 <translation id="1482772681918035149">修改密码</translation>
+<translation id="1483431819520123112">已将显示名称复制到剪贴板</translation>
 <translation id="1483493594462132177">发送</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">此网站正在使用蓝牙</translation>
@@ -951,6 +953,7 @@
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 条记事}other{# 条记事}}</translation>
 <translation id="1784707308176068866">在合作的原生应用请求时在后台运行</translation>
 <translation id="1784849162047402014">设备磁盘空间不足</translation>
+<translation id="1786290960428378411">请求进行读取和更改</translation>
 <translation id="1787350673646245458">用户图片</translation>
 <translation id="1790976235243700817">移除访问权限</translation>
 <translation id="1792619191750875668">扩展显示屏</translation>
@@ -1280,6 +1283,7 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{点击即可安装该扩展程序}other{点击即可安装这些扩展程序}}</translation>
 <translation id="2073496667646280609">您的设备或所选备份位置可能没有足够的可用存储空间。请尝试释放一些空间，或者改为备份到别处。</translation>
 <translation id="2073505299004274893">字符数不得超过 <ph name="CHARACTER_LIMIT" /> 个</translation>
+<translation id="2075088158103027942">前往订阅页面</translation>
 <translation id="2075474481720804517">电池电量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2076269580855484719">隐藏此插件</translation>
 <translation id="2076672359661571384">中（推荐）</translation>
@@ -2098,6 +2102,7 @@
 <translation id="2731700343119398978">请稍候...</translation>
 <translation id="2731971182069536520">当您下次重启设备时，您的管理员将会执行一项一次性更新，这项更新会删除您的本地数据。</translation>
 <translation id="2732134891301408122">第 <ph name="CURRENT_ELEMENT" /> 项附加内容，共 <ph name="TOTAL_ELEMENTS" /> 项</translation>
+<translation id="2733992589856193783">您已为此网站创建了一个通行密钥。您需要使用移动设备才能登录。</translation>
 <translation id="27349076983469322">浅色背景</translation>
 <translation id="2735712963799620190">排定时间</translation>
 <translation id="2737363922397526254">收起...</translation>
@@ -3085,6 +3090,7 @@
 <translation id="3610241585790874201">不得将数据保存在设备上</translation>
 <translation id="3610369246614755442">基座风扇需要维修</translation>
 <translation id="3610961622607302617">更改 <ph name="WEBSITE" /> 的密码</translation>
+<translation id="3611634011145829814">前往订阅页面</translation>
 <translation id="3611658447322220736">最近关闭的网站可以完成数据收发操作</translation>
 <translation id="3612673635130633812">由&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;下载</translation>
 <translation id="3613134908380545408">显示“<ph name="FOLDER_NAME" />”</translation>
@@ -3435,6 +3441,7 @@
 <translation id="3888586133700543064">这些信息有助于我们更好地了解您所遇到的 Google 助理问题。这些信息最多会存储 90 天，且仅限相关的工程团队和反馈团队访问。</translation>
 <translation id="3890064827463908288">您需要开启 Chrome 同步才能使用 Wi-Fi 同步功能</translation>
 <translation id="389313931326656921">为“下一项”操作分配开关</translation>
+<translation id="3893268973182382220">暂时无法加载此面板</translation>
 <translation id="3893295674388762059">若要清除数据，请关闭所有无痕式窗口</translation>
 <translation id="3893536212201235195">读取和更改您的无障碍设置</translation>
 <translation id="3893630138897523026">ChromeVox（语音反馈）</translation>
@@ -3771,6 +3778,7 @@
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4176864026061939326">此设备是受管设备。设备管理员要求您为帐号 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的个人资料</translation>
 <translation id="4177501066905053472">广告主题</translation>
+<translation id="4178220097446335546">若要忘记此订阅及关联的网络，请前往 Passpoint 订阅页面以移除相应订阅。</translation>
 <translation id="4180788401304023883">要删除 CA 证书“<ph name="CERTIFICATE_NAME" />”吗？</translation>
 <translation id="4181602000363099176">20 倍</translation>
 <translation id="4181841719683918333">语言</translation>
@@ -3923,6 +3931,7 @@
 <translation id="4316850752623536204">开发者网站</translation>
 <translation id="4317733381297736564">应用内购买</translation>
 <translation id="4317820549299924617">验证失败</translation>
+<translation id="4319441675152393296">点击此扩展程序的图标即可读取和更改 <ph name="HOST" /> 数据</translation>
 <translation id="4320177379694898372">未连接到互联网</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197">在 Finder 中显示 <ph name="FILE_NAME" /></translation>
@@ -4604,6 +4613,7 @@
 <translation id="4899052647152077033">反色</translation>
 <translation id="4899696330053002588">包含广告</translation>
 <translation id="489985760463306091">要完成有害软件的移除，请重新启动计算机</translation>
+<translation id="490031510406860025">不允许在此网站上使用</translation>
 <translation id="4900392736118574277">您的启动页已改为 <ph name="URL" />。</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> 赫兹 - 隔行扫描</translation>
 <translation id="4900652253009739885">这是为“选择”操作分配的唯一开关键，因此无法移除。按任意键即可<ph name="RESPONSE" />。</translation>
@@ -7327,6 +7337,7 @@
 <translation id="7299515639584427954">为默认应用更改受支持的链接？</translation>
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">您可以这样问：“Hey Google，这是什么歌？”或“Hey Google，我的屏幕上显示的是什么？”</translation>
+<translation id="7301812050652048720">已删除通行密钥</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{这款应用可能会致使 Chrome 无法正常运行。}other{这些应用可能会致使 Chrome 无法正常运行。}}</translation>
 <translation id="7303281435234579599">糟糕！设置演示模式时出了点问题。</translation>
 <translation id="7303900363563182677">此网站已被阻止查看复制到剪贴板的文字和图片</translation>
@@ -7870,6 +7881,7 @@
 <translation id="7744192722284567281">遭遇了数据泄露</translation>
 <translation id="7744649840067671761">按新的开关键或键盘按键即可开始分配。
 按已分配的开关键或键盘按键即可撤消分配。</translation>
+<translation id="7745677556280361868">在 Passpoint 订阅页面中移除此网络？</translation>
 <translation id="7746045113967198252">放大或缩小屏幕上的内容（包括文字）。日后还可在“设置”&gt;“设备”&gt;“显示”下找到此设置。</translation>
 <translation id="7746739418892731373">系统会显示 Google 相册媒体库中的照片和视频集锦。您可以前往 <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> 控制集锦中显示的内容。
         <ph name="BREAK" />
@@ -8082,6 +8094,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" /> 可以查看“<ph name="FILENAME" />”的内容</translation>
 <translation id="7920482456679570420">添加您想让“拼写检查”功能跳过的字词</translation>
 <translation id="7921347341284348270">您无法通过这个受管理的帐号查看手机上的通知。请换个帐号重试。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="7921901223958867679">此扩展程序可读取和更改 <ph name="HOST" /> 数据</translation>
 <translation id="7922606348470480702">1 个扩展程序</translation>
 <translation id="7922935920104868876">显示在无痕模式下屏蔽第三方 Cookie 的有关详情</translation>
 <translation id="7923564237306226146">Linux 升级完毕</translation>
@@ -9610,6 +9623,7 @@
 <translation id="930551443325541578">重复按键和重音符号</translation>
 <translation id="930893132043726269">目前正在使用漫游服务</translation>
 <translation id="930991362911221750">允许“<ph name="APP_NAME" />”查看此标签页？</translation>
+<translation id="931273044114601262">允许在此网站上使用</translation>
 <translation id="93140074055951850">Android 应用被停止了</translation>
 <translation id="932327136139879170">首页</translation>
 <translation id="932508678520956232">无法开始打印。</translation>
