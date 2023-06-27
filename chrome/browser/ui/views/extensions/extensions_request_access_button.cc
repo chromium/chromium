@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_util.h"
@@ -153,6 +154,9 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
 
   base::RecordAction(base::UserMetricsAction(
       "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"));
+  UMA_HISTOGRAM_COUNTS_100(
+      "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton",
+      extension_ids_.size());
   action_runner->GrantTabPermissions(extensions_to_run);
 
   // Show confirmation message, and disable the button, for a specific duration.

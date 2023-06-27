@@ -4250,6 +4250,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"
+    units="Extension Count" expires_after="2023-12-10">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The number of extensions in the request access button that were granted site
+    access after the user clicked on the request access button.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.Toolbar.InvocationSource"
     enum="ExtensionActionInvocationSource" expires_after="2023-12-10">
   <owner>rdevlin.cronin@chromium.org</owner>
