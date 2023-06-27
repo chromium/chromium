@@ -52,6 +52,11 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerRegistrationCache);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kServiceWorkerRegistrationCacheSize;
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerScopeCacheLimit);
+
+CONTENT_EXPORT extern const base::FeatureParam<int>
+    kServiceWorkerScopeCacheLimitSize;
+
 // Manages in-memory representation of service worker registrations
 // (i.e., ServiceWorkerRegistration) including installing and uninstalling
 // registrations. Owned by ServiceWorkerContextCore and has the same lifetime of
@@ -543,7 +548,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   // ServiceWorker registration scope cache to skip calling
   // FindRegistrationForClientUrl mojo function (https://crbug.com/1411197).
-  std::map<blink::StorageKey, std::set<GURL>> registration_scope_cache_;
+  base::LRUCache<blink::StorageKey, std::set<GURL>> registration_scope_cache_;
 
   // Live registration's `registration_id` cache to skip calling
   // FindRegistrationForClientUrl mojo function (https://crbug.com/1446216).
