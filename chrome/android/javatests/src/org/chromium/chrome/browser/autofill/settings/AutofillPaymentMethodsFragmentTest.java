@@ -386,14 +386,11 @@ public class AutofillPaymentMethodsFragmentTest {
         // Simulate the biometric authentication will succeed.
         setUpBiometricAuthenticationResult(/*success=*/true);
         // Simulate click on the Reauth toggle, trying to toggle on. Now Chrome is waiting for OS
-        // authentication.
+        // authentication which should succeed.
         TestThreadUtils.runOnUiThreadBlocking(getMandatoryReauthPreference(activity)::performClick);
-        // Now call onResume to simulate bringing the settings page back to foreground, which will
-        // rebuild the fragment.
-        TestThreadUtils.runOnUiThreadBlocking(activity.getMainFragment()::onResume);
 
         verify(mReauthenticatorMock).reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
-        // Verify that the refreshed Reauth toggle is now checked.
+        // Verify that the Reauth toggle is now checked.
         Assert.assertTrue(getMandatoryReauthPreference(activity).isChecked());
     }
 
@@ -416,14 +413,11 @@ public class AutofillPaymentMethodsFragmentTest {
         // Simulate the biometric authentication will fail.
         setUpBiometricAuthenticationResult(/*success=*/false);
         // Simulate click on the Reauth toggle, trying to toggle off. Now Chrome is waiting for OS
-        // authentication.
+        // authentication which should fail.
         TestThreadUtils.runOnUiThreadBlocking(getMandatoryReauthPreference(activity)::performClick);
-        // Now call onResume to simulate bringing the settings page back to foreground, which will
-        // rebuild the fragment.
-        TestThreadUtils.runOnUiThreadBlocking(activity.getMainFragment()::onResume);
 
         verify(mReauthenticatorMock).reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
-        // Verify that the refreshed Reauth toggle is still checked since authentication failed.
+        // Verify that the Reauth toggle is still checked since authentication failed.
         Assert.assertTrue(getMandatoryReauthPreference(activity).isChecked());
     }
 
@@ -484,12 +478,9 @@ public class AutofillPaymentMethodsFragmentTest {
 
         // Simulate the biometric authentication will fails.
         setUpBiometricAuthenticationResult(/*success=*/false);
-        // Simulate click on the local card widget. Now Chrome is waiting for OS authentication.
+        // Simulate click on the local card widget. Now Chrome is waiting for OS authentication
+        // which should fail and hence the payment methods page should still be open.
         TestThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
-        // Now mReauthenticatorMock simulates failed authentication, which will stay on the payment
-        // methods page. Thus call onResume to simulate bringing the settings page back to
-        // foreground, which will rebuild the fragment.
-        TestThreadUtils.runOnUiThreadBlocking(activity.getMainFragment()::onResume);
 
         verify(mReauthenticatorMock).reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
         // Verify that the local card edit dialog was NOT shown.
