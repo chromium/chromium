@@ -255,6 +255,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private MultiInstanceManager mMultiInstanceManager;
     private View mToolbarContainerView;
     private StripLayoutTab mActiveClickedTab;
+    private TabDropTarget mTabDropTarget;
 
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
@@ -436,6 +437,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      */
     public void destroy() {
         mStripTabEventHandler.removeCallbacksAndMessages(null);
+        mTabDropTarget = null;
     }
 
     /**
@@ -3130,12 +3132,18 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return mActiveClickedTab;
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    TabDropTarget getTabDropTarget() {
+        return mTabDropTarget;
+    }
+
     protected void prepareForDragDrop() {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
         if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
 
+        mTabDropTarget = new TabDropTarget();
         TabDragSource.getInstance().prepareForDragDrop(
-                mToolbarContainerView, mMultiInstanceManager);
+                mToolbarContainerView, mMultiInstanceManager, mTabDropTarget);
     }
 
     @VisibleForTesting

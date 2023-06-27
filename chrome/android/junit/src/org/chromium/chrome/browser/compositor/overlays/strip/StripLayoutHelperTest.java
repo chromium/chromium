@@ -2389,9 +2389,30 @@ public class StripLayoutHelperTest {
 
         // Act and verify.
         mStripLayoutHelper.prepareForDragDrop();
-        verify(mTabDragSource, atLeastOnce()).prepareForDragDrop(any(), any());
+        verify(mTabDragSource, atLeastOnce()).prepareForDragDrop(any(), any(), any());
 
         // Windup
+        clearTabDragSourceMock();
+    }
+
+    @Test
+    @Feature(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @Config(sdk = 31)
+    public void testDrag_TabDropTargetCleared_success() {
+        // Setup with 5 tabs and select tab 3.
+        setTabDragSourceMock();
+        initializeTest(false, false, 3);
+
+        // Act and verify.
+        assertTrue("Tab Drop Target should not exist before prepareForDragDrop.",
+                mStripLayoutHelper.getTabDropTarget() == null);
+        mStripLayoutHelper.prepareForDragDrop();
+        assertTrue("Tab Drop Target should exist after prepareForDragDrop.",
+                mStripLayoutHelper.getTabDropTarget() != null);
+        mStripLayoutHelper.destroy();
+        assertTrue("Tab Drop Target should be cleared on StripLayout cleanup.",
+                mStripLayoutHelper.getTabDropTarget() == null);
+
         clearTabDragSourceMock();
     }
 }

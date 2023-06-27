@@ -122,7 +122,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                 (instanceInfo) -> moveTabAction(instanceInfo, tab), getInstanceInfo());
     }
 
-    private void moveTabAction(InstanceInfo info, Tab tab) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void moveTabAction(InstanceInfo info, Tab tab) {
         Activity targetActivity = getActivityById(info.instanceId);
         if (targetActivity != null) {
             reparentTabToRunningActivity((ChromeTabbedActivity) targetActivity, tab);
@@ -722,5 +723,30 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             // from the exiting window.
             openNewWindow("Android.WindowManager.NewWindow");
         }
+    }
+
+    /**
+     * Move the specified tab to the current instance of the ChromeTabbedActivity window.
+     * @param tab Tab that is to be moved to the current instance.
+     */
+    @Override
+    public void moveTabToCurrentWindow(Tab tab) {
+        if (!ChromeFeatureList.sTabDragDropAndroid.isEnabled()) return;
+
+        // Get the current instance and move tab there.
+        InstanceInfo info = getCurrentInstanceInfo();
+        moveTabAction(info, tab);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    InstanceInfo getCurrentInstanceInfo() {
+        List<InstanceInfo> allInstances = getInstanceInfo();
+        for (InstanceInfo instanceInfo : allInstances) {
+            if (instanceInfo.type == InstanceInfo.Type.CURRENT) {
+                return instanceInfo;
+            }
+        }
+        assert false;
+        return null;
     }
 }
