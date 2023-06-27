@@ -43,6 +43,9 @@ enum class CredentialPhishedStatus {
   kSiteMarkedAsLegitimate = 1,
   kMaxValue = kSiteMarkedAsLegitimate,
 };
-}
+
+// Product Specific (String) Data field name for page load tokens.
+extern const char kUserActivityId[];
+}  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_SAFEBROWSING_CONSTANTS_H_

@@ -16,13 +16,10 @@ class ChromeSafeBrowsingHatsDelegate : public SafeBrowsingHatsDelegate {
   ChromeSafeBrowsingHatsDelegate();
   explicit ChromeSafeBrowsingHatsDelegate(HatsService* hats_service);
 
-  void LaunchSurvey(
-      const std::string& trigger,
-      base::OnceClosure success_callback,
-      base::OnceClosure failure_callback,
-      const std::map<std::string, bool>& product_specific_bits_data = {},
-      const std::map<std::string, std::string>& product_specific_string_data =
-          {}) override;
+  void LaunchRedWarningSurvey(base::OnceClosure success_callback,
+                              base::OnceClosure failure_callback,
+                              const std::map<std::string, std::string>&
+                                  product_specific_string_data = {}) override;
 
  private:
   raw_ptr<HatsService> hats_service_;

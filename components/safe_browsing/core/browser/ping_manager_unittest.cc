@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "base/base64.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
@@ -15,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
+#include "components/safe_browsing/core/browser/safe_browsing_hats_delegate.h"
 #include "components/safe_browsing/core/browser/test_safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "google_apis/google_api_keys.h"
@@ -32,6 +34,13 @@ using ::testing::_;
 
 namespace safe_browsing {
 
+class MockSafeBrowsingHatsDelegate : public SafeBrowsingHatsDelegate {
+ public:
+  MOCK_METHOD3(LaunchRedWarningSurvey,
+               void(base::OnceClosure,
+                    base::OnceClosure,
+                    const SurveyStringData&));
+};
 class MockWebUIDelegate : public PingManager::WebUIDelegate {
  public:
   MOCK_METHOD1(AddToCSBRRsSent,
@@ -48,7 +57,8 @@ class PingManagerTest : public testing::Test {
       bool expect_access_token,
       absl::optional<ChromeUserPopulation> expected_user_population,
       absl::optional<std::string> expected_page_load_token_value,
-      bool expect_cookies_removed);
+      bool expect_cookies_removed,
+      bool expect_red_warning_survey = false);
   PingManager* ping_manager();
   void SetNewPingManager(
       absl::optional<base::RepeatingCallback<bool()>>
@@ -58,7 +68,8 @@ class PingManagerTest : public testing::Test {
       absl::optional<
           base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>>
           get_page_load_token_callback);
-  void SetUpFeatureList(bool should_enable_remove_cookies);
+  void SetUpFeatureList(bool should_enable_remove_cookies,
+                        bool should_enable_red_warning_survey = false);
 
   base::test::TaskEnvironment task_environment_;
   std::string key_param_;
@@ -67,9 +78,11 @@ class PingManagerTest : public testing::Test {
 
  private:
   TestSafeBrowsingTokenFetcher* SetUpTokenFetcher();
+  MockSafeBrowsingHatsDelegate* SetUpHatsDelegate();
 
   std::unique_ptr<PingManager> ping_manager_;
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<MockSafeBrowsingHatsDelegate> hats_delegate_;
 };
 
 void PingManagerTest::SetUp() {
@@ -107,14 +120,21 @@ void PingManagerTest::SetNewPingManager(
       get_page_load_token_callback.value_or(base::NullCallback()), nullptr));
 }
 
-void PingManagerTest::SetUpFeatureList(bool should_enable_remove_cookies) {
+void PingManagerTest::SetUpFeatureList(bool should_enable_remove_cookies,
+                                       bool should_enable_red_warning_survey) {
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
   if (should_enable_remove_cookies) {
-    feature_list_.InitAndEnableFeature(
-        kSafeBrowsingRemoveCookiesInAuthRequests);
+    enabled_features.push_back(kSafeBrowsingRemoveCookiesInAuthRequests);
   } else {
-    feature_list_.InitAndDisableFeature(
-        kSafeBrowsingRemoveCookiesInAuthRequests);
+    disabled_features.push_back(kSafeBrowsingRemoveCookiesInAuthRequests);
   }
+  if (should_enable_red_warning_survey) {
+    enabled_features.push_back(kRedWarningSurvey);
+  } else {
+    disabled_features.push_back(kRedWarningSurvey);
+  }
+  feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 TestSafeBrowsingTokenFetcher* PingManagerTest::SetUpTokenFetcher() {
@@ -124,14 +144,23 @@ TestSafeBrowsingTokenFetcher* PingManagerTest::SetUpTokenFetcher() {
   return raw_token_fetcher;
 }
 
+MockSafeBrowsingHatsDelegate* PingManagerTest::SetUpHatsDelegate() {
+  auto hats_delegate = std::make_unique<MockSafeBrowsingHatsDelegate>();
+  auto* raw_hats_delegate = hats_delegate.get();
+  ping_manager()->SetHatsDelegateForTesting(std::move(hats_delegate));
+  return raw_hats_delegate;
+}
+
 void PingManagerTest::RunReportThreatDetailsTest(
     absl::optional<bool> attach_default_data,
     bool expect_access_token,
     absl::optional<ChromeUserPopulation> expected_user_population,
     absl::optional<std::string> expected_page_load_token_value,
-    bool expect_cookies_removed) {
+    bool expect_cookies_removed,
+    bool expect_red_warning_survey) {
   base::HistogramTester histogram_tester;
   TestSafeBrowsingTokenFetcher* raw_token_fetcher = SetUpTokenFetcher();
+  MockSafeBrowsingHatsDelegate* raw_hats_delegate = SetUpHatsDelegate();
 
   std::string input_report_content;
   std::unique_ptr<ClientSafeBrowsingReportRequest> report =
@@ -182,6 +211,8 @@ void PingManagerTest::RunReportThreatDetailsTest(
           &test_url_loader_factory));
 
   EXPECT_CALL(*webui_delegate_.get(), AddToCSBRRsSent(_)).Times(1);
+  EXPECT_CALL(*raw_hats_delegate, LaunchRedWarningSurvey(_, _, _))
+      .Times(expect_red_warning_survey ? 1 : 0);
   PingManager::ReportThreatDetailsResult result =
       attach_default_data.has_value()
           ? ping_manager()->ReportThreatDetails(std::move(report),
@@ -510,6 +541,20 @@ TEST_F(PingManagerTest, ReportThreatDetailsWithUserPopulation) {
                              /*expected_user_population=*/population,
                              /*expected_page_load_token_value=*/absl::nullopt,
                              /*expect_cookies_removed=*/false);
+}
+TEST_F(PingManagerTest, ReportThreatDetailsWithRedWarningSurveyEnabled) {
+  SetNewPingManager(
+      /*get_should_fetch_access_token=*/absl::nullopt,
+      /*get_user_population_callback=*/absl::nullopt,
+      /*get_page_load_token_callback=*/absl::nullopt);
+  SetUpFeatureList(/*should_enable_remove_cookies=*/false,
+                   /*should_enable_red_warning_survey=*/true);
+  RunReportThreatDetailsTest(/*attach_default_data=*/absl::nullopt,
+                             /*expect_access_token=*/false,
+                             /*expected_user_population=*/absl::nullopt,
+                             /*expected_page_load_token_value=*/absl::nullopt,
+                             /*expect_cookies_removed=*/false,
+                             /*expect_red_warning_survey=*/true);
 }
 TEST_F(PingManagerTest, ReportThreatDetailsWithPageLoadToken) {
   base::HistogramTester histogram_tester;

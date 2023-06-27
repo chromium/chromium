@@ -106,6 +106,8 @@ class PingManager : public KeyedService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   void SetTokenFetcherForTesting(
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher);
+  void SetHatsDelegateForTesting(
+      std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate);
 
   // Helper function to return a weak pointer.
   base::WeakPtr<PingManager> GetWeakPtr();

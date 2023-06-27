@@ -14,18 +14,16 @@ ChromeSafeBrowsingHatsDelegate::ChromeSafeBrowsingHatsDelegate(
     HatsService* hats_service)
     : hats_service_(hats_service) {}
 
-void ChromeSafeBrowsingHatsDelegate::LaunchSurvey(
-    const std::string& trigger,
+void ChromeSafeBrowsingHatsDelegate::LaunchRedWarningSurvey(
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
-    const std::map<std::string, bool>& product_specific_bits_data,
     const std::map<std::string, std::string>& product_specific_string_data) {
   if (!hats_service_) {
     return;
   }
   hats_service_->LaunchSurvey(
-      trigger, std::move(success_callback), std::move(failure_callback),
-      product_specific_bits_data, product_specific_string_data);
+      kHatsSurveyTriggerRedWarning, std::move(success_callback),
+      std::move(failure_callback), {}, product_specific_string_data);
 }
 
 }  // namespace safe_browsing

@@ -334,5 +334,20 @@ extern const base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB;
 
 BASE_DECLARE_FEATURE(kClientSideDetectionModelImageEmbedder);
 
+// Enables HaTS surveys for users encountering red warnings.
+BASE_DECLARE_FEATURE(kRedWarningSurvey);
+
+// Specifies the HaTS survey's identifier.
+extern const base::FeatureParam<std::string> kRedWarningSurveyTriggerId;
+
+// Specifies which CSBRR report types (and thus, red warning types) we want to
+// show HaTS surveys for.
+extern const base::FeatureParam<std::string> kRedWarningSurveyReportTypeFilter;
+
+// Specifies whether we want to show HaTS surveys based on if the user bypassed
+// the warning or not. Note: specifying any combination of TRUE and FALSE
+// corresponds to "don't care."
+extern const base::FeatureParam<std::string> kRedWarningSurveyDidProceedFilter;
+
 }  // namespace safe_browsing
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_FEATURES_H_

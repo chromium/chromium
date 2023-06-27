@@ -12,6 +12,7 @@ source_set("browser") {
     "hash_realtime_mechanism.h",
     "ping_manager.cc",
     "ping_manager.h",
+    "safe_browsing_hats_delegate.cc",
     "safe_browsing_hats_delegate.h",
     "safe_browsing_lookup_mechanism.cc",
     "safe_browsing_lookup_mechanism.h",
@@ -217,6 +218,16 @@ source_set("token_fetcher_testing_helper") {
     ":token_fetcher",
     "//base",
     "//testing/gmock",
+  ]
+}
+
+source_set("safe_browsing_hats_delegate_unittest") {
+  testonly = true
+  sources = [ "safe_browsing_hats_delegate_unittest.cc" ]
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//testing/gtest",
   ]
 }
 

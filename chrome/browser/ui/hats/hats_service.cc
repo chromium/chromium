@@ -35,6 +35,8 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -61,6 +63,7 @@ constexpr char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[] =
 constexpr char kHatsSurveyTriggerPermissionsPrompt[] = "permissions-prompt";
 constexpr char kHatsSurveyTriggerPrivacyGuide[] = "privacy-guide";
 constexpr char kHatsSurveyTriggerPrivacySandbox[] = "privacy-sandbox";
+constexpr char kHatsSurveyTriggerRedWarning[] = "red-warning";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
 constexpr char kHatsSurveyTriggerTesting[] = "testing";
@@ -410,6 +413,13 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
       &performance_manager::features::
           kPerformanceControlsBatterySaverOptOutSurvey,
       kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut);
+
+  // Red Warning surveys.
+  survey_configs.emplace_back(
+      &safe_browsing::kRedWarningSurvey, kHatsSurveyTriggerRedWarning,
+      safe_browsing::kRedWarningSurveyTriggerId.Get(),
+      std::vector<std::string>{},
+      std::vector<std::string>{safe_browsing::kUserActivityId});
 
   return survey_configs;
 }

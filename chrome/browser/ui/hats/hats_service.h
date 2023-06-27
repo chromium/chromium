@@ -50,6 +50,7 @@ extern const char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[];
 extern const char kHatsSurveyTriggerPermissionsPrompt[];
 extern const char kHatsSurveyTriggerPrivacyGuide[];
 extern const char kHatsSurveyTriggerPrivacySandbox[];
+extern const char kHatsSurveyTriggerRedWarning[];
 extern const char kHatsSurveyTriggerSettings[];
 extern const char kHatsSurveyTriggerSettingsPrivacy[];
 extern const char kHatsSurveyTriggerTesting[];
