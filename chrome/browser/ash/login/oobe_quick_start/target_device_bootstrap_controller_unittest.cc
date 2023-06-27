@@ -145,7 +145,8 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
   FakeNearbyConnectionsManager fake_nearby_connections_manager_;
   std::unique_ptr<FakeObserver> fake_observer_;
   raw_ptr<MockAuthBroker> auth_broker_;
-  FakeAccessibilityManagerWrapper* fake_accessibility_manager_ = nullptr;
+  raw_ptr<FakeAccessibilityManagerWrapper, ExperimentalAsh>
+      fake_accessibility_manager_ = nullptr;
   std::unique_ptr<TargetDeviceBootstrapController> bootstrap_controller_;
   ScopedTestingLocalState local_state_;
 };

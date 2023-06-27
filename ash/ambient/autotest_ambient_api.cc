@@ -20,6 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -106,7 +107,7 @@ struct VideoPlaybackStatusTestParams {
   base::OnceClosure on_complete;
   base::OnceCallback<void(std::string)> on_error;
   // Never null. Points to default clock if a testing clock was not provided.
-  const base::TickClock* tick_clock;
+  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock;
 };
 
 void ScheduleVideoPlaybackStatusCheck(VideoPlaybackStatusTestParams params);

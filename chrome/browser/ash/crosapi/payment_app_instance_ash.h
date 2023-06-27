@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/payments/mojom/payment_app_types.mojom.h"
@@ -50,7 +51,8 @@ class PaymentAppInstanceAsh
       arc::ArcPaymentAppBridge* payment_app_service);
 
  private:
-  arc::ArcPaymentAppBridge* payment_app_service_ = nullptr;
+  raw_ptr<arc::ArcPaymentAppBridge, ExperimentalAsh> payment_app_service_ =
+      nullptr;
   mojo::ReceiverSet<chromeos::payments::mojom::PaymentAppInstance> receivers_;
   SEQUENCE_CHECKER(sequence_checker_);
 };

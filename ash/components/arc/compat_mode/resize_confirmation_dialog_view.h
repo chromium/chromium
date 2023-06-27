@@ -74,7 +74,7 @@ class ResizeConfirmationDialogView : public views::BoxLayoutView {
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #addr-of
   RAW_PTR_EXCLUSION views::Checkbox* do_not_ask_checkbox_{nullptr};
-  ash::Checkbox* do_not_ask_checkbox_jelly_{nullptr};
+  raw_ptr<ash::Checkbox, ExperimentalAsh> do_not_ask_checkbox_jelly_{nullptr};
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #addr-of
   RAW_PTR_EXCLUSION views::LabelButton* accept_button_{nullptr};

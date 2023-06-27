@@ -7,6 +7,7 @@
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -55,7 +56,7 @@ class AppServicePromiseAppItemBrowserTest
   apps::PromiseAppRegistryCache* cache() { return cache_; }
 
  private:
-  apps::PromiseAppRegistryCache* cache_;
+  raw_ptr<apps::PromiseAppRegistryCache, ExperimentalAsh> cache_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

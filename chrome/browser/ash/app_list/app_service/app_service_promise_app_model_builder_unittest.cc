@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -120,7 +121,7 @@ class AppServicePromiseAppModelBuilderTest : public app_list::AppListTestBase {
   display::test::TestScreen test_screen_;
   std::unique_ptr<Profile> profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  apps::PromiseAppRegistryCache* cache_;
+  raw_ptr<apps::PromiseAppRegistryCache, ExperimentalAsh> cache_;
   syncer::StringOrdinal last_position_;
   base::WeakPtrFactory<AppServicePromiseAppModelBuilderTest> weak_ptr_factory_{
       this};

@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 
@@ -54,14 +55,15 @@ class VirtualTrackpadView : public views::View {
   ASH_EXPORT views::View* GetTrackpadViewForTesting();
 
   // Owned by views hierarchy.
-  views::BoxLayoutView* finger_buttons_panel_;
+  raw_ptr<views::BoxLayoutView, ExperimentalAsh> finger_buttons_panel_;
 
   // Keeps track of each `LabelButton` that is housed inside
   // `finger_buttons_panel_`. The key represents the number of fingers that the
   // `LabelButton` activates for future gestures. This map is ultimately used to
   // highlight the active button with a different color.
   base::flat_map<int, views::LabelButton*> finger_buttons_;
-  TrackpadInternalSurfaceView* trackpad_view_ = nullptr;
+  raw_ptr<TrackpadInternalSurfaceView, ExperimentalAsh> trackpad_view_ =
+      nullptr;
 };
 
 }  // namespace ash

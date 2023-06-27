@@ -61,7 +61,7 @@ class AuthHubTest : public LoginManagerTest {
 
  protected:
   MockAuthAttemptConsumer attempt_consumer_;
-  AuthHubConnector* connector_;
+  raw_ptr<AuthHubConnector, DanglingUntriaged | ExperimentalAsh> connector_;
   MockAuthFactorStatusConsumer status_consumer_;
   absl::optional<AuthProofToken> auth_token_;
 

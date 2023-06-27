@@ -7,6 +7,7 @@
 #include <memory>
 #include <sstream>
 
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
@@ -381,7 +382,8 @@ class FakePendingBleListenerConnectionRequestFactory
     return instance;
   }
 
-  ClientConnectionParameters* expected_client_connection_parameters_ = nullptr;
+  raw_ptr<ClientConnectionParameters, DanglingUntriaged | ExperimentalAsh>
+      expected_client_connection_parameters_ = nullptr;
   absl::optional<ConnectionPriority> expected_connection_priority_;
 
   // This field is not a raw_ptr<> because it was filtered by the rewriter

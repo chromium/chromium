@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 class PrefChangeRegistrar;
@@ -56,7 +57,7 @@ class AutoclickTestUtils {
   void OnFocusRingChanged();
   base::WeakPtr<AutoclickTestUtils> GetWeakPtr();
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   base::OnceClosure pref_change_waiter_;

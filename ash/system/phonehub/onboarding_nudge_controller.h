@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ash {
 
@@ -31,7 +32,7 @@ class ASH_EXPORT OnboardingNudgeController {
   void MaybeRecordNudgeAction();
 
  private:
-  PhoneHubTray* phone_hub_tray_;
+  raw_ptr<PhoneHubTray, ExperimentalAsh> phone_hub_tray_;
   base::RepeatingClosure stop_animation_callback_;
   base::RepeatingClosure start_animation_callback_;
 };

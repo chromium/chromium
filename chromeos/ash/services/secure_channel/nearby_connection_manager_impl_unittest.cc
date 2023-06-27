@@ -111,8 +111,13 @@ class FakeAuthenticatedChannelFactory
     return instance;
   }
 
-  FakeSecureChannelConnection* expected_fake_secure_channel_ = nullptr;
-  FakeAuthenticatedChannel* last_created_instance_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeSecureChannelConnection* expected_fake_secure_channel_ =
+      nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakeAuthenticatedChannel* last_created_instance_ = nullptr;
 };
 
 }  // namespace

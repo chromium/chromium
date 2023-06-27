@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -228,8 +229,8 @@ class OnNotificationClickedTest
                                    ash::SystemWebAppType::FILE_MANAGER);
   }
 
-  NotificationDisplayServiceImpl* display_service_;
-  TestNotificationPlatformBridgeDelegator* bridge_;
+  raw_ptr<NotificationDisplayServiceImpl, ExperimentalAsh> display_service_;
+  raw_ptr<TestNotificationPlatformBridgeDelegator, ExperimentalAsh> bridge_;
   std::unique_ptr<MockFilesPolicyDialogFactory> factory_;
 };
 
