@@ -61,6 +61,7 @@ source_set("bottom_sheet_ui") {
     "//components/password_manager/ios",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/shared/ui/bottom_sheet",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/ui/settings/password:title_view",

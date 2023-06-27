@@ -31,5 +31,5 @@ source_set("bottom_sheet_ui") {
     "payments_suggestion_bottom_sheet_view_controller.h",
     "payments_suggestion_bottom_sheet_view_controller.mm",
   ]
-  deps = [ "//ios/chrome/common/ui/confirmation_alert" ]
+  deps = [ "//ios/chrome/browser/shared/ui/bottom_sheet" ]
 }
