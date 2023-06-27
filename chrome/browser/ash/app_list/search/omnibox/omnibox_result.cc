@@ -130,27 +130,16 @@ OmniboxResult::~OmniboxResult() {
 void OmniboxResult::UpdateRelevance() {
   double normalized_autocomplete_relevance =
       search_result_->relevance / kMaxOmniboxScore;
-  bool fuzzy_match_cutoff_enabled = base::GetFieldTrialParamByFeatureAsBool(
-      search_features::kLauncherFuzzyMatchForOmnibox, "enable_cutoff", false);
-  bool fuzzy_match_relevance_enabled = base::GetFieldTrialParamByFeatureAsBool(
-      search_features::kLauncherFuzzyMatchForOmnibox, "enable_relevance",
-      false);
 
-  if (!fuzzy_match_cutoff_enabled && !fuzzy_match_relevance_enabled) {
-    // Derive relevance from autocomplete relevance and normalize it to [0, 1].
-    set_relevance(normalized_autocomplete_relevance);
-    return;
-  }
-
-  double title_relevance = CalculateTitleRelevance();
-  if (fuzzy_match_cutoff_enabled) {
+  if (search_features::isLauncherFuzzyMatchForOmniboxEnabled()) {
+    double title_relevance = CalculateTitleRelevance();
     if (title_relevance < kRelevanceThreshold) {
       scoring().set_filtered(true);
     }
-    set_relevance(normalized_autocomplete_relevance);
-  } else {
-    set_relevance((normalized_autocomplete_relevance + title_relevance) / 2);
   }
+
+  // Derive relevance from autocomplete relevance and normalize it to [0, 1].
+  set_relevance(normalized_autocomplete_relevance);
 }
 
 double OmniboxResult::CalculateTitleRelevance() const {
