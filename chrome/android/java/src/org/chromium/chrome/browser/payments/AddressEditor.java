@@ -16,7 +16,6 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDIT
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FORM_VALID;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.CUSTOM_ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.INVALID_ERROR_MESSAGE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_FULL_LINE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.REQUIRED_ERROR_MESSAGE;
@@ -57,10 +56,10 @@ import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.editors.EditorBase;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogViewBinder;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorFieldValidator;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType;
 import org.chromium.payments.mojom.AddressErrors;
 import org.chromium.ui.modelutil.ListModel;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -222,7 +221,6 @@ public class AddressEditor
                                     mContext.getString(R.string.autofill_profile_editor_country))
                             .with(DROPDOWN_KEY_VALUE_LIST,
                                     AutofillProfileBridge.getSupportedCountries())
-                            .with(IS_FULL_LINE, true)
                             .build();
         }
 
@@ -310,7 +308,6 @@ public class AddressEditor
                             .with(INVALID_ERROR_MESSAGE,
                                     mContext.getString(
                                             R.string.payments_phone_invalid_validation_message))
-                            .with(IS_FULL_LINE, true)
                             .build();
         }
 
@@ -561,12 +558,12 @@ public class AddressEditor
      * the profile that's being edited.
      */
     private void addAddressFieldsToEditor(String countryCode, String languageCode) {
-        ListModel<ListItem> editorFields = new ListModel<>();
+        ListModel<FieldItem> editorFields = new ListModel<>();
         mAddressUiComponents = mAutofillProfileBridge.getAddressUiComponents(
                 countryCode, languageCode, AddressValidationType.PAYMENT_REQUEST);
         // In terms of order, country must be the first field.
         mCountryField.set(CUSTOM_ERROR_MESSAGE, getAddressError(AddressField.COUNTRY));
-        editorFields.add(new ListItem(DROPDOWN, mCountryField));
+        editorFields.add(new FieldItem(DROPDOWN, mCountryField, /*isFullLine=*/true));
         for (int i = 0; i < mAddressUiComponents.size(); i++) {
             AddressUiComponent component = mAddressUiComponents.get(i);
 
@@ -583,9 +580,6 @@ public class AddressEditor
             // Labels depend on country, e.g., state is called province in some countries. These are
             // already localized.
             field.set(LABEL, component.label);
-            field.set(IS_FULL_LINE,
-                    component.isFullLine || component.id == AddressField.LOCALITY
-                            || component.id == AddressField.DEPENDENT_LOCALITY);
 
             // Libaddressinput formats do not always require the full name (RECIPIENT), but
             // PaymentRequest does.
@@ -597,11 +591,13 @@ public class AddressEditor
             }
 
             field.set(CUSTOM_ERROR_MESSAGE, getAddressError(component.id));
-            editorFields.add(new ListItem(fieldType, field));
+            boolean isFullLine = component.isFullLine || component.id == AddressField.LOCALITY
+                    || component.id == AddressField.DEPENDENT_LOCALITY;
+            editorFields.add(new FieldItem(fieldType, field, isFullLine));
         }
         // Phone number (and email if applicable) are the last fields of the address.
         mPhoneField.set(CUSTOM_ERROR_MESSAGE, mAddressErrors != null ? mAddressErrors.phone : null);
-        editorFields.add(new ListItem(TEXT_INPUT, mPhoneField));
+        editorFields.add(new FieldItem(TEXT_INPUT, mPhoneField, /*isFullLine=*/true));
         mEditorModel.set(EDITOR_FIELDS, editorFields);
     }
 

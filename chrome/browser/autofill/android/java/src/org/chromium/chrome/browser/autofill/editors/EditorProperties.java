@@ -37,6 +37,22 @@ import java.util.stream.Stream;
  * Properties defined here reflect the visible state of the {@link EditorDialog}.
  */
 public class EditorProperties {
+    /**
+     * Contains information needed by {@link EditorDialogView} to display fields.
+     */
+    public static class FieldItem extends ListItem {
+        public final boolean isFullLine;
+
+        public FieldItem(int type, PropertyModel model) {
+            this(type, model, /*isFullLine=*/false);
+        }
+
+        public FieldItem(int type, PropertyModel model, boolean isFullLine) {
+            super(type, model);
+            this.isFullLine = isFullLine;
+        }
+    }
+
     public static final PropertyModel.ReadableObjectPropertyKey<String> EDITOR_TITLE =
             new PropertyModel.ReadableObjectPropertyKey<>("editor_title");
     public static final PropertyModel.ReadableObjectPropertyKey<String> CUSTOM_DONE_BUTTON_TEXT =
@@ -50,7 +66,8 @@ public class EditorProperties {
     public static final PropertyModel.ReadableBooleanPropertyKey SHOW_REQUIRED_INDICATOR =
             new PropertyModel.ReadableBooleanPropertyKey("show_required_indicator");
 
-    public static final PropertyModel.WritableObjectPropertyKey<ListModel<ListItem>> EDITOR_FIELDS =
+    public static final PropertyModel
+            .WritableObjectPropertyKey<ListModel<FieldItem>> EDITOR_FIELDS =
             new PropertyModel.WritableObjectPropertyKey<>("editor_fields");
 
     public static final PropertyModel.ReadableObjectPropertyKey<Runnable> DONE_RUNNABLE =
@@ -175,14 +192,11 @@ public class EditorProperties {
                 new PropertyModel.ReadableObjectPropertyKey<>("invalid_error_message");
         public static final PropertyModel.WritableObjectPropertyKey<String> CUSTOM_ERROR_MESSAGE =
                 new PropertyModel.WritableObjectPropertyKey<>("custom_error_message");
-        public static final PropertyModel.WritableBooleanPropertyKey IS_FULL_LINE =
-                new PropertyModel.WritableBooleanPropertyKey("is_full_line");
         public static final PropertyModel.WritableObjectPropertyKey<String> VALUE =
                 new PropertyModel.WritableObjectPropertyKey<>("value");
 
         public static final PropertyKey[] FIELD_ALL_KEYS = {LABEL, VALIDATOR, IS_REQUIRED,
-                REQUIRED_ERROR_MESSAGE, INVALID_ERROR_MESSAGE, CUSTOM_ERROR_MESSAGE, IS_FULL_LINE,
-                VALUE};
+                REQUIRED_ERROR_MESSAGE, INVALID_ERROR_MESSAGE, CUSTOM_ERROR_MESSAGE, VALUE};
     }
 
     /**

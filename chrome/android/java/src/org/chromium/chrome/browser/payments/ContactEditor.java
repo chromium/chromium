@@ -12,7 +12,6 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDIT
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FORM_VALID;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.CUSTOM_ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.INVALID_ERROR_MESSAGE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_FULL_LINE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.REQUIRED_ERROR_MESSAGE;
@@ -45,9 +44,9 @@ import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.editors.EditorBase;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogViewBinder;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorFieldValidator;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.payments.mojom.PayerErrors;
 import org.chromium.ui.modelutil.ListModel;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -233,7 +232,6 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                                           mContext.getString(
                                                   R.string.pref_edit_dialog_field_required_validation_message))
                                   .with(CUSTOM_ERROR_MESSAGE, nameCustomErrorMessage)
-                                  .with(IS_FULL_LINE, true)
                                   .with(VALUE, mContact.getPayerName())
                                   .build()
                         : null);
@@ -257,7 +255,6 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                                           mContext.getString(
                                                   R.string.payments_phone_invalid_validation_message))
                                   .with(CUSTOM_ERROR_MESSAGE, phoneCustomErrorMessage)
-                                  .with(IS_FULL_LINE, true)
                                   .with(VALUE, mContact.getPayerPhone())
                                   .build()
                         : null);
@@ -279,7 +276,6 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                                           mContext.getString(
                                                   R.string.payments_email_invalid_validation_message))
                                   .with(CUSTOM_ERROR_MESSAGE, emailCustomErrorMessage)
-                                  .with(IS_FULL_LINE, true)
                                   .with(VALUE, mContact.getPayerEmail())
                                   .build()
                         : null);
@@ -288,15 +284,15 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                 ? mContext.getString(R.string.payments_add_contact_details_label)
                 : toEdit.getEditTitle();
 
-        ListModel<ListItem> editorFields = new ListModel<>();
+        ListModel<FieldItem> editorFields = new ListModel<>();
         if (mNameField.isPresent()) {
-            editorFields.add(new ListItem(TEXT_INPUT, mNameField.get()));
+            editorFields.add(new FieldItem(TEXT_INPUT, mNameField.get(), /*isFullLine=*/true));
         }
         if (mPhoneField.isPresent()) {
-            editorFields.add(new ListItem(TEXT_INPUT, mPhoneField.get()));
+            editorFields.add(new FieldItem(TEXT_INPUT, mPhoneField.get(), /*isFullLine=*/true));
         }
         if (mEmailField.isPresent()) {
-            editorFields.add(new ListItem(TEXT_INPUT, mEmailField.get()));
+            editorFields.add(new FieldItem(TEXT_INPUT, mEmailField.get(), /*isFullLine=*/true));
         }
 
         mEditorModel = new PropertyModel.Builder(ALL_KEYS)

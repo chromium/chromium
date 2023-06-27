@@ -23,7 +23,6 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANC
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_FULL_LINE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
@@ -65,11 +64,11 @@ import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtilJni;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.ListModel;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -218,22 +217,22 @@ public class AddressEditorTest {
                         anyList(), anyList(), anyList());
     }
 
-    private static void validateTextField(ListItem fieldItem, String value,
+    private static void validateTextField(FieldItem fieldItem, String value,
             @TextInputType int textInputType, String label, boolean isRequired,
             boolean isFullLine) {
         assertEquals(TEXT_INPUT, fieldItem.type);
+        assertEquals(isFullLine, fieldItem.isFullLine);
 
         PropertyModel field = fieldItem.model;
         assertEquals(value, field.get(VALUE));
         assertEquals(textInputType, field.get(TEXT_INPUT_TYPE));
         assertEquals(label, field.get(LABEL));
         assertEquals(isRequired, field.get(IS_REQUIRED));
-        assertEquals(isFullLine, field.get(IS_FULL_LINE));
     }
 
     private void validateShownFields(PropertyModel editorModel, AutofillProfile profile) {
         assertNotNull(editorModel);
-        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
         // editorFields[0] - country dropdown.
         // editorFields[1] - full name field.
         // editorFields[2] - admin area field.
@@ -323,7 +322,7 @@ public class AddressEditorTest {
         mAddressEditor.edit(new AutofillAddress(mActivity, sProfile), unused -> {});
 
         assertNotNull(mAddressEditor.getEditorModelForTesting());
-        ListModel<ListItem> editorFields =
+        ListModel<FieldItem> editorFields =
                 mAddressEditor.getEditorModelForTesting().get(EDITOR_FIELDS);
         // Following values are set regardless of the UI components list
         // received from backend when nicknames are disabled:
@@ -331,11 +330,11 @@ public class AddressEditorTest {
         // editorFields[1] - phone field.
         assertEquals(2, editorFields.size());
 
-        ListItem countryDropdownItem = editorFields.get(0);
+        FieldItem countryDropdownItem = editorFields.get(0);
         assertEquals(countryDropdownItem.type, DROPDOWN);
+        assertTrue(countryDropdownItem.isFullLine);
 
         PropertyModel countryDropdown = countryDropdownItem.model;
-        assertTrue(countryDropdown.get(IS_FULL_LINE));
         assertEquals(countryDropdown.get(VALUE), AutofillAddress.getCountryCode(sProfile));
         assertEquals(countryDropdown.get(LABEL),
                 mActivity.getString(R.string.autofill_profile_editor_country));
@@ -370,7 +369,7 @@ public class AddressEditorTest {
         mAddressEditor.edit(new AutofillAddress(mActivity, sProfile), unused -> {});
 
         assertNotNull(mAddressEditor.getEditorModelForTesting());
-        ListModel<ListItem> editorFields =
+        ListModel<FieldItem> editorFields =
                 mAddressEditor.getEditorModelForTesting().get(EDITOR_FIELDS);
         // Following values are set regardless of the UI components list
         // received from backend when nicknames are disabled:
@@ -379,8 +378,9 @@ public class AddressEditorTest {
         // editorFields[2] - phone field.
         assertEquals(3, editorFields.size());
 
-        ListItem adminAreaDropdownItem = editorFields.get(1);
+        FieldItem adminAreaDropdownItem = editorFields.get(1);
         assertEquals(DROPDOWN, adminAreaDropdownItem.type);
+        assertTrue(adminAreaDropdownItem.isFullLine);
 
         PropertyModel adminAreaDropdown = adminAreaDropdownItem.model;
         List<DropdownKeyValue> adminAreas = List.of(new DropdownKeyValue("CA", "California"),
@@ -388,7 +388,6 @@ public class AddressEditorTest {
         assertThat(adminAreas,
                 containsInAnyOrder(adminAreaDropdown.get(DROPDOWN_KEY_VALUE_LIST).toArray()));
 
-        assertTrue(adminAreaDropdown.get(IS_FULL_LINE));
         assertEquals(adminAreaDropdown.get(VALUE), sProfile.getRegion());
         assertEquals(adminAreaDropdown.get(LABEL), "admin area label");
     }
@@ -451,7 +450,7 @@ public class AddressEditorTest {
         mAddressEditor.edit(null, unused -> {});
 
         assertNotNull(mAddressEditor.getEditorModelForTesting());
-        ListModel<ListItem> editorFields =
+        ListModel<FieldItem> editorFields =
                 mAddressEditor.getEditorModelForTesting().get(EDITOR_FIELDS);
 
         // editorFields[0] - country dropdown.
@@ -470,7 +469,7 @@ public class AddressEditorTest {
         PropertyModel countryDropdown = editorFields.get(0).model;
 
         setDropdownKey(countryDropdown, "DE");
-        ListModel<ListItem> editorFieldsGermany =
+        ListModel<FieldItem> editorFieldsGermany =
                 mAddressEditor.getEditorModelForTesting().get(EDITOR_FIELDS);
         // editorFields[0] - country dropdown.
         // editorFields[1] - street address field.
@@ -504,7 +503,7 @@ public class AddressEditorTest {
 
         PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         assertNotNull(editorModel);
-        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(10, editorFields.size());
 
         // Verify behaviour only on the relevant subset of fields.
@@ -535,7 +534,7 @@ public class AddressEditorTest {
 
         assertNotNull(mAddressEditor.getEditorModelForTesting());
         PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
-        ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(10, editorFields.size());
 
         // Verify behaviour only on the relevant subset of fields.

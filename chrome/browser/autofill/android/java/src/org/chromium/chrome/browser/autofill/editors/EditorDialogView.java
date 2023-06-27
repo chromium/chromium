@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_FULL_LINE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.isDropdownField;
@@ -39,6 +38,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -52,7 +52,6 @@ import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.ListModel;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -267,7 +266,7 @@ public class EditorDialogView
     }
 
     public void setEditorFields(
-            ListModel<ListItem> editorFields, boolean shouldShowRequiredIndicator) {
+            ListModel<FieldItem> editorFields, boolean shouldShowRequiredIndicator) {
         prepareEditor(editorFields, shouldShowRequiredIndicator);
     }
 
@@ -408,7 +407,7 @@ public class EditorDialogView
      *
      * @param editorFields the list of fields this editor should display.
      */
-    private void prepareEditor(ListModel<ListItem> editorFields, boolean showRequiredIndicator) {
+    private void prepareEditor(ListModel<FieldItem> editorFields, boolean showRequiredIndicator) {
         // Ensure the layout is empty.
         removeTextChangedListeners();
         mContentView.removeAllViews();
@@ -418,15 +417,15 @@ public class EditorDialogView
 
         // Add Views for each of the {@link EditorFields}.
         for (int i = 0; i < editorFields.size(); i++) {
-            ListItem fieldItem = editorFields.get(i);
-            ListItem nextFieldItem = null;
+            FieldItem fieldItem = editorFields.get(i);
+            FieldItem nextFieldItem = null;
 
             boolean isLastField = i == editorFields.size() - 1;
-            boolean useFullLine = fieldItem.model.get(IS_FULL_LINE);
+            boolean useFullLine = fieldItem.isFullLine;
             if (!isLastField && !useFullLine) {
                 // If the next field isn't full, stretch it out.
                 nextFieldItem = editorFields.get(i + 1);
-                if (nextFieldItem.model.get(IS_FULL_LINE)) useFullLine = true;
+                if (nextFieldItem.isFullLine) useFullLine = true;
             }
 
             // Always keep dropdowns and text fields on different lines because of height
@@ -494,7 +493,7 @@ public class EditorDialogView
     }
 
     private View addFieldViewToEditor(
-            ViewGroup parent, final ListItem fieldItem, boolean showRequiredIndicator) {
+            ViewGroup parent, final FieldItem fieldItem, boolean showRequiredIndicator) {
         View childView = null;
 
         switch (fieldItem.type) {
