@@ -45,6 +45,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Companion.FullLoad.Latency" units="ms"
+    expires_after="2023-10-20">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records the latency of Companion for full loads of the UI. Recorded once the
+    UI responds and reports the first element is shown.
+  </summary>
+</histogram>
+
 <histogram name="Companion.HasNavigatedToExpsSuccessPagePref.OnChanged"
     enum="Boolean" expires_after="2023-10-20">
   <owner>tbansal@chromium.org</owner>
@@ -72,6 +82,27 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether user is opted-in to various experiments. Recorded when the
     information is received from the companion backend.
+  </summary>
+</histogram>
+
+<histogram name="Companion.NavigationLoad.Latency" units="ms"
+    expires_after="2023-10-20">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records the latency of Companion for loads of the UI that are triggered by
+    navigation refreshes via PostMessages. Recorded once the UI responds and
+    reports the first element is shown.
+  </summary>
+</histogram>
+
+<histogram name="Companion.PHFeedback.Result" enum="Companion.PhFeedback"
+    expires_after="2023-10-20">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records the last PH feedback submitted by the user for the current page.
+    Recorded at the once the companion is reloaded or closed.
   </summary>
 </histogram>
 
