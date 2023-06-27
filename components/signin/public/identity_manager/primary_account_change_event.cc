@@ -94,9 +94,7 @@ std::ostream& operator<<(std::ostream& os,
                          const PrimaryAccountChangeEvent::State& state) {
   os << "{ primary_account: " << state.primary_account.account_id << ", "
      << "consent_level:"
-     << (state.primary_account.IsEmpty()                ? ""
-         : state.consent_level == ConsentLevel::kSignin ? " Signin"
-                                                        : " Sync")
+     << (state.consent_level == ConsentLevel::kSignin ? "NotRequired" : "Sync")
      << " }";
   return os;
 }

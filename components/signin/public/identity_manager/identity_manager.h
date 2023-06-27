@@ -60,7 +60,6 @@ class PrivacySandboxSettingsDelegate;
 namespace signin {
 
 struct AccountsInCookieJarInfo;
-struct AccountAvailabilityOptions;
 class IdentityManagerTest;
 class IdentityTestEnvironment;
 class DiagnosticsProvider;
@@ -447,6 +446,9 @@ class IdentityManager : public KeyedService,
 
  private:
   // These test helpers need to use some of the private methods below.
+  friend CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
+                                           const std::string& email,
+                                           ConsentLevel consent_level);
   friend void SetRefreshTokenForPrimaryAccount(
       IdentityManager* identity_manager,
       const std::string& token_value);
@@ -454,11 +456,19 @@ class IdentityManager : public KeyedService,
       IdentityManager* identity_manager);
   friend void RemoveRefreshTokenForPrimaryAccount(
       IdentityManager* identity_manager);
+  friend AccountInfo MakePrimaryAccountAvailable(
+      IdentityManager* identity_manager,
+      const std::string& email,
+      ConsentLevel consent_level);
   friend void RevokeSyncConsent(IdentityManager* identity_manager);
   friend void ClearPrimaryAccount(IdentityManager* identity_manager);
-  friend AccountInfo MakeAccountAvailable(
+  friend AccountInfo MakeAccountAvailable(IdentityManager* identity_manager,
+                                          const std::string& email);
+  friend AccountInfo MakeAccountAvailableWithCookies(
       IdentityManager* identity_manager,
-      const AccountAvailabilityOptions& options);
+      network::TestURLLoaderFactory* test_url_loader_factory,
+      const std::string& email,
+      const std::string& gaia_id);
   friend void SetRefreshTokenForAccount(IdentityManager* identity_manager,
                                         const CoreAccountId& account_id,
                                         const std::string& token_value);
