@@ -1726,7 +1726,10 @@ TEST_P(ThrottledBeginFrameCompositorFrameSinkSupportTest, BeginFrameInterval) {
   SurfaceId id(kAnotherArbitraryFrameSinkId, local_surface_id_);
   support->SetBeginFrameSource(&begin_frame_source);
   support->SetNeedsBeginFrame(true);
-  constexpr int fps = 5;
+
+  // We only throttle multiples of the refresh rate.
+  constexpr int fps = BeginFrameArgs::DefaultInterval().ToHz() / 2;
+
   constexpr base::TimeDelta throttled_interval = base::Seconds(1) / fps;
   support->ThrottleBeginFrame(throttled_interval);
 
@@ -1782,9 +1785,8 @@ TEST_P(ThrottledBeginFrameCompositorFrameSinkSupportTest, BeginFrameInterval) {
     }
     frame_time += interval;
   }
-  // In total 11 frames should have been sent (5fps x 2 seconds) + 1 frame at
-  // time 0.
-  EXPECT_EQ(sent_frames, 11);
+  // In total fps x 2 seconds + 1 frame at time 0.
+  EXPECT_EQ(sent_frames, 2 * fps + 1);
   support->SetNeedsBeginFrame(false);
 }
 
