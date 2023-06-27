@@ -6897,13 +6897,13 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="CQ.NumEntriesAvailable">
     <summary>
-      The number of child elements available within the CQ suface after
+      The number of child elements available within the CQ surface after
       eligibility check after text finder API. Clamped to a max value of 10.
     </summary>
   </metric>
   <metric name="CQ.NumEntriesShown">
     <summary>
-      The number of child elements actually shown within the CQ suface after
+      The number of child elements actually shown within the CQ surface after
       eligibility check through text finder API. Clamped to a max value of 10.
     </summary>
   </metric>
@@ -6930,13 +6930,13 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="PageEntities.NumEntriesAvailable">
     <summary>
-      The number of child elements available within the page entities suface.
+      The number of child elements available within the page entities surface.
       Clamped to a max value of 10.
     </summary>
   </metric>
   <metric name="PageEntities.NumEntriesShown">
     <summary>
-      The number of child elements shown within the page entities suface.
+      The number of child elements shown within the page entities surface.
       Clamped to a max value of 10.
     </summary>
   </metric>
@@ -6953,6 +6953,35 @@ be describing additional metrics about the same event.
   <metric name="PH.LastEvent" enum="Companion.UiEvent">
     <summary>
       The last event on the PH surface.
+    </summary>
+  </metric>
+  <metric name="PHResult.ClickPosition">
+    <summary>
+      The position of the PH element that was clicked with respect to its parent
+      list.
+    </summary>
+  </metric>
+  <metric name="PHResult.ComponentPosition">
+    <summary>
+      The position of the PH surface in the page.
+    </summary>
+  </metric>
+  <metric name="PHResult.LastEvent" enum="Companion.UiEvent">
+    <summary>
+      The last event on the PH surface.
+    </summary>
+  </metric>
+  <metric name="PHResult.NumEntriesAvailable">
+    <summary>
+      The number of child elements available within the PH surface, regardless
+      of text finder API results. Clamped to a max value of 10.
+    </summary>
+  </metric>
+  <metric name="PHResult.NumEntriesShown">
+    <summary>
+      The number of child elements within the PH surface that pass text finder
+      API elibigility check, this is the count bullet points that have jump
+      tags. Clamped to a max value of 10.
     </summary>
   </metric>
   <metric name="PromoEvent" enum="Companion.PromoEvent">
@@ -6983,13 +7012,13 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="RelQr.NumEntriesAvailable">
     <summary>
-      The number of child elements available within the RelQr suface. Clamped to
-      a max value of 10.
+      The number of child elements available within the RelQr surface. Clamped
+      to a max value of 10.
     </summary>
   </metric>
   <metric name="RelQr.NumEntriesShown">
     <summary>
-      The number of child elements shown within the RelQr suface. Clamped to a
+      The number of child elements shown within the RelQr surface. Clamped to a
       max value of 10.
     </summary>
   </metric>
@@ -7011,13 +7040,13 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="RelQs.NumEntriesAvailable">
     <summary>
-      The number of child elements available within the RelQs suface. Clamped to
-      a max value of 10.
+      The number of child elements available within the RelQs surface. Clamped
+      to a max value of 10.
     </summary>
   </metric>
   <metric name="RelQs.NumEntriesShown">
     <summary>
-      The number of child elements shown within the RelQs suface. Clamped to a
+      The number of child elements shown within the RelQs surface. Clamped to a
       max value of 10.
     </summary>
   </metric>
@@ -7044,13 +7073,13 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="VQ.NumEntriesAvailable">
     <summary>
-      The number of child elements available within the VQ suface. Clamped to a
+      The number of child elements available within the VQ surface. Clamped to a
       max value of 10.
     </summary>
   </metric>
   <metric name="VQ.NumEntriesShown">
     <summary>
-      The number of child elements shown within the VQ suface. Clamped to a max
+      The number of child elements shown within the VQ surface. Clamped to a max
       value of 10.
     </summary>
   </metric>
