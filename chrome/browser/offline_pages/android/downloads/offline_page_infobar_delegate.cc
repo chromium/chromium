@@ -34,10 +34,7 @@ OfflinePageInfoBarDelegate::OfflinePageInfoBarDelegate(
     : confirm_continuation_(std::move(confirm_continuation)),
       page_name_(page_name),
       page_to_download_(page_to_download),
-      duplicate_request_exists_(duplicate_request_exists) {
-  DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
-      true, DuplicateDownloadInfobarEvent::kShown);
-}
+      duplicate_request_exists_(duplicate_request_exists) {}
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 OfflinePageInfoBarDelegate::GetIdentifier() const {
@@ -52,14 +49,10 @@ bool OfflinePageInfoBarDelegate::EqualsDelegate(
 }
 
 bool OfflinePageInfoBarDelegate::Cancel() {
-  DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
-      true, DuplicateDownloadInfobarEvent::kCanceled);
   return true;
 }
 
 bool OfflinePageInfoBarDelegate::Accept() {
-  DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
-      true, DuplicateDownloadInfobarEvent::kAccepted);
   std::move(confirm_continuation_).Run();
   return true;
 }
@@ -90,9 +83,6 @@ OfflinePageInfoBarDelegate::AsOfflinePageInfoBarDelegate() {
   return this;
 }
 
-void OfflinePageInfoBarDelegate::InfoBarDismissed() {
-  DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
-      true, DuplicateDownloadInfobarEvent::kDismissed);
-}
+void OfflinePageInfoBarDelegate::InfoBarDismissed() {}
 
 }  // namespace offline_pages

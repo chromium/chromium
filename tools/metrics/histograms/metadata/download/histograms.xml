@@ -426,20 +426,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Download.DuplicateInfobarEvent.{Type}"
-    enum="DuplicateDownloadEvent" expires_after="2022-04-03">
-  <owner>qinmin@chromium.org</owner>
-  <owner>clank-downloads@chromium.org</owner>
-  <summary>
-    Records user interactions on the duplicate download infobar on Android,
-    either for a regular download or an offline page.
-  </summary>
-  <token key="Type">
-    <variant name="Download"/>
-    <variant name="OfflinePage"/>
-  </token>
-</histogram>
-
 <histogram name="Download.HttpResponseCode" enum="HttpResponseCode"
     expires_after="never">
 <!-- expires-never: Used to monitor download system health. -->

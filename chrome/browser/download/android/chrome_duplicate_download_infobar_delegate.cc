@@ -54,8 +54,6 @@ ChromeDuplicateDownloadInfoBarDelegate::ChromeDuplicateDownloadInfoBarDelegate(
       file_path_(file_path),
       file_selected_callback_(std::move(file_selected_callback)) {
   download_item_->AddObserver(this);
-  DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
-      false, DuplicateDownloadInfobarEvent::kShown);
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
@@ -64,8 +62,6 @@ ChromeDuplicateDownloadInfoBarDelegate::GetIdentifier() const {
 }
 
 bool ChromeDuplicateDownloadInfoBarDelegate::Accept() {
-  DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
-      false, DuplicateDownloadInfobarEvent::kAccepted);
   if (!download_item_) {
     return true;
   }
@@ -85,8 +81,6 @@ bool ChromeDuplicateDownloadInfoBarDelegate::Accept() {
 }
 
 bool ChromeDuplicateDownloadInfoBarDelegate::Cancel() {
-  DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
-      false, DuplicateDownloadInfobarEvent::kCanceled);
   if (!download_item_)
     return true;
 
@@ -100,8 +94,6 @@ std::string ChromeDuplicateDownloadInfoBarDelegate::GetFilePath() const {
 }
 
 void ChromeDuplicateDownloadInfoBarDelegate::InfoBarDismissed() {
-  DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
-      false, DuplicateDownloadInfobarEvent::kDismissed);
   Cancel();
 }
 
