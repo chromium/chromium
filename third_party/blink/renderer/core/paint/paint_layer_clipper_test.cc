@@ -227,7 +227,7 @@ TEST_F(PaintLayerClipperTest, ControlClipSelect) {
 
   PhysicalRect content_box_rect = target->PhysicalContentBoxRect();
   EXPECT_GT(foreground_rect.Rect().X(),
-            content_box_rect.X() + target->Location().X());
+            content_box_rect.X() + target->PhysicalLocation().left);
   EXPECT_LE(foreground_rect.Rect().Width(), content_box_rect.Width());
 }
 

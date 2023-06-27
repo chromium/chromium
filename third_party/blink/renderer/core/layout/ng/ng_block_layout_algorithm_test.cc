@@ -921,7 +921,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsEmptyBlockWithClearance) {
     // #float
     child = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("float"));
     EXPECT_EQ(LayoutSize(LayoutUnit(50), LayoutUnit(50)), child->Size());
-    EXPECT_EQ(LayoutPoint(LayoutUnit(0), LayoutUnit(0)), child->Location());
+    EXPECT_EQ(PhysicalOffset(0, 0), child->PhysicalLocation());
 
     // We need to manually test the position of #zero, #abs, #inflow.
     zero = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("zero"));
@@ -938,9 +938,9 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsEmptyBlockWithClearance) {
       /* #inflow margin-top */ Length::Fixed(0));
 
   // #zero, #abs, #inflow should all be positioned at the float.
-  EXPECT_EQ(LayoutUnit(50), zero->Location().Y());
-  EXPECT_EQ(LayoutUnit(50), abs->Location().Y());
-  EXPECT_EQ(LayoutUnit(50), inflow->Location().Y());
+  EXPECT_EQ(LayoutUnit(50), zero->PhysicalLocation().top);
+  EXPECT_EQ(LayoutUnit(50), abs->PhysicalLocation().top);
+  EXPECT_EQ(LayoutUnit(50), inflow->PhysicalLocation().top);
 
   // A margin strut which resolves to -50 (-70 + 20) adjusts the position of
   // #zero to the float clearance.
@@ -953,15 +953,15 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsEmptyBlockWithClearance) {
 
   // #zero is placed at the float, the margin strut is at:
   // 90 = (50 - (-60 + 20)).
-  EXPECT_EQ(LayoutUnit(50), zero->Location().Y());
+  EXPECT_EQ(LayoutUnit(50), zero->PhysicalLocation().top);
 
   // #abs estimates its position with the margin strut:
   // 40 = (90 + (-70 + 20)).
-  EXPECT_EQ(LayoutUnit(40), abs->Location().Y());
+  EXPECT_EQ(LayoutUnit(40), abs->PhysicalLocation().top);
 
   // #inflow has similar behavior to #abs, but includes its margin.
   // 70 = (90 + (-70 + 50))
-  EXPECT_EQ(LayoutUnit(70), inflow->Location().Y());
+  EXPECT_EQ(LayoutUnit(70), inflow->PhysicalLocation().top);
 
   // A margin strut which resolves to 60 (-10 + 70) means that #zero doesn't
   // get adjusted to clear the float, and we have normal behavior.
@@ -976,15 +976,15 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsEmptyBlockWithClearance) {
       /* #inflow margin-top */ Length::Fixed(80));
 
   // #zero is placed at 60 (-10 + 70).
-  EXPECT_EQ(LayoutUnit(60), zero->Location().Y());
+  EXPECT_EQ(LayoutUnit(60), zero->PhysicalLocation().top);
 
   // #abs estimates its position with the margin strut:
   // 50 = (0 + (-20 + 70)).
-  EXPECT_EQ(LayoutUnit(50), abs->Location().Y());
+  EXPECT_EQ(LayoutUnit(50), abs->PhysicalLocation().top);
 
   // #inflow has similar behavior to #abs, but includes its margin.
   // 60 = (0 + (-20 + 80))
-  EXPECT_EQ(LayoutUnit(60), inflow->Location().Y());
+  EXPECT_EQ(LayoutUnit(60), inflow->PhysicalLocation().top);
 
   // #zero-top produces a margin which needs to be ignored, as #zero is
   // affected by clearance, it needs to have layout performed again, starting
@@ -998,11 +998,11 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsEmptyBlockWithClearance) {
 
   // #zero is placed at the float, the margin strut is at:
   // 40 = (50 - (-10 + 20)).
-  EXPECT_EQ(LayoutUnit(50), zero->Location().Y());
+  EXPECT_EQ(LayoutUnit(50), zero->PhysicalLocation().top);
 
   // The margin strut is now disjoint, this is placed at:
   // 55 = (40 + (-10 + 25))
-  EXPECT_EQ(LayoutUnit(55), inflow->Location().Y());
+  EXPECT_EQ(LayoutUnit(55), inflow->PhysicalLocation().top);
 }
 
 // Tests that when auto margins are applied to a new formatting context, they
