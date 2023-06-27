@@ -58,9 +58,9 @@ void GpuServiceFactory::RunMediaService(
   // operations are blocked, user may hear audio glitch or see video
   // freezing, hence "user blocking".
   scoped_refptr<base::SequencedTaskRunner> task_runner = task_runner_;
-  // D3D9 device doesn't support multi-treaded use.
-  if (gpu_info_.gl_implementation_parts.angle !=
-          gl::ANGLEImplementation::kD3D9 &&
+  // Only D3D11 device supports multi-treaded use.
+  if (gpu_info_.gl_implementation_parts.angle ==
+          gl::ANGLEImplementation::kD3D11 &&
       base::FeatureList::IsEnabled(media::kDedicatedMediaServiceThread)) {
     if (base::FeatureList::IsEnabled(
             media::kUseSequencedTaskRunnerForMediaService)) {
@@ -78,13 +78,20 @@ void GpuServiceFactory::RunMediaService(
         FROM_HERE,
         base::BindOnce(
             [](base::WeakPtr<media::MediaGpuChannelManager> manager) {
-              CHECK(manager);
+              if (!manager) {
+                return;
+              }
+              auto* channel_manager = manager->channel_manager();
+              if (!channel_manager) {
+                return;
+              }
               gpu::ContextResult result;
               auto shared_context_state =
-                  manager.get()->channel_manager()->GetSharedContextState(
-                      &result);
+                  channel_manager->GetSharedContextState(&result);
               auto device = shared_context_state->GetD3D11Device();
-              CHECK(device);
+              if (!device) {
+                return;
+              }
               Microsoft::WRL::ComPtr<ID3D11Multithread> multi_threaded;
               auto hr = device->QueryInterface(IID_PPV_ARGS(&multi_threaded));
               CHECK(SUCCEEDED(hr));
