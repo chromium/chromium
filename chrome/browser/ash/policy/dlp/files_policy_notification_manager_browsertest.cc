@@ -641,7 +641,7 @@ class OnIONotificationClickedTest
 };
 
 // TODO(crbug.com/1458326): Re-enable this test
-#if defined(MEMORY_SANITIZER)
+#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
 #define MAYBE_MultiFileOKShowsDialogOverFilesApp \
   DISABLED_MultiFileOKShowsDialogOverFilesApp
 #else
