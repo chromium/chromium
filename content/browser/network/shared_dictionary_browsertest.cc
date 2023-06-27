@@ -58,6 +58,8 @@ const std::string kExpectedDictionaryHash =
 const std::string kUncompressedDataString = "test(\"This is uncompressed.\");";
 const std::string kErrorInvalidHashString =
     "test(\"Invalid dictionary hash.\");";
+const std::string kErrorNoSbrAcceptEncodingString =
+    "test(\"sbr is not set in accept-encoding header.\");";
 
 const std::string kCompressedDataOrigialString =
     "test(\"This is compressed test data using a test dictionary\");";
@@ -172,6 +174,24 @@ std::string FetchTargetDataScript(const GURL& dictionary_url) {
                    dictionary_url);
 }
 
+absl::optional<std::string> GetSecAvailableDictionary(
+    const net::test_server::HttpRequest::HeaderMap& headers) {
+  auto it = headers.find("sec-available-dictionary");
+  if (it == headers.end()) {
+    return absl::nullopt;
+  }
+  return it->second;
+}
+
+bool HasSbrAcceptEncoding(
+    const net::test_server::HttpRequest::HeaderMap& headers) {
+  auto it = headers.find(net::HttpRequestHeaders::kAcceptEncoding);
+  if (it == headers.end()) {
+    return false;
+  }
+  return it->second == "sbr" || base::EndsWith(it->second, ", sbr");
+}
+
 class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
  public:
   SharedDictionaryBrowserTestBase() = default;
@@ -270,22 +290,20 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
     }
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
+    response->set_content_type("application/javascript");
     if (request.GetURL().query() != "no_acao") {
       response->AddCustomHeader("access-control-allow-origin", "*");
     }
-
-    absl::optional<std::string> dict_hash;
-
-    auto it = request.headers.find("sec-available-dictionary");
-    if (it != request.headers.end()) {
-      dict_hash = it->second;
-    }
-    response->set_content_type("application/javascript");
-
+    absl::optional<std::string> dict_hash =
+        GetSecAvailableDictionary(request.headers);
     if (dict_hash) {
       if (*dict_hash == kExpectedDictionaryHash) {
-        response->AddCustomHeader("content-encoding", "sbr");
-        response->set_content(kCompressedDataString);
+        if (HasSbrAcceptEncoding(request.headers)) {
+          response->AddCustomHeader("content-encoding", "sbr");
+          response->set_content(kCompressedDataString);
+        } else {
+          response->set_content(kErrorNoSbrAcceptEncodingString);
+        }
       } else {
         response->set_content(kErrorInvalidHashString);
       }

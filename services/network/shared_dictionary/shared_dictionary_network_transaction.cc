@@ -138,6 +138,14 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
           base::HexEncode(shared_dictionary_->hash().data,
                           sizeof(shared_dictionary_->hash().data))));
 
+  std::string accept_encoding;
+  request_headers->SetHeader(
+      net::HttpRequestHeaders::kAcceptEncoding,
+      request_headers->GetHeader(net::HttpRequestHeaders::kAcceptEncoding,
+                                 &accept_encoding)
+          ? accept_encoding + ", sbr"
+          : "sbr");
+
   CHECK_EQ(DictionaryStatus::kNoDictionary, dictionary_status_);
   dictionary_status_ = DictionaryStatus::kReading;
   auto split_callback = base::SplitOnceCallback(base::BindOnce(
