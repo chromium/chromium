@@ -553,7 +553,7 @@ class ChromeDriverTestWithCustomCapability(ChromeDriverBaseTestWithWebServer):
     self.assertTrue('hello' in driver.GetPageSource())
 
   def testUnsupportedPageLoadStrategyRaisesException(self):
-    self.assertRaises(chromedriver.SessionNotCreated,
+    self.assertRaises(chromedriver.InvalidArgument,
                       self.CreateDriver, page_load_strategy='unsupported')
 
   def testGetUrlOnInvalidUrl(self):
@@ -597,7 +597,7 @@ class ChromeDriverWebSocketTest(ChromeDriverBaseTestWithWebServer):
     self.assertIsNotNone(websocket)
 
   def testWebSocketUrlInvalid(self):
-    self.assertRaises(chromedriver.SessionNotCreated,
+    self.assertRaises(chromedriver.InvalidArgument,
         self.CreateDriver, web_socket_url='Invalid')
 
   def testWebSocketInvalidSessionId(self):
@@ -5145,7 +5145,7 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
   def testW3cCompliantResponses(self):
     # It's an error to send Legacy format request
     # without Legacy capability flag.
-    with self.assertRaises(chromedriver.SessionNotCreated):
+    with self.assertRaises(chromedriver.InvalidArgument):
       self.CreateDriver(send_w3c_request=False)
 
     # It's an error to send Legacy format capability
