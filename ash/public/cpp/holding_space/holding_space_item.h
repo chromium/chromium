@@ -135,6 +135,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // Returns `true` if `type` is a suggestion type, `false` otherwise.
   static bool IsSuggestionType(HoldingSpaceItem::Type type);
 
+  // TODO(http://b/288471183): Update comment after removing file system URL.
   // Deserializes from `base::Value::Dict` to `HoldingSpaceItem`.
   // This creates a partially initialized item with an empty file system URL.
   // The item should be fully initialized using `Initialize()`.
@@ -163,9 +164,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // been called. Non-initialized items should not be shown in holding space UI.
   bool IsInitialized() const;
 
+  // TODO(http://b/288471183): Remove file system URL.
   // Used to fully initialize partially initialized items created by
   // `Deserialize()`.
-  void Initialize(const GURL& file_system_url);
+  void Initialize(const HoldingSpaceFile& file, const GURL& file_system_url);
 
   // TODO(http://b/288471183): Remove file path and file system URL.
   // Sets the `file` backing the item to `file_path` and `file_system_url`,

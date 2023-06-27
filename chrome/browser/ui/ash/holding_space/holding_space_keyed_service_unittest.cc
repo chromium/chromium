@@ -1363,6 +1363,12 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
                                  primary_holding_space_service
                                      ->thumbnail_loader_for_testing()));
 
+          // TODO(http://b/288471183): Remove after updating constructor.
+          fresh_holding_space_item->SetBackingFile(
+              HoldingSpaceFile(holding_space_util::ResolveFileSystemType(
+                  GetProfile(), file_system_url)),
+              file, file_system_url);
+
           persisted_holding_space_items_before_restoration.Append(
               fresh_holding_space_item->Serialize());
 
@@ -1957,6 +1963,12 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
                   base::BindOnce(&holding_space_util::ResolveImage,
                                  primary_holding_space_service
                                      ->thumbnail_loader_for_testing()));
+
+          // TODO(http://b/288471183): Remove after updating constructor.
+          fresh_holding_space_item->SetBackingFile(
+              HoldingSpaceFile(holding_space_util::ResolveFileSystemType(
+                  GetProfile(), file_system_url)),
+              file, file_system_url);
 
           persisted_holding_space_items_before_restoration.Append(
               fresh_holding_space_item->Serialize());
@@ -3447,8 +3459,10 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
 
   // Initialize the pinned item for the suggested local file and verify that
   // the suggestion is removed from the model if suggestions are enabled.
-  model->InitializeOrRemoveItem(partially_initialized_pinned_item_ptr->id(),
-                                GetFileSystemUrl(GetProfile(), file_path_2));
+  model->InitializeOrRemoveItem(
+      partially_initialized_pinned_item_ptr->id(),
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kTest),
+      GetFileSystemUrl(GetProfile(), file_path_2));
   task_environment()->RunUntilIdle();
 
   if (suggestion_feature_enabled) {

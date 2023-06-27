@@ -614,9 +614,13 @@ void HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete(
   }
 
   for (auto* item : items_to_initialize) {
+    const GURL file_system_url =
+        holding_space_util::ResolveFileSystemUrl(profile(), item->file_path());
+    const HoldingSpaceFile::FileSystemType file_system_type =
+        holding_space_util::ResolveFileSystemType(profile(), file_system_url);
+
     model()->InitializeOrRemoveItem(
-        item->id(),
-        holding_space_util::ResolveFileSystemUrl(profile(), item->file_path()));
+        item->id(), HoldingSpaceFile(file_system_type), file_system_url);
   }
 }
 

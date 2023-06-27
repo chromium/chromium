@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/public/cpp/holding_space/holding_space_file.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
@@ -61,7 +62,10 @@ TEST_P(HoldingSpaceItemTest, Serialization) {
   EXPECT_FALSE(deserialized_holding_space_item->IsInitialized());
   EXPECT_TRUE(deserialized_holding_space_item->file_system_url().is_empty());
 
-  deserialized_holding_space_item->Initialize(file_system_url);
+  const auto file =
+      HoldingSpaceFile(HoldingSpaceFile::FileSystemType::kUnknown);
+
+  deserialized_holding_space_item->Initialize(file, file_system_url);
   EXPECT_TRUE(deserialized_holding_space_item->IsInitialized());
   EXPECT_EQ(*deserialized_holding_space_item, *holding_space_item);
 }

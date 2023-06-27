@@ -242,6 +242,7 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceModel::TakeItem(
 }
 
 void HoldingSpaceModel::InitializeOrRemoveItem(const std::string& id,
+                                               const HoldingSpaceFile& file,
                                                const GURL& file_system_url) {
   if (file_system_url.is_empty()) {
     RemoveItem(id);
@@ -254,7 +255,7 @@ void HoldingSpaceModel::InitializeOrRemoveItem(const std::string& id,
   HoldingSpaceItem* item = item_it->get();
   DCHECK(!item->IsInitialized());
 
-  item->Initialize(file_system_url);
+  item->Initialize(file, file_system_url);
   ++initialized_item_counts_by_type_[item->type()];
 
   for (auto& observer : observers_)

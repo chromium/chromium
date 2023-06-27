@@ -297,9 +297,11 @@ bool HoldingSpaceItem::IsInitialized() const {
   return !file_system_url_.is_empty();
 }
 
-void HoldingSpaceItem::Initialize(const GURL& file_system_url) {
+void HoldingSpaceItem::Initialize(const HoldingSpaceFile& file,
+                                  const GURL& file_system_url) {
   DCHECK(!IsInitialized());
   DCHECK(!file_system_url.is_empty());
+  file_ = file;
   file_system_url_ = file_system_url;
 }
 

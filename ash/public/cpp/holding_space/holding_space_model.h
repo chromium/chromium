@@ -135,10 +135,12 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
   // item. If the specified item does not exist in the model, returns `nullptr`.
   std::unique_ptr<HoldingSpaceItem> TakeItem(const std::string& id);
 
+  // TODO(http://b/288471183): Remove file system URL.
   // Fully initializes a partially initialized holding space item using the
-  // provided `file_system_url`. The item will be removed if `file_system_url`
-  // is empty.
+  // provided `file` and `file_system_url`. The item will be removed if
+  // `file_system_url` is empty.
   void InitializeOrRemoveItem(const std::string& id,
+                              const HoldingSpaceFile& file,
                               const GURL& file_system_url);
 
   // Returns an object which, upon its destruction, performs an atomic update to
