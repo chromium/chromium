@@ -53,24 +53,6 @@ struct TargetItemComparator {
   }
 };
 
-// Checks if the file paths point to the same inode.
-bool IsSameFile(const base::FilePath& file1, const base::FilePath& file2) {
-  struct stat st_1;
-  if (stat(file1.value().c_str(), &st_1) == -1) {
-    PLOG(ERROR) << "stat failed";
-    return false;
-  }
-
-  struct stat st_2;
-  if (stat(file2.value().c_str(), &st_2) == -1) {
-    PLOG(ERROR) << "stat failed";
-    return false;
-  }
-
-  // Make sure that they are indeed the same file.
-  return (st_1.st_ino == st_2.st_ino);
-}
-
 std::set<std::string> CollectDictKeys(const base::Value::Dict* dict) {
   std::set<std::string> result;
   if (dict) {
@@ -496,24 +478,6 @@ TEST(BrowserDataMigratorUtilTest, RecordUserDataSize) {
   histogram_tester.ExpectBucketCount(uma_name, size / 1024 / 1024, 1);
 }
 
-TEST(BrowserDataMigratorUtilTest, CreateHardLink) {
-  base::ScopedTempDir scoped_temp_dir;
-  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
-
-  const base::FilePath from_file =
-      scoped_temp_dir.GetPath().Append(FILE_PATH_LITERAL("from_file"));
-  const base::FilePath to_file =
-      scoped_temp_dir.GetPath().Append(FILE_PATH_LITERAL("to_file"));
-  ASSERT_TRUE(base::WriteFile(from_file, "Hello, World"));
-
-  ASSERT_TRUE(CreateHardLink(from_file, to_file));
-
-  EXPECT_TRUE(base::PathExists(to_file));
-
-  // Make sure that they are indeed the same file.
-  EXPECT_TRUE(IsSameFile(from_file, to_file));
-}
-
 TEST(BrowserDataMigratorUtilTest, CopyDirectory) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
@@ -575,39 +539,6 @@ TEST(BrowserDataMigratorUtilTest, CopyDirectory) {
   // Make sure that symlink is not copied.
   EXPECT_FALSE(base::PathExists(copy_to.Append(symlink)));
   EXPECT_FALSE(base::PathExists(copy_to.Append(original)));
-
-  // Test `CopyDirectoryByHardLinks()`.
-  const base::FilePath copy_to_hard =
-      scoped_temp_dir.GetPath().Append("copy_to_hard");
-  ASSERT_TRUE(CopyDirectoryByHardLinks(copy_from, copy_to_hard));
-
-  // Expected `copy_to_hard` structure after `CopyDirectoryByHardLinks()`.
-  // |- copy_to_hard/
-  //     |- data
-  //     |- Subdirectory/
-  //         |- data
-  //         |- Subdirectory/data
-  EXPECT_TRUE(base::PathExists(copy_to_hard));
-  EXPECT_TRUE(base::PathExists(copy_to_hard.Append(data_file)));
-  EXPECT_TRUE(
-      base::PathExists(copy_to_hard.Append(subdirectory).Append(data_file)));
-  EXPECT_TRUE(base::PathExists(copy_to_hard.Append(subdirectory)
-                                   .Append(subdirectory)
-                                   .Append(data_file)));
-  // Make sure that symlink is not copied.
-  EXPECT_FALSE(base::PathExists(copy_to_hard.Append(symlink)));
-  EXPECT_FALSE(base::PathExists(copy_to_hard.Append(original)));
-
-  // Make sure that they are indeed the same file.
-  EXPECT_TRUE(
-      IsSameFile(copy_from.Append(data_file), copy_to_hard.Append(data_file)));
-  EXPECT_TRUE(IsSameFile(copy_from.Append(subdirectory).Append(data_file),
-                         copy_to_hard.Append(subdirectory).Append(data_file)));
-  EXPECT_TRUE(IsSameFile(
-      copy_from.Append(subdirectory).Append(subdirectory).Append(data_file),
-      copy_to_hard.Append(subdirectory)
-          .Append(subdirectory)
-          .Append(data_file)));
 }
 
 TEST(BrowserDataMigratorUtilTest, EstimatedExtraBytesCreated) {
