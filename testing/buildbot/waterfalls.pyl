@@ -7070,7 +7070,7 @@
       },
       'webrtc_linux_chromium': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'additional_compile_targets': [
           'blink_unittests',
