@@ -423,6 +423,9 @@
   "flakiness": {
     "flakiness-data-packager": "Ubuntu-22.04"
   },
+  "flaky-reproducer": {
+    "runner": "Ubuntu-22.04"
+  },
   "goma": {
     "Linux Builder Goma RBE Canary": "Ubuntu-22.04",
     "android-archive-dbg-goma-rbe-ats-canary": "Ubuntu-22.04",
