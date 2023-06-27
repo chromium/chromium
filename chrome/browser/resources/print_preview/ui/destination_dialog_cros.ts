@@ -21,10 +21,11 @@ import './throbber.css.js';
 import './destination_list_item_cros.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, GooglePromotedDestinationId} from '../data/destination.js';
@@ -113,6 +114,23 @@ export class PrintPreviewDestinationDialogCrosElement extends
         computed: 'computeLoadingDestinations_(' +
             'loadingDestinations_, loadingServerPrinters_)',
       },
+
+      isPrintPreviewSetupAssistanceEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean(
+              'isPrintPreviewSetupAssistanceEnabled');
+        },
+        readOnly: true,
+      },
+
+      isShowingPrinterSetupAssistance: {
+        type: Boolean,
+        computed:
+            'computeIsShowingPrinterSetupAssistance(destinations_.length, ' +
+            'isPrintPreviewSetupAssistanceEnabled_)',
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -125,6 +143,7 @@ export class PrintPreviewDestinationDialogCrosElement extends
   private printServerNames_: string[];
   private loadingServerPrinters_: boolean;
   private loadingAnyDestinations_: boolean;
+  private isPrintPreviewSetupAssistanceEnabled_: boolean;
 
   private tracker_: EventTracker = new EventTracker();
   private destinationInConfiguring_: Destination|null = null;
@@ -325,6 +344,23 @@ export class PrintPreviewDestinationDialogCrosElement extends
 
   private onManageButtonClick_() {
     NativeLayerImpl.getInstance().managePrinters();
+  }
+
+  /**
+   * Sets `isShowingPrinterSetupAssistance` state based on flag and
+   * destinations.
+   * If flag is turned off, then do not show.
+   * If flag is turned on and there is only a PDF printer, then show.
+   * Save to drive is already excluded by `getDestinationList_()`.
+   */
+  private computeIsShowingPrinterSetupAssistance(): boolean {
+    if (!this.isPrintPreviewSetupAssistanceEnabled_) {
+      return false;
+    }
+
+    return !this.destinations_.some(
+        (destination: Destination): boolean =>
+            destination.id !== GooglePromotedDestinationId.SAVE_AS_PDF);
   }
 }
 

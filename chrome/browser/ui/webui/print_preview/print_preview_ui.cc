@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/id_map.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -80,6 +81,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler_chromeos.h"
+#include "chrome/common/chrome_features.h"
 #endif
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
@@ -305,6 +307,9 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
 void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
   source->AddBoolean("useSystemDefaultPrinter", false);
+  source->AddBoolean(
+      "isPrintPreviewSetupAssistanceEnabled",
+      base::FeatureList::IsEnabled(::features::kPrintPreviewSetupAssistance));
 #else
   bool system_default_printer = profile->GetPrefs()->GetBoolean(
       prefs::kPrintPreviewUseSystemDefaultPrinter);

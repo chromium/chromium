@@ -1,4 +1,8 @@
 <style include="destination-dialog-style">
+  :host([is-showing-printer-setup-assistance]) div[slot=button-container] {
+    justify-content: flex-end;
+  }
+
   .form-row {
     align-items: center;
     column-gap: 18px;
@@ -47,7 +51,8 @@
     </print-preview-provisional-destination-resolver>
   </div>
   <div slot="button-container">
-    <cr-button on-click="onManageButtonClick_">
+    <cr-button on-click="onManageButtonClick_"
+        hidden$="[[isShowingPrinterSetupAssistance]]">
       $i18n{manage}
       <iron-icon icon="cr:open-in-new" id="manageIcon"></iron-icon>
     </cr-button>

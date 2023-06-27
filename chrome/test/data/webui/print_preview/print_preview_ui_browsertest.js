@@ -762,6 +762,20 @@ TEST_F(
           destination_dialog_cros_test.TestNames.PrintServerSelected);
     });
 
+TEST_F(
+    'PrintPreviewDestinationDialogCrosTest',
+    'PrinterSetupAssistanceHasDestinations', function() {
+      this.runMochaTest(destination_dialog_cros_test.TestNames
+                            .PrinterSetupAssistanceHasDestinations);
+    });
+
+TEST_F(
+    'PrintPreviewDestinationDialogCrosTest',
+    'PrinterSetupAssistanceHasNoDestinations', function() {
+      this.runMochaTest(destination_dialog_cros_test.TestNames
+                            .PrinterSetupAssistanceHasNoDestinations);
+    });
+
 GEN('#endif');
 
 var PrintPreviewAdvancedDialogTest = class extends PrintPreviewTest {
