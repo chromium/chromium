@@ -610,7 +610,7 @@ bool CanToggleGameDashboard() {
     return false;
   }
   aura::Window* window = GetTargetWindow();
-  return window && GameDashboardController::IsGameWindow(window);
+  return window && GameDashboardController::ReadyForAccelerator(window);
 }
 
 bool CanToggleMultitaskMenu() {

@@ -35,6 +35,21 @@ bool GameDashboardController::IsGameWindow(aura::Window* window) {
   return window->GetProperty(chromeos::kIsGameKey);
 }
 
+// static
+bool GameDashboardController::ReadyForAccelerator(aura::Window* window) {
+  if (!IsGameWindow(window)) {
+    return false;
+  }
+
+  if (IsArcWindow(window)) {
+    return game_dashboard_utils::IsFlagSet(
+        window->GetProperty(kArcGameControlsFlagsKey),
+        ArcGameControlsFlag::kKnown);
+  }
+
+  return true;
+}
+
 GameDashboardController::GameDashboardController(
     std::unique_ptr<GameDashboardDelegate> delegate)
     : delegate_(std::move(delegate)) {

@@ -29,6 +29,7 @@
 #include "ash/ime/test_ime_controller_client.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/ime_info.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -3367,6 +3368,8 @@ TEST_F(AcceleratorControllerGameDashboardTests,
       CreateAppWindow(gfx::Rect(5, 5, 20, 20), AppType::ARC_APP);
   window->SetProperty(kAppIDKey,
                       std::string(TestGameDashboardDelegate::kGameAppId));
+  EXPECT_FALSE(ProcessInController(accelerator));
+  window->SetProperty(kArcGameControlsFlagsKey, ArcGameControlsFlag::kKnown);
   EXPECT_TRUE(ProcessInController(accelerator));
 }
 

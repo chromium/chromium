@@ -41,6 +41,9 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   // Checks whether the `window` is a game.
   static bool IsGameWindow(aura::Window* window);
 
+  // Checks whether the `window` can respond to accelerator commands.
+  static bool ReadyForAccelerator(aura::Window* window);
+
   // Returns a pointer to the `GameDashboardContext` if the given `window` is a
   // game window, otherwise nullptr.
   GameDashboardContext* GetGameDashboardContext(aura::Window* window) const;
