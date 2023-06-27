@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Clear-Site-Data for * should remove all client hints. assert_equals: expected "MissingDeviceMemory" but got "HadDeviceMemory"
+Harness: the test ran to completion.
+
