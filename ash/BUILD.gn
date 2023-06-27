@@ -7,6 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//chromeos/ash/components/assistant/ambient.gni")
+import("//chromeos/ash/components/scalable_iph/scalable_iph.gni")
 import("//chromeos/components/sensors/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
@@ -975,6 +976,8 @@ component("ash") {
     "rounded_display/rounded_display_host.h",
     "rounded_display/rounded_display_provider.cc",
     "rounded_display/rounded_display_provider.h",
+    "scalable_iph/wallpaper_ash_notification_view.cc",
+    "scalable_iph/wallpaper_ash_notification_view.h",
     "scoped_animation_disabler.cc",
     "scoped_animation_disabler.h",
     "screen_util.cc",
@@ -2741,8 +2744,10 @@ component("ash") {
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/components/peripheral_notification",
     "//chromeos/ash/components/phonehub",
+    "//chromeos/ash/components/scalable_iph:buildflags",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/resources:resources_grit",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/assistant/public/mojom",
     "//chromeos/ash/services/bluetooth_config/public/cpp",
@@ -3206,6 +3211,7 @@ test("ash_unittests") {
     "rounded_display/rounded_display_gutter_unittest.cc",
     "rounded_display/rounded_display_host_unittest.cc",
     "rounded_display/rounded_display_provider_unittest.cc",
+    "scalable_iph/wallpaper_ash_notification_view_unittest.cc",
     "screen_util_unittest.cc",
     "session/fullscreen_controller_unittest.cc",
     "session/fullscreen_notification_bubble_unittest.cc",

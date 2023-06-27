@@ -67,7 +67,20 @@ class ScalableIphDelegate {
     bool operator==(const BubbleParams& params) const = default;
   };
 
+  // TODO(b/284158831): Define types of notifications, such as wallpaper,
+  // printer, etc.
+  enum class NotificationType {
+    kInvalid = 0,
+    kWallpaper,
+  };
+
   struct NotificationParams {
+    NotificationParams();
+    NotificationParams(const NotificationParams&);
+    NotificationParams& operator=(const NotificationParams&);
+    ~NotificationParams();
+
+    NotificationType type = NotificationType::kInvalid;
     std::string title;
     std::string text;
     Button button;

@@ -185,7 +185,8 @@ enum class NotificationCatalogName {
   kGeolocationSwitch = 170,
   kMultiCaptureOnLogin = 171,
   kFloatingWorkspace = 172,
-  kMaxValue = kFloatingWorkspace
+  kScalableIphNotification = 173,
+  kMaxValue = kScalableIphNotification
 };
 
 // A living catalog that registers system nudges.

@@ -76324,6 +76324,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="170" label="Geolocation Switch"/>
   <int value="171" label="Multi Capture On Login"/>
   <int value="172" label="Floating Workspace"/>
+  <int value="173" label="Scalable IPH"/>
 </enum>
 
 <enum name="NotificationDatabaseStatus">

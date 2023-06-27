@@ -6,10 +6,17 @@
 
 #include <memory>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/network_config_service.h"
+#include "ash/public/cpp/notification_utils.h"
+#include "ash/scalable_iph/wallpaper_ash_notification_view.h"
+#include "ash/system/message_center/message_view_factory.h"
+#include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
 
@@ -21,6 +28,14 @@ using ::chromeos::network_config::mojom::NetworkFilter;
 using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using ::chromeos::network_config::mojom::NetworkType;
 using Observer = ::scalable_iph::ScalableIphDelegate::Observer;
+using NotificationType = scalable_iph::ScalableIphDelegate::NotificationType;
+using NotificationParams =
+    scalable_iph::ScalableIphDelegate::NotificationParams;
+
+constexpr char kNotificationSourceName[] = "ChromeOS";
+constexpr char kWallpaperNotificationType[] = "wallpaper_notification_type";
+constexpr char kNotifierId[] = "scalable_iph";
+constexpr char kWallpaperNotificationId[] = "scalable_iph_wallpaper";
 
 bool HasOnlineNetwork(const std::vector<NetworkStatePropertiesPtr>& networks) {
   for (const NetworkStatePropertiesPtr& network : networks) {
@@ -29,6 +44,47 @@ bool HasOnlineNetwork(const std::vector<NetworkStatePropertiesPtr>& networks) {
     }
   }
   return false;
+}
+
+// Adds the given `notification` to the message center after it removes any
+// existing notification that has the same ID.
+void AddOrReplaceNotification(
+    std::unique_ptr<message_center::Notification> notification) {
+  auto* message_center = message_center::MessageCenter::Get();
+  message_center->RemoveNotification(notification->id(),
+                                     /*by_user=*/false);
+  message_center->AddNotification(std::move(notification));
+}
+
+message_center::NotifierId GetNotifierId() {
+  return message_center::NotifierId(
+      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
+      NotificationCatalogName::kScalableIphNotification);
+}
+
+bool IsWallpaperNotification(const NotificationParams& params) {
+  return params.type == NotificationType::kWallpaper;
+}
+
+message_center::NotificationType GetNotificationType(
+    const NotificationParams& params) {
+  switch (params.type) {
+    case NotificationType::kWallpaper:
+      return message_center::NOTIFICATION_TYPE_CUSTOM;
+    case NotificationType::kInvalid:
+      CHECK(false);
+  }
+  NOTREACHED_NORETURN();
+}
+
+std::string GetNotificationId(const NotificationParams& params) {
+  switch (params.type) {
+    case NotificationType::kWallpaper:
+      return kWallpaperNotificationId;
+    case NotificationType::kInvalid:
+      CHECK(false);
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -41,11 +97,19 @@ ScalableIphDelegateImpl::ScalableIphDelegateImpl(Profile* profile)
       receiver_cros_network_config_observer_.BindNewPipeAndPassRemote());
 
   QueryOnlineNetworkState();
+
+  MessageViewFactory::SetCustomNotificationViewFactory(
+      kWallpaperNotificationType,
+      base::BindRepeating(&WallpaperAshNotificationView::CreateWithPreview));
 }
 
 // Remember NOT to interact with `iph_session` from the destructor. See the
 // comment of `ScalableIphDelegate::ShowBubble` for details.
-ScalableIphDelegateImpl::~ScalableIphDelegateImpl() = default;
+ScalableIphDelegateImpl::~ScalableIphDelegateImpl() {
+  // Remove the custom notification view factories.
+  MessageViewFactory::ClearCustomNotificationViewFactory(
+      kWallpaperNotificationType);
+}
 
 void ScalableIphDelegateImpl::ShowBubble(
     const scalable_iph::ScalableIphDelegate::BubbleParams& params,
@@ -54,9 +118,33 @@ void ScalableIphDelegateImpl::ShowBubble(
 }
 
 void ScalableIphDelegateImpl::ShowNotification(
-    const scalable_iph::ScalableIphDelegate::NotificationParams& params,
+    const NotificationParams& params,
     std::unique_ptr<scalable_iph::IphSession> iph_session) {
   // TODO(b/284158831): Add implementation.
+  std::string notification_source_name = kNotificationSourceName;
+  std::string notification_title = params.title;
+  std::string notification_text = params.text;
+  std::string button_text = params.button.text;
+
+  message_center::RichNotificationData rich_notification_data;
+  message_center::ButtonInfo button_info;
+  button_info.title = base::UTF8ToUTF16(button_text);
+  rich_notification_data.buttons.push_back(button_info);
+
+  std::unique_ptr<message_center::Notification> notification =
+      ash::CreateSystemNotificationPtr(
+          GetNotificationType(params), GetNotificationId(params),
+          base::UTF8ToUTF16(notification_title),
+          base::UTF8ToUTF16(notification_text),
+          base::UTF8ToUTF16(notification_source_name), GURL(), GetNotifierId(),
+          rich_notification_data,
+          /*message_center::HandleNotificationClickDelegate=*/nullptr,
+          gfx::kNoneIcon,
+          message_center::SystemNotificationWarningLevel::NORMAL);
+  if (IsWallpaperNotification(params)) {
+    notification->set_custom_view_type(kWallpaperNotificationType);
+  }
+  AddOrReplaceNotification(std::move(notification));
 }
 
 void ScalableIphDelegateImpl::AddObserver(Observer* observer) {
