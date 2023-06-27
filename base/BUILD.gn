@@ -229,7 +229,11 @@ if (is_apple) {
     defines = [ "BASE_IMPLEMENTATION" ]
     configs += [ "//build/config/compiler:enable_arc" ]
     deps = [
-      "//base:base_static",
+      ":base_static",
+      ":debugging_buildflags",
+      ":logging_buildflags",
+      ":tracing_buildflags",
+      "//base/allocator/partition_allocator:buildflags",
       "//base/numerics:base_numerics",
       "//build:blink_buildflags",
       "//third_party/abseil-cpp:absl",
