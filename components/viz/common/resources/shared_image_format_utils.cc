@@ -21,51 +21,48 @@ namespace {
 #if BUILDFLAG(ENABLE_VULKAN)
 VkFormat ToVkFormatInternal(SharedImageFormat format) {
   CHECK(format.is_single_plane());
-  switch (format.resource_format()) {
-    case RGBA_8888:
-      return VK_FORMAT_R8G8B8A8_UNORM;  // or VK_FORMAT_R8G8B8A8_SRGB
-    case RGBA_4444:
-      return VK_FORMAT_R4G4B4A4_UNORM_PACK16;
-    case BGRA_8888:
-      return VK_FORMAT_B8G8R8A8_UNORM;
-    case RED_8:
-      return VK_FORMAT_R8_UNORM;
-    case RGB_565:
-      return VK_FORMAT_R5G6B5_UNORM_PACK16;
-    case BGR_565:
-      return VK_FORMAT_B5G6R5_UNORM_PACK16;
-    case RG_88:
-      return VK_FORMAT_R8G8_UNORM;
-    case RGBA_F16:
-      return VK_FORMAT_R16G16B16A16_SFLOAT;
-    case R16_EXT:
-      return VK_FORMAT_R16_UNORM;
-    case RG16_EXT:
-      return VK_FORMAT_R16G16_UNORM;
-    case RGBX_8888:
-      return VK_FORMAT_R8G8B8A8_UNORM;
-    case BGRX_8888:
-      return VK_FORMAT_B8G8R8A8_UNORM;
-    case RGBA_1010102:
-      return VK_FORMAT_A2B10G10R10_UNORM_PACK32;
-    case BGRA_1010102:
-      return VK_FORMAT_A2R10G10B10_UNORM_PACK32;
-    case ALPHA_8:
-      return VK_FORMAT_R8_UNORM;
-    case LUMINANCE_8:
-      return VK_FORMAT_R8_UNORM;
-    case YVU_420:
-      return VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
-    case YUV_420_BIPLANAR:
-      return VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
-    case ETC1:
-      return VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK;
-    case LUMINANCE_F16:
-      return VK_FORMAT_R16_SFLOAT;
-    case P010:
-      return VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16;
-    case YUVA_420_TRIPLANAR:
-      break;
+  if (format == SinglePlaneFormat::kRGBA_8888) {
+    return VK_FORMAT_R8G8B8A8_UNORM;  // or VK_FORMAT_R8G8B8A8_SRGB
+  } else if (format == SinglePlaneFormat::kRGBA_4444) {
+    return VK_FORMAT_R4G4B4A4_UNORM_PACK16;
+  } else if (format == SinglePlaneFormat::kBGRA_8888) {
+    return VK_FORMAT_B8G8R8A8_UNORM;
+  } else if (format == SinglePlaneFormat::kR_8) {
+    return VK_FORMAT_R8_UNORM;
+  } else if (format == SinglePlaneFormat::kRGB_565) {
+    return VK_FORMAT_R5G6B5_UNORM_PACK16;
+  } else if (format == SinglePlaneFormat::kBGR_565) {
+    return VK_FORMAT_B5G6R5_UNORM_PACK16;
+  } else if (format == SinglePlaneFormat::kRG_88) {
+    return VK_FORMAT_R8G8_UNORM;
+  } else if (format == SinglePlaneFormat::kRGBA_F16) {
+    return VK_FORMAT_R16G16B16A16_SFLOAT;
+  } else if (format == SinglePlaneFormat::kR_16) {
+    return VK_FORMAT_R16_UNORM;
+  } else if (format == SinglePlaneFormat::kRG_1616) {
+    return VK_FORMAT_R16G16_UNORM;
+  } else if (format == SinglePlaneFormat::kRGBX_8888) {
+    return VK_FORMAT_R8G8B8A8_UNORM;
+  } else if (format == SinglePlaneFormat::kBGRX_8888) {
+    return VK_FORMAT_B8G8R8A8_UNORM;
+  } else if (format == SinglePlaneFormat::kRGBA_1010102) {
+    return VK_FORMAT_A2B10G10R10_UNORM_PACK32;
+  } else if (format == SinglePlaneFormat::kBGRA_1010102) {
+    return VK_FORMAT_A2R10G10B10_UNORM_PACK32;
+  } else if (format == SinglePlaneFormat::kALPHA_8) {
+    return VK_FORMAT_R8_UNORM;
+  } else if (format == SinglePlaneFormat::kLUMINANCE_8) {
+    return VK_FORMAT_R8_UNORM;
+  } else if (format == LegacyMultiPlaneFormat::kYV12) {
+    return VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
+  } else if (format == LegacyMultiPlaneFormat::kNV12) {
+    return VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
+  } else if (format == SinglePlaneFormat::kETC1) {
+    return VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK;
+  } else if (format == SinglePlaneFormat::kLUMINANCE_F16) {
+    return VK_FORMAT_R16_SFLOAT;
+  } else if (format == LegacyMultiPlaneFormat::kP010) {
+    return VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16;
   }
   return VK_FORMAT_UNDEFINED;
 }
