@@ -12,8 +12,8 @@ source_set("web_view_only") {
   deps = [ "//ios/web/web_view_only" ]
 
   visibility = [
-    "//ios/web_view:*",
     "//ios/web/web_view_only:unittests",
+    "//ios/web_view:*",
   ]
 }
 
