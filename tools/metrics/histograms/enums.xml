@@ -95800,6 +95800,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="kInvalidSource"/>
 </enum>
 
+<enum name="ServiceWorkerRouterSourceType">
+  <int value="0" label="kNetwork"/>
+  <int value="1" label="kRace"/>
+</enum>
+
 <enum name="ServiceWorkerSite">
   <obsolete>
     Removed in November 2021.

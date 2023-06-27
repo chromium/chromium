@@ -31,6 +31,12 @@ void RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums e) {
   base::UmaHistogramEnumeration("ServiceWorker.RouterEvaluator.Error", e);
 }
 
+void RecordMatchedSourceType(
+    const std::vector<blink::ServiceWorkerRouterSource>& sources) {
+  base::UmaHistogramEnumeration(
+      "ServiceWorker.RouterEvaluator.MatchedFirstSourceType", sources[0].type);
+}
+
 std::string ConvertToRegex(const blink::UrlPattern& url_pattern) {
   liburlpattern::Options options = {.delimiter_list = "/",
                                     .prefix_list = "/",
@@ -137,6 +143,7 @@ ServiceWorkerRouterEvaluator::Evaluate(
     if (rule->url_patterns.Match(request.url.path(), &vec) &&
         // ensure it matches all included patterns.
         vec.size() == rule->url_pattern_length) {
+      RecordMatchedSourceType(rule->sources);
       return rule->sources;
     }
   }
