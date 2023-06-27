@@ -1387,22 +1387,22 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsPreventClose) {
     {
       "manifest_id": "https://windowed.example/",
       "run_on_os_login": "run_windowed",
-      "prevent_close_after_run_on_login": true
+      "prevent_close_after_run_on_os_login": true
     },
     {
       "manifest_id": "https://tabbed.example/",
       "run_on_os_login": "blocked",
-      "prevent_close_after_run_on_login": true
+      "prevent_close_after_run_on_os_login": true
     },
     {
       "manifest_id": "https://no-container.example/",
       "run_on_os_login": "unsupported_value",
-      "prevent_close_after_run_on_login": true
+      "prevent_close_after_run_on_os_login": true
     },
     {
       "manifest_id": "bad.uri",
       "run_on_os_login": "allowed",
-      "prevent_close_after_run_on_login": true
+      "prevent_close_after_run_on_os_login": true
     }
   ])";
 
