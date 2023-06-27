@@ -287,7 +287,7 @@ void CheckInstallation(UpdaterScope scope,
         task_info.exec_actions[0].arguments,
         base::StrCat({L"--wake ", IsSystemInstall(scope) ? L"--system " : L"",
                       L"--enable-logging "
-                      L"--vmodule=*/components/winhttp/*=2,"
+                      L"--vmodule=*/components/winhttp/*=1,"
                       L"*/components/update_client/*=2,"
                       L"*/chrome/updater/*=2"}));
 
