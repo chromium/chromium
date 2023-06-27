@@ -13,7 +13,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/mock_chrome_application_mac.h"
 #include "base/test/test_timeouts.h"
-#include "ui/display/screen.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -114,63 +113,7 @@
 
 namespace ui {
 
-namespace {
-
-// A vector to hold a list of weak NSWindow pointers. Used as the container for
-// lists of weak pointers, because putting pointers that can change their values
-// to nil inside a set would break the hash.
-using WeakWindowVector = std::vector<NSWindow * __weak>;
-
-// Returns a vector of currently open windows.
-WeakWindowVector ApplicationWindows() {
-  WeakWindowVector windows;
-
-  // Must create a pool here because [NSApp windows] has created an array which
-  // retains all the windows in it.
-  @autoreleasepool {
-    for (NSWindow* window in NSApp.windows) {
-      windows.push_back(window);
-    }
-    return windows;
-  }
-}
-
-// Returns a vector of windows which are in `ApplicationWindows()` but not
-// `initial_windows`.
-WeakWindowVector WindowsLeft(WeakWindowVector initial_windows) {
-  // Window pointers can go nil only when the run loop is going, so it's safe to
-  // use sets within this function, just not outside it.
-  using WeakWindowSet = std::set<NSWindow * __weak>;
-
-  WeakWindowVector windows = ApplicationWindows();
-  WeakWindowSet windows_set(windows.begin(), windows.end());
-
-  // Subtract away the initial windows. The current window set will not have any
-  // nil values, as it was just obtained, so subtracting away the nil from any
-  // initial windows that have been closed is safe.
-  WeakWindowSet initial_windows_set(initial_windows.begin(),
-                                    initial_windows.end());
-
-  WeakWindowSet windows_left_set =
-      base::STLSetDifference<WeakWindowSet>(windows_set, initial_windows_set);
-  return std::vector(windows_left_set.begin(), windows_left_set.end());
-}
-
-}  // namespace.
-
-struct CocoaTestHelper::ObjCStorage {
-  display::ScopedNativeScreen screen;
-
-  base::mac::ScopedNSAutoreleasePool pool;
-
-  // Windows which existed at the beginning of the test.
-  WeakWindowVector initial_windows;
-
-  CocoaTestHelperWindow* __strong test_window;
-};
-
-CocoaTestHelper::CocoaTestHelper()
-    : objc_storage_(std::make_unique<ObjCStorage>()) {
+CocoaTestHelper::CocoaTestHelper() {
   // If a test suite hasn't already initialized NSApp, register the mock one
   // now.
   if (!NSApp) {
@@ -193,13 +136,13 @@ CocoaTestHelper::CocoaTestHelper()
 
 CocoaTestHelper::~CocoaTestHelper() {
   // Call close on the test_window to clean it up if one was opened.
-  [objc_storage_->test_window clearPretendKeyWindowAndFirstResponder];
-  [objc_storage_->test_window close];
-  objc_storage_->test_window = nil;
+  [test_window_ clearPretendKeyWindowAndFirstResponder];
+  [test_window_ close];
+  test_window_ = nil;
 
   // Recycle the pool to clean up any stuff that was put on the
   // autorelease pool due to window or window controller closures.
-  objc_storage_->pool.Recycle();
+  pool_.Recycle();
 
   // Some controls (NSTextFields, NSComboboxes etc) use
   // performSelector:withDelay: to clean up drag handlers and other
@@ -214,7 +157,7 @@ CocoaTestHelper::~CocoaTestHelper() {
 
   // Get the set of windows which weren't present when the test
   // started.
-  WeakWindowVector windows_left = WindowsLeft(objc_storage_->initial_windows);
+  WeakWindowVector windows_left = WindowsLeft();
 
   while (!windows_left.empty()) {
     // Cover delayed actions by spinning the loop at least once after
@@ -251,7 +194,7 @@ CocoaTestHelper::~CocoaTestHelper() {
       }
 
       // Refresh the outstanding windows.
-      still_left = WindowsLeft(objc_storage_->initial_windows);
+      still_left = WindowsLeft();
     }
 
     // If no progress is being made, log a failure and continue.
@@ -276,19 +219,52 @@ void CocoaTestHelper::MarkCurrentWindowsAsInitial() {
   // Collect the list of windows that were open when the test started so
   // that we don't wait for them to close in TearDown. Has to be done
   // after BootstrapCocoa is called.
-  objc_storage_->initial_windows = ApplicationWindows();
+  initial_windows_ = ApplicationWindows();
 }
 
 CocoaTestHelperWindow* CocoaTestHelper::test_window() {
-  if (!objc_storage_->test_window) {
-    objc_storage_->test_window = [[CocoaTestHelperWindow alloc] init];
+  if (!test_window_) {
+    test_window_ = [[CocoaTestHelperWindow alloc] init];
     if (base::debug::BeingDebugged()) {
-      [objc_storage_->test_window orderFront:nil];
+      [test_window_ orderFront:nil];
     } else {
-      [objc_storage_->test_window orderBack:nil];
+      [test_window_ orderBack:nil];
     }
   }
-  return objc_storage_->test_window;
+  return test_window_;
+}
+
+// Returns a vector of currently open windows.
+CocoaTestHelper::WeakWindowVector CocoaTestHelper::ApplicationWindows() {
+  WeakWindowVector windows;
+
+  // Must create a pool here because [NSApp windows] has created an array which
+  // retains all the windows in it.
+  @autoreleasepool {
+    for (NSWindow* window in NSApp.windows) {
+      windows.push_back(window);
+    }
+    return windows;
+  }
+}
+
+CocoaTestHelper::WeakWindowVector CocoaTestHelper::WindowsLeft() {
+  // Window pointers can go nil only when the run loop is going, so it's safe to
+  // use sets within this function, just not outside it.
+  using WeakWindowSet = std::set<NSWindow * __weak>;
+
+  WeakWindowVector windows = ApplicationWindows();
+  WeakWindowSet windows_set(windows.begin(), windows.end());
+
+  // Subtract away the initial windows. The current window set will not have any
+  // nil values, as it was just obtained, so subtracting away the nil from any
+  // initial windows that have been closed is safe.
+  WeakWindowSet initial_windows_set(initial_windows_.begin(),
+                                    initial_windows_.end());
+
+  WeakWindowSet windows_left_set =
+      base::STLSetDifference<WeakWindowSet>(windows_set, initial_windows_set);
+  return std::vector(windows_left_set.begin(), windows_left_set.end());
 }
 
 CocoaTest::CocoaTest() : helper_(std::make_unique<CocoaTestHelper>()) {}

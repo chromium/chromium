@@ -12,6 +12,7 @@
 
 #import "base/mac/scoped_nsautorelease_pool.h"
 #include "testing/platform_test.h"
+#include "ui/display/screen.h"
 
 // CocoaTestHelperWindow behaves differently from a regular NSWindow in the
 // following ways:
@@ -71,8 +72,26 @@ class CocoaTestHelper {
   CocoaTestHelperWindow* test_window();
 
  private:
-  struct ObjCStorage;
-  std::unique_ptr<ObjCStorage> objc_storage_;
+  // A vector to hold a list of weak NSWindow pointers. Used as the container
+  // for lists of weak pointers, because putting pointers that can change their
+  // values to nil inside a set would break the hash.
+  using WeakWindowVector = std::vector<NSWindow * __weak>;
+
+  // Returns a vector of currently open windows.
+  WeakWindowVector ApplicationWindows();
+
+  // Returns a vector of windows which are in `ApplicationWindows()` but not
+  // `initial_windows_`.
+  WeakWindowVector WindowsLeft();
+
+  display::ScopedNativeScreen screen_;
+
+  base::mac::ScopedNSAutoreleasePool pool_;
+
+  // Windows which existed at the beginning of the test.
+  WeakWindowVector initial_windows_;
+
+  CocoaTestHelperWindow* __strong test_window_;
 };
 
 // A test class that all tests that depend on AppKit should inherit from.
