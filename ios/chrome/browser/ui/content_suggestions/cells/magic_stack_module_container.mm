@@ -227,8 +227,8 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
        content_suggestions::ShouldShowWiderMagicStackLayer(self.traitCollection,
                                                            self.window));
   BOOL moduleShouldUseWideWidth =
-      self.traitCollection.horizontalSizeClass ==
-          UIUserInterfaceSizeClassRegular &&
+      content_suggestions::ShouldShowWiderMagicStackLayer(self.traitCollection,
+                                                          self.window) &&
       [_delegate doesMagicStackShowOnlyOneModule:_type];
   if (MVTModuleShouldUseWideWidth || moduleShouldUseWideWidth) {
     return CGSizeMake(kMagicStackWideWidth, self.bounds.size.height);
@@ -243,10 +243,11 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (_type == ContentSuggestionsModuleType::kMostVisited &&
-      !ShouldPutMostVisitedSitesInMagicStack()) {
-    _contentViewWidthAnchor.constant = [self contentViewWidth];
-  }
+  _contentViewWidthAnchor.constant = [self contentViewWidth];
+  // Trigger relayout so intrinsic contentsize is recalculated.
+  [self invalidateIntrinsicContentSize];
+  [self sizeToFit];
+  [self layoutIfNeeded];
 }
 
 #pragma mark - UIContextMenuInteractionDelegate
