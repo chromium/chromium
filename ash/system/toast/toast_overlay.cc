@@ -324,10 +324,12 @@ int ToastOverlay::CalculateSliderBubbleOffset() {
 
   // If a slider bubble is visible, the toast baseline will be shifted
   // up by the slider bubble's height + a default spacing offset.
-  return unified_system_tray->IsSliderBubbleShown()
-             ? unified_system_tray->GetSliderBubbleHeight() +
-                   ToastOverlay::kOffset
-             : 0;
+  if (unified_system_tray->IsSliderBubbleShown()) {
+    auto* slider_view = unified_system_tray->GetSliderView();
+    DCHECK(slider_view);
+    return slider_view->height() + ToastOverlay::kOffset;
+  }
+  return 0;
 }
 
 void ToastOverlay::OnButtonClicked() {

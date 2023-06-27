@@ -1342,9 +1342,10 @@ TEST_P(ToastManagerImplTest, BaselineUpdatesAfterSliderBubbleShown) {
   // slider bubble should be the slider bubble height + a default spacing
   // offset. Baseline remains unchanged with center aligned toasts.
   GetPrimaryUnifiedSystemTray()->ShowVolumeSliderBubble();
+  auto* slider_view = GetPrimaryUnifiedSystemTray()->GetSliderView();
+  ASSERT_TRUE(slider_view);
   if (AreSideAlignedToastsEnabled()) {
-    EXPECT_EQ(GetPrimaryUnifiedSystemTray()->GetSliderBubbleHeight() +
-                  ToastOverlay::kOffset,
+    EXPECT_EQ(slider_view->height() + ToastOverlay::kOffset,
               previous_baseline - GetToastBounds().bottom());
   } else {
     EXPECT_EQ(GetToastBounds().bottom(), previous_baseline);

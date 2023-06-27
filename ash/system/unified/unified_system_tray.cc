@@ -46,6 +46,7 @@
 #include "ash/system/unified/notification_icons_controller.h"
 #include "ash/system/unified/screen_capture_tray_item_view.h"
 #include "ash/system/unified/unified_slider_bubble_controller.h"
+#include "ash/system/unified/unified_slider_view.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
@@ -95,10 +96,6 @@ class UnifiedSystemTray::UiDelegate : public MessageCenterUiDelegate {
   void HideMessageCenter() override;
 
   MessageCenterUiController* ui_controller() { return ui_controller_.get(); }
-
-  void NotifySecondaryBubbleHeight(int height) {
-    message_popup_collection_->SetBaselineOffset(height);
-  }
 
   message_center::MessagePopupView* GetPopupViewForNotificationID(
       const std::string& notification_id) {
@@ -335,8 +332,8 @@ bool UnifiedSystemTray::IsSliderBubbleShown() const {
   return slider_bubble_controller_->IsBubbleShown();
 }
 
-int UnifiedSystemTray::GetSliderBubbleHeight() const {
-  return slider_bubble_controller_->GetBubbleHeight();
+UnifiedSliderView* UnifiedSystemTray::GetSliderView() const {
+  return slider_bubble_controller_->slider_view();
 }
 
 bool UnifiedSystemTray::IsMessageCenterBubbleShown() const {
@@ -416,7 +413,6 @@ void UnifiedSystemTray::ShowNetworkDetailedViewBubble() {
 }
 
 void UnifiedSystemTray::NotifySecondaryBubbleHeight(int height) {
-  ui_delegate_->NotifySecondaryBubbleHeight(height);
   for (auto& observer : observers_) {
     observer.OnSliderBubbleHeightChanged();
   }

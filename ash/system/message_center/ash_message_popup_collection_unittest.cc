@@ -12,6 +12,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
@@ -22,6 +23,7 @@
 #include "ash/system/message_center/message_popup_animation_waiter.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/unified/unified_slider_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
@@ -567,6 +569,95 @@ TEST_P(AshMessagePopupCollectionTest, BaselineInTabletMode) {
   EXPECT_FALSE(tablet_mode_controller->InTabletMode());
   EXPECT_GT(GetPrimaryShelf()->GetShelfBoundsInScreen().y(),
             popup_collection->GetBaseline());
+}
+
+TEST_P(AshMessagePopupCollectionTest, BaselineUpdatesAfterSliderShown) {
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  AddNotification();
+  auto* popup = GetLastPopUpAdded();
+  ASSERT_TRUE(popup);
+
+  auto* popup_collection = GetPrimaryPopupCollection();
+  auto* system_tray = GetPrimaryUnifiedSystemTray();
+
+  system_tray->ShowVolumeSliderBubble();
+  auto* slider_view = system_tray->GetSliderView();
+  ASSERT_TRUE(slider_view);
+
+  // The added popup should appears on top of the slider bubble, separated by a
+  // padding of `kMarginBetweenPopups`.
+  EXPECT_EQ(popup->GetBoundsInScreen().bottom() +
+                message_center::kMarginBetweenPopups,
+            slider_view->GetBoundsInScreen().y());
+  EXPECT_EQ(slider_view->height() + message_center::kMarginBetweenPopups,
+            popup_collection->baseline_offset_for_test());
+
+  // Baseline returns to previous value when the slider bubble is closed.
+  system_tray->CloseSecondaryBubbles();
+  EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+
+  // The popup is adjusted to be at the baseline without the offset.
+  EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
+            popup_collection->GetBaseline());
+}
+
+TEST_P(AshMessagePopupCollectionTest,
+       BaselineUpdatesAfterSliderShownOnShelfAutohide) {
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  // Create a window, otherwise autohide doesn't work.
+  Shelf* shelf = GetPrimaryShelf();
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(0, 0, 50, 50));
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  ASSERT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+  AddNotification();
+  auto* popup = GetLastPopUpAdded();
+  ASSERT_TRUE(popup);
+
+  auto* system_tray = GetPrimaryUnifiedSystemTray();
+  system_tray->ShowVolumeSliderBubble();
+  auto* slider_view = system_tray->GetSliderView();
+  ASSERT_TRUE(slider_view);
+
+  // On hidden shelf, the added popup should appears on top of the slider
+  // bubble, separated by a padding of `kMarginBetweenPopups`.
+  int shelf_hide_popup_bottom = popup->GetBoundsInScreen().bottom();
+  EXPECT_EQ(shelf_hide_popup_bottom + message_center::kMarginBetweenPopups,
+            slider_view->GetBoundsInScreen().y());
+
+  // Move mouse to the shelf to make it shows.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  gfx::Rect display_bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  generator->MoveMouseTo(display_bounds.bottom_center());
+  ASSERT_TRUE(TriggerShelfAutoHideTimeout());
+  ASSERT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Popup should move up when shelf is shown, and still on top of slider view.
+  int shelf_show_popup_bottom = popup->GetBoundsInScreen().bottom();
+  EXPECT_GT(shelf_hide_popup_bottom, shelf_show_popup_bottom);
+  EXPECT_EQ(popup->GetBoundsInScreen().bottom() +
+                message_center::kMarginBetweenPopups,
+            slider_view->GetBoundsInScreen().y());
+
+  // Move the mouse away to hide the shelf. The shelf should hide now and the
+  // popup is adjusted correctly.
+  generator->MoveMouseTo(0, 0);
+  ASSERT_TRUE(TriggerShelfAutoHideTimeout());
+  ASSERT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+  // Popup should move down and still on top of slider view.
+  EXPECT_EQ(shelf_hide_popup_bottom, popup->GetBoundsInScreen().bottom());
+  EXPECT_EQ(popup->GetBoundsInScreen().bottom() +
+                message_center::kMarginBetweenPopups,
+            slider_view->GetBoundsInScreen().y());
 }
 
 // Tests that `TrayBubbleView` elements (e.g. Quick Settings) and popups

@@ -54,6 +54,7 @@ class TrayBubbleView;
 class TrayItemView;
 class TimeTrayItemView;
 class UnifiedSliderBubbleController;
+class UnifiedSliderView;
 class UnifiedSystemTrayBubble;
 class UnifiedMessageCenterBubble;
 
@@ -109,9 +110,8 @@ class ASH_EXPORT UnifiedSystemTray
   // accelerator is shown.
   bool IsSliderBubbleShown() const;
 
-  // Gets the height of the slider bubble used to calculate the baseline of
-  // notification popups and side aligned toasts so they don't overlap.
-  int GetSliderBubbleHeight() const;
+  // Gets the slider view of the slider bubble.
+  UnifiedSliderView* GetSliderView() const;
 
   // True if the bubble containing notifications is visible..
   bool IsMessageCenterBubbleShown() const;
