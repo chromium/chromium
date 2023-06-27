@@ -78,8 +78,8 @@ class PlayerFrameBitmapPainter {
             for (int col = colStart; col < colEnd; col++) {
                 Bitmap tileBitmap = mBitmapMatrix[row][col];
 
-                // Request is ongoing.
-                if (tileBitmap == null) continue;
+                // Request is ongoing or mid-replacement.
+                if (tileBitmap == null || tileBitmap.isRecycled()) continue;
 
                 // Calculate the portion of this tileBitmap that is visible in mViewPort.
                 int bitmapLeft = Math.max(mViewPort.left - (col * mTileSize.getWidth()), 0);

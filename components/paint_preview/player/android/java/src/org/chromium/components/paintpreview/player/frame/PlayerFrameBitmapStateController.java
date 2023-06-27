@@ -96,13 +96,15 @@ public class PlayerFrameBitmapStateController {
      */
     void swap(PlayerFrameBitmapState newState) {
         assert mLoadingBitmapState == newState;
-        // Clear the state to stop potential stragling updates.
-        if (mVisibleBitmapState != null) {
-            mVisibleBitmapState.destroy();
-        }
+        PlayerFrameBitmapState oldState = mVisibleBitmapState;
         mVisibleBitmapState = newState;
         mLoadingBitmapState = null;
         mMediatorDelegate.onSwapState();
+        // Clear the state to stop potential stragling updates. Destroy afterwards in case drawing
+        // is happening concurrently somehow.
+        if (oldState != null) {
+            oldState.destroy();
+        }
     }
 
     /**
