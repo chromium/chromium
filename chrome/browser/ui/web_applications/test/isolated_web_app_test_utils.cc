@@ -203,28 +203,15 @@ TestSignedWebBundleBuilder::TestSignedWebBundleBuilder(
 
 void TestSignedWebBundleBuilder::AddManifest(
     base::StringPiece manifest_string) {
-  // TODO(crbug.com/1385393): Remove base URL once relative URL is supported.
-  GURL base_url = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-                      web_package::SignedWebBundleId::CreateForEd25519PublicKey(
-                          (key_pair_.public_key)))
-                      .origin()
-                      .GetURL();
   builder_.AddExchange(
-      base_url.Resolve("/manifest.webmanifest"),
+      "/manifest.webmanifest",
       {{":status", "200"}, {"content-type", "application/manifest+json"}},
       manifest_string);
 }
 
 void TestSignedWebBundleBuilder::AddPngImage(base::StringPiece url,
                                              base::StringPiece image_string) {
-  // TODO(crbug.com/1385393): Remove base URL once relative URL is supported.
-  GURL base_url = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-                      web_package::SignedWebBundleId::CreateForEd25519PublicKey(
-                          (key_pair_.public_key)))
-                      .origin()
-                      .GetURL();
-  builder_.AddExchange(base_url.Resolve(url),
-                       {{":status", "200"}, {"content-type", "image/png"}},
+  builder_.AddExchange(url, {{":status", "200"}, {"content-type", "image/png"}},
                        image_string);
 }
 
