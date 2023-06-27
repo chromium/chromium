@@ -3927,11 +3927,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "expanded-tab-strip",
-    "owners": [ "rkgibson@google.com", "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "experience-kit-apple-calendar",
     "owners": [ "djean@google.com", "olivierrobin", "bling-flags@google.com" ],
     "expiry_milestone": 112

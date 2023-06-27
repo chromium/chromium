@@ -155,8 +155,7 @@ struct CredentialUIEntry;
 // Prepare to show the TabSwitcher UI.
 - (void)prepareTabSwitcher;
 
-// Shows the TabSwitcher UI. When the thumb strip is enabled, shows the
-// TabSwitcher UI, specifically in its grid layout.
+// Shows the TabSwitcher UI.
 - (void)displayTabSwitcherInGridLayout;
 
 // Same as displayTabSwitcherInGridLayout, but also force tab switcher to

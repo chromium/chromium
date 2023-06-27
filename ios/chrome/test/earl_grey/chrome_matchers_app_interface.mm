@@ -60,7 +60,6 @@
 #import "ios/chrome/browser/ui/settings/tabs/inactive_tabs/inactive_tabs_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/plus_sign_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
@@ -913,7 +912,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)tabGridCellAtIndex:(unsigned int)index {
   return grey_allOf(grey_accessibilityID(IdentifierForCellAtIndex(index)),
-                    grey_not(grey_kindOfClass([PlusSignCell class])),
                     grey_sufficientlyVisible(), nil);
 }
 

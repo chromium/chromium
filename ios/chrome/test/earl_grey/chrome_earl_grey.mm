@@ -1383,11 +1383,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isUseLensToSearchForImageEnabled];
 }
 
-- (BOOL)isThumbstripEnabledForWindowWithNumber:(int)windowNumber {
-  return [ChromeEarlGreyAppInterface
-      isThumbstripEnabledForWindowWithNumber:windowNumber];
-}
-
 - (BOOL)isWebChannelsEnabled {
   return [ChromeEarlGreyAppInterface isWebChannelsEnabled];
 }

@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_utils.h"
-#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -373,13 +372,7 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
   [items addObjectsFromArray:@[ _spaceItem, centralItem, _spaceItem ]];
 
-  if (ShowThumbStripInTraitCollection(traitCollection) &&
-      _mode == TabGridModeNormal) {
-    // The new tab button is only used if the thumb strip is enabled. In other
-    // cases, there is a floating new tab button on the bottom.
-    [items
-        addObjectsFromArray:@[ _newTabButton, _iconButtonAdditionalSpaceItem ]];
-  } else if (_mode != TabGridModeNormal) {
+  if (_mode != TabGridModeNormal) {
     [items addObject:_selectionModeFixedSpace];
   }
 

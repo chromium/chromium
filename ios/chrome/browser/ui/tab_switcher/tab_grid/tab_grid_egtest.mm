@@ -119,25 +119,6 @@ id<GREYMatcher> VisibleTabGridEditButton() {
                     grey_sufficientlyVisible(), nil);
 }
 
-void WaitForTabGridFullscreen() {
-  if (![ChromeEarlGrey isThumbstripEnabledForWindowWithNumber:0]) {
-    return;
-  }
-
-  // Check that the kRegularTabGridIdentifier is visible.
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kRegularTabGridIdentifier)]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-    return error == nil;
-  };
-  bool fullscreenAchieved = base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForUIElementTimeout, condition);
-  GREYAssertTrue(fullscreenAchieved, @"kRegularTabGridIdentifier not visible");
-}
-
 // Returns the matcher for the Recent Tabs table.
 id<GREYMatcher> RecentTabsTable() {
   return grey_allOf(grey_accessibilityID(
@@ -740,7 +721,6 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   [[EarlGrey selectElementWithMatcher:SelectTabsContextMenuItem()]
       performAction:grey_tap()];
-  WaitForTabGridFullscreen();
 
   // Wait for the select all button to appear to confirm that edit mode was
   // entered.
@@ -1224,7 +1204,6 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
-  WaitForTabGridFullscreen();
 
   // Tap tab to select.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]

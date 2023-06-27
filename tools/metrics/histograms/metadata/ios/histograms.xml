@@ -2687,6 +2687,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.Thumbstrip.CancelBy" enum="ThumbstripOpenByIOS"
     expires_after="2024-05-14">
+  <obsolete>
+    Deprecated as of 06/2023
+  </obsolete>
   <owner>gambard@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
@@ -2697,6 +2700,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.Thumbstrip.CloseBy" enum="ThumbstripCloseByIOS"
     expires_after="2024-05-14">
+  <obsolete>
+    Deprecated as of 06/2023
+  </obsolete>
   <owner>gambard@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>[iOS] Reports how the thumbstrip was closed.</summary>
@@ -2704,6 +2710,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.Thumbstrip.OpenBy" enum="ThumbstripOpenByIOS"
     expires_after="2024-05-14">
+  <obsolete>
+    Deprecated as of 06/2023
+  </obsolete>
   <owner>gambard@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>[iOS] Reports how the thumbstrip was opened.</summary>

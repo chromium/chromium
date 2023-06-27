@@ -47,7 +47,6 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
-#import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
 #import "ios/chrome/browser/ui/lens/lens_coordinator.h"
@@ -92,6 +91,7 @@
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/mac/url_conversions.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
@@ -163,8 +163,7 @@ enum HeaderBehaviour {
                                      MainContentUI,
                                      SideSwipeMediatorDelegate,
                                      TabStripPresentation,
-                                     UIGestureRecognizerDelegate,
-                                     ViewRevealingAnimatee> {
+                                     UIGestureRecognizerDelegate> {
   // Identifier for each animation of an NTP opening.
   NSInteger _NTPAnimationIdentifier;
 
@@ -220,10 +219,6 @@ enum HeaderBehaviour {
   // Fake status bar view used to blend the toolbar into the status bar.
   UIView* _fakeStatusBarView;
 
-  // The disabler that prevents the toolbar from being scrolled offscreen when
-  // the thumb strip is visible.
-  std::unique_ptr<ScopedFullscreenDisabler> _fullscreenDisabler;
-
   // The service used to load url parameters in current or new tab.
   UrlLoadingBrowserAgent* _urlLoadingBrowserAgent;
 
@@ -235,12 +230,6 @@ enum HeaderBehaviour {
 
   // Used for updates in web state.
   WebStateUpdateBrowserAgent* _webStateUpdateBrowserAgent;
-
-  // For thumb strip, when YES, fullscreen disabler is reset only when web view
-  // dragging stops, to avoid closing thumb strip and going fullscreen in
-  // one single drag gesture.  When NO, full screen disabler is reset when
-  // the thumb strip animation ends.
-  BOOL _deferEndFullscreenDisabler;
 
   // Used to get the layout guide center.
   LayoutGuideCenter* _layoutGuideCenter;
@@ -277,9 +266,6 @@ enum HeaderBehaviour {
 // Whether BVC prefers to hide the status bar. This value is used to determine
 // the response from the `prefersStatusBarHidden` method.
 @property(nonatomic, assign) BOOL hideStatusBar;
-// Whether the BVC is positioned at the bottom of the window, for example after
-// switching from thumb strip to tab grid.
-@property(nonatomic, assign) BOOL bottomPosition;
 // A block to be run when the `tabWasAdded:` method completes the animation
 // for the presentation of a new tab. Can be used to record performance metrics.
 @property(nonatomic, strong, nullable)
@@ -291,8 +277,6 @@ enum HeaderBehaviour {
 @property(nonatomic, strong) TabStripCoordinator* tabStripCoordinator;
 // A weak reference to the view of the tab strip on tablet.
 @property(nonatomic, weak) UIView<TabStripContaining>* tabStripView;
-// A snapshot of the tab strip used on the thumb strip reveal/hide animation.
-@property(nonatomic, strong) UIView* tabStripSnapshot;
 
 // Returns the header views, all the chrome on top of the page, including the
 // ones that cannot be scrolled off screen by full screen.
@@ -345,11 +329,6 @@ enum HeaderBehaviour {
 // The webState of the active tab.
 @property(nonatomic, readonly) web::WebState* currentWebState;
 
-// Whether the view has been translated for thumb strip usage when smooth
-// scrolling has been enabled. This allows the correct setup to be done when
-// displaying a new web state.
-@property(nonatomic, assign) BOOL viewTranslatedForSmoothScrolling;
-
 // A gesture recognizer to track the last tapped window and the coordinates of
 // the last tap.
 @property(nonatomic, strong) UIGestureRecognizer* contentAreaGestureRecognizer;
@@ -363,8 +342,6 @@ enum HeaderBehaviour {
 @end
 
 @implementation BrowserViewController
-
-@synthesize thumbStripEnabled = _thumbStripEnabled;
 
 #pragma mark - Object lifecycle
 
@@ -577,11 +554,10 @@ enum HeaderBehaviour {
 }
 
 // Returns the safeAreaInsets of the root window for self.view. In some cases,
-// the self.view.safeAreaInsets are cleared when the view has moved (like with
-// thumbstrip, starting with iOS 15) or if it is unattached ( for example on the
-// incognito BVC when the normal BVC is the one active or vice versa). Attached
-// or unattached, going to the window through the SceneState for the
-// self.browser solves both issues.
+// the self.view.safeAreaInsets are cleared when the view is unattached ( for
+// example on the incognito BVC when the normal BVC is the one active or vice
+// versa). Attached or unattached, going to the window through the SceneState
+// for the self.browser solves both issues.
 - (UIEdgeInsets)rootSafeAreaInsets {
   if (_isShutdown) {
     return UIEdgeInsetsZero;
@@ -854,7 +830,6 @@ enum HeaderBehaviour {
   self.toolbarCoordinator = nil;
   _sideSwipeMediator = nil;
   [_voiceSearchController disconnect];
-  _fullscreenDisabler = nullptr;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   _bookmarksCoordinator = nil;
 }
@@ -899,9 +874,6 @@ enum HeaderBehaviour {
     return NO;
 
   if (_voiceSearchController.visible)
-    return NO;
-
-  if (self.bottomPosition)
     return NO;
 
   return self.viewVisible;
@@ -1320,24 +1292,11 @@ enum HeaderBehaviour {
 // On iOS7, iPad should match iOS6 status bar.  Install a simple black bar under
 // the status bar to mimic this layout.
 - (void)installFakeStatusBar {
-  // This method is called when the view is loaded and when the thumb strip is
-  // installed via addAnimatee -> didAnimateViewRevealFromState ->
-  // installFakeStatusBar.
+  // This method is called when the view is loaded.
 
   // Remove the _fakeStatusBarView if present.
   [_fakeStatusBarView removeFromSuperview];
   _fakeStatusBarView = nil;
-
-  if (self.thumbStripEnabled &&
-      !ios::provider::IsFullscreenSmoothScrollingSupported()) {
-    // A fake status bar on the browser view is not necessary when the thumb
-    // strip feature is enabled because the view behind the browser view already
-    // has a dark background. Adding a fake status bar would block the
-    // visibility of the thumb strip thumbnails when moving the browser view.
-    // However, if the Fullscreen Provider is used, then the web content extends
-    // up to behind the tab strip, making the fake status bar necessary.
-    return;
-  }
 
   CGRect statusBarFrame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 0);
   _fakeStatusBarView = [[UIView alloc] initWithFrame:statusBarFrame];
@@ -1542,7 +1501,7 @@ enum HeaderBehaviour {
         [self addConstraintsToTabStrip];
       }
       [self.view insertSubview:primaryToolbarView
-                  aboveSubview:self.tabStripView];
+                  belowSubview:self.tabStripView];
     } else {
       [self.view addSubview:primaryToolbarView];
     }
@@ -1625,15 +1584,7 @@ enum HeaderBehaviour {
     // Make new content visible, resizing it first as the orientation may
     // have changed from the last time it was displayed.
     CGRect viewFrame = self.contentArea.bounds;
-    if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
-      // If the view was translated for the thumb strip, make sure to re-apply
-      // that translation here.
-      if (self.viewTranslatedForSmoothScrolling) {
-        CGFloat toolbarHeight = [self expandedTopToolbarHeight];
-        viewFrame = UIEdgeInsetsInsetRect(
-            viewFrame, UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
-      }
-    } else {
+    if (!ios::provider::IsFullscreenSmoothScrollingSupported()) {
       // If the Smooth Scrolling is on, the WebState view is not
       // resized, and should always match the bounds of the content area.  When
       // the provider is not initialized, viewport insets resize the webview, so
@@ -1827,246 +1778,6 @@ enum HeaderBehaviour {
 }
 
 #pragma mark - ** Protocol Implementations and Helpers **
-
-#pragma mark - ThumbStripSupporting
-
-- (void)thumbStripEnabledWithPanHandler:
-    (ViewRevealingVerticalPanHandler*)panHandler {
-  DCHECK(![self isThumbStripEnabled]);
-  DCHECK(panHandler);
-  _thumbStripEnabled = YES;
-
-  // Add self as animatee first to make sure that the BVC's view is loaded for
-  // the rest of setup
-  [panHandler addAnimatee:self];
-
-  DCHECK([self isViewLoaded]);
-
-  [panHandler addAnimatee:self.toolbarCoordinator.viewRevealingAnimatee];
-
-  self.toolbarCoordinator.panGestureHandler = panHandler;
-  if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
-    self.legacyTabStripCoordinator.panGestureHandler = panHandler;
-  }
-
-  self.view.backgroundColor = UIColor.clearColor;
-
-  CGRect webStateViewFrame = self.contentArea.bounds;
-  if (panHandler.currentState == ViewRevealState::Revealed) {
-    CGFloat toolbarHeight = [self expandedTopToolbarHeight];
-    webStateViewFrame = UIEdgeInsetsInsetRect(
-        webStateViewFrame, UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
-  }
-  self.viewForCurrentWebState.frame = webStateViewFrame;
-
-  self.ntpCoordinator.panGestureHandler = panHandler;
-  [self.ntpCoordinator.thumbStripSupporting
-      thumbStripEnabledWithPanHandler:panHandler];
-}
-
-- (void)thumbStripDisabled {
-  DCHECK([self isThumbStripEnabled]);
-
-  self.toolbarCoordinator.panGestureHandler = nil;
-  if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
-    self.legacyTabStripCoordinator.panGestureHandler = nil;
-  }
-
-  self.view.transform = CGAffineTransformIdentity;
-  if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
-    self.tabStripSnapshot.transform =
-        [self.tabStripView adjustTransformForRTL:CGAffineTransformIdentity];
-  }
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-
-  CGRect webStateViewFrame = self.contentArea.bounds;
-  self.viewForCurrentWebState.frame = webStateViewFrame;
-
-  [self.ntpCoordinator.thumbStripSupporting thumbStripDisabled];
-  self.ntpCoordinator.panGestureHandler = nil;
-
-  _thumbStripEnabled = NO;
-}
-
-#pragma mark - ViewRevealingAnimatee
-
-- (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
-                               toState:(ViewRevealState)nextViewRevealState {
-  // Disable fullscreen if the thumb strip is about to be shown.
-  if (currentViewRevealState == ViewRevealState::Hidden &&
-      !_fullscreenDisabler) {
-    _fullscreenDisabler =
-        std::make_unique<ScopedFullscreenDisabler>(self.fullscreenController);
-    _deferEndFullscreenDisabler = NO;
-  }
-
-  // Hide the tab strip and take a snapshot of it for better animation. However,
-  // this is not necessary to do if the thumb strip will never actually be
-  // revealed.
-  if (currentViewRevealState != nextViewRevealState) {
-    // If a snapshot of a hidden view is taken, the snapshot will be a blank
-    // view. However, if the view's parent is hidden but the view itself is not,
-    // the snapshot will not be a blank view.
-    [self.tabStripSnapshot removeFromSuperview];
-    // During initial setup, the tab strip view may be nil, but the missing
-    // snapshot will never be visible because all three animation methods are
-    // called in succession.
-    if (self.tabStripView && !base::FeatureList::IsEnabled(kModernTabStrip)) {
-      self.tabStripSnapshot = [self.tabStripView screenshotForAnimation];
-      self.tabStripSnapshot.translatesAutoresizingMaskIntoConstraints = NO;
-      self.tabStripSnapshot.transform =
-          currentViewRevealState == ViewRevealState::Hidden
-              ? [self.tabStripView
-                    adjustTransformForRTL:CGAffineTransformIdentity]
-              : [self.tabStripView
-                    adjustTransformForRTL:CGAffineTransformMakeTranslation(
-                                              0, self.tabStripView.frame.size
-                                                     .height)];
-      self.tabStripSnapshot.alpha =
-          currentViewRevealState == ViewRevealState::Revealed ? 0 : 1;
-      [self.contentArea addSubview:self.tabStripSnapshot];
-      AddSameConstraints(self.tabStripSnapshot, self.tabStripView);
-
-      // Now let coordinator take care of hiding the tab strip.
-      [self.legacyTabStripCoordinator.animatee
-          willAnimateViewRevealFromState:currentViewRevealState
-                                 toState:nextViewRevealState];
-    }
-  }
-
-  // Remove the fake status bar to allow the thumb strip animations to appear.
-  [_fakeStatusBarView removeFromSuperview];
-
-  if (currentViewRevealState == ViewRevealState::Hidden) {
-    // When Smooth Scrolling is enabled, the web content extends up to the
-    // top of the BVC view. It has a visible background and blocks the thumb
-    // strip. Thus, when the view revealing process starts, the web content
-    // frame must be moved down and the content inset is decreased. To prevent
-    // the actual web content from jumping, the content offset must be moved up
-    // by a corresponding amount.
-    if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
-      self.viewTranslatedForSmoothScrolling = YES;
-      CGFloat toolbarHeight = [self expandedTopToolbarHeight];
-      if (self.viewForCurrentWebState) {
-        CGRect webStateViewFrame =
-            UIEdgeInsetsInsetRect(self.viewForCurrentWebState.frame,
-                                  UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
-        self.viewForCurrentWebState.frame = webStateViewFrame;
-      }
-      _webStateUpdateBrowserAgent->UpdateWebStateScrollViewOffset(
-          toolbarHeight);
-      // This alerts the fullscreen controller to use the correct new content
-      // insets.
-      self.fullscreenController->FreezeToolbarHeight(true);
-    }
-  }
-
-  // Close all keyboards if the thumb strip is transitioning to the tab grid.
-  if (nextViewRevealState == ViewRevealState::Revealed) {
-    [self.view endEditing:YES];
-  }
-
-  // Stop scrolling in the current web state when transitioning.
-  if (self.currentWebState) {
-    if (self.ntpCoordinator.isNTPActiveForCurrentWebState) {
-      [self.ntpCoordinator stopScrolling];
-    } else {
-      CRWWebViewScrollViewProxy* scrollProxy =
-          self.currentWebState->GetWebViewProxy().scrollViewProxy;
-      [scrollProxy setContentOffset:scrollProxy.contentOffset animated:NO];
-    }
-  }
-}
-
-- (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
-  CGFloat tabStripHeight = self.tabStripView.frame.size.height;
-  CGFloat hideHeight = tabStripHeight + self.headerOffset;
-  switch (nextViewRevealState) {
-    case ViewRevealState::Hidden:
-      self.view.transform = CGAffineTransformIdentity;
-      if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
-        self.tabStripSnapshot.transform =
-            [self.tabStripView adjustTransformForRTL:CGAffineTransformIdentity];
-        self.tabStripSnapshot.alpha = 1;
-      }
-      break;
-    case ViewRevealState::Peeked:
-      self.view.transform = CGAffineTransformMakeTranslation(0, -hideHeight);
-      if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
-        CGAffineTransform transform =
-            CGAffineTransformMakeTranslation(0, tabStripHeight);
-        self.tabStripSnapshot.transform =
-            [self.tabStripView adjustTransformForRTL:transform];
-        self.tabStripSnapshot.alpha = 1;
-      }
-      break;
-    case ViewRevealState::Revealed:
-      self.view.transform = CGAffineTransformMakeTranslation(0, -hideHeight);
-      if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
-        CGAffineTransform transform =
-            CGAffineTransformMakeTranslation(0, tabStripHeight);
-        self.tabStripSnapshot.transform =
-            [self.tabStripView adjustTransformForRTL:transform];
-        self.tabStripSnapshot.alpha = 0;
-      }
-      break;
-  }
-}
-
-- (void)didAnimateViewRevealFromState:(ViewRevealState)startViewRevealState
-                              toState:(ViewRevealState)currentViewRevealState
-                              trigger:(ViewRevealTrigger)trigger {
-  [self.tabStripSnapshot removeFromSuperview];
-  self.bottomPosition = (currentViewRevealState == ViewRevealState::Revealed);
-
-  if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
-    // Now let coordinator take care of showing the tab strip.
-    [self.legacyTabStripCoordinator.animatee
-        didAnimateViewRevealFromState:startViewRevealState
-                              toState:currentViewRevealState
-                              trigger:trigger];
-  }
-
-  if (currentViewRevealState == ViewRevealState::Hidden) {
-    // Stop disabling fullscreen.
-    if (!_deferEndFullscreenDisabler) {
-      _fullscreenDisabler.reset();
-    }
-
-    // Add the status bar back to cover the web content.
-    [self installFakeStatusBar];
-    [self setupStatusBarLayout];
-
-    // See the comments in `-willAnimateViewRevealFromState:toState:` for the
-    // explanation of why this is necessary.
-    if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
-      self.viewTranslatedForSmoothScrolling = NO;
-      self.fullscreenController->FreezeToolbarHeight(false);
-      CGFloat toolbarHeight = [self expandedTopToolbarHeight];
-      if (self.viewForCurrentWebState) {
-        CGRect webStateViewFrame =
-            UIEdgeInsetsInsetRect(self.viewForCurrentWebState.frame,
-                                  UIEdgeInsetsMake(-toolbarHeight, 0, 0, 0));
-        self.viewForCurrentWebState.frame = webStateViewFrame;
-      }
-      _webStateUpdateBrowserAgent->UpdateWebStateScrollViewOffset(
-          -toolbarHeight);
-    }
-  } else if (currentViewRevealState == ViewRevealState::Peeked) {
-    // Close the omnibox after opening the thumb strip
-    [self.omniboxCommandsHandler cancelOmniboxEdit];
-  }
-}
-
-- (void)webViewIsDragging:(BOOL)dragging
-          viewRevealState:(ViewRevealState)viewRevealState {
-  if (dragging && viewRevealState != ViewRevealState::Hidden) {
-    _deferEndFullscreenDisabler = YES;
-  } else if (_deferEndFullscreenDisabler) {
-    _fullscreenDisabler.reset();
-    _deferEndFullscreenDisabler = NO;
-  }
-}
 
 #pragma mark - Helpers
 
@@ -2822,11 +2533,7 @@ enum HeaderBehaviour {
   tabStripFrame.origin.y = self.headerOffset;
   tabStripFrame.size.width = CGRectGetWidth([self view].bounds);
   [self.tabStripView setFrame:tabStripFrame];
-  // The tab strip should be behind the toolbar, because it slides behind the
-  // toolbar during the transition to the thumb strip.
-  [self.view
-      insertSubview:tabStripView
-       belowSubview:self.toolbarCoordinator.primaryToolbarViewController.view];
+  [[self view] addSubview:tabStripView];
 }
 
 #pragma mark - FindBarPresentationDelegate

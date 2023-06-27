@@ -57,8 +57,6 @@ const CGFloat kNonDynamicToolbarHeight = 14;
 const CGFloat kToolbarHeightFullscreen = 20;
 const CGFloat kNonDynamicToolbarHeightFullscreen = 3;
 
-const CGFloat kTopCornerRadius = 10;
-
 NSString* const kToolbarToolsMenuButtonIdentifier =
     @"kToolbarToolsMenuButtonIdentifier";
 NSString* const kToolbarStackButtonIdentifier =

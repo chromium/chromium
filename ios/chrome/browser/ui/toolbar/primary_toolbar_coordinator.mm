@@ -83,18 +83,9 @@
   return self.viewController;
 }
 
-- (id<ViewRevealingAnimatee>)animatee {
-  return self.viewController;
-}
-
 - (id<ToolbarAnimatee>)toolbarAnimatee {
   CHECK(self.viewController);
   return self.viewController;
-}
-
-- (void)setPanGestureHandler:
-    (ViewRevealingVerticalPanHandler*)panGestureHandler {
-  self.viewController.panGestureHandler = panGestureHandler;
 }
 
 - (void)showPrerenderingAnimation {

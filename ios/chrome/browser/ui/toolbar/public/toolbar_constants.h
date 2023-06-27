@@ -98,10 +98,6 @@ extern NSString* const kToolbarNewTabButtonIdentifier;
 // Accessibility identifier of the cancel omnibox edit button.
 extern NSString* const kToolbarCancelOmniboxEditButtonIdentifier;
 
-// Round corner radius for top-left and top-right corners when thumb strip is
-// visible.
-extern const CGFloat kTopCornerRadius;
-
 // Font size for the TabGrid button containing the tab count.
 extern const NSInteger kTabGridButtonFontSize;
 

@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
-#import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
@@ -676,7 +675,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
     return;
   }
   [self.overscrollActionsController scrollViewDidScroll:scrollView];
-  [self.panGestureHandler scrollViewDidScroll:scrollView];
   [self updateFakeOmniboxForScrollPosition];
 
   [self updateScrolledToMinimumHeight];
@@ -694,7 +692,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   // scroll position can now be overriden.
   self.hasSavedOffsetFromPreviousScrollState = NO;
   [self.overscrollActionsController scrollViewWillBeginDragging:scrollView];
-  [self.panGestureHandler scrollViewWillBeginDragging:scrollView];
   self.scrollStartPosition = scrollView.contentOffset.y;
 }
 
@@ -705,9 +702,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
       scrollViewWillEndDragging:scrollView
                    withVelocity:velocity
             targetContentOffset:targetContentOffset];
-  [self.panGestureHandler scrollViewWillEndDragging:scrollView
-                                       withVelocity:velocity
-                                targetContentOffset:targetContentOffset];
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
@@ -730,7 +724,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView {
   // TODO(crbug.com/1114792): Handle scrolling.
-  [self.panGestureHandler scrollViewDidEndDecelerating:scrollView];
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView*)scrollView {
@@ -752,23 +745,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   // Unfocus omnibox without scrolling back.
   [self unfocusOmnibox];
   return YES;
-}
-
-#pragma mark - ThumbStripSupporting
-
-- (BOOL)isThumbStripEnabled {
-  return self.panGestureHandler != nil;
-}
-
-- (void)thumbStripEnabledWithPanHandler:
-    (ViewRevealingVerticalPanHandler*)panHandler {
-  DCHECK(!self.thumbStripEnabled);
-  self.panGestureHandler = panHandler;
-}
-
-- (void)thumbStripDisabled {
-  DCHECK(self.thumbStripEnabled);
-  self.panGestureHandler = nil;
 }
 
 #pragma mark - UIGestureRecognizerDelegate

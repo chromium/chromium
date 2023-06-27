@@ -491,11 +491,6 @@ const char kTailoredSecurityIntegrationDescription[] =
     "Enable integration between account level enhanced safe browsing and "
     "chrome enhanced safe browsing";
 
-const char kExpandedTabStripName[] = "Enable expanded tabstrip";
-const char kExpandedTabStripDescription[] =
-    "Enables the new expanded tabstrip. Activated by swiping down the tabstrip"
-    " or the toolbar";
-
 const char kFeedBackgroundRefreshName[] = "Enable feed background refresh";
 const char kFeedBackgroundRefreshDescription[] =
     "Schedules a feed background refresh after some minimum period of time has "

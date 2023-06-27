@@ -17,8 +17,6 @@ class WebState;
 @protocol NewTabPageControllerDelegate;
 @protocol NewTabPageDelegate;
 @protocol NewTabPageMetricsDelegate;
-@protocol ThumbStripSupporting;
-@class ViewRevealingVerticalPanHandler;
 
 // Coordinator to manage the Suggestions UI via a
 // ContentSuggestionsViewController.
@@ -40,10 +38,6 @@ class WebState;
 // TODO(crbug.com/1403298): Replace this with a delegate to avoid exposing this.
 @property(nonatomic, strong, readonly)
     ContentSuggestionsMediator* contentSuggestionsMediator;
-
-// Allows for the in-flight enabling/disabling of the thumb strip.
-@property(nonatomic, weak, readonly) id<ThumbStripSupporting>
-    thumbStripSupporting;
 
 // Delegate for NTP related actions.
 @property(nonatomic, weak) id<NewTabPageDelegate> NTPDelegate;

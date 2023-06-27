@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_new_tab_button.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_utils.h"
-#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -439,18 +438,9 @@
     [NSLayoutConstraint deactivateConstraints:_compactConstraints];
     [_toolbar removeFromSuperview];
 
-    // When the thumb strip is enabled, there should be no new tab button on the
-    // bottom ever.
-    if (ShowThumbStripInTraitCollection(self.traitCollection) ||
-        self.page == TabGridPageRemoteTabs) {
-      [NSLayoutConstraint deactivateConstraints:_floatingConstraints];
-      [_largeNewTabButton removeFromSuperview];
-      self.hidden = YES;
-    } else {
       [self addSubview:_largeNewTabButton];
       [NSLayoutConstraint activateConstraints:_floatingConstraints];
       self.hidden = NO;
-    }
   }
 
   [self updateBackgroundVisibility];

@@ -103720,6 +103720,9 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="ThumbstripCloseByIOS">
+  <obsolete>
+    Deprecated as of 06/2023
+  </obsolete>
   <int value="0" label="Closed by dragging the primary toolbar up"/>
   <int value="1" label="Closed by tapping the fake tab at bottom"/>
   <int value="2" label="Closed by user navigating in web page"/>
@@ -103731,6 +103734,9 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="ThumbstripOpenByIOS">
+  <obsolete>
+    Deprecated as of 06/2023
+  </obsolete>
   <int value="0" label="Opened by dragging tab strip down"/>
   <int value="1" label="Opened by dragging primary toolbar down"/>
   <int value="2" label="Opened by scrolling web page / ntp down from top"/>

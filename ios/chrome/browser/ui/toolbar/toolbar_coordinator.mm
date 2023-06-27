@@ -317,18 +317,6 @@
   return height;
 }
 
-#pragma mark ViewRevealing
-
-- (id<ViewRevealingAnimatee>)viewRevealingAnimatee {
-  CHECK(self.primaryToolbarCoordinator.animatee);
-  return self.primaryToolbarCoordinator.animatee;
-}
-
-- (void)setPanGestureHandler:
-    (ViewRevealingVerticalPanHandler*)panGestureHandler {
-  [self.primaryToolbarCoordinator setPanGestureHandler:panGestureHandler];
-}
-
 #pragma mark - FakeboxFocuser
 
 - (void)focusOmniboxNoAnimation {

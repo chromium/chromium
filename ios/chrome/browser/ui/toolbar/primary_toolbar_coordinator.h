@@ -10,8 +10,6 @@
 @protocol PrimaryToolbarViewControllerDelegate;
 @protocol SharingPositioner;
 @protocol ToolbarAnimatee;
-@class ViewRevealingVerticalPanHandler;
-@protocol ViewRevealingAnimatee;
 namespace web {
 class WebState;
 }
@@ -30,9 +28,6 @@ class WebState;
 // adaptive toolbar.
 @interface PrimaryToolbarCoordinator : AdaptiveToolbarCoordinator
 
-// A reference to the view controller that implements the view revealing
-// vertical pan handler delegate methods.
-@property(nonatomic, weak, readonly) id<ViewRevealingAnimatee> animatee;
 // Delegate for events in `PrimaryToolbarCoordinator`.
 @property(nonatomic, weak) id<PrimaryToolbarCoordinatorDelegate> delegate;
 // A reference to the view controller that implements the tooblar animation
@@ -44,10 +39,6 @@ class WebState;
 
 // Positioner for activity services attached to the toolbar
 - (id<SharingPositioner>)SharingPositioner;
-
-// Sets the pan gesture handler for the toolbar controller.
-- (void)setPanGestureHandler:
-    (ViewRevealingVerticalPanHandler*)panGestureHandler;
 
 // Shows the animation when transitioning to a prerendered page.
 - (void)showPrerenderingAnimation;

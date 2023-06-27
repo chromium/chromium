@@ -141,7 +141,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
-#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/whats_new/promo/whats_new_scene_agent.h"
 #import "ios/chrome/browser/url_loading/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -384,9 +383,6 @@ void InjectNTP(Browser* browser) {
                    incognitoBrowser:self.incognitoInterface.browser];
     tabGridCoordinator.delegate = self;
     _mainCoordinator = tabGridCoordinator;
-    tabGridCoordinator.regularThumbStripSupporting = self.mainInterface.bvc;
-    tabGridCoordinator.incognitoThumbStripSupporting =
-        self.incognitoInterface.bvc;
   }
   return _mainCoordinator;
 }
@@ -2208,7 +2204,7 @@ void InjectNTP(Browser* browser) {
     shouldActivateBrowser:(Browser*)browser
            dismissTabGrid:(BOOL)dismissTabGrid
              focusOmnibox:(BOOL)focusOmnibox {
-  DCHECK(dismissTabGrid || self.mainCoordinator.isThumbStripEnabled);
+  DCHECK(dismissTabGrid);
   [self beginActivatingBrowser:browser
             dismissTabSwitcher:dismissTabGrid
                   focusOmnibox:focusOmnibox];
@@ -2231,12 +2227,14 @@ void InjectNTP(Browser* browser) {
 // without closing the tab switcher (e.g. thumb strip), but dismissing the tab
 // switcher requires activating a browser. The omnibox will be focused after the
 // tab switcher dismissal is completed if `focusOmnibox` is YES.
+// TODO(crbug.com/1457148): Modify this function to remove `dismissTabSwitcher`
+// as it is only needed for thumbstrip which is deprecated.
 - (void)beginActivatingBrowser:(Browser*)browser
             dismissTabSwitcher:(BOOL)dismissTabSwitcher
                   focusOmnibox:(BOOL)focusOmnibox {
   DCHECK(browser == self.mainInterface.browser ||
          browser == self.incognitoInterface.browser);
-  DCHECK(dismissTabSwitcher || self.mainCoordinator.isThumbStripEnabled);
+  DCHECK(dismissTabSwitcher);
 
   self.activatingBrowser = YES;
   ApplicationMode mode = (browser == self.mainInterface.browser)
@@ -2932,6 +2930,8 @@ void InjectNTP(Browser* browser) {
 // If `dismissTabSwitcher` is NO, then the tab switcher is not dismissed,
 // although the BVC will be visible. `dismissTabSwitcher` is only used in the
 // thumb strip feature.
+// TODO(crbug.com/1457148): Modify this function to remove `dismissTabSwitcher`
+// as it is only needed for thumbstrip which is deprecated.
 - (void)displayCurrentBVCAndFocusOmnibox:(BOOL)focusOmnibox
                       dismissTabSwitcher:(BOOL)dismissTabSwitcher {
   ProceduralBlock completion = nil;
@@ -3511,8 +3511,6 @@ void InjectNTP(Browser* browser) {
   // Always set the new otr Browser for the tablet or grid switcher.
   // Notify the TabGrid with the new Incognito Browser.
   self.mainCoordinator.incognitoBrowser = self.incognitoInterface.browser;
-  self.mainCoordinator.incognitoThumbStripSupporting =
-      self.incognitoInterface.bvc;
 }
 
 #pragma mark - PolicyWatcherBrowserAgentObserving

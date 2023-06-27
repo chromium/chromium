@@ -7,15 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/gestures/layout_switcher_provider.h"
-#import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_action_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_delegate_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation_layout_providing.h"
-#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
 @protocol ApplicationCommands;
 @protocol GridCommands;
@@ -37,8 +34,6 @@ class GURL;
 @protocol TabGridToolbarsCommandsWrangler;
 @class TabGridTopToolbar;
 @class TabGridViewController;
-@protocol ThumbStripCommands;
-@protocol ViewControllerTraitCollectionObserver;
 
 // Configurations for tab grid pages.
 enum class TabGridPageConfiguration {
@@ -59,6 +54,8 @@ enum class TabGridPageConfiguration {
 // tab will simply be displayed in its current position.
 // This last parameter is used for the thumb strip, where the
 // BVCContainerViewController is never dismissed.
+// TODO(crbug.com/1457148): Modify this function to remove `closeTabGrid` as it
+// is only needed for thumbstrip which is deprecated.
 - (void)showActiveTabInPage:(TabGridPage)page
                focusOmnibox:(BOOL)focusOmnibox
                closeTabGrid:(BOOL)closeTabGrid;
@@ -78,18 +75,12 @@ enum class TabGridPageConfiguration {
 // Opens a link when the user clicks on the in-text link.
 - (void)openLinkWithURL:(const GURL&)URL;
 
-// BVC is completely hidden, detach it from view (for thumbstrip mode).
-- (void)dismissBVC;
-
 // Asks the delegate to open history modal with results filtered by
 // `searchText`.
 - (void)showHistoryFilteredBySearchText:(NSString*)searchText;
 
 // Asks the delegate to open a new tab page with a web search for `searchText`.
 - (void)openSearchResultsPageForSearchText:(NSString*)searchText;
-
-// Sets BVC accessibilityViewIsModal to `modal` (for thumbstrip mode).
-- (void)setBVCAccessibilityViewModal:(BOOL)modal;
 
 // Asks the delegate to show the inactive tabs.
 - (void)showInactiveTabs;
@@ -102,13 +93,10 @@ enum class TabGridPageConfiguration {
     : UIViewController <LegacyGridTransitionAnimationLayoutProviding,
                         IncognitoReauthObserver,
                         KeyCommandActions,
-                        LayoutSwitcherProvider,
                         TabGridPaging,
                         TabGridToolbarsActionWrangler,
                         TabGridToolbarsDelegateWrangler,
-                        ThumbStripSupporting,
-                        UISearchBarDelegate,
-                        ViewRevealingAnimatee>
+                        UISearchBarDelegate>
 
 @property(nonatomic, weak) id<ApplicationCommands> handler;
 @property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
@@ -116,9 +104,6 @@ enum class TabGridPageConfiguration {
 // Handlers for popup menu commands for the regular and incognito states.
 @property(nonatomic, weak) id<PopupMenuCommands> regularPopupMenuHandler;
 @property(nonatomic, weak) id<PopupMenuCommands> incognitoPopupMenuHandler;
-// Handlers for thumb strip commands for the regular and incognito states.
-@property(nonatomic, weak) id<ThumbStripCommands> regularThumbStripHandler;
-@property(nonatomic, weak) id<ThumbStripCommands> incognitoThumbStripHandler;
 
 // Delegate for this view controller to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
@@ -156,11 +141,6 @@ enum class TabGridPageConfiguration {
     regularTabsShareableItemsProvider;
 @property(nonatomic, weak) id<GridShareableItemsProvider>
     incognitoTabsShareableItemsProvider;
-
-// An optional object to be notified whenever the trait collection of this view
-// controller changes.
-@property(nonatomic, weak) id<ViewControllerTraitCollectionObserver>
-    traitCollectionObserver;
 
 // Readwrite override of the UIViewController property. This object will ignore
 // the value supplied by UIViewController.

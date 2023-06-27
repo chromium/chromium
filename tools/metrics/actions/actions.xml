@@ -22248,6 +22248,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileThumbstripCreateIncognitoTab">
+  <obsolete>Deprecated as of 06/2023</obsolete>
   <owner>djean@chromium.org</owner>
   <owner>edchin@chromium.org</owner>
   <description>
@@ -22257,6 +22258,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileThumbstripCreateRegularTab">
+  <obsolete>Deprecated as of 06/2023</obsolete>
   <owner>djean@chromium.org</owner>
   <owner>edchin@chromium.org</owner>
   <description>

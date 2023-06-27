@@ -725,7 +725,6 @@
   self.NTPViewController.contentSuggestionsViewController =
       self.contentSuggestionsCoordinator.viewController;
 
-  self.NTPViewController.panGestureHandler = self.panGestureHandler;
   self.NTPViewController.feedVisible = [self isFeedVisible];
 
   self.feedWrapperViewController = [self.componentFactory
@@ -775,10 +774,6 @@
   } else {
     return self.containerViewController;
   }
-}
-
-- (id<ThumbStripSupporting>)thumbStripSupporting {
-  return self.NTPViewController;
 }
 
 #pragma mark - NewTabPageConfiguring

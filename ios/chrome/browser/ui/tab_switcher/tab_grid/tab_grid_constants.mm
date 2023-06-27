@@ -91,13 +91,6 @@ const CGFloat kTabGridSearchBarNonCompactWidthRatioModifier = 0.5f;
 const CGFloat kTabGridTopToolbarHeight = 52.0f;
 const CGFloat kTabGridBottomToolbarHeight = 44.0f;
 
-// The distance travelled by the thumb strip thumbnails during the slide-in
-// animation of the thumb strip reveal transition.
-const CGFloat kThumbStripSlideInHeight = 40.0f;
-// The distance travelled by the thumb strip's plus sign button during the
-// slide-out animation of the transition from Peeked to Revealed state.
-const CGFloat kThumbStripPlusSignButtonSlideOutDistance = 400.0f;
-
 // Alpha of the background color of the toolbar.
 const CGFloat kToolbarBackgroundAlpha = 0.75;
 

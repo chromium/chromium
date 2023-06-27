@@ -158,13 +158,12 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
     }
   }
 
-  // Thumb strip, pinned tabs, inactive tabs and search results menus don't
+  // Pinned tabs, inactive tabs and search results menus don't
   // support tab selection.
   BOOL scenarioDisablesSelection =
       scenario == MenuScenarioHistogram::kTabGridSearchResult ||
       scenario == MenuScenarioHistogram::kPinnedTabsEntry ||
-      scenario == MenuScenarioHistogram::kInactiveTabsEntry ||
-      scenario == MenuScenarioHistogram::kThumbStrip;
+      scenario == MenuScenarioHistogram::kInactiveTabsEntry;
   if (!scenarioDisablesSelection) {
     [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
                     [self.contextMenuDelegate selectTabs];

@@ -26,9 +26,6 @@ enum class BlueDotPromoUserGroup {
 extern const base::FeatureParam<BlueDotPromoUserGroup>
     kBlueDotPromoUserGroupParam;
 
-// Feature to open tab switcher after sliding down the toolbar.
-BASE_DECLARE_FEATURE(kExpandedTabStrip);
-
 // Test-only: Feature flag used to verify that EG2 can trigger flags. Must be
 // always disabled by default, because it is used to verify that enabling
 // features in tests works.

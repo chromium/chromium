@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
-#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
@@ -167,11 +166,6 @@
   self.fakeOmniboxTarget = nil;
 }
 
-- (void)setTopCornersRounded:(BOOL)rounded {
-  _topCornersRounded = rounded;
-  self.layer.cornerRadius = rounded ? kTopCornerRadius : 0;
-}
-
 #pragma mark - UIView
 
 - (CGSize)intrinsicContentSize {
@@ -186,10 +180,6 @@
 - (void)setUpToolbarBackground {
   self.backgroundColor =
       self.buttonFactory.toolbarConfiguration.backgroundColor;
-  if (base::FeatureList::IsEnabled(kExpandedTabStrip)) {
-    self.layer.maskedCorners = kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
-  }
-
   self.contentView = self;
 }
 

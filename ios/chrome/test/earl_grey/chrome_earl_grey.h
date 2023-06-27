@@ -718,10 +718,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether the UseLensToSearchForImage feature is enabled;
 - (BOOL)isUseLensToSearchForImageEnabled;
 
-// Returns whether the Thumbstrip feature is enabled for window with given
-// number.
-- (BOOL)isThumbstripEnabledForWindowWithNumber:(int)windowNumber;
-
 // Returns whether the Web Channels feature is enabled.
 - (BOOL)isWebChannelsEnabled;
 

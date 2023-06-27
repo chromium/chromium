@@ -31,9 +31,7 @@
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
-#import "ios/chrome/browser/shared/public/commands/thumb_strip_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views.h"
@@ -212,15 +210,6 @@
 - (void)focusOmnibox {
   if (![self.textField isFirstResponder]) {
     base::RecordAction(base::UserMetricsAction("MobileOmniboxFocused"));
-
-    // Thumb strip is not necessarily active, so only close it if it is active.
-    if ([self.browser->GetCommandDispatcher()
-            dispatchingForProtocol:@protocol(ThumbStripCommands)]) {
-      id<ThumbStripCommands> thumbStripHandler = HandlerForProtocol(
-          self.browser->GetCommandDispatcher(), ThumbStripCommands);
-      [thumbStripHandler
-          closeThumbStripWithTrigger:ViewRevealTrigger::OmniboxFocus];
-    }
 
     // In multiwindow context, -becomeFirstRepsonder is not enough to get the
     // keyboard input. The window will not automatically become key. Make it key

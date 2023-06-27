@@ -18,8 +18,6 @@
 @protocol SharingPositioner;
 @class SecondaryToolbarViewController;
 @protocol SideSwipeToolbarSnapshotProviding;
-@protocol ViewRevealingAnimatee;
-@class ViewRevealingVerticalPanHandler;
 
 /// Coordinator above primary and secondary toolbars. It does not have a
 /// view controller. This object is also an interface between multiple toolbars
@@ -86,16 +84,6 @@
 - (CGFloat)collapsedSecondaryToolbarHeight;
 /// The maximum height of the secondary toolbar.
 - (CGFloat)expandedSecondaryToolbarHeight;
-
-#pragma mark ViewRevealing
-
-/// A reference to the view controller that implements the view revealing
-/// vertical pan handler delegate methods.
-- (id<ViewRevealingAnimatee>)viewRevealingAnimatee;
-/// Sets the pan gesture handler for the view controller that implements the
-/// view revealing.
-- (void)setPanGestureHandler:
-    (ViewRevealingVerticalPanHandler*)panGestureHandler;
 
 @end
 

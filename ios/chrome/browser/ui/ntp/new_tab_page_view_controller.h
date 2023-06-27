@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
 @class BubblePresenter;
 @class ContentSuggestionsViewController;
@@ -19,13 +18,11 @@
 @protocol NewTabPageContentDelegate;
 @class NewTabPageHeaderViewController;
 @protocol OverscrollActionsControllerDelegate;
-@class ViewRevealingVerticalPanHandler;
 
 // View controller containing all the content presented on a standard,
 // non-incognito new tab page.
 @interface NewTabPageViewController
-    : UIViewController <ThumbStripSupporting,
-                        NewTabPageConsumer,
+    : UIViewController <NewTabPageConsumer,
                         NewTabPageHeaderViewControllerDelegate,
                         UIScrollViewDelegate>
 
@@ -42,10 +39,6 @@
 
 // Delegate for actions relating to the NTP content.
 @property(nonatomic, weak) id<NewTabPageContentDelegate> ntpContentDelegate;
-
-// The pan gesture handler to notify of scroll events happening in this view
-// controller.
-@property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
 
 // The view controller representing the content suggestions.
 @property(nonatomic, strong)

@@ -59,7 +59,6 @@ source_set("tabs") {
     "//ios/chrome/browser/ui/bookmarks",
     "//ios/chrome/browser/ui/bubble",
     "//ios/chrome/browser/ui/fullscreen",
-    "//ios/chrome/browser/ui/gestures",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/popup_menu/public",
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
@@ -96,7 +95,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/bubble",
-    "//ios/chrome/browser/ui/gestures",
     "//ios/chrome/browser/ui/tabs/requirements",
   ]
 }

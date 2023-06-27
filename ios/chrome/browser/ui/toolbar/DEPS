@@ -6,8 +6,6 @@ include_rules = [
   "+ios/chrome/browser/ui/location_bar",
   "+ios/chrome/browser/ui/omnibox",
   "+ios/chrome/browser/ui/orchestrator",
-  "+ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h",
-  "+ios/chrome/browser/ui/gestures",
   "+ios/chrome/browser/ui/keyboard/key_command_actions.h",
   "+ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h",
   "+ios/chrome/browser/ui/lens",

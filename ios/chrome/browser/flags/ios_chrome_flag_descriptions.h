@@ -415,10 +415,6 @@ extern const char kEnableVariationsGoogleGroupFilteringDescription[];
 extern const char kEnableWebChannelsName[];
 extern const char kEnableWebChannelsDescription[];
 
-// Title and description for the flag to enable an expanded tab strip.
-extern const char kExpandedTabStripName[];
-extern const char kExpandedTabStripDescription[];
-
 // Title and description for the flag to enable feed background refresh.
 extern const char kFeedBackgroundRefreshName[];
 extern const char kFeedBackgroundRefreshDescription[];

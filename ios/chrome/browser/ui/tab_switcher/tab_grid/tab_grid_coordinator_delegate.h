@@ -20,6 +20,8 @@ class Browser;
 // active. If `dismissTabGrid` is YES, the tab grid itself should also be
 // dismissed. This should always be the case except when using the thumb strip,
 // where the tab grid is never dismissed
+// TODO(crbug.com/1457148): Modify this function to remove `dismissTabGrid` as
+// it is only needed for thumbstrip which is deprecated.
 - (void)tabGrid:(TabGridCoordinator*)tabGrid
     shouldActivateBrowser:(Browser*)browser
            dismissTabGrid:(BOOL)dismissTabGrid
