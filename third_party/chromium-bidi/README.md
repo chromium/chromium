@@ -180,10 +180,10 @@ CHANNEL=dev npm run server
 npm run server -- --channel=dev
 ```
 
-Use the CLI argument `--verbose` to have CDP events printed to the console. Note: you have to enable debugging output `bidiMapper:mapperDebug:*` as well.
+Use the CLI argument `--verbose` to have CDP events printed to the console. Note: you have to enable debugging output `bidi:mapper:debug:*` as well.
 
 ```sh
-DEBUG=bidiMapper:mapperDebug:* npm run server -- --verbose
+DEBUG=bidi:mapper:debug:* npm run server -- --verbose
 ```
 
 or

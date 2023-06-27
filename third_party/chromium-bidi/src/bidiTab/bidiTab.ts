@@ -107,12 +107,7 @@ function createCdpConnection() {
     }
   }
 
-  return new CdpConnection(
-    new WindowCdpTransport(),
-    (...messages: unknown[]) => {
-      log(LogType.cdp, ...messages);
-    }
-  );
+  return new CdpConnection(new WindowCdpTransport(), log);
 }
 
 function createBidiServer(selfTargetId: string) {
@@ -121,7 +116,7 @@ function createBidiServer(selfTargetId: string) {
 
     constructor() {
       window.onBidiMessage = (messageStr: string) => {
-        log(LogType.bidi, 'received ◂', messageStr);
+        log(`${LogType.bidi}:RECV ◂`, messageStr);
         let messageObject: Message.RawCommandRequest;
         try {
           messageObject = WindowBidiTransport.#parseBidiMessage(messageStr);
@@ -146,7 +141,7 @@ function createBidiServer(selfTargetId: string) {
     sendMessage(message: Message.OutgoingMessage) {
       const messageStr = JSON.stringify(message);
       window.sendBidiResponse(messageStr);
-      log(LogType.bidi, 'sent ▸', messageStr);
+      log(`${LogType.bidi}:SEND ▸`, messageStr);
     }
 
     close() {

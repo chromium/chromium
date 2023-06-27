@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {LogType} from '../utils/log.js';
+import {type LogPrefix, LogType} from '../utils/log.js';
 
 /** HTML source code for the user-facing Mapper tab. */
 const mapperPageSource =
@@ -64,7 +64,7 @@ export function generatePage() {
   findOrCreateTypeLogContainer(LogType.cdp);
 }
 
-export function log(logType: LogType, ...messages: unknown[]) {
+export function log(logType: LogPrefix, ...messages: unknown[]) {
   // If run not in browser (e.g. unit test), do nothing.
   if (!globalThis.document.documentElement) {
     return;

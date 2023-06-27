@@ -21,10 +21,10 @@ import websocket from 'websocket';
 
 import type {ITransport} from '../utils/transport.js';
 
-const log = debug('bidiServer:log');
-const debugInternal = debug('bidiServer:internal');
-const debugSend = debug('bidiServer:SEND ▸');
-const debugRecv = debug('bidiServer:RECV ◂');
+export const debugInfo = debug('bidi:server:info');
+const debugInternal = debug('bidi:server:internal');
+const debugSend = debug('bidi:server:SEND ▸');
+const debugRecv = debug('bidi:server:RECV ◂');
 
 function getHttpRequestPayload(request: http.IncomingMessage): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -117,7 +117,7 @@ export class BidiServerRunner {
       }
     );
     server.listen(bidiPort, () => {
-      log('Server is listening on port', bidiPort);
+      debugInfo('Server is listening on port', bidiPort);
     });
 
     const wsServer: websocket.server = new websocket.server({
@@ -162,7 +162,7 @@ export class BidiServerRunner {
         onBidiConnectionClosed();
       });
 
-      bidiServer.initialise((messageStr) => {
+      bidiServer.initialize((messageStr) => {
         return this.#sendClientMessageStr(messageStr, connection);
       });
     });
@@ -242,7 +242,7 @@ class BidiServer implements ITransport {
     // Intentionally empty.
   }
 
-  initialise(sendBidiMessage: (messageStr: string) => Promise<void>) {
+  initialize(sendBidiMessage: (messageStr: string) => Promise<void>) {
     this.#sendBidiMessage = sendBidiMessage;
   }
 

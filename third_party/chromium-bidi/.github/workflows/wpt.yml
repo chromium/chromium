@@ -187,6 +187,6 @@ jobs:
             out
 
 env:
-  DEBUG: 'bidiServer:log,bidiMapper:mapperDebug:*'
+  DEBUG: 'bidi:server:info,bidi:mapper:debug:*'
   FORCE_COLOR: 3
   PIP_DISABLE_PIP_VERSION_CHECK: 1

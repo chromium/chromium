@@ -58,7 +58,7 @@ jobs:
         run: >
           xvfb-run --auto-servernum
           npm run e2e-${{ matrix.head }}
-        # For verbose logging, set `DEBUG: 'bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
+        # For verbose logging, set `DEBUG: 'bidi:mapper:debug:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           VERBOSE: ${{ github.event.inputs.verbose }}
@@ -66,7 +66,7 @@ jobs:
         if: matrix.os == 'macos-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless')
         timeout-minutes: 20
         run: npm run e2e-${{ matrix.head }}
-        # For verbose logging, set `DEBUG: 'bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
+        # For verbose logging, set `DEBUG: 'bidi:mapper:debug:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           VERBOSE: ${{ github.event.inputs.verbose }}
@@ -78,6 +78,6 @@ jobs:
           path: logs
 
 env:
-  DEBUG: 'bidiServer:log,bidiMapper:mapperDebug:*'
+  DEBUG: 'bidi:server:info,bidi:mapper:debug:*'
   FORCE_COLOR: 3
   PIP_DISABLE_PIP_VERSION_CHECK: 1

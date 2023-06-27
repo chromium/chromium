@@ -24,11 +24,10 @@ import type {CdpClient} from '../cdp/cdpClient.js';
 import {LogType} from '../utils/log.js';
 import {WebSocketTransport} from '../utils/websocketTransport.js';
 
-const debugInternal = debug('bidiMapper:internal');
-const debugLog = debug('bidiMapper:log');
-const mapperDebugLogOthers = debug('bidiMapper:mapperDebug:others');
-
-const bidiMapperMapperDebugPrefix = 'bidiMapper:mapperDebug:';
+const debugInternal = debug('bidi:mapper:internal');
+const debugInfo = debug('bidi:mapper:info');
+const debugMapperDebugOthers = debug('bidi:mapper:debug:others');
+const debugMapperDebugPrefix = 'bidi:mapper:debug:';
 
 export class MapperServer {
   #handlers: ((message: string) => void)[] = [];
@@ -134,8 +133,8 @@ export class MapperServer {
         messages: unknown[];
       };
 
-      // BiDi traffic is logged in `bidiServer:SEND ▸`
-      if (debugMessage.logType === LogType.bidi) {
+      // BiDi traffic is logged in `bidi:server:SEND ▸`
+      if (debugMessage.logType.startsWith(LogType.bidi)) {
         return;
       }
 
@@ -143,7 +142,7 @@ export class MapperServer {
         debugMessage.logType !== undefined &&
         debugMessage.messages !== undefined
       ) {
-        debug(bidiMapperMapperDebugPrefix + debugMessage.logType)(
+        debug(debugMapperDebugPrefix + debugMessage.logType)(
           // No formatter is needed as the messages will be formatted
           // automatically.
           '',
@@ -153,11 +152,11 @@ export class MapperServer {
       }
     } catch {}
     // Fall back to raw log in case of unknown
-    mapperDebugLogOthers(debugMessageStr);
+    debugMapperDebugOthers(debugMessageStr);
   };
 
   #onConsoleAPICalled = (params: Protocol.Runtime.ConsoleAPICalledEvent) => {
-    debugLog(
+    debugInfo(
       'consoleAPICalled %s %O',
       params.type,
       params.args.map((arg) => arg.value)
@@ -167,7 +166,7 @@ export class MapperServer {
   #onRuntimeExceptionThrown = (
     params: Protocol.Runtime.ExceptionThrownEvent
   ) => {
-    debugLog('exceptionThrown', params);
+    debugInfo('exceptionThrown', params);
   };
 
   static async #initMapper(

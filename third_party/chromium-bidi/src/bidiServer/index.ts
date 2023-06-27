@@ -20,7 +20,6 @@ import os from 'os';
 import {mkdtemp} from 'fs/promises';
 
 import argparse from 'argparse';
-import debug from 'debug';
 import {
   launch,
   computeSystemExecutablePath,
@@ -31,11 +30,9 @@ import {
 
 import type {ITransport} from '../utils/transport.js';
 
-import {BidiServerRunner} from './bidiServerRunner.js';
+import {BidiServerRunner, debugInfo} from './bidiServerRunner.js';
 import {MapperServer} from './mapperServer.js';
 import mapperReader from './mapperReader.js';
-
-const log = debug('bidiServer:log');
 
 function parseArguments(): {
   port: number;
@@ -79,7 +76,7 @@ function parseArguments(): {
 
 (() => {
   try {
-    log('Launching BiDi server');
+    debugInfo('Launching BiDi server');
 
     const args = parseArguments();
     const bidiPort = args.port;
@@ -95,9 +92,9 @@ function parseArguments(): {
         verbose
       );
     });
-    log('BiDi server launched');
+    debugInfo('BiDi server launched');
   } catch (e) {
-    log('Error', e);
+    debugInfo('Error', e);
   }
 })();
 

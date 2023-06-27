@@ -24,4 +24,6 @@ export enum LogType {
   // keep-sorted end
 }
 
-export type LoggerFn = (type: LogType, ...messages: unknown[]) => void;
+export type LogPrefix = LogType | `${LogType}:${string}`;
+
+export type LoggerFn = (type: LogPrefix, ...messages: unknown[]) => void;

@@ -17,6 +17,8 @@
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import type {ITransport} from '../utils/transport.js';
+import {LogType} from '../utils/log.js';
+import type {LoggerFn} from '../utils/log.js';
 
 import {CloseError, CdpClient, type ICdpClient} from './cdpClient.js';
 import type {CdpMessage} from './cdpMessage.js';
@@ -44,13 +46,10 @@ export class CdpConnection implements ICdpConnection {
   /** Map from session ID to CdpClient. */
   readonly #sessionCdpClients = new Map<string, CdpClient>();
   readonly #commandCallbacks = new Map<number, CdpCallbacks>();
-  readonly #logger?: (...messages: unknown[]) => void;
+  readonly #logger?: LoggerFn;
   #nextId = 0;
 
-  constructor(
-    transport: ITransport,
-    logger?: (...messages: unknown[]) => void
-  ) {
+  constructor(transport: ITransport, logger?: LoggerFn) {
     this.#transport = transport;
     this.#logger = logger;
     this.#transport.setOnMessage(this.#onMessage);
@@ -107,17 +106,20 @@ export class CdpConnection implements ICdpConnection {
 
       const cdpMessageStr = JSON.stringify(cdpMessage);
       void this.#transport.sendMessage(cdpMessageStr)?.catch((error) => {
-        this.#logger?.('error', error);
+        this.#logger?.(`${LogType.cdp}:ERROR`, error);
         this.#transport.close();
       });
-      this.#logger?.('sent ▸', JSON.stringify(cdpMessage, null, 2));
+      this.#logger?.(
+        `${LogType.cdp}:SEND ▸`,
+        JSON.stringify(cdpMessage, null, 2)
+      );
     });
   }
 
   #onMessage = (message: string) => {
     const messageParsed: CdpMessage<any> = JSON.parse(message);
     const messagePretty = JSON.stringify(messageParsed, null, 2);
-    this.#logger?.('received ◂', messagePretty);
+    this.#logger?.(`${LogType.cdp}:RECV ◂`, messagePretty);
 
     // Update client map if a session is attached or detached.
     // Listen for these events on every session.
