@@ -209,26 +209,7 @@ bool UninstallGoogleUpdate(UpdaterScope scope,
   }
 
   // Keep only `GoogleUpdate.exe` and nothing else under `\Google\Update`.
-  const absl::optional<base::FilePath> google_update_exe =
-      GetGoogleUpdateExePath(scope);
-  if (!google_update_exe) {
-    return false;
-  }
-
-  base::FileEnumerator it(
-      google_update_exe->DirName(), false,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
-  std::unique_ptr<WorkItemList> list(WorkItem::CreateWorkItemList());
-  for (base::FilePath name = it.Next(); !name.empty(); name = it.Next()) {
-    if (name == google_update_exe) {
-      continue;
-    }
-
-    VLOG(2) << __func__ << ": Deleting legacy path: " << name;
-    list->AddDeleteTreeWorkItem(name, temp_path);
-  }
-
-  return list->Do();
+  return DeleteExcept(GetGoogleUpdateExePath(scope));
 }
 
 absl::optional<int> DaynumFromDWORD(DWORD value) {

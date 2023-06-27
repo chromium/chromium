@@ -25,6 +25,7 @@
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
@@ -1142,6 +1143,40 @@ absl::optional<base::FilePath> GetInstallDirectoryX86(UpdaterScope scope) {
   }
   return install_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING);
+}
+
+void ForEachItemInPath(
+    const base::FilePath& path,
+    bool recursive,
+    int file_type,
+    base::RepeatingCallback<void(const base::FilePath&)> callback) {
+  if (path.empty()) {
+    return;
+  }
+  base::FileEnumerator it(path, recursive, file_type);
+  for (base::FilePath name = it.Next(); !name.empty(); name = it.Next()) {
+    callback.Run(name);
+  }
+}
+
+bool DeleteExcept(const absl::optional<base::FilePath>& except) {
+  if (!except) {
+    return false;
+  }
+
+  ForEachItemInPath(
+      except->DirName(), false,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES,
+      base::BindRepeating(
+          [](const base::FilePath& except, const base::FilePath& item) {
+            if (item != except) {
+              VLOG(2) << __func__ << ": Deleting: " << item;
+              base::DeletePathRecursively(item);
+            }
+          },
+          *except));
+
+  return true;
 }
 
 }  // namespace updater

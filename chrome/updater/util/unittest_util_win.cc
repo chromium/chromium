@@ -7,16 +7,21 @@
 #include <windows.h>
 
 #include <string>
+#include <utility>
 
 #include "base/base_paths_win.h"
 #include "base/command_line.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/win/registry.h"
+#include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util/unittest_util.h"
 #include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -143,6 +148,48 @@ void SetupCmdExe(UpdaterScope scope,
       SERVICE_WIN32_OWN_PROCESS, SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
       command_line.c_str(), nullptr, nullptr, nullptr, nullptr, nullptr));
   return service.IsValid() || ::GetLastError() == ERROR_SERVICE_EXISTS;
+}
+
+void SetupMockUpdater(const base::FilePath& mock_updater_path) {
+  const base::FilePath exe_dir(mock_updater_path.DirName());
+
+  const base::FilePath test_exe(
+      GetTestProcessCommandLine(GetTestScope(), test::GetTestName())  // IN-TEST
+          .GetProgram());
+
+  for (const base::FilePath& dir :
+       {exe_dir, exe_dir.Append(L"1.2.3.4"), exe_dir.Append(L"Download"),
+        exe_dir.Append(L"Install")}) {
+    ASSERT_TRUE(base::CreateDirectory(dir));
+
+    for (const std::wstring& exe_name :
+         {mock_updater_path.BaseName().value(), {L"mock.exe"}}) {
+      const base::FilePath exe(dir.Append(exe_name));
+      ASSERT_TRUE(base::CopyFile(test_exe, exe));
+    }
+  }
+}
+
+void ExpectOnlyMockUpdater(const base::FilePath& mock_updater_path) {
+  const base::FilePath exe_dir(mock_updater_path.DirName());
+  ASSERT_TRUE(base::PathExists(mock_updater_path));
+  int count_mock_updater_path = 0;
+
+  ForEachItemInPath(
+      exe_dir, false,
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES,
+      base::BindRepeating(
+          [](const base::FilePath& mock_updater_path,
+             int& count_mock_updater_path, const base::FilePath& item) {
+            if (item == mock_updater_path) {
+              ++count_mock_updater_path;
+            } else {
+              ADD_FAILURE() << "Unexpected file/directory found: " << item;
+            }
+          },
+          mock_updater_path, std::ref(count_mock_updater_path)));
+
+  EXPECT_EQ(count_mock_updater_path, 1);
 }
 
 }  // namespace updater

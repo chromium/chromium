@@ -33,6 +33,7 @@
 #include "chrome/updater/auto_run_on_os_upgrade_task.h"
 #include "chrome/updater/change_owners_task.h"
 #include "chrome/updater/check_for_updates_task.h"
+#include "chrome/updater/cleanup_task.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/installer.h"
@@ -333,6 +334,8 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
       base::BindOnce(&AutoRunOnOsUpgradeTask::Run,
                      base::MakeRefCounted<AutoRunOnOsUpgradeTask>(
                          GetUpdaterScope(), persisted_data_)));
+  new_tasks.push_back(base::BindOnce(
+      &CleanupTask::Run, base::MakeRefCounted<CleanupTask>(GetUpdaterScope())));
 
   const auto barrier_closure =
       base::BarrierClosure(new_tasks.size(), std::move(callback));
