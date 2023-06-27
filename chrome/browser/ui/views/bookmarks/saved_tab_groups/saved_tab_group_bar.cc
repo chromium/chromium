@@ -651,6 +651,8 @@ void SavedTabGroupBar::MaybeShowOverflowMenu() {
 
   // 1. Build the vertical list of buttons in the over flow menu.
   auto overflow_menu = std::make_unique<OverflowMenu>(*this);
+  overflow_menu->SetProperty(views::kElementIdentifierKey,
+                             kSavedTabGroupOverflowMenuId);
 
   // Add all buttons that are not currently visible to the overflow menu.
   for (const auto* const child : children()) {

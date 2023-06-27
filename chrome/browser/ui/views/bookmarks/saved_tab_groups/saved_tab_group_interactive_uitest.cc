@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -155,13 +156,15 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest, CreateGroupAndSave) {
   const tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({0});
 
-  RunTestSequence(ShowBookmarksBar(),
-                  // Ensure no tab groups save buttons in the bookmarks bar
-                  // are present.
-                  EnsureNotPresent(kSavedTabGroupButtonElementId),
-                  // Add tab at index 0 to a new group and save it.
-                  SaveGroupLeaveEditorBubbleOpen(group_id),
-                  WaitForShow(kSavedTabGroupButtonElementId, true));
+  RunTestSequence(
+      // Show the bookmarks bar where the buttons will be displayed.
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      // Ensure no tab groups save buttons in the bookmarks bar
+      // are present.
+      EnsureNotPresent(kSavedTabGroupButtonElementId),
+      // Add tab at index 0 to a new group and save it.
+      SaveGroupLeaveEditorBubbleOpen(group_id),
+      WaitForShow(kSavedTabGroupButtonElementId, true));
 }
 
 IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
@@ -171,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
 
   RunTestSequence(
       // Show the bookmarks bar where the buttons will be displayed.
-      ShowBookmarksBar(),
+      FinishTabstripAnimations(), ShowBookmarksBar(),
       // Ensure no tab groups save buttons in the bookmarks bar are present.
       EnsureNotPresent(kSavedTabGroupButtonElementId),
       SaveGroupLeaveEditorBubbleOpen(group_id),
@@ -198,9 +201,8 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       browser()->tab_strip_model()->AddToNewGroup({0});
 
   RunTestSequence(
-      FinishTabstripAnimations(),
       // Show the bookmarks bar where the buttons will be displayed.
-      ShowBookmarksBar(),
+      FinishTabstripAnimations(), ShowBookmarksBar(),
       // Ensure no tab groups save buttons in the bookmarks bar are present.
       EnsureNotPresent(kSavedTabGroupButtonElementId),
       SaveGroupLeaveEditorBubbleOpen(group_id),
@@ -227,7 +229,6 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
                        FirstTabIsFocusedInReopenedSavedGroup) {
-  // Add 3 tabs to the browser.
   ASSERT_TRUE(
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
   ASSERT_TRUE(
@@ -243,7 +244,8 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
   base::Uuid saved_guid;
 
   RunTestSequence(
-      ShowBookmarksBar(),
+      // Show the bookmarks bar where the buttons will be displayed.
+      FinishTabstripAnimations(), ShowBookmarksBar(),
       // Ensure no saved group buttons in the bookmarks bar are present.
       EnsureNotPresent(kSavedTabGroupButtonElementId),
       // Save the group and ensure it is linked in the model.
@@ -292,9 +294,8 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       group->visual_data();
 
   RunTestSequence(
-      FinishTabstripAnimations(),
       // Show the bookmarks bar where the buttons will be displayed.
-      ShowBookmarksBar(),
+      FinishTabstripAnimations(), ShowBookmarksBar(),
       // Ensure no tab groups save buttons in the bookmarks bar are present.
       EnsureNotPresent(kSavedTabGroupButtonElementId),
       SaveGroupLeaveEditorBubbleOpen(group_id),
@@ -319,6 +320,59 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       // Click the tab group header to close the menu.
       FlushEvents(), HoverTabGroupHeader(group_id),
       ClickMouse(ui_controls::LEFT), FinishTabstripAnimations());
+}
+
+IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+                       FiveSavedGroupsShowsOverflowMenuButton) {
+  // Add 4 additional tabs to the browser.
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(5, browser()->tab_strip_model()->count());
+
+  // Add each tab to a separate group.
+  const tab_groups::TabGroupId group_1 =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+  const tab_groups::TabGroupId group_2 =
+      browser()->tab_strip_model()->AddToNewGroup({1});
+  const tab_groups::TabGroupId group_3 =
+      browser()->tab_strip_model()->AddToNewGroup({2});
+  const tab_groups::TabGroupId group_4 =
+      browser()->tab_strip_model()->AddToNewGroup({3});
+  const tab_groups::TabGroupId group_5 =
+      browser()->tab_strip_model()->AddToNewGroup({4});
+
+  RunTestSequence(
+      // Show the bookmarks bar where the buttons will be displayed.
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      // Ensure no saved group buttons in the bookmarks bar are present.
+      EnsureNotPresent(kSavedTabGroupButtonElementId),
+
+      // Verify the overflow button is hidden until the 5th group is saved.
+      SaveGroupAndCloseEditorBubble(group_1), FinishTabstripAnimations(),
+      SaveGroupAndCloseEditorBubble(group_2), FinishTabstripAnimations(),
+      SaveGroupAndCloseEditorBubble(group_3), FinishTabstripAnimations(),
+      SaveGroupAndCloseEditorBubble(group_4), FinishTabstripAnimations(),
+      EnsureNotPresent(kSavedTabGroupOverflowButtonElementId),
+      SaveGroupAndCloseEditorBubble(group_5), FinishTabstripAnimations(),
+      EnsurePresent(kSavedTabGroupOverflowButtonElementId),
+
+      // Verify there is only 1 button in the overflow menu
+      PressButton(kSavedTabGroupOverflowButtonElementId),
+      WaitForShow(kSavedTabGroupOverflowMenuId, true),
+      CheckView(kSavedTabGroupOverflowMenuId,
+                [](views::View* el) { return el->children().size() == 1u; }),
+      // Hide the overflow menu.
+      FlushEvents(),
+      SendAccelerator(
+          kSavedTabGroupOverflowMenuId,
+          ui::Accelerator(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE)),
+      WaitForHide(kSavedTabGroupOverflowMenuId));
 }
 
 // TODO(crbug.com/1432770): Re-enable this test once it doesn't get stuck in
@@ -348,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
 
   RunTestSequence(
       // This comment fixes the auto formatting, do not remove.
-      ShowBookmarksBar(),
+      FinishTabstripAnimations(), ShowBookmarksBar(),
       // Save the groups.
       SaveGroupAndCloseEditorBubble(group_id_1),
       SaveGroupAndCloseEditorBubble(group_id_2),
