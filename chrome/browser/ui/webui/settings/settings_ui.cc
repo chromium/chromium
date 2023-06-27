@@ -322,12 +322,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
         ->FetchPriceEmailPref();
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  html_source->AddBoolean(
-      "enableDesktopDetailedLanguageSettings",
-      base::FeatureList::IsEnabled(language::kDesktopDetailedLanguageSettings));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddBoolean(
       "userCannotManuallyEnterPassword",

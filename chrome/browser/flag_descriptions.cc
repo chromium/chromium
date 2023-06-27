@@ -7209,11 +7209,6 @@ const char kUIDebugToolsName[] = "Debugging tools for UI";
 const char kUIDebugToolsDescription[] =
     "Enables additional keyboard shortcuts to help debugging.";
 
-const char kDesktopDetailedLanguageSettingsName[] =
-    "Detailed Language Settings (Desktop)";
-const char kDesktopDetailedLanguageSettingsDescription[] =
-    "Enable the new detailed language settings page";
-
 const char kSyncPollImmediatelyOnEveryStartupName[] =
     "Sync Poll Immediately On Every Startup";
 const char kSyncPollImmediatelyOnEveryStartupDescription[] =

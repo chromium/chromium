@@ -8710,11 +8710,6 @@ const FeatureEntry kFeatureEntries[] = {
         kOsWin | kOsLinux | kOsLacros | kOsMac | kOsFuchsia,
         FEATURE_VALUE_TYPE(features::kUIDebugTools),
     },
-    {"desktop-detailed-language-settings",
-     flag_descriptions::kDesktopDetailedLanguageSettingsName,
-     flag_descriptions::kDesktopDetailedLanguageSettingsDescription,
-     kOsWin | kOsLinux | kOsLacros | kOsMac | kOsFuchsia,
-     FEATURE_VALUE_TYPE(language::kDesktopDetailedLanguageSettings)},
 
     {"sync-poll-immediately-on-every-startup",
      flag_descriptions::kSyncPollImmediatelyOnEveryStartupName,

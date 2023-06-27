@@ -4171,9 +4171,6 @@ extern const char kElasticOverscrollDescription[];
 extern const char kUIDebugToolsName[];
 extern const char kUIDebugToolsDescription[];
 
-extern const char kDesktopDetailedLanguageSettingsName[];
-extern const char kDesktopDetailedLanguageSettingsDescription[];
-
 extern const char kSyncPollImmediatelyOnEveryStartupName[];
 extern const char kSyncPollImmediatelyOnEveryStartupDescription[];
 

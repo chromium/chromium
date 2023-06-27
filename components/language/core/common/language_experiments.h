@@ -30,9 +30,6 @@ BASE_DECLARE_FEATURE(kUseButtonTranslateBubbleUi);
 // This feature enables setting the application language on Android.
 BASE_DECLARE_FEATURE(kDetailedLanguageSettings);
 
-// This feature enables setting the application language on Desktop.
-BASE_DECLARE_FEATURE(kDesktopDetailedLanguageSettings);
-
 // This feature enables providing Translate data to Assistant.
 BASE_DECLARE_FEATURE(kTranslateAssistContent);
 
