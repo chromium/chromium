@@ -1595,10 +1595,15 @@ TEST_F(ScrollableShelfViewDeskButtonTest, ButtonRespondsToOverflowStateChange) {
 
   // Keep adding apps until the desk button shrinks, and track the ID of the
   // last added app so that we can remove it later.
+  // Set the upper limit on number of apps to avoid infinite loop if the desk
+  // button does not shrink.
   ShelfID last_app_id;
+  size_t number_of_apps = 0u;
   while (desk_button_widget->is_expanded()) {
     last_app_id = AddAppShortcut();
     WaitForShelfAnimation();
+    ++number_of_apps;
+    ASSERT_LT(number_of_apps, 50u);
   }
 
   EXPECT_EQ(ScrollableShelfView::LayoutStrategy::kNotShowArrowButtons,
