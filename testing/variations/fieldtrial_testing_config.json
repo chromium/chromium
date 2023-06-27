@@ -5063,15 +5063,6 @@
                     "enable_features": [
                         "LauncherFuzzyMatchForOmnibox"
                     ]
-                },
-                {
-                    "name": "EnabledWithRelevance_20221221",
-                    "params": {
-                        "enable_relevance": "true"
-                    },
-                    "enable_features": [
-                        "LauncherFuzzyMatchForOmnibox"
-                    ]
                 }
             ]
         }
