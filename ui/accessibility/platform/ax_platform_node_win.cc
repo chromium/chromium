@@ -7920,13 +7920,6 @@ bool AXPlatformNodeWin::IsHyperlink() {
   return false;
 }
 
-void AXPlatformNodeWin::ComputeHypertextRemovedAndInserted(size_t* start,
-                                                           size_t* old_len,
-                                                           size_t* new_len) {
-  AXPlatformNodeBase::ComputeHypertextRemovedAndInserted(old_hypertext_, start,
-                                                         old_len, new_len);
-}
-
 double AXPlatformNodeWin::GetHorizontalScrollPercent() {
   if (!IsHorizontallyScrollable())
     return UIA_ScrollPatternNoScroll;

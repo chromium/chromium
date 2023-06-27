@@ -1220,8 +1220,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // Relationships between this node and other nodes.
   std::vector<Microsoft::WRL::ComPtr<AXPlatformRelationWin>> relations_;
 
-  AXLegacyHypertext old_hypertext_;
-
   // These protected methods are still used by BrowserAccessibilityComWin. At
   // some point post conversion, we can probably move these to be private
   // methods.
@@ -1233,9 +1231,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // Also, in IA2, text that includes embedded objects is called hypertext.
   // Returns true if the current object is an IA2 hyperlink.
   bool IsHyperlink();
-  void ComputeHypertextRemovedAndInserted(size_t* start,
-                                          size_t* old_len,
-                                          size_t* new_len);
 
   // If offset is a member of IA2TextSpecialOffsets this function updates the
   // value of offset and returns, otherwise offset remains unchanged.

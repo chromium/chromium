@@ -432,9 +432,21 @@ class __declspec(uuid("562072fe-3390-43b1-9e2c-dd4118f5ac79"))
 
   std::unique_ptr<WinAttributes> win_attributes_;
 
+  // Holds transient state needed only while processing a tree update.
+  struct UpdateState {
+    UpdateState(std::unique_ptr<WinAttributes> old_win_attributes,
+                ui::AXLegacyHypertext old_hypertext);
+    UpdateState(const UpdateState&) = delete;
+    UpdateState& operator=(const UpdateState&) = delete;
+    ~UpdateState();
+
+    std::unique_ptr<WinAttributes> old_win_attributes;
+    ui::AXLegacyHypertext old_hypertext;
+  };
+
   // Only valid during the scope of a IA2_EVENT_TEXT_REMOVED or
   // IA2_EVENT_TEXT_INSERTED event.
-  std::unique_ptr<WinAttributes> old_win_attributes_;
+  std::unique_ptr<UpdateState> update_state_;
 
   // The previous scroll position, so we can tell if this object scrolled.
   int previous_scroll_x_;

@@ -10,6 +10,7 @@
 #include <sstream>
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
@@ -1640,6 +1641,18 @@ AXLegacyHypertext::~AXLegacyHypertext() = default;
 AXLegacyHypertext::AXLegacyHypertext(const AXLegacyHypertext& other) = default;
 AXLegacyHypertext& AXLegacyHypertext::operator=(
     const AXLegacyHypertext& other) = default;
+AXLegacyHypertext::AXLegacyHypertext(AXLegacyHypertext&& other) noexcept
+    : needs_update(std::exchange(other.needs_update, true)),
+      hyperlink_offset_to_index(std::move(other.hyperlink_offset_to_index)),
+      hyperlinks(std::move(other.hyperlinks)),
+      hypertext(std::move(other.hypertext)) {}
+AXLegacyHypertext& AXLegacyHypertext::operator=(AXLegacyHypertext&& other) {
+  needs_update = std::exchange(other.needs_update, true);
+  hyperlink_offset_to_index = std::move(other.hyperlink_offset_to_index);
+  hyperlinks = std::move(other.hyperlinks);
+  hypertext = std::move(other.hypertext);
+  return *this;
+}
 
 // TODO(nektar): To be able to use AXNode in Views, move this logic to AXNode.
 void AXPlatformNodeBase::UpdateComputedHypertext() const {

@@ -55,6 +55,18 @@ BrowserAccessibilityComWin::WinAttributes::WinAttributes()
 BrowserAccessibilityComWin::WinAttributes::~WinAttributes() {}
 
 //
+// BrowserAccessibilityComWin::UpdateState
+//
+
+BrowserAccessibilityComWin::UpdateState::UpdateState(
+    std::unique_ptr<WinAttributes> old_win_attributes,
+    ui::AXLegacyHypertext old_hypertext)
+    : old_win_attributes(std::move(old_win_attributes)),
+      old_hypertext(std::move(old_hypertext)) {}
+
+BrowserAccessibilityComWin::UpdateState::~UpdateState() = default;
+
+//
 // BrowserAccessibilityComWin
 //
 BrowserAccessibilityComWin::BrowserAccessibilityComWin()
@@ -317,11 +329,13 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_newText(
   if (!new_text)
     return E_INVALIDARG;
 
-  if (!old_win_attributes_)
+  if (!update_state_) {
     return E_FAIL;
+  }
 
   size_t start, old_len, new_len;
-  ComputeHypertextRemovedAndInserted(&start, &old_len, &new_len);
+  ComputeHypertextRemovedAndInserted(update_state_->old_hypertext, &start,
+                                     &old_len, &new_len);
   if (new_len == 0)
     return E_FAIL;
 
@@ -342,15 +356,17 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_oldText(
   if (!old_text)
     return E_INVALIDARG;
 
-  if (!old_win_attributes_)
+  if (!update_state_) {
     return E_FAIL;
+  }
 
   size_t start, old_len, new_len;
-  ComputeHypertextRemovedAndInserted(&start, &old_len, &new_len);
+  ComputeHypertextRemovedAndInserted(update_state_->old_hypertext, &start,
+                                     &old_len, &new_len);
   if (old_len == 0)
     return E_FAIL;
 
-  std::u16string old_hypertext = old_hypertext_.hypertext;
+  const std::u16string& old_hypertext = update_state_->old_hypertext.hypertext;
   std::u16string substr = old_hypertext.substr(start, old_len);
   old_text->text = SysAllocString(base::as_wcstr(substr));
   old_text->start = static_cast<LONG>(start);
@@ -1486,12 +1502,14 @@ void BrowserAccessibilityComWin::ComputeStylesIfNeeded() {
 //
 
 void BrowserAccessibilityComWin::UpdateStep1ComputeWinAttributes() {
-  // Swap win_attributes_ to old_win_attributes_, allowing us to see
-  // exactly what changed and fire appropriate events. Note that
-  // old_win_attributes_ is cleared at the end of UpdateStep3FireEvents.
-  old_win_attributes_.swap(win_attributes_);
+  DCHECK(!update_state_);
+  DCHECK(win_attributes_);
 
-  old_hypertext_ = hypertext_;
+  // Move win_attributes_ and hypertext_ into update_state_, allowing us to see
+  // exactly what changed and fire appropriate events. Note that update_state_
+  // is destroyed at the end of UpdateStep3FireEvents.
+  update_state_ = std::make_unique<UpdateState>(std::move(win_attributes_),
+                                                std::move(hypertext_));
   hypertext_ = ui::AXLegacyHypertext();
 
   win_attributes_ = std::make_unique<WinAttributes>();
@@ -1514,26 +1532,34 @@ void BrowserAccessibilityComWin::UpdateStep1ComputeWinAttributes() {
 }
 
 void BrowserAccessibilityComWin::UpdateStep2ComputeHypertext() {
+  DCHECK(update_state_);
   UpdateComputedHypertext();
 }
 
 void BrowserAccessibilityComWin::UpdateStep3FireEvents() {
+  DCHECK(update_state_);
+  DCHECK(update_state_->old_win_attributes);
+
   const bool ignored = owner()->IsIgnored();
+
+  const auto& old_win_attributes = *update_state_->old_win_attributes;
 
   // Suppress all of these events when the node is ignored, or when the ignored
   // state has changed on a node that isn't part of an active live region.
-  if (ignored || (old_win_attributes_->ignored != ignored &&
+  if (ignored || (old_win_attributes.ignored != ignored &&
                   !owner()->GetData().IsContainedInActiveLiveRegion() &&
                   !owner()->GetData().IsActiveLiveRegionRoot())) {
+    update_state_.reset();
     return;
   }
 
   // The rest of the events only fire on changes, not on new objects.
 
-  if (old_win_attributes_->ia_role != 0) {
+  if (old_win_attributes.ia_role != 0) {
     // Fire an event if the description, help, or value changes.
-    if (description() != old_win_attributes_->description)
+    if (description() != old_win_attributes.description) {
       FireNativeEvent(EVENT_OBJECT_DESCRIPTIONCHANGE);
+    }
 
     // Fire an event if this container object has scrolled.
     int sx = 0;
@@ -1550,10 +1576,11 @@ void BrowserAccessibilityComWin::UpdateStep3FireEvents() {
     // Do not fire removed/inserted when a name change event will be fired by
     // AXEventGenerator, as they are providing redundant information and will
     // lead to duplicate announcements.
-    if (name() == old_win_attributes_->name ||
+    if (name() == old_win_attributes.name ||
         GetNameFrom() == ax::mojom::NameFrom::kContents) {
       size_t start, old_len, new_len;
-      ComputeHypertextRemovedAndInserted(&start, &old_len, &new_len);
+      ComputeHypertextRemovedAndInserted(update_state_->old_hypertext, &start,
+                                         &old_len, &new_len);
       if (old_len > 0) {
         // In-process screen readers may call IAccessibleText::get_oldText
         // in reaction to this event to retrieve the text that was removed.
@@ -1567,8 +1594,7 @@ void BrowserAccessibilityComWin::UpdateStep3FireEvents() {
     }
   }
 
-  old_win_attributes_.reset(nullptr);
-  old_hypertext_ = ui::AXLegacyHypertext();
+  update_state_.reset();
 }
 
 BrowserAccessibilityManager* BrowserAccessibilityComWin::Manager() const {
