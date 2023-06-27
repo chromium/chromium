@@ -99,10 +99,10 @@ BASE_FEATURE(kEnableCloudScanAfterPreview,
 
 // The naming mismatch below is intentional to preserve compatibility while
 // making code usage clearer. This is temporary and will be removed once
-// b/216105729 is officially fix and the local workflow is supported.
+// b/216105729 is officially fixed and the local workflow is supported.
 BASE_FEATURE(kEnableLocalScanAfterPreview,
              "EnablePrintScanAfterPreview",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 }  // namespace features
