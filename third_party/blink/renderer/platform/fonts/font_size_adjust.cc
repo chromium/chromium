@@ -37,7 +37,7 @@ String FontSizeAdjust::ToString() const {
   }
 
   if (metric_ == Metric::kExHeight) {
-    return value_ == IsFromFont()
+    return IsFromFont()
                ? "from-font"
                : String::Format("%s", String::Number(value_).Ascii().c_str());
   }
