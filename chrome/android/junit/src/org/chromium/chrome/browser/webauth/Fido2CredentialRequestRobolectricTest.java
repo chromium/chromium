@@ -29,7 +29,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -44,7 +43,6 @@ import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
-import org.chromium.components.webauthn.AuthenticatorImpl;
 import org.chromium.components.webauthn.CredManMetricsHelper;
 import org.chromium.components.webauthn.CredManMetricsHelper.CredManGetRequestEnum;
 import org.chromium.components.webauthn.CredManMetricsHelper.CredManPrepareRequestEnum;
@@ -56,7 +54,6 @@ import org.chromium.components.webauthn.WebAuthnCredentialDetails;
 import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.net.GURLUtils;
 import org.chromium.net.GURLUtilsJni;
@@ -79,8 +76,6 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Mock
     private RenderFrameHost mFrameHost;
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private WebContents mWebContents;
     @Mock
     GURLUtils.Natives mGURLUtilsJniMock;
     @Mock
@@ -125,14 +120,11 @@ public class Fido2CredentialRequestRobolectricTest {
 
         mRequest = new Fido2CredentialRequest(
                 /*intentSender=*/null);
-        AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mRequest);
 
         Fido2ApiTestHelper.mockFido2CredentialRequestJni(mMocker);
         Fido2ApiTestHelper.mockClientDataJson(mMocker, "{}");
 
         mCallback = Fido2ApiTestHelper.getAuthenticatorCallback();
-
-        mRequest.setWebContentsForTesting(mWebContents);
 
         Mockito.when(mFrameHost.getLastCommittedURL()).thenReturn(gurl);
         Mockito.when(mFrameHost.getLastCommittedOrigin()).thenReturn(mOrigin);
@@ -142,8 +134,6 @@ public class Fido2CredentialRequestRobolectricTest {
         Mockito.when(mFrameHost.performGetAssertionWebAuthSecurityChecks(
                              any(String.class), any(Origin.class), anyBoolean()))
                 .thenReturn(new WebAuthSecurityChecksResults(AuthenticatorStatus.SUCCESS, false));
-        Mockito.when(mWebContents.getTopLevelNativeWindow().getActivity().get())
-                .thenReturn(mActivity);
 
         mCredentialManager = new FakeAndroidCredentialManager();
         mRequest.setOverrideVersionCheckForTesting(true);
@@ -164,7 +154,8 @@ public class Fido2CredentialRequestRobolectricTest {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
 
-        mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin,
+        mRequest.handleMakeCredentialRequest(mActivity, mCreationOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin,
                 (responseStatus, response)
                         -> mCallback.onRegisterResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
@@ -186,12 +177,54 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
+    public void testMakeCredential_credManEnabledWithExplicitHash_success() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+
+        final byte[] clientDataHash = new byte[] {1, 2, 3};
+        mRequest.handleMakeCredentialRequest(mActivity, mCreationOptions, /*frameHost=*/null,
+                clientDataHash, mOrigin,
+                (responseStatus, response)
+                        -> mCallback.onRegisterResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        FakeAndroidCredManCreateRequest credManRequest = mCredentialManager.getCreateRequest();
+        assertThat(credManRequest).isNotNull();
+        assertThat(credManRequest.getOrigin())
+                .isEqualTo(Fido2CredentialRequest.convertOriginToString(mOrigin));
+        assertThat(credManRequest.getCredentialData().getByteArray(
+                           "androidx.credentials.BUNDLE_KEY_CLIENT_DATA_HASH"))
+                .isEqualTo(clientDataHash);
+        assertThat(mCallback.getStatus()).isEqualTo(Integer.valueOf(AuthenticatorStatus.SUCCESS));
+    }
+
+    @Test
+    @SmallTest
+    public void testMakeCredential_rkDisabledWithExplicitHash_success() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+
+        mCreationOptions.authenticatorSelection.residentKey = ResidentKeyRequirement.DISCOURAGED;
+        final byte[] clientDataHash = new byte[] {1, 2, 3};
+        mRequest.handleMakeCredentialRequest(mActivity, mCreationOptions, /*frameHost=*/null,
+                clientDataHash, mOrigin,
+                (responseStatus, response)
+                        -> mCallback.onRegisterResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        FakeAndroidCredManCreateRequest credManRequest = mCredentialManager.getCreateRequest();
+        assertThat(credManRequest).isNull();
+        assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isTrue();
+        assertThat(mFido2ApiCallHelper.mClientDataHash).isEqualTo(clientDataHash);
+    }
+
+    @Test
+    @SmallTest
     public void testMakeCredential_rkDiscouraged_goesToPlayServices() {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
 
         mCreationOptions.authenticatorSelection.residentKey = ResidentKeyRequirement.DISCOURAGED;
-        mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin,
+        mRequest.handleMakeCredentialRequest(mActivity, mCreationOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin,
                 (responseStatus, response)
                         -> mCallback.onRegisterResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
@@ -205,7 +238,8 @@ public class Fido2CredentialRequestRobolectricTest {
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
 
         mCreationOptions.isPaymentCredentialCreation = true;
-        mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin,
+        mRequest.handleMakeCredentialRequest(mActivity, mCreationOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin,
                 (responseStatus, response)
                         -> mCallback.onRegisterResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
@@ -220,7 +254,8 @@ public class Fido2CredentialRequestRobolectricTest {
 
         mCredentialManager.setErrorResponse(new FakeAndroidCredManException(
                 "android.credentials.CreateCredentialException.TYPE_USER_CANCELED", "Message"));
-        mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin,
+        mRequest.handleMakeCredentialRequest(mActivity, mCreationOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin,
                 (responseStatus, response)
                         -> mCallback.onRegisterResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
@@ -236,7 +271,8 @@ public class Fido2CredentialRequestRobolectricTest {
 
         mCredentialManager.setErrorResponse(new FakeAndroidCredManException(
                 "android.credentials.CreateCredentialException.TYPE_UNKNOWN", "Message"));
-        mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin,
+        mRequest.handleMakeCredentialRequest(mActivity, mCreationOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin,
                 (responseStatus, response)
                         -> mCallback.onRegisterResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
@@ -250,7 +286,8 @@ public class Fido2CredentialRequestRobolectricTest {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
 
-        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+        mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin, mOrigin, /*payment=*/null,
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
@@ -278,13 +315,64 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
+    public void testGetAssertion_credManEnabledWithExplicitHash_success() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+
+        final byte[] clientDataHash = new byte[] {1, 2, 3, 4};
+        mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, /*frameHost=*/null,
+                clientDataHash, mOrigin, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
+        assertThat(credManRequest).isNotNull();
+        assertThat(credManRequest.getCredentialOptions()).hasSize(1);
+        FakeAndroidCredentialOption option = credManRequest.getCredentialOptions().get(0);
+        assertThat(option.getCredentialRetrievalData().getByteArray(
+                           "androidx.credentials.BUNDLE_KEY_CLIENT_DATA_HASH"))
+                .isEqualTo(clientDataHash);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_allowListMatchWithExplicitHash_goesToPlayServices() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+
+        PublicKeyCredentialDescriptor descriptor = new PublicKeyCredentialDescriptor();
+        descriptor.type = 0;
+        descriptor.id = new byte[] {1, 2, 3, 4};
+        descriptor.transports = new int[] {0};
+        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[] {descriptor};
+
+        WebAuthnCredentialDetails details = new WebAuthnCredentialDetails();
+        details.mCredentialId = descriptor.id;
+        mFido2ApiCallHelper.mCredentials = new ArrayList<>();
+        mFido2ApiCallHelper.mCredentials.add(details);
+
+        final byte[] clientDataHash = new byte[] {1, 2, 3, 4};
+        mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, /*frameHost=*/null,
+                clientDataHash, mOrigin, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
+        assertThat(credManRequest).isNull();
+        assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isTrue();
+        assertThat(mFido2ApiCallHelper.mClientDataHash).isEqualTo(clientDataHash);
+    }
+
+    @Test
+    @SmallTest
     public void testGetAssertion_credManEnabledUserCancel_notAllowedError() {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
 
         mCredentialManager.setErrorResponse(new FakeAndroidCredManException(
                 "android.credentials.GetCredentialException.TYPE_USER_CANCELED", "Message"));
-        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+        mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin, mOrigin, /*payment=*/null,
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
@@ -303,7 +391,8 @@ public class Fido2CredentialRequestRobolectricTest {
 
         mCredentialManager.setErrorResponse(new FakeAndroidCredManException(
                 "android.credentials.GetCredentialException.TYPE_UNKNOWN", "Message"));
-        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+        mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin, mOrigin, /*payment=*/null,
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
@@ -326,7 +415,8 @@ public class Fido2CredentialRequestRobolectricTest {
         descriptor.transports = new int[] {0};
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[] {descriptor};
 
-        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+        mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin, mOrigin, /*payment=*/null,
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
@@ -349,7 +439,8 @@ public class Fido2CredentialRequestRobolectricTest {
 
         mFido2ApiCallHelper.mCredentialsError = new IllegalStateException("injected error");
 
-        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+        mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin, mOrigin, /*payment=*/null,
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
@@ -375,7 +466,8 @@ public class Fido2CredentialRequestRobolectricTest {
         mFido2ApiCallHelper.mCredentials = new ArrayList<>();
         mFido2ApiCallHelper.mCredentials.add(details);
 
-        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+        mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin, mOrigin, /*payment=*/null,
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
@@ -391,7 +483,8 @@ public class Fido2CredentialRequestRobolectricTest {
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
         mRequestOptions.isConditional = true;
 
-        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+        mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin, mOrigin, /*payment=*/null,
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
@@ -426,7 +519,8 @@ public class Fido2CredentialRequestRobolectricTest {
         mCredentialManager.setErrorResponse(new FakeAndroidCredManException(
                 "android.credentials.GetCredentialException.TYPE_UNKNOWN", "Message"));
 
-        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+        mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin, mOrigin, /*payment=*/null,
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
@@ -445,7 +539,8 @@ public class Fido2CredentialRequestRobolectricTest {
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
         mRequestOptions.isConditional = true;
 
-        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+        mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin, mOrigin, /*payment=*/null,
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
@@ -467,7 +562,8 @@ public class Fido2CredentialRequestRobolectricTest {
         ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
         mRequestOptions.isConditional = true;
 
-        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+        mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin, mOrigin, /*payment=*/null,
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
@@ -495,7 +591,8 @@ public class Fido2CredentialRequestRobolectricTest {
         ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
         mRequestOptions.isConditional = true;
 
-        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+        mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin, mOrigin, /*payment=*/null,
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
@@ -538,6 +635,7 @@ public class Fido2CredentialRequestRobolectricTest {
         public boolean mGetAssertionCalled;
         public List<WebAuthnCredentialDetails> mCredentials;
         public Exception mCredentialsError;
+        public byte[] mClientDataHash;
 
         @Override
         public boolean arePlayServicesAvailable() {
@@ -569,6 +667,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 byte[] clientDataHash, OnSuccessListener<PendingIntent> successCallback,
                 OnFailureListener failureCallback) throws NoSuchAlgorithmException {
             mMakeCredentialCalled = true;
+            mClientDataHash = clientDataHash;
             // Don't make any actual calls to Play Services.
         }
 
@@ -577,6 +676,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 byte[] clientDataHash, OnSuccessListener<PendingIntent> successCallback,
                 OnFailureListener failureCallback) {
             mGetAssertionCalled = true;
+            mClientDataHash = clientDataHash;
             // Don't make any actual calls to Play Services.
         }
     }

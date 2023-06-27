@@ -4,6 +4,8 @@
 
 package org.chromium.components.webauthn;
 
+import android.content.Context;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -15,6 +17,9 @@ import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebAuthenticationDelegate;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsStatics;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.Origin;
 
 import java.nio.ByteBuffer;
@@ -31,23 +36,29 @@ public class InternalAuthenticator {
     private long mNativeInternalAuthenticatorAndroid;
     private final AuthenticatorImpl mAuthenticator;
 
-    private InternalAuthenticator(long nativeInternalAuthenticatorAndroid,
-            WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost renderFrameHost) {
+    private InternalAuthenticator(long nativeInternalAuthenticatorAndroid, Context context,
+            WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost renderFrameHost,
+            Origin topOrigin) {
         mNativeInternalAuthenticatorAndroid = nativeInternalAuthenticatorAndroid;
-        mAuthenticator = new AuthenticatorImpl(intentSender, renderFrameHost);
+        mAuthenticator = new AuthenticatorImpl(context, intentSender, renderFrameHost, topOrigin);
     }
 
     @VisibleForTesting
-    public static InternalAuthenticator createForTesting(
-            WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost renderFrameHost) {
-        return new InternalAuthenticator(-1, intentSender, renderFrameHost);
+    public static InternalAuthenticator createForTesting(Context context,
+            WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost renderFrameHost,
+            Origin topOrigin) {
+        return new InternalAuthenticator(-1, context, intentSender, renderFrameHost, topOrigin);
     }
 
     @CalledByNative
     public static InternalAuthenticator create(
             long nativeInternalAuthenticatorAndroid, RenderFrameHost renderFrameHost) {
-        return new InternalAuthenticator(
-                nativeInternalAuthenticatorAndroid, /* intentSender= */ null, renderFrameHost);
+        final WebContents webContents = WebContentsStatics.fromRenderFrameHost(renderFrameHost);
+        final WindowAndroid window = webContents.getTopLevelNativeWindow();
+        final Context context = window.getActivity().get();
+        final Origin topOrigin = webContents.getMainFrame().getLastCommittedOrigin();
+        return new InternalAuthenticator(nativeInternalAuthenticatorAndroid, context,
+                new AuthenticatorImpl.WindowIntentSender(window), renderFrameHost, topOrigin);
     }
 
     @CalledByNative
