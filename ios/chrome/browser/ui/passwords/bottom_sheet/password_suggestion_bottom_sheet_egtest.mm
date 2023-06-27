@@ -203,7 +203,7 @@ id<GREYMatcher> DeleteConfirmationButton() {
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS))]
+                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD))]
       performAction:grey_tap()];
 
   WaitForKeyboardToAppear();
@@ -507,7 +507,7 @@ id<GREYMatcher> DeleteConfirmationButton() {
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS))]
+                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD))]
       performAction:grey_tap()];
 
   WaitForKeyboardToAppear();
@@ -523,7 +523,7 @@ id<GREYMatcher> DeleteConfirmationButton() {
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS))]
+                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD))]
       performAction:grey_tap()];
 
   WaitForKeyboardToAppear();
@@ -539,7 +539,7 @@ id<GREYMatcher> DeleteConfirmationButton() {
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS))]
+                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD))]
       performAction:grey_tap()];
 
   WaitForKeyboardToAppear();
