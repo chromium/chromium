@@ -62,7 +62,10 @@ class PictureInPictureWindowManager {
   void EnterPictureInPictureWithController(
       content::PictureInPictureWindowController* pip_window_controller);
 
-  void ExitPictureInPicture();
+  // Closes any existing picture-in-picture windows (video or document pip).
+  // Returns true if a picture-in-picture window was closed, and false if there
+  // were no picture-in-picture windows to close.
+  bool ExitPictureInPicture();
 
   // Called to notify that the initiator web contents should be focused.
   void FocusInitiator();
