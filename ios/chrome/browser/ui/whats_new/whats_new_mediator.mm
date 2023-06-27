@@ -67,7 +67,6 @@
     case WhatsNewType::kUseChromeByDefault:
     case WhatsNewType::kIncognitoTabsFromOtherApps:
     case WhatsNewType::kIncognitoLock:
-    case WhatsNewType::kChromeActions:
       // Handles actions that open iOS Settings.
       [self openSettingsURLString];
       break;
