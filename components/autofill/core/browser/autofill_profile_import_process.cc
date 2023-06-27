@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/profile_requirement_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 
@@ -296,13 +297,9 @@ void ProfileImportProcess::MaybeSetMigrationCandidate(
     return;
   }
   // Check the eligiblity of the user and profile.
-  if (!personal_data_manager_->IsEligibleForAddressAccountStorage() ||
-      personal_data_manager_->IsProfileMigrationBlocked(profile.guid()) ||
-      !personal_data_manager_->IsCountryEligibleForAccountStorage(
-          base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)))) {
-    return;
+  if (IsEligibleForMigrationToAccount(*personal_data_manager_, profile)) {
+    migration_candidate = profile;
   }
-  migration_candidate = profile;
 }
 
 std::vector<AutofillProfile> ProfileImportProcess::GetResultingProfiles() {

@@ -9,6 +9,7 @@
 
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 
 namespace autofill {
@@ -52,6 +53,12 @@ bool IsMinimumAddress(const AutofillProfile& profile,
                       const std::string& predicted_country_code,
                       const std::string& app_locale);
 
+// Returns true if the profile can be migrated to the Account. Only sufficiently
+// complete profiles are migrated and this method does not check for the
+// completeness of the `profile`.
+bool IsEligibleForMigrationToAccount(
+    const PersonalDataManager& personal_data_manager,
+    const AutofillProfile& profile);
 }  //  namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PROFILE_REQUIREMENT_UTILS_H_

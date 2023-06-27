@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/profile_requirement_utils.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -106,13 +107,21 @@ bool IsMinimumAddress(const AutofillProfile& profile,
       GetAutofillProfileRequirementResult(profile, predicted_country_code,
                                           app_locale,
                                           /*import_log_buffer=*/nullptr);
-
   return !base::ranges::any_of(
       kMinimumAddressRequirementViolations,
       [&](AddressImportRequirement address_requirement_violation) {
         return address_import_requirements.contains(
             address_requirement_violation);
       });
+}
+
+bool IsEligibleForMigrationToAccount(
+    const PersonalDataManager& personal_data_manager,
+    const AutofillProfile& profile) {
+  return personal_data_manager.IsEligibleForAddressAccountStorage() &&
+         !personal_data_manager.IsProfileMigrationBlocked(profile.guid()) &&
+         personal_data_manager.IsCountryEligibleForAccountStorage(
+             base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)));
 }
 
 }  // namespace autofill
