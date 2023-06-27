@@ -5779,6 +5779,7 @@ crbug.com/1434123 media/video-source-type-params.html [ Failure Pass ]
 crbug.com/1418393 [ Debug Linux ] external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-attributes.tentative.window.html [ Failure ]
 crbug.com/1445674 [ Linux ] webaudio/internals/audioworkletprocessor-gc.https.html [ Timeout ]
 crbug.com/1456739 [ Linux ] virtual/private-aggregation/wpt_internal/private-aggregation/shared-storage-context-id-sends-report.https.html [ Failure ]
+crbug.com/1456739 [ Linux ] virtual/private-aggregation/wpt_internal/private-aggregation/shared-storage-sends-report.https.html [ Failure ]
 
 # Suppress http/tests/inspector-protocol/network/navigate-iframe-in2out.js test cluster
 crbug.com/1395412 [ Mac ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
