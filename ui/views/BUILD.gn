@@ -1127,6 +1127,8 @@ source_set("test_support") {
       "test/widget_test_mac.mm",
     ]
 
+    configs += [ "//build/config/compiler:enable_arc" ]
+
     deps += [
       "//components/remote_cocoa/app_shim",
       "//ui/display:test_support",

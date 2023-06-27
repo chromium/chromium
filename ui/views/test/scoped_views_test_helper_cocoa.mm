@@ -6,8 +6,11 @@
 
 #include <Cocoa/Cocoa.h>
 
-#import "base/mac/scoped_nsobject.h"
 #include "ui/views/widget/widget.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace views {
 
@@ -15,8 +18,7 @@ void ScopedViewsTestHelper::SimulateNativeDestroy(Widget* widget) {
   // Retain the window while closing it, otherwise the window may lose its
   // last owner before -[NSWindow close] completes (this offends AppKit).
   // Usually this reference will exist on an event delivered to the runloop.
-  base::scoped_nsobject<NSWindow> window(
-      [widget->GetNativeWindow().GetNativeNSWindow() retain]);
+  NSWindow* window = widget->GetNativeWindow().GetNativeNSWindow();
   [window close];
 }
 

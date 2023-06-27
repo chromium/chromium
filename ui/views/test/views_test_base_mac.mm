@@ -8,11 +8,15 @@
 
 namespace views {
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 int ViewsTestBase::GetSystemReservedHeightAtTopOfScreen() {
   // Includes gap of 1 px b/w menu bar and title bar.
-  CGFloat menu_bar_height = NSHeight([[NSScreen mainScreen] frame]) -
-                            [[NSScreen mainScreen] visibleFrame].origin.y -
-                            NSHeight([[NSScreen mainScreen] visibleFrame]);
+  CGFloat menu_bar_height = NSHeight(NSScreen.mainScreen.frame) -
+                            NSScreen.mainScreen.visibleFrame.origin.y -
+                            NSHeight(NSScreen.mainScreen.visibleFrame);
   CGFloat title_bar_height =
       NSHeight([NSWindow frameRectForContentRect:NSZeroRect
                                        styleMask:NSWindowStyleMaskTitled]);

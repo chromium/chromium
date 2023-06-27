@@ -7,7 +7,6 @@
 #import <Cocoa/Cocoa.h>
 #include <stddef.h>
 
-#import "base/mac/scoped_nsobject.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/memory/singleton.h"
 #include "base/time/time.h"
@@ -23,6 +22,10 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -48,8 +51,8 @@ NSPoint ConvertRootPointToTarget(NSWindow* target,
   DCHECK(GetActiveGenerator());
   gfx::Point point = point_in_root;
 
-  point -= gfx::ScreenRectFromNSRect([target frame]).OffsetFromOrigin();
-  return NSMakePoint(point.x(), NSHeight([target frame]) - point.y());
+  point -= gfx::ScreenRectFromNSRect(target.frame).OffsetFromOrigin();
+  return NSMakePoint(point.x(), NSHeight(target.frame) - point.y());
 }
 
 // Inverse of ui::EventFlagsFromModifiers().
@@ -138,8 +141,8 @@ void EmulateSendEvent(NSWindow* window, NSEvent* event) {
   // mouseDown, and then keep track of the NSView returned. The toolkit-views
   // RootView does this too. So, for tests, assume tracking will be done there,
   // and the NSWindow's contentView is wrapping a views::internal::RootView.
-  responder = [window contentView];
-  switch ([event type]) {
+  responder = window.contentView;
+  switch (event.type) {
     case NSEventTypeLeftMouseDown:
       [responder mouseDown:event];
       break;
@@ -213,7 +216,7 @@ NSEvent* CreateMouseEventInWindow(NSWindow* window,
                             location:point
                        modifierFlags:modifiers
                            timestamp:ui::EventTimeStampToSeconds(time_stamp)
-                        windowNumber:[window windowNumber]
+                        windowNumber:window.windowNumber
                              context:nil
                          eventNumber:0
                           clickCount:click_count
@@ -255,7 +258,7 @@ class EventGeneratorDelegateMac : public ui::EventTarget,
     return swizzle_current_event_->InvokeOriginal<NSEvent*>(receiver, selector);
   }
 
-  NSWindow* target_window() { return target_window_.get(); }
+  NSWindow* target_window() { return target_window_; }
   ui::test::EventGenerator* owner() { return owner_; }
 
   // Overridden from ui::EventTarget:
@@ -297,10 +300,7 @@ class EventGeneratorDelegateMac : public ui::EventTarget,
     return this;
   }
   void SetTargetWindow(gfx::NativeWindow target_window) override {
-    // Retain the NSWindow (note it can be nil). This matches Cocoa's tendency
-    // to have autoreleased objects, or objects still in the event queue, that
-    // reference the NSWindow.
-    target_window_.reset([target_window.GetNativeNSWindow() retain]);
+    target_window_ = target_window.GetNativeNSWindow();
   }
   ui::EventSource* GetEventSource(ui::EventTarget* target) override {
     return this;
@@ -327,11 +327,11 @@ class EventGeneratorDelegateMac : public ui::EventTarget,
   static EventGeneratorDelegateMac* instance_;
 
   raw_ptr<ui::test::EventGenerator> owner_;
-  base::scoped_nsobject<NSWindow> target_window_;
+  NSWindow* __strong target_window_;
   std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzle_pressed_;
   std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzle_location_;
   std::unique_ptr<base::mac::ScopedObjCClassSwizzler> swizzle_current_event_;
-  base::scoped_nsobject<NSMenu> fake_menu_;
+  NSMenu* __strong fake_menu_;
 
   // Mac always sends trackpad scroll events between begin/end phase event
   // markers. If |in_trackpad_scroll| is false, a phase begin event is sent
@@ -355,7 +355,7 @@ EventGeneratorDelegateMac::EventGeneratorDelegateMac(
   SetTargetHandler(this);
   // Install a fake "edit" menu. This is normally provided by Chrome's
   // MainMenu.xib, but src/ui shouldn't depend on that.
-  fake_menu_.reset([[NSMenu alloc] initWithTitle:@"Edit"]);
+  fake_menu_ = [[NSMenu alloc] initWithTitle:@"Edit"];
   struct {
     NSString* title;
     SEL action;
@@ -393,7 +393,7 @@ EventGeneratorDelegateMac::EventGeneratorDelegateMac(
   // to find a target starting at the first responder of the key window. Since
   // non-interactive tests have no key window, that won't work. So set (or
   // clear) the target explicitly on all menu items.
-  [[fake_menu_ itemArray]
+  [fake_menu_.itemArray
       makeObjectsPerformSelector:@selector(setTarget:)
                       withObject:[target_window.GetNativeNSWindow()
                                      firstResponder]];
@@ -457,11 +457,12 @@ void EventGeneratorDelegateMac::OnKeyEvent(ui::KeyEvent* event) {
     case Target::WINDOW:
       // -[NSApp sendEvent:] sends -performKeyEquivalent: if Command or Control
       // modifiers are pressed. Emulate that behavior.
-      if ([ns_event type] == NSEventTypeKeyDown &&
-          ([ns_event modifierFlags] &
+      if (ns_event.type == NSEventTypeKeyDown &&
+          (ns_event.modifierFlags &
            (NSEventModifierFlagControl | NSEventModifierFlagCommand)) &&
-          [target_window_ performKeyEquivalent:ns_event])
+          [target_window_ performKeyEquivalent:ns_event]) {
         break;  // Handled by performKeyEquivalent:.
+      }
 
       [target_window_ sendEvent:ns_event];
       break;
