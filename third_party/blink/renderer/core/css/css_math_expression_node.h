@@ -36,6 +36,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
+#include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_math_operator.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -94,6 +95,9 @@ class CORE_EXPORT CSSMathExpressionNode
   // Hits DCHECK if type conversion is required.
   virtual double DoubleValue() const = 0;
 
+  double ComputeNumber(const CSSLengthResolver& length_resolver) const {
+    return ComputeDouble(length_resolver);
+  }
   virtual double ComputeLengthPx(const CSSLengthResolver&) const = 0;
   virtual bool AccumulateLengthArray(CSSLengthArray&,
                                      double multiplier) const = 0;
@@ -180,6 +184,13 @@ class CORE_EXPORT CSSMathExpressionNode
     DCHECK_NE(category, kCalcOther);
   }
 
+  virtual double ComputeDouble(
+      const CSSLengthResolver& length_resolver) const = 0;
+  static double ComputeDouble(const CSSMathExpressionNode* operand,
+                              const CSSLengthResolver& length_resolver) {
+    return operand->ComputeDouble(length_resolver);
+  }
+
   CalculationResultCategory category_;
   bool can_be_resolved_with_conversion_data_;
   bool is_nested_calc_ = false;
@@ -230,6 +241,9 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
   bool InvolvesPercentageComparisons() const final;
 #endif
 
+ protected:
+  double ComputeDouble(const CSSLengthResolver& length_resolver) const final;
+
  private:
   Member<const CSSNumericLiteralValue> value_;
 };
@@ -273,7 +287,7 @@ class CORE_EXPORT CSSMathExpressionOperation final
       const CSSMathExpressionNode* right_side,
       CSSMathOperator op);
 
-  static CSSMathExpressionNode* CreateSignRelatedFunctionSimplified(
+  static CSSMathExpressionNode* CreateSignRelatedFunction(
       Operands&& operands,
       CSSValueID function_id);
 
@@ -312,11 +326,15 @@ class CORE_EXPORT CSSMathExpressionOperation final
   bool IsTrigonometricFunction() const {
     return operator_ == CSSMathOperator::kHypot;
   }
+  bool IsSignRelatedFunction() const {
+    return operator_ == CSSMathOperator::kAbs ||
+           operator_ == CSSMathOperator::kSign;
+  }
 
   // TODO(crbug.com/1284199): Check other math functions too.
   bool IsMathFunction() const final {
     return IsMinOrMax() || IsClamp() || IsSteppedValueFunction() ||
-           IsTrigonometricFunction();
+           IsTrigonometricFunction() || IsSignRelatedFunction();
   }
 
   String CSSTextAsClamp() const;
@@ -344,6 +362,9 @@ class CORE_EXPORT CSSMathExpressionOperation final
 #if DCHECK_IS_ON()
   bool InvolvesPercentageComparisons() const final;
 #endif
+
+ protected:
+  double ComputeDouble(const CSSLengthResolver& length_resolver) const final;
 
  private:
   static const CSSMathExpressionNode* GetNumberSide(
@@ -438,6 +459,13 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
 #if DCHECK_IS_ON()
   bool InvolvesPercentageComparisons() const final { return false; }
 #endif
+
+ protected:
+  double ComputeDouble(const CSSLengthResolver& length_resolver) const final {
+    // We can't resolve an anchor query until layout time.
+    NOTREACHED();
+    return 0;
+  }
 
  private:
   CSSAnchorQueryType type_;

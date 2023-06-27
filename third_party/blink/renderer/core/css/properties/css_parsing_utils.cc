@@ -989,7 +989,8 @@ class MathFunctionParser {
 
 CSSPrimitiveValue* ConsumeInteger(CSSParserTokenRange& range,
                                   const CSSParserContext& context,
-                                  double minimum_value) {
+                                  double minimum_value,
+                                  const bool is_percentage_allowed) {
   const CSSParserToken& token = range.Peek();
   if (token.GetType() == kNumberToken) {
     if (token.GetNumericValueType() == kNumberValueType ||
@@ -1012,7 +1013,8 @@ CSSPrimitiveValue* ConsumeInteger(CSSParserTokenRange& range,
     value_range = CSSPrimitiveValue::ValueRange::kPositiveInteger;
   }
 
-  MathFunctionParser math_parser(range, context, value_range);
+  MathFunctionParser math_parser(range, context, value_range,
+                                 is_percentage_allowed);
   if (const CSSMathFunctionValue* math_value = math_parser.Value()) {
     if (math_value->Category() != kCalcNumber) {
       return nullptr;

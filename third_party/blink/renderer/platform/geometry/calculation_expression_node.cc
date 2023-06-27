@@ -229,6 +229,30 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       return base::MakeRefCounted<CalculationExpressionOperationNode>(
           std::move(children), op);
     }
+    case CalculationOperator::kAbs:
+    case CalculationOperator::kSign: {
+      DCHECK_EQ(children.size(), 1u);
+      const auto* pixels_and_percent =
+          DynamicTo<CalculationExpressionPixelsAndPercentNode>(
+              *children.front());
+      if (!pixels_and_percent || pixels_and_percent->Percent()) {
+        return base::MakeRefCounted<CalculationExpressionOperationNode>(
+            std::move(children), op);
+      } else {
+        float value = pixels_and_percent->Pixels();
+        if (op == CalculationOperator::kAbs) {
+          return base::MakeRefCounted<
+              CalculationExpressionPixelsAndPercentNode>(
+              PixelsAndPercent(std::abs(value), 0));
+        } else {
+          if (value == 0 || std::isnan(value)) {
+            return base::MakeRefCounted<CalculationExpressionNumberNode>(value);
+          }
+          return base::MakeRefCounted<CalculationExpressionNumberNode>(
+              value > 0 ? 1 : -1);
+        }
+      }
+    }
     case CalculationOperator::kInvalid:
       NOTREACHED();
       return nullptr;
@@ -333,6 +357,20 @@ float CalculationExpressionOperationNode::Evaluate(
       }
       return value;
     }
+    case CalculationOperator::kAbs:
+    case CalculationOperator::kSign: {
+      DCHECK_EQ(children_.size(), 1u);
+      const float value =
+          children_.front()->Evaluate(max_value, anchor_evaluator);
+      if (operator_ == CalculationOperator::kAbs) {
+        return std::abs(value);
+      } else {
+        if (value == 0 || std::isnan(value)) {
+          return value;
+        }
+        return value > 0 ? 1 : -1;
+      }
+    }
     case CalculationOperator::kInvalid:
       break;
       // TODO(crbug.com/1284199): Support other math functions.
@@ -380,7 +418,9 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
     case CalculationOperator::kRoundToZero:
     case CalculationOperator::kMod:
     case CalculationOperator::kRem:
-    case CalculationOperator::kHypot: {
+    case CalculationOperator::kHypot:
+    case CalculationOperator::kAbs:
+    case CalculationOperator::kSign: {
       DCHECK(children_.size());
       Vector<scoped_refptr<const CalculationExpressionNode>> cloned_operands;
       cloned_operands.reserve(children_.size());
@@ -436,7 +476,9 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
     case CalculationOperator::kRoundToZero:
     case CalculationOperator::kMod:
     case CalculationOperator::kRem:
-    case CalculationOperator::kHypot: {
+    case CalculationOperator::kHypot:
+    case CalculationOperator::kAbs:
+    case CalculationOperator::kSign: {
       DCHECK(children_.size());
       auto first_child_type = children_.front()->ResolvedResultType();
       for (const auto& child : children_) {

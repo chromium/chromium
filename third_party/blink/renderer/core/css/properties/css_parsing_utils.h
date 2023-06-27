@@ -89,7 +89,8 @@ CORE_EXPORT bool ConsumeAnyValue(CSSParserTokenRange&);
 CSSPrimitiveValue* ConsumeInteger(
     CSSParserTokenRange&,
     const CSSParserContext&,
-    double minimum_value = -std::numeric_limits<double>::max());
+    double minimum_value = -std::numeric_limits<double>::max(),
+    const bool is_percentage_allowed = true);
 CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
     CSSParserTokenRange&,
     const CSSParserContext&,

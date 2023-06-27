@@ -79,6 +79,7 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
   double ComputeDegrees() const;
   double ComputeLengthPx(const CSSLengthResolver&) const;
   double ComputeDotsPerPixel() const;
+  int ComputeInteger(const CSSLengthResolver&) const;
 
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const;

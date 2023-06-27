@@ -1042,12 +1042,6 @@
       status: "test",
       base_feature: "none",
     },
-    // Support relative numbers in non-length properties.
-    // Design doc: https://docs.google.com/document/d/1rikPXstHFK3b8N95QzfDar6dDDrEsuVgw1YF-JgvKQM
-    {
-      name: "CSSRelativeNumbersForNonLengthProperties",
-      status: "experimental",
-    },
     {
       // https://drafts.csswg.org/css-cascade-6/#scoped-styles
       name: "CSSScope",

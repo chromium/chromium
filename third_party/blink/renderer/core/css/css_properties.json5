@@ -6222,6 +6222,7 @@
       type_name: "int",
       computed_style_custom_functions: ["setter"],
       style_builder_template: "auto",
+      converter: "ConvertInteger",
       keywords: ["auto"],
       typedom_types: ["Keyword", "Number"],
     },

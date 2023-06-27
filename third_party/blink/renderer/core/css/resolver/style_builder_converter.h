@@ -209,6 +209,7 @@ class StyleBuilderConverter {
   static TabSize ConvertLengthOrTabSpaces(StyleResolverState&, const CSSValue&);
   static Length ConvertLineHeight(StyleResolverState&, const CSSValue&);
   static float ConvertNumberOrPercentage(StyleResolverState&, const CSSValue&);
+  static int ConvertInteger(StyleResolverState&, const CSSValue&);
   static ScrollStartData ConvertScrollStart(const StyleResolverState&,
                                             const CSSValue&);
   static float ConvertAlpha(StyleResolverState&,

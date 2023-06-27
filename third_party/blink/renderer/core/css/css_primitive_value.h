@@ -378,6 +378,8 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   template <typename T>
   inline T ConvertTo() const;  // Defined in CSSPrimitiveValueMappings.h
 
+  int ComputeInteger(const CSSLengthResolver&) const;
+
   static const char* UnitTypeToString(UnitType);
   static UnitType StringToUnitType(StringView string) {
     if (string.Is8Bit()) {

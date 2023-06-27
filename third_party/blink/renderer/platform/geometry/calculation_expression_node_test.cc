@@ -94,4 +94,73 @@ TEST(CalculationExpressionOperationNodeTest, ExponentialFunctions) {
       19e37f);
 }
 
+TEST(CalculationExpressionOperationNodeTest,
+     SignRelatedFunctionsPixelsAndPercent) {
+  scoped_refptr<CalculationExpressionNode> pixels_and_percent_node =
+      base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+          PixelsAndPercent(-100.0f, -100.0f));
+  CalculationExpressionOperationNode::Children children;
+  children.push_back(pixels_and_percent_node);
+  scoped_refptr<const CalculationExpressionNode>
+      pixels_and_percent_operation_abs =
+          CalculationExpressionOperationNode::CreateSimplified(
+              std::move(children), CalculationOperator::kAbs);
+  EXPECT_TRUE(pixels_and_percent_operation_abs->IsOperation());
+  EXPECT_EQ(pixels_and_percent_operation_abs->Evaluate(100.0f, nullptr),
+            200.0f);
+}
+
+TEST(CalculationExpressionOperationNodeTest,
+     SignRelatedFunctionsPixelsAndZeroPercent) {
+  scoped_refptr<CalculationExpressionNode> pixels_and_zero_percent_node =
+      base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+          PixelsAndPercent(-100.0f, 0.0f));
+  CalculationExpressionOperationNode::Children children;
+  children.push_back(pixels_and_zero_percent_node);
+  scoped_refptr<const CalculationExpressionNode>
+      pixels_and_zero_percent_operation_sign =
+          CalculationExpressionOperationNode::CreateSimplified(
+              std::move(children), CalculationOperator::kSign);
+  EXPECT_TRUE(pixels_and_zero_percent_operation_sign->IsNumber());
+  EXPECT_EQ(pixels_and_zero_percent_operation_sign->Evaluate(FLT_MAX, nullptr),
+            -1.0f);
+}
+
+TEST(CalculationExpressionOperationNodeTest, SignRelatedFunctionsPixelsOnly) {
+  scoped_refptr<CalculationExpressionNode> pixels_node =
+      base::MakeRefCounted<CalculationExpressionNumberNode>(-0.0f);
+  CalculationExpressionOperationNode::Children children;
+  children.push_back(pixels_node);
+  scoped_refptr<const CalculationExpressionNode> pixels_operation_sign =
+      CalculationExpressionOperationNode::CreateSimplified(
+          std::move(children), CalculationOperator::kSign);
+  EXPECT_TRUE(pixels_operation_sign->IsOperation());
+  EXPECT_TRUE(std::signbit(pixels_operation_sign->Evaluate(FLT_MAX, nullptr)));
+}
+
+TEST(CalculationExpressionOperationNodeTest, SignRelatedFunctions) {
+  scoped_refptr<CalculationExpressionOperationNode> operation_abs_1 =
+      BuildOperationNode({1.0f}, CalculationOperator::kAbs);
+  scoped_refptr<CalculationExpressionOperationNode> operation_abs_minus_1 =
+      BuildOperationNode({-1.0f}, CalculationOperator::kAbs);
+  scoped_refptr<CalculationExpressionOperationNode> operation_abs_minus_0 =
+      BuildOperationNode({-0.0f}, CalculationOperator::kAbs);
+  scoped_refptr<CalculationExpressionOperationNode> operation_sign_1 =
+      BuildOperationNode({1.0f}, CalculationOperator::kSign);
+  scoped_refptr<CalculationExpressionOperationNode> operation_sign_minus_1 =
+      BuildOperationNode({-1.0f}, CalculationOperator::kSign);
+  scoped_refptr<CalculationExpressionOperationNode> operation_sign_0 =
+      BuildOperationNode({0.0f}, CalculationOperator::kSign);
+  scoped_refptr<CalculationExpressionOperationNode> operation_sign_minus_0 =
+      BuildOperationNode({-0.0f}, CalculationOperator::kSign);
+
+  EXPECT_EQ(operation_abs_1->Evaluate(FLT_MAX, nullptr), 1.0f);
+  EXPECT_EQ(operation_abs_minus_1->Evaluate(FLT_MAX, nullptr), 1.0f);
+  EXPECT_EQ(operation_abs_minus_0->Evaluate(FLT_MAX, nullptr), 0.0f);
+  EXPECT_EQ(operation_sign_1->Evaluate(FLT_MAX, nullptr), 1.0f);
+  EXPECT_EQ(operation_sign_minus_1->Evaluate(FLT_MAX, nullptr), -1.0f);
+  EXPECT_EQ(operation_sign_0->Evaluate(FLT_MAX, nullptr), 0.0f);
+  EXPECT_TRUE(std::signbit(operation_sign_minus_0->Evaluate(FLT_MAX, nullptr)));
+}
+
 }  // namespace blink
