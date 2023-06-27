@@ -88086,12 +88086,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="Privacy Sandbox Notice"/>
 </enum>
 
-<enum name="PrivacyScreenToggleUISurface">
-  <int value="0" label="KeyboardShortcut"/>
-  <int value="1" label="FeaturePod"/>
-  <int value="2" label="ToastButton"/>
-</enum>
-
 <enum name="PrivateNetworkAccessCheckResult">
   <int value="0" label="AllowedMissingClientSecurityState"/>
   <int value="1" label="AllowedNoLessPublic"/>

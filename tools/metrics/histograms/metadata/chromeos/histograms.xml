@@ -2075,17 +2075,6 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
-<histogram name="ChromeOS.PrivacyScreen.Toggled"
-    enum="PrivacyScreenToggleUISurface" expires_after="2022-04-01">
-  <owner>tengs@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
-  <summary>
-    Record when the user toggles the integrated privacy screen on/off. See the
-    PrivacyScreenToggleUISurface enum for all UI surfaces for toggling the
-    feature.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.RgbKeyboard.RgbKeyboardCapabilityType"
     enum="RgbKeyboardCapabilityType" expires_after="2023-11-12">
   <owner>michaelcheco@google.com</owner>

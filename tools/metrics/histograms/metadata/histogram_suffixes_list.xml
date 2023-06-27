@@ -3919,14 +3919,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Previews.Triggered.EffectiveConnectionType2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PrivacyScreenToggleState" separator=".">
-  <owner>tengs@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
-  <suffix name="Disabled" label=""/>
-  <suffix name="Enabled" label=""/>
-  <affected-histogram name="ChromeOS.PrivacyScreen.Toggled"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ProcessMemoryAllocator2" separator=".">
   <suffix name="AndroidOtherPrivateDirty"
       label="Other private dirty memory, including GPU memory, as reported by

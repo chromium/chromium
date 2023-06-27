@@ -1622,9 +1622,7 @@ void ToggleOverview() {
 void TogglePrivacyScreen() {
   PrivacyScreenController* controller =
       Shell::Get()->privacy_screen_controller();
-  controller->SetEnabled(
-      !controller->GetEnabled(),
-      PrivacyScreenController::kToggleUISurfaceKeyboardShortcut);
+  controller->SetEnabled(!controller->GetEnabled());
 }
 
 void ToggleProjectorMarker() {

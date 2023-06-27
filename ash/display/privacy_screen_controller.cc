@@ -8,7 +8,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -76,8 +75,7 @@ bool PrivacyScreenController::GetEnabled() const {
   return current_status_;
 }
 
-void PrivacyScreenController::SetEnabled(bool enabled,
-                                         ToggleUISurface ui_surface) {
+void PrivacyScreenController::SetEnabled(bool enabled) {
   if (!IsSupported()) {
     LOG(ERROR) << "Attempted to set privacy-screen on an unsupported device.";
     return;
@@ -105,17 +103,6 @@ void PrivacyScreenController::SetEnabled(bool enabled,
       active_user_pref_service_->SetBoolean(prefs::kDisplayPrivacyScreenEnabled,
                                             enabled);
     }
-  }
-
-  if (ui_surface == kToggleUISurfaceCount)
-    return;
-
-  if (enabled) {
-    UMA_HISTOGRAM_ENUMERATION("ChromeOS.PrivacyScreen.Toggled.Enabled",
-                              ui_surface, kToggleUISurfaceCount);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("ChromeOS.PrivacyScreen.Toggled.Disabled",
-                              ui_surface, kToggleUISurfaceCount);
   }
 }
 

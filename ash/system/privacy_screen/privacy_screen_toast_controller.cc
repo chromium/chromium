@@ -152,8 +152,7 @@ void PrivacyScreenToastController::UpdateToastView() {
 void PrivacyScreenToastController::ButtonPressed() {
   auto* privacy_screen_controller = Shell::Get()->privacy_screen_controller();
   privacy_screen_controller->SetEnabled(
-      !privacy_screen_controller->GetEnabled(),
-      PrivacyScreenController::kToggleUISurfaceToastButton);
+      !privacy_screen_controller->GetEnabled());
 }
 
 void PrivacyScreenToastController::StopAutocloseTimer() {
