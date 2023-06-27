@@ -300,6 +300,11 @@ void ThrottlingNetworkTransaction::SetConnectedCallback(
   network_transaction_->SetConnectedCallback(callback);
 }
 
+void ThrottlingNetworkTransaction::SetModifyRequestHeadersCallback(
+    base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback) {
+  network_transaction_->SetModifyRequestHeadersCallback(std::move(callback));
+}
+
 int ThrottlingNetworkTransaction::ResumeNetworkStart() {
   if (CheckFailed())
     return net::ERR_INTERNET_DISCONNECTED;

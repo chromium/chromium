@@ -1031,3 +1031,9 @@ NET_ERROR(DNS_REQUEST_CANCELLED, -810)
 // The hostname resolution of HTTPS record was expected to be resolved with
 // alpn values of supported protocols, but did not.
 NET_ERROR(DNS_NO_MATCHING_SUPPORTED_ALPN, -811)
+
+// The compression dictionary cannot be loaded.
+NET_ERROR(DICTIONARY_LOAD_FAILED, -812)
+
+// The compression dictionary cannot be used as the origin check failed.
+NET_ERROR(DICTIONARY_ORIGIN_CHECK_FAILED, -813)

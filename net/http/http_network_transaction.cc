@@ -598,6 +598,11 @@ void HttpNetworkTransaction::SetResponseHeadersCallback(
   response_headers_callback_ = std::move(callback);
 }
 
+void HttpNetworkTransaction::SetModifyRequestHeadersCallback(
+    base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback) {
+  modify_headers_callbacks_ = std::move(callback);
+}
+
 int HttpNetworkTransaction::ResumeNetworkStart() {
   DCHECK_EQ(next_state_, STATE_CREATE_STREAM);
   return DoLoop(OK);
@@ -1102,6 +1107,10 @@ int HttpNetworkTransaction::BuildRequestHeaders(
         &request_headers_);
 
   request_headers_.MergeFrom(request_->extra_headers);
+
+  if (modify_headers_callbacks_) {
+    modify_headers_callbacks_.Run(&request_headers_);
+  }
 
   response_.did_use_http_auth =
       request_headers_.HasHeader(HttpRequestHeaders::kAuthorization) ||

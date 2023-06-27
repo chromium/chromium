@@ -103,3 +103,7 @@ LOAD_FLAG(RESTRICTED_PREFETCH, 1 << 15)
 // is considered privileged, and therefore this flag must only be set from a
 // trusted process.
 LOAD_FLAG(CAN_USE_RESTRICTED_PREFETCH, 1 << 16)
+
+// Indicates that Access-Control-Allow-Origin response header check is required
+// before using a shared dictionary.
+LOAD_FLAG(SHARED_DICTIONARY_ORIGIN_CHECK_REQUIRED, 1 << 17)

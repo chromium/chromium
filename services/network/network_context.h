@@ -739,6 +739,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   std::unique_ptr<ResourceScheduler> resource_scheduler_;
 
+  // Used only when blink::features::kCompressionDictionaryTransportBackend is
+  // enabled.
+  // Note: `url_request_context_owner_` indirectly holds a pointer to
+  // `shared_dictionary_manager_` via URLRequestContext and HttpCache and
+  // SharedDictionaryNetworkTransactionFactory. So `url_request_context_owner_`
+  // needs to be defined after `shared_dictionary_manager_`.
+  std::unique_ptr<SharedDictionaryManager> shared_dictionary_manager_;
+
   // Holds owning pointer to |url_request_context_|. Will contain a nullptr for
   // |url_request_context| when the NetworkContextImpl doesn't own its own
   // URLRequestContext.
@@ -956,10 +964,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       http_cache_file_operations_factory_;
 
   const CacheTransparencySettings cache_transparency_settings_;
-
-  // Used only when blink::features::kCompressionDictionaryTransportBackend is
-  // enabled.
-  std::unique_ptr<SharedDictionaryManager> shared_dictionary_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

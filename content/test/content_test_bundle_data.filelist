@@ -6708,6 +6708,8 @@ data/shared_dictionary/blank.html
 data/shared_dictionary/fetch_dictionary.js
 data/shared_dictionary/test.dict
 data/shared_dictionary/test.dict.mock-http-headers
+data/shared_dictionary/test_no_acao.dict
+data/shared_dictionary/test_no_acao.dict.mock-http-headers
 data/shared_storage/customizable_module.js
 data/shared_storage/customizable_script.js
 data/shared_storage/erroneous_function_module.js

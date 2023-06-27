@@ -12,6 +12,7 @@
 
 namespace net {
 class IsolationInfo;
+class NetworkIsolationKey;
 
 // Key used to isolate shared dictionary storages.
 class COMPONENT_EXPORT(NET_EXTRAS) SharedDictionaryIsolationKey {
@@ -21,6 +22,13 @@ class COMPONENT_EXPORT(NET_EXTRAS) SharedDictionaryIsolationKey {
   // opaque, or `nonce` is set.
   static absl::optional<SharedDictionaryIsolationKey> MaybeCreate(
       const net::IsolationInfo& isolation_info);
+
+  // Creates a SharedDictionaryIsolationKey. Returns nullopt when
+  // `frame_origin` or `top_frame_origin` of `network_isolation_key` is not set
+  // or opaque, or `nonce` of `network_isolation_key` is set.
+  static absl::optional<SharedDictionaryIsolationKey> MaybeCreate(
+      const NetworkIsolationKey& network_isolation_key,
+      const absl::optional<url::Origin>& frame_origin);
 
   SharedDictionaryIsolationKey(const url::Origin& frame_origin,
                                const net::SchemefulSite& top_frame_site);

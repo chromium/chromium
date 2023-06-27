@@ -93,6 +93,10 @@ struct NET_EXPORT HttpRequestInfo {
   /// behavior, and may still provide useful metrics.
   absl::optional<url::Origin> possibly_top_frame_origin;
 
+  // The frame origin associated with a request. This is used to isolate shared
+  // dictionaries between different frame origins.
+  absl::optional<url::Origin> frame_origin;
+
   // Idempotency of the request, which determines that if it is safe to enable
   // 0-RTT for the request. By default, 0-RTT is only enabled for safe
   // HTTP methods, i.e., GET, HEAD, OPTIONS, and TRACE. For other methods,

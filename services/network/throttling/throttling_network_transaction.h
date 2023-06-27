@@ -89,6 +89,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransaction
       net::ResponseHeadersCallback callback) override;
   void SetEarlyResponseHeadersCallback(
       net::ResponseHeadersCallback callback) override;
+  void SetModifyRequestHeadersCallback(
+      base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback)
+      override;
   int ResumeNetworkStart() override;
   net::ConnectionAttempts GetConnectionAttempts() const override;
   void CloseConnectionOnDestruction() override;

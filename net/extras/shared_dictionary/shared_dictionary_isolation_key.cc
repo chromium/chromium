@@ -5,6 +5,7 @@
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 
 #include "net/base/isolation_info.h"
+#include "net/base/network_isolation_key.h"
 
 namespace net {
 
@@ -24,10 +25,28 @@ SharedDictionaryIsolationKey::MaybeCreate(
       net::SchemefulSite(*isolation_info.top_frame_origin()));
 }
 
+// static
+absl::optional<SharedDictionaryIsolationKey>
+SharedDictionaryIsolationKey::MaybeCreate(
+    const NetworkIsolationKey& network_isolation_key,
+    const absl::optional<url::Origin>& frame_origin) {
+  if (!frame_origin || frame_origin->opaque() ||
+      !network_isolation_key.GetTopFrameSite() ||
+      network_isolation_key.GetTopFrameSite()->opaque() ||
+      network_isolation_key.GetNonce().has_value()) {
+    return absl::nullopt;
+  }
+  return SharedDictionaryIsolationKey(*frame_origin,
+                                      *network_isolation_key.GetTopFrameSite());
+}
+
 SharedDictionaryIsolationKey::SharedDictionaryIsolationKey(
     const url::Origin& frame_origin,
     const net::SchemefulSite& top_frame_site)
-    : frame_origin_(frame_origin), top_frame_site_(top_frame_site) {}
+    : frame_origin_(frame_origin), top_frame_site_(top_frame_site) {
+  CHECK(!frame_origin.opaque());
+  CHECK(!top_frame_site.opaque());
+}
 
 SharedDictionaryIsolationKey::~SharedDictionaryIsolationKey() = default;
 

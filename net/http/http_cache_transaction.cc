@@ -609,6 +609,12 @@ void HttpCache::Transaction::SetEarlyResponseHeadersCallback(
   early_response_headers_callback_ = std::move(callback);
 }
 
+void HttpCache::Transaction::SetModifyRequestHeadersCallback(
+    base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback) {
+  // This method should not be called for this class.
+  NOTREACHED();
+}
+
 int HttpCache::Transaction::ResumeNetworkStart() {
   if (network_trans_)
     return network_trans_->ResumeNetworkStart();

@@ -94,6 +94,9 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   void SetEarlyResponseHeadersCallback(
       ResponseHeadersCallback callback) override;
   void SetResponseHeadersCallback(ResponseHeadersCallback callback) override;
+  void SetModifyRequestHeadersCallback(
+      base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback)
+      override;
   int ResumeNetworkStart() override;
   void CloseConnectionOnDestruction() override;
 
@@ -474,6 +477,11 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   RequestHeadersCallback request_headers_callback_;
   ResponseHeadersCallback early_response_headers_callback_;
   ResponseHeadersCallback response_headers_callback_;
+
+  // The callback to modify the request header. They will be called just before
+  // sending the request to the network.
+  base::RepeatingCallback<void(net::HttpRequestHeaders*)>
+      modify_headers_callbacks_;
 
   ConnectionAttempts connection_attempts_;
   IPEndPoint remote_endpoint_;

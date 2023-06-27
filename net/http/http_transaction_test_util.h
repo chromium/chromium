@@ -253,6 +253,10 @@ class MockNetworkTransaction
   void SetResponseHeadersCallback(ResponseHeadersCallback) override {}
   void SetEarlyResponseHeadersCallback(ResponseHeadersCallback) override {}
 
+  void SetModifyRequestHeadersCallback(
+      base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback)
+      override;
+
   int ResumeNetworkStart() override;
 
   ConnectionAttempts GetConnectionAttempts() const override;
@@ -265,6 +269,11 @@ class MockNetworkTransaction
 
   RequestPriority priority() const { return priority_; }
   const HttpRequestInfo* request() const { return request_; }
+
+  base::RepeatingCallback<void(net::HttpRequestHeaders*)>&
+  modify_request_headers_callback() {
+    return modify_request_headers_callback_;
+  }
 
   // Bogus value that will be returned by GetTotalReceivedBytes() if the
   // MockNetworkTransaction was started.
@@ -305,6 +314,9 @@ class MockNetworkTransaction
   bool reading_ = false;
 
   CompletionOnceCallback resume_start_callback_;  // used for pause and restart.
+
+  base::RepeatingCallback<void(net::HttpRequestHeaders*)>
+      modify_request_headers_callback_;
 
   base::WeakPtrFactory<MockNetworkTransaction> weak_factory_{this};
 };
