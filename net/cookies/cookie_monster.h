@@ -728,6 +728,12 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // Number of partitioned cookies whose partition key has a nonce.
   size_t num_nonced_partitioned_cookies_ = 0u;
 
+  // Number of bytes used by the partitioned cookie jar.
+  size_t num_partitioned_cookies_bytes_ = 0u;
+  // Number of bytes used by partitioned cookies whose partition key has a
+  // nonce.
+  size_t num_nonced_partitioned_cookie_bytes_ = 0u;
+
   bool same_party_attribute_enabled_ = false;
 
   CookieMonsterChangeDispatcher change_dispatcher_;

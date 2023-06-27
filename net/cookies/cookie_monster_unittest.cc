@@ -3645,12 +3645,14 @@ TEST_F(CookieMonsterTest, CookieCount2Histogram) {
   }
 }
 
-TEST_F(CookieMonsterTest, PartitionedCookieCountHistograms) {
+TEST_F(CookieMonsterTest, PartitionedCookieHistograms) {
   auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
 
   {
     base::HistogramTester histogram_tester;
     ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
+
+    // Cookie counters.
     histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount",
                                         /*sample=*/0,
                                         /*count=*/1);
@@ -3659,6 +3661,18 @@ TEST_F(CookieMonsterTest, PartitionedCookieCountHistograms) {
                                         /*count=*/1);
     histogram_tester.ExpectUniqueSample(
         "Cookie.PartitionedCookieCount.Unnonced", /*sample=*/0,
+        /*count=*/1);
+
+    // Partitioned cookie jar size.
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes",
+        /*sample=*/0,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes.Nonced", /*sample=*/0,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced", /*sample=*/0,
         /*count=*/1);
   }
 
@@ -3675,6 +3689,7 @@ TEST_F(CookieMonsterTest, PartitionedCookieCountHistograms) {
                                    /*modify_httponly=*/true));
     ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
 
+    // Cookie counters.
     histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount",
                                         /*sample=*/0,
                                         /*count=*/1);
@@ -3686,12 +3701,24 @@ TEST_F(CookieMonsterTest, PartitionedCookieCountHistograms) {
         /*count=*/1);
     histogram_tester.ExpectUniqueSample("Cookie.Count2", /*sample=*/1,
                                         /*count=*/1);
+
+    // Partitioned cookie jar size.
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes",
+        /*sample=*/0,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes.Nonced", /*sample=*/0,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced", /*sample=*/0,
+        /*count=*/1);
   }
 
   {  // Add unnonced partitioned cookie.
     base::HistogramTester histogram_tester;
     auto cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
-        "a", "b", "a.url", "/", base::Time(),
+        "a", std::string(2 * 1024, '0'), "a.url", "/", base::Time(),
         base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
         /*secure=*/true,
         /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
@@ -3702,6 +3729,7 @@ TEST_F(CookieMonsterTest, PartitionedCookieCountHistograms) {
                                    /*modify_httponly=*/true));
     ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
 
+    // Cookie counters.
     histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount",
                                         /*sample=*/1,
                                         /*count=*/1);
@@ -3713,12 +3741,24 @@ TEST_F(CookieMonsterTest, PartitionedCookieCountHistograms) {
         /*count=*/1);
     histogram_tester.ExpectUniqueSample("Cookie.Count2", /*sample=*/1,
                                         /*count=*/1);
+
+    // Partitioned cookie jar size.
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes",
+        /*sample=*/2,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes.Nonced", /*sample=*/0,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced", /*sample=*/2,
+        /*count=*/1);
   }
 
   {  // Add nonced partitioned cookie.
     base::HistogramTester histogram_tester;
     auto cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
-        "a", "b", "a.url", "/", base::Time(),
+        "a", std::string(3 * 1024, '0'), "a.url", "/", base::Time(),
         base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
         /*secure=*/true,
         /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
@@ -3730,6 +3770,7 @@ TEST_F(CookieMonsterTest, PartitionedCookieCountHistograms) {
                                    /*modify_httponly=*/true));
     ASSERT_TRUE(cm->DoRecordPeriodicStatsForTesting());
 
+    // Cookie counts.
     histogram_tester.ExpectUniqueSample("Cookie.PartitionedCookieCount",
                                         /*sample=*/2,
                                         /*count=*/1);
@@ -3741,6 +3782,18 @@ TEST_F(CookieMonsterTest, PartitionedCookieCountHistograms) {
         /*count=*/1);
     histogram_tester.ExpectUniqueSample("Cookie.Count2", /*sample=*/1,
                                         /*count=*/1);
+
+    // Partitioned cookie jar size.
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes",
+        /*sample=*/5,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes.Nonced", /*sample=*/3,
+        /*count=*/1);
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.PartitionedCookieJarSizeKibibytes.Unnonced", /*sample=*/2,
+        /*count=*/1);
   }
 }
 
