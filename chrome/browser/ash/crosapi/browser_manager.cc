@@ -1643,6 +1643,7 @@ void BrowserManager::ResumeLaunch() {
   // we need to reload and relaunch the correct version of Lacros.
   auto user_lacros_selection = browser_util::DetermineLacrosSelection();
   if (user_lacros_selection.has_value() &&
+      lacros_selection_ != LacrosSelection::kDeployedLocally &&
       lacros_selection_ != user_lacros_selection) {
     LOG(WARNING)
         << "Mismatching Lacros selection between login screen and user. "
