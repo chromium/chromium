@@ -66,8 +66,12 @@ export class Camera3DeviceInfo {
       readonly supportPTZ: boolean,
   ) {
     this.deviceId = deviceInfo.deviceId;
+    // If all fps supported by the camera is lower than 24, use the maximum
+    // supported fps.
+    const maxSupportedFps =
+        Math.max(...videoResolutionFpses.map(({maxFps}) => maxFps));
     for (const {width, height, maxFps} of videoResolutionFpses) {
-      if (maxFps < 24) {
+      if (maxFps < 24 && maxFps !== maxSupportedFps) {
         continue;
       }
       const r = new Resolution(width, height);
