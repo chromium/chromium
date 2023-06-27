@@ -229,6 +229,8 @@ void CheckExperimentalMemoryMetrics(
   CheckMemoryMetric("Memory.Experimental.Browser2.Malloc", histogram_tester,
                     count, ValueRestriction::ABOVE_ZERO);
 #endif
+  CheckMemoryMetric("Memory.Experimental.Browser2.Custom.AXPlatformNodeCount",
+                    histogram_tester, count, ValueRestriction::ABOVE_ZERO);
   if (number_of_renderer_processes) {
     CheckExperimentalMemoryMetricsForProcessType(
         histogram_tester, count, "Renderer", number_of_renderer_processes);

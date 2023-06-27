@@ -18,6 +18,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/memory_allocator_dump.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_provider.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -70,14 +75,57 @@ bool FindDescendantRoleWithMaxDepth(const AXPlatformNodeBase* node,
   return false;
 }
 
-}  // namespace
-
-const char16_t AXPlatformNodeBase::kEmbeddedCharacter = u'\xfffc';
-
 // Map from each AXPlatformNode's unique id to its instance.
 using UniqueIdMap = std::unordered_map<int32_t, AXPlatformNode*>;
 base::LazyInstance<UniqueIdMap>::Leaky g_unique_id_map =
     LAZY_INSTANCE_INITIALIZER;
+
+// Adds process-wide statistics about accessibility objects to traces.
+class AXPlatformNodeMemoryDumpProvider
+    : public base::trace_event::MemoryDumpProvider {
+ public:
+  AXPlatformNodeMemoryDumpProvider(const AXPlatformNodeMemoryDumpProvider&) =
+      delete;
+  AXPlatformNodeMemoryDumpProvider& operator=(
+      const AXPlatformNodeMemoryDumpProvider&) = delete;
+
+  // base::trace_event::MemoryDumpProvider:
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
+
+ private:
+  friend class base::NoDestructor<AXPlatformNodeMemoryDumpProvider>;
+
+  explicit AXPlatformNodeMemoryDumpProvider(const UniqueIdMap& id_to_node);
+  ~AXPlatformNodeMemoryDumpProvider() override = default;
+
+  const raw_ref<const UniqueIdMap> id_to_node_;
+};
+
+bool AXPlatformNodeMemoryDumpProvider::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  auto* const dump = pmd->CreateAllocatorDump("accessibility/ax_platform_node");
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
+                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
+                  id_to_node_->size());
+  return true;
+}
+
+AXPlatformNodeMemoryDumpProvider::AXPlatformNodeMemoryDumpProvider(
+    const UniqueIdMap& id_to_node)
+    : id_to_node_(id_to_node) {
+  // Skip this in tests that don't set up a task runner on the main thread.
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+        this, "AXPlatformNode",
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
+}
+
+}  // namespace
+
+const char16_t AXPlatformNodeBase::kEmbeddedCharacter = u'\xfffc';
 
 // TODO(fxbug.dev/91030): Remove the !BUILDFLAG(IS_FUCHSIA) condition once
 // fuchsia has native accessibility.
@@ -122,6 +170,9 @@ void AXPlatformNodeBase::Init(AXPlatformNodeDelegate* delegate) {
 
   // This must be called after assigning our delegate.
   g_unique_id_map.Get()[GetUniqueId()] = this;
+
+  static base::NoDestructor<AXPlatformNodeMemoryDumpProvider> dump_provider(
+      g_unique_id_map.Get());
 }
 
 const AXNodeData& AXPlatformNodeBase::GetData() const {

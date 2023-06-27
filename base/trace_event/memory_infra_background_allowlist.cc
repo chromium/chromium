@@ -35,6 +35,7 @@ constexpr auto kDumpProviderAllowlist =
         "android::ResourceManagerImpl",
 #endif
         "AutocompleteController",
+        "AXPlatformNode",
         "BlinkGC",
         "BlinkObjectCounters",
         "BlobStorageContext",
@@ -102,6 +103,7 @@ constexpr auto kAllocatorDumpNameAllowlist = base::MakeFixedFlatSet<
 #if BUILDFLAG(IS_ANDROID)
         base::android::MeminfoDumpProvider::kDumpName,
 #endif
+        "accessibility/ax_platform_node",
         "blink_gc/main/allocated_objects",
         "blink_gc/main/heap",
         "blink_gc/workers/heap/worker_0x?",

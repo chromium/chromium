@@ -3930,6 +3930,8 @@ chromium-metrics-reviews@google.com.
              APIs. Only reported on Android, if the value hasn't been
              collected in the last 5 minutes (otherwise Android produces a
              stale value, which is not emitted in Chrome)."/>
+  <suffix name="AXPlatformNodeCount"
+      label="Count of accessibility nodes in the browser process."/>
   <suffix name="BlinkGC" label="Only counting Blink GC memory."/>
   <suffix name="BlinkGC.AllocatedObjects"
       label="Only counting objects allocated using Blink GC."/>

@@ -122,6 +122,13 @@ struct Metric {
 };
 
 const Metric kAllocatorDumpNamesForMetrics[] = {
+    {"accessibility/ax_platform_node",
+     "AXPlatformNodeCount",
+     MetricSize::kCustom,
+     MemoryAllocatorDump::kNameObjectCount,
+     EmitTo::kSizeInUmaOnly,
+     /*ukm_setter=*/nullptr,
+     {1, 1000000}},
     {"blink_gc", "BlinkGC", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetBlinkGC},
     {"blink_gc", "BlinkGC.AllocatedObjects", MetricSize::kLarge,
