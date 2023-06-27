@@ -24,6 +24,7 @@ import android.view.inputmethod.InputContentInfo;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -183,7 +184,7 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
 
     private void notifyAccessibilityService() {
         if (mCurrentState.equals(mPreviouslyNotifiedState)) return;
-        if (!mDelegate.isAccessibilityEnabled()) return;
+        if (!AccessibilityState.isAnyAccessibilityServiceEnabled()) return;
         sendAccessibilityEventForUserTextChange(mPreviouslyNotifiedState, mCurrentState);
         // Read autocomplete text separately.
         sendAccessibilityEventForAppendingAutocomplete(mCurrentState);

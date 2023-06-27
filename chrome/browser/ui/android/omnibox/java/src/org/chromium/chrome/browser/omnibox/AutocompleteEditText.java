@@ -12,7 +12,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
@@ -35,7 +34,6 @@ public class AutocompleteEditText
     private static final String TAG = "AutocompleteEdit";
 
     private static final boolean DEBUG = false;
-    private final AccessibilityManager mAccessibilityManager;
 
     private AutocompleteEditTextModelBase mModel;
     private boolean mIgnoreTextChangesForAutocomplete = true;
@@ -56,9 +54,6 @@ public class AutocompleteEditText
 
     public AutocompleteEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mAccessibilityManager =
-                (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
-
         addTextWatcherForPaste();
     }
 
@@ -95,11 +90,6 @@ public class AutocompleteEditText
      */
     public void onFinishNativeInitialization() {
         mNativeInitialized = true;
-    }
-
-    @VisibleForTesting
-    public AccessibilityManager getAccessibilityManagerForTesting() {
-        return mAccessibilityManager;
     }
 
     private void ensureModel() {
@@ -349,11 +339,6 @@ public class AutocompleteEditText
     @Override
     public void onAutocompleteTextStateChanged(boolean updateDisplay) {
         assert false; // make sure that this method is properly overridden.
-    }
-
-    @Override
-    public boolean isAccessibilityEnabled() {
-        return mAccessibilityManager != null && mAccessibilityManager.isEnabled();
     }
 
     @Override

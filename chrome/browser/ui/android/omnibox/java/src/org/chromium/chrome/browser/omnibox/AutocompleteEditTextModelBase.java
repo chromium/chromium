@@ -57,9 +57,6 @@ public interface AutocompleteEditTextModelBase {
          */
         void replaceAllTextFromAutocomplete(String text);
 
-        /** @return Whether accessibility is enabled. */
-        boolean isAccessibilityEnabled();
-
         /**
          * This is called when autocomplete text state changes.
          * @param updateDisplay True if string is changed.
