@@ -201,8 +201,7 @@ DataTypeTracker::DataTypeTracker(ModelType type)
   // Sanity check the hardcode value for kMinLocalChangeNudgeDelay.
   DCHECK_GE(local_change_nudge_delay_, kMinLocalChangeNudgeDelay);
 
-  if (CanGetCommitsFromExtensions(type) &&
-      base::FeatureList::IsEnabled(kSyncExtensionTypesThrottling)) {
+  if (CanGetCommitsFromExtensions(type)) {
     quota_ = std::make_unique<CommitQuota>(kInitialTokensForExtensionTypes,
                                            kRefillIntervalForExtensionTypes);
   }

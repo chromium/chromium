@@ -43,10 +43,6 @@ BASE_FEATURE(kSyncAutofillWalletUsageData,
              "SyncAutofillWalletUsageData",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncExtensionTypesThrottling,
-             "SyncExtensionTypesThrottling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSyncSegmentationDataType,
              "SyncSegmentationDataType",
              base::FEATURE_DISABLED_BY_DEFAULT);
