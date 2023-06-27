@@ -8,14 +8,30 @@
 #include "base/scoped_observation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+class TestScreenAIInstallState : public screen_ai::ScreenAIInstallState {
+ public:
+  TestScreenAIInstallState() = default;
+
+  TestScreenAIInstallState(const TestScreenAIInstallState&) = delete;
+  TestScreenAIInstallState& operator=(const TestScreenAIInstallState&) = delete;
+
+  ~TestScreenAIInstallState() override = default;
+
+  void SetLastUsageTime() override {}
+
+  void DownloadComponent() override {}
+};
+
+}  // namespace
+
 namespace screen_ai {
 
 class ScreenAIInstallStateTest : public testing::Test,
                                  ScreenAIInstallState::Observer {
  public:
-  ScreenAIInstallStateTest() {
-    ScreenAIInstallState::GetInstance()->ResetForTesting();
-  }
+  ScreenAIInstallStateTest() = default;
 
   void StartObservation() {
     component_downloaded_observer_.Observe(ScreenAIInstallState::GetInstance());
@@ -41,6 +57,7 @@ class ScreenAIInstallStateTest : public testing::Test,
                           ScreenAIInstallState::Observer>
       component_downloaded_observer_{this};
 
+  TestScreenAIInstallState test_install_state_;
   bool component_downloaded_received_ = false;
 };
 

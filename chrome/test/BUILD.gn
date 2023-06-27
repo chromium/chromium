@@ -6105,6 +6105,10 @@ test("unit_tests") {
     ]
   }
 
+  if (enable_screen_ai_service) {
+    sources += [ "../browser/screen_ai/screen_ai_install_state_unittest.cc" ]
+  }
+
   if (enable_webui_certificate_viewer) {
     sources += [ "../common/net/x509_certificate_model_unittest.cc" ]
   }
@@ -6848,6 +6852,10 @@ test("unit_tests") {
       "//components/offline_pages/core:test_support",
       "//components/offline_pages/core/background:test_support",
     ]
+  }
+
+  if (enable_screen_ai_service) {
+    deps += [ "../browser/screen_ai:screen_ai_install_state" ]
   }
 
   if (enable_soda_integration_tests) {
