@@ -5243,14 +5243,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DrmUtil.GetColorSpaceFromEdid.ChecksOutcome"
-    enum="EdidColorSpaceChecksOutcome" expires_after="2022-01-03">
+    enum="EdidColorSpaceChecksOutcome" expires_after="2024-06-26">
   <owner>andrescj@chromium.org</owner>
   <owner>mcasas@chromium.org</owner>
+  <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@google.com</owner>
   <summary>
     When attempting to get the color space from an EDID blob, whether the sanity
     checks passed (and if not, which check failed). This UMA is recorded
     whenever the color space is extracted from an EDID blob.
+
+    Expired in January 2022, and revived in June 2023 (M117). Data collected
+    between those dates may be incomplete.
   </summary>
 </histogram>
 
