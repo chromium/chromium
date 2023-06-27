@@ -2985,7 +2985,6 @@ class MixinTests(TestCase):
                     FOO_TEST_SUITE_WITH_ARGS,
                     LUCI_MILO_CFG,
                     mixins=MIXIN_ARGS)
-    self.regen_test_json(fbb)
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
