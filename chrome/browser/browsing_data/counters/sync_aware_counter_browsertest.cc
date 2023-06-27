@@ -105,7 +105,6 @@ class SyncAwareCounterTest : public SyncTest {
 IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, AutofillCounter) {
   // Set up the Sync client.
   ASSERT_TRUE(SetupClients());
-  static const int kFirstProfileIndex = 0;
   syncer::SyncService* sync_service = GetSyncService(kFirstProfileIndex);
   Profile* profile = GetProfile(kFirstProfileIndex);
   // Set up the counter.
@@ -245,7 +244,6 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, PasswordCounter) {
 IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, HistoryCounter) {
   // Set up the Sync client.
   ASSERT_TRUE(SetupClients());
-  static const int kFirstProfileIndex = 0;
   syncer::SyncService* sync_service = GetSyncService(kFirstProfileIndex);
   Profile* profile = GetProfile(kFirstProfileIndex);
 

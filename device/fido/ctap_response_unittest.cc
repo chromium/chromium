@@ -977,7 +977,7 @@ TEST(CTAPResponseTest, AttestationObjectResponseFields) {
       0x36, 0xcb, 0xa9, 0xe7, 0xf6, 0x4b, 0xaf, 0xf9, 0xbc, 0x84, 0x1d, 0x1a,
       0x66, 0xc8, 0x01, 0x1c, 0x05, 0x42, 0x31, 0x3a, 0x26, 0x3a, 0x5d, 0x2a,
       0x12, 0xd6, 0x6d, 0x26, 0xf4};
-  static const std::vector<uint8_t> kPublicKey = {
+  static const std::vector<uint8_t> kPublicKeyBytes = {
       0x30, 0x59, 0x30, 0x13, 0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02,
       0x01, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x03, 0x01, 0x07, 0x03,
       0x42, 0x00, 0x04, 0xa2, 0x68, 0x2f, 0x95, 0x1e, 0xdf, 0x6c, 0xba, 0xe7,
@@ -1000,7 +1000,7 @@ TEST(CTAPResponseTest, AttestationObjectResponseFields) {
     EXPECT_EQ(fields->authenticator_data,
               attestation_object.authenticator_data().SerializeToByteArray());
     EXPECT_EQ(fields->public_key_algo, -7);
-    EXPECT_EQ(fields->public_key_der, kPublicKey);
+    EXPECT_EQ(fields->public_key_der, kPublicKeyBytes);
   }
 
   {
@@ -1011,7 +1011,7 @@ TEST(CTAPResponseTest, AttestationObjectResponseFields) {
 
     EXPECT_NE(fields->attestation_object_bytes, kAttestationObjectBytes);
     EXPECT_EQ(fields->public_key_algo, -7);
-    EXPECT_EQ(fields->public_key_der, kPublicKey);
+    EXPECT_EQ(fields->public_key_der, kPublicKeyBytes);
 
     const AttestationObject attestation_object = *AttestationObject::Parse(
         *cbor::Reader::Read(fields->attestation_object_bytes));
