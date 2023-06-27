@@ -220,10 +220,9 @@ void FontBuilder::SetFontVariantAlternates(
   font_description_.SetFontVariantAlternates(variant_alternates);
 }
 
-void FontBuilder::SetFontSmoothing(FontSmoothingMode foont_smoothing_mode) {
+void FontBuilder::SetFontSmoothing(FontSmoothingMode font_smoothing_mode) {
   Set(PropertySetFlag::kFontSmoothing);
-
-  font_description_.SetFontSmoothing(foont_smoothing_mode);
+  font_description_.SetFontSmoothing(font_smoothing_mode);
 }
 
 void FontBuilder::SetFeatureSettings(
@@ -392,88 +391,175 @@ void FontBuilder::UpdateComputedSize(FontDescription& font_description,
   font_description.SetComputedSize(computed_size);
 }
 
-void FontBuilder::UpdateFontDescription(FontDescription& description,
+bool FontBuilder::UpdateFontDescription(FontDescription& description,
                                         FontOrientation font_orientation) {
+  bool modified = false;
   if (IsSet(PropertySetFlag::kFamily)) {
-    description.SetGenericFamily(font_description_.GenericFamily());
-    description.SetFamily(font_description_.Family());
+    if (description.GenericFamily() != font_description_.GenericFamily() ||
+        description.Family() != font_description_.Family()) {
+      modified = true;
+      description.SetGenericFamily(font_description_.GenericFamily());
+      description.SetFamily(font_description_.Family());
+    }
   }
   if (IsSet(PropertySetFlag::kSize)) {
-    description.SetKeywordSize(font_description_.KeywordSize());
-    description.SetSpecifiedSize(font_description_.SpecifiedSize());
-    description.SetIsAbsoluteSize(font_description_.IsAbsoluteSize());
+    if (description.KeywordSize() != font_description_.KeywordSize() ||
+        description.SpecifiedSize() != font_description_.SpecifiedSize() ||
+        description.IsAbsoluteSize() != font_description_.IsAbsoluteSize()) {
+      modified = true;
+      description.SetKeywordSize(font_description_.KeywordSize());
+      description.SetSpecifiedSize(font_description_.SpecifiedSize());
+      description.SetIsAbsoluteSize(font_description_.IsAbsoluteSize());
+    }
   }
 
   if (IsSet(PropertySetFlag::kSizeAdjust)) {
-    description.SetSizeAdjust(font_description_.SizeAdjust());
+    if (description.SizeAdjust() != font_description_.SizeAdjust()) {
+      modified = true;
+      description.SetSizeAdjust(font_description_.SizeAdjust());
+    }
   }
   if (IsSet(PropertySetFlag::kWeight)) {
-    description.SetWeight(font_description_.Weight());
+    if (description.Weight() != font_description_.Weight()) {
+      modified = true;
+      description.SetWeight(font_description_.Weight());
+    }
   }
   if (IsSet(PropertySetFlag::kStretch)) {
-    description.SetStretch(font_description_.Stretch());
+    if (description.Stretch() != font_description_.Stretch()) {
+      modified = true;
+      description.SetStretch(font_description_.Stretch());
+    }
   }
   if (IsSet(PropertySetFlag::kFeatureSettings)) {
-    description.SetFeatureSettings(font_description_.FeatureSettings());
+    if (description.FeatureSettings() != font_description_.FeatureSettings()) {
+      modified = true;
+      description.SetFeatureSettings(font_description_.FeatureSettings());
+    }
   }
   if (IsSet(PropertySetFlag::kLocale)) {
-    description.SetLocale(font_description_.Locale());
+    if (description.Locale() != font_description_.Locale()) {
+      modified = true;
+      description.SetLocale(font_description_.Locale());
+    }
   }
   if (IsSet(PropertySetFlag::kStyle)) {
-    description.SetStyle(font_description_.Style());
+    if (description.Style() != font_description_.Style()) {
+      modified = true;
+      description.SetStyle(font_description_.Style());
+    }
   }
   if (IsSet(PropertySetFlag::kVariantCaps)) {
-    description.SetVariantCaps(font_description_.VariantCaps());
+    if (description.VariantCaps() != font_description_.VariantCaps()) {
+      modified = true;
+      description.SetVariantCaps(font_description_.VariantCaps());
+    }
   }
   if (IsSet(PropertySetFlag::kVariantEastAsian)) {
-    description.SetVariantEastAsian(font_description_.VariantEastAsian());
+    if (description.VariantEastAsian() !=
+        font_description_.VariantEastAsian()) {
+      modified = true;
+      description.SetVariantEastAsian(font_description_.VariantEastAsian());
+    }
   }
   if (IsSet(PropertySetFlag::kVariantLigatures)) {
-    description.SetVariantLigatures(font_description_.GetVariantLigatures());
+    if (description.GetVariantLigatures() !=
+        font_description_.GetVariantLigatures()) {
+      modified = true;
+      description.SetVariantLigatures(font_description_.GetVariantLigatures());
+    }
   }
   if (IsSet(PropertySetFlag::kVariantNumeric)) {
-    description.SetVariantNumeric(font_description_.VariantNumeric());
+    if (description.VariantNumeric() != font_description_.VariantNumeric()) {
+      modified = true;
+      description.SetVariantNumeric(font_description_.VariantNumeric());
+    }
   }
   if (IsSet(PropertySetFlag::kVariationSettings)) {
-    description.SetVariationSettings(font_description_.VariationSettings());
+    if (description.VariationSettings() !=
+        font_description_.VariationSettings()) {
+      modified = true;
+      description.SetVariationSettings(font_description_.VariationSettings());
+    }
   }
   if (IsSet(PropertySetFlag::kFontSynthesisWeight)) {
-    description.SetFontSynthesisWeight(
-        font_description_.GetFontSynthesisWeight());
+    if (description.GetFontSynthesisWeight() !=
+        font_description_.GetFontSynthesisWeight()) {
+      modified = true;
+      description.SetFontSynthesisWeight(
+          font_description_.GetFontSynthesisWeight());
+    }
   }
   if (IsSet(PropertySetFlag::kFontSynthesisStyle)) {
-    description.SetFontSynthesisStyle(
-        font_description_.GetFontSynthesisStyle());
+    if (description.GetFontSynthesisStyle() !=
+        font_description_.GetFontSynthesisStyle()) {
+      modified = true;
+      description.SetFontSynthesisStyle(
+          font_description_.GetFontSynthesisStyle());
+    }
   }
   if (IsSet(PropertySetFlag::kFontSynthesisSmallCaps)) {
-    description.SetFontSynthesisSmallCaps(
-        font_description_.GetFontSynthesisSmallCaps());
+    if (description.GetFontSynthesisSmallCaps() !=
+        font_description_.GetFontSynthesisSmallCaps()) {
+      modified = true;
+      description.SetFontSynthesisSmallCaps(
+          font_description_.GetFontSynthesisSmallCaps());
+    }
   }
   if (IsSet(PropertySetFlag::kTextRendering)) {
-    description.SetTextRendering(font_description_.TextRendering());
+    if (description.TextRendering() != font_description_.TextRendering()) {
+      modified = true;
+      description.SetTextRendering(font_description_.TextRendering());
+    }
   }
   if (IsSet(PropertySetFlag::kKerning)) {
-    description.SetKerning(font_description_.GetKerning());
+    if (description.GetKerning() != font_description_.GetKerning()) {
+      modified = true;
+      description.SetKerning(font_description_.GetKerning());
+    }
   }
   if (IsSet(PropertySetFlag::kFontOpticalSizing)) {
-    description.SetFontOpticalSizing(font_description_.FontOpticalSizing());
+    if (description.FontOpticalSizing() !=
+        font_description_.FontOpticalSizing()) {
+      modified = true;
+      description.SetFontOpticalSizing(font_description_.FontOpticalSizing());
+    }
   }
   if (IsSet(PropertySetFlag::kFontPalette)) {
-    description.SetFontPalette(font_description_.GetFontPalette());
+    if (description.GetFontPalette() != font_description_.GetFontPalette()) {
+      modified = true;
+      description.SetFontPalette(font_description_.GetFontPalette());
+    }
   }
   if (IsSet(PropertySetFlag::kFontVariantAlternates)) {
-    description.SetFontVariantAlternates(
-        font_description_.GetFontVariantAlternates());
+    if (description.GetFontVariantAlternates() !=
+        font_description_.GetFontVariantAlternates()) {
+      modified = true;
+      description.SetFontVariantAlternates(
+          font_description_.GetFontVariantAlternates());
+    }
   }
   if (IsSet(PropertySetFlag::kFontSmoothing)) {
-    description.SetFontSmoothing(font_description_.FontSmoothing());
+    if (description.FontSmoothing() != font_description_.FontSmoothing()) {
+      modified = true;
+      description.SetFontSmoothing(font_description_.FontSmoothing());
+    }
   }
   if (IsSet(PropertySetFlag::kTextOrientation) ||
       IsSet(PropertySetFlag::kWritingMode)) {
-    description.SetOrientation(font_orientation);
+    if (description.Orientation() != font_orientation) {
+      modified = true;
+      description.SetOrientation(font_orientation);
+    }
   }
   if (IsSet(PropertySetFlag::kVariantPosition)) {
-    description.SetVariantPosition(font_description_.VariantPosition());
+    if (description.VariantPosition() != font_description_.VariantPosition()) {
+      modified = true;
+      description.SetVariantPosition(font_description_.VariantPosition());
+    }
+  }
+  if (!modified && !IsSet(PropertySetFlag::kEffectiveZoom)) {
+    return false;
   }
 
   float size = description.SpecifiedSize();
@@ -487,6 +573,7 @@ void FontBuilder::UpdateFontDescription(FontDescription& description,
   if (size && description.HasSizeAdjust()) {
     description.SetAdjustedSize(size);
   }
+  return true;
 }
 
 FontSelector* FontBuilder::FontSelectorFromTreeScope(
@@ -524,7 +611,12 @@ void FontBuilder::CreateFont(ComputedStyleBuilder& builder,
                    : builder.GetFontDescription();
 
   FontDescription description = builder.GetFontDescription();
-  UpdateFontDescription(description, builder.ComputeFontOrientation());
+  if (!UpdateFontDescription(description, builder.ComputeFontOrientation())) {
+    // Early exit; nothing was actually changed (i.e., everything that was set
+    // already matched the initial/parent style).
+    flags_ = 0;
+    return;
+  }
   UpdateSpecifiedSize(description, parent_description);
   UpdateComputedSize(description, builder);
 

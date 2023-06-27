@@ -88,7 +88,9 @@ class CORE_EXPORT FontBuilder {
   void SetVariantPosition(FontDescription::FontVariantPosition);
 
   // FIXME: These need to just vend a Font object eventually.
-  void UpdateFontDescription(FontDescription&,
+  // UpdateFontDescription() returns true if any properties were actually
+  // changed.
+  bool UpdateFontDescription(FontDescription&,
                              FontOrientation = FontOrientation::kHorizontal);
   void CreateFont(ComputedStyleBuilder&, const ComputedStyle* parent_style);
   void CreateInitialFont(ComputedStyleBuilder&);
