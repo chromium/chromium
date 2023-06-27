@@ -148,6 +148,7 @@
     "android-angle-chromium-try": "Ubuntu-22.04",
     "android-dawn-arm-rel": "Ubuntu-22.04",
     "android-dawn-arm64-rel": "Ubuntu-22.04",
+    "android-nougat-x86-rel-compilator": "Ubuntu-22.04",
     "android-pie-arm64-dbg": "Ubuntu-22.04",
     "android_optional_gpu_tests_rel": "Ubuntu-22.04",
     "chromeos-amd64-generic-rel": "Ubuntu-22.04",
