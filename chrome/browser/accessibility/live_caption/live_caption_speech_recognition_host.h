@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_LIVE_CAPTION_SPEECH_RECOGNITION_HOST_H_
 
 #include <memory>
+#include <string>
+#include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -73,7 +75,12 @@ class LiveCaptionSpeechRecognitionHost
       mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizerClient>
           pending_receiver);
   ~LiveCaptionSpeechRecognitionHost() override;
-  void OnTranslationCallback(media::SpeechRecognitionResult result);
+  void OnTranslationCallback(const std::string& cached_translation,
+                             const std::string& original_transcription,
+                             const std::string& source_language,
+                             const std::string& target_language,
+                             bool is_final,
+                             const std::string& result);
 
   // Returns the WebContents if it exists. If it does not exist, sets the
   // RenderFrameHost reference to nullptr and returns nullptr.
@@ -92,6 +99,14 @@ class LiveCaptionSpeechRecognitionHost
   // A flag used by the Live Translate feature indicating whether transcriptions
   // should stop.
   bool stop_transcriptions_ = false;
+
+  // Used to cache translations to avoid retranslating the same string. The key
+  // is the source and target language codes followed by a `|` separator
+  // character and the original text. The value is the translated text. This
+  // cache is cleared upon receiving a final recognition event. The size of this
+  // cache depends on the frequency of partial and final recognition events, but
+  // is typically under ~10.
+  std::unordered_map<std::string, std::string> translation_cache_;
 
   // The source language code of the audio stream.
   std::string source_language_;

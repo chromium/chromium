@@ -83,6 +83,10 @@ void LiveCaptionBrowserTest::SetLiveCaptionEnabledOnProfile(bool enabled,
 void LiveCaptionBrowserTest::SetLiveTranslateEnabled(bool enabled) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
                                                enabled);
+  browser()->profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
+                                              "en-US");
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kLiveTranslateTargetLanguageCode, "fr-FR");
 }
 
 }  // namespace captions
