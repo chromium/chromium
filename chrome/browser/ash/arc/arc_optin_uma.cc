@@ -60,11 +60,15 @@ ArcEnabledState ComputeEnabledState(bool enabled, const Profile* profile) {
 }  // namespace
 
 void UpdateEnabledStateByUserTypeUMA() {
+  auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+  // Don't record UMA if there is no primary user.
+  if (!primary_user) {
+    return;
+  }
+
   const Profile* profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
-          user_manager::UserManager::Get()->GetPrimaryUser()));
-  // Don't record UMA if there is no primary user or the primary user profile is
-  // not loaded.
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(primary_user));
+  // Don't record UMA if the primary user profile is not loaded.
   if (!profile) {
     return;
   }
