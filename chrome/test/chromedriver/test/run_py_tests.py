@@ -5172,9 +5172,10 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
     self.assertFalse(driver.w3c_compliant)
 
   def testClientHintsMobileLegacy(self):
-    expected_ua = 'Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 5 Bui'
-    'ld/JOP40D) AppleWebKit/535.19 (KHTML, like Gecko) Chr'
-    'ome/18.0.1025.166 Mobile Safari/535.19'
+    expected_ua = ''.join(['Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 5',
+                          'Build/JOP40D) AppleWebKit/535.19',
+                          '(KHTML, like Gecko) Chrome/18.0.1025.166 Mobile',
+                           'Safari/535.19'])
     driver = self.CreateDriver(
         mobile_emulation = {
             'deviceMetrics': {'width': 360, 'height': 640, 'pixelRatio': 3},
@@ -5225,6 +5226,7 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
                 'platformVersion': '17',
                 'architecture': 'arm',
                 'bitness': '32',
+                'mobile': True,
                 'model': 'Special',
             }
         })

@@ -825,7 +825,8 @@ base::Value::Dict CreateCapabilitiesDict(const std::string& mobile_emulation) {
 TEST(ParseClientHints, MinimalistMobileAndroid) {
   Capabilities capabilities;
   const std::string mobile_emulation =
-      "{\"deviceMetrics\": {}, \"clientHints\": {\"platform\": \"Android\"}}";
+      "{\"deviceMetrics\": {}, \"clientHints\": {\"platform\": \"Android\", "
+      "\"mobile\": true}}";
   base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
   EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
   ASSERT_TRUE(capabilities.mobile_device.has_value());
@@ -845,8 +846,8 @@ TEST(ParseClientHints, MinimalistMobileAndroid) {
 TEST(ParseClientHints, MinimalistTabletAndroid) {
   Capabilities capabilities;
   const std::string mobile_emulation =
-      "{\"deviceMetrics\": {\"mobile\": false},"
-      "\"clientHints\": {\"platform\": \"Android\"}}";
+      "{\"deviceMetrics\": {},"
+      "\"clientHints\": {\"platform\": \"Android\", \"mobile\": false}}";
   base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
   EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
   ASSERT_TRUE(capabilities.mobile_device.has_value());
@@ -894,7 +895,7 @@ TEST_P(ParseClientHintsPerPlatform, MobileDeviceMetrics) {
   Capabilities capabilities;
   const std::string mobile_emulation = base::StringPrintf(
       "{\"deviceMetrics\": {},"
-      "\"clientHints\": {\"platform\": \"%s\"}}",
+      "\"clientHints\": {\"platform\": \"%s\", \"mobile\": true}}",
       expected_platform.c_str());
   base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
   EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
@@ -917,8 +918,8 @@ TEST_P(ParseClientHintsPerPlatform, TabletDeviceMetrics) {
   const std::string expected_user_agent = GetParam().second;
   Capabilities capabilities;
   const std::string mobile_emulation = base::StringPrintf(
-      "{\"deviceMetrics\": {\"mobile\": false},"
-      "\"clientHints\": {\"platform\": \"%s\"}}",
+      "{\"deviceMetrics\": {},"
+      "\"clientHints\": {\"platform\": \"%s\", \"mobile\": false}}",
       expected_platform.c_str());
   base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
   EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
@@ -950,7 +951,7 @@ TEST(ParseClientHints, MinimalistCustomMobile) {
   Capabilities capabilities;
   const std::string mobile_emulation = base::StringPrintf(
       "{\"userAgent\": \"%s\", \"deviceMetrics\": {},"
-      "\"clientHints\": {\"platform\": \"Custom\"}}",
+      "\"clientHints\": {\"platform\": \"Custom\", \"mobile\": true}}",
       kUserAgentMobileChromeOnIOS);
   base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
   EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
@@ -974,8 +975,8 @@ TEST(ParseClientHints, MinimalistCustomMobile) {
 TEST(ParseClientHints, MinimalistCustomTablet) {
   Capabilities capabilities;
   const std::string mobile_emulation = base::StringPrintf(
-      "{\"userAgent\": \"%s\", \"deviceMetrics\": {\"mobile\": false},"
-      "\"clientHints\": {\"platform\": \"Custom\"}}",
+      "{\"userAgent\": \"%s\", \"deviceMetrics\": {},"
+      "\"clientHints\": {\"platform\": \"Custom\", \"mobile\": false}}",
       kUserAgentNonMobileChromeOnIOS);
   base::Value::Dict caps = CreateCapabilitiesDict(mobile_emulation);
   EXPECT_TRUE(StatusOk(capabilities.Parse(caps)));
@@ -996,10 +997,12 @@ TEST(ParseClientHints, MinimalistCustomTablet) {
   EXPECT_TRUE(reduced_user_agent.empty());
 }
 
-class InferClientHintsOnAndroid : public testing::TestWithParam<std::string> {};
+class InferClientHintsOnAndroid
+    : public testing::TestWithParam<std::pair<std::string, bool>> {};
 
 TEST_P(InferClientHintsOnAndroid, NoDeviceMetrics) {
-  const std::string input_user_agent = GetParam();
+  const std::string input_user_agent = GetParam().first;
+  const bool expected_is_mobile = GetParam().second;
   const std::string mobile_emulation =
       base::StringPrintf("{\"userAgent\": \"%s\"}", input_user_agent.c_str());
   Capabilities capabilities;
@@ -1013,16 +1016,16 @@ TEST_P(InferClientHintsOnAndroid, NoDeviceMetrics) {
   EXPECT_TRUE(capabilities.mobile_device->user_agent.has_value());
   ASSERT_EQ(input_user_agent, capabilities.mobile_device->user_agent.value());
   EXPECT_EQ("Android", client_hints.platform);
-  // Inferred as non-mobile due to the lack of device metrics
-  EXPECT_EQ(false, client_hints.mobile);
+  EXPECT_EQ(expected_is_mobile, client_hints.mobile);
   std::string reduced_user_agent;
   EXPECT_TRUE(StatusOk(capabilities.mobile_device->GetReducedUserAgent(
       "114", &reduced_user_agent)));
-  EXPECT_EQ(kUserAgentNonMobileChromeOnAndroid, reduced_user_agent);
+  EXPECT_EQ(input_user_agent, reduced_user_agent);
 }
 
 TEST_P(InferClientHintsOnAndroid, MobileDeviceMetrics) {
-  const std::string input_user_agent = GetParam();
+  const std::string input_user_agent = GetParam().first;
+  const bool expected_is_mobile = GetParam().second;
   const std::string mobile_emulation =
       base::StringPrintf("{\"userAgent\": \"%s\", \"deviceMetrics\": {}}",
                          input_user_agent.c_str());
@@ -1037,16 +1040,16 @@ TEST_P(InferClientHintsOnAndroid, MobileDeviceMetrics) {
   EXPECT_TRUE(capabilities.mobile_device->user_agent.has_value());
   ASSERT_EQ(input_user_agent, capabilities.mobile_device->user_agent.value());
   EXPECT_EQ("Android", client_hints.platform);
-  // Deriverd from deviceMetrics.mobile that always defaults to true
-  EXPECT_EQ(true, client_hints.mobile);
+  EXPECT_EQ(expected_is_mobile, client_hints.mobile);
   std::string reduced_user_agent;
   EXPECT_TRUE(StatusOk(capabilities.mobile_device->GetReducedUserAgent(
       "114", &reduced_user_agent)));
-  EXPECT_EQ(kUserAgentMobileChromeOnAndroid, reduced_user_agent);
+  EXPECT_EQ(input_user_agent, reduced_user_agent);
 }
 
 TEST_P(InferClientHintsOnAndroid, TabletDeviceMetrics) {
-  const std::string input_user_agent = GetParam();
+  const std::string input_user_agent = GetParam().first;
+  const bool expected_is_mobile = GetParam().second;
   const std::string mobile_emulation = base::StringPrintf(
       "{\"userAgent\": \"%s\", \"deviceMetrics\": {\"mobile\": false}}",
       input_user_agent.c_str());
@@ -1062,17 +1065,18 @@ TEST_P(InferClientHintsOnAndroid, TabletDeviceMetrics) {
   ASSERT_EQ(input_user_agent, capabilities.mobile_device->user_agent.value());
   EXPECT_EQ("Android", client_hints.platform);
   // Deriverd from deviceMetrics.mobile
-  EXPECT_EQ(false, client_hints.mobile);
+  EXPECT_EQ(expected_is_mobile, client_hints.mobile);
   std::string reduced_user_agent;
   EXPECT_TRUE(StatusOk(capabilities.mobile_device->GetReducedUserAgent(
       "114", &reduced_user_agent)));
-  EXPECT_EQ(kUserAgentNonMobileChromeOnAndroid, reduced_user_agent);
+  EXPECT_EQ(input_user_agent, reduced_user_agent);
 }
 
-INSTANTIATE_TEST_SUITE_P(Inference,
-                         InferClientHintsOnAndroid,
-                         testing::Values(kUserAgentMobileChromeOnAndroid,
-                                         kUserAgentNonMobileChromeOnAndroid));
+INSTANTIATE_TEST_SUITE_P(
+    Inference,
+    InferClientHintsOnAndroid,
+    testing::Values(std::make_pair(kUserAgentMobileChromeOnAndroid, true),
+                    std::make_pair(kUserAgentNonMobileChromeOnAndroid, false)));
 
 class InferClientHintsPerPlatform
     : public testing::TestWithParam<std::pair<std::string, std::string>> {};
@@ -1120,8 +1124,7 @@ TEST_P(InferClientHintsPerPlatform, MobileDeviceMetrics) {
   ASSERT_EQ(expected_user_agent,
             capabilities.mobile_device->user_agent.value());
   EXPECT_EQ(expected_platform, client_hints.platform);
-  // Deriverd from deviceMetrics.mobile that always defaults to true
-  EXPECT_EQ(true, client_hints.mobile);
+  EXPECT_EQ(false, client_hints.mobile);
   std::string reduced_user_agent;
   EXPECT_TRUE(StatusOk(capabilities.mobile_device->GetReducedUserAgent(
       "114", &reduced_user_agent)));
@@ -1181,7 +1184,6 @@ TEST_P(InferClientHintsOnCustomPlatform, NoDeviceMetrics) {
   EXPECT_TRUE(capabilities.mobile_device->user_agent.has_value());
   ASSERT_EQ(input_user_agent, capabilities.mobile_device->user_agent.value());
   EXPECT_EQ("", client_hints.platform);
-  // Inferred as non-mobile due to the lack of device metrics
   EXPECT_EQ(false, client_hints.mobile);
   std::string reduced_user_agent;
   EXPECT_TRUE(capabilities.mobile_device
@@ -1206,8 +1208,7 @@ TEST_P(InferClientHintsOnCustomPlatform, MobileDeviceMetrics) {
   EXPECT_TRUE(capabilities.mobile_device->user_agent.has_value());
   ASSERT_EQ(input_user_agent, capabilities.mobile_device->user_agent.value());
   EXPECT_EQ("", client_hints.platform);
-  // Deriverd from deviceMetrics.mobile that always defaults to true
-  EXPECT_EQ(true, client_hints.mobile);
+  EXPECT_EQ(false, client_hints.mobile);
   std::string reduced_user_agent;
   EXPECT_TRUE(capabilities.mobile_device
                   ->GetReducedUserAgent("114", &reduced_user_agent)
@@ -1231,7 +1232,6 @@ TEST_P(InferClientHintsOnCustomPlatform, TabletDeviceMetrics) {
   EXPECT_TRUE(capabilities.mobile_device->user_agent.has_value());
   ASSERT_EQ(input_user_agent, capabilities.mobile_device->user_agent.value());
   EXPECT_EQ("", client_hints.platform);
-  // Deriverd from deviceMetrics.mobile
   EXPECT_EQ(false, client_hints.mobile);
   std::string reduced_user_agent;
   EXPECT_TRUE(capabilities.mobile_device

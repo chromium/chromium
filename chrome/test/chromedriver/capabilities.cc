@@ -198,13 +198,10 @@ Status ParseMobileEmulation(const base::Value& option,
     absl::optional<bool> mobile = metrics->FindBool("mobile");
     if (metrics->Find("mobile") && !mobile.has_value())
       return Status(kInvalidArgument, "'mobile' must be a boolean");
-    // We don't infere deviceMetrics.mobile form mobile_ua because
-    // mobile device may have no "Mobile" word in its userAgent.
-    // Example: Lumia 950 (Chrome on Windows 10 Mobile)
     if (!mobile.has_value()) {
       // Due to legacy reasons missing 'deviceMetrics.mobile' is inferred as
       // true.
-      VLOG(0) << "Inferring 'deviceMetrics.mobile' as true";
+      VLOG(logging::LOGGING_INFO) << "Inferring 'deviceMetrics.mobile' as true";
       mobile = true;
     }
 
@@ -217,10 +214,11 @@ Status ParseMobileEmulation(const base::Value& option,
     }
 
     if (!touch.has_value()) {
-      VLOG(0) << "Inferring 'deviceMetrics.touch' as true.";
+      VLOG(logging::LOGGING_INFO) << "Inferring 'deviceMetrics.touch' as true.";
     }
     if (!maybe_device_scale_factor.has_value()) {
-      VLOG(0) << "Inferring 'deviceMetrics.pixelRatio' as 0.";
+      VLOG(logging::LOGGING_INFO)
+          << "Inferring 'deviceMetrics.pixelRatio' as 0.";
     }
 
     DeviceMetrics device_metrics{width, height,
@@ -230,8 +228,9 @@ Status ParseMobileEmulation(const base::Value& option,
   }
 
   if (mobile_ua && !mobile_device.device_metrics.has_value()) {
-    VLOG(0) << "The 'userAgent' value corresponds to a mobile UserAgent but "
-               "'deviceMetrics' is not provided.";
+    VLOG(logging::LOGGING_INFO)
+        << "The 'userAgent' value corresponds to a mobile UserAgent but "
+           "'deviceMetrics' is not provided.";
   }
 
   if (mobile_emulation->Find("clientHints")) {
@@ -269,38 +268,28 @@ Status ParseMobileEmulation(const base::Value& option,
     if (client_hints_dict.Find("mobile") && !mobile.has_value()) {
       return Status(kInvalidArgument, "'clientHints.mobile' must be a boolean");
     }
-    if (mobile_device.device_metrics.has_value()) {
-      if (mobile.has_value() &&
-          mobile_device.device_metrics->mobile != mobile.value()) {
-        VLOG(logging::LOGGING_WARNING)
-            << "The mobility in 'deviceMetrics.mobile' contradicts "
-               "'clientHints.mobile' value.";
-      }
-      if (!mobile.has_value()) {
-        VLOG(0) << "Inferring 'clientHints.mobile' as 'deviceMetrics.mobile'.";
-        mobile = mobile_device.device_metrics->mobile;
-      }
-    } else {
-      if (mobile.has_value() && mobile.value()) {
-        VLOG(0) << "User does not provide 'deviceMetrics' while "
-                   "'clintHints.mobile' is true";
-      }
-      // We don't infere deviceMetrics.mobile form mobile_ua because
-      // mobile device may have no "Mobile" word in its userAgent.
-      // Example: Lumia 950 (Chrome on Windows 10 Mobile)
-      if (!mobile.has_value()) {
-        VLOG(0) << "Inferring 'clientHints.mobile' as false";
+    if (!mobile.has_value()) {
+      if (base::ToUpperASCII(client_hints.platform) == "ANDROID" &&
+          mobile_device.user_agent.has_value()) {
+        VLOG(logging::LOGGING_INFO)
+            << "Inferring 'clientHints.mobile' from 'userAgent' as "
+            << mobile_ua;
+        mobile = mobile_ua;
+      } else {
+        VLOG(logging::LOGGING_INFO)
+            << "Inferring 'clientHints.mobile' as false";
         mobile = false;
       }
     }
-    // All the paths above assign some value to 'mobile'
-    if (mobile_device.user_agent.has_value() && mobile_ua && !mobile.value()) {
-      // Presence of word Mobile in UserAgent clearly hints that the device is
-      // mobile. The opposite is not true.
-      VLOG(logging::LOGGING_WARNING)
-          << "The mobility in 'userAgent' contradicts "
-             "'clientHints.mobile' value.";
+    if (mobile_device.device_metrics.has_value()) {
+      if (mobile.has_value() && mobile.value() &&
+          !mobile_device.device_metrics->mobile) {
+        VLOG(logging::LOGGING_WARNING)
+            << "The mobility in 'clientHints.mobile' contradicts "
+               "'deviceMetrics.mobile' value.";
+      }
     }
+    // All the paths above assign some value to 'mobile'
     client_hints.mobile = mobile.value();
 
     if (client_hints_dict.Find("architecture")) {
@@ -312,7 +301,8 @@ Status ParseMobileEmulation(const base::Value& option,
       }
       client_hints.architecture = *architecture;
     } else {
-      VLOG(0) << "Inferring 'clientHints.architecture' as an empty string.";
+      VLOG(logging::LOGGING_INFO)
+          << "Inferring 'clientHints.architecture' as an empty string.";
       client_hints.architecture = "";
     }
 
@@ -324,7 +314,8 @@ Status ParseMobileEmulation(const base::Value& option,
       }
       client_hints.bitness = *bitness;
     } else {
-      VLOG(0) << "Inferring 'clientHints.bitness' as an empty string.";
+      VLOG(logging::LOGGING_INFO)
+          << "Inferring 'clientHints.bitness' as an empty string.";
       client_hints.bitness = "";
     }
 
@@ -360,7 +351,8 @@ Status ParseMobileEmulation(const base::Value& option,
 
       client_hints.brands = std::move(brands);
     } else {
-      VLOG(0) << "Inferring 'clientHints.brands' as browser defined.";
+      VLOG(logging::LOGGING_INFO)
+          << "Inferring 'clientHints.brands' as browser defined.";
     }
 
     if (client_hints_dict.Find("fullVersionList")) {
@@ -397,7 +389,8 @@ Status ParseMobileEmulation(const base::Value& option,
 
       client_hints.full_version_list = std::move(full_version_list);
     } else {
-      VLOG(0) << "Inferring 'clientHints.fullversionList' as browser defined.";
+      VLOG(logging::LOGGING_INFO)
+          << "Inferring 'clientHints.fullversionList' as browser defined.";
     }
 
     if (client_hints_dict.Find("model")) {
@@ -406,12 +399,14 @@ Status ParseMobileEmulation(const base::Value& option,
         return Status(kInvalidArgument, "'clientHints.model' must be a string");
       }
       if (!client_hints.mobile && model->size() > 0) {
-        VLOG(0) << "User provides 'clientHints.model' for a non-mobile "
-                   "platform as indicated by 'clientHints.mobile'";
+        VLOG(logging::LOGGING_INFO)
+            << "User provides 'clientHints.model' for a non-mobile "
+               "platform as indicated by 'clientHints.mobile'";
       }
       client_hints.model = *model;
     } else {
-      VLOG(0) << "Inferring 'clientHints.model' as an empty string.";
+      VLOG(logging::LOGGING_INFO)
+          << "Inferring 'clientHints.model' as an empty string.";
       client_hints.model = "";
     }
 
@@ -424,7 +419,8 @@ Status ParseMobileEmulation(const base::Value& option,
       }
       client_hints.platform_version = *platform_version;
     } else {
-      VLOG(0) << "Inferring 'clientHints.platformVersion' as an empty string.";
+      VLOG(logging::LOGGING_INFO)
+          << "Inferring 'clientHints.platformVersion' as an empty string.";
       client_hints.platform_version = "";
     }
 
@@ -436,25 +432,24 @@ Status ParseMobileEmulation(const base::Value& option,
       }
       client_hints.wow64 = *wow64;
     } else {
-      VLOG(0) << "Inferring 'clientHints.wow64' as false.";
+      VLOG(logging::LOGGING_INFO) << "Inferring 'clientHints.wow64' as false.";
       client_hints.wow64 = false;
     }
 
     mobile_device.client_hints = std::move(client_hints);
   } else if (mobile_device.user_agent.has_value()) {
-    VLOG(0)
+    VLOG(logging::LOGGING_INFO)
         << "Operating in legacy emulation mode as 'mobileEmulation' contains "
            "no 'clientHints'.";
     ClientHints client_hints;
-    client_hints.mobile = mobile_device.device_metrics.has_value()
-                              ? mobile_device.device_metrics->mobile
-                              : false;
     if (!MobileDevice::GuessPlatform(mobile_device.user_agent.value(),
                                      &client_hints.platform)) {
       // In legacy mode we allow platform to be empty.
       // Otherwise we might break the users' tests.
       client_hints.platform = "";
     }
+    client_hints.mobile =
+        client_hints.platform == "Android" ? mobile_ua : false;
     // Empty value corresponds to the result of GetCpuArchitecture in
     // //content/common/user_agent.cc.
     client_hints.architecture = "";
@@ -464,17 +459,18 @@ Status ParseMobileEmulation(const base::Value& option,
     client_hints.model = "";
     client_hints.platform_version = "";
     client_hints.wow64 = false;
-    VLOG(0) << "No 'clientHints' found. Operating in legacy mode. "
-            << "Inferring clientHints as: "
-            << "{architecture='" << client_hints.architecture << "'"
-            << ", bitness='" << client_hints.bitness << "'"
-            << ", brands=<browser-defined>"
-            << ", fullVersionList=<browser-defined>"
-            << ", mobile=" << std::boolalpha << client_hints.mobile
-            << ", model='" << client_hints.model << "'"
-            << ", platform='" << client_hints.platform << "'"
-            << ", platformVersion='" << client_hints.platform_version << "'"
-            << ", wow64=" << std::boolalpha << client_hints.wow64 << "}";
+    VLOG(logging::LOGGING_INFO)
+        << "No 'clientHints' found. Operating in legacy mode. "
+        << "Inferring clientHints as: "
+        << "{architecture='" << client_hints.architecture << "'"
+        << ", bitness='" << client_hints.bitness << "'"
+        << ", brands=<browser-defined>"
+        << ", fullVersionList=<browser-defined>"
+        << ", mobile=" << std::boolalpha << client_hints.mobile << ", model='"
+        << client_hints.model << "'"
+        << ", platform='" << client_hints.platform << "'"
+        << ", platformVersion='" << client_hints.platform_version << "'"
+        << ", wow64=" << std::boolalpha << client_hints.wow64 << "}";
     mobile_device.client_hints = std::move(client_hints);
   }
 
