@@ -10,11 +10,6 @@
 
 namespace syncer {
 
-// If enabled, EntitySpecifics will be cached in EntityMetadata in order to
-// prevent data loss caused by older clients dealing with unknown proto fields
-// (introduced later).
-BASE_DECLARE_FEATURE(kCacheBaseEntitySpecificsInMetadata);
-
 // Customizes the delay of a deferred sync startup.
 BASE_DECLARE_FEATURE(kDeferredSyncStartupCustomDelay);
 inline constexpr base::FeatureParam<int>

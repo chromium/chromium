@@ -1382,10 +1382,7 @@ ClientTagBasedModelTypeProcessor::GetPossiblyTrimmedRemoteSpecifics(
     const std::string& storage_key) const {
   DCHECK(entity_tracker_);
   DCHECK(!storage_key.empty());
-  if (!base::FeatureList::IsEnabled(
-          syncer::kCacheBaseEntitySpecificsInMetadata)) {
-    return sync_pb::EntitySpecifics::default_instance();
-  }
+
   ProcessorEntity* entity =
       entity_tracker_->GetEntityForStorageKey(storage_key);
   if (entity == nullptr) {

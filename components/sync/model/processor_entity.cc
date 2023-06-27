@@ -171,10 +171,8 @@ void ProcessorEntity::RecordAcceptedRemoteUpdate(
   metadata_.set_modification_time(
       TimeToProtoTime(update.entity.modification_time));
   UpdateSpecificsHash(update.entity.specifics);
-  if (base::FeatureList::IsEnabled(kCacheBaseEntitySpecificsInMetadata)) {
-    *metadata_.mutable_possibly_trimmed_base_specifics() =
-        std::move(trimmed_specifics);
-  }
+  *metadata_.mutable_possibly_trimmed_base_specifics() =
+      std::move(trimmed_specifics);
 }
 
 void ProcessorEntity::RecordForcedRemoteUpdate(
@@ -202,12 +200,11 @@ void ProcessorEntity::RecordLocalUpdate(
   // it remembers specifics hash before the modifications.
   IncrementSequenceNumber(modification_time);
   UpdateSpecificsHash(data->specifics);
-  if (base::FeatureList::IsEnabled(kCacheBaseEntitySpecificsInMetadata)) {
-    *metadata_.mutable_possibly_trimmed_base_specifics() =
-        std::move(trimmed_specifics);
-  }
-  if (!data->creation_time.is_null())
+  *metadata_.mutable_possibly_trimmed_base_specifics() =
+      std::move(trimmed_specifics);
+  if (!data->creation_time.is_null()) {
     metadata_.set_creation_time(TimeToProtoTime(data->creation_time));
+  }
   metadata_.set_modification_time(TimeToProtoTime(modification_time));
   metadata_.set_is_deleted(false);
 

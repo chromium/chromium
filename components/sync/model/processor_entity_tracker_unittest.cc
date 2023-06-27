@@ -325,9 +325,6 @@ TEST_F(ProcessorEntityTrackerTest, ShouldReturnLocalChanges) {
 }
 
 TEST_F(ProcessorEntityTrackerTest, ShouldUpdateSpecificsCacheOnLocalCreation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kCacheBaseEntitySpecificsInMetadata);
-
   std::unique_ptr<EntityData> entity_data = std::make_unique<EntityData>(
       GenerateEntityData(kStorageKey1, kClientTagHash1));
   sync_pb::EntitySpecifics specifics_for_caching;
@@ -343,9 +340,6 @@ TEST_F(ProcessorEntityTrackerTest, ShouldUpdateSpecificsCacheOnLocalCreation) {
 }
 
 TEST_F(ProcessorEntityTrackerTest, ShouldUpdateSpecificsCacheOnRemoteCreation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kCacheBaseEntitySpecificsInMetadata);
-
   sync_pb::EntitySpecifics specifics_for_caching;
   specifics_for_caching.mutable_preference()->set_name("name");
   specifics_for_caching.mutable_preference()->set_value("value");

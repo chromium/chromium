@@ -316,9 +316,7 @@ void ContactInfoSyncBridge::LoadMetadata() {
     change_processor()->ReportError(
         {FROM_HERE, "Failed reading CONTACT_INFO metadata from WebDatabase."});
     return;
-  } else if (base::FeatureList::IsEnabled(
-                 syncer::kCacheBaseEntitySpecificsInMetadata) &&
-             SyncMetadataCacheContainsSupportedFields(
+  } else if (SyncMetadataCacheContainsSupportedFields(
                  batch->GetAllMetadata())) {
     // Caching entity specifics is meant to preserve fields not supported in a
     // given browser version during commits to the server. If the cache

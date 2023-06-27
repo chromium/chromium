@@ -925,9 +925,6 @@ TEST_F(PasswordSyncBridgeTest, ShouldRemoveSyncMetadataWhenReadAllLoginsFails) {
 TEST_F(PasswordSyncBridgeTest,
        ShouldRemoveSyncMetadataWhenSpecificsCacheContainsSupportedFields) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      syncer::kCacheBaseEntitySpecificsInMetadata);
 
   ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
       .WillByDefault([&]() {
@@ -964,10 +961,6 @@ TEST_F(PasswordSyncBridgeTest,
 TEST_F(
     PasswordSyncBridgeTest,
     ShouldNotRemoveSyncMetadataWhenSpecificsCacheContainsUnsupportedFieldsOnly) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      syncer::kCacheBaseEntitySpecificsInMetadata);
-
   ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
       .WillByDefault([&]() {
         // Create entity with a cached unsupported field.
@@ -1125,10 +1118,6 @@ TEST_F(PasswordSyncBridgeTest,
 
 TEST_F(PasswordSyncBridgeTest,
        ShouldNotRemoveSyncMetadataWhenSpecificsCacheIsEmpty) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      syncer::kCacheBaseEntitySpecificsInMetadata);
-
   ON_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata)
       .WillByDefault([&]() {
         // Create entity with empty `possibly_trimmed_base_specifics`.

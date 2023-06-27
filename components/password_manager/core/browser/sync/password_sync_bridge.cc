@@ -287,9 +287,7 @@ PasswordSyncBridge::PasswordSyncBridge(
           syncer::PASSWORDS);
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::kReadSuccessButCleared;
-    } else if (base::FeatureList::IsEnabled(
-                   syncer::kCacheBaseEntitySpecificsInMetadata) &&
-               SyncMetadataCacheContainsSupportedFields(
+    } else if (SyncMetadataCacheContainsSupportedFields(
                    batch->GetAllMetadata())) {
       // Caching entity specifics is meant to preserve fields not supported in a
       // given browser version during commits to the server. If the cache

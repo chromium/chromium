@@ -676,8 +676,6 @@ TEST_F(ProcessorEntityTest, LocalCreationConflictsWithServerTombstone) {
 }
 
 TEST_F(ProcessorEntityTest, UpdatesSpecificsCacheOnRemoteUpdates) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kCacheBaseEntitySpecificsInMetadata);
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
   const base::Time mtime = base::Time::Now();
   UpdateResponseData update =
@@ -691,9 +689,6 @@ TEST_F(ProcessorEntityTest, UpdatesSpecificsCacheOnRemoteUpdates) {
 }
 
 TEST_F(ProcessorEntityTest, UpdatesSpecificsCacheOnLocalUpdates) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kCacheBaseEntitySpecificsInMetadata);
-
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
   sync_pb::EntitySpecifics specifics_for_caching =
       GenerateSpecifics(kName, kValue2);
