@@ -509,9 +509,7 @@ void AppInstallControllerImpl::DoInstallApp() {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&SetUsageStats, GetUpdaterScope(), app_id_,
-                     tag_args && tag_args->usage_stats_enable
-                         ? absl::make_optional(*tag_args->usage_stats_enable)
-                         : absl::nullopt),
+                     tag_args ? tag_args->usage_stats_enable : absl::nullopt),
       base::BindOnce(
           &UpdateService::Install, update_service_, request,
           GetDecodedInstallDataFromAppArgs(app_id_),
@@ -637,9 +635,7 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&SetUsageStats, GetUpdaterScope(), app_id_,
-                     tag_args && tag_args->usage_stats_enable
-                         ? absl::make_optional(*tag_args->usage_stats_enable)
-                         : absl::nullopt),
+                     tag_args ? tag_args->usage_stats_enable : absl::nullopt),
       base::BindOnce(
           &UpdateService::RegisterApp, update_service_, request,
           base::BindOnce(
