@@ -788,8 +788,12 @@ drive::EventLogger* GetLogger(Profile* profile) {
 
 std::vector<extensions::api::file_manager_private::MountableGuest>
 CreateMountableGuestList(Profile* profile) {
-  auto* registry =
-      guest_os::GuestOsService::GetForProfile(profile)->MountProviderRegistry();
+  auto* service = guest_os::GuestOsService::GetForProfile(profile);
+  if (!service) {
+    return {};
+  }
+
+  auto* registry = service->MountProviderRegistry();
   std::vector<file_manager_private::MountableGuest> guests;
   for (const auto id : registry->List()) {
     file_manager_private::MountableGuest guest;

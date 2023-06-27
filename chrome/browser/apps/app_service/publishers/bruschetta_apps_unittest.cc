@@ -48,7 +48,6 @@ class BruschettaAppsTest : public testing::Test,
     registry_ =
         guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_.get());
     scoped_feature_list_.InitAndEnableFeature(ash::features::kBruschetta);
-    bruschetta::BruschettaServiceFactory::EnableForTesting(profile_.get());
     const guest_os::GuestId id(bruschetta::kBruschettaVmName, "test_container");
     guest_os::GuestOsSessionTracker::GetForProfile(profile_.get())
         ->AddGuestForTesting(id);

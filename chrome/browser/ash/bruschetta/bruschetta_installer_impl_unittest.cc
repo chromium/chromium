@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
-#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -144,8 +143,6 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
     ASSERT_TRUE(base::CreateDirectory(profile_.GetPath().Append("Downloads")));
 
     ash::disks::DiskMountManager::InitializeForTesting(&*disk_mount_manager_);
-
-    BruschettaServiceFactory::EnableForTesting(&profile_);
 
     installer_ = std::make_unique<BruschettaInstallerImpl>(
         &profile_, base::BindOnce(&BruschettaInstallerTest::CloseCallback,
