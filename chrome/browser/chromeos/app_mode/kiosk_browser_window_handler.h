@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_APP_SESSION_BROWSER_WINDOW_HANDLER_H_
-#define CHROME_BROWSER_CHROMEOS_APP_MODE_APP_SESSION_BROWSER_WINDOW_HANDLER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_BROWSER_WINDOW_HANDLER_H_
+#define CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_BROWSER_WINDOW_HANDLER_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/app_mode/app_session_policies.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_policies.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -42,19 +42,18 @@ enum class KioskBrowserWindowType {
 // If the last browser window gets closed, the session gets ended.
 //
 // It also manages showing required settings pages in a consistent browser.
-class AppSessionBrowserWindowHandler : public BrowserListObserver {
+class KioskBrowserWindowHandler : public BrowserListObserver {
  public:
-  AppSessionBrowserWindowHandler(
+  KioskBrowserWindowHandler(
       Profile* profile,
       const absl::optional<std::string>& web_app_name,
       base::RepeatingCallback<void(bool is_closing)>
           on_browser_window_added_callback,
-      base::OnceClosure shutdown_app_session_callback);
-  AppSessionBrowserWindowHandler(const AppSessionBrowserWindowHandler&) =
+      base::OnceClosure shutdown_kiosk_browser_session_callback);
+  KioskBrowserWindowHandler(const KioskBrowserWindowHandler&) = delete;
+  KioskBrowserWindowHandler& operator=(const KioskBrowserWindowHandler&) =
       delete;
-  AppSessionBrowserWindowHandler& operator=(
-      const AppSessionBrowserWindowHandler&) = delete;
-  ~AppSessionBrowserWindowHandler() override;
+  ~KioskBrowserWindowHandler() override;
 
   Browser* GetSettingsBrowserForTesting() { return settings_browser_; }
 
@@ -83,8 +82,8 @@ class AppSessionBrowserWindowHandler : public BrowserListObserver {
   // open.
   bool IsOnlySettingsBrowserRemainOpen() const;
 
-  // Calls `shutdown_app_session_callback_` once.
-  void ShutdownAppSession();
+  // Calls `shutdown_kiosk_browser_session_callback_` once.
+  void Shutdown();
 
   // Owned by `ProfileManager`.
   const raw_ptr<Profile, DanglingUntriaged> profile_;
@@ -93,7 +92,7 @@ class AppSessionBrowserWindowHandler : public BrowserListObserver {
   const absl::optional<std::string> web_app_name_;
   base::RepeatingCallback<void(bool is_closing)>
       on_browser_window_added_callback_;
-  base::OnceClosure shutdown_app_session_callback_;
+  base::OnceClosure shutdown_kiosk_browser_session_callback_;
 
   std::unique_ptr<KioskTroubleshootingController>
       kiosk_troubleshooting_controller_;
@@ -103,10 +102,10 @@ class AppSessionBrowserWindowHandler : public BrowserListObserver {
   raw_ptr<Browser> settings_browser_ = nullptr;
 
   // Provides access to app session related policies.
-  AppSessionPolicies app_session_policies_;
+  KioskPolicies kiosk_policies_;
 
-  base::WeakPtrFactory<AppSessionBrowserWindowHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<KioskBrowserWindowHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos
-#endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_APP_SESSION_BROWSER_WINDOW_HANDLER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_BROWSER_WINDOW_HANDLER_H_

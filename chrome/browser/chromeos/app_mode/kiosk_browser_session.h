@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_APP_SESSION_H_
-#define CHROME_BROWSER_CHROMEOS_APP_MODE_APP_SESSION_H_
+#ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_BROWSER_SESSION_H_
+#define CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_BROWSER_SESSION_H_
 
 #include <memory>
 #include <string>
@@ -11,8 +11,8 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
-#include "chrome/browser/chromeos/app_mode/app_session_metrics_service.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_metrics_service.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -34,18 +34,18 @@ namespace chromeos {
 class KioskSessionPluginHandler;
 class KioskSessionPluginHandlerDelegate;
 
-// AppSession maintains a kiosk session and handles its lifetime.
-class AppSession {
+// KioskBrowserSession maintains a kiosk session and handles its lifetime.
+class KioskBrowserSession {
  public:
-  explicit AppSession(Profile* profile);
-  AppSession(Profile* profile,
-             base::OnceClosure attempt_user_exit,
-             PrefService* local_state);
-  AppSession(const AppSession&) = delete;
-  AppSession& operator=(const AppSession&) = delete;
-  virtual ~AppSession();
+  explicit KioskBrowserSession(Profile* profile);
+  KioskBrowserSession(Profile* profile,
+                      base::OnceClosure attempt_user_exit,
+                      PrefService* local_state);
+  KioskBrowserSession(const KioskBrowserSession&) = delete;
+  KioskBrowserSession& operator=(const KioskBrowserSession&) = delete;
+  virtual ~KioskBrowserSession();
 
-  static std::unique_ptr<AppSession> CreateForTesting(
+  static std::unique_ptr<KioskBrowserSession> CreateForTesting(
       Profile* profile,
       base::OnceClosure attempt_user_exit,
       PrefService* local_state,
@@ -85,9 +85,9 @@ class AppSession {
   // PluginHandlerDelegateImpl handles callbacks from `plugin_handler_`.
   class PluginHandlerDelegateImpl;
 
-  AppSession(Profile* profile,
-             base::OnceClosure attempt_user_exit,
-             std::unique_ptr<AppSessionMetricsService> metrics_service);
+  KioskBrowserSession(Profile* profile,
+                      base::OnceClosure attempt_user_exit,
+                      std::unique_ptr<KioskMetricsService> metrics_service);
 
   // Create a `browser_window_handler_` object.
   void CreateBrowserWindowHandler(
@@ -97,7 +97,7 @@ class AppSession {
 
   void OnHandledNewBrowserWindow(bool is_closing);
   void OnAppWindowAdded(extensions::AppWindow* app_window);
-  void ShutdownAppSession();
+  void Shutdown();
 
   bool is_shutting_down_ = false;
 
@@ -105,22 +105,22 @@ class AppSession {
   raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
   std::unique_ptr<AppWindowHandler> app_window_handler_;
-  std::unique_ptr<AppSessionBrowserWindowHandler> browser_window_handler_;
+  std::unique_ptr<KioskBrowserWindowHandler> browser_window_handler_;
 #if BUILDFLAG(ENABLE_PLUGINS)
   std::unique_ptr<PluginHandlerDelegateImpl> plugin_handler_delegate_;
   std::unique_ptr<KioskSessionPluginHandler> plugin_handler_;
 #endif
 
   base::OnceClosure attempt_user_exit_;
-  const std::unique_ptr<AppSessionMetricsService> metrics_service_;
+  const std::unique_ptr<KioskMetricsService> metrics_service_;
 
   // Is called whenever a new browser creation was handled by the
   // BrowserWindowHandler.
   base::RepeatingCallback<void(bool is_closing)> on_handle_browser_callback_;
 
-  base::WeakPtrFactory<AppSession> weak_ptr_factory_{this};
+  base::WeakPtrFactory<KioskBrowserSession> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_APP_SESSION_H_
+#endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_BROWSER_SESSION_H_

@@ -15,14 +15,14 @@ namespace chromeos {
 
 // `AreKioskTroubleshootingToolsEnabled` depends on the dynamically refreshed
 // `prefs::kKioskTroubleshootingToolsEnabled` policy.
-// If the policy gets disabled during the active kiosk session, `AppSession`
-// should be shutdown to prevent active troubleshooting tools from being
-// displayed.
+// If the policy gets disabled during the active kiosk session,
+// `KioskBrowserSession` should be shutdown to prevent active troubleshooting
+// tools from being displayed.
 class KioskTroubleshootingController {
  public:
   KioskTroubleshootingController(
       PrefService* pref_service,
-      base::OnceClosure shutdown_app_session_callback);
+      base::OnceClosure shutdown_kiosk_browser_session_callback);
   KioskTroubleshootingController(const KioskTroubleshootingController&) =
       delete;
   KioskTroubleshootingController& operator=(
@@ -42,7 +42,7 @@ class KioskTroubleshootingController {
   // Register `prefs::kKioskTroubleshootingToolsEnabled` preference to support
   // dynamic refresh.
   PrefChangeRegistrar pref_change_registrar_;
-  base::OnceClosure shutdown_app_session_callback_;
+  base::OnceClosure shutdown_kiosk_browser_session_callback_;
 };
 
 }  // namespace chromeos

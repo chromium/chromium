@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"
+#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/account_id/account_id.h"
@@ -25,7 +26,6 @@ class FilePath;
 
 namespace ash {
 
-class AppSessionAsh;
 class KioskAppDataBase;
 class KioskAppManagerObserver;
 
@@ -80,7 +80,9 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
   }
 
   // Session of the app that is currently running.
-  AppSessionAsh* app_session() { return app_session_.get(); }
+  KioskSystemSession* kiosk_system_session() {
+    return kiosk_system_session_.get();
+  }
 
  protected:
   // Notifies the observers about the updates.
@@ -99,7 +101,7 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
   base::CallbackListSubscription local_account_auto_login_id_subscription_;
 
   // Current app session.
-  std::unique_ptr<AppSessionAsh> app_session_;
+  std::unique_ptr<KioskSystemSession> kiosk_system_session_;
 
   base::ObserverList<KioskAppManagerObserver, /*check_empty=*/true> observers_;
 

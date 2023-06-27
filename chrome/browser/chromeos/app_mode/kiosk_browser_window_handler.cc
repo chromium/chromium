@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/chromeos/app_mode/app_session_policies.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_policies.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_troubleshooting_controller.h"
 #include "chrome/browser/ui/browser.h"
@@ -38,40 +38,41 @@ void MakeWindowResizable(BrowserWindow* window) {
 
 const char kKioskNewBrowserWindowHistogram[] = "Kiosk.NewBrowserWindow";
 
-AppSessionBrowserWindowHandler::AppSessionBrowserWindowHandler(
+KioskBrowserWindowHandler::KioskBrowserWindowHandler(
     Profile* profile,
     const absl::optional<std::string>& web_app_name,
     base::RepeatingCallback<void(bool is_closing)>
         on_browser_window_added_callback,
-    base::OnceClosure shutdown_app_session_callback)
+    base::OnceClosure shutdown_kiosk_browser_session_callback)
     : profile_(profile),
       web_app_name_(web_app_name),
       on_browser_window_added_callback_(on_browser_window_added_callback),
-      shutdown_app_session_callback_(std::move(shutdown_app_session_callback)),
-      app_session_policies_(profile_->GetPrefs()) {
+      shutdown_kiosk_browser_session_callback_(
+          std::move(shutdown_kiosk_browser_session_callback)),
+      kiosk_policies_(profile_->GetPrefs()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   kiosk_troubleshooting_controller_ =
       std::make_unique<ash::KioskTroubleshootingControllerAsh>(
           profile_->GetPrefs(),
-          base::BindOnce(&AppSessionBrowserWindowHandler::ShutdownAppSession,
+          base::BindOnce(&KioskBrowserWindowHandler::Shutdown,
                          weak_ptr_factory_.GetWeakPtr()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   kiosk_troubleshooting_controller_ =
       std::make_unique<KioskTroubleshootingController>(
           profile_->GetPrefs(),
-          base::BindOnce(&AppSessionBrowserWindowHandler::ShutdownAppSession,
+          base::BindOnce(&KioskBrowserWindowHandler::Shutdown,
                          weak_ptr_factory_.GetWeakPtr()));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   BrowserList::AddObserver(this);
 }
 
-AppSessionBrowserWindowHandler::~AppSessionBrowserWindowHandler() {
+KioskBrowserWindowHandler::~KioskBrowserWindowHandler() {
   BrowserList::RemoveObserver(this);
 }
 
-void AppSessionBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
+void KioskBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
   content::WebContents* active_tab =
       browser->tab_strip_model()->GetActiveWebContents();
   std::string url_string =
@@ -122,11 +123,11 @@ void AppSessionBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
   on_browser_window_added_callback_.Run(/*is_closing=*/true);
 }
 
-void AppSessionBrowserWindowHandler::HandleNewSettingsWindow(
+void KioskBrowserWindowHandler::HandleNewSettingsWindow(
     Browser* browser,
     const std::string& url_string) {
   if (settings_browser_) {
-    // If another settings browser exist, navigate to |url_string| in the
+    // If another settings browser exist, navigate to `url_string` in the
     // existing browser.
     browser->window()->Close();
     // Navigate in the existing browser.
@@ -151,7 +152,7 @@ void AppSessionBrowserWindowHandler::HandleNewSettingsWindow(
     nav_params.disposition = WindowOpenDisposition::NEW_POPUP;
     Navigate(&nav_params);
 
-    // We do not save the newly created browser to the |settings_browser_| here
+    // We do not save the newly created browser to the `settings_browser_` here
     // because this new browser will be handled by this function after creation,
     // and it will be saved there.
     return;
@@ -165,64 +166,63 @@ void AppSessionBrowserWindowHandler::HandleNewSettingsWindow(
   browser->window()->Maximize();
 }
 
-void AppSessionBrowserWindowHandler::OnBrowserAdded(Browser* browser) {
+void KioskBrowserWindowHandler::OnBrowserAdded(Browser* browser) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&AppSessionBrowserWindowHandler::HandleNewBrowserWindow,
+      base::BindOnce(&KioskBrowserWindowHandler::HandleNewBrowserWindow,
                      weak_ptr_factory_.GetWeakPtr(), browser));
 }
 
-void AppSessionBrowserWindowHandler::OnBrowserRemoved(Browser* browser) {
+void KioskBrowserWindowHandler::OnBrowserRemoved(Browser* browser) {
   // Exit the kiosk session if the last browser was closed.
   if (ShouldExitKioskWhenLastBrowserRemoved() &&
       BrowserList::GetInstance()->empty()) {
-    ShutdownAppSession();
+    Shutdown();
   }
 
   if (browser == settings_browser_) {
     settings_browser_ = nullptr;
   } else if (ShouldExitKioskWhenLastBrowserRemoved() &&
              IsOnlySettingsBrowserRemainOpen()) {
-    // Only |settings_browser_| is opened and there are no app browsers anymore.
-    // So we should close |settings_browser_| and it will end the kiosk session.
+    // Only `settings_browser_` is opened and there are no app browsers anymore.
+    // So we should close `settings_browser_` and it will end the kiosk session.
     settings_browser_->window()->Close();
   }
 }
 
-bool AppSessionBrowserWindowHandler::IsNewBrowserWindowAllowed(
+bool KioskBrowserWindowHandler::IsNewBrowserWindowAllowed(
     Browser* browser) const {
-  return app_session_policies_.IsWindowCreationAllowed() &&
+  return kiosk_policies_.IsWindowCreationAllowed() &&
          browser->is_type_app_popup() && web_app_name_.has_value() &&
          browser->app_name() == web_app_name_.value();
 }
 
-bool AppSessionBrowserWindowHandler::IsDevToolsAllowedBrowser(
+bool KioskBrowserWindowHandler::IsDevToolsAllowedBrowser(
     Browser* browser) const {
   return browser->is_type_devtools() &&
          kiosk_troubleshooting_controller_
              ->AreKioskTroubleshootingToolsEnabled();
 }
 
-bool AppSessionBrowserWindowHandler::IsNormalTroubleshootingBrowserAllowed(
+bool KioskBrowserWindowHandler::IsNormalTroubleshootingBrowserAllowed(
     Browser* browser) const {
   return browser->is_type_normal() &&
          kiosk_troubleshooting_controller_
              ->AreKioskTroubleshootingToolsEnabled();
 }
 
-bool AppSessionBrowserWindowHandler::ShouldExitKioskWhenLastBrowserRemoved()
-    const {
+bool KioskBrowserWindowHandler::ShouldExitKioskWhenLastBrowserRemoved() const {
   return web_app_name_.has_value();
 }
 
-bool AppSessionBrowserWindowHandler::IsOnlySettingsBrowserRemainOpen() const {
+bool KioskBrowserWindowHandler::IsOnlySettingsBrowserRemainOpen() const {
   return settings_browser_ && BrowserList::GetInstance()->size() == 1 &&
          BrowserList::GetInstance()->get(0) == settings_browser_;
 }
 
-void AppSessionBrowserWindowHandler::ShutdownAppSession() {
-  if (!shutdown_app_session_callback_.is_null()) {
-    std::move(shutdown_app_session_callback_).Run();
+void KioskBrowserWindowHandler::Shutdown() {
+  if (!shutdown_kiosk_browser_session_callback_.is_null()) {
+    std::move(shutdown_kiosk_browser_session_callback_).Run();
   }
 }
 

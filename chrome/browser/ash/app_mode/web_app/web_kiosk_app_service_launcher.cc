@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
+#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_service_launcher.h"
 #include "chrome/browser/chromeos/app_mode/web_kiosk_app_installer.h"

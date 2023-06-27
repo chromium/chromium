@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/app_mode/app_session_metrics_service.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_metrics_service.h"
 
 #include <string>
 #include <vector>
@@ -60,8 +60,8 @@ bool IsRestoredSession() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-// Returns true if there is a new crash in |crash_dirs| after
-// |previous_start_time|.
+// Returns true if there is a new crash in `crash_dirs` after
+// `previous_start_time`.
 //
 // crash_dirs          - the list of known directories with crash related files.
 // previous_start_time - the start time of the previous kiosk session that is
@@ -77,12 +77,12 @@ bool IsPreviousKioskSessionCrashed(const std::vector<std::string>& crash_dirs,
         base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
     while (!enumerator.Next().empty()) {
       if (enumerator.GetInfo().GetLastModifiedTime() > previous_start_time) {
-        // A new crash after |previous_start_time|.
+        // A new crash after `previous_start_time`.
         return true;
       }
     }
   }
-  // No new crashes in |crash_dirs|.
+  // No new crashes in `crash_dirs`.
   return false;
 }
 
@@ -192,31 +192,29 @@ const char kKioskSessionEndReason[] = "session-end-reason";
 const int kKioskHistogramBucketCount = 100;
 const base::TimeDelta kKioskSessionDurationHistogramLimit = base::Days(1);
 
-AppSessionMetricsService::AppSessionMetricsService(PrefService* prefs)
-    : AppSessionMetricsService(prefs,
-                               std::vector<std::string>(std::begin(kCrashDirs),
-                                                        std::end(kCrashDirs))) {
-}
+KioskMetricsService::KioskMetricsService(PrefService* prefs)
+    : KioskMetricsService(prefs,
+                          std::vector<std::string>(std::begin(kCrashDirs),
+                                                   std::end(kCrashDirs))) {}
 
-AppSessionMetricsService::~AppSessionMetricsService() = default;
+KioskMetricsService::~KioskMetricsService() = default;
 
 // static
-std::unique_ptr<AppSessionMetricsService>
-AppSessionMetricsService::CreateForTesting(
+std::unique_ptr<KioskMetricsService> KioskMetricsService::CreateForTesting(
     PrefService* prefs,
     const std::vector<std::string>& crash_dirs) {
-  return base::WrapUnique(new AppSessionMetricsService(prefs, crash_dirs));
+  return base::WrapUnique(new KioskMetricsService(prefs, crash_dirs));
 }
 
-void AppSessionMetricsService::RecordKioskSessionStarted() {
+void KioskMetricsService::RecordKioskSessionStarted() {
   RecordKioskSessionStarted(KioskSessionState::kStarted);
 }
 
-void AppSessionMetricsService::RecordKioskSessionWebStarted() {
+void KioskMetricsService::RecordKioskSessionWebStarted() {
   RecordKioskSessionStarted(KioskSessionState::kWebStarted);
 }
 
-void AppSessionMetricsService::RecordKioskSessionStopped() {
+void KioskMetricsService::RecordKioskSessionStopped() {
   if (!IsKioskSessionRunning()) {
     return;
   }
@@ -226,7 +224,7 @@ void AppSessionMetricsService::RecordKioskSessionStopped() {
                              kKioskSessionDurationInDaysNormalHistogram);
 }
 
-void AppSessionMetricsService::RecordPreviousKioskSessionCrashed(
+void KioskMetricsService::RecordPreviousKioskSessionCrashed(
     const base::Time& start_time) const {
   RecordKioskSessionState(KioskSessionState::kCrashed);
   RecordKioskSessionDuration(kKioskSessionDurationCrashedHistogram,
@@ -234,26 +232,26 @@ void AppSessionMetricsService::RecordPreviousKioskSessionCrashed(
                              start_time);
 }
 
-void AppSessionMetricsService::RecordKioskSessionRestartReason(
+void KioskMetricsService::RecordKioskSessionRestartReason(
     const KioskSessionRestartReason& reason) const {
   base::UmaHistogramEnumeration(kKioskSessionRestartReasonHistogram, reason);
 }
 
-void AppSessionMetricsService::RecordKioskSessionPluginCrashed() {
+void KioskMetricsService::RecordKioskSessionPluginCrashed() {
   SaveSessionEndReason(KioskSessionEndReason::kPluginCrashed);
   RecordKioskSessionState(KioskSessionState::kPluginCrashed);
   RecordKioskSessionDuration(kKioskSessionDurationCrashedHistogram,
                              kKioskSessionDurationInDaysCrashedHistogram);
 }
 
-void AppSessionMetricsService::RecordKioskSessionPluginHung() {
+void KioskMetricsService::RecordKioskSessionPluginHung() {
   SaveSessionEndReason(KioskSessionEndReason::kPluginHung);
   RecordKioskSessionState(KioskSessionState::kPluginHung);
   RecordKioskSessionDuration(kKioskSessionDurationCrashedHistogram,
                              kKioskSessionDurationInDaysCrashedHistogram);
 }
 
-void AppSessionMetricsService::RestartRequested(
+void KioskMetricsService::RestartRequested(
     power_manager::RequestRestartReason reason) {
   switch (reason) {
     case power_manager::REQUEST_RESTART_FOR_USER:
@@ -272,7 +270,7 @@ void AppSessionMetricsService::RestartRequested(
   }
 }
 
-AppSessionMetricsService::AppSessionMetricsService(
+KioskMetricsService::KioskMetricsService(
     PrefService* prefs,
     const std::vector<std::string>& crash_dirs)
     : prefs_(prefs), crash_dirs_(crash_dirs) {
@@ -281,11 +279,11 @@ AppSessionMetricsService::AppSessionMetricsService(
   power_manager_client_observation_.Observe(power_manager_client);
 }
 
-bool AppSessionMetricsService::IsKioskSessionRunning() const {
+bool KioskMetricsService::IsKioskSessionRunning() const {
   return !start_time_.is_null();
 }
 
-void AppSessionMetricsService::RecordKioskSessionStarted(
+void KioskMetricsService::RecordKioskSessionStarted(
     KioskSessionState started_state) {
   RecordPreviousKioskSessionEndState();
   if (IsRestoredSession()) {
@@ -296,17 +294,17 @@ void AppSessionMetricsService::RecordKioskSessionStarted(
   RecordKioskSessionCountPerDay();
 }
 
-void AppSessionMetricsService::RecordKioskSessionState(
+void KioskMetricsService::RecordKioskSessionState(
     KioskSessionState state) const {
   base::UmaHistogramEnumeration(kKioskSessionStateHistogram, state);
 }
 
-void AppSessionMetricsService::RecordKioskSessionCountPerDay() {
+void KioskMetricsService::RecordKioskSessionCountPerDay() {
   base::UmaHistogramCounts100(kKioskSessionCountPerDayHistogram,
                               RetrieveLastDaySessionCount(base::Time::Now()));
 }
 
-void AppSessionMetricsService::RecordKioskSessionDuration(
+void KioskMetricsService::RecordKioskSessionDuration(
     const std::string& kiosk_session_duration_histogram,
     const std::string& kiosk_session_duration_in_days_histogram) {
   if (!IsKioskSessionRunning()) {
@@ -318,7 +316,7 @@ void AppSessionMetricsService::RecordKioskSessionDuration(
   ClearStartTime();
 }
 
-void AppSessionMetricsService::RecordKioskSessionDuration(
+void KioskMetricsService::RecordKioskSessionDuration(
     const std::string& kiosk_session_duration_histogram,
     const std::string& kiosk_session_duration_in_days_histogram,
     const base::Time& start_time) const {
@@ -333,7 +331,7 @@ void AppSessionMetricsService::RecordKioskSessionDuration(
       kKioskSessionDurationHistogramLimit, kKioskHistogramBucketCount);
 }
 
-void AppSessionMetricsService::RecordPreviousKioskSessionEndState() {
+void KioskMetricsService::RecordPreviousKioskSessionEndState() {
   absl::optional<KioskSessionEndReason> previous_session_end_reason =
       GetSessionEndReason(prefs_);
   // Avoid reading the old saved reason in the future.
@@ -357,13 +355,13 @@ void AppSessionMetricsService::RecordPreviousKioskSessionEndState() {
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&IsPreviousKioskSessionCrashed, crash_dirs_,
                      previous_start_time.value()),
-      base::BindOnce(&AppSessionMetricsService::OnPreviousKioskSessionResult,
+      base::BindOnce(&KioskMetricsService::OnPreviousKioskSessionResult,
                      weak_ptr_factory_.GetWeakPtr(),
                      previous_start_time.value(),
                      previous_session_end_reason.has_value()));
 }
 
-void AppSessionMetricsService::OnPreviousKioskSessionResult(
+void KioskMetricsService::OnPreviousKioskSessionResult(
     const base::Time& start_time,
     bool has_recorded_session_restart_reason,
     bool crashed) const {
@@ -384,7 +382,7 @@ void AppSessionMetricsService::OnPreviousKioskSessionResult(
   }
 }
 
-void AppSessionMetricsService::SaveSessionEndReason(
+void KioskMetricsService::SaveSessionEndReason(
     const KioskSessionEndReason& reason) {
   if (prefs_->GetDict(prefs::kKioskMetrics).contains(kKioskSessionEndReason)) {
     // Do not override saved reason.
@@ -399,7 +397,7 @@ void AppSessionMetricsService::SaveSessionEndReason(
   prefs_->CommitPendingWrite(base::DoNothing(), base::DoNothing());
 }
 
-size_t AppSessionMetricsService::RetrieveLastDaySessionCount(
+size_t KioskMetricsService::RetrieveLastDaySessionCount(
     base::Time session_start_time) {
   const base::Value::Dict& metrics_dict = prefs_->GetDict(prefs::kKioskMetrics);
   const base::Value::List* previous_times = nullptr;
@@ -432,7 +430,7 @@ size_t AppSessionMetricsService::RetrieveLastDaySessionCount(
   return result;
 }
 
-void AppSessionMetricsService::ClearStartTime() {
+void KioskMetricsService::ClearStartTime() {
   start_time_ = base::Time();
   ClearMetricFromPrefs(kKioskSessionStartTime, prefs_);
 }

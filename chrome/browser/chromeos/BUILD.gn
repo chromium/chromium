@@ -16,14 +16,6 @@ assert(use_ozone)
 source_set("chromeos") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   sources = [
-    "app_mode/app_session.cc",
-    "app_mode/app_session.h",
-    "app_mode/app_session_browser_window_handler.cc",
-    "app_mode/app_session_browser_window_handler.h",
-    "app_mode/app_session_metrics_service.cc",
-    "app_mode/app_session_metrics_service.h",
-    "app_mode/app_session_policies.cc",
-    "app_mode/app_session_policies.h",
     "app_mode/chrome_kiosk_app_installer.cc",
     "app_mode/chrome_kiosk_app_installer.h",
     "app_mode/chrome_kiosk_app_launcher.cc",
@@ -34,6 +26,14 @@ source_set("chromeos") {
     "app_mode/kiosk_app_external_loader.h",
     "app_mode/kiosk_app_service_launcher.cc",
     "app_mode/kiosk_app_service_launcher.h",
+    "app_mode/kiosk_browser_session.cc",
+    "app_mode/kiosk_browser_session.h",
+    "app_mode/kiosk_browser_window_handler.cc",
+    "app_mode/kiosk_browser_window_handler.h",
+    "app_mode/kiosk_metrics_service.cc",
+    "app_mode/kiosk_metrics_service.h",
+    "app_mode/kiosk_policies.cc",
+    "app_mode/kiosk_policies.h",
     "app_mode/kiosk_settings_navigation_throttle.cc",
     "app_mode/kiosk_settings_navigation_throttle.h",
     "app_mode/kiosk_troubleshooting_controller.cc",
@@ -461,9 +461,9 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "app_mode/app_session_policies_unittest.cc",
-    "app_mode/app_session_unittest.cc",
     "app_mode/chrome_kiosk_external_loader_broker_unittest.cc",
+    "app_mode/kiosk_browser_session_unittest.cc",
+    "app_mode/kiosk_policies_unittest.cc",
     "arc/arc_external_protocol_dialog_unittest.cc",
     "arc/open_with_menu_unittest.cc",
     "extensions/contact_center_insights/contact_center_insights_extension_manager_unittest.cc",

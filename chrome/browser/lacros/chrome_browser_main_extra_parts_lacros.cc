@@ -245,8 +245,9 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
   sync_crosapi_manager_.PostProfileInit(profile);
 
   // The setup below is intended to run for only the initial profile.
-  if (!is_initial_profile)
+  if (!is_initial_profile) {
     return;
+  }
 
   quick_answers_controller_ = std::make_unique<QuickAnswersControllerImpl>();
   QuickAnswersController::Get()->SetClient(
@@ -301,11 +302,11 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostMainMessageLoopRun() {
-  // Must be destroyed before |chrome_kiosk_launch_controller_->profile_| is
+  // Must be destroyed before `chrome_kiosk_launch_controller_->profile_` is
   // destroyed.
   chrome_kiosk_launch_controller_.reset();
-  // Must be destroyed before |kiosk_session_service_->app_session_->profile_|
-  // is destroyed.
+  // Must be destroyed before
+  // `kiosk_session_service_->kiosk_browser_session_->profile_` is destroyed.
   kiosk_session_service_.reset();
 
   // Initialized in PreProfileInit.

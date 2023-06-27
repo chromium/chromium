@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/app_session_ash.h"
+#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include <memory>
 
 #include "ash/public/cpp/accessibility_controller.h"
@@ -47,7 +47,7 @@ bool IsOfflineEnabledForApp(const std::string& app_id, Profile* profile) {
       extensions::ExtensionRegistry::Get(profile);
   if (!extension_registry) {
     // If Lacros is enabled, extensions are running in Lacros. So Ash does not
-    // have |extension_registry|.
+    // have `extension_registry`.
     return false;
   }
 
@@ -67,7 +67,8 @@ bool IsLacrosEnabled() {
 
 }  // namespace
 
-class AppSessionAsh::LacrosWatcher : public crosapi::BrowserManagerObserver {
+class KioskSystemSession::LacrosWatcher
+    : public crosapi::BrowserManagerObserver {
  public:
   explicit LacrosWatcher(Profile* profile, const ash::KioskAppId& kiosk_app_id)
       : profile_(profile), kiosk_app_id_(kiosk_app_id) {
@@ -89,9 +90,9 @@ class AppSessionAsh::LacrosWatcher : public crosapi::BrowserManagerObserver {
  private:
   void RestartKioskSession() {
     // Restart the kiosk session. We do not need to create a new
-    // `AppSessionAsh`, because ash did not crash in this flow.
+    // `KioskSystemSession`, because ash did not crash in this flow.
     ash::LaunchAppOrDie(profile_, kiosk_app_id_,
-                        /*should_start_app_session_ash=*/false);
+                        /*should_start_kiosk_system_session=*/false);
   }
 
   const raw_ptr<Profile> profile_;
@@ -101,11 +102,12 @@ class AppSessionAsh::LacrosWatcher : public crosapi::BrowserManagerObserver {
       observation_{this};
 };
 
-AppSessionAsh::AppSessionAsh(Profile* profile,
-                             const KioskAppId& kiosk_app_id,
-                             const absl::optional<std::string>& app_name)
+KioskSystemSession::KioskSystemSession(
+    Profile* profile,
+    const KioskAppId& kiosk_app_id,
+    const absl::optional<std::string>& app_name)
     : profile_(profile),
-      app_session_(profile),
+      browser_session_(profile),
       kiosk_app_id_(kiosk_app_id),
       network_metrics_service_(
           std::make_unique<NetworkConnectivityMetricsService>()),
@@ -126,11 +128,11 @@ AppSessionAsh::AppSessionAsh(Profile* profile,
   }
 }
 
-AppSessionAsh::~AppSessionAsh() = default;
+KioskSystemSession::~KioskSystemSession() = default;
 
-void AppSessionAsh::InitForChromeAppKiosk() {
+void KioskSystemSession::InitForChromeAppKiosk() {
   const std::string& app_id = kiosk_app_id_.app_id.value();
-  app_session_.InitForChromeAppKiosk(app_id);
+  browser_session_.InitForChromeAppKiosk(app_id);
   StartFloatingAccessibilityMenu();
   InitKioskAppUpdateService(app_id);
   SetRebootAfterUpdateIfNecessary();
@@ -140,9 +142,9 @@ void AppSessionAsh::InitForChromeAppKiosk() {
       IsOfflineEnabledForApp(app_id, profile()));
 }
 
-void AppSessionAsh::InitForWebKiosk(
+void KioskSystemSession::InitForWebKiosk(
     const absl::optional<std::string>& app_name) {
-  app_session_.InitForWebKiosk(app_name);
+  browser_session_.InitForWebKiosk(app_name);
   StartFloatingAccessibilityMenu();
 
   periodic_metrics_service_->RecordPreviousSessionMetrics();
@@ -151,11 +153,11 @@ void AppSessionAsh::InitForWebKiosk(
       /*is_offline_enabled=*/true);
 }
 
-void AppSessionAsh::ShuttingDown() {
+void KioskSystemSession::ShuttingDown() {
   network_metrics_service_.reset();
 }
 
-void AppSessionAsh::InitKioskAppUpdateService(const std::string& app_id) {
+void KioskSystemSession::InitKioskAppUpdateService(const std::string& app_id) {
   // Set the app_id for the current instance of KioskAppUpdateService.
   auto* update_service = KioskAppUpdateServiceFactory::GetForProfile(profile());
   DCHECK(update_service);
@@ -167,7 +169,7 @@ void AppSessionAsh::InitKioskAppUpdateService(const std::string& app_id) {
   KioskAppManager::Get()->MonitorKioskExternalUpdate();
 }
 
-void AppSessionAsh::SetRebootAfterUpdateIfNecessary() {
+void KioskSystemSession::SetRebootAfterUpdateIfNecessary() {
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   if (!connector->IsDeviceEnterpriseManaged()) {
@@ -177,26 +179,27 @@ void AppSessionAsh::SetRebootAfterUpdateIfNecessary() {
   }
 }
 
-void AppSessionAsh::OnGuestAdded(content::WebContents* guest_web_contents) {
-  app_session_.OnGuestAdded(guest_web_contents);
+void KioskSystemSession::OnGuestAdded(
+    content::WebContents* guest_web_contents) {
+  browser_session_.OnGuestAdded(guest_web_contents);
 }
 
-Profile* AppSessionAsh::profile() const {
+Profile* KioskSystemSession::profile() const {
   CHECK(profile_);
   return profile_;
 }
 
-bool AppSessionAsh::is_shutting_down() const {
-  return app_session_.is_shutting_down();
+bool KioskSystemSession::is_shutting_down() const {
+  return browser_session_.is_shutting_down();
 }
 
-Browser* AppSessionAsh::GetSettingsBrowserForTesting() {
-  return app_session_.GetSettingsBrowserForTesting();
+Browser* KioskSystemSession::GetSettingsBrowserForTesting() {
+  return browser_session_.GetSettingsBrowserForTesting();  // IN-TEST
 }
 
-void AppSessionAsh::SetOnHandleBrowserCallbackForTesting(
+void KioskSystemSession::SetOnHandleBrowserCallbackForTesting(
     base::RepeatingCallback<void(bool)> callback) {
-  app_session_.SetOnHandleBrowserCallbackForTesting(callback);
+  browser_session_.SetOnHandleBrowserCallbackForTesting(callback);  // IN-TEST
 }
 
 }  // namespace ash

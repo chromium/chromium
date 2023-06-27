@@ -20,8 +20,8 @@ KioskSessionInitializedWaiter::KioskSessionInitializedWaiter() {
 KioskSessionInitializedWaiter::~KioskSessionInitializedWaiter() = default;
 
 void KioskSessionInitializedWaiter::Wait() {
-  if (KioskAppManager::Get()->app_session() ||
-      WebKioskAppManager::Get()->app_session()) {
+  if (KioskAppManager::Get()->kiosk_system_session() ||
+      WebKioskAppManager::Get()->kiosk_system_session()) {
     return;
   }
 

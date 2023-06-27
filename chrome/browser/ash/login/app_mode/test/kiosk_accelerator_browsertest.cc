@@ -7,8 +7,8 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/app_mode/test/accelerator_helpers.h"
-#include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/ash_accelerator_helpers.h"
 #include "chrome/browser/ash/login/app_mode/test/test_browser_closed_waiter.h"
@@ -55,7 +55,8 @@ IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, AcceleratorsDontCloseSession) {
   base::RunLoop loop;
   loop.RunUntilIdle();
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
-  ASSERT_FALSE(WebKioskAppManager::Get()->app_session()->is_shutting_down());
+  ASSERT_FALSE(
+      WebKioskAppManager::Get()->kiosk_system_session()->is_shutting_down());
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, ZoomAccelerators) {
@@ -76,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, ZoomAccelerators) {
   int zoomed_in_width = WindowWidthAfterChange(web_contents, initial_width);
   ASSERT_LT(zoomed_in_width, initial_width);
 
-  // Restore zoom, window width becomes |initial_width|.
+  // Restore zoom, window width becomes `initial_width`.
   browser_view->AcceleratorPressed(
       ui::Accelerator(ui::VKEY_0, ui::EF_CONTROL_DOWN));
   int restored_width = WindowWidthAfterChange(web_contents, zoomed_in_width);

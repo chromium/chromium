@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/app_mode/app_session.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
 
 #include <errno.h>
 #include <signal.h>
@@ -14,8 +14,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
-#include "chrome/browser/chromeos/app_mode/app_session_metrics_service.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_metrics_service.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -98,10 +98,11 @@ void DumpPluginProcess(const std::set<int>& child_ids) {
 
 }  // namespace
 
-class AppSession::AppWindowHandler : public AppWindowRegistry::Observer {
+class KioskBrowserSession::AppWindowHandler
+    : public AppWindowRegistry::Observer {
  public:
-  explicit AppWindowHandler(AppSession* app_session)
-      : app_session_(app_session) {}
+  explicit AppWindowHandler(KioskBrowserSession* session)
+      : kiosk_browser_session_(session) {}
   AppWindowHandler(const AppWindowHandler&) = delete;
   AppWindowHandler& operator=(const AppWindowHandler&) = delete;
   ~AppWindowHandler() override {}
@@ -122,7 +123,7 @@ class AppSession::AppWindowHandler : public AppWindowRegistry::Observer {
       return;
     }
 
-    app_session_->OnAppWindowAdded(app_window);
+    kiosk_browser_session_->OnAppWindowAdded(app_window);
     app_window_created_ = true;
   }
 
@@ -132,21 +133,22 @@ class AppSession::AppWindowHandler : public AppWindowRegistry::Observer {
       return;
     }
 
-    app_session_->ShutdownAppSession();
+    kiosk_browser_session_->Shutdown();
     window_registry_->RemoveObserver(this);
   }
 
-  const raw_ptr<AppSession> app_session_;
+  const raw_ptr<KioskBrowserSession> kiosk_browser_session_;
   raw_ptr<AppWindowRegistry> window_registry_ = nullptr;
   std::string app_id_;
   bool app_window_created_ = false;
 };
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-class AppSession::PluginHandlerDelegateImpl
+class KioskBrowserSession::PluginHandlerDelegateImpl
     : public KioskSessionPluginHandlerDelegate {
  public:
-  explicit PluginHandlerDelegateImpl(AppSession* owner) : owner_(owner) {}
+  explicit PluginHandlerDelegateImpl(KioskBrowserSession* owner)
+      : owner_(owner) {}
   PluginHandlerDelegateImpl(const PluginHandlerDelegateImpl&) = delete;
   PluginHandlerDelegateImpl& operator=(const PluginHandlerDelegateImpl&) =
       delete;
@@ -181,51 +183,52 @@ class AppSession::PluginHandlerDelegateImpl
   }
 
  private:
-  const raw_ptr<AppSession, ExperimentalAsh> owner_;
+  const raw_ptr<KioskBrowserSession, ExperimentalAsh> owner_;
 };
 #endif
 
-AppSession::AppSession(Profile* profile)
-    : AppSession(profile,
-                 base::BindOnce(chrome::AttemptUserExit),
-                 g_browser_process->local_state()) {}
+KioskBrowserSession::KioskBrowserSession(Profile* profile)
+    : KioskBrowserSession(profile,
+                          base::BindOnce(chrome::AttemptUserExit),
+                          g_browser_process->local_state()) {}
 
-AppSession::AppSession(Profile* profile,
-                       base::OnceClosure attempt_user_exit,
-                       PrefService* local_state)
-    : AppSession(profile,
-                 std::move(attempt_user_exit),
-                 std::make_unique<AppSessionMetricsService>(local_state)) {}
+KioskBrowserSession::KioskBrowserSession(Profile* profile,
+                                         base::OnceClosure attempt_user_exit,
+                                         PrefService* local_state)
+    : KioskBrowserSession(profile,
+                          std::move(attempt_user_exit),
+                          std::make_unique<KioskMetricsService>(local_state)) {}
 
-AppSession::~AppSession() {
+KioskBrowserSession::~KioskBrowserSession() {
   if (!is_shutting_down()) {
     metrics_service_->RecordKioskSessionStopped();
   }
 }
 
 // static
-std::unique_ptr<AppSession> AppSession::CreateForTesting(
+std::unique_ptr<KioskBrowserSession> KioskBrowserSession::CreateForTesting(
     Profile* profile,
     base::OnceClosure attempt_user_exit,
     PrefService* local_state,
     const std::vector<std::string>& crash_dirs) {
-  return base::WrapUnique(new AppSession(
+  return base::WrapUnique(new KioskBrowserSession(
       profile, std::move(attempt_user_exit),
-      AppSessionMetricsService::CreateForTesting(local_state, crash_dirs)));
+      KioskMetricsService::CreateForTesting(local_state, crash_dirs)));
 }
 
-void AppSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+void KioskBrowserSession::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kKioskMetrics);
 }
 
-void AppSession::RegisterProfilePrefs(
+void KioskBrowserSession::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kNewWindowsInKioskAllowed, false);
   registry->RegisterBooleanPref(prefs::kKioskTroubleshootingToolsEnabled,
                                 false);
 }
 
-void AppSession::InitForChromeAppKiosk(const std::string& app_id) {
+void KioskBrowserSession::InitForChromeAppKiosk(const std::string& app_id) {
   app_window_handler_ = std::make_unique<AppWindowHandler>(this);
   app_window_handler_->Init(profile(), app_id);
   CreateBrowserWindowHandler(absl::nullopt);
@@ -236,30 +239,31 @@ void AppSession::InitForChromeAppKiosk(const std::string& app_id) {
   metrics_service_->RecordKioskSessionStarted();
 }
 
-void AppSession::InitForWebKiosk(
+void KioskBrowserSession::InitForWebKiosk(
     const absl::optional<std::string>& web_app_name) {
   CreateBrowserWindowHandler(web_app_name);
   metrics_service_->RecordKioskSessionWebStarted();
 }
 
-void AppSession::SetAttemptUserExitForTesting(base::OnceClosure closure) {
+void KioskBrowserSession::SetAttemptUserExitForTesting(
+    base::OnceClosure closure) {
   attempt_user_exit_ = std::move(closure);
 }
 
-void AppSession::SetOnHandleBrowserCallbackForTesting(
+void KioskBrowserSession::SetOnHandleBrowserCallbackForTesting(
     base::RepeatingCallback<void(bool is_closing)> callback) {
   on_handle_browser_callback_ = std::move(callback);
 }
 
 KioskSessionPluginHandlerDelegate*
-AppSession::GetPluginHandlerDelegateForTesting() {
+KioskBrowserSession::GetPluginHandlerDelegateForTesting() {
   return plugin_handler_delegate_.get();
 }
 
-AppSession::AppSession(
+KioskBrowserSession::KioskBrowserSession(
     Profile* profile,
     base::OnceClosure attempt_user_exit,
-    std::unique_ptr<AppSessionMetricsService> metrics_service)
+    std::unique_ptr<KioskMetricsService> metrics_service)
     : profile_(profile),
 #if BUILDFLAG(ENABLE_PLUGINS)
       plugin_handler_delegate_(
@@ -269,23 +273,23 @@ AppSession::AppSession(
       metrics_service_(std::move(metrics_service)) {
 }
 
-void AppSession::CreateBrowserWindowHandler(
+void KioskBrowserSession::CreateBrowserWindowHandler(
     const absl::optional<std::string>& web_app_name) {
-  browser_window_handler_ = std::make_unique<AppSessionBrowserWindowHandler>(
+  browser_window_handler_ = std::make_unique<KioskBrowserWindowHandler>(
       profile(), web_app_name,
-      base::BindRepeating(&AppSession::OnHandledNewBrowserWindow,
+      base::BindRepeating(&KioskBrowserSession::OnHandledNewBrowserWindow,
                           weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&AppSession::ShutdownAppSession,
+      base::BindOnce(&KioskBrowserSession::Shutdown,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AppSession::OnHandledNewBrowserWindow(bool is_closing) {
+void KioskBrowserSession::OnHandledNewBrowserWindow(bool is_closing) {
   if (on_handle_browser_callback_) {
     on_handle_browser_callback_.Run(is_closing);
   }
 }
 
-void AppSession::OnAppWindowAdded(AppWindow* app_window) {
+void KioskBrowserSession::OnAppWindowAdded(AppWindow* app_window) {
   if (is_shutting_down()) {
     return;
   }
@@ -295,7 +299,8 @@ void AppSession::OnAppWindowAdded(AppWindow* app_window) {
 #endif
 }
 
-void AppSession::OnGuestAdded(content::WebContents* guest_web_contents) {
+void KioskBrowserSession::OnGuestAdded(
+    content::WebContents* guest_web_contents) {
   // Bail if the session is shutting down.
   if (is_shutting_down()) {
     return;
@@ -311,7 +316,7 @@ void AppSession::OnGuestAdded(content::WebContents* guest_web_contents) {
 #endif
 }
 
-void AppSession::ShutdownAppSession() {
+void KioskBrowserSession::Shutdown() {
   if (is_shutting_down()) {
     return;
   }
@@ -321,7 +326,7 @@ void AppSession::ShutdownAppSession() {
   std::move(attempt_user_exit_).Run();
 }
 
-Browser* AppSession::GetSettingsBrowserForTesting() {
+Browser* KioskBrowserSession::GetSettingsBrowserForTesting() {
   if (browser_window_handler_) {
     return browser_window_handler_->GetSettingsBrowserForTesting();  // IN-TEST
   }

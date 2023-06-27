@@ -167,7 +167,7 @@ std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
           profile, kiosk_app_id.app_id.value(), /*should_skip_install=*/false,
           network_delegate);
     case KioskAppType::kWebApp:
-      // TODO(b/242023891): |WebKioskAppServiceLauncher| does not support
+      // TODO(b/242023891): `WebKioskAppServiceLauncher` does not support
       // Lacros until App Service installation API is available.
       if (base::FeatureList::IsEnabled(features::kKioskEnableAppService) &&
           !crosapi::browser_util::IsLacrosEnabled()) {
@@ -685,7 +685,7 @@ void KioskLaunchController::OnAppWindowCreated(
 
   SetKioskLaunchStateCrashKey(KioskLaunchState::kAppWindowCreated);
 
-  CreateAppSession(kiosk_app_id_, profile_, app_name);
+  CreateKioskSystemSession(kiosk_app_id_, profile_, app_name);
   // If timer is running, do not remove splash screen for a few
   // more seconds to give the user ability to exit kiosk session.
   if (splash_wait_timer_.IsRunning()) {

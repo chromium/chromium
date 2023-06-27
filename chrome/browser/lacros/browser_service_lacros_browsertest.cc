@@ -5,7 +5,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/chromeos/app_mode/app_session.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -92,15 +92,15 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
         }));
     EXPECT_TRUE(use_callback);
 
-    // Verify `AppSession` object is created when `NewFullscreenWindow` is
-    // called in the Web Kiosk session. Then, disable the `AttemptUserExit`
+    // Verify `KioskBrowserSession` object is created when `NewFullscreenWindow`
+    // is called in the Web Kiosk session. Then, disable the `AttemptUserExit`
     // method to do nothing.
     if (chromeos::BrowserParamsProxy::Get()->SessionType() ==
         SessionType::kWebKioskSession) {
-      chromeos::AppSession* app_session =
-          KioskSessionServiceLacros::Get()->GetAppSessionForTesting();
-      EXPECT_TRUE(app_session);
-      app_session->SetAttemptUserExitForTesting(base::DoNothing());
+      chromeos::KioskBrowserSession* session =
+          KioskSessionServiceLacros::Get()->GetKioskBrowserSessionForTesting();
+      EXPECT_TRUE(session);
+      session->SetAttemptUserExitForTesting(base::DoNothing());
     }
   }
 
@@ -238,8 +238,9 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
 
   size_t browser_count = chrome::GetTotalBrowserCount();
   chrome::CloseAllBrowsers();
-  for (size_t i = 0; i < browser_count; ++i)
+  for (size_t i = 0; i < browser_count; ++i) {
     ui_test_utils::WaitForBrowserToClose();
+  }
 
   // `NewWindow()` should open the profile picker.
   NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/false);
@@ -324,8 +325,9 @@ class BrowserServiceLacrosWindowlessBrowserTest
   }
 
   void DisableWelcomePages(const std::vector<Profile*>& profiles) {
-    for (Profile* profile : profiles)
+    for (Profile* profile : profiles) {
       profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
+    }
 
     // Also disable What's New.
     PrefService* pref_service = g_browser_process->local_state();

@@ -13,7 +13,7 @@
 #include "url/gurl.h"
 
 namespace chromeos {
-class AppSession;
+class KioskBrowserSession;
 }
 
 class Browser;
@@ -37,10 +37,10 @@ class KioskSessionServiceLacros {
       delete;
   virtual ~KioskSessionServiceLacros();
 
-  // Initialize the current Chrome Kiosk session with the |app_id|.
+  // Initialize the current Chrome Kiosk session with the `app_id`.
   void InitChromeKioskSession(Profile* profile, const std::string& app_id);
 
-  // Initialize the current Web Kiosk session with the |install_url| and the
+  // Initialize the current Web Kiosk session with the `install_url` and the
   // browser that is running the app.
   void InitWebKioskSession(Browser* browser, const GURL& install_url);
 
@@ -48,8 +48,8 @@ class KioskSessionServiceLacros {
   const GURL& GetInstallURL() const { return install_url_; }
 
   // Get app session object for testing purpose only.
-  chromeos::AppSession* GetAppSessionForTesting() const {
-    return app_session_.get();
+  chromeos::KioskBrowserSession* GetKioskBrowserSessionForTesting() const {
+    return kiosk_browser_session_.get();
   }
 
  protected:
@@ -63,7 +63,7 @@ class KioskSessionServiceLacros {
 
   // The app session instance to observe the window status, and take action if
   // necessary.
-  std::unique_ptr<chromeos::AppSession> app_session_;
+  std::unique_ptr<chromeos::KioskBrowserSession> kiosk_browser_session_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

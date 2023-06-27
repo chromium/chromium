@@ -73,11 +73,10 @@ const char kTestEnterpriseAccountId[] = "enterprise-kiosk-app@localhost";
 const test::UIPath kConfigNetwork = {"app-launch-splash", "configNetwork"};
 const char kSizeChangedMessage[] = "size_changed";
 
-bool ShouldBrowserBeClosedByAppSessionBrowserHander(
-    AppSessionAsh* app_session) {
+bool DidSessionCloseNewWindow(KioskSystemSession* session) {
   base::RunLoop waiter;
   bool result = false;
-  app_session->SetOnHandleBrowserCallbackForTesting(
+  session->SetOnHandleBrowserCallbackForTesting(
       base::BindLambdaForTesting([&waiter, &result](bool is_closing) {
         result = is_closing;
         waiter.Quit();
@@ -86,16 +85,16 @@ bool ShouldBrowserBeClosedByAppSessionBrowserHander(
   return result;
 }
 
-Browser* OpenA11ySettingsBrowser(AppSessionAsh* app_session) {
+Browser* OpenA11ySettingsBrowser(KioskSystemSession* session) {
   auto* settings_manager = chrome::SettingsWindowManager::GetInstance();
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
 
   settings_manager->ShowOSSettings(
       profile, chromeos::settings::mojom::kManageAccessibilitySubpagePath);
 
-  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session));
+  EXPECT_FALSE(DidSessionCloseNewWindow(session));
 
-  Browser* settings_browser = app_session->GetSettingsBrowserForTesting();
+  Browser* settings_browser = session->GetSettingsBrowserForTesting();
   return settings_browser;
 }
 

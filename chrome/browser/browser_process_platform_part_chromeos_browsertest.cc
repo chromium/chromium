@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/app_mode/app_session.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartChromeOSBrowsertest,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL original_url = embedded_test_server()->GetURL("/simple.html");
 
-  // Open |original_url| in a tab.
+  // Open `original_url` in a tab.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), original_url));
   ASSERT_EQ(1, tab_strip_model->count());
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartChromeOSBrowsertest,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL original_url = embedded_test_server()->GetURL("/simple.html");
 
-  // Open |original_url| in a tab.
+  // Open `original_url` in a tab.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), original_url));
   ASSERT_EQ(1, tab_strip_model->count());
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartChromeOSBrowsertest,
   // Initial browser will be navigated to original_url.
   const GURL original_url = embedded_test_server()->GetURL("/simple.html");
 
-  // Open |original_url| in a tab for profile_urls's browser.
+  // Open `original_url` in a tab for profile_urls's browser.
   auto* profile_urls = browser()->profile();
   profile_urls->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartChromeOSBrowsertest,
   profile_last_and_urls->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage,
                                                 true);
 
-  // Open |original_url| in a tab for profile_last_and_urls's browser.
+  // Open `original_url` in a tab for profile_last_and_urls's browser.
   Browser* new_browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_NORMAL, profile_last_and_urls, true));
   chrome::NewTab(new_browser);

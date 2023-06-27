@@ -2,31 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_MODE_APP_SESSION_ASH_H_
-#define CHROME_BROWSER_ASH_APP_MODE_APP_SESSION_ASH_H_
+#ifndef CHROME_BROWSER_ASH_APP_MODE_KIOSK_SYSTEM_SESSION_H_
+#define CHROME_BROWSER_ASH_APP_MODE_KIOSK_SYSTEM_SESSION_H_
 
 #include <memory>
 
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/metrics/low_disk_metrics_service.h"
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
-#include "chrome/browser/chromeos/app_mode/app_session.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 class NetworkConnectivityMetricsService;
 
-// AppSessionAsh maintains a kiosk session and handles its lifetime.
-class AppSessionAsh {
+// Maintains system-level services tied to a Kiosk session.
+//
+// Example services are accessibility, metrics and browser crash recovery.
+class KioskSystemSession {
  public:
-  explicit AppSessionAsh(
+  explicit KioskSystemSession(
       Profile* profile,
       const KioskAppId& kiosk_app_id,
       const absl::optional<std::string>& app_name = absl::nullopt);
-  AppSessionAsh(const AppSessionAsh&) = delete;
-  AppSessionAsh& operator=(const AppSessionAsh&) = delete;
-  ~AppSessionAsh();
+  KioskSystemSession(const KioskSystemSession&) = delete;
+  KioskSystemSession& operator=(const KioskSystemSession&) = delete;
+  ~KioskSystemSession();
 
   // Destroys ash observers.
   void ShuttingDown();
@@ -60,7 +62,7 @@ class AppSessionAsh {
   // Owned by `ProfileManager`.
   raw_ptr<Profile> profile_ = nullptr;
 
-  chromeos::AppSession app_session_;
+  chromeos::KioskBrowserSession browser_session_;
 
   const KioskAppId kiosk_app_id_;
 
@@ -77,4 +79,4 @@ class AppSessionAsh {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_MODE_APP_SESSION_ASH_H_
+#endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_SYSTEM_SESSION_H_

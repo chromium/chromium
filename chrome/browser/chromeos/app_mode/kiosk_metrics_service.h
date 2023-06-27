@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_APP_SESSION_METRICS_SERVICE_H_
-#define CHROME_BROWSER_CHROMEOS_APP_MODE_APP_SESSION_METRICS_SERVICE_H_
+#ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_METRICS_SERVICE_H_
+#define CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_METRICS_SERVICE_H_
 
 #include <string>
 #include <vector>
@@ -80,15 +80,15 @@ enum class KioskSessionEndReason {
   kMaxValue = kPluginHung,
 };
 
-// This object accumulates and records kiosk UMA metrics.
-class AppSessionMetricsService : public chromeos::PowerManagerClient::Observer {
+// This class accumulates and records kiosk UMA metrics.
+class KioskMetricsService : public chromeos::PowerManagerClient::Observer {
  public:
-  explicit AppSessionMetricsService(PrefService* prefs);
-  AppSessionMetricsService(AppSessionMetricsService&) = delete;
-  AppSessionMetricsService& operator=(const AppSessionMetricsService&) = delete;
-  ~AppSessionMetricsService() override;
+  explicit KioskMetricsService(PrefService* prefs);
+  KioskMetricsService(KioskMetricsService&) = delete;
+  KioskMetricsService& operator=(const KioskMetricsService&) = delete;
+  ~KioskMetricsService() override;
 
-  static std::unique_ptr<AppSessionMetricsService> CreateForTesting(
+  static std::unique_ptr<KioskMetricsService> CreateForTesting(
       PrefService* prefs,
       const std::vector<std::string>& crash_dirs);
 
@@ -102,8 +102,8 @@ class AppSessionMetricsService : public chromeos::PowerManagerClient::Observer {
   void RestartRequested(power_manager::RequestRestartReason reason) override;
 
  protected:
-  AppSessionMetricsService(PrefService* prefs,
-                           const std::vector<std::string>& crash_dirs);
+  KioskMetricsService(PrefService* prefs,
+                      const std::vector<std::string>& crash_dirs);
 
  private:
   bool IsKioskSessionRunning() const;
@@ -156,9 +156,9 @@ class AppSessionMetricsService : public chromeos::PowerManagerClient::Observer {
                           chromeos::PowerManagerClient::Observer>
       power_manager_client_observation_{this};
 
-  base::WeakPtrFactory<AppSessionMetricsService> weak_ptr_factory_{this};
+  base::WeakPtrFactory<KioskMetricsService> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_APP_SESSION_METRICS_SERVICE_H_
+#endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_METRICS_SERVICE_H_

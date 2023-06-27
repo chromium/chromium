@@ -13,9 +13,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/chromeos/app_mode/app_session.h"
-#include "chrome/browser/chromeos/app_mode/app_session_browser_window_handler.h"
-#include "chrome/browser/chromeos/app_mode/app_session_metrics_service.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_metrics_service.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -173,21 +173,22 @@ void CheckSessionRestartReasonHistogramDependingOnRebootStatus(
 
 }  // namespace
 
-// TODO(b/271336749): split app_session_unittest.cc file into smaller test
-// files.
-template <typename AppSessionParamType = KioskSessionRestartTestCase>
-class AppSessionBaseTest
-    : public ::testing::TestWithParam<AppSessionParamType> {
+// TODO(b/271336749): split kiosk_browser_session_unittest.cc file into smaller
+// test files.
+template <typename KioskBrowserSessionParamType = KioskSessionRestartTestCase>
+class KioskBrowserSessionBaseTest
+    : public ::testing::TestWithParam<KioskBrowserSessionParamType> {
  public:
-  explicit AppSessionBaseTest(
+  explicit KioskBrowserSessionBaseTest(
       base::test::TaskEnvironment::TimeSource time_source =
           base::test::TaskEnvironment::TimeSource::DEFAULT)
       : task_environment_{time_source},
         local_state_(std::make_unique<ScopedTestingLocalState>(
             TestingBrowserProcess::GetGlobal())) {}
 
-  AppSessionBaseTest(const AppSessionBaseTest&) = delete;
-  AppSessionBaseTest& operator=(const AppSessionBaseTest&) = delete;
+  KioskBrowserSessionBaseTest(const KioskBrowserSessionBaseTest&) = delete;
+  KioskBrowserSessionBaseTest& operator=(const KioskBrowserSessionBaseTest&) =
+      delete;
 
   static void SetUpTestSuite() {
     chromeos::PowerManagerClient::InitializeFake();
@@ -240,34 +241,34 @@ class AppSessionBaseTest
             /*user_gesture=*/true),
         profile(), /*is_main_browser=*/true);
 
-    app_session_ = AppSession::CreateForTesting(
+    kiosk_browser_session_ = KioskBrowserSession::CreateForTesting(
         profile(), base::DoNothing(), local_state(), {crash_path().value()});
-    app_session_->InitForWebKiosk(web_app_name);
+    kiosk_browser_session_->InitForWebKiosk(web_app_name);
 
     task_environment_.RunUntilIdle();
   }
 
   // Simulate starting a chrome app kiosk session.
   void StartChromeAppKioskSession() {
-    app_session_ = std::make_unique<AppSession>(profile(), base::DoNothing(),
-                                                local_state());
-    app_session_->InitForChromeAppKiosk(kTestAppId);
+    kiosk_browser_session_ = std::make_unique<KioskBrowserSession>(
+        profile(), base::DoNothing(), local_state());
+    kiosk_browser_session_->InitForChromeAppKiosk(kTestAppId);
   }
 
-  // Waits until |app_session_| handles creation of |new_browser_window| and
-  // returns whether |new_browser_window| was asked to close. In this case we
-  // will also ensure that |new_browser_window| was automatically closed.
-  bool ShouldBrowserBeClosedByAppSessionBrowserHander(
-      BrowserWindow* new_browser_window) {
+  // Waits until `kiosk_browser_session_` handles creation of
+  // `new_browser_window` and returns whether `new_browser_window` was asked to
+  // close. In this case we will also ensure that `new_browser_window` was
+  // automatically closed.
+  bool DidSessionCloseNewWindow(BrowserWindow* new_browser_window) {
     bool already_closed = false;
     static_cast<TestBrowserWindow*>(new_browser_window)
         ->SetCloseCallback(base::BindLambdaForTesting(
             [&already_closed]() { already_closed = true; }));
 
-    // Wait until the browser is handled by |app_session_|.
+    // Wait until the new window is handled by `kiosk_browser_session_`.
     base::RunLoop handler_loop;
     bool result = false;
-    app_session_->SetOnHandleBrowserCallbackForTesting(
+    kiosk_browser_session_->SetOnHandleBrowserCallbackForTesting(
         base::BindLambdaForTesting([&handler_loop, &result](bool is_closing) {
           result = is_closing;
           handler_loop.Quit();
@@ -291,15 +292,15 @@ class AppSessionBaseTest
   }
 
   bool IsSessionShuttingDown() const {
-    return app_session_->is_shutting_down();
+    return kiosk_browser_session_->is_shutting_down();
   }
 
-  void ResetAppSession() { app_session_.reset(); }
+  void ResetKioskBrowserSession() { kiosk_browser_session_.reset(); }
 
   PrefService* GetPrefs() { return profile()->GetPrefs(); }
 
   KioskSessionPluginHandlerDelegate* GetPluginHandlerDelegate() {
-    return app_session_->GetPluginHandlerDelegateForTesting();
+    return kiosk_browser_session_->GetPluginHandlerDelegateForTesting();
   }
 
   base::FilePath crash_path() const { return temp_dir_.GetPath(); }
@@ -312,20 +313,20 @@ class AppSessionBaseTest
   ash::AshTestHelper ash_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Must outlive |app_session_|.
+  // Must outlive `kiosk_browser_session_`.
   TestingProfile profile_;
   // Main browser window created when launching a web kiosk app.
-  // Could be nullptr if |StartWebKioskSession| function was not called.
+  // Could be nullptr if `StartWebKioskSession` function was not called.
   std::unique_ptr<Browser> web_kiosk_main_browser_;
   base::HistogramTester histogram_;
-  std::unique_ptr<AppSession> app_session_;
+  std::unique_ptr<KioskBrowserSession> kiosk_browser_session_;
 };
 
-using AppSessionTest = AppSessionBaseTest<>;
-using AppSessionRestartReasonTest =
-    AppSessionBaseTest<KioskSessionRestartTestCase>;
+using KioskBrowserSessionTest = KioskBrowserSessionBaseTest<>;
+using KioskBrowserSessionRestartReasonTest =
+    KioskBrowserSessionBaseTest<KioskSessionRestartTestCase>;
 
-TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
+TEST_F(KioskBrowserSessionTest, WebKioskTracksBrowserCreation) {
   {
     base::Value::Dict value;
     value.Set(kKioskSessionStartTime, base::TimeToValue(base::Time::Now()));
@@ -338,8 +339,8 @@ TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
                                  KioskSessionState::kWebStarted, 1);
   histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
 
-  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
-      CreateBrowserWithTestWindow()->window()));
+  EXPECT_TRUE(
+      DidSessionCloseNewWindow(CreateBrowserWithTestWindow()->window()));
 
   // The main browser window still exists, the kiosk session should not
   // shutdown.
@@ -364,18 +365,18 @@ TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
   histogram()->ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
 }
 
-TEST_F(AppSessionTest, ChromeAppKioskSessionState) {
+TEST_F(KioskBrowserSessionTest, ChromeAppKioskSessionState) {
   StartChromeAppKioskSession();
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
                                  KioskSessionState::kStarted, 1);
   histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
 }
 
-TEST_F(AppSessionTest, ChromeAppKioskTracksBrowserCreation) {
+TEST_F(KioskBrowserSessionTest, ChromeAppKioskTracksBrowserCreation) {
   StartChromeAppKioskSession();
 
-  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
-      CreateBrowserWithTestWindow()->window()));
+  EXPECT_TRUE(
+      DidSessionCloseNewWindow(CreateBrowserWithTestWindow()->window()));
   // Closing the browser should not shutdown the ChromeApp kiosk session.
   EXPECT_FALSE(IsSessionShuttingDown());
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
@@ -390,7 +391,7 @@ TEST_F(AppSessionTest, ChromeAppKioskTracksBrowserCreation) {
   EXPECT_EQ(1u, sessions_list->size());
 
   // Emulate exiting kiosk session.
-  ResetAppSession();
+  ResetKioskBrowserSession();
 
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
                                  KioskSessionState::kStopped, 1);
@@ -402,7 +403,7 @@ TEST_F(AppSessionTest, ChromeAppKioskTracksBrowserCreation) {
 
 // Check that sessions list in local_state contains only sessions within the
 // last 24h.
-TEST_F(AppSessionTest, WebKioskLastDaySessions) {
+TEST_F(KioskBrowserSessionTest, WebKioskLastDaySessions) {
   // Setup local_state with 5 more kiosk sessions happened prior to the current
   // one: {now, 2,3,4,5 days ago}
   {
@@ -468,33 +469,34 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
   histogram()->ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
 }
 
-TEST_F(AppSessionTest, DoNotOpenSecondBrowserInWebKiosk) {
+TEST_F(KioskBrowserSessionTest, DoNotOpenSecondBrowserInWebKiosk) {
   StartWebKioskSession(kTestWebAppName1);
 
-  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+  EXPECT_TRUE(DidSessionCloseNewWindow(
       CreateBrowserForWebApp(kTestWebAppName1)->window()));
 }
 
-TEST_F(AppSessionTest, OpenSecondBrowserInWebKioskIfAllowed) {
+TEST_F(KioskBrowserSessionTest, OpenSecondBrowserInWebKioskIfAllowed) {
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
   StartWebKioskSession(kTestWebAppName1);
 
-  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+  EXPECT_FALSE(DidSessionCloseNewWindow(
       CreateBrowserForWebApp(kTestWebAppName1)->window()));
 }
 
-TEST_F(AppSessionTest, EnsureSecondBrowserIsFullscreenInWebKiosk) {
+TEST_F(KioskBrowserSessionTest, EnsureSecondBrowserIsFullscreenInWebKiosk) {
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
   StartWebKioskSession(kTestWebAppName1);
   EXPECT_TRUE(IsMainBrowserFullscreen());
 
   auto second_browser = CreateBrowserForWebApp(kTestWebAppName1);
-  ShouldBrowserBeClosedByAppSessionBrowserHander(second_browser->window());
+  DidSessionCloseNewWindow(second_browser->window());
 
   EXPECT_TRUE(IsBrowserFullscreen(*second_browser));
 }
 
-TEST_F(AppSessionTest, DoNotOpenSecondBrowserInWebKioskIfTypeIsNotAppPopup) {
+TEST_F(KioskBrowserSessionTest,
+       DoNotOpenSecondBrowserInWebKioskIfTypeIsNotAppPopup) {
   const std::vector<Browser::Type> not_app_popup_browser_types = {
     Browser::Type::TYPE_NORMAL,
     Browser::Type::TYPE_POPUP,
@@ -510,44 +512,44 @@ TEST_F(AppSessionTest, DoNotOpenSecondBrowserInWebKioskIfTypeIsNotAppPopup) {
   StartWebKioskSession(kTestWebAppName1);
 
   for (auto browser_type : not_app_popup_browser_types) {
-    EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+    EXPECT_TRUE(DidSessionCloseNewWindow(
         CreateBrowserForWebApp(kTestWebAppName1, browser_type)->window()));
   }
 }
 
-TEST_F(AppSessionTest, DoNotOpenSecondBrowserInWebKioskWithEmptyWebAppName) {
+TEST_F(KioskBrowserSessionTest,
+       DoNotOpenSecondBrowserInWebKioskWithEmptyWebAppName) {
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
   StartWebKioskSession();
 
-  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
-      CreateBrowserWithTestWindow()->window()));
+  EXPECT_TRUE(
+      DidSessionCloseNewWindow(CreateBrowserWithTestWindow()->window()));
 }
 
-TEST_F(AppSessionTest,
+TEST_F(KioskBrowserSessionTest,
        DoNotOpenSecondBrowserInWebKioskWithDifferentWebAppName) {
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
   StartWebKioskSession(kTestWebAppName1);
 
-  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+  EXPECT_TRUE(DidSessionCloseNewWindow(
       CreateBrowserForWebApp(kTestWebAppName2)->window()));
 }
 
-TEST_F(AppSessionTest, DoNotOpenSecondBrowserInChromeAppKiosk) {
+TEST_F(KioskBrowserSessionTest, DoNotOpenSecondBrowserInChromeAppKiosk) {
   // This flag allows opening new windows only for the web kiosk session. For
   // chrome app kiosk we still should block all new browsers.
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
   StartChromeAppKioskSession();
 
-  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+  EXPECT_TRUE(DidSessionCloseNewWindow(
       CreateBrowserForWebApp(kTestWebAppName2)->window()));
 }
 
-TEST_F(AppSessionTest, NewOpenedRegularBrowserMetrics) {
+TEST_F(KioskBrowserSessionTest, NewOpenedRegularBrowserMetrics) {
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
   StartWebKioskSession(kTestWebAppName1);
 
-  ShouldBrowserBeClosedByAppSessionBrowserHander(
-      CreateBrowserForWebApp(kTestWebAppName1)->window());
+  DidSessionCloseNewWindow(CreateBrowserForWebApp(kTestWebAppName1)->window());
 
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
                                  KioskBrowserWindowType::kOpenedRegularBrowser,
@@ -555,12 +557,11 @@ TEST_F(AppSessionTest, NewOpenedRegularBrowserMetrics) {
   histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
 }
 
-TEST_F(AppSessionTest, NewClosedRegularBrowserMetrics) {
+TEST_F(KioskBrowserSessionTest, NewClosedRegularBrowserMetrics) {
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, false);
   StartWebKioskSession(kTestWebAppName1);
 
-  ShouldBrowserBeClosedByAppSessionBrowserHander(
-      CreateBrowserForWebApp(kTestWebAppName1)->window());
+  DidSessionCloseNewWindow(CreateBrowserForWebApp(kTestWebAppName1)->window());
 
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
                                  KioskBrowserWindowType::kClosedRegularBrowser,
@@ -568,13 +569,13 @@ TEST_F(AppSessionTest, NewClosedRegularBrowserMetrics) {
   histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
 }
 
-TEST_F(AppSessionTest, DoNotExitWebKioskSessionWhenSecondBrowserIsOpened) {
+TEST_F(KioskBrowserSessionTest,
+       DoNotExitWebKioskSessionWhenSecondBrowserIsOpened) {
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
   StartWebKioskSession();
 
   auto second_browser = CreateBrowserForWebApp(kTestWebAppName1);
-  EXPECT_FALSE(
-      ShouldBrowserBeClosedByAppSessionBrowserHander(second_browser->window()));
+  EXPECT_FALSE(DidSessionCloseNewWindow(second_browser->window()));
 
   CloseMainBrowser();
   EXPECT_FALSE(IsSessionShuttingDown());
@@ -584,13 +585,12 @@ TEST_F(AppSessionTest, DoNotExitWebKioskSessionWhenSecondBrowserIsOpened) {
   EXPECT_TRUE(IsSessionShuttingDown());
 }
 
-TEST_F(AppSessionTest, InitialBrowserShouldBeHandledAsRegularBrowser) {
+TEST_F(KioskBrowserSessionTest, InitialBrowserShouldBeHandledAsRegularBrowser) {
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
   StartWebKioskSession();
 
   auto second_browser = CreateBrowserForWebApp(kTestWebAppName1);
-  EXPECT_FALSE(
-      ShouldBrowserBeClosedByAppSessionBrowserHander(second_browser->window()));
+  EXPECT_FALSE(DidSessionCloseNewWindow(second_browser->window()));
 
   second_browser.reset();
   EXPECT_FALSE(IsSessionShuttingDown());
@@ -600,7 +600,7 @@ TEST_F(AppSessionTest, InitialBrowserShouldBeHandledAsRegularBrowser) {
   EXPECT_TRUE(IsSessionShuttingDown());
 }
 
-TEST_P(AppSessionRestartReasonTest, StoppedMetric) {
+TEST_P(KioskBrowserSessionRestartReasonTest, StoppedMetric) {
   const KioskSessionRestartTestCase& test_config = GetParam();
   StartWebKioskSession();
   // Emulate exiting the kiosk session.
@@ -624,7 +624,7 @@ TEST_P(AppSessionRestartReasonTest, StoppedMetric) {
   histogram()->ExpectTotalCount(kKioskSessionRestartReasonHistogram, 1);
 }
 
-TEST_P(AppSessionRestartReasonTest, CrashMetric) {
+TEST_P(KioskBrowserSessionRestartReasonTest, CrashMetric) {
   const KioskSessionRestartTestCase& test_config = GetParam();
   // Setup `kKioskSessionStartTime` and add a file to the crash directory to
   // emulate previous kiosk session crash.
@@ -645,7 +645,7 @@ TEST_P(AppSessionRestartReasonTest, CrashMetric) {
       KioskSessionRestartReason::kCrashedWithReboot, histogram());
 }
 
-TEST_P(AppSessionRestartReasonTest, LocalStateWasNotSavedMetric) {
+TEST_P(KioskBrowserSessionRestartReasonTest, LocalStateWasNotSavedMetric) {
   const KioskSessionRestartTestCase& test_config = GetParam();
   // Setup `kKioskSessionStartTime` to emulate previous kiosk session stopped
   // correctly, but because of race condition, `kKioskSessionStartTime` was not
@@ -667,7 +667,7 @@ TEST_P(AppSessionRestartReasonTest, LocalStateWasNotSavedMetric) {
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-TEST_P(AppSessionRestartReasonTest, PluginCrashedMetric) {
+TEST_P(KioskBrowserSessionRestartReasonTest, PluginCrashedMetric) {
   const KioskSessionRestartTestCase& test_config = GetParam();
   StartWebKioskSession();
 
@@ -689,7 +689,7 @@ TEST_P(AppSessionRestartReasonTest, PluginCrashedMetric) {
       KioskSessionRestartReason::kPluginCrashedWithReboot, histogram());
 }
 
-TEST_P(AppSessionRestartReasonTest, PluginHungMetric) {
+TEST_P(KioskBrowserSessionRestartReasonTest, PluginHungMetric) {
   const KioskSessionRestartTestCase& test_config = GetParam();
   // Create a fake power manager client.
   // FakePowerManagerClient client;
@@ -716,18 +716,20 @@ TEST_P(AppSessionRestartReasonTest, PluginHungMetric) {
 
 // Reboot-related restart reasons are only reported in Ash.
 INSTANTIATE_TEST_SUITE_P(
-    AppSessionRestartReasons,
-    AppSessionRestartReasonTest,
+    KioskBrowserSessionRestartReasons,
+    KioskBrowserSessionRestartReasonTest,
     testing::ValuesIn<KioskSessionRestartTestCase>({
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       {/*test_name=*/"WithReboot", /*run_with_reboot=*/true},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
           {/*test_name=*/"WithoutReboot", /*run_with_reboot=*/false},
     }),
-    [](const testing::TestParamInfo<AppSessionRestartReasonTest::ParamType>&
-           info) { return info.param.test_name; });
+    [](const testing::TestParamInfo<
+        KioskBrowserSessionRestartReasonTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
-TEST_F(AppSessionRestartReasonTest, PowerManagerRequestRestart) {
+TEST_F(KioskBrowserSessionRestartReasonTest, PowerManagerRequestRestart) {
   std::vector<KioskSessionPowerManagerRequestRestartTestCase> test_cases = {
       {/*power_manager_reason=*/power_manager::RequestRestartReason::
            REQUEST_RESTART_SCHEDULED_REBOOT_POLICY,
@@ -755,7 +757,8 @@ TEST_F(AppSessionRestartReasonTest, PowerManagerRequestRestart) {
 }
 
 // Kiosk type agnostic test class. Runs all tests for web and chrome app kiosks.
-class AppSessionTroubleshootingTest : public AppSessionBaseTest<bool> {
+class KioskBrowserSessionTroubleshootingTest
+    : public KioskBrowserSessionBaseTest<bool> {
  public:
   void SetUpKioskSession() {
     bool is_web_kiosk = GetParam();
@@ -792,7 +795,8 @@ class AppSessionTroubleshootingTest : public AppSessionBaseTest<bool> {
   }
 };
 
-TEST_P(AppSessionTroubleshootingTest, EnableTroubleshootingToolsDuringSession) {
+TEST_P(KioskBrowserSessionTroubleshootingTest,
+       EnableTroubleshootingToolsDuringSession) {
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
@@ -804,7 +808,7 @@ TEST_P(AppSessionTroubleshootingTest, EnableTroubleshootingToolsDuringSession) {
   EXPECT_TRUE(IsSessionShuttingDown());
 }
 
-TEST_P(AppSessionTroubleshootingTest,
+TEST_P(KioskBrowserSessionTroubleshootingTest,
        EnableTroubleshootingToolsBeforeSessionStarted) {
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
   SetUpKioskSession();
@@ -813,7 +817,7 @@ TEST_P(AppSessionTroubleshootingTest,
   EXPECT_TRUE(IsSessionShuttingDown());
 }
 
-TEST_P(AppSessionTroubleshootingTest,
+TEST_P(KioskBrowserSessionTroubleshootingTest,
        MainBrowserShutdownAfterKioskTroubleshootingToolsDisabled) {
   GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, true);
 
@@ -828,11 +832,12 @@ TEST_P(AppSessionTroubleshootingTest,
   EXPECT_TRUE(IsSessionShuttingDown());
 }
 
-TEST_P(AppSessionTroubleshootingTest, OpenDevToolsEnabledTroubleshootingTools) {
+TEST_P(KioskBrowserSessionTroubleshootingTest,
+       OpenDevToolsEnabledTroubleshootingTools) {
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
-  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+  EXPECT_FALSE(DidSessionCloseNewWindow(
       CreateDevToolsBrowserWithTestWindow()->window()));
 
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
@@ -841,19 +846,20 @@ TEST_P(AppSessionTroubleshootingTest, OpenDevToolsEnabledTroubleshootingTools) {
   histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
 }
 
-TEST_P(AppSessionTroubleshootingTest, CloseTroubleshootingToolsByDefault) {
+TEST_P(KioskBrowserSessionTroubleshootingTest,
+       CloseTroubleshootingToolsByDefault) {
   SetUpKioskSession();
 
   // Kiosk troubleshooting tools are disabled by default.
-  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+  EXPECT_TRUE(DidSessionCloseNewWindow(
       CreateDevToolsBrowserWithTestWindow()->window()));
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
                                  KioskBrowserWindowType::kClosedRegularBrowser,
                                  1);
   histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
 
-  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
-      CreateRegularBrowserWithTestWindow()->window()));
+  EXPECT_TRUE(
+      DidSessionCloseNewWindow(CreateRegularBrowserWithTestWindow()->window()));
 
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
                                  KioskBrowserWindowType::kClosedRegularBrowser,
@@ -861,7 +867,7 @@ TEST_P(AppSessionTroubleshootingTest, CloseTroubleshootingToolsByDefault) {
   histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 2);
 }
 
-TEST_P(AppSessionTroubleshootingTest,
+TEST_P(KioskBrowserSessionTroubleshootingTest,
        OpenDevToolsDisableTroubleshootingToolsDuringSession) {
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
@@ -869,7 +875,7 @@ TEST_P(AppSessionTroubleshootingTest,
   // Kiosk session should shoutdown only if policy is changed from enable to
   // disable.
   EXPECT_FALSE(IsSessionShuttingDown());
-  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+  EXPECT_FALSE(DidSessionCloseNewWindow(
       CreateDevToolsBrowserWithTestWindow()->window()));
 
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
@@ -881,15 +887,14 @@ TEST_P(AppSessionTroubleshootingTest,
   EXPECT_TRUE(IsSessionShuttingDown());
 }
 
-TEST_P(AppSessionTroubleshootingTest,
+TEST_P(KioskBrowserSessionTroubleshootingTest,
        OpenNewWindowEnabledTroubleshootingTools) {
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
   std::unique_ptr<Browser> normal_browser =
       CreateRegularBrowserWithTestWindow();
-  EXPECT_FALSE(
-      ShouldBrowserBeClosedByAppSessionBrowserHander(normal_browser->window()));
+  EXPECT_FALSE(DidSessionCloseNewWindow(normal_browser->window()));
 
   histogram()->ExpectBucketCount(
       kKioskNewBrowserWindowHistogram,
@@ -897,13 +902,13 @@ TEST_P(AppSessionTroubleshootingTest,
   histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
 }
 
-TEST_P(AppSessionTroubleshootingTest,
+TEST_P(KioskBrowserSessionTroubleshootingTest,
        CloseNewWindowDisabledTroubleshootingTools) {
   UpdateTroubleshootingToolsPolicy(/*enable=*/false);
   SetUpKioskSession();
 
-  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
-      CreateRegularBrowserWithTestWindow()->window()));
+  EXPECT_TRUE(
+      DidSessionCloseNewWindow(CreateRegularBrowserWithTestWindow()->window()));
 
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
                                  KioskBrowserWindowType::kClosedRegularBrowser,
@@ -911,7 +916,7 @@ TEST_P(AppSessionTroubleshootingTest,
   histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
 }
 
-TEST_P(AppSessionTroubleshootingTest,
+TEST_P(KioskBrowserSessionTroubleshootingTest,
        OnlyAllowRegularBrowserAndDevToolsAsTroubleshootingBrowsers) {
   const std::vector<Browser::Type> should_be_closed_browser_types = {
     Browser::Type::TYPE_POPUP,
@@ -926,7 +931,7 @@ TEST_P(AppSessionTroubleshootingTest,
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
   for (Browser::Type type : should_be_closed_browser_types) {
-    EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+    EXPECT_TRUE(DidSessionCloseNewWindow(
         CreateBrowserWithTestWindowAndType(type)->window()));
   }
 
@@ -937,8 +942,8 @@ TEST_P(AppSessionTroubleshootingTest,
                                 should_be_closed_browser_types.size());
 }
 
-INSTANTIATE_TEST_SUITE_P(AppSessionTroubleshootingTools,
-                         AppSessionTroubleshootingTest,
+INSTANTIATE_TEST_SUITE_P(KioskBrowserSessionTroubleshootingTools,
+                         KioskBrowserSessionTroubleshootingTest,
                          ::testing::Bool());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -976,8 +981,8 @@ class FakeNewWindowDelegate : public ash::TestNewWindowDelegate {
 
 // Tests actions after pressing troubleshooting shortcuts. Runs all tests for
 // web and chrome app kiosks.
-class AppSessionTroubleshootingShortcutsTest
-    : public AppSessionTroubleshootingTest {
+class KioskBrowserSessionTroubleshootingShortcutsTest
+    : public KioskBrowserSessionTroubleshootingTest {
  public:
   static bool ProcessInController(const ui::Accelerator& accelerator) {
     return ash::Shell::Get()->accelerator_controller()->Process(accelerator);
@@ -990,7 +995,7 @@ class AppSessionTroubleshootingShortcutsTest
         std::make_unique<ash::TestNewWindowDelegateProvider>(
             std::move(new_window_delegate));
 
-    AppSessionTroubleshootingTest::SetUp();
+    KioskBrowserSessionTroubleshootingTest::SetUp();
 
     ash::SessionInfo info;
     info.is_running_in_app_mode = true;
@@ -1036,7 +1041,8 @@ class AppSessionTroubleshootingShortcutsTest
       test_new_window_delegate_provider_;
 };
 
-TEST_P(AppSessionTroubleshootingShortcutsTest, NewWindowShortcutEnabled) {
+TEST_P(KioskBrowserSessionTroubleshootingShortcutsTest,
+       NewWindowShortcutEnabled) {
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
@@ -1045,7 +1051,8 @@ TEST_P(AppSessionTroubleshootingShortcutsTest, NewWindowShortcutEnabled) {
 }
 
 // Just confirm that other shortcuts (e.g. new tab) do not work.
-TEST_P(AppSessionTroubleshootingShortcutsTest, NewTabShortcutIsNoAction) {
+TEST_P(KioskBrowserSessionTroubleshootingShortcutsTest,
+       NewTabShortcutIsNoAction) {
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
@@ -1054,7 +1061,7 @@ TEST_P(AppSessionTroubleshootingShortcutsTest, NewTabShortcutIsNoAction) {
   EXPECT_FALSE(IsNewWindowCalled());
 }
 
-TEST_P(AppSessionTroubleshootingShortcutsTest,
+TEST_P(KioskBrowserSessionTroubleshootingShortcutsTest,
        NewWindowShortcutNoActionByDefault) {
   SetUpKioskSession();
 
@@ -1062,7 +1069,7 @@ TEST_P(AppSessionTroubleshootingShortcutsTest,
   EXPECT_FALSE(IsNewWindowCalled());
 }
 
-TEST_P(AppSessionTroubleshootingShortcutsTest,
+TEST_P(KioskBrowserSessionTroubleshootingShortcutsTest,
        NewWindowShortcutNoActionIfPolicyDisabled) {
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/false);
@@ -1071,7 +1078,8 @@ TEST_P(AppSessionTroubleshootingShortcutsTest,
   EXPECT_FALSE(IsNewWindowCalled());
 }
 
-TEST_P(AppSessionTroubleshootingShortcutsTest, TaskManagerShortcutEnabled) {
+TEST_P(KioskBrowserSessionTroubleshootingShortcutsTest,
+       TaskManagerShortcutEnabled) {
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
@@ -1079,7 +1087,7 @@ TEST_P(AppSessionTroubleshootingShortcutsTest, TaskManagerShortcutEnabled) {
   EXPECT_TRUE(IsTaskManagerCalled());
 }
 
-TEST_P(AppSessionTroubleshootingShortcutsTest,
+TEST_P(KioskBrowserSessionTroubleshootingShortcutsTest,
        TaskManagerShortcutNoActionByDefault) {
   SetUpKioskSession();
 
@@ -1087,7 +1095,7 @@ TEST_P(AppSessionTroubleshootingShortcutsTest,
   EXPECT_FALSE(IsTaskManagerCalled());
 }
 
-TEST_P(AppSessionTroubleshootingShortcutsTest,
+TEST_P(KioskBrowserSessionTroubleshootingShortcutsTest,
        TaskManagerShortcutNoActionIfPolicyDisabled) {
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/false);
@@ -1096,7 +1104,7 @@ TEST_P(AppSessionTroubleshootingShortcutsTest,
   EXPECT_FALSE(IsTaskManagerCalled());
 }
 
-TEST_P(AppSessionTroubleshootingShortcutsTest,
+TEST_P(KioskBrowserSessionTroubleshootingShortcutsTest,
        OpenFeedbackPageShortcutEnabled) {
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
@@ -1105,7 +1113,7 @@ TEST_P(AppSessionTroubleshootingShortcutsTest,
   EXPECT_TRUE(IsOpenFeedbackPageCalled());
 }
 
-TEST_P(AppSessionTroubleshootingShortcutsTest,
+TEST_P(KioskBrowserSessionTroubleshootingShortcutsTest,
        OpenFeedbackPageShortcutNoActionByDefault) {
   SetUpKioskSession();
 
@@ -1113,7 +1121,7 @@ TEST_P(AppSessionTroubleshootingShortcutsTest,
   EXPECT_FALSE(IsOpenFeedbackPageCalled());
 }
 
-TEST_P(AppSessionTroubleshootingShortcutsTest,
+TEST_P(KioskBrowserSessionTroubleshootingShortcutsTest,
        OpenFeedbackPageShortcutNoActionIfPolicyDisabled) {
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/false);
@@ -1122,7 +1130,8 @@ TEST_P(AppSessionTroubleshootingShortcutsTest,
   EXPECT_FALSE(IsOpenFeedbackPageCalled());
 }
 
-TEST_P(AppSessionTroubleshootingShortcutsTest, ToggleOverviewShortcutEnabled) {
+TEST_P(KioskBrowserSessionTroubleshootingShortcutsTest,
+       ToggleOverviewShortcutEnabled) {
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
@@ -1130,7 +1139,7 @@ TEST_P(AppSessionTroubleshootingShortcutsTest, ToggleOverviewShortcutEnabled) {
   EXPECT_TRUE(IsOverviewToggled());
 }
 
-TEST_P(AppSessionTroubleshootingShortcutsTest,
+TEST_P(KioskBrowserSessionTroubleshootingShortcutsTest,
        ToggleOverviewShortcutNoActionByDefault) {
   SetUpKioskSession();
 
@@ -1138,7 +1147,7 @@ TEST_P(AppSessionTroubleshootingShortcutsTest,
   EXPECT_FALSE(IsOverviewToggled());
 }
 
-TEST_P(AppSessionTroubleshootingShortcutsTest,
+TEST_P(KioskBrowserSessionTroubleshootingShortcutsTest,
        ToggleOverviewShortcutNoActionIfPolicyDisabled) {
   SetUpKioskSession();
   UpdateTroubleshootingToolsPolicy(/*enable=*/false);
@@ -1147,14 +1156,14 @@ TEST_P(AppSessionTroubleshootingShortcutsTest,
   EXPECT_FALSE(IsOverviewToggled());
 }
 
-INSTANTIATE_TEST_SUITE_P(AppSessionTroubleshootingShortcuts,
-                         AppSessionTroubleshootingShortcutsTest,
+INSTANTIATE_TEST_SUITE_P(KioskBrowserSessionTroubleshootingShortcuts,
+                         KioskBrowserSessionTroubleshootingShortcutsTest,
                          ::testing::Bool());
 
 #endif  //  BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-TEST_F(AppSessionTest, ShouldHandlePlugin) {
+TEST_F(KioskBrowserSessionTest, ShouldHandlePlugin) {
   // Create an out-of-process pepper plugin.
   content::WebPluginInfo info1;
   info1.name = kPepperPluginName1;
@@ -1191,9 +1200,9 @@ TEST_F(AppSessionTest, ShouldHandlePlugin) {
       run_loop.QuitClosure()));
   run_loop.Run();
 
-  AppSession app_session(profile());
+  KioskBrowserSession session(profile());
   KioskSessionPluginHandlerDelegate* delegate =
-      app_session.GetPluginHandlerDelegateForTesting();
+      session.GetPluginHandlerDelegateForTesting();
 
   // The app session should handle two pepper plugins.
   EXPECT_TRUE(
@@ -1210,7 +1219,7 @@ TEST_F(AppSessionTest, ShouldHandlePlugin) {
       base::FilePath(kUnregisteredPluginFilePath)));
 }
 
-TEST_F(AppSessionTest, OnPluginCrashed) {
+TEST_F(KioskBrowserSessionTest, OnPluginCrashed) {
   StartWebKioskSession();
   KioskSessionPluginHandlerDelegate* delegate = GetPluginHandlerDelegate();
 
@@ -1226,7 +1235,7 @@ TEST_F(AppSessionTest, OnPluginCrashed) {
   EXPECT_EQ(2u, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
 }
 
-TEST_F(AppSessionTest, OnPluginHung) {
+TEST_F(KioskBrowserSessionTest, OnPluginHung) {
   StartWebKioskSession();
   KioskSessionPluginHandlerDelegate* delegate = GetPluginHandlerDelegate();
 
