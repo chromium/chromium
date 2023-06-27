@@ -97,7 +97,7 @@ PreloadingDecider::PreloadingDecider(RenderFrameHost* rfh)
       preconnector_(render_frame_host()),
       prefetcher_(render_frame_host()),
       prerenderer_(std::make_unique<PrerendererImpl>(render_frame_host())) {
-  if (PrefetchContentRefactorIsEnabled() && PrefetchNewLimitsEnabled()) {
+  if (PrefetchNewLimitsEnabled()) {
     PrefetchDocumentManager::GetOrCreateForCurrentDocument(rfh)
         ->SetPrefetchDestructionCallback(base::BindRepeating(
             &PrefetchDestructionCallback, rfh->GetWeakDocumentPtr()));

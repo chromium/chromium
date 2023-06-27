@@ -63,11 +63,6 @@ void PrefetchProxyConfigurator::UpdateCustomProxyConfig(
     base::OnceCallback<void()> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!PrefetchContentRefactorIsEnabled()) {
-    std::move(callback).Run();
-    return;
-  }
-
   base::RepeatingClosure repeating_closure =
       base::BarrierClosure(proxy_config_clients_.size(), std::move(callback));
   network::mojom::CustomProxyConfigPtr config = CreateCustomProxyConfig();

@@ -297,15 +297,6 @@ bool IsReferrerPolicySufficientlyStrict(
 }  // namespace
 
 // static
-std::unique_ptr<PrefetchService> PrefetchService::CreateIfPossible(
-    BrowserContext* browser_context) {
-  if (!base::FeatureList::IsEnabled(features::kPrefetchUseContentRefactor))
-    return nullptr;
-
-  return std::make_unique<PrefetchService>(browser_context);
-}
-
-// static
 PrefetchService* PrefetchService::GetFromFrameTreeNodeId(
     int frame_tree_node_id) {
   BrowserContext* browser_context =

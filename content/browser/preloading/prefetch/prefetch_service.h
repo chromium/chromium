@@ -67,17 +67,14 @@ enum class PrefetchRedirectNetworkContextTransition {
 // needed.
 class CONTENT_EXPORT PrefetchService {
  public:
-  // |browser_context| must outlive this instance. In general this should always
-  // be true, since |PrefetchService| will be indirectly owned by
-  // |BrowserContext|.
-  static std::unique_ptr<PrefetchService> CreateIfPossible(
-      BrowserContext* browser_context);
-
   static PrefetchService* GetFromFrameTreeNodeId(int frame_tree_node_id);
   static void SetFromFrameTreeNodeIdForTesting(
       int frame_tree_node_id,
       std::unique_ptr<PrefetchService> prefetch_service);
 
+  // |browser_context| must outlive this instance. In general this should always
+  // be true, since |PrefetchService| will be indirectly owned by
+  // |BrowserContext|.
   explicit PrefetchService(BrowserContext* browser_context);
   virtual ~PrefetchService();
 

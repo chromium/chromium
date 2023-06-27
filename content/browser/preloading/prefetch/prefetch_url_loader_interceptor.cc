@@ -46,10 +46,6 @@ std::unique_ptr<PrefetchURLLoaderInterceptor>
 PrefetchURLLoaderInterceptor::MaybeCreateInterceptor(
     int frame_tree_node_id,
     const GlobalRenderFrameHostId& referring_render_frame_host_id) {
-  if (!base::FeatureList::IsEnabled(features::kPrefetchUseContentRefactor)) {
-    return nullptr;
-  }
-
   if (!referring_render_frame_host_id) {
     // This is expected to occur only in unit tests.
     return nullptr;

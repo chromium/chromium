@@ -14,9 +14,6 @@
 
 namespace content {
 
-// Returns true if the |kPrefetchUseContentRefactor| feature is enabled.
-bool PrefetchContentRefactorIsEnabled();
-
 // The url of the tunnel proxy.
 CONTENT_EXPORT GURL PrefetchProxyHost(const GURL& default_proxy_url);
 

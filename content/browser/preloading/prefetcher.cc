@@ -22,15 +22,11 @@ Prefetcher::Prefetcher(RenderFrameHost& render_frame_host)
 Prefetcher::~Prefetcher() = default;
 
 bool Prefetcher::IsPrefetchAttemptFailedOrDiscarded(const GURL& url) {
-  if (base::FeatureList::IsEnabled(features::kPrefetchUseContentRefactor)) {
-    PrefetchDocumentManager* prefetch_document_manager =
-        PrefetchDocumentManager::GetOrCreateForCurrentDocument(
-            &render_frame_host());
-    return prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(url);
-  }
-
+  PrefetchDocumentManager* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(
+          &render_frame_host());
   // TODO(isaboori): Implement |IsPrefetchAttemptFailed| for the delegate case.
-  return true;
+  return prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(url);
 }
 
 void Prefetcher::OnStartSinglePrefetch(
@@ -73,14 +69,12 @@ Prefetcher::MakeSelfOwnedNetworkServiceDevToolsObserver() {
 
 void Prefetcher::ProcessCandidatesForPrefetch(
     std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
-  if (base::FeatureList::IsEnabled(features::kPrefetchUseContentRefactor)) {
-    PrefetchDocumentManager* prefetch_document_manager =
-        PrefetchDocumentManager::GetOrCreateForCurrentDocument(
-            &render_frame_host());
+  PrefetchDocumentManager* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(
+          &render_frame_host());
 
-    prefetch_document_manager->ProcessCandidates(
-        candidates, weak_ptr_factory_.GetWeakPtr());
-  }
+  prefetch_document_manager->ProcessCandidates(candidates,
+                                               weak_ptr_factory_.GetWeakPtr());
 
   // Let `delegate_` process the candidates that it is interested in.
   if (delegate_)
@@ -89,25 +83,12 @@ void Prefetcher::ProcessCandidatesForPrefetch(
 
 bool Prefetcher::MaybePrefetch(
     blink::mojom::SpeculationCandidatePtr candidate) {
-  if (base::FeatureList::IsEnabled(features::kPrefetchUseContentRefactor)) {
-    PrefetchDocumentManager* prefetch_document_manager =
-        PrefetchDocumentManager::GetOrCreateForCurrentDocument(
-            &render_frame_host());
+  PrefetchDocumentManager* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(
+          &render_frame_host());
 
-    return prefetch_document_manager->MaybePrefetch(
-        std::move(candidate), weak_ptr_factory_.GetWeakPtr());
-  }
-
-  // Let `delegate_` try processing the candidate if PrefetchDocumentManager
-  // cannot.
-  if (delegate_) {
-    std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-    candidates.push_back(std::move(candidate));
-    delegate_->ProcessCandidates(candidates);
-    return candidates.empty();
-  }
-
-  return false;
+  return prefetch_document_manager->MaybePrefetch(
+      candidate.Clone(), weak_ptr_factory_.GetWeakPtr());
 }
 
 }  // namespace content

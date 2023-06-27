@@ -13,10 +13,6 @@
 
 namespace content {
 
-bool PrefetchContentRefactorIsEnabled() {
-  return base::FeatureList::IsEnabled(features::kPrefetchUseContentRefactor);
-}
-
 GURL PrefetchProxyHost(const GURL& default_proxy_url) {
   // Command line overrides take priority.
   std::string cmd_line_value =

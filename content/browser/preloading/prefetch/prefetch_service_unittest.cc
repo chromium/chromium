@@ -283,7 +283,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         std::make_unique<ScopedPrefetchServiceContentBrowserClient>(
             std::move(mock_prefetch_service_delegate));
 
-    prefetch_service_ = PrefetchService::CreateIfPossible(browser_context());
+    prefetch_service_ = std::make_unique<PrefetchService>(browser_context());
     PrefetchDocumentManager::SetPrefetchServiceForTesting(
         prefetch_service_.get());
   }
@@ -671,28 +671,6 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
 
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
 };
-
-TEST_F(PrefetchServiceTest, CreateServiceWhenFeatureEnabled) {
-  // Enable feature, which means that we should be able to create a
-  // PrefetchService instance.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kPrefetchUseContentRefactor},
-      {network::features::kPrefetchNoVarySearch});
-
-  EXPECT_TRUE(PrefetchService::CreateIfPossible(browser_context()));
-}
-
-TEST_F(PrefetchServiceTest, DontCreateServiceWhenFeatureDisabled) {
-  // Disable feature, which means that we shouldn't be able to create a
-  // PrefetchService instance.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {features::kPrefetchUseContentRefactor,
-           network::features::kPrefetchNoVarySearch});
-
-  EXPECT_FALSE(PrefetchService::CreateIfPossible(browser_context()));
-}
 
 TEST_F(PrefetchServiceTest, SuccessCase) {
   base::HistogramTester histogram_tester;
@@ -3451,8 +3429,7 @@ class PrefetchServiceNoVarySearchTest : public PrefetchServiceTest {
  public:
   void InitScopedFeatureList() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kPrefetchUseContentRefactor,
-         network::features::kPrefetchNoVarySearch},
+        {network::features::kPrefetchNoVarySearch},
         {::features::kPreloadingConfig});
   }
 };
