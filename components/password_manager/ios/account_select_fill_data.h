@@ -101,6 +101,9 @@ class AccountSelectFillData {
   // field the user clicked.
   std::unique_ptr<FillData> GetFillData(const std::u16string& username) const;
 
+  // Clear credentials cache.
+  void ResetCache();
+
  private:
   // Keeps data about all known forms. The key is the pair (form_id, username
   // field_name).
