@@ -581,6 +581,9 @@ std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
                                /*adjust_height_for_width =*/true)
           .WithWeight(1));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  if (features::IsChromeRefresh2023()) {
+    title_->SetTextStyle(views::style::STYLE_HEADLINE_4);
+  }
   auto close_button = views::BubbleFrameView::CreateCloseButton(
       base::BindRepeating(&PageInfoNavigationHandler::CloseBubble,
                           base::Unretained(navigation_handler_)));

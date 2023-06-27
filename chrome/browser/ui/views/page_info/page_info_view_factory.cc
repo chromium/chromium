@@ -204,7 +204,10 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
       base::BindRepeating(&PageInfoNavigationHandler::OpenMainPage,
                           base::Unretained(navigation_handler_),
                           base::DoNothing()),
-      vector_icons::kArrowBackIcon, GetIconSize());
+      features::IsChromeRefresh2023()
+          ? vector_icons::kArrowBackChromeRefreshIcon
+          : vector_icons::kArrowBackIcon,
+      GetIconSize());
   views::InstallCircleHighlightPathGenerator(back_button.get());
   back_button->SetID(VIEW_ID_PAGE_INFO_BACK_BUTTON);
   back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
@@ -575,7 +578,9 @@ const ui::ImageModel PageInfoViewFactory::GetLaunchIcon() {
   return ui::ImageModel::FromVectorIcon(
       features::IsChromeRefresh2023() ? vector_icons::kLaunchChromeRefreshIcon
                                       : vector_icons::kLaunchIcon,
-      ui::kColorIconSecondary, GetIconSize());
+      features::IsChromeRefresh2023() ? ui::kColorIcon
+                                      : ui::kColorIconSecondary,
+      GetIconSize());
 }
 
 // static
