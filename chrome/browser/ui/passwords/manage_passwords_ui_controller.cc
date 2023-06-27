@@ -827,7 +827,7 @@ void ManagePasswordsUIController::MaybeShowIOSPasswordPromo() {
   if (!browser) {
     return;
   }
-  browser->window()->MaybeShowIOSPasswordPromoBubble();
+  browser->window()->VerifyUserEligibilityIOSPasswordPromoBubble();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 

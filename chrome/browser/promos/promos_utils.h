@@ -8,6 +8,10 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 
 namespace promos_utils {
+// Amount of days of data to look back on for the segmentation platform model's
+// input data.
+constexpr int kiOSPasswordPromoLookbackWindow = 60;
+
 // RegisterProfilePrefs is a helper to register the synced profile prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 

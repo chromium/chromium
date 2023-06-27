@@ -26901,6 +26901,17 @@ Called by update_debug_scenarios.py.-->
   <int value="19" label="LegacyDesktopCaptureDeviceTypeWebContents"/>
 </enum>
 
+<enum name="DesktopIOSPasswordPromoAction">
+  <int value="0" label="Dismissed"/>
+  <int value="1" label="ExplicitlyClosed"/>
+  <int value="2" label="GetStartedClicked"/>
+</enum>
+
+<enum name="DesktopIOSPasswordPromoImpression">
+  <int value="0" label="FirstImpression"/>
+  <int value="1" label="SecondImpression"/>
+</enum>
+
 <enum name="DesktopIOSPromotionDismissalReason">
   <obsolete>
     Deprecated 11/2018 in issue 894963.
