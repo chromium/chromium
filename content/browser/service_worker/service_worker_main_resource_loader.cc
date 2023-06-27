@@ -229,6 +229,11 @@ void ServiceWorkerMainResourceLoader::StartRequest(
     CHECK(active_worker->router_evaluator()->IsValid());
     auto sources =
         active_worker->router_evaluator()->Evaluate(resource_request_);
+    // TODO(crbug.com/1371756) In some cases the router is evaluated only in the
+    // renderer side. The same mechanism is needed in the subresource loader
+    // as well.
+    active_worker->CountFeature(
+        blink::mojom::WebFeature::kServiceWorkerStaticRouter_Evaluate);
     if (!sources.empty()) {  // matched the rule.
       // TODO(crbug.com/1371756): support other sources in the full form.
       // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md

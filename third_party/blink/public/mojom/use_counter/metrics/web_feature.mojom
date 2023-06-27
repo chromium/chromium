@@ -3927,6 +3927,7 @@ enum WebFeature {
   kWebGPUCanvasContextGetCurrentTexture = 4587,
   kEditContext = 4588,
   kServiceWorkerStaticRouter_RegisterRouter = 4589,
+  kServiceWorkerStaticRouter_Evaluate = 4590,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
