@@ -83,7 +83,7 @@ group("deps") {
 
         # TODO(crbug.com/1442273): The shared library unittest EXE ends up
         # requiring the DLL to run, even though it does not use the DLL.
-        if (!is_mac) {
+        if (!is_win && !is_mac) {
           deps +=
               [ "test_rust_shared_library:test_rust_shared_library_unittests" ]
         }
