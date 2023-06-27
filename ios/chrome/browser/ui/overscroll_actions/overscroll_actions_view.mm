@@ -904,7 +904,7 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   switch (self.style) {
     case OverscrollStyle::NTP_NON_INCOGNITO:
       self.backgroundColor = IsMagicStackEnabled()
-                                 ? [UIColor colorNamed:@"ntp_background_color"]
+                                 ? [UIColor clearColor]
                                  : ntp_home::NTPBackgroundColor();
       break;
     case OverscrollStyle::NTP_INCOGNITO:
