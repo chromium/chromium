@@ -155,6 +155,14 @@ void FakeWebAppProvider::SetWebAppUiManager(
   ui_manager_ = std::move(ui_manager);
 }
 
+void FakeWebAppProvider::SetIsolatedWebAppCommandLineInstallManager(
+    std::unique_ptr<IsolatedWebAppCommandLineInstallManager>
+        iwa_command_line_install_manager) {
+  CheckNotStartedAndDisconnect();
+  iwa_command_line_install_manager_ =
+      std::move(iwa_command_line_install_manager);
+}
+
 void FakeWebAppProvider::SetWebAppPolicyManager(
     std::unique_ptr<WebAppPolicyManager> web_app_policy_manager) {
   CheckNotStartedAndDisconnect();
@@ -176,6 +184,12 @@ void FakeWebAppProvider::SetCommandManager(
   if (command_manager_)
     command_manager_->Shutdown();
   command_manager_ = std::move(command_manager);
+}
+
+void FakeWebAppProvider::SetScheduler(
+    std::unique_ptr<WebAppCommandScheduler> scheduler) {
+  CheckNotStartedAndDisconnect();
+  command_scheduler_ = std::move(scheduler);
 }
 
 void FakeWebAppProvider::SetPreinstalledWebAppManager(

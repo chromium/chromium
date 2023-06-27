@@ -125,11 +125,15 @@ class FakeWebAppProvider : public WebAppProvider {
   void SetWebAppUiManager(std::unique_ptr<WebAppUiManager> ui_manager);
   void SetWebAppPolicyManager(
       std::unique_ptr<WebAppPolicyManager> web_app_policy_manager);
+  void SetIsolatedWebAppCommandLineInstallManager(
+      std::unique_ptr<IsolatedWebAppCommandLineInstallManager>
+          iwa_command_line_install_manager);
 #if BUILDFLAG(IS_CHROMEOS)
   void SetWebAppRunOnOsLoginManager(std::unique_ptr<WebAppRunOnOsLoginManager>
                                         web_app_run_on_os_login_manager);
 #endif
   void SetCommandManager(std::unique_ptr<WebAppCommandManager> command_manager);
+  void SetScheduler(std::unique_ptr<WebAppCommandScheduler> scheduler);
   void SetPreinstalledWebAppManager(
       std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager);
   void SetOriginAssociationManager(
