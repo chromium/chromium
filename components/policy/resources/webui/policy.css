@@ -45,9 +45,14 @@ body > header {
   height: 56px;
 }
 
-.show-unset-checkbox {
-  flex: 0 1 200px;
-  margin-inline-start: auto;
+.action-header-row {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.action-row-buttons {
+  display: flex;
+  flex-wrap: nowrap;
 }
 
 #topbar {
@@ -128,6 +133,7 @@ body > header {
 .show-unset-checkbox > label {
   align-items: center;
   display: flex;
+  gap: 0.4em;
   justify-content: space-between;
 }
 
@@ -144,6 +150,13 @@ a {
 #screen-reader-message {
   clip: rect(0,0,0,0);
   position: fixed;
+}
+
+/* Remove the flex gap after the searchbar on smaller width devices. */
+@media only screen and (max-width: 440px) {
+  #right-content {
+    display: none;
+  }
 }
 
 <if expr="is_android or is_ios">
