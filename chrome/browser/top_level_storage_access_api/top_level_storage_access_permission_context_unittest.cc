@@ -217,10 +217,10 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
   DCHECK(settings_map);
 
   // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
-  ContentSettingsForOneType non_restorable_grants;
-  settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
-      content_settings::SessionModel::NonRestorableUserSession);
+  ContentSettingsForOneType non_restorable_grants =
+      settings_map->GetSettingsForOneType(
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+          content_settings::SessionModel::NonRestorableUserSession);
   EXPECT_EQ(0u, non_restorable_grants.size());
 
   base::test::TestFuture<ContentSetting> future;
@@ -235,8 +235,8 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
             1);
 
   // Check the `SessionModel::NonRestorableUserSession` settings granted by FPS.
-  settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
+  non_restorable_grants = settings_map->GetSettingsForOneType(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
       content_settings::SessionModel::NonRestorableUserSession);
   EXPECT_EQ(1u, non_restorable_grants.size());
 }
@@ -252,10 +252,10 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
   DCHECK(settings_map);
 
   // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
-  ContentSettingsForOneType non_restorable_grants;
-  settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
-      content_settings::SessionModel::NonRestorableUserSession);
+  ContentSettingsForOneType non_restorable_grants =
+      settings_map->GetSettingsForOneType(
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+          content_settings::SessionModel::NonRestorableUserSession);
   ASSERT_EQ(0u, non_restorable_grants.size());
 
   base::test::TestFuture<ContentSetting> future;
@@ -266,8 +266,8 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
   EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
 
   // Check the `SessionModel::NonRestorableUserSession` settings granted by FPS.
-  settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
+  non_restorable_grants = settings_map->GetSettingsForOneType(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
       content_settings::SessionModel::NonRestorableUserSession);
   EXPECT_EQ(1u, non_restorable_grants.size());
 
@@ -298,10 +298,10 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
   DCHECK(settings_map);
 
   // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
-  ContentSettingsForOneType non_restorable_grants;
-  settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
-      content_settings::SessionModel::NonRestorableUserSession);
+  ContentSettingsForOneType non_restorable_grants =
+      settings_map->GetSettingsForOneType(
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+          content_settings::SessionModel::NonRestorableUserSession);
   EXPECT_EQ(0u, non_restorable_grants.size());
 
   base::test::TestFuture<ContentSetting> future;
@@ -318,8 +318,8 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
   // Check the `SessionModel::NonRestorableUserSession` settings.
   // None were granted, and implicit denials are not currently persisted, which
   // preserves the default `ASK` setting.
-  settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
+  non_restorable_grants = settings_map->GetSettingsForOneType(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
       content_settings::SessionModel::NonRestorableUserSession);
   EXPECT_EQ(0u, non_restorable_grants.size());
 }
@@ -334,10 +334,10 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
   DCHECK(settings_map);
 
   // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
-  ContentSettingsForOneType non_restorable_grants;
-  settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
-      content_settings::SessionModel::NonRestorableUserSession);
+  ContentSettingsForOneType non_restorable_grants =
+      settings_map->GetSettingsForOneType(
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+          content_settings::SessionModel::NonRestorableUserSession);
   ASSERT_EQ(0u, non_restorable_grants.size());
 
   base::test::TestFuture<ContentSetting> future;
@@ -350,8 +350,8 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest,
   // Check the `SessionModel::NonRestorableUserSession` settings.
   // None were granted, and implicit denials are not currently persisted, which
   // preserves the default `ASK` setting.
-  settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
+  non_restorable_grants = settings_map->GetSettingsForOneType(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
       content_settings::SessionModel::NonRestorableUserSession);
   EXPECT_EQ(0u, non_restorable_grants.size());
 
@@ -389,10 +389,10 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIFirstPartySetsDisabledTest,
   DCHECK(settings_map);
 
   // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
-  ContentSettingsForOneType non_restorable_grants;
-  settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
-      content_settings::SessionModel::NonRestorableUserSession);
+  ContentSettingsForOneType non_restorable_grants =
+      settings_map->GetSettingsForOneType(
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+          content_settings::SessionModel::NonRestorableUserSession);
   EXPECT_EQ(0u, non_restorable_grants.size());
 
   base::test::TestFuture<ContentSetting> future;
@@ -407,8 +407,8 @@ TEST_F(TopLevelStorageAccessPermissionContextAPIFirstPartySetsDisabledTest,
             1);
 
   // Check the `SessionModel::NonRestorableUserSession` settings granted by FPS.
-  settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &non_restorable_grants,
+  non_restorable_grants = settings_map->GetSettingsForOneType(
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
       content_settings::SessionModel::NonRestorableUserSession);
   EXPECT_EQ(0u, non_restorable_grants.size());
 }

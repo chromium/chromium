@@ -123,10 +123,9 @@ PatternPair ParsePatternString(const std::string& pattern_str) {
 void GetRendererContentSettingRules(const HostContentSettingsMap* map,
                                     RendererContentSettingRules* rules) {
 #if !BUILDFLAG(IS_ANDROID)
-  map->GetSettingsForOneType(ContentSettingsType::IMAGES,
-                             &(rules->image_rules));
-  map->GetSettingsForOneType(ContentSettingsType::MIXEDSCRIPT,
-                             &(rules->mixed_content_rules));
+  rules->image_rules = map->GetSettingsForOneType(ContentSettingsType::IMAGES);
+  rules->mixed_content_rules =
+      map->GetSettingsForOneType(ContentSettingsType::MIXEDSCRIPT);
   // Auto dark web content settings is available only for Android, so ALLOW rule
   // is added for all origins.
   rules->auto_dark_content_rules.push_back(ContentSettingPatternSource(
@@ -146,13 +145,13 @@ void GetRendererContentSettingRules(const HostContentSettingsMap* map,
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingToValue(CONTENT_SETTING_BLOCK), std::string(),
       map->IsOffTheRecord()));
-  map->GetSettingsForOneType(ContentSettingsType::AUTO_DARK_WEB_CONTENT,
-                             &(rules->auto_dark_content_rules));
+  rules->auto_dark_content_rules =
+      map->GetSettingsForOneType(ContentSettingsType::AUTO_DARK_WEB_CONTENT);
 #endif
-  map->GetSettingsForOneType(ContentSettingsType::JAVASCRIPT,
-                             &(rules->script_rules));
-  map->GetSettingsForOneType(ContentSettingsType::POPUPS,
-                             &(rules->popup_redirect_rules));
+  rules->script_rules =
+      map->GetSettingsForOneType(ContentSettingsType::JAVASCRIPT);
+  rules->popup_redirect_rules =
+      map->GetSettingsForOneType(ContentSettingsType::POPUPS);
 }
 
 bool IsMorePermissive(ContentSetting a, ContentSetting b) {

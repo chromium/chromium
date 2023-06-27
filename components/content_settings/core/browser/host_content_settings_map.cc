@@ -419,24 +419,23 @@ ContentSetting HostContentSettingsMap::GetUserModifiableContentSetting(
   return content_settings::ValueToContentSetting(value);
 }
 
-void HostContentSettingsMap::GetSettingsForOneType(
+ContentSettingsForOneType HostContentSettingsMap::GetSettingsForOneType(
     ContentSettingsType content_type,
-    ContentSettingsForOneType* settings,
     absl::optional<content_settings::SessionModel> session_model) const {
-  DCHECK(settings);
+  ContentSettingsForOneType settings;
   UsedContentSettingsProviders();
 
-  settings->clear();
   for (const auto& provider_pair : content_settings_providers_) {
     // For each provider, iterate first the incognito-specific rules, then the
     // normal rules.
     if (is_off_the_record_) {
       AddSettingsForOneType(provider_pair.second.get(), provider_pair.first,
-                            content_type, settings, true, session_model);
+                            content_type, &settings, true, session_model);
     }
     AddSettingsForOneType(provider_pair.second.get(), provider_pair.first,
-                          content_type, settings, false, session_model);
+                          content_type, &settings, false, session_model);
   }
+  return settings;
 }
 
 void HostContentSettingsMap::SetDefaultContentSetting(
@@ -634,13 +633,12 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
     ContentSettingsType content_type = info->type();
     const std::string type_name = info->name();
 
-    ContentSettingsForOneType settings;
-    GetSettingsForOneType(content_type, &settings);
     size_t num_exceptions = 0;
     size_t num_third_party_cookie_allow_exceptions = 0;
     base::flat_map<ContentSetting, size_t> num_exceptions_with_setting;
     const content_settings::ContentSettingsInfo* content_info =
         content_setting_registry->Get(content_type);
+    ContentSettingsForOneType settings = GetSettingsForOneType(content_type);
     for (const ContentSettingPatternSource& setting_entry : settings) {
       // Skip default settings.
       if (setting_entry.primary_pattern == ContentSettingsPattern::Wildcard() &&
@@ -777,9 +775,8 @@ void HostContentSettingsMap::ClearSettingsForOneTypeWithPredicate(
     return;
   }
   UsedContentSettingsProviders();
-  ContentSettingsForOneType settings;
-  GetSettingsForOneType(content_type, &settings);
-  for (const ContentSettingPatternSource& setting : settings) {
+  for (const ContentSettingPatternSource& setting :
+       GetSettingsForOneType(content_type)) {
     if (pattern_predicate.is_null() ||
         pattern_predicate.Run(setting.primary_pattern,
                               setting.secondary_pattern)) {
@@ -1065,9 +1062,7 @@ void HostContentSettingsMap::
 
   ContentSettingsType type = info->type();
 
-  ContentSettingsForOneType host_settings;
-  GetSettingsForOneType(type, &host_settings);
-  for (ContentSettingPatternSource pattern : host_settings) {
+  for (ContentSettingPatternSource pattern : GetSettingsForOneType(type)) {
     if (pattern.source != "preference" ||
         pattern.secondary_pattern == ContentSettingsPattern::Wildcard()) {
       continue;

@@ -55,9 +55,8 @@ TEST_F(NotificationPermissionReviewServiceTest,
   EXPECT_EQ(notification_permissions[0].primary_pattern,
             ContentSettingsPattern::FromString(urls[1]));
 
-  ContentSettingsForOneType ignored_patterns;
-  map->GetSettingsForOneType(
-      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
+  ContentSettingsForOneType ignored_patterns = map->GetSettingsForOneType(
+      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW);
   EXPECT_EQ(ignored_patterns.size(), 1UL);
   EXPECT_EQ(ignored_patterns[0].primary_pattern, pattern_to_ignore);
 
@@ -66,8 +65,8 @@ TEST_F(NotificationPermissionReviewServiceTest,
                                      ContentSettingsType::NOTIFICATIONS,
                                      CONTENT_SETTING_ALLOW);
   EXPECT_EQ(service->GetNotificationSiteListForReview().size(), 1UL);
-  map->GetSettingsForOneType(
-      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
+  ignored_patterns = map->GetSettingsForOneType(
+      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW);
   EXPECT_EQ(ignored_patterns.size(), 1UL);
   EXPECT_EQ(ignored_patterns[0].primary_pattern, pattern_to_ignore);
 
@@ -76,8 +75,8 @@ TEST_F(NotificationPermissionReviewServiceTest,
   map->SetContentSettingDefaultScope(GURL(urls[0]), GURL(),
                                      ContentSettingsType::NOTIFICATIONS,
                                      CONTENT_SETTING_BLOCK);
-  map->GetSettingsForOneType(
-      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
+  ignored_patterns = map->GetSettingsForOneType(
+      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW);
   EXPECT_EQ(ignored_patterns.size(), 0UL);
   EXPECT_EQ(service->GetNotificationSiteListForReview().size(), 1UL);
   // The site is presented again if permissions are re-granted.

@@ -253,12 +253,11 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
       secondary_site_pattern, ContentSettingsType::STORAGE_ACCESS,
       content_setting, constraints);
 
-  ContentSettingsForOneType top_level_grants;
-  settings_map->GetSettingsForOneType(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, &top_level_grants);
-  ContentSettingsForOneType storage_access_grants;
-  settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS,
-                                      &storage_access_grants);
+  ContentSettingsForOneType top_level_grants =
+      settings_map->GetSettingsForOneType(
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS);
+  ContentSettingsForOneType storage_access_grants =
+      settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS);
 
   // TODO(https://crbug.com/989663): Ensure that this update of settings doesn't
   // cause a double update with

@@ -411,11 +411,11 @@ bool IsDownloadPermittedByContentSettings(
   // TODO(crbug.com/1048957): Checking content settings crashes unit tests on
   // Android. It shouldn't.
 #if !BUILDFLAG(IS_ANDROID)
-  ContentSettingsForOneType settings;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::MIXEDSCRIPT, &settings);
+  ContentSettingsForOneType settings =
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::MIXEDSCRIPT);
 
   // When there's only one rule, it's the default wildcard rule.
   if (settings.size() == 1) {

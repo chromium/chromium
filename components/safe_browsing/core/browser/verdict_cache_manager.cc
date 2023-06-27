@@ -586,12 +586,11 @@ size_t VerdictCacheManager::GetStoredPhishGuardVerdictCount(
     return stored_verdict_count->value();
   }
 
-  ContentSettingsForOneType settings;
-  content_settings_->GetSettingsForOneType(
-      ContentSettingsType::PASSWORD_PROTECTION, &settings);
   stored_verdict_count_password_on_focus_ = 0;
   stored_verdict_count_password_entry_ = 0;
-  for (const ContentSettingPatternSource& source : settings) {
+  for (const ContentSettingPatternSource& source :
+       content_settings_->GetSettingsForOneType(
+           ContentSettingsType::PASSWORD_PROTECTION)) {
     for (auto item : source.setting_value.GetDict()) {
       if (item.first == base::StringPiece(kPasswordOnFocusCacheKey)) {
         stored_verdict_count_password_on_focus_.value() +=
@@ -614,11 +613,10 @@ size_t VerdictCacheManager::GetStoredRealTimeUrlCheckVerdictCount() {
     return stored_verdict_count_real_time_url_check_.value();
   }
 
-  ContentSettingsForOneType settings;
-  content_settings_->GetSettingsForOneType(
-      ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA, &settings);
   stored_verdict_count_real_time_url_check_ = 0;
-  for (const ContentSettingPatternSource& source : settings) {
+  for (const ContentSettingPatternSource& source :
+       content_settings_->GetSettingsForOneType(
+           ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA)) {
     for (auto item : source.setting_value.GetDict()) {
       if (item.first == base::StringPiece(kRealTimeUrlCacheKey)) {
         stored_verdict_count_real_time_url_check_.value() +=
@@ -822,12 +820,10 @@ void VerdictCacheManager::CleanUpExpiredPhishGuardVerdicts() {
     return;
   }
 
-  ContentSettingsForOneType password_protection_settings;
-  content_settings_->GetSettingsForOneType(
-      ContentSettingsType::PASSWORD_PROTECTION, &password_protection_settings);
-
   int removed_count = 0;
-  for (ContentSettingPatternSource& source : password_protection_settings) {
+  for (ContentSettingPatternSource& source :
+       content_settings_->GetSettingsForOneType(
+           ContentSettingsType::PASSWORD_PROTECTION)) {
     // Find all verdicts associated with this origin.
     base::Value::Dict cache_dictionary =
         std::move(source.setting_value.GetDict());
@@ -860,14 +856,11 @@ void VerdictCacheManager::CleanUpExpiredRealTimeUrlCheckVerdicts() {
   if (GetStoredRealTimeUrlCheckVerdictCount() == 0) {
     return;
   }
-  ContentSettingsForOneType safe_browsing_url_check_data_settings;
-  content_settings_->GetSettingsForOneType(
-      ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA,
-      &safe_browsing_url_check_data_settings);
 
   int removed_count = 0;
   for (ContentSettingPatternSource& source :
-       safe_browsing_url_check_data_settings) {
+       content_settings_->GetSettingsForOneType(
+           ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA)) {
     // Find all verdicts associated with this origin.
     base::Value::Dict cache_dictionary =
         std::move(source.setting_value.GetDict());

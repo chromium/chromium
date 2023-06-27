@@ -56,23 +56,22 @@ TEST_F(NotificationsEngagementServiceTest,
   // Record initial display date to enable comparing dictionaries.
   std::string displayedDate = service()->GetBucketLabel(base::Time::Now());
 
-  ContentSettingsForOneType notifications_engagement_setting;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
 
   // Testing the dictionary of URLS
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::NOTIFICATION_INTERACTIONS,
-      &notifications_engagement_setting);
+  ContentSettingsForOneType notifications_engagement_setting =
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::NOTIFICATION_INTERACTIONS);
   ASSERT_EQ(0U, notifications_engagement_setting.size());
 
   // Test that a new Dict entry is added when no entry existed for the given
   // URL.
   service()->RecordNotificationDisplayed(hosts[0]);
   service()->RecordNotificationDisplayed(hosts[0]);
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::NOTIFICATION_INTERACTIONS,
-      &notifications_engagement_setting);
+  notifications_engagement_setting =
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::NOTIFICATION_INTERACTIONS);
   ASSERT_EQ(1U, notifications_engagement_setting.size());
 
   // Advance time to set same URL entries in different dates.
@@ -82,16 +81,16 @@ TEST_F(NotificationsEngagementServiceTest,
   // Test that the same URL entry is not duplicated.
   service()->RecordNotificationDisplayed(hosts[0]);
   service()->RecordNotificationInteraction(hosts[0]);
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::NOTIFICATION_INTERACTIONS,
-      &notifications_engagement_setting);
+  notifications_engagement_setting =
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::NOTIFICATION_INTERACTIONS);
   ASSERT_EQ(1U, notifications_engagement_setting.size());
 
   // Test that different entries are created for different URL.
   service()->RecordNotificationDisplayed(hosts[1]);
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::NOTIFICATION_INTERACTIONS,
-      &notifications_engagement_setting);
+  notifications_engagement_setting =
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::NOTIFICATION_INTERACTIONS);
   ASSERT_EQ(2U, notifications_engagement_setting.size());
 
   // Verify the contents of the |notifications_engagement_setting| for

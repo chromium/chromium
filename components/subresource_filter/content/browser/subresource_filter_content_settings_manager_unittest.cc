@@ -62,11 +62,9 @@ class SubresourceFilterContentSettingsManagerTest : public testing::Test {
   }
 
   ContentSetting GetContentSettingMatchingUrlWithEmptyPath(const GURL& url) {
-    ContentSettingsForOneType host_settings;
-    GetSettingsMap()->GetSettingsForOneType(ContentSettingsType::ADS,
-                                            &host_settings);
     GURL url_with_empty_path = url.GetWithEmptyPath();
-    for (const auto& it : host_settings) {
+    for (const auto& it :
+         GetSettingsMap()->GetSettingsForOneType(ContentSettingsType::ADS)) {
       // Need GURL conversion to get rid of unnecessary default ports.
       if (GURL(it.primary_pattern.ToString()) == url_with_empty_path)
         return it.GetContentSetting();

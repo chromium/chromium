@@ -63,9 +63,7 @@ UnusedSitePermissionsService::UnusedPermissionMap GetUnusedPermissionsMap(
     if (!content_settings::CanTrackLastVisit(type)) {
       continue;
     }
-    ContentSettingsForOneType settings;
-    hcsm->GetSettingsForOneType(type, &settings);
-    for (const auto& setting : settings) {
+    for (const auto& setting : hcsm->GetSettingsForOneType(type)) {
       // Skip wildcard patterns that don't belong to a single origin. These
       // shouldn't track visit timestamps.
       if (!setting.primary_pattern.MatchesSingleOrigin()) {
@@ -249,11 +247,8 @@ void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
 }
 
 void UnusedSitePermissionsService::ClearRevokedPermissionsList() {
-  ContentSettingsForOneType settings;
-  hcsm_->GetSettingsForOneType(
-      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, &settings);
-
-  for (const auto& revoked_permissions : settings) {
+  for (const auto& revoked_permissions : hcsm_->GetSettingsForOneType(
+           ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS)) {
     DeletePatternFromRevokedPermissionList(
         revoked_permissions.primary_pattern,
         revoked_permissions.secondary_pattern);
@@ -278,9 +273,7 @@ void UnusedSitePermissionsService::IgnoreOriginForAutoRevocation(
   for (const content_settings::ContentSettingsInfo* info : *registry) {
     ContentSettingsType type = info->website_settings_info()->type();
 
-    ContentSettingsForOneType settings;
-    hcsm_->GetSettingsForOneType(type, &settings);
-    for (const auto& setting : settings) {
+    for (const auto& setting : hcsm_->GetSettingsForOneType(type)) {
       if (setting.metadata.last_visited() != base::Time() &&
           setting.primary_pattern.MatchesSingleOrigin() &&
           setting.primary_pattern.Matches(origin.GetURL())) {

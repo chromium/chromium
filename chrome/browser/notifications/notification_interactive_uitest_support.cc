@@ -224,17 +224,13 @@ bool NotificationsTest::CancelNotification(const char* notification_id,
 
 void NotificationsTest::GetDisabledContentSettings(
     ContentSettingsForOneType* settings) {
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS, settings);
+  *settings = HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+                  ->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
 
-  for (auto it = settings->begin(); it != settings->end();) {
-    if (it->GetContentSetting() != CONTENT_SETTING_BLOCK ||
-        it->source.compare("preference") != 0) {
-      it = settings->erase(it);
-    } else {
-      ++it;
-    }
-  }
+  base::EraseIf(*settings, [](const ContentSettingPatternSource& setting) {
+    return setting.GetContentSetting() != CONTENT_SETTING_BLOCK ||
+           setting.source.compare("preference") != 0;
+  });
 }
 
 bool NotificationsTest::CheckOriginInSetting(

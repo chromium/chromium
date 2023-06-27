@@ -33,6 +33,7 @@
 #include "components/browsing_data/core/features.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -276,9 +277,8 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
 
   ApplyBrowsingDataLifetimeDeletion(kPref);
 
-  ContentSettingsForOneType host_settings;
-  map->GetSettingsForOneType(ContentSettingsType::COOKIES, &host_settings);
-  for (const auto& host_setting : host_settings) {
+  for (const auto& host_setting :
+       map->GetSettingsForOneType(ContentSettingsType::COOKIES)) {
     if (host_setting.source == "webui_allowlist")
       continue;
     EXPECT_EQ(ContentSettingsPattern::Wildcard(), host_setting.primary_pattern);
@@ -563,10 +563,9 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerShutdownTest,
                                      ContentSettingsType::COOKIES,
                                      CONTENT_SETTING_BLOCK);
 
-  ContentSettingsForOneType host_settings;
   bool has_pref_setting = false;
-  map->GetSettingsForOneType(ContentSettingsType::COOKIES, &host_settings);
-  for (const auto& host_setting : host_settings) {
+  for (const auto& host_setting :
+       map->GetSettingsForOneType(ContentSettingsType::COOKIES)) {
     if (host_setting.source == "webui_allowlist")
       continue;
     if (host_setting.source == "preference") {
@@ -596,10 +595,9 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerShutdownTest,
 
   // site_settings
   auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
-  ContentSettingsForOneType host_settings;
   bool has_pref_setting = false;
-  map->GetSettingsForOneType(ContentSettingsType::COOKIES, &host_settings);
-  for (const auto& host_setting : host_settings) {
+  for (const auto& host_setting :
+       map->GetSettingsForOneType(ContentSettingsType::COOKIES)) {
     if (host_setting.source == "webui_allowlist")
       continue;
     if (host_setting.source == "preference") {
@@ -633,9 +631,8 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerShutdownTest,
   // site_settings
   auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
 
-  ContentSettingsForOneType host_settings;
-  map->GetSettingsForOneType(ContentSettingsType::COOKIES, &host_settings);
-  for (const auto& host_setting : host_settings) {
+  for (const auto& host_setting :
+       map->GetSettingsForOneType(ContentSettingsType::COOKIES)) {
     if (host_setting.source == "webui_allowlist")
       continue;
     EXPECT_EQ(ContentSettingsPattern::Wildcard(), host_setting.primary_pattern);

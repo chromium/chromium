@@ -73,9 +73,8 @@ bool StorageAccessAPIServiceImpl::RenewPermissionGrant(
     return false;
   }
 
-  ContentSettingsForOneType grants;
-  settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS,
-                                      &grants);
+  ContentSettingsForOneType grants =
+      settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS);
   browser_context_.get()
       .GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()

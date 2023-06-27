@@ -30,9 +30,9 @@ std::vector<ash::NotifierMetadata> WebPageNotifierController::GetNotifierList(
     Profile* profile) {
   std::vector<ash::NotifierMetadata> notifiers;
 
-  ContentSettingsForOneType settings;
-  HostContentSettingsMapFactory::GetForProfile(profile)->GetSettingsForOneType(
-      ContentSettingsType::NOTIFICATIONS, &settings);
+  ContentSettingsForOneType settings =
+      HostContentSettingsMapFactory::GetForProfile(profile)
+          ->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
 
   favicon::FaviconService* const favicon_service =
       FaviconServiceFactory::GetForProfile(profile,

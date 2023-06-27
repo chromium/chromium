@@ -2524,9 +2524,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
             GetOriginTypeMask());
 
   // Verify we only have true, and they're origin1, origin3, and origin4.
-  ContentSettingsForOneType host_settings;
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::SITE_ENGAGEMENT, &host_settings);
+  ContentSettingsForOneType host_settings =
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::SITE_ENGAGEMENT);
   EXPECT_EQ(3u, host_settings.size());
   EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(kOrigin1),
             host_settings[0].primary_pattern)
@@ -2564,8 +2564,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_CONTENT_SETTINGS, false);
 
-  ContentSettingsForOneType host_settings;
-  map->GetSettingsForOneType(ContentSettingsType::GEOLOCATION, &host_settings);
+  ContentSettingsForOneType host_settings =
+      map->GetSettingsForOneType(ContentSettingsType::GEOLOCATION);
 
   ASSERT_EQ(1u, host_settings.size());
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
@@ -2573,8 +2573,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {
       << host_settings[0].primary_pattern.ToString();
   EXPECT_EQ(CONTENT_SETTING_ASK, host_settings[0].GetContentSetting());
 
-  map->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS,
-                             &host_settings);
+  host_settings =
+      map->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
 
   ASSERT_EQ(1u, host_settings.size());
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
@@ -2582,7 +2582,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {
       << host_settings[0].primary_pattern.ToString();
   EXPECT_EQ(CONTENT_SETTING_ASK, host_settings[0].GetContentSetting());
 
-  map->GetSettingsForOneType(ContentSettingsType::COOKIES, &host_settings);
+  host_settings = map->GetSettingsForOneType(ContentSettingsType::COOKIES);
   ASSERT_EQ(1u, host_settings.size());
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
             host_settings[0].primary_pattern)
@@ -2669,9 +2669,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveSelectedClientHints) {
                               content::BrowsingDataRemover::DATA_TYPE_COOKIES,
                               std::move(filter));
 
-  ContentSettingsForOneType host_settings;
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::CLIENT_HINTS, &host_settings);
+  ContentSettingsForOneType host_settings =
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::CLIENT_HINTS);
 
   ASSERT_EQ(2u, host_settings.size());
 
@@ -2718,9 +2718,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveAllClientHints) {
                                 content::BrowsingDataRemover::DATA_TYPE_COOKIES,
                                 false);
 
-  ContentSettingsForOneType host_settings;
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::CLIENT_HINTS, &host_settings);
+  ContentSettingsForOneType host_settings =
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::CLIENT_HINTS);
 
   ASSERT_EQ(0u, host_settings.size());
 }
@@ -2825,9 +2825,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDurablePermission) {
             GetOriginTypeMask());
 
   // Verify we only have allow for the first origin.
-  ContentSettingsForOneType host_settings;
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::DURABLE_STORAGE, &host_settings);
+  ContentSettingsForOneType host_settings =
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::DURABLE_STORAGE);
 
   ASSERT_EQ(2u, host_settings.size());
   // Only the first should should have a setting.
@@ -2851,9 +2851,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   durable_permission.UpdateContentSetting(GURL("http://host1.com:1"), GURL(),
                                           CONTENT_SETTING_ALLOW,
                                           /*is_one_time=*/false);
-  ContentSettingsForOneType host_settings;
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::DURABLE_STORAGE, &host_settings);
+  ContentSettingsForOneType host_settings =
+      host_content_settings_map->GetSettingsForOneType(
+          ContentSettingsType::DURABLE_STORAGE);
   EXPECT_EQ(2u, host_settings.size());
 
   BlockUntilBrowsingDataRemoved(
@@ -2861,8 +2861,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
       content::BrowsingDataRemover::DATA_TYPE_EMBEDDER_DOM_STORAGE, false);
 
   // After the deletion, only the wildcard should remain.
-  host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::DURABLE_STORAGE, &host_settings);
+  host_settings = host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::DURABLE_STORAGE);
   EXPECT_EQ(1u, host_settings.size());
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
             host_settings[0].primary_pattern)

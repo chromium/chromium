@@ -201,9 +201,9 @@ void ChromeExtensionCookies::OnContentSettingChanged(
   if (!content_type_set.Contains(ContentSettingsType::COOKIES))
     return;
 
-  ContentSettingsForOneType settings;
-  HostContentSettingsMapFactory::GetForProfile(profile_)->GetSettingsForOneType(
-      ContentSettingsType::COOKIES, &settings);
+  ContentSettingsForOneType settings =
+      HostContentSettingsMapFactory::GetForProfile(profile_)
+          ->GetSettingsForOneType(ContentSettingsType::COOKIES);
 
   // Safe since |io_data_| is non-null so no IOData deletion is queued.
   content::GetIOThreadTaskRunner({})->PostTask(

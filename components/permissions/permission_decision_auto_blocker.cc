@@ -377,11 +377,9 @@ std::set<GURL> PermissionDecisionAutoBlocker::GetEmbargoedOrigins(
   if (filtered_content_types.empty())
     return std::set<GURL>();
 
-  ContentSettingsForOneType embargo_settings;
-  settings_map_->GetSettingsForOneType(
-      ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA, &embargo_settings);
   std::set<GURL> origins;
-  for (const auto& e : embargo_settings) {
+  for (const auto& e : settings_map_->GetSettingsForOneType(
+           ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA)) {
     for (auto content_type : filtered_content_types) {
       const GURL url(e.primary_pattern.ToString());
       if (IsEmbargoed(url, content_type)) {
@@ -506,12 +504,8 @@ void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
 
 void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
     base::RepeatingCallback<bool(const GURL& url)> filter) {
-  std::unique_ptr<ContentSettingsForOneType> settings(
-      new ContentSettingsForOneType);
-  settings_map_->GetSettingsForOneType(
-      ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA, settings.get());
-
-  for (const auto& site : *settings) {
+  for (const auto& site : settings_map_->GetSettingsForOneType(
+           ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA)) {
     GURL origin(site.primary_pattern.ToString());
 
     if (origin.is_valid() && filter.Run(origin)) {
