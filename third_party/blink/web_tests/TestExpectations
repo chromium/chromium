@@ -212,8 +212,6 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 # --- Skia roll test suppressions
 # --- END Skia roll test suppresions
 
-# Sheriff on 2020-09-03
-crbug.com/1124352 media/picture-in-picture/controls/picture-in-picture-button.html [ Crash Pass ]
 
 # These fail due to subtle anti-aliasing differences cause by the fact that
 # <canvas> renders via IOSurface and OffscreenCanvas does not.
@@ -1824,7 +1822,6 @@ crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body
 
 crbug.com/821455 editing/pasteboard/drag-files-to-editable-element.html [ Failure ]
 
-crbug.com/1170052 external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-audio-is-silence.https.html [ Pass Timeout ]
 crbug.com/1174937 external/wpt/mediacapture-streams/MediaStream-clone.https.html [ Crash ]
 
 
@@ -3193,7 +3190,10 @@ crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-joinin
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-joining-dl-element-and-another-list.tentative.html?Delete [ Failure Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-deleting-in-list-items.tentative.html?Backspace,ol [ Failure Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-deleting-in-list-items.tentative.html?Delete,ol [ Failure Timeout ]
-crbug.com/626703 [ Mac ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure Timeout ]
+crbug.com/626703 [ Mac10.15 Release ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure Timeout ]
+crbug.com/626703 [ Mac11 Release ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure Timeout ]
+crbug.com/626703 [ Mac12 Release ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure Timeout ]
+crbug.com/626703 [ Mac13 ] external/wpt/webxr/xr_viewport_scale.https.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/infrastructure/testdriver/actions/iframe.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/infrastructure/testdriver/actions/crossOrigin.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-during-and-after-dispatch.tentative.html [ Failure Timeout ]
