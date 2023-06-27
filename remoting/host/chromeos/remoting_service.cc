@@ -25,7 +25,6 @@ class RemotingServiceImpl : public RemotingService {
 
   // RemotingService implementation.
   RemoteSupportHostAsh& GetSupportHost() override;
-  void GetReconnectableEnterpriseSessionId(SessionIdCallback callback) override;
 
  private:
   void ReleaseSupportHost();
@@ -47,12 +46,6 @@ RemoteSupportHostAsh& RemotingServiceImpl::GetSupportHost() {
             &RemotingServiceImpl::ReleaseSupportHost, base::Unretained(this)));
   }
   return *remote_support_host_;
-}
-
-void RemotingServiceImpl::GetReconnectableEnterpriseSessionId(
-    SessionIdCallback callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(absl::nullopt);
 }
 
 void RemotingServiceImpl::ReleaseSupportHost() {
