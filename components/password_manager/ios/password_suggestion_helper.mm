@@ -214,7 +214,7 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
         std::make_pair(frame, std::make_unique<AccountSelectFillData>()));
     fillData = it.first->second.get();
   }
-  fillData->Reset();
+  fillData->ResetCache();
 
   if (_suggestionsAvailableCompletion) {
     _suggestionsAvailableCompletion(nullptr);
