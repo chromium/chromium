@@ -914,6 +914,13 @@ void UserManagerBase::NotifyUserRemoved(const AccountId& account_id,
     observer.OnUserRemoved(account_id, reason);
 }
 
+void UserManagerBase::NotifyUserNotAllowed(const std::string& user_email) {
+  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  for (auto& observer : observer_list_) {
+    observer.OnUserNotAllowed(user_email);
+  }
+}
+
 bool UserManagerBase::CanUserBeRemoved(const User* user) const {
   // Only regular users are allowed to be manually removed.
   if (!user || !(user->HasGaiaAccount() || user->IsActiveDirectoryUser()))

@@ -377,6 +377,13 @@ void SessionControllerClientImpl::OnUserImageChanged(const User& user) {
     SendUserSession(user);
 }
 
+void SessionControllerClientImpl::OnUserNotAllowed(
+    const std::string& user_email) {
+  LOG(ERROR) << "Shutdown session because a user is not allowed to be in the "
+                "current session";
+  session_controller_->ShowMultiprofilesSessionAbortedDialog(user_email);
+}
+
 // static
 bool SessionControllerClientImpl::CanLockScreen() {
   return !UserManager::Get()->GetUnlockUsers().empty();
@@ -405,7 +412,9 @@ SessionControllerClientImpl::GetAddUserSessionPolicy() {
   if (user_manager->GetUsersAllowedForMultiProfile().empty())
     return ash::AddUserSessionPolicy::ERROR_NO_ELIGIBLE_USERS;
 
-  if (ash::MultiProfileUserController::GetPrimaryUserPolicy() !=
+  if (static_cast<ash::ChromeUserManager*>(user_manager)
+          ->GetMultiProfileUserController()
+          ->GetPrimaryUserPolicy() !=
       ash::MultiProfileUserController::ALLOWED) {
     return ash::AddUserSessionPolicy::ERROR_NOT_ALLOWED_PRIMARY_USER;
   }

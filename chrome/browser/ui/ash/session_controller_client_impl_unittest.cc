@@ -119,6 +119,9 @@ class SessionControllerClientImplTest : public testing::Test {
     user_manager_ = new TestChromeUserManager;
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(user_manager_.get()));
+    controller_ = std::make_unique<ash::MultiProfileUserController>(
+        TestingBrowserProcess::GetGlobal()->local_state(), user_manager_);
+    user_manager_->set_multi_profile_user_controller(controller_.get());
     // Initialize AssistantBrowserDelegate singleton.
     assistant_delegate_ = std::make_unique<AssistantBrowserDelegateImpl>();
 
@@ -132,6 +135,8 @@ class SessionControllerClientImplTest : public testing::Test {
 
   void TearDown() override {
     assistant_delegate_.reset();
+    user_manager_->set_multi_profile_user_controller(nullptr);
+    controller_.reset();
     user_manager_enabler_.reset();
     user_manager_ = nullptr;
     profile_manager_.reset();
@@ -207,6 +212,8 @@ class SessionControllerClientImplTest : public testing::Test {
 
   // Owned by |user_manager_enabler_|.
   raw_ptr<TestChromeUserManager, ExperimentalAsh> user_manager_ = nullptr;
+
+  std::unique_ptr<ash::MultiProfileUserController> controller_;
 
   std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
 };

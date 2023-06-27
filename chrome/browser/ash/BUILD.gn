@@ -1998,7 +1998,6 @@ source_set("ash") {
     "login/users/default_user_image/default_user_images.h",
     "login/users/multi_profile_user_controller.cc",
     "login/users/multi_profile_user_controller.h",
-    "login/users/multi_profile_user_controller_delegate.h",
     "login/users/scoped_test_user_manager.cc",
     "login/users/scoped_test_user_manager.h",
     "login/users/test_users.cc",

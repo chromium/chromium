@@ -46,6 +46,8 @@ void UserManager::Observer::OnUserRemoved(const AccountId& account_id,
 
 void UserManager::Observer::OnUserToBeRemoved(const AccountId& account_id) {}
 
+void UserManager::Observer::OnUserNotAllowed(const std::string& user_email) {}
+
 void UserManager::UserSessionStateObserver::ActiveUserChanged(
     User* active_user) {}
 

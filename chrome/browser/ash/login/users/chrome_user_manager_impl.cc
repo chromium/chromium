@@ -281,6 +281,7 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
       cros_settings_(CrosSettings::Get()),
       device_local_account_policy_service_(nullptr),
       user_image_manager_registry_(this),
+      multi_profile_user_controller_(GetLocalState(), this),
       mount_performer_(std::make_unique<MountPerformer>()) {
   UpdateNumberOfUsers();
 
@@ -328,8 +329,6 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
       kAccountsPrefDeviceLocalAccounts,
       base::BindRepeating(&ChromeUserManagerImpl::RetrieveTrustedDevicePolicies,
                           weak_factory_.GetWeakPtr()));
-  multi_profile_user_controller_ =
-      std::make_unique<MultiProfileUserController>(this, GetLocalState());
 
   // |this| is sometimes initialized before owner is ready in CrosSettings for
   // the consoldiated consent screen flow. Listen for changes to owner setting
@@ -419,14 +418,14 @@ void ChromeUserManagerImpl::Shutdown() {
 
   user_image_manager_registry_.Shutdown();
 
-  multi_profile_user_controller_.reset();
+  multi_profile_user_controller_.Shutdown();
   cloud_external_data_policy_handlers_.clear();
   session_observation_.Reset();
 }
 
 MultiProfileUserController*
 ChromeUserManagerImpl::GetMultiProfileUserController() {
-  return multi_profile_user_controller_.get();
+  return &multi_profile_user_controller_;
 }
 
 UserImageManager* ChromeUserManagerImpl::GetUserImageManager(
@@ -449,7 +448,7 @@ user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
     if ((*it)->GetType() == user_manager::USER_TYPE_REGULAR &&
         !(*it)->is_logged_in()) {
       MultiProfileUserController::UserAllowedInSessionReason check;
-      multi_profile_user_controller_->IsUserAllowedInSession(
+      multi_profile_user_controller_.IsUserAllowedInSession(
           (*it)->GetAccountId().GetUserEmail(), &check);
       if (check ==
           MultiProfileUserController::NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS) {
@@ -563,7 +562,7 @@ void ChromeUserManagerImpl::OnUserProfileLoaded(const AccountId& account_id) {
             AuthErrorObserverFactory::GetInstance()->GetForProfile(profile);
         sync_observer->StartObserving();
       }
-      multi_profile_user_controller_->StartObserving(profile);
+      multi_profile_user_controller_.StartObserving(profile);
     }
   }
   system::UpdateSystemTimezone(profile);
@@ -882,7 +881,7 @@ void ChromeUserManagerImpl::RemoveNonCryptohomeDataPostExternalDataRemoval(
                                                 : account_id.GetUserEmail());
   }
 
-  multi_profile_user_controller_->RemoveCachedValues(account_id.GetUserEmail());
+  multi_profile_user_controller_.RemoveCachedValues(account_id.GetUserEmail());
 
   ChromeUserManager::RemoveNonCryptohomeData(account_id);
 }
@@ -1106,12 +1105,6 @@ void ChromeUserManagerImpl::NotifyUserAddedToSession(
 
   UpdateNumberOfUsers();
   ChromeUserManager::NotifyUserAddedToSession(added_user, user_switch_pending);
-}
-
-void ChromeUserManagerImpl::OnUserNotAllowed(const std::string& user_email) {
-  LOG(ERROR) << "Shutdown session because a user is not allowed to be in the "
-                "current session";
-  SessionController::Get()->ShowMultiprofilesSessionAbortedDialog(user_email);
 }
 
 void ChromeUserManagerImpl::UpdateNumberOfUsers() {

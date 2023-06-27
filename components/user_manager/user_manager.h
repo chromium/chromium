@@ -94,6 +94,10 @@ class USER_MANAGER_EXPORT UserManager {
     virtual void OnUserRemoved(const AccountId& account_id,
                                UserRemovalReason reason);
 
+    // Called when the first user that is not allowed in the session is
+    // detected.
+    virtual void OnUserNotAllowed(const std::string& user_email);
+
    protected:
     virtual ~Observer();
   };
@@ -405,6 +409,7 @@ class USER_MANAGER_EXPORT UserManager {
   virtual void NotifyUserToBeRemoved(const AccountId& account_id) = 0;
   virtual void NotifyUserRemoved(const AccountId& account_id,
                                  UserRemovalReason reason) = 0;
+  virtual void NotifyUserNotAllowed(const std::string& user_email) = 0;
 
   // Returns true if guest user is allowed.
   virtual bool IsGuestSessionAllowed() const = 0;

@@ -166,6 +166,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   void NotifyUserToBeRemoved(const AccountId& account_id) override;
   void NotifyUserRemoved(const AccountId& account_id,
                          UserRemovalReason reason) override;
+  void NotifyUserNotAllowed(const std::string& user_email) final;
   PrefService* GetLocalState() const final;
   bool IsFirstExecAfterBoot() const final;
   bool HasBrowserRestarted() const final;
