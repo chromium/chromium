@@ -22,6 +22,7 @@
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -864,7 +865,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
       </style>
       <div id='target'></div>)HTML";
 
+  LoadStopObserver load_stop_observer(shell()->web_contents());
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kTestPageURL)));
+  load_stop_observer.Wait();
 
   const gfx::Size root_view_size = view()->GetVisibleViewportSize();
   const int kDisplayFeatureLength = 10;
@@ -872,9 +875,11 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   DisplayFeature emulated_display_feature{
       DisplayFeature::Orientation::kVertical, offset,
       /* mask_length */ kDisplayFeatureLength};
-  MockDisplayFeature mock_display_feature(view());
-  mock_display_feature.SetDisplayFeature(&emulated_display_feature);
-  host()->SynchronizeVisualProperties();
+  {
+    MockDisplayFeature mock_display_feature(view());
+    mock_display_feature.SetDisplayFeature(&emulated_display_feature);
+    host()->SynchronizeVisualProperties();
+  }
 
   EXPECT_EQ(
       base::NumberToString(emulated_display_feature.offset) + "px",
@@ -882,9 +887,24 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
 
   // Ensure that the environment variables have the correct values in the new
   // document that is created on reloading the page.
-  LoadStopObserver load_stop_observer(shell()->web_contents());
+  LoadStopObserver load_stop_observer2(shell()->web_contents());
+  TestNavigationManager navigation_manager(shell()->web_contents(),
+                                           GURL(kTestPageURL));
   shell()->Reload();
-  load_stop_observer.Wait();
+  EXPECT_TRUE(navigation_manager.WaitForResponse());
+  if (ShouldCreateNewHostForAllFrames()) {
+    // When RenderDocument is enabled, a new RenderWidgetHost will be created
+    // after the reload, so we need to call SynchronizeVisualProperties() again.
+    RenderWidgetHostImpl* target_rwh = static_cast<RenderWidgetHostImpl*>(
+        navigation_manager.GetNavigationHandle()
+            ->GetRenderFrameHost()
+            ->GetRenderWidgetHost());
+    MockDisplayFeature mock_display_feature(target_rwh->GetView());
+    mock_display_feature.SetDisplayFeature(&emulated_display_feature);
+    target_rwh->SynchronizeVisualProperties();
+  }
+  EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
+  load_stop_observer2.Wait();
 
   EXPECT_EQ(
       base::NumberToString(emulated_display_feature.offset) + "px",
