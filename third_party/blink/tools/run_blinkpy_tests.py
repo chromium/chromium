@@ -47,10 +47,9 @@ def main():
             finder.path_from_blink_tools('blinkpy'),
         ],
         coverage_omit=[
-            '*/blinkpy/third_party/*',
+            '*/blinkpy/presubmit/*',
             # Exclude non-production code.
             '*/PRESUBMIT.py',
-            '*/blinkpy/web_tests/lint_test_expectations_presubmit.py',
             '*_unittest.py',
             '*mock*.py',
             # Temporarily exclude python2 code that Coverage.py cannot import in
