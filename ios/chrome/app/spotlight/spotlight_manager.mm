@@ -9,6 +9,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
+#import "ios/chrome/app/spotlight/open_tabs_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/reading_list_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/topsites_spotlight_manager.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
@@ -28,6 +29,7 @@
 }
 
 @property(nonatomic, strong) ReadingListSpotlightManager* readingListManager;
+@property(nonatomic, strong) OpenTabsSpotlightManager* openTabsManager;
 
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
     NS_DESIGNATED_INITIALIZER;
@@ -61,6 +63,10 @@
       _readingListManager = [ReadingListSpotlightManager
           readingListSpotlightManagerWithBrowserState:browserState];
     }
+    if (base::FeatureList::IsEnabled(kSpotlightOpenTabsSource)) {
+      _openTabsManager = [OpenTabsSpotlightManager
+          openTabsSpotlightManagerWithBrowserState:browserState];
+    }
   }
   return self;
 }
@@ -78,6 +84,7 @@
   [_actionsManager indexActionsWithIsGoogleDefaultSearchEngine:
                        [self isGoogleDefaultSearchEngine]];
   [self.readingListManager clearAndReindexReadingList];
+  [self.openTabsManager clearAndReindexOpenTabs];
 }
 
 - (void)bookmarkUpdated {
@@ -89,11 +96,13 @@
   [_topSitesManager shutdown];
   [_actionsManager shutdown];
   [_readingListManager shutdown];
+  [_openTabsManager shutdown];
 
   _bookmarkManager = nil;
   _topSitesManager = nil;
   _actionsManager = nil;
   _readingListManager = nil;
+  _openTabsManager = nil;
   _templateURLService = nullptr;
 }
 

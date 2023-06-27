@@ -50,8 +50,11 @@ NSString* const kSpotlightTopSitesPrefix = @"com.google.chrome.topsites.";
 NSString* const kSpotlightActionsDomain = @"com.google.chrome.actions";
 NSString* const kSpotlightActionsPrefix = @"com.google.chrome.actions.";
 
-NSString* const kSpotlightReadingListDomain = @"org.chromium.readinglist";
-NSString* const kSpotlightReadingListPrefix = @"org.chromium.readinglist.";
+NSString* const kSpotlightReadingListDomain = @"com.google.readinglist";
+NSString* const kSpotlightReadingListPrefix = @"com.google.readinglist.";
+
+NSString* const kSpotlightOpenTabsDomain = @"com.google.opentabs";
+NSString* const kSpotlightOpenTabsPrefix = @"com.google.opentabs.";
 #else
 
 NSString* const kSpotlightBookmarkDomain = @"org.chromium.bookmarks";
@@ -65,6 +68,9 @@ NSString* const kSpotlightActionsPrefix = @"org.chromium.actions.";
 
 NSString* const kSpotlightReadingListDomain = @"org.chromium.readinglist";
 NSString* const kSpotlightReadingListPrefix = @"org.chromium.readinglist.";
+
+NSString* const kSpotlightOpenTabsDomain = @"org.chromium.opentabs";
+NSString* const kSpotlightOpenTabsPrefix = @"org.chromium.opentabs.";
 
 #endif
 
@@ -94,6 +100,8 @@ Domain SpotlightDomainFromString(NSString* domain) {
     return DOMAIN_ACTIONS;
   } else if ([domain hasPrefix:kSpotlightReadingListPrefix]) {
     return DOMAIN_READING_LIST;
+  } else if ([domain hasPrefix:kSpotlightOpenTabsPrefix]) {
+    return DOMAIN_OPEN_TABS;
   }
   // On normal flow, it is not possible to reach this point. When testing the
   // app, it may be possible though if the app is downgraded.
@@ -111,6 +119,9 @@ NSString* StringFromSpotlightDomain(Domain domain) {
       return kSpotlightActionsDomain;
     case DOMAIN_READING_LIST:
       return kSpotlightReadingListDomain;
+    case DOMAIN_OPEN_TABS:
+      return kSpotlightOpenTabsDomain;
+
     default:
       // On normal flow, it is not possible to reach this point. When testing
       // the app, it may be possible though if the app is downgraded.
