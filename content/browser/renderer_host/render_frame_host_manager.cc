@@ -19,6 +19,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -28,6 +29,7 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/network/cross_origin_opener_policy_reporter.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
@@ -346,6 +348,24 @@ void ReuseDefaultProcessFromDifferentBrowsingInstanceIfPossible(
       });
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ProcessPerSiteWithMainFrameThresholdBlockReason {
+  kNotBlocked = 0,
+  kDisableProcessResuse = 1,
+  kDevToolsWasEverAttached = 2,
+  kDoesNotRequireDedicatedProcess = 3,
+  kIsIpAddressOrLocalHost = 4,
+  kSchemeIsNotHttpOrHttps = 5,
+  kMaxValue = kSchemeIsNotHttpOrHttps,
+};
+
+void RecordProcessPerSiteWithMainFrameThresholdBlockReason(
+    ProcessPerSiteWithMainFrameThresholdBlockReason reason) {
+  base::UmaHistogramEnumeration(
+      "SiteIsolation.ProcessPerSiteWithMainFrameThreshold.BlockReason", reason);
+}
+
 // If `site_instance` is for a main frame, try to reuse an existing process
 // when an experimental process-per-site-up-to-main-frame-threshold feature is
 // enabled, subject to a threshold for the maximum number of main frames that
@@ -357,33 +377,53 @@ void UpdateProcessReusePolicyForProcessPerSiteWithMainFrameThreshold(
           features::kProcessPerSiteUpToMainFrameThreshold)) {
     return;
   }
+  if (!frame_tree_node->IsOutermostMainFrame()) {
+    return;
+  }
   if (base::FeatureList::IsEnabled(features::kDisableProcessReuse)) {
+    RecordProcessPerSiteWithMainFrameThresholdBlockReason(
+        ProcessPerSiteWithMainFrameThresholdBlockReason::kDisableProcessResuse);
+    return;
+  }
+  if (!features::kProcessPerSiteMainFrameAllowDevToolsAttached.Get() &&
+      RenderFrameDevToolsAgentHost::WasEverAttachedToAnyFrame()) {
+    RecordProcessPerSiteWithMainFrameThresholdBlockReason(
+        ProcessPerSiteWithMainFrameThresholdBlockReason::
+            kDevToolsWasEverAttached);
     return;
   }
   if (!site_instance->RequiresDedicatedProcess()) {
-    return;
-  }
-  if (!frame_tree_node->IsOutermostMainFrame()) {
+    RecordProcessPerSiteWithMainFrameThresholdBlockReason(
+        ProcessPerSiteWithMainFrameThresholdBlockReason::
+            kDoesNotRequireDedicatedProcess);
     return;
   }
 
   // ProcessPerSite doesn't work well when DevTools is attached because DevTools
   // assumes that there is only one main frame per renderer process
   // (https://crbug.com/1449114). Localhost and IP based host names are a common
-  // target for DevTools to  attach to. Exclude localhost and IP based host name
+  // target for DevTools to attach to. Exclude localhost and IP based host name
   // for process reuse to work around the problem, unless a field parameter
   // explicitly allows it.
   const GURL& site_url = site_instance->GetSiteURL();
   if (!features::kProcessPerSiteMainFrameAllowIPAndLocalhost.Get() &&
       (site_url.HostIsIPAddress() || net::IsLocalHostname(site_url.host()))) {
+    RecordProcessPerSiteWithMainFrameThresholdBlockReason(
+        ProcessPerSiteWithMainFrameThresholdBlockReason::
+            kIsIpAddressOrLocalHost);
     return;
   }
 
   // Disallow process reuse when scheme is not HTTP(S).
   if (!site_url.SchemeIsHTTPOrHTTPS()) {
+    RecordProcessPerSiteWithMainFrameThresholdBlockReason(
+        ProcessPerSiteWithMainFrameThresholdBlockReason::
+            kSchemeIsNotHttpOrHttps);
     return;
   }
 
+  RecordProcessPerSiteWithMainFrameThresholdBlockReason(
+      ProcessPerSiteWithMainFrameThresholdBlockReason::kNotBlocked);
   site_instance->set_process_reuse_policy(
       SiteInstanceImpl::ProcessReusePolicy::
           REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD);

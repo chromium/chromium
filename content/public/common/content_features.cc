@@ -966,6 +966,15 @@ constexpr base::FeatureParam<bool> kProcessPerSiteMainFrameAllowIPAndLocalhost{
     &kProcessPerSiteUpToMainFrameThreshold,
     "ProcessPerSiteMainFrameAllowIPAndLocalhost", false};
 
+// When `kProcessPerSiteUpToMainFrameThreshold` is enabled, allows process reuse
+// even when DevTools was ever attached. This allows developers to test the
+// process sharing mode, since DevTools normally disables it for the field
+// trial participants.
+constexpr base::FeatureParam<bool>
+    kProcessPerSiteMainFrameAllowDevToolsAttached{
+        &kProcessPerSiteUpToMainFrameThreshold,
+        "ProcessPerSiteMainFrameAllowDevToolsAttached", false};
+
 // Enables skipping the early call to CommitPending when navigating away from a
 // crashed frame.
 BASE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame,

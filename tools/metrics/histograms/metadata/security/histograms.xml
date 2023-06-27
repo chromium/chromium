@@ -963,6 +963,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SiteIsolation.ProcessPerSiteWithMainFrameThreshold.BlockReason"
+    enum="ProcessPerSiteWithMainFrameThresholdBlockReason"
+    expires_after="2023-12-22">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The reason why process sharing is disallowed when
+    ProcessPerSiteUpToMainFrameThreshold feature is enabled. Recorded when
+    initializing a frame tree or getting a site instance for navigation.
+  </summary>
+</histogram>
+
 <histogram name="SiteIsolation.ProxyCount" units="proxies"
     expires_after="2023-11-12">
   <owner>alexmos@chromium.org</owner>

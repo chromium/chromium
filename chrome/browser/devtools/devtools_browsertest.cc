@@ -3431,6 +3431,28 @@ class DevToolsProcessPerSiteUpToMainFrameThresholdTest : public DevToolsTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteUpToMainFrameThresholdTest,
+                       DevToolsWasAttachedBefore) {
+  const GURL url = embedded_test_server()->GetURL("foo.test", "/hello.html");
+
+  OpenDevToolsWindow(kDebuggerTestPage, false);
+
+  Browser* browser1 = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, url));
+
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, url));
+
+  ASSERT_NE(browser1->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetPrimaryMainFrame()
+                ->GetProcess(),
+            browser2->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetPrimaryMainFrame()
+                ->GetProcess());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteUpToMainFrameThresholdTest,
                        DontReuseProcess) {
   OpenDevToolsWindow(kDebuggerTestPage, false);
   DevToolsWindow* window =

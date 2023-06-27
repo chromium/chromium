@@ -39,6 +39,11 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
       private WebContentsObserver,
       private RenderProcessHostObserver {
  public:
+  // Returns true when DevTools was ever attached to any RenderFrameHost.
+  // TODO(https://crbug.com/1434900): Remove this method after the experiment
+  // associated with the bug entry.
+  static bool WasEverAttachedToAnyFrame();
+
   static void AddAllAgentHosts(DevToolsAgentHost::List* result);
 
   // Returns appropriate agent host for given frame tree node, traversing
