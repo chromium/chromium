@@ -2256,6 +2256,29 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
     return;
   }
 
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+
+  // Allow uncleared access, as we manually handle clear tracking.
+  std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
+      dest_scoped_access = dest_shared_image->BeginScopedWriteAccess(
+          &begin_semaphores, &end_semaphores,
+          SharedImageRepresentation::AllowUnclearedAccess::kYes,
+          /*use_sk_surface=*/false);
+  if (!dest_scoped_access) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixelsYUV",
+                       "Failed to begin scoped write access.");
+    return;
+  }
+  if (!begin_semaphores.empty()) {
+    // The Graphite SharedImage representation does not set semaphores.
+    CHECK(gr_context());
+    bool result =
+        gr_context()->wait(begin_semaphores.size(), begin_semaphores.data(),
+                           /*deleteSemaphoresAfterWait=*/false);
+    CHECK(result);
+  }
+
   size_t row_bytes[SkYUVAInfo::kMaxPlanes];
   row_bytes[0] = src_row_bytes_plane1;
   row_bytes[1] = src_row_bytes_plane2;
@@ -2309,13 +2332,33 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
     }
 
     // Try a direct texture upload without using SkSurface.
-    if (!DoWritePixelsINTERNALDirectTextureUpload(dest_shared_image.get(),
-                                                  src_info, plane, pixel_data,
-                                                  row_bytes[plane])) {
+    SkPixmap pixmap(src_info, pixel_data, row_bytes[plane]);
+    bool written = false;
+    if (gr_context()) {
+      written = gr_context()->updateBackendTexture(
+          dest_scoped_access->promise_image_texture(plane)->backendTexture(),
+          &pixmap,
+          /*numLevels=*/1, dest_shared_image->surface_origin(), nullptr,
+          nullptr);
+    } else {
+      CHECK(graphite_context());
+      written = graphite_recorder()->updateBackendTexture(
+          dest_scoped_access->graphite_texture(plane), &pixmap,
+          /*numLevels=*/1);
+    }
+    if (!written) {
       LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixelsYUV",
                          "Failed to upload pixels to dest shared image");
       return;
     }
+  }
+
+  if (gr_context()) {
+    dest_scoped_access->ApplyBackendSurfaceEndState();
+    SubmitIfNecessary(std::move(end_semaphores));
+  } else {
+    auto recording = graphite_recorder()->snap();
+    GraphiteFlushAndSubmitWithRecording(std::move(recording));
   }
 
   if (!dest_shared_image->IsCleared()) {
