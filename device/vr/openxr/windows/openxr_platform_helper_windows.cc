@@ -74,10 +74,11 @@ OpenXrPlatformHelperWindows::GetGraphicsBinding(
       texture_helper, weak_ptr_factory_.GetWeakPtr());
 }
 
-const void* OpenXrPlatformHelperWindows::GetPlatformCreateInfo(
-    const OpenXrCreateInfo& create_info) {
+void OpenXrPlatformHelperWindows::GetPlatformCreateInfo(
+    const device::OpenXrCreateInfo& create_info,
+    PlatformCreateInfoReadyCallback callback) {
   // We have nothing we need to add to the "next" chain.
-  return nullptr;
+  std::move(callback).Run(nullptr);
 }
 
 device::mojom::XRDeviceData OpenXrPlatformHelperWindows::GetXRDeviceData() {
@@ -161,9 +162,8 @@ bool OpenXrPlatformHelperWindows::Initialize() {
   return true;
 }
 
-XrResult OpenXrPlatformHelperWindows::CreateInstance(
-    XrInstance* instance,
-    absl::optional<OpenXrCreateInfo> create_info) {
+XrResult OpenXrPlatformHelperWindows::CreateInstance(XrInstance* instance,
+                                                     void* create_info) {
   CHECK(instance);
 
   // The base-class expects CreatInstance to be called exactly once without a
@@ -198,7 +198,7 @@ XrInstance OpenXrPlatformHelperWindows::GetOrCreateXrInstance() {
   // CreateInstance fails, we'll just end up returning XR_NULL_HANDLE which is
   // fine. We don't actually need anything from the OpenXrCreateInfo to create
   // an instance on Windows.
-  (void)CreateInstance(&instance, absl::nullopt);
+  (void)CreateInstance(&instance, nullptr);
   return instance;
 }
 

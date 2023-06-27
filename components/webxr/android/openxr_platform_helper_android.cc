@@ -18,7 +18,9 @@ namespace {
 static PFN_xrInitializeLoaderKHR g_initialize_loader_fn_ = nullptr;
 }  // anonymous namespace
 
-OpenXrPlatformHelperAndroid::OpenXrPlatformHelperAndroid() = default;
+OpenXrPlatformHelperAndroid::OpenXrPlatformHelperAndroid()
+    : session_coordinator_(std::make_unique<XrSessionCoordinator>()) {}
+
 OpenXrPlatformHelperAndroid::~OpenXrPlatformHelperAndroid() = default;
 
 std::unique_ptr<device::OpenXrGraphicsBinding>
@@ -26,17 +28,24 @@ OpenXrPlatformHelperAndroid::GetGraphicsBinding() {
   return std::make_unique<device::OpenXrGraphicsBindingOpenGLES>();
 }
 
-const void* OpenXrPlatformHelperAndroid::GetPlatformCreateInfo(
-    const device::OpenXrCreateInfo& create_info) {
-  // Re-compute the create_info_ that we need every time in case the activity
-  // has changed.
-  activity_ = XrSessionCoordinator::GetActivity(GetJavaWebContents(
-      create_info.render_process_id, create_info.render_frame_id));
+void OpenXrPlatformHelperAndroid::GetPlatformCreateInfo(
+    const device::OpenXrCreateInfo& create_info,
+    PlatformCreateInfoReadyCallback callback) {
+  session_coordinator_->RequestXrSession(
+      base::BindOnce(&OpenXrPlatformHelperAndroid::OnXrActivityReady,
+                     base::Unretained(this), std::move(callback)));
+}
+
+void OpenXrPlatformHelperAndroid::OnXrActivityReady(
+    PlatformCreateInfoReadyCallback callback,
+    const base::android::JavaParamRef<jobject>& activity) {
+  activity_ = activity;
 
   create_info_.next = nullptr;
   create_info_.applicationVM = base::android::GetVM();
   create_info_.applicationActivity = activity_.obj();
-  return &create_info_;
+
+  std::move(callback).Run(&create_info_);
 }
 
 bool OpenXrPlatformHelperAndroid::Initialize() {
@@ -71,6 +80,13 @@ device::mojom::XRDeviceData OpenXrPlatformHelperAndroid::GetXRDeviceData() {
   device::mojom::XRDeviceData device_data;
   device_data.is_ar_blend_mode_supported = false;
   return device_data;
+}
+
+XrResult OpenXrPlatformHelperAndroid::DestroyInstance(XrInstance& instance) {
+  session_coordinator_->EndSession();
+  XrResult result = OpenXrPlatformHelper::DestroyInstance(instance);
+  activity_ = nullptr;
+  return result;
 }
 
 }  // namespace webxr

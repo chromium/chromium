@@ -88,6 +88,16 @@ void XrSessionCoordinator::RequestVrSession(
       webxr::GetJavaWebContents(render_process_id, render_frame_id));
 }
 
+void XrSessionCoordinator::RequestXrSession(
+    ActivityReadyCallback ready_callback) {
+  DVLOG(1) << __func__;
+  JNIEnv* env = AttachCurrentThread();
+
+  activity_ready_callback_ = std::move(ready_callback);
+
+  Java_XrSessionCoordinator_startXrSession(env, j_xr_session_coordinator_);
+}
+
 void XrSessionCoordinator::EndSession() {
   DVLOG(1) << __func__;
   JNIEnv* env = AttachCurrentThread();
@@ -139,6 +149,16 @@ void XrSessionCoordinator::OnDrawingSurfaceDestroyed(
   DVLOG(1) << __func__ << ":::";
   if (surface_destroyed_callback_) {
     std::move(surface_destroyed_callback_).Run();
+  }
+}
+
+void XrSessionCoordinator::OnXrHostActivityReady(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    const base::android::JavaParamRef<jobject>& activity) {
+  DVLOG(1) << __func__;
+  if (activity_ready_callback_) {
+    std::move(activity_ready_callback_).Run(activity);
   }
 }
 

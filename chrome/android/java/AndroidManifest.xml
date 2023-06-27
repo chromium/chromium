@@ -1209,6 +1209,28 @@ by a child template that "extends" this file.
         <property android:name="android.adservices.AD_SERVICES_CONFIG"
             android:resource="@xml/ad_services_config" />
 
+        {% set enable_openxr = enable_openxr|default(0) %}
+        {% if enable_openxr == "true" %}
+          <!-- launchMode is set to singleTask because there should never be multiple copies of the app running. -->
+          <!-- Theme.Black.NoTitleBar.Fullscreen gives solid black instead of a (bad stereoscopic) gradient on app transition. -->
+          <activity
+            android:name="org.chromium.components.webxr.XrHostActivity"
+            {{ self.chrome_activity_common() }}
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:launchMode="singleTask"
+            android:exported="false"
+            android:resizeableActivity="false"
+            android:screenOrientation="landscape"
+            android:label="WebXR"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+            tools:ignore="NonResizeableActivity">
+            <intent-filter>
+              <category android:name="android.intent.category.XR" />
+            </intent-filter>
+          </activity>
+        {% endif %}
+
         {% block extra_application_definitions %}
         {% endblock %}
       {% endmacro %}
