@@ -198,10 +198,18 @@ public class PasswordMigrationWarningMediatorTest {
     }
 
     @Test
-    public void testOnNextWithExportingSelectedStartsTheExportFlow() {
+    public void testOnNextWithoutPasswordsWithExportingSelectedStartsTheExportFlow() {
         mMediator.onNext(MigrationOption.EXPORT_AND_DELETE, mFragmentManager);
 
-        verify(mOptionsHandler).startExportFlow(mFragmentManager);
+        verify(mOptionsHandler).startExportFlow(mFragmentManager, false);
+    }
+
+    @Test
+    public void testOnNextWithPasswordsWithExportingSelectedStartsTheExportFlow() {
+        mMediator.passwordListAvailable(2);
+        mMediator.onNext(MigrationOption.EXPORT_AND_DELETE, mFragmentManager);
+
+        verify(mOptionsHandler).startExportFlow(mFragmentManager, true);
     }
 
     @Test
@@ -235,5 +243,12 @@ public class PasswordMigrationWarningMediatorTest {
 
         mMediator.showWarning(ScreenType.INTRO_SCREEN);
         assertEquals(null, mModel.get(ACCOUNT_DISPLAY_NAME));
+    }
+
+    @Test
+    public void testNotifyTheOptionsHandlerWhenPasswordsAreAvailable() {
+        mMediator.passwordListAvailable(2);
+
+        verify(mOptionsHandler).passwordsAvailable();
     }
 }

@@ -189,9 +189,12 @@ public class ExportFlow implements ExportFlowInterface {
     /** The concrete delegate instance. It is (re)set in {@link #onCreate}. */
     private Delegate mDelegate;
 
+    private boolean mPasswordSerializationStarted;
+
     @Override
     public void onCreate(Bundle savedInstanceState, Delegate delegate) {
         mDelegate = delegate;
+        mPasswordSerializationStarted = false;
 
         if (savedInstanceState == null) return;
 
@@ -261,7 +264,7 @@ public class ExportFlow implements ExportFlowInterface {
     }
 
     @Override
-    public void startExporting() {
+    public void startExporting(boolean passwordsAvailable) {
         assert mExportState == ExportState.INACTIVE;
         // Disable re-triggering exporting until the current exporting finishes.
         mExportState = ExportState.REQUESTED;
@@ -271,17 +274,9 @@ public class ExportFlow implements ExportFlowInterface {
         // fails the reauthentication, the serialized passwords will simply get ignored when
         // they arrive.
         mEntriesCount = null;
-        PasswordManagerHandlerProvider.getInstance().getPasswordManagerHandler().serializePasswords(
-                getTargetDirectory(),
-                (int entriesCount, String pathToPasswordsFile)
-                        -> {
-                    mEntriesCount = entriesCount;
-                    shareSerializedPasswords(pathToPasswordsFile);
-                },
-                (String errorMessage) -> {
-                    showExportErrorAndAbort(R.string.password_settings_export_tips, errorMessage,
-                            R.string.try_again, HistogramExportResult.WRITE_FAILED);
-                });
+        if (passwordsAvailable) {
+            serializePasswords();
+        }
         if (!ReauthenticationManager.isScreenLockSetUp(
                     mDelegate.getActivity().getApplicationContext())) {
             Toast.makeText(mDelegate.getActivity().getApplicationContext(),
@@ -295,6 +290,32 @@ public class ExportFlow implements ExportFlowInterface {
             ReauthenticationManager.displayReauthenticationFragment(
                     R.string.lockscreen_description_export, mDelegate.getViewId(),
                     mDelegate.getFragmentManager(), ReauthenticationManager.ReauthScope.BULK);
+        }
+    }
+
+    /**
+     * Starts fetching the serialized passwords.
+     */
+    void serializePasswords() {
+        if (mPasswordSerializationStarted) return;
+        mPasswordSerializationStarted = true;
+        PasswordManagerHandlerProvider.getInstance().getPasswordManagerHandler().serializePasswords(
+                getTargetDirectory(),
+                (int entriesCount, String pathToPasswordsFile)
+                        -> {
+                    mEntriesCount = entriesCount;
+                    shareSerializedPasswords(pathToPasswordsFile);
+                },
+                (String errorMessage) -> {
+                    showExportErrorAndAbort(R.string.password_settings_export_tips, errorMessage,
+                            R.string.try_again, HistogramExportResult.WRITE_FAILED);
+                });
+    }
+
+    @Override
+    public void passwordsAvailable() {
+        if (mExportState == ExportState.REQUESTED) {
+            serializePasswords();
         }
     }
 
