@@ -193,6 +193,32 @@ public class AuthenticatorSelectionDialogTest {
 
     @Test
     @SmallTest
+    public void
+    testMultipleAuthenticatorOption_changeToSmsOtpChallengeOption_clickOnViewToSelectChallengeOption()
+            throws Exception {
+        PropertyModel model = createAndShowModelForChangeSelectedOptionTest();
+
+        // Perform click for the view of authenticator option 2.
+        getAuthenticatorOptionViewAt(model, 1).performClick();
+        forceAuthenticatorOptionsViewLayout(model);
+        assertThat(model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT)).isEqualTo("Send");
+
+        // Verify that the radio button's checked state reflects correctly. Note: we need to fetch
+        // the viewHolder again as the performClick triggered a redraw of the views.
+        assertThat(getRadioButtonViewAt(model, 0).isChecked()).isFalse();
+        assertThat(getRadioButtonViewAt(model, 1).isChecked()).isTrue();
+        assertThat(getRadioButtonViewAt(model, 2).isChecked()).isFalse();
+        assertThat(getRadioButtonViewAt(model, 3).isChecked()).isFalse();
+
+        // Trigger positive button click.
+        mModalDialogManager.clickPositiveButton();
+
+        // Verify that the correct identifiers are passed to the listener.
+        verify(mAuthenticatorSelectedListener, times(1)).onOptionSelected(OPTION_2.getIdentifier());
+    }
+
+    @Test
+    @SmallTest
     public void testMultipleAuthenticatorOption_changeToCvcChallengeOption() throws Exception {
         PropertyModel model = createAndShowModelForChangeSelectedOptionTest();
 
@@ -265,6 +291,11 @@ public class AuthenticatorSelectionDialogTest {
 
     private RadioButton getRadioButtonViewAt(PropertyModel model, int position) {
         return getAuthenticatorOptionViewHolderAtPosition(model, position).getRadioButton();
+    }
+
+    private View getAuthenticatorOptionViewAt(PropertyModel model, int position) {
+        return getAuthenticatorOptionViewHolderAtPosition(model, position)
+                .getAuthenticatorOptionView();
     }
 
     private void forceAuthenticatorOptionsViewLayout(PropertyModel model) {
