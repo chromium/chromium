@@ -155,6 +155,7 @@
     "android-dawn-arm-rel": "Ubuntu-22.04",
     "android-dawn-arm64-rel": "Ubuntu-22.04",
     "android-nougat-x86-rel": "Ubuntu-22.04",
+    "android-nougat-x86-rel-compilator": "Ubuntu-22.04",
     "android-pie-arm64-dbg": "Ubuntu-22.04",
     "android-x64-cast": "Ubuntu-22.04",
     "android_compile_dbg": "Ubuntu-22.04",
