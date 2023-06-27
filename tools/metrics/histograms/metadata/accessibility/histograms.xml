@@ -2067,6 +2067,19 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.ScreenAI.OCR.ImageSize" units="count"
     expires_after="2023-11-30">
+  <obsolete>
+    Removed in July 2023 in favor of Accessibility.ScreenAI.OCR.ImageSize10M
+    which has a higher max value.
+  </obsolete>
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of pixels in the passed image to OCR request.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.OCR.ImageSize10M" units="count"
+    expires_after="2023-11-30">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>

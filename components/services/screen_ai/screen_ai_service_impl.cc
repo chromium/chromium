@@ -254,8 +254,8 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
 
   base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Time", elapsed_time);
-  base::UmaHistogramCounts1M("Accessibility.ScreenAI.OCR.ImageSize",
-                             image.width() * image.height());
+  base::UmaHistogramCounts10M("Accessibility.ScreenAI.OCR.ImageSize10M",
+                              image.width() * image.height());
   return result;
 }
 
