@@ -3,6 +3,7 @@
 name: Pre-commit
 
 on:
+  merge_group:
   pull_request:
   push:
     branches: 'main'

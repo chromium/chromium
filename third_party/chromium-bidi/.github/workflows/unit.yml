@@ -4,6 +4,7 @@
 name: Unit tests
 
 on:
+  merge_group:
   pull_request:
   push:
     branches: 'main'

@@ -3,6 +3,7 @@
 name: E2E tests
 
 on:
+  merge_group:
   pull_request:
   push:
     branches: 'main'
