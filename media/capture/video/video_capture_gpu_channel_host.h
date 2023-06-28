@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAPTURE_VIDEO_LINUX_VIDEO_CAPTURE_GPU_MEMORY_BUFFER_MANAGER_H_
-#define MEDIA_CAPTURE_VIDEO_LINUX_VIDEO_CAPTURE_GPU_MEMORY_BUFFER_MANAGER_H_
+#ifndef MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_GPU_CHANNEL_HOST_H_
+#define MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_GPU_CHANNEL_HOST_H_
 
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/capture/capture_export.h"
 
 namespace media {
@@ -24,15 +25,14 @@ class VideoCaptureGpuContextLostObserver {
 // This class provides the access to `gpu::GpuMemoryBufferManager` for the
 // `V4L2GpuMemoryBufferTracker`. It listens the GPU context lost event and
 // broadcast it to trackers.
-class CAPTURE_EXPORT VideoCaptureGpuMemoryBufferManager final
+class CAPTURE_EXPORT VideoCaptureGpuChannelHost final
     : public VideoCaptureGpuContextLostObserver {
  public:
-  static VideoCaptureGpuMemoryBufferManager& GetInstance();
+  static VideoCaptureGpuChannelHost& GetInstance();
 
-  VideoCaptureGpuMemoryBufferManager(
-      const VideoCaptureGpuMemoryBufferManager&) = delete;
-  VideoCaptureGpuMemoryBufferManager& operator=(
-      const VideoCaptureGpuMemoryBufferManager&) = delete;
+  VideoCaptureGpuChannelHost(const VideoCaptureGpuChannelHost&) = delete;
+  VideoCaptureGpuChannelHost& operator=(const VideoCaptureGpuChannelHost&) =
+      delete;
 
   // Set gpu::GpuMemoryBufferManager by
   // `VideoCaptureServiceImpl::VizGpuContextProvider` from the main thead of
@@ -51,6 +51,20 @@ class CAPTURE_EXPORT VideoCaptureGpuMemoryBufferManager final
   // failed.
   gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager();
 
+  // Set gpu::ClientSharedImageInterface by
+  // `VideoCaptureServiceImpl::VizGpuContextProvider` from the main thead of
+  // utility process. It will be set with
+  // `gpu::GpuChannelHost::CreateClientSharedImageInterface()` when calling
+  // `VideoCaptureServiceImpl::VizGpuContextProvider::StartContextProviderIfNeeded()`
+  // success or set to nullptr if failed.
+  void SetSharedImageInterface(
+      std::unique_ptr<gpu::ClientSharedImageInterface>);
+
+  // It will return nullptr when
+  // `VideoCaptureServiceImpl::VizGpuContextProvider::StartContextProviderIfNeeded()`
+  // failed.
+  gpu::SharedImageInterface* SharedImageInterface();
+
   // VideoCaptureGpuContextLostObserver implementation.
   void OnContextLost() override;
 
@@ -58,10 +72,10 @@ class CAPTURE_EXPORT VideoCaptureGpuMemoryBufferManager final
   void RemoveObserver(VideoCaptureGpuContextLostObserver*);
 
  private:
-  friend class base::NoDestructor<VideoCaptureGpuMemoryBufferManager>;
+  friend class base::NoDestructor<VideoCaptureGpuChannelHost>;
 
-  VideoCaptureGpuMemoryBufferManager();
-  ~VideoCaptureGpuMemoryBufferManager() override;
+  VideoCaptureGpuChannelHost();
+  ~VideoCaptureGpuChannelHost() override;
 
   mutable base::Lock lock_;
   // The |gpu_buffer_manager_| is nullptr before set by the
@@ -74,8 +88,14 @@ class CAPTURE_EXPORT VideoCaptureGpuMemoryBufferManager final
   // VideoCaptureServiceImpl::VizGpuContextProvider.
   base::ObserverList<VideoCaptureGpuContextLostObserver>::Unchecked observers_
       GUARDED_BY(lock_);
+
+  // The |shared_image_interface_| is nullptr before set by the
+  // `VideoCaptureServiceImpl::VizGpuContextProvider::StartContextProviderIfNeeded()`
+  // It is created by Gpu Channel Host that viz::Gpu owns.
+  std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface_
+      GUARDED_BY(lock_);
 };
 
 }  // namespace media
 
-#endif  // MEDIA_CAPTURE_VIDEO_LINUX_VIDEO_CAPTURE_GPU_MEMORY_BUFFER_MANAGER_H_
+#endif  // MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_GPU_CHANNEL_HOST_H_

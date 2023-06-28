@@ -35,7 +35,7 @@ gfx::BufferUsage GetBufferUsage(gfx::BufferFormat format) {
 V4L2GpuMemoryBufferTracker::V4L2GpuMemoryBufferTracker() = default;
 V4L2GpuMemoryBufferTracker::~V4L2GpuMemoryBufferTracker() {
   if (is_valid_) {
-    VideoCaptureGpuMemoryBufferManager::GetInstance().RemoveObserver(this);
+    VideoCaptureGpuChannelHost::GetInstance().RemoveObserver(this);
   }
 }
 
@@ -49,8 +49,7 @@ bool V4L2GpuMemoryBufferTracker::Init(const gfx::Size& dimensions,
     return false;
   }
   gpu::GpuMemoryBufferManager* gpu_buffer_manager =
-      VideoCaptureGpuMemoryBufferManager::GetInstance()
-          .GetGpuMemoryBufferManager();
+      VideoCaptureGpuChannelHost::GetInstance().GetGpuMemoryBufferManager();
   if (!gpu_buffer_manager) {
     DLOG(ERROR) << "Invalid GPU memory buffer manager!";
     return false;
@@ -64,7 +63,7 @@ bool V4L2GpuMemoryBufferTracker::Init(const gfx::Size& dimensions,
     return false;
   }
 
-  VideoCaptureGpuMemoryBufferManager::GetInstance().AddObserver(this);
+  VideoCaptureGpuChannelHost::GetInstance().AddObserver(this);
   is_valid_ = true;
   return true;
 }

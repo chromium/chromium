@@ -15,7 +15,7 @@
 #include "content/browser/font_service.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "components/viz/host/gpu_client.h"
 #include "content/public/browser/gpu_client.h"
 #endif
@@ -30,7 +30,7 @@ void UtilityProcessHost::BindHostReceiver(
     return;
   }
 #endif
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   if (auto gpu_receiver = receiver.As<viz::mojom::Gpu>()) {
     gpu_client_ =
         content::CreateGpuClient(std::move(gpu_receiver), base::DoNothing());

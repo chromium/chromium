@@ -8,8 +8,8 @@
 #include <atomic>
 
 #include "media/capture/capture_export.h"
-#include "media/capture/video/linux/video_capture_gpu_memory_buffer_manager.h"
 #include "media/capture/video/video_capture_buffer_tracker.h"
+#include "media/capture/video/video_capture_gpu_channel_host.h"
 
 namespace media {
 

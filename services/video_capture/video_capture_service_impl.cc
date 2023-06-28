@@ -40,11 +40,11 @@
 #include "services/video_capture/lacros/device_factory_adapter_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "media/capture/capture_switches.h"
-#include "media/capture/video/linux/video_capture_gpu_memory_buffer_manager.h"
+#include "media/capture/video/video_capture_gpu_channel_host.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 namespace video_capture {
 
@@ -107,7 +107,7 @@ class VideoCaptureServiceImpl::GpuDependenciesContext {
       this};
 };
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 // Intended usage of this class is to create viz::Gpu in utility process and
 // connect to viz::GpuClient of browser process, which will call to Gpu service.
 // Also, this class holds the viz::ContextProvider to listen and monitor Gpu
@@ -117,7 +117,7 @@ class VideoCaptureServiceImpl::GpuDependenciesContext {
 // viz::ContextProvider will call BindToCurrentSequence on |main_task_runner_|
 // sequence of main thread. Then, the gpu context lost event will be called in
 // the |main_task_runner_| sequence, which will be notified to the
-// media::VideoCaptureGpuMemoryBufferManager.
+// media::VideoCaptureGpuChannelHost.
 class VideoCaptureServiceImpl::VizGpuContextProvider
     : public viz::ContextLostObserver {
  public:
@@ -125,8 +125,10 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
       : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         viz_gpu_(std::move(viz_gpu)) {
     if (StartContextProviderIfNeeded()) {
-      media::VideoCaptureGpuMemoryBufferManager::GetInstance()
+      media::VideoCaptureGpuChannelHost::GetInstance()
           .SetGpuMemoryBufferManager(viz_gpu_->GetGpuMemoryBufferManager());
+      media::VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
+          viz_gpu_->GetGpuChannel()->CreateClientSharedImageInterface());
     }
   }
   ~VizGpuContextProvider() override {
@@ -145,12 +147,14 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
     bool success = StartContextProviderIfNeeded();
     // Clear the GPU memory buffer manager if failed.
     if (!success) {
-      media::VideoCaptureGpuMemoryBufferManager::GetInstance()
+      media::VideoCaptureGpuChannelHost::GetInstance()
           .SetGpuMemoryBufferManager(nullptr);
+      media::VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
+          nullptr);
     }
 
     // Notify context lost after new context ready.
-    media::VideoCaptureGpuMemoryBufferManager::GetInstance().OnContextLost();
+    media::VideoCaptureGpuChannelHost::GetInstance().OnContextLost();
   }
 
  private:
@@ -204,7 +208,7 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
   scoped_refptr<viz::ContextProvider> context_provider_;
   base::WeakPtrFactory<VizGpuContextProvider> weak_ptr_factory_{this};
 };
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool ShouldUseVCDFromAsh() {
@@ -285,14 +289,14 @@ void VideoCaptureServiceImpl::LazyInitializeGpuDependenciesContext() {
   if (!gpu_dependencies_context_)
     gpu_dependencies_context_ = std::make_unique<GpuDependenciesContext>();
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
     if (!viz_gpu_context_provider_) {
       viz_gpu_context_provider_ =
           std::make_unique<VizGpuContextProvider>(std::move(viz_gpu_));
     }
   }
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 }
 
 void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
@@ -381,7 +385,7 @@ void VideoCaptureServiceImpl::OnGpuInfoUpdate(const CHROME_LUID& luid) {
 }
 #endif
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 void VideoCaptureServiceImpl::SetVizGpu(std::unique_ptr<viz::Gpu> viz_gpu) {
   viz_gpu_ = std::move(viz_gpu);
 }

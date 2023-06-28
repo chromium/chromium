@@ -276,8 +276,18 @@ component("capture_lib") {
       "video/linux/v4l2_capture_delegate_gpu_helper.h",
       "video/linux/v4l2_gpu_memory_buffer_tracker.cc",
       "video/linux/v4l2_gpu_memory_buffer_tracker.h",
-      "video/linux/video_capture_gpu_memory_buffer_manager.cc",
-      "video/linux/video_capture_gpu_memory_buffer_manager.h",
+    ]
+  }
+
+  # Establish GPU Channel
+  if (is_linux || is_win) {
+    sources += [
+      "video/video_capture_gpu_channel_host.cc",
+      "video/video_capture_gpu_channel_host.h",
+    ]
+    deps += [
+      "//gpu/command_buffer/client",
+      "//gpu/ipc/client",
     ]
   }
 

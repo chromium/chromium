@@ -6,8 +6,8 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "media/capture/video/linux/video_capture_gpu_memory_buffer_manager.h"
 #include "media/capture/video/mock_gpu_memory_buffer_manager.h"
+#include "media/capture/video/video_capture_gpu_channel_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,12 +32,12 @@ class V4l2GpuMemoryBufferTrackerTest : public ::testing::Test {
   void SetUp() override {}
 
   void TearDown() override {
-    VideoCaptureGpuMemoryBufferManager::GetInstance().SetGpuMemoryBufferManager(
+    VideoCaptureGpuChannelHost::GetInstance().SetGpuMemoryBufferManager(
         nullptr);
   }
 
   void SetUpExpectationGpuMemoryBufferManager() {
-    VideoCaptureGpuMemoryBufferManager::GetInstance().SetGpuMemoryBufferManager(
+    VideoCaptureGpuChannelHost::GetInstance().SetGpuMemoryBufferManager(
         &mock_gpu_memory_buffer_manager_);
     EXPECT_CALL(mock_gpu_memory_buffer_manager_,
                 CreateGpuMemoryBuffer(_, gfx::BufferFormat::YUV_420_BIPLANAR,
@@ -48,7 +48,7 @@ class V4l2GpuMemoryBufferTrackerTest : public ::testing::Test {
   }
 
   void SetupInvalidGpuMemoryBufferManager() {
-    VideoCaptureGpuMemoryBufferManager::GetInstance().SetGpuMemoryBufferManager(
+    VideoCaptureGpuChannelHost::GetInstance().SetGpuMemoryBufferManager(
         &mock_gpu_memory_buffer_manager_);
     EXPECT_CALL(mock_gpu_memory_buffer_manager_,
                 CreateGpuMemoryBuffer(_, gfx::BufferFormat::YUV_420_BIPLANAR,
