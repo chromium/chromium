@@ -2078,6 +2078,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiInstance.MaxWindowLimitExceeded" enum="Boolean"
+    expires_after="2024-06-15">
+  <owner>ranjithkagathi@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records the exceeded status when attempted to open a new chrome window. The
+    value is set to true when attempted to exceed the maximum number of allowed
+    chrome windows, the value is set to false otherwise. See also related
+    metrics &quot;Android.MultiInstance.NumActivities&quot; and
+    &quot;Android.MultiInstance.NumInstances&quot; which record the count of
+    windows.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiInstance.NumActivities" units="activities"
     expires_after="2023-11-12">
   <owner>jinsukkim@chromium.org</owner>

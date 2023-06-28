@@ -2138,6 +2138,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (mWindowId == INVALID_WINDOW_ID) {
             Log.i(TAG, "Window ID not allocated. Finishing the activity");
             Toast.makeText(this, R.string.max_number_of_windows, Toast.LENGTH_LONG).show();
+            recordMaxWindowLimitExceededHistogram(/*limitExceeded=*/true);
             return false;
         }
 
@@ -2145,8 +2146,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 && !mMultiInstanceManager.isStartedUpCorrectly(getTaskId())) {
             return false;
         }
+        recordMaxWindowLimitExceededHistogram(/*limitExceeded=*/false);
 
         return super.isStartedUpCorrectly(intent);
+    }
+
+    private void recordMaxWindowLimitExceededHistogram(boolean limitExceeded) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.MultiInstance.MaxWindowLimitExceeded", limitExceeded);
     }
 
     private static int getExtraWindowIdFromIntent(Intent intent) {
