@@ -266,7 +266,6 @@
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_tree_update.h"
-#include "ui/base/ime/text_input_client.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
@@ -4598,20 +4597,6 @@ void RenderFrameHostImpl::DidFocusFrame() {
 
   DCHECK(owner_);  // See `owner_` invariants about `IsActive()`.
   owner_->SetFocusedFrame(GetSiteInstance()->group());
-
-#if BUILDFLAG(IS_WIN)
-  // If the frame has a url, notify the view to allow it to supply the Url to
-  // any interested IME (e.g. Windows 11's TSF uses this information).
-  if (!last_committed_url_.is_empty()) {
-    RenderWidgetHostView* view = render_view_host_->GetWidget()->GetView();
-    if (view) {
-      ui::TextInputClient* input_client = view->GetTextInputClient();
-      if (input_client) {
-        input_client->OnFrameFocusChanged();
-      }
-    }
-  }
-#endif  // BUILDFLAG(IS_WIN)
 }
 
 void RenderFrameHostImpl::DidCallFocus() {

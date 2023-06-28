@@ -179,12 +179,4 @@ void InputMethodWinTSF::ConfirmCompositionText() {
     ui::TSFBridge::GetInstance()->ConfirmComposition();
 }
 
-void InputMethodWinTSF::OnUrlChanged() {
-  if (!ui::TSFBridge::GetInstance()) {
-    return;
-  }
-
-  ui::TSFBridge::GetInstance()->UrlChanged();
-}
-
 }  // namespace ui

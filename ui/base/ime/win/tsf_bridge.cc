@@ -53,7 +53,6 @@ class TSFBridgeImpl : public TSFBridge {
   bool IsInputLanguageCJK() override;
   Microsoft::WRL::ComPtr<ITfThreadMgr> GetThreadManager() override;
   TextInputClient* GetFocusedTextInputClient() const override;
-  void UrlChanged() override;
 
  private:
   // Returns S_OK if |tsf_document_map_| is successfully initialized. This
@@ -155,9 +154,6 @@ class TSFBridgeImpl : public TSFBridge {
 
   // Represents the window that is currently owns text input focus.
   HWND attached_window_handle_ = nullptr;
-
-  // Tracks Windows OS support for empty TSF text stores.
-  bool empty_TSF_support_ = false;
 };
 
 TSFBridgeImpl::TSFBridgeImpl() = default;
@@ -399,14 +395,6 @@ TextInputClient* TSFBridgeImpl::GetFocusedTextInputClient() const {
   return client_;
 }
 
-void TSFBridgeImpl::UrlChanged() {
-  TSFDocument* document = GetAssociatedDocument();
-  if (!document || !document->text_store) {
-    return;
-  }
-  document->text_store->MaybeSendOnUrlChanged();
-}
-
 Microsoft::WRL::ComPtr<ITfThreadMgr> TSFBridgeImpl::GetThreadManager() {
   DCHECK(base::CurrentUIThread::IsSet());
   DCHECK(IsInitialized());
@@ -507,17 +495,6 @@ HRESULT TSFBridgeImpl::InitializeDocumentMapInternal() {
       TEXT_INPUT_TYPE_TELEPHONE, TEXT_INPUT_TYPE_URL,
       TEXT_INPUT_TYPE_TEXT_AREA,
   };
-  // Query TSF for empty TSF text store support, introduced with Windows 11.
-  // If support is present, as indicated by successful return of an interface
-  // for the IID value GUID_COMPARTMENT_EMPTYCONTEXT, we use a dummy/empty Text
-  // store when there is no text.
-  Microsoft::WRL::ComPtr<IUnknown> flag_empty_context;
-  HRESULT res = thread_manager_->QueryInterface(GUID_COMPARTMENT_EMPTYCONTEXT,
-                                                &flag_empty_context);
-  if (SUCCEEDED(res)) {
-    empty_TSF_support_ = true;
-  }
-
   for (size_t i = 0; i < std::size(kTextInputTypes); ++i) {
     const TextInputType input_type = kTextInputTypes[i];
     Microsoft::WRL::ComPtr<ITfContext> context;
@@ -525,9 +502,7 @@ HRESULT TSFBridgeImpl::InitializeDocumentMapInternal() {
     DWORD source_cookie = TF_INVALID_COOKIE;
     DWORD key_trace_sink_cookie = TF_INVALID_COOKIE;
     DWORD language_profile_cookie = TF_INVALID_COOKIE;
-    // Use a null text store if empty tsf text store is not supported.
-    const bool use_null_text_store =
-        (input_type == TEXT_INPUT_TYPE_NONE && !empty_TSF_support_);
+    const bool use_null_text_store = (input_type == TEXT_INPUT_TYPE_NONE);
     DWORD* source_cookie_ptr = use_null_text_store ? nullptr : &source_cookie;
     DWORD* key_trace_sink_cookie_ptr =
         use_null_text_store ? nullptr : &key_trace_sink_cookie;
@@ -535,8 +510,7 @@ HRESULT TSFBridgeImpl::InitializeDocumentMapInternal() {
         use_null_text_store ? nullptr : &language_profile_cookie;
     scoped_refptr<TSFTextStore> text_store =
         use_null_text_store ? nullptr : new TSFTextStore();
-    if (text_store && input_type != TEXT_INPUT_TYPE_NONE) {
-      // No need to initialize for TEXT_INPUT_TYPE_NONE.
+    if (text_store) {
       HRESULT hr = text_store->Initialize();
       if (FAILED(hr))
         return hr;
@@ -546,10 +520,7 @@ HRESULT TSFBridgeImpl::InitializeDocumentMapInternal() {
         key_trace_sink_cookie_ptr, language_profile_cookie_ptr);
     if (FAILED(hr))
       return hr;
-    if (input_type == TEXT_INPUT_TYPE_PASSWORD ||
-        (empty_TSF_support_ && input_type == TEXT_INPUT_TYPE_NONE)) {
-      // Disable context for TEXT_INPUT_TYPE_NONE, if empty text store is
-      // supported.
+    if (input_type == TEXT_INPUT_TYPE_PASSWORD) {
       hr = InitializeDisabledContext(context.Get());
       if (FAILED(hr))
         return hr;
@@ -560,10 +531,8 @@ HRESULT TSFBridgeImpl::InitializeDocumentMapInternal() {
     tsf_document_map_[input_type].key_trace_sink_cookie = key_trace_sink_cookie;
     tsf_document_map_[input_type].language_profile_cookie =
         language_profile_cookie;
-    if (text_store) {
+    if (text_store)
       text_store->OnContextInitialized(context.Get());
-      text_store->SetEmptyTextStoreSupport(empty_TSF_support_);
-    }
   }
   return S_OK;
 }
