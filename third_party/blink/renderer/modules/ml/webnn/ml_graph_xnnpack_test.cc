@@ -1090,6 +1090,56 @@ TEST_P(MLGraphXnnpackTest, TanhTest) {
   }
 }
 
+// ThreadPoolTester checks the compute results of an MLGraphXnnpack which
+// creates a pthreadpool to schedule `num_threads` parallel work items with
+// `base::ThreadPool` for XNNPACK operator execution.
+struct ThreadPoolTester {
+  uint32_t num_threads;
+
+  void Test(MLGraphXnnpackTest& helper, V8TestingScope& scope) {
+    // Create MLContextOptions and set the numThreads to `num_threads`.
+    auto* context_options = MLContextOptions::Create();
+    context_options->setNumThreads(num_threads);
+
+    // Build a simple WebNN graph with the options. A pthreadpool will be
+    // created internally with `num_threads`.
+    auto* builder =
+        CreateMLGraphBuilder(scope.GetExecutionContext(), context_options);
+    auto* input_operand =
+        BuildInput(builder, "input", {1, 2, 2, 1},
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* output_operand =
+        builder->relu(input_operand, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    // Compute the graph and compare the result.
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(
+              input_operand, Vector<float>({-10.0, -1.0, 1.0, 10.0}))}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<float>(outputs[0].second);
+    EXPECT_EQ(results, Vector<float>({0.0, 0.0, 1.0, 10.0}));
+  }
+};
+
+TEST_P(MLGraphXnnpackTest, ThreadPoolTest) {
+  V8TestingScope scope;
+  // Test executing WebNN graph with a pthreadpool for different number of
+  // threads.
+  { ThreadPoolTester{.num_threads = 0}.Test(*this, scope); }
+  { ThreadPoolTester{.num_threads = 1}.Test(*this, scope); }
+  { ThreadPoolTester{.num_threads = 2}.Test(*this, scope); }
+  { ThreadPoolTester{.num_threads = 3}.Test(*this, scope); }
+  { ThreadPoolTester{.num_threads = 4}.Test(*this, scope); }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     MLGraphXnnpackTest,

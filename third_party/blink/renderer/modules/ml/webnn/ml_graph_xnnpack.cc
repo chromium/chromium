@@ -8,7 +8,9 @@
 
 #include "base/numerics/checked_math.h"
 #include "base/ranges/algorithm.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
@@ -44,6 +46,13 @@
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
+
+// According to the tests on multiple systems, there will be a performance
+// regression of XNNPACK model inference when the number of work items is
+// greater than `kMaxNumWorkItems`.
+//
+// TODO(crbug.com/1273291): Ensure `kMaxNumWorkItems` value setting makes sense.
+constexpr uint32_t kMaxNumWorkItems = 4;
 
 // Maps MLOperand pointer address to its XNNPACK Value ID.
 //
@@ -162,10 +171,6 @@ class SharedXnnpackContext : public ThreadSafeRefCounted<SharedXnnpackContext> {
         return nullptr;
       }
 
-      // TODO(crbug.com/1273291): Integrate XNNPACK pthreadpool with
-      // base::ThreadPool for performance optimziation on multi-cores in the
-      // future.
-
       // Create a new instance of SharedXnnpackContext.
       return base::MakeRefCounted<SharedXnnpackContext>();
     } else {
@@ -233,23 +238,55 @@ class XnnRuntimeWrapper : public ThreadSafeRefCounted<XnnRuntimeWrapper> {
   // executions. This method can run either in a background thread for
   // asynchronous graph building or in the caller's thread for synchronous graph
   // building.
+  //
+  // The `num_threads` indicates how many work items will be scheduled to
+  // base::ThreadPool that run XNNPACK operators in parallel. The value `0`
+  // (default value of `MLContextOptions.numThreads`) and `1` mean executing
+  // operators without parallelization.
   static scoped_refptr<XnnRuntimeWrapper> Create(
       XnnSubgraphPtr subgraph,
       scoped_refptr<SharedXnnpackContext> xnn_context,
       Vector<DataBufferPtr> static_data_buffers,
+      uint32_t num_threads,
       String& error_message) {
     TRACE_EVENT("blink", "XnnRuntimeWrapper::Create");
     CHECK(xnn_context);
     CHECK(subgraph);
+
+    // The current implementation interprets the default value of
+    // `MLContextOptions.numThreads` (0) as single-threaded execution.
+    if (num_threads == 0) {
+      num_threads = 1;
+    }
+    // Cap the user-supplied value to the minimum value of `kMaxNumWorkItems`
+    // and the number of logical processors that avoids too much scheduling
+    // overhead.
+    num_threads = std::min(
+        {num_threads,
+         base::checked_cast<uint32_t>(base::SysInfo::NumberOfProcessors()),
+         kMaxNumWorkItems});
+    pthreadpool_t pthreadpool_ptr = nullptr;
+    pthreadpool_ptr = pthreadpool_create(num_threads);
+    if (pthreadpool_ptr == nullptr) {
+      error_message = "Failed to create pthreadpool";
+      return nullptr;
+    }
+
     xnn_runtime_t runtime_ptr = nullptr;
-    xnn_status status = xnn_create_runtime(subgraph.get(), &runtime_ptr);
+    // Because the integration of pthreadpool and Chromium Jobs API yields
+    // to ThreadPool's scheduler after executing each operator, e.g.
+    // https://source.chromium.org/chromium/chromium/src/+/main:third_party/pthreadpool/chromium/jobs.cc;l=102,
+    // setting XNN_FLAG_YIELD_WORKERS flag is not required.
+    xnn_status status = xnn_create_runtime_v2(subgraph.get(), pthreadpool_ptr,
+                                              /* flags */ 0, &runtime_ptr);
     if (status != xnn_status_success) {
       error_message = "Failed to create XNNPACK Runtime.";
       return nullptr;
     }
     CHECK(runtime_ptr);
     return base::MakeRefCounted<XnnRuntimeWrapper>(
-        runtime_ptr, std::move(xnn_context), std::move(static_data_buffers));
+        runtime_ptr, pthreadpool_ptr, std::move(xnn_context),
+        std::move(static_data_buffers));
   }
 
   // Invoke the XNNPACK Runtime object. If there are any data pointers changed,
@@ -257,6 +294,7 @@ class XnnRuntimeWrapper : public ThreadSafeRefCounted<XnnRuntimeWrapper> {
   // invocation.
   xnn_status Invoke(XnnExternalValuesPtr external_values,
                     String& error_message) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     TRACE_EVENT("blink", "XnnRuntimeWrapper::Invoke");
     CHECK(external_values);
 
@@ -294,12 +332,14 @@ class XnnRuntimeWrapper : public ThreadSafeRefCounted<XnnRuntimeWrapper> {
   friend scoped_refptr<T> base::MakeRefCounted(Args&&... args);
 
   XnnRuntimeWrapper(xnn_runtime_t xnn_runtime,
+                    pthreadpool_t pthreadpool,
                     scoped_refptr<SharedXnnpackContext> xnn_context,
                     Vector<DataBufferPtr> static_data_buffers)
       : xnn_context_(std::move(xnn_context)),
         static_data_buffers_(std::move(static_data_buffers)),
         xnn_external_values_(std::make_unique<Vector<xnn_external_value>>()),
-        xnn_runtime_({xnn_runtime, &xnn_delete_runtime}) {}
+        xnn_runtime_({xnn_runtime, &xnn_delete_runtime}),
+        pthreadpool_({pthreadpool, &pthreadpool_destroy}) {}
 
   // The SharedXnnpackContext is shared and reference-counted by all instances
   // of MLGraphXnnpack. It initializes (and also deinitializes) the XNNPACK
@@ -316,7 +356,19 @@ class XnnRuntimeWrapper : public ThreadSafeRefCounted<XnnRuntimeWrapper> {
   XnnExternalValuesPtr xnn_external_values_;
 
   // The XNNPACK Runtime object for the accelerated executions.
-  std::unique_ptr<xnn_runtime, decltype(&xnn_delete_runtime)> xnn_runtime_;
+  std::unique_ptr<xnn_runtime, decltype(&xnn_delete_runtime)> xnn_runtime_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The pthreadpool is used by XNNPACK Runtime to execute operators in
+  // parallel. With the integration with `base::PostJob()` API, pthreadpool
+  // schedules the parallel executions with `base::ThreadPool` workers. Because
+  // the `struct pthreadpool` is accessed by XNNPACK Runtime without a lock, a
+  // SequenceChecker is used to ensure the accessing is thread-safe.
+  std::unique_ptr<struct pthreadpool, decltype(&pthreadpool_destroy)>
+      pthreadpool_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The sequence on which `Invoke()` method is executed.
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 xnn_datatype GetXnnDataType(V8MLOperandType::Enum operand_type) {
@@ -1866,8 +1918,8 @@ void MLGraphXnnpack::OnDidGetSharedXnnpackContext(
       CrossThreadBindOnce(
           &CreateXnnRuntimeOnBackgroundThread, std::move(subgraph),
           std::move(xnn_context), std::move(static_data_buffers),
-          MakeCrossThreadHandle(this), MakeCrossThreadHandle(resolver),
-          resolver_task_runner_));
+          MakeCrossThreadHandle(this), ml_context_->GetNumThreads(),
+          MakeCrossThreadHandle(resolver), resolver_task_runner_));
 }
 
 // static
@@ -1876,13 +1928,14 @@ void MLGraphXnnpack::CreateXnnRuntimeOnBackgroundThread(
     scoped_refptr<SharedXnnpackContext> xnn_context,
     Vector<DataBufferPtr> static_data_buffers,
     CrossThreadHandle<MLGraphXnnpack> graph,
+    uint32_t num_threads,
     CrossThreadHandle<ScriptPromiseResolver> resolver,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
   CHECK(!IsMainThread());
   String error_message;
-  auto xnn_runtime_wrapper =
-      XnnRuntimeWrapper::Create(std::move(subgraph), std::move(xnn_context),
-                                std::move(static_data_buffers), error_message);
+  auto xnn_runtime_wrapper = XnnRuntimeWrapper::Create(
+      std::move(subgraph), std::move(xnn_context),
+      std::move(static_data_buffers), num_threads, error_message);
   PostCrossThreadTask(
       *resolver_task_runner, FROM_HERE,
       CrossThreadBindOnce(&MLGraphXnnpack::OnDidCreateXnnRuntime,
@@ -1927,7 +1980,8 @@ MLGraph* MLGraphXnnpack::BuildSyncImpl(const MLNamedOperands& named_outputs,
   }
   xnn_runtime_wrapper_ =
       XnnRuntimeWrapper::Create(std::move(subgraph), std::move(xnn_context),
-                                std::move(static_data_buffers), error_message);
+                                std::move(static_data_buffers),
+                                ml_context_->GetNumThreads(), error_message);
   if (!xnn_runtime_wrapper_) {
     exception_state.ThrowDOMException(
         XnnStatusToDOMExceptionCode(xnn_status_invalid_parameter),
