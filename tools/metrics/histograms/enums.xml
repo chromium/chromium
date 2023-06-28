@@ -53813,6 +53813,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="111" label="TAILORED_SECURITY_SERVICE_INFOBAR_DELEGATE"/>
   <int value="112" label="CHROME_FOR_TESTING_INFOBAR_DELEGATE"/>
   <int value="113" label="EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE"/>
+  <int value="114" label="TAB_PICKUP_INFOBAR_DELEGATE"/>
 </enum>
 
 <enum name="InfoBarResponse">

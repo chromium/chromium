@@ -10,6 +10,7 @@ source_set("tab_pickup") {
   ]
   deps = [
     ":features",
+    ":infobar_delegate",
     "//base",
     "//components/sync_sessions",
     "//ios/chrome/browser/shared/model/browser",
@@ -17,6 +18,27 @@ source_set("tab_pickup") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/synced_sessions",
+  ]
+}
+
+source_set("infobar_delegate") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tab_pickup_infobar_delegate.h",
+    "tab_pickup_infobar_delegate.mm",
+  ]
+  deps = [
+    ":features",
+    "//components/infobars/core",
+    "//components/sync_sessions",
+    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/synced_sessions",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ios/web/public",
   ]
 }
 

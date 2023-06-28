@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/synced_sessions/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/synced_sessions.h"
 #import "ios/chrome/browser/tabs/tab_pickup/features.h"
+#import "ios/chrome/browser/tabs/tab_pickup/tab_pickup_infobar_delegate.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -114,6 +115,16 @@ void TabPickupBrowserAgent::ForeignSessionsChanged() {
 void TabPickupBrowserAgent::SetupInfoBarDelegate() {
   DCHECK(IsTabPickupEnabled());
   infobar_in_progress_ = true;
+
+  delegate_ =
+      std::make_unique<TabPickupInfobarDelegate>(browser_->GetBrowserState());
+  delegate_->FetchFavIconImage(^{
+    // Once the favicon image is fetched, display the infobar.
+    ShowInfoBar();
+  });
+}
+
+void TabPickupBrowserAgent::ShowInfoBar() {
   // TODO(crbug.com/1129482): Implement this.
 }
 

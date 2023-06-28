@@ -15,6 +15,8 @@
 
 class Browser;
 
+class TabPickupInfobarDelegate;
+
 namespace sync_sessions {
 class SessionSyncService;
 }
@@ -48,6 +50,9 @@ class TabPickupBrowserAgent : public BrowserObserver,
   // Setups the infobar delegate before showing the infobar.
   void SetupInfoBarDelegate();
 
+  // Adds/replaces the infobar and show the banner.
+  void ShowInfoBar();
+
   // BrowserObserver methods.
   void BrowserDestroyed(Browser* browser) override;
 
@@ -72,6 +77,8 @@ class TabPickupBrowserAgent : public BrowserObserver,
   raw_ptr<Browser> browser_ = nullptr;
   // The active webState.
   raw_ptr<web::WebState> active_web_state_ = nullptr;
+  // The infobar's delegate.
+  std::unique_ptr<TabPickupInfobarDelegate> delegate_;
   // KeyedService responsible session sync.
   raw_ptr<sync_sessions::SessionSyncService> session_sync_service_ = nullptr;
   // CallbackListSubscription for the SessionSyncService method.

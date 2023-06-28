@@ -185,6 +185,7 @@ class InfoBarDelegate {
     TAILORED_SECURITY_SERVICE_INFOBAR_DELEGATE = 111,
     CHROME_FOR_TESTING_INFOBAR_DELEGATE = 112,
     EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE = 113,
+    TAB_PICKUP_INFOBAR_DELEGATE = 114,
   };
 
   // Describes navigation events, used to decide whether infobars should be
