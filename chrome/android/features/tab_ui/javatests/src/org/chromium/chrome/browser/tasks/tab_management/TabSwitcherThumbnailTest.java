@@ -22,7 +22,6 @@ import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAssertion;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -73,11 +72,6 @@ public class TabSwitcherThumbnailTest {
     public void setUp() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         TabGridViewBinder.setThumbnailFeatureForTesting(mNullThumbnailProvider);
-    }
-
-    @After
-    public void tearDown() {
-        TabGridViewBinder.setThumbnailFeatureForTesting(null);
     }
 
     @Test

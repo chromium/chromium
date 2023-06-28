@@ -200,7 +200,7 @@ public class BookmarkTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         runOnUiThreadBlocking(() -> {
             mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
-            SyncServiceFactory.overrideForTests(mSyncService);
+            SyncServiceFactory.setInstanceForTesting(mSyncService);
         });
         // Use a custom port so the links are consistent for render tests.
         mActivityTestRule.getEmbeddedTestServerRule().setServerPort(TEST_PORT);

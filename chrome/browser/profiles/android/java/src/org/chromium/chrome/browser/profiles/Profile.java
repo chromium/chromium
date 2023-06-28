@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.profiles;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -227,10 +227,9 @@ public class Profile implements BrowserContextHandle {
     /**
      * Sets for testing the profile to be returned by {@link #getLastUsedRegularProfile()}.
      */
-    @CheckDiscard("Test-only setter.")
-    @VisibleForTesting
     public static void setLastUsedProfileForTesting(Profile profile) {
         sLastUsedProfileForTesting = profile;
+        ResettersForTesting.register(() -> sLastUsedProfileForTesting = null);
     }
 
     @NativeMethods

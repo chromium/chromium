@@ -1043,7 +1043,6 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Override
     public void tearDownTest() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PriceTrackingFeatures.setPriceTrackingEnabledForTesting(null);
             mStripMCP.destroy();
             mGridMCP.destroy();
             mSelectableMCP.destroy();

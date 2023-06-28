@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -101,9 +102,10 @@ public class HomepagePolicyManager implements PrefObserver {
         sInstance = null;
     }
 
-    @VisibleForTesting
     public static void setInstanceForTests(HomepagePolicyManager instance) {
+        var oldValue = sInstance;
         sInstance = instance;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     @VisibleForTesting
@@ -221,9 +223,9 @@ public class HomepagePolicyManager implements PrefObserver {
         return UserPrefs.get(Profile.getLastUsedRegularProfile());
     }
 
-    @VisibleForTesting
     public static void setPrefServiceForTesting(PrefService prefService) {
         sPrefServiceForTesting = prefService;
+        ResettersForTesting.register(() -> sPrefServiceForTesting = null);
     }
 
     @VisibleForTesting
@@ -242,7 +244,6 @@ public class HomepagePolicyManager implements PrefObserver {
         return mIsInitializedWithNative;
     }
 
-    @VisibleForTesting
     ObserverList<HomepagePolicyStateListener> getListenersForTesting() {
         return mListeners;
     }

@@ -61,12 +61,11 @@ public class HistorySyncFragmentTest {
 
     @Before
     public void setUp() {
-        SyncServiceFactory.overrideForTests(mSyncService);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
     }
 
     @After
     public void tearDown() {
-        SyncServiceFactory.resetForTests();
         if (mScenario != null) {
             mScenario.close();
         }

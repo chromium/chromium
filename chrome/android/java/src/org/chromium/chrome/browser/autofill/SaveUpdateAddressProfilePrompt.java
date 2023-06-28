@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.R;
@@ -270,7 +271,9 @@ public class SaveUpdateAddressProfilePrompt {
     }
 
     void setAddressEditorForTesting(AddressEditorCoordinator addressEditor) {
+        var oldValue = mAddressEditor;
         mAddressEditor = addressEditor;
+        ResettersForTesting.register(() -> mAddressEditor = oldValue);
     }
 
     View getDialogViewForTesting() {

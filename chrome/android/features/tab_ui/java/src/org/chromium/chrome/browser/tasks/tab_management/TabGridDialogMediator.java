@@ -12,10 +12,10 @@ import android.text.TextWatcher;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
@@ -720,38 +720,33 @@ public class TabGridDialogMediator
         }
     }
 
-    @VisibleForTesting
     int getCurrentTabIdForTesting() {
         return mCurrentTabId;
     }
 
-    @VisibleForTesting
     void setCurrentTabIdForTesting(int tabId) {
+        var oldValue = mCurrentTabId;
         mCurrentTabId = tabId;
+        ResettersForTesting.register(() -> mCurrentTabId = oldValue);
     }
 
-    @VisibleForTesting
     KeyboardVisibilityDelegate.KeyboardVisibilityListener
     getKeyboardVisibilityListenerForTesting() {
         return mKeyboardVisibilityListener;
     }
 
-    @VisibleForTesting
     boolean getIsUpdatingTitleForTesting() {
         return mIsUpdatingTitle;
     }
 
-    @VisibleForTesting
     String getCurrentGroupModifiedTitleForTesting() {
         return mCurrentGroupModifiedTitle;
     }
 
-    @VisibleForTesting
     Callback<Integer> getToolbarMenuCallbackForTesting() {
         return mToolbarMenuCallback;
     }
 
-    @VisibleForTesting
     Runnable getScrimClickRunnableForTesting() {
         return mScrimClickRunnable;
     }

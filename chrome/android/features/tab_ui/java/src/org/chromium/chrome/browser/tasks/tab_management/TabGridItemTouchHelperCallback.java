@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -453,32 +454,36 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         return out;
     }
 
-    @VisibleForTesting
     void setActionsOnAllRelatedTabsForTesting(boolean flag) {
+        var oldValue = mActionsOnAllRelatedTabs;
         mActionsOnAllRelatedTabs = flag;
+        ResettersForTesting.register(() -> mActionsOnAllRelatedTabs = oldValue);
     }
 
-    @VisibleForTesting
     void setHoveredTabIndexForTesting(int index) {
+        var oldValue = mHoveredTabIndex;
         mHoveredTabIndex = index;
+        ResettersForTesting.register(() -> mHoveredTabIndex = oldValue);
     }
 
-    @VisibleForTesting
     void setSelectedTabIndexForTesting(int index) {
+        var oldValue = mSelectedTabIndex;
         mSelectedTabIndex = index;
+        ResettersForTesting.register(() -> mSelectedTabIndex = oldValue);
     }
 
-    @VisibleForTesting
     void setUnGroupTabIndexForTesting(int index) {
+        var oldValue = mUnGroupTabIndex;
         mUnGroupTabIndex = index;
+        ResettersForTesting.register(() -> mUnGroupTabIndex = oldValue);
     }
 
-    @VisibleForTesting
     void setCurrentActionStateForTesting(int actionState) {
+        var oldValue = mCurrentActionState;
         mCurrentActionState = actionState;
+        ResettersForTesting.register(() -> mCurrentActionState = oldValue);
     }
 
-    @VisibleForTesting
     boolean hasDragFlagForTesting(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         int flags = getMovementFlags(recyclerView, viewHolder);
         return (flags >> 16) != 0;

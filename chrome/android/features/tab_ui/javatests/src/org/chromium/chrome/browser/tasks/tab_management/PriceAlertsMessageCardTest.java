@@ -123,10 +123,6 @@ public class PriceAlertsMessageCardTest {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mPriceDropNotificationManager.deleteChannelForTesting();
         }
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(null);
-        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(null);
-        PriceDropNotificationManagerImpl.setNotificationManagerForTesting(null);
-        ShoppingFeatures.setShoppingListEligibleForTesting(null);
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
         Intents.release();
     }

@@ -102,7 +102,7 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
         MockitoAnnotations.initMocks(this);
         runOnUiThreadBlocking(() -> {
             PersonalDataManager.setInstanceForTesting(mPersonalDataManager);
-            SyncServiceFactory.overrideForTests(mSyncService);
+            SyncServiceFactory.setInstanceForTesting(mSyncService);
             IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
             when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
         });
@@ -120,7 +120,6 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
     @Override
     public void tearDownTest() throws Exception {
         runOnUiThreadBlocking(mPrompt::dismiss);
-        PersonalDataManager.setInstanceForTesting(null);
         super.tearDownTest();
     }
 

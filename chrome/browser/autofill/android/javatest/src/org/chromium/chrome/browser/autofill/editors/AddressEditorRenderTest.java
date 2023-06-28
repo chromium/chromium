@@ -177,7 +177,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
         runOnUiThreadBlocking(() -> {
             when(mSyncService.isSyncFeatureEnabled()).thenReturn(false);
             when(mSyncService.getSelectedTypes()).thenReturn(new HashSet());
-            SyncServiceFactory.overrideForTests(mSyncService);
+            SyncServiceFactory.setInstanceForTesting(mSyncService);
 
             when(mPersonalDataManager.isCountryEligibleForAccountStorage(anyString()))
                     .thenReturn(true);

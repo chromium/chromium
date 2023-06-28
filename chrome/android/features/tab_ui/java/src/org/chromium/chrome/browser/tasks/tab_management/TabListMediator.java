@@ -37,6 +37,7 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -1111,9 +1112,10 @@ class TabListMediator {
         sTabClosedFromMapTabClosedFromMap.put(tabId, TabClosedFrom.GRID_TAB_SWITCHER_GROUP);
     }
 
-    @VisibleForTesting
     void setActionOnAllRelatedTabsForTesting(boolean actionOnAllRelatedTabs) {
+        var oldValue = mActionsOnAllRelatedTabs;
         mActionsOnAllRelatedTabs = actionOnAllRelatedTabs;
+        ResettersForTesting.register(() -> mActionsOnAllRelatedTabs = oldValue);
     }
 
     private List<Tab> getRelatedTabsForId(int id) {
@@ -1374,7 +1376,6 @@ class TabListMediator {
         return getRelatedTabsForId(tabId).size() == 1;
     }
 
-    @VisibleForTesting
     public Set<Integer> getViewedTabIdsForTesting() {
         return sViewedTabIds;
     }
@@ -2003,7 +2004,6 @@ class TabListMediator {
         }
     }
 
-    @VisibleForTesting
     View.AccessibilityDelegate getAccessibilityDelegateForTesting() {
         return mAccessibilityDelegate;
     }
@@ -2050,13 +2050,13 @@ class TabListMediator {
         return TabModel.INVALID_TAB_INDEX;
     }
 
-    @VisibleForTesting
     Tab getTabToAddDelayedForTesting() {
         return mTabToAddDelayed;
     }
 
-    @VisibleForTesting
     void setComponentNameForTesting(String name) {
+        var oldValue = mComponentName;
         mComponentName = name;
+        ResettersForTesting.register(() -> mComponentName = oldValue);
     }
 }

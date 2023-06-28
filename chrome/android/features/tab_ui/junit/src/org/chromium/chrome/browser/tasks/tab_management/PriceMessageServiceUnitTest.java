@@ -16,7 +16,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -102,11 +101,6 @@ public class PriceMessageServiceUnitTest {
         mMessageService = new PriceMessageService(
                 mMessageProvider, mReviewActionProvider, mNotificationManager);
         mMessageService.addObserver(mMessageObserver);
-    }
-
-    @After
-    public void tearDown() {
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(null);
     }
 
     @Test(expected = AssertionError.class)

@@ -843,8 +843,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         verify(mOnLongPressTabItemEventListener).onLongPressEvent(TAB1_ID);
         assertTrue(mItemTouchHelperCallback.shouldBlockAction());
-
-        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(false);
     }
 
     @Test
@@ -864,8 +862,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         verify(mOnLongPressTabItemEventListener, never()).onLongPressEvent(TAB1_ID);
         assertFalse(mItemTouchHelperCallback.shouldBlockAction());
-
-        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(false);
     }
 
     private void verifyDrag(

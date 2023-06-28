@@ -219,7 +219,6 @@ public class TabGridDialogTest {
 
     @After
     public void tearDown() throws Exception {
-        TabSelectionEditorShareAction.setIntentCallbackForTesting(null);
         ActivityTestUtils.clearActivityOrientation(sActivityTestRule.getActivity());
         Intents.release();
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
@@ -569,8 +568,6 @@ public class TabGridDialogTest {
         // Verify no selection action occurred to switch the selected tab in the tab model
         Criteria.checkThat(
                 sActivityTestRule.getActivity().getCurrentTabModel().index(), Matchers.is(1));
-
-        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(false);
     }
 
     @Test
@@ -607,7 +604,6 @@ public class TabGridDialogTest {
                                                        .getBottomControlOffset()
                         == 0);
         waitForView(allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
-        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(false);
     }
 
     @Test
@@ -1442,7 +1438,6 @@ public class TabGridDialogTest {
 
         // With a custom homepage exit the app.
         CriteriaHelper.pollUiThread(() -> cta.isDestroyed());
-        HomepagePolicyManager.setInstanceForTests(null);
     }
 
     @Test

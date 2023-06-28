@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -68,14 +67,9 @@ public class StepDisplayHandlerImplTest {
 
         mMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceNativesMock);
 
-        SyncServiceFactory.overrideForTests(mSyncService);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
         mMocker.mock(SafeBrowsingBridgeJni.TEST_HOOKS, mSBNativesMock);
         mStepDisplayHandler = new StepDisplayHandlerImpl();
-    }
-
-    @After
-    public void tearDown() {
-        SyncServiceFactory.resetForTests();
     }
 
     private void setSBState(@SafeBrowsingState int sbState) {

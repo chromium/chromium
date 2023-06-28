@@ -20,7 +20,6 @@ import android.content.res.Configuration;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -69,18 +68,11 @@ public class IncognitoReauthPromoCardRenderTest {
     public void setUp() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
         IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(true);
-        IncognitoReauthPromoMessageService.sTriggerReviewActionWithoutReauthForTesting = true;
+        IncognitoReauthPromoMessageService.setTriggerReviewActionWithoutReauthForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
 
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
-    }
-
-    @After
-    public void tearDown() {
-        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(null);
-        IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(null);
-        IncognitoReauthPromoMessageService.sTriggerReviewActionWithoutReauthForTesting = null;
     }
 
     @Test

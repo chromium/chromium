@@ -124,7 +124,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
-import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -474,9 +473,6 @@ public class TabListMediatorUnitTest {
     public void tearDown() {
         CachedFeatureFlags.resetFlagsForTesting();
         PseudoTab.clearForTesting();
-        TabAttributeCache.clearAllForTesting();
-        getGroupTitleSharedPreferences().edit().clear();
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(null);
     }
 
     private static SharedPreferences getGroupTitleSharedPreferences() {

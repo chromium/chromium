@@ -14,11 +14,11 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
@@ -360,7 +360,6 @@ public class TabSwitcherCoordinator
                 coordinator.getContext().getColor(R.color.omnibox_focused_fading_background_color));
     }
 
-    @VisibleForTesting
     public static boolean hasAppendedMessagesForTesting() {
         return sAppendedMessagesForTesting;
     }
@@ -577,31 +576,28 @@ public class TabSwitcherCoordinator
     }
 
     @Override
-    @VisibleForTesting
     public void setBitmapCallbackForTesting(Callback<Bitmap> callback) {
         TabListMediator.ThumbnailFetcher.sBitmapCallbackForTesting = callback;
+        ResettersForTesting.register(
+                () -> TabListMediator.ThumbnailFetcher.sBitmapCallbackForTesting = null);
     }
 
     @Override
-    @VisibleForTesting
     public int getBitmapFetchCountForTesting() {
         return TabListMediator.ThumbnailFetcher.sFetchCountForTesting;
     }
 
     @Override
-    @VisibleForTesting
     public void resetBitmapFetchCountForTesting() {
         TabListMediator.ThumbnailFetcher.sFetchCountForTesting = 0;
     }
 
     @Override
-    @VisibleForTesting
     public int getSoftCleanupDelayForTesting() {
         return mMediator.getSoftCleanupDelayForTesting();
     }
 
     @Override
-    @VisibleForTesting
     public int getCleanupDelayForTesting() {
         return mMediator.getCleanupDelayForTesting();
     }

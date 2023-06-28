@@ -131,7 +131,7 @@ public class SearchResumptionModuleUtilsUnitTest {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
-        SyncServiceFactory.overrideForTests(mSyncServiceMock);
+        SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
 
         ShadowChromeFeatureList.sEnableScrollableMVT = true;
         ShadowChromeFeatureList.sEnableSearchResumptionModule = true;

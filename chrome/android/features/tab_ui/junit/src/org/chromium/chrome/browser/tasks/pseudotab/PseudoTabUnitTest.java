@@ -88,13 +88,7 @@ public class PseudoTabUnitTest {
 
     @After
     public void tearDown() {
-        TabAttributeCache.clearAllForTesting();
         PseudoTab.clearForTesting();
-
-        // This is necessary to get the cache behavior correct.
-        Runtime runtime = Runtime.getRuntime();
-        runtime.runFinalization();
-        runtime.gc();
     }
 
     @Test

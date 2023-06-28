@@ -10,7 +10,6 @@ import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -68,21 +67,12 @@ public class PriceTrackingFeaturesTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         when(mIdentityServicesProviderMock.getIdentityManager(any(Profile.class)))
                 .thenReturn(mIdentityManagerMock);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> SyncServiceFactory.overrideForTests(mSyncServiceMock));
+        SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
 
         setMbbStatus(true);
         setSignedInStatus(true);
         setTabSyncStatus(true, true);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
-    }
-
-    @After
-    public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> SyncServiceFactory.resetForTests());
-        IdentityServicesProvider.setInstanceForTests(null);
-        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(null);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(null);
     }
 
     @UiThreadTest

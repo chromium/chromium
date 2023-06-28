@@ -118,7 +118,7 @@ public class PasswordMigrationWarningMediatorTest {
         mMediator.initializeModel(mModel);
 
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        SyncServiceFactory.overrideForTests(mSyncService);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
     }
 
     @Test

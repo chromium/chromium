@@ -169,7 +169,7 @@ public class SearchResumptionModuleMediatorUnitTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         doReturn(mSignInManager).when(mIdentityServicesProvider).getSigninManager(any());
 
-        SyncServiceFactory.overrideForTests(mSyncServiceMock);
+        SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
 
         mActionTester = new UserActionTester();
     }

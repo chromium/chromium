@@ -277,6 +277,5 @@ public class TabSuggestionsOrchestratorTest {
         tabSuggestionsOrchestrator.mTabContextObserver.mTabModelObserver.didAddTab(
                 null, 0, TabCreationState.LIVE_IN_FOREGROUND, false);
         Assert.assertEquals(expectedSuggestions, suggestions.size());
-        tabSuggestionsOrchestrator.restoreMinTimeBetweenPrefetchesForTesting();
     }
 }

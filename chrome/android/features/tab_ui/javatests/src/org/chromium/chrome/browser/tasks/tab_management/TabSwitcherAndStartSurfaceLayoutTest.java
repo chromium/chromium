@@ -1960,8 +1960,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         // Verify no selection action occurred to switch the selected tab in the tab model
         Criteria.checkThat(
                 mActivityTestRule.getActivity().getCurrentTabModel().index(), Matchers.is(1));
-
-        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(false);
     }
 
     @Test
@@ -1985,8 +1983,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
         TabSelectionEditorTestingRobot mSelectionEditorRobot = new TabSelectionEditorTestingRobot();
         mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsVisible();
-
-        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(false);
     }
 
     @Test
@@ -2017,8 +2013,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         // verify clicking the tab worked.
         Criteria.checkThat(
                 mActivityTestRule.getActivity().getCurrentTabModel().index(), Matchers.is(0));
-
-        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(false);
     }
 
     @Test

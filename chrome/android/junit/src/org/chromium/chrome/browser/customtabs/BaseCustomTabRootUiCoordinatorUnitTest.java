@@ -51,7 +51,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         CustomTabsConnection.setInstanceForTesting(connection);
 
         SyncService syncService = Mockito.mock(SyncService.class);
-        SyncServiceFactory.overrideForTests(syncService);
+        SyncServiceFactory.setInstanceForTesting(syncService);
 
         enablePageInsights(testValues, connection, syncService);
         assertTrue("PageInsightsHub should be enabled", isPageInsightsEnabledSync());

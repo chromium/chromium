@@ -731,7 +731,7 @@ public class AutofillProfilesFragmentTest {
 
     private void setUpMockSyncService(boolean enabled, Set<Integer> selectedTypes) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> SyncServiceFactory.overrideForTests(mSyncService));
+                () -> SyncServiceFactory.setInstanceForTesting(mSyncService));
         when(mSyncService.isSyncFeatureEnabled()).thenReturn(enabled);
         when(mSyncService.getSelectedTypes()).thenReturn(selectedTypes);
     }

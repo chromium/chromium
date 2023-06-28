@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -93,7 +92,7 @@ public class SaveUpdateAddressProfilePromptTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         PersonalDataManager.setInstanceForTesting(mPersonalDataManager);
-        SyncServiceFactory.overrideForTests(mSyncService);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
 
@@ -104,11 +103,6 @@ public class SaveUpdateAddressProfilePromptTest {
         mJniMocker.mock(
                 SaveUpdateAddressProfilePromptControllerJni.TEST_HOOKS, mPromptControllerJni);
         mJniMocker.mock(AutofillProfileBridgeJni.TEST_HOOKS, mAutofillProfileBridgeJni);
-    }
-
-    @After
-    public void tearDown() {
-        PersonalDataManager.setInstanceForTesting(null);
     }
 
     private void createAndShowPrompt(boolean isUpdate) {

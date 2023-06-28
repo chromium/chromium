@@ -13,10 +13,10 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.tab.Tab;
@@ -221,13 +221,13 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
                 || UNSUPPORTED_SCHEMES.contains(url.getScheme());
     }
 
-    @VisibleForTesting
     void setSkipUrlCheckForTesting(boolean skip) {
         mSkipUrlCheckForTesting = skip;
+        ResettersForTesting.register(() -> mSkipUrlCheckForTesting = false);
     }
 
-    @VisibleForTesting
     static void setIntentCallbackForTesting(Callback<Intent> callback) {
         sIntentCallbackForTesting = callback;
+        ResettersForTesting.register(() -> sIntentCallbackForTesting = null);
     }
 }

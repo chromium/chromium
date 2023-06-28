@@ -178,7 +178,6 @@ public class TabSelectionEditorTest {
 
     @After
     public void tearDown() {
-        TabSelectionEditorShareAction.setIntentCallbackForTesting(null);
         if (mTabSelectionEditorCoordinator != null) {
             if (sActivityTestRule.getActivity().findViewById(R.id.app_menu_list) != null) {
                 Espresso.pressBack();

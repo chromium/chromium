@@ -95,7 +95,7 @@ public class BookmarkManagerCoordinatorTest {
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mMockLargeIconBridgeJni);
 
         // Setup service mocks.
-        SyncServiceFactory.overrideForTests(mSyncService);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         Mockito.doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(mProfile);
         Mockito.doReturn(mIdentityManager).when(mSigninManager).getIdentityManager();

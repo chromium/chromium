@@ -30,6 +30,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
@@ -562,7 +563,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         }
     }
 
-    @VisibleForTesting
     int getSoftCleanupDelayForTesting() {
         return getSoftCleanupDelay();
     }
@@ -578,7 +578,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                 DEFAULT_SOFT_CLEANUP_DELAY_MS);
     }
 
-    @VisibleForTesting
     int getCleanupDelayForTesting() {
         return getCleanupDelay();
     }
@@ -1043,6 +1042,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      */
     void setSoftCleanupDelayForTesting(int timeoutMs) {
         mSoftCleanupDelayMsForTesting = timeoutMs;
+        ResettersForTesting.register(() -> mSoftCleanupDelayMsForTesting = null);
     }
 
     /**
@@ -1050,6 +1050,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      */
     void setCleanupDelayForTesting(int timeoutMs) {
         mCleanupDelayMsForTesting = timeoutMs;
+        ResettersForTesting.register(() -> mCleanupDelayMsForTesting = null);
     }
 
     /**

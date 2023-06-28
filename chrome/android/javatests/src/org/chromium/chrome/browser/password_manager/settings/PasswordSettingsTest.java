@@ -84,7 +84,7 @@ public class PasswordSettingsTest {
         // By default sync is off. Tests can override this later.
         setSyncServiceState(false, false);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> SyncServiceFactory.overrideForTests(mMockSyncService));
+                () -> SyncServiceFactory.setInstanceForTesting(mMockSyncService));
 
         // This initializes the browser, so some tests can do setup before PasswordSettings is
         // launched. ChromeTabbedActivityTestRule.startMainActivityOnBlankPage() is more commonly

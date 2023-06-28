@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
@@ -41,7 +42,6 @@ public class IncognitoReauthPromoMessageService
     /**
      * TODO(crbug.com/1227656): Remove this when we support all the Android versions.
      */
-    @VisibleForTesting
     public static Boolean sIsPromoEnabledForTesting;
 
     /**
@@ -50,8 +50,7 @@ public class IncognitoReauthPromoMessageService
      * triggering and simply call the next set of actions which would have been call, if
      * the re-auth was indeed successful.
      */
-    @VisibleForTesting
-    public static Boolean sTriggerReviewActionWithoutReauthForTesting;
+    private static Boolean sTriggerReviewActionWithoutReauthForTesting;
 
     @VisibleForTesting
     public final int mMaxPromoMessageCount = 10;
@@ -297,9 +296,14 @@ public class IncognitoReauthPromoMessageService
         return mSharedPreferencesManager.readBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, true);
     }
 
-    @VisibleForTesting
+    public static void setTriggerReviewActionWithoutReauthForTesting(boolean enabled) {
+        sTriggerReviewActionWithoutReauthForTesting = enabled;
+        ResettersForTesting.register(() -> sTriggerReviewActionWithoutReauthForTesting = null);
+    }
+
     public static void setIsPromoEnabledForTesting(@Nullable Boolean enabled) {
         sIsPromoEnabledForTesting = enabled;
+        ResettersForTesting.register(() -> sIsPromoEnabledForTesting = null);
     }
 
     private void disableIncognitoReauthPromoMessage() {

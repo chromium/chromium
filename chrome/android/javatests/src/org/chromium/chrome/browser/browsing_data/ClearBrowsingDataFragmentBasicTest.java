@@ -86,15 +86,13 @@ public class ClearBrowsingDataFragmentBasicTest {
     @Before
     public void setUp() throws InterruptedException {
         initMocks(this);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> SyncServiceFactory.overrideForTests(mMockSyncService));
+        SyncServiceFactory.setInstanceForTesting(mMockSyncService);
         setSyncable(false);
         mActivityTestRule.startMainActivityOnBlankPage();
     }
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> SyncServiceFactory.resetForTests());
         TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
 

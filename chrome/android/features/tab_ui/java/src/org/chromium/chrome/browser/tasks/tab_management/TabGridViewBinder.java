@@ -26,6 +26,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.tab_ui.R;
@@ -470,8 +471,8 @@ class TabGridViewBinder {
         }
     }
 
-    @VisibleForTesting
     static void setThumbnailFeatureForTesting(TabListMediator.ThumbnailFetcher fetcher) {
         sThumbnailFetcherForTesting = fetcher;
+        ResettersForTesting.register(() -> sThumbnailFetcherForTesting = null);
     }
 }

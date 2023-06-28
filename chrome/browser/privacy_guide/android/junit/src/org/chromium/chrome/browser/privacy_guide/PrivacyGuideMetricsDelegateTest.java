@@ -76,7 +76,7 @@ public class PrivacyGuideMetricsDelegateTest {
     public void setUp() {
         Profile.setLastUsedProfileForTesting(mProfile);
         mocker.mock(UnifiedConsentServiceBridgeJni.TEST_HOOKS, mNativeMock);
-        SyncServiceFactory.overrideForTests(mSyncService);
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.getSelectedTypes()).thenReturn(mSyncTypes);
         mocker.mock(SafeBrowsingBridgeJni.TEST_HOOKS, mSafeBrowsingNativeMock);
         mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativesMock);

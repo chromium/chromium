@@ -171,7 +171,7 @@ public class PasswordManagerHelperTest {
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         when(mPrefService.getBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS))
                 .thenReturn(false);
-        SyncServiceFactory.overrideForTests(mSyncServiceMock);
+        SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.getAuthError()).thenReturn(GoogleServiceAuthError.State.NONE);
         when(mLoadingModalDialogCoordinator.getState())
@@ -269,7 +269,6 @@ public class PasswordManagerHelperTest {
     @Test
     @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testCanUseUpmCheckup() {
-        SyncServiceFactory.overrideForTests(mSyncServiceMock);
         when(mSyncServiceMock.getSelectedTypes())
                 .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
@@ -277,59 +276,49 @@ public class PasswordManagerHelperTest {
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
 
         assertTrue(PasswordManagerHelper.canUseUpm());
-        SyncServiceFactory.resetForTests();
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testCanNotUseUpmCheckupWithoutPasswordType() {
-        SyncServiceFactory.overrideForTests(mSyncServiceMock);
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
 
         assertFalse(PasswordManagerHelper.canUseUpm());
-        SyncServiceFactory.resetForTests();
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testCanNotUseUpmCheckupWithoutSyncService() {
-        SyncServiceFactory.overrideForTests(mSyncServiceMock);
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(false);
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
 
         assertFalse(PasswordManagerHelper.canUseUpm());
-        SyncServiceFactory.resetForTests();
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testCanNotUseUpmCheckupWithoutSyncConsent() {
-        SyncServiceFactory.overrideForTests(mSyncServiceMock);
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(false);
 
         assertFalse(PasswordManagerHelper.canUseUpm());
-        SyncServiceFactory.resetForTests();
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testCanNotUseUpmCheckupWithAuthError() {
-        SyncServiceFactory.overrideForTests(mSyncServiceMock);
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
         when(mSyncServiceMock.getAuthError()).thenReturn(State.INVALID_GAIA_CREDENTIALS);
 
         assertFalse(PasswordManagerHelper.canUseUpm());
-        SyncServiceFactory.resetForTests();
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testCanNotUseUpmCheckupWithNoBackend() {
-        SyncServiceFactory.overrideForTests(mSyncServiceMock);
         when(mSyncServiceMock.getSelectedTypes())
                 .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
@@ -339,13 +328,11 @@ public class PasswordManagerHelperTest {
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(false);
 
         assertFalse(PasswordManagerHelper.canUseUpm());
-        SyncServiceFactory.resetForTests();
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testCanUseUpmCheckupWhenBackendUpdateNeeded() {
-        SyncServiceFactory.overrideForTests(mSyncServiceMock);
         when(mSyncServiceMock.getSelectedTypes())
                 .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
@@ -357,7 +344,6 @@ public class PasswordManagerHelperTest {
         when(mBackendSupportHelperMock.isUpdateNeeded()).thenReturn(true);
 
         assertTrue(PasswordManagerHelper.canUseUpm());
-        SyncServiceFactory.resetForTests();
     }
 
     @Test
@@ -378,8 +364,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier, /*managePasskeys=*/false);
 
         assertNotNull(mModalDialogManager.getCurrentDialogForTest());
-
-        SyncServiceFactory.resetForTests();
     }
 
     @Test
@@ -399,8 +383,6 @@ public class PasswordManagerHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK, mSyncServiceMock, mModalDialogManagerSupplier);
 
         assertNotNull(mModalDialogManager.getCurrentDialogForTest());
-
-        SyncServiceFactory.resetForTests();
     }
 
     @Test
@@ -416,8 +398,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier, /*managePasskeys=*/false);
 
         assertNull(mModalDialogManager.getCurrentDialogForTest());
-
-        SyncServiceFactory.resetForTests();
     }
 
     @Test
@@ -432,8 +412,6 @@ public class PasswordManagerHelperTest {
                 PasswordCheckReferrer.SAFETY_CHECK, mSyncServiceMock, mModalDialogManagerSupplier);
 
         assertNull(mModalDialogManager.getCurrentDialogForTest());
-
-        SyncServiceFactory.resetForTests();
     }
 
     @Test
@@ -462,7 +440,6 @@ public class PasswordManagerHelperTest {
     @Test
     @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testResetsUnenrollment() {
-        SyncServiceFactory.overrideForTests(mSyncServiceMock);
         when(mSyncServiceMock.getSelectedTypes())
                 .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
@@ -476,14 +453,11 @@ public class PasswordManagerHelperTest {
         verify(mPrefService)
                 .setBoolean(
                         eq(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS), eq(false));
-
-        SyncServiceFactory.resetForTests();
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testDoesntResetUnenrollmentIfUnnecessary() {
-        SyncServiceFactory.overrideForTests(mSyncServiceMock);
         when(mSyncServiceMock.getSelectedTypes())
                 .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
@@ -498,8 +472,6 @@ public class PasswordManagerHelperTest {
         verify(mPrefService, never())
                 .setBoolean(eq(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS),
                         anyBoolean());
-
-        SyncServiceFactory.resetForTests();
     }
 
     @Test
@@ -1376,11 +1348,9 @@ public class PasswordManagerHelperTest {
             ChromeFeatureList.PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID})
     public void
     testUseAccountSettings() {
-        SyncServiceFactory.overrideForTests(mSyncServiceMock);
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(false);
 
         assertTrue(PasswordManagerHelper.canUseAccountSettings());
-        SyncServiceFactory.resetForTests();
     }
 
     @Test
@@ -1388,13 +1358,11 @@ public class PasswordManagerHelperTest {
             ChromeFeatureList.PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID})
     public void
     testCannotUseAccountSettingsWithNoBackend() {
-        SyncServiceFactory.overrideForTests(mSyncServiceMock);
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(false);
 
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(false);
 
         assertFalse(PasswordManagerHelper.canUseAccountSettings());
-        SyncServiceFactory.resetForTests();
     }
 
     private void chooseToSyncPasswordsWithoutCustomPassphrase() {

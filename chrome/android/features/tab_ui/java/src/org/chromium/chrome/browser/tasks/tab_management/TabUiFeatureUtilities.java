@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.device.DeviceClassManager.GTS_LOW_END_
 import android.content.Context;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
@@ -88,7 +89,9 @@ public class TabUiFeatureUtilities {
      * Set whether the longpress entry for TabSelectionEditor is enabled. Currently only in tests.
      */
     public static void setTabSelectionEditorLongPressEntryEnabledForTesting(boolean enabled) {
+        var oldValue = sTabSelectionEditorLongPressEntryEnabled;
         sTabSelectionEditorLongPressEntryEnabled = enabled;
+        ResettersForTesting.register(() -> sTabSelectionEditorLongPressEntryEnabled = oldValue);
     }
 
     /**

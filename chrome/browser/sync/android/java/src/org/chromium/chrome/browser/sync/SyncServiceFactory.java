@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.sync;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
@@ -55,21 +54,9 @@ public class SyncServiceFactory {
     /**
      * Overrides the initialization for tests. The tests should call resetForTests() at shutdown.
      */
-    @VisibleForTesting
-    public static void overrideForTests(SyncService syncService) {
-        ThreadUtils.assertOnUiThread();
-        sSyncServiceForTest = syncService;
+    public static void setInstanceForTesting(SyncService syncService) {
+        ThreadUtils.runOnUiThreadBlocking((Runnable) () -> sSyncServiceForTest = syncService);
         ResettersForTesting.register(() -> sSyncServiceForTest = null);
-    }
-
-    /**
-     * Resets the SyncService instance. Calling get() next time will initialize with a new
-     * instance.
-     */
-    @VisibleForTesting
-    public static void resetForTests() {
-        ThreadUtils.assertOnUiThread();
-        sSyncServiceForTest = null;
     }
 
     @NativeMethods
