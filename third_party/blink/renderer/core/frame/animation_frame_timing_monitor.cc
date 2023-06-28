@@ -64,8 +64,13 @@ void AnimationFrameTimingMonitor::WillPerformStyleAndLayoutCalculation() {
 }
 
 void AnimationFrameTimingMonitor::DidBeginMainFrame() {
-  DCHECK(current_frame_timing_info_ && state_ == State::kRenderingFrame);
-  DCHECK(!desired_render_start_time_.is_null());
+  // This can happen if a frame becomes visible mid-frame.
+  if (!current_frame_timing_info_) {
+    return;
+  }
+
+  CHECK(state_ == State::kRenderingFrame);
+  CHECK(!desired_render_start_time_.is_null());
   current_frame_timing_info_->SetRenderEndTime(base::TimeTicks::Now());
 
   if (did_pause_) {
