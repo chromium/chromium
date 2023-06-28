@@ -56,19 +56,9 @@ bool StorageAccessAPIServiceImpl::RenewPermissionGrant(
       HostContentSettingsMapFactory::GetForProfile(&*browser_context_);
   CHECK(settings_map);
 
-  if (!settings_map->RenewContentSetting(embedded_origin.GetURL(),
-                                         top_frame_origin.GetURL(),
-                                         ContentSettingsType::STORAGE_ACCESS)) {
-    return false;
-  }
-
-  ContentSettingsForOneType grants =
-      settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS);
-  browser_context_.get()
-      .GetDefaultStoragePartition()
-      ->GetCookieManagerForBrowserProcess()
-      ->SetStorageAccessGrantSettings(grants, base::DoNothing());
-  return true;
+  return settings_map->RenewContentSetting(embedded_origin.GetURL(),
+                                           top_frame_origin.GetURL(),
+                                           ContentSettingsType::STORAGE_ACCESS);
 }
 
 void StorageAccessAPIServiceImpl::Shutdown() {
