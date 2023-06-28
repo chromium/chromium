@@ -23,6 +23,7 @@
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/ukm/ios/ukm_reporting_ios_util.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/metric_kit_subscriber.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
@@ -59,6 +60,8 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+@class AppState;
 
 namespace {
 // The key to a NSUserDefaults entry logging the number of times classes are
@@ -572,6 +575,12 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
     [[NSUserDefaults standardUserDefaults]
         removeObjectForKey:kAppEnteredBackgroundDateKey];
   }
+
+  // Log browser cold start for default browser promo experiment stats.
+  if (scenes.count != 0 && scenes[0].appState.mainBrowserState) {
+    LogBrowserLaunched(startupInformation.isColdStart);
+  }
+
   if (!startupInformation.isColdStart) {
     return;
   }

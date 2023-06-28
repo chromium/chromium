@@ -14,11 +14,17 @@
 @property(nonatomic, assign) int promoDisplayCount;
 // Number of days since user last interacted with a promo.
 @property(nonatomic, assign) int numDaysSinceLastPromo;
+// Number of cold starts in the last `kTriggerCriteriaExperimentStatExpiration`
+// days.
+@property(nonatomic, assign) int chromeColdStartCount;
+// Number of warm starts in the last `kTriggerCriteriaExperimentStatExpiration`
+// days.
+@property(nonatomic, assign) int chromeWarmStartCount;
+// Number of indirect starts in the last
+// `kTriggerCriteriaExperimentStatExpiration` days.
+@property(nonatomic, assign) int chromeIndirectStartCount;
 
-// TODO(crbug.com/1456438): Implement rest of the metrics:
-// ChromeOpenCount
-// ChromeOpenIndirectlyCount
-// ActiveDayCount
+// TODO:
 // OmniboxClipboardUseCount
 // PasswordManagerUseCount
 // BookmarkUseCount

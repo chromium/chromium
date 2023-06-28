@@ -152,6 +152,10 @@ constexpr base::TimeDelta kMaximumTimeBetweenAppColdStartLaunches =
 // Maximum time range between valid user URL pastes to notify the FET.
 constexpr base::TimeDelta kMaximumTimeBetweenValidURLPastes = base::Days(7);
 
+// Time threshold for default browser trigger criteria experiment statistics.
+constexpr base::TimeDelta kTriggerCriteriaExperimentStatExpiration =
+    base::Days(14);
+
 // List of DefaultPromoType considered by MostRecentInterestDefaultPromoType.
 const DefaultPromoType kDefaultPromoTypes[] = {
     DefaultPromoTypeStaySafe,
@@ -230,11 +234,6 @@ void UpdateStorageWithDictionary(NSDictionary<NSString*, NSObject*>* dict) {
   [defaults setObject:storage forKey:kDefaultBrowserUtilsKey];
 }
 
-// Helper function to set `data` for `key` into the storage object.
-void SetObjectIntoStorageForKey(NSString* key, NSObject* data) {
-  UpdateStorageWithDictionary(@{key : data});
-}
-
 // Helper function to get the storage key for a specific promo type.
 NSString* StorageKeyForDefaultPromoType(DefaultPromoType type) {
   switch (type) {
@@ -253,9 +252,10 @@ NSString* StorageKeyForDefaultPromoType(DefaultPromoType type) {
   return nil;
 }
 
-// Loads from NSUserDefaults the time of the last non-expired events.
-std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type) {
-  NSString* key = StorageKeyForDefaultPromoType(type);
+// Loads from NSUserDefaults the time of the non-expired events for the
+// given key.
+std::vector<base::Time> LoadActiveTimestampsForKey(NSString* key,
+                                                   base::TimeDelta delay) {
   NSArray* dates = GetObjectFromStorageForKey<NSArray>(key);
   if (!dates) {
     return {};
@@ -272,7 +272,7 @@ std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type) {
     }
 
     const base::Time time = base::Time::FromNSDate(date);
-    if (now - time > kUserActivityTimestampExpiration) {
+    if (now - time > delay) {
       continue;
     }
 
@@ -282,9 +282,15 @@ std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type) {
   return times;
 }
 
-// Stores the time of the last recorded events for `type`.
-void StoreTimestampsForPromoType(DefaultPromoType type,
-                                 std::vector<base::Time> times) {
+// Loads from NSUserDefaults the time of the non-expired events for the
+// given promo type.
+std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type) {
+  return LoadActiveTimestampsForKey(StorageKeyForDefaultPromoType(type),
+                                    kUserActivityTimestampExpiration);
+}
+
+// Stores the time of the last recorded events for `key`.
+void StoreTimestampsForKey(NSString* key, std::vector<base::Time> times) {
   NSMutableArray<NSDate*>* dates =
       [[NSMutableArray alloc] initWithCapacity:times.size()];
 
@@ -299,8 +305,13 @@ void StoreTimestampsForPromoType(DefaultPromoType type,
     [dates addObject:time.ToNSDate()];
   }
 
-  NSString* key = StorageKeyForDefaultPromoType(type);
   SetObjectIntoStorageForKey(key, dates);
+}
+
+// Stores the time of the last recorded events for `type`.
+void StoreTimestampsForPromoType(DefaultPromoType type,
+                                 std::vector<base::Time> times) {
+  StoreTimestampsForKey(StorageKeyForDefaultPromoType(type), times);
 }
 
 // Returns whether an event was logged for key occuring less than `delay`
@@ -327,6 +338,11 @@ bool HasRecordedEventForKeyMoreThanDelay(NSString* key, base::TimeDelta delay) {
   return base::Time::Now() - time > delay;
 }
 
+// Returns number of events logged for key occuring less than `delay` in the
+// past.
+int NumRecordedEventForKeyLessThanDelay(NSString* key, base::TimeDelta delay) {
+  return LoadActiveTimestampsForKey(key, delay).size();
+}
 // `YES` if user interacted with the first run default browser screen.
 BOOL HasUserInteractedWithFirstRunPromoBefore() {
   NSNumber* number =
@@ -377,6 +393,16 @@ int NumDaysSincePromoInteraction() {
 
 NSString* const kLastTimeUserInteractedWithPromo =
     @"lastTimeUserInteractedWithFullscreenPromo";
+NSString* const kAllTimestampsAppLaunchColdStart =
+    @"AllTimestampsAppLaunchColdStart";
+NSString* const kAllTimestampsAppLaunchWarmStart =
+    @"AllTimestampsAppLaunchWarmStart";
+NSString* const kAllTimestampsAppLaunchIndirectStart =
+    @"AllTimestampsAppLaunchIndirectStart";
+
+void SetObjectIntoStorageForKey(NSString* key, NSObject* data) {
+  UpdateStorageWithDictionary(@{key : data});
+}
 
 void LogOpenHTTPURLFromExternalURL() {
   SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, [NSDate date]);
@@ -826,6 +852,13 @@ const std::string IOSDefaultBrowserPromoActionToString(
   }
 }
 
+void CleanupStorageForTriggerExperiment() {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+
+  [defaults removeObjectForKey:kAllTimestampsAppLaunchColdStart];
+  [defaults removeObjectForKey:kAllTimestampsAppLaunchWarmStart];
+  [defaults removeObjectForKey:kAllTimestampsAppLaunchIndirectStart];
+}
 void RecordPromoStatsToUMAForActionString(PromoStatistics* promo_stats,
                                           const std::string& action_str) {
   if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
@@ -840,6 +873,15 @@ void RecordPromoStatsToUMAForActionString(PromoStatistics* promo_stats,
   base::UmaHistogramCounts100(
       base::StrCat({histogram_prefix, ".LastPromoInteractionNumDays"}),
       promo_stats.numDaysSinceLastPromo);
+  base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, ".ChromeColdStartCount"}),
+      promo_stats.chromeColdStartCount);
+  base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, ".ChromeWarmStartCount"}),
+      promo_stats.chromeWarmStartCount);
+  base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, ".ChromeIndirectStartCount"}),
+      promo_stats.chromeIndirectStartCount);
 }
 
 PromoStatistics* CalculatePromoStatistics() {
@@ -850,6 +892,15 @@ PromoStatistics* CalculatePromoStatistics() {
   PromoStatistics* promo_stats = [[PromoStatistics alloc] init];
   promo_stats.promoDisplayCount = DisplayedPromoCount();
   promo_stats.numDaysSinceLastPromo = NumDaysSincePromoInteraction();
+  promo_stats.chromeColdStartCount = NumRecordedEventForKeyLessThanDelay(
+      kAllTimestampsAppLaunchColdStart,
+      kTriggerCriteriaExperimentStatExpiration);
+  promo_stats.chromeWarmStartCount = NumRecordedEventForKeyLessThanDelay(
+      kAllTimestampsAppLaunchWarmStart,
+      kTriggerCriteriaExperimentStatExpiration);
+  promo_stats.chromeIndirectStartCount = NumRecordedEventForKeyLessThanDelay(
+      kAllTimestampsAppLaunchIndirectStart,
+      kTriggerCriteriaExperimentStatExpiration);
 
   return promo_stats;
 }
@@ -862,4 +913,31 @@ void RecordPromoStatsToUMAForAction(PromoStatistics* promo_stats,
 
 void RecordPromoStatsToUMAForAppear(PromoStatistics* promo_stats) {
   RecordPromoStatsToUMAForActionString(promo_stats, kAppearAction);
+}
+
+void StoreCurrentTimestampForKey(NSString* key) {
+  std::vector<base::Time> timestamps =
+      LoadActiveTimestampsForKey(key, kTriggerCriteriaExperimentStatExpiration);
+  timestamps.push_back(base::Time::Now());
+  StoreTimestampsForKey(key, timestamps);
+}
+
+void LogBrowserLaunched(bool is_cold_start) {
+  if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    CleanupStorageForTriggerExperiment();
+    return;
+  }
+
+  NSString* key = is_cold_start ? kAllTimestampsAppLaunchColdStart
+                                : kAllTimestampsAppLaunchWarmStart;
+  StoreCurrentTimestampForKey(key);
+}
+
+void LogBrowserIndirectlylaunched() {
+  if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    CleanupStorageForTriggerExperiment();
+    return;
+  }
+
+  StoreCurrentTimestampForKey(kAllTimestampsAppLaunchIndirectStart);
 }

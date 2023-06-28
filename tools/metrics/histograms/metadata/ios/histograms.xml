@@ -604,8 +604,19 @@ chromium-metrics-reviews@google.com.
     <variant name="Dismiss"/>
   </token>
   <token key="PromoStat">
-    <variant name="LastPromoNumDays"/>
-    <variant name="PromoDisplayCount"/>
+    <variant name="ChromeColdStartCount"
+        summary="Represents number of time Chrome cold starts"/>
+    <variant name="ChromeOpenIndirectlyCount"
+        summary="Represents number of time Chrome indirect (by widget or
+                 external url) starts"/>
+    <variant name="ChromeWarmStartCount"
+        summary="Represents number of time Chrome warm starts"/>
+    <variant name="LastPromoNumDays"
+        summary="Represents number of days since last default browser promo
+                 was displayed"/>
+    <variant name="PromoDisplayCount"
+        summary="Represents number of default browser promos displayed to the
+                 user"/>
   </token>
 </histogram>
 

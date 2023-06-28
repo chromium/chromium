@@ -67,6 +67,21 @@ extern const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[];
 // seen the promo.
 extern NSString* const kLastTimeUserInteractedWithPromo;
 
+// Key in storage containing all the recent timestamps of browser cold starts up
+// to allowed maximum number of past events.
+extern NSString* const kAllTimestampsAppLaunchColdStart;
+
+// Key in storage containing all the recent timestamps of browser warm starts up
+// to allowed maximum number of past events.
+extern NSString* const kAllTimestampsAppLaunchWarmStart;
+
+// Key in storage containing all the recent timestamps of browser indirect
+// starts up to allowed maximum number of past events.
+extern NSString* const kAllTimestampsAppLaunchIndirectStart;
+
+// Helper function to set `data` for `key` into the storage object.
+void SetObjectIntoStorageForKey(NSString* key, NSObject* data);
+
 // Logs the timestamp of opening an HTTP(S) link sent and opened by the app.
 void LogOpenHTTPURLFromExternalURL();
 
@@ -247,5 +262,15 @@ void RecordPromoStatsToUMAForAction(PromoStatistics* promo_stats,
 
 // Records given promo stats for "Appear" action into UMA histograms.
 void RecordPromoStatsToUMAForAppear(PromoStatistics* promo_stats);
+
+// Logs browser launched for default browser promo trigger criteria experiment
+// stats to NSUserDefaults. `LogBrowserIndirectlylaunched` and
+// `LogBrowserLaunched` will have overlap.
+void LogBrowserLaunched(bool is_cold_start);
+
+// Log browser started indirectly(by widget or external url) for default browser
+// promo experiment stats to NSUserDefaults. `LogBrowserIndirectlylaunched` and
+// `LogBrowserLaunched` will have overlap.
+void LogBrowserIndirectlylaunched();
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_UTILS_H_

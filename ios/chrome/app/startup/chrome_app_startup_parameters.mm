@@ -207,6 +207,9 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   if (!gurl.is_valid() || gurl.scheme().length() == 0)
     return nil;
 
+  // Log browser started indirectly for default browser promo experiment stats.
+  LogBrowserIndirectlylaunched();
+
   if ([completeURL.scheme isEqualToString:kWidgetKitSchemeChrome]) {
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
                               START_ACTION_WIDGET_KIT_COMMAND,
@@ -599,6 +602,10 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     // Search, search clipboard content) is activity that should indicate a user
     // that would be interested in setting Chrome as the default browser.
     LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+
+    // Log browser started indirectly for default browser promo experiment
+    // stats.
+    LogBrowserIndirectlylaunched();
   }
 
   if ([secureSourceApp
