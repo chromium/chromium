@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">Skráin eða mappan er ónothæf.</translation>
 <translation id="1363028406613469049">Rekja</translation>
 <translation id="1378727793141957596">Velkomin(n) í Google Drive!</translation>
+<translation id="1379156577998569384">Skrárnar þínar í „Drifið mitt“ eru tiltækar án nettengingar</translation>
 <translation id="1379911846207762492">Þú getur gert skrár aðgengilegar án nettengingar til að geta opnað þær þegar engin nettenging er til staðar.</translation>
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1388045380422025115">Allar gerðir</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">Þýskt Neo 2</translation>
 <translation id="3858860766373142691">Heiti</translation>
 <translation id="3866249974567520381">Lýsing</translation>
+<translation id="3866439285517092441">Lítil rafhleðsla. Samstilling hefst aftur þegar þú tengist við rafmagn.</translation>
 <translation id="3899991606604168269">Franska (Kanada) með fjölmála lyklaborði</translation>
 <translation id="3901991538546252627">Tengist <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Setur upp snjallprófíl, netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">Rangt PUK-númer</translation>
 <translation id="4057991113334098539">Virkjar...</translation>
 <translation id="4092890906744441904">Írska</translation>
+<translation id="4124731372776320263">Samstillir 1 Drive-skrá</translation>
 <translation id="4124935795427217608">Einhyrningur</translation>
 <translation id="4131235941541910880">Færðu óþörf atriði í ruslið</translation>
 <translation id="4134804435730168042">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Virkja eftir uppsetningu tækis</translation>
@@ -563,6 +566,7 @@
 <translation id="5422221874247253874">Aðgangsstaður</translation>
 <translation id="5428105026674456456">Spænskt</translation>
 <translation id="5438282218546237410">Engar niðurstöður fyrir <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Of lítið geymslurými.</translation>
 <translation id="5449551289610225147">Ógilt aðgangsorð</translation>
 <translation id="5459064203055649751">Skrá með heitið „<ph name="FILENAME" />“ er þegar til staðar. Viltu skipta henni út fyrir skrána sem þú ert að flytja?</translation>
 <translation id="5463231940765244860">Slá inn</translation>
@@ -578,6 +582,7 @@
 <translation id="5524517123096967210">Ekki var hægt að lesa skrána.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-mynd</translation>
 <translation id="5534520101572674276">Reiknar stærð</translation>
+<translation id="5536122250858122375">Ekki er hægt að samstilla þessa skráargerð</translation>
 <translation id="554153475311314364">Gríska umritun</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> möppur valdar</translation>
 <translation id="5580591966435005537">sýndarvél</translation>
@@ -690,6 +695,7 @@
 <translation id="6423031066725912715">Víetnamska með TCVN-lyklaborði</translation>
 <translation id="6430271654280079150">Þú átt 1 tilraun eftir.</translation>
 <translation id="643243556292470964">Skrár sem er eytt eru nú færðar í ruslið</translation>
+<translation id="6438480100790416671">Athugar geymslurými…</translation>
 <translation id="6485131920355264772">Mistókst að sækja upplýsingar um pláss</translation>
 <translation id="6495925982925244349">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% sendistyrkur, stjórnað af kerfisstjóra, upplýsingar</translation>
 <translation id="649877868557234318">Draga út <ph name="FILE_NAME" /> í <ph name="FOLDER_NAME" /></translation>
@@ -737,6 +743,7 @@
 <translation id="6874758081814639712">Einstaklingur að æfa tai chi</translation>
 <translation id="6876155724392614295">Hjól</translation>
 <translation id="6878261347041253038">Devanagari-lyklaborð (hljóðritun)</translation>
+<translation id="6882444584974399416">Tækið er ekki með nægt geymslurými til að halda skrám tiltækum án nettengingar. Nýjar skrár verða ekki lengur samstilltar sjálfkrafa.</translation>
 <translation id="6885780034956018177">Snigill</translation>
 <translation id="6896758677409633944">Afrita</translation>
 <translation id="6898028766943174120">Fleiri undirmöppur...</translation>
@@ -892,6 +899,7 @@
 <translation id="8000066093800657092">Ekkert net</translation>
 <translation id="8008366997883261463">Frasier</translation>
 <translation id="8028993641010258682">Stærð</translation>
+<translation id="8034974485549318493">Við fyrstu uppsetningu þarftu að vera með nettengingu svo hægt sé að samstilla skrár.</translation>
 <translation id="803771048473350947">Skrá</translation>
 <translation id="8038111231936746805">(sjálfgefið)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> hljóð</translation>
@@ -911,6 +919,7 @@
 <translation id="8154842056504218462">Allar færslur valdar.</translation>
 <translation id="8157684860301034423">Mistókst að sækja upplýsingar um forrit.</translation>
 <translation id="8175731104491895765">Franska (Belgía)</translation>
+<translation id="8175799081768705361">Samstillir <ph name="NUMBER_OF_FILES_SYNCING" /> Drive-skrár</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Gerð tækis</translation>
 <translation id="8223479393428528563">Til að vista þessar skrár fyrir notkun án nettengingar skaltu tengjast netinu aftur, hægrismella á skrárnar og velja kostinn <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
@@ -943,6 +952,7 @@
 <translation id="8395901698320285466">Stærð</translation>
 <translation id="8404498045299006085">Geyma allt</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-net, tengist</translation>
+<translation id="841387525767317275">Skrár í þessari möppu eru tiltækar án nettengingar</translation>
 <translation id="8425213833346101688">Breyta</translation>
 <translation id="8431909052837336408">Breyta PIN-númeri SIM-korts</translation>
 <translation id="8437209419043462667">Bandarískt</translation>
@@ -970,6 +980,7 @@
 <translation id="8560515948038859357">Kantónska</translation>
 <translation id="8561206103590473338">Fíll</translation>
 <translation id="8566466896628108558">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />%, útilokað af stjórnanda, nánar</translation>
+<translation id="8567555211227790801">Þú ert ekki á netinu. Samstilling hefst aftur þegar þú tengist netinu.</translation>
 <translation id="8568374623837201676">Eyða þessari skrá endanlega?</translation>
 <translation id="8569764466147087991">Veldu skrá til að opna</translation>
 <translation id="8577897833047451336">Króatíska</translation>

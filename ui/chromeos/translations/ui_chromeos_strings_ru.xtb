@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">Этот файл или каталог непригоден для использования.</translation>
 <translation id="1363028406613469049">Трек</translation>
 <translation id="1378727793141957596">Добро пожаловать в Google Диск!</translation>
+<translation id="1379156577998569384">Файлы на Google Диске доступны в офлайн-режиме</translation>
 <translation id="1379911846207762492">Вы можете скачать файлы, чтобы работать с ними без подключения к интернету.</translation>
 <translation id="1383876407941801731">Поиск</translation>
 <translation id="1388045380422025115">Все</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">Немецкая (Neo 2)</translation>
 <translation id="3858860766373142691">Название</translation>
 <translation id="3866249974567520381">Описание</translation>
+<translation id="3866439285517092441">Низкий уровень заряда батареи. Синхронизация возобновится, когда вы подключитесь к источнику питания.</translation>
 <translation id="3899991606604168269">Французский (Канада), мультиязычная раскладка</translation>
 <translation id="3901991538546252627">Подключение к <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Установка мобильного профиля, сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">Неверный PUK-код.</translation>
 <translation id="4057991113334098539">Активация...</translation>
 <translation id="4092890906744441904">Ирландский</translation>
+<translation id="4124731372776320263">Синхронизация 1 файла на Диске…</translation>
 <translation id="4124935795427217608">Единорог</translation>
 <translation id="4131235941541910880">Перемещайте ненужные объекты в корзину.</translation>
 <translation id="4134804435730168042">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – <ph name="NETWORK_NAME" />, поставщик – <ph name="NETWORK_PROVIDER_NAME" />. Чтобы активировать сеть, настройте устройство.</translation>
@@ -579,6 +582,7 @@
 <translation id="5524517123096967210">Не удалось прочитать файл.</translation>
 <translation id="5533102081734025921">Изображение <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Подсчет размера…</translation>
+<translation id="5536122250858122375">Этот тип файлов не может быть синхронизирован</translation>
 <translation id="554153475311314364">Греческий, транслитерация</translation>
 <translation id="5554171655917412781">Выбрано папок: <ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">виртуальная машина</translation>
@@ -738,6 +742,7 @@
 <translation id="6874758081814639712">Человек занимается тай-чи</translation>
 <translation id="6876155724392614295">Велосипед</translation>
 <translation id="6878261347041253038">Раскладка деванагари (фонетическая)</translation>
+<translation id="6882444584974399416">На устройстве недостаточно места, чтобы обеспечивать доступность файлов в офлайн-режиме. Новые файлы не будут автоматически синхронизироваться.</translation>
 <translation id="6885780034956018177">Улитка</translation>
 <translation id="6896758677409633944">Копировать</translation>
 <translation id="6898028766943174120">Другие вложенные папки…</translation>
@@ -912,6 +917,7 @@
 <translation id="8154842056504218462">Выбраны все объекты.</translation>
 <translation id="8157684860301034423">Не удалось получить информацию о приложении.</translation>
 <translation id="8175731104491895765">Французский (Бельгия)</translation>
+<translation id="8175799081768705361">Синхронизация файлов (<ph name="NUMBER_OF_FILES_SYNCING" />) на Диске…</translation>
 <translation id="8179976553408161302">ВВОД</translation>
 <translation id="8193175696669055101">Модель устройства</translation>
 <translation id="8223479393428528563">Чтобы работать с этими файлами в офлайн-режиме, подключитесь к Интернету, нажмите правой кнопкой мыши на каждый документ и выберите вариант "<ph name="OFFLINE_CHECKBOX_NAME" />".</translation>
@@ -944,6 +950,7 @@
 <translation id="8395901698320285466">Размеры</translation>
 <translation id="8404498045299006085">Сохранить все</translation>
 <translation id="8408068190360279472">Сеть <ph name="NETWORK_TYPE" />, подключение</translation>
+<translation id="841387525767317275">Файлы в этой папке доступны в офлайн-режиме</translation>
 <translation id="8425213833346101688">Изменить</translation>
 <translation id="8431909052837336408">Изменение PIN-кода SIM-карты</translation>
 <translation id="8437209419043462667">США</translation>
@@ -971,6 +978,7 @@
 <translation id="8560515948038859357">Кантонский</translation>
 <translation id="8561206103590473338">Слон</translation>
 <translation id="8566466896628108558">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, "<ph name="NETWORK_NAME" />", <ph name="SECURITY_STATUS" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заблокирована администратором, дополнительные сведения</translation>
+<translation id="8567555211227790801">Сейчас включен офлайн-режим. Синхронизация возобновится, когда вы подключитесь к интернету.</translation>
 <translation id="8568374623837201676">Удалить файл без возможности восстановления?</translation>
 <translation id="8569764466147087991">Выберите файл</translation>
 <translation id="8577897833047451336">Хорватский</translation>

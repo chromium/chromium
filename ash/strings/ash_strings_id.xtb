@@ -140,7 +140,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1550523713251050646">Klik untuk opsi lainnya</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="1557622599341396706">Tampilkan nama desktop</translation>
-<translation id="1576511610858879060">Chromebook atau perangkat Bluetooth Anda menggunakan Bluetooth versi lama. Gunakan sumber input lain untuk kualitas audio yang lebih baik.</translation>
 <translation id="1576623706766186887">Perkecil saat kaca pembesar diaktifkan</translation>
 <translation id="1586324912145647027">Membuka desktop 1 sampai 8</translation>
 <translation id="1589090746204042747">Akses semua aktivitas Anda di sesi ini</translation>
@@ -358,6 +357,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2579264398927991698">Update Firmware</translation>
 <translation id="2582112259361606227">Nyalakan ulang untuk mengupdate</translation>
 <translation id="2586561057878260610">Tekan Ctrl + W untuk menggabungkan dengan <ph name="DESK_NAME" />. Tekan Ctrl + Shift + W untuk menutup desktop dan jendela.</translation>
+<translation id="2586657967955657006">Papan klip</translation>
 <translation id="2595239820337756193">Lima kilometer dalam mil</translation>
 <translation id="2596078834055697711">Mengambil screenshot jendela</translation>
 <translation id="2598725286293895280">Aplikasi tidak didukung di desktop</translation>
@@ -911,6 +911,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Desktop 16</translation>
+<translation id="4989163558385430922">Lihat semua</translation>
 <translation id="5003993274120026347">Kalimat berikutnya</translation>
 <translation id="5004607513195820459">Jaringan dikelola</translation>
 <translation id="5009463889040999939">Mengganti nama profil. Proses ini mungkin perlu waktu beberapa menit.</translation>
@@ -1183,6 +1184,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
 <translation id="6166852626429024716">Telusuri perangkat, aplikasi, setelan, web ...</translation>
 <translation id="6168318496333165060">Buka aplikasi Diagnostik</translation>
+<translation id="6173151025443907148">Login sebagai pengguna kedua tidak didukung jika Lacros diaktifkan. Gunakan profil browser kedua di Lacros atau nonaktifkan Lacros lalu coba lagi.</translation>
 <translation id="6179832488876878285">Anda dapat menyematkan file penting di sini. Buka aplikasi File untuk memulai.</translation>
 <translation id="6182592640011875895">Buka desktop</translation>
 <translation id="6185696379715117369">Page up</translation>
@@ -1543,6 +1545,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7866482334467279021">aktif</translation>
 <translation id="7872786842639831132">Nonaktif</translation>
 <translation id="7875575368831396199">Sepertinya Bluetooth dinonaktifkan di <ph name="DEVICE_TYPE" /> Anda. Aktifkan Bluetooth untuk menggunakan Phone Hub.</translation>
+<translation id="7876243839304621966">Hapus semua</translation>
 <translation id="7877557217297072640">{0,plural, =0{Ubah perangkat ke versi sebelumnya sekarang juga}=1{Ubah perangkat ke versi sebelumnya dalam 1 detik}other{Ubah perangkat ke versi sebelumnya dalam # detik}}</translation>
 <translation id="7884446017008693258">Setelan Hotspot</translation>
 <translation id="7884902759927478774">Batalkan penarikkan tab</translation>

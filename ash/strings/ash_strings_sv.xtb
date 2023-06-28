@@ -140,7 +140,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1550523713251050646">Klicka här för fler alternativ</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1557622599341396706">Visa skrivbordets namn</translation>
-<translation id="1576511610858879060">En äldre version av Bluetooth används av Chromebook eller Bluetooth-enheten. Använd en annan ingångskälla för bättre ljudkvalitet.</translation>
 <translation id="1576623706766186887">Zooma ut när skärmförstoring är aktiverat</translation>
 <translation id="1586324912145647027">Öppna skrivbord 1 till 8</translation>
 <translation id="1589090746204042747">Få tillgång till all aktivitet i sessionen</translation>
@@ -358,6 +357,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2579264398927991698">Firmware-uppdateringar</translation>
 <translation id="2582112259361606227">Starta om för att uppdatera</translation>
 <translation id="2586561057878260610">Tryck på Ctrl + W för att kombinera med <ph name="DESK_NAME" />. Tryck på Ctrl + Skift + W för att stänga skrivbord och fönster.</translation>
+<translation id="2586657967955657006">Urklipp</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
 <translation id="2596078834055697711">Ta en skärmbild av fönstret</translation>
 <translation id="2598725286293895280">Det finns appar som inte stöds på skrivbordet</translation>
@@ -911,6 +911,7 @@ Anslut enheten till en strömkälla.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Skrivbord 16</translation>
+<translation id="4989163558385430922">Visa alla</translation>
 <translation id="5003993274120026347">Nästa mening</translation>
 <translation id="5004607513195820459">Nätverket hanteras</translation>
 <translation id="5009463889040999939">Byter namn på profilen. Det kan ta några minuter.</translation>
@@ -1183,6 +1184,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6166852626429024716">Sök på enheten, i appar, inställningar och på webben …</translation>
 <translation id="6168318496333165060">Öppna appen Diagnostik</translation>
+<translation id="6173151025443907148">Det finns inte stöd för inloggning av en andra användare om Lacros är aktiverad. Använd i stället en annan webbläsarprofil i Lacros eller inaktivera Lacros och försök igen.</translation>
 <translation id="6179832488876878285">Du kan fästa viktiga filer här. Börja med att öppna appen Filer.</translation>
 <translation id="6182592640011875895">Öppna skrivbordet</translation>
 <translation id="6185696379715117369">Uppåt en sida</translation>
@@ -1543,6 +1545,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7866482334467279021">på</translation>
 <translation id="7872786842639831132">Av</translation>
 <translation id="7875575368831396199">Det verkar som om Bluetooth har inaktiverats på <ph name="DEVICE_TYPE" />. Aktivera Bluetooth om du vill använda Phone Hub.</translation>
+<translation id="7876243839304621966">Ta bort alla</translation>
 <translation id="7877557217297072640">{0,plural, =0{Byt till en tidigare version av enheten nu}=1{Byt till en tidigare version av enheten inom en sekund}other{Byt till en tidigare version av enheten inom # sekunder}}</translation>
 <translation id="7884446017008693258">Inställningar för surfzon</translation>
 <translation id="7884902759927478774">Avbryt trycka och dra för flik</translation>

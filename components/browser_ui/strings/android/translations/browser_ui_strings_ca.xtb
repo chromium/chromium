@@ -302,6 +302,7 @@
 <translation id="6467852467360539617">Esborra les dades i restableix els permisos</translation>
 <translation id="6527303717912515753">Comparteix</translation>
 <translation id="6545864417968258051">Cerca de dispositius Bluetooth</translation>
+<translation id="6552691050538553146">Més opcions per a <ph name="BANNER_TITLE" /></translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{S'han bloquejat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}other{S'han bloquejat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}}</translation>
 <translation id="6554732001434021288">Darrera visita: fa <ph name="NUM_DAYS" /> dies</translation>
 <translation id="6561560012278703671">Utilitza missatges més discrets (bloqueja les sol·licituds de notificacions per evitar interrupcions)</translation>

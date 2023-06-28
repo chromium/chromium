@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">该文件或目录无法使用。</translation>
 <translation id="1363028406613469049">曲目</translation>
 <translation id="1378727793141957596">欢迎使用 Google 云端硬盘！</translation>
+<translation id="1379156577998569384">您在“我的云端硬盘”中存储的文件已可供离线访问</translation>
 <translation id="1379911846207762492">您可将文件设为“可离线使用”，以便在未联网的情况下访问。</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1388045380422025115">所有类型</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">德语Neo 2</translation>
 <translation id="3858860766373142691">名称</translation>
 <translation id="3866249974567520381">说明</translation>
+<translation id="3866439285517092441">电池电量低。待接通电源后，设备会继续同步。</translation>
 <translation id="3899991606604168269">法语（加拿大）多语言键盘</translation>
 <translation id="3901991538546252627">正在连接：<ph name="NAME" /></translation>
 <translation id="3906232975181435906">正在安装移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”</translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">PUK 不正确</translation>
 <translation id="4057991113334098539">正在激活...</translation>
 <translation id="4092890906744441904">爱尔兰语</translation>
+<translation id="4124731372776320263">正在同步 1 个云端硬盘文件</translation>
 <translation id="4124935795427217608">独角兽</translation>
 <translation id="4131235941541910880">将不需要的内容移至回收站</translation>
 <translation id="4134804435730168042">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，在设备完成设置后启用</translation>
@@ -574,6 +577,7 @@
 <translation id="5524517123096967210">无法读取该文件。</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> 图片</translation>
 <translation id="5534520101572674276">正在计算大小</translation>
+<translation id="5536122250858122375">无法同步此文件类型</translation>
 <translation id="554153475311314364">希腊语音译</translation>
 <translation id="5554171655917412781">已选择 <ph name="SELECTED_FOLDERS_COUNT" /> 个文件夹</translation>
 <translation id="5580591966435005537">虚拟机</translation>
@@ -733,6 +737,7 @@
 <translation id="6874758081814639712">一个人在打太极</translation>
 <translation id="6876155724392614295">自行车</translation>
 <translation id="6878261347041253038">梵语键盘（注音）</translation>
+<translation id="6882444584974399416">您的设备的存储空间不足，无法支持离线访问您的文件。此设备将不再自动同步新文件。</translation>
 <translation id="6885780034956018177">蜗牛</translation>
 <translation id="6896758677409633944">复制</translation>
 <translation id="6898028766943174120">更多子文件夹…</translation>
@@ -907,6 +912,7 @@
 <translation id="8154842056504218462">已选择所有条目。</translation>
 <translation id="8157684860301034423">未能检索应用信息。</translation>
 <translation id="8175731104491895765">法语（比利时）</translation>
+<translation id="8175799081768705361">正在同步 <ph name="NUMBER_OF_FILES_SYNCING" /> 个云端硬盘文件</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">设备型号</translation>
 <translation id="8223479393428528563">要保存这些文件以供离线使用，请恢复联网状态，右键点击文件，然后选择<ph name="OFFLINE_CHECKBOX_NAME" />选项。</translation>
@@ -939,6 +945,7 @@
 <translation id="8395901698320285466">尺寸</translation>
 <translation id="8404498045299006085">全部保留</translation>
 <translation id="8408068190360279472">“<ph name="NETWORK_TYPE" />”类型的网络，正在连接</translation>
+<translation id="841387525767317275">此文件夹中的文件已可供离线访问</translation>
 <translation id="8425213833346101688">更改</translation>
 <translation id="8431909052837336408">更改 SIM 卡 PIN 码</translation>
 <translation id="8437209419043462667">美国英语</translation>
@@ -966,6 +973,7 @@
 <translation id="8560515948038859357">粤语</translation>
 <translation id="8561206103590473338">大象</translation>
 <translation id="8566466896628108558">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，已被您的管理员禁用，详细信息</translation>
+<translation id="8567555211227790801">您目前处于离线状态。待连接到互联网后，设备会继续同步。</translation>
 <translation id="8568374623837201676">永久删除此文件？</translation>
 <translation id="8569764466147087991">选择要打开的文件</translation>
 <translation id="8577897833047451336">克罗地亚语</translation>

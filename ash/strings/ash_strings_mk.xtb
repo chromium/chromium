@@ -140,7 +140,6 @@
 <translation id="1550523713251050646">Кликни за повеќе опции</translation>
 <translation id="1555130319947370107">Сина</translation>
 <translation id="1557622599341396706">Прикажи го името на работната површина</translation>
-<translation id="1576511610858879060">Вашиот Chromebook или уредот со Bluetooth користи постара верзија на Bluetooth. Користете друг извор на влез за подобар аудиоквалитет.</translation>
 <translation id="1576623706766186887">Одзумирајте кога е вклучена лупата</translation>
 <translation id="1586324912145647027">Одете на работната површина 1 до 8</translation>
 <translation id="1589090746204042747">Пристапете до целата ваша активност во сесијава</translation>
@@ -358,6 +357,7 @@
 <translation id="2579264398927991698">Ажурирања на фирмвер</translation>
 <translation id="2582112259361606227">Рестартирај за да се ажурира</translation>
 <translation id="2586561057878260610">Притиснете Ctrl + W за да комбинирате со <ph name="DESK_NAME" />. Притиснете Ctrl + Shift + W за да ги затворите работната површина и прозорците.</translation>
+<translation id="2586657967955657006">Табла со исечоци</translation>
 <translation id="2595239820337756193">5 km во милји</translation>
 <translation id="2596078834055697711">Прави слика од екранот</translation>
 <translation id="2598725286293895280">Неподдржани апликации во работната површина</translation>
@@ -912,6 +912,7 @@
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Работна површина 16</translation>
+<translation id="4989163558385430922">Прикажи ги сите</translation>
 <translation id="5003993274120026347">Следна реченица</translation>
 <translation id="5004607513195820459">Со мрежата се управува</translation>
 <translation id="5009463889040999939">Се преименува профилот. Може да потрае неколку минути.</translation>
@@ -1544,6 +1545,7 @@
 <translation id="7866482334467279021">вклучено</translation>
 <translation id="7872786842639831132">Исклучено</translation>
 <translation id="7875575368831396199">Се чини дека Bluetooth е исклучен на вашиот <ph name="DEVICE_TYPE" />. Вклучете го Bluetooth за да користите Phone Hub.</translation>
+<translation id="7876243839304621966">Отстрани ги сите</translation>
 <translation id="7877557217297072640">{0,plural, =0{Променете го уредот на претходната верзија сега}=1{Променете го уредот на претходната верзија во рок од 1 секунда}one{Променете го уредот на претходната верзија во рок од # секунда}other{Променете го уредот на претходната верзија во рок од # секунди}}</translation>
 <translation id="7884446017008693258">Поставки за точка на пристап</translation>
 <translation id="7884902759927478774">Го откажува повлекувањето на картичката</translation>

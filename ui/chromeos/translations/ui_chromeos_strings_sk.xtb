@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">Súbor alebo adresár nie je možné použiť.</translation>
 <translation id="1363028406613469049">Stopa</translation>
 <translation id="1378727793141957596">Vitajte v službe Disk Google!</translation>
+<translation id="1379156577998569384">Súbory v sekcii Môj disk sú k dispozícii offline</translation>
 <translation id="1379911846207762492">Súbory si môžete sprístupniť v režime offline, aby ste s nimi mohli pracovať aj bez internetového pripojenia.</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
 <translation id="1388045380422025115">Všetky typy</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">Nemecká klávesnica Neo 2</translation>
 <translation id="3858860766373142691">Názov</translation>
 <translation id="3866249974567520381">Popis</translation>
+<translation id="3866439285517092441">Batéria je takmer vybitá. Synchronizácia bude pokračovať po pripojení k napájaniu.</translation>
 <translation id="3899991606604168269">Francúzska (Kanada) viacjazyčná klávesnica</translation>
 <translation id="3901991538546252627">Pripája sa k sieti <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Inštaluje sa mobilný profil. Sieť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">Nesprávny kód PUK</translation>
 <translation id="4057991113334098539">Prebieha aktivácia...</translation>
 <translation id="4092890906744441904">Írska klávesnica</translation>
+<translation id="4124731372776320263">Synchronizuje sa jeden súbor na Disku</translation>
 <translation id="4124935795427217608">Jednorožec</translation>
 <translation id="4131235941541910880">Položky, ktoré nepotrebujete, presuňte do koša</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivovať po nastavení zariadenia</translation>
@@ -564,6 +567,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5422221874247253874">Prístupový bod</translation>
 <translation id="5428105026674456456">Španielčina</translation>
 <translation id="5438282218546237410">Pre dopyt <ph name="SEARCH_TERM" /> nie sú k dispozícii žiadne výsledky.</translation>
+<translation id="5447680084201416734">Nie je dostatok priestoru.</translation>
 <translation id="5449551289610225147">Neplatné heslo</translation>
 <translation id="5459064203055649751">Súbor s názvom <ph name="FILENAME" /> už existuje. Chcete ho nahradiť súborom, ktorý presúvate?</translation>
 <translation id="5463231940765244860">Zadať</translation>
@@ -579,6 +583,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5524517123096967210">Súbor sa nepodarilo prečítať.</translation>
 <translation id="5533102081734025921">Obrázok <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Prebieha výpočet veľkosti</translation>
+<translation id="5536122250858122375">Tento typ súboru nie je možné synchronizovať</translation>
 <translation id="554153475311314364">Grécka klávesnica (prepis)</translation>
 <translation id="5554171655917412781">Počet vybraných priečinkov: <ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">virtuálne zariadenie</translation>
@@ -691,6 +696,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6423031066725912715">Vietnamská klávesnica s rozložením TCVN</translation>
 <translation id="6430271654280079150">Zostáva vám jeden pokus.</translation>
 <translation id="643243556292470964">Odstránené súbory sa teraz presúvajú do koša</translation>
+<translation id="6438480100790416671">Kontroluje sa priestor…</translation>
 <translation id="6485131920355264772">Nepodarilo sa získať informácie o voľnom mieste</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> ovládaná správcom, podrobnosti</translation>
 <translation id="649877868557234318">Rozbaľuje sa súbor <ph name="FILE_NAME" /> do priečinka <ph name="FOLDER_NAME" /></translation>
@@ -738,6 +744,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6874758081814639712">Osoba cvičiaca taiči</translation>
 <translation id="6876155724392614295">Bicykel</translation>
 <translation id="6878261347041253038">Klávesnica dévanágarí (fonetický prepis)</translation>
+<translation id="6882444584974399416">V zariadení nie je dostatok priestoru na to, aby ste mali súbory k dispozícii offline. Nové súbory sa už nebudú synchronizovať automaticky.</translation>
 <translation id="6885780034956018177">Slimák</translation>
 <translation id="6896758677409633944">Kopírovať</translation>
 <translation id="6898028766943174120">Ďalšie podpriečinky…</translation>
@@ -893,6 +900,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8000066093800657092">Žiadna sieť</translation>
 <translation id="8008366997883261463">Jack Russell teriér</translation>
 <translation id="8028993641010258682">Veľkosť</translation>
+<translation id="8034974485549318493">Pred prvým nastavením sa musíte pripojiť k internetu, aby sa súbory mohli synchronizovať.</translation>
 <translation id="803771048473350947">Súbor</translation>
 <translation id="8038111231936746805">(predvolená)</translation>
 <translation id="8042602468072383151">Zvuk <ph name="AUDIO_TYPE" /></translation>
@@ -912,6 +920,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8154842056504218462">Boli vybrané všetky položky.</translation>
 <translation id="8157684860301034423">Nepodarilo sa načítať informácie o aplikácii.</translation>
 <translation id="8175731104491895765">Francúzska (Belgicko) klávesnica</translation>
+<translation id="8175799081768705361">Synchronizujú sa súbory (<ph name="NUMBER_OF_FILES_SYNCING" />) na Disku</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model zariadenia</translation>
 <translation id="8223479393428528563">Ak chcete tieto súbory uložiť na používanie offline, prejdite online, kliknite na súbory pravým tlačidlom a vyberte možnosť <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
@@ -944,6 +953,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8395901698320285466">Rozmery</translation>
 <translation id="8404498045299006085">Ponechať všetko</translation>
 <translation id="8408068190360279472">Sieť <ph name="NETWORK_TYPE" /> sa pripája</translation>
+<translation id="841387525767317275">Súbory v tomto priečinku sú k dispozícii offline</translation>
 <translation id="8425213833346101688">Zmeniť</translation>
 <translation id="8431909052837336408">Zmena kódu PIN pre SIM kartu</translation>
 <translation id="8437209419043462667">Americká klávesnica</translation>
@@ -971,6 +981,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8560515948038859357">Kantonská klávesnica</translation>
 <translation id="8561206103590473338">Slon</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, sila signálu: <ph name="SIGNAL_STRENGTH" /> %, zablokoval váš správca, podrobnosti</translation>
+<translation id="8567555211227790801">Momentálne ste offline. Synchronizácia bude pokračovať po pripojení k internetu.</translation>
 <translation id="8568374623837201676">Chcete tento súbor natrvalo odstrániť?</translation>
 <translation id="8569764466147087991">Vyberte súbor, ktorý chcete otvoriť</translation>
 <translation id="8577897833047451336">Chorvátska klávesnica</translation>

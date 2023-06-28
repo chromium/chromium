@@ -140,7 +140,6 @@
 <translation id="1550523713251050646">තවත් විකල්ප සඳහා ක්ලික් කරන්න</translation>
 <translation id="1555130319947370107">නිල්</translation>
 <translation id="1557622599341396706">මේසයේ නම පෙන්වන්න</translation>
-<translation id="1576511610858879060">ඔබේ Chromebook හෝ බ්ලූටූත් උපාංගය බ්ලූටූත් හි පැරණි අනුවාදයක් භාවිතා කරයි. වඩා හොඳ ශ්‍රව්‍ය ගුණත්වය සඳහා වෙනත් ආදාන මූලාශ්‍රයක් භාවිතා කරන්න.</translation>
 <translation id="1576623706766186887">විශාලකය සක්‍රීයව ඇති විට විශාලනය අඩු කරන්න</translation>
 <translation id="1586324912145647027">1 සිට 8 දක්වා මේස වෙත යන්න</translation>
 <translation id="1589090746204042747">මෙම සැසියෙහි ඔබේ සියලු ක්‍රියාකාරකම්වලට ප්‍රවේශය</translation>
@@ -358,6 +357,7 @@
 <translation id="2579264398927991698">නිත්‍ය මෘදුකාංග යාවත්කාලීන</translation>
 <translation id="2582112259361606227">යාවත්කාලීන කිරීමට නැවත පණගන්වන්න</translation>
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> සමග ඒකාබද්ධ කිරීමට Ctrl + W ඔබන්න. මේසය සහ කවුළු වැසීමට Ctrl + Shift + W ඔබන්න.</translation>
+<translation id="2586657967955657006">පසුරු පුවරුව</translation>
 <translation id="2595239820337756193">සැතපුම්වලින් 5K</translation>
 <translation id="2596078834055697711">කවුළුවේ තිර රුවක් ලබා ගන්න</translation>
 <translation id="2598725286293895280">මේසය තුළ සහාය නොදක්වන යෙදුම්</translation>
@@ -911,6 +911,7 @@
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">16 වෙනි මේසය</translation>
+<translation id="4989163558385430922">සියල්ල බලන්න</translation>
 <translation id="5003993274120026347">ඊළඟ වාක්‍යය</translation>
 <translation id="5004607513195820459">ජාලය කළමනාකරණය වේ</translation>
 <translation id="5009463889040999939">පැතිකඩ යළි නම් කරමින්. මෙයට මිනිත්තු කිහිපයක් ගත විය හැකිය.</translation>
@@ -1544,6 +1545,7 @@
 <translation id="7866482334467279021">ක්‍රියාත්මකයි</translation>
 <translation id="7872786842639831132">ක්‍රියාවිරහිතයි</translation>
 <translation id="7875575368831396199">ඔබගේ <ph name="DEVICE_TYPE" /> හි බ්ලූටූත් ක්‍රියාවිරහිත කර ඇති බව පෙනේ. Phone Hub භාවිත කිරීමට කරුණාකර බ්ලූටූත් ක්‍රියාත්මක කරන්න.</translation>
+<translation id="7876243839304621966">සියල්ල ඉවත් කරන්න</translation>
 <translation id="7877557217297072640">{0,plural, =0{දැන් උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}=1{තත්පර 1ක් ඇතුළත උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}one{තත්පර #ක් ඇතුළත උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}other{තත්පර #ක් ඇතුළත උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}}</translation>
 <translation id="7884446017008693258">හොට්ස්පොට් සැකසීම්</translation>
 <translation id="7884902759927478774">පටිති ඇදගෙන යාම අවලංගු කරන්න</translation>

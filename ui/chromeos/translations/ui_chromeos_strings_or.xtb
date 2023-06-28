@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">ଫାଇଲ୍ ବା ଡିରେକ୍ଟୋରୀ ବ୍ୟବହାର ଯୋଗ୍ୟ ନୁହେଁ।</translation>
 <translation id="1363028406613469049">ଟ୍ରାକ୍‌ କରନ୍ତୁ</translation>
 <translation id="1378727793141957596">Google Driveକୁ ସ୍ୱାଗତ!</translation>
+<translation id="1379156577998569384">ଆପଣଙ୍କ My Drive ଫାଇଲଗୁଡ଼ିକ ଅଫଲାଇନରେ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="1379911846207762492">ଯେତେବେଳେ ଆପଣଙ୍କ ପାଖରେ ଇଣ୍ଟରନେଟ୍ ସଂଯୋଗ ନଥାଏ, ସେତେବେଳେ ଆପଣ ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରିପାରିବେ।</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1388045380422025115">ସମସ୍ତ ପ୍ରକାରର</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">ଜର୍ମନ୍ ନିଓ 2</translation>
 <translation id="3858860766373142691">ନାମ</translation>
 <translation id="3866249974567520381">ବିବରଣୀ</translation>
+<translation id="3866439285517092441">ବେଟେରୀର ଚାର୍ଜ କମ ଅଛି। ଆପଣ ପାୱାର ସହ କନେକ୍ଟ ହେଲେ ସିଙ୍କ ପୁଣି ଆରମ୍ଭ ହେବ।</translation>
 <translation id="3899991606604168269">ବହୁଭାଷୀ କୀବୋର୍ଡ ସହ ଫରାସୀ (କାନାଡ଼ା)</translation>
 <translation id="3901991538546252627"><ph name="NAME" />କୁ ସଂଯୋଗ ହେଉଛି</translation>
 <translation id="3906232975181435906">ମୋବାଇଲ ପ୍ରୋଫାଇଲ୍, <ph name="NETWORK_COUNT" />ର ନେଟୱାର୍କ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" /> ଇନଷ୍ଟଲ୍ କରାଯାଉଛି</translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">ଭୁଲ PUK</translation>
 <translation id="4057991113334098539">ସକ୍ରିୟ ହେଉଛି...</translation>
 <translation id="4092890906744441904">ଆଇରିଶ୍</translation>
+<translation id="4124731372776320263">1ଟି Drive ଫାଇଲ ସିଙ୍କ କରାଯାଉଛି</translation>
 <translation id="4124935795427217608">ୟୁନିକର୍ନ</translation>
 <translation id="4131235941541910880">ଆପଣ ଆବଶ୍ୟକ କରୁନଥିବା ଆଇଟମଗୁଡ଼ିକୁ ଟ୍ରାସକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ଡିଭାଇସ ସେଟଅପ ପରେ ସକ୍ରିୟ କରନ୍ତୁ</translation>
@@ -558,6 +561,7 @@
 <translation id="5422221874247253874">ଆକ୍ସେସ୍ ପଏଣ୍ଟ</translation>
 <translation id="5428105026674456456">ସ୍ପାନିଶ୍</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> ପାଇଁ କୌଣସି ଫଳାଫଳ ନାହିଁ।</translation>
+<translation id="5447680084201416734">ଯଥେଷ୍ଟ ଷ୍ଟୋରେଜ ନାହିଁ।</translation>
 <translation id="5449551289610225147">ଅବୈଧ ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="5459064203055649751">"<ph name="FILENAME" />" ନାମକ ଗୋଟିଏ ଫାଇଲ ପୂର୍ବରୁ ଉପଲବ୍ଧ ଅଛି। ଆପଣ ମୁଭ କରୁଥିବା ଏକ ଫାଇଲ ସହ ଏହାକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="5463231940765244860">ଲେଖନ୍ତୁ</translation>
@@ -573,6 +577,7 @@
 <translation id="5524517123096967210">ଫାଇଲ୍‌କୁ ପଢ଼ାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> ଛବି</translation>
 <translation id="5534520101572674276">ଆକାର ଗଣନା କରାଯାଉଛି</translation>
+<translation id="5536122250858122375">ଏହି ଫାଇଲ ପ୍ରକାରକୁ ସିଙ୍କ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="554153475311314364">ଗ୍ରୀକ୍ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" />ଟି ଫୋଲ୍ଡର ଚୟନ କରାଯାଇଛି</translation>
 <translation id="5580591966435005537">ଭର୍ଚୁଆଲ ମେସିନ</translation>
@@ -685,6 +690,7 @@
 <translation id="6423031066725912715">TCVN କୀବୋର୍ଡ ସହ ଭିଏତନାମିଜ୍</translation>
 <translation id="6430271654280079150">ଆପଣଙ୍କ ପାଖରେ 1ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି।</translation>
 <translation id="643243556292470964">ଡିଲିଟ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକୁ ବର୍ତ୍ତମାନ ଟ୍ରାସକୁ ମୁଭ କରାଯାଇଛି</translation>
+<translation id="6438480100790416671">ଷ୍ଟୋରେଜ ସ୍ପେସ ଯାଞ୍ଚ କରାଯାଉଛି…</translation>
 <translation id="6485131920355264772">ଯାଗା ସମ୍ବନ୍ଧିତ ତଥ୍ୟ ପୁନରୁଦ୍ଧାର କରିବାରେ ବିଫଳ ହେଲା</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ, ବିବରଣୀ</translation>
 <translation id="649877868557234318"><ph name="FOLDER_NAME" />କୁ <ph name="FILE_NAME" /> ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଉଛି</translation>
@@ -732,6 +738,7 @@
 <translation id="6874758081814639712">ଟାଇ ଚି କରୁଥିବା ଜଣେ ବ୍ୟକ୍ତି</translation>
 <translation id="6876155724392614295">ବାଇକ୍</translation>
 <translation id="6878261347041253038">ଦେବନାଗରୀ କୀବୋର୍ଡ (ଫୋନେଟିକ୍)</translation>
+<translation id="6882444584974399416">ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ ରଖିବା ପାଇଁ ଆପଣଙ୍କ ଡିଭାଇସରେ ଯଥେଷ୍ଟ ଷ୍ଟୋରେଜ ନାହିଁ। ନୂଆ ଫାଇଲଗୁଡ଼ିକ ଆଉ ସ୍ୱତଃ ସିଙ୍କ ହେବ ନାହିଁ।</translation>
 <translation id="6885780034956018177">ଗେଣ୍ଡା</translation>
 <translation id="6896758677409633944">କପି କରନ୍ତୁ</translation>
 <translation id="6898028766943174120">ଅଧିକ ସବ୍-ଫୋଲ୍ଡର୍...</translation>
@@ -887,6 +894,7 @@
 <translation id="8000066093800657092">କୌଣସି ନେଟ୍‌ୱର୍କ ନାହିଁ</translation>
 <translation id="8008366997883261463">ଶ୍ୱାନ</translation>
 <translation id="8028993641010258682">ଆକାର</translation>
+<translation id="8034974485549318493">ପ୍ରାରମ୍ଭିକ ସେଟଅପ ପାଇଁ, ଆପଣ ଇଣ୍ଟରନେଟ ସହ କନେକ୍ଟ କରିବା ଆବଶ୍ୟକ ଯାହା ଫଳରେ ଫାଇଲଗୁଡ଼ିକ ସିଙ୍କ ହୋଇପାରିବ।</translation>
 <translation id="803771048473350947">ଫାଇଲ୍</translation>
 <translation id="8038111231936746805">(ଡିଫଲ୍ଟ)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ଅଡିଓ</translation>
@@ -906,6 +914,7 @@
 <translation id="8154842056504218462">ସବୁ ବଛାଯାଇଛି।</translation>
 <translation id="8157684860301034423">ଆପ୍ ସୂଚନାଗୁଡ଼ିକୁ ପୁନରୁଦ୍ଧାର କରିହେଲାନାହିଁ।</translation>
 <translation id="8175731104491895765">ଫରାସୀ (ବେଲଜିୟମ୍)</translation>
+<translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" />ଟି Drive ଫାଇଲ ସିଙ୍କ କରାଯାଉଛି</translation>
 <translation id="8179976553408161302">ପ୍ରବେଶ</translation>
 <translation id="8193175696669055101">ଡିଭାଇସ୍‍ର ମଡେଲ୍</translation>
 <translation id="8223479393428528563">ଅଫ୍‍ଲାଇନ୍‍‍ରେ ବ୍ୟବହାର କରିବା ପାଇଁ ଏହି ଫାଇଲ୍‍ଗୁଡ଼ିକୁ ସେଭ୍ କରିବାକୁ, ଅନ୍‍ଲାଇନ୍‍‍ରେ ଫେରି ଆସନ୍ତୁ, ଫାଇଲ୍‍ଗୁଡ଼ିକ ଉପରେ ଡାହାଣ-କ୍ଲିକ୍ କରନ୍ତୁ ଏବଂ <ph name="OFFLINE_CHECKBOX_NAME" /> ବିକଳ୍ପ ଚୟନ କରନ୍ତୁ।</translation>
@@ -938,6 +947,7 @@
 <translation id="8395901698320285466">ପରିମେୟ ପରିସର</translation>
 <translation id="8404498045299006085">ସବୁ ରଖନ୍ତୁ</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ନେଟ୍‍ୱାର୍କ, ସଂଯୁକ୍ତ ହେଉଛି</translation>
+<translation id="841387525767317275">ଏହି ଫୋଲ୍ଡରରେ ଥିବା ଫାଇଲଗୁଡ଼ିକ ଅଫଲାଇନରେ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="8425213833346101688">ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="8431909052837336408">ସିମ୍‌ ପିନ୍‌ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="8437209419043462667">US</translation>
@@ -965,6 +975,7 @@
 <translation id="8560515948038859357">କାଣ୍ଟୋନିଜ୍</translation>
 <translation id="8561206103590473338">ହାତୀ</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ସିଗନାଲ କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ବ୍ଲକ କରାଯାଇଛି, ବିବରଣୀ</translation>
+<translation id="8567555211227790801">ବର୍ତ୍ତମାନ ଆପଣ ଅଫଲାଇନ ଅଛନ୍ତି। ଆପଣ ଇଣ୍ଟରନେଟ ସହ କନେକ୍ଟ ହେଲେ ସିଙ୍କ ପୁଣି ଆରମ୍ଭ ହେବ।</translation>
 <translation id="8568374623837201676">ଏହି ଫାଇଲକୁ ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ କରିବେ?</translation>
 <translation id="8569764466147087991">ଖୋଲିବାକୁ ଏକ ଫାଇଲ୍‌ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8577897833047451336">କ୍ରୋଏସୀୟ</translation>

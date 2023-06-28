@@ -302,6 +302,7 @@
 <translation id="6467852467360539617">Изчистване на данните и нулиране на разрешенията</translation>
 <translation id="6527303717912515753">Споделяне</translation>
 <translation id="6545864417968258051">Сканиране за устройства с Bluetooth</translation>
+<translation id="6552691050538553146">Още опции за <ph name="BANNER_TITLE" /></translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е блокиран}other{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е блокиран}}</translation>
 <translation id="6554732001434021288">Последно посещение: преди <ph name="NUM_DAYS" /> дни</translation>
 <translation id="6561560012278703671">Използване на по-малко натрапчиви съобщения (подканите за известия се блокират, така че да не ви прекъсват)</translation>

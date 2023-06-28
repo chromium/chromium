@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">Файлды же каталогду колдонуу мүмкүн эмес.</translation>
 <translation id="1363028406613469049">Трек</translation>
 <translation id="1378727793141957596">Google Drive'га кош келиңиз!</translation>
+<translation id="1379156577998569384">Менин Drive'ым файлдарыңыз офлайн режиминде жеткиликтүү</translation>
 <translation id="1379911846207762492">Файлдарга оффлайн режиминде кирүү үчүн аларды жүктөп алсаңыз болот.</translation>
 <translation id="1383876407941801731">Издөө</translation>
 <translation id="1388045380422025115">Бардык түрлөрү</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Аталышы</translation>
 <translation id="3866249974567520381">Сүрөттөлүшү</translation>
+<translation id="3866439285517092441">Батареянын кубаты аз. Шайкештирүү түзмөк кубаттагычка туташтырылганда улантылат.</translation>
 <translation id="3899991606604168269">Французча (Канада) жана көп тилдүү баскычтоп</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> менен туташууда</translation>
 <translation id="3906232975181435906">Мобилдик профиль орнотулууда, <ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" /></translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">PUK туура эмес</translation>
 <translation id="4057991113334098539">Жандырылууда...</translation>
 <translation id="4092890906744441904">Ирландча</translation>
+<translation id="4124731372776320263">1 Drive файлы шайкештирилүүдө</translation>
 <translation id="4124935795427217608">Жалгыз мүйүздүү ат</translation>
 <translation id="4131235941541910880">Керексиз нерселерди таштандыга салыңыз</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Түзмөктү тууралагандан кийин иштетиңиз</translation>
@@ -579,6 +582,7 @@
 <translation id="5524517123096967210">Файл окулбай койду.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> фарматындагы сүрөт</translation>
 <translation id="5534520101572674276">Эсептөө өлчөмү</translation>
+<translation id="5536122250858122375">Бул файл түрү шайкештирилбейт</translation>
 <translation id="554153475311314364">Грекче (транслитерация)</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> папка тандалды</translation>
 <translation id="5580591966435005537">виртуалдык машина</translation>
@@ -739,6 +743,7 @@
 <translation id="6874758081814639712">Тай-чи жасап жаткан адам</translation>
 <translation id="6876155724392614295">Велосипед</translation>
 <translation id="6878261347041253038">Деванагари баскычтобу (Фонетикалык)</translation>
+<translation id="6882444584974399416">Файлдарыңызды офлайн режиминде көрсөтүү үчүн түзмөгүңүздүн сактагычы жетишсиз. Жаңы файлдар мындан ары автоматтык түрдө шайкештирилбейт.</translation>
 <translation id="6885780034956018177">Үлүл</translation>
 <translation id="6896758677409633944">Көчүрүү</translation>
 <translation id="6898028766943174120">Дагы башка кошумча файлдар...</translation>
@@ -914,6 +919,7 @@
 <translation id="8154842056504218462">Бардык пункттар тандалды.</translation>
 <translation id="8157684860301034423">Колдонмо тууралуу маалымат алынбай калды.</translation>
 <translation id="8175731104491895765">Французча (Бельгия)</translation>
+<translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive файлы шайкештирилүүдө</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Түзмөктүн үлгүсү</translation>
 <translation id="8223479393428528563">Бул файлдарды оффлайнда колдонуу үчүн онлайн режимине кайтып, файлдарды оң баскыч менен чыкылдатып, андан соң <ph name="OFFLINE_CHECKBOX_NAME" /> параметрин тандаңыз.</translation>
@@ -946,6 +952,7 @@
 <translation id="8395901698320285466">Чен-өлчөмү</translation>
 <translation id="8404498045299006085">Баары сакталсын</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> тармагы, туташууда</translation>
+<translation id="841387525767317275">Ушул папкадагы файлдарыңыз офлайн режиминде жеткиликтүү</translation>
 <translation id="8425213833346101688">Өзгөртүү</translation>
 <translation id="8431909052837336408">SIM картанын PIN кодун өзгөртүү</translation>
 <translation id="8437209419043462667">АКШ</translation>
@@ -973,6 +980,7 @@
 <translation id="8560515948038859357">Кантончо</translation>
 <translation id="8561206103590473338">Пил</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз бөгөттөп койгон, Чоо-жайы</translation>
+<translation id="8567555211227790801">Учурда офлайндасыз. Шайкештирүү түзмөк Интернетке туташтырылганда улантылат.</translation>
 <translation id="8568374623837201676">Бул файлды биротоло өчүрөсүзбү?</translation>
 <translation id="8569764466147087991">Ачыла турган файлды тандаңыз</translation>
 <translation id="8577897833047451336">Хорватча</translation>

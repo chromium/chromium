@@ -140,7 +140,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1550523713251050646">Click for more options</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="1557622599341396706">Show desk name</translation>
-<translation id="1576511610858879060">Your Chromebook or Bluetooth device is using an older version of Bluetooth. Use another input source for better audio quality.</translation>
 <translation id="1576623706766186887">Zoom out when magnifier is on</translation>
 <translation id="1586324912145647027">Go to desk 1 to 8</translation>
 <translation id="1589090746204042747">Access all your activity in this session</translation>
@@ -358,6 +357,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2579264398927991698">Firmware updates</translation>
 <translation id="2582112259361606227">Restart to update</translation>
 <translation id="2586561057878260610">Press Ctrl + W to combine with <ph name="DESK_NAME" />. Press Ctrl + Shift + W to close desk and windows.</translation>
+<translation id="2586657967955657006">Clipboard</translation>
 <translation id="2595239820337756193">5 K in miles</translation>
 <translation id="2596078834055697711">Take window screenshot</translation>
 <translation id="2598725286293895280">Unsupported apps in desk</translation>
@@ -911,6 +911,7 @@ Connect your device to power.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Desk 16</translation>
+<translation id="4989163558385430922">See all</translation>
 <translation id="5003993274120026347">Next sentence</translation>
 <translation id="5004607513195820459">Network is managed</translation>
 <translation id="5009463889040999939">Renaming profile. This may take a few minutes.</translation>
@@ -1183,6 +1184,7 @@ Connect your device to power.</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6166852626429024716">Search your device, apps, settings, web…</translation>
 <translation id="6168318496333165060">Open Diagnostics app</translation>
+<translation id="6173151025443907148">Signing in a second user is not supported if Lacros is enabled. Please use a second browser profile in Lacros instead, or disable Lacros and try again.</translation>
 <translation id="6179832488876878285">You can pin your important files here. Open Files app to get started.</translation>
 <translation id="6182592640011875895">Open desk</translation>
 <translation id="6185696379715117369">Page up</translation>
@@ -1543,6 +1545,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7866482334467279021">on</translation>
 <translation id="7872786842639831132">Off</translation>
 <translation id="7875575368831396199">Looks like Bluetooth is turned off on your <ph name="DEVICE_TYPE" />. Please turn on Bluetooth to use Phone Hub.</translation>
+<translation id="7876243839304621966">Remove all</translation>
 <translation id="7877557217297072640">{0,plural, =0{Change device to previous version now}=1{Change device to previous version within 1 second}other{Change device to previous version within # seconds}}</translation>
 <translation id="7884446017008693258">Hotspot settings</translation>
 <translation id="7884902759927478774">Cancel tab dragging</translation>

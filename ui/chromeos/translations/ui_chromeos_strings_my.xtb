@@ -566,6 +566,7 @@
 <translation id="5422221874247253874">ချိတ်ဆက်ရန် အမှတ်</translation>
 <translation id="5428105026674456456">စပိန်</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> အတွက် ရလဒ်မရှိပါ။</translation>
+<translation id="5447680084201416734">သိုလှောင်ခန်း မလုံလောက်ပါ။</translation>
 <translation id="5449551289610225147">စကားဝှက် မမှန်ကန်ပါ</translation>
 <translation id="5459064203055649751">“<ph name="FILENAME" />” အမည်ဖြင့် ဖိုင်ရှိပြီးဖြစ်သည်။ သင်ရွှေ့နေသောဖိုင်ဖြင့် အစားထိုးလိုသလား။</translation>
 <translation id="5463231940765244860">ဝင်ရန်</translation>
@@ -694,6 +695,7 @@
 <translation id="6423031066725912715">TCVN ကီးဘုတ်ဖြင့် ဗီယက်နမ်</translation>
 <translation id="6430271654280079150">သင့်တွင် ကြိုးစားခွင့် ၁ ကြိမ် ကျန်သည်။</translation>
 <translation id="643243556292470964">ဖျက်လိုက်သည့်ဖိုင်များကို အမှိုက်ပုံးထဲ ယခုရွှေ့လိုက်သည်</translation>
+<translation id="6438480100790416671">သိုလှောင်ခန်းနေရာ စစ်ဆေးနေသည်…</translation>
 <translation id="6485131920355264772">နေရာခြားအချက်လက် ရယူခြင်း မအောင်မြင်ပါ</translation>
 <translation id="6495925982925244349">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />% သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်၊ အသေးစိတ်များ</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> ကို <ph name="FOLDER_NAME" /> တွင် ထုတ်ယူနေသည်</translation>
@@ -897,6 +899,7 @@
 <translation id="8000066093800657092">ကွန်ရက် မရှိပါ</translation>
 <translation id="8008366997883261463">ဂျက် ရစဲလ် တယ်ရီယာ</translation>
 <translation id="8028993641010258682">ဆိုက်</translation>
+<translation id="8034974485549318493">ကနဦးထည့်သွင်းမှုအတွက် ဖိုင်များ စင့်ခ်လုပ်ရန် အင်တာနက်ချိတ်ဆက်ရပါမည်။</translation>
 <translation id="803771048473350947">ဖိုင်</translation>
 <translation id="8038111231936746805">(ပုံသေ)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> အသံ</translation>

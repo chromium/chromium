@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">फाइलवा डाइरेक्टरी प्रयोगयोग्य छैन।</translation>
 <translation id="1363028406613469049">ट्रयाक</translation>
 <translation id="1378727793141957596">Google ड्राइभ मा स्वागत छ!</translation>
+<translation id="1379156577998569384">तपाईंको My Drive मा रहेका फाइलहरू अफलाइन उपलब्ध भएका छन्</translation>
 <translation id="1379911846207762492">तपाईं इन्टरनेट नभएका बेला प्रयोग गर्ने प्रयोजनका लागि फाइलहरू अफलाइन उपलब्ध गराउन सक्नुहुन्छ।</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
 <translation id="1388045380422025115">सबै प्रकारका फाइलहरू</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">जर्मन नियो 2</translation>
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3866249974567520381">विवरण</translation>
+<translation id="3866439285517092441">ब्याट्री कम छ। तपाईंको डिभाइस बिजुलीको स्रोतमा जोडिएपछि सिंक गर्ने कार्य सुचारु गरिने छ।</translation>
 <translation id="3899991606604168269">फ्रान्सेली (क्यानाडा) बहुभाषी किबोर्ड</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> मा कनेक्ट गरिँदै छ</translation>
 <translation id="3906232975181435906">मोबाइल प्रोफाइल इन्स्टल गरिँदै छ। यो प्रोफाइल <ph name="NETWORK_NAME" /> नेटवर्कको <ph name="NETWORK_INDEX" /> मध्ये <ph name="NETWORK_COUNT" /> औँ नेटवर्क हो।</translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">PUK मिलेन</translation>
 <translation id="4057991113334098539">सक्रिय गरिँदै छ…</translation>
 <translation id="4092890906744441904">आइरिस</translation>
+<translation id="4124731372776320263">Drive मा रहेको एउटा फाइल सिंक गरिँदै छ</translation>
 <translation id="4124935795427217608">एक सिङे घोडा</translation>
 <translation id="4131235941541910880">आफूलाई नचाहिने फाइलहरू सारेर ट्र्यासमा लैजानुहोस्</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, डिभाइस सेटअप गरेपछि एक्टिभेट गर्नुहोस्</translation>
@@ -563,6 +566,7 @@
 <translation id="5422221874247253874">पहुँचको बिन्दु</translation>
 <translation id="5428105026674456456">स्पेनिस</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> सम्बन्धी कुनै पनि परिणाम छैन।</translation>
+<translation id="5447680084201416734">पर्याप्त खाली ठाउँ छैन।</translation>
 <translation id="5449551289610225147">अमान्य पासवर्ड</translation>
 <translation id="5459064203055649751">"<ph name="FILENAME" />" नाम गरेको फाइल पहिलेदेखि नै छ। तपाईं यो फाइललाई आफूले सारिरहेको फाइलले प्रतिस्थापन गर्न चाहनुहुन्छ?</translation>
 <translation id="5463231940765244860">प्रविष्टि गर्नुहोस्</translation>
@@ -578,6 +582,7 @@
 <translation id="5524517123096967210">फाइल पढ्न सकिएन।</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> छवि</translation>
 <translation id="5534520101572674276">परिमाण हिसाब गर्दै</translation>
+<translation id="5536122250858122375">यस प्रकारको फाइल सिंक गर्न मिल्दैन</translation>
 <translation id="554153475311314364">ग्रिक लिपि रूपान्तरण</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> वटा फोल्डर चयन गरिएका छन्</translation>
 <translation id="5580591966435005537">भर्चुअल मेसिन</translation>
@@ -690,6 +695,7 @@
 <translation id="6423031066725912715">भियतनामी TCVN किबोर्ड</translation>
 <translation id="6430271654280079150">तपाईं अझै १ पटक प्रयास गर्न सक्नुहुन्छ।</translation>
 <translation id="643243556292470964">मेटाइएका फाइलहरू अहिले ट्र्यासमा सारिएका छन्</translation>
+<translation id="6438480100790416671">भण्डारणमा रहेको खाली ठाउँमा जाँच गरिँदै छ…</translation>
 <translation id="6485131920355264772">स्पेज जानकारी पुनर्प्राप्त गर्न असफल भयो</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> <ph name="SECURITY_STATUS" /> <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> मा एक्स्ट्रयाक्ट गरिँदै छ</translation>
@@ -737,6 +743,7 @@
 <translation id="6874758081814639712">ताइ ची गरिरहेका व्यक्ति</translation>
 <translation id="6876155724392614295">साइकल</translation>
 <translation id="6878261347041253038">देवनागरी किबोर्ड (ध्वन्यात्मक)</translation>
+<translation id="6882444584974399416">फाइलहरू अफलाइन उपलब्ध गराइराख्नका निम्ति तपाईंको डिभाइसमा पर्याप्त खाली ठाउँ छैन। अबदेखि नयाँ फाइलहरू स्वतः सिंक गरिने छैनन्।</translation>
 <translation id="6885780034956018177">चिप्लेकिरो</translation>
 <translation id="6896758677409633944">प्रतिलिपि गर्नुहोस्</translation>
 <translation id="6898028766943174120">थप उप फोल्डरहरू...</translation>
@@ -892,6 +899,7 @@
 <translation id="8000066093800657092">कुनै नेटवर्क छैन</translation>
 <translation id="8008366997883261463">ज्याक रसल टेरियर</translation>
 <translation id="8028993641010258682">आकार</translation>
+<translation id="8034974485549318493">प्रारम्भिक सेटअपका क्रममा फाइलहरू सिंक गर्न सकियोस् भन्नाका लागि तपाईंले आफ्नो डिभाइस इन्टरनेटमा कनेक्ट गर्नु पर्ने हुन्छ।</translation>
 <translation id="803771048473350947">फाइल</translation>
 <translation id="8038111231936746805">(डिफल्ट)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> अडियो</translation>
@@ -911,6 +919,7 @@
 <translation id="8154842056504218462">सबै प्रविष्टिहरू चयन गरिए।</translation>
 <translation id="8157684860301034423">एपसम्बन्धी जानकारी भेट्टाउन सकिएन।</translation>
 <translation id="8175731104491895765">फ्रान्सेली (बेल्जियम)</translation>
+<translation id="8175799081768705361">Drive मा रहेका <ph name="NUMBER_OF_FILES_SYNCING" /> वटा फाइल सिंक गरिँदै छन्</translation>
 <translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>
 <translation id="8193175696669055101">यन्त्र मोडल</translation>
 <translation id="8223479393428528563">अफलाइन प्रयोगको लागि यी फाइलहरू सुरक्षित गर्न, अनलाइनमा फिर्ता जानुहोस्, फाइलमा दायाँ क्लिक गर्नुहोस्, र <ph name="OFFLINE_CHECKBOX_NAME" /> विकल्प चयन गर्नुहोस्।</translation>
@@ -943,6 +952,7 @@
 <translation id="8395901698320285466">उचाइ तथा चौडाइ</translation>
 <translation id="8404498045299006085">सबै इन्ट्रीहरू राखिराख्नुहोस्</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> नेटवर्क, जोड्दै</translation>
+<translation id="841387525767317275">यो फोल्डरभित्र रहेका फाइलहरू अफलाइन उपलब्ध भएका छन्</translation>
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
 <translation id="8431909052837336408">SIM को PIN परिवर्तन गर्नुहोस्</translation>
 <translation id="8437209419043462667">US</translation>
@@ -970,6 +980,7 @@
 <translation id="8560515948038859357">क्यान्टोनिज</translation>
 <translation id="8561206103590473338">हात्ती</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नलको क्षमता: <ph name="SIGNAL_STRENGTH" />%, तपाईंका एड्मिनले ब्लक गरेको, विवरणहरू</translation>
+<translation id="8567555211227790801">तपाईं अहिले अफलाइन हुनुहुन्छ। तपाईंको डिभाइस इन्टरनेटमा कनेक्ट भएपछि सिंक गर्ने कार्य सुचारु गरिने छ।</translation>
 <translation id="8568374623837201676">यो फाइल सदाका लागि मेटाउने हो?</translation>
 <translation id="8569764466147087991">खोल्नको लागि फाइल चयन गर्नुहोस्</translation>
 <translation id="8577897833047451336">क्रोएसियाली</translation>

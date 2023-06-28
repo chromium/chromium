@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">फा़इल या निर्देशिका उपयोग करने योग्य नहीं है.</translation>
 <translation id="1363028406613469049">ट्रैक</translation>
 <translation id="1378727793141957596">Google डिस्क में आपका स्वागत है!</translation>
+<translation id="1379156577998569384">मेरी ड्राइव पर मौजूद आपकी फ़ाइलें ऑफ़लाइन उपलब्ध हैं</translation>
 <translation id="1379911846207762492">आप ऑफ़लाइन मोड में ऐक्सेस करने के लिए फ़ाइलें डाउनलोड कर सकते हैं.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1388045380422025115">सभी तरह की फ़ाइलें</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">जर्मन नियो 2</translation>
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3866249974567520381">वर्णन</translation>
+<translation id="3866439285517092441">डिवाइस की बैटरी कम है. डिवाइस को बिजली से कनेक्ट करने पर, सिंक की सुविधा फिर से शुरू हो जाएगी.</translation>
 <translation id="3899991606604168269">बहुभाषी कीबोर्ड के साथ फ़्रेंच (कनाडा)</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> से कनेक्‍ट हो रहा है</translation>
 <translation id="3906232975181435906">मोबाइल प्रोफ़ाइल को इंस्टॉल किया जा रहा है. यह <ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" /> नेटवर्क में से नेटवर्क <ph name="NETWORK_INDEX" /> है</translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">PUK गलत है</translation>
 <translation id="4057991113334098539">सक्रिय कर रहा है...</translation>
 <translation id="4092890906744441904">आयरिश</translation>
+<translation id="4124731372776320263">Drive की एक फ़ाइल सिंक की जा रही है</translation>
 <translation id="4124935795427217608">यूनिकॉर्न</translation>
 <translation id="4131235941541910880">ग़ैर-ज़रूरी आइटम को ट्रैश में ले जाएं</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> को डिवाइस सेटअप होने के बाद चालू करें</translation>
@@ -579,6 +582,7 @@
 <translation id="5524517123096967210">फ़ाइल को पढ़ा नहीं जा सका.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> इमेज</translation>
 <translation id="5534520101572674276">आकार की गणना कर रहा है</translation>
+<translation id="5536122250858122375">इस फ़ाइल टाइप को सिंक नहीं किया जा सकता</translation>
 <translation id="554153475311314364">ग्रीक ट्रांसलिट्रेशन</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> फ़ोल्डर चुने गए</translation>
 <translation id="5580591966435005537">वर्चुअल मशीन</translation>
@@ -738,6 +742,7 @@
 <translation id="6874758081814639712">ताई ची करता हुआ व्यक्ति</translation>
 <translation id="6876155724392614295">बाइक</translation>
 <translation id="6878261347041253038">देवनागरी कीबोर्ड (फ़ोनेटिक)</translation>
+<translation id="6882444584974399416">आपकी फ़ाइलों को ऑफ़लाइन उपलब्ध कराने के लिए, आपके डिवाइस में स्टोरेज के लिए बची जगह काफ़ी नहीं है. अब नई फ़ाइलें अपने-आप सिंक नहीं होंगी.</translation>
 <translation id="6885780034956018177">घोंघा</translation>
 <translation id="6896758677409633944">कॉपी बनाएं</translation>
 <translation id="6898028766943174120">और सब-फ़़ोल्डर...</translation>
@@ -912,6 +917,7 @@
 <translation id="8154842056504218462">सभी एंट्री चुनी गईं.</translation>
 <translation id="8157684860301034423">ऐप्लिकेशन जानकारी बहाल नहीं की जा सकी.</translation>
 <translation id="8175731104491895765">फ़्रेंच (बेल्जियम)</translation>
+<translation id="8175799081768705361">Drive की <ph name="NUMBER_OF_FILES_SYNCING" /> फ़ाइलें सिंक की जा रही हैं</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">डिवाइस मॉडल</translation>
 <translation id="8223479393428528563">इन फ़ाइलों को ऑफ़लाइन देखने को सेव करने के लिए, फिर से ऑनलाइन होकर, फ़ाइलों पर राइट-क्‍लिक करें और <ph name="OFFLINE_CHECKBOX_NAME" /> विकल्‍प चुनें.</translation>
@@ -944,6 +950,7 @@
 <translation id="8395901698320285466">आयाम</translation>
 <translation id="8404498045299006085">सभी को बनाए रखें</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> नेटवर्क, कनेक्ट हो रहा है</translation>
+<translation id="841387525767317275">इस फ़ोल्डर में मौजूद फ़ाइलें, ऑफ़लाइन उपलब्ध हैं</translation>
 <translation id="8425213833346101688">बदलें</translation>
 <translation id="8431909052837336408">SIM पिन बदलें</translation>
 <translation id="8437209419043462667">यूएस</translation>
@@ -971,6 +978,7 @@
 <translation id="8560515948038859357">कैंटोनीज़</translation>
 <translation id="8561206103590473338">हाथी</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नल का स्तर <ph name="SIGNAL_STRENGTH" />%, आपके एडमिन ने ब्लॉक किया है, ब्यौरा</translation>
+<translation id="8567555211227790801">आप फ़िलहाल ऑफ़लाइन हैं. डिवाइस को इंटरनेट से कनेक्ट करने पर, सिंक की सुविधा फिर से शुरू हो जाएगी.</translation>
 <translation id="8568374623837201676">क्या आपको यह फ़ाइल हमेशा के लिए मिटानी है?</translation>
 <translation id="8569764466147087991">खोलने के लिए फ़ाइल को चुनें</translation>
 <translation id="8577897833047451336">क्रोएशियन</translation>

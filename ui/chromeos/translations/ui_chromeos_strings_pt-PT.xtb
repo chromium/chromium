@@ -567,6 +567,7 @@
 <translation id="5422221874247253874">Ponto de acesso</translation>
 <translation id="5428105026674456456">Espanhol</translation>
 <translation id="5438282218546237410">Não existem resultados para <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Sem armazenamento suficiente</translation>
 <translation id="5449551289610225147">Palavra-passe inválida</translation>
 <translation id="5459064203055649751">Já existe um ficheiro com o nome "<ph name="FILENAME" />". Quer substituí-lo pelo que está a mover?</translation>
 <translation id="5463231940765244860">Introduzir</translation>
@@ -695,6 +696,7 @@
 <translation id="6423031066725912715">Vietnamita com teclado TCVN</translation>
 <translation id="6430271654280079150">Tem mais 1 tentativa.</translation>
 <translation id="643243556292470964">Os ficheiros eliminados são agora movidos para o lixo</translation>
+<translation id="6438480100790416671">A verificar o espaço de armazenamento…</translation>
 <translation id="6485131920355264772">Falha ao obter informações de espaço</translation>
 <translation id="6495925982925244349">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, Gerida pelo administrador, Detalhes</translation>
 <translation id="649877868557234318">A extrair <ph name="FILE_NAME" /> para <ph name="FOLDER_NAME" /></translation>
@@ -898,6 +900,7 @@
 <translation id="8000066093800657092">Sem rede</translation>
 <translation id="8008366997883261463">Jack Russell Terrier</translation>
 <translation id="8028993641010258682">Tamanho</translation>
+<translation id="8034974485549318493">Na configuração inicial, tem de estabelecer ligação à Internet para sincronizar os ficheiros.</translation>
 <translation id="803771048473350947">Ficheiro</translation>
 <translation id="8038111231936746805">(predefinição)</translation>
 <translation id="8042602468072383151">Áudio <ph name="AUDIO_TYPE" /></translation>

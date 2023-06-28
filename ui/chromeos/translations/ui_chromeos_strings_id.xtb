@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">File atau direktori tidak dapat digunakan.</translation>
 <translation id="1363028406613469049">Lacak</translation>
 <translation id="1378727793141957596">Selamat datang di Google Drive!</translation>
+<translation id="1379156577998569384">File Drive Anda tersedia secara offline</translation>
 <translation id="1379911846207762492">Anda bisa membuat file tersedia offline untuk Anda akses saat tidak memiliki koneksi internet.</translation>
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1388045380422025115">Semua jenis</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">Neo 2 Jerman</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3866249974567520381">Deskripsi</translation>
+<translation id="3866439285517092441">Daya baterai lemah. Sinkronisasi akan dilanjutkan saat Anda terhubung ke sumber listrik.</translation>
 <translation id="3899991606604168269">Prancis (Kanada) dengan keyboard Multibahasa</translation>
 <translation id="3901991538546252627">Menghubungkan ke <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Menginstal profil seluler, Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">PUK salah</translation>
 <translation id="4057991113334098539">Mengaktifkan...</translation>
 <translation id="4092890906744441904">Irlandia</translation>
+<translation id="4124731372776320263">Menyinkronkan 1 file Drive</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Pindahkan item yang tidak Anda butuhkan ke sampah</translation>
 <translation id="4134804435730168042">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Aktifkan setelah penyiapan perangkat</translation>
@@ -564,6 +567,7 @@
 <translation id="5422221874247253874">Titik Akses</translation>
 <translation id="5428105026674456456">Spanyol</translation>
 <translation id="5438282218546237410">Tidak ada hasil untuk <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Penyimpanan tidak cukup.</translation>
 <translation id="5449551289610225147">Sandi tidak valid</translation>
 <translation id="5459064203055649751">File bernama "<ph name="FILENAME" />" sudah ada. Ingin menggantinya dengan file yang sedang Anda pindahkan?</translation>
 <translation id="5463231940765244860">Masuk</translation>
@@ -579,6 +583,7 @@
 <translation id="5524517123096967210">File tidak dapat dibaca.</translation>
 <translation id="5533102081734025921">Gambar <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Menghitung ukuran</translation>
+<translation id="5536122250858122375">Jenis file ini tidak dapat disinkronkan</translation>
 <translation id="554153475311314364">Transliterasi Yunani</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> folder dipilih</translation>
 <translation id="5580591966435005537">mesin virtual</translation>
@@ -691,6 +696,7 @@
 <translation id="6423031066725912715">Vietnam dengan keyboard TCVN</translation>
 <translation id="6430271654280079150">Tersisa 1 upaya lagi.</translation>
 <translation id="643243556292470964">File yang dihapus sekarang dipindahkan ke sampah</translation>
+<translation id="6438480100790416671">Memeriksa ruang penyimpanan…</translation>
 <translation id="6485131920355264772">Gagal mengambil info ruang</translation>
 <translation id="6495925982925244349">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Dikelola oleh Administrator Anda, Detail</translation>
 <translation id="649877868557234318">Mengekstrak <ph name="FILE_NAME" /> ke <ph name="FOLDER_NAME" /></translation>
@@ -738,6 +744,7 @@
 <translation id="6874758081814639712">Orang melakukan tai chi</translation>
 <translation id="6876155724392614295">Sepeda</translation>
 <translation id="6878261347041253038">Keyboard Devanagari (Fonetik)</translation>
+<translation id="6882444584974399416">Perangkat Anda tidak memiliki ruang penyimpanan yang cukup untuk menyimpan file yang tersedia secara offline. File baru tidak lagi disinkronkan secara otomatis.</translation>
 <translation id="6885780034956018177">Siput</translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6898028766943174120">Lebih banyak subfolder ...</translation>
@@ -893,6 +900,7 @@
 <translation id="8000066093800657092">Tidak ada jaringan</translation>
 <translation id="8008366997883261463">Anjing</translation>
 <translation id="8028993641010258682">Ukuran</translation>
+<translation id="8034974485549318493">Untuk penyiapan awal, Anda harus terhubung ke internet agar file dapat disinkronkan.</translation>
 <translation id="803771048473350947">File</translation>
 <translation id="8038111231936746805">(default)</translation>
 <translation id="8042602468072383151">Audio <ph name="AUDIO_TYPE" /></translation>
@@ -912,6 +920,7 @@
 <translation id="8154842056504218462">Semua entri dipilih.</translation>
 <translation id="8157684860301034423">Gagal mengambil info aplikasi.</translation>
 <translation id="8175731104491895765">Prancis (Belgia)</translation>
+<translation id="8175799081768705361">Menyinkronkan <ph name="NUMBER_OF_FILES_SYNCING" /> file Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model perangkat</translation>
 <translation id="8223479393428528563">Untuk menyimpan file ini agar dapat digunakan saat offline, sambungkan ke internet, klik kanan pada file, dan pilih opsi <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
@@ -944,6 +953,7 @@
 <translation id="8395901698320285466">Dimensi</translation>
 <translation id="8404498045299006085">Simpan semua</translation>
 <translation id="8408068190360279472">Jaringan <ph name="NETWORK_TYPE" />, menyambungkan</translation>
+<translation id="841387525767317275">File dalam folder ini tersedia secara offline</translation>
 <translation id="8425213833346101688">Ubah</translation>
 <translation id="8431909052837336408">Ubah PIN SIM</translation>
 <translation id="8437209419043462667">AS</translation>
@@ -971,6 +981,7 @@
 <translation id="8560515948038859357">Kanton</translation>
 <translation id="8561206103590473338">Gajah</translation>
 <translation id="8566466896628108558">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Diblokir oleh Administrator Anda, Detail</translation>
+<translation id="8567555211227790801">Anda sedang offline. Sinkronisasi akan dilanjutkan saat Anda terhubung ke internet.</translation>
 <translation id="8568374623837201676">Hapus file ini secara permanen?</translation>
 <translation id="8569764466147087991">Pilih file yang akan dibuka</translation>
 <translation id="8577897833047451336">Kroasia</translation>

@@ -140,7 +140,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1550523713251050646">Kliknutím zobrazíte další možnosti</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1557622599341396706">Zobrazit název plochy</translation>
-<translation id="1576511610858879060">Váš Chromebook nebo zařízení Bluetooth používá starší verzi rozhraní Bluetooth. Pro lepší kvalitu zvuku použijte jiný zdroj vstupu.</translation>
 <translation id="1576623706766186887">Oddálit, když je zapnutá lupa</translation>
 <translation id="1586324912145647027">Přejděte na plochu 1 až 8</translation>
 <translation id="1589090746204042747">Získat přístup k veškeré vaší aktivitě v této relaci</translation>
@@ -358,6 +357,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2579264398927991698">Aktualizace firmwaru</translation>
 <translation id="2582112259361606227">Restartovat a aktualizovat</translation>
 <translation id="2586561057878260610">Stisknutím Ctrl + W sloučíte s plochou <ph name="DESK_NAME" />. Stisknutím Ctrl + Shift + W plochu a okna zavřete.</translation>
+<translation id="2586657967955657006">Schránka</translation>
 <translation id="2595239820337756193">5 km v mílích</translation>
 <translation id="2596078834055697711">Pořídit snímek obrazovky okna</translation>
 <translation id="2598725286293895280">Na ploše jsou nepodporované aplikace</translation>
@@ -911,6 +911,7 @@ Připojte zařízení k napájení.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Plocha 16</translation>
+<translation id="4989163558385430922">Zobrazit vše</translation>
 <translation id="5003993274120026347">Další věta</translation>
 <translation id="5004607513195820459">Síť je spravována</translation>
 <translation id="5009463889040999939">Probíhá přejmenování profilu. Může to trvat několik minut.</translation>
@@ -1544,6 +1545,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7866482334467279021">zapnuto</translation>
 <translation id="7872786842639831132">Vyp</translation>
 <translation id="7875575368831396199">Na zařízení <ph name="DEVICE_TYPE" /> je pravděpodobně vypnuté rozhraní Bluetooth. Pokud chcete používat Telefonní centrum, zapněte Bluetooth.</translation>
+<translation id="7876243839304621966">Odstranit vše</translation>
 <translation id="7877557217297072640">{0,plural, =0{Převeďte zařízení na předchozí verzi}=1{Do 1 sekundy zařízení převeďte na předchozí verzi}few{Do # sekund zařízení převeďte na předchozí verzi}many{Do # sekundy zařízení převeďte na předchozí verzi}other{Do # sekund zařízení převeďte na předchozí verzi}}</translation>
 <translation id="7884446017008693258">Nastavení hotspotu</translation>
 <translation id="7884902759927478774">Zrušit přetahování karty</translation>

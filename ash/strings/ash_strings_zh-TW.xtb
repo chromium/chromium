@@ -140,7 +140,6 @@
 <translation id="1550523713251050646">按一下即可查看更多選項</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1557622599341396706">顯示桌面名稱</translation>
-<translation id="1576511610858879060">Chromebook 或藍牙裝置使用的是舊版藍牙。如要提高音訊品質，請使用其他輸入來源。</translation>
 <translation id="1576623706766186887">放大鏡開啟時縮小畫面</translation>
 <translation id="1586324912145647027">前往桌面 1 到 8</translation>
 <translation id="1589090746204042747">存取你在這個工作階段內的所有活動</translation>
@@ -358,6 +357,7 @@
 <translation id="2579264398927991698">韌體更新</translation>
 <translation id="2582112259361606227">重新啟動即可更新</translation>
 <translation id="2586561057878260610">按下 Ctrl + W 鍵，即可與「<ph name="DESK_NAME" />」合併。按下 Ctrl + Shift + W 鍵，即可關閉桌面和視窗。</translation>
+<translation id="2586657967955657006">剪貼簿</translation>
 <translation id="2595239820337756193">5 公里等於多少英里</translation>
 <translation id="2596078834055697711">擷取視窗螢幕畫面</translation>
 <translation id="2598725286293895280">桌面不支援的應用程式</translation>
@@ -908,6 +908,7 @@
         <ph name="NOTIFICATION_2" />；
         以及<ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">桌面 16</translation>
+<translation id="4989163558385430922">查看全部</translation>
 <translation id="5003993274120026347">下一句</translation>
 <translation id="5004607513195820459">這是受管理的網路</translation>
 <translation id="5009463889040999939">正在重新命名設定檔。請稍候片刻。</translation>
@@ -1540,6 +1541,7 @@
 <translation id="7866482334467279021">開啟</translation>
 <translation id="7872786842639831132">關閉</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> 的藍牙功能似乎已關閉。請開啟藍牙功能，才能使用 Phone Hub。</translation>
+<translation id="7876243839304621966">全部移除</translation>
 <translation id="7877557217297072640">{0,plural, =0{立即將裝置復原為較舊的版本}=1{在 1 秒內將裝置復原為較舊的版本}other{在 # 秒內將裝置復原為較舊的版本}}</translation>
 <translation id="7884446017008693258">無線基地台設定</translation>
 <translation id="7884902759927478774">取消分頁拖曳</translation>

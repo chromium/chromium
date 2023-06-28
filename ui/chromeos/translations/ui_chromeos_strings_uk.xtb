@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">Файл або каталог не можна використовувати.</translation>
 <translation id="1363028406613469049">Композиція</translation>
 <translation id="1378727793141957596">Вітаємо на Диску Google!</translation>
+<translation id="1379156577998569384">Файли в папці "Мій диск" доступні в режимі офлайн</translation>
 <translation id="1379911846207762492">Ви можете зробити файли доступними офлайн, щоб відкривати їх, коли немає інтернет-з'єднання.</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1388045380422025115">Усі типи</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">Німецька (Neo 2)</translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3866249974567520381">Опис</translation>
+<translation id="3866439285517092441">Низький рівень заряду акумулятора. Синхронізація відновиться, коли ви підключите пристрій до живлення.</translation>
 <translation id="3899991606604168269">Французька (Канада), багатомовна розкладка</translation>
 <translation id="3901991538546252627">Під’єднання до <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Встановлення мобільного профілю; мережа <ph name="NETWORK_INDEX" />, усього мереж: <ph name="NETWORK_COUNT" />; назва: <ph name="NETWORK_NAME" /></translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">Неправильний PUK-код</translation>
 <translation id="4057991113334098539">Активація...</translation>
 <translation id="4092890906744441904">Ірландська</translation>
+<translation id="4124731372776320263">Синхронізація 1 файлу на Диску</translation>
 <translation id="4124935795427217608">Єдиноріг</translation>
 <translation id="4131235941541910880">Перемістіть непотрібні файли в кошик</translation>
 <translation id="4134804435730168042">Мережа № <ph name="NETWORK_INDEX" /> (усього: <ph name="NETWORK_COUNT" />); назва мережі: <ph name="NETWORK_NAME" />; оператор мережі: <ph name="NETWORK_PROVIDER_NAME" />. Активація доступна після налаштування пристрою.</translation>
@@ -564,6 +567,7 @@
 <translation id="5422221874247253874">Точка доступу</translation>
 <translation id="5428105026674456456">Іспанська</translation>
 <translation id="5438282218546237410">Немає результатів для запиту "<ph name="SEARCH_TERM" />".</translation>
+<translation id="5447680084201416734">Недостатньо пам’яті.</translation>
 <translation id="5449551289610225147">Недійсний пароль</translation>
 <translation id="5459064203055649751">Файл із назвою "<ph name="FILENAME" />" уже існує. Замінити його на файл, який ви переносите?</translation>
 <translation id="5463231940765244860">Ввести</translation>
@@ -579,6 +583,7 @@
 <translation id="5524517123096967210">Файл неможливо прочитати.</translation>
 <translation id="5533102081734025921">Зображення <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Обчислення розміру</translation>
+<translation id="5536122250858122375">Не вдалося синхронізувати файли цього типу</translation>
 <translation id="554153475311314364">Грецька, транслітерація</translation>
 <translation id="5554171655917412781">Вибрано папок: <ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">віртуальна машина</translation>
@@ -691,6 +696,7 @@
 <translation id="6423031066725912715">В'єтнамська, розкладка TCVN</translation>
 <translation id="6430271654280079150">Залишилась 1 спроба.</translation>
 <translation id="643243556292470964">Видалені файли переміщено в кошик</translation>
+<translation id="6438480100790416671">Перевірка обсягу пам’яті…</translation>
 <translation id="6485131920355264772">Не вдалось отримати дані про вільне місце</translation>
 <translation id="6495925982925244349">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Мережею керує адміністратор. Докладніше</translation>
 <translation id="649877868557234318">Видобування файлу "<ph name="FILE_NAME" />" у папку "<ph name="FOLDER_NAME" />"</translation>
@@ -738,6 +744,7 @@
 <translation id="6874758081814639712">Людина, яка займається тайцзицюань</translation>
 <translation id="6876155724392614295">Велосипед</translation>
 <translation id="6878261347041253038">Клавіатура деванагарі (фонетична)</translation>
+<translation id="6882444584974399416">На вашому пристрої недостатньо пам’яті, щоб користуватися файлами в режимі офлайн. Нові файли не синхронізуватимуться автоматично.</translation>
 <translation id="6885780034956018177">Равлик</translation>
 <translation id="6896758677409633944">Копіювати</translation>
 <translation id="6898028766943174120">Інші підпапки…</translation>
@@ -893,6 +900,7 @@
 <translation id="8000066093800657092">Немає мережі</translation>
 <translation id="8008366997883261463">Собака</translation>
 <translation id="8028993641010258682">Розмір</translation>
+<translation id="8034974485549318493">Для початкового налаштування потрібне інтернет-з’єднання, щоб синхронізувати файли.</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038111231936746805">(за умовчанням)</translation>
 <translation id="8042602468072383151">Аудіо <ph name="AUDIO_TYPE" /></translation>
@@ -912,6 +920,7 @@
 <translation id="8154842056504218462">Вибрано всі елементи.</translation>
 <translation id="8157684860301034423">Не вдалось отримати інформацію про додаток.</translation>
 <translation id="8175731104491895765">Французька (Бельгія)</translation>
+<translation id="8175799081768705361">Синхронізація файлів на Диску (<ph name="NUMBER_OF_FILES_SYNCING" />)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Модель пристрою</translation>
 <translation id="8223479393428528563">Щоб зберегти ці файли для використання в режимі офлайн, під’єднайте пристрій до Інтернету, натисніть файли правою кнопкою миші та виберіть опцію <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
@@ -944,6 +953,7 @@
 <translation id="8395901698320285466">Розміри</translation>
 <translation id="8404498045299006085">Залишити всі</translation>
 <translation id="8408068190360279472">Мережа <ph name="NETWORK_TYPE" />: підключення</translation>
+<translation id="841387525767317275">Файли в цій папці доступні в режимі офлайн</translation>
 <translation id="8425213833346101688">Змінити</translation>
 <translation id="8431909052837336408">Змінити PIN-код SIM-карти</translation>
 <translation id="8437209419043462667">Американська</translation>
@@ -971,6 +981,7 @@
 <translation id="8560515948038859357">Кантонський діалект</translation>
 <translation id="8561206103590473338">Слон</translation>
 <translation id="8566466896628108558">Мережа № <ph name="NETWORK_INDEX" />; загалом мереж: <ph name="NETWORK_COUNT" />; назва мережі: "<ph name="NETWORK_NAME" />"; стан безпеки: <ph name="SECURITY_STATUS" />; рівень сигналу: <ph name="SIGNAL_STRENGTH" />%; заблоковано адміністратором; відомості</translation>
+<translation id="8567555211227790801">Зараз ви не в мережі. Синхронізація відновиться, коли пристрій підключиться до Інтернету.</translation>
 <translation id="8568374623837201676">Видалити цей файл назавжди?</translation>
 <translation id="8569764466147087991">Виберіть файл, який потрібно відкрити</translation>
 <translation id="8577897833047451336">Хорватська</translation>

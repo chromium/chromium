@@ -567,6 +567,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5422221874247253874">ॲक्सेस पॉइंट</translation>
 <translation id="5428105026674456456">स्पॅनिश</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> साठी कोणतेही परिणाम नाहीत.</translation>
+<translation id="5447680084201416734">पुरेसे स्टोरेज नाही.</translation>
 <translation id="5449551289610225147">चुकीचा पासवर्ड</translation>
 <translation id="5459064203055649751">"<ph name="FILENAME" />" नावाची फाइल आधीपासून अस्तित्वात आहे. तुम्हाला ही तुम्ही हलवत आहात तिच्यासोबत बदलायची आहे का?</translation>
 <translation id="5463231940765244860">एंटर करा</translation>
@@ -695,6 +696,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6423031066725912715">TCVN कीबोर्डसह व्हिएतनामी</translation>
 <translation id="6430271654280079150">तुमच्याकडे एक प्रयत्न शिल्लक आहे.</translation>
 <translation id="643243556292470964">हटवलेल्या फाइल आता ट्रॅशमध्ये हलवल्या जातात</translation>
+<translation id="6438480100790416671">स्टोरेज जागा तपासत आहे…</translation>
 <translation id="6485131920355264772">स्थान माहिती पुनर्प्राप्त करण्यात अयशस्वी</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, तपशील</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> ही <ph name="FOLDER_NAME" /> मध्ये एक्स्ट्रॅक्ट करत आहे</translation>
@@ -898,6 +900,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8000066093800657092">कोणतेही नेटवर्क नाही</translation>
 <translation id="8008366997883261463">कुत्रा</translation>
 <translation id="8028993641010258682">आकार</translation>
+<translation id="8034974485549318493">प्रारंभिक सेटअपसाठी, तुम्हाला इंटरनेटशी कनेक्ट करणे आवश्यक आहे, जेणेकरून फाइल सिंक होऊ शकतील.</translation>
 <translation id="803771048473350947">फाइल</translation>
 <translation id="8038111231936746805">(डीफॉल्ट)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ऑडिओ</translation>

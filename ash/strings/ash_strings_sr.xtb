@@ -140,7 +140,6 @@
 <translation id="1550523713251050646">Кликните за више опција</translation>
 <translation id="1555130319947370107">Плава</translation>
 <translation id="1557622599341396706">Прикажи назив радне површине</translation>
-<translation id="1576511610858879060">Chromebook или Bluetooth уређај користи старију верзију Bluetooth-а. Користите други извор за бољи квалитет звука.</translation>
 <translation id="1576623706766186887">Умањите приказ када је лупа укључена</translation>
 <translation id="1586324912145647027">Идите на радне површине од 1 до 8</translation>
 <translation id="1589090746204042747">Приступите свим активностима у овој сесији</translation>
@@ -358,6 +357,7 @@
 <translation id="2579264398927991698">Ажурирања фирмвера</translation>
 <translation id="2582112259361606227">Рестартујте да бисте ажурирали</translation>
 <translation id="2586561057878260610">Притисните Ctrl + W да бисте комбиновали са: <ph name="DESK_NAME" />. Притисните Ctrl + Shift + W да бисте затворили радну површину и прозоре.</translation>
+<translation id="2586657967955657006">Меморија</translation>
 <translation id="2595239820337756193">5 km у миљама</translation>
 <translation id="2596078834055697711">Направите снимак екрана прозора</translation>
 <translation id="2598725286293895280">Неподржане апликације на радној површини</translation>
@@ -395,6 +395,7 @@
 <translation id="2750941250130734256">Активни прозор је одвојен.</translation>
 <translation id="2761723519669354964">Отворите истакнуту ставку са полице</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /> од <ph name="KEY_ONE" /> до <ph name="KEY_TWO" /></translation>
+<translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-ом управља <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Изађите из режима снимања</translation>
 <translation id="2785499565474703580">1 уређај је повезан</translation>
@@ -458,6 +459,7 @@
 <translation id="3062298103034426069">Није подржано</translation>
 <translation id="3068622547379332530">Верзија <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Полица на левој страни</translation>
+<translation id="3070639127620815135">search+esc</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Прошири мени</translation>
 <translation id="3087734570205094154">Дно</translation>
@@ -471,6 +473,7 @@
 <translation id="3120421559657122717">Желите да искључите уређај?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Покрените поново да бисте ажурирали</translation>
+<translation id="3139188263101386725">Користите ажурирану пречицу</translation>
 <translation id="3139942575505304791">Радна површина 1</translation>
 <translation id="315116470104423982">Мобилни подаци</translation>
 <translation id="3151786313568798007">Положај</translation>
@@ -606,6 +609,7 @@
         <ph name="END_TIME" />,
         <ph name="TIME_ZONE" />. Изаберите да бисте видели више детаља у Google календару.</translation>
 <translation id="3659444876902283058">(<ph name="CURRENT_DAY" />. дан од <ph name="TOTAL_DAYS" />)</translation>
+<translation id="3659667652322717492">Можете да промените понашање микрофона касније у било ком тренутку.</translation>
 <translation id="3659814201068740063">Преостало је око <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Прикључите уређај на напајање.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Корисник којим се управља</translation>
@@ -912,6 +916,7 @@
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Радна површина 16</translation>
+<translation id="4989163558385430922">Прикажи све</translation>
 <translation id="5003993274120026347">Следећа реченица</translation>
 <translation id="5004607513195820459">Мрежом се управља</translation>
 <translation id="5009463889040999939">Мења се име профила. То може да потраје неколико минута.</translation>
@@ -1049,6 +1054,7 @@
 <translation id="5578188167649348993">меморија</translation>
 <translation id="5580000943347215299">Библиотека</translation>
 <translation id="558849140439112033">Превуците да бисте изабрали област за снимање</translation>
+<translation id="5590609058453685222">Подсетник за микрофон је укључен. Добићете обавештење ако говорите док је звук искључен.</translation>
 <translation id="5596627076506792578">Још опција</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" /> <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Притисните Ctrl + Alt + Z да бисте онемогућили говорне повратне информације.</translation>
@@ -1184,6 +1190,7 @@
 <translation id="6165508094623778733">Сазнајте више</translation>
 <translation id="6166852626429024716">Претражујте уређај, апликације, подешавања, веб...</translation>
 <translation id="6168318496333165060">Отворите апликацију Дијагностика</translation>
+<translation id="6173151025443907148">Пријављивање другог корисника није подржано док је Lacros омогућен. Користите други профил за прегледач у Lacros-у или онемогућите Lacros и пробајте поново.</translation>
 <translation id="6179832488876878285">Овде можете да закачите најважније фајлове. Отворите апликацију Фајлови да бисте започели.</translation>
 <translation id="6182592640011875895">Отвори радну површину</translation>
 <translation id="6185696379715117369">Страница нагоре</translation>
@@ -1201,6 +1208,7 @@
 <translation id="6231419273573514727">Учинак периферних уређаја ће можда бити ограничен</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> тренутно користи камеру и микрофон</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6244986124527896815">Отворите апликацију Менаџер задатака помоћу апликације <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6247728804802644171">Отворите обавештења</translation>
 <translation id="6254629735336163724">Хоризонтални приказ је закључан</translation>
 <translation id="6259254695169772643">Изаберите помоћу писаљке</translation>
@@ -1251,6 +1259,7 @@
 <translation id="6497418457565568043">Не узнемиравај је укључено</translation>
 <translation id="6500896621837555595">Ажурирај</translation>
 <translation id="6501401484702599040">Екран се пребацује на <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507042703812908515">Отворите апликацију Тастерске пречице помоћу пречице <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Пређите на следећи доступни метод уноса</translation>
 <translation id="6508923215158854599">Уверите се да је Chromebook повезан на исту WiFi мрежу као и Chromecast уређај.</translation>
 <translation id="6515727200518652613">Веза са камером је прекинута, покушава да се поново повеже.</translation>
@@ -1544,6 +1553,7 @@
 <translation id="7866482334467279021">укључено</translation>
 <translation id="7872786842639831132">Искључено</translation>
 <translation id="7875575368831396199">Изгледа да је искључен Bluetooth на уређају <ph name="DEVICE_TYPE" />. Укључите Bluetooth да бисте користили Phone Hub.</translation>
+<translation id="7876243839304621966">Уклони све</translation>
 <translation id="7877557217297072640">{0,plural, =0{Промените верзију уређаја у претходну верзију одмах}=1{Промените верзију уређаја у претходну верзију у року од 1 секунде}one{Промените верзију уређаја у претходну верзију у року од # секунде}few{Промените верзију уређаја у претходну верзију у року од # секунде}other{Промените верзију уређаја у претходну верзију у року од # секунди}}</translation>
 <translation id="7884446017008693258">Подешавања хотспота</translation>
 <translation id="7884902759927478774">Откажи превлачење картица</translation>
@@ -1642,6 +1652,7 @@
 <translation id="8255234195843591763">Ресетујте ради ажурирања</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8262312463845990408">Укључите/искључите репродукцију</translation>
+<translation id="8265826854528868575">Приказује се <ph name="NUM_SHOWN_TASKS" /> од <ph name="NUM_TOTAL_TASKS" /></translation>
 <translation id="8270450402312105425">{0,plural, =1{Промените верзију уређаја у претходну верзију у року од једног сата}one{Промените верзију уређаја у претходну верзију у року од # сата}few{Промените верзију уређаја у претходну верзију у року од # сата}other{Промените верзију уређаја у претходну верзију у року од # сати}}</translation>
 <translation id="8277261673056602147">Истакните текст на екрану</translation>
 <translation id="8284362522226889623">Превуците улево помоћу четири прста да бисте прешли на претходну радну површину</translation>

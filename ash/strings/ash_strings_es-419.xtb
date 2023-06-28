@@ -139,7 +139,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1550406609415860283">Dispositivos disponibles</translation>
 <translation id="1550523713251050646">Haz clic para obtener más opciones</translation>
 <translation id="1555130319947370107">Azul</translation>
-<translation id="1576511610858879060">Tu Chromebook o dispositivo Bluetooth usan una versión anterior de Bluetooth. Usa otra entrada para obtener una mejor calidad de audio.</translation>
+<translation id="1557622599341396706">Mostrar el nombre del escritorio</translation>
 <translation id="1576623706766186887">Alejar cuando la lupa esté activada</translation>
 <translation id="1586324912145647027">Ir al escritorio 1 al 8</translation>
 <translation id="1589090746204042747">Accede a toda tu actividad en esta sesión</translation>
@@ -357,6 +357,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2579264398927991698">Actualizaciones de firmware</translation>
 <translation id="2582112259361606227">Reiniciar para actualizar</translation>
 <translation id="2586561057878260610">Presiona Ctrl + W para combinar con <ph name="DESK_NAME" />. Presiona Ctrl + Mayúsculas + W para cerrar el escritorio y las pestañas.</translation>
+<translation id="2586657967955657006">Portapapeles</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
 <translation id="2596078834055697711">Tomar captura de pantalla de la ventana</translation>
 <translation id="2598725286293895280">Hay apps no compatibles en el escritorio</translation>
@@ -911,6 +912,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Escritorio 16</translation>
+<translation id="4989163558385430922">Ver todo</translation>
 <translation id="5003993274120026347">Oración siguiente</translation>
 <translation id="5004607513195820459">La red está administrada</translation>
 <translation id="5009463889040999939">Se está cambiando el nombre del perfil. Es posible que este proceso demore unos minutos.</translation>
@@ -987,6 +989,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319712128756744240">Vincular dispositivo nuevo</translation>
 <translation id="5322611492012084517">No podemos encontrar tu teléfono</translation>
+<translation id="5323994101633366939">Ocultar el nombre del escritorio</translation>
 <translation id="5327248766486351172">Nombre</translation>
 <translation id="5329548388331921293">Conectando…</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (puerto lateral izquierdo trasero)</translation>
@@ -1169,6 +1172,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">Se descargaron los archivos de voz en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
+<translation id="6119972796024789243">Corrección de colores</translation>
 <translation id="6121838516699723042">Confirmar la descarga de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">El Asistente de Google no está disponible en las sesiones de invitado.</translation>
 <translation id="6129953537138746214">Espacio</translation>
@@ -1181,6 +1185,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6166852626429024716">Buscar en el dispositivo, en su configuración y apps, y en la Web…</translation>
 <translation id="6168318496333165060">Abrir la app de Diagnóstico</translation>
+<translation id="6173151025443907148">No se admite el acceso a un segundo usuario si Lacros está habilitado. En su lugar, usa un segundo perfil de navegador en Lacros, o inhabilita Lacros y vuelve a intentarlo.</translation>
 <translation id="6179832488876878285">Puedes fijar tus archivos importantes aquí. Para comenzar, abre la app de Archivos.</translation>
 <translation id="6182592640011875895">Abrir el escritorio</translation>
 <translation id="6185696379715117369">Retroceder página</translation>
@@ -1541,6 +1546,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7866482334467279021">activado</translation>
 <translation id="7872786842639831132">No</translation>
 <translation id="7875575368831396199">Al parecer, tu <ph name="DEVICE_TYPE" /> tiene la conexión Bluetooth desactivada. Actívala para poder usar Phone Hub.</translation>
+<translation id="7876243839304621966">Eliminar todo</translation>
 <translation id="7877557217297072640">{0,plural, =0{Cambia el dispositivo a la versión anterior ahora}=1{Cambia el dispositivo a la versión anterior en el transcurso de 1 segundo}other{Cambia el dispositivo a la versión anterior en el transcurso de # segundos}}</translation>
 <translation id="7884446017008693258">Configuración del hotspot</translation>
 <translation id="7884902759927478774">Cancelar la función de arrastrar pestañas</translation>
@@ -1638,6 +1644,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
 <translation id="8255234195843591763">Restablecer para actualizar</translation>
 <translation id="8261506727792406068">Borrar</translation>
+<translation id="8262312463845990408">Activar o desactivar la reproducción</translation>
 <translation id="8270450402312105425">{0,plural, =1{Cambia el dispositivo a la versión anterior en el transcurso de una hora}other{Cambia el dispositivo a la versión anterior en el transcurso de # horas}}</translation>
 <translation id="8277261673056602147">Destacar texto en la pantalla</translation>
 <translation id="8284362522226889623">Para cambiar al escritorio anterior, desliza cuatro dedos hacia la izquierda.</translation>

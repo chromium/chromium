@@ -140,7 +140,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1550523713251050646">Klõpsake lisavalikute nägemiseks</translation>
 <translation id="1555130319947370107">Sinine</translation>
 <translation id="1557622599341396706">Kuva töölaua nimi</translation>
-<translation id="1576511610858879060">Teie Chromebook või Bluetooth-seade kasutab Bluetoothi vanemat versiooni. Parema helikvaliteedi huvides kasutage muud sisendi allikat.</translation>
 <translation id="1576623706766186887">Suumi välja, kui luup on sisse lülitatud</translation>
 <translation id="1586324912145647027">Töölaua 1–8 kuvamine</translation>
 <translation id="1589090746204042747">Juurdepääs kõigile teie tegevustele selle seansi ajal</translation>
@@ -358,6 +357,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2579264398927991698">Püsivara värskendused</translation>
 <translation id="2582112259361606227">Taaskäivitage värskendamiseks</translation>
 <translation id="2586561057878260610">Vajutage klahve Ctrl + W, et töölauaga <ph name="DESK_NAME" /> kombineerida. Vajutage klahve Ctrl + Tõstuklahv + W, et töölaud ja aknad sulgeda.</translation>
+<translation id="2586657967955657006">Lõikelaud</translation>
 <translation id="2595239820337756193">5 km miilides</translation>
 <translation id="2596078834055697711">Jäädvustab aknast kuvatõmmise</translation>
 <translation id="2598725286293895280">Töölaual on toetamata rakendused</translation>
@@ -912,6 +912,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Töölaud 16</translation>
+<translation id="4989163558385430922">Kuva kõik</translation>
 <translation id="5003993274120026347">Järgmine lause</translation>
 <translation id="5004607513195820459">Võrk on hallatud</translation>
 <translation id="5009463889040999939">Profiili nime muudetakse. See võib võtta mõne minuti.</translation>
@@ -1545,6 +1546,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7866482334467279021">sisse</translation>
 <translation id="7872786842639831132">Väljas</translation>
 <translation id="7875575368831396199">Näib, et Bluetooth on teie seadmes <ph name="DEVICE_TYPE" /> välja lülitatud. Lülitage Bluetooth Phone Hubi kasutamiseks sisse.</translation>
+<translation id="7876243839304621966">Eemalda kõik</translation>
 <translation id="7877557217297072640">{0,plural, =0{Viige seadme operatsioonisüsteem kohe tagasi eelmisele versioonile}=1{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega 1 sekund}other{Teil on seadme operatsioonisüsteemi eelmisele versioonile üleminekuks aega # sekundit}}</translation>
 <translation id="7884446017008693258">Kuumkoha seaded</translation>
 <translation id="7884902759927478774">Vahelehe lohistamise tühistamine</translation>

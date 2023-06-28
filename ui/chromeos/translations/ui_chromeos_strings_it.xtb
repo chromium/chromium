@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">Il file o la directory non è utilizzabile.</translation>
 <translation id="1363028406613469049">Traccia</translation>
 <translation id="1378727793141957596">Benvenuto in Google Drive.</translation>
+<translation id="1379156577998569384">I file di Il mio Drive sono disponibili offline</translation>
 <translation id="1379911846207762492">Puoi rendere disponibili i file per l'accesso offline quando non hai una connessione a Internet.</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1388045380422025115">Tutti i tipi</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">Tastiera Neo 2 tedesca</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3866249974567520381">Descrizione</translation>
+<translation id="3866439285517092441">Batteria in esaurimento. La sincronizzazione riprenderà quando il dispositivo sarà collegato all'alimentazione.</translation>
 <translation id="3899991606604168269">Francese (Canada) con tastiera multilingue</translation>
 <translation id="3901991538546252627">Connessione a: <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Installazione del profilo per dispositivi mobili in corso, rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">PUK errato</translation>
 <translation id="4057991113334098539">In fase di attivazione...</translation>
 <translation id="4092890906744441904">Irlandese</translation>
+<translation id="4124731372776320263">Sincronizzazione di 1 file di Drive in corso…</translation>
 <translation id="4124935795427217608">Unicorno</translation>
 <translation id="4131235941541910880">Sposta nel cestino gli elementi che non ti servono</translation>
 <translation id="4134804435730168042">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Attiva dopo la configurazione del dispositivo</translation>
@@ -563,6 +566,7 @@
 <translation id="5422221874247253874">Punto di accesso</translation>
 <translation id="5428105026674456456">Spagnolo</translation>
 <translation id="5438282218546237410">Nessun risultato per <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Spazio di archiviazione insufficiente.</translation>
 <translation id="5449551289610225147">Password non valida</translation>
 <translation id="5459064203055649751">Esiste già un file chiamato "<ph name="FILENAME" />". Vuoi sostituirlo con quello da spostare?</translation>
 <translation id="5463231940765244860">Inserisci</translation>
@@ -578,6 +582,7 @@
 <translation id="5524517123096967210">Impossibile leggere il file.</translation>
 <translation id="5533102081734025921">Immagine <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Calcolo dimensioni</translation>
+<translation id="5536122250858122375">Impossibile sincronizzare questo tipo di file</translation>
 <translation id="554153475311314364">Traslitterazione greco</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> cartelle selezionate</translation>
 <translation id="5580591966435005537">macchina virtuale</translation>
@@ -690,6 +695,7 @@
 <translation id="6423031066725912715">Vietnamita con tastiera TCVN</translation>
 <translation id="6430271654280079150">Hai ancora 1 tentativo a disposizione.</translation>
 <translation id="643243556292470964">I file eliminati verranno spostati nel cestino</translation>
+<translation id="6438480100790416671">Controllo dello spazio di archiviazione in corso…</translation>
 <translation id="6485131920355264772">Impossibile recuperare le informazioni sullo spazio</translation>
 <translation id="6495925982925244349">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, gestita dall'amministratore, dettagli</translation>
 <translation id="649877868557234318">Estrazione del file <ph name="FILE_NAME" /> nella cartella <ph name="FOLDER_NAME" /> in corso…</translation>
@@ -737,6 +743,7 @@
 <translation id="6874758081814639712">Persona che fa tai chi</translation>
 <translation id="6876155724392614295">Bicicletta</translation>
 <translation id="6878261347041253038">Tastiera Devanagari (fonetica)</translation>
+<translation id="6882444584974399416">Il dispositivo non dispone di spazio di archiviazione sufficiente per mantenere i file disponibili offline. I nuovi file non verranno più sincronizzati automaticamente.</translation>
 <translation id="6885780034956018177">Lumaca</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6898028766943174120">Altre sottocartelle…</translation>
@@ -892,6 +899,7 @@
 <translation id="8000066093800657092">Nessuna rete</translation>
 <translation id="8008366997883261463">Cane</translation>
 <translation id="8028993641010258682">Dimensioni</translation>
+<translation id="8034974485549318493">Per la configurazione iniziale, devi connetterti a internet in modo che i file possano essere sincronizzati.</translation>
 <translation id="803771048473350947">Archivio</translation>
 <translation id="8038111231936746805">(predefinita)</translation>
 <translation id="8042602468072383151">Audio <ph name="AUDIO_TYPE" /></translation>
@@ -911,6 +919,7 @@
 <translation id="8154842056504218462">Sono stati selezionati tutti gli elementi.</translation>
 <translation id="8157684860301034423">Impossibile recuperare le informazioni sull'app.</translation>
 <translation id="8175731104491895765">Francese (Belgio)</translation>
+<translation id="8175799081768705361">Sincronizzazione di <ph name="NUMBER_OF_FILES_SYNCING" /> file di Drive in corso…</translation>
 <translation id="8179976553408161302">Invio</translation>
 <translation id="8193175696669055101">Modello dispositivo</translation>
 <translation id="8223479393428528563">Per salvare i file da utilizzare offline, torna online, fai clic con il pulsante destro del mouse sui file e seleziona l'opzione <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
@@ -943,6 +952,7 @@
 <translation id="8395901698320285466">Dimensioni</translation>
 <translation id="8404498045299006085">Conserva tutto</translation>
 <translation id="8408068190360279472">Rete <ph name="NETWORK_TYPE" />, collegamento in corso</translation>
+<translation id="841387525767317275">I file in questa cartella sono disponibili offline</translation>
 <translation id="8425213833346101688">Cambia</translation>
 <translation id="8431909052837336408">Cambia il PIN della SIM</translation>
 <translation id="8437209419043462667">USA</translation>
@@ -970,6 +980,7 @@
 <translation id="8560515948038859357">Cantonese</translation>
 <translation id="8561206103590473338">Elefante</translation>
 <translation id="8566466896628108558">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensità del segnale: <ph name="SIGNAL_STRENGTH" />%, bloccata dall'amministratore, dettagli</translation>
+<translation id="8567555211227790801">Al momento sei offline. La sincronizzazione riprenderà quando sarà disponibile la connessione a internet.</translation>
 <translation id="8568374623837201676">Vuoi eliminare definitivamente questo file?</translation>
 <translation id="8569764466147087991">Seleziona un file da aprire</translation>
 <translation id="8577897833047451336">Croato</translation>

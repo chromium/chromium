@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">Файл немесе каталог пайдаланылмайды.</translation>
 <translation id="1363028406613469049">Бақылау нөмірі</translation>
 <translation id="1378727793141957596">Google Drive жүйесіне қош келдіңіз!</translation>
+<translation id="1379156577998569384">Жеке Drive файлдарыңыз офлайн қолжетімді</translation>
 <translation id="1379911846207762492">Файлдарды офлайн режимде қолжетімді етіп, интернет байланысы болмаған кезде пайдалануыңызға болады.</translation>
 <translation id="1383876407941801731">Іздеу</translation>
 <translation id="1388045380422025115">Барлық түр</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">Неміс (Neo 2)</translation>
 <translation id="3858860766373142691">Аты</translation>
 <translation id="3866249974567520381">Сипаттама</translation>
+<translation id="3866439285517092441">Батарея заряды аз. Сіз қуатқа қосылған кезде синхрондау жалғасады.</translation>
 <translation id="3899991606604168269">Француз (Канада), көптілді пернетақтамен</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> желісіне қосылу</translation>
 <translation id="3906232975181435906">Мобильдік профиль, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" /> желісі орнатылуда</translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">PUK коды дұрыс емес.</translation>
 <translation id="4057991113334098539">Іске қосылуда...</translation>
 <translation id="4092890906744441904">Ирланд</translation>
+<translation id="4124731372776320263">1 Drive файлы синхрондалып жатыр</translation>
 <translation id="4124935795427217608">Пырақ</translation>
 <translation id="4131235941541910880">Қажетсіз элементтерді себетке жіберіңіз.</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Құрылғыны орнатудан кейін белсендіру</translation>
@@ -563,6 +566,7 @@
 <translation id="5422221874247253874">Кіру нүктесі</translation>
 <translation id="5428105026674456456">испан</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> үшін нәтиже жоқ.</translation>
+<translation id="5447680084201416734">Жадта орын жеткіліксіз.</translation>
 <translation id="5449551289610225147">Құпия сөз жарамсыз</translation>
 <translation id="5459064203055649751">"<ph name="FILENAME" />" файлы бұрыннан бар. Оны жылжытып жатқан файлыңызбен алмастырасыз ба?</translation>
 <translation id="5463231940765244860">Енгізу</translation>
@@ -578,6 +582,7 @@
 <translation id="5524517123096967210">Файлды оқу мүмкін болмады.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> суреті</translation>
 <translation id="5534520101572674276">Көлемін есептеу</translation>
+<translation id="5536122250858122375">Бұл файл түрін синхрондау мүмкін емес</translation>
 <translation id="554153475311314364">Грек (транслитерация)</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> қалта таңдалған</translation>
 <translation id="5580591966435005537">виртуалдық машина</translation>
@@ -690,6 +695,7 @@
 <translation id="6423031066725912715">Вьетнам (TCVN пернетақтасымен)</translation>
 <translation id="6430271654280079150">1 мүмкіндік қалды.</translation>
 <translation id="643243556292470964">Жойылған файлдар енді себетке жылжытылады.</translation>
+<translation id="6438480100790416671">Жад көлемі тексеріліп жатыр…</translation>
 <translation id="6485131920355264772">Бос орын ақпаратын шығарып алу сәтсіз аяқталды</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші:<ph name="SIGNAL_STRENGTH" />%, әкімшіңіз басқарады, мәліметтер</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> файлы <ph name="FOLDER_NAME" /> қалтасына көшірілуде</translation>
@@ -737,6 +743,7 @@
 <translation id="6874758081814639712">Тай-чимен айналысып жатқан адам</translation>
 <translation id="6876155724392614295">Велосипед</translation>
 <translation id="6878261347041253038">Деванагари пернетақтасы (фонетикалық)</translation>
+<translation id="6882444584974399416">Құрылғыңызда файлдарыңызды офлайн қолжетімді сақтау үшін жад көлемі жеткіліксіз. Жаңа файлдар енді автоматты түрде синхрондалмайды.</translation>
 <translation id="6885780034956018177">Ұлу</translation>
 <translation id="6896758677409633944">Көшіру</translation>
 <translation id="6898028766943174120">Тағы басқа ішкі қалталар...</translation>
@@ -892,6 +899,7 @@
 <translation id="8000066093800657092">Желі жоқ</translation>
 <translation id="8008366997883261463">Ит</translation>
 <translation id="8028993641010258682">Көлемі</translation>
+<translation id="8034974485549318493">Бастапқы орнату үшін интернетке қосылуыңыз керек, сонда файлдарды синхрондай аласыз.</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038111231936746805">(әдепкі)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> аудиофайлы</translation>
@@ -911,6 +919,7 @@
 <translation id="8154842056504218462">Барлық жазба таңдалды.</translation>
 <translation id="8157684860301034423">Қолданба туралы ақпарат алынбады.</translation>
 <translation id="8175731104491895765">Француз (Бельгия)</translation>
+<translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive файлы синхрондалып жатыр</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Құрылғы үлгісі</translation>
 <translation id="8223479393428528563">Бұл файлдарды желіден тыс сақтау үшін желіге қайта қосылып, файлдарды тінтуірдің оң жағымен басыңыз және <ph name="OFFLINE_CHECKBOX_NAME" /> опциясын таңдаңыз.</translation>
@@ -943,6 +952,7 @@
 <translation id="8395901698320285466">Өлшемдер</translation>
 <translation id="8404498045299006085">Барлығын сақтау</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> желісі, жалғануда</translation>
+<translation id="841387525767317275">Осы қалтадағы файлдар офлайн қолжетімді</translation>
 <translation id="8425213833346101688">Өзгерту</translation>
 <translation id="8431909052837336408">SIM PIN кодын өзгерту</translation>
 <translation id="8437209419043462667">АҚШ</translation>
@@ -970,6 +980,7 @@
 <translation id="8560515948038859357">Кантон</translation>
 <translation id="8561206103590473338">Піл</translation>
 <translation id="8566466896628108558">Желі: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімші бөгеген, мәліметтер</translation>
+<translation id="8567555211227790801">Қазір желіден тыссыз. Сіз интернетке қосылған кезде синхрондау жалғасады.</translation>
 <translation id="8568374623837201676">Бұл файл біржола жойылсын ба?</translation>
 <translation id="8569764466147087991">Ашу үшін файлды таңдаңыз</translation>
 <translation id="8577897833047451336">Хорват</translation>

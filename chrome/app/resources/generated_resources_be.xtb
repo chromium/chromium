@@ -775,6 +775,7 @@
 <translation id="1629451755632656601">Дазволіць Google шукаць персаналізаваныя скідкі на тавары ў вашых кошыках?</translation>
 <translation id="163072119192489970">Дазволена завяршаць адпраўку і атрыманне даных</translation>
 <translation id="1630768113285622200">Перазапусціць і працягнуць</translation>
+<translation id="1631503405579357839">Дальтанізм</translation>
 <translation id="1632082166874334883">Пароль, захаваны ва Уліковым запісе Google</translation>
 <translation id="1632756664321977232">Інструмент "Абрэзка"</translation>
 <translation id="163309982320328737">Пачатковая шырыня сімвалаў – поўная</translation>
@@ -1480,6 +1481,7 @@
 <translation id="2214018885812055163">Абагуленыя папкі</translation>
 <translation id="2214884991347062907">Няправільны пароль, паўтарыце спробу.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 радок не паказваецца&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> радок не паказваецца&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> радкі не паказваецца&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> радкоў не паказваецца&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> радка не паказваецца&gt;}}</translation>
+<translation id="2215070081105889450">Каб абагуліць аўдыя, абагульце ўкладку ці экран</translation>
 <translation id="2218019600945559112">Мыш і сэнсарная панэль</translation>
 <translation id="2218515861914035131">Уставіць як звычайны тэкст</translation>
 <translation id="221872881068107022">Адваротная прагортка</translation>
@@ -2009,6 +2011,7 @@
 <translation id="2645047101481282803">Гэтай прыладай кіруе <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Ідзе трансляцыя гэтай укладкі на прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
+<translation id="264897126871533291">Пратанамалія</translation>
 <translation id="2649045351178520408">ASCII з кадзіраваннем Base64, ланцужок сертыфікатаў</translation>
 <translation id="265156376773362237">Стандартная перадзагрузка</translation>
 <translation id="2652129567809778422">Выберыце пароль</translation>
@@ -2967,6 +2970,7 @@
 <translation id="3476303763173086583">Адпраўка даных пра выкарыстанне і дыягностыку. Дапамажыце палепшыць функцыянальнасць прылады Android для дзіцяці шляхам аўтаматычнай адпраўкі даных пра дыягностыку, выкарыстанне прылады і праграм у Google. Яны не будуць выкарыстаны для ідэнтыфікацыі асобы дзіцяці, але дапамогуць у паляпшэнні стабільнасці сістэмы і праграм і для іншых удасканаленняў. Некаторыя згрупаваныя даныя таксама будуць карысныя для праграм і партнёраў Google, напрыклад распрацоўшчыкаў Android. Гэта <ph name="BEGIN_LINK1" />налада<ph name="END_LINK1" /> ўключана ўладальнікам. Уладальнік можа ўключыць адпраўку даных пра выкарыстанне і дыягностыку гэтай прылады ў Google. Калі для вашага дзіцяці ўключана налада дадатковай гісторыі дзеянняў у інтэрнэце і праграмах, то адпаведныя даныя могуць захоўвацца ў яго Уліковым запісе Google. <ph name="BEGIN_LINK2" />Даведацца больш<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Памылка.  Сістэме не ўдалося атрымаць палітыку для прылады.</translation>
 <translation id="347785443197175480">І далей даваць <ph name="HOST" /> доступ да камеры і мікрафона</translation>
+<translation id="3479357084663933762">Дэйтаранамалія</translation>
 <translation id="3479552764303398839">Не зараз</translation>
 <translation id="3479685872808224578">Не ўдалося выявіць сервер друку. Праверце адрас і паўтарыце спробу.</translation>
 <translation id="3479753605053415848">Націсніце, каб наладзіць Chrome</translation>
@@ -3436,6 +3440,7 @@
 <translation id="3867134342671430205">Каб перамясціць дысплэй, выкарыстайце перацягванне або клавішы са стрэлкамі</translation>
 <translation id="3867944738977021751">Палі сертыфіката</translation>
 <translation id="3869917919960562512">Няправільны індэкс.</translation>
+<translation id="3870626286046977643">Таксама абагуліць сістэмнае аўдыя</translation>
 <translation id="3870688298003434214">Скасаваць выбар закладкі "<ph name="BOOKMARK_TITLE" />"</translation>
 <translation id="3870931306085184145">Няма захаваных пароляў для <ph name="DOMAIN" /></translation>
 <translation id="3871350334636688135">Праз 24 гадзіны адміністратар выканае разавае абнаўленне, пры якім пасля перазагрузкі прылады выдаляцца вашы лакальныя даныя. Захавайце ўсе патрэбныя лакальныя даныя ў воблачнае сховішча на працягу 24 гадзін.</translation>
@@ -4309,6 +4314,7 @@
 <translation id="4623189117674524348">Сістэме не ўдалося аўтарызаваць доступ API для гэтай прылады.</translation>
 <translation id="4623341761454569602">У Менеджары пароляў Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="4625078469366263107">Уключыць праграму</translation>
+<translation id="4625905218692741757">Стандартны шэры колер</translation>
 <translation id="4627427111733173920">Файлы cookie заблакіраваны</translation>
 <translation id="4627442949885028695">Працягніце з іншай прылады</translation>
 <translation id="4628762811416793313">Наладжванне кантэйнера Linux не завершана. Паўтарыце спробу.</translation>
@@ -5216,6 +5222,7 @@
 <translation id="5430931332414098647">Імгненны рэжым мадэма</translation>
 <translation id="5431318178759467895">Колер</translation>
 <translation id="5432145523462851548">Файл "<ph name="FILE_NAME" />": паказаць у папцы</translation>
+<translation id="5432223177001837288">Каб абагуліць аўдыя, абагульце ўкладку</translation>
 <translation id="543338862236136125">Змяніць пароль</translation>
 <translation id="5434065355175441495">Шыфраванне PKCS #1 RSA</translation>
 <translation id="5435274640623994081">Уключыць вядзенне журнала гукавых сігналаў</translation>
@@ -5991,6 +5998,7 @@
 <translation id="6087960857463881712">Захапленне</translation>
 <translation id="6088475950266477163">&amp;Налады</translation>
 <translation id="608912389580139775">Каб дадаць гэту старонку ў спіс на прагляд, націсніце на значок закладкі</translation>
+<translation id="6089289670051481345">Трытанамалія</translation>
 <translation id="6090760257419195752">Адхіленыя папярэджанні</translation>
 <translation id="6091761513005122595">Абагулены рэсурс падключаны.</translation>
 <translation id="6093803049406781019">Выдаліць профіль</translation>
@@ -6076,6 +6084,7 @@
 <translation id="6163363155248589649">&amp;Звычайны</translation>
 <translation id="6163376401832887457">Налады Kerberos</translation>
 <translation id="6163522313638838258">Разгарнуць усе...</translation>
+<translation id="6164393601566177235">Дадайце сайты</translation>
 <translation id="6164832038898943453">Дадаць мовы для аўтаматычнага перакладу</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6166185671393271715">Імпарт пароляў у Chrome</translation>
@@ -8712,6 +8721,7 @@
 <translation id="839363317075970734">Падрабязныя звесткі пра прыладу з Bluetooth</translation>
 <translation id="8393700583063109961">Адправіць паведамленне</translation>
 <translation id="8394212467245680403">Літарна-лічбавыя сімвалы</translation>
+<translation id="8396098434728053815">Таксама абагуліць аўдыя з укладкі</translation>
 <translation id="8397825320644530257">Адключыць падключаны тэлефон</translation>
 <translation id="8398877366907290961">Усё роўна працягнуць</translation>
 <translation id="8399282673057829204">Паглядзець пароль</translation>
@@ -9747,7 +9757,6 @@
 <translation id="992256792861109788">Ружовы</translation>
 <translation id="992592832486024913">Выключыць ChromeVox (галасавая зваротная сувязь)</translation>
 <translation id="992778845837390402">Ідзе рэзервовае капіраванне кантэйнера Linux</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> – Сэканомлена: <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Выконваецца ўсталяванне</translation>
 <translation id="994289308992179865">&amp;Зацыкліць</translation>
 <translation id="995755448277384931">Дадаванне нумара IBAN</translation>

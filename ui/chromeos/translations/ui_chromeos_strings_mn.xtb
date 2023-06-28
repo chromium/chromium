@@ -564,6 +564,7 @@
 <translation id="5422221874247253874">Хандах цэг</translation>
 <translation id="5428105026674456456">Испани</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" />-н илэрц байхгүй байна.</translation>
+<translation id="5447680084201416734">Хадгалах сан хангалтгүй байна.</translation>
 <translation id="5449551289610225147">Буруу нууц үг</translation>
 <translation id="5459064203055649751">"<ph name="FILENAME" />" нэртэй файл аль хэдийн байна. Та үүнийг зөөж байгаа файлаар солихыг хүсэж байна уу?</translation>
 <translation id="5463231940765244860">Оруулах</translation>
@@ -692,6 +693,7 @@
 <translation id="6423031066725912715">TCVN гартай вьетнам</translation>
 <translation id="6430271654280079150">Танд 1 оролдлого үлдсэн байна.</translation>
 <translation id="643243556292470964">Устгасан файлуудыг одоо хогийн сав руу зөөсөн</translation>
+<translation id="6438480100790416671">Хадгалах сангийн зайг шалгаж байна…</translation>
 <translation id="6485131920355264772">Сансрын мэдээллийг сэргээн татаж авч чадсангүй</translation>
 <translation id="6495925982925244349">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, таны администратор удирддаг, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" />-г <ph name="FOLDER_NAME" /> руу татаж авах</translation>
@@ -895,6 +897,7 @@
 <translation id="8000066093800657092">Ямар ч сүлжээ алга байна</translation>
 <translation id="8008366997883261463">Жак Рассел Терриер</translation>
 <translation id="8028993641010258682">Хэмжээ</translation>
+<translation id="8034974485549318493">Анхны тохируулгад та интернэтэд холбогдох шаардлагатай бөгөөд ингэснээр файлууд синк хийх боломжтой.</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038111231936746805">(Өгөгдмөл)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> аудио</translation>

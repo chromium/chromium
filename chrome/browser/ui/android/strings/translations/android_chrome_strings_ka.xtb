@@ -240,6 +240,7 @@
 <translation id="2349710944427398404">Chrome-ის მიერ გამოყენებული მეხსიერების საერთო მოცულობა, რომელშიც ინახება ანგარიშები, სანიშნეები და შენახული პარამეტრები</translation>
 <translation id="235789365079050412">Google-ის კონფიდენციალურობის დებულება</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
+<translation id="2362083820973145409">შესული ხართ, როგორც <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. გახსნის პარამეტრებს.</translation>
 <translation id="2386938421315164605">თემების დამალვა და გამოჩენა</translation>
 <translation id="2390510615457643724">გსურთ, ხელახლა ჩამოტვირთოთ <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="2394602618534698961">აქ გამოჩნდება თქვენ მიერ ჩამოტვირთული ფაილები</translation>
@@ -296,6 +297,7 @@
 <translation id="2643064289437760082">რეკლამის ეფექტურობის გასაზომად გამოყენებული მონაცემების წაშლა ნებისმიერ დროს შეგიძლიათ თქვენი დათვალიერების მონაცემების წაშლით</translation>
 <translation id="2647434099613338025">დაამატე ენა</translation>
 <translation id="2649068648233607930">თქვენს ბრაუზერს მართავს <ph name="DOMAIN" /></translation>
+<translation id="2650077116157640844">მეტი სინქრონიზებულ მოწყობილობებზე</translation>
 <translation id="2650348088770008516">კონფიდენციალურობის სახელმძღვანელოს განმარტება დახურულია</translation>
 <translation id="2650408372219180431">ამ მოწყობილობაზე შენახული პაროლების ექსპორტირება და წაშლა</translation>
 <translation id="2650751991977523696">გსურთ ფაილის ხელახლა ჩამოტვირთვა?</translation>
@@ -388,7 +390,6 @@
 <translation id="3070005020161560471">ავტომატურად ითარგმნოს</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> გაიხსნება Chrome-ში. გაგრძელებით ეთანხმებით <ph name="BEGIN_LINK1" />Google-ის მომსახურების პირობებს<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />Google Chrome-ისა და ChromeOS-ის მომსახურების დამატებით პირობებს<ph name="END_LINK2" />. გარდა ამისა, მოქმედებს <ph name="BEGIN_LINK3" />კონფიდენციალურობის დებულება<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">სურვილისამებრ, შეგიძლიათ შეინახოთ გვერდები მოგვიანებით ან ხაზგარეშე რეჟიმში წასაკითხად</translation>
-<translation id="3083194063661536258">გამოსული ხართ. ღილაკი. გახსნის დიალოგს სისტემაში შესასვლელად და სინქრონიზაციის ჩასართავად.</translation>
 <translation id="3091010850649238832">გაცვლის ბუფერის შიგთავსის ჩვენება</translation>
 <translation id="3098745985164956033">ზოგიერთი სურათი გაეგზავნება Google-ს, უკეთესი აღწერილობები რომ შემოგთავაზოთ</translation>
 <translation id="3114507951000454849">გაეცანით დღის სიახლეებს <ph name="NEWS_ICON" /></translation>
@@ -482,6 +483,7 @@
 <translation id="360901359071773787">წაიშალოს ბოლო 15 წუთი?</translation>
 <translation id="3616113530831147358">აუდიო</translation>
 <translation id="3622349720008044802">მართეთ ფანჯრები</translation>
+<translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 საიტი}other{+ # საიტი}}</translation>
 <translation id="3631987586758005671">მიმდინარეობს გაზიარება <ph name="DEVICE_NAME" />-თან</translation>
 <translation id="363596933471559332">ავტორიზაციის შენახული მონაცემების მეშვეობით ვებსაიტებში ავტომატური შესვლა. ამ ფუნქციის გამორთვის შემთხვევაში, ვებსაიტში შესვლის ყოველი მცდელობისას დადასტურება მოგიწევთ.</translation>
 <translation id="3636940436873918441">უპირატესი ენები</translation>
@@ -873,6 +875,7 @@
 <translation id="5752232708629533680">მხოლოდ GIF-ის გაზიარება</translation>
 <translation id="5753139477036638699">Chrome-ში ძიება ხმის მეშვეობითაც შეგიძლიათ</translation>
 <translation id="5754350196967618083">Discover-ის განახლება ვერ ხერხდება</translation>
+<translation id="5755162682436943950">გამოსული ხართ. გახსნის დიალოგს სისტემაში შესასვლელად და სინქრონიზაციის ჩასართავად.</translation>
 <translation id="5763382633136178763">ინკოგნიტო ჩანართები</translation>
 <translation id="5763514718066511291">შეეხეთ ამ აპის URL-ის კოპირებისთვის</translation>
 <translation id="5765517223145864268">გაგვიზიარეთ, როგორ მოგეწონათ, ან <ph name="BEGIN_LINK" />შეცვალეთ პარამეტრები<ph name="END_LINK" />.</translation>
@@ -932,7 +935,6 @@
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="604124094241169006">ავტომატური</translation>
 <translation id="6042308850641462728">სხვა</translation>
-<translation id="6049046116080614938">შესული ხართ, როგორც <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. ღილაკი. გახსნის პარამეტრებს.</translation>
 <translation id="604996488070107836"><ph name="FILE_NAME" /> ვერ ჩამოიტვირთა უცნობი შეცდომის გამო.</translation>
 <translation id="605721222689873409">წწ</translation>
 <translation id="6059830886158432458">აქ შეგიძლიათ მართოთ ამბები და აქტივობა</translation>
@@ -1154,6 +1156,7 @@
 <translation id="7146622961999026732">როგორც ჩანს, თქვენთვის მნიშვნელოვანია შემდეგი აპები და საიტები:</translation>
 <translation id="7149893636342594995">ბოლო 24 საათი</translation>
 <translation id="7155317020660659215">QR კოდი რომ დაასკანიროთ, შეცვალეთ პარამეტრები იმგვარად, რომ Chrome-მა შეძლოს თქვენი კამერით სარგებლობა</translation>
+<translation id="7168323970702333693">შესული ხართ, როგორც <ph name="USER_NAME" />. გახსნის პარამეტრებს.</translation>
 <translation id="7173114856073700355">პარამეტრების გახსნა</translation>
 <translation id="7177466738963138057">ამის მოგვიანებით შეცვლა შეგიძლიათ პარამეტრებიდან</translation>
 <translation id="7177873915659574692">QR კოდის შექმნა ვერ მოხერხდა. URL შედგება <ph name="CHARACTER_LIMIT" />-ზე მეტი სიმბოლოსგან.</translation>
@@ -1317,7 +1320,6 @@
 <translation id="7968014550143838305">დაემატა საკითხავ სიას</translation>
 <translation id="7971136598759319605">აქტიური იყო 1 დღის წინ</translation>
 <translation id="7975379999046275268">გვერდის გადახედვა <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
-<translation id="7981085434646346979">შესული ხართ, როგორც <ph name="USER_NAME" />. ღილაკი. გახსნის პარამეტრებს.</translation>
 <translation id="7986497153528221272">პაროლების სანახავად, პირველ რიგში, საჭიროა ეკრანის დაბლოკვის მეთოდის დაყენება თქვენს მოწყობილობაზე</translation>
 <translation id="7995059495660416932">კონტენტს დაინახავთ, როცა ხელმისაწვდომი გახდება</translation>
 <translation id="799576009106109668">თქვენ უფრო სწრაფად დაათვალიერებთ, რადგან კონტენტი პროაქტიულად ჩაიტვირთება თქვენი მიმდინარე ვებსაიტის მონახულების გათვალისწინებით</translation>

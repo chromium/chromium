@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">Ֆայլը կամ գրացուցակը վնասված են:</translation>
 <translation id="1363028406613469049">Կատարում</translation>
 <translation id="1378727793141957596">Բարի գալուստ Google Drive:</translation>
+<translation id="1379156577998569384">«Իմ դրայվը» պանակի ձեր ֆայլերը հասանելի են անցանց ռեժիմում</translation>
 <translation id="1379911846207762492">Դուք կարող եք ներբեռնել ֆայլերը՝ անցանց ռեժիմում օգտագործելու համար։</translation>
 <translation id="1383876407941801731">Որոնում</translation>
 <translation id="1388045380422025115">Բոլոր տեսակները</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">Գերմանական (Neo 2)</translation>
 <translation id="3858860766373142691">Անուն</translation>
 <translation id="3866249974567520381">Նկարագրություն</translation>
+<translation id="3866439285517092441">Մարտկոցի լիցքը քիչ է։ Համաժամացումը կվերսկսվի, երբ դուք միանաք հոսանքի աղբյուրին։</translation>
 <translation id="3899991606604168269">ֆրանսերեն (Կանադա)՝ բազմալեզու ստեղնաշարով</translation>
 <translation id="3901991538546252627">Միացում <ph name="NAME" />-ին</translation>
 <translation id="3906232975181435906">Տեղադրվում է բջջային պրոֆիլը (ցանց <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />)</translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">PUK կոդը սխալ է</translation>
 <translation id="4057991113334098539">Ակտիվացվում է…</translation>
 <translation id="4092890906744441904">իռլանդերեն</translation>
+<translation id="4124731372776320263">Համաժամացվում է 1 Drive ֆայլ</translation>
 <translation id="4124935795427217608">Միաեղջյուր</translation>
 <translation id="4131235941541910880">Ոչ պետքական ֆայլերը տեղափոխեք աղբարկղ</translation>
 <translation id="4134804435730168042">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />։ Ակտիվացրեք՝ սարքը կարգավորելուց հետո</translation>
@@ -563,6 +566,7 @@
 <translation id="5422221874247253874">Մուտքի կետ</translation>
 <translation id="5428105026674456456">Իսպանական</translation>
 <translation id="5438282218546237410">«<ph name="SEARCH_TERM" />» հարցումով ոչինչ չի գտնվել:</translation>
+<translation id="5447680084201416734">Բավարար տարածք չկա։</translation>
 <translation id="5449551289610225147">Սխալ գաղտնաբառ</translation>
 <translation id="5459064203055649751">«<ph name="FILENAME" />» անունով ֆայլ արդեն կա։ Ուզո՞ւմ եք այն փոխարինել ֆայլով, որն այժմ տեղափոխում եք։</translation>
 <translation id="5463231940765244860">Մուտքագրել</translation>
@@ -578,6 +582,7 @@
 <translation id="5524517123096967210">Չհաջողվեց բացել ֆայլը:</translation>
 <translation id="5533102081734025921">Պատկեր (<ph name="IMAGE_TYPE" />)</translation>
 <translation id="5534520101572674276">Չափի հաշվարկում</translation>
+<translation id="5536122250858122375">Ֆայլի այս տեսակը հնարավոր չէ համաժամացնել</translation>
 <translation id="554153475311314364">հունարեն (տառադարձություն)</translation>
 <translation id="5554171655917412781">Ընտրված է <ph name="SELECTED_FOLDERS_COUNT" /> պանակ</translation>
 <translation id="5580591966435005537">վիրտուալ մեքենա</translation>
@@ -690,6 +695,7 @@
 <translation id="6423031066725912715">վիետնամերեն (TCVN ստեղնաշար)</translation>
 <translation id="6430271654280079150">Մնաց 1 փորձ։</translation>
 <translation id="643243556292470964">Ջնջված ֆայլերն այժմ աղբարկղում են</translation>
+<translation id="6438480100790416671">Ստուգվում է ազատ տարածքի առկայությունը…</translation>
 <translation id="6485131920355264772">Չհաջողվեց առբերել ազատ տարածքի մասին տեղեկությունները</translation>
 <translation id="6495925982925244349">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, մանրամասներ</translation>
 <translation id="649877868557234318">Ֆայլը (<ph name="FILE_NAME" />) արտահանվում է <ph name="FOLDER_NAME" /> պանակ</translation>
@@ -737,6 +743,7 @@
 <translation id="6874758081814639712">Թայ չիով զվաղվող մարդ</translation>
 <translation id="6876155724392614295">Հեծանիվ</translation>
 <translation id="6878261347041253038">Դևանագարի ստեղնաշար (հնչյունաբանական)</translation>
+<translation id="6882444584974399416">Ձեր սարքում չկա բավականաչափ տարածք, որպեսզի ձեր ֆայլերը շարունակեն հասանելի լինել անցանց ռեժիմում։ Նոր ֆայլերն այլևս ավտոմատ չեն համաժամացվի։</translation>
 <translation id="6885780034956018177">Խխունջ</translation>
 <translation id="6896758677409633944">Պատճենել</translation>
 <translation id="6898028766943174120">Այլ ենթապանակներ…</translation>
@@ -892,6 +899,7 @@
 <translation id="8000066093800657092">Ցանց չկա</translation>
 <translation id="8008366997883261463">Շուն</translation>
 <translation id="8028993641010258682">Չափ</translation>
+<translation id="8034974485549318493">Նախնական կարգավորման համար դուք պետք է միանաք ինտերնետին, որպեսզի ֆայլերը համաժամացվեն։</translation>
 <translation id="803771048473350947">Ֆայլ</translation>
 <translation id="8038111231936746805">(կանխադրված)</translation>
 <translation id="8042602468072383151">Աուդիո ֆայլ (<ph name="AUDIO_TYPE" />)</translation>
@@ -911,6 +919,7 @@
 <translation id="8154842056504218462">Բոլոր գրառումներն ընտրվեցին:</translation>
 <translation id="8157684860301034423">Չհաջողվեց բեռնել հավելվածի մասին տեղեկությունները։</translation>
 <translation id="8175731104491895765">ֆրանսերեն (Բելգիա)</translation>
+<translation id="8175799081768705361">Համաժամացվում է <ph name="NUMBER_OF_FILES_SYNCING" /> Drive ֆայլ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Սարքի մոդելը</translation>
 <translation id="8223479393428528563">Այս ֆայլերը անցանց ռեժիմում օգտագործելու համար, նորից կապակցվեք համացանցին, ֆայլերի վրա աջ սեղմումով ընտրեք <ph name="OFFLINE_CHECKBOX_NAME" /> ընտրանքը:</translation>
@@ -943,6 +952,7 @@
 <translation id="8395901698320285466">Չափեր</translation>
 <translation id="8404498045299006085">Պահպանել բոլորը</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ցանց, միացում…</translation>
+<translation id="841387525767317275">Այս պանակի ֆայլերը հասանելի են անցանց ռեժիմում</translation>
 <translation id="8425213833346101688">Փոխել</translation>
 <translation id="8431909052837336408">Փոխեք SIM քարտի PIN կոդը</translation>
 <translation id="8437209419043462667">ԱՄՆ</translation>
@@ -970,6 +980,7 @@
 <translation id="8560515948038859357">կանտոներեն</translation>
 <translation id="8561206103590473338">Փիղ</translation>
 <translation id="8566466896628108558">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, արգելափակված է ադմինիստրատորի կողմից, մանրամասներ</translation>
+<translation id="8567555211227790801">Այս պահին դուք անցանց ռեժիմում եք։ Համաժամացումը կվերսկսվի, երբ դուք միանաք ինտերնետին։</translation>
 <translation id="8568374623837201676">Ընդմիշտ ջնջե՞լ այս ֆայլը</translation>
 <translation id="8569764466147087991">Ընտրեք ֆայլ</translation>
 <translation id="8577897833047451336">խորվաթերեն</translation>

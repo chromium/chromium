@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">Filen eller mappen kan ikke bruges.</translation>
 <translation id="1363028406613469049">Spor</translation>
 <translation id="1378727793141957596">Velkommen til Google Drev!</translation>
+<translation id="1379156577998569384">Dine filer på Mit drev er tilgængelige offline</translation>
 <translation id="1379911846207762492">Du kan gøre filer tilgængelige offline, så du kan få adgang til dem, når du ikke har internetforbindelse.</translation>
 <translation id="1383876407941801731">Søg</translation>
 <translation id="1388045380422025115">Alle typer</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">Tysk (Neo 2)</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3866249974567520381">Beskrivelse</translation>
+<translation id="3866439285517092441">Batteriniveauet er lavt. Synkroniseringen genoptages, når enheden er tilsluttet en strømkilde.</translation>
 <translation id="3899991606604168269">Fransk (Canada) tastatur til flere sprog</translation>
 <translation id="3901991538546252627">Opretter forbindelse til <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Mobilprofil installeres. Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">PUK-koden er forkert</translation>
 <translation id="4057991113334098539">Aktiverer...</translation>
 <translation id="4092890906744441904">Irsk</translation>
+<translation id="4124731372776320263">Synkroniserer 1 Drev-fil</translation>
 <translation id="4124935795427217608">Enhjørning</translation>
 <translation id="4131235941541910880">Flyt overflødige elementer til papirkurven</translation>
 <translation id="4134804435730168042">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivér efter konfiguration af enhed</translation>
@@ -564,6 +567,7 @@
 <translation id="5422221874247253874">Adgangspunkt</translation>
 <translation id="5428105026674456456">Spansk</translation>
 <translation id="5438282218546237410">Der er ingen resultater for <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Der er ikke nok lagerplads.</translation>
 <translation id="5449551289610225147">Ugyldig adgangskode</translation>
 <translation id="5459064203055649751">Der findes allerede en fil med navnet "<ph name="FILENAME" />". Vil du erstatte den med den, du er ved at flytte?</translation>
 <translation id="5463231940765244860">Angiv</translation>
@@ -579,6 +583,7 @@
 <translation id="5524517123096967210">Filen kunne ikke læses.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-billede</translation>
 <translation id="5534520101572674276">Beregner størrelse</translation>
+<translation id="5536122250858122375">Denne filtype kan ikke synkroniseres</translation>
 <translation id="554153475311314364">Græsk translitteration</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> mapper er valgt</translation>
 <translation id="5580591966435005537">virtuel maskine</translation>
@@ -691,6 +696,7 @@
 <translation id="6423031066725912715">Vietnamesisk med TCVN-tastatur</translation>
 <translation id="6430271654280079150">Du har 1 forsøg tilbage.</translation>
 <translation id="643243556292470964">Slettede filer flyttes nu til papirkurven</translation>
+<translation id="6438480100790416671">Tjekker lagerplads…</translation>
 <translation id="6485131920355264772">Pladsoplysningerne kunne ikke hentes</translation>
 <translation id="6495925982925244349">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, administreret af din administrator, info</translation>
 <translation id="649877868557234318">Pakker <ph name="FILE_NAME" /> ud i <ph name="FOLDER_NAME" /></translation>
@@ -738,6 +744,7 @@
 <translation id="6874758081814639712">Person, der dyrker tai chi</translation>
 <translation id="6876155724392614295">Cykel</translation>
 <translation id="6878261347041253038">Devanagari-tastatur (fonetisk)</translation>
+<translation id="6882444584974399416">Din enhed har ikke nok lagerplads til at holde dine filer tilgængelige offline. Nye filer synkroniseres ikke længere automatisk.</translation>
 <translation id="6885780034956018177">Snegl</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6898028766943174120">Flere undermapper...</translation>
@@ -893,6 +900,7 @@
 <translation id="8000066093800657092">Intet netværk</translation>
 <translation id="8008366997883261463">Jack Russell-terrier</translation>
 <translation id="8028993641010258682">Størrelse</translation>
+<translation id="8034974485549318493">Opret forbindelse til internettet ved første konfiguration, så filerne kan synkroniseres.</translation>
 <translation id="803771048473350947">Fil</translation>
 <translation id="8038111231936746805">(standard)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-lyd</translation>
@@ -912,6 +920,7 @@
 <translation id="8154842056504218462">Alle elementer er valgt.</translation>
 <translation id="8157684860301034423">Appoplysningerne kunne ikke hentes.</translation>
 <translation id="8175731104491895765">Fransk (Belgien)</translation>
+<translation id="8175799081768705361">Synkroniserer <ph name="NUMBER_OF_FILES_SYNCING" /> Drev-filer</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Enhedsmodel</translation>
 <translation id="8223479393428528563">Hvis du vil gemme disse filer til offlinebrug, skal du gå online igen, højreklikke på filerne og vælge indstillingen <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
@@ -944,6 +953,7 @@
 <translation id="8395901698320285466">Mål</translation>
 <translation id="8404498045299006085">Behold alle</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-netværk, opretter forbindelse</translation>
+<translation id="841387525767317275">Filer i denne mappe er tilgængelige offline</translation>
 <translation id="8425213833346101688">Skift</translation>
 <translation id="8431909052837336408">Skift pinkode til SIM-kort</translation>
 <translation id="8437209419043462667">Amerikansk</translation>
@@ -971,6 +981,7 @@
 <translation id="8560515948038859357">Kantonesisk</translation>
 <translation id="8561206103590473338">Elefant</translation>
 <translation id="8566466896628108558">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, blokeret af din administrator, oplysninger</translation>
+<translation id="8567555211227790801">Du er i øjeblikket offline. Synkronisering genoptages, når du har forbindelse til internettet.</translation>
 <translation id="8568374623837201676">Vil du slette denne fil permanent?</translation>
 <translation id="8569764466147087991">Vælg den fil, der skal åbnes</translation>
 <translation id="8577897833047451336">Kroatisk</translation>

@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">Файлът или директорията не могат да се използват.</translation>
 <translation id="1363028406613469049">Запис</translation>
 <translation id="1378727793141957596">Добре дошли в Google Диск!</translation>
+<translation id="1379156577998569384">Файловете ви в „Моят Диск“ са налице офлайн</translation>
 <translation id="1379911846207762492">Можете да направите файловете да бъдат налице офлайн, за да имате достъп до тях, когато нямате връзка с интернет.</translation>
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="1388045380422025115">Всички типове</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">Немска (Neo 2) клавиатура</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3866249974567520381">Описание</translation>
+<translation id="3866439285517092441">Батерията е изтощена. Синхронизирането ще се възобнови, когато включите устройството в захранването.</translation>
 <translation id="3899991606604168269">Френски (Канада) с многоезична клавиатура</translation>
 <translation id="3901991538546252627">Установява се връзка със: <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Мобилният потребителски профил се инсталира, мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">Неправилен PUK код</translation>
 <translation id="4057991113334098539">Активира се...</translation>
 <translation id="4092890906744441904">Ирландски</translation>
+<translation id="4124731372776320263">1 файл в Диск се синхронизира</translation>
 <translation id="4124935795427217608">Еднорог</translation>
 <translation id="4131235941541910880">Преместете в кошчето елементите, от които нямате нужда</translation>
 <translation id="4134804435730168042">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, активиране след настройването на устройството</translation>
@@ -564,6 +567,7 @@
 <translation id="5422221874247253874">Точка за достъп</translation>
 <translation id="5428105026674456456">испански</translation>
 <translation id="5438282218546237410">Няма резултати за <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Няма достатъчно място в хранилището.</translation>
 <translation id="5449551289610225147">Паролата е невалидна</translation>
 <translation id="5459064203055649751">Вече съществува файл с име „<ph name="FILENAME" />“. Искате ли да го замените с този, който премествате?</translation>
 <translation id="5463231940765244860">Въвеждане</translation>
@@ -579,6 +583,7 @@
 <translation id="5524517123096967210">Файлът не можа да бъде прочетен.</translation>
 <translation id="5533102081734025921">Изображение във формат <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Размерът се изчислява</translation>
+<translation id="5536122250858122375">Този файлов тип не може да бъде синхронизиран</translation>
 <translation id="554153475311314364">Гръцки (транслитерация)</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> избрани папки</translation>
 <translation id="5580591966435005537">виртуална машина</translation>
@@ -691,6 +696,7 @@
 <translation id="6423031066725912715">Виетнамски с клавиатура TCVN</translation>
 <translation id="6430271654280079150">Остава ви 1 опит.</translation>
 <translation id="643243556292470964">Изтритите файлове са преместени в кошчето</translation>
+<translation id="6438480100790416671">Мястото в хранилището се проверява…</translation>
 <translation id="6485131920355264772">Извличането на информацията за мястото не бе успешно</translation>
 <translation id="6495925982925244349">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, управлява се от администратора ви, подробности</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> се извлича в(ъв) „<ph name="FOLDER_NAME" />“</translation>
@@ -738,6 +744,7 @@
 <translation id="6874758081814639712">Човек, който практикува тай чи</translation>
 <translation id="6876155724392614295">Колело</translation>
 <translation id="6878261347041253038">Деванагари клавиатура (фонетична)</translation>
+<translation id="6882444584974399416">Мястото в хранилището на устройството не е достатъчно, за да бъдат файловете ви налице офлайн. Новите файлове повече няма да се синхронизират автоматично.</translation>
 <translation id="6885780034956018177">Охлюв</translation>
 <translation id="6896758677409633944">Копиране</translation>
 <translation id="6898028766943174120">Още подпапки...</translation>
@@ -893,6 +900,7 @@
 <translation id="8000066093800657092">Няма мрежа</translation>
 <translation id="8008366997883261463">Джак Ръсел териер</translation>
 <translation id="8028993641010258682">Размер</translation>
+<translation id="8034974485549318493">За първоначалното настройване трябва да се свържете с интернет, за да могат да се синхронизират файловете.</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038111231936746805">(по подразбиране)</translation>
 <translation id="8042602468072383151">Аудиофайл във формат <ph name="AUDIO_TYPE" /></translation>
@@ -912,6 +920,7 @@
 <translation id="8154842056504218462">Избрахте всички елементи.</translation>
 <translation id="8157684860301034423">Извличането на информацията за приложението не бе успешно.</translation>
 <translation id="8175731104491895765">Френски (Белгия)</translation>
+<translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> файла в Диск се синхронизират</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Модел на устройството</translation>
 <translation id="8223479393428528563">За да запазите тези файлове за използване офлайн, върнете се онлайн, кликнете с десния бутон на мишката върху тях и изберете опцията „<ph name="OFFLINE_CHECKBOX_NAME" />“.</translation>
@@ -944,6 +953,7 @@
 <translation id="8395901698320285466">Размери</translation>
 <translation id="8404498045299006085">Запазване на всички</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> мрежа – установява се връзка</translation>
+<translation id="841387525767317275">Файловете в тази папка са налице офлайн</translation>
 <translation id="8425213833346101688">Промяна</translation>
 <translation id="8431909052837336408">Промяна на ПИН за SIM картата</translation>
 <translation id="8437209419043462667">Американска клавиатура</translation>
@@ -971,6 +981,7 @@
 <translation id="8560515948038859357">Кантонски</translation>
 <translation id="8561206103590473338">Слон</translation>
 <translation id="8566466896628108558">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, блокирана от администратора ви, подробности</translation>
+<translation id="8567555211227790801">Понастоящем сте офлайн. Синхронизирането ще се възобнови, когато имате връзка с интернет.</translation>
 <translation id="8568374623837201676">Да се изтрие ли за постоянно този файл?</translation>
 <translation id="8569764466147087991">Изберете файл за отваряне</translation>
 <translation id="8577897833047451336">Хърватски</translation>

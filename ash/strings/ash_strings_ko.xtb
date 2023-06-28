@@ -140,7 +140,6 @@
 <translation id="1550523713251050646">더 많은 옵션을 확인하려면 클릭하세요.</translation>
 <translation id="1555130319947370107">파란색</translation>
 <translation id="1557622599341396706">데스크 이름 표시</translation>
-<translation id="1576511610858879060">Chromebook 또는 블루투스 기기에서 이전 버전의 블루투스를 사용하고 있습니다. 더 나은 오디오 품질을 위해 다른 입력 소스를 사용하세요.</translation>
 <translation id="1576623706766186887">돋보기 사용 설정 시 축소</translation>
 <translation id="1586324912145647027">데스크 1에서 8로 이동</translation>
 <translation id="1589090746204042747">이 세션의 모든 활동에 액세스</translation>
@@ -358,6 +357,7 @@
 <translation id="2579264398927991698">펌웨어 업데이트</translation>
 <translation id="2582112259361606227">업데이트하려면 다시 시작</translation>
 <translation id="2586561057878260610">Ctrl + W 키를 눌러 <ph name="DESK_NAME" />과(와) 결합하세요. Ctrl + Shift + W 키를 눌러 데스크와 창을 닫으세요.</translation>
+<translation id="2586657967955657006">클립보드</translation>
 <translation id="2595239820337756193">5km를 마일로 변환</translation>
 <translation id="2596078834055697711">창 스크린샷 찍기</translation>
 <translation id="2598725286293895280">데스크에 지원되지 않는 앱 있음</translation>
@@ -911,6 +911,7 @@
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">데스크 16</translation>
+<translation id="4989163558385430922">모두 보기</translation>
 <translation id="5003993274120026347">다음 문장</translation>
 <translation id="5004607513195820459">네트워크가 관리됨</translation>
 <translation id="5009463889040999939">프로필 이름을 변경하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
@@ -1183,6 +1184,7 @@
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6166852626429024716">기기, 앱, 설정, 웹에서 검색...</translation>
 <translation id="6168318496333165060">진단 앱 열기</translation>
+<translation id="6173151025443907148">Lacros가 사용 설정된 경우에는 두 번째 사용자 로그인이 지원되지 않습니다. 대신 Lacros에서 두 번째 브라우저 프로필을 사용하거나 Lacros를 사용 안함으로 설정했다가 다시 시도해 보세요.</translation>
 <translation id="6179832488876878285">여기에 중요한 파일을 고정할 수 있습니다. 시작하려면 파일 앱을 여세요.</translation>
 <translation id="6182592640011875895">데스크 열기</translation>
 <translation id="6185696379715117369">페이지 위로</translation>
@@ -1543,6 +1545,7 @@
 <translation id="7866482334467279021">사용</translation>
 <translation id="7872786842639831132">꺼짐</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" />의 블루투스가 꺼져 있는 것 같습니다. 휴대전화 허브를 사용하려면 블루투스를 사용 설정하세요.</translation>
+<translation id="7876243839304621966">모두 삭제</translation>
 <translation id="7877557217297072640">{0,plural, =0{지금 기기를 이전 버전으로 되돌리세요}=1{1초 이내에 기기를 이전 버전으로 되돌리세요}other{#초 이내에 기기를 이전 버전으로 되돌리세요}}</translation>
 <translation id="7884446017008693258">핫스팟 설정</translation>
 <translation id="7884902759927478774">탭 드래그 취소</translation>

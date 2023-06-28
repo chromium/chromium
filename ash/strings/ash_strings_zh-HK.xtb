@@ -140,7 +140,6 @@
 <translation id="1550523713251050646">點擊即可取得更多選項</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1557622599341396706">顯示桌面名稱</translation>
-<translation id="1576511610858879060">Chromebook 或藍牙裝置正使用較舊版本的藍牙。如要提高音效品質，請使用其他輸入來源。</translation>
 <translation id="1576623706766186887">放大鏡開啟時縮小畫面</translation>
 <translation id="1586324912145647027">前往桌面 1 至 8</translation>
 <translation id="1589090746204042747">存取此工作階段的所有活動紀錄</translation>
@@ -358,6 +357,7 @@
 <translation id="2579264398927991698">韌體更新</translation>
 <translation id="2582112259361606227">重新啟動即可更新</translation>
 <translation id="2586561057878260610">㩒 Ctrl + W 制就可以同「<ph name="DESK_NAME" />」合併。㩒 Ctrl + Shift + W 制就可以閂咗桌面同埋視窗。</translation>
+<translation id="2586657967955657006">剪貼簿</translation>
 <translation id="2595239820337756193">5 公里等於幾多英里</translation>
 <translation id="2596078834055697711">擷取視窗螢幕畫面</translation>
 <translation id="2598725286293895280">桌面不支援的應用程式</translation>
@@ -910,6 +910,7 @@
         <ph name="NOTIFICATION_1" />；
         <ph name="NOTIFICATION_2" />；以及 <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">桌面 16</translation>
+<translation id="4989163558385430922">查看全部</translation>
 <translation id="5003993274120026347">下一句</translation>
 <translation id="5004607513195820459">這是受管理的網絡</translation>
 <translation id="5009463889040999939">正在重新命名設定檔。這項操作可能需時數分鐘。</translation>
@@ -1182,7 +1183,7 @@
 <translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6166852626429024716">搜尋您的裝置、應用程式、設定、網絡…</translation>
 <translation id="6168318496333165060">開啟「診斷」應用程式</translation>
-<translation id="6173151025443907148">啟用 Lacros 後，第二位使用者就無法登入。請改為在 Lacros 中使用第二個瀏覽器設定檔，或者停用 Lacros，然後再試一次。</translation>
+<translation id="6173151025443907148">啟用 Lacros 後，第二位使用者便無法登入。請改為在 Lacros 中使用第二個瀏覽器設定檔，或停用 Lacros，然後再試一次。</translation>
 <translation id="6179832488876878285">您可將重要的檔案固定至此處。開啟「檔案」應用程式即可開始使用。</translation>
 <translation id="6182592640011875895">開啟桌面</translation>
 <translation id="6185696379715117369">向上鍵</translation>
@@ -1542,6 +1543,7 @@
 <translation id="7866482334467279021">開啟</translation>
 <translation id="7872786842639831132">關閉</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> 上的藍牙似乎已關閉。請開啟藍牙，才能使用 Phone Hub。</translation>
+<translation id="7876243839304621966">全部移除</translation>
 <translation id="7877557217297072640">{0,plural, =0{現在將裝置回復為先前的版本}=1{在 1 秒內將裝置回復為先前的版本}other{在 # 秒內將裝置回復為先前的版本}}</translation>
 <translation id="7884446017008693258">熱點設定</translation>
 <translation id="7884902759927478774">取消分頁拖曳</translation>

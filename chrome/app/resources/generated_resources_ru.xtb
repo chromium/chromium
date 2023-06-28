@@ -774,6 +774,7 @@
 <translation id="1629451755632656601">Разрешить Google искать персонализированные скидки на товары в корзине?</translation>
 <translation id="163072119192489970">Разрешить сайтам завершать отправку и получение данных</translation>
 <translation id="1630768113285622200">Перезапустить и продолжить</translation>
+<translation id="1631503405579357839">Дальтонизм</translation>
 <translation id="1632082166874334883">Пароль, сохраненный в вашем аккаунте Google</translation>
 <translation id="1632756664321977232">Инструмент "Кадрирование"</translation>
 <translation id="163309982320328737">Первоначальная ширина символа – полная</translation>
@@ -1478,6 +1479,7 @@
 <translation id="2214018885812055163">Общие папки</translation>
 <translation id="2214884991347062907">Неверный пароль. Повторите попытку.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 строка скрыта&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> строка скрыта&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> строки скрыто&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> строк скрыто&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> строки скрыто&gt;}}</translation>
+<translation id="2215070081105889450">Чтобы поделиться аудио, предоставьте доступ к вкладке или экрану</translation>
 <translation id="2218019600945559112">Мышь и сенсорная панель</translation>
 <translation id="2218515861914035131">Вставить как обычный текст</translation>
 <translation id="221872881068107022">Прокрутка в обратную сторону</translation>
@@ -2007,6 +2009,7 @@
 <translation id="2645047101481282803">Вашим устройством управляет администратор домена <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645388244376970260">Эта вкладка транслируется на устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="264897126871533291">Протаномалия</translation>
 <translation id="2649045351178520408">ASCII с кодировкой Base64, цепочка сертификатов</translation>
 <translation id="265156376773362237">Стандартная предзагрузка</translation>
 <translation id="2652129567809778422">Выберите пароль</translation>
@@ -2964,6 +2967,7 @@
 <translation id="3476303763173086583">Отправка данных о работе устройства. Помогите сделать Android ещё лучше – разрешите автоматически отправлять в Google диагностическую информацию, данные об использовании приложений и самого устройства. Установить личность ребенка по этим данным нельзя. Они нужны нам, чтобы в будущем повысить стабильность приложений и внести другие улучшения. Некоторые данные в обобщенном виде пригодятся партнерам Google, например разработчикам Android. Эта <ph name="BEGIN_LINK1" />настройка<ph name="END_LINK1" /> принудительно применяется владельцем. Он вправе разрешить автоматическую отправку в Google данных об использовании и диагностике устройства. Если запись дополнительной истории приложений и веб-поиска включена, эта информация может сохраняться в аккаунте ребенка. <ph name="BEGIN_LINK2" />Подробнее…<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Не удалось извлечь правила для вашего устройства.</translation>
 <translation id="347785443197175480">Предоставить сайту <ph name="HOST" /> доступ к камере и микрофону</translation>
+<translation id="3479357084663933762">Дейтераномалия</translation>
 <translation id="3479552764303398839">Не сейчас</translation>
 <translation id="3479685872808224578">Не удалось найти сервер печати. Проверьте его адрес и повторите попытку.</translation>
 <translation id="3479753605053415848">Нажмите, чтобы настроить Chrome.</translation>
@@ -3435,6 +3439,7 @@
 <translation id="3867134342671430205">Чтобы переместить экран, используйте перетаскивание или клавиши со стрелками.</translation>
 <translation id="3867944738977021751">Поля сертификата</translation>
 <translation id="3869917919960562512">Неверный индекс.</translation>
+<translation id="3870626286046977643">Также предоставить доступ к аудиоданным системы</translation>
 <translation id="3870688298003434214">Отменить выбор закладки "<ph name="BOOKMARK_TITLE" />"</translation>
 <translation id="3870931306085184145">Для домена <ph name="DOMAIN" /> нет сохраненных паролей.</translation>
 <translation id="3871350334636688135">Через 24 часа ваш администратор выполнит разовое обновление. Когда оно вступит в силу, после перезапуска устройства ваши локальные данные будут удалены. У вас есть 24 часа, чтобы сохранить необходимые локальные данные в облачном хранилище.</translation>
@@ -3456,6 +3461,7 @@
 <translation id="3888586133700543064">Эта информация поможет нам понять, в чем причина возникшей неполадки в работе Ассистента. Данные хранятся до 90 дней. Доступ к ним есть только у разработчиков и специалистов по работе с отзывами.</translation>
 <translation id="3890064827463908288">Чтобы использовать функцию "Синхронизация Wi-Fi", включите синхронизацию Chrome</translation>
 <translation id="389313931326656921">Назначьте переключатель для действия "Далее"</translation>
+<translation id="3893268973182382220">Не удалось загрузить панель.</translation>
 <translation id="3893295674388762059">Чтобы удалить данные, закройте все окна в режиме инкогнито.</translation>
 <translation id="3893536212201235195">Чтение и изменение настроек специальных возможностей</translation>
 <translation id="3893630138897523026">ChromeVox (голосовое сопровождение)</translation>
@@ -4305,6 +4311,7 @@
 <translation id="4623189117674524348">Не удалось предоставить доступ API на этом устройстве.</translation>
 <translation id="4623341761454569602">В Google Менеджере паролей <ph name="SEPARATOR" /> <ph name="ACCOUNT" />.</translation>
 <translation id="4625078469366263107">Включить приложение</translation>
+<translation id="4625905218692741757">Серый цвет по умолчанию</translation>
 <translation id="4627427111733173920">Файлы cookie заблокированы</translation>
 <translation id="4627442949885028695">Продолжить на другом устройстве</translation>
 <translation id="4628762811416793313">Не удалось завершить настройку контейнера Linux. Повторите попытку.</translation>
@@ -5211,6 +5218,7 @@
 <translation id="5430931332414098647">Мгновенная точка доступа</translation>
 <translation id="5431318178759467895">Цветная печать</translation>
 <translation id="5432145523462851548">Показать файл "<ph name="FILE_NAME" />" в папке</translation>
+<translation id="5432223177001837288">Чтобы поделиться аудио, предоставьте доступ к вкладке</translation>
 <translation id="543338862236136125">Изменить пароль</translation>
 <translation id="5434065355175441495">PKCS #1 шифрование RSA</translation>
 <translation id="5435274640623994081">Включить ведение журнала для звуковых сигналов</translation>
@@ -5981,6 +5989,7 @@
 <translation id="6087960857463881712">Модник</translation>
 <translation id="6088475950266477163">Н&amp;астройки</translation>
 <translation id="608912389580139775">Чтобы добавить эту страницу в свой список для чтения, нажмите на значок закладки.</translation>
+<translation id="6089289670051481345">Тританомалия</translation>
 <translation id="6090760257419195752">Закрытые предупреждения</translation>
 <translation id="6091761513005122595">Ресурс подключен.</translation>
 <translation id="6093803049406781019">Удалить профиль</translation>
@@ -6065,6 +6074,7 @@
 <translation id="6163363155248589649">&amp;Стандартный</translation>
 <translation id="6163376401832887457">Настройки Kerberos</translation>
 <translation id="6163522313638838258">Развернуть все...</translation>
+<translation id="6164393601566177235">Добавление сайтов</translation>
 <translation id="6164832038898943453">Добавить языки, страницы на которых будут автоматически переводиться</translation>
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6166185671393271715">Импорт паролей в Chrome</translation>
@@ -8693,6 +8703,7 @@
 <translation id="839363317075970734">Сведения об устройстве Bluetooth</translation>
 <translation id="8393700583063109961">Отправить сообщение</translation>
 <translation id="8394212467245680403">Буквенно-цифровой ввод</translation>
+<translation id="8396098434728053815">Также предоставить доступ к аудио на вкладке</translation>
 <translation id="8397825320644530257">Прервать подключение к телефону</translation>
 <translation id="8398877366907290961">Продолжить все равно</translation>
 <translation id="8399282673057829204">Показать пароль</translation>
@@ -9728,7 +9739,6 @@
 <translation id="992256792861109788">Розовый</translation>
 <translation id="992592832486024913">Отключить ChromeVox (голосовое сопровождение)</translation>
 <translation id="992778845837390402">Выполняется резервное копирование Linux.</translation>
-<translation id="992995739384733897">Сэкономлено благодаря неактивной вкладке "<ph name="WINDOW_TITLE" />": <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Выполняется установка</translation>
 <translation id="994289308992179865">&amp;Повтор</translation>
 <translation id="995755448277384931">Добавление кода IBAN</translation>

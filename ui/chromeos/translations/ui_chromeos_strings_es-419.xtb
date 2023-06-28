@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">No se puede utilizar el archivo o el directorio.</translation>
 <translation id="1363028406613469049">Seguimiento</translation>
 <translation id="1378727793141957596">Te damos la bienvenida a Google Drive</translation>
+<translation id="1379156577998569384">Tus archivos de Mi unidad están disponibles sin conexión</translation>
 <translation id="1379911846207762492">Puedes hacer que los archivos estén disponibles sin conexión para cuando no tengas conexión a Internet.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1388045380422025115">Todos los tipos</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">Alemán (Neo 2)</translation>
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="3866249974567520381">Descripción</translation>
+<translation id="3866439285517092441">La batería tiene poca carga. La sincronización se reanudará cuando te conectes a una fuente de alimentación.</translation>
 <translation id="3899991606604168269">Francés (Canadá) con teclado multilingüe</translation>
 <translation id="3901991538546252627">Conectando con: <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Se está instalando el perfil móvil, red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">La PUK es incorrecta.</translation>
 <translation id="4057991113334098539">Activando...</translation>
 <translation id="4092890906744441904">Irlandés</translation>
+<translation id="4124731372776320263">Sincronizando 1 archivo de Drive</translation>
 <translation id="4124935795427217608">Unicornio</translation>
 <translation id="4131235941541910880">Mueve los elementos que no necesites a la papelera</translation>
 <translation id="4134804435730168042">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activar después de la configuración del dispositivo</translation>
@@ -564,6 +567,7 @@
 <translation id="5422221874247253874">Punto de acceso</translation>
 <translation id="5428105026674456456">Español</translation>
 <translation id="5438282218546237410">No hay resultados para <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">No hay suficiente espacio de almacenamiento.</translation>
 <translation id="5449551289610225147">Contraseña no válida</translation>
 <translation id="5459064203055649751">Ya existe un archivo con el nombre "<ph name="FILENAME" />". ¿Quieres reemplazarlo por el que vas a mover?</translation>
 <translation id="5463231940765244860">Ingresar</translation>
@@ -579,6 +583,7 @@
 <translation id="5524517123096967210">No se pudo leer el archivo.</translation>
 <translation id="5533102081734025921">Imagen de <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Calculando tamaño...</translation>
+<translation id="5536122250858122375">No se puede sincronizar este tipo de archivo</translation>
 <translation id="554153475311314364">Griego (transliteración)</translation>
 <translation id="5554171655917412781">Se seleccionaron <ph name="SELECTED_FOLDERS_COUNT" /> carpetas</translation>
 <translation id="5580591966435005537">máquina virtual</translation>
@@ -691,6 +696,7 @@
 <translation id="6423031066725912715">Vietnamita con teclado TCVN</translation>
 <translation id="6430271654280079150">Te queda 1 intento.</translation>
 <translation id="643243556292470964">Los archivos borrados ahora se moverán a la papelera</translation>
+<translation id="6438480100790416671">Comprobando el espacio de almacenamiento…</translation>
 <translation id="6485131920355264772">No se pudo recuperar la información sobre el espacio.</translation>
 <translation id="6495925982925244349">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, administrada por tu administrador, detalles</translation>
 <translation id="649877868557234318">Extrayendo <ph name="FILE_NAME" /> en <ph name="FOLDER_NAME" /></translation>
@@ -738,6 +744,7 @@
 <translation id="6874758081814639712">Persona practicando tai chi</translation>
 <translation id="6876155724392614295">Bicicleta</translation>
 <translation id="6878261347041253038">Teclado devanagari (fonético)</translation>
+<translation id="6882444584974399416">Tu dispositivo no tiene suficiente espacio de almacenamiento para que tus archivos estén disponibles sin conexión. Los archivos nuevos ya no se sincronizarán de forma automática.</translation>
 <translation id="6885780034956018177">Caracol</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6898028766943174120">Más subcarpetas…</translation>
@@ -893,6 +900,7 @@
 <translation id="8000066093800657092">Sin red</translation>
 <translation id="8008366997883261463">Perro</translation>
 <translation id="8028993641010258682">Tamaño</translation>
+<translation id="8034974485549318493">Para la configuración inicial, debes conectarte a Internet para que los archivos se puedan sincronizar.</translation>
 <translation id="803771048473350947">Archivo</translation>
 <translation id="8038111231936746805">(predeterminado)</translation>
 <translation id="8042602468072383151">Audio <ph name="AUDIO_TYPE" /></translation>
@@ -912,6 +920,7 @@
 <translation id="8154842056504218462">Se seleccionaron todas las entradas.</translation>
 <translation id="8157684860301034423">No se pudo recuperar la información de la app.</translation>
 <translation id="8175731104491895765">Francés (Bélgica)</translation>
+<translation id="8175799081768705361">Sincronizando <ph name="NUMBER_OF_FILES_SYNCING" /> archivos de Drive</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8193175696669055101">Modelo de dispositivo</translation>
 <translation id="8223479393428528563">Para guardar estos archivos para su uso sin conexión, conéctate nuevamente, haz clic con el botón derecho en los archivos y selecciona la opción <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
@@ -944,6 +953,7 @@
 <translation id="8395901698320285466">Dimensiones</translation>
 <translation id="8404498045299006085">Conservar todo</translation>
 <translation id="8408068190360279472">Red <ph name="NETWORK_TYPE" />, conectando</translation>
+<translation id="841387525767317275">Los archivos de esta carpeta están disponibles sin conexión</translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8431909052837336408">Cambiar el PIN de la tarjeta SIM</translation>
 <translation id="8437209419043462667">Inglés (Estados Unidos)</translation>
@@ -971,6 +981,7 @@
 <translation id="8560515948038859357">Cantonés</translation>
 <translation id="8561206103590473338">Elefante</translation>
 <translation id="8566466896628108558">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, bloqueada por tu administrador, detalles</translation>
+<translation id="8567555211227790801">Actualmente, no tienes conexión. La sincronización se reanudará cuando te conectes a Internet.</translation>
 <translation id="8568374623837201676">¿Quieres borrar este archivo de forma permanente?</translation>
 <translation id="8569764466147087991">Seleccionar un archivo para abrir</translation>
 <translation id="8577897833047451336">Croata</translation>

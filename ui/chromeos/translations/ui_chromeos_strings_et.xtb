@@ -567,6 +567,7 @@
 <translation id="5422221874247253874">Pääsupunkt</translation>
 <translation id="5428105026674456456">hispaania keel</translation>
 <translation id="5438282218546237410">Päringule <ph name="SEARCH_TERM" /> ei leitud tulemusi.</translation>
+<translation id="5447680084201416734">Salvestusruumi pole piisavalt.</translation>
 <translation id="5449551289610225147">Vale parool</translation>
 <translation id="5459064203055649751">Fail nimega „<ph name="FILENAME" />“ on juba olemas. Kas soovite selle teisaldatava failiga asendada?</translation>
 <translation id="5463231940765244860">Sisesta</translation>
@@ -695,6 +696,7 @@
 <translation id="6423031066725912715">vietnami, klaviatuuriga TCVN</translation>
 <translation id="6430271654280079150">Teil on veel 1 katse.</translation>
 <translation id="643243556292470964">Kustutatud failid teisaldatakse nüüd prügikasti</translation>
+<translation id="6438480100790416671">Salvestusruumi kontrollimine …</translation>
 <translation id="6485131920355264772">Talletusruumi teabe toomine ebaõnnestus</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, võrku haldab teie administraator, üksikasjad</translation>
 <translation id="649877868557234318">Faili <ph name="FILE_NAME" /> ekstraktimine kausta <ph name="FOLDER_NAME" /></translation>
@@ -898,6 +900,7 @@
 <translation id="8000066093800657092">Võrku pole</translation>
 <translation id="8008366997883261463">Jack Russelli terjer</translation>
 <translation id="8028993641010258682">Suurus</translation>
+<translation id="8034974485549318493">Esialgse seadistuse jaoks peate looma internetiühenduse, et faile oleks võimalik sünkroonida.</translation>
 <translation id="803771048473350947">Fail</translation>
 <translation id="8038111231936746805">(vaikimisi)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-heli</translation>

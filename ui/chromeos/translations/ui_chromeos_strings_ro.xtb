@@ -567,6 +567,7 @@
 <translation id="5422221874247253874">Punct de acces</translation>
 <translation id="5428105026674456456">Spaniolă</translation>
 <translation id="5438282218546237410">Nu există rezultate pentru <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Nu există suficient spațiu de stocare.</translation>
 <translation id="5449551289610225147">Parolă nevalidă</translation>
 <translation id="5459064203055649751">Fișierul cu numele <ph name="FILENAME" /> există deja. Vrei să-l înlocuiești cu cel pe care îl muți?</translation>
 <translation id="5463231940765244860">Introdu</translation>
@@ -695,6 +696,7 @@
 <translation id="6423031066725912715">Tastatură vietnameză TCVN</translation>
 <translation id="6430271654280079150">Mai ai o încercare.</translation>
 <translation id="643243556292470964">Fișierele șterse au fost mutate în coșul de gunoi</translation>
+<translation id="6438480100790416671">Se verifică spațiul de stocare…</translation>
 <translation id="6485131920355264772">Nu s-au putut prelua informațiile despre spațiu</translation>
 <translation id="6495925982925244349">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, gestionată de administratorul tău, detalii</translation>
 <translation id="649877868557234318">Se extrage <ph name="FILE_NAME" /> în <ph name="FOLDER_NAME" /></translation>
@@ -898,6 +900,7 @@
 <translation id="8000066093800657092">Nicio rețea</translation>
 <translation id="8008366997883261463">Terier</translation>
 <translation id="8028993641010258682">Dimensiune</translation>
+<translation id="8034974485549318493">Pentru configurarea inițială, trebuie să te conectezi la internet pentru ca fișierele să se poată sincroniza.</translation>
 <translation id="803771048473350947">Fișier</translation>
 <translation id="8038111231936746805">(prestabilit)</translation>
 <translation id="8042602468072383151">Fișier audio <ph name="AUDIO_TYPE" /></translation>

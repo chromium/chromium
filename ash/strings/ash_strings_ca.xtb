@@ -140,7 +140,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1550523713251050646">Feu clic per veure més opcions</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1557622599341396706">Mostra el nom de l'escriptori</translation>
-<translation id="1576511610858879060">El Chromebook o el dispositiu Bluetooth utilitza una versió anterior de Bluetooth. Fes servir una altra font d'entrada per millorar la qualitat de l'àudio.</translation>
 <translation id="1576623706766186887">Redueix quan la lupa estigui activada</translation>
 <translation id="1586324912145647027">Ves a l'escriptori de l'1 al 8</translation>
 <translation id="1589090746204042747">Accedir a tota la teva activitat d'aquesta sessió.</translation>
@@ -358,6 +357,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2579264398927991698">Actualitzacions de microprogramari</translation>
 <translation id="2582112259361606227">Reinicia per actualitzar</translation>
 <translation id="2586561057878260610">Prem Ctrl+W per combinar amb <ph name="DESK_NAME" />. Prem Ctrl+Shift+W per tancar l'escriptori i les finestres</translation>
+<translation id="2586657967955657006">Porta-retalls</translation>
 <translation id="2595239820337756193">5 km en milles</translation>
 <translation id="2596078834055697711">Fes una captura de pantalla de la finestra</translation>
 <translation id="2598725286293895280">Hi ha aplicacions no admeses a l'escriptori</translation>
@@ -911,6 +911,7 @@ Connecta el dispositiu a l'alimentació.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Escriptori 16</translation>
+<translation id="4989163558385430922">Mostra-ho tot</translation>
 <translation id="5003993274120026347">Frase següent</translation>
 <translation id="5004607513195820459">La xarxa està gestionada</translation>
 <translation id="5009463889040999939">S'està canviant el nom del perfil. Aquest procés pot tardar uns minuts.</translation>
@@ -1183,6 +1184,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6166852626429024716">Cerca al dispositiu, en aplicacions, a la configuració i al web...</translation>
 <translation id="6168318496333165060">Obre l'aplicació Diagnòstic</translation>
+<translation id="6173151025443907148">Si Lacros està activat, no s'admet l'inici de sessió amb un segon usuari. Utilitza un altre perfil del navegador o desactiva Lacros i torna-ho a provar.</translation>
 <translation id="6179832488876878285">Pots fixar els teus fitxers importants aquí. Obre l'aplicació Fitxers per començar.</translation>
 <translation id="6182592640011875895">Obre l'escriptori</translation>
 <translation id="6185696379715117369">Re Pàg</translation>
@@ -1540,6 +1542,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7866482334467279021">activat</translation>
 <translation id="7872786842639831132">Desactivat</translation>
 <translation id="7875575368831396199">Sembla que el Bluetooth està desactivat al teu <ph name="DEVICE_TYPE" />. Activa el Bluetooth per utilitzar El meu telèfon.</translation>
+<translation id="7876243839304621966">Suprimeix-ho tot</translation>
 <translation id="7877557217297072640">{0,plural, =0{Canvia el dispositiu a la versió anterior ara}=1{Canvia el dispositiu a la versió anterior en el termini d’1 segon}other{Canvia el dispositiu a la versió anterior en el termini de # segons}}</translation>
 <translation id="7884446017008693258">Configuració del punt d'accés Wi‐Fi</translation>
 <translation id="7884902759927478774">Cancel·la l'arrossegament de pestanyes</translation>

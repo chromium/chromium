@@ -140,7 +140,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1550523713251050646">Klik untuk mendapatkan lagi pilihan</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="1557622599341396706">Tunjukkan nama meja</translation>
-<translation id="1576511610858879060">Chromebook atau peranti Bluetooth anda menggunakan versi Bluetooth yang lama. Gunakan sumber input lain untuk kualiti audio yang lebih baik.</translation>
 <translation id="1576623706766186887">Zum keluar apabila penggadang dihidupkan</translation>
 <translation id="1586324912145647027">Pergi ke meja 1 hingga 8</translation>
 <translation id="1589090746204042747">Akses semua aktiviti anda dalam sesi ini</translation>
@@ -358,6 +357,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2579264398927991698">Kemaskinian Perisian Tegar</translation>
 <translation id="2582112259361606227">Mulakan semula untuk mengemas kini</translation>
 <translation id="2586561057878260610">Tekan Ctrl + W untuk digabungkan dengan <ph name="DESK_NAME" />. Tekan Ctrl + Shift + W untuk menutup meja dan tetingkap.</translation>
+<translation id="2586657967955657006">Papan Keratan</translation>
 <translation id="2595239820337756193">5000 batu</translation>
 <translation id="2596078834055697711">Ambil tangkapan skrin tetingkap</translation>
 <translation id="2598725286293895280">Apl tidak disokong dalam meja</translation>
@@ -916,6 +916,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Meja 16</translation>
+<translation id="4989163558385430922">Lihat semua</translation>
 <translation id="5003993274120026347">Ayat seterusnya</translation>
 <translation id="5004607513195820459">Rangkaian diurus</translation>
 <translation id="5009463889040999939">Menamakan semula profil. Proses ini mungkin mengambil masa beberapa minit.</translation>
@@ -1552,6 +1553,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7866482334467279021">dihidupkan</translation>
 <translation id="7872786842639831132">Mati</translation>
 <translation id="7875575368831396199">Nampaknya Bluetooth dimatikan pada <ph name="DEVICE_TYPE" /> anda. Sila hidupkan Bluetooth untuk menggunakan Hab Telefon.</translation>
+<translation id="7876243839304621966">Buangkan semua</translation>
 <translation id="7877557217297072640">{0,plural, =0{Tukar peranti kepada versi sebelumnya sekarang}=1{Tukar peranti kepada versi sebelumnya dalam masa 1 saat}other{Tukar peranti kepada versi sebelumnya dalam masa # saat}}</translation>
 <translation id="7884446017008693258">Tetapan Tempat Liputan</translation>
 <translation id="7884902759927478774">Batalkan penyeretan tab</translation>

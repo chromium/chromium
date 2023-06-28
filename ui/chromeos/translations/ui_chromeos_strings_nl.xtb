@@ -41,6 +41,7 @@
 <translation id="1358735829858566124">Het bestand of de map is niet bruikbaar.</translation>
 <translation id="1363028406613469049">Track</translation>
 <translation id="1378727793141957596">Welkom bij Google Drive!</translation>
+<translation id="1379156577998569384">Je Mijn Drive-bestanden zijn offline beschikbaar</translation>
 <translation id="1379911846207762492">Je kunt bestanden offline beschikbaar maken voor toegang als je geen internetverbinding hebt.</translation>
 <translation id="1383876407941801731">Zoeken</translation>
 <translation id="1388045380422025115">Alle typen</translation>
@@ -350,6 +351,7 @@
 <translation id="3855472144336161447">Duits Neo 2</translation>
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3866249974567520381">Beschrijving</translation>
+<translation id="3866439285517092441">De batterij is bijna leeg. De synchronisatie wordt hervat als je het apparaat op de stroomvoorziening aansluit.</translation>
 <translation id="3899991606604168269">Frans (Canada) met meertalig toetsenbord</translation>
 <translation id="3901991538546252627">Verbinding maken met <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Mobiel profiel installeren, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -368,6 +370,7 @@
 <translation id="4040753847560036377">Onjuiste pukcode</translation>
 <translation id="4057991113334098539">Wordt geactiveerd...</translation>
 <translation id="4092890906744441904">Iers</translation>
+<translation id="4124731372776320263">1 Drive-bestand synchroniseren</translation>
 <translation id="4124935795427217608">Eenhoorn</translation>
 <translation id="4131235941541910880">Verplaats overbodige items naar de prullenbak.</translation>
 <translation id="4134804435730168042">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activeren na apparaatinstelling</translation>
@@ -565,6 +568,7 @@
 <translation id="5422221874247253874">Toegangspunt</translation>
 <translation id="5428105026674456456">Spaans</translation>
 <translation id="5438282218546237410">Geen resultaten voor <ph name="SEARCH_TERM" />.</translation>
+<translation id="5447680084201416734">Onvoldoende opslagruimte.</translation>
 <translation id="5449551289610225147">Ongeldig wachtwoord</translation>
 <translation id="5459064203055649751">Er is al een bestand met de naam <ph name="FILENAME" />. Wil je het vervangen door het bestand dat je verplaatst?</translation>
 <translation id="5463231940765244860">Opgeven</translation>
@@ -580,6 +584,7 @@
 <translation id="5524517123096967210">Het bestand kan niet worden gelezen.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-afbeelding</translation>
 <translation id="5534520101572674276">Grootte berekenen</translation>
+<translation id="5536122250858122375">Dit bestandstype kan niet worden gesynchroniseerd</translation>
 <translation id="554153475311314364">Grieks (transliteratie)</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> mappen geselecteerd</translation>
 <translation id="5580591966435005537">virtuele machine</translation>
@@ -692,6 +697,7 @@
 <translation id="6423031066725912715">Vietnamees met TCVN-toetsenbord</translation>
 <translation id="6430271654280079150">Je hebt nog 1 poging.</translation>
 <translation id="643243556292470964">Verwijderde bestanden worden nu naar de prullenbak verplaatst</translation>
+<translation id="6438480100790416671">Opslagruimte checken…</translation>
 <translation id="6485131920355264772">Kan ruimte-informatie niet ophalen</translation>
 <translation id="6495925982925244349">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, beheerd door je beheerder, details</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> uitpakken naar <ph name="FOLDER_NAME" /></translation>
@@ -739,6 +745,7 @@
 <translation id="6874758081814639712">Persoon die tai chi doet</translation>
 <translation id="6876155724392614295">Fiets</translation>
 <translation id="6878261347041253038">Devanagari toetsenbord (fonetisch)</translation>
+<translation id="6882444584974399416">Je apparaat heeft niet voldoende opslagruimte om je bestanden offline beschikbaar te houden. Nieuwe bestanden worden niet meer automatisch gesynchroniseerd.</translation>
 <translation id="6885780034956018177">Slak</translation>
 <translation id="6896758677409633944">Kopiëren</translation>
 <translation id="6898028766943174120">Meer submappen…</translation>
@@ -894,6 +901,7 @@
 <translation id="8000066093800657092">Geen netwerk</translation>
 <translation id="8008366997883261463">Jack Russell-terriër</translation>
 <translation id="8028993641010258682">Grootte</translation>
+<translation id="8034974485549318493">Tijdens de eerste installatie moet je verbinding maken met internet, zodat de bestanden kunnen worden gesynchroniseerd.</translation>
 <translation id="803771048473350947">Archief</translation>
 <translation id="8038111231936746805">(standaard)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" />-audio</translation>
@@ -913,6 +921,7 @@
 <translation id="8154842056504218462">Alle items zijn geselecteerd.</translation>
 <translation id="8157684860301034423">Het ophalen van app-informatie is mislukt.</translation>
 <translation id="8175731104491895765">Frans (België)</translation>
+<translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive-bestanden synchroniseren</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Apparaatmodel</translation>
 <translation id="8223479393428528563">Als je deze bestanden wilt opslaan voor offline gebruik, ga je weer online, klik je met de rechtermuisknop op de bestanden en selecteer je de optie <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
@@ -945,6 +954,7 @@
 <translation id="8395901698320285466">Afmetingen</translation>
 <translation id="8404498045299006085">Alles behouden</translation>
 <translation id="8408068190360279472">Netwerk: <ph name="NETWORK_TYPE" />, verbinden</translation>
+<translation id="841387525767317275">Bestanden in deze map zijn offline beschikbaar</translation>
 <translation id="8425213833346101688">Wijzigen</translation>
 <translation id="8431909052837336408">Pincode van simkaart wijzigen</translation>
 <translation id="8437209419043462667">Amerikaans</translation>
@@ -972,6 +982,7 @@
 <translation id="8560515948038859357">Kantonees</translation>
 <translation id="8561206103590473338">Olifant</translation>
 <translation id="8566466896628108558">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, geblokkeerd door je beheerder, details</translation>
+<translation id="8567555211227790801">Je bent op dit moment offline. De synchronisatie wordt hervat als je verbinding hebt met internet.</translation>
 <translation id="8568374623837201676">Dit bestand definitief verwijderen?</translation>
 <translation id="8569764466147087991">Selecteer een bestand om te openen</translation>
 <translation id="8577897833047451336">Kroatisch</translation>

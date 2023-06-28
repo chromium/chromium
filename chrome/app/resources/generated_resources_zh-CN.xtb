@@ -767,6 +767,7 @@
 <translation id="1629451755632656601">让 Google 查找您购物车中商品的个性化折扣信息？</translation>
 <translation id="163072119192489970">允许完成数据收发操作</translation>
 <translation id="1630768113285622200">重启并继续</translation>
+<translation id="1631503405579357839">色盲</translation>
 <translation id="1632082166874334883">您的 Google 帐号中存储的密码</translation>
 <translation id="1632756664321977232">剪裁工具</translation>
 <translation id="163309982320328737">初始字符用全角</translation>
@@ -1469,6 +1470,7 @@
 <translation id="2214018885812055163">共享的文件夹</translation>
 <translation id="2214884991347062907">密码不正确，请重试</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;有 1 行代码未显示出来&gt;}other{&lt;有 <ph name="NUMBER_OF_LINES" /> 行代码未显示出来&gt;}}</translation>
+<translation id="2215070081105889450">若要分享音频，请改为分享标签页或共享屏幕</translation>
 <translation id="2218019600945559112">鼠标和触控板</translation>
 <translation id="2218515861914035131">粘贴为纯文本</translation>
 <translation id="221872881068107022">反向滚动</translation>
@@ -1997,6 +1999,7 @@
 <translation id="2645047101481282803">您的设备由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="2645388244376970260">正在将此标签页投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="2645435784669275700">Chrome 操作系统</translation>
+<translation id="264897126871533291">红色弱</translation>
 <translation id="2649045351178520408">Base64 编码 ASCII，证书链</translation>
 <translation id="265156376773362237">标准预加载</translation>
 <translation id="2652129567809778422">选择密码</translation>
@@ -2954,6 +2957,7 @@
 <translation id="3476303763173086583">发送使用情况数据和诊断数据。通过自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您孩子的 Android 使用体验。这些数据不会被用来辨识您孩子的身份，而是会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />是由此设备的所有者强制指定的。此设备的所有者可以选择向 Google 发送此设备的诊断数据和使用情况数据。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。<ph name="BEGIN_LINK2" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">糟糕！系统未能成功抓取您设备的政策。</translation>
 <translation id="347785443197175480">继续允许 <ph name="HOST" /> 使用您的摄像头和麦克风</translation>
+<translation id="3479357084663933762">绿色弱</translation>
 <translation id="3479552764303398839">以后再说</translation>
 <translation id="3479685872808224578">检测不到打印服务器。请检查该地址，然后重试。</translation>
 <translation id="3479753605053415848">点击即可自定义 Chrome</translation>
@@ -3425,6 +3429,7 @@
 <translation id="3867134342671430205">拖动或使用箭头键来移动显示屏位置</translation>
 <translation id="3867944738977021751">证书字段</translation>
 <translation id="3869917919960562512">索引错误。</translation>
+<translation id="3870626286046977643">同时分享系统音频</translation>
 <translation id="3870688298003434214">取消选择“<ph name="BOOKMARK_TITLE" />”</translation>
 <translation id="3870931306085184145">尚未保存任何用于登录 <ph name="DOMAIN" /> 的密码</translation>
 <translation id="3871350334636688135">24 小时后，当您重启设备时，您的管理员将会执行一项一次性更新，这项更新会删除您的本地数据。请在 24 小时之内将您需要的所有本地数据保存到云端存储空间。</translation>
@@ -4293,6 +4298,7 @@
 <translation id="4623189117674524348">系统未能向此设备授予 API 访问权限。</translation>
 <translation id="4623341761454569602">更新到 Google 密码管理工具 <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="4625078469366263107">启用应用</translation>
+<translation id="4625905218692741757">默认颜色为灰色</translation>
 <translation id="4627427111733173920">已拦截 Cookie</translation>
 <translation id="4627442949885028695">通过其他设备继续浏览</translation>
 <translation id="4628762811416793313">未完成 Linux 容器设置。请重试。</translation>
@@ -5199,6 +5205,7 @@
 <translation id="5430931332414098647">即时网络共享</translation>
 <translation id="5431318178759467895">彩色</translation>
 <translation id="5432145523462851548">在文件夹中显示 <ph name="FILE_NAME" /></translation>
+<translation id="5432223177001837288">若要分享音频，请改为分享标签页</translation>
 <translation id="543338862236136125">修改密码</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 加密</translation>
 <translation id="5435274640623994081">启用耳标记录功能</translation>
@@ -5966,6 +5973,7 @@
 <translation id="6087960857463881712">酷炫表情</translation>
 <translation id="6088475950266477163">设置(&amp;G)</translation>
 <translation id="608912389580139775">若要将此网页添加到您的阅读清单中，请点击“书签”图标</translation>
+<translation id="6089289670051481345">蓝色弱</translation>
 <translation id="6090760257419195752">已忽略的警告</translation>
 <translation id="6091761513005122595">已成功装载共享资源。</translation>
 <translation id="6093803049406781019">删除个人资料</translation>
@@ -6050,6 +6058,7 @@
 <translation id="6163363155248589649">正常(&amp;N)</translation>
 <translation id="6163376401832887457">Kerberos 设置</translation>
 <translation id="6163522313638838258">全部展开...</translation>
+<translation id="6164393601566177235">添加网站</translation>
 <translation id="6164832038898943453">添加可自动翻译的语言</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6166185671393271715">将密码导入到 Chrome 中</translation>
@@ -8673,6 +8682,7 @@
 <translation id="839363317075970734">蓝牙设备详情</translation>
 <translation id="8393700583063109961">发送消息</translation>
 <translation id="8394212467245680403">字母数字</translation>
+<translation id="8396098434728053815">同时分享标签页中的音频</translation>
 <translation id="8397825320644530257">断开已连接的手机</translation>
 <translation id="8398877366907290961">仍然继续</translation>
 <translation id="8399282673057829204">查看密码</translation>
@@ -9705,7 +9715,6 @@
 <translation id="992256792861109788">粉色</translation>
 <translation id="992592832486024913">停用 ChromeVox（语音反馈）</translation>
 <translation id="992778845837390402">正在进行 Linux 备份</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - 节省了 <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">正在安装</translation>
 <translation id="994289308992179865">循环(&amp;L)</translation>
 <translation id="995755448277384931">添加 IBAN</translation>

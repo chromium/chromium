@@ -140,7 +140,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1550523713251050646">Clique para ver mais opções</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1557622599341396706">Mostrar nome do espaço de trabalho</translation>
-<translation id="1576511610858879060">Seu Chromebook ou dispositivo Bluetooth está usando uma versão mais antiga do Bluetooth. Use outra fonte de entrada para melhorar a qualidade do áudio.</translation>
 <translation id="1576623706766186887">Diminuir zoom quando a lupa estiver ativada</translation>
 <translation id="1586324912145647027">Ir para o espaço de trabalho 1 a 8</translation>
 <translation id="1589090746204042747">acessar todas as suas atividades nesta sessão;</translation>
@@ -358,6 +357,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2579264398927991698">Atualizações de firmware</translation>
 <translation id="2582112259361606227">Reiniciar para atualizar</translation>
 <translation id="2586561057878260610">Pressione Ctrl + W para combinar com o <ph name="DESK_NAME" />. Pressione Ctrl + Shift + W para fechar o espaço de trabalho e as janelas.</translation>
+<translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2595239820337756193">5 km em milhas</translation>
 <translation id="2596078834055697711">Fazer captura de tela da janela</translation>
 <translation id="2598725286293895280">Apps sem suporte no espaço de trabalho</translation>
@@ -911,6 +911,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
 <translation id="4987738733603015246">Espaço de trabalho 16</translation>
+<translation id="4989163558385430922">Ver tudo</translation>
 <translation id="5003993274120026347">Próxima frase</translation>
 <translation id="5004607513195820459">Rede gerenciada</translation>
 <translation id="5009463889040999939">Renomeando o perfil. Pode levar alguns minutos..</translation>
@@ -1183,6 +1184,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6166852626429024716">Pesquisar no dispositivo, em apps, nas configurações, na Web…</translation>
 <translation id="6168318496333165060">Abrir o app Diagnóstico</translation>
+<translation id="6173151025443907148">Não é possível fazer login em um segundo usuário se o navegador Lacros está ativado. Use um segundo perfil de navegador no Lacros ou desative-o e tente novamente.</translation>
 <translation id="6179832488876878285">Fixe seus arquivos importantes aqui. Abra o app Arquivos para começar.</translation>
 <translation id="6182592640011875895">Abrir espaço de trabalho</translation>
 <translation id="6185696379715117369">Página para cima</translation>
@@ -1543,6 +1545,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7866482334467279021">ativada</translation>
 <translation id="7872786842639831132">Desativado</translation>
 <translation id="7875575368831396199">Parece que o Bluetooth está desativado no seu <ph name="DEVICE_TYPE" />. Ative-o para usar o recurso Seu smartphone.</translation>
+<translation id="7876243839304621966">Remover tudo</translation>
 <translation id="7877557217297072640">{0,plural, =0{Reverta o dispositivo para a versão anterior agora}=1{Reverta o dispositivo para a versão anterior em até 1 segundo}one{Reverta o dispositivo para a versão anterior em até # segundo}other{Reverta o dispositivo para a versão anterior em até # segundos}}</translation>
 <translation id="7884446017008693258">Configurações de ponto de acesso</translation>
 <translation id="7884902759927478774">Cancelar o gesto de arrastar guia</translation>

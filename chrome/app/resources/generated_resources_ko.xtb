@@ -775,6 +775,7 @@
 <translation id="1629451755632656601">Google에서 장바구니의 상품에 관한 맞춤형 할인을 찾도록 허용하시겠습니까?</translation>
 <translation id="163072119192489970">데이터 전송 및 수신 완료가 허용됨</translation>
 <translation id="1630768113285622200">다시 시작 및 계속</translation>
+<translation id="1631503405579357839">색맹</translation>
 <translation id="1632082166874334883">Google 계정에 비밀번호가 저장됨</translation>
 <translation id="1632756664321977232">자르기 도구</translation>
 <translation id="163309982320328737">초기 글자 폭을 최대로 설정</translation>
@@ -1490,6 +1491,7 @@
 <translation id="2214018885812055163">공유 폴더</translation>
 <translation id="2214884991347062907">잘못된 비밀번호입니다. 다시 시도하세요.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1줄이 표시되지 않음&gt;}other{&lt;<ph name="NUMBER_OF_LINES" />줄이 표시되지 않음&gt;}}</translation>
+<translation id="2215070081105889450">오디오를 공유하려면 탭이나 화면을 대신 공유하세요.</translation>
 <translation id="2218019600945559112">마우스 및 터치패드</translation>
 <translation id="2218515861914035131">일반 텍스트로 붙여넣기</translation>
 <translation id="221872881068107022">역방향 스크롤</translation>
@@ -2023,6 +2025,7 @@
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" />님이 관리하는 기기입니다</translation>
 <translation id="2645388244376970260"><ph name="DEVICE_NAME" /> 기기로 이 탭 전송 중</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="264897126871533291">적색약</translation>
 <translation id="2649045351178520408">Base64-인코딩 ASCII, 인증서 체인</translation>
 <translation id="265156376773362237">표준 미리 로드</translation>
 <translation id="2652129567809778422">비밀번호 선택</translation>
@@ -2388,6 +2391,7 @@
 <translation id="2942279350258725020">Android 메시지</translation>
 <translation id="2942560570858569904">대기 중...</translation>
 <translation id="2942581856830209953">페이지 맞춤설정</translation>
+<translation id="2942707801577151363">Word, Excel, PowerPoint 파일을 열고, 수정하고, 저장하세요. 일부 기능을 이용하려면 구독이 필요할 수 있습니다.</translation>
 <translation id="2943268899142471972">Ansible Playbook 또는 Crostini 백업 파일 선택</translation>
 <translation id="2944060181911631861">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 Android 사용 환경 개선에 참여합니다. 이 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">파일로 이동</translation>
@@ -2981,6 +2985,7 @@
 <translation id="3476303763173086583">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 이 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 소유자가 이 기기의 진단 및 사용 데이터를 Google에 전송할지 선택할 수 있습니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />자세히 알아보기<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">시스템에서 기기 정책을 가져오지 못했습니다.</translation>
 <translation id="347785443197175480"><ph name="HOST" />에서 카메라와 마이크에 액세스하도록 계속 허용</translation>
+<translation id="3479357084663933762">녹색약</translation>
 <translation id="3479552764303398839">나중에</translation>
 <translation id="3479685872808224578">인쇄 서버를 찾을 수 없습니다. 주소를 확인한 다음 다시 시도해 보세요.</translation>
 <translation id="3479753605053415848">클릭하여 Chrome을 맞춤설정하세요</translation>
@@ -3452,6 +3457,7 @@
 <translation id="3867134342671430205">드래그하거나 화살표 키를 사용하여 디스플레이를 옮기세요.</translation>
 <translation id="3867944738977021751">인증서 필드</translation>
 <translation id="3869917919960562512">잘못된 색인입니다.</translation>
+<translation id="3870626286046977643">시스템 오디오도 공유</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> 선택 해제</translation>
 <translation id="3870931306085184145"><ph name="DOMAIN" />에 저장된 비밀번호가 없습니다.</translation>
 <translation id="3871350334636688135">24시간 후 기기를 다시 시작하면 관리자가 일회성 업데이트를 실행하여 로컬 데이터가 삭제됩니다. 필요한 로컬 데이터가 있다면 24시간 이내에 클라우드 스토리지에 저장하세요.</translation>
@@ -3473,6 +3479,7 @@
 <translation id="3888586133700543064">어시스턴트에서 발생하는 문제를 파악하는 데 도움이 되는 정보입니다. 정보는 최대 90일 동안 저장되며, 관련 엔지니어링팀과 의견팀에서만 액세스할 수 있습니다.</translation>
 <translation id="3890064827463908288">Wi-Fi 동기화를 사용하려면 Chrome 동기화 사용 설정</translation>
 <translation id="389313931326656921">'다음'에 스위치 할당</translation>
+<translation id="3893268973182382220">현재 이 패널을 로드할 수 없습니다.</translation>
 <translation id="3893295674388762059">데이터를 삭제하려면 모든 시크릿 창을 닫으세요.</translation>
 <translation id="3893536212201235195">접근성 설정 확인 및 변경</translation>
 <translation id="3893630138897523026">ChromeVox(음성 피드백)</translation>
@@ -4323,6 +4330,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4623189117674524348">시스템에서 이 기기의 API 액세스를 승인하지 못했습니다.</translation>
 <translation id="4623341761454569602">Google 비밀번호 관리자(<ph name="SEPARATOR" /> <ph name="ACCOUNT" />)에서</translation>
 <translation id="4625078469366263107">앱 사용</translation>
+<translation id="4625905218692741757">회색 기본 색상</translation>
 <translation id="4627427111733173920">쿠키가 차단됨</translation>
 <translation id="4627442949885028695">다른 기기에서 계속</translation>
 <translation id="4628762811416793313">Linux 컨테이너 설정이 완료되지 않았습니다. 다시 시도해 주세요.</translation>
@@ -5230,6 +5238,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5430931332414098647">인스턴트 테더링</translation>
 <translation id="5431318178759467895">컬러</translation>
 <translation id="5432145523462851548">폴더에서 <ph name="FILE_NAME" /> 보기</translation>
+<translation id="5432223177001837288">오디오를 공유하려면 탭을 대신 공유하세요.</translation>
 <translation id="543338862236136125">비밀번호 수정</translation>
 <translation id="5434065355175441495">PKCS #1 RSA 암호화</translation>
 <translation id="5435274640623994081">이어콘 로깅 사용</translation>
@@ -6005,6 +6014,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6087960857463881712">멋진 얼굴</translation>
 <translation id="6088475950266477163">설정(&amp;G)</translation>
 <translation id="608912389580139775">읽기 목록에 이 페이지를 추가하려면 북마크 아이콘을 클릭하세요.</translation>
+<translation id="6089289670051481345">청색약</translation>
 <translation id="6090760257419195752">닫은 경고</translation>
 <translation id="6091761513005122595">공유가 성공적으로 마운트되었습니다.</translation>
 <translation id="6093803049406781019">프로필 삭제</translation>
@@ -6090,6 +6100,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6163363155248589649">보통(&amp;N)</translation>
 <translation id="6163376401832887457">Kerberos 설정</translation>
 <translation id="6163522313638838258">모두 펼치기...</translation>
+<translation id="6164393601566177235">사이트 추가</translation>
 <translation id="6164832038898943453">자동 번역할 언어 추가</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6166185671393271715">Chrome으로 비밀번호 가져오기</translation>
@@ -8602,6 +8613,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8293206222192510085">북마크 추가</translation>
 <translation id="8294431847097064396">출처</translation>
 <translation id="8295449579927246485">실시간 번역</translation>
+<translation id="8295450130892483256">Microsoft 365 설치하기</translation>
 <translation id="8297292446125062288">HID 설정</translation>
 <translation id="8298429963694909221">이제 <ph name="DEVICE_TYPE" />에서 휴대전화 알림을 받아 볼 수 있습니다. <ph name="DEVICE_TYPE" />에서 알림을 닫으면 휴대전화에서도 알림이 닫힙니다. 휴대전화가 근처에 있고 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="8299319456683969623">현재 오프라인 상태</translation>
@@ -8721,6 +8733,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="839363317075970734">블루투스 기기 세부정보</translation>
 <translation id="8393700583063109961">메시지 보내기</translation>
 <translation id="8394212467245680403">영숫자</translation>
+<translation id="8396098434728053815">탭 오디오도 공유</translation>
 <translation id="8397825320644530257">연결된 휴대전화 연결 해제</translation>
 <translation id="8398877366907290961">무시하고 계속하기</translation>
 <translation id="8399282673057829204">비밀번호 보기</translation>
@@ -9756,7 +9769,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="992256792861109788">분홍색</translation>
 <translation id="992592832486024913">ChromeVox(음성 피드백) 사용 중지</translation>
 <translation id="992778845837390402">현재 Linux 백업이 진행 중입니다.</translation>
-<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> 저장됨</translation>
 <translation id="993540765962421562">설치 진행 중</translation>
 <translation id="994289308992179865">루프(&amp;L)</translation>
 <translation id="995755448277384931">IBAN 추가</translation>
