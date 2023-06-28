@@ -56,6 +56,7 @@ java_cpp_enum("content_settings_enums_javagen") {
     "../core/browser/cookie_settings.h",
     "../core/common/content_settings.h",
     "../core/common/content_settings_types.h",
+    "../core/common/cookie_controls_breakage_confidence_level.h",
     "../core/common/cookie_controls_enforcement.h",
     "../core/common/cookie_controls_status.h",
   ]

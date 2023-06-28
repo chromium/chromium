@@ -73,6 +73,23 @@ public class CookieControlsBridge {
         mObserver.onCookiesCountChanged(allowedCookies, blockedCookies);
     }
 
+    @CalledByNative
+    private void onStatusChanged(@CookieControlsStatus int status,
+            @CookieControlsEnforcement int enforcement, long expiration) {
+        mObserver.onStatusChanged(status, enforcement, expiration);
+    }
+
+    @CalledByNative
+    private void onSitesCountChanged(int allowedSites, int blockedSites) {
+        mObserver.onSitesCountChanged(allowedSites, blockedSites);
+    }
+
+    @CalledByNative
+    private void onBreakageConfidenceLevelChanged(
+            @CookieControlsBreakageConfidenceLevel int level) {
+        mObserver.onBreakageConfidenceLevelChanged(level);
+    }
+
     @NativeMethods
     interface Natives {
         long init(CookieControlsBridge caller, WebContents webContents,

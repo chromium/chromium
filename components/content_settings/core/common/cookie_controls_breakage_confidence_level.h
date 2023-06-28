@@ -9,6 +9,7 @@
 // controls. It takes into account blocked third-party cookie access, exceptions
 // lifecycle, site engagement index and recent user activity (like frequent page
 // reloads).
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
 enum class CookieControlsBreakageConfidenceLevel {
   kUninitialized,
   kLow,

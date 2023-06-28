@@ -181,6 +181,16 @@ public class PageInfoCookiesController
         }
     }
 
+    // TODO(crbug.com/1446230): Implement the following three UserBypassUI methods.
+    @Override
+    public void onStatusChanged(int status, int enforcement, long expiration) {}
+
+    @Override
+    public void onSitesCountChanged(int allowedSites, int blockedSites) {}
+
+    @Override
+    public void onBreakageConfidenceLevelChanged(int level) {}
+
     private boolean isDeletionDisabled() {
         return WebsitePreferenceBridge.isCookieDeletionDisabled(mMainController.getBrowserContext(), mFullUrl);
     }

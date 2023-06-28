@@ -8,6 +8,8 @@ package org.chromium.components.content_settings;
  * Interface for a class that wants to receive cookie updates from CookieControlsBridge.
  */
 public interface CookieControlsObserver {
+    /* The following two methods are used when the UserBypassUI flag is disabled. */
+
     /**
      * Called when the cookie blocking status for the current page changes.
      * @param status An enum indicating the cookie blocking status.
@@ -21,4 +23,28 @@ public interface CookieControlsObserver {
      * @param blockedCookies An integer indicating the number of cookies being blocked.
      */
     public void onCookiesCountChanged(int allowedCookies, int blockedCookies);
+
+    /* The following three methods are used when the UserBypassUI flag is enabled. */
+
+    /**
+     * Called when the cookie blocking status for the current site changes.
+     * @param status An enum indicating the cookie blocking status.
+     * @param enforcement An enum indicating enforcement of cookie policies.
+     * @param expiration Expiration of the cookie blocking exception.
+     */
+    public void onStatusChanged(@CookieControlsStatus int status,
+            @CookieControlsEnforcement int enforcement, long expiration);
+
+    /**
+     * Called when there is an update in the number of sites where cookies are used/blocked.
+     * @param allowedSites An integer indicating the number of sites with cookies being used.
+     * @param blockedSites An integer indicating the number of sites with cookies being blocked.
+     */
+    public void onSitesCountChanged(int allowedSites, int blockedSites);
+
+    /**
+     * Called when the breakage confidence level for the current site changes.
+     * @param level An enum indicating the confidence level.
+     */
+    public void onBreakageConfidenceLevelChanged(@CookieControlsBreakageConfidenceLevel int level);
 }
