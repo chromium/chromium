@@ -9571,6 +9571,8 @@ if (!is_android) {
       "../browser/ui/autofill/payments/card_unmask_prompt_view_tester.h",
       "../browser/ui/autofill/payments/test_card_unmask_prompt_waiter.cc",
       "../browser/ui/autofill/payments/test_card_unmask_prompt_waiter.h",
+      "../browser/ui/exclusive_access/exclusive_access_test.cc",
+      "../browser/ui/exclusive_access/exclusive_access_test.h",
       "../browser/ui/search/ntp_test_utils.cc",
       "../browser/ui/search/ntp_test_utils.h",
       "../browser/ui/views/autofill/payments/card_unmask_prompt_view_tester_views.cc",

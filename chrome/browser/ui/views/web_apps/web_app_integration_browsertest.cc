@@ -16,6 +16,12 @@ using WebAppIntegration = WebAppIntegrationTest;
 
 // Manual tests:
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, EnterAndExitFullScreenApp) {
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.EnterFullScreenApp();
+  helper_.ExitFullScreenApp();
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, UninstallFromList) {
   helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.UninstallFromList(Site::kStandalone);

@@ -46,6 +46,8 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/web_app_startup_utils.h"
@@ -127,6 +129,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -1102,6 +1105,34 @@ void WebAppIntegrationTestDriver::EnableRunOnOsLoginFromAppHome(Site site) {
   app_home_page_handler.SetRunOnOsLoginMode(
       app_id, web_app::RunOnOsLoginMode::kWindowed);
 #endif
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::EnterFullScreenApp() {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  FullscreenNotificationObserver fullscreen_observer(app_browser());
+  FullscreenController* fullscreen_controller =
+      app_browser()->exclusive_access_manager()->fullscreen_controller();
+  ASSERT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
+  fullscreen_controller->ToggleBrowserFullscreenMode();
+  fullscreen_observer.Wait();
+  ASSERT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::ExitFullScreenApp() {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  FullscreenNotificationObserver fullscreen_observer(app_browser());
+  FullscreenController* fullscreen_controller =
+      app_browser()->exclusive_access_manager()->fullscreen_controller();
+  ASSERT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
+  fullscreen_controller->ToggleBrowserFullscreenMode();
+  fullscreen_observer.Wait();
+  ASSERT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
   AfterStateChangeAction();
 }
 
@@ -2647,6 +2678,26 @@ void WebAppIntegrationTestDriver::CheckAppNavigationIsStartUrl() {
   GURL url =
       app_browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL();
   EXPECT_EQ(url, provider()->registrar_unsafe().GetAppStartUrl(active_app_id_));
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckAppToolbarVisible() {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+  ASSERT_TRUE(app_browser());
+  BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser());
+  ASSERT_TRUE(app_view->web_app_frame_toolbar_for_testing()->GetVisible());
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckAppToolbarNotVisible() {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+  ASSERT_TRUE(app_browser());
+  BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser());
+  ASSERT_FALSE(app_view->web_app_frame_toolbar_for_testing()->GetVisible());
   AfterStateCheckAction();
 }
 

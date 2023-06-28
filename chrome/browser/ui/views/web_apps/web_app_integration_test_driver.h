@@ -264,6 +264,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void DisableRunOnOsLoginFromAppHome(Site site);
   void EnableRunOnOsLoginFromAppSettings(Site site);
   void EnableRunOnOsLoginFromAppHome(Site site);
+  void EnterFullScreenApp();
+  void ExitFullScreenApp();
   void DisableFileHandling(Site site);
   void EnableFileHandling(Site site);
   void DisableWindowControlsOverlay(Site site);
@@ -340,6 +342,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckAppInListTabbed(Site site);
   void CheckAppNavigation(Site site);
   void CheckAppNavigationIsStartUrl();
+  void CheckAppToolbarVisible();
+  void CheckAppToolbarNotVisible();
   void CheckBrowserNavigation(Site site);
   void CheckBrowserNavigationIsAppSettings(Site site);
   void CheckBrowserNotAtAppHome();
