@@ -4,20 +4,10 @@
 
 package org.chromium.chrome.modules.readaloud.external;
 
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-
 import java.time.Duration;
 
 /** Represents a single audio playback session. */
 public interface Playback {
-    /**
-     * Returns metadata represented by this playback. Serialized ReadAloudMetadata proto message.
-     */
-    default byte[] getMetadata() {
-        return null;
-    }
-
     /**
      * Add a listener to be called on playback events.
      * @param listener Listener.
@@ -75,9 +65,4 @@ public interface Playback {
      * @param rate Playback rate. Must be positive.
      */
     default void setRate(float rate) {}
-
-    /** Returns ListenableFuture returning serialized ReadAloudPlaybackData proto message. */
-    default ListenableFuture<byte[]> getPlaybackData() {
-        return Futures.immediateFuture(null);
-    }
 }

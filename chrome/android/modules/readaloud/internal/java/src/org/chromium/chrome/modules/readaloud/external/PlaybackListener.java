@@ -4,13 +4,55 @@
 
 package org.chromium.chrome.modules.readaloud.external;
 
+import androidx.annotation.IntDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.time.Duration;
+
 /** Interface for receiving updates on playback state during playback. */
 public interface PlaybackListener {
+    /** Playback state. */
+    @IntDef({State.UNKNOWN, State.ERROR, State.BUFFERING, State.PAUSED, State.PLAYING,
+            State.STOPPED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface State {
+        /** Unknown. */
+        int UNKNOWN = 0;
+        /** Error. */
+        int ERROR = 1;
+        /** Buffering (audio isn't playing). */
+        int BUFFERING = 3;
+        /** Paused. */
+        int PAUSED = 4;
+        /** Playing. */
+        int PLAYING = 5;
+        /** Stopped; represents end of playback. */
+        int STOPPED = 6;
+    }
+
+    /** Information about playback. */
+    interface PlaybackData {
+        /** Current playback state. */
+        @State
+        int state();
+        /** Current paragraph index. */
+        int paragraphIndex();
+        /** Audio position relative to beginning of paragraph. */
+        Duration positionInParagraph();
+        /** Duration of the current paragraph. */
+        Duration paragraphDuration();
+        /** Audio position, absolute. */
+        Duration absolutePosition();
+        /** Total audio duration. */
+        Duration totalDuration();
+    }
+
     /**
      * Called when playback data changes.
-     * @param readAloudPlaybackData Serialized ReadAloudPlaybackData proto message.
+     * @param data Updated playback data.
      */
-    default void onPlaybackDataChanged(byte[] readAloudPlaybackData) {}
+    default void onPlaybackDataChanged(PlaybackData data) {}
 
     /**
      * Indicates that an error occurred in playback.
