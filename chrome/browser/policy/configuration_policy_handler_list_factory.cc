@@ -1455,6 +1455,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kReportAppUsageCollectionRateMs,
     ash::reporting::kReportAppUsageCollectionRateMs,
     base::Value::Type::INTEGER },
+  { key::kArcVmDataMigrationStrategy,
+    arc::prefs::kArcVmDataMigrationStrategy,
+    base::Value::Type::INTEGER },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

@@ -1119,6 +1119,11 @@ policies:
   1118: PhysicalKeyboardAutocorrect
   1119: PhysicalKeyboardPredictiveWriting
   1120: ColorCorrectionEnabled
+  1121: ''
+  1122: ''
+  1123: ''
+  1124: ''
+  1125: ArcVmDataMigrationStrategy
 atomic_groups:
   1: Homepage
   2: RemoteAccess

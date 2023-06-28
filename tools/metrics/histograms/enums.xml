@@ -33776,6 +33776,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1118" label="PhysicalKeyboardAutocorrect"/>
   <int value="1119" label="PhysicalKeyboardPredictiveWriting"/>
   <int value="1120" label="ColorCorrectionEnabled"/>
+  <int value="1125" label="ArcVmDataMigrationStrategy"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
