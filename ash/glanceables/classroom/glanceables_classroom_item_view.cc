@@ -100,10 +100,9 @@ std::unique_ptr<views::ImageView> BuildIcon() {
       .SetBackground(views::CreateThemedRoundedRectBackground(
           cros_tokens::kCrosSysSystemOnBase1, kIconViewBackgroundRadius))
       .SetID(GlanceablesClassroomItemView::kIconViewId)
-      // TODO(b/283370862): update icon.
-      .SetImage(ui::ImageModel::FromVectorIcon(kUnifiedMenuLiveCaptionIcon,
-                                               cros_tokens::kCrosSysOnSurface,
-                                               kIconSize))
+      .SetImage(ui::ImageModel::FromVectorIcon(
+          kGlanceablesClassroomAssignmentIcon, cros_tokens::kCrosSysOnSurface,
+          kIconSize))
       .SetPreferredSize(kIconViewPreferredSize)
       .SetProperty(views::kMarginsKey, kIconViewMargin)
       .Build();
