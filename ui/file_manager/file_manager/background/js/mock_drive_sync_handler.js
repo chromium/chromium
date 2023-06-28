@@ -7,7 +7,6 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.js';
 
-
 /**
  * Mock of DriveSyncHandler.
  * @implements {DriveSyncHandler}

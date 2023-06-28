@@ -5,7 +5,7 @@
 import {assertEquals, assertGT, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {FileOperationHandler} from './file_operation_handler.js';
-import {fileOperationUtil} from './file_operation_util.js';
+import {Speedometer} from './file_operation_util.js';
 import {MockFileOperationManager} from './mock_file_operation_manager.js';
 import {MockProgressCenter} from './mock_progress_center.js';
 
@@ -70,7 +70,7 @@ export function setUp() {
  * Tests Speedometer's speed calculations.
  */
 export function testSpeedometerMovingAverage() {
-  const speedometer = new fileOperationUtil.Speedometer();
+  const speedometer = new Speedometer();
   const mockDate = new MockDate();
 
   speedometer.setTotalBytes(2000);
@@ -141,7 +141,7 @@ export function testSpeedometerMovingAverage() {
  */
 export function testSpeedometerBufferRing() {
   const maxSamples = 20;
-  const speedometer = new fileOperationUtil.Speedometer(maxSamples);
+  const speedometer = new Speedometer(maxSamples);
   const mockDate = new MockDate();
 
   speedometer.setTotalBytes(20000);
