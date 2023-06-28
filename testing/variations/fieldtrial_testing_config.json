@@ -12762,19 +12762,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_InitializeRenderer_20230531",
+                    "name": "Enabled_NonStable_InitializeRenderer_20230627",
                     "params": {
                         "spare_tab_initialize_renderer": "true"
-                    },
-                    "enable_features": [
-                        "SpareTab",
-                        "StartSurfaceSpareTab"
-                    ]
-                },
-                {
-                    "name": "Enabled_NoInitializeRenderer_20230531",
-                    "params": {
-                        "spare_tab_initialize_renderer": "false"
                     },
                     "enable_features": [
                         "SpareTab",
