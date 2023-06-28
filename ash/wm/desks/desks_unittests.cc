@@ -9151,7 +9151,11 @@ class DeskBarTest
   }
 
   void OpenDeskBar(aura::Window* root = Shell::Get()->GetPrimaryRootWindow()) {
-    switch (bar_type_) {
+    OpenDeskBar(root, bar_type_);
+  }
+
+  void OpenDeskBar(aura::Window* root, DeskBarViewBase::Type bar_type) {
+    switch (bar_type) {
       case DeskBarViewBase::Type::kOverview:
         EnterOverview();
         break;
@@ -9161,24 +9165,33 @@ class DeskBarTest
     }
   }
 
-  void CloseDeskBar() {
-    switch (bar_type_) {
+  void CloseDeskBar(aura::Window* root = Shell::Get()->GetPrimaryRootWindow()) {
+    CloseDeskBar(root, bar_type_);
+  }
+
+  void CloseDeskBar(aura::Window* root, DeskBarViewBase::Type bar_type) {
+    switch (bar_type) {
       case DeskBarViewBase::Type::kOverview:
         ExitOverview();
         break;
       case DeskBarViewBase::Type::kDeskButton:
-        DesksController::Get()->desk_bar_controller()->CloseAllDeskBars();
+        DesksController::Get()->desk_bar_controller()->CloseDeskBar(root);
         break;
     }
   }
 
   void WaitForDeskBarAnimation(
       aura::Window* root = Shell::Get()->GetPrimaryRootWindow()) {
+    WaitForDeskBarAnimation(root, bar_type_);
+  }
+
+  void WaitForDeskBarAnimation(aura::Window* root,
+                               DeskBarViewBase::Type bar_type) {
     // TODO(yongshun): Find a better way to wait for animation.
     int wait_time = 1000;
     while (wait_time > 0 &&
-           (!GetDeskBarView(root, bar_type_) ||
-            GetDeskBarView(root, bar_type_)->is_bounds_animation_on_going())) {
+           (!GetDeskBarView(root, bar_type) ||
+            GetDeskBarView(root, bar_type)->is_bounds_animation_on_going())) {
       WaitForMilliseconds(100);
       wait_time -= 100;
     }
@@ -9190,9 +9203,9 @@ class DeskBarTest
   }
 
   DeskBarViewBase* GetDeskBarView(aura::Window* root,
-                                  DeskBarViewBase::Type type) {
+                                  DeskBarViewBase::Type bar_type) {
     DeskBarViewBase* desk_bar_view = nullptr;
-    switch (type) {
+    switch (bar_type) {
       case DeskBarViewBase::Type::kOverview:
         if (Shell::Get()->overview_controller()->InOverviewSession()) {
           desk_bar_view = GetOverviewGridForRoot(root)->desks_bar_view();
@@ -9206,8 +9219,12 @@ class DeskBarTest
     return desk_bar_view;
   }
 
-  void EnterLibrary() {
-    auto* desk_bar_view = GetDeskBarView();
+  void EnterLibrary(aura::Window* root = Shell::Get()->GetPrimaryRootWindow()) {
+    EnterLibrary(root, bar_type_);
+  }
+
+  void EnterLibrary(aura::Window* root, DeskBarViewBase::Type bar_type) {
+    auto* desk_bar_view = GetDeskBarView(root, bar_type);
     ASSERT_TRUE(desk_bar_view);
 
     // Clicking the library button on the desk button desk bar.
@@ -9229,7 +9246,6 @@ class DeskBarTest
     auto* overview_session = overview_controller->overview_session();
     EXPECT_TRUE(overview_session &&
                 overview_session->IsShowingSavedDeskLibrary());
-    aura::Window* root = Shell::GetPrimaryRootWindow();
     EXPECT_FALSE(GetDeskBarView(root, DeskBarViewBase::Type::kDeskButton));
     EXPECT_TRUE(GetDeskBarView(root, DeskBarViewBase::Type::kOverview));
   }
@@ -9455,7 +9471,7 @@ TEST_P(DeskBarTest, BasicSecondaryDisplay) {
     EXPECT_FALSE(desk_bar_view->IsZeroState());
   }
 
-  CloseDeskBar();
+  CloseDeskBar(root);
 }
 
 // Tests that desk button desk bar shows the scroll arrow buttons when overflow
@@ -9592,7 +9608,12 @@ TEST_P(DeskBarTest, LibraryButton) {
     OpenDeskBar();
     WaitForDeskBarAnimation();
     EnterLibrary();
-    CloseDeskBar();
+    WaitForDeskBarAnimation();
+
+    // Overview desk bar will show up once we enter library page.
+    auto* root = Shell::GetPrimaryRootWindow();
+    WaitForDeskBarAnimation(root, DeskBarViewBase::Type::kOverview);
+    CloseDeskBar(root, DeskBarViewBase::Type::kOverview);
   };
 
   test_library_button("no app window");

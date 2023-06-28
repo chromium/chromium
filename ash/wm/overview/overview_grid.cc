@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <memory>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -76,6 +77,7 @@
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/throughput_tracker.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/animation/animation_builder.h"
@@ -419,18 +421,22 @@ bool ShouldExcludeItemFromGridLayout(
 // bar widget as well.
 class DesksBarSlideAnimation {
  public:
-  DesksBarSlideAnimation(std::unique_ptr<views::Widget> desks_widget,
-                         bool is_zero_state)
-      : desks_widget_(std::move(desks_widget)) {
+  DesksBarSlideAnimation(std::unique_ptr<views::Widget> desk_bar_widget,
+                         bool is_zero_state) {
     gfx::Transform transform;
-    transform.Translate(0, -desks_widget_->GetWindowBoundsInScreen().height());
+    transform.Translate(0,
+                        -desk_bar_widget->GetWindowBoundsInScreen().height());
 
-    const auto duration = is_zero_state ? kZeroDesksBarSlideDuration
-                                        : kExpandedDesksBarSlideDuration;
+    // Create layer copies, get rid of the original desk bar widget, and add the
+    // layer copies to the parent layer.
+    ui::Layer* parent_layer = desk_bar_widget->GetLayer()->parent();
+    layer_tree_ = wm::RecreateLayers(desk_bar_widget->GetContentsView());
+    ui::Layer* layer_tree_root = layer_tree_->root();
+    parent_layer->Add(layer_tree_root);
+    desk_bar_widget.reset();
 
     // Add slide out animation as part of the overview exit animation.
-    ui::ScopedLayerAnimationSettings settings{
-        desks_widget_->GetLayer()->GetAnimator()};
+    ui::ScopedLayerAnimationSettings settings{parent_layer->GetAnimator()};
     auto exit_observer = std::make_unique<ExitAnimationObserver>();
     settings.AddObserver(exit_observer.get());
     Shell::Get()->overview_controller()->AddExitAnimationObserver(
@@ -446,8 +452,9 @@ class DesksBarSlideAnimation {
         .SetPreemptionStrategy(
             ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
         .Once()
-        .SetDuration(duration)
-        .SetTransform(desks_widget_->GetLayer(), transform,
+        .SetDuration(is_zero_state ? kZeroDesksBarSlideDuration
+                                   : kExpandedDesksBarSlideDuration)
+        .SetTransform(layer_tree_root, transform,
                       gfx::Tween::ACCEL_20_DECEL_100);
   }
 
@@ -457,7 +464,7 @@ class DesksBarSlideAnimation {
   ~DesksBarSlideAnimation() = default;
 
  private:
-  std::unique_ptr<views::Widget> desks_widget_;
+  std::unique_ptr<ui::LayerTreeOwner> layer_tree_;
 };
 
 OverviewGrid::OverviewGrid(aura::Window* root_window,
