@@ -156,6 +156,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   // Coordinator for the "Tab List From Android Prompt" for Android switchers.
   TabListFromAndroidCoordinator* _tabListFromAndroidCoordinator;
+
+  // Coordinator for the toolbars.
+  TabGridToolbarsCoordinator* _toolbarsCoordinator;
 }
 
 // Browser that contain tabs from the main pane (i.e. non-incognito).
@@ -201,8 +204,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 @property(nonatomic, strong) SnackbarCoordinator* incognitoSnackbarCoordinator;
 // Coordinator for inactive tabs.
 @property(nonatomic, strong) InactiveTabsCoordinator* inactiveTabsCoordinator;
-// Coordinator for the toolbars.
-@property(nonatomic, strong) TabGridToolbarsCoordinator* toolbarsCoordinator;
 // The timestamp of the user entering the tab grid.
 @property(nonatomic, assign) base::TimeTicks tabGridEnterTime;
 
@@ -321,7 +322,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self dismissPopovers];
 
   [self.inactiveTabsCoordinator hide];
-  [self.toolbarsCoordinator stop];
+  [_toolbarsCoordinator stop];
 
   if (_bookmarksCoordinator) {
     [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:YES];
@@ -637,17 +638,16 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   baseViewController.delegate = self;
   _baseViewController = baseViewController;
 
-  self.toolbarsCoordinator =
+  _toolbarsCoordinator =
       [[TabGridToolbarsCoordinator alloc] initWithBaseViewController:nil
                                                              browser:nil];
-  self.toolbarsCoordinator.searchDelegate = self.baseViewController;
-  self.toolbarsCoordinator.actionWrangler = self.baseViewController;
-  self.toolbarsCoordinator.delegateWrangler = self.baseViewController;
-  [self.toolbarsCoordinator start];
-  self.baseViewController.topToolbar = self.toolbarsCoordinator.topToolbar;
-  self.baseViewController.bottomToolbar =
-      self.toolbarsCoordinator.bottomToolbar;
-  self.baseViewController.toolbarCommandsWrangler = self.toolbarsCoordinator;
+  _toolbarsCoordinator.searchDelegate = self.baseViewController;
+  _toolbarsCoordinator.actionWrangler = self.baseViewController;
+  _toolbarsCoordinator.delegateWrangler = self.baseViewController;
+  [_toolbarsCoordinator start];
+  self.baseViewController.topToolbar = _toolbarsCoordinator.topToolbar;
+  self.baseViewController.bottomToolbar = _toolbarsCoordinator.bottomToolbar;
+  self.baseViewController.toolbarCommandsWrangler = _toolbarsCoordinator;
 
   self.regularTabsMediator = [[TabGridMediator alloc]
       initWithConsumer:baseViewController.regularTabsConsumer];
@@ -832,8 +832,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       stopDispatchingForProtocol:@protocol(ApplicationSettingsCommands)];
   [self.dispatcher stopDispatchingForProtocol:@protocol(BrowsingDataCommands)];
 
-  [self.toolbarsCoordinator stop];
-  self.toolbarsCoordinator = nil;
+  [_toolbarsCoordinator stop];
+  _toolbarsCoordinator = nil;
 
   // Disconnect UI from models they observe.
   self.regularTabsMediator.browser = nil;
