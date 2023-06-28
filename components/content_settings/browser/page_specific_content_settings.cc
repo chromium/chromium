@@ -23,7 +23,6 @@
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/browsing_data/content/service_worker_helper.h"
 #include "components/browsing_data/content/shared_worker_helper.h"
-#include "components/browsing_data/core/features.h"
 #include "components/content_settings/common/content_settings_agent.mojom.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -561,45 +560,21 @@ PageSpecificContentSettings::GetDelegateForWebContents(
 }
 
 // static
-void PageSpecificContentSettings::StorageAccessed(
-    StorageType storage_type,
-    int render_process_id,
-    int render_frame_id,
-    const blink::StorageKey& storage_key,
-    bool blocked_by_policy) {
+void PageSpecificContentSettings::StorageAccessed(StorageType storage_type,
+                                                  int render_process_id,
+                                                  int render_frame_id,
+                                                  const GURL& url,
+                                                  bool blocked_by_policy) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
   if (DelayUntilCommitIfNecessary(
           rfh, &PageSpecificContentSettings::StorageAccessed, storage_type,
-          render_process_id, render_frame_id, storage_key, blocked_by_policy)) {
+          render_process_id, render_frame_id, url, blocked_by_policy))
     return;
-  }
   PageSpecificContentSettings* settings = GetForFrame(rfh);
-  if (settings) {
-    if (base::FeatureList::IsEnabled(
-            browsing_data::features::kMigrateStorageToBDM)) {
-      auto bdm_storage_type = ([storage_type]() {
-        switch (storage_type) {
-          case StorageType::LOCAL_STORAGE:
-            return BrowsingDataModel::StorageType::kLocalStorage;
-          case StorageType::SESSION_STORAGE:
-            return BrowsingDataModel::StorageType::kSessionStorage;
-          case StorageType::FILE_SYSTEM:
-          case StorageType::INDEXED_DB:
-          case StorageType::DATABASE:
-          case StorageType::CACHE:
-          case StorageType::WEB_LOCKS:
-            return BrowsingDataModel::StorageType::kQuotaStorage;
-        }
-      })();
-      settings->OnBrowsingDataAccessed(storage_key, bdm_storage_type,
-                                       blocked_by_policy);
-    } else {
-      settings->OnStorageAccessed(storage_type, storage_key, blocked_by_policy,
-                                  rfh);
-    }
-  }
+  if (settings)
+    settings->OnStorageAccessed(storage_type, url, blocked_by_policy, rfh);
 }
 
 // static
@@ -891,11 +866,10 @@ void AddToContainer(browsing_data::LocalSharedObjectsContainer& container,
 
 void PageSpecificContentSettings::OnStorageAccessed(
     StorageType storage_type,
-    const blink::StorageKey& storage_key,
+    const GURL& url,
     bool blocked_by_policy,
     content::RenderFrameHost* rfh,
     content::Page* originating_page) {
-  GURL url = storage_key.origin().GetURL();
   originating_page = originating_page ? originating_page : &page();
   if (blocked_by_policy) {
     AddToContainer(blocked_local_shared_objects_, storage_type, url);
@@ -906,10 +880,9 @@ void PageSpecificContentSettings::OnStorageAccessed(
   }
 
   MaybeUpdateParent(&PageSpecificContentSettings::OnStorageAccessed,
-                    storage_type, storage_key, blocked_by_policy, rfh,
+                    storage_type, url, blocked_by_policy, rfh,
                     originating_page);
 
-  // TODO(crbug/1454806): Consider exposing `blink::StorageKey` details here.
   AccessDetails access_details{SiteDataType::kStorage, AccessType::kUnknown,
                                url, blocked_by_policy, rfh};
 

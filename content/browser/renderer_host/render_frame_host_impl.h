@@ -386,7 +386,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   ~RenderFrameHostImpl() override;
 
   // RenderFrameHost
-  const blink::StorageKey& storage_key() const override;
   int GetRoutingID() const override;
   const blink::LocalFrameToken& GetFrameToken() const override;
   const base::UnguessableToken& GetReportingSource() override;
@@ -850,6 +849,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // loadDataWithBaseURL API or not.
     bool was_loaded_from_load_data_with_base_url = false;
   };
+
+  // Returns the storage key for the last committed document in this
+  // RenderFrameHostImpl. It is used for partitioning storage by the various
+  // storage APIs.
+  const blink::StorageKey& storage_key() const { return storage_key_; }
 
   // Returns the http method of the last committed navigation.
   const std::string& last_http_method() { return last_http_method_; }

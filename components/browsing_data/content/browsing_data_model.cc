@@ -88,7 +88,6 @@ std::string GetDataOwner::GetOwningHost<blink::StorageKey>(
     case BrowsingDataModel::StorageType::kQuotaStorage:
     case BrowsingDataModel::StorageType::kSharedStorage:
     case BrowsingDataModel::StorageType::kLocalStorage:
-    case BrowsingDataModel::StorageType::kSessionStorage:
       return data_key.origin().host();
     default:
       NOTREACHED() << "Unexpected StorageType: "
@@ -557,8 +556,8 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
       base::FeatureList::IsEnabled(blink::features::kAdInterestGroupAPI);
   bool is_attribution_reporting_enabled =
       base::FeatureList::IsEnabled(blink::features::kConversionMeasurement);
-  bool is_migrate_storage_to_bdm_enabled = base::FeatureList::IsEnabled(
-      browsing_data::features::kMigrateStorageToBDM);
+  bool is_cookies_tree_model_deprecated = base::FeatureList::IsEnabled(
+      browsing_data::features::kDeprecateCookiesTreeModel);
 
   base::RepeatingClosure completion =
       base::BindRepeating([](const base::OnceClosure&) {},
@@ -591,7 +590,7 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
         base::BindOnce(&OnAttributionReportingLoaded, this, completion));
   }
 
-  if (is_migrate_storage_to_bdm_enabled) {
+  if (is_cookies_tree_model_deprecated) {
     quota_helper_->StartFetching(
         base::BindOnce(&OnQuotaManagedDataLoaded, this, completion));
     local_storage_helper_->StartFetching(

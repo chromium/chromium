@@ -210,10 +210,10 @@ class BrowsingDataModelBrowserTest
 
     if (GetParam()) {
       enabled_features.push_back(
-          {browsing_data::features::kMigrateStorageToBDM, {}});
+          {browsing_data::features::kDeprecateCookiesTreeModel, {}});
     } else {
       disabled_features.emplace_back(
-          browsing_data::features::kMigrateStorageToBDM);
+          browsing_data::features::kDeprecateCookiesTreeModel);
     }
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -763,151 +763,6 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   } else {
     ValidateBrowsingDataEntries(browsing_data_model.get(), {});
     ASSERT_EQ(browsing_data_model->size(), 0u);
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
-                       LocalStorageAccessReportedCorrectly) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
-
-  auto* content_settings =
-      content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetPrimaryMainFrame());
-
-  // Validate that the allowed browsing data model is empty.
-  auto* allowed_browsing_data_model =
-      content_settings->allowed_browsing_data_model();
-  ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
-  ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
-
-  SetDataForType("LocalStorage", web_contents());
-  if (GetParam()) {
-    WaitForModelUpdate(allowed_browsing_data_model, /*expected_size=*/1);
-
-    // Validate Local Storage is reported.
-    url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
-    auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
-    ValidateBrowsingDataEntries(
-        allowed_browsing_data_model,
-        {{kTestHost,
-          data_key,
-          {{BrowsingDataModel::StorageType::kLocalStorage},
-           /*storage_size=*/0,
-           /*cookie_count=*/0}}});
-    ASSERT_EQ(allowed_browsing_data_model->size(), 1u);
-
-    // Delete Local Storage
-    {
-      base::RunLoop run_loop;
-      allowed_browsing_data_model->RemoveBrowsingData(kTestHost,
-                                                      run_loop.QuitClosure());
-      run_loop.Run();
-    }
-  }
-
-  // Validate that the allowed browsing data model is empty.
-  ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
-  ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
-}
-
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
-                       SessionStorageAccessReportedCorrectly) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
-
-  auto* content_settings =
-      content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetPrimaryMainFrame());
-
-  // Validate that the allowed browsing data model is empty.
-  auto* allowed_browsing_data_model =
-      content_settings->allowed_browsing_data_model();
-  ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
-  ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
-
-  SetDataForType("SessionStorage", web_contents());
-  if (GetParam()) {
-    WaitForModelUpdate(allowed_browsing_data_model, /*expected_size=*/1);
-
-    // Validate Session Storage is reported.
-    url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
-    auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
-    ValidateBrowsingDataEntries(
-        allowed_browsing_data_model,
-        {{kTestHost,
-          data_key,
-          {{BrowsingDataModel::StorageType::kSessionStorage},
-           /*storage_size=*/0,
-           /*cookie_count=*/0}}});
-    ASSERT_EQ(allowed_browsing_data_model->size(), 1u);
-
-    // Delete Session Storage
-    {
-      base::RunLoop run_loop;
-      allowed_browsing_data_model->RemoveBrowsingData(kTestHost,
-                                                      run_loop.QuitClosure());
-      run_loop.Run();
-    }
-  }
-
-  // Validate that the allowed browsing data model is empty.
-  ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
-  ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
-}
-
-IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
-                       QuotaManagedDataAccessReportedCorrectly) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
-
-  auto* content_settings =
-      content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetPrimaryMainFrame());
-
-  // Validate that the allowed browsing data model is empty.
-  auto* allowed_browsing_data_model =
-      content_settings->allowed_browsing_data_model();
-  ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
-  ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
-
-  // TODO(crbug.com/1442473): Investigate and include remaining quota managed
-  // data types ["ServiceWorker", "MediaLicense"].
-  std::string quota_managed_data_types[] = {"IndexedDb", "FileSystem",
-                                            "WebSql"};
-
-  for (auto data_type : quota_managed_data_types) {
-    SetDataForType(data_type, web_contents());
-    if (GetParam()) {
-      WaitForModelUpdate(allowed_browsing_data_model, /*expected_size=*/1);
-
-      // Validate quota data is reported.
-      url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
-      auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
-      ValidateBrowsingDataEntries(
-          allowed_browsing_data_model,
-          {{kTestHost,
-            data_key,
-            {{BrowsingDataModel::StorageType::kQuotaStorage},
-             /*storage_size=*/0,
-             /*cookie_count=*/0}}});
-      ASSERT_EQ(allowed_browsing_data_model->size(), 1u);
-
-      // Delete quota data
-      {
-        base::RunLoop run_loop;
-        allowed_browsing_data_model->RemoveBrowsingData(kTestHost,
-                                                        run_loop.QuitClosure());
-        run_loop.Run();
-      }
-    }
-
-    // Validate that the allowed browsing data model is empty.
-    ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
-    ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
   }
 }
 
