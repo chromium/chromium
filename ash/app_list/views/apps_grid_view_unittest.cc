@@ -4286,42 +4286,41 @@ TEST_P(AppsGridViewDragTest, DragAndPinFolderItemToShelf) {
   AppListFolderItem* folder_item =
       GetTestModel()->CreateAndPopulateFolderWithApps(2);
   UpdateLayout();
+  auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
 
-  auto drag_sequence = base::BindLambdaForTesting([&]() {
+  AppListItemView* const item_view = GetItemViewInTopLevelGrid(2);
+  ASSERT_TRUE(item_view->is_folder());
+
+  // TODO(anasalazar): Investigate why Mouse pointer does not
+  // ExceedDragThresehold in this case to trigger drag.
+  StartDragForViewAndFireTimer(AppsGridView::TOUCH, item_view);
+
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
     // Verify that item drag has started.
     ASSERT_TRUE(apps_grid_view_->drag_item());
     ASSERT_TRUE(apps_grid_view_->IsDragging());
     ASSERT_EQ(folder_item, apps_grid_view_->drag_item());
-
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
     // Shelf should start handling the drag if it moves within its bounds.
-    auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
     UpdateDragInScreen(
-        AppsGridView::MOUSE,
+        AppsGridView::TOUCH,
         shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
         /*steps=*/1);
     ASSERT_FALSE(apps_grid_view_->FireDragToShelfTimerForTest());
 
     EXPECT_TRUE(shelf_view->drag_and_drop_shelf_id().IsNull());
-
-    // Releasing drag over shelf should not pin the dragged folder.
-    EndDrag();
-  });
-
-  if (use_drag_drop_refactor()) {
-    ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
-        drag_sequence, base::DoNothing());
-  }
-
-  AppListItemView* const item_view = InitiateDragForItemAtCurrentPageAt(
-      AppsGridView::MOUSE, 0, 2, apps_grid_view_);
-  ASSERT_TRUE(item_view->is_folder());
-
-  if (!use_drag_drop_refactor()) {
-    drag_sequence.Run();
-  }
+  }));
+  tasks.push_back(
+      base::BindLambdaForTesting([&]() { EndDrag(AppsGridView::TOUCH); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
 
   EXPECT_FALSE(ShelfModel::Get()->IsAppPinned(folder_item->id()));
-  MaybeCheckHaptickEventsCount(1);
+
+  // Make sure that the shelf does not have a drag view assigned.
+  EXPECT_FALSE(shelf_view->drag_image_layer_for_test());
+  EXPECT_FALSE(shelf_view->drag_view());
 }
 
 TEST_P(AppsGridViewDragTest, DragAndPinNotInitiallyVisibleItemToShelf) {

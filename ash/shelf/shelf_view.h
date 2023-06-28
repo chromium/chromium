@@ -316,6 +316,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
     default_last_focusable_child_ = default_last_focusable_child;
   }
 
+  ui::LayerTreeOwner* drag_image_layer_for_test() {
+    return drag_image_layer_.get();
+  }
+
   ShelfAppButton* drag_view() { return drag_view_; }
 
   const std::vector<size_t>& visible_views_indices() const {

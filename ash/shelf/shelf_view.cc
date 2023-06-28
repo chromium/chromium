@@ -2802,7 +2802,8 @@ bool ShelfView::CanDrop(const OSExchangeData& data) {
 
   std::set<ui::ClipboardFormatType> format_types;
   format_types.insert(GetAppItemFormatType());
-  return data.HasAnyFormat(0, format_types);
+  return data.HasAnyFormat(0, format_types) &&
+         app_info->type == DraggableAppType::kAppGridItem;
 }
 
 void ShelfView::OnDragExited() {
