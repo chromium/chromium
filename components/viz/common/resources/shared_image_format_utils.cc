@@ -82,61 +82,60 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
     return kN32_SkColorType;
   }
 
-  switch (format.resource_format()) {
-    case RGBA_4444:
-      return kARGB_4444_SkColorType;
-    case RGBA_8888:
-      return kRGBA_8888_SkColorType;
-    case BGRA_8888:
-      return kBGRA_8888_SkColorType;
-    case ALPHA_8:
-      return kAlpha_8_SkColorType;
-    case BGR_565:
-    case RGB_565:
-      return kRGB_565_SkColorType;
-    case LUMINANCE_8:
-      return kGray_8_SkColorType;
-    case RGBX_8888:
-    case BGRX_8888:
-    case ETC1:
-      return kRGB_888x_SkColorType;
-    case P010:
+  if (format == SinglePlaneFormat::kRGBA_4444) {
+    return kARGB_4444_SkColorType;
+  } else if (format == SinglePlaneFormat::kRGBA_8888) {
+    return kRGBA_8888_SkColorType;
+  } else if (format == SinglePlaneFormat::kBGRA_8888) {
+    return kBGRA_8888_SkColorType;
+  } else if (format == SinglePlaneFormat::kALPHA_8) {
+    return kAlpha_8_SkColorType;
+  } else if (format == SinglePlaneFormat::kBGR_565 ||
+             format == SinglePlaneFormat::kRGB_565) {
+    return kRGB_565_SkColorType;
+  } else if (format == SinglePlaneFormat::kLUMINANCE_8) {
+    return kGray_8_SkColorType;
+  } else if (format == SinglePlaneFormat::kRGBX_8888 ||
+             format == SinglePlaneFormat::kBGRX_8888 ||
+             format == SinglePlaneFormat::kETC1) {
+    return kRGB_888x_SkColorType;
+  } else if (format == LegacyMultiPlaneFormat::kP010) {
 #if BUILDFLAG(IS_APPLE)
-      DLOG(ERROR) << "Sampling of P010 resources must be done per-plane.";
+    DLOG(ERROR) << "Sampling of P010 resources must be done per-plane.";
 #endif
-      return kRGBA_1010102_SkColorType;
-    case RGBA_1010102:
-    // This intentionally returns kRGBA_1010102_SkColorType for BGRA_1010102
-    // even though kBGRA_1010102_SkColorType exists. It should only be used on
-    // macOS (outside of tests).
-    case BGRA_1010102:
-      return kRGBA_1010102_SkColorType;
+    return kRGBA_1010102_SkColorType;
+  } else if (format == SinglePlaneFormat::kRGBA_1010102 ||
+             // This intentionally returns kRGBA_1010102_SkColorType for
+             // BGRA_1010102 even though kBGRA_1010102_SkColorType exists. It
+             // should only be used on macOS (outside of tests).
+             format == SinglePlaneFormat::kBGRA_1010102) {
+    return kRGBA_1010102_SkColorType;
 
+  } else if (format == LegacyMultiPlaneFormat::kYV12 ||
+             format == LegacyMultiPlaneFormat::kNV12) {
+#if BUILDFLAG(IS_APPLE)
+    DLOG(ERROR) << "Sampling of YUV_420 resources must be done per-plane.";
+#endif
     // YUV images are sampled as RGB.
-    case YVU_420:
-    case YUV_420_BIPLANAR:
+    return kRGB_888x_SkColorType;
+  } else if (format == LegacyMultiPlaneFormat::kNV12A) {
 #if BUILDFLAG(IS_APPLE)
-      DLOG(ERROR) << "Sampling of YUV_420 resources must be done per-plane.";
+    DLOG(ERROR) << "Sampling of YUVA_420 resources must be done per-plane.";
 #endif
-      return kRGB_888x_SkColorType;
-    case YUVA_420_TRIPLANAR:
-#if BUILDFLAG(IS_APPLE)
-      DLOG(ERROR) << "Sampling of YUVA_420 resources must be done per-plane.";
-#endif
-      return kRGBA_8888_SkColorType;
-    case RED_8:
-      return kAlpha_8_SkColorType;
-    case R16_EXT:
-      return kA16_unorm_SkColorType;
-    case RG16_EXT:
-      return kR16G16_unorm_SkColorType;
+    return kRGBA_8888_SkColorType;
+  } else if (format == SinglePlaneFormat::kR_8) {
+    return kAlpha_8_SkColorType;
+  } else if (format == SinglePlaneFormat::kR_16) {
+    return kA16_unorm_SkColorType;
+  } else if (format == SinglePlaneFormat::kRG_1616) {
+    return kR16G16_unorm_SkColorType;
     // Use kN32_SkColorType if there is no corresponding SkColorType.
-    case LUMINANCE_F16:
-      return kN32_SkColorType;
-    case RG_88:
-      return kR8G8_unorm_SkColorType;
-    case RGBA_F16:
-      return kRGBA_F16_SkColorType;
+  } else if (format == SinglePlaneFormat::kLUMINANCE_F16) {
+    return kN32_SkColorType;
+  } else if (format == SinglePlaneFormat::kRG_88) {
+    return kR8G8_unorm_SkColorType;
+  } else if (format == SinglePlaneFormat::kRGBA_F16) {
+    return kRGBA_F16_SkColorType;
   }
   NOTREACHED_NORETURN();
 }
