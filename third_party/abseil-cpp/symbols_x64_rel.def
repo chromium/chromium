@@ -218,6 +218,7 @@ EXPORTS
     ??0GraphCycles@synchronization_internal@absl@@QEAA@XZ
     ??0HashtablezInfo@container_internal@absl@@QEAA@XZ
     ??0Impl@time_zone@cctz@time_internal@absl@@AEAA@AEBV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
+    ??0Impl@time_zone@cctz@time_internal@absl@@AEAA@XZ
     ??0KernelTimeout@synchronization_internal@absl@@QEAA@VDuration@2@@Z
     ??0KernelTimeout@synchronization_internal@absl@@QEAA@VTime@2@@Z
     ??0LogMessage@log_internal@absl@@QEAA@PEBDHUErrorTag@012@@Z
@@ -238,7 +239,7 @@ EXPORTS
     ??0SpinLock@base_internal@absl@@QEAA@W4SchedulingMode@12@@Z
     ??0Status@absl@@QEAA@W4StatusCode@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ??0StdcppWaiter@synchronization_internal@absl@@QEAA@XZ
-    ??0TimeZoneLibC@cctz@time_internal@absl@@QEAA@AEBV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
+    ??0TimeZoneLibC@cctz@time_internal@absl@@AEAA@AEBV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ??0Win32Waiter@synchronization_internal@absl@@QEAA@XZ
     ??0int128@absl@@QEAA@M@Z
     ??0int128@absl@@QEAA@N@Z
@@ -409,7 +410,6 @@ EXPORTS
     ?Block@Mutex@absl@@AEAAXPEAUPerThreadSynch@base_internal@2@@Z
     ?BreakTime@TimeZoneInfo@cctz@time_internal@absl@@UEBA?AUabsolute_lookup@time_zone@234@AEBV?$time_point@Vsystem_clock@chrono@__Cr@std@@V?$duration@_JV?$ratio@$00$00@__Cr@std@@@234@@chrono@__Cr@std@@@Z
     ?BreakTime@TimeZoneLibC@cctz@time_internal@absl@@UEBA?AUabsolute_lookup@time_zone@234@AEBV?$time_point@Vsystem_clock@chrono@__Cr@std@@V?$duration@_JV?$ratio@$00$00@__Cr@std@@@234@@chrono@__Cr@std@@@Z
-    ?Build@Header@TimeZoneInfo@cctz@time_internal@absl@@QEAA_NAEBUtzhead@@@Z
     ?BytesToHexString@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@34@@Z
     ?CEscape@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@34@@Z
     ?CHexEscape@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@34@@Z
@@ -475,7 +475,6 @@ EXPORTS
     ?CreateSlow@CordRepRing@cord_internal@absl@@CAPEAV123@PEAUCordRep@23@_K@Z
     ?CreateThreadIdentity@synchronization_internal@absl@@YAPEAUThreadIdentity@base_internal@2@XZ
     ?CurrentThreadIdentityIfPresent@base_internal@absl@@YAPEAUThreadIdentity@12@XZ
-    ?DataLength@Header@TimeZoneInfo@cctz@time_internal@absl@@QEBA_K_K@Z
     ?DataLossError@absl@@YA?AVStatus@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?DeadlineExceededError@absl@@YA?AVStatus@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?DecodeFrom@ProtoField@log_internal@absl@@QEAA_NPEAV?$Span@$$CBD@3@@Z
@@ -749,9 +748,8 @@ EXPORTS
     ?KeyFunction@LogSink@absl@@EEBAXXZ
     ?LengthModToString@str_format_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@W4LengthMod@12@@Z
     ?LengthToTag@CordTestAccess@strings_internal@absl@@SAE_K@Z
-    ?Load@TimeZoneIf@cctz@time_internal@absl@@SA?AV?$unique_ptr@VTimeZoneIf@cctz@time_internal@absl@@U?$default_delete@VTimeZoneIf@cctz@time_internal@absl@@@__Cr@std@@@__Cr@std@@AEBV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@67@@Z
+    ?Load@TimeZoneInfo@cctz@time_internal@absl@@AEAA_NAEBV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ?Load@TimeZoneInfo@cctz@time_internal@absl@@AEAA_NPEAVZoneInfoSource@234@@Z
-    ?Load@TimeZoneInfo@cctz@time_internal@absl@@QEAA_NAEBV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ?LoadTimeZone@Impl@time_zone@cctz@time_internal@absl@@SA_NAEBV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@PEAV2345@@Z
     ?LocalTime@TimeZoneInfo@cctz@time_internal@absl@@AEBA?AUabsolute_lookup@time_zone@234@_JAEBUTransition@234@@Z
     ?LocalTime@TimeZoneInfo@cctz@time_internal@absl@@AEBA?AUabsolute_lookup@time_zone@234@_JAEBUTransitionType@234@@Z
@@ -768,6 +766,9 @@ EXPORTS
     ?LogToSinks@log_internal@absl@@YAXAEBVLogEntry@2@V?$Span@PEAVLogSink@absl@@@2@_N@Z
     ?LowLevelHash@hash_internal@absl@@YA_KPEBX_K1QEB_K@Z
     ?LowLevelHashImpl@MixingHashState@hash_internal@absl@@CA_KPEBE_K@Z
+    ?Make@TimeZoneIf@cctz@time_internal@absl@@SA?AV?$unique_ptr@VTimeZoneIf@cctz@time_internal@absl@@U?$default_delete@VTimeZoneIf@cctz@time_internal@absl@@@__Cr@std@@@__Cr@std@@AEBV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@67@@Z
+    ?Make@TimeZoneInfo@cctz@time_internal@absl@@SA?AV?$unique_ptr@VTimeZoneInfo@cctz@time_internal@absl@@U?$default_delete@VTimeZoneInfo@cctz@time_internal@absl@@@__Cr@std@@@__Cr@std@@AEBV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@67@@Z
+    ?Make@TimeZoneLibC@cctz@time_internal@absl@@SA?AV?$unique_ptr@VTimeZoneLibC@cctz@time_internal@absl@@U?$default_delete@VTimeZoneLibC@cctz@time_internal@absl@@@__Cr@std@@@__Cr@std@@AEBV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@67@@Z
     ?MakeAbsNanos@KernelTimeout@synchronization_internal@absl@@QEBA_JXZ
     ?MakeAbsTimespec@KernelTimeout@synchronization_internal@absl@@QEBA?AUtimespec@@XZ
     ?MakeCheckFailString@status_internal@absl@@YAPEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@PEBVStatus@2@PEBD@Z
@@ -1069,6 +1070,8 @@ EXPORTS
     ?ToString@?$BigUnsigned@$03@strings_internal@absl@@QEBA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@XZ
     ?ToString@?$BigUnsigned@$0FE@@strings_internal@absl@@QEBA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@XZ
     ?ToString@Status@absl@@QEBA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@W4StatusToStringMode@2@@Z
+    ?ToString@int128@absl@@AEBA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@XZ
+    ?ToString@uint128@absl@@AEBA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@XZ
     ?ToStringSlow@Status@absl@@AEBA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@W4StatusToStringMode@2@@Z
     ?ToTM@absl@@YA?AUtm@@VTime@1@VTimeZone@1@@Z
     ?ToTimeT@absl@@YA_JVTime@1@@Z
@@ -1091,6 +1094,8 @@ EXPORTS
     ?TryNewCRC32AcceleratedX86ARMCombined@crc_internal@absl@@YAPEAVCRCImpl@12@XZ
     ?TryRemove@Mutex@absl@@AEAAXPEAUPerThreadSynch@base_internal@2@@Z
     ?UTC@Impl@time_zone@cctz@time_internal@absl@@SA?AV2345@XZ
+    ?UTC@TimeZoneIf@cctz@time_internal@absl@@SA?AV?$unique_ptr@VTimeZoneIf@cctz@time_internal@absl@@U?$default_delete@VTimeZoneIf@cctz@time_internal@absl@@@__Cr@std@@@__Cr@std@@XZ
+    ?UTC@TimeZoneInfo@cctz@time_internal@absl@@SA?AV?$unique_ptr@VTimeZoneInfo@cctz@time_internal@absl@@U?$default_delete@VTimeZoneInfo@cctz@time_internal@absl@@@__Cr@std@@@__Cr@std@@XZ
     ?UTCImpl@Impl@time_zone@cctz@time_internal@absl@@CAPEBV12345@XZ
     ?UnauthenticatedError@absl@@YA?AVStatus@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?UnavailableError@absl@@YA?AVStatus@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z

@@ -14,15 +14,13 @@
 
 #if !defined(HAS_STRPTIME)
 #if !defined(_MSC_VER) && !defined(__MINGW32__) && !defined(__VXWORKS__)
-#define HAS_STRPTIME \
-  1  // assume everyone has strptime() except windows
-     // and VxWorks
+#define HAS_STRPTIME 1  // Assume everyone else has strptime().
 #endif
 #endif
 
 #if defined(HAS_STRPTIME) && HAS_STRPTIME
 #if !defined(_XOPEN_SOURCE) && !defined(__OpenBSD__)
-#define _XOPEN_SOURCE  // Definedness suffices for strptime.
+#define _XOPEN_SOURCE  // Definedness suffices for strptime().
 #endif
 #endif
 

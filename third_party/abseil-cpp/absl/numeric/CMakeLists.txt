@@ -72,6 +72,7 @@ absl_cc_test(
     absl::base
     absl::hash_testing
     absl::type_traits
+    absl::strings
     GTest::gmock_main
 )
 
