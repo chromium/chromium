@@ -106,10 +106,17 @@ export class CrosImageCapture {
 
     const doTakes = (async () => {
       const metadataArr = getMetadata();
-      const blobs =
-          await deviceOperator.setReprocessOptions(this.deviceId, photoEffects);
-      blobs.unshift(this.capture.takePhoto(photoSettings));
-
+      const blobs = [];
+      if (photoEffects.length === 0) {
+        blobs.push(this.capture.takePhoto(photoSettings));
+      } else {
+        assert(
+            photoEffects.length === 1 &&
+            photoEffects[0] === Effect.PORTRAIT_MODE);
+        const portraitBlobs =
+            await deviceOperator.takePortraitModePhoto(this.deviceId);
+        blobs.push(...portraitBlobs);
+      }
       // Assuming the metadata is returned according to the order:
       // [reference, effect_1, effect_2, ...]
       return blobs.map((blob, index) => {

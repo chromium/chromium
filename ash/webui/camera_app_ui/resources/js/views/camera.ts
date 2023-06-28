@@ -48,7 +48,7 @@ import {
   MimeType,
   Mode,
   PerfEvent,
-  PortraitModeProcessError,
+  PortraitErrorNoFaceDetected,
   Resolution,
   Rotation,
   ViewName,
@@ -643,10 +643,9 @@ export class Camera extends View implements CameraViewUI {
             portraitBlob, ToteMetricFormat.PHOTO, name, portraitMetadata);
       } catch (e) {
         toast.show(I18nString.ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED);
-        // PortraitModeProcessError might be thrown when no face is detected
-        // or the segmentataion failed for the scene. Since there is not much
-        // we can do for either cases, we tolerate such error.
-        if (!(e instanceof PortraitModeProcessError)) {
+        // Throws PortraitErrorNoFaceDetected error if no face is detected for
+        // the scene.
+        if (!(e instanceof PortraitErrorNoFaceDetected)) {
           throw e;
         }
       }

@@ -21,6 +21,7 @@
 #include "media/base/video_transformation.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/mojom/image_capture.mojom.h"
+#include "media/capture/video/chromeos/camera_device_delegate.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
@@ -39,38 +40,22 @@ namespace media {
 
 class CameraDeviceContext;
 
-struct ReprocessTask {
- public:
-  ReprocessTask();
-  ReprocessTask(ReprocessTask&& other);
-  ~ReprocessTask();
-  cros::mojom::Effect effect;
-  base::OnceCallback<void(int32_t, media::mojom::BlobPtr)> callback;
-  std::vector<cros::mojom::CameraMetadataEntryPtr> extra_metadata;
-};
-
-using ReprocessTaskQueue = base::queue<ReprocessTask>;
-
 // TODO(shik): Get the keys from VendorTagOps by names instead (b/130774415).
 constexpr uint32_t kPortraitModeVendorKey = 0x80000000;
 constexpr uint32_t kPortraitModeSegmentationResultVendorKey = 0x80000001;
-constexpr int32_t kReprocessSuccess = 0;
 
-// Implementation of CameraAppDevice that is used as the ommunication bridge
+// Implementation of CameraAppDevice that is used as the communication bridge
 // between Chrome Camera App (CCA) and the ChromeOS Video Capture Device. By
 // using this, we can do more complicated operations on cameras which is not
 // supported by Chrome API.
 class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
  public:
-  // Retrieve the return code for reprocess |effect| from the |metadata|.
-  static int GetReprocessReturnCode(
-      cros::mojom::Effect effect,
+  // TODO(b/244503017): Add definitions for the portrait mode segmentation
+  // result in the mojom file.
+  // Retrieve the return code for portrait mode segmentation result from the
+  // |metadata|.
+  static int GetPortraitSegResultCode(
       const cros::mojom::CameraMetadataPtr* metadata);
-
-  // Construct a ReprocessTaskQueue for regular capture with
-  // |take_photo_callback|.
-  static ReprocessTaskQueue GetSingleShotReprocessOptions(
-      media::mojom::ImageCapture::TakePhotoCallback take_photo_callback);
 
   explicit CameraAppDeviceImpl(const std::string& device_id);
 
@@ -93,15 +78,6 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   // created. It is used when tearing down the CameraAppDeviceImpl instance.
   void ResetOnDeviceIpcThread(base::OnceClosure callback,
                               bool should_disable_new_ptrs);
-
-  // Consumes all the pending reprocess tasks if there is any and eventually
-  // generates a ReprocessTaskQueue which contains:
-  //   1. A regular capture task with |take_photo_callback|.
-  //   2. One or more reprocess tasks if there is any.
-  // And passes the generated ReprocessTaskQueue through |consumption_callback|.
-  void ConsumeReprocessOptions(
-      media::mojom::ImageCapture::TakePhotoCallback take_photo_callback,
-      base::OnceCallback<void(ReprocessTaskQueue)> consumption_callback);
 
   // Retrieves the fps range if it is specified by the app.
   absl::optional<gfx::Range> GetFpsRange();
@@ -136,10 +112,9 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   bool IsMultipleStreamsEnabled();
 
   // cros::mojom::CameraAppDevice implementations.
-  void SetReprocessOptions(
-      const std::vector<cros::mojom::Effect>& effects,
-      mojo::PendingRemote<cros::mojom::ReprocessResultListener> listener,
-      SetReprocessOptionsCallback callback) override;
+  void TakePortraitModePhoto(
+      mojo::PendingRemote<cros::mojom::StillCaptureResultObserver> observer,
+      TakePortraitModePhotoCallback callback) override;
   void SetFpsRange(const gfx::Range& fps_range,
                    SetFpsRangeCallback callback) override;
   void SetStillCaptureResolution(
@@ -167,10 +142,9 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   void RegisterCameraInfoObserver(
       mojo::PendingRemote<cros::mojom::CameraInfoObserver> observer,
       RegisterCameraInfoObserverCallback callback) override;
+  absl::optional<PortraitModeCallbacks> ConsumePortraitModeCallbacks();
 
  private:
-  static void DisableEeNr(ReprocessTask* task);
-
   void OnMojoConnectionError();
 
   bool IsCloseToPreviousDetectionRequest();
@@ -184,9 +158,9 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
       bool success,
       const std::vector<gfx::PointF>& corners);
 
-  void SetReprocessResultOnMojoThread(cros::mojom::Effect effect,
-                                      const int32_t status,
-                                      media::mojom::BlobPtr blob);
+  void NotifyPortraitResultOnMojoThread(cros::mojom::Effect effect,
+                                        const int32_t status,
+                                        media::mojom::BlobPtr blob);
 
   void NotifyShutterDoneOnMojoThread();
   void NotifyResultMetadataOnMojoThread(cros::mojom::CameraMetadataPtr metadata,
@@ -207,12 +181,11 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   // It is used for calls which should run on the mojo thread.
   scoped_refptr<base::SingleThreadTaskRunner> mojo_task_runner_;
 
-  // The queue will be enqueued and dequeued from different threads.
-  base::Lock reprocess_tasks_lock_;
-  base::queue<ReprocessTask> reprocess_task_queue_
-      GUARDED_BY(reprocess_tasks_lock_);
-  mojo::Remote<cros::mojom::ReprocessResultListener> reprocess_listener_
-      GUARDED_BY(reprocess_tasks_lock_);
+  mojo::Remote<cros::mojom::StillCaptureResultObserver>
+      portrait_mode_observers_;
+  base::Lock portrait_mode_callbacks_lock_;
+  absl::optional<PortraitModeCallbacks> take_portrait_photo_callbacks_
+      GUARDED_BY(portrait_mode_callbacks_lock_);
 
   // It will be inserted and read from different threads.
   base::Lock fps_ranges_lock_;

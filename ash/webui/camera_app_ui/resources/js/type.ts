@@ -449,7 +449,7 @@ export class NoFrameError extends Error {
 /**
  * Throws when the portrait mode fails to detect a human face.
  */
-export class PortraitModeProcessError extends Error {
+export class PortraitErrorNoFaceDetected extends Error {
   constructor(message = 'No human face detected in the scene') {
     super(message);
     this.name = this.constructor.name;
@@ -457,7 +457,7 @@ export class PortraitModeProcessError extends Error {
 }
 
 /**
- * Throws when the camera is suspended while reprocess effects are ongoing.
+ * Throws when the camera is suspended while camera effects are ongoing.
  */
 export class CameraSuspendError extends Error {
   constructor(message = 'camera suspended') {

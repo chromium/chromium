@@ -513,6 +513,6 @@ TEST_F(RequestManagerTest, BufferErrorTest) {
 }
 
 // Test that preview and still capture buffers can be correctly submitted.
-// TODO(crbug.com/917574): Add reprocess tests and take photo test.
+// TODO(crbug.com/917574): Add take photo test.
 
 }  // namespace media

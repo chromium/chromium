@@ -23,51 +23,16 @@ namespace {
 constexpr int kDetectionWidth = 256;
 constexpr int kDetectionHeight = 256;
 
-void OnStillCaptureDone(media::mojom::ImageCapture::TakePhotoCallback callback,
-                        int status,
-                        mojom::BlobPtr blob) {
-  DCHECK_EQ(status, kReprocessSuccess);
-  std::move(callback).Run(std::move(blob));
-}
-
 }  // namespace
 
-ReprocessTask::ReprocessTask() = default;
-
-ReprocessTask::ReprocessTask(ReprocessTask&& other)
-    : effect(other.effect),
-      callback(std::move(other.callback)),
-      extra_metadata(std::move(other.extra_metadata)) {}
-
-ReprocessTask::~ReprocessTask() = default;
-
 // static
-int CameraAppDeviceImpl::GetReprocessReturnCode(
-    cros::mojom::Effect effect,
+int CameraAppDeviceImpl::GetPortraitSegResultCode(
     const cros::mojom::CameraMetadataPtr* metadata) {
-  if (effect == cros::mojom::Effect::PORTRAIT_MODE) {
-    auto portrait_mode_segmentation_result = GetMetadataEntryAsSpan<uint8_t>(
-        *metadata, static_cast<cros::mojom::CameraMetadataTag>(
-                       kPortraitModeSegmentationResultVendorKey));
-    DCHECK(!portrait_mode_segmentation_result.empty());
-    return static_cast<int>(portrait_mode_segmentation_result[0]);
-  }
-  return kReprocessSuccess;
-}
-
-// static
-ReprocessTaskQueue CameraAppDeviceImpl::GetSingleShotReprocessOptions(
-    media::mojom::ImageCapture::TakePhotoCallback take_photo_callback) {
-  ReprocessTaskQueue result_task_queue;
-  ReprocessTask still_capture_task;
-  still_capture_task.effect = cros::mojom::Effect::NO_EFFECT;
-  still_capture_task.callback =
-      base::BindOnce(&OnStillCaptureDone, std::move(take_photo_callback));
-  // Explicitly disable edge enhancement and noise reduction for YUV -> JPG
-  // conversion.
-  DisableEeNr(&still_capture_task);
-  result_task_queue.push(std::move(still_capture_task));
-  return result_task_queue;
+  auto portrait_mode_segmentation_result = GetMetadataEntryAsSpan<uint8_t>(
+      *metadata, static_cast<cros::mojom::CameraMetadataTag>(
+                     kPortraitModeSegmentationResultVendorKey));
+  CHECK(!portrait_mode_segmentation_result.empty());
+  return static_cast<int>(portrait_mode_segmentation_result[0]);
 }
 
 CameraAppDeviceImpl::CameraAppDeviceImpl(const std::string& device_id)
@@ -107,28 +72,6 @@ void CameraAppDeviceImpl::ResetOnDeviceIpcThread(base::OnceClosure callback,
   }
   weak_ptr_factory_.InvalidateWeakPtrs();
   std::move(callback).Run();
-}
-
-void CameraAppDeviceImpl::ConsumeReprocessOptions(
-    media::mojom::ImageCapture::TakePhotoCallback take_photo_callback,
-    base::OnceCallback<void(ReprocessTaskQueue)> consumption_callback) {
-  ReprocessTaskQueue result_task_queue;
-
-  ReprocessTask still_capture_task;
-  still_capture_task.effect = cros::mojom::Effect::NO_EFFECT;
-  still_capture_task.callback =
-      base::BindOnce(&OnStillCaptureDone, std::move(take_photo_callback));
-  // Explicitly disable edge enhancement and noise reduction for YUV -> JPG
-  // conversion.
-  DisableEeNr(&still_capture_task);
-  result_task_queue.push(std::move(still_capture_task));
-
-  base::AutoLock lock(reprocess_tasks_lock_);
-  while (!reprocess_task_queue_.empty()) {
-    result_task_queue.push(std::move(reprocess_task_queue_.front()));
-    reprocess_task_queue_.pop();
-  }
-  std::move(consumption_callback).Run(std::move(result_task_queue));
 }
 
 absl::optional<gfx::Range> CameraAppDeviceImpl::GetFpsRange() {
@@ -209,31 +152,32 @@ bool CameraAppDeviceImpl::IsMultipleStreamsEnabled() {
   return multi_stream_enabled_;
 }
 
-void CameraAppDeviceImpl::SetReprocessOptions(
-    const std::vector<cros::mojom::Effect>& effects,
-    mojo::PendingRemote<cros::mojom::ReprocessResultListener> listener,
-    SetReprocessOptionsCallback callback) {
+void CameraAppDeviceImpl::TakePortraitModePhoto(
+    mojo::PendingRemote<cros::mojom::StillCaptureResultObserver> observer,
+    TakePortraitModePhotoCallback callback) {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
 
-  base::AutoLock lock(reprocess_tasks_lock_);
-  reprocess_listener_.reset();
-  reprocess_listener_.Bind(std::move(listener));
-  reprocess_task_queue_ = {};
-  for (const auto& effect : effects) {
-    ReprocessTask task;
-    task.effect = effect;
-    task.callback = base::BindPostTaskToCurrentDefault(
-        base::BindOnce(&CameraAppDeviceImpl::SetReprocessResultOnMojoThread,
-                       weak_ptr_factory_for_mojo_.GetWeakPtr(), effect));
+  base::AutoLock lock(portrait_mode_callbacks_lock_);
+  portrait_mode_observers_.reset();
+  portrait_mode_observers_.Bind(std::move(observer));
+  take_portrait_photo_callbacks_.reset();
 
-    if (effect == cros::mojom::Effect::PORTRAIT_MODE) {
-      auto e = BuildMetadataEntry(
-          static_cast<cros::mojom::CameraMetadataTag>(kPortraitModeVendorKey),
-          uint8_t{1});
-      task.extra_metadata.push_back(std::move(e));
-    }
-    reprocess_task_queue_.push(std::move(task));
-  }
+  // Create two callbacks that will notify the client when the result is
+  // returned. The `normal_photo_callback` is for the normal photo, and
+  // `portrait_photo_callback` is for the portrait photo.
+  PortraitModeCallbacks take_portrait_photo_callbacks;
+  take_portrait_photo_callbacks.normal_photo_callback =
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&CameraAppDeviceImpl::NotifyPortraitResultOnMojoThread,
+                         weak_ptr_factory_for_mojo_.GetWeakPtr(),
+                         cros::mojom::Effect::NO_EFFECT));
+  take_portrait_photo_callbacks.portrait_photo_callback =
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&CameraAppDeviceImpl::NotifyPortraitResultOnMojoThread,
+                         weak_ptr_factory_for_mojo_.GetWeakPtr(),
+                         cros::mojom::Effect::PORTRAIT_MODE));
+  take_portrait_photo_callbacks_ = std::move(take_portrait_photo_callbacks);
+
   std::move(callback).Run();
 }
 
@@ -387,18 +331,6 @@ void CameraAppDeviceImpl::RegisterCameraInfoObserver(
   NotifyCameraInfoUpdatedOnMojoThread();
 }
 
-// static
-void CameraAppDeviceImpl::DisableEeNr(ReprocessTask* task) {
-  auto ee_entry =
-      BuildMetadataEntry(cros::mojom::CameraMetadataTag::ANDROID_EDGE_MODE,
-                         cros::mojom::AndroidEdgeMode::ANDROID_EDGE_MODE_OFF);
-  auto nr_entry = BuildMetadataEntry(
-      cros::mojom::CameraMetadataTag::ANDROID_NOISE_REDUCTION_MODE,
-      cros::mojom::AndroidNoiseReductionMode::ANDROID_NOISE_REDUCTION_MODE_OFF);
-  task->extra_metadata.push_back(std::move(ee_entry));
-  task->extra_metadata.push_back(std::move(nr_entry));
-}
-
 void CameraAppDeviceImpl::OnMojoConnectionError() {
   CameraAppDeviceBridgeImpl::GetInstance()->OnDeviceMojoDisconnected(
       device_id_);
@@ -502,14 +434,13 @@ void CameraAppDeviceImpl::OnDetectedDocumentCornersOnMojoThread(
   }
 }
 
-void CameraAppDeviceImpl::SetReprocessResultOnMojoThread(
+void CameraAppDeviceImpl::NotifyPortraitResultOnMojoThread(
     cros::mojom::Effect effect,
     const int32_t status,
     media::mojom::BlobPtr blob) {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
 
-  base::AutoLock lock(reprocess_tasks_lock_);
-  reprocess_listener_->OnReprocessDone(effect, status, std::move(blob));
+  portrait_mode_observers_->OnStillCaptureDone(effect, status, std::move(blob));
 }
 
 void CameraAppDeviceImpl::NotifyShutterDoneOnMojoThread() {
@@ -541,6 +472,17 @@ void CameraAppDeviceImpl::NotifyCameraInfoUpdatedOnMojoThread() {
   for (auto& observer : camera_info_observers_) {
     observer->OnCameraInfoUpdated(camera_info_.Clone());
   }
+}
+
+absl::optional<PortraitModeCallbacks>
+CameraAppDeviceImpl::ConsumePortraitModeCallbacks() {
+  base::AutoLock lock(portrait_mode_callbacks_lock_);
+  absl::optional<PortraitModeCallbacks> callbacks;
+  if (take_portrait_photo_callbacks_.has_value()) {
+    callbacks = std::move(take_portrait_photo_callbacks_);
+    take_portrait_photo_callbacks_.reset();
+  }
+  return callbacks;
 }
 
 }  // namespace media

@@ -13,7 +13,7 @@ import {
   ErrorType,
   Facing,
   FpsRangeList,
-  PortraitModeProcessError,
+  PortraitErrorNoFaceDetected,
   Resolution,
   ResolutionList,
   VideoConfig,
@@ -38,8 +38,8 @@ import {
   GetCameraAppDeviceStatus,
   MojoBlob,
   PointF,
-  ReprocessResultListenerCallbackRouter,
   ResultMetadataObserverCallbackRouter,
+  StillCaptureResultObserverCallbackRouter,
   StreamType,
 } from './type.js';
 import {
@@ -588,63 +588,68 @@ export class DeviceOperator {
   }
 
   /**
-   * Sets reprocess options which are normally effects to the video capture
-   * device before taking picture.
+   * Takes portrait mode photos.
    *
    * @param deviceId The renderer-facing device id of the target camera which
    *     could be retrieved from MediaDeviceInfo.deviceId.
-   * @param effects The target reprocess options (effects) that would be
-   *     applied on the result.
-   * @return Array of captured results with given effect.
-   * @throws Thrown when the reprocess is failed or the device operation is not
-   *     supported.
+   * @return Array of captured results for portrait mode. The first result is
+   *     the reference photo, and the second result is the photo with the bokeh
+   *     effect applied.
+   * @throws Thrown when the portrait mode processing is failed or the device
+   *     operation is not supported.
    */
-  async setReprocessOptions(deviceId: string, effects: Effect[]):
-      Promise<Array<Promise<Blob>>> {
-    const reprocessEvents = new Map<Effect, CancelableEvent<Blob>>();
-    const callbacks = [];
-    for (const effect of effects) {
-      const event = new CancelableEvent<Blob>();
-      reprocessEvents.set(effect, event);
-      callbacks.push(event.wait());
-    }
+  async takePortraitModePhoto(deviceId: string): Promise<Array<Promise<Blob>>> {
+    // TODO(b/244503017): Add definitions for the portrait mode segmentation
+    // result in the mojom file.
+    const PORTRAIT_SUCCESS = 0;
+    const PORTRAIT_NO_FACES = 3;
+
+    const normalCapture = new CancelableEvent<Blob>();
+    const portraitCapture = new CancelableEvent<Blob>();
+    const portraitEvents = new Map([
+      [Effect.NO_EFFECT, normalCapture],
+      [Effect.PORTRAIT_MODE, portraitCapture],
+    ]);
+    const callbacks = [normalCapture.wait(), portraitCapture.wait()];
 
     const listenerCallbacksRouter =
-        wrapEndpoint(new ReprocessResultListenerCallbackRouter());
-    listenerCallbacksRouter.onReprocessDone.addListener(
+        wrapEndpoint(new StillCaptureResultObserverCallbackRouter());
+    listenerCallbacksRouter.onStillCaptureDone.addListener(
         (effect: Effect, status: number, blob: MojoBlob|null) => {
-          const event = assertExists(reprocessEvents.get(effect));
-          // The definitions of status code is not exposed to Chrome so we are
-          // not able to distinguish between different kinds of errors.
-          // TODO(b/220056961): Handle errors respectively once we have the
-          // definitions.
-          // Ref:
-          // https://source.corp.google.com/chromeos_public/src/platform2/camera/hal_adapter/reprocess_effect/portrait_mode_effect.h;rcl=dd67a0b4be973da51324be2ff2dd243125e27f07;l=77
-          if (effect === Effect.PORTRAIT_MODE && status !== 0) {
-            event.signalError(new PortraitModeProcessError());
-          } else if (blob === null || status !== 0) {
-            event.signalError(new Error(`Set reprocess failed: ${status}`));
-          } else {
-            const {data, mimeType} = blob;
-            event.signal(new Blob([new Uint8Array(data)], {type: mimeType}));
+          const event = assertExists(portraitEvents.get(effect));
+          if (blob === null) {
+            event.signalError(new Error(`Capture failed.`));
+            return;
           }
+          if (effect === Effect.PORTRAIT_MODE && status !== PORTRAIT_SUCCESS) {
+            // We only appends the blob result to the output when the status
+            // code is `PORTRAIT_SUCCESS`. For any other status code, the blob
+            // will be the original photo and will not be shown to the user.
+            if (status === PORTRAIT_NO_FACES) {
+              event.signalError(new PortraitErrorNoFaceDetected());
+              return;
+            }
+            event.signalError(
+                new Error(`Portrait processing failed: ${status}`));
+            return;
+          }
+          const {data, mimeType} = blob;
+          event.signal(new Blob([new Uint8Array(data)], {type: mimeType}));
         });
 
     function suspendObserver(val: boolean) {
       if (val) {
         console.warn('camera suspended');
-        for (const [effect, event] of reprocessEvents.entries()) {
-          if (effect === Effect.PORTRAIT_MODE) {
-            event.signalError(new CameraSuspendError());
-          }
+        for (const event of portraitEvents.values()) {
+          event.signalError(new CameraSuspendError());
         }
       }
     }
     state.addOneTimeObserver(state.State.SUSPEND, suspendObserver);
 
     const device = await this.getDevice(deviceId);
-    await device.setReprocessOptions(
-        effects, listenerCallbacksRouter.$.bindNewPipeAndPassRemote());
+    await device.takePortraitModePhoto(
+        listenerCallbacksRouter.$.bindNewPipeAndPassRemote());
 
     Promise.allSettled(callbacks).then(() => {
       state.removeObserver(state.State.SUSPEND, suspendObserver);

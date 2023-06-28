@@ -46,8 +46,8 @@ export {
   DocumentCornersObserverCallbackRouter,
   Effect,
   GetCameraAppDeviceStatus,
-  ReprocessResultListenerCallbackRouter,
   ResultMetadataObserverCallbackRouter,
+  StillCaptureResultObserverCallbackRouter,
   StreamType,
 } from
     '../../mojom/media/capture/video/chromeos/mojom/camera_app.mojom-webui.js';
