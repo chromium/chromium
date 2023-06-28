@@ -193,15 +193,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Browser.ERP.RecordsPerUpload" units="records"
-    expires_after="2024-01-31">
+<histogram name="Browser.ERP.RecordsPerUploadFrom{ManagementStatus}Device"
+    units="records" expires_after="2024-01-31">
   <owner>jrhilke@chromium.org</owner>
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     Recorded when uploading records to the reporting server. Counts the number
-    of records batched into a single upload request.
+    of records batched into a single upload request from a {ManagementStatus}
+    device. Uploads containing zero records will not be included as those are
+    just encryption key requests.
   </summary>
+  <token key="ManagementStatus">
+    <variant name="Managed" summary="managed"/>
+    <variant name="Unmanaged" summary="unmanaged"/>
+  </token>
 </histogram>
 
 <histogram name="Browser.ERP.ResponsePayloadSize" units="bytes"

@@ -4,21 +4,9 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 
-#include "base/base64.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/json/json_writer.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
-#include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
@@ -29,8 +17,6 @@
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 #include "chrome/browser/policy/messaging_layer/util/test_response_payload.h"
-#include "components/policy/core/common/cloud/dm_token.h"
-#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/proto/synced/status.pb.h"
@@ -38,14 +24,16 @@
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/status.h"
-#include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
-#include "components/reporting/util/task_runner_context.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#endif
 
 using ::testing::_;
 using ::testing::AllOf;
@@ -154,8 +142,8 @@ class RecordHandlerUploadTest : public ::testing::Test {
         test_storage_);
     auto delegate = std::make_unique<MockFileUploadDelegate>();
     delegate_ = delegate.get();
-    handler_ = std::make_unique<RecordHandlerImpl>(sequenced_task_runner_,
-                                                   std::move(delegate));
+    handler_ = std::make_unique<RecordHandlerImpl>(
+        base::SequencedTaskRunner::GetCurrentDefault(), std::move(delegate));
 
     memory_resource_ =
         base::MakeRefCounted<ResourceManager>(4u * 1024LLu * 1024LLu);  // 4 MiB
@@ -194,8 +182,6 @@ class RecordHandlerUploadTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_ =
-      base::ThreadPool::CreateSequencedTaskRunner({});
 
   FileUploadJob::TestEnvironment manager_test_env_;
   ReportingServerConnector::TestEnvironment test_env_;
@@ -208,6 +194,14 @@ class RecordHandlerUploadTest : public ::testing::Test {
   std::unique_ptr<RecordHandlerImpl> handler_;
 
   scoped_refptr<ResourceManager> memory_resource_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Control device management status for Ash.
+  std::unique_ptr<ash::ScopedStubInstallAttributes> install_attributes_ =
+      std::make_unique<ash::ScopedStubInstallAttributes>(
+          ash::StubInstallAttributes::CreateCloudManaged("fake-domain-name",
+                                                         "fake-device-id"));
+#endif
 };
 
 EncryptedRecord ComposeEncryptedRecord(

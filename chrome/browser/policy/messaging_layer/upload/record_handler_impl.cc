@@ -4,16 +4,14 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 
+#include <cstddef>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/base64.h"
-#include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/json/json_reader.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
@@ -21,26 +19,21 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/token.h"
 #include "base/values.h"
+#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
-#include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
 #include "chrome/browser/policy/messaging_layer/upload/event_upload_size_controller.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
-#include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/proto/synced/upload_tracker.pb.h"
 #include "components/reporting/resources/resource_manager.h"
-#include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/util/status.h"
-#include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/task_runner_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -160,6 +153,7 @@ class RecordHandlerImpl::ReportUploader
   void OnCompletion(const CompletionResponse& result) override;
 
   void StartUpload();
+  void LogNumRecordsInUpload(size_t num_records);
   void ResumeUpload(size_t next_record);
   void FinalizeUpload();
   void OnUploadComplete(StatusOr<base::Value::Dict> response);
@@ -249,12 +243,29 @@ void RecordHandlerImpl::ReportUploader::OnCompletion(
 
 void RecordHandlerImpl::ReportUploader::StartUpload() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!records_.empty() || need_encryption_key_);
 
-  base::UmaHistogramCounts1000("Browser.ERP.RecordsPerUpload", records_.size());
+  // Log size of non-empty uploads. Key-request uploads have no records.
+  if (!records_.empty()) {
+    Schedule(&RecordHandlerImpl::ReportUploader::LogNumRecordsInUpload,
+             base::Unretained(this), records_.size());
+  }
 
   request_builder_ = std::make_unique<UploadEncryptedReportingRequestBuilder>(
       need_encryption_key_);
   ResumeUpload(/*next_record=*/0);
+}
+
+void RecordHandlerImpl::ReportUploader::LogNumRecordsInUpload(
+    size_t num_records) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (policy::IsDeviceEnterpriseManaged()) {
+    base::UmaHistogramCounts1000(
+        "Browser.ERP.RecordsPerUploadFromManagedDevice", num_records);
+  } else {  // Device is unmanaged.
+    base::UmaHistogramCounts1000(
+        "Browser.ERP.RecordsPerUploadFromUnmanagedDevice", num_records);
+  }
 }
 
 void RecordHandlerImpl::ReportUploader::ResumeUpload(size_t next_record) {
@@ -441,13 +452,13 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
       last_response.FindDictByDottedPath(
           "firstFailedUploadedRecord.failedUploadedRecord");
   if (!force_confirm_ && failed_uploaded_record != nullptr) {
-    // The record we uploaded previously was unprocessable by the server, if the
-    // record was after the current |highest_sequence_information_| we should
-    // return a gap record. A gap record consists of an EncryptedRecord with
-    // just SequenceInformation. The server will report success for the gap
-    // record and |highest_sequence_information_| will be updated in the next
-    // response. In the future there may be recoverable |failureStatus|, but
-    // for now all the device can do is delete the record.
+    // The record we uploaded previously was unprocessable by the server, if
+    // the record was after the current |highest_sequence_information_| we
+    // should return a gap record. A gap record consists of an EncryptedRecord
+    // with just SequenceInformation. The server will report success for the
+    // gap record and |highest_sequence_information_| will be updated in the
+    // next response. In the future there may be recoverable |failureStatus|,
+    // but for now all the device can do is delete the record.
     auto gap_record_result =
         HandleFailedUploadedSequenceInformation(*failed_uploaded_record);
     if (gap_record_result.has_value()) {
@@ -525,7 +536,8 @@ RecordHandlerImpl::ReportUploader::SequenceInformationValueToProto(
   const auto priority_result =
       GetPriorityProtoFromSequenceInformationValue(value);
 
-  // If any of the previous values don't exist, or are malformed, return error.
+  // If any of the previous values don't exist, or are malformed, return
+  // error.
   int64_t seq_id;
   int64_t gen_id;
   if (!sequencing_id || !generation_id || generation_id->empty() ||

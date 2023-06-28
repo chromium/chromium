@@ -12,7 +12,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -31,18 +30,17 @@
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/encryption/primitives.h"
 #include "components/reporting/encryption/testing_primitives.h"
-#include "components/reporting/encryption/verification.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/storage_selector/storage_selector.h"
 #include "components/reporting/util/status.h"
-#include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#endif
 
 using ::testing::_;
 using ::testing::Eq;
@@ -291,6 +289,14 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   const Destination destination_ = Destination::UPLOAD_EVENTS;
   ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =
       base::BindRepeating([]() { return Status::StatusOK(); });
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Required when production code checks device management status.
+  std::unique_ptr<ash::ScopedStubInstallAttributes> install_attributes_ =
+      std::make_unique<ash::ScopedStubInstallAttributes>(
+          ash::StubInstallAttributes::CreateCloudManaged("fake-domain-name",
+                                                         "fake-device-id"));
+#endif
 };
 
 // Tests that a ReportQueue can be created using the ReportingClient with a DM
