@@ -3319,6 +3319,7 @@
       'linux-exp-tsan-fyi-rel',  # The TSan bot sets enable_nacl=false
       'Mac ASan 64 Tests (1)',  # The mac asan bot sets enable_nacl=false
       'win-arm64-rel',  # Not available on arm64.
+      'linux-arm64-rel-cft',  # Not available on arm64.
     ],
   },
   'net_unittests': {
@@ -3723,6 +3724,12 @@
       'linux-chromeos-dbg',
       'linux-chromeos-rel',
       'linux-lacros-tester-rel',
+    ],
+  },
+  'remoting_unittests': {
+    'remove_from': [
+      # Not available on Linux ARM64
+      'linux-arm64-rel-cft',
     ],
   },
   'sandbox_linux_unittests': {
@@ -4363,6 +4370,8 @@
   'vr_common_unittests': {
     'remove_from': [
       'android-pie-x86-rel',
+      # Not available on Linux ARM64
+      'linux-arm64-rel-cft',
     ],
   },
   'vulkan_pixel_skia_gold_test': {
