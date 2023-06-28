@@ -17,7 +17,8 @@
 #
 # Apply all pre-commit hooks to all files:
 #   $ pre-commit run --all-files
-exclude: '^wpt'
+default_install_hook_types: [pre-commit, commit-msg]
+default_stages: [pre-commit]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
@@ -53,7 +54,7 @@ repos:
     rev: v0.31.0
     hooks:
       - id: yapf
-        args: ['--in-place', '--parallel']
+        args: [--in-place, --parallel]
   - repo: https://github.com/PyCQA/isort
     rev: 5.12.0
     hooks:
@@ -115,3 +116,10 @@ repos:
     rev: v0.1.1
     hooks:
       - id: keep-sorted
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v2.3.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        # c.f. https://conventionalcommits.org
+        args: [feat, fix, build, chore, ci, docs, refactor, test]
