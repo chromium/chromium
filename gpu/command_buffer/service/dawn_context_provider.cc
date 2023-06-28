@@ -140,7 +140,7 @@ bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
 #endif
 
   // TODO(crbug.com/1456492): verify the required features.
-  wgpu::FeatureName features[] = {
+  std::vector<wgpu::FeatureName> features = {
       wgpu::FeatureName::DawnInternalUsages,
       wgpu::FeatureName::DawnMultiPlanarFormats,
       wgpu::FeatureName::DepthClipControl,
@@ -149,15 +149,20 @@ bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
       wgpu::FeatureName::SurfaceCapabilities,
   };
 
-  descriptor.requiredFeatures = features;
-  descriptor.requiredFeaturesCount = std::size(features);
-
   wgpu::BackendType backend_type = GetDefaultBackendType();
   std::vector<dawn::native::Adapter> adapters = instance_->EnumerateAdapters();
   for (dawn::native::Adapter adapter : adapters) {
     wgpu::AdapterProperties properties;
     adapter.GetProperties(&properties);
     if (properties.backendType == backend_type) {
+      if (wgpu::Adapter(adapter.Get()).HasFeature(
+              wgpu::FeatureName::TransientAttachments)) {
+        features.push_back(wgpu::FeatureName::TransientAttachments);
+      }
+
+      descriptor.requiredFeatures = features.data();
+      descriptor.requiredFeaturesCount = std::size(features);
+
       wgpu::Device device(adapter.CreateDevice(&descriptor));
       if (device) {
         device.SetUncapturedErrorCallback(&LogError, nullptr);
