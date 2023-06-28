@@ -119,52 +119,6 @@ MojoDecoderBufferReader::~MojoDecoderBufferReader() {
     std::move(flush_cb_).Run();
 }
 
-void MojoDecoderBufferReader::CancelReadCB(ReadCB read_cb) {
-  DVLOG(1) << "Failed to read DecoderBuffer because the pipe is already closed";
-  std::move(read_cb).Run(nullptr);
-}
-
-void MojoDecoderBufferReader::CancelAllPendingReadCBs() {
-  while (!pending_read_cbs_.empty()) {
-    ReadCB read_cb = std::move(pending_read_cbs_.front());
-    pending_read_cbs_.pop_front();
-    // TODO(sandersd): Make sure there are no possible re-entrancy issues
-    // here. Perhaps these should be posted, or merged into a single error
-    // callback?
-    CancelReadCB(std::move(read_cb));
-  }
-}
-
-void MojoDecoderBufferReader::CompleteCurrentRead() {
-  DVLOG(4) << __func__;
-  DCHECK(!pending_read_cbs_.empty());
-  DCHECK_EQ(pending_read_cbs_.size(), pending_buffers_.size());
-
-  ReadCB read_cb = std::move(pending_read_cbs_.front());
-  pending_read_cbs_.pop_front();
-
-  scoped_refptr<DecoderBuffer> buffer = std::move(pending_buffers_.front());
-  pending_buffers_.pop_front();
-
-  DCHECK(buffer->end_of_stream() || buffer->data_size() == bytes_read_);
-  bytes_read_ = 0;
-
-  std::move(read_cb).Run(std::move(buffer));
-
-  if (pending_read_cbs_.empty() && flush_cb_)
-    std::move(flush_cb_).Run();
-}
-
-void MojoDecoderBufferReader::ScheduleNextRead() {
-  DVLOG(4) << __func__;
-  DCHECK(!armed_);
-  DCHECK(!pending_buffers_.empty());
-
-  armed_ = true;
-  pipe_watcher_.ArmOrNotify();
-}
-
-// TODO(xhwang): Move this up to match declaration order.
 void MojoDecoderBufferReader::ReadDecoderBuffer(
     mojom::DecoderBufferPtr mojo_buffer,
     ReadCB read_cb) {
@@ -223,6 +177,52 @@ void MojoDecoderBufferReader::Flush(base::OnceClosure flush_cb) {
 
 bool MojoDecoderBufferReader::HasPendingReads() const {
   return !pending_read_cbs_.empty();
+}
+
+void MojoDecoderBufferReader::CancelReadCB(ReadCB read_cb) {
+  DVLOG(1) << "Failed to read DecoderBuffer because the pipe is already closed";
+  std::move(read_cb).Run(nullptr);
+}
+
+void MojoDecoderBufferReader::CancelAllPendingReadCBs() {
+  while (!pending_read_cbs_.empty()) {
+    ReadCB read_cb = std::move(pending_read_cbs_.front());
+    pending_read_cbs_.pop_front();
+    // TODO(sandersd): Make sure there are no possible re-entrancy issues
+    // here. Perhaps these should be posted, or merged into a single error
+    // callback?
+    CancelReadCB(std::move(read_cb));
+  }
+}
+
+void MojoDecoderBufferReader::CompleteCurrentRead() {
+  DVLOG(4) << __func__;
+  DCHECK(!pending_read_cbs_.empty());
+  DCHECK_EQ(pending_read_cbs_.size(), pending_buffers_.size());
+
+  ReadCB read_cb = std::move(pending_read_cbs_.front());
+  pending_read_cbs_.pop_front();
+
+  scoped_refptr<DecoderBuffer> buffer = std::move(pending_buffers_.front());
+  pending_buffers_.pop_front();
+
+  DCHECK(buffer->end_of_stream() || buffer->data_size() == bytes_read_);
+  bytes_read_ = 0;
+
+  std::move(read_cb).Run(std::move(buffer));
+
+  if (pending_read_cbs_.empty() && flush_cb_) {
+    std::move(flush_cb_).Run();
+  }
+}
+
+void MojoDecoderBufferReader::ScheduleNextRead() {
+  DVLOG(4) << __func__;
+  DCHECK(!armed_);
+  DCHECK(!pending_buffers_.empty());
+
+  armed_ = true;
+  pipe_watcher_.ArmOrNotify();
 }
 
 void MojoDecoderBufferReader::OnPipeReadable(
