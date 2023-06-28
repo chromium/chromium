@@ -23,8 +23,7 @@ items:
 - caption: Allow users to choose
   value: null
 owners:
-- file://components/policy/OWNERS
-- rsorokin@chromium.org
+- chrome-desktop-ntp@google.com
 schema:
   type: boolean
 supported_on:

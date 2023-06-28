@@ -20,8 +20,7 @@ future_on:
 - fuchsia
 label: Home page URL
 owners:
-- file://components/policy/OWNERS
-- rsorokin@chromium.org
+- chrome-desktop-ntp@google.com
 schema:
   type: string
 supported_on:

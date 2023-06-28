@@ -21,8 +21,7 @@ future_on:
 - fuchsia
 label: New Tab page URL
 owners:
-- file://components/policy/OWNERS
-- okalitova@chromium.org
+- chrome-desktop-ntp@google.com
 schema:
   type: string
 supported_on:
