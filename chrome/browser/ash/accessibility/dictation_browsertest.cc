@@ -1857,6 +1857,17 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, ChromeVoxAnnouncesHints) {
   // Assert speech from ChromeVox.
   sm.ExpectSpeechPattern("Try saying*Type*Help*");
   sm.Replay();
+
+  // Check that Chromevox changed to a different pitch to announce hints. Note
+  // that only if the whole text pattern used the same parameters this will
+  // match.
+  auto params =
+      sm.GetParamsForPreviouslySpokenTextPattern("*Try saying*Type*Help*");
+  ASSERT_TRUE(params);
+
+  // Note: the Chromevox personality that sets this value has a relative pitch
+  // of 0.3, so that's how this turns into 1.3.
+  EXPECT_DOUBLE_EQ(params->pitch, 1.3);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationUITest, HintsShownWhenTextCommitted) {

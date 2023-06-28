@@ -282,11 +282,11 @@ void AutomationManagerAura::SendPendingEvents() {
 
   std::vector<ui::AXTreeUpdate> tree_updates;
   std::vector<ui::AXEvent> events;
-  auto pending_events_copy = pending_events_;
+  auto pending_events_copy = std::move(pending_events_);
   pending_events_.clear();
   for (auto& event_copy : pending_events_copy) {
-    int id = event_copy.id;
-    ax::mojom::Event event_type = event_copy.event_type;
+    const int id = event_copy.id;
+    const ax::mojom::Event event_type = event_copy.event_type;
     auto* aura_obj = cache_->Get(id);
 
     // Some events are important enough where even if their ax obj was
@@ -302,7 +302,7 @@ void AutomationManagerAura::SendPendingEvents() {
       OnSerializeFailure(event_type, update);
       return;
     }
-    tree_updates.push_back(update);
+    tree_updates.push_back(std::move(update));
 
     // Fire the event on the node, but only if it's actually in the tree.
     // Sometimes we get events fired on nodes with an ancestor that's
@@ -318,7 +318,7 @@ void AutomationManagerAura::SendPendingEvents() {
         event.event_from_action = event_copy.currently_performing_action;
       }
       event.action_request_id = event_copy.action_request_id;
-      events.push_back(event);
+      events.push_back(std::move(event));
     }
   }
 
@@ -327,7 +327,7 @@ void AutomationManagerAura::SendPendingEvents() {
   if (focus) {
     ui::AXTreeUpdate focused_node_update;
     tree_serializer_->SerializeChanges(focus, &focused_node_update);
-    tree_updates.push_back(focused_node_update);
+    tree_updates.push_back(std::move(focused_node_update));
   }
 
   if (automation_event_router_interface_) {

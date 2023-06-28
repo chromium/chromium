@@ -49,6 +49,7 @@ void SpeechMonitor::Speak(int utterance_id,
          "empty string in a test, that's probably not the correct way to "
          "achieve stopping speech. If it is unintended, it indicates a deeper "
          "underlying issue.";
+  text_params_[utterance] = params;
   content::TtsController::GetInstance()->OnTtsEvent(
       utterance_id, content::TTS_EVENT_START, 0,
       static_cast<int>(utterance.size()), std::string());
@@ -56,6 +57,7 @@ void SpeechMonitor::Speak(int utterance_id,
       utterance_id, content::TTS_EVENT_END, static_cast<int>(utterance.size()),
       0, std::string());
   std::move(on_speak_finished).Run(true);
+
   time_of_last_utterance_ = std::chrono::steady_clock::now();
 }
 
@@ -285,6 +287,17 @@ void SpeechMonitor::MaybePrintExpectations() {
              << base::JoinString(utterance_queue_descriptions, "\n") << "\n\n"
              << "Satisfied expectations...\n"
              << base::JoinString(replayed_queue_, "\n");
+}
+
+absl::optional<content::UtteranceContinuousParameters>
+SpeechMonitor::GetParamsForPreviouslySpokenTextPattern(
+    const std::string& pattern) {
+  for (const auto& [text, params] : text_params_) {
+    if (base::MatchPattern(text, pattern)) {
+      return params;
+    }
+  }
+  return absl::nullopt;
 }
 
 }  // namespace test

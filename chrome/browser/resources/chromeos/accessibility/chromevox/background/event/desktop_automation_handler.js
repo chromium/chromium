@@ -16,7 +16,7 @@ import {Command} from '../../common/command_store.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '../../common/custom_automation_event.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {Msgs} from '../../common/msgs.js';
-import {QueueMode, TtsCategory} from '../../common/tts_types.js';
+import {Personality, QueueMode, TtsCategory} from '../../common/tts_types.js';
 import {AutoScrollHandler} from '../auto_scroll_handler.js';
 import {AutomationObjectConstructorInstaller} from '../automation_object_constructor_installer.js';
 import {ChromeVox} from '../chromevox.js';
@@ -229,9 +229,15 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     }
 
     const range = CursorRange.fromNode(node);
-    const output = new Output()
-                       .withSpeechCategory(TtsCategory.LIVE)
-                       .withSpeechAndBraille(range, null, evt.type);
+    const output = new Output();
+    // Whenever chromevox is running together with dictation, we want to
+    // announce the hints provided by the Dictation feature in a different voice
+    // to differentiate them from regular UI text.
+    if (node.className === 'DictationHintView') {
+      output.withInitialSpeechProperties(Personality.DICTATION_HINT);
+    }
+    output.withSpeechCategory(TtsCategory.LIVE)
+        .withSpeechAndBraille(range, null, evt.type);
 
     const alertDelayMet = new Date() - this.lastAlertTime_ >
         DesktopAutomationHandler.MIN_ALERT_DELAY_MS;
