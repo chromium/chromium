@@ -118,7 +118,7 @@ config("compiler") {
         cflags += [ "--target=x86_64-windows" ]
       }
     } else if (current_cpu == "arm64") {
-      cflags += [ "--target=arm64-windows" ]
+      cflags += [ "--target=aarch64-pc-windows" ]
     } else {
       assert(false, "unknown current_cpu " + current_cpu)
     }
