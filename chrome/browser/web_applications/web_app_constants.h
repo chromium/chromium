@@ -295,6 +295,24 @@ using ResultCallback = base::OnceCallback<void(Result)>;
 std::string ConvertUninstallSourceToStringType(
     const webapps::WebappUninstallSource& uninstall_source);
 
+// Install sources that can be uninstalled by the user.
+const WebAppManagement::Type kUserUninstallableSources[] = {
+    WebAppManagement::kDefault,
+    WebAppManagement::kSync,
+    WebAppManagement::kWebAppStore,
+    WebAppManagement::kSubApp,
+    WebAppManagement::kOem,
+    WebAppManagement::kCommandLine,
+    WebAppManagement::kOneDriveIntegration,
+};
+
+// Install sources that resulted from a user web app install.
+const WebAppManagement::Type kUserDrivenInstallSources[] = {
+    WebAppManagement::kSync,
+    WebAppManagement::kWebAppStore,
+    WebAppManagement::kOneDriveIntegration,
+};
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_CONSTANTS_H_

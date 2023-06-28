@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/commands/navigate_and_trigger_install_dialog_command.h"
+#include "chrome/browser/web_applications/commands/uninstall_all_user_installed_web_apps_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/uninstall/uninstall_job.h"
@@ -246,6 +247,12 @@ class WebAppCommandScheduler {
                  webapps::WebappUninstallSource uninstall_source,
                  UninstallJob::Callback callback,
                  const base::Location& location = FROM_HERE);
+
+  // Schedules a command that uninstalls all user-installed web apps.
+  void UninstallAllUserInstalledWebApps(
+      webapps::WebappUninstallSource uninstall_source,
+      UninstallAllUserInstalledWebAppsCommand::Callback callback,
+      const base::Location& location = FROM_HERE);
 
   // Schedules a command that updates run on os login to provided `login_mode`
   // for a web app.

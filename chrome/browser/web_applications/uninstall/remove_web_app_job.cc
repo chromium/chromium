@@ -53,7 +53,9 @@ bool CanUninstallAllManagementSources(
          uninstall_source == webapps::WebappUninstallSource::kShelf ||
          uninstall_source == webapps::WebappUninstallSource::kSync ||
          uninstall_source == webapps::WebappUninstallSource::kStartupCleanup ||
-         uninstall_source == webapps::WebappUninstallSource::kTestCleanup;
+         uninstall_source == webapps::WebappUninstallSource::kTestCleanup ||
+         uninstall_source ==
+             webapps::WebappUninstallSource::kHealthcareUserInstallCleanup;
 }
 
 }  // namespace

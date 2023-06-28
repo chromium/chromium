@@ -506,6 +506,24 @@ void WebAppCommandScheduler::Uninstall(
       location);
 }
 
+void WebAppCommandScheduler::UninstallAllUserInstalledWebApps(
+    webapps::WebappUninstallSource uninstall_source,
+    UninstallAllUserInstalledWebAppsCommand::Callback callback,
+    const base::Location& location) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       ConvertUninstallResultCodeToString(
+                           webapps::UninstallResultCode::kCancelled)));
+    return;
+  }
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<UninstallAllUserInstalledWebAppsCommand>(
+          uninstall_source, *profile_, std::move(callback)),
+      location);
+}
+
 void WebAppCommandScheduler::SetRunOnOsLoginMode(
     const AppId& app_id,
     RunOnOsLoginMode login_mode,

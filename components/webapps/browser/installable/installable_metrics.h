@@ -204,8 +204,12 @@ enum class WebappUninstallSource {
   // The DedupeInstallUrlsCommand.
   kInstallUrlDeduping = 20,
 
+  // Healthcare app cleaning up all user installed apps in between shared
+  // sessions.
+  kHealthcareUserInstallCleanup = 21,
+
   // Add any new values above this one.
-  kMaxValue = kInstallUrlDeduping,
+  kMaxValue = kHealthcareUserInstallCleanup,
 };
 
 // This is the result of the promotability check that is recorded in the

@@ -40,7 +40,9 @@ chromium-metrics-reviews@google.com.
   <variant name="LacrosBrowser"
       summary="Handler for open browser windows and browsing data on Lacros"/>
   <variant name="LacrosExtension" summary="Handler for extensions on Lacros"/>
+  <variant name="LacrosWebApp" summary="Handler for web apps on Lacros"/>
   <variant name="PrintJobs" summary="Handler for print jobs"/>
+  <variant name="WebApp" summary="Handler for web apps"/>
 </variants>
 
 <variants name="Enterprise_CrdSessionType">

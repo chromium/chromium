@@ -19,7 +19,6 @@ namespace chromeos {
 // By uninstalling the apps/extensions, we make sure all user data is removed
 // and after that, we reinstall the force-installed, component and external
 // component extensions.
-// TODO(mpetrisor, b:202150852) Add browser tests.
 class ExtensionCleanupHandler : public CleanupHandler {
  public:
   ExtensionCleanupHandler();
