@@ -17,6 +17,9 @@ enum PolicyScope {
 
   // MACHINE policies apply to any users of the current machine.
   POLICY_SCOPE_MACHINE,
+
+  // Number of scope types. Has to be last element.
+  POLICY_SCOPE_MAX = POLICY_SCOPE_MACHINE
 };
 
 // The level of a policy determines its enforceability and whether users can
@@ -28,6 +31,9 @@ enum PolicyLevel {
 
   // MANDATORY policies must be enforced and users can't circumvent them.
   POLICY_LEVEL_MANDATORY,
+
+  // Number of level types. Has to be equal to last element.
+  POLICY_LEVEL_MAX = POLICY_LEVEL_MANDATORY
 };
 
 // The source of a policy indicates where its value is originating from. The
