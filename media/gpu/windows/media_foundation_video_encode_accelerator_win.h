@@ -63,11 +63,14 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
       const MediaFoundationVideoEncodeAccelerator&) = delete;
 
   // VideoEncodeAccelerator implementation.
+  using EncodeOptions = VideoEncoder::EncodeOptions;
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
   bool Initialize(const Config& config,
                   Client* client,
                   std::unique_ptr<MediaLog> media_log) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
+  void Encode(scoped_refptr<VideoFrame> frame,
+              const EncodeOptions& options) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
   void RequestEncodingParametersChange(const Bitrate& bitrate,
                                        uint32_t framerate) override;

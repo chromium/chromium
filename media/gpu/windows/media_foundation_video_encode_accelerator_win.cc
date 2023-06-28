@@ -344,11 +344,12 @@ VideoRateControlWrapper::RateControlConfig CreateRateControllerConfig(
   return config;
 }
 
-VideoEncoder::PendingEncode MakeInput(scoped_refptr<media::VideoFrame> frame,
-                                      bool keyframe) {
+VideoEncoder::PendingEncode MakeInput(
+    scoped_refptr<media::VideoFrame> frame,
+    const VideoEncoder::EncodeOptions& options) {
   VideoEncoder::PendingEncode result;
   result.frame = std::move(frame);
-  result.options.key_frame = keyframe;
+  result.options = options;
   return result;
 }
 
@@ -434,19 +435,6 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
   }
 #endif
 
-  // There's no easy way to enumerate the supported resolution bounds, so we
-  // just choose reasonable default values.
-  const SupportedProfile kDefaultProfile = []() {
-    SupportedProfile profile(VIDEO_CODEC_PROFILE_UNKNOWN,
-                             /*max_resolution=*/gfx::Size(1920, 1088),
-                             kMaxFrameRateNumerator, kMaxFrameRateDenominator,
-                             VideoEncodeAccelerator::kConstantMode |
-                                 VideoEncodeAccelerator::kVariableMode,
-                             {SVCScalabilityMode::kL1T1});
-    profile.min_resolution = gfx::Size(32, 32);
-    return profile;
-  }();
-
   SupportedProfiles profiles;
   for (auto codec : supported_codecs) {
     bool svc_supported = false;
@@ -454,7 +442,20 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
       continue;
     }
 
-    SupportedProfile profile(kDefaultProfile);
+    auto bitrate_mode = VideoEncodeAccelerator::kConstantMode |
+                        VideoEncodeAccelerator::kVariableMode;
+    if (codec == VideoCodec::kH264) {
+      bitrate_mode |= VideoEncodeAccelerator::kExternalMode;
+    }
+
+    // There's no easy way to enumerate the supported resolution bounds, so we
+    // just choose reasonable default values.
+    SupportedProfile profile(VIDEO_CODEC_PROFILE_UNKNOWN,
+                             /*max_resolution=*/gfx::Size(1920, 1088),
+                             kMaxFrameRateNumerator, kMaxFrameRateDenominator,
+                             bitrate_mode, {SVCScalabilityMode::kL1T1});
+    profile.min_resolution = gfx::Size(32, 32);
+
     if (svc_supported) {
       profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
       profile.scalability_modes.push_back(SVCScalabilityMode::kL1T3);
@@ -716,19 +717,23 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
 void MediaFoundationVideoEncodeAccelerator::Encode(
     scoped_refptr<VideoFrame> frame,
     bool force_keyframe) {
+  Encode(std::move(frame), EncodeOptions(force_keyframe));
+}
+
+void MediaFoundationVideoEncodeAccelerator::Encode(
+    scoped_refptr<VideoFrame> frame,
+    const EncodeOptions& options) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   switch (state_) {
     case kEncoding: {
-      pending_input_queue_.push_back(
-          MakeInput(std::move(frame), force_keyframe));
+      pending_input_queue_.push_back(MakeInput(std::move(frame), options));
       FeedInputs();
       break;
     }
     case kInitializing: {
-      pending_input_queue_.push_back(
-          MakeInput(std::move(frame), force_keyframe));
+      pending_input_queue_.push_back(MakeInput(std::move(frame), options));
       break;
     }
     default:
@@ -796,9 +801,16 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   VideoBitrateAllocation allocation(bitrate.mode());
-  allocation.SetBitrate(0, 0, bitrate.target_bps());
-  if (bitrate.mode() == Bitrate::Mode::kVariable) {
-    allocation.SetPeakBps(bitrate.peak_bps());
+  switch (bitrate.mode()) {
+    case Bitrate::Mode::kVariable:
+      allocation.SetBitrate(0, 0, bitrate.target_bps());
+      allocation.SetPeakBps(bitrate.peak_bps());
+      break;
+    case Bitrate::Mode::kConstant:
+      allocation.SetBitrate(0, 0, bitrate.target_bps());
+      break;
+    case Bitrate::Mode::kExternal:
+      break;
   }
 
   RequestEncodingParametersChange(allocation, framerate);
@@ -836,16 +848,22 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
 
   VARIANT var;
   var.vt = VT_UI4;
-  var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetSumBps(),
-                                       configured_frame_rate_, framerate);
-  HRESULT hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMeanBitRate, &var);
-  RETURN_ON_HR_FAILURE(hr, "Couldn't update mean bitrate", );
-
-  if (bitrate_allocation_.GetMode() == Bitrate::Mode::kVariable) {
-    var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetPeakBps(),
-                                         configured_frame_rate_, framerate);
-    hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMaxBitRate, &var);
-    RETURN_ON_HR_FAILURE(hr, "Couldn't set max bitrate", );
+  HRESULT hr;
+  switch (bitrate_allocation_.GetMode()) {
+    case Bitrate::Mode::kVariable:
+      var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetPeakBps(),
+                                           configured_frame_rate_, framerate);
+      hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMaxBitRate, &var);
+      RETURN_ON_HR_FAILURE(hr, "Couldn't set max bitrate", );
+      [[fallthrough]];
+    case Bitrate::Mode::kConstant:
+      var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetSumBps(),
+                                           configured_frame_rate_, framerate);
+      hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMeanBitRate, &var);
+      RETURN_ON_HR_FAILURE(hr, "Couldn't update mean bitrate", );
+      break;
+    case Bitrate::Mode::kExternal:
+      break;
   }
 }
 
@@ -1115,7 +1133,8 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
     }
     case Bitrate::Mode::kExternal:
       // Unsupported.
-      return false;
+      var.ulVal = eAVEncCommonRateControlMode_Quality;
+      break;
   }
   hr = codec_api_->SetValue(&CODECAPI_AVEncCommonRateControlMode, &var);
   RETURN_ON_HR_FAILURE(hr, "Couldn't set CommonRateControlMode", false);
@@ -1132,7 +1151,8 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
     RETURN_ON_HR_FAILURE(hr, "Couldn't set temporal layer count", false);
   }
 
-  if (!rate_ctrl_) {
+  if (!rate_ctrl_ &&
+      bitrate_allocation_.GetMode() != Bitrate::Mode::kExternal) {
     var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetSumBps(),
                                          configured_frame_rate_, frame_rate_);
     hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMeanBitRate, &var);
@@ -1226,7 +1246,16 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
     HRESULT hr = PopulateInputSampleBuffer(input);
     RETURN_ON_HR_FAILURE(hr, "Couldn't populate input sample buffer", hr);
 
-    if (rate_ctrl_) {
+    if (input.options.quantizer.has_value()) {
+      DCHECK_EQ(codec_, VideoCodec::kH264);
+      VARIANT var;
+      var.vt = VT_UI8;
+      var.ulVal = std::clamp(input.options.quantizer.value(), 1, 51);
+      hr = codec_api_->SetValue(&CODECAPI_AVEncVideoEncodeQP, &var);
+      RETURN_ON_HR_FAILURE(hr, "Couldn't set frame QP", hr);
+      hr = input_sample_->SetUINT64(MFSampleExtension_VideoEncodeQP, var.ulVal);
+      RETURN_ON_HR_FAILURE(hr, "Couldn't set input sample attribute QP", hr);
+    } else if (rate_ctrl_) {
       VideoRateControlWrapper::FrameParams frame_params{};
       frame_params.frame_type =
           input.options.key_frame

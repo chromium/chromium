@@ -115,7 +115,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
                                      EncoderStatusCB done_cb);
   void InitializeInternalOnAcceleratorThread();
   void EncodeOnAcceleratorThread(scoped_refptr<VideoFrame> frame,
-                                 const EncodeOptions& encode_options,
+                                 EncodeOptions encode_options,
                                  EncoderStatusCB done_cb);
   void FlushOnAcceleratorThread(EncoderStatusCB done_cb);
   void ChangeOptionsOnAcceleratorThread(const Options options,

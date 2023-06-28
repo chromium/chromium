@@ -163,6 +163,10 @@ std::vector<uint8_t> GetFpsAllocation(size_t num_temporal_layers) {
 
 VideoBitrateAllocation AllocateBitrateForDefaultEncoding(
     const VideoEncodeAccelerator::Config& config) {
+  if (config.bitrate.mode() == Bitrate::Mode::kExternal) {
+    return VideoBitrateAllocation(Bitrate::Mode::kExternal);
+  }
+
   VideoBitrateAllocation allocation;
   const bool use_vbr = config.bitrate.mode() == Bitrate::Mode::kVariable;
   if (config.spatial_layers.empty()) {
