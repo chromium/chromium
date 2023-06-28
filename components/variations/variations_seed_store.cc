@@ -275,7 +275,8 @@ bool VariationsSeedStore::LoadSafeSeed(VariationsSeed* seed,
   // not used for successfully loaded safe seeds that are rejected after
   // additional validation (expiry and future milestone).
   client_state->reference_date =
-      local_state_->GetTime(prefs::kVariationsSafeSeedDate);
+      ClientFilterableState::GetTimeForStudyDateChecks(/*is_safe_seed=*/true,
+                                                       local_state_);
   client_state->locale =
       local_state_->GetString(prefs::kVariationsSafeSeedLocale);
   client_state->permanent_consistency_country = local_state_->GetString(

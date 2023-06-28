@@ -15,7 +15,6 @@
 #include <utility>
 
 #include "base/base_switches.h"
-#include "base/build_time.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -51,20 +50,6 @@
 
 namespace variations {
 namespace {
-
-// Returns the date that should be used by the VariationsSeedProcessor to do
-// expiry and start date checks.
-base::Time GetReferenceDateForExpiryChecks(PrefService* local_state) {
-  const base::Time seed_date = local_state->GetTime(prefs::kVariationsSeedDate);
-  const base::Time build_time = base::GetBuildTime();
-  // Use the build time for date checks if either the seed date is invalid or
-  // the build time is newer than the seed date.
-  base::Time reference_date = seed_date;
-  if (seed_date.is_null() || seed_date < build_time) {
-    reference_date = build_time;
-  }
-  return reference_date;
-}
 
 // Records the loaded seed's expiry status.
 void RecordSeedExpiry(bool is_safe_seed, VariationsSeedExpiry seed_expiry) {
@@ -353,7 +338,8 @@ VariationsFieldTrialCreatorBase::GetClientFilterableStateForVersion(
       std::make_unique<ClientFilterableState>(IsEnterpriseCallback,
                                               GoogleGroupsCallback);
   state->locale = application_locale_;
-  state->reference_date = GetReferenceDateForExpiryChecks(local_state());
+  state->reference_date = ClientFilterableState::GetTimeForStudyDateChecks(
+      /*is_safe_seed=*/false, local_state());
   state->version = version;
   state->os_version = ClientFilterableState::GetOSVersion();
   state->channel =
