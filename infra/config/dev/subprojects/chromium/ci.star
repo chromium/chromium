@@ -118,7 +118,6 @@ ci_builder(
 # disabled.
 ci_builder(
     name = "linux-rel-dev",
-    os = os.LINUX_BIONIC,
     description_html = "Test description. <b>Test HTML</b>.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
@@ -128,6 +127,7 @@ ci_builder(
             build_config = builder_config.build_config.RELEASE,
         ),
     ),
+    os = os.LINUX_BIONIC,
 )
 
 ci_builder(
