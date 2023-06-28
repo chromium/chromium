@@ -74,7 +74,7 @@ os = struct(
     LINUX_FOCAL = os_enum(os_category.LINUX, "Ubuntu-20.04"),
     # A migration off of bionic is in progress, builders identified in
     # linux-default.json will have a different os dimension
-    LINUX_DEFAULT = os_enum(os_category.LINUX, "Ubuntu-18.04", json.decode(io.read_file("./linux-default.json"))),
+    LINUX_DEFAULT = os_enum(os_category.LINUX, "Ubuntu-22.04", json.decode(io.read_file("./linux-default.json"))),
     MAC_10_15 = os_enum(os_category.MAC, "Mac-10.15"),
     MAC_12 = os_enum(os_category.MAC, "Mac-12"),
     MAC_13 = os_enum(os_category.MAC, "Mac-13"),
