@@ -99,6 +99,7 @@ std::vector<password_manager::PasswordForm> DeepCopyForms(
 }
 
 bool IsSyncUser(Profile* profile) {
+  CHECK(profile);
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
   password_manager::SyncState sync_state =
@@ -234,6 +235,12 @@ bool SaveUpdateBubbleController::
   DCHECK(state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
          state_ == password_manager::ui::PENDING_PASSWORD_STATE);
 
+  if (!delegate_) {
+    // A race between `PasswordBubbleControllerBase::OnBubbleClosing()` and
+    // `PasswordSaveUpdateView::OnContentChanged()` may result in a null
+    // `delegate_`.
+    return false;
+  }
   if (IsSyncUser(GetProfile()))
     return true;
 
