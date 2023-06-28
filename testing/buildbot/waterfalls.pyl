@@ -1322,7 +1322,7 @@
       'linux-arm64-rel-cft': {
         'mixins': [
           'isolate_profile_data',
-          'linux-bionic',
+          'linux-jammy',
           'arm64',
         ],
         'additional_compile_targets': [
