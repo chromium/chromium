@@ -11,6 +11,10 @@
 #include "content/shell/browser/shell.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 
 #define EXPECT_ACCESSIBILITY_MAC_HIT_TEST_RESULT(css_point, expected_element, \
