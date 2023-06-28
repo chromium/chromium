@@ -390,6 +390,14 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // true. It should be called when either of these conditions becomes true.
   void MaybeSendPrivateAggregationReports();
 
+  // Checks that `url` is attested for reporting. On success, returns true. On
+  // failure, return false, and appends an error to `errors_`.
+  bool CheckReportUrl(const GURL& url);
+
+  // For each url in `urls`, erases that url iff CheckReportUrl(url) returns
+  // false.
+  void EnforceAttestationsReportUrls(std::vector<GURL>& urls);
+
   const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
   const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
   const raw_ptr<PrivateAggregationManager> private_aggregation_manager_;
@@ -445,6 +453,8 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   std::vector<GURL> pending_report_urls_;
 
   const scoped_refptr<FencedFrameReporter> fenced_frame_reporter_;
+
+  const raw_ptr<BrowserContext> browser_context_;
 
   bool reporting_complete_ = false;
   bool navigated_to_winning_ad_ = false;

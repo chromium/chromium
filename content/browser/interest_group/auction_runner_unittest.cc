@@ -49,6 +49,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
@@ -60,6 +61,7 @@
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
+#include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/system/functions.h"
@@ -1321,6 +1323,16 @@ MATCHER_P2(HasMetricWithValueOrNotIfNullOpt, key, matcher, "") {
   }
   return ExplainMatchResult(arg.at(key), matcher, result_listener);
 }
+
+class EventReportingAttestationBrowserClient : public TestContentBrowserClient {
+ public:
+  bool IsPrivacySandboxReportingDestinationAttested(
+      content::BrowserContext* browser_context,
+      const url::Origin& destination_origin,
+      content::PrivacySandboxInvokingAPI invoking_api) override {
+    return true;
+  }
+};
 
 class AuctionRunnerTest : public RenderViewHostTestHarness,
                           public AuctionWorkletManager::Delegate,
@@ -2699,6 +2711,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
             /*send_report_url=*/GURL("https://reporting.example.com"),
             bid_from_component_auction_wins, report_post_auction_signals));
   }
+
+  EventReportingAttestationBrowserClient browser_client_;
+  ScopedContentBrowserClientSetting browser_client_setting_{&browser_client_};
 
   // This is what an "empty" FLEDGE ad beacon map looks like.
   const base::flat_map<blink::FencedFrame::ReportingDestination,
