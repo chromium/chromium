@@ -25,7 +25,6 @@ constexpr auto kFooterMargins =
 
 struct AlertFooterRowData {
   absl::optional<TabAlertState> alert_state;
-  absl::optional<ui::ColorId> icon_color;
   int footer_row_width = 0;
 };
 

@@ -43,6 +43,9 @@ class AlertIndicatorButton : public views::ImageButton,
   static ui::ImageModel GetTabAlertIndicatorImage(TabAlertState alert_state,
                                                   ui::ColorId button_color);
 
+  static ui::ImageModel GetTabAlertIndicatorImageForHoverCard(
+      TabAlertState alert_state);
+
   // Returns the current TabAlertState except, while the indicator image is
   // fading out, returns the prior TabAlertState.
   absl::optional<TabAlertState> showing_alert_state() const {

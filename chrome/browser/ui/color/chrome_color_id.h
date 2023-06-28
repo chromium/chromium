@@ -439,7 +439,7 @@
   E_CPONLY(kColorStatusBubbleForegroundFrameActive) \
   E_CPONLY(kColorStatusBubbleForegroundFrameInactive) \
   E_CPONLY(kColorStatusBubbleShadow) \
-  /* Tab alert colors. */ \
+  /* Tab alert colors in tab strip. */ \
   E_CPONLY(kColorTabAlertAudioPlayingActiveFrameActive) \
   E_CPONLY(kColorTabAlertAudioPlayingActiveFrameInactive) \
   E_CPONLY(kColorTabAlertAudioPlayingInactiveFrameActive) \
@@ -452,6 +452,10 @@
   E_CPONLY(kColorTabAlertPipPlayingActiveFrameInactive) \
   E_CPONLY(kColorTabAlertPipPlayingInactiveFrameActive) \
   E_CPONLY(kColorTabAlertPipPlayingInactiveFrameInactive) \
+  /* Tab alert colors in hover cards */ \
+  E_CPONLY(kColorTabAlertMediaRecordingIcon) \
+  E_CPONLY(kColorTabAlertPipPlayingIcon) \
+  E_CPONLY(kColorTabAlertAudioPlayingIcon) \
   /* Tab colors. */ \
   E_CPONLY(kColorTabBackgroundActiveFrameActive) \
   E_CPONLY(kColorTabBackgroundActiveFrameInactive) \
