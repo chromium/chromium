@@ -74,6 +74,7 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
   raw_ptr<views::ImageView> preview_;
   raw_ptr<views::Label> empty_preview_label_;
   raw_ptr<views::Label> preview_label_;
+  raw_ptr<views::ScrollView> scroll_view_;
 
   // Counts the number of times preview_ has been set to an image.
   size_t preview_set_count_ = 0;

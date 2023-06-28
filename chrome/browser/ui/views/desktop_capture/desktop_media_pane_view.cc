@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_pane_view.h"
 
+#include "ui/base/ui_base_features.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
@@ -11,8 +12,12 @@
 DesktopMediaPaneView::DesktopMediaPaneView(
     std::unique_ptr<views::View> content_view,
     std::unique_ptr<ShareAudioView> share_audio_view) {
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorSubtleEmphasisBackground));
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      features::IsChromeRefresh2023() ? ui::kColorSysSurface4
+                                      : ui::kColorSubtleEmphasisBackground,
+      /*top_radius=*/0,
+      /*bottom_radius=*/features::IsChromeRefresh2023() ? 8 : 4,
+      /*for_border_thickness=*/0));
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical, gfx::Insets::VH(0, 16)));

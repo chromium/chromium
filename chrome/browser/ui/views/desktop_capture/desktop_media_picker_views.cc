@@ -291,7 +291,9 @@ bool ShouldSelectTab(DesktopMediaList::Type type,
 std::unique_ptr<views::ScrollView> CreateScrollView() {
   if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)) {
     auto scroll_view = std::make_unique<views::ScrollView>();
-    scroll_view->SetBackgroundThemeColorId(ui::kColorSubtleEmphasisBackground);
+    scroll_view->SetBackgroundThemeColorId(
+        features::IsChromeRefresh2023() ? ui::kColorSysSurface4
+                                        : ui::kColorSubtleEmphasisBackground);
     return scroll_view;
   } else {
     return views::ScrollView::CreateScrollViewWithBorder();
