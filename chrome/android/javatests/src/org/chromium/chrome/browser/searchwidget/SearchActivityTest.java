@@ -561,6 +561,7 @@ public class SearchActivityTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/1166647")
     @SmallTest
     public void testNewIntentDiscardsQuery() {
         final SearchActivity searchActivity = startSearchActivity();
