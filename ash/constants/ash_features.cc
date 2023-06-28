@@ -1469,6 +1469,13 @@ BASE_FEATURE(kLanguagePacksInOobe,
              "LanguagePacksInOobe",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the UI and relative logic to manage Language Packs in Settings.
+// This feature allows users to install/remove languages and input methods
+// via the corresponding Settings page.
+BASE_FEATURE(kLanguagePacksInSettings,
+             "LanguagePacksInSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Uses short intervals for launcher nudge for testing if enabled.
 BASE_FEATURE(kLauncherNudgeShortInterval,
              "LauncherNudgeShortInterval",
