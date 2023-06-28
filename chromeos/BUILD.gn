@@ -31,10 +31,6 @@ component("chromeos") {
 
   if (is_chromeos_ash) {
     configs += [ ":chromeos_implementation" ]
-    if (is_chromeos_device) {
-      configs += [ "//build/config/compiler:use_orderfile_for_hugepage" ]
-    }
-
     if (current_cpu == "arm" || current_cpu == "x86") {
       defines = [ "BINDER_IPC_32BIT" ]
     }

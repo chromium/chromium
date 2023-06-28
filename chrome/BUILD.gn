@@ -365,10 +365,6 @@ if (!is_android && !is_mac) {
 
       if (is_chromeos_ash) {
         data_deps += [ "//mojo/core:shared_libraries_for_arc" ]
-        if (is_chromeos_device) {
-          configs += [ "//build/config/chromeos:print_orderfile" ]
-          configs += [ "//build/config/compiler:chrome_orderfile_config" ]
-        }
       }
 
       # These files are used by the installer so we need a public dep.

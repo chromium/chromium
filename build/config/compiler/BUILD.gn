@@ -203,9 +203,7 @@ declare_args() {
                                                        current_cpu == "x64"))))
 }
 
-# TODO(b/287316830): remove this option from ChromeOS once they've migrated away
-# from using orderfiles.
-if (is_android || (is_chromeos_ash && is_chromeos_device)) {
+if (is_android) {
   # Set the path to use orderfile for linking Chrome
   # Note that this is for using only one orderfile for linking
   # the Chrome binary/library.
@@ -2816,27 +2814,14 @@ if (is_apple) {
   }
 }
 
-if (is_chromeos_ash && is_chromeos_device) {
-  # This config is intended to be a temporary to facilitate
-  # the transition to use orderfile in Chrome OS. Once orderfile
-  # use becomes a default in Chrome OS, this config should not
-  # be needed.
-  config("use_orderfile_for_hugepage") {
-    if (chrome_orderfile_path != "") {
-      defines = [ "CHROMEOS_ORDERFILE_USE" ]
-    }
-  }
-}
-
-if (is_android || (is_chromeos_ash && is_chromeos_device)) {
-  # Use orderfile for linking Chrome on Android and Chrome OS.
+if (is_android) {
+  # Use orderfile for linking Chrome on Android.
   # This config enables using an orderfile for linking in LLD.
   config("chrome_orderfile_config") {
     # Don't try to use an orderfile with call graph sorting, except on Android,
     # where we care about memory used by code, so we still want to mandate
     # ordering.
-    if (chrome_orderfile_path != "" &&
-        (is_android || !enable_call_graph_profile_sort)) {
+    if (chrome_orderfile_path != "") {
       assert(use_lld)
       _rebased_orderfile = rebase_path(chrome_orderfile_path, root_build_dir)
       ldflags = [

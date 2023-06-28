@@ -6,21 +6,6 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos)
 
-declare_args() {
-  # The location to a file used to dump symbols ordered by Call-Chain Clustering (C3)
-  # https://research.fb.com/wp-content/uploads/2017/01/cgo2017-hfsort-final1.pdf?
-  # to a file, used for generating orderfiles in Chrome OS
-  dump_call_chain_clustering_order = ""
-}
-
-config("print_orderfile") {
-  if (dump_call_chain_clustering_order != "") {
-    _output_orderfile =
-        rebase_path(dump_call_chain_clustering_order, root_build_dir)
-    ldflags = [ "-Wl,--print-symbol-order=$_output_orderfile" ]
-  }
-}
-
 config("compiler_cpu_abi") {
   # Lacros currently uses the *-generic-crosstoolchain.gni files generated
   # by the simplechrome sdk in build/args/chromeos. These target triples
