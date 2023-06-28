@@ -403,6 +403,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://account-migration-welcome",
     "chrome://add-supervision/",
     "chrome://app-disabled",
+    "chrome://bluetooth-pairing",
     "chrome://certificate-manager/",
     // Crashes because message handler is not registered outside of the dialog
     // for confirm password change UI.

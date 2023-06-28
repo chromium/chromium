@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/webui/common/trusted_types_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -65,7 +66,7 @@ ParentAccessUI::GetHandlerForTest() {
 void ParentAccessUI::SetUpResources() {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui()), chrome::kChromeUIParentAccessHost);
-  webui::EnableTrustedTypesCSP(source);
+  ash::EnableTrustedTypesCSP(source);
 
   source->EnableReplaceI18nInJS();
 

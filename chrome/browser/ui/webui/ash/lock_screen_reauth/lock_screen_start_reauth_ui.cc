@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/common/trusted_types_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -48,7 +49,7 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUILockScreenStartReauthHost);
-  webui::EnableTrustedTypesCSP(source);
+  ash::EnableTrustedTypesCSP(source);
 
   auto main_handler = std::make_unique<LockScreenReauthHandler>(email);
   main_handler_ = main_handler.get();

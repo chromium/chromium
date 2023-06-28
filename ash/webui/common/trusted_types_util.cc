@@ -23,6 +23,8 @@ void EnableTrustedTypesCSP(content::WebUIDataSource* source) {
       // Add TrustedTypes policy used during Ash WebUI tests created in
       // `//ash/webui/common/trusted_types_test_util.h`.
       "ash-webui-test-script "
+      // Add deprecated policies for Ash WebUIs using js.
+      "ash-deprecated-sanitize-inner-html ash-deprecated-parse-html-subset "
       // Add TrustedTypes policy for creating the PDF plugin.
       "print-preview-plugin-loader "
       // Add TrustedTypes policies necessary for using Polymer.
