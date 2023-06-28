@@ -3846,7 +3846,7 @@ TEST_P(CaptureModeCameraPreviewTest,
   // can stay in the same side with it when camera preview is collapsed,
   // otherwise, camera preview should be snapped to the other side of the
   // display.
-  UpdateDisplay("1366x700");
+  UpdateDisplay("1366x950");
 
   StartCaptureSessionWithParam();
   auto* camera_controller = GetCameraController();
