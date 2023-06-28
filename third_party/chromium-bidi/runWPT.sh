@@ -109,6 +109,7 @@ else
 fi
 
 TEST="${*: -1}"
+[[ -z "$TEST" ]] && TEST="webdriver/tests/bidi"
 
 echo "Running \"$TEST\" with \"$BROWSER_BIN\"..."
 

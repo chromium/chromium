@@ -23,6 +23,7 @@
     "tsc": "wireit",
     "unit": "wireit",
     "wpt": "wireit",
+    "wpt-all": "wireit",
     "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
   },
   "nyc": {
@@ -152,6 +153,15 @@
       "command": "./runWPT.sh",
       "files": [
         "runWPT.sh"
+      ],
+      "dependencies": [
+        "rollup"
+      ]
+    },
+    "wpt-all": {
+      "command": "./runWPTAll.sh",
+      "files": [
+        "runWPTAll.sh"
       ],
       "dependencies": [
         "rollup"
