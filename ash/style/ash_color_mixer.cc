@@ -572,6 +572,20 @@ void ReverseMapSysColors(ui::ColorMixer& mixer, bool dark_mode) {
       cros_tokens::kIllustrationElevationSecondaryColor};
 }
 
+// Maps colors used in Skottie images to their cros.sys values.
+void RemapIllustrationColors(ui::ColorMixer& mixer) {
+  mixer[ui::kColorNativeColor1] = {cros_tokens::kCrosSysIlloColor1};
+  mixer[ui::kColorNativeColor1Shade1] = {cros_tokens::kCrosSysIlloColor11};
+  mixer[ui::kColorNativeColor1Shade2] = {cros_tokens::kCrosSysIlloColor12};
+  mixer[ui::kColorNativeColor2] = {cros_tokens::kCrosSysIlloColor2};
+  mixer[ui::kColorNativeColor3] = {cros_tokens::kCrosSysIlloColor3};
+  mixer[ui::kColorNativeColor4] = {cros_tokens::kCrosSysIlloColor4};
+  mixer[ui::kColorNativeColor5] = {cros_tokens::kCrosSysIlloColor5};
+  mixer[ui::kColorNativeColor6] = {cros_tokens::kCrosSysIlloColor6};
+  mixer[ui::kColorNativeBaseColor] = {cros_tokens::kCrosSysIlloBase};
+  mixer[ui::kColorNativeSecondaryColor] = {cros_tokens::kCrosSysIlloSecondary};
+}
+
 }  // namespace
 
 void AddCrosStylesColorMixer(ui::ColorProvider* provider,
@@ -597,6 +611,7 @@ void AddCrosStylesColorMixer(ui::ColorProvider* provider,
 
   if (chromeos::features::IsJellyEnabled()) {
     RemapLegacySemanticColors(mixer);
+    RemapIllustrationColors(mixer);
   }
 }
 
