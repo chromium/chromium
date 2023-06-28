@@ -317,18 +317,10 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      kSyncEncryptionPassphraseTextFieldAccessibilityIdentifier)]
-      performAction:grey_tap()];
-  // TODO(crbug.com/1454849): replaceText causes the view to dismiss. Needs
-  // investigation.
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:passphrase flags:0];
-
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_kindOfClassName(@"_UIButtonBarButton"),
-                                   ButtonWithAccessibilityLabel(
-                                       l10n_util::GetNSString(
-                                           IDS_IOS_SYNC_DECRYPT_BUTTON)),
-                                   nil)] performAction:grey_tap()];
+      performAction:grey_replaceText(passphrase)];
+  // grey_replaceText triggers textFieldDidEndEditing, which the
+  // SyncEncryptionPassphraseTableViewController will treat as a signInPressed,
+  // so there's no reason to tap the 'enter' button.
 }
 #pragma mark - Private
 
