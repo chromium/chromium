@@ -1,6 +1,0 @@
-CONSOLE WARNING: Failed to decode downloaded font: https://localhost:8443/css/resources/cors-ahem.php
-CONSOLE WARNING: OTS parsing error: invalid sfntVersion: 1013084704
-This is a testharness.js-based test.
-FAIL Test using cached CSS font face src value resources (see CSSFontFaceSrcValue::restoreCachedResourceIfNeeded) assert_true: expected true got false
-Harness: the test ran to completion.
-
