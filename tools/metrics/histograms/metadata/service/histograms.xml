@@ -1089,6 +1089,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.RouterEvaluator.MatchedFirstSourceType"
+    enum="ServiceWorkerRouterSourceType" expires_after="2023-12-31">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The reuslt of the router evaluation of the Static Routing API. This
+    indicates which source type is used to get the resource. This will be
+    recorded only when the router has matched the incoming resource.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.SkipCallingFindRegistrationForClientUrl"
     enum="BooleanSkipped" expires_after="2023-12-04">
   <owner>chikamune@chromium.org</owner>
