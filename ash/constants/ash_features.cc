@@ -1924,7 +1924,7 @@ BASE_FEATURE(kMoreVideoCaptureBuffers,
 // using camera/microphone.
 BASE_FEATURE(kPrivacyIndicators,
              "PrivacyIndicators",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables a bubble-based launcher in clamshell mode. Changes the suggestions
 // that appear in the launcher in both clamshell and tablet modes. Removes pages
