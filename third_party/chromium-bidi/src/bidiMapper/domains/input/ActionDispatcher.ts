@@ -579,7 +579,7 @@ export class ActionDispatcher {
         unmodifiedText: text,
         autoRepeat: repeat,
         isSystemKey: source.alt || undefined,
-        location: location < 2 ? location : undefined,
+        location: location < 3 ? location : undefined,
         isKeypad: location === 3,
         modifiers,
       }
@@ -625,7 +625,7 @@ export class ActionDispatcher {
         code,
         text,
         unmodifiedText: text,
-        location: location < 2 ? location : undefined,
+        location: location < 3 ? location : undefined,
         isSystemKey: source.alt || undefined,
         isKeypad: location === 3,
         modifiers,
