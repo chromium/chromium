@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/printing/printer_configurer.h"
@@ -66,10 +67,10 @@ class CupsProxyServiceDelegateImpl
                       PrinterSetupResult result);
 
   // Current/active Profile. Not owned.
-  Profile* const profile_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Handle to a CupsPrintersManager associated with profile_. Not owned.
-  CupsPrintersManager* const printers_manager_;
+  const raw_ptr<CupsPrintersManager, ExperimentalAsh> printers_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CupsProxyServiceDelegateImpl> weak_factory_{this};
