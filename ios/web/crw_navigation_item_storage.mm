@@ -73,9 +73,17 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
   storage.set_title(base::UTF16ToUTF8(_title));
   web::SerializeTimeToProto(_timestamp, *storage.mutable_timestamp());
   storage.set_user_agent(web::UserAgentTypeToProto(_userAgentType));
-  web::SerializeReferrerToProto(_referrer, *storage.mutable_referrer());
-  web::SerializeHttpRequestHeadersToProto(
-      _HTTPRequestHeaders, *storage.mutable_http_request_headers());
+  // To reduce disk usage, NavigationItemImpl does not serialize invalid
+  // referrer or empty HTTP header map. The helper function responsible
+  // for the serialisation enforces this with assertion, so skip items
+  // that should not be serialised.
+  if (_referrer.url.is_valid()) {
+    web::SerializeReferrerToProto(_referrer, *storage.mutable_referrer());
+  }
+  if (_HTTPRequestHeaders.count) {
+    web::SerializeHttpRequestHeadersToProto(
+        _HTTPRequestHeaders, *storage.mutable_http_request_headers());
+  }
 }
 
 #pragma mark - NSObject
