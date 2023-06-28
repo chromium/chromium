@@ -2681,17 +2681,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_SHOW, DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_CONFIRM, DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_CANCEL, DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_LINK_CLICKED, DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_DISMISS"
-        errorLine1="                event, DuplicateDownloadDialogEvent.COUNT);"
-        errorLine2="                                                    ~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DuplicateDownloadDialog.java"
-            line="189"
-            column="53"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: StreamTabId.DEFAULT, StreamTabId.FOR_YOU, StreamTabId.FOLLOWING"
         errorLine1="        if (mTabToStreamMap.size() &lt;= tabId) tabId = 0;"
         errorLine2="                                                     ~">

@@ -409,23 +409,6 @@ chromium-metrics-reviews@google.com.
   <summary>The size of successfully completed downloads.</summary>
 </histogram>
 
-<histogram name="Download.DuplicateDialogEvent.{Type}"
-    enum="DuplicateDownloadEvent" expires_after="2022-12-03">
-  <owner>qinmin@chromium.org</owner>
-  <owner>clank-downloads@chromium.org</owner>
-  <summary>
-    Records user interactions on the duplicate download dialog on Android,
-    either for a regular download or an offline page. One user interaction could
-    trigger multiple histograms to be recorded. For example, clicking the text
-    link could record both the link click histogram and the dialog dismiss
-    histogram.
-  </summary>
-  <token key="Type">
-    <variant name="Download"/>
-    <variant name="OfflinePage"/>
-  </token>
-</histogram>
-
 <histogram name="Download.HttpResponseCode" enum="HttpResponseCode"
     expires_after="never">
 <!-- expires-never: Used to monitor download system health. -->

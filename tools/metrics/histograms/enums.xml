@@ -31137,14 +31137,6 @@ Called by update_document_policy_enum.py.-->
   <int value="2" label="Both entities are non-tombstone"/>
 </enum>
 
-<enum name="DuplicateDownloadEvent">
-  <int value="0" label="Shown"/>
-  <int value="1" label="Confirmed"/>
-  <int value="2" label="Canceled"/>
-  <int value="3" label="Link Clicked"/>
-  <int value="4" label="Dismissed"/>
-</enum>
-
 <enum name="DXGI_COLOR_SPACE_TYPE">
   <summary>
     DirectX color space type. Documented here:
