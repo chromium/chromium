@@ -2034,6 +2034,9 @@ void FederatedAuthRequestImpl::NotifyClose() {
 }
 
 bool FederatedAuthRequestImpl::NotifyResolve(const std::string& token) {
+  // Close the pop-up window post user permission.
+  NotifyClose();
+
   // TODO(crbug.com/1429083): handle the multi-idp case when there are
   // more than one config_urls hanging.
   CompleteRequest(FederatedAuthRequestResult::kSuccess, TokenStatus::kSuccess,
