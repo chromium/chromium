@@ -49,6 +49,7 @@ void AddHighContrastSysColors(ColorMixer& mixer) {
   mixer[kColorSysSurfaceVariant] = {kColorNativeBtnFace};
   // Inverse.
   mixer[kColorSysInversePrimary] = {kColorNativeWindow};
+  mixer[kColorSysInverseSurface] = {kColorNativeWindow};
   mixer[kColorSysInverseOnSurface] = {kColorNativeWindowText};
   // Surfaces.
   mixer[kColorSysSurface] = {kColorNativeWindow};

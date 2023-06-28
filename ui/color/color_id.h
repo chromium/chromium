@@ -142,6 +142,7 @@
   E_CPONLY(kColorSysWhite) \
   /* Inverse. */ \
   E_CPONLY(kColorSysInversePrimary) \
+  E_CPONLY(kColorSysInverseSurface) \
   E_CPONLY(kColorSysInverseOnSurface) \
   /* Surfaces. */ \
   E_CPONLY(kColorSysSurface) \

@@ -430,6 +430,9 @@
   E_CPONLY(kColorSidePanelResizeAreaHandle) \
   E_CPONLY(kColorSidePanelScrollbarThumb) \
   E_CPONLY(kColorSidePanelTextfieldBorder) \
+  E_CPONLY(kColorSidePanelToastBackground) \
+  E_CPONLY(kColorSidePanelToastButton) \
+  E_CPONLY(kColorSidePanelToastForeground) \
   /* Status bubble colors. */ \
   E_CPONLY(kColorStatusBubbleBackgroundFrameActive) \
   E_CPONLY(kColorStatusBubbleBackgroundFrameInactive) \

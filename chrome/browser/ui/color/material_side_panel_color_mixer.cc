@@ -48,6 +48,11 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
   mixer[kColorSidePanelMenuForeground] = {ui::kColorSysOnSurface};
   mixer[kColorSidePanelMenuIcon] = {ui::kColorSysOnSurfaceSubtle};
 
+  /* Toasts within the side panel. */
+  mixer[kColorSidePanelToastBackground] = {ui::kColorSysInverseSurface};
+  mixer[kColorSidePanelToastButton] = {ui::kColorSysInversePrimary};
+  mixer[kColorSidePanelToastForeground] = {ui::kColorSysInverseOnSurface};
+
   mixer[kColorSidePanelBadgeBackground] = {ui::kColorSysNeutralContainer};
   mixer[kColorSidePanelBadgeBackgroundUpdated] = {
       ui::kColorSysTertiaryContainer};

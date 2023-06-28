@@ -161,3 +161,15 @@
   --cr-menu-shadow: var(--cr-elevation-2);
   --cr-primary-text-color: var(--color-side-panel-menu-foreground);
 }
+
+:host-context([chrome-refresh-2023]) cr-toast {
+  --cr-toast-background: var(--color-side-panel-toast-background);
+  --cr-toast-button-color: var(--color-side-panel-toast-button);
+  --cr-toast-text-color: var(--color-side-panel-toast-foreground);
+  border-radius: 8px;
+  padding: 0 16px;
+}
+
+:host-context([chrome-refresh-2023]) cr-toast:has(cr-button) {
+  padding-inline-end: 4px;
+}
