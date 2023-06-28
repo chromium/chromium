@@ -718,7 +718,6 @@ void ArcInputMethodManagerService::Focus(int context_id) {
 
 void ArcInputMethodManagerService::Blur() {
   active_connection_.reset();
-  is_virtual_keyboard_shown_ = false;
 }
 
 void ArcInputMethodManagerService::UpdateTextInputState() {
