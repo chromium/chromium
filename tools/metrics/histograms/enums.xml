@@ -72996,6 +72996,7 @@ Called by update_use_counter_css.py.-->
   <int value="12" label="BLE error"/>
   <int value="13" label="Wi-Fi LAN error"/>
   <int value="14" label="Payload unknown"/>
+  <int value="15" label="Already listening"/>
 </enum>
 
 <enum name="NearbyConnectionsUtilityProcessMojoDependencyName">
