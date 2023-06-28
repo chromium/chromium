@@ -91,6 +91,9 @@
 
 namespace blink {
 
+const double kFinalStatePercentage = 100.0;
+const double kMiddleStatePercentage = 50.0;
+
 namespace {
 
 static GridLength ConvertGridTrackBreadth(const StyleResolverState& state,
@@ -526,9 +529,22 @@ scoped_refptr<FontPalette> StyleBuilderConverterBase::ConvertPaletteMix(
     if (cssvalue::CSSColorMixValue::NormalizePercentages(
             palette_mix_value->Percentage1(), palette_mix_value->Percentage2(),
             normalized_percentage, alpha_multiplier)) {
-      return FontPalette::Mix(palette1, palette2, normalized_percentage,
-                              alpha_multiplier, color_space,
-                              hue_interpolation_method);
+      double percentage1 = kMiddleStatePercentage;
+      double percentage2 = kMiddleStatePercentage;
+      if (palette_mix_value->Percentage1() &&
+          palette_mix_value->Percentage2()) {
+        percentage1 = palette_mix_value->Percentage1()->GetDoubleValue();
+        percentage2 = palette_mix_value->Percentage2()->GetDoubleValue();
+      } else if (palette_mix_value->Percentage1()) {
+        percentage1 = palette_mix_value->Percentage1()->GetDoubleValue();
+        percentage2 = kFinalStatePercentage - percentage1;
+      } else if (palette_mix_value->Percentage2()) {
+        percentage2 = palette_mix_value->Percentage2()->GetDoubleValue();
+        percentage1 = kFinalStatePercentage - percentage2;
+      }
+      return FontPalette::Mix(palette1, palette2, percentage1, percentage2,
+                              normalized_percentage, alpha_multiplier,
+                              color_space, hue_interpolation_method);
     }
   }
   return nullptr;

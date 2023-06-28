@@ -57,9 +57,9 @@ String FontPalette::ToString() const {
       builder.Append(start_->ToString());
       builder.Append(", ");
       builder.Append(end_->ToString());
-      DCHECK(percentage_);
+      DCHECK(normalized_percentage_);
       builder.Append(" ");
-      double normalized_percentage = percentage_ * 100;
+      double normalized_percentage = normalized_percentage_ * 100;
       builder.AppendNumber(normalized_percentage);
       builder.Append("%)");
       return builder.ToString();
@@ -75,7 +75,8 @@ bool FontPalette::operator==(const FontPalette& other) const {
     DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     return *start_.get() == *other.start_.get() &&
            *end_.get() == *other.end_.get() &&
-           percentage_ == other.percentage_ &&
+           percentages_ == other.percentages_ &&
+           normalized_percentage_ == other.normalized_percentage_ &&
            alpha_multiplier_ == other.alpha_multiplier_ &&
            color_interpolation_space_ == other.color_interpolation_space_ &&
            hue_interpolation_method_ == other.hue_interpolation_method_;

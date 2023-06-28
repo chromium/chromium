@@ -107,11 +107,12 @@ scoped_refptr<FontPalette> ResolveInterpolableFontPalette(
   }
 
   scoped_refptr<FontPalette> new_palette;
-  new_palette = FontPalette::Mix(start_palette, end_palette,
-                                 font_palette->GetPercentage(),
-                                 font_palette->GetAlphaMultiplier(),
-                                 font_palette->GetColorInterpolationSpace(),
-                                 font_palette->GetHueInterpolationMethod());
+  new_palette = FontPalette::Mix(
+      start_palette, end_palette, font_palette->GetStartPercentage(),
+      font_palette->GetEndPercentage(), font_palette->GetNormalizedPercentage(),
+      font_palette->GetAlphaMultiplier(),
+      font_palette->GetColorInterpolationSpace(),
+      font_palette->GetHueInterpolationMethod());
   new_palette->SetMatchFamilyName(start_palette->GetMatchFamilyName());
   return new_palette;
 }

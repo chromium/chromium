@@ -108,10 +108,10 @@ test(t => {
   var anim = target.animate({ fontPalette: ['normal', 'inherit'] }, 1000);
   anim.pause();
   anim.currentTime = 500;
-  assert_equals(getComputedStyle(target).fontPalette, 'palette-mix(in oklab, normal 50%, light)');
+  assert_equals(getComputedStyle(target).fontPalette, 'palette-mix(in oklab, normal, light)');
 
   container.setAttribute('class', 'container2');
-  assert_equals(getComputedStyle(target).fontPalette, 'palette-mix(in oklab, normal 50%, dark)');
+  assert_equals(getComputedStyle(target).fontPalette, 'palette-mix(in oklab, normal, dark)');
 }, "An interpolation to inherit updates correctly on a parent style change.");
 
 test(t => {
@@ -136,7 +136,7 @@ test(t => {
     animation.currentTime = 500;
   });
   assert_equals(getComputedStyle(target).fontPalette,
-                "palette-mix(in oklab, light 50%, normal)");
+                "palette-mix(in oklab, light, normal)");
 }, "Test additive animations");
 
 </script>

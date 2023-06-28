@@ -66,12 +66,16 @@ void InterpolableFontPalette::Interpolate(const InterpolableValue& to,
   } else if (normalized_progress == 1) {
     result_palette.font_palette_ = to_palette.font_palette_;
   } else {
+    FontPalette::NonNormalizedPercentages percentages =
+        FontPalette::ComputeEndpointPercentagesFromNormalized(
+            normalized_progress);
     // Since there is no way for user to specify which color space should be
     // used for interpolation, it defaults to Oklab.
     // https://www.w3.org/TR/css-color-4/#interpolation-space
     result_palette.font_palette_ = FontPalette::Mix(
-        font_palette_, to_palette.font_palette_, normalized_progress, 1.0,
-        Color::ColorSpace::kOklab, absl::nullopt);
+        font_palette_, to_palette.font_palette_, percentages.start,
+        percentages.end, normalized_progress, 1.0, Color::ColorSpace::kOklab,
+        absl::nullopt);
   }
 }
 

@@ -113,11 +113,11 @@ PaletteInterpolation::ComputeInterpolableFontPalette(
   Vector<FontPalette::FontPaletteOverride> end_color_records =
       ComputeInterpolableFontPalette(palette->GetEnd().get());
   Vector<FontPalette::FontPaletteOverride> result_color_records =
-      MixColorRecords(std::move(start_color_records),
-                      std::move(end_color_records), palette->GetPercentage(),
-                      palette->GetAlphaMultiplier(),
-                      palette->GetColorInterpolationSpace(),
-                      palette->GetHueInterpolationMethod());
+      MixColorRecords(
+          std::move(start_color_records), std::move(end_color_records),
+          palette->GetNormalizedPercentage(), palette->GetAlphaMultiplier(),
+          palette->GetColorInterpolationSpace(),
+          palette->GetHueInterpolationMethod());
   return result_color_records;
 }
 
