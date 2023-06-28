@@ -851,7 +851,7 @@ void RTCVideoEncoder::Impl::NotifyEncoderInfoChange(
 void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk,
                                     SignaledValue encode_event) {
   TRACE_EVENT1("webrtc", "RTCVideoEncoder::Impl::Enqueue", "timestamp",
-               frame_chunk.timestamp);
+               frame_chunk.timestamp_us);
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1059,11 +1059,13 @@ void RTCVideoEncoder::Impl::RequireBitstreamBuffers(
 void RTCVideoEncoder::Impl::BitstreamBufferReady(
     int32_t bitstream_buffer_id,
     const media::BitstreamBufferMetadata& metadata) {
-  TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::BitstreamBufferReady");
+  TRACE_EVENT2("webrtc", "RTCVideoEncoder::Impl::BitstreamBufferReady",
+               "timestamp", metadata.timestamp.InMicroseconds(),
+               "bitstream_buffer_id", bitstream_buffer_id);
   DVLOG(3) << __func__ << " bitstream_buffer_id=" << bitstream_buffer_id
            << ", payload_size=" << metadata.payload_size_bytes
            << ", key_frame=" << metadata.key_frame
-           << ", timestamp ms=" << metadata.timestamp.InMilliseconds();
+           << ", timestamp ms=" << metadata.timestamp.InMicroseconds();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (bitstream_buffer_id < 0 ||
@@ -1316,7 +1318,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!input_buffers_free_.empty());
   TRACE_EVENT1("webrtc", "RTCVideoEncoder::Impl::EncodeOneFrame", "timestamp",
-               frame_chunk.timestamp);
+               frame_chunk.timestamp_us);
 
   if (!video_encoder_) {
     async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);
@@ -1486,7 +1488,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(input_buffers_.empty() && input_buffers_free_.empty());
   TRACE_EVENT1("webrtc", "RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput",
-               "timestamp", frame_chunk.timestamp);
+               "timestamp", frame_chunk.timestamp_us);
 
   if (!video_encoder_) {
     async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);
@@ -1826,7 +1828,7 @@ int32_t RTCVideoEncoder::Encode(
     const std::vector<webrtc::VideoFrameType>* frame_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
   TRACE_EVENT1("webrtc", "RTCVideoEncoder::Encode", "timestamp",
-               input_image.timestamp());
+               input_image.timestamp_us());
   DVLOG(3) << __func__;
   if (!impl_) {
     DVLOG(3) << "Encoder is not initialized";
