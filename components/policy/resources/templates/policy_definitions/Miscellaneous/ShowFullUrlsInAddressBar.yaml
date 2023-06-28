@@ -22,8 +22,10 @@ items:
 - caption: Display the default URL, allow users to switch to the full URL
   value: null
 owners:
-- livvielin@chromium.org
-- enamelites@google.com
+- jdeblasio@google.com
+- meacer@google.com
+- cthomp@google.com
+- carlosil@google.com
 schema:
   type: boolean
 supported_on:
