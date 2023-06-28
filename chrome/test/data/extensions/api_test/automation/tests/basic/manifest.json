@@ -8,5 +8,5 @@
     "scripts": [ "background.js" ]
   },
   "permissions": ["tabs", "http://a.com/"],
-  "automation": true
+  "automation": {"desktop": true}
 }

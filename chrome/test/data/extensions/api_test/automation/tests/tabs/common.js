@@ -26,17 +26,22 @@ function setUpAndRunTests(allTests, opt_path) {
   getUrlFromConfig(path, function(url) {
     import('/_test_resources/test_util/tabs_util.js').then(async (tabUtil) => {
       await tabUtil.openTab(url);
-      chrome.automation.getTree(function (returnedRootNode) {
-        rootNode = returnedRootNode;
-        if (rootNode.docLoaded) {
+      chrome.automation.getDesktop(function(desktop) {
+        rootNode = desktop.find({attributes: {docUrl: url}});
+        if (rootNode && rootNode.docLoaded) {
           chrome.test.runTests(allTests);
           return;
         }
-        rootNode.addEventListener('loadComplete', function() {
-          chrome.test.runTests(allTests);
-        });
-      });
-    });
+        let listener = () => {
+        rootNode = desktop.find({attributes: {docUrl: url}});
+          if (rootNode && rootNode.docLoaded) {
+            desktop.removeEventListener('loadComplete', listener);
+          desktop.addEventListener('focus', () => {});
+            chrome.test.runTests(allTests);
+          }
+        };
+        desktop.addEventListener('loadComplete', listener);
+    });});
   });
 }
 

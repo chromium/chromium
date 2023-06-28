@@ -20,16 +20,6 @@ namespace extensions {
 
 struct AutomationInfo;
 
-// Implementation of the chrome.automation API.
-class AutomationInternalEnableTabFunction : public ExtensionFunction {
-  DECLARE_EXTENSION_FUNCTION("automationInternal.enableTab",
-                             AUTOMATIONINTERNAL_ENABLETAB)
- protected:
-  ~AutomationInternalEnableTabFunction() override = default;
-
-  ExtensionFunction::ResponseAction Run() override;
-};
-
 class AutomationInternalPerformActionFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("automationInternal.performAction",
                              AUTOMATIONINTERNAL_PERFORMACTION)
