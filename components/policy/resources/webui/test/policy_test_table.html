@@ -1,0 +1,29 @@
+<style>
+  .table {
+    display: table;
+    width: 100%;
+  }
+
+  header {
+    display: table-row;
+    text-align: center;
+  }
+
+  .cell {
+    display: table-cell;
+    border: 1px solid black;
+    padding: 1px;
+  }
+</style>
+<div class="table" role="table">
+  <header role="row">
+    <div class="cell">$i18n{testTableName}</div>
+    <div class="cell">$i18n{testTableSource}</div>
+    <div class="cell">$i18n{testTableTarget}</div>
+    <div class="cell">$i18n{testTableLevel}</div>
+    <div class="cell">$i18n{testTableValue}</div>
+    <div class="cell">$i18n{testTableRemove}</div>
+  </header>
+  <policy-test-row></policy-test-row>
+</div>
+<button id="add-policy-btn">$i18n{testAdd}</button>

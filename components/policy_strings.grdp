@@ -740,9 +740,36 @@ Additional details:
     Refresh Logs
   </message>
 
-  <!-- Strings for chrome://policy/test -->
+<!-- Strings for chrome://policy/test -->
   <message name="IDS_POLICY_TEST_TITLE" desc="Title for the page.">
     Policy Tests
+  </message>
+  <message name="IDS_POLICY_TEST_APPLY" desc="Label for the apply-policies button.">
+    Apply policies
+  </message>
+  <message name="IDS_POLICY_TEST_IMPORT" desc="Label for the import-policies-json button.">
+    Import from JSON
+  </message>
+  <message name="IDS_POLICY_TEST_DESC" desc="Text for the page description.">
+    You must run chrome as an admin to apply policies from this page. You cannot use this page from a managed acount on this unmanaged device. All managed accounts will be locked if you use this page, except accounts managed by the same entity as this device (affiliaited accounts).
+  </message>
+  <message name="IDS_POLICY_TEST_TABLE_TARGET" desc="Text for the column of the policy table for the policy target.">
+    Target
+  </message>
+  <message name="IDS_POLICY_TEST_ADD" desc="Label for the add-policy-btn button.">
+    Add policy
+  </message>
+  <message name="IDS_POLICY_SELECT_NAME" desc="Text for the default option in the policy name dropdown menu.">
+    Select policy name
+  </message>
+  <message name="IDS_POLICY_SELECT_SOURCE" desc="Text for the default option in the policy source dropdown menu.">
+    Select policy source
+  </message>
+  <message name="IDS_POLICY_SELECT_TARGET" desc="Text for the default option in the policy target dropdown menu.">
+    Select policy target
+  </message>
+  <message name="IDS_POLICY_SELECT_LEVEL" desc="Text for the default option in the policy level dropdown menu.">
+    Select policy level
   </message>
 
   <!-- Strings for Disabled chrome://.* screen -->

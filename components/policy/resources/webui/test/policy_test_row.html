@@ -1,0 +1,86 @@
+<style>
+  :host {
+    display: table-row;
+  }
+
+  div {
+    display: table-cell;
+    border: 1px solid black;
+    padding: 1px;
+  }
+
+  [role="cell"] > * {
+    width: 100%;
+    box-sizing: border-box;
+  }
+</style>
+<div role="cell">
+  <select class="name-select">
+    <option selected disabled hidden>$i18n{testNameSelect}</option>
+  </select>
+</div>
+<div role="cell">
+  <select class="source-select">
+    <option selected disabled hidden>$i18n{testSourceSelect}</option>
+    <option title="POLICY_SOURCE_ENTERPRISE_DEFAULT" value="0">
+      $i18n{sourceEnterpriseDefault}
+    </option>
+    <option title="POLICY_SOURCE_DEFAULT" value="1">
+      $i18n{sourceDefault}
+    </option>
+    <option title="POLICY_SOURCE_COMMAND_LINE" value="2">
+      $i18n{sourceCommandLine}
+    </option>
+    <option title="POLICY_SOURCE_CLOUD" value="3">
+      $i18n{sourceCloud}
+    </option>
+    <option title="POLICY_SOURCE_MERGED" value="4">
+      $i18n{sourceMerged}
+    </option>
+    <option title="POLICY_SOURCE_CLOUD_FROM_ASH" value="5">
+      $i18n{sourceCloudFromAsh}
+    </option>
+    <option
+        title="POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE"
+        value="6">
+      $i18n{sourceRestrictedManagedGuestSessionOverride}
+    </option>
+    <option title="POLICY_SOURCE_ACTIVE_DIRECTORY" value="7">
+      $i18n{sourceActiveDirectory}
+    </option>
+    <option title="POLICY_SOURCE_PLATFORM" value="8">
+      $i18n{sourcePlatform}
+    </option>
+    <option title="POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE"
+        value="9">
+      $i18n{sourceDeviceLocalAccountOverride}
+    </option>
+  </select>
+</div>
+<div role="cell">
+  <select class="target-select">
+    <option selected disabled hidden>$i18n{testTargetSelect}</option>
+    <option title="POLICY_SCOPE_USER" value="0">$i18n{scopeUser}</option>
+    <option title="POLICY_SCOPE_ALL_USERS" value="1">
+      $i18n{scopeAllUsers}
+    </option>
+    <option title="POLICY_SCOPE_DEVICE" value="2">$i18n{scopeDevice}</option>
+  </select>
+</div>
+<div role="cell">
+  <select class="level-select">
+    <option selected disabled hidden>$i18n{testLevelSelect}</option>
+    <option title="POLICY_LEVEL_RECOMMENDED" value="0">
+      $i18n{levelRecommended}
+    </option>
+    <option title="POLICY_LEVEL_MANDATORY" value="1">
+      $i18n{levelMandatory}
+    </option>
+  </select>
+</div>
+<div role="cell">
+  <input type="text" class="value-input">
+</div>
+<div role="cell">
+  <button class="remove-btn">$i18n{testTableRemove}</button>
+</div>

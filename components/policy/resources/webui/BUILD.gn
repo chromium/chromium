@@ -23,6 +23,8 @@ build_webui("build") {
     "policy_row.ts",
     "policy_precedence_row.ts",
     "policy_table.ts",
+    "test/policy_test_row.ts",
+    "test/policy_test_table.ts",
     "status_box.ts",
   ]
 

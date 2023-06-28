@@ -485,7 +485,7 @@
     "includes": [4020],
   },
   "<(SHARED_INTERMEDIATE_DIR)/components/policy/resources/webui/resources.grd": {
-    "META": {"sizes": {"includes": [20]}},
+    "META": {"sizes": {"includes": [30]}},
     "includes": [4040],
   },
   "<(SHARED_INTERMEDIATE_DIR)/components/version_ui/resources/resources.grd": {

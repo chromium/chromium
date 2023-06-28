@@ -8,6 +8,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/policy/value_provider/chrome_policies_value_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/policy/policy_ui_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -169,10 +170,62 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
     // Localized strings for chrome://policy/test.
     static constexpr webui::LocalizedString kPolicyTestStrings[] = {
         {"testTitle", IDS_POLICY_TEST_TITLE},
+        {"testRestart", IDS_POLICY_REBOOT_BUTTON},
+        {"testApply", IDS_POLICY_TEST_APPLY},
+        {"testImport", IDS_POLICY_TEST_IMPORT},
+        {"testDesc", IDS_POLICY_TEST_DESC},
+        {"testTableName", IDS_POLICY_HEADER_NAME},
+        {"testTableSource", IDS_POLICY_HEADER_SOURCE},
+        {"testTableTarget", IDS_POLICY_TEST_TABLE_TARGET},
+        {"testTableLevel", IDS_POLICY_HEADER_LEVEL},
+        {"testTableValue", IDS_POLICY_LABEL_VALUE},
+        {"testTableRemove", IDS_REMOVE},
+        {"testAdd", IDS_POLICY_TEST_ADD},
+        {"testNameSelect", IDS_POLICY_SELECT_NAME},
+        {"testSourceSelect", IDS_POLICY_SELECT_SOURCE},
+        {"testTargetSelect", IDS_POLICY_SELECT_TARGET},
+        {"testLevelSelect", IDS_POLICY_SELECT_LEVEL},
     };
+
     source->AddLocalizedStrings(kPolicyTestStrings);
     source->AddResourcePath("test/", IDR_POLICY_TEST_POLICY_TEST_HTML);
     source->AddResourcePath("test", IDR_POLICY_TEST_POLICY_TEST_HTML);
+
+    // Create a string policy_name_str of comma-separated policy names
+    ChromePoliciesValueProvider value_provider(profile);
+    base::Value::List policy_names =
+        (*value_provider.GetNames().FindDict("chrome"))
+            .FindList("policyNames")
+            ->Clone();
+    std::string policy_name_str = "";
+    for (auto& policy_name : policy_names) {
+      policy_name_str += policy_name.GetString() + ",";
+    }
+    policy_name_str.pop_back();  // remove last divider
+    source->AddString("policyNames", policy_name_str);
+
+    // Strings for policy levels, scopes and sources
+    static constexpr webui::LocalizedString kPolicyTestTypes[] = {
+        {"scopeUser", IDS_POLICY_SCOPE_USER},
+        {"scopeAllUsers", IDS_POLICY_SCOPE_ALL_USERS},
+        {"scopeDevice", IDS_POLICY_SCOPE_DEVICE},
+        {"levelRecommended", IDS_POLICY_LEVEL_RECOMMENDED},
+        {"levelMandatory", IDS_POLICY_LEVEL_MANDATORY},
+        {"sourceEnterpriseDefault", IDS_POLICY_SOURCE_ENTERPRISE_DEFAULT},
+        {"sourceDefault", IDS_POLICY_SOURCE_DEFAULT},
+        {"sourceCommandLine", IDS_POLICY_SOURCE_COMMAND_LINE},
+        {"sourceCloud", IDS_POLICY_SOURCE_CLOUD},
+        {"sourceMerged", IDS_POLICY_SOURCE_MERGED},
+        {"sourceCloudFromAsh", IDS_POLICY_SOURCE_CLOUD_FROM_ASH},
+        {"sourceRestrictedManagedGuestSessionOverride",
+         IDS_POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE},
+        {"sourceActiveDirectory", IDS_POLICY_SOURCE_ACTIVE_DIRECTORY},
+        {"sourcePlatform", IDS_POLICY_SOURCE_PLATFORM},
+        {"sourceDeviceLocalAccountOverride",
+         IDS_POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE},
+    };
+
+    source->AddLocalizedStrings(kPolicyTestTypes);
   }
 
   webui::SetupWebUIDataSource(
