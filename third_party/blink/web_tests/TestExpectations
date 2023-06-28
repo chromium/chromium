@@ -3162,7 +3162,6 @@ crbug.com/626703 external/wpt/density-size-correction/density-corrected-image-sv
 crbug.com/626703 external/wpt/webrtc-extensions/transfer-datachannel-service-worker.https.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc-extensions/transfer-datachannel.html [ Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/Create-blocked-port.any.worker.html?wpt_flags=h2 [ Failure Timeout ]
-crbug.com/626703 [ Win11 ] external/wpt/websockets/stream/tentative/constructor.any.serviceworker.html?wss [ Failure Timeout ]
 crbug.com/1209223 external/wpt/html/syntax/xmldecl/xmldecl-2.html [ Failure ]
 crbug.com/626703 [ Mac ] editing/pasteboard/drag-selected-image-to-contenteditable.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Failure Pass Timeout ]
