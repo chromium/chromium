@@ -240,17 +240,16 @@ TEST_F(LevelDBSiteDataStoreTest, DatabaseRecoveryTest) {
   EXPECT_TRUE(leveldb_chrome::CorruptClosedDBForTesting(GetDBPath()));
 
   base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount("ResourceCoordinator.LocalDB.DatabaseInit",
+  histogram_tester.ExpectTotalCount("PerformanceManager.SiteDB.DatabaseInit",
                                     0);
   // Open the corrupt DB and ensure that the appropriate histograms gets
   // updated.
   OpenDB();
   EXPECT_TRUE(DbIsInitialized());
+  histogram_tester.ExpectUniqueSample("PerformanceManager.SiteDB.DatabaseInit",
+                                      1 /* kInitStatusCorruption */, 1);
   histogram_tester.ExpectUniqueSample(
-      "ResourceCoordinator.LocalDB.DatabaseInit", 1 /* kInitStatusCorruption */,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      "ResourceCoordinator.LocalDB.DatabaseInitAfterRepair",
+      "PerformanceManager.SiteDB.DatabaseInitAfterRepair",
       0 /* kInitStatusOk */, 1);
 
   // TODO(sebmarchand): try to induce an I/O error by deleting one of the

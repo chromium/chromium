@@ -34,6 +34,90 @@ each histogram.
   </summary>
 </histogram>
 
+<histogram name="PerformanceManager.SiteDB.DatabaseInit"
+    enum="LocalSiteCharacteristicsDBInitStatus" expires_after="2023-09-28">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The result of opening the Local Site Characteristics database. Recorded at
+    startup when the database gets opened. If the result is not Success,
+    PerformanceManager.SiteDB.DatabaseInitAfterRepair may be logged as well.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.SiteDB.DatabaseInitAfterDelete"
+    enum="LocalSiteCharacteristicsDBInitStatus" expires_after="2023-09-28">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The result of opening the Local Site Characteristics database after deleting
+    it after a failed repair attempt. Recorded at startup when the database gets
+    opened, if the initial open and repair attempts failed.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.SiteDB.DatabaseInitAfterRepair"
+    enum="LocalSiteCharacteristicsDBInitStatus" expires_after="2023-09-28">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The result of opening the Local Site Characteristics database after a repair
+    attempt. Recorded at startup when the database gets opened, if the initial
+    open attempt failed. If the result is not Success,
+    PerformanceManager.SiteDB.DatabaseInitAfterDelete may be logged as well.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.SiteDB.DatabaseRepair"
+    enum="BooleanSuccess" expires_after="2023-09-28">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The result of trying to repair the Local Site Characteristics database after
+    a failed open. Recorded at startup when the database gets opened, if the
+    initial open attempt failed.
+  </summary>
+</histogram>
+
+<histogram
+    name="PerformanceManager.SiteDB.ObservationTimeBeforeFirstUse.{Feature}"
+    units="ms" expires_after="2023-09-28">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The cumulative observation time before the {Feature} feature tracked in the
+    Local Site Characteristics database gets used. Reported the first time a
+    site is observed to use the feature.
+  </summary>
+  <token key="Feature">
+    <variant name="AudioUsageInBackground"/>
+    <variant name="FaviconUpdateInBackground"/>
+    <variant name="TitleUpdateInBackground"/>
+  </token>
+</histogram>
+
+<histogram name="PerformanceManager.SiteDB.OnDiskSize" units="KB"
+    expires_after="2023-09-28">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The size of the Local Site Characteristics database on disk. Recorded at
+    startup when the database gets opened, if it already existed from a previous
+    run.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.SiteDB.ReadHasCompletedBeforeQuery"
+    enum="Boolean" expires_after="2023-09-28">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Boolean indicating if the read operation from the Local Site Characteristics
+    database has completed when we query for the characteristics of a site.
+    Reported every time the database is queried.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceManager.UserTuning.BatterySaverModeEnabledPercent"
     units="%" expires_after="2023-10-28">
   <owner>anthonyvd@chromium.org</owner>
