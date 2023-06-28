@@ -28,6 +28,12 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kNavigationUpdatesChildViewsVisibility);
 BASE_DECLARE_FEATURE(kOptimizeImmHideCalls);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, shows a dropdown menu for mouse and trackpad secondary
+// clicks (i.e. right click).
+BASE_DECLARE_FEATURE(kMouseAndTrackpadDropdownMenu);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // When enabled, when creating new proxies for all nodes in a `FrameTree`, one
 // IPC is sent to create all child frame proxies instead of sending one IPC per
 // proxy.

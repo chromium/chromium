@@ -35,12 +35,13 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
     public final @Nullable CharSequence contentDescription;
     public final @Nullable View.OnClickListener clickListener;
     public final boolean isEnabled;
+    public final boolean isIconTintable;
 
     private SelectionMenuItem(@IdRes int id, @AttrRes int iconAttr, @Nullable Drawable icon,
             @StringRes int titleRes, @Nullable CharSequence title,
             @Nullable Character alphabeticShortcut, int orderInCategory, int showAsActionFlags,
             @Nullable CharSequence contentDescription, @Nullable View.OnClickListener clickListener,
-            boolean isEnabled) {
+            boolean isEnabled, boolean isIconTintable) {
         mIconAttr = iconAttr;
         mIcon = icon;
         mTitleRes = titleRes;
@@ -52,6 +53,7 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         this.contentDescription = contentDescription;
         this.clickListener = clickListener;
         this.isEnabled = isEnabled;
+        this.isIconTintable = isIconTintable;
     }
 
     /**
@@ -104,6 +106,7 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         private @Nullable CharSequence mContentDescription;
         private @Nullable View.OnClickListener mClickListener;
         private boolean mIsEnabled;
+        private boolean mIsIconTintable;
 
         /**
          * Pass in a non-null title.
@@ -137,6 +140,7 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
             mContentDescription = null;
             mClickListener = null;
             mIsEnabled = true;
+            mIsIconTintable = false;
         }
 
         /**
@@ -216,12 +220,20 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         }
 
         /**
+         * Pass in true if the icon can be safely tinted. Defaults to false.
+         */
+        public Builder setIsIconTintable(boolean isIconTintable) {
+            mIsIconTintable = isIconTintable;
+            return this;
+        }
+
+        /**
          * Builds the menu item.
          */
         public SelectionMenuItem build() {
             return new SelectionMenuItem(mId, mIconAttr, mIcon, mTitleRes, mTitle,
                     mAlphabeticShortcut, mOrderInCategory, mShowAsActionFlags, mContentDescription,
-                    mClickListener, mIsEnabled);
+                    mClickListener, mIsEnabled, mIsIconTintable);
         }
     }
 }

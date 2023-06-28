@@ -313,6 +313,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   void MoveCaret(const gfx::Point& point);
   void DismissTextHandles();
+  void SetTextHandlesHiddenForDropdownMenu(bool hide_handles);
   void SetTextHandlesTemporarilyHidden(bool hide_handles);
   void SelectAroundCaretAck(blink::mojom::SelectAroundCaretResultPtr result);
 
@@ -567,6 +568,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   bool is_window_activity_started_;
 
   PageVisibilityState page_visibility_ = PageVisibilityState::kHidden;
+
+  // Specifies whether touch selection handles are hidden due to the dropdown
+  // menu.
+  bool handles_hidden_by_dropdown_menu_ = false;
 
   // Specifies whether touch selection handles are hidden due to stylus.
   bool handles_hidden_by_stylus_ = false;

@@ -28,6 +28,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kFedCm,
     &features::kOnDemandAccessibilityEvents,
     &kOptimizeImmHideCalls,
+    &kMouseAndTrackpadDropdownMenu,
     &features::kProcessSharingWithStrictSiteInstances,
     &features::kReduceGpuPriorityOnBackground,
     &features::kRequestDesktopSiteAdditions,

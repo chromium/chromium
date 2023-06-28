@@ -9,6 +9,7 @@ import android.view.ActionMode;
 import android.view.textclassifier.TextClassifier;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
@@ -84,7 +85,8 @@ public interface SelectionPopupController {
      * Sets the {@link AdditionalSelectionMenuItemProvider} used by {@link SelectionPopupController}
      * when no text is selected.
      */
-    void setNonSelectionAdditionalMenuItemProvider(AdditionalSelectionMenuItemProvider provider);
+    void setNonSelectionAdditionalMenuItemProvider(
+            @Nullable AdditionalSelectionMenuItemProvider provider);
 
     /**
      * @return {@link SelectionClient.ResultCallback} instance.

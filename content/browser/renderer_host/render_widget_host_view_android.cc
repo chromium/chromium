@@ -2711,6 +2711,16 @@ void RenderWidgetHostViewAndroid::OnActivityStarted() {
   ShowInternal();
 }
 
+void RenderWidgetHostViewAndroid::SetTextHandlesHiddenForDropdownMenu(
+    bool hide_handles) {
+  if (!touch_selection_controller_ ||
+      handles_hidden_by_dropdown_menu_ == hide_handles) {
+    return;
+  }
+  handles_hidden_by_dropdown_menu_ = hide_handles;
+  SetTextHandlesHiddenInternal();
+}
+
 void RenderWidgetHostViewAndroid::SetTextHandlesHiddenForStylus(
     bool hide_handles) {
   if (!touch_selection_controller_ || handles_hidden_by_stylus_ == hide_handles)
@@ -2723,7 +2733,8 @@ void RenderWidgetHostViewAndroid::SetTextHandlesHiddenInternal() {
   if (!touch_selection_controller_)
     return;
   touch_selection_controller_->SetTemporarilyHidden(
-      handles_hidden_by_stylus_ || handles_hidden_by_selection_ui_);
+      handles_hidden_by_dropdown_menu_ || handles_hidden_by_stylus_ ||
+      handles_hidden_by_selection_ui_);
 }
 
 void RenderWidgetHostViewAndroid::OnStylusSelectBegin(float x0,

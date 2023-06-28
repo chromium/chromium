@@ -65,6 +65,7 @@ android_library("content_java_test_support") {
     "javatests/src/org/chromium/content_public/browser/test/util/RenderProcessHostUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/TestCallbackHelperContainer.java",
     "javatests/src/org/chromium/content_public/browser/test/util/TestInputMethodManagerWrapper.java",
+    "javatests/src/org/chromium/content_public/browser/test/util/TestSelectionDropdownMenuDelegate.java",
     "javatests/src/org/chromium/content_public/browser/test/util/TestSelectionPopupController.java",
     "javatests/src/org/chromium/content_public/browser/test/util/TestThreadUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/TestTouchUtils.java",

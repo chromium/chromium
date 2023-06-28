@@ -119,7 +119,7 @@ public class FloatingPastePopupMenu implements PastePopupMenu {
                     return mDelegate.canPasteAsPlainText();
                 }
             };
-            SelectionPopupControllerImpl.initializeNonSelectionMenu(
+            SelectionPopupControllerImpl.initializeNonSelectionActionMenu(
                     actionMenuDelegate, mContext, mAdditionalItemProvider, mode, menu);
         }
 

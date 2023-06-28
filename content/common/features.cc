@@ -25,6 +25,12 @@ BASE_FEATURE(kOptimizeImmHideCalls,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kMouseAndTrackpadDropdownMenu,
+             "MouseAndTrackpadDropdownMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 BASE_FEATURE(kConsolidatedIPCForProxyCreation,
              "ConsolidatedIPCForProxyCreation",
              base::FEATURE_DISABLED_BY_DEFAULT);

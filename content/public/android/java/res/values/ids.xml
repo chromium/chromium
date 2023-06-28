@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
 <resources>
     <!-- Selection Menu Group IDs -->
     <item type="id" name="select_action_menu_assist_items" />
