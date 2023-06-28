@@ -3635,8 +3635,8 @@ TEST_F(FloatOverviewSessionTest, DraggingToNewDeskWithFloatedWindow) {
   generator->ReleaseLeftButton();
   auto* controller = DesksController::Get();
   EXPECT_EQ(2u, controller->desks().size());
-  EXPECT_TRUE(
-      base::Contains(controller->desks()[1]->windows(), normal_window.get()));
+  EXPECT_TRUE(base::Contains(controller->GetDeskAtIndex(1)->windows(),
+                             normal_window.get()));
 }
 
 // Tests that the overview item associated with the floated window appears
@@ -3879,14 +3879,14 @@ TEST_F(TabletModeOverviewSessionTest, DeskRemovalWhileScrolling) {
 
   auto* controller = DesksController::Get();
   controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
-  ActivateDesk(controller->desks()[1].get());
+  ActivateDesk(controller->GetDeskAtIndex(1));
   auto desk2_windows = CreateAppWindows(2);
 
   // Activate the desk with 15 windows. There may be more than the windows we
   // created (i.e. backdrop, nudges), so we assert greater than.
-  ActivateDesk(controller->desks()[0].get());
-  ASSERT_GT(controller->desks()[0]->windows().size(), 15u);
-  ASSERT_GT(controller->desks()[1]->windows().size(), 2u);
+  ActivateDesk(controller->GetDeskAtIndex(0));
+  ASSERT_GT(controller->GetDeskAtIndex(0)->windows().size(), 15u);
+  ASSERT_GT(controller->GetDeskAtIndex(1)->windows().size(), 2u);
 
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
@@ -3896,7 +3896,7 @@ TEST_F(TabletModeOverviewSessionTest, DeskRemovalWhileScrolling) {
   GetEventGenerator()->MoveTouchBy(-50, 0);
 
   // Remove the desk and continue scrolling. There should be no crash.
-  RemoveDesk(controller->desks()[1].get(), DeskCloseType::kCombineDesks);
+  RemoveDesk(controller->GetDeskAtIndex(1), DeskCloseType::kCombineDesks);
   GetEventGenerator()->MoveTouchBy(-50, 0);
 }
 

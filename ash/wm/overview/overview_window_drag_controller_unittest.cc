@@ -272,7 +272,7 @@ TEST_F(OverviewWindowDragControllerTest,
   event_generator->ReleaseTouch();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_grid->empty());
-  const Desk* desk_2 = controller->desks()[1].get();
+  const Desk* desk_2 = controller->GetDeskAtIndex(1);
   EXPECT_TRUE(base::Contains(desk_2->windows(), window.get()));
   EXPECT_TRUE(const_cast<OverviewGrid*>(overview_grid)->no_windows_widget());
 }
@@ -417,7 +417,7 @@ class OverviewWindowDragControllerDesksPortraitTabletTest
     // Give the second desk a name. The desk name gets exposed as the accessible
     // name. And the focusable views that are painted in these tests will fail
     // the accessibility paint checker checks if they lack an accessible name.
-    desks_controller->desks()[1]->SetName(u"Desk 2", false);
+    desks_controller->GetDeskAtIndex(1)->SetName(u"Desk 2", false);
   }
 };
 
@@ -526,7 +526,7 @@ TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest,
   // overview mode, there's no desks bar after entering overview mode. Cause we
   // don't show desks bar for tablet mode when there's only one desk.
   auto* desks_controller = DesksController::Get();
-  DesksController::Get()->RemoveDesk(desks_controller->desks()[1].get(),
+  DesksController::Get()->RemoveDesk(desks_controller->GetDeskAtIndex(1),
                                      DesksCreationRemovalSource::kButton,
                                      DeskCloseType::kCombineDesks);
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());

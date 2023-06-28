@@ -389,7 +389,7 @@ class DesksOverviewHighlightControllerTest
     // Give the second desk a name. The desk name gets exposed as the accessible
     // name. And the focusable views that are painted in these tests will fail
     // the accessibility paint checker checks if they lack an accessible name.
-    desk_controller->desks()[1]->SetName(u"Desk 2", false);
+    desk_controller->GetDeskAtIndex(1)->SetName(u"Desk 2", false);
   }
 
   OverviewHighlightableView* GetHighlightedView() {
@@ -725,8 +725,8 @@ TEST_P(DesksOverviewHighlightControllerTest, ActivateHighlightOnMiniView) {
 TEST_P(DesksOverviewHighlightControllerTest, CloseHighlightOnMiniView) {
   const auto* desks_controller = DesksController::Get();
   ASSERT_EQ(2u, desks_controller->desks().size());
-  auto* desk1 = desks_controller->desks()[0].get();
-  auto* desk2 = desks_controller->desks()[1].get();
+  auto* desk1 = desks_controller->GetDeskAtIndex(0);
+  auto* desk2 = desks_controller->GetDeskAtIndex(1);
   ASSERT_EQ(desk1, desks_controller->active_desk());
 
   ToggleOverview();
@@ -744,7 +744,7 @@ TEST_P(DesksOverviewHighlightControllerTest, CloseHighlightOnMiniView) {
   // with desk 2, desk 2 is destroyed.
   SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
   EXPECT_EQ(1u, desks_controller->desks().size());
-  EXPECT_NE(desk2, desks_controller->desks()[0].get());
+  EXPECT_NE(desk2, desks_controller->GetDeskAtIndex(0));
 
   // Go back to zero state since there is only a single desk and mini views
   // are empty in zero state.
@@ -771,7 +771,7 @@ TEST_P(DesksOverviewHighlightControllerTest, ActivateDeskNameView) {
   // All should be selected.
   EXPECT_TRUE(desk_name_view_1->HasSelection());
   const auto* desks_controller = DesksController::Get();
-  auto* desk_1 = desks_controller->desks()[0].get();
+  auto* desk_1 = desks_controller->GetDeskAtIndex(0);
   EXPECT_EQ(desk_1->name(), desk_name_view_1->GetSelectedText());
 
   // Arrow keys should not change neither the focus nor the highlight.
@@ -812,7 +812,7 @@ TEST_P(DesksOverviewHighlightControllerTest, RemoveDeskWhileNameIsHighlighted) {
   EXPECT_EQ(desk_name_view_1, GetHighlightedView());
 
   const auto* desks_controller = DesksController::Get();
-  auto* desk_1 = desks_controller->desks()[0].get();
+  auto* desk_1 = desks_controller->GetDeskAtIndex(0);
   RemoveDesk(desk_1);
 
   // Tabbing again should cause no crashes.

@@ -3314,7 +3314,7 @@ TEST_F(SavedDeskTest, WindowOpacityResetAfterImmediateExit) {
 
   // Activate the second desk which has no windows. Test that all the windows
   // have their opacity restored.
-  ActivateDesk(desks_controller->desks()[1].get());
+  ActivateDesk(desks_controller->GetDeskAtIndex(1));
   EXPECT_EQ(1.f, test_window1->layer()->opacity());
   EXPECT_EQ(1.f, test_window2->layer()->opacity());
   EXPECT_EQ(1.f, test_window3->layer()->opacity());
@@ -4352,7 +4352,7 @@ TEST_F(DeskSaveAndRecallTest, RecallSavedDesk) {
   // Verify that a new desk has been created and that it has the name of the
   // saved desk.
   EXPECT_EQ(2ul, desks_controller->desks().size());
-  EXPECT_EQ(kDeskName, desks_controller->desks()[1]->name());
+  EXPECT_EQ(kDeskName, desks_controller->GetDeskAtIndex(1)->name());
 
   // Verify that the saved desk has been deleted.
   EXPECT_TRUE(GetAllEntries().empty());

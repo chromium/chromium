@@ -857,14 +857,14 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchMultipleDeskTemplates) {
   // Remove "Test Desk Name (1)", which means the next created desk from
   // template will have that name. Then it will skip (2) since it already
   // exists, and create the next desk with (3).
-  RemoveDesk(desks_controller->desks()[2].get());
+  RemoveDesk(desks_controller->GetDeskAtIndex(2));
   check_launch_template_desk_name(std::u16string(kDeskName).append(u" (1)"));
   check_launch_template_desk_name(std::u16string(kDeskName).append(u" (3)"));
 
   // Same as above, but make sure that deleting the desk with the exact template
   // name still functions the same by only filling in whatever name is
   // available.
-  RemoveDesk(desks_controller->desks()[1].get());
+  RemoveDesk(desks_controller->GetDeskAtIndex(1));
   check_launch_template_desk_name(kDeskName);
   check_launch_template_desk_name(std::u16string(kDeskName).append(u" (4)"));
 }
@@ -1605,7 +1605,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchSnappedWindow) {
     // Remove a desk first, otherwise we will run into an accessibility error
     // with `DeskPreviewView` upon entering overview.
     auto* desks_controller = ash::DesksController::Get();
-    RemoveDesk(desks_controller->desks()[1].get());
+    RemoveDesk(desks_controller->GetDeskAtIndex(1));
 
     // Enter overview and launch the same template.
     ash::ToggleOverview();
@@ -2210,8 +2210,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
     // Change desk name to avoid duplication on template name. Having duplicate
     // names invokes a workflow that involves showing and accepting the replace
     // dialog, which is unnecessary for this test.
-    desks_controller->desks()[active_desk_index]->SetName(
-        base::UTF8ToUTF16(base::NumberToString(i)), true);
+    desks_controller->GetDeskAtIndex(active_desk_index)
+        ->SetName(base::UTF8ToUTF16(base::NumberToString(i)), true);
 
     // Exit and renenter overview to save the next template. Once we are viewing
     // the grid we can't go back to regular overview unless we exit overview or
@@ -2320,7 +2320,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchMultipleDeskTemplates) {
   auto* desks_controller = ash::DesksController::Get();
 
   ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
-  desks_controller->desks()[0]->SetName(kDeskName, true);
+  desks_controller->GetDeskAtIndex(0)->SetName(kDeskName, true);
 
   // Save a template.
   ash::ToggleOverview();
@@ -2348,7 +2348,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchMultipleDeskTemplates) {
 
   // Launching a desk from the template creates a desk with the same name as
   // the template.
-  desks_controller->desks()[0]->SetName(u"Desk", true);
+  desks_controller->GetDeskAtIndex(0)->SetName(u"Desk", true);
   check_launch_template_desk_name(kDeskName);
 
   // Launch more desks from the template and verify that the newly create desks
@@ -2359,14 +2359,14 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchMultipleDeskTemplates) {
   // Remove "Test Desk Name (1)", which means the next created desk from
   // template will have that name. Then it will skip (2) since it already
   // exists, and create the next desk with (3).
-  RemoveDesk(desks_controller->desks()[2].get());
+  RemoveDesk(desks_controller->GetDeskAtIndex(2));
   check_launch_template_desk_name(std::u16string(kDeskName).append(u"(1)"));
   check_launch_template_desk_name(std::u16string(kDeskName).append(u"(3)"));
 
   // Same as above, but make sure that deleting the desk with the exact template
   // name still functions the same by only filling in whatever name is
   // available.
-  RemoveDesk(desks_controller->desks()[1].get());
+  RemoveDesk(desks_controller->GetDeskAtIndex(1));
   check_launch_template_desk_name(kDeskName);
   check_launch_template_desk_name(std::u16string(kDeskName).append(u"(4)"));
 }

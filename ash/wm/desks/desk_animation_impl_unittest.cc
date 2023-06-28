@@ -225,7 +225,7 @@ class OverviewDeskNavigationTest : public AshTestBase {
     NewDesk();
     auto* desks_controller = DesksController::Get();
     ASSERT_EQ(2u, desks_controller->desks().size());
-    EXPECT_TRUE(desks_controller->desks()[0].get()->is_active());
+    EXPECT_TRUE(desks_controller->GetDeskAtIndex(0)->is_active());
   }
 
  private:
@@ -258,7 +258,7 @@ TEST_F(OverviewDeskNavigationTest, SwitchDesksWithoutExitingOverview) {
   waiter.Wait();
 
   // Verify that we have switched desks and are still in overview.
-  EXPECT_TRUE(desks_controller->desks()[1].get()->is_active());
+  EXPECT_TRUE(desks_controller->GetDeskAtIndex(1)->is_active());
   ASSERT_TRUE(overview_controller->InOverviewSession());
 }
 
@@ -279,7 +279,7 @@ TEST_F(OverviewDeskNavigationTest, ClickingMiniViewExitsOverview) {
   // Activate the second desk by clicking on its mini view and wait for the desk
   // switch animation.
   auto* desks_controller = DesksController::Get();
-  const Desk* desk_2 = desks_controller->desks()[1].get();
+  const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   EXPECT_EQ(0, desks_controller->GetActiveDeskIndex());
   auto* mini_view = desks_bar_view->mini_views().back();
   EXPECT_EQ(desk_2, mini_view->desk());
@@ -329,7 +329,7 @@ TEST_F(OverviewDeskNavigationTest, ShortSwipeStaysInOverview) {
 
   // Checks that as part of the animation, we have already activated the
   // expected ending desk.
-  EXPECT_TRUE(desks_controller->desks()[1].get()->is_active());
+  EXPECT_TRUE(desks_controller->GetDeskAtIndex(1)->is_active());
   ASSERT_TRUE(overview_controller->InOverviewSession());
 
   // End the swipe animation and wait for the desk activation animation to
@@ -342,7 +342,7 @@ TEST_F(OverviewDeskNavigationTest, ShortSwipeStaysInOverview) {
 
   // Verify that the original active desk is once again activated (meaning that
   // we animated back to it), and are still in overview.
-  EXPECT_TRUE(desks_controller->desks()[0].get()->is_active());
+  EXPECT_TRUE(desks_controller->GetDeskAtIndex(0)->is_active());
   ASSERT_TRUE(overview_controller->InOverviewSession());
 
   // Verify that the grid bounds haven't changed, especially since we
@@ -377,7 +377,7 @@ TEST_F(OverviewDeskNavigationTest, CannotToggleOverviewDuringAnimation) {
   // desk (not the original active desk) and that the attempt to exit overview
   // during the animation was unsuccessful.
   desks_controller->EndSwipeAnimation();
-  EXPECT_TRUE(desks_controller->desks()[1].get()->is_active());
+  EXPECT_TRUE(desks_controller->GetDeskAtIndex(1)->is_active());
   ASSERT_TRUE(overview_controller->InOverviewSession());
 }
 
