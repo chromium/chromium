@@ -39,7 +39,6 @@ const UserCreationScreenElementBase = mixinBehaviors(
  */
 const UserCreationUIState = {
   CREATE: 'create',
-  CHILD: 'child',
 };
 
 /**
@@ -51,22 +50,6 @@ const UserCreationUserType = {
   CHILD: 'child',
 };
 
-/**
- * Sign in method for setting up the device for child.
- * @enum {string}
- */
-const UserCreationSignInMethod = {
-  CREATE: 'create',
-  SIGNIN: 'signin',
-};
-
-/**
- * @typedef {{
- *   learnMoreDialog:  OobeModalDialog,
- *   learnMoreLink: HTMLAnchorElement,
- * }}
- */
-UserCreationScreenElementBase.$;
 
 class UserCreation extends UserCreationScreenElementBase {
   static get is() {
@@ -83,13 +66,6 @@ class UserCreation extends UserCreationScreenElementBase {
        * The currently selected user type.
        */
       selectedUserType: {
-        type: String,
-      },
-
-      /**
-       * The currently selected sign in method.
-       */
-      selectedSignInMethod: {
         type: String,
       },
 
@@ -139,15 +115,11 @@ class UserCreation extends UserCreationScreenElementBase {
 
   onBeforeShow() {
     this.selectedUserType = UserCreationUserType.SELF;
-    this.selectedSignInMethod = '';
     this.titleKey_ = this.isBackButtonVisible_ ? 'userCreationAddPersonTitle' :
                                                  'userCreationTitle';
     this.subtitleKey_ = this.isBackButtonVisible_ ?
         'userCreationAddPersonSubtitle' :
         'userCreationSubtitle';
-    if (this.uiStep === UserCreationUIState.CHILD) {
-      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.GAIA_SIGNIN);
-    }
   }
 
   /** @override */
@@ -171,12 +143,7 @@ class UserCreation extends UserCreationScreenElementBase {
   }
 
   onBackClicked_() {
-    if (this.uiStep === UserCreationUIState.CHILD) {
-      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.USER_CREATION);
-      this.setUIStep(UserCreationUIState.CREATE);
-    } else {
-      this.userActed('cancel');
-    }
+    this.userActed('cancel');
   }
 
   onNextClicked_() {
@@ -184,25 +151,9 @@ class UserCreation extends UserCreationScreenElementBase {
       if (this.selectedUserType === UserCreationUserType.SELF) {
         this.userActed('signin');
       } else if (this.selectedUserType === UserCreationUserType.CHILD) {
-        Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.GAIA_SIGNIN);
-        this.setUIStep(UserCreationUIState.CHILD);
-      }
-    } else if (this.uiStep === UserCreationUIState.CHILD) {
-      if (this.selectedSignInMethod === UserCreationSignInMethod.CREATE) {
-        this.userActed('child-account-create');
-      } else if (
-          this.selectedSignInMethod === UserCreationSignInMethod.SIGNIN) {
-        this.userActed('child-signin');
+        this.userActed('add-child');
       }
     }
-  }
-
-  onLearnMoreClicked_() {
-    this.$.learnMoreDialog.showDialog();
-  }
-
-  focusLearnMoreLink_() {
-    this.$.learnMoreLink.focus();
   }
 }
 customElements.define(UserCreation.is, UserCreation);

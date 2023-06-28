@@ -1729,6 +1729,8 @@ source_set("ash") {
     "login/saml/saml_profile_prefs.h",
     "login/screen_manager.cc",
     "login/screen_manager.h",
+    "login/screens/add_child_screen.cc",
+    "login/screens/add_child_screen.h",
     "login/screens/app_downloading_screen.cc",
     "login/screens/app_downloading_screen.h",
     "login/screens/arc_vm_data_migration_screen.cc",

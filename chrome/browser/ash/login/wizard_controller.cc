@@ -51,6 +51,7 @@
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/ash/login/screens/add_child_screen.h"
 #include "chrome/browser/ash/login/screens/app_downloading_screen.h"
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
@@ -131,6 +132,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/ash/login/add_child_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
@@ -807,6 +809,12 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnUserCreationScreenExit,
                           weak_factory_.GetWeakPtr())));
 
+  append(std::make_unique<AddChildScreen>(
+      oobe_ui->GetView<AddChildScreenHandler>()->AsWeakPtr(),
+      oobe_ui->GetErrorScreen(),
+      base::BindRepeating(&WizardController::OnAddChildScreenExit,
+                          weak_factory_.GetWeakPtr())));
+
   append(std::make_unique<EduCoexistenceLoginScreen>(
       base::BindRepeating(&WizardController::OnEduCoexistenceLoginScreenExit,
                           weak_factory_.GetWeakPtr())));
@@ -979,6 +987,10 @@ void WizardController::ShowGaiaPasswordChangedScreen(
 
 void WizardController::ShowGaiaInfoScreen() {
   SetCurrentScreen(GetScreen(GaiaInfoScreenView::kScreenId));
+}
+
+void WizardController::ShowAddChildScreen() {
+  SetCurrentScreen(GetScreen(AddChildScreenView::kScreenId));
 }
 
 void WizardController::ShowEnrollmentScreen() {
@@ -1215,13 +1227,8 @@ void WizardController::OnUserCreationScreenExit(
           QuickStartScreen::FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS);
       AdvanceToScreen(QuickStartView::kScreenId);
       break;
-    case UserCreationScreen::Result::CHILD_SIGNIN:
-      GetScreen<GaiaScreen>()->LoadOnlineForChildSignin();
-      AdvanceToScreen(GaiaView::kScreenId);
-      break;
-    case UserCreationScreen::Result::CHILD_ACCOUNT_CREATE:
-      GetScreen<GaiaScreen>()->LoadOnlineForChildSignup();
-      AdvanceToScreen(GaiaView::kScreenId);
+    case UserCreationScreen::Result::ADD_CHILD:
+      ShowAddChildScreen();
       break;
     case UserCreationScreen::Result::ENTERPRISE_ENROLL:
       ShowEnrollmentScreenIfEligible();
@@ -1311,6 +1318,35 @@ void WizardController::OnGaiaInfoScreenExit(GaiaInfoScreen::Result result) {
     case GaiaInfoScreen::Result::kNext:
     case GaiaInfoScreen::Result::kNotApplicable:
       AdvanceToSigninScreen();
+      break;
+  }
+}
+
+void WizardController::OnAddChildScreenExit(AddChildScreen::Result result) {
+  OnScreenExit(AddChildScreenView::kScreenId,
+               AddChildScreen::GetResultString(result));
+  switch (result) {
+    case AddChildScreen::Result::CHILD_SIGNIN:
+      GetScreen<GaiaScreen>()->LoadOnlineForChildSignin();
+      AdvanceToScreen(GaiaView::kScreenId);
+      break;
+    case AddChildScreen::Result::CHILD_ACCOUNT_CREATE:
+      GetScreen<GaiaScreen>()->LoadOnlineForChildSignup();
+      AdvanceToScreen(GaiaView::kScreenId);
+      break;
+    case AddChildScreen::Result::ENTERPRISE_ENROLL:
+      ShowEnrollmentScreenIfEligible();
+      break;
+    case AddChildScreen::Result::KIOSK_ENTERPRISE_ENROLL:
+      wizard_context_->enrollment_preference_ =
+          WizardContext::EnrollmentPreference::kKiosk;
+      ShowEnrollmentScreenIfEligible();
+      break;
+    case AddChildScreen::Result::SKIPPED:
+      AdvanceToSigninScreen();
+      break;
+    case AddChildScreen::Result::BACK:
+      AdvanceToScreen(UserCreationView::kScreenId);
       break;
   }
 }
@@ -2515,6 +2551,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowDisplaySizeScreen();
   } else if (screen_id == ChoobeScreenView::kScreenId) {
     ShowChoobeScreen();
+  } else if (screen_id == AddChildScreenView::kScreenId) {
+    ShowAddChildScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == FamilyLinkNoticeView::kScreenId ||

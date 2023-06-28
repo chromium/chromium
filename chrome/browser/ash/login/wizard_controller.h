@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screen_manager.h"
+#include "chrome/browser/ash/login/screens/add_child_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
 #include "chrome/browser/ash/login/screens/choobe_screen.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
@@ -330,6 +331,7 @@ class WizardController : public OobeUI::Observer {
   void ShowGaiaPasswordChangedScreen(std::unique_ptr<UserContext> user_context);
   void ShowDrivePinningScreen();
   void ShowGaiaInfoScreen();
+  void ShowAddChildScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -416,6 +418,7 @@ class WizardController : public OobeUI::Observer {
   void OnDisplaySizeScreenExit(DisplaySizeScreen::Result result);
   void OnDrivePinningScreenExit(DrivePinningScreen::Result result);
   void OnGaiaInfoScreenExit(GaiaInfoScreen::Result result);
+  void OnAddChildScreenExit(AddChildScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.

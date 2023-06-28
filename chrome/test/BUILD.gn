@@ -4061,6 +4061,7 @@ if (!is_android) {
         "../browser/ash/login/saml/security_token_saml_test.h",
         "../browser/ash/login/saml/test_client_cert_saml_idp_mixin.cc",
         "../browser/ash/login/saml/test_client_cert_saml_idp_mixin.h",
+        "../browser/ash/login/screens/add_child_screen_browsertest.cc",
         "../browser/ash/login/screens/app_downloading_screen_browsertest.cc",
         "../browser/ash/login/screens/assistant_optin_flow_screen_browsertest.cc",
         "../browser/ash/login/screens/choobe_screen_browsertest.cc",

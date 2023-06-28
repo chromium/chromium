@@ -3150,26 +3150,15 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoTest, TransitionFromGaiaInfo) {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(GaiaInfoTest, SkipGaiaInfoForChildAccountCreation) {
+IN_PROC_BROWSER_TEST_F(GaiaInfoTest, SkipGaiaInfoForChildAccount) {
   WaitForOobeUI();
   WizardController::default_controller()->AdvanceToScreen(
       UserCreationView::kScreenId);
-  test::OobeJS().ClickOnPath({"user-creation", "childButton"});
-  test::OobeJS().ClickOnPath({"user-creation", "nextButton"});
-  test::OobeJS().ClickOnPath({"user-creation", "childCreateButton"});
-  test::OobeJS().ClickOnPath({"user-creation", "childNextButton"});
-  OobeScreenWaiter(GaiaView::kScreenId).Wait();
-}
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
 
-IN_PROC_BROWSER_TEST_F(GaiaInfoTest, SkipGaiaInfoForChildSignIn) {
-  WaitForOobeUI();
-  WizardController::default_controller()->AdvanceToScreen(
-      UserCreationView::kScreenId);
   test::OobeJS().ClickOnPath({"user-creation", "childButton"});
   test::OobeJS().ClickOnPath({"user-creation", "nextButton"});
-  test::OobeJS().ClickOnPath({"user-creation", "childSignInButton"});
-  test::OobeJS().ClickOnPath({"user-creation", "childNextButton"});
-  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  OobeScreenWaiter(AddChildScreenView::kScreenId).Wait();
 }
 
 class WizardControllerGaiaTest : public GaiaInfoTest {
@@ -3226,8 +3215,8 @@ IN_PROC_BROWSER_TEST_P(GoingBackFromGaiaScreenInChildFlowTest,
 
   test::OobeJS().ClickOnPath({"user-creation", "childButton"});
   test::OobeJS().ClickOnPath({"user-creation", "nextButton"});
-  test::OobeJS().ClickOnPath({"user-creation", std::get<1>(GetParam())});
-  test::OobeJS().ClickOnPath({"user-creation", "childNextButton"});
+  test::OobeJS().ClickOnPath({"add-child", std::get<1>(GetParam())});
+  test::OobeJS().ClickOnPath({"add-child", "childNextButton"});
 
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 

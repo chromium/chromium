@@ -21,8 +21,7 @@ namespace ash {
 namespace {
 
 constexpr char kUserActionSignIn[] = "signin";
-constexpr char kUserActionChildSignIn[] = "child-signin";
-constexpr char kUserActionChildAccountCreate[] = "child-account-create";
+constexpr char kUserActionAddChild[] = "add-child";
 constexpr char kUserActionCancel[] = "cancel";
 
 UserCreationScreen::UserCreationScreenExitTestDelegate* test_exit_delegate =
@@ -35,10 +34,8 @@ std::string UserCreationScreen::GetResultString(Result result) {
   switch (result) {
     case Result::SIGNIN:
       return "SignIn";
-    case Result::CHILD_SIGNIN:
-      return "SignInAsChild";
-    case Result::CHILD_ACCOUNT_CREATE:
-      return "CreateChildAccount";
+    case Result::ADD_CHILD:
+      return "AddChild";
     case Result::ENTERPRISE_ENROLL:
       return "EnterpriseEnroll";
     case Result::KIOSK_ENTERPRISE_ENROLL:
@@ -129,14 +126,8 @@ void UserCreationScreen::OnUserAction(const base::Value::List& args) {
   if (action_id == kUserActionSignIn) {
     context()->sign_in_as_child = false;
     RunExitCallback(Result::SIGNIN);
-  } else if (action_id == kUserActionChildSignIn) {
-    context()->sign_in_as_child = true;
-    context()->is_child_gaia_account_new = false;
-    RunExitCallback(Result::CHILD_SIGNIN);
-  } else if (action_id == kUserActionChildAccountCreate) {
-    context()->sign_in_as_child = true;
-    context()->is_child_gaia_account_new = true;
-    RunExitCallback(Result::CHILD_ACCOUNT_CREATE);
+  } else if (action_id == kUserActionAddChild) {
+    RunExitCallback(Result::ADD_CHILD);
   } else if (action_id == kUserActionCancel) {
     context()->is_user_creation_enabled = false;
     RunExitCallback(Result::CANCEL);

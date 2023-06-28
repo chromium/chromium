@@ -31,6 +31,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="OOBELegacyScreenName">
   <variant name="Adb-sideloading"/>
+  <variant name="Add-child"/>
   <variant name="App-downloading"/>
   <variant name="Assistant-optin-flow"/>
   <variant name="Auto-enrollment-check"/>
@@ -120,6 +121,11 @@ chromium-metrics-reviews@google.com.
 
 <variants name="OOBEScreenName_ExitReason">
   <variant name="Adb-sideloading.Next"/>
+  <variant name="Add-child.Back"/>
+  <variant name="Add-child.CreateChildAccount"/>
+  <variant name="Add-child.EnterpriseEnroll"/>
+  <variant name="Add-child.KioskEnterpriseEnroll"/>
+  <variant name="Add-child.SignInAsChild"/>
   <variant name="App-downloading.Next"/>
   <variant name="Assistant-optin-flow.Next"/>
   <variant name="Auto-enrollment-check.Next"/>
@@ -211,15 +217,30 @@ chromium-metrics-reviews@google.com.
   <variant name="Terms-of-service.Declined"/>
   <variant name="Theme-selection.Proceed"/>
   <variant name="User-creation.Cancel"/>
-  <variant name="User-creation.CreateChildAccount"/>
+  <variant name="User-creation.CreateChildAccount">
+    <obsolete>
+      This histogram was available before introducing software update sreen
+      which requiered split the add child step into it is own screen this
+      changes is implemented in M-117. Add-child.CreateChildAccount is replacing
+      this one.
+    </obsolete>
+  </variant>
   <variant name="User-creation.EnterpriseEnroll"/>
   <variant name="User-creation.KioskEnterpriseEnroll"/>
   <variant name="User-creation.SignIn"/>
-  <variant name="User-creation.SignInAsChild"/>
+  <variant name="User-creation.SignInAsChild">
+    <obsolete>
+      This histogram was available before introducing software update sreen
+      which requiered split the add child step into it is own screen this
+      changes is implemented in M-117. Add-child.SignInAsChild histogram is
+      replacing this one.
+    </obsolete>
+  </variant>
   <variant name="Wrong-hwid.Next"/>
 </variants>
 
 <variants name="OOBEScreenShownBeforeNetworkError">
+  <variant name="AddChild" summary="Add Child Screen"/>
   <variant name="Enrollment" summary="Enrollment or Autoenrollment"/>
   <variant name="Signin" summary="Signin Screen"/>
   <variant name="Update" summary="Update Screen"/>

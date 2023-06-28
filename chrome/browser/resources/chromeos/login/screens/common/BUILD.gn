@@ -27,6 +27,7 @@ js_type_check("closure_compile_local") {
       ]
   deps = [
     ":adb_sideloading",
+    ":add_child",
     ":app_downloading",
     ":app_launch_splash",
 
@@ -83,6 +84,18 @@ js_type_check("closure_compile_multidevice_setup") {
 
 js_library("adb_sideloading") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/adb_sideloading.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:multi_step_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/buttons:oobe_text_button",
+    "../../components/dialogs:oobe_adaptive_dialog",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("add_child") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/add_child.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior",
@@ -721,6 +734,7 @@ js_library("error_message") {
 html_to_js("web_components") {
   js_files = [
     "adb_sideloading.js",
+    "add_child.js",
     "cryptohome_recovery_setup.js",
     "app_downloading.js",
     "app_launch_splash.js",

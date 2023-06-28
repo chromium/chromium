@@ -31,15 +31,10 @@ constexpr char kUserCreationId[] = "user-creation";
 
 const test::UIPath kUserCreationDialog = {kUserCreationId,
                                           "userCreationDialog"};
-const test::UIPath kChildSignInDialog = {kUserCreationId, "childSignInDialog"};
 const test::UIPath kSelfButton = {kUserCreationId, "selfButton"};
 const test::UIPath kChildButton = {kUserCreationId, "childButton"};
 const test::UIPath kBackButton = {kUserCreationId, "backButton"};
 const test::UIPath kNextButton = {kUserCreationId, "nextButton"};
-const test::UIPath kChildCreateButton = {kUserCreationId, "childCreateButton"};
-const test::UIPath kChildSignInButton = {kUserCreationId, "childSignInButton"};
-const test::UIPath kChildBackButton = {kUserCreationId, "childBackButton"};
-const test::UIPath kChildNextButton = {kUserCreationId, "childNextButton"};
 
 class UserCreationScreenTest
     : public OobeBaseTest,
@@ -65,15 +60,6 @@ class UserCreationScreenTest
     test::OobeJS().ExpectHasAttribute("checked", kSelfButton);
     test::OobeJS().ClickOnPath(element_id);
     test::OobeJS().TapOnPath(kNextButton);
-  }
-
-  void SelectSetUpMethodOnChildScreen(test::UIPath element_id) {
-    OobeScreenWaiter(UserCreationView::kScreenId).Wait();
-    ASSERT_FALSE(LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown());
-    test::OobeJS().ExpectHiddenPath(kUserCreationDialog);
-    test::OobeJS().ExpectVisiblePath(kChildSignInDialog);
-    test::OobeJS().ClickOnPath(element_id);
-    test::OobeJS().TapOnPath(kChildNextButton);
   }
 
   void WaitForScreenExit() {
@@ -127,50 +113,11 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, SignInForSelf) {
   }
 }
 
-// Verify flow for setting up the device for a child with a newly created gaia
-// account.
-IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, CreateAccountForChild) {
+IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, SelectChild) {
   SelectUserTypeOnUserCreationScreen(kChildButton);
-  SelectSetUpMethodOnChildScreen(kChildCreateButton);
   WaitForScreenExit();
-  EXPECT_TRUE(LoginDisplayHost::default_host()
-                  ->GetWizardContextForTesting()
-                  ->sign_in_as_child);
-  EXPECT_TRUE(LoginDisplayHost::default_host()
-                  ->GetWizardContextForTesting()
-                  ->is_child_gaia_account_new);
-  EXPECT_EQ(screen_result_.value(),
-            UserCreationScreen::Result::CHILD_ACCOUNT_CREATE);
-  OobeScreenWaiter(GaiaView::kScreenId).Wait();
-}
-
-// Verify flow for setting up the device for a child with an existing gaia
-// account.
-IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, SignInForChild) {
-  SelectUserTypeOnUserCreationScreen(kChildButton);
-  SelectSetUpMethodOnChildScreen(kChildSignInButton);
-  WaitForScreenExit();
-  EXPECT_TRUE(LoginDisplayHost::default_host()
-                  ->GetWizardContextForTesting()
-                  ->sign_in_as_child);
-  EXPECT_FALSE(LoginDisplayHost::default_host()
-                   ->GetWizardContextForTesting()
-                   ->is_child_gaia_account_new);
-  EXPECT_EQ(screen_result_.value(), UserCreationScreen::Result::CHILD_SIGNIN);
-  OobeScreenWaiter(GaiaView::kScreenId).Wait();
-}
-
-// Verify back button is hidden during the oobe flow (when no existing users).
-IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, Cancel) {
-  SelectUserTypeOnUserCreationScreen(kChildButton);
-
-  test::OobeJS().ExpectHiddenPath(kUserCreationDialog);
-  test::OobeJS().ExpectVisiblePath(kChildSignInDialog);
-  test::OobeJS().TapOnPath(kChildBackButton);
-
-  test::OobeJS().ExpectVisiblePath(kUserCreationDialog);
-  test::OobeJS().ExpectHiddenPath(kChildSignInDialog);
-  test::OobeJS().ExpectHiddenPath(kBackButton);
+  EXPECT_EQ(screen_result_.value(), UserCreationScreen::Result::ADD_CHILD);
+  OobeScreenWaiter(AddChildScreenView::kScreenId).Wait();
 }
 
 // Verify enterprise enrollment button is available during the oobe flow (when
@@ -218,15 +165,6 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenLoginTest, Cancel) {
   ASSERT_FALSE(LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown());
 
   test::OobeJS().ExpectVisiblePath(kUserCreationDialog);
-  test::OobeJS().ClickOnPath(kChildButton);
-  test::OobeJS().TapOnPath(kNextButton);
-
-  test::OobeJS().ExpectHiddenPath(kUserCreationDialog);
-  test::OobeJS().ExpectVisiblePath(kChildSignInDialog);
-  test::OobeJS().TapOnPath(kChildBackButton);
-
-  test::OobeJS().ExpectVisiblePath(kUserCreationDialog);
-  test::OobeJS().ExpectHiddenPath(kChildSignInDialog);
   test::OobeJS().ExpectVisiblePath(kBackButton);
   test::OobeJS().TapOnPath(kBackButton);
 

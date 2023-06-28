@@ -7,6 +7,7 @@
 
 // COMMON SCREENS
 import './screens/common/adb_sideloading.js';
+import './screens/common/add_child.js';
 import './screens/common/app_downloading.js';
 import './screens/common/app_launch_splash.js';
 import './screens/common/assistant_optin.js';
@@ -73,6 +74,7 @@ import './screens/oobe/update.js';
  */
 export const commonScreensList = [
   {tag: 'adb-sideloading-element', id: 'adb-sideloading'},
+  {tag: 'add-child-element', id: 'add-child'},
   {tag: 'app-downloading-element', id: 'app-downloading'},
   {tag: 'app-launch-splash-element', id: 'app-launch-splash'},
   {tag: 'assistant-optin-element', id: 'assistant-optin-flow'},

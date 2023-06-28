@@ -36,23 +36,6 @@ void UserCreationScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_USER_CREATION_CHILD_BUTTON_LABEL);
   builder->Add("createForChildDescription",
                IDS_OOBE_USER_CREATION_CHILD_BUTTON_DESCRIPTION);
-  builder->AddF("childSignInTitle", IDS_OOBE_USER_CREATION_CHILD_SIGNIN_TITLE,
-                ui::GetChromeOSDeviceName());
-  builder->Add("childSignInSubtitle",
-               IDS_OOBE_USER_CREATION_CHILD_SIGNIN_SUBTITLE);
-  builder->Add("createAccountForChildLabel",
-               IDS_OOBE_USER_CREATION_CHILD_ACCOUNT_CREATION_BUTTON_LABEL);
-  builder->Add("signInForChildLabel",
-               IDS_OOBE_USER_CREATION_CHILD_SIGN_IN_BUTTON_LABEL);
-  builder->AddF("childSignInParentNotificationText",
-                IDS_OOBE_USER_CREATION_CHILD_SIGN_IN_PARENT_NOTIFICATION_TEXT,
-                ui::GetChromeOSDeviceName());
-  builder->Add("childSignInLearnMore",
-               IDS_OOBE_USER_CREATION_CHILD_SIGNIN_LEARN_MORE);
-  builder->Add("childSignInLearnMoreDialogTitle",
-               IDS_OOBE_USER_CREATION_CHILD_SIGN_IN_LEARN_MORE_DIALOG_TITLE);
-  builder->Add("childSignInLearnMoreDialogText",
-               IDS_OOBE_USER_CREATION_CHILD_SIGN_IN_LEARN_MORE_DIALOG_TEXT);
 }
 
 void UserCreationScreenHandler::Show() {

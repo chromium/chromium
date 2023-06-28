@@ -25,8 +25,7 @@ class UserCreationScreen
  public:
   enum class Result {
     SIGNIN,
-    CHILD_SIGNIN,
-    CHILD_ACCOUNT_CREATE,
+    ADD_CHILD,
     ENTERPRISE_ENROLL,
     CANCEL,
     SKIPPED,

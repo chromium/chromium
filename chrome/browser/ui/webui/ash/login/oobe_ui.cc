@@ -42,6 +42,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/about_ui.h"
+#include "chrome/browser/ui/webui/ash/login/add_child_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
@@ -517,6 +518,8 @@ void OobeUI::ConfigureOobeDisplay() {
   if (features::IsOobeDisplaySizeEnabled()) {
     AddScreenHandler(std::make_unique<DisplaySizeScreenHandler>());
   }
+
+  AddScreenHandler(std::make_unique<AddChildScreenHandler>());
 
   if (features::IsOobeDrivePinningEnabled()) {
     AddScreenHandler(std::make_unique<DrivePinningScreenHandler>());
