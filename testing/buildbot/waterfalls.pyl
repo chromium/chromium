@@ -5097,7 +5097,7 @@
       },
       'Linux ASan Tests (sandboxed)': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'sandboxed_chromium_memory_linux_gtests',
