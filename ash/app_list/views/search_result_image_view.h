@@ -5,9 +5,6 @@
 #ifndef ASH_APP_LIST_VIEWS_SEARCH_RESULT_IMAGE_VIEW_H_
 #define ASH_APP_LIST_VIEWS_SEARCH_RESULT_IMAGE_VIEW_H_
 
-#include <memory>
-#include <string>
-
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/search_result_base_view.h"
 #include "base/memory/raw_ptr.h"
@@ -24,8 +21,7 @@ class SearchResultImageListView;
 class ASH_EXPORT SearchResultImageView : public SearchResultBaseView {
  public:
   METADATA_HEADER(SearchResultImageView);
-  explicit SearchResultImageView(SearchResultImageListView* list_view,
-                                 std::string dummy_result_id);
+  explicit SearchResultImageView(SearchResultImageListView* list_view);
   SearchResultImageView(const SearchResultImageView&) = delete;
   SearchResultImageView& operator=(const SearchResultImageView&) = delete;
   ~SearchResultImageView() override;

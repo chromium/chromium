@@ -87,12 +87,9 @@ SearchResultImageListView::SearchResultImageListView(
   image_view_container_->SetDefault(views::kMarginsKey,
                                     gfx::Insets::VH(0, kSpaceBetweenImages));
 
-  // TODO(crbug.com/1352636) replace mock results with real results.
-  int dummy_search_result_id = 0;
   for (size_t i = 0;
        i < SharedAppListConfig::instance().image_search_max_results(); ++i) {
-    image_views_.emplace_back(new SearchResultImageView(
-        this, "dummy id" + base::NumberToString(++dummy_search_result_id)));
+    image_views_.emplace_back(new SearchResultImageView(this));
     image_views_.back()->SetPaintToLayer();
     image_views_.back()->layer()->SetFillsBoundsOpaquely(false);
     image_views_.back()->SetVisible(true);
@@ -125,8 +122,6 @@ SearchResultImageListView::SearchResultImageListView(
               gfx::Font::Weight::MEDIUM));
     }
 
-    // TODO(crbug.com/1352636): Double check which part of the file path we want
-    // to elide.
     // Elide the file path if needed.
     if (title_string_ids[idx] == IDS_ASH_SEARCH_RESULT_IMAGE_FILE_LOCATION) {
       content_label->SetElideBehavior(gfx::ElideBehavior::ELIDE_MIDDLE);
@@ -211,7 +206,6 @@ void SearchResultImageListView::OnSelectedResultChanged() {
 }
 
 int SearchResultImageListView::DoUpdate() {
-  // TODO(crbug.com/1352636) once backend results are available.
   std::vector<SearchResult*> display_results =
       SearchModel::FilterSearchResultsByFunction(
           results(), base::BindRepeating([](const SearchResult& result) {

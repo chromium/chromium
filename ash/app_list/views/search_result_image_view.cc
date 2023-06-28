@@ -5,6 +5,7 @@
 #include "ash/app_list/views/search_result_image_view.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/search_result_image_list_view.h"
@@ -65,8 +66,7 @@ class ImagePreviewView : public views::ImageButton {
 }  // namespace
 
 SearchResultImageView::SearchResultImageView(
-    SearchResultImageListView* list_view,
-    std::string dummy_result_id)
+    SearchResultImageListView* list_view)
     : list_view_(list_view) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   result_image_ = AddChildView(std::make_unique<ImagePreviewView>());
@@ -101,8 +101,6 @@ void SearchResultImageView::OnImageViewPressed(const ui::Event& event) {
 void SearchResultImageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kListBoxOption;
   node_data->SetName(result() ? result()->title() : u"");
-  // TODO(crbug.com/1352636) update with internationalized accessible name if we
-  // launch this feature.
 }
 
 void SearchResultImageView::OnGestureEvent(ui::GestureEvent* event) {
