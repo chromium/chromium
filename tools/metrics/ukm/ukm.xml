@@ -1075,6 +1075,13 @@ be describing additional metrics about the same event.
       auction.
     </summary>
   </metric>
+  <metric name="NumConfigPromises">
+    <summary>
+      The total number of config promises for this auction. For a multi-seller
+      auction, this includes promises from both the top-level auction and all
+      component auctions within.
+    </summary>
+  </metric>
   <metric name="NumDistinctOwnersWithInterestGroups">
     <summary>
       The number of buyers with InterestGroups participating in an auction,

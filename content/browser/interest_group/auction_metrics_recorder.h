@@ -85,6 +85,11 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
   // Records the k-anonymity mode used for this auction.
   void SetKAnonymityBidMode(auction_worklet::mojom::KAnonymityBidMode bid_mode);
 
+  // Records the total number of config promises for this auction. For a
+  // multi-seller auction, this includes promises from both the top-level
+  // auction and all component auctions within.
+  void SetNumConfigPromises(int64_t num_config_promises);
+
   // Records outcomes on the boundary between GenerateBid and ScoreAd.
   // Each of these is called once for each InterestGroup for which we called
   // GenerateBid.

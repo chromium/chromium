@@ -2084,8 +2084,10 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                 Entry::kNumBidsFilteredDuringInterestGroupLoadName,
                 Entry::kNumBidsFilteredDuringReprioritizationName,
                 Entry::kNumBidsFilteredByPerBuyerLimitsName,
-                /* GenerateBid outcome metrics */
+                /* Properties of the auction metrics */
                 Entry::kKAnonymityBidModeName,
+                Entry::kNumConfigPromisesName,
+                /* GenerateBid outcome metrics */
                 Entry::kNumInterestGroupsWithNoBidsName,
                 Entry::kNumInterestGroupsWithOnlyNonKAnonBidName,
                 Entry::kNumInterestGroupsWithSameBidForKAnonAndNonKAnonName,
@@ -2176,6 +2178,11 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
     MetricsExpectations& SetNumBidderWorklets(int64_t value) {
       num_bidder_worklets = value;
+      return *this;
+    }
+
+    MetricsExpectations& SetNumConfigPromises(int64_t value) {
+      num_config_promises = value;
       return *this;
     }
 
@@ -2290,6 +2297,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     absl::optional<int64_t> num_sellers;
     int64_t num_distinct_owners = 0;
     int64_t num_bidder_worklets = 0;
+    int64_t num_config_promises = 0;
     int64_t num_bids_aborted_by_buyer_cumulative_timeout = 0;
     int64_t num_bids_aborted_by_bidder_worklet_fatal_error = 0;
     int64_t num_bids_filtered_during_interest_group_load = 0;
@@ -2387,6 +2395,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     EXPECT_THAT(ukm_metrics,
                 HasMetricWithValue(UkmEntry::kKAnonymityBidModeName,
                                    static_cast<int64_t>(kanon_mode_)));
+    EXPECT_THAT(ukm_metrics,
+                HasMetricWithValue(UkmEntry::kNumConfigPromisesName,
+                                   expectations.num_config_promises));
     EXPECT_THAT(
         ukm_metrics,
         HasMetric(UkmEntry::kLoadInterestGroupPhaseLatencyInMillisName));
@@ -6499,6 +6510,14 @@ TEST_F(AuctionRunnerTest, PromiseAuctionSignals) {
   EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
+
+  CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
+                   .SetNumBidderWorklets(2)
+                   .SetNumConfigPromises(1)
+                   .SetNumOwnersAndDistinctOwners(2)
+                   .SetNumInterestGroups(2)
+                   .SetNumInterestGroupsWithOnlyNonKAnonBid(2)
+                   .SetNumSellers(1));
 }
 
 // Checks case where auction signals promises resolves before the bidder worklet

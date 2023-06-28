@@ -225,6 +225,11 @@ void AuctionMetricsRecorder::SetKAnonymityBidMode(
   builder_.SetKAnonymityBidMode(static_cast<int64_t>(bid_mode));
 }
 
+void AuctionMetricsRecorder::SetNumConfigPromises(int64_t num_config_promises) {
+  builder_.SetNumConfigPromises(
+      GetExponentialBucketMinForCounts1000(num_config_promises));
+}
+
 void AuctionMetricsRecorder::RecordInterestGroupWithNoBids() {
   ++num_interest_groups_with_no_bids_;
 }

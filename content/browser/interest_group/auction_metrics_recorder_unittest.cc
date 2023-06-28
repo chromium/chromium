@@ -250,6 +250,14 @@ TEST_F(AuctionMetricsRecorderTest, KAnonymityBidMode) {
                 auction_worklet::mojom::KAnonymityBidMode::kEnforce));
 }
 
+TEST_F(AuctionMetricsRecorderTest, NumConfigPromises) {
+  recorder().SetNumConfigPromises(14);
+  recorder().OnAuctionEnd(AuctionResult::kSuccess);
+
+  // 14 becomes 13 because of bucketing
+  EXPECT_EQ(GetMetricValue(UkmEntry::kNumConfigPromisesName), 13);
+}
+
 TEST_F(AuctionMetricsRecorderTest, NumInterestGroupsWithNoBids) {
   for (size_t i = 0; i < 14; ++i) {
     recorder().RecordInterestGroupWithNoBids();

@@ -1802,6 +1802,7 @@ InterestGroupAuction::InterestGroupAuction(
 
   if (!parent_) {
     auction_metrics_recorder_->SetKAnonymityBidMode(kanon_mode);
+    auction_metrics_recorder_->SetNumConfigPromises(config_->NumPromises());
   }
 }
 
