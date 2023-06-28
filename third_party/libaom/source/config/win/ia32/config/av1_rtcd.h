@@ -135,11 +135,6 @@ void av1_build_compound_diffwtd_mask_d16_sse4_1(uint8_t *mask, DIFFWTD_MASK_TYPE
 void av1_build_compound_diffwtd_mask_d16_avx2(uint8_t *mask, DIFFWTD_MASK_TYPE mask_type, const CONV_BUF_TYPE *src0, int src0_stride, const CONV_BUF_TYPE *src1, int src1_stride, int h, int w, ConvolveParams *conv_params, int bd);
 RTCD_EXTERN void (*av1_build_compound_diffwtd_mask_d16)(uint8_t *mask, DIFFWTD_MASK_TYPE mask_type, const CONV_BUF_TYPE *src0, int src0_stride, const CONV_BUF_TYPE *src1, int src1_stride, int h, int w, ConvolveParams *conv_params, int bd);
 
-int64_t av1_calc_frame_error_c(const uint8_t *const ref, int stride, const uint8_t *const dst, int p_width, int p_height, int p_stride);
-int64_t av1_calc_frame_error_sse2(const uint8_t *const ref, int stride, const uint8_t *const dst, int p_width, int p_height, int p_stride);
-int64_t av1_calc_frame_error_avx2(const uint8_t *const ref, int stride, const uint8_t *const dst, int p_width, int p_height, int p_stride);
-RTCD_EXTERN int64_t (*av1_calc_frame_error)(const uint8_t *const ref, int stride, const uint8_t *const dst, int p_width, int p_height, int p_stride);
-
 void av1_calc_indices_dim1_c(const int16_t *data, const int16_t *centroids, uint8_t *indices, int64_t *total_dist, int n, int k);
 void av1_calc_indices_dim1_sse2(const int16_t *data, const int16_t *centroids, uint8_t *indices, int64_t *total_dist, int n, int k);
 void av1_calc_indices_dim1_avx2(const int16_t *data, const int16_t *centroids, uint8_t *indices, int64_t *total_dist, int n, int k);
@@ -667,9 +662,10 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_AVX2) av1_build_compound_diffwtd_mask = av1_build_compound_diffwtd_mask_avx2;
     av1_build_compound_diffwtd_mask_d16 = av1_build_compound_diffwtd_mask_d16_c;
     if (flags & HAS_SSE4_1) av1_build_compound_diffwtd_mask_d16 = av1_build_compound_diffwtd_mask_d16_sse4_1;
-    if (flags & HAS_AVX2) av1_build_compound_diffwtd_mask_d16 = av1_build_compound_diffwtd_mask_d16_avx2;
-    av1_calc_frame_error = av1_calc_frame_error_sse2;
-    if (flags & HAS_AVX2) av1_calc_frame_error = av1_calc_frame_error_avx2;
+    if (flags & HAS_AVX2) {
+      av1_build_compound_diffwtd_mask_d16 =
+          av1_build_compound_diffwtd_mask_d16_avx2;
+    }
     av1_calc_indices_dim1 = av1_calc_indices_dim1_sse2;
     if (flags & HAS_AVX2) av1_calc_indices_dim1 = av1_calc_indices_dim1_avx2;
     av1_calc_indices_dim2 = av1_calc_indices_dim2_sse2;
