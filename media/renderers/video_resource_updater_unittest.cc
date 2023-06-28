@@ -13,6 +13,8 @@
 #include "base/test/task_environment.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/client/shared_bitmap_reporter.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/test/fake_output_surface.h"
 #include "components/viz/test/test_gles2_interface.h"
@@ -296,6 +298,15 @@ class VideoResourceUpdaterTest : public testing::Test {
     video_frame->metadata().copy_required = needs_copy;
     return video_frame;
   }
+
+#if BUILDFLAG(IS_WIN)
+  scoped_refptr<VideoFrame> CreateTestDCompSurfaceVideoFrame() {
+    scoped_refptr<VideoFrame> video_frame = CreateTestHardwareVideoFrame(
+        PIXEL_FORMAT_ARGB, GL_TEXTURE_EXTERNAL_OES);
+    video_frame->metadata().dcomp_surface = true;
+    return video_frame;
+  }
+#endif
 
   scoped_refptr<VideoFrame> CreateTestYuvHardwareVideoFrame(
       VideoPixelFormat format,
@@ -922,6 +933,52 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_TextureQuad) {
   EXPECT_EQ(1u, resources.release_callbacks.size());
   EXPECT_EQ(0u, GetSharedImageCount());
 }
+
+#if BUILDFLAG(IS_WIN)
+// Check that a video frame marked as containing a DComp surface turns into a
+// texture draw quad that is required for overlay.
+TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_DCompSurface) {
+  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
+  EXPECT_EQ(0u, GetSharedImageCount());
+  scoped_refptr<VideoFrame> video_frame = CreateTestDCompSurfaceVideoFrame();
+
+  VideoFrameExternalResources resources =
+      updater->CreateExternalResourcesFromVideoFrame(video_frame);
+  EXPECT_EQ(VideoFrameResourceType::STREAM_TEXTURE, resources.type);
+  EXPECT_EQ(1u, resources.resources.size());
+  EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
+            resources.resources[0].mailbox_holder.texture_target);
+  EXPECT_EQ(1u, resources.release_callbacks.size());
+  EXPECT_EQ(0u, GetSharedImageCount());
+
+  updater->ObtainFrameResources(video_frame);
+
+  std::unique_ptr<viz::CompositorRenderPass> pass =
+      viz::CompositorRenderPass::Create();
+  pass->SetNew(/*pass_id=*/viz::CompositorRenderPassId{1},
+               /*output_rect=*/gfx::Rect(video_frame->coded_size()),
+               /*damage_rect=*/gfx::Rect(),
+               /*transform_to_root_target=*/gfx::Transform());
+  updater->AppendQuads(
+      /*render_pass=*/pass.get(), video_frame,
+      /*transform=*/gfx::Transform(),
+      /*quad_rect=*/gfx::Rect(video_frame->coded_size()),
+      /*visible_quad_rect=*/gfx::Rect(video_frame->coded_size()),
+      gfx::MaskFilterInfo(), /*clip_rect=*/absl::nullopt,
+      /*context_opaque=*/true, /*draw_opacity=*/1.0,
+      /*sorting_context_id=*/0);
+
+  EXPECT_EQ(1u, pass->quad_list.size());
+
+  const viz::TextureDrawQuad* quad =
+      pass->quad_list.ElementAt(0)->DynamicCast<viz::TextureDrawQuad>();
+  EXPECT_NE(nullptr, quad);
+  EXPECT_EQ(true, quad->is_stream_video);
+  EXPECT_EQ(viz::OverlayPriority::kRequired, quad->overlay_priority_hint);
+
+  updater->ReleaseFrameResources();
+}
+#endif
 
 // Passthrough the sync token returned by the compositor if we don't have an
 // existing release sync token.

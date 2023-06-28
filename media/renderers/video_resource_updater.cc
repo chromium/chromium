@@ -734,6 +734,13 @@ void VideoResourceUpdater::AppendQuads(
       // (e.g. *_layer_overlay.cc).
       texture_quad->is_stream_video =
           frame_resource_type_ == VideoFrameResourceType::STREAM_TEXTURE;
+#if BUILDFLAG(IS_WIN)
+      // Windows uses DComp surfaces to e.g. hold MediaFoundation videos, which
+      // must be promoted to overlay to be composited correctly.
+      if (frame->metadata().dcomp_surface) {
+        texture_quad->overlay_priority_hint = viz::OverlayPriority::kRequired;
+      }
+#endif
       texture_quad->is_video_frame = true;
       texture_quad->hdr_metadata = frame->hdr_metadata();
       for (viz::ResourceId resource_id : texture_quad->resources) {

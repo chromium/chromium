@@ -1774,6 +1774,47 @@ TEST_P(GPURendererPixelTest,
       cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
+// Check that the renderer draws a fallback quad for quads that require overlay.
+TEST_P(GPURendererPixelTest, OverlayHintRequiredFallback) {
+  gfx::Rect rect(this->device_viewport_size_);
+
+  AggregatedRenderPassId id{1};
+  auto pass = CreateTestRootRenderPass(id, rect);
+
+  SharedQuadState* texture_quad_state = CreateTestSharedQuadState(
+      gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
+
+  // Add a texture quad with the overlay priority of "required". Most properties
+  // shouldn't matter since the renderer shouldn't attempt to draw this quad.
+  TextureDrawQuad* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+  const float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+  quad->SetNew(texture_quad_state, gfx::Rect(this->device_viewport_size_),
+               gfx::Rect(this->device_viewport_size_), false,
+               kInvalidResourceId, true, gfx::PointF(), gfx::PointF(),
+               SkColors::kTransparent, &vertex_opacity[0], false, false, false,
+               gfx::ProtectedVideoType::kClear);
+  quad->overlay_priority_hint = OverlayPriority::kRequired;
+
+  // Add a background that's not the expected fallback color.
+  SharedQuadState* color_quad_state = CreateTestSharedQuadState(
+      gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
+  auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  color_quad->SetNew(color_quad_state, rect, rect, SkColors::kWhite, false);
+
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+
+#if DCHECK_IS_ON()
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list, base::FilePath(FILE_PATH_LITERAL("magenta.png")),
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
+#else
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list, base::FilePath(FILE_PATH_LITERAL("black.png")),
+      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
+#endif
+}
+
 class IntersectingQuadPixelTest : public VizPixelTestWithParam {
  protected:
   void SetupQuadStateAndRenderPass() {
