@@ -1,4 +1,19 @@
 {
+    "AAudioInputStudy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseAAudioInput"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityPageZoom": [
         {
             "platforms": [
@@ -13740,21 +13755,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UnifiedSidePanel"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UseAAudioInput": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseAAudioInput"
                     ]
                 }
             ]
