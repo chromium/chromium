@@ -28,7 +28,9 @@ class CRWWKHTTPCookieStoreTest : public PlatformTest {
  public:
   CRWWKHTTPCookieStoreTest()
       : crw_cookie_store_([[CRWWKHTTPCookieStore alloc] init]) {
-    mock_http_cookie_store_ = OCMPartialMock(CreateDataStore().httpCookieStore);
+    wk_website_data_store_ = CreateDataStore();
+    mock_http_cookie_store_ =
+        OCMPartialMock(wk_website_data_store_.httpCookieStore);
     crw_cookie_store_.HTTPCookieStore = mock_http_cookie_store_;
     NSURL* test_cookie_url = [NSURL URLWithString:@"http://foo.google.com/bar"];
     test_cookie_1_ = [NSHTTPCookie cookieWithProperties:@{
@@ -102,6 +104,7 @@ class CRWWKHTTPCookieStoreTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   CRWWKHTTPCookieStore* crw_cookie_store_;
+  WKWebsiteDataStore* wk_website_data_store_ = nil;
   id mock_http_cookie_store_ = nil;
   NSHTTPCookie* test_cookie_1_ = nil;
   NSHTTPCookie* test_cookie_2_ = nil;
@@ -192,7 +195,9 @@ TEST_F(CRWWKHTTPCookieStoreTest, ChangeCookieStore) {
 
   // Change the internal cookie store.
   [mock_http_cookie_store_ stopMocking];
-  mock_http_cookie_store_ = OCMPartialMock(CreateDataStore().httpCookieStore);
+  wk_website_data_store_ = CreateDataStore();
+  mock_http_cookie_store_ =
+      OCMPartialMock(wk_website_data_store_.httpCookieStore);
   crw_cookie_store_.HTTPCookieStore = mock_http_cookie_store_;
 
   // Verify that internal getAllCookies is called.
