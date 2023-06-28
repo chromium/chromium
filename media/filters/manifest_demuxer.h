@@ -87,6 +87,9 @@ class MEDIA_EXPORT ManifestDemuxerEngineHost {
                                   const uint8_t* data,
                                   size_t data_size) = 0;
 
+  // Allow seeking from within an implementation.
+  virtual void RequestSeek(base::TimeDelta time) = 0;
+
   // Handle errors.
   virtual void OnError(PipelineStatus error) = 0;
 };
@@ -145,6 +148,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   // ManifestDemuxer takes and keeps ownership of `impl` for the lifetime of
   // both.
   ManifestDemuxer(scoped_refptr<base::SequencedTaskRunner> media_task_runner,
+                  base::RepeatingCallback<void(base::TimeDelta)> request_seek,
                   std::unique_ptr<Engine> impl,
                   MediaLog* media_log);
 
@@ -202,6 +206,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
                           const uint8_t* data,
                           size_t data_size) override;
   void OnError(PipelineStatus status) override;
+  void RequestSeek(base::TimeDelta time) override;
 
   // Allow unit tests to grab the chunk demuxer.
   ChunkDemuxer* GetChunkDemuxerForTesting();
@@ -268,6 +273,8 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   void TriggerEvent();
   void TriggerEventWithTime(DelayCallback cb, base::TimeDelta current_time);
   void OnEngineEventFinished(base::TimeDelta delay_time);
+
+  base::RepeatingCallback<void(base::TimeDelta)> request_seek_;
 
   std::unique_ptr<MediaLog> media_log_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;

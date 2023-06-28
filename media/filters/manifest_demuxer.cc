@@ -71,9 +71,11 @@ ManifestDemuxer::~ManifestDemuxer() {
 
 ManifestDemuxer::ManifestDemuxer(
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
+    base::RepeatingCallback<void(base::TimeDelta)> request_seek,
     std::unique_ptr<ManifestDemuxer::Engine> impl,
     MediaLog* media_log)
-    : media_log_(media_log->Clone()),
+    : request_seek_(std::move(request_seek)),
+      media_log_(media_log->Clone()),
       media_task_runner_(std::move(media_task_runner)),
       impl_(std::move(impl)) {}
 
@@ -420,6 +422,11 @@ void ManifestDemuxer::OnError(PipelineStatus error) {
 
   host_->OnDemuxerError(std::move(error).AddHere());
   Stop();
+}
+
+void ManifestDemuxer::RequestSeek(base::TimeDelta time) {
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  request_seek_.Run(time);
 }
 
 ChunkDemuxer* ManifestDemuxer::GetChunkDemuxerForTesting() {

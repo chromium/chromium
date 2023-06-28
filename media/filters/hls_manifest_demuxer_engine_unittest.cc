@@ -133,6 +133,7 @@ class MockManifestDemuxerEngineHost : public ManifestDemuxerEngineHost {
                size_t),
               (override));
   MOCK_METHOD(void, OnError, (PipelineStatus), (override));
+  MOCK_METHOD(void, RequestSeek, (base::TimeDelta), (override));
 };
 
 class MockHlsDataSourceProvider : public HlsDataSourceProvider {

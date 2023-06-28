@@ -587,8 +587,11 @@ std::unique_ptr<Demuxer> DemuxerManager::CreateHlsDemuxer() {
   auto engine = std::make_unique<HlsManifestDemuxerEngine>(
       client_->GetHlsDataSourceProvider(), media_task_runner_, loaded_url_,
       media_log_.get());
-  return std::make_unique<ManifestDemuxer>(media_task_runner_,
-                                           std::move(engine), media_log_.get());
+  return std::make_unique<ManifestDemuxer>(
+      media_task_runner_,
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &DemuxerManager::DemuxerRequestsSeek, weak_factory_.GetWeakPtr())),
+      std::move(engine), media_log_.get());
 }
 #endif
 
@@ -709,5 +712,12 @@ void DemuxerManager::OnFFmpegMediaTracksUpdated(
   }
 }
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
+
+void DemuxerManager::DemuxerRequestsSeek(base::TimeDelta time) {
+  if (!client_) {
+    return;
+  }
+  client_->DemuxerRequestsSeek(time);
+}
 
 }  // namespace media

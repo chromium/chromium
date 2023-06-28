@@ -103,6 +103,9 @@ class MEDIA_EXPORT DemuxerManager {
     // Allows us to set a loaded url on the client, which might happen when we
     // handle a redirect as part of a restart for switching to HLS.
     virtual void UpdateLoadedUrl(const GURL& url) = 0;
+
+    // Allows a seek triggered by a demuxer (mainly used for live content)
+    virtual void DemuxerRequestsSeek(base::TimeDelta seek_time) = 0;
   };
 
   // Demuxer, StartType, IsStreaming, IsStatic
@@ -201,6 +204,8 @@ class MEDIA_EXPORT DemuxerManager {
 #if BUILDFLAG(ENABLE_FFMPEG)
   void OnFFmpegMediaTracksUpdated(std::unique_ptr<MediaTracks> tracks);
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
+
+  void DemuxerRequestsSeek(base::TimeDelta time);
 
   // This is usually just the WebMediaPlayerImpl.
   raw_ptr<Client, DanglingUntriaged> client_;

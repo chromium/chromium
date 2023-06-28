@@ -423,6 +423,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void RestartForHls() override;
   bool IsSecurityOriginCryptographic() const override;
   void UpdateLoadedUrl(const GURL& url) override;
+  void DemuxerRequestsSeek(base::TimeDelta seek_time) override;
 
 #if BUILDFLAG(ENABLE_FFMPEG)
   void AddAudioTrack(const std::string& id,

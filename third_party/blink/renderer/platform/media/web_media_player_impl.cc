@@ -1817,6 +1817,11 @@ void WebMediaPlayerImpl::UpdateLoadedUrl(const GURL& url) {
   loaded_url_ = url;
 }
 
+void WebMediaPlayerImpl::DemuxerRequestsSeek(base::TimeDelta seek_time) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DoSeek(seek_time, true);
+}
+
 void WebMediaPlayerImpl::RestartForHls() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   observer_->OnHlsManifestDetected();
