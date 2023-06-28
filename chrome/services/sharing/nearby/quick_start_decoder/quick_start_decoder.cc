@@ -466,7 +466,16 @@ QuickStartDecoder::ExtractFidoDataFromJsonResponse(
     return absl::nullopt;
   }
 
-  return base::Base64Decode(*fido_message);
+  std::string base64_decoded_fido_message;
+
+  if (!base::Base64Decode(*fido_message, &base64_decoded_fido_message,
+                          base::Base64DecodePolicy::kForgiving)) {
+    LOG(ERROR) << "Failed to decode fidoMessage as a Base64 String";
+    return absl::nullopt;
+  }
+
+  return std::vector<uint8_t>(base64_decoded_fido_message.begin(),
+                              base64_decoded_fido_message.end());
 }
 
 void QuickStartDecoder::DecodeNotifySourceOfUpdateResponse(
