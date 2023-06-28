@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using content_settings::PageSpecificContentSettings;
 
@@ -51,7 +52,6 @@ void OnStorageAccessed(int process_id,
 void NotifyStorageAccess(int render_process_id,
                          int32_t render_frame_id,
                          StorageType storage_type,
-                         const GURL& url,
                          const url::Origin& top_frame_origin,
                          bool allowed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -70,34 +70,40 @@ void NotifyStorageAccess(int render_process_id,
     }
   })();
 
-  auto metrics_type =
-      ([storage_type]() -> absl::optional<page_load_metrics::StorageType> {
-        switch (storage_type) {
-          case StorageType::LOCAL_STORAGE:
-            return page_load_metrics::StorageType::kLocalStorage;
-          case StorageType::SESSION_STORAGE:
-            return page_load_metrics::StorageType::kSessionStorage;
-          case StorageType::FILE_SYSTEM:
-            return page_load_metrics::StorageType::kFileSystem;
-          case StorageType::INDEXED_DB:
-            return page_load_metrics::StorageType::kIndexedDb;
-          case StorageType::CACHE:
-            return page_load_metrics::StorageType::kCacheStorage;
-          case StorageType::DATABASE:
-          case StorageType::WEB_LOCKS:
-            return absl::nullopt;
-        }
-      })();
+  auto* rfh =
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  if (rfh) {
+    auto metrics_type =
+        ([storage_type]() -> absl::optional<page_load_metrics::StorageType> {
+          switch (storage_type) {
+            case StorageType::LOCAL_STORAGE:
+              return page_load_metrics::StorageType::kLocalStorage;
+            case StorageType::SESSION_STORAGE:
+              return page_load_metrics::StorageType::kSessionStorage;
+            case StorageType::FILE_SYSTEM:
+              return page_load_metrics::StorageType::kFileSystem;
+            case StorageType::INDEXED_DB:
+              return page_load_metrics::StorageType::kIndexedDb;
+            case StorageType::CACHE:
+              return page_load_metrics::StorageType::kCacheStorage;
+            case StorageType::DATABASE:
+            case StorageType::WEB_LOCKS:
+              return absl::nullopt;
+          }
+        })();
 
-  if (should_notify_pscs) {
-    PageSpecificContentSettings::StorageAccessed(
-        storage_type, render_process_id, render_frame_id, url, !allowed);
-  }
+    if (should_notify_pscs) {
+      PageSpecificContentSettings::StorageAccessed(
+          storage_type, render_process_id, render_frame_id, rfh->storage_key(),
+          !allowed);
+    }
 
-  if (metrics_type) {
-    OnStorageAccessed(render_process_id, render_frame_id, url,
-                      top_frame_origin.GetURL(), !allowed,
-                      metrics_type.value());
+    if (metrics_type) {
+      OnStorageAccessed(render_process_id, render_frame_id,
+                        rfh->storage_key().origin().GetURL(),
+                        rfh->storage_key().top_level_site().GetURL(), !allowed,
+                        metrics_type.value());
+    }
   }
 }
 
@@ -171,7 +177,7 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&NotifyStorageAccess, render_process_id_, render_frame_id,
-                     storage_type, url, top_frame_origin, allowed));
+                     storage_type, top_frame_origin, allowed));
 
   std::move(callback).Run(allowed);
 }

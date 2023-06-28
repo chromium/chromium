@@ -180,6 +180,11 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
   ~RenderFrameHost() override = default;
 
+  // Returns the storage key for the last committed document in this
+  // RenderFrameHost. It is used for partitioning storage by the various
+  // storage APIs.
+  virtual const blink::StorageKey& storage_key() const = 0;
+
   // Returns the route id for this frame.
   virtual int GetRoutingID() const = 0;
 
