@@ -900,6 +900,14 @@ _CONFIG = [
         ],
     },
     {
+        'paths': [
+            'third_party/blink/renderer/core/frame/deprecation/deprecation.cc'
+        ],
+        'allowed': [
+            'base::CommandLine',
+        ]
+    },
+    {
         'paths': ['third_party/blink/renderer/core/frame/visual_viewport.cc'],
         'allowed': [
             'cc::SolidColorScrollbarLayer',
