@@ -84,6 +84,7 @@ class StubDeviceCommandStartCrdSessionJobDelegate
       DeviceCommandStartCrdSessionJob::AccessCodeCallback,
       DeviceCommandStartCrdSessionJob::ErrorCallback,
       DeviceCommandStartCrdSessionJob::SessionEndCallback) override {}
+  void TryToReconnect(base::OnceClosure done_callback) override {}
 };
 
 }  // namespace

@@ -23,6 +23,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#define EXPECT_NO_CALLS(args...) EXPECT_CALL(args).Times(0);
+
 namespace policy {
 
 namespace {
@@ -32,6 +34,7 @@ using SessionParameters =
 using StartSupportSessionCallback =
     crosapi::mojom::Remoting::StartSupportSessionCallback;
 
+using base::test::TestFuture;
 using remoting::mojom::StartSupportSessionResponse;
 using remoting::mojom::StartSupportSessionResponsePtr;
 using remoting::mojom::SupportHostObserver;
@@ -96,6 +99,10 @@ class RemotingServiceMock
               (SupportSessionParamsPtr params,
                const remoting::ChromeOsEnterpriseParams& enterprise_params,
                StartSessionCallback callback));
+  MOCK_METHOD(void, GetReconnectableSessionId, (SessionIdCallback));
+  MOCK_METHOD(void,
+              ReconnectToSession,
+              (remoting::SessionId, StartSessionCallback));
 };
 
 // Wrapper around the `RemotingServiceMock`, solving the lifetime issue
@@ -115,6 +122,15 @@ class RemotingServiceWrapper
                     StartSessionCallback callback) override {
     implementation_->StartSession(std::move(params), enterprise_params,
                                   std::move(callback));
+  }
+
+  void GetReconnectableSessionId(SessionIdCallback callback) override {
+    implementation_->GetReconnectableSessionId(std::move(callback));
+  }
+
+  void ReconnectToSession(remoting::SessionId session_id,
+                          StartSessionCallback callback) override {
+    implementation_->ReconnectToSession(session_id, std::move(callback));
   }
 
  private:
@@ -229,9 +245,8 @@ class CrdAdminSessionControllerTest : public testing::TestWithParam<bool> {
             [&](SupportSessionParamsPtr params,
                 const remoting::ChromeOsEnterpriseParams& enterprise_params,
                 StartSupportSessionCallback callback) {
-              auto response = StartSupportSessionResponse::NewObserver(
-                  observer_.BindNewPipeAndPassReceiver());
-              std::move(callback).Run(std::move(response));
+              std::move(callback).Run(
+                  StartSupportSessionResponse::NewObserver(BindObserver()));
             });
 
     session_controller().StartCrdHostAndGetCode(
@@ -248,11 +263,15 @@ class CrdAdminSessionControllerTest : public testing::TestWithParam<bool> {
     return environment_;
   }
 
+  mojo::PendingReceiver<SupportHostObserver> BindObserver() {
+    return observer_.BindNewPipeAndPassReceiver();
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::TestFuture<Response> result_;
-  base::test::TestFuture<base::TimeDelta> session_finish_result_;
+  TestFuture<Response> result_;
+  TestFuture<base::TimeDelta> session_finish_result_;
   mojo::Remote<SupportHostObserver> observer_;
   RemotingServiceMock remoting_service_;
   CrdAdminSessionController session_controller_{
@@ -515,7 +534,7 @@ TEST_F(CrdAdminSessionControllerTest,
       session_finished_callback());
   EXPECT_TRUE(session_controller().HasActiveSession());
 
-  base::test::TestFuture<void> terminate_session_future;
+  TestFuture<void> terminate_session_future;
   session_controller().TerminateSession(terminate_session_future.GetCallback());
 
   ASSERT_TRUE(terminate_session_future.Wait())
@@ -549,6 +568,44 @@ TEST_F(CrdAdminSessionControllerTest,
 
   base::TimeDelta session_duration = WaitForSessionFinishResult();
   EXPECT_EQ(duration, session_duration);
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldResumeReconnectableSessionIfAvailable) {
+  const remoting::SessionId kSessionId{123};
+
+  // First we should query for the reconnectable session id.
+  EXPECT_CALL(remoting_service(), GetReconnectableSessionId)
+      .WillOnce([&](auto callback) { std::move(callback).Run(kSessionId); });
+
+  // And next we should use this session id to reconnect.
+  EXPECT_CALL(remoting_service(), ReconnectToSession(kSessionId, testing::_))
+      .WillOnce([&](remoting::SessionId, StartSupportSessionCallback callback) {
+        std::move(callback).Run(
+            StartSupportSessionResponse::NewObserver(BindObserver()));
+      });
+
+  TestFuture<void> done_signal;
+  session_controller().TryToReconnect(done_signal.GetCallback());
+  ASSERT_TRUE(done_signal.Wait());
+
+  EXPECT_TRUE(session_controller().HasActiveSession());
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldNotResumeReconnectableSessionIfUnavailable) {
+  // First we return nullopt when we query for the reconnectable session id.
+  EXPECT_CALL(remoting_service(), GetReconnectableSessionId)
+      .WillOnce([&](auto callback) { std::move(callback).Run(absl::nullopt); });
+
+  // Which means we should not attempt to reconnect.
+  EXPECT_NO_CALLS(remoting_service(), ReconnectToSession);
+
+  TestFuture<void> done_signal;
+  session_controller().TryToReconnect(done_signal.GetCallback());
+
+  // The `done_signal` should still be invoked.
+  ASSERT_TRUE(done_signal.Wait());
 }
 
 TEST_F(

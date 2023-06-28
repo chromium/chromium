@@ -15,6 +15,7 @@
 #include "remoting/host/it2me/it2me_constants.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_ash.h"
 #include "remoting/host/policy_watcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -52,6 +53,14 @@ void RemoteSupportHostAsh::StartSession(
       base::BindOnce(std::move(callback), std::move(response)),
       base::BindOnce(&RemoteSupportHostAsh::OnSessionDisconnected,
                      base::Unretained(this)));
+}
+
+// Checks if session information for a reconnectable session is stored,
+// and invokes `callback` with the id of this session (or absl::nullopt
+// if there is no reconnectable session).
+void RemoteSupportHostAsh::ReconnectToSession(SessionId session_id,
+                                              StartSessionCallback callback) {
+  NOTIMPLEMENTED();
 }
 
 // static

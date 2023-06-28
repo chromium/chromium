@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/notreached.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
 
 #include <map>
@@ -162,6 +163,7 @@ class StubCrdAdminSessionController
   // DeviceCommandStartCrdSessionJob::Delegate implementation:
   bool HasActiveSession() const override;
   void TerminateSession(base::OnceClosure callback) override;
+  void TryToReconnect(base::OnceClosure done_callback) override;
   void StartCrdHostAndGetCode(
       const SessionParameters& parameters,
       DeviceCommandStartCrdSessionJob::AccessCodeCallback success_callback,
@@ -187,6 +189,11 @@ void StubCrdAdminSessionController::TerminateSession(
   has_active_session_ = false;
   terminate_session_called_ = true;
   std::move(callback).Run();
+}
+
+void StubCrdAdminSessionController::TryToReconnect(
+    base::OnceClosure done_callback) {
+  NOTREACHED_NORETURN();
 }
 
 void StubCrdAdminSessionController::StartCrdHostAndGetCode(
