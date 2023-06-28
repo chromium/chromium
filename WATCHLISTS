@@ -722,6 +722,7 @@
                   '|third_party/fp16'\
                   '|third_party/gemmlowp'\
                   '|third_party/libzip'\
+                  '|third_party/mediapipe'\
                   '|third_party/neon_2_sse'\
                   '|third_party/ruy'\
                   '|third_party/tensorflow-text'\
