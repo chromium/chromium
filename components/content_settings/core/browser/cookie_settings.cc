@@ -148,6 +148,10 @@ void CookieSettings::SetThirdPartyCookieSetting(const GURL& first_party_url,
 void CookieSettings::ResetThirdPartyCookieSetting(const GURL& first_party_url) {
   host_content_settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromURL(first_party_url),
+      ContentSettingsType::COOKIES, CONTENT_SETTING_DEFAULT);
+  host_content_settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromURLNoWildcard(first_party_url),
       ContentSettingsType::COOKIES, CONTENT_SETTING_DEFAULT);
 }

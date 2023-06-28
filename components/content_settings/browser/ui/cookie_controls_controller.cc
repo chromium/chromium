@@ -169,9 +169,15 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
   } else {
     base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOff"));
     should_reload_ = true;
-    cookie_settings_->SetThirdPartyCookieSetting(
-        GetWebContents()->GetLastCommittedURL(),
-        ContentSetting::CONTENT_SETTING_ALLOW);
+    if (base::FeatureList::IsEnabled(
+            content_settings::features::kUserBypassUI)) {
+      cookie_settings_->SetCookieSettingForUserBypass(
+          GetWebContents()->GetLastCommittedURL());
+    } else {
+      cookie_settings_->SetThirdPartyCookieSetting(
+          GetWebContents()->GetLastCommittedURL(),
+          ContentSetting::CONTENT_SETTING_ALLOW);
+    }
   }
 }
 

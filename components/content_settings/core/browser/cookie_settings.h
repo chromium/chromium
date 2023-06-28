@@ -137,7 +137,10 @@ class CookieSettings : public CookieSettingsBase,
   void SetThirdPartyCookieSetting(const GURL& first_party_url,
                                   ContentSetting setting);
 
-  // Resets the third party cookie setting for the given url.
+  // Resets the third party cookie setting for the given url. Resets both site-
+  // and origin-scoped exceptions since either one might be present.
+  // `SetCookieSettingForUserBypass()` and `SetThirdPartyCookieSetting()` create
+  // site- and origin-scoped exceptions respectevely.
   //
   // This should only be called on the UI thread.
   void ResetThirdPartyCookieSetting(const GURL& first_party_url);
