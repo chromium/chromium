@@ -75,5 +75,8 @@ specific_include_rules = {
   ],
   "test_shared_storage_header_observer.h": [
     "+content/browser/shared_storage/shared_storage_header_observer.h"
+  ],
+  "shared_storage_test_utils.h": [
+    "+content/browser/private_aggregation/private_aggregation_host.h"
   ]
 }

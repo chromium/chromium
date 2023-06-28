@@ -313,4 +313,15 @@ bool operator==(const SharedStorageWriteOperationAndResult& a,
          a.result == b.result;
 }
 
+PrivateAggregationHost::SendHistogramReportResult
+GetPrivateAggregationSendHistogramSuccessValue() {
+  return PrivateAggregationHost::SendHistogramReportResult::kSuccess;
+}
+
+PrivateAggregationHost::SendHistogramReportResult
+GetPrivateAggregationSendHistogramApiDisabledValue() {
+  return PrivateAggregationHost::SendHistogramReportResult::
+      kApiDisabledInSettings;
+}
+
 }  // namespace content
