@@ -151,6 +151,10 @@ class ZWPTextInputWrapperV1 : public ZWPTextInputWrapper {
       void* data,
       struct zcr_extended_text_input_v1* extended_text_input,
       uint32_t selection_behavior);
+  static void OnInsertImage(
+      void* data,
+      struct zcr_extended_text_input_v1* extended_text_input,
+      const char* src);
 
   const raw_ptr<WaylandConnection> connection_;
   wl::Object<zwp_text_input_v1> obj_;

@@ -52,6 +52,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
   void OnSetAutocorrectRange(const gfx::Range& range) override;
   void OnSetVirtualKeyboardOccludedBounds(
       const gfx::Rect& screen_bounds) override;
+  void OnInsertImage(const GURL& src) override;
 
  protected:
   // Overridden from InputMethodBase.

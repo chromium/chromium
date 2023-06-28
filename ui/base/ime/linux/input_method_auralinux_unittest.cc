@@ -302,6 +302,10 @@ class TextInputClientForTesting : public DummyTextInputClient {
   void EnsureCaretNotInRect(const gfx::Rect& rect) override {
     caret_not_in_rect = rect;
   }
+
+  void InsertImage(const GURL& url) override {
+    TestResult::GetInstance()->RecordAction(u"insertimage");
+  }
 };
 
 class InputMethodAuraLinuxTest : public testing::Test {
@@ -1218,6 +1222,20 @@ TEST_F(InputMethodAuraLinuxTest, OnConfirmCompositionText) {
 
   test_result_->ExpectAction("compositionend");
   test_result_->ExpectAction("textinput:a");
+
+  RemoveLastClient(client.get());
+}
+
+TEST_F(InputMethodAuraLinuxTest, OnInsertImage) {
+  const GURL some_image_url = GURL("");
+  auto client = std::make_unique<TextInputClientForTesting>(
+      TEXT_INPUT_TYPE_CONTENT_EDITABLE);
+  InstallFirstClient(client.get());
+
+  input_method_auralinux_->OnInsertImage(some_image_url);
+
+  test_result_->ExpectAction("insertimage");
+  test_result_->Verify();
 
   RemoveLastClient(client.get());
 }

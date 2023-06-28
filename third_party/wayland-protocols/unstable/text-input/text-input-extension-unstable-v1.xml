@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_text_input_extension_v1" version="12">
+  <interface name="zcr_text_input_extension_v1" version="13">
     <description summary="extends text_input to support richer operations">
       Allows a text_input to sends more variation of operations to support
       richer features, such as set_preedit_region.
@@ -57,7 +57,7 @@
 
   </interface>
 
-  <interface name="zcr_extended_text_input_v1" version="12">
+  <interface name="zcr_extended_text_input_v1" version="13">
     <description summary="extension of text_input protocol">
       The zcr_extended_text_input_v1 interface extends the text_input interface
       to support more rich operations on text_input.
@@ -422,6 +422,21 @@
       <arg name="cursor" type="uint"/>
       <arg name="anchor" type="uint"/>
     </request>
+
+    <!-- Version 13 -->
+
+    <event name="insert_image" since="13">
+      <description summary="Inserts image">
+        This inserts a given image into current editing field. The value of src
+        should be a valid http(s) URL pointing to some image.
+
+        Note: this only works for richly-editable editing field in web apps.
+        Internally it sends a PasteFromImage editing command to blink engine.
+        If the current editing field is not richly-editable, this event will be
+        ignored.
+      </description>
+      <arg name="src" type="string" />
+    </event>
 
   </interface>
 </protocol>

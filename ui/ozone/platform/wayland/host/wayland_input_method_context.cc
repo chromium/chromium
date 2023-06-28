@@ -876,6 +876,10 @@ void WaylandInputMethodContext::OnModifiersMap(
   modifiers_map_ = std::move(modifiers_map);
 }
 
+void WaylandInputMethodContext::OnInsertImage(const GURL& src) {
+  ime_delegate_->OnInsertImage(src);
+}
+
 void WaylandInputMethodContext::OnKeyboardFocusedWindowChanged() {
   MaybeUpdateActivated(false, TextInputClient::FOCUS_REASON_OTHER);
 }

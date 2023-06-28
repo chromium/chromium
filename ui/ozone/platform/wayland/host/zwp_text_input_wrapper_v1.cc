@@ -134,6 +134,7 @@ ZWPTextInputWrapperV1::ZWPTextInputWrapperV1(
           &OnSetAutocorrectRange,  // extended_text_input_set_autocorrect_range,
           &OnSetVirtualKeyboardOccludedBounds,  // extended_text_input_set_virtual_keyboard_occluded_bounds,
           &OnConfirmPreedit,  // extended_text_input_confirm_preedit,
+          &OnInsertImage,     // extended_text_input_insert_image
       };
 
   obj_ = wl::Object<zwp_text_input_v1>(
@@ -554,6 +555,15 @@ void ZWPTextInputWrapperV1::OnConfirmPreedit(
       self->client_->OnConfirmPreedit(/*keep_selection=*/false);
       break;
   }
+}
+
+// static
+void ZWPTextInputWrapperV1::OnInsertImage(
+    void* data,
+    struct zcr_extended_text_input_v1* extended_text_input,
+    const char* src) {
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  self->client_->OnInsertImage(GURL(src));
 }
 
 }  // namespace ui

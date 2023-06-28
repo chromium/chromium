@@ -168,6 +168,9 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   void OnSetAutocorrectRange(const gfx::Range& range) override {
     was_on_set_autocorrect_range_called_ = true;
   }
+  void OnInsertImage(const GURL& src) override {
+    was_on_insert_image_range_called_ = true;
+  }
   void OnPreeditEnd() override {}
   void OnPreeditStart() override {}
   void OnDeleteSurroundingText(size_t before, size_t after) override {
@@ -210,6 +213,10 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
     return was_on_set_autocorrect_range_called_;
   }
 
+  bool was_on_insert_image_called() const {
+    return was_on_insert_image_range_called_;
+  }
+
   const absl::optional<std::pair<size_t, size_t>>&
   last_on_delete_surrounding_text_args() const {
     return last_on_delete_surrounding_text_args_;
@@ -227,6 +234,7 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   bool was_on_clear_grammar_fragments_called_ = false;
   bool was_on_add_grammar_fragment_called_ = false;
   bool was_on_set_autocorrect_range_called_ = false;
+  bool was_on_insert_image_range_called_ = false;
   absl::optional<std::pair<size_t, size_t>>
       last_on_delete_surrounding_text_args_;
   absl::optional<gfx::Rect> virtual_keyboard_bounds_;
@@ -1589,6 +1597,13 @@ TEST_P(WaylandInputMethodContextTest, OnAddGrammarFragments) {
   wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
   EXPECT_TRUE(
       input_method_context_delegate_->was_on_add_grammar_fragment_called());
+}
+
+TEST_P(WaylandInputMethodContextTest, OnInsertImage) {
+  const GURL some_image_url = GURL("");
+  input_method_context_->OnInsertImage(some_image_url);
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  EXPECT_TRUE(input_method_context_delegate_->was_on_insert_image_called());
 }
 
 TEST_P(WaylandInputMethodContextTest, OnSetAutocorrectRange) {

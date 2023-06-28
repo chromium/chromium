@@ -15,6 +15,7 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
+#include "url/gurl.h"
 
 namespace gfx {
 class Rect;
@@ -109,6 +110,9 @@ class ZWPTextInputWrapperClient {
   // on OnKeysym. E.g., if LSB of modifiers is set, modifiers_map[0] is
   // set, if (1 << 1) of modifiers is set, modifiers_map[1] is set, and so on.
   virtual void OnModifiersMap(std::vector<std::string> modifiers_map) = 0;
+
+  // Called when some image is being inserted.
+  virtual void OnInsertImage(const GURL& src) = 0;
 };
 
 // A wrapper around different versions of wayland text input protocols.

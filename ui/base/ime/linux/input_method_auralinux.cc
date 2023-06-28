@@ -489,6 +489,12 @@ void InputMethodAuraLinux::OnCommit(const std::u16string& text) {
   }
 }
 
+void InputMethodAuraLinux::OnInsertImage(const GURL& src) {
+  if (auto* text_input_client = GetTextInputClient()) {
+    text_input_client->InsertImage(src);
+  }
+}
+
 void InputMethodAuraLinux::OnConfirmCompositionText(bool keep_selection) {
   ConfirmCompositionText(keep_selection);
 }

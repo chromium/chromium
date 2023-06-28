@@ -94,6 +94,7 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void OnConfirmPreedit(bool keep_selection) override;
   void OnInputPanelState(uint32_t state) override;
   void OnModifiersMap(std::vector<std::string> modifiers_map) override;
+  void OnInsertImage(const GURL& src) override;
 
   const SurroundingTextTracker::State& predicted_state_for_testing() const {
     return surrounding_text_tracker_.predicted_state();

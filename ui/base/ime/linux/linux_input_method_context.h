@@ -132,6 +132,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContextDelegate {
   // Sets the virtual keyboard's occluded bounds in screen DIP.
   virtual void OnSetVirtualKeyboardOccludedBounds(
       const gfx::Rect& screen_bounds) = 0;
+
+  // Inserts an image.
+  virtual void OnInsertImage(const GURL& src) = 0;
 };
 
 }  // namespace ui
