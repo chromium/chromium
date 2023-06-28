@@ -17,8 +17,12 @@ ImeKeyboardImpl::~ImeKeyboardImpl() = default;
 
 bool ImeKeyboardImpl::SetCurrentKeyboardLayoutByName(
     const std::string& layout_name) {
-  ImeKeyboard::SetCurrentKeyboardLayoutByName(layout_name);
+  // Only notify on keyboard layout change.
+  if (last_layout_ == layout_name) {
+    return false;
+  }
   last_layout_ = layout_name;
+  ImeKeyboard::SetCurrentKeyboardLayoutByName(layout_name);
   input_controller_->SetCurrentLayoutByName(layout_name);
   return true;
 }
