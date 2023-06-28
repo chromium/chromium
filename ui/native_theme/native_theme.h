@@ -297,6 +297,11 @@ class NATIVE_THEME_EXPORT NativeTheme {
     ScrollbarOverlayColorTheme scrollbar_theme;
     ScrollbarOrientation orientation;  // Used on Mac for drawing gradients.
     float scale_from_dip;
+    absl::optional<SkColor> thumb_color;
+    absl::optional<SkColor> track_color;
+
+    ScrollbarExtraParams()
+        : thumb_color(absl::nullopt), track_color(absl::nullopt) {}
   };
 #endif
 

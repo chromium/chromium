@@ -2537,6 +2537,26 @@ absl::optional<blink::Color> ComputedStyle::AccentColorResolved() const {
   return auto_color.Resolve(GetCurrentColor(), UsedColorScheme());
 }
 
+absl::optional<blink::Color> ComputedStyle::ScrollbarThumbColorResolved()
+    const {
+  const absl::optional<StyleScrollbarColor>& scrollbar_color = ScrollbarColor();
+  if (scrollbar_color.has_value()) {
+    return scrollbar_color.value().GetThumbColor().Resolve(GetCurrentColor(),
+                                                           UsedColorScheme());
+  }
+  return absl::nullopt;
+}
+
+absl::optional<blink::Color> ComputedStyle::ScrollbarTrackColorResolved()
+    const {
+  const absl::optional<StyleScrollbarColor>& scrollbar_color = ScrollbarColor();
+  if (scrollbar_color.has_value()) {
+    return scrollbar_color.value().GetTrackColor().Resolve(GetCurrentColor(),
+                                                           UsedColorScheme());
+  }
+  return absl::nullopt;
+}
+
 static const int kPaintOrderBitwidth = 2;
 
 static unsigned PaintOrderSequence(EPaintOrderType first,

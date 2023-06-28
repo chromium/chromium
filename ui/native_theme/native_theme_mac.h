@@ -129,6 +129,7 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
 
   enum ScrollbarPart {
     kThumb,
+    kTrack,
     kTrackInnerBorder,
     kTrackOuterBorder,
   };

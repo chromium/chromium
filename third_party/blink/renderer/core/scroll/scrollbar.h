@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/style_scrollbar_color.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -211,6 +212,9 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   // scrollbar-width CSS property
   EScrollbarWidth CSSScrollbarWidth() const;
+  // scrollbar-color CSS property
+  absl::optional<blink::Color> ScrollbarThumbColor() const;
+  absl::optional<blink::Color> ScrollbarTrackColor() const;
 
   // The Element that supplies our style information. If the scrollbar is
   // for a document, this is either the <body> or <html> element. Otherwise, it

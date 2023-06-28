@@ -186,6 +186,17 @@ WebThemeEngine::ExtraParams GetPaintParams(const Scrollbar& scrollbar,
   params.scrollbar_extra.is_hovering =
       scrollbar.HoveredPart() != ScrollbarPart::kNoPart;
   params.scrollbar_extra.scale_from_dip = scrollbar.ScaleFromDIP();
+
+  if (scrollbar.ScrollbarThumbColor().has_value()) {
+    params.scrollbar_extra.thumb_color =
+        scrollbar.ScrollbarThumbColor().value().toSkColor4f().toSkColor();
+  }
+
+  if (scrollbar.ScrollbarTrackColor().has_value()) {
+    params.scrollbar_extra.track_color =
+        scrollbar.ScrollbarTrackColor().value().toSkColor4f().toSkColor();
+  }
+
   return params;
 }
 

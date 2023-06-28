@@ -937,6 +937,11 @@ class ComputedStyle : public ComputedStyleBase,
   // An empty optional means the accent-color is 'auto'
   absl::optional<blink::Color> AccentColorResolved() const;
 
+  // scrollbar-color
+  // An empty optional means the scrollbar-color is 'auto'
+  absl::optional<blink::Color> ScrollbarThumbColorResolved() const;
+  absl::optional<blink::Color> ScrollbarTrackColorResolved() const;
+
   // Comparison operators
   // FIXME: Replace callers of operator== wth a named method instead, e.g.
   // inheritedEquals().

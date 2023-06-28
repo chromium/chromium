@@ -25,9 +25,15 @@
 
 namespace ui {
 
+#if BUILDFLAG(IS_APPLE)
+NativeTheme::ExtraParams::ExtraParams() : scrollbar_extra() {
+  memset(this, 0, sizeof(*this));
+}
+#else
 NativeTheme::ExtraParams::ExtraParams() {
   memset(this, 0, sizeof(*this));
 }
+#endif
 
 NativeTheme::ExtraParams::ExtraParams(const ExtraParams& other) {
   memcpy(this, &other, sizeof(*this));
