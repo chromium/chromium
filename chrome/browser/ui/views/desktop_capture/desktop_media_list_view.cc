@@ -68,6 +68,8 @@ DesktopMediaListView::DesktopMediaListView(
     const std::u16string& accessible_name)
     : item_spacing_(
           base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 4 : 0),
+      horizontal_margins_(
+          base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 16 : 0),
       vertical_margins_(
           base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 16 : 0),
       controller_(controller),
@@ -89,7 +91,8 @@ gfx::Size DesktopMediaListView::CalculatePreferredSize() const {
       (static_cast<int>(children().size()) + active_style_->columns - 1) /
       active_style_->columns;
   return gfx::Size(active_style_->columns * active_style_->item_size.width() +
-                       (active_style_->columns - 1) * item_spacing_,
+                       (active_style_->columns - 1) * item_spacing_ +
+                       2 * horizontal_margins_,
                    total_rows * active_style_->item_size.height() +
                        (total_rows - 1) * item_spacing_ +
                        2 * vertical_margins_);
@@ -108,7 +111,8 @@ void DesktopMediaListView::Layout() {
          ++col, x += (width + item_spacing_)) {
       if (i == children().end())
         return;
-      (*i++)->SetBounds(x, y + vertical_margins_, width, height);
+      (*i++)->SetBounds(x + horizontal_margins_, y + vertical_margins_, width,
+                        height);
     }
   }
 }

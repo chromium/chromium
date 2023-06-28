@@ -6,6 +6,7 @@
 
 #include "ui/base/ui_base_features.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -20,14 +21,17 @@ DesktopMediaPaneView::DesktopMediaPaneView(
       /*for_border_thickness=*/0));
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical, gfx::Insets::VH(0, 16)));
+          views::BoxLayout::Orientation::kVertical, gfx::Insets(0)));
   layout->SetFlexForView(AddChildView(std::move(content_view)), 1);
 
   if (!share_audio_view) {
     return;
   }
 
-  AddChildView(std::make_unique<views::Separator>());
+  View* separator_container = AddChildView(std::make_unique<views::View>());
+  separator_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets::VH(0, 16)));
+  separator_container->AddChildView(std::make_unique<views::Separator>());
   share_audio_view_ = AddChildView(std::move(share_audio_view));
 }
 

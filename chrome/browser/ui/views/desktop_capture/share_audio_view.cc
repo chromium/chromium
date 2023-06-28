@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/desktop_capture/share_audio_view.h"
 
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -13,7 +14,8 @@
 
 ShareAudioView::ShareAudioView(const std::u16string& label_text,
                                bool audio_offered) {
-  SetProperty(views::kMarginsKey, gfx::Insets::TLBR(8, 0, 16, 0));
+  CHECK(base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign));
+  SetProperty(views::kMarginsKey, gfx::Insets::TLBR(8, 16, 16, 16));
 
   views::ImageView* audio_icon_view =
       AddChildView(std::make_unique<views::ImageView>());

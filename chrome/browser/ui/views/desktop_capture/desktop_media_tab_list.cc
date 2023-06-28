@@ -283,7 +283,7 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
 
   const gfx::Insets kFullPannelInset =
       base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)
-          ? gfx::Insets::VH(16, 0)
+          ? gfx::Insets(16)
           : gfx::Insets::TLBR(15, 0, 0, 0);
   const int kChildSpacing =
       base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 16 : 12;

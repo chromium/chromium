@@ -288,12 +288,17 @@ bool ShouldSelectTab(DesktopMediaList::Type type,
   NOTREACHED_NORETURN();
 }
 
-std::unique_ptr<views::ScrollView> CreateScrollView() {
+std::unique_ptr<views::ScrollView> CreateScrollView(bool audio_requested) {
   if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)) {
     auto scroll_view = std::make_unique<views::ScrollView>();
     scroll_view->SetBackgroundThemeColorId(
         features::IsChromeRefresh2023() ? ui::kColorSysSurface4
                                         : ui::kColorSubtleEmphasisBackground);
+    if (audio_requested) {
+      // When audio is requested, a separator is added just below the scroll
+      // view, and the overflow indicator becomes redundant,
+      scroll_view->SetDrawOverflowIndicator(false);
+    }
     return scroll_view;
   } else {
     return views::ScrollView::CreateScrollViewWithBorder();
@@ -452,7 +457,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
                       /*focus_rectangle_inset=*/5);
 
         std::unique_ptr<views::ScrollView> screen_scroll_view =
-            CreateScrollView();
+            CreateScrollView(audio_requested_);
         std::u16string screen_title_text = l10n_util::GetStringUTF16(
             IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_SCREEN);
         auto list_controller = std::make_unique<DesktopMediaListController>(
@@ -501,7 +506,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
                       /*focus_rectangle_inset=*/5);
 
         std::unique_ptr<views::ScrollView> window_scroll_view =
-            CreateScrollView();
+            CreateScrollView(audio_requested_);
         std::u16string window_title_text = l10n_util::GetStringUTF16(
             IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_WINDOW);
         auto list_controller = std::make_unique<DesktopMediaListController>(
@@ -557,7 +562,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             /*image_rect=*/gfx::Rect(20, 20, 320, 240),
             /*focus_rectangle_inset=*/5);
         std::unique_ptr<views::ScrollView> window_scroll_view =
-            CreateScrollView();
+            CreateScrollView(audio_requested_);
         const std::u16string title = l10n_util::GetStringUTF16(
             IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_THIS_TAB);
         auto list_controller = std::make_unique<DesktopMediaListController>(
