@@ -3007,6 +3007,12 @@ extern const char kArcSwitchToKeyMintOnTDesc[];
 extern const char kArcSyncInstallPriorityName[];
 extern const char kArcSyncInstallPriorityDescription[];
 
+extern const char kArcTouchscreenEmulationName[];
+extern const char kArcTouchscreenEmulationDesc[];
+
+extern const char kArcTrackpadScrollTouchscreenEmulationName[];
+extern const char kArcTrackpadScrollTouchscreenEmulationDesc[];
+
 extern const char kArcVmmSwapKBShortcutName[];
 extern const char kArcVmmSwapKBShortcutDesc[];
 

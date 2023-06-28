@@ -61230,6 +61230,8 @@ from previous Chrome versions.
   <int value="-1356379431" label="GlobalMediaControlsOverlayControls:enabled"/>
   <int value="-1355886577" label="ReleaseNotesNotificationAllChannels:enabled"/>
   <int value="-1355717940" label="WebViewPowerSchedulerThrottleIdle:enabled"/>
+  <int value="-1355267677"
+      label="ArcTrackpadScrollTouchscreenEmulation:enabled"/>
   <int value="-1353926640" label="GMSCoreEmoji:disabled"/>
   <int value="-1353865639" label="InteractiveWindowCycleList:disabled"/>
   <int value="-1353714232" label="FilesTransferDetails:enabled"/>
@@ -64582,6 +64584,8 @@ from previous Chrome versions.
   <int value="365467768" label="prefetch-search-results"/>
   <int value="365581200" label="EnableSupervisionOnDesktopAndIOS:disabled"/>
   <int value="365737168" label="SingleTouchSelect:disabled"/>
+  <int value="366524741"
+      label="ArcTrackpadScrollTouchscreenEmulation:disabled"/>
   <int value="366860338" label="InternalServerSideSpeechRecognition:enabled"/>
   <int value="367063319" label="PasswordImport:disabled"/>
   <int value="368224960" label="FedCmRpContext:disabled"/>
@@ -65622,6 +65626,7 @@ from previous Chrome versions.
   <int value="928991555" label="DefaultViewportIsDeviceWidth:disabled"/>
   <int value="929462705" label="disable-link-disambiguation-popup"/>
   <int value="930187600" label="WebAssemblyExperimentalJSPI:enabled"/>
+  <int value="931603226" label="ArcTouchscreenEmulation:enabled"/>
   <int value="932468127" label="LauncherPulsingBlocksRefresh:enabled"/>
   <int value="933696491" label="TailoredSecurityDesktopNotice:enabled"/>
   <int value="934139985" label="WallpaperWebUI:enabled"/>
@@ -67781,6 +67786,7 @@ from previous Chrome versions.
   <int value="2037756154" label="enable-impl-side-painting"/>
   <int value="2038036881" label="NewShortcutMapping:enabled"/>
   <int value="2039276757" label="EnableOverviewRoundedCorners:enabled"/>
+  <int value="2040216830" label="ArcTouchscreenEmulation:disabled"/>
   <int value="2041570184" label="UsePreferredIntervalForVideo:enabled"/>
   <int value="2043141918" label="DnsOverHttps:enabled"/>
   <int value="2043321329" label="OfflinePagesPrefetchingUI:disabled"/>

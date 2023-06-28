@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 module arc.mojom;
 
@@ -12,6 +12,10 @@ struct FeatureFlags {
   bool qs_revamp;
   // chrome://flags#jelly-colors
   bool jelly_colors;
+  // chrome://flags#arc-trackpad-scroll-touchscreen-emulation
+  [MinVersion=2] bool trackpad_scroll_touchscreen_emulation = true;
+  // chrome://flags#arc-touchscreen-emulation
+  [MinVersion=2] bool touchscreen_emulation = true;
 };
 
 // This interface provides methods to propagate the feature flag status to

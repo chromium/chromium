@@ -4,6 +4,7 @@
 
 #include "ash/components/arc/chrome_feature_flags/arc_chrome_feature_flags_bridge.h"
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/fake_chrome_feature_flags_instance.h"
@@ -86,6 +87,36 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyJelly_Disabled) {
   scoped_feature_list()->InitAndDisableFeature(chromeos::features::kJelly);
   Connect();
   EXPECT_FALSE(instance()->flags_called_value()->jelly_colors);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyTouchscreenEmulation_Enabled) {
+  scoped_feature_list()->InitAndEnableFeature(kTouchscreenEmulation);
+  Connect();
+  EXPECT_TRUE(instance()->flags_called_value()->touchscreen_emulation);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyTouchscreenEmulation_Disabled) {
+  scoped_feature_list()->InitAndDisableFeature(kTouchscreenEmulation);
+  Connect();
+  EXPECT_FALSE(instance()->flags_called_value()->touchscreen_emulation);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest,
+       NotifyTrackpadScrollTouchscreenEmulation_Enabled) {
+  scoped_feature_list()->InitAndEnableFeature(
+      kTrackpadScrollTouchscreenEmulation);
+  Connect();
+  EXPECT_TRUE(
+      instance()->flags_called_value()->trackpad_scroll_touchscreen_emulation);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest,
+       NotifyTrackpadScrollTouchscreenEmulation_Disabled) {
+  scoped_feature_list()->InitAndDisableFeature(
+      kTrackpadScrollTouchscreenEmulation);
+  Connect();
+  EXPECT_FALSE(
+      instance()->flags_called_value()->trackpad_scroll_touchscreen_emulation);
 }
 
 }  // namespace

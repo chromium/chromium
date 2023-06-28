@@ -5,6 +5,7 @@
 #include "ash/components/arc/chrome_feature_flags/arc_chrome_feature_flags_bridge.h"
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
@@ -75,6 +76,10 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
   mojom::FeatureFlagsPtr flags = mojom::FeatureFlags::New();
   flags->qs_revamp = ash::features::IsQsRevampEnabled();
   flags->jelly_colors = chromeos::features::IsJellyEnabled();
+  flags->touchscreen_emulation =
+      base::FeatureList::IsEnabled(kTouchscreenEmulation);
+  flags->trackpad_scroll_touchscreen_emulation =
+      base::FeatureList::IsEnabled(kTrackpadScrollTouchscreenEmulation);
 
   chrome_feature_flags_instance->NotifyFeatureFlags(std::move(flags));
 }

@@ -341,6 +341,16 @@
     "expiry_milestone": 120
   },
   {
+    "name": "arc-touchscreen-emulation",
+    "owners": [ "yhanada" ],
+    "expiry_milestone": 122
+  },
+  {
+    "name": "arc-trackpad-scroll-touchscreen-emulation",
+    "owners": [ "yhanada" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "arc-use-high-memory-dalvik-profile",
     "owners": [ "khmel" ],
     "expiry_milestone": 92

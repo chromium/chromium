@@ -253,6 +253,18 @@ BASE_FEATURE(kSyncInstallPriority,
              "ArcSyncInstallPriority",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, touch screen emulation for compatibility is enabled on specific
+// apps.
+BASE_FEATURE(kTouchscreenEmulation,
+             "ArcTouchscreenEmulation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, compatibility logic for trackpad scrolling is enabled on
+// specific apps.
+BASE_FEATURE(kTrackpadScrollTouchscreenEmulation,
+             "ArcTrackpadScrollTouchscreenEmulation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls ARC USB Storage UI feature.
 // When enabled, chrome://settings and Files.app will ask if the user wants
 // to expose USB storage devices to ARC.
