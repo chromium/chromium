@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/media_message_center/media_notification_view_ash_impl.h"
+#include "components/global_media_controls/media_notification_view_ash_impl.h"
 
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_item.h"
@@ -23,7 +23,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
 
-namespace media_message_center {
+namespace global_media_controls {
 
 using media_session::mojom::MediaSessionAction;
 
@@ -31,12 +31,13 @@ namespace {
 
 // Dimensions.
 constexpr auto kBorderInsets = gfx::Insets::TLBR(16, 8, 8, 8);
-constexpr auto kMainRowInsets = gfx::Insets::VH(0, 8);
+constexpr auto kMainRowInsets = gfx::Insets::TLBR(0, 8, 12, 8);
 constexpr auto kInfoColumnInsets = gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr auto kPlayPauseContainerInsets = gfx::Insets::VH(8, 0);
 constexpr auto kSourceLabelInsets = gfx::Insets::TLBR(0, 0, 10, 0);
+constexpr auto kDeviceSelectorSeparatorInsets = gfx::Insets::VH(10, 12);
+constexpr auto kDeviceSelectorSeparatorLineInsets = gfx::Insets::VH(1, 1);
 
-constexpr int kMainSeparator = 12;
 constexpr int kMainRowSeparator = 8;
 constexpr int kMediaInfoSeparator = 4;
 constexpr int kControlsRowSeparator = 2;
@@ -113,9 +114,11 @@ gfx::Size ScaleImageSizeToFitView(const gfx::Size& image_size,
 }  // namespace
 
 MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
-    MediaNotificationContainer* container,
-    base::WeakPtr<MediaNotificationItem> item,
-    MediaColorTheme theme,
+    media_message_center::MediaNotificationContainer* container,
+    base::WeakPtr<media_message_center::MediaNotificationItem> item,
+    std::unique_ptr<MediaItemUIFooter> footer_view,
+    std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view,
+    media_message_center::MediaColorTheme theme,
     MediaDisplayPage media_display_page)
     : container_(container), item_(std::move(item)), theme_(theme) {
   DCHECK(container_);
@@ -124,9 +127,8 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
   SetBackground(views::CreateThemedRoundedRectBackground(
       theme_.background_color_id, kBackgroundCornerRadius));
-
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(), kMainSeparator));
+      views::BoxLayout::Orientation::kVertical));
 
   // |main_row| holds all the media object's information, as well as the
   // play/pause button.
@@ -175,8 +177,8 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   if (media_display_page == MediaDisplayPage::kQuickSettingsMediaView) {
     chevron_icon_ = title_row_->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            kChevronRightIcon, theme_.secondary_foreground_color_id,
-            kChevronIconSize)));
+            media_message_center::kChevronRightIcon,
+            theme_.secondary_foreground_color_id, kChevronIconSize)));
   }
 
   artist_label_ =
@@ -196,7 +198,8 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
 
   play_pause_button_ = CreateMediaButton(
       play_pause_container, static_cast<int>(MediaSessionAction::kPlay),
-      kPlayArrowIcon, IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
+      media_message_center::kPlayArrowIcon,
+      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
   play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
       theme_.secondary_container_color_id, kPlayPauseButtonSize.height() / 2));
 
@@ -210,12 +213,12 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   // Create the previous track button.
   CreateMediaButton(
       controls_row, static_cast<int>(MediaSessionAction::kPreviousTrack),
-      kMediaPreviousTrackIcon,
+      media_message_center::kMediaPreviousTrackIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK);
 
   // Create the squiggly progress view.
-  squiggly_progress_view_ =
-      controls_row->AddChildView(std::make_unique<MediaSquigglyProgressView>(
+  squiggly_progress_view_ = controls_row->AddChildView(
+      std::make_unique<media_message_center::MediaSquigglyProgressView>(
           theme_.primary_container_color_id,
           theme_.secondary_container_color_id,
           base::BindRepeating(&MediaNotificationViewAshImpl::SeekTo,
@@ -225,20 +228,53 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   // Create the next track button.
   CreateMediaButton(
       controls_row, static_cast<int>(MediaSessionAction::kNextTrack),
-      kMediaNextTrackIcon,
+      media_message_center::kMediaNextTrackIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK);
 
+  // TODO(crbug.com/1442056): Show the button on quick settings media view and
+  // clicking it should redirect to detailed view.
   // Create the start casting button.
-  start_casting_button_ = CreateMediaButton(
-      controls_row, kNotMediaActionButtonId, kMediaCastIcon,
-      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_START_CASTING);
+  if (device_selector_view) {
+    start_casting_button_ = CreateMediaButton(
+        controls_row, kNotMediaActionButtonId,
+        media_message_center::kMediaCastIcon,
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_START_CASTING);
+    start_casting_button_->SetCallback(base::BindRepeating(
+        &MediaNotificationViewAshImpl::StartCastingButtonPressed,
+        base::Unretained(this), start_casting_button_));
+  }
 
   // Create the picture in picture button.
   picture_in_picture_button_ = CreateMediaButton(
       controls_row,
       static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
-      kMediaEnterPipIcon,
+      media_message_center::kMediaEnterPipIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP);
+
+  // TODO(crbug.com/1442056): Fix the UI for footer view.
+  // Create the stop casting button.
+  if (footer_view) {
+    footer_view_ = AddChildView(std::move(footer_view));
+  }
+
+  if (device_selector_view) {
+    // Create a separator line between the media view and device selector view.
+    device_selector_view_separator_ =
+        AddChildView(std::make_unique<views::BoxLayoutView>());
+    device_selector_view_separator_->SetInsideBorderInsets(
+        kDeviceSelectorSeparatorInsets);
+    auto* separator = device_selector_view_separator_->AddChildView(
+        std::make_unique<views::BoxLayoutView>());
+    separator->SetInsideBorderInsets(kDeviceSelectorSeparatorLineInsets);
+    separator->SetBackground(
+        views::CreateThemedSolidBackground(theme_.separator_color_id));
+    device_selector_view_separator_->SetFlexForView(separator, 1);
+    device_selector_view_separator_->SetVisible(
+        device_selector_view->IsDeviceSelectorExpanded());
+
+    // Create the device selector view.
+    device_selector_view_ = AddChildView(std::move(device_selector_view));
+  }
 
   item_->SetView(this);
 }
@@ -275,11 +311,13 @@ void MediaNotificationViewAshImpl::UpdateWithMediaSessionInfo(
                           media_session::mojom::MediaPlaybackState::kPlaying;
   if (playing) {
     play_pause_button_->Update(
-        static_cast<int>(MediaSessionAction::kPause), kPauseIcon,
+        static_cast<int>(MediaSessionAction::kPause),
+        media_message_center::kPauseIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PAUSE);
   } else {
     play_pause_button_->Update(
-        static_cast<int>(MediaSessionAction::kPlay), kPlayArrowIcon,
+        static_cast<int>(MediaSessionAction::kPlay),
+        media_message_center::kPlayArrowIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
   }
 
@@ -290,12 +328,12 @@ void MediaNotificationViewAshImpl::UpdateWithMediaSessionInfo(
   if (in_picture_in_picture) {
     picture_in_picture_button_->Update(
         static_cast<int>(MediaSessionAction::kExitPictureInPicture),
-        kMediaExitPipIcon,
+        media_message_center::kMediaExitPipIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_EXIT_PIP);
   } else {
     picture_in_picture_button_->Update(
         static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
-        kMediaEnterPipIcon,
+        media_message_center::kMediaEnterPipIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP);
   }
 
@@ -372,6 +410,24 @@ void MediaNotificationViewAshImpl::SeekTo(double seek_progress) {
   item_->SeekTo(seek_progress * position_.duration());
 }
 
+void MediaNotificationViewAshImpl::StartCastingButtonPressed(
+    MediaButton* button) {
+  CHECK(device_selector_view_);
+  CHECK(device_selector_view_separator_);
+
+  device_selector_view_->ShowOrHideDeviceList();
+  bool is_expanded = device_selector_view_->IsDeviceSelectorExpanded();
+  if (is_expanded) {
+    // Use the ink drop color as the button background if user clicks the button
+    // to show devices.
+    views::InkDrop::Get(button)->GetInkDrop()->SnapToActivated();
+  } else {
+    // Hide the ink drop color if user clicks the button to hide devices.
+    views::InkDrop::Get(button)->GetInkDrop()->SnapToHidden();
+  }
+  device_selector_view_separator_->SetVisible(is_expanded);
+}
+
 // Helper functions for testing:
 views::ImageView* MediaNotificationViewAshImpl::GetArtworkViewForTesting() {
   return artwork_view_;
@@ -393,7 +449,25 @@ views::ImageView* MediaNotificationViewAshImpl::GetChevronIconForTesting() {
   return chevron_icon_;
 }
 
+views::Button* MediaNotificationViewAshImpl::GetStartCastingButtonForTesting() {
+  return start_casting_button_;
+}
+
+MediaItemUIFooter* MediaNotificationViewAshImpl::GetFooterForTesting() {
+  return footer_view_;
+}
+
+MediaItemUIDeviceSelector*
+MediaNotificationViewAshImpl::GetDeviceSelectorForTesting() {
+  return device_selector_view_;
+}
+
+views::View*
+MediaNotificationViewAshImpl::GetDeviceSelectorSeparatorForTesting() {
+  return device_selector_view_separator_;
+}
+
 BEGIN_METADATA(MediaNotificationViewAshImpl, views::View)
 END_METADATA
 
-}  // namespace media_message_center
+}  // namespace global_media_controls

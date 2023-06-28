@@ -44,8 +44,9 @@ using media_router::mojom::MediaRouteProviderId;
 namespace {
 
 // Constants for the MediaItemUIDeviceSelectorView
+const int kExpandButtonStripWidth = 400;
 constexpr auto kExpandButtonStripInsets = gfx::Insets::VH(6, 15);
-constexpr gfx::Size kExpandButtonStripSize{400, 30};
+constexpr gfx::Size kExpandButtonStripSize{kExpandButtonStripWidth, 30};
 constexpr auto kExpandButtonBorderInsets = gfx::Insets::VH(4, 8);
 
 // Constant for DropdownButton
@@ -153,6 +154,8 @@ MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
+  // Do not create the expand button strip if this device selector view is used
+  // on Chrome OS ash with media::kGlobalMediaControlsCrOSUpdatedUI enabled.
   CreateExpandButtonStrip(show_expand_button &&
                           !media_color_theme_.has_value());
 
@@ -162,16 +165,11 @@ MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
           views::BoxLayout::Orientation::kVertical));
   device_entry_views_container_->SetVisible(false);
 
-  // Always show the devices on CrOS updated media UI for now for testing.
-  // TODO(crbug.com/1442056): Fix to use cast button to control the devices.
   if (entry_point_ ==
-          global_media_controls::GlobalMediaControlsEntryPoint::kPresentation ||
-      media_color_theme_.has_value()) {
+      global_media_controls::GlobalMediaControlsEntryPoint::kPresentation) {
     ShowDevices();
   }
   SetBackground(views::CreateSolidBackground(background_color_));
-  // Set the size of this view
-  SetPreferredSize(kExpandButtonStripSize);
   Layout();
 
   // This view will become visible when devices are discovered.
@@ -384,8 +382,11 @@ void MediaItemUIDeviceSelectorView::CreateExpandButtonStrip(
             foreground_color_));
   }
 
-  if (!show_expand_button) {
+  if (show_expand_button) {
+    SetPreferredSize(kExpandButtonStripSize);
+  } else {
     expand_button_strip_->SetVisible(false);
+    SetPreferredSize(gfx::Size(kExpandButtonStripWidth, 0));
   }
 }
 
@@ -395,7 +396,9 @@ void MediaItemUIDeviceSelectorView::ShowOrHideDeviceList() {
   } else {
     ShowDevices();
   }
-  dropdown_button_->SetToggled(is_expanded_);
+  if (dropdown_button_) {
+    dropdown_button_->SetToggled(is_expanded_);
+  }
 
   if (media_item_ui_) {
     media_item_ui_->OnDeviceSelectorViewSizeChanged();

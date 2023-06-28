@@ -12,7 +12,7 @@ namespace global_media_controls {
 class MediaItemUIView;
 
 // A MediaItemUIDeviceSelector is a views::View that should be inserted into the
-// bottom of the MediaItemUI which contains and expandable list of devices to
+// bottom of the MediaItemUI which contains an expandable list of devices to
 // connect to (audio/Cast/etc).
 class MediaItemUIDeviceSelector : public views::View {
  public:
@@ -23,9 +23,16 @@ class MediaItemUIDeviceSelector : public views::View {
   // Called when the color theme has changed.
   virtual void OnColorsChanged(SkColor foreground, SkColor background) = 0;
 
-  // Called when an audio device switch has occurred
+  // Called when an audio device switch has occurred.
   virtual void UpdateCurrentAudioDevice(
       const std::string& current_device_id) = 0;
+
+  // Called to show the device list if it is hidden before, or hide the device
+  // list if it is shown before.
+  virtual void ShowOrHideDeviceList() = 0;
+
+  // Returns whether the device list has been expanded.
+  virtual bool IsDeviceSelectorExpanded() = 0;
 };
 
 }  // namespace global_media_controls

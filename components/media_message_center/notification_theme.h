@@ -36,6 +36,9 @@ struct COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaColorTheme {
 
   // Color ID for media view background.
   ui::ColorId background_color_id = 0;
+
+  // Color ID for device selector view separator line.
+  ui::ColorId separator_color_id = 0;
 };
 
 }  // namespace media_message_center

@@ -11,15 +11,12 @@
 #include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"
-#include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
-#include "components/global_media_controls/public/views/media_item_ui_footer.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_view_modern_impl.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/audio/audio_device_description.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
@@ -90,12 +87,12 @@ MediaItemUIView::MediaItemUIView(
     std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view,
     absl::optional<media_message_center::NotificationTheme> notification_theme,
     absl::optional<media_message_center::MediaColorTheme> media_color_theme,
-    absl::optional<media_message_center::MediaDisplayPage> media_display_page)
+    absl::optional<MediaDisplayPage> media_display_page)
     : views::Button(base::BindRepeating(&MediaItemUIView::ContainerClicked,
                                         base::Unretained(this))),
       id_(id),
       has_notification_theme_(notification_theme.has_value()) {
-  DCHECK(item);
+  CHECK(item);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   SetPreferredSize(kNormalSize);
@@ -128,11 +125,19 @@ MediaItemUIView::MediaItemUIView(
 
   std::unique_ptr<media_message_center::MediaNotificationView> view;
   if (use_cros_updated_ui) {
-    DCHECK(media_color_theme.has_value());
-    view = std::make_unique<media_message_center::MediaNotificationViewAshImpl>(
-        this, std::move(item), media_color_theme.value(),
-        media_display_page.value());
-    UpdateFooterView(std::move(footer_view));
+    CHECK(media_color_theme.has_value());
+    if (footer_view) {
+      footer_view_ = footer_view.get();
+    }
+    if (device_selector_view) {
+      device_selector_view->SetMediaItemUIView(this);
+      device_selector_view_ = device_selector_view.get();
+    }
+    view_ = swipeable_container_->AddChildView(
+        std::make_unique<MediaNotificationViewAshImpl>(
+            this, std::move(item), std::move(footer_view),
+            std::move(device_selector_view), media_color_theme.value(),
+            media_display_page.value()));
   } else {
     gfx::Size dismiss_button_size =
         has_notification_theme_ ? kCrOSDismissButtonSize : kDismissButtonSize;
@@ -182,12 +187,10 @@ MediaItemUIView::MediaItemUIView(
       UpdateFooterView(std::move(footer_view));
       SetPreferredSize(kNormalSize);
     }
+    view_ = swipeable_container_->AddChildView(std::move(view));
+    UpdateDeviceSelector(std::move(device_selector_view));
+    ForceExpandedState();
   }
-  view_ = swipeable_container_->AddChildView(std::move(view));
-
-  UpdateDeviceSelector(std::move(device_selector_view));
-
-  ForceExpandedState();
 }
 
 MediaItemUIView::~MediaItemUIView() {
@@ -458,7 +461,7 @@ void MediaItemUIView::OnSizeChanged() {
   // include that in |new_size|.
   if (device_selector_view_) {
     auto device_selector_view_size = device_selector_view_->GetPreferredSize();
-    DCHECK(device_selector_view_size.width() == kWidth);
+    CHECK(device_selector_view_size.width() == kWidth);
     new_size.set_height(new_size.height() + device_selector_view_size.height());
     view_->UpdateDeviceSelectorAvailability(
         device_selector_view_->GetVisible());

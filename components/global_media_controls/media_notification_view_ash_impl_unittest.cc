@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/media_message_center/media_notification_view_ash_impl.h"
+#include "components/global_media_controls/media_notification_view_ash_impl.h"
 
+#include "components/global_media_controls/public/test/mock_media_item_ui_device_selector.h"
+#include "components/global_media_controls/public/test/mock_media_item_ui_footer.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/mock_media_notification_item.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -14,15 +16,19 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 
-namespace media_message_center {
+namespace global_media_controls {
 
+using ::global_media_controls::test::MockMediaItemUIDeviceSelector;
+using ::global_media_controls::test::MockMediaItemUIFooter;
+using ::media_message_center::test::MockMediaNotificationItem;
 using ::media_session::mojom::MediaSessionAction;
 using ::testing::_;
 using ::testing::NiceMock;
 
 namespace {
 
-class MockMediaNotificationContainer : public MediaNotificationContainer {
+class MockMediaNotificationContainer
+    : public media_message_center::MediaNotificationContainer {
  public:
   MockMediaNotificationContainer() = default;
   MockMediaNotificationContainer(const MockMediaNotificationContainer&) =
@@ -63,18 +69,31 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
     views::ViewsTestBase::SetUp();
 
     container_ = std::make_unique<NiceMock<MockMediaNotificationContainer>>();
-    item_ = std::make_unique<NiceMock<test::MockMediaNotificationItem>>();
+    item_ = std::make_unique<NiceMock<MockMediaNotificationItem>>();
+
+    auto footer = std::make_unique<NiceMock<MockMediaItemUIFooter>>();
+    footer_ = footer.get();
+
+    auto device_selector =
+        std::make_unique<NiceMock<MockMediaItemUIDeviceSelector>>();
+    device_selector_ = device_selector.get();
+    device_selector_->SetPreferredSize(gfx::Size(400, 50));
 
     // Create a widget and add the view to show on the screen for testing screen
     // coordinates and focus.
     widget_ = CreateTestWidget();
-    view_ = widget_->SetContentsView(CreateView(
-        media_message_center::MediaDisplayPage::kQuickSettingsMediaView));
+    view_ =
+        widget_->SetContentsView(std::make_unique<MediaNotificationViewAshImpl>(
+            container_.get(), item_->GetWeakPtr(), std::move(footer),
+            std::move(device_selector), media_message_center::MediaColorTheme(),
+            MediaDisplayPage::kQuickSettingsMediaView));
     widget_->Show();
   }
 
   void TearDown() override {
     view_ = nullptr;
+    footer_ = nullptr;
+    device_selector_ = nullptr;
     widget_.reset();
     actions_.clear();
 
@@ -84,8 +103,8 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
   std::unique_ptr<MediaNotificationViewAshImpl> CreateView(
       MediaDisplayPage media_display_page) {
     return std::make_unique<MediaNotificationViewAshImpl>(
-        container_.get(), item_->GetWeakPtr(), MediaColorTheme(),
-        media_display_page);
+        container_.get(), item_->GetWeakPtr(), nullptr, nullptr,
+        media_message_center::MediaColorTheme(), media_display_page);
   }
 
   void EnableAllActions() {
@@ -119,7 +138,11 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
 
   MediaNotificationViewAshImpl* view() const { return view_; }
 
-  test::MockMediaNotificationItem& item() { return *item_; }
+  MockMediaNotificationItem& item() { return *item_; }
+
+  MockMediaItemUIFooter* footer() { return footer_; }
+
+  MockMediaItemUIDeviceSelector* device_selector() { return device_selector_; }
 
   std::vector<views::Button*> media_control_buttons() const {
     return view()->action_buttons_;
@@ -151,19 +174,37 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
 
   base::flat_set<MediaSessionAction> actions_;
   std::unique_ptr<MockMediaNotificationContainer> container_;
-  std::unique_ptr<test::MockMediaNotificationItem> item_;
+  std::unique_ptr<MockMediaNotificationItem> item_;
   raw_ptr<MediaNotificationViewAshImpl> view_;
+  raw_ptr<MockMediaItemUIFooter> footer_;
+  raw_ptr<MockMediaItemUIDeviceSelector> device_selector_;
   std::unique_ptr<views::Widget> widget_;
 };
 
 TEST_F(MediaNotificationViewAshImplTest, ChevronIconVisibilityCheck) {
-  auto view = CreateView(
-      media_message_center::MediaDisplayPage::kQuickSettingsMediaView);
+  auto view = CreateView(MediaDisplayPage::kQuickSettingsMediaView);
   EXPECT_NE(view->GetChevronIconForTesting(), nullptr);
 
-  view = CreateView(
-      media_message_center::MediaDisplayPage::kQuickSettingsMediaDetailedView);
+  view = CreateView(MediaDisplayPage::kQuickSettingsMediaDetailedView);
   EXPECT_EQ(view->GetChevronIconForTesting(), nullptr);
+}
+
+TEST_F(MediaNotificationViewAshImplTest, DeviceSelectorCheck) {
+  EXPECT_NE(view()->GetStartCastingButtonForTesting(), nullptr);
+  EXPECT_EQ(view()->GetStartCastingButtonForTesting()->GetVisible(), true);
+  EXPECT_EQ(view()->GetFooterForTesting(), footer());
+  EXPECT_EQ(view()->GetDeviceSelectorForTesting(), device_selector());
+  EXPECT_NE(view()->GetDeviceSelectorSeparatorForTesting(), nullptr);
+  EXPECT_EQ(view()->GetDeviceSelectorSeparatorForTesting()->GetVisible(),
+            false);
+
+  EXPECT_CALL(*device_selector(), ShowOrHideDeviceList());
+  EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
+      .WillOnce(testing::Return(true));
+  views::test::ButtonTestApi(view()->GetStartCastingButtonForTesting())
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  EXPECT_EQ(view()->GetDeviceSelectorSeparatorForTesting()->GetVisible(), true);
 }
 
 TEST_F(MediaNotificationViewAshImplTest, MetadataUpdated) {
@@ -324,4 +365,4 @@ TEST_F(MediaNotificationViewAshImplTest, ExitPictureInPictureButtonClick) {
   SimulateButtonClick(MediaSessionAction::kExitPictureInPicture);
 }
 
-}  // namespace media_message_center
+}  // namespace global_media_controls

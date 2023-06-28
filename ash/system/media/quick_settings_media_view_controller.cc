@@ -76,7 +76,7 @@ QuickSettingsMediaViewController::ShowMediaItem(
   auto media_item_ui = std::make_unique<global_media_controls::MediaItemUIView>(
       id, item, /*footer_view=*/nullptr, /*device_selector_view=*/nullptr,
       /*notification_theme=*/absl::nullopt, GetCrosMediaColorTheme(),
-      media_message_center::MediaDisplayPage::kQuickSettingsMediaView);
+      global_media_controls::MediaDisplayPage::kQuickSettingsMediaView);
   auto* media_item_ui_ptr = media_item_ui.get();
   media_item_ui_observer_set_.Observe(id, media_item_ui_ptr);
   media_view_->ShowItem(id, std::move(media_item_ui));

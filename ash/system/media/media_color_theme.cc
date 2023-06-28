@@ -16,6 +16,7 @@ media_message_center::MediaColorTheme GetCrosMediaColorTheme() {
   theme.secondary_container_color_id =
       cros_tokens::kCrosSysSystemPrimaryContainer;
   theme.background_color_id = cros_tokens::kCrosSysSystemOnBase;
+  theme.separator_color_id = cros_tokens::kCrosSysSeparator;
   return theme;
 }
 

@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_
-#define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_
+#ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_
+#define COMPONENTS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "components/global_media_controls/public/views/media_item_ui_device_selector.h"
+#include "components/global_media_controls/public/views/media_item_ui_footer.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "components/media_message_center/notification_theme.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -20,10 +22,12 @@ class Label;
 }  // namespace views
 
 namespace media_message_center {
-
 class MediaNotificationContainer;
 class MediaNotificationItem;
 class MediaSquigglyProgressView;
+}  // namespace media_message_center
+
+namespace global_media_controls {
 
 namespace {
 class MediaButton;
@@ -38,15 +42,18 @@ enum class MediaDisplayPage {
 };
 
 // CrOS implementation of media notification view.
-class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewAshImpl
-    : public MediaNotificationView {
+class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
+    : public media_message_center::MediaNotificationView {
  public:
   METADATA_HEADER(MediaNotificationViewAshImpl);
 
-  MediaNotificationViewAshImpl(MediaNotificationContainer* container,
-                               base::WeakPtr<MediaNotificationItem> item,
-                               MediaColorTheme theme,
-                               MediaDisplayPage media_display_page);
+  MediaNotificationViewAshImpl(
+      media_message_center::MediaNotificationContainer* container,
+      base::WeakPtr<media_message_center::MediaNotificationItem> item,
+      std::unique_ptr<MediaItemUIFooter> footer_view,
+      std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view,
+      media_message_center::MediaColorTheme theme,
+      MediaDisplayPage media_display_page);
   MediaNotificationViewAshImpl(const MediaNotificationViewAshImpl&) = delete;
   MediaNotificationViewAshImpl& operator=(const MediaNotificationViewAshImpl&) =
       delete;
@@ -78,6 +85,10 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewAshImpl
   views::Label* GetArtistLabelForTesting();
   views::Label* GetTitleLabelForTesting();
   views::ImageView* GetChevronIconForTesting();
+  views::Button* GetStartCastingButtonForTesting();
+  MediaItemUIFooter* GetFooterForTesting();
+  MediaItemUIDeviceSelector* GetDeviceSelectorForTesting();
+  views::View* GetDeviceSelectorSeparatorForTesting();
 
  private:
   friend class MediaNotificationViewAshImplTest;
@@ -96,16 +107,19 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewAshImpl
   // progress position.
   void SeekTo(double seek_progress);
 
+  // Callback for when the start casting button is toggled by user.
+  void StartCastingButtonPressed(MediaButton* button);
+
   // Raw pointer to the container holding this view. The |container_| should
   // never be nullptr.
-  const raw_ptr<MediaNotificationContainer> container_;
+  const raw_ptr<media_message_center::MediaNotificationContainer> container_;
 
   // Weak pointer to the media notification item associated with this view. The
   // |item_| should never be nullptr.
-  base::WeakPtr<MediaNotificationItem> item_;
+  base::WeakPtr<media_message_center::MediaNotificationItem> item_;
 
   // The color theme for all the colors in this view.
-  MediaColorTheme theme_;
+  media_message_center::MediaColorTheme theme_;
 
   media_session::MediaPosition position_;
 
@@ -123,12 +137,17 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewAshImpl
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::ImageView> chevron_icon_ = nullptr;
 
-  raw_ptr<MediaSquigglyProgressView> squiggly_progress_view_ = nullptr;
+  raw_ptr<media_message_center::MediaSquigglyProgressView>
+      squiggly_progress_view_ = nullptr;
   raw_ptr<MediaButton> play_pause_button_ = nullptr;
   raw_ptr<MediaButton> start_casting_button_ = nullptr;
   raw_ptr<MediaButton> picture_in_picture_button_ = nullptr;
+
+  raw_ptr<MediaItemUIFooter> footer_view_ = nullptr;
+  raw_ptr<MediaItemUIDeviceSelector> device_selector_view_ = nullptr;
+  raw_ptr<views::BoxLayoutView> device_selector_view_separator_ = nullptr;
 };
 
-}  // namespace media_message_center
+}  // namespace global_media_controls
 
-#endif  // COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_
+#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_
