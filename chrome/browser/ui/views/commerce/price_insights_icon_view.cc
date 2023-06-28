@@ -112,7 +112,8 @@ bool PriceInsightsIconView::QualifiesForPageActionLabel() {
     SetLabel(l10n_util::GetStringUTF16(
         IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE));
   } else if (price_insights_info->price_bucket ==
-             commerce::PriceBucket::kHighPrice) {
+                 commerce::PriceBucket::kHighPrice &&
+             commerce::kPriceInsightsChipLabelExpandOnHighPrice.Get()) {
     SetLabel(l10n_util::GetStringUTF16(
         IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE));
   } else {
