@@ -531,6 +531,8 @@ third_party/mediapipe/src 2 1
 third_party/mediapipe/src/.github/ISSUE_TEMPLATE 2 1
 third_party/mediapipe/src/mediapipe/calculators/core 1 1
 third_party/mediapipe/src/mediapipe/framework/api2 2 1
+third_party/mediapipe/src/mediapipe/graphs/youtube8m 1 1
+third_party/mediapipe/src/mediapipe/modules/face_detection 4 1
 third_party/metrics_proto 2 1
 third_party/microsoft_webauthn 1 1
 third_party/mocha 10 2
