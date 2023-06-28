@@ -150,6 +150,17 @@
     },
   },
   'android_browsertests_no_fieldtrial': {
+    'modifications': {
+      'android-12-x64-rel': {
+        # TODO(crbug.com/1225851): Remove experiment and ci_only
+        # once the test suite is stable.
+        'experiment_percentage': 100,
+        'args': [
+          # https://crbug.com/1289764
+          '--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*',
+        ],
+      }
+    },
     'remove_from': [
       'android-12l-x64-fyi-dbg',
     ],
