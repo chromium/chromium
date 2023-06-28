@@ -17,6 +17,7 @@ _cros_components_ts_files = [
   "async_helpers/async_helpers.ts",
   "lottie_renderer/lottie-renderer.ts",
   "lottie_renderer/worker.ts",
+  "slider/slider.ts",
 ]
 
 ts_library("cros_components__ts_library") {

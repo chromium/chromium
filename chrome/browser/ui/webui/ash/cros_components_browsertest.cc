@@ -161,6 +161,11 @@ static constexpr const ComponentTestData kComponentsTestData[] = {
         .component_name = "cros-switch",
         .gtest_name = "CrosSwitch",
     },
+    {
+        .script_src = "chrome://resources/cros_components/slider/slider.js",
+        .component_name = "cros-slider",
+        .gtest_name = "CrosSlider",
+    },
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
