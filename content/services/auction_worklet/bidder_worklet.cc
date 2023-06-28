@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -320,6 +321,7 @@ void BidderWorklet::BeginGenerateBid(
     const absl::optional<GURL>& direct_from_seller_auction_signals,
     const url::Origin& browser_signal_seller_origin,
     const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
+    const base::TimeDelta browser_signal_recency,
     mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
     base::Time auction_start_time,
     uint64_t trace_id,
@@ -338,6 +340,7 @@ void BidderWorklet::BeginGenerateBid(
       browser_signal_seller_origin;
   generate_bid_task->browser_signal_top_level_seller_origin =
       browser_signal_top_level_seller_origin;
+  generate_bid_task->browser_signal_recency = browser_signal_recency;
   generate_bid_task->bidding_browser_signals =
       std::move(bidding_browser_signals);
   generate_bid_task->auction_start_time = auction_start_time;
@@ -825,6 +828,7 @@ void BidderWorklet::V8State::GenerateBid(
     const absl::optional<blink::AdCurrency>& expected_buyer_currency,
     const url::Origin& browser_signal_seller_origin,
     const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
+    const base::TimeDelta browser_signal_recency,
     mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
     base::Time auction_start_time,
     scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result,
@@ -847,7 +851,7 @@ void BidderWorklet::V8State::GenerateBid(
       direct_from_seller_result_auction_signals, per_buyer_timeout,
       expected_buyer_currency, browser_signal_seller_origin,
       base::OptionalToPtr(browser_signal_top_level_seller_origin),
-      bidding_browser_signals, auction_start_time,
+      browser_signal_recency, bidding_browser_signals, auction_start_time,
       trusted_bidding_signals_result, trace_id,
       /*context_recycler_for_rerun=*/nullptr,
       /*restrict_to_kanon_ads=*/false);
@@ -884,8 +888,8 @@ void BidderWorklet::V8State::GenerateBid(
               direct_from_seller_result_auction_signals, per_buyer_timeout,
               expected_buyer_currency, browser_signal_seller_origin,
               base::OptionalToPtr(browser_signal_top_level_seller_origin),
-              bidding_browser_signals, auction_start_time,
-              trusted_bidding_signals_result, trace_id,
+              browser_signal_recency, bidding_browser_signals,
+              auction_start_time, trusted_bidding_signals_result, trace_id,
               std::move(result->context_recycler_for_rerun),
               /*restrict_to_kanon_ads=*/true);
       if (restricted_result.has_value() && restricted_result->bid) {
@@ -948,6 +952,7 @@ BidderWorklet::V8State::GenerateSingleBid(
     const absl::optional<blink::AdCurrency>& expected_buyer_currency,
     const url::Origin& browser_signal_seller_origin,
     const url::Origin* browser_signal_top_level_seller_origin,
+    const base::TimeDelta browser_signal_recency,
     const mojom::BiddingBrowserSignalsPtr& bidding_browser_signals,
     base::Time auction_start_time,
     const scoped_refptr<TrustedSignals::Result>& trusted_bidding_signals_result,
@@ -1166,6 +1171,10 @@ BidderWorklet::V8State::GenerateSingleBid(
                                 bidding_browser_signals->join_count) ||
       !browser_signals_dict.Set("bidCount",
                                 bidding_browser_signals->bid_count) ||
+      (base::FeatureList::IsEnabled(
+           blink::features::kFledgePassRecencyToGenerateBid) &&
+       !browser_signals_dict.Set("recency",
+                                 browser_signal_recency.InMilliseconds())) ||
       (bidding_signals_data_version.has_value() &&
        !browser_signals_dict.Set("dataVersion",
                                  bidding_signals_data_version.value()))) {
@@ -1742,6 +1751,7 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
           std::move(task->expected_buyer_currency),
           std::move(task->browser_signal_seller_origin),
           std::move(task->browser_signal_top_level_seller_origin),
+          std::move(task->browser_signal_recency),
           std::move(task->bidding_browser_signals), task->auction_start_time,
           std::move(task->trusted_bidding_signals_result), task->trace_id,
           base::ScopedClosureRunner(std::move(cleanup_generate_bid_task)),

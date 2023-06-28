@@ -785,6 +785,10 @@ BASE_FEATURE(kFledgeEnforceKAnonymity,
              "FledgeEnforceKAnonymity",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFledgePassRecencyToGenerateBid,
+             "FledgePassRecencyToGenerateBid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kForceDeferScriptIntervention,
              "ForceDeferScriptIntervention",
              base::FEATURE_DISABLED_BY_DEFAULT);
