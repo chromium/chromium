@@ -140,6 +140,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
+    # pylint: disable=line-too-long
     # Could not figure out how to prevent yapf from breaking the formatting
     # below.
     # yapf: disable
@@ -181,6 +182,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               'webgl2-multisampling-high-power-switch-loses-context.html'),
              ('ContextLost_MacWebGLMultisamplingHighPowerSwitchDoesNotCrash',
               'webgl2-multisampling-high-power-switch-does-not-crash.html'),
+             ('ContextLost_MacWebGLCopyTexSubImage2DHighPowerSwitchDoesNotCrash',
+              'webgl2-copytexsubimage2d-high-power-switch-does-not-crash.html'),
              ('ContextLost_MacWebGLPreserveDBHighPowerSwitchLosesContext',
               'webgl2-preserve-db-high-power-switch-loses-context.html'),
              ('GpuCrash_InfoForHardwareGpu', 'simple.html'),
@@ -192,6 +195,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
              ('GpuNormalTermination_WebGPUNotBlocked',
               'webgpu-domain-not-blocked.html'))
     # yapf: enable
+
+    # pylint: enable=line-too-long
 
     for t in tests:
       yield (t[0], t[1], ['_' + t[0]])
@@ -581,6 +586,29 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Verifies that switching from the low-power to the high-power GPU
     # on a dual-GPU Mac, while the user has allocated multisampled
     # renderbuffers via the WebGL 2.0 API, does not crash.
+    if not self._IsDualGPUMacLaptop():
+      logging.info('Skipping test because not running on dual-GPU Mac laptop')
+      self.skipTest('Not running on dual-GPU Mac laptop')
+    # Start with a browser with clean GPU process state.
+    self.RestartBrowserWithArgs([])
+    # Wait a few seconds for the system to dispatch any GPU switched
+    # notifications.
+    time.sleep(3)
+    self._NavigateAndWaitForLoad(test_path)
+    if not gpu_helper.IsIntel(
+        self.browser.GetSystemInfo().gpu.devices[0].vendor_id):
+      self.fail('Test did not start up on low-power GPU')
+    tab = self.tab
+    tab.EvaluateJavaScript('runTest()')
+    self._WaitForTabAndCheckCompletion()
+    self._CheckCrashCount(tab, 0)
+
+  def _ContextLost_MacWebGLCopyTexSubImage2DHighPowerSwitchDoesNotCrash(
+      self, test_path: str) -> None:
+    # Verifies that switching from the low-power to the high-power GPU
+    # on a dual-GPU Mac, while the user has allocated multisampled
+    # renderbuffers via the WebGL 2.0 API, and calling
+    # CopyTexSubImage2D all the while, does not crash.
     if not self._IsDualGPUMacLaptop():
       logging.info('Skipping test because not running on dual-GPU Mac laptop')
       self.skipTest('Not running on dual-GPU Mac laptop')

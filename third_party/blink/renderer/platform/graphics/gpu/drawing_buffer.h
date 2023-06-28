@@ -202,7 +202,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Note that in rare situations on macOS the drawing buffer can be destroyed
   // during the resolve process, specifically during automatic graphics
   // switching. In this scenario this method returns false.
-  bool ResolveAndBindForReadAndDraw();
+  [[nodiscard]] bool ResolveAndBindForReadAndDraw();
 
   bool Multisample() const;
 

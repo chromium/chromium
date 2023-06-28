@@ -933,6 +933,9 @@ void WebGL2RenderingContextBase::readPixels(GLint x,
 
   {
     ScopedDrawingBufferBinder binder(GetDrawingBuffer(), framebuffer);
+    if (!binder.Succeeded()) {
+      return;
+    }
     ContextGL()->ReadPixels(x, y, width, height, format, type,
                             reinterpret_cast<void*>(offset));
   }
@@ -2374,6 +2377,9 @@ void WebGL2RenderingContextBase::copyTexSubImage3D(GLenum target,
   ClearIfComposited(kClearCallerOther);
   ScopedDrawingBufferBinder binder(GetDrawingBuffer(),
                                    read_framebuffer_binding);
+  if (!binder.Succeeded()) {
+    return;
+  }
   ContextGL()->CopyTexSubImage3D(target, level, xoffset, yoffset, zoffset, x, y,
                                  width, height);
 }
