@@ -437,6 +437,17 @@ ArcVmDataMigrationStatus GetArcVmDataMigrationStatus(PrefService* prefs) {
       prefs->GetInteger(prefs::kArcVmDataMigrationStatus));
 }
 
+ArcVmDataMigrationStrategy GetArcVmDataMigrationStrategy(PrefService* prefs) {
+  int value =
+      std::max(0, prefs->GetInteger(prefs::kArcVmDataMigrationStrategy));
+  if (value > static_cast<int>(ArcVmDataMigrationStrategy::kMaxValue)) {
+    LOG(ERROR) << "Unexpected value for ArcVmDataMigrationStrategy pref: "
+               << value;
+    value = static_cast<int>(ArcVmDataMigrationStrategy::kPrompt);
+  }
+  return static_cast<ArcVmDataMigrationStrategy>(value);
+}
+
 void SetArcVmDataMigrationStatus(PrefService* prefs,
                                  ArcVmDataMigrationStatus status) {
   prefs->SetInteger(prefs::kArcVmDataMigrationStatus, static_cast<int>(status));
