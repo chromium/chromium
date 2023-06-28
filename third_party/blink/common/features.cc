@@ -719,6 +719,12 @@ BASE_FEATURE(kEventTimingMatchPresentationIndex,
              "EventTimingMatchPresentationIndex",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables reporting Event Timing entries with a smaller presentation index on
+// resolved painted presentation.
+BASE_FEATURE(kEventTimingReportAllEarlyEntriesOnPaintedPresentation,
+             "EventTimingReportAllEarlyEntriesOnPaintedPresentation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether LCP calculations should exclude low-entropy images. If
 // enabled, then the associated parameter sets the cutoff, expressed as the
 // minimum number of bits of encoded image data used to encode each rendered

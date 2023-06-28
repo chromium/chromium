@@ -488,8 +488,16 @@ void WindowPerformance::OnPresentationPromiseResolved(
   if (!DomWindow() || !DomWindow()->document()) {
     return;
   }
+  if (events_data_.empty()) {
+    // Counts when a presentation promise got resolved after its related entries
+    // being reported.
+    UseCounter::Count(
+        GetExecutionContext(),
+        WebFeature::kEventTimingPresentationPromiseResolvedAfterReport);
 
-  CHECK(!events_data_.empty());
+    return;
+  }
+
   const bool is_painted_presentation_promise =
       presentation_index < event_presentation_promise_count_ ||
       need_new_promise_for_event_presentation_time_;
@@ -501,6 +509,20 @@ void WindowPerformance::OnPresentationPromiseResolved(
         GetExecutionContext(),
         WebFeature::
             kEventTimingPaintedPresentationPromiseResolvedWithEarlierPromiseUnresolved);
+
+    if (last_resolved_painted_event_presentation_promise_index_ <
+        presentation_index) {
+      last_resolved_painted_event_presentation_promise_index_ =
+          presentation_index;
+    }
+  } else if (is_painted_presentation_promise &&
+             events_data_.front()->GetPresentationIndex() >
+                 presentation_index) {
+    // Counts when a presentation promise got resolved after its related entries
+    // being reported.
+    UseCounter::Count(
+        GetExecutionContext(),
+        WebFeature::kEventTimingPresentationPromiseResolvedAfterReport);
   }
 
   // If the resolved presentation promise is the latest one we registered, then
@@ -533,16 +555,29 @@ void WindowPerformance::ReportEventTimings() {
   CHECK(DomWindow() && DomWindow()->document());
   InteractiveDetector* interactive_detector =
       InteractiveDetector::From(*(DomWindow()->document()));
+  bool report_all_early_entries = base::FeatureList::IsEnabled(
+      features::kEventTimingReportAllEarlyEntriesOnPaintedPresentation);
   CHECK(!events_data_.empty());
 
   for (uint64_t presentation_index_to_report =
            events_data_.front()->GetPresentationIndex();
-       pending_event_presentation_time_map_.Contains(
-           presentation_index_to_report);
-       ++presentation_index_to_report) {
-    base::TimeTicks presentation_timestamp =
-        pending_event_presentation_time_map_.at(presentation_index_to_report);
-    pending_event_presentation_time_map_.erase(presentation_index_to_report);
+       ; ++presentation_index_to_report) {
+    const bool is_resolved_promise =
+        pending_event_presentation_time_map_.Contains(
+            presentation_index_to_report);
+    const bool is_early_entry =
+        presentation_index_to_report <
+        last_resolved_painted_event_presentation_promise_index_;
+    if (!is_resolved_promise && !(is_early_entry && report_all_early_entries)) {
+      return;
+    }
+
+    base::TimeTicks presentation_timestamp = base::TimeTicks();
+    if (is_resolved_promise) {
+      presentation_timestamp =
+          pending_event_presentation_time_map_.at(presentation_index_to_report);
+      pending_event_presentation_time_map_.erase(presentation_index_to_report);
+    }
 
     while (!events_data_.empty() &&
            events_data_.front()->GetPresentationIndex() ==
@@ -562,17 +597,6 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
   absl::optional<int> key_code = event_data->GetKeyCode();
   absl::optional<PointerId> pointer_id = event_data->GetPointerId();
 
-  base::TimeTicks entry_presentation_timestamp = presentation_timestamp;
-  DOMHighResTimeStamp entry_end_time =
-      MonotonicTimeToDOMHighResTimeStamp(presentation_timestamp);
-
-  base::TimeDelta input_delay =
-      base::Milliseconds(entry->processingStart() - entry->startTime());
-  base::TimeDelta processing_time =
-      base::Milliseconds(entry->processingEnd() - entry->processingStart());
-  base::TimeDelta time_to_next_paint =
-      base::Milliseconds(entry_end_time - entry->processingEnd());
-
   const bool is_artificial_pointerup_or_click =
       (entry->name() == event_type_names::kPointerup ||
        entry->name() == event_type_names::kClick) &&
@@ -583,28 +607,38 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
                       WebFeature::kEventTimingArtificialPointerupOrClick);
   }
 
-  if ((last_visibility_change_timestamp_ > event_timestamp &&
+  // The page visibility was changed, or the entry's related presentation
+  // promise didn't resolve, or this is an artificial event. We fallback entry's
+  // end time to its processingEnd (as if there was no next paint needed).
+  const bool fallback_end_time_to_processing_end =
+      presentation_timestamp == base::TimeTicks() ||
+      (last_visibility_change_timestamp_ > event_timestamp &&
        last_visibility_change_timestamp_ < presentation_timestamp)
 #if BUILDFLAG(IS_MAC)
       || is_artificial_pointerup_or_click
 #endif  // BUILDFLAG(IS_MAC)
-  ) {
-    // The page visibility was changed. Ignore the presentation_timestamp and
-    // fallback to processingEnd (as if there was no next paint needed).
-    entry_end_time = entry->processingEnd();
-    // Adjust the entry_presentation_timestamp to also be == processingEnd.
-    // Ideally we could just assign the processingEnd value, except that
-    // processingEnd is already a DOMHighResTimeStamp and we cannot convert
-    // back to TimeTicks.  Subtracting the time_to_next_paint
-    entry_presentation_timestamp -= time_to_next_paint;
-    // Set time_to_next_paint = 0
-    time_to_next_paint = base::TimeDelta();
-  }
+      ;
+
+  base::TimeTicks entry_end_timetick =
+      fallback_end_time_to_processing_end
+          ? GetTimeOriginInternal() + base::Milliseconds(entry->processingEnd())
+          : presentation_timestamp;
+  DOMHighResTimeStamp entry_end_time =
+      fallback_end_time_to_processing_end
+          ? entry->processingEnd()
+          : MonotonicTimeToDOMHighResTimeStamp(presentation_timestamp);
+
+  base::TimeDelta input_delay =
+      base::Milliseconds(entry->processingStart() - entry->startTime());
+  base::TimeDelta processing_time =
+      base::Milliseconds(entry->processingEnd() - entry->processingStart());
+  base::TimeDelta time_to_next_paint =
+      base::Milliseconds(entry_end_time - entry->processingEnd());
 
   int rounded_duration =
       std::round((entry_end_time - entry->startTime()) / 8) * 8;
   entry->SetDuration(rounded_duration);
-  entry->SetUnsafePresentationTimestamp(entry_presentation_timestamp);
+  entry->SetUnsafePresentationTimestamp(entry_end_timetick);
 
   if (entry->name() == "pointerdown") {
     pending_pointer_down_start_time_ = entry->startTime();
@@ -628,7 +662,7 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
 
   // Event Timing
   ResponsivenessMetrics::EventTimestamps event_timestamps = {
-      event_timestamp, entry_presentation_timestamp};
+      event_timestamp, entry_end_timetick};
   if (SetInteractionIdAndRecordLatency(entry, key_code, pointer_id,
                                        event_timestamps)) {
     NotifyAndAddEventTimingBuffer(entry);

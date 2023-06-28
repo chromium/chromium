@@ -61,8 +61,11 @@ class WindowPerformanceTest : public testing::Test,
  protected:
   void SetUp() override {
     if (GetParam()) {
-      features_.InitAndEnableFeature(
-          blink::features::kEventTimingMatchPresentationIndex);
+      features_.InitWithFeatures(
+          {blink::features::kEventTimingMatchPresentationIndex,
+           blink::features::
+               kEventTimingReportAllEarlyEntriesOnPaintedPresentation},
+          {});
     }
     test_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
     ResetPerformance();
@@ -713,12 +716,12 @@ TEST_P(WindowPerformanceTest, PressMultipleKeys) {
 // callback got invoked later than keyup's due to multi processes & threading
 // overhead.
 TEST_P(WindowPerformanceTest, KeyupFinishLastButCallbackInvokedFirst) {
-  // This test only pass with the experiment feature
-  base::test::ScopedFeatureList features_;
-  features_.InitAndEnableFeature(
-      blink::features::kEventTimingMatchPresentationIndex);
+  // This test only pass with the experiment features.
+  if (!GetParam()) {
+    return;
+  }
 
-  // Random keycode picked for testing from
+  // Arbitrary keycode picked for testing from
   // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode#value_of_keycode
   int digit_1_key_code = 0x31;
 
@@ -742,6 +745,7 @@ TEST_P(WindowPerformanceTest, KeyupFinishLastButCallbackInvokedFirst) {
       RegisterKeyboardEvent("keyup", keyup_timestamp, processing_start_keyup,
                             processing_end_keyup, digit_1_key_code);
 
+  // keyup resolved without a paint, due to no damage.
   SimulateResolvePresentationPromise(presentation_index_keyup,
                                      presentation_promise_break_time_keyup);
   SimulateResolvePresentationPromise(presentation_index_keydown,
@@ -762,6 +766,70 @@ TEST_P(WindowPerformanceTest, KeyupFinishLastButCallbackInvokedFirst) {
       ukm_entry,
       ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
       8);
+  GetUkmRecorder()->ExpectEntryMetric(
+      ukm_entry,
+      ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 0);
+
+  // Check UMA recording.
+  GetHistogramTester().ExpectTotalCount(
+      "Blink.Responsiveness.UserInteraction.MaxEventDuration.AllTypes", 1);
+  GetHistogramTester().ExpectTotalCount(
+      "Blink.Responsiveness.UserInteraction.MaxEventDuration.Keyboard", 1);
+  GetHistogramTester().ExpectTotalCount(
+      "Blink.Responsiveness.UserInteraction.MaxEventDuration.TapOrClick", 0);
+  GetHistogramTester().ExpectTotalCount(
+      "Blink.Responsiveness.UserInteraction.MaxEventDuration.Drag", 0);
+}
+
+TEST_P(WindowPerformanceTest, ReportEventTimingOnRealPaintFeedback) {
+  // This test only pass with the experiment features.
+  if (!GetParam()) {
+    return;
+  }
+
+  // Arbitrary keycode picked for testing from
+  // https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode#value_of_keycode
+  int digit_1_key_code = 0x31;
+
+  // Keydown
+  base::TimeTicks keydown_timestamp = GetTimeOrigin();
+  base::TimeTicks processing_start_keydown = GetTimeStamp(1);
+  base::TimeTicks processing_end_keydown = GetTimeStamp(4);
+  RegisterKeyboardEvent("keydown", keydown_timestamp, processing_start_keydown,
+                        processing_end_keydown, digit_1_key_code);
+
+  SimulatePaint();
+
+  // Keyup
+  base::TimeTicks keyup_timestamp = GetTimeStamp(5);
+  base::TimeTicks processing_start_keyup = GetTimeStamp(6);
+  base::TimeTicks processing_end_keyup = GetTimeStamp(7);
+  base::TimeTicks presentation_promise_break_time_keyup = GetTimeStamp(8);
+  RegisterKeyboardEvent("keyup", keyup_timestamp, processing_start_keyup,
+                        processing_end_keyup, digit_1_key_code);
+
+  // The keydown & keyup result in two real paints, while we're only getting
+  // presentation feedback of keyup.
+  SimulatePaintAndResolvePresentationPromise(
+      presentation_promise_break_time_keyup);
+
+  // Flush UKM logging mojo request.
+  RunPendingTasks();
+
+  // Check UKM recording.
+  auto entries = GetUkmRecorder()->GetEntriesByName(
+      ukm::builders::Responsiveness_UserInteraction::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  const ukm::mojom::UkmEntry* ukm_entry = entries[0];
+  // Events that are missing presentation feedbacks (keydown here) should
+  // fallback ending time to their processingEnd.
+  GetUkmRecorder()->ExpectEntryMetric(
+      ukm_entry,
+      ukm::builders::Responsiveness_UserInteraction::kMaxEventDurationName, 4);
+  GetUkmRecorder()->ExpectEntryMetric(
+      ukm_entry,
+      ukm::builders::Responsiveness_UserInteraction::kTotalEventDurationName,
+      7);
   GetUkmRecorder()->ExpectEntryMetric(
       ukm_entry,
       ukm::builders::Responsiveness_UserInteraction::kInteractionTypeName, 0);
@@ -1034,7 +1102,7 @@ TEST_P(WindowPerformanceTest, TouchesWithoutClick) {
 //  as event duration ending time.
 //  See crbug.com/1321819
 TEST_P(WindowPerformanceTest, ArtificialPointerupOrClick) {
-  // Random keycode picked for testing
+  // Arbitrary keycode picked for testing
   PointerId pointer_id = 4;
 
   // Pointerdown

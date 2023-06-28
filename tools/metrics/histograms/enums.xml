@@ -43487,6 +43487,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4594" label="TextWrapPretty"/>
   <int value="4595" label="TextWrapPrettyFail"/>
   <int value="4596" label="ContainerQueryEvalUnknown"/>
+  <int value="4597" label="EventTimingPresentationPromiseResolvedAfterReport"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

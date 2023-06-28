@@ -370,6 +370,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEstablishGpuChannelAsync);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEventTimingMatchPresentationIndex);
 
+// This feature (EventTimingReportAllEarlyEntriesOnPaintedPresentation) is
+// having an effect only when EventTimingMatchPresentationIndex is turned on.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kEventTimingReportAllEarlyEntriesOnPaintedPresentation);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExcludeLowEntropyImagesFromLCP);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
     kMinimumEntropyForLCP;
