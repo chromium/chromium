@@ -3595,7 +3595,7 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     blink::ServiceWorkerRouterCondition condition;
     condition.type =
         blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-    blink::UrlPattern url_pattern;
+    blink::SafeUrlPattern url_pattern;
     url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
                                       "/test_data",
                                       liburlpattern::Modifier::kNone);
@@ -3618,7 +3618,7 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     blink::ServiceWorkerRouterCondition condition;
     condition.type =
         blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-    blink::UrlPattern url_pattern;
+    blink::SafeUrlPattern url_pattern;
     url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
                                       "/test_data",
                                       liburlpattern::Modifier::kNone);
@@ -3642,7 +3642,7 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     blink::ServiceWorkerRouterCondition condition;
     condition.type =
         blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-    blink::UrlPattern url_pattern;
+    blink::SafeUrlPattern url_pattern;
     url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
                                       "/test_data",
                                       liburlpattern::Modifier::kNone);
@@ -3674,7 +3674,7 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     blink::ServiceWorkerRouterCondition condition;
     condition.type =
         blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-    blink::UrlPattern url_pattern;
+    blink::SafeUrlPattern url_pattern;
     url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
                                       "/test_data",
                                       liburlpattern::Modifier::kNone);
@@ -3702,7 +3702,7 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     blink::ServiceWorkerRouterCondition condition;
     condition.type =
         blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-    blink::UrlPattern url_pattern;
+    blink::SafeUrlPattern url_pattern;
     url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
                                       "/test_data",
                                       liburlpattern::Modifier::kNone);

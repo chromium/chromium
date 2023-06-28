@@ -14,7 +14,7 @@
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/url_pattern.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 
 namespace apps {
 struct IconInfo;
@@ -59,10 +59,10 @@ RunOnOsLoginMode ToRunOnOsLoginMode(WebAppProto::RunOnOsLoginMode mode);
 WebAppProto::RunOnOsLoginMode ToWebAppProtoRunOnOsLoginMode(
     RunOnOsLoginMode mode);
 
-absl::optional<blink::UrlPattern> ToUrlPattern(
+absl::optional<blink::SafeUrlPattern> ToUrlPattern(
     const proto::UrlPattern& proto_url_pattern);
 
-proto::UrlPattern ToUrlPatternProto(const blink::UrlPattern& url_pattern);
+proto::UrlPattern ToUrlPatternProto(const blink::SafeUrlPattern& url_pattern);
 
 absl::optional<TabStrip> ProtoToTabStrip(proto::TabStrip tab_strip_proto);
 

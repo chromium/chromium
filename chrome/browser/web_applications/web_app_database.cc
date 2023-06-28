@@ -47,10 +47,10 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
-#include "third_party/blink/public/common/url_pattern.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
-#include "third_party/blink/public/mojom/url_pattern.mojom.h"
+#include "third_party/blink/public/mojom/safe_url_pattern.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -835,7 +835,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
             AppImageResourceToProto(image_resource);
       }
 
-      const std::vector<blink::UrlPattern>& scope_patterns =
+      const std::vector<blink::SafeUrlPattern>& scope_patterns =
           absl::get<blink::Manifest::HomeTabParams>(tab_strip.home_tab)
               .scope_patterns;
       for (const auto& pattern : scope_patterns) {

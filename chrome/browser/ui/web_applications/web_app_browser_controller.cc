@@ -746,7 +746,7 @@ absl::optional<RE2::Set> WebAppBrowserController::GetTabbedHomeTabScope()
   TabStrip tab_strip = web_app->tab_strip().value();
   if (const auto* params =
           absl::get_if<blink::Manifest::HomeTabParams>(&tab_strip.home_tab)) {
-    std::vector<blink::UrlPattern> scope_patterns = params->scope_patterns;
+    std::vector<blink::SafeUrlPattern> scope_patterns = params->scope_patterns;
 
     RE2::Set scope_set = RE2::Set(RE2::Options(), RE2::Anchor::UNANCHORED);
     for (auto& scope : scope_patterns) {
