@@ -197,6 +197,78 @@ TEST(CSSParserTokenStreamTest, LookAheadOffset) {
   EXPECT_EQ(13U, stream.LookAheadOffset());
 }
 
+TEST(CSSParserTokenStreamTest, ConsumeUntilPeekedTypeOffset) {
+  CSSTokenizer tokenizer(String("a b c;d e f"));
+  CSSParserTokenStream stream(tokenizer);
+
+  // a
+  EXPECT_EQ(kIdentToken, stream.Peek().GetType());
+  EXPECT_EQ(0u, stream.Offset());
+
+  stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
+  EXPECT_EQ(kSemicolonToken, stream.Peek().GetType());
+  EXPECT_EQ(5u, stream.Offset());
+
+  // Again, when we're already at kSemicolonToken.
+  stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
+  EXPECT_EQ(kSemicolonToken, stream.Peek().GetType());
+  EXPECT_EQ(5u, stream.Offset());
+}
+
+TEST(CSSParserTokenStreamTest, ConsumeUntilPeekedTypeOffsetEndOfFile) {
+  CSSTokenizer tokenizer(String("a b c"));
+  CSSParserTokenStream stream(tokenizer);
+
+  // a
+  EXPECT_EQ(kIdentToken, stream.Peek().GetType());
+  EXPECT_EQ(0u, stream.Offset());
+
+  stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
+  EXPECT_TRUE(stream.AtEnd());
+  EXPECT_EQ(5u, stream.Offset());
+
+  // Again, when we're already at EOF.
+  stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
+  EXPECT_TRUE(stream.AtEnd());
+  EXPECT_EQ(5u, stream.Offset());
+}
+
+TEST(CSSParserTokenStreamTest, ConsumeUntilPeekedTypeOffsetEndOfBlock) {
+  CSSTokenizer tokenizer(String("a { a b c } d ;"));
+  CSSParserTokenStream stream(tokenizer);
+
+  // a
+  EXPECT_EQ(0u, stream.Offset());
+  EXPECT_EQ(kIdentToken, stream.Consume().GetType());
+
+  EXPECT_EQ(1u, stream.Offset());
+  EXPECT_EQ(kWhitespaceToken, stream.Consume().GetType());
+
+  EXPECT_EQ(kLeftBraceToken, stream.Peek().GetType());
+  EXPECT_EQ(2u, stream.Offset());
+
+  {
+    CSSParserTokenStream::BlockGuard guard(stream);
+
+    EXPECT_EQ(kWhitespaceToken, stream.Peek().GetType());
+    EXPECT_EQ(3u, stream.Offset());
+
+    stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
+    EXPECT_TRUE(stream.AtEnd());  // End of block.
+    EXPECT_EQ(kRightBraceToken, stream.UncheckedPeek().GetType());
+    EXPECT_EQ(10u, stream.Offset());
+
+    // Again, when we're already at the end-of-block.
+    stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
+    EXPECT_TRUE(stream.AtEnd());  // End of block.
+    EXPECT_EQ(kRightBraceToken, stream.UncheckedPeek().GetType());
+    EXPECT_EQ(10u, stream.Offset());
+  }
+
+  EXPECT_EQ(kWhitespaceToken, stream.Peek().GetType());
+  EXPECT_EQ(11u, stream.Offset());
+}
+
 TEST(CSSParserTokenStreamTest, ConsumeUntilPeekedTypeIsEmpty) {
   CSSTokenizer tokenizer(String("{23 }"));
   CSSParserTokenStream stream(tokenizer);
