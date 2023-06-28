@@ -2988,11 +2988,6 @@ const char kSplitTabStripDescription[] =
     "Splits pinned and unpinned tabs into separate TabStrips under the hood. "
     "Pure refactoring, no user-visible behavioral changes are included.";
 
-const char kScrollUnificationName[] = "Scroll Unification";
-const char kScrollUnificationDescription[] =
-    "Refactoring project that eliminates scroll handling code from Blink. "
-    "Does not affect behavior or performance.";
-
 const char kSearchResultInlineIconName[] = "Search Result Inline Icons";
 const char kSearchResultInlineIconDescription[] =
     "Show iconified text and vector icons "

@@ -1691,9 +1691,6 @@ extern const char kScrollableTabStripOverflowDescription[];
 extern const char kSplitTabStripName[];
 extern const char kSplitTabStripDescription[];
 
-extern const char kScrollUnificationName[];
-extern const char kScrollUnificationDescription[];
-
 extern const char kSearchResultInlineIconName[];
 extern const char kSearchResultInlineIconDescription[];
 
