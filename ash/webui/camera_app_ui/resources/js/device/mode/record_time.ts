@@ -66,15 +66,17 @@ abstract class RecordTimeBase {
 
   /**
    * Starts to count and show the elapsed recording time.
-   *
-   * @param resume Start parameters.
-   * @param resume.resume If the time count is resumed from paused state.
    */
-  start({resume}: {resume: boolean}): void {
-    if (!resume) {
-      this.ticks = 0;
-      this.totalDuration = 0;
-    }
+  start(): void {
+    this.ticks = 0;
+    this.totalDuration = 0;
+    this.resume();
+  }
+
+  /**
+   * Resumes to count and show the elapsed recording time.
+   */
+  resume(): void {
     this.update();
     this.recordTime.hidden = false;
 
@@ -97,28 +99,44 @@ abstract class RecordTimeBase {
   }
 
   /**
-   * Stops counting and showing the elapsed recording time.
-   *
-   * @param pause Stop parameters.
-   * @param pause.pause If the time count is paused temporarily.
+   * Calculates total duration after stop recoding.
    */
-  stop({pause}: {pause: boolean}): void {
-    speak(I18nString.STATUS_MSG_RECORDING_STOPPED);
-    if (this.tickTimeout !== null) {
-      clearInterval(this.tickTimeout);
-      this.tickTimeout = null;
-    }
-    if (!pause) {
-      this.ticks = 0;
-      this.recordTime.hidden = true;
-      this.update();
-    }
-
+  private calculateDuration(): void {
     this.totalDuration += performance.now() - this.startTimestamp;
     if (this.maxTimeOption !== null) {
       this.totalDuration =
           Math.min(this.totalDuration, this.maxTimeOption.maxTime);
     }
+  }
+
+  /**
+   * Stops counting and showing the elapsed recording time.
+   */
+  stop(): void {
+    speak(I18nString.STATUS_MSG_RECORDING_STOPPED);
+    if (this.tickTimeout !== null) {
+      clearInterval(this.tickTimeout);
+      this.tickTimeout = null;
+    }
+
+    this.ticks = 0;
+    this.recordTime.hidden = true;
+    this.update();
+
+    this.calculateDuration();
+  }
+
+  /**
+   * Pauses counting and showing the elapsed recording time.
+   */
+  pause(): void {
+    speak(I18nString.STATUS_MSG_RECORDING_STOPPED);
+    if (this.tickTimeout !== null) {
+      clearInterval(this.tickTimeout);
+      this.tickTimeout = null;
+    }
+
+    this.calculateDuration();
   }
 
   /**

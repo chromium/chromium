@@ -456,11 +456,11 @@ export class Video extends ModeBase {
     this.mediaRecorder.addEventListener(toggledEvent, onToggled);
     if (toBePaused) {
       waitable.wait().then(() => this.playPauseEffect(toBePaused));
-      this.recordTime.stop({pause: true});
+      this.recordTime.pause();
       this.mediaRecorder.pause();
     } else {
       await this.playPauseEffect(toBePaused);
-      this.recordTime.start({resume: true});
+      this.recordTime.resume();
       this.mediaRecorder.resume();
     }
 
@@ -481,11 +481,11 @@ export class Video extends ModeBase {
     // Resume: Sound/Button UI -> Update Timer -> Resume
     if (toBePaused) {
       state.set(state.State.RECORDING_PAUSED, true);
-      this.recordTime.stop({pause: true});
+      this.recordTime.pause();
       await this.playPauseEffect(true);
     } else {
       await this.playPauseEffect(false);
-      this.recordTime.start({resume: true});
+      this.recordTime.resume();
       state.set(state.State.RECORDING_PAUSED, false);
     }
 
@@ -624,7 +624,7 @@ export class Video extends ModeBase {
         this.recordingType === RecordType.GIF);
     if (this.recordingType === RecordType.GIF) {
       state.set(state.State.RECORDING, true);
-      this.gifRecordTime.start({resume: false});
+      this.gifRecordTime.start();
 
       let gifSaver = null;
       try {
@@ -637,7 +637,7 @@ export class Video extends ModeBase {
         throw e;
       } finally {
         state.set(state.State.RECORDING, false);
-        this.gifRecordTime.stop({pause: false});
+        this.gifRecordTime.stop();
       }
 
       const gifName = (new Filenamer()).newVideoName(VideoType.GIF);
@@ -653,14 +653,14 @@ export class Video extends ModeBase {
       // TODO(b/279865370): Don't pause when the confirm dialog is shown.
       window.addEventListener('beforeunload', beforeUnloadListener);
 
-      this.recordTime.start({resume: false});
+      this.recordTime.start();
       let timeLapseSaver: TimeLapseSaver|null = null;
       try {
         assert(param !== null);
         timeLapseSaver = await this.captureTimeLapse(param);
       } finally {
         state.set(state.State.RECORDING, false);
-        this.recordTime.stop({pause: false});
+        this.recordTime.stop();
         window.removeEventListener('beforeunload', beforeUnloadListener);
       }
 
@@ -680,7 +680,7 @@ export class Video extends ModeBase {
         timeLapseSaver,
       })];
     } else {
-      this.recordTime.start({resume: false});
+      this.recordTime.start();
       let videoSaver: VideoSaver|null = null;
 
       const isVideoTooShort = () => this.recordTime.inMilliseconds() <
@@ -690,7 +690,7 @@ export class Video extends ModeBase {
         try {
           videoSaver = await this.captureVideo();
         } finally {
-          this.recordTime.stop({pause: false});
+          this.recordTime.stop();
           sound.play(dom.get('#sound-rec-end', HTMLAudioElement));
           await this.snapshotting;
         }
