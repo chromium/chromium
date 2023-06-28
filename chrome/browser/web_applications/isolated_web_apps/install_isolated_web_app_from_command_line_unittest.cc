@@ -176,20 +176,26 @@ class InstallIsolatedWebAppFromCommandLineFlagTest : public WebAppTest {
         {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode}, {});
   }
 
+  void SetUp() override {
+    WebAppTest::SetUp();
+
+    // Clear raw_ptr to existing scheduler to prevent dangling pointer.
+    // TODO(b/283816014): Remove this once SetSubsystems is replaced by
+    // SetProvider().
+    fake_provider().iwa_command_line_install_manager().SetSubsystems(nullptr);
+
+    fake_provider().SetScheduler(std::make_unique<FakeWebAppCommandScheduler>(
+        *profile(), &fake_provider()));
+
+    test::AwaitStartWebAppProviderAndSubsystems(profile());
+  }
+
   sync_preferences::TestingPrefServiceSyncable* pref_service() {
     return profile()->GetTestingPrefService();
   }
 
-  IsolatedWebAppCommandLineInstallManager& SetUpManagerForTesting() {
-    FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
-    auto manager =
-        std::make_unique<IsolatedWebAppCommandLineInstallManager>(*profile());
-    IsolatedWebAppCommandLineInstallManager& manager_ref = *manager;
-    provider->SetIsolatedWebAppCommandLineInstallManager(std::move(manager));
-    provider->SetScheduler(
-        std::make_unique<FakeWebAppCommandScheduler>(*profile(), provider));
-    test::AwaitStartWebAppProviderAndSubsystems(profile());
-    return manager_ref;
+  IsolatedWebAppCommandLineInstallManager& manager() {
+    return fake_provider().iwa_command_line_install_manager();
   }
 
  private:
@@ -204,13 +210,11 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   base::test::RepeatingTestFuture<
       base::expected<InstallIsolatedWebAppCommandSuccess, std::string>>
       future;
-  IsolatedWebAppCommandLineInstallManager& manager = SetUpManagerForTesting();
-  manager.OnReportInstallationResultForTesting(future.GetCallback());
-
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::ISOLATED_WEB_APP_INSTALL,
       KeepAliveRestartOption::DISABLED);
-  manager.InstallFromCommandLine(
+  manager().OnReportInstallationResultForTesting(future.GetCallback());
+  manager().InstallFromCommandLine(
       CreateCommandLine("http://example.com:12345", absl::nullopt),
       std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr,
       base::TaskPriority::USER_VISIBLE);
@@ -228,13 +232,11 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   base::test::RepeatingTestFuture<
       base::expected<InstallIsolatedWebAppCommandSuccess, std::string>>
       future;
-  IsolatedWebAppCommandLineInstallManager& manager = SetUpManagerForTesting();
-  manager.OnReportInstallationResultForTesting(future.GetCallback());
-
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::ISOLATED_WEB_APP_INSTALL,
       KeepAliveRestartOption::DISABLED);
-  manager.InstallFromCommandLine(
+  manager().OnReportInstallationResultForTesting(future.GetCallback());
+  manager().InstallFromCommandLine(
       CreateCommandLine("http://example.com:12345", absl::nullopt),
       std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr,
       base::TaskPriority::USER_VISIBLE);
@@ -254,13 +256,11 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   base::test::RepeatingTestFuture<
       base::expected<InstallIsolatedWebAppCommandSuccess, std::string>>
       future;
-  IsolatedWebAppCommandLineInstallManager& manager = SetUpManagerForTesting();
-  manager.OnReportInstallationResultForTesting(future.GetCallback());
-
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::ISOLATED_WEB_APP_INSTALL,
       KeepAliveRestartOption::DISABLED);
-  manager.InstallFromCommandLine(
+  manager().OnReportInstallationResultForTesting(future.GetCallback());
+  manager().InstallFromCommandLine(
       CreateCommandLine("http://example.com:12345", absl::nullopt),
       std::move(keep_alive), /*optional_profile_keep_alive=*/nullptr,
       base::TaskPriority::USER_VISIBLE);

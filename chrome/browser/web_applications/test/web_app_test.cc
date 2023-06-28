@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/test/web_app_test.h"
 
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 
@@ -30,4 +31,8 @@ void WebAppTest::TearDown() {
 
 content::BrowserContext* WebAppTest::GetBrowserContext() {
   return profile();
+}
+
+web_app::FakeWebAppProvider& WebAppTest::fake_provider() {
+  return *web_app::FakeWebAppProvider::Get(profile());
 }

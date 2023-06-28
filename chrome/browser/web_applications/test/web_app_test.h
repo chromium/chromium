@@ -11,6 +11,10 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/test_renderer_host.h"
 
+namespace web_app {
+class FakeWebAppProvider;
+}
+
 // Consider to implement web app specific test harness independent of
 // RenderViewHost.
 class WebAppTest : public content::RenderViewHostTestHarness {
@@ -24,6 +28,7 @@ class WebAppTest : public content::RenderViewHostTestHarness {
 
   TestingProfile* profile() { return profile_.get(); }
   TestingProfileManager& profile_manager() { return testing_profile_manager_; }
+  web_app::FakeWebAppProvider& fake_provider();
 
  protected:
   // content::RenderViewHostTestHarness.
