@@ -13026,6 +13026,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Signed in"/>
 </enum>
 
+<enum name="BooleanIsSubresource">
+  <int value="0" label="Mainframe"/>
+  <int value="1" label="Subresource"/>
+</enum>
+
 <enum name="BooleanIsSystemLevelInstall">
   <int value="0" label="User Level Install"/>
   <int value="1" label="System Level Install"/>
@@ -54948,6 +54953,12 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="40" label="USER_CANCELED"/>
   <int value="41" label="USER_SHUTDOWN"/>
   <int value="50" label="CRASH"/>
+</enum>
+
+<enum name="InterstitialCloseReason">
+  <int value="0" label="Interstitial is shown"/>
+  <int value="1" label="User leaves the interstitial by navigating away"/>
+  <int value="2" label="User leaves the interstitial by closing the page"/>
 </enum>
 
 <enum name="InterstitialTypeEnum">

@@ -602,10 +602,14 @@ TEST_F(PingManagerTest, ReportSafeBrowsingHit) {
   std::unique_ptr<HitReport> hit_report = std::make_unique<HitReport>();
   std::string post_data = "testing_hit_report_post_data";
   hit_report->post_data = post_data;
-  // Threat type and source are arbitrary but specified so that determining the
-  // URL does not does throw an error due to input validation.
+  // Threat type, threat source and other fields are arbitrary but specified so
+  // that determining the URL does not throw an error due to input validation.
   hit_report->threat_type = SB_THREAT_TYPE_URL_PHISHING;
   hit_report->threat_source = ThreatSource::LOCAL_PVER4;
+  hit_report->is_subresource = false;
+  hit_report->extended_reporting_level = SBER_LEVEL_SCOUT;
+  hit_report->is_metrics_reporting_active = false;
+  hit_report->is_enhanced_protection = false;
 
   network::TestURLLoaderFactory test_url_loader_factory;
   test_url_loader_factory.SetInterceptor(

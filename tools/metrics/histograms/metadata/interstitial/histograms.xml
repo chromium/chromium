@@ -36,6 +36,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="interstitial.CloseReason" enum="InterstitialCloseReason"
+    expires_after="2023-09-22">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records how users close the interstitial. The shown bucket is logged every
+    time an interstitial is shown, ideally it should be exactly the sum of the
+    remaining buckets. If users close it by closing the entire tab, Safe
+    Browsing client reports will not be sent.
+  </summary>
+</histogram>
+
 <histogram name="interstitial.enterprise_block.decision"
     enum="SecurityInterstitialDecision" expires_after="M120">
   <owner>domfc@chromium.org</owner>
