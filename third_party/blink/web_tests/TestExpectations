@@ -5702,8 +5702,7 @@ crbug.com/1159586 virtual/post-message-first-party-to-third-party-different-buck
 crbug.com/1159586 virtual/post-message-third-party-to-first-party-different-bucket-same-origin-blocked/external/wpt/html/browsers/windows/post-message/first-party-to-third-party-cross-partition-same-origin.sub.html [ Timeout ]
 crbug.com/1159586 virtual/post-message-third-party-to-third-party-different-bucket-same-origin-blocked/external/wpt/html/browsers/windows/post-message/third-party-to-third-party-cross-partition-same-origin.sub.html [ Timeout ]
 
-# /dev/snd/seq failed: Permission denied
-crbug.com/1441622 [ Linux ] external/wpt/webmidi/idlharness.https.window.html [ Failure ]
+crbug.com/1459038 [ Linux ] external/wpt/webmidi/idlharness.https.window.html [ Failure ]
 
 crbug.com/1446799 external/wpt/pointerevents/pointerevent_attributes_nohover_pointers.html [ Failure Pass ]
 
@@ -6446,10 +6445,6 @@ crbug.com/1443872 [ Fuchsia ] paint/invalidation/selection/selection-in-composit
 crbug.com/1443871 [ Mac10.15 ] virtual/text-antialias/mac-system-ui-weight.html [ Failure ]
 
 
-
-# Sheriff 2023-05-17
-# Fails on various Mac versions
-crbug.com/1368767 [ Linux ] wpt_internal/webmidi/requestmidiaccess-basic.https.html [ Failure Pass ]
 
 # Failures on Mac13 2023-05-18
 crbug.com/1446037 [ Debug Mac13 ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Timeout ]
