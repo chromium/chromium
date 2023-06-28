@@ -9,8 +9,10 @@
 #include <memory>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -33,10 +35,12 @@
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/range/range.h"
 
 namespace content::protocol {
@@ -359,6 +363,9 @@ DropData ProtocolDragDataToDropData(std::unique_ptr<Input::DragData> data) {
 
 base::expected<std::unique_ptr<blink::WebMouseEvent>, protocol::Response>
 CreateWebMouseEvent(const std::string& event_type,
+                    double x,
+                    double y,
+                    float scale_factor,
                     Maybe<int> modifiers,
                     Maybe<double> timestamp,
                     Maybe<std::string> button,
@@ -425,6 +432,9 @@ CreateWebMouseEvent(const std::string& event_type,
   mouse_event->tilt_x = tilt_x.fromMaybe(0);
   mouse_event->tilt_y = tilt_y.fromMaybe(0);
   mouse_event->twist = twist.fromMaybe(0);
+
+  mouse_event->SetPositionInWidget(CssPixelsToPointF(x, y, scale_factor));
+  mouse_event->SetPositionInScreen(mouse_event->PositionInWidget());
 
   return mouse_event;
 }
@@ -545,6 +555,44 @@ CreateWebTouchEvents(
 
 }  // namespace
 
+// FailSafe sends a failure to a given backend callback if the wrapper is never
+// called. It's _only_ meant to be used when a OnceCallback isn't called due to
+// a null WeakPtr. In any other situation, you should call this directly to be
+// declarative (even when it's an internal error).
+template <class BackendCallback>
+class FailSafe {
+ public:
+  explicit FailSafe(std::unique_ptr<BackendCallback> callback)
+      : callback_(std::move(callback)) {}
+  ~FailSafe() {
+    if (callback_) {
+      sendFailure(Response::InternalError());
+    }
+  }
+
+  FailSafe(const FailSafe& other) = delete;
+  FailSafe& operator=(const FailSafe& other) = delete;
+
+  FailSafe(FailSafe&& other) = default;
+  FailSafe& operator=(FailSafe&& other) = default;
+
+  void sendSuccess() {
+    DCHECK(callback_) << "Already called before.";
+    std::move(callback_)->sendSuccess();
+  }
+  void sendFailure(const DispatchResponse& response) {
+    DCHECK(callback_) << "Already called before.";
+    std::move(callback_)->sendFailure(response);
+  }
+  void fallThrough() {
+    DCHECK(callback_) << "Already called before.";
+    std::move(callback_)->fallthrough();
+  }
+
+ private:
+  std::unique_ptr<BackendCallback> callback_;
+};
+
 class InputHandler::InputInjector
     : public RenderWidgetHost::InputEventObserver {
  public:
@@ -601,6 +649,11 @@ class InputHandler::InputInjector
                         std::unique_ptr<DispatchMouseEventCallback> callback) {
     if (!widget_host_) {
       callback->sendFailure(Response::InternalError());
+      return;
+    }
+
+    if (owner_->drag_controller_.HandleMouseEvent(*widget_host_, mouse_event,
+                                                  callback)) {
       return;
     }
 
@@ -689,8 +742,17 @@ class InputHandler::InputInjector
     if ((blink::WebInputEvent::IsMouseEventType(event.GetType()) ||
          event.GetType() == blink::WebInputEvent::Type::kMouseWheel) &&
         !pending_mouse_callbacks_.empty()) {
-      pending_mouse_callbacks_.front()->sendSuccess();
+      auto callback = std::move(pending_mouse_callbacks_.front());
       pending_mouse_callbacks_.pop_front();
+      // We may need to dispatch the event back to the drag controller in case
+      // drag was initiated at some point between dispatch and now. The event
+      // will have been ignored during dispatch in this case.
+      if (!widget_host_ ||
+          !owner_->drag_controller_.HandleMouseEvent(
+              *widget_host_, static_cast<const blink::WebMouseEvent&>(event),
+              callback)) {
+        callback->sendSuccess();
+      }
       MaybeSelfDestruct();
       return;
     }
@@ -716,11 +778,175 @@ class InputHandler::InputInjector
   base::WeakPtrFactory<InputHandler::InputInjector> weak_ptr_factory_{this};
 };
 
+struct InputHandler::DragController::DragState {
+  DropData data;
+  blink::DragOperationsMask mask;
+  base::WeakPtr<RenderWidgetHostImpl> host;
+  gfx::PointF pos;
+  ui::mojom::DragOperation operation;
+  // Acts as a counting semaphore for concurrent updates.
+  size_t updating;
+  base::OnceClosure updated_callback;
+};
+
+InputHandler::DragController::DragController(InputHandler& handler)
+    : handler_(handler) {}
+
+InputHandler::DragController::~DragController() = default;
+
+bool InputHandler::DragController::HandleMouseEvent(
+    RenderWidgetHostImpl& host,
+    const blink::WebMouseEvent& event,
+    std::unique_ptr<DispatchMouseEventCallback>& callback) {
+  if (!drag_state_) {
+    if (event.GetType() == blink::mojom::EventType::kMouseMove) {
+      last_mouse_move_ = base::WrapUnique(
+          static_cast<blink::WebMouseEvent*>(event.Clone().release()));
+      last_widget_host_ = host.GetWeakPtr();
+    }
+    return false;
+  }
+  switch (event.GetType()) {
+    case blink::mojom::EventType::kMouseMove:
+      UpdateDragging(host, event,
+                     std::make_unique<FailSafe<DispatchMouseEventCallback>>(
+                         std::move(callback)));
+      return true;
+    case blink::mojom::EventType::kMouseUp:
+      EndDragging(event.GetModifiers(),
+                  std::make_unique<FailSafe<DispatchMouseEventCallback>>(
+                      std::move(callback)));
+      return true;
+    default:
+      break;
+  }
+  return false;
+}
+
+void InputHandler::DragController::EnsureDraggingEntered(
+    RenderWidgetHostImpl& host,
+    const blink::WebMouseEvent& event) {
+  // If the host is the same, then we've already entered into the widget.
+  if (drag_state_->host.get() == &host) {
+    return;
+  }
+  // If we entered a widget previously, we need to leave it.
+  if (drag_state_->host) {
+    drag_state_->host->DragTargetDragLeave(drag_state_->pos, drag_state_->pos);
+  }
+  drag_state_->data.view_id = host.GetRoutingID();
+  host.DragTargetDragEnter(drag_state_->data, drag_state_->pos,
+                           drag_state_->pos, drag_state_->mask,
+                           event.GetModifiers(), base::DoNothing());
+  drag_state_->host = host.GetWeakPtr();
+}
+
+void InputHandler::DragController::StartDragging(
+    const content::DropData& drop_data,
+    blink::DragOperationsMask drag_operations_mask) {
+  if (!last_widget_host_ || !last_mouse_move_) {
+    CancelDragging();
+    return;
+  }
+
+  drag_state_ =
+      std::make_unique<DragController::DragState>(DragController::DragState{
+          drop_data, drag_operations_mask, nullptr, gfx::PointF(),
+          ui::mojom::DragOperation(), 0, base::DoNothing()});
+  UpdateDragging(*last_widget_host_, *last_mouse_move_);
+}
+
+void InputHandler::DragController::CancelDragging() {
+  auto* view = handler_.GetRootView();
+  if (!view) {
+    return;
+  }
+  view->GetRenderWidgetHost()->DragSourceSystemDragEnded();
+}
+
+void InputHandler::DragController::UpdateDragging(
+    RenderWidgetHostImpl& host,
+    const blink::WebMouseEvent& event,
+    std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback) {
+  ++drag_state_->updating;
+
+  drag_state_->pos = event.PositionInWidget();
+
+  EnsureDraggingEntered(host, event);
+  drag_state_->host->DragTargetDragOver(
+      drag_state_->pos, drag_state_->pos, drag_state_->mask,
+      event.GetModifiers(),
+      base::BindOnce(&InputHandler::DragController::DragUpdated,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void InputHandler::DragController::DragUpdated(
+    std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback,
+    ui::mojom::DragOperation operation) {
+  if (!drag_state_) {
+    return;
+  }
+  drag_state_->operation = operation;
+
+  --drag_state_->updating;
+  if (callback) {
+    callback->sendSuccess();
+  }
+
+  if (drag_state_->updating == 0 && drag_state_->updated_callback) {
+    std::move(drag_state_->updated_callback).Run();
+  }
+}
+
+void InputHandler::DragController::EndDragging(
+    int key_modifiers,
+    std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback) {
+  if (drag_state_->updating > 0) {
+    drag_state_->updated_callback = base::BindOnce(
+        &InputHandler::DragController::EndDragging, weak_factory_.GetWeakPtr(),
+        key_modifiers, std::move(callback));
+    return;
+  }
+  if (!drag_state_->host) {
+    handler_.web_contents_->GetInputEventRouter()
+        ->GetRenderWidgetHostAtPointAsynchronously(
+            handler_.GetRootView(), drag_state_->pos,
+            base::BindOnce(
+                [](base::WeakPtr<InputHandler::DragController> controller,
+                   base::WeakPtr<RenderWidgetHostViewBase> view,
+                   absl::optional<gfx::PointF> point) {
+                  if (!controller) {
+                    // The input handler is gone.
+                    return;
+                  }
+                  if (!view || !point) {
+                    controller->CancelDragging();
+                    return;
+                  }
+                  controller->drag_state_->host =
+                      RenderWidgetHostImpl::From(view->GetRenderWidgetHost())
+                          ->GetWeakPtr();
+                  controller->drag_state_->pos = *point;
+                },
+                weak_factory_.GetWeakPtr())
+                .Then(base::BindOnce(&InputHandler::DragController::EndDragging,
+                                     weak_factory_.GetWeakPtr(), key_modifiers,
+                                     std::move(callback))));
+    return;
+  }
+  drag_state_->host->DragTargetDrop(drag_state_->data, drag_state_->pos,
+                                    drag_state_->pos, key_modifiers,
+                                    base::DoNothing());
+  drag_state_->host->DragSourceEndedAt(
+      drag_state_->pos, drag_state_->pos, drag_state_->operation,
+      base::BindOnce(&FailSafe<DispatchMouseEventCallback>::sendSuccess,
+                     std::move(callback)));
+}
+
 InputHandler::InputHandler(bool allow_file_access,
                            bool allow_sending_input_to_browser)
     : DevToolsDomainHandler(Input::Metainfo::domainName),
-      host_(nullptr),
-      last_id_(0),
+      drag_controller_(*this),
       allow_file_access_(allow_file_access),
       allow_sending_input_to_browser_(allow_sending_input_to_browser) {}
 
@@ -962,17 +1188,23 @@ void InputHandler::DispatchMouseEvent(
     std::unique_ptr<DispatchMouseEventCallback> callback) {
   base::expected<std::unique_ptr<blink::WebMouseEvent>, protocol::Response>
       maybe_event = CreateWebMouseEvent(
-          event_type, std::move(modifiers), std::move(timestamp),
-          std::move(button), std::move(buttons), std::move(click_count),
-          std::move(force), std::move(tangential_pressure), std::move(tilt_x),
-          std::move(tilt_y), std::move(twist), std::move(delta_x),
-          std::move(delta_y), std::move(pointer_type));
+          event_type, x, y, ScaleFactor(), std::move(modifiers),
+          std::move(timestamp), std::move(button), std::move(buttons),
+          std::move(click_count), std::move(force),
+          std::move(tangential_pressure), std::move(tilt_x), std::move(tilt_y),
+          std::move(twist), std::move(delta_x), std::move(delta_y),
+          std::move(pointer_type));
   if (!maybe_event.has_value()) {
     callback->sendFailure(std::move(maybe_event).error());
     return;
   }
 
-  std::unique_ptr<blink::WebMouseEvent> event = std::move(maybe_event).value();
+  HandleMouseEvent(std::move(maybe_event).value(), std::move(callback));
+}
+
+void InputHandler::HandleMouseEvent(
+    std::unique_ptr<blink::WebMouseEvent> event,
+    std::unique_ptr<DispatchMouseEventCallback> callback) {
   bool is_wheel_event =
       event->GetType() == blink::WebInputEvent::Type::kMouseWheel;
 
@@ -987,21 +1219,21 @@ void InputHandler::DispatchMouseEvent(
 
   auto findWidgetAndDispatchEvent = base::BindOnce(
       [](base::WeakPtr<InputHandler> self,
-         base::WeakPtr<RenderWidgetHostImpl> widget_host, double x, double y,
+         base::WeakPtr<RenderWidgetHostImpl> widget_host,
          std::unique_ptr<blink::WebMouseEvent> event,
          std::unique_ptr<DispatchMouseEventCallback> callback, bool success) {
         if (!self || !widget_host)
           return;
+        gfx::PointF position = event->PositionInWidget();
         widget_host->delegate()
             ->GetInputEventRouter()
             ->GetRenderWidgetHostAtPointAsynchronously(
-                widget_host->GetView(),
-                CssPixelsToPointF(x, y, self->ScaleFactor()),
+                widget_host->GetView(), position,
                 base::BindOnce(&InputHandler::OnWidgetForDispatchMouseEvent,
                                self, std::move(callback), std::move(event)));
       },
-      weak_factory_.GetWeakPtr(), widget_host->GetWeakPtr(), x, y,
-      std::move(event), std::move(callback));
+      weak_factory_.GetWeakPtr(), widget_host->GetWeakPtr(), std::move(event),
+      std::move(callback));
   // We make sure the compositor is up to date before sending a wheel event.
   // Otherwise it wont be picked up by newly added event listeners on the main
   // thread.
@@ -1136,12 +1368,26 @@ float InputHandler::ScaleFactor() {
          web_contents_->GetPrimaryPage().GetPageScaleFactor();
 }
 
-void InputHandler::StartDragging(const blink::mojom::DragData& drag_data,
+void InputHandler::StartDragging(const content::DropData& drop_data,
+                                 const blink::mojom::DragData& drag_data,
                                  blink::DragOperationsMask drag_operations_mask,
                                  bool* intercepted) {
-  if (!intercept_drags_ || *intercepted)
+  // Only allow when Input.setInterceptDrags is disabled.
+  if (!intercept_drags_) {
+    // If `last_mouse_move_` exists, then CDP is the currently handling mouse
+    // movement, so intercept dragging.
+    if (drag_controller_.last_mouse_move_) {
+      drag_controller_.StartDragging(drop_data, drag_operations_mask);
+      *intercepted = true;
+    }
     return;
+  }
+
+  if (*intercepted) {
+    return;
+  }
   *intercepted = true;
+
   auto items =
       std::make_unique<protocol::Array<protocol::Input::DragDataItem>>();
   for (const auto& item : drag_data.items) {
@@ -1165,7 +1411,10 @@ void InputHandler::StartDragging(const blink::mojom::DragData& drag_data,
                                  .Build());
 }
 
-void InputHandler::DragEnded() {}
+void InputHandler::DragEnded() {
+  drag_controller_.drag_state_.reset();
+  drag_controller_.last_mouse_move_.reset();
+}
 
 Response InputHandler::SetInterceptDrags(bool enabled) {
   intercept_drags_ = enabled;
