@@ -48,6 +48,10 @@
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "content/public/common/url_constants.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace content {
 
 namespace {
@@ -190,8 +194,21 @@ void ClipboardHostImpl::ReadAvailableTypes(
   // available, do not include other types such as text/plain which contain the
   // full path on some platforms (http://crbug.com/1214108). But do not exclude
   // other types when it is set as a custom web type (http://crbug.com/1241671).
-  if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::FilenamesType(),
-                                   clipboard_buffer, data_endpoint.get())) {
+  bool file_type_only =
+      clipboard->IsFormatAvailable(ui::ClipboardFormatType::FilenamesType(),
+                                   clipboard_buffer, data_endpoint.get());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeOS FilesApp must include the custom 'fs/sources', etc data for
+  // paste that it put on the clipboard during copy (b/271078230). This can be
+  // removed when ash is fully replaced by lacros.
+  if (render_frame_host().GetMainFrame()->GetLastCommittedURL().SchemeIs(
+          kChromeUIScheme)) {
+    file_type_only = false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (file_type_only) {
     types = {base::UTF8ToUTF16(ui::kMimeTypeURIList)};
   } else {
     clipboard->ReadAvailableTypes(clipboard_buffer, data_endpoint.get(),

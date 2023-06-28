@@ -1573,13 +1573,30 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
     return RespondNow(Error("Cannot find VolumeManager"));
   }
 
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+
   std::vector<storage::FileSystemURL> source_urls;
   for (const std::string& url : params->urls) {
+    GURL gurl(url);
     storage::FileSystemURL cracked_url =
-        file_system_context->CrackURLInFirstPartyContext(GURL(url));
+        file_system_context->CrackURLInFirstPartyContext(gurl);
     if (!cracked_url.is_valid()) {
       return RespondNow(Error("Invalid source URL *", Redact(url)));
     }
+    base::FilePath virtual_path;
+    const bool result =
+        file_manager::util::ConvertAbsoluteFilePathToRelativeFileSystemPath(
+            profile, gurl, cracked_url.path(), &virtual_path);
+    if (!result) {
+      LOG(WARNING) << "Failed to convert file_system_url to relative file "
+                      "system path, type: "
+                   << cracked_url.type();
+      continue;
+    }
+    cracked_url = mount_points->CreateCrackedFileSystemURL(
+        cracked_url.storage_key(), storage::kFileSystemTypeExternal,
+        virtual_path);
     source_urls.push_back(std::move(cracked_url));
   }
 

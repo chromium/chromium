@@ -88,13 +88,6 @@ std::vector<ui::FileInfo> TestDataExchangeDelegate::ParseFileSystemSources(
     const ui::DataTransferEndpoint* source,
     const base::Pickle& pickle) const {
   std::vector<ui::FileInfo> file_info;
-  std::string lines(pickle.data_as_char(), pickle.size());
-  for (const base::StringPiece& line : base::SplitStringPiece(
-           lines, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    base::FilePath path;
-    if (net::FileURLToFilePath(GURL(line), &path))
-      file_info.push_back(ui::FileInfo(std::move(path), base::FilePath()));
-  }
   return file_info;
 }
 
