@@ -60929,6 +60929,7 @@ from previous Chrome versions.
   <int value="-1504305449" label="NTPPhysicalWebPageSuggestions:enabled"/>
   <int value="-1503851906" label="EnableSettingsShortcutSearch:enabled"/>
   <int value="-1503745396" label="UnifiedPasswordManagerReenrollment:disabled"/>
+  <int value="-1501658124" label="IsolatedWebAppAutomaticUpdates:enabled"/>
   <int value="-1500811568" label="MuteNotificationSnoozeAction:disabled"/>
   <int value="-1499989506" label="FedCmWithoutThirdPartyCookies:disabled"/>
   <int value="-1498681588" label="AndroidWebContentsDarkMode:enabled"/>
@@ -62089,6 +62090,7 @@ from previous Chrome versions.
       label="WebAppSyncGeneratedIconBackgroundFix:disabled"/>
   <int value="-931494909" label="DefaultLinkCapturingInBrowser:disabled"/>
   <int value="-930478115" label="CameraAppDocScanDlc:enabled"/>
+  <int value="-930168768" label="IsolatedWebAppAutomaticUpdates:disabled"/>
   <int value="-929944930"
       label="AutofillRationalizeRepeatedServerPredictions:disabled"/>
   <int value="-928138978" label="IPH_DemoMode:disabled"/>

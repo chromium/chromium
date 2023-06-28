@@ -4763,6 +4763,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-isolated-web-apps", flag_descriptions::kEnableIsolatedWebAppsName,
      flag_descriptions::kEnableIsolatedWebAppsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kIsolatedWebApps)},
+#if BUILDFLAG(IS_CHROMEOS)
+    {"enable-isolated-web-app-automatic-updates",
+     flag_descriptions::kEnableIsolatedWebAppAutomaticUpdatesName,
+     flag_descriptions::kEnableIsolatedWebAppAutomaticUpdatesDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(features::kIsolatedWebAppAutomaticUpdates)},
+#endif
     {"enable-isolated-web-app-dev-mode",
      flag_descriptions::kEnableIsolatedWebAppDevModeName,
      flag_descriptions::kEnableIsolatedWebAppDevModeDescription, kOsAll,

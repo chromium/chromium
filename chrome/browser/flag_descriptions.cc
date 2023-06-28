@@ -1181,8 +1181,16 @@ const char kEnableGpuServiceLoggingDescription[] =
 
 const char kEnableIsolatedWebAppsName[] = "Enable Isolated Web Apps";
 const char kEnableIsolatedWebAppsDescription[] =
-    "Enables experimental support for isolated web apps. "
+    "Enables experimental support for Isolated Web Apps. "
     "See https://github.com/reillyeon/isolated-web-apps for more information.";
+
+#if BUILDFLAG(IS_CHROMEOS)
+const char kEnableIsolatedWebAppAutomaticUpdatesName[] =
+    "Enable automatic updates of Isolated Web Apps";
+const char kEnableIsolatedWebAppAutomaticUpdatesDescription[] =
+    "Enables experimental support for automatically updating Isolated Web "
+    "Apps.";
+#endif
 
 const char kEnableIsolatedWebAppDevModeName[] =
     "Enable Isolated Web App Developer Mode";
