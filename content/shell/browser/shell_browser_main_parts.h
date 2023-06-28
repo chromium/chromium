@@ -91,9 +91,6 @@ class ShellBrowserMainParts : public BrowserMainParts {
 #if BUILDFLAG(IS_FUCHSIA)
   std::unique_ptr<FuchsiaViewPresenter> fuchsia_view_presenter_;
 #endif
-#if BUILDFLAG(IS_IOS)
-  std::unique_ptr<device::GeolocationManager> geolocation_manager_;
-#endif
 };
 
 }  // namespace content
