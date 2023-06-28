@@ -23,6 +23,8 @@
       promiseResolve(event.data['companionUpdateParams']);
     } else if (event.data['type'] == 32) { // `MethodType.kOnCqFindTextResultsAvailable`
       promiseResolve(event.data['cqTextFindResults']);
+    } else if (event.data['type'] == 33) { // `MethodType.OnDeviceVisualClassificationResult`
+      promiseResolve(event.data['visualSearchParams']);
     }
   }
 
