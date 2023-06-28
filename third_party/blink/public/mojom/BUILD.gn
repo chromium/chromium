@@ -179,6 +179,7 @@ mojom("mojom_platform") {
     "renderer_preferences.mojom",
     "reporting/reporting.mojom",
     "runtime_feature_state/runtime_feature_state_controller.mojom",
+    "safe_url_pattern.mojom",
     "scroll/scroll_enums.mojom",
     "scroll/scroll_into_view_params.mojom",
     "scroll/scrollbar_mode.mojom",
@@ -213,7 +214,6 @@ mojom("mojom_platform") {
     "subapps/sub_apps_service.mojom",
     "timing/performance_mark_or_measure.mojom",
     "timing/resource_timing.mojom",
-    "url_pattern.mojom",
     "use_counter/use_counter_feature.mojom",
     "user_agent/user_agent_metadata.mojom",
     "v8_cache_options.mojom",
@@ -630,8 +630,8 @@ mojom("mojom_platform") {
     {
       types = [
         {
-          mojom = "blink.mojom.UrlPattern"
-          cpp = "::blink::UrlPattern"
+          mojom = "blink.mojom.SafeUrlPattern"
+          cpp = "::blink::SafeUrlPattern"
         },
         {
           mojom = "blink.mojom.UrlPatternPart"
@@ -654,8 +654,9 @@ mojom("mojom_platform") {
           cpp = "::liburlpattern::Modifier"
         },
       ]
-      traits_headers =
-          [ "//third_party/blink/public/common/url_pattern_mojom_traits.h" ]
+      traits_headers = [
+        "//third_party/blink/public/common/safe_url_pattern_mojom_traits.h",
+      ]
       traits_public_deps = [ "//third_party/blink/public/common:headers" ]
     },
     {

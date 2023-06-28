@@ -9,8 +9,8 @@
 
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
+#include "third_party/blink/public/mojom/safe_url_pattern.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_router_rule.mojom.h"
-#include "third_party/blink/public/mojom/url_pattern.mojom.h"
 
 namespace mojo {
 
@@ -21,7 +21,7 @@ struct BLINK_COMMON_EXPORT
   static blink::mojom::ServiceWorkerRouterConditionDataView::Tag GetTag(
       const blink::ServiceWorkerRouterCondition& data);
 
-  static const blink::UrlPattern& url_pattern(
+  static const blink::SafeUrlPattern& url_pattern(
       const blink::ServiceWorkerRouterCondition& data) {
     return *data.url_pattern;
   }

@@ -9,7 +9,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/url_pattern.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 
 namespace blink {
 
@@ -25,7 +25,7 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterCondition {
 
   // URLPattern to be used for matching.
   // This field is valid if `type` is `kUrlPattern`.
-  absl::optional<UrlPattern> url_pattern;
+  absl::optional<SafeUrlPattern> url_pattern;
 
   bool operator==(const ServiceWorkerRouterCondition& other) const;
 };

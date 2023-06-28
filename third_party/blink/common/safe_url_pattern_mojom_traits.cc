@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/url_pattern_mojom_traits.h"
+#include "third_party/blink/public/common/safe_url_pattern_mojom_traits.h"
 
 namespace mojo {
 
@@ -101,9 +101,10 @@ bool UnionTraits<blink::mojom::PatternTemplateDataView, ::liburlpattern::Part>::
   return false;
 }
 
-bool StructTraits<blink::mojom::UrlPatternPartDataView, ::liburlpattern::Part>::
-    Read(blink::mojom::UrlPatternPartDataView data,
-         ::liburlpattern::Part* out) {
+bool StructTraits<
+    blink::mojom::SafeUrlPatternPartDataView,
+    ::liburlpattern::Part>::Read(blink::mojom::SafeUrlPatternPartDataView data,
+                                 ::liburlpattern::Part* out) {
   liburlpattern::Part part;
   if (!data.ReadPattern(&part)) {
     return false;
@@ -121,9 +122,10 @@ bool StructTraits<blink::mojom::UrlPatternPartDataView, ::liburlpattern::Part>::
   return true;
 }
 
-bool StructTraits<blink::mojom::UrlPatternDataView, ::blink::UrlPattern>::Read(
-    blink::mojom::UrlPatternDataView data,
-    ::blink::UrlPattern* out) {
+bool StructTraits<
+    blink::mojom::SafeUrlPatternDataView,
+    ::blink::SafeUrlPattern>::Read(blink::mojom::SafeUrlPatternDataView data,
+                                   ::blink::SafeUrlPattern* out) {
   if (!data.ReadPathname(&out->pathname)) {
     return false;
   }

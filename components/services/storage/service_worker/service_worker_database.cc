@@ -1976,7 +1976,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
               kUrlPattern: {
             condition.type =
                 blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-            blink::UrlPattern url_pattern;
+            blink::SafeUrlPattern url_pattern;
             for (const auto& pathname : c.url_pattern().pathname()) {
               liburlpattern::Part part;
               switch (pathname.modifier()) {

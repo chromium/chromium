@@ -368,9 +368,9 @@ WebAppProto::RunOnOsLoginMode ToWebAppProtoRunOnOsLoginMode(
   }
 }
 
-absl::optional<blink::UrlPattern> ToUrlPattern(
+absl::optional<blink::SafeUrlPattern> ToUrlPattern(
     const proto::UrlPattern& proto_url_pattern) {
-  blink::UrlPattern url_pattern;
+  blink::SafeUrlPattern url_pattern;
 
   for (const proto::UrlPatternPart& proto_part : proto_url_pattern.pathname()) {
     liburlpattern::Part part;
@@ -421,7 +421,7 @@ absl::optional<blink::UrlPattern> ToUrlPattern(
   return url_pattern;
 }
 
-proto::UrlPattern ToUrlPatternProto(const blink::UrlPattern& url_pattern) {
+proto::UrlPattern ToUrlPatternProto(const blink::SafeUrlPattern& url_pattern) {
   proto::UrlPattern url_pattern_proto;
   for (const auto& part : url_pattern.pathname) {
     proto::UrlPatternPart* url_pattern_part_proto =
@@ -453,10 +453,10 @@ absl::optional<TabStrip> ProtoToTabStrip(proto::TabStrip tab_strip_proto) {
       home_tab_params.icons = std::move(*icons);
     }
 
-    std::vector<blink::UrlPattern> scope_patterns;
+    std::vector<blink::SafeUrlPattern> scope_patterns;
     for (const proto::UrlPattern& proto_url_pattern :
          tab_strip_proto.home_tab_params().scope_patterns()) {
-      absl::optional<blink::UrlPattern> url_pattern =
+      absl::optional<blink::SafeUrlPattern> url_pattern =
           ToUrlPattern(proto_url_pattern);
       if (!url_pattern) {
         return absl::nullopt;

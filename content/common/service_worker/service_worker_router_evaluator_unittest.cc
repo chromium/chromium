@@ -34,7 +34,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleMatch) {
       blink::ServiceWorkerRouterCondition condition;
       condition.type =
           blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-      blink::UrlPattern url_pattern;
+      blink::SafeUrlPattern url_pattern;
       auto parse_result = liburlpattern::Parse(
           "/test/*",
           [](base::StringPiece input) { return std::string(input); });
@@ -72,7 +72,7 @@ TEST(ServiceWorkerRouterEvaluator, SimpleExactMatch) {
       blink::ServiceWorkerRouterCondition condition;
       condition.type =
           blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-      blink::UrlPattern url_pattern;
+      blink::SafeUrlPattern url_pattern;
       auto parse_result = liburlpattern::Parse(
           "/test/page.html",
           [](base::StringPiece input) { return std::string(input); });
@@ -110,7 +110,7 @@ TEST(ServiceWorkerRouterEvaluator, NotMatchingCondition) {
       blink::ServiceWorkerRouterCondition condition;
       condition.type =
           blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-      blink::UrlPattern url_pattern;
+      blink::SafeUrlPattern url_pattern;
       auto parse_result = liburlpattern::Parse(
           "/test/*",
           [](base::StringPiece input) { return std::string(input); });
@@ -148,7 +148,7 @@ TEST(ServiceWorkerRouterEvaluator, OneConditionMisMatch) {
       blink::ServiceWorkerRouterCondition condition;
       condition.type =
           blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-      blink::UrlPattern url_pattern;
+      blink::SafeUrlPattern url_pattern;
       auto parse_result = liburlpattern::Parse(
           "/test/*",
           [](base::StringPiece input) { return std::string(input); });
@@ -161,7 +161,7 @@ TEST(ServiceWorkerRouterEvaluator, OneConditionMisMatch) {
       blink::ServiceWorkerRouterCondition condition;
       condition.type =
           blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-      blink::UrlPattern url_pattern;
+      blink::SafeUrlPattern url_pattern;
       auto parse_result = liburlpattern::Parse(
           "/notmatch/*",
           [](base::StringPiece input) { return std::string(input); });
@@ -199,7 +199,7 @@ TEST(ServiceWorkerRouterEvaluator, AllConditionMatch) {
       blink::ServiceWorkerRouterCondition condition;
       condition.type =
           blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-      blink::UrlPattern url_pattern;
+      blink::SafeUrlPattern url_pattern;
       auto parse_result = liburlpattern::Parse(
           "/test/*",
           [](base::StringPiece input) { return std::string(input); });
@@ -212,7 +212,7 @@ TEST(ServiceWorkerRouterEvaluator, AllConditionMatch) {
       blink::ServiceWorkerRouterCondition condition;
       condition.type =
           blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-      blink::UrlPattern url_pattern;
+      blink::SafeUrlPattern url_pattern;
       auto parse_result = liburlpattern::Parse(
           "*.html", [](base::StringPiece input) { return std::string(input); });
       ASSERT_TRUE(parse_result.ok());
@@ -249,7 +249,7 @@ TEST(ServiceWorkerRouterEvaluator, ChooseMatchedRoute) {
       blink::ServiceWorkerRouterCondition condition;
       condition.type =
           blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-      blink::UrlPattern url_pattern;
+      blink::SafeUrlPattern url_pattern;
       auto parse_result = liburlpattern::Parse(
           "*.html", [](base::StringPiece input) { return std::string(input); });
       ASSERT_TRUE(parse_result.ok());
@@ -271,7 +271,7 @@ TEST(ServiceWorkerRouterEvaluator, ChooseMatchedRoute) {
       blink::ServiceWorkerRouterCondition condition;
       condition.type =
           blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-      blink::UrlPattern url_pattern;
+      blink::SafeUrlPattern url_pattern;
       auto parse_result = liburlpattern::Parse(
           "*.css", [](base::StringPiece input) { return std::string(input); });
       ASSERT_TRUE(parse_result.ok());
@@ -331,7 +331,7 @@ TEST(ServiceWorkerRouterEvaluator, EmptySource) {
       blink::ServiceWorkerRouterCondition condition;
       condition.type =
           blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-      blink::UrlPattern url_pattern;
+      blink::SafeUrlPattern url_pattern;
       auto parse_result = liburlpattern::Parse(
           "/test/*",
           [](base::StringPiece input) { return std::string(input); });
@@ -358,7 +358,7 @@ TEST(ServiceWorkerRouterEvaluator, InvalidSource) {
       blink::ServiceWorkerRouterCondition condition;
       condition.type =
           blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-      blink::UrlPattern url_pattern;
+      blink::SafeUrlPattern url_pattern;
       auto parse_result = liburlpattern::Parse(
           "/test/*",
           [](base::StringPiece input) { return std::string(input); });
@@ -398,7 +398,7 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
       blink::ServiceWorkerRouterCondition condition;
       condition.type =
           blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-      blink::UrlPattern url_pattern;
+      blink::SafeUrlPattern url_pattern;
       auto parse_result = liburlpattern::Parse(
           "/test/*",
           [](base::StringPiece input) { return std::string(input); });

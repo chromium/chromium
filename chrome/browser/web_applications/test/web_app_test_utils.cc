@@ -69,8 +69,8 @@
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/common/url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom-shared.h"
 #include "third_party/liburlpattern/pattern.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -394,11 +394,12 @@ std::vector<blink::Manifest::ImageResource> CreateRandomHomeTabIcons(
   return icons;
 }
 
-std::vector<blink::UrlPattern> CreateRandomScopePatterns(RandomHelper& random) {
-  std::vector<blink::UrlPattern> scope_patterns;
+std::vector<blink::SafeUrlPattern> CreateRandomScopePatterns(
+    RandomHelper& random) {
+  std::vector<blink::SafeUrlPattern> scope_patterns;
 
   for (int i = random.next_uint(4) + 1; i >= 0; --i) {
-    blink::UrlPattern url_pattern;
+    blink::SafeUrlPattern url_pattern;
 
     for (int j = random.next_uint(4) + 1; j >= 0; --j) {
       liburlpattern::Part part;

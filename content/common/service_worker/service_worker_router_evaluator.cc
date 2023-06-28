@@ -37,7 +37,7 @@ void RecordMatchedSourceType(
       "ServiceWorker.RouterEvaluator.MatchedFirstSourceType", sources[0].type);
 }
 
-std::string ConvertToRegex(const blink::UrlPattern& url_pattern) {
+std::string ConvertToRegex(const blink::SafeUrlPattern& url_pattern) {
   liburlpattern::Options options = {.delimiter_list = "/",
                                     .prefix_list = "/",
                                     .sensitive = true,
@@ -47,7 +47,7 @@ std::string ConvertToRegex(const blink::UrlPattern& url_pattern) {
   return pattern.GenerateRegexString();
 }
 
-std::string ConvertToPattern(const blink::UrlPattern& url_pattern) {
+std::string ConvertToPattern(const blink::SafeUrlPattern& url_pattern) {
   liburlpattern::Options options = {.delimiter_list = "/",
                                     .prefix_list = "/",
                                     .sensitive = true,

@@ -31,7 +31,7 @@
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
-#include "third_party/blink/public/common/url_pattern.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/color_utils.h"
 #include "url/origin.h"
@@ -217,7 +217,7 @@ base::Value::Dict ImageResourceDebugDict(
   return root;
 }
 
-base::Value::Dict UrlPatternDebugValue(const blink::UrlPattern& pattern) {
+base::Value::Dict UrlPatternDebugValue(const blink::SafeUrlPattern& pattern) {
   liburlpattern::Options options = {.delimiter_list = "/",
                                     .prefix_list = "/",
                                     .sensitive = true,
@@ -1155,7 +1155,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
       }
 
       base::Value::List scope_patterns_json;
-      const std::vector<blink::UrlPattern>& scope_patterns =
+      const std::vector<blink::SafeUrlPattern>& scope_patterns =
           home_tab_params.scope_patterns;
 
       for (const auto& scope_pattern : scope_patterns) {
