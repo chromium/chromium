@@ -165,6 +165,11 @@ int ScalableIphDelegateImpl::ClientAgeInDays() {
   return delta.InDaysFloored();
 }
 
+void ScalableIphDelegateImpl::PerformActionForScalableIph(
+    scalable_iph::ActionType action_type) {
+  // TODO(b/284158779): Implement this.
+}
+
 void ScalableIphDelegateImpl::OnActiveNetworksChanged(
     std::vector<NetworkStatePropertiesPtr> networks) {
   SetHasOnlineNetwork(HasOnlineNetwork(networks));

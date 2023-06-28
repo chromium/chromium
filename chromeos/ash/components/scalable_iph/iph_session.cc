@@ -19,4 +19,9 @@ IphSession::~IphSession() {
   tracker_->Dismissed(feature_);
 }
 
+void IphSession::PerformAction(ActionType action_type) {
+  // TODO(b/289108135): Implement this. This will pass `action_type` to
+  // `ScalableIph::PerformAction`.
+}
+
 }  // namespace scalable_iph

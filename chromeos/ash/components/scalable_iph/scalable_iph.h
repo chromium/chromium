@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -48,6 +49,12 @@ class ScalableIph : public KeyedService, public ScalableIphDelegate::Observer {
       const std::vector<const base::Feature*> features);
   void OverrideTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  // Perform `action_type` as a result of a user action, e.g. A link click in a
+  // help app, etc. Ash UI code should not use this method but use
+  // `IphSession::PerformAction`. This notifies a corresponding IPH event to the
+  // feature engagement framework.
+  void PerformAction(ActionType action_type);
 
  private:
   void EnsureTimerStarted();

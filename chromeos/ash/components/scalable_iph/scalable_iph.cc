@@ -104,6 +104,11 @@ void ScalableIph::OverrideTaskRunnerForTesting(
   EnsureTimerStarted();
 }
 
+void ScalableIph::PerformAction(ActionType action_type) {
+  // TODO(b/289108135): Implement this.
+  delegate_->PerformActionForScalableIph(action_type);
+}
+
 void ScalableIph::RecordEvent(ScalableIph::Event event) {
   if (!tracker_) {
     DCHECK(false) << kFunctionCallAfterKeyedServiceShutdown;

@@ -7,6 +7,7 @@
 
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 
 namespace scalable_iph {
 
@@ -31,15 +32,8 @@ class ScalableIphDelegate {
   // unique_ptr.
   virtual ~ScalableIphDelegate() = default;
 
-  // TODO(b/284158779): Details of the interface TBD.
-  enum class ActionType {
-    // `kNoActionInvalid` is used as an initial value. This should not be used
-    // in prod.
-    kNoActionInvalid,
-  };
-
   struct Action {
-    ActionType action_type = ActionType::kNoActionInvalid;
+    ActionType action_type = ActionType::kInvalid;
 
     // An event name notified to the feature engagement framework on the
     // execution of this action. Typically this event name will be set to
@@ -114,6 +108,11 @@ class ScalableIphDelegate {
   // first 24 hours. Note that this can return a negative number if a profile
   // creation time is in a future time for some reason, e.g. Clock has changed.
   virtual int ClientAgeInDays() = 0;
+
+  // Performs `action_type` in Ash or Chrome. This method is for `ScalableIph`
+  // keyed service to delegate actions. Other code (e.g. Ui code) MUST use
+  // `PerformAction` in `IphSession` or `ScalableIph`.
+  virtual void PerformActionForScalableIph(ActionType action_type) = 0;
 };
 
 }  // namespace scalable_iph

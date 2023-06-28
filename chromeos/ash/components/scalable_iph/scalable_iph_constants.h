@@ -7,6 +7,21 @@
 
 namespace scalable_iph {
 
+enum class ActionType {
+  // `kInvalid` is reserved to be used as an initial value. This must not be
+  // used in prod.
+  kInvalid = 0,
+  kOpenChrome,
+  kOpenPersonalizationApp,
+  kOpenPlayStore,
+  kOpenGoogleDocs,
+  kOpenGooglePhotos,
+  kOpenSettingsPrinter,
+  kOpenPhoneHub,
+  kOpenYouTube,
+  kOpenFileManager,
+};
+
 // Constants for events.
 // Naming convention: Camel case starting with a capital letter. Note that
 // Scalable Iph event names must start with `ScalableIph` as Iph event names

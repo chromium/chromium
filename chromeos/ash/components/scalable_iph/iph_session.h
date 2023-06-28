@@ -6,12 +6,16 @@
 #define CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH_IPH_SESSION_H_
 
 #include "base/feature_list.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 
 namespace scalable_iph {
 
 // `IphSession` manages a single IPH session. An IPH UI is responsible to
-// destroy this object once it stops showing the IPH.
+// destroy this object once it stops showing the IPH. UI code should interact
+// with ScalableIph framework via `IphSession` object which is passed from the
+// service. UI code should not query/interact directly with `ScalableIph` keyed
+// service.
 class IphSession {
  public:
   IphSession(const base::Feature& feature,
@@ -20,6 +24,10 @@ class IphSession {
 
   IphSession(const IphSession& iph_session) = delete;
   IphSession& operator=(const IphSession& iph_session) = delete;
+
+  // Perform `action_type` as a result of a user action. This records a
+  // corresponding IPH event to the feature engagement framework.
+  void PerformAction(ActionType action_type);
 
  private:
   // This is an IPH feature which is tied to this IPH session. See

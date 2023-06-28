@@ -35,6 +35,10 @@ class MockScalableIphDelegate : public scalable_iph::ScalableIphDelegate {
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
   MOCK_METHOD(bool, IsOnline, (), (override));
   MOCK_METHOD(int, ClientAgeInDays, (), (override));
+  MOCK_METHOD(void,
+              PerformActionForScalableIph,
+              (scalable_iph::ActionType action_type),
+              (override));
 
   // Specify a delegate object and enable fake behaviors. We will want a fake
   // behavior for the most of cases, i.e. Unlike `ShowBubble` etc, we won't test
