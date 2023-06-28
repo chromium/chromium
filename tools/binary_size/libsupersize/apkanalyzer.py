@@ -503,21 +503,17 @@ def _StringSymbolsFromDexFile(apk_path, dexfile, source_map,
 
   return dex_string_symbols
 
-def _ParseMainDexfileInApk(apk_path):
+
+def _ParseDexfilesInApk(apk_path):
   with zipfile.ZipFile(apk_path) as src_zip:
     dex_infos = [
         info for info in src_zip.infolist() if
         info.filename.startswith('classes') and info.filename.endswith('.dex')
     ]
-    if len(dex_infos) != 0:
-      if len(dex_infos) > 1:
-        logging.warning(
-            'Found multiple .dex files in %s: Only the first will be used.',
-            apk_path)
-      dex_data = src_zip.read(dex_infos[0])
-      return dex_infos[0].filename, dex_parser.DexFile(dex_data)
-
-  return None
+    # Assume sound and stable ordering of DEX filenames.
+    for dex_info in dex_infos:
+      dex_data = src_zip.read(dex_info)
+      yield dex_info.filename, dex_parser.DexFile(dex_data)
 
 
 def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
@@ -560,30 +556,34 @@ def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
         'dex_total_size=%d total_node_size=%d', dex_total_size, total_node_size)
 
   dex_method_symbols, dex_other_symbols = _SymbolsFromNodes(nodes, source_map)
+  dex_string_symbols = []
+  metrics_by_file = {}
+  for dex_path, dexfile in _ParseDexfilesInApk(apk_path):
+    logging.debug('Found DEX: %r', dex_path)
+    if track_string_literals:
+      dex_string_symbols += _StringSymbolsFromDexFile(apk_path, dexfile,
+                                                      source_map,
+                                                      class_deobfuscation_map)
+    map_item_sizes = dexfile.ComputeMapItemSizes()
+    metrics = {}
+    for item in map_item_sizes:
+      metrics[f'{models.METRICS_SIZE}/' + item['name']] = item['byte_size']
+      metrics[f'{models.METRICS_COUNT}/' + item['name']] = item['size']
+    metrics_by_file[dex_path] = metrics
 
-  dex_path, dexfile = _ParseMainDexfileInApk(apk_path)
-
-  if track_string_literals:
-    # TODO(huangs): Handle the case where an APK contains multiple DEX files.
-    dex_string_symbols = _StringSymbolsFromDexFile(apk_path, dexfile,
-                                                   source_map,
-                                                   class_deobfuscation_map)
-    if dex_string_symbols:
-      logging.info('Converting excessive DEX string aliases into shared-path '
-                   'symbols')
-      archive_util.CompactLargeAliasesIntoSharedSymbols(
-          dex_string_symbols, _DEX_STRING_MAX_SAME_NAME_ALIAS_COUNT)
-  else:
-    dex_string_symbols = []
+  if dex_string_symbols:
+    logging.info('Converting excessive DEX string aliases into shared-path '
+                 'symbols')
+    archive_util.CompactLargeAliasesIntoSharedSymbols(
+        dex_string_symbols, _DEX_STRING_MAX_SAME_NAME_ALIAS_COUNT)
 
   dex_method_size = round(sum(s.pss for s in dex_method_symbols))
   dex_other_size = round(sum(s.pss for s in dex_other_symbols))
   dex_other_size += round(sum(s.pss for s in dex_string_symbols))
-
   unattributed_dex = dex_total_size - dex_method_size - dex_other_size
   # Compare against -5 instead of 0 to guard against round-off errors.
   assert unattributed_dex >= -5, (
-      'sum(dex_symbols.size) > filesize(classes.dex). {} vs {}'.format(
+      'sum(dex_symbols.size) > sum(filesize(dex file)). {} vs {}'.format(
           dex_method_size + dex_other_size, dex_total_size))
 
   if unattributed_dex > 0:
@@ -593,6 +593,9 @@ def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
             unattributed_dex,
             full_name='** .dex (unattributed)'))
 
+  dex_other_symbols.extend(dex_method_symbols)
+  dex_other_symbols.extend(dex_string_symbols)
+
   # We can't meaningfully track section size of dex methods vs other, so
   # just fake the size of dex methods as the sum of symbols, and make
   # "dex other" responsible for any unattributed bytes.
@@ -601,12 +604,4 @@ def CreateDexSymbols(apk_path, apk_analyzer_async_result, dex_total_size,
       models.SECTION_DEX: (0, dex_total_size - dex_method_size),
   }
 
-  dex_other_symbols.extend(dex_method_symbols)
-  dex_other_symbols.extend(dex_string_symbols)
-
-  map_item_sizes = dexfile.ComputeMapItemSizes()
-  metrics = {}
-  for item in map_item_sizes:
-    metrics[f'{models.METRICS_SIZE}/' + item['name']] = item['byte_size']
-    metrics[f'{models.METRICS_COUNT}/' + item['name']] = item['size']
-  return section_ranges, dex_other_symbols, {dex_path: metrics}
+  return section_ranges, dex_other_symbols, metrics_by_file
