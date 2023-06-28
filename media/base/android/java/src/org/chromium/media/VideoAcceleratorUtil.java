@@ -329,6 +329,12 @@ class VideoAcceleratorUtil {
                     continue;
                 }
 
+                // Skip tunnel decoders because it's not supported by the media pipeline.
+                if (capabilities.isFeatureRequired(
+                            MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback)) {
+                    continue;
+                }
+
                 MediaCodecInfo.VideoCapabilities videoCapabilities =
                         capabilities.getVideoCapabilities();
 
