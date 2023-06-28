@@ -210,7 +210,9 @@ const char* FetchHandlerTypeToSuffix(
 // ServiceWokrerResourceRecord and return a single hash string.
 absl::optional<std::string> MergeResourceRecordSHA256ScriptChecksum(
     const GURL& main_script_url,
-    const ServiceWorkerScriptCacheMap& script_cache_map) {
+    const ServiceWorkerScriptCacheMap& script_cache_map,
+    absl::optional<blink::mojom::ServiceWorkerFetchHandlerType>
+        fetch_handler_type) {
   const std::unique_ptr<crypto::SecureHash> checksum =
       crypto::SecureHash::Create(crypto::SecureHash::SHA256);
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources =
@@ -243,8 +245,11 @@ absl::optional<std::string> MergeResourceRecordSHA256ScriptChecksum(
   checksum->Finish(result, crypto::kSHA256Length);
   const std::string encoded = base::HexEncode(result);
 
-  DVLOG(3) << "Updated ServiceWorker script checksum. script_url:"
-           << main_script_url.spec() << ", checksum:" << encoded;
+  if (fetch_handler_type) {
+    DVLOG(3) << "Updated ServiceWorker script checksum. script_url:"
+             << main_script_url.spec() << ", checksum:" << encoded
+             << ", fetch_handler_type:" << fetch_handler_type.value();
+  }
 
   return encoded;
 }
@@ -1390,8 +1395,8 @@ void ServiceWorkerVersion::OnStarted(
   // |sha256_script_checksum_| should be empty. Calculate the checksum string
   // with the script newly added/updated in |script_cache_map_|.
   if (!sha256_script_checksum_) {
-    sha256_script_checksum_ =
-        MergeResourceRecordSHA256ScriptChecksum(script_url_, script_cache_map_);
+    sha256_script_checksum_ = MergeResourceRecordSHA256ScriptChecksum(
+        script_url_, script_cache_map_, fetch_handler_type_);
   }
 
   // Fire all start callbacks.
@@ -2885,8 +2890,8 @@ void ServiceWorkerVersion::SetResources(
   DCHECK_EQ(status_, NEW);
   DCHECK(!sha256_script_checksum_);
   script_cache_map_.SetResources(resources);
-  sha256_script_checksum_ =
-      MergeResourceRecordSHA256ScriptChecksum(script_url_, script_cache_map_);
+  sha256_script_checksum_ = MergeResourceRecordSHA256ScriptChecksum(
+      script_url_, script_cache_map_, fetch_handler_type_);
 }
 
 bool ServiceWorkerVersion::SetupRouterEvaluator(
