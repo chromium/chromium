@@ -495,6 +495,8 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
     self.feedWrapperViewController.contentCollectionView.delegate = self;
     [self setMinimumHeight];
   }
+
+  [self updateAccessibilityElements];
 }
 
 - (void)willUpdateSnapshot {
@@ -1390,6 +1392,22 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
     [self updateFeedInsetsForContentAbove];
     [self setContentOffsetToTop];
   }
+}
+
+// Updates the accessibilityElements used by VoiceOver / Switch Control to
+// iterate through on-screen elements. The feed collectionView does not seem to
+// include non-feed items in its `accessibilityElements` so they are added here.
+- (void)updateAccessibilityElements {
+  NSMutableArray* elements = [[NSMutableArray alloc] init];
+  // viewControllersAboveFeed elements are added from bottom to top, so we
+  // iterate in reverse to get the correct order.
+  NSEnumerator<UIViewController*>* enumerator =
+      [self.viewControllersAboveFeed reverseObjectEnumerator];
+  for (UIViewController* viewController in enumerator) {
+    [elements addObject:viewController.view];
+  }
+  [elements addObject:self.collectionView];
+  self.accessibilityElements = elements;
 }
 
 #pragma mark - Helpers
