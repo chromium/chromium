@@ -285,51 +285,45 @@ bool HasEquivalentBufferFormat(SharedImageFormat format) {
 gfx::BufferFormat SinglePlaneSharedImageFormatToBufferFormat(
     SharedImageFormat format) {
   CHECK(format.is_single_plane());
-  switch (format.resource_format()) {
-    case BGRA_8888:
-      return gfx::BufferFormat::BGRA_8888;
-    case RED_8:
-      return gfx::BufferFormat::R_8;
-    case R16_EXT:
-      return gfx::BufferFormat::R_16;
-    case RG16_EXT:
-      return gfx::BufferFormat::RG_1616;
-    case RGBA_4444:
-      return gfx::BufferFormat::RGBA_4444;
-    case RGBA_8888:
-      return gfx::BufferFormat::RGBA_8888;
-    case RGBA_F16:
-      return gfx::BufferFormat::RGBA_F16;
-    case BGR_565:
-      return gfx::BufferFormat::BGR_565;
-    case RG_88:
-      return gfx::BufferFormat::RG_88;
-    case RGBX_8888:
-      return gfx::BufferFormat::RGBX_8888;
-    case BGRX_8888:
-      return gfx::BufferFormat::BGRX_8888;
-    case RGBA_1010102:
-      return gfx::BufferFormat::RGBA_1010102;
-    case BGRA_1010102:
-      return gfx::BufferFormat::BGRA_1010102;
-    case YVU_420:
-      return gfx::BufferFormat::YVU_420;
-    case YUV_420_BIPLANAR:
-      return gfx::BufferFormat::YUV_420_BIPLANAR;
-    case YUVA_420_TRIPLANAR:
-      return gfx::BufferFormat::YUVA_420_TRIPLANAR;
-    case P010:
-      return gfx::BufferFormat::P010;
-    case ETC1:
-    case ALPHA_8:
-    case LUMINANCE_8:
-    case RGB_565:
-    case LUMINANCE_F16:
-      // CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat() returns
-      // false for these types, so give a default value that will not be used.
-      break;
+  if (format == SinglePlaneFormat::kBGRA_8888) {
+    return gfx::BufferFormat::BGRA_8888;
+  } else if (format == SinglePlaneFormat::kR_8) {
+    return gfx::BufferFormat::R_8;
+  } else if (format == SinglePlaneFormat::kR_16) {
+    return gfx::BufferFormat::R_16;
+  } else if (format == SinglePlaneFormat::kRG_1616) {
+    return gfx::BufferFormat::RG_1616;
+  } else if (format == SinglePlaneFormat::kRGBA_4444) {
+    return gfx::BufferFormat::RGBA_4444;
+  } else if (format == SinglePlaneFormat::kRGBA_8888) {
+    return gfx::BufferFormat::RGBA_8888;
+  } else if (format == SinglePlaneFormat::kRGBA_F16) {
+    return gfx::BufferFormat::RGBA_F16;
+  } else if (format == SinglePlaneFormat::kBGR_565) {
+    return gfx::BufferFormat::BGR_565;
+  } else if (format == SinglePlaneFormat::kRG_88) {
+    return gfx::BufferFormat::RG_88;
+  } else if (format == SinglePlaneFormat::kRGBX_8888) {
+    return gfx::BufferFormat::RGBX_8888;
+  } else if (format == SinglePlaneFormat::kBGRX_8888) {
+    return gfx::BufferFormat::BGRX_8888;
+  } else if (format == SinglePlaneFormat::kRGBA_1010102) {
+    return gfx::BufferFormat::RGBA_1010102;
+  } else if (format == SinglePlaneFormat::kBGRA_1010102) {
+    return gfx::BufferFormat::BGRA_1010102;
+  } else if (format == LegacyMultiPlaneFormat::kYV12) {
+    return gfx::BufferFormat::YVU_420;
+  } else if (format == LegacyMultiPlaneFormat::kNV12) {
+    return gfx::BufferFormat::YUV_420_BIPLANAR;
+  } else if (format == LegacyMultiPlaneFormat::kNV12A) {
+    return gfx::BufferFormat::YUVA_420_TRIPLANAR;
+  } else if (format == LegacyMultiPlaneFormat::kP010) {
+    return gfx::BufferFormat::P010;
+  } else {
+    // CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat() returns
+    // false for all other types, so give a default value that will not be used.
+    return gfx::BufferFormat::RGBA_8888;
   }
-  return gfx::BufferFormat::RGBA_8888;
 }
 
 SharedImageFormat GetSharedImageFormat(gfx::BufferFormat format) {
