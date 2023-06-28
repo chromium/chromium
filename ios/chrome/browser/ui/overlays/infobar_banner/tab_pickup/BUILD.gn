@@ -1,0 +1,21 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tab_pickup") {
+  sources = [
+    "tab_pickup_infobar_banner_overlay_mediator.h",
+    "tab_pickup_infobar_banner_overlay_mediator.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//components/infobars/core",
+    "//ios/chrome/browser/overlays/public/default",
+    "//ios/chrome/browser/tabs/tab_pickup:infobar_delegate",
+    "//ios/chrome/browser/ui/infobars/banners",
+    "//ios/chrome/browser/ui/overlays:coordinators",
+    "//ios/chrome/browser/ui/overlays/infobar_banner:mediators",
+  ]
+}

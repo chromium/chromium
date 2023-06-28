@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/ui/overlays/infobar_banner/permissions/permissions_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/save_card/save_card_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/sync_error/sync_error_infobar_banner_overlay_mediator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_banner/tab_pickup/tab_pickup_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/tailored_security/tailored_security_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/translate/translate_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator+subclassing.h"
@@ -63,6 +64,7 @@
     [PermissionsBannerOverlayMediator class],
     [TailoredSecurityInfobarBannerOverlayMediator class],
     [SyncErrorInfobarBannerOverlayMediator class],
+    [TabPickupBannerOverlayMediator class],
   ];
 }
 
@@ -236,6 +238,9 @@
       break;
     case InfobarType::kInfobarTypeTranslate:
       mediatorClass = [TranslateInfobarBannerOverlayMediator class];
+      break;
+    case InfobarType::kInfobarTypeTabPickup:
+      mediatorClass = [TabPickupBannerOverlayMediator class];
       break;
     default:
       NOTREACHED_NORETURN() << "Received unsupported infobarType.";

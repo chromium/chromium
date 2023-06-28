@@ -6,6 +6,8 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "components/sync_sessions/session_sync_service.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/sync/session_sync_service_factory.h"
@@ -77,6 +79,16 @@ void TabPickupBrowserAgent::WebStateRealized(web::WebState* web_state) {
   ForeignSessionsChanged();
 }
 
+#pragma mark - infobars::InfoBarManager::Observer
+
+void TabPickupBrowserAgent::OnInfoBarRemoved(infobars::InfoBar* infobar,
+                                             bool animate) {
+  if (infobar == infobar_) {
+    infobar_manager_scoped_observation_.Reset();
+    infobar_ = nullptr;
+  }
+}
+
 #pragma mark - Private methods
 
 void TabPickupBrowserAgent::ForeignSessionsChanged() {
@@ -125,7 +137,24 @@ void TabPickupBrowserAgent::SetupInfoBarDelegate() {
 }
 
 void TabPickupBrowserAgent::ShowInfoBar() {
-  // TODO(crbug.com/1129482): Implement this.
+  infobar_in_progress_ = false;
+
+  if (!active_web_state_) {
+    return;
+  }
+
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(active_web_state_);
+  if (infobar_) {
+    infobar_manager->RemoveInfoBar(infobar_);
+    DCHECK(!infobar_);
+  }
+
+  infobar_manager_scoped_observation_.Observe(infobar_manager);
+  std::unique_ptr<infobars::InfoBar> infobar = std::make_unique<InfoBarIOS>(
+      InfobarType::kInfobarTypeTabPickup, std::move(delegate_));
+  infobar_ = infobar_manager->AddInfoBar(std::move(infobar),
+                                         /*replace_existing=*/true);
 }
 
 void TabPickupBrowserAgent::RecordTransitionTime() {

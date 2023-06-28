@@ -8,6 +8,8 @@
 #import "base/callback_list.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
+#import "components/infobars/core/confirm_infobar_delegate.h"
+#import "components/infobars/core/infobar.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
@@ -28,6 +30,7 @@ class WebState;
 // Service that creates/replaces tab pickup infobar.
 class TabPickupBrowserAgent : public BrowserObserver,
                               public BrowserUserData<TabPickupBrowserAgent>,
+                              public infobars::InfoBarManager::Observer,
                               public WebStateListObserver,
                               public web::WebStateObserver {
  public:
@@ -67,6 +70,9 @@ class TabPickupBrowserAgent : public BrowserObserver,
   void WebStateDestroyed(web::WebState* web_state) override;
   void WebStateRealized(web::WebState* web_state) override;
 
+  // infobars::InfoBarManager::Observer methods.
+  void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
+
   // Track if an infobar will be displayed.
   bool infobar_in_progress_ = false;
   // Tracks if the `IOS.TabPickup.TimeSinceLastCrossDeviceSync` metric has been
@@ -79,6 +85,8 @@ class TabPickupBrowserAgent : public BrowserObserver,
   raw_ptr<web::WebState> active_web_state_ = nullptr;
   // The infobar's delegate.
   std::unique_ptr<TabPickupInfobarDelegate> delegate_;
+  // The currently displayed infobar.
+  raw_ptr<infobars::InfoBar> infobar_ = nullptr;
   // KeyedService responsible session sync.
   raw_ptr<sync_sessions::SessionSyncService> session_sync_service_ = nullptr;
   // CallbackListSubscription for the SessionSyncService method.
@@ -86,6 +94,10 @@ class TabPickupBrowserAgent : public BrowserObserver,
   // Scoped observer observing unrealized WebStates.
   base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
       web_state_observations_{this};
+  // Scoped observer that facilitates observing the infobar manager.
+  base::ScopedObservation<infobars::InfoBarManager,
+                          infobars::InfoBarManager::Observer>
+      infobar_manager_scoped_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_TABS_TAB_PICKUP_TAB_PICKUP_BROWSER_AGENT_H_

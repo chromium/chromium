@@ -43,6 +43,9 @@ void AttachInfobarOverlayBrowserAgent(Browser* browser) {
   browser_agent->AddDefaultInfobarInteractionHandlerForInfobarType(
       InfobarType::kInfobarTypeTranslate);
 
+  browser_agent->AddDefaultInfobarInteractionHandlerForInfobarType(
+      InfobarType::kInfobarTypeTabPickup);
+
   browser_agent->AddInfobarInteractionHandler(
       std::make_unique<InfobarInteractionHandler>(
           InfobarType::kInfobarTypeConfirm,

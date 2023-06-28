@@ -29,6 +29,7 @@ std::unique_ptr<OverlayRequest> DefaultInfobarOverlayRequestFactory(
     case InfobarType::kInfobarTypeSaveCard:
     case InfobarType::kInfobarTypeSyncError:
     case InfobarType::kInfobarTypeTranslate:
+    case InfobarType::kInfobarTypeTabPickup:
       return OverlayRequest::CreateWithConfig<
           DefaultInfobarOverlayRequestConfig>(infobar_ios, overlay_type);
 
