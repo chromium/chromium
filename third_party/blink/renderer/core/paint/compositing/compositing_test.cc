@@ -153,7 +153,7 @@ TEST_P(CompositingTest, DidScrollCallbackAfterScrollableAreaChanges) {
   UpdateAllLifecyclePhases();
 
   Document* document = WebView()->MainFrameImpl()->GetFrame()->GetDocument();
-  Element* scrollable = document->getElementById("scrollable");
+  Element* scrollable = document->getElementById(AtomicString("scrollable"));
 
   auto* scrollable_area = scrollable->GetLayoutBox()->GetScrollableArea();
   EXPECT_NE(nullptr, scrollable_area);
@@ -1756,9 +1756,9 @@ TEST_P(CompositingSimTest, PromoteCrossOriginToParent) {
           ->contentDocument();
   EXPECT_TRUE(CcLayerByOwnerNodeId(iframe_doc));
 
-  iframe_doc =
-      To<HTMLFrameOwnerElement>(iframe_doc->getElementById("child_iframe"))
-          ->contentDocument();
+  iframe_doc = To<HTMLFrameOwnerElement>(
+                   iframe_doc->getElementById(AtomicString("child_iframe")))
+                   ->contentDocument();
   Node* owner_node = iframe_doc->documentElement();
   EXPECT_TRUE(CcLayerByOwnerNodeId(owner_node));
 }
@@ -1777,8 +1777,8 @@ TEST_P(CompositingSimTest, PromoteCrossOriginIframeAfterDomainChange) {
   frame_resource.Complete("<!DOCTYPE html>");
   Compositor().BeginFrame();
 
-  auto* iframe_element =
-      To<HTMLIFrameElement>(GetDocument().getElementById("iframe"));
+  auto* iframe_element = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("iframe")));
 
   Document* iframe_doc =
       To<HTMLFrameOwnerElement>(GetElementById("iframe"))->contentDocument();
@@ -1825,19 +1825,20 @@ TEST_P(CompositingSimTest, PromoteCrossOriginToParentIframeAfterDomainChange) {
           ->contentDocument();
   EXPECT_TRUE(CcLayerByOwnerNodeId(iframe_doc));
 
-  iframe_doc =
-      To<HTMLFrameOwnerElement>(iframe_doc->getElementById("child_iframe"))
-          ->contentDocument();
+  iframe_doc = To<HTMLFrameOwnerElement>(
+                   iframe_doc->getElementById(AtomicString("child_iframe")))
+                   ->contentDocument();
   Node* owner_node = iframe_doc->documentElement();
   EXPECT_TRUE(CcLayerByOwnerNodeId(owner_node));
 
-  auto* main_iframe_element =
-      To<HTMLIFrameElement>(GetDocument().getElementById("main_iframe"));
+  auto* main_iframe_element = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("main_iframe")));
   NonThrowableExceptionState exception_state;
 
   GetDocument().setDomain(String("origin-a.com"), exception_state);
   auto* child_iframe_element = To<HTMLIFrameElement>(
-      main_iframe_element->contentDocument()->getElementById("child_iframe"));
+      main_iframe_element->contentDocument()->getElementById(
+          AtomicString("child_iframe")));
   child_iframe_element->contentDocument()->setDomain(String("origin-a.com"),
                                                      exception_state);
   main_iframe_element->contentDocument()->setDomain(String("origin-a.com"),
@@ -1850,9 +1851,9 @@ TEST_P(CompositingSimTest, PromoteCrossOriginToParentIframeAfterDomainChange) {
                    ->contentDocument();
   EXPECT_FALSE(CcLayerByOwnerNodeId(iframe_doc));
 
-  iframe_doc =
-      To<HTMLFrameOwnerElement>(iframe_doc->getElementById("child_iframe"))
-          ->contentDocument();
+  iframe_doc = To<HTMLFrameOwnerElement>(
+                   iframe_doc->getElementById(AtomicString("child_iframe")))
+                   ->contentDocument();
   owner_node = iframe_doc->documentElement();
   EXPECT_FALSE(CcLayerByOwnerNodeId(owner_node));
 }
@@ -1885,7 +1886,7 @@ TEST_P(CompositingSimTest, ImplSideScrollSkipsCommit) {
   )HTML");
   Compositor().BeginFrame();
 
-  auto* scroller = GetDocument().getElementById("scroller");
+  auto* scroller = GetDocument().getElementById(AtomicString("scroller"));
   auto* scrollable_area = scroller->GetLayoutBox()->GetScrollableArea();
   auto element_id = scrollable_area->GetScrollElementId();
 
@@ -2701,9 +2702,10 @@ TEST_P(CompositingSimTest, DecompositeScrollerInHiddenIframe) {
   middle_frame.View()->BeginLifecycleUpdates();
   bottom_frame.View()->BeginLifecycleUpdates();
   Compositor().BeginFrame();
-  LayoutBox* scroller = To<LayoutBox>(bottom_frame.GetDocument()
-                                          ->getElementById("scroller")
-                                          ->GetLayoutObject());
+  LayoutBox* scroller =
+      To<LayoutBox>(bottom_frame.GetDocument()
+                        ->getElementById(AtomicString("scroller"))
+                        ->GetLayoutObject());
   if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
     // In CompositeScrollAfterPaint, NeedsComositedScrolling returns true
     // only if the scroller is forced to be composited.
@@ -2715,8 +2717,9 @@ TEST_P(CompositingSimTest, DecompositeScrollerInHiddenIframe) {
   EXPECT_TRUE(CcLayerByDOMElementId("scroller"));
 
   // Hide the iframes. Scroller should be decomposited.
-  GetDocument().getElementById("middle")->SetInlineStyleProperty(
-      CSSPropertyID::kVisibility, CSSValueID::kHidden);
+  GetDocument()
+      .getElementById(AtomicString("middle"))
+      ->SetInlineStyleProperty(CSSPropertyID::kVisibility, CSSValueID::kHidden);
   Compositor().BeginFrame();
   EXPECT_FALSE(CcLayerByDOMElementId("scroller"));
 }

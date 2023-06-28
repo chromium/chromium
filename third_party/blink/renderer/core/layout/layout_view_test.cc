@@ -34,7 +34,7 @@ TEST_F(LayoutViewTest, UpdateCountersLayout) {
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* inc = GetDocument().getElementById("inc");
+  Element* inc = GetDocument().getElementById(AtomicString("inc"));
 
   inc->setAttribute("class", "incX");
   GetDocument().UpdateStyleAndLayoutTree();
@@ -51,7 +51,8 @@ TEST_F(LayoutViewTest, DisplayNoneFrame) {
     <iframe id="iframe" style="display:none"></iframe>
   )HTML");
 
-  auto* iframe = To<HTMLIFrameElement>(GetDocument().getElementById("iframe"));
+  auto* iframe = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("iframe")));
   Document* frame_doc = iframe->contentDocument();
   ASSERT_TRUE(frame_doc);
   frame_doc->OverrideIsInitialEmptyDocument();
@@ -623,9 +624,11 @@ TEST_P(LayoutViewHitTestTest, HitTestHorizontal) {
   //   |                  |
   //   |------------------|
   // (50, 180)         (250, 180)
-  auto* div = GetDocument().getElementById("div");
-  auto* text1 = GetDocument().getElementById("span1")->firstChild();
-  auto* text2 = GetDocument().getElementById("span2")->firstChild();
+  auto* div = GetDocument().getElementById(AtomicString("div"));
+  auto* text1 =
+      GetDocument().getElementById(AtomicString("span1"))->firstChild();
+  auto* text2 =
+      GetDocument().getElementById(AtomicString("span2"))->firstChild();
 
   HitTestResult result;
   // In body, but not in any descendants.
@@ -741,9 +744,11 @@ TEST_P(LayoutViewHitTestTest, HitTestVerticalLR) {
   //   |   Z              |
   //   |------------------|
   // (50, 180)         (250, 180)
-  auto* div = GetDocument().getElementById("div");
-  auto* text1 = GetDocument().getElementById("span1")->firstChild();
-  auto* text2 = GetDocument().getElementById("span2")->firstChild();
+  auto* div = GetDocument().getElementById(AtomicString("div"));
+  auto* text1 =
+      GetDocument().getElementById(AtomicString("span1"))->firstChild();
+  auto* text2 =
+      GetDocument().getElementById(AtomicString("span2"))->firstChild();
 
   HitTestResult result;
   // In body, but not in any descendants.
@@ -851,9 +856,11 @@ TEST_P(LayoutViewHitTestTest, HitTestVerticalRL) {
   //   |              Z   |
   //   |------------------|
   // (50, 180)         (250, 180)
-  auto* div = GetDocument().getElementById("div");
-  auto* text1 = GetDocument().getElementById("span1")->firstChild();
-  auto* text2 = GetDocument().getElementById("span2")->firstChild();
+  auto* div = GetDocument().getElementById(AtomicString("div"));
+  auto* text1 =
+      GetDocument().getElementById(AtomicString("span1"))->firstChild();
+  auto* text2 =
+      GetDocument().getElementById(AtomicString("span2"))->firstChild();
 
   HitTestResult result;
   // In body, but not in any descendants.
@@ -976,8 +983,8 @@ TEST_P(LayoutViewHitTestTest, HitTestVerticalRLRoot) {
   // .                           .
   // +----...--------------------+ (800, 600)
 
-  auto* div = GetDocument().getElementById("div");
-  auto* text = GetDocument().getElementById("span")->firstChild();
+  auto* div = GetDocument().getElementById(AtomicString("div"));
+  auto* text = GetDocument().getElementById(AtomicString("span"))->firstChild();
   HitTestResult result;
   // Not in any element. Should fallback to documentElement.
   GetLayoutView().HitTest(HitTestLocation(PhysicalOffset(1, 1)), result);

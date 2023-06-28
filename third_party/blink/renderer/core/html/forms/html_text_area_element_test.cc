@@ -18,7 +18,7 @@ class HTMLTextAreaElementTest : public RenderingTest {
 
  protected:
   HTMLTextAreaElement& TestElement() {
-    Element* element = GetDocument().getElementById("test");
+    Element* element = GetDocument().getElementById(AtomicString("test"));
     DCHECK(element);
     return To<HTMLTextAreaElement>(*element);
   }

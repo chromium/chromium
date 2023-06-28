@@ -851,8 +851,8 @@ class ContentCaptureSimTest : public SimTest {
 
     static_cast<WebLocalFrame*>(MainFrame().FindFrameByName("frame"))
         ->SetContentCaptureClient(&child_client_);
-    auto* child_frame_element =
-        To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
+    auto* child_frame_element = To<HTMLIFrameElement>(
+        GetDocument().getElementById(AtomicString("frame")));
     child_document_ = child_frame_element->contentDocument();
     child_document_->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
     Compositor().BeginFrame();
@@ -896,7 +896,7 @@ class ContentCaptureSimTest : public SimTest {
     Node* node = doc.createTextNode("New Text");
     auto* element = MakeGarbageCollected<Element>(html_names::kPTag, &doc);
     element->appendChild(node);
-    Element* div_element = doc.getElementById("d1");
+    Element* div_element = doc.getElementById(AtomicString("d1"));
     div_element->appendChild(element);
     Compositor().BeginFrame();
     auto* layout_text = To<LayoutText>(node->GetLayoutObject());

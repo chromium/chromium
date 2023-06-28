@@ -89,7 +89,7 @@ TEST_F(LayoutThemeTest, SystemColorWithColorScheme) {
     <div id="dark"></div>
   )HTML");
 
-  Element* dark_element = GetDocument().getElementById("dark");
+  Element* dark_element = GetDocument().getElementById(AtomicString("dark"));
   ASSERT_TRUE(dark_element);
 
   const ComputedStyle* style = dark_element->GetComputedStyle();

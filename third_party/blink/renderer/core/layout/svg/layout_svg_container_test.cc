@@ -21,9 +21,9 @@ TEST_F(LayoutSVGContainerTest, TransformAffectsVectorEffect) {
 
   auto* svg = GetLayoutObjectByElementId("svg");
   auto* g = GetLayoutObjectByElementId("g");
-  auto* rect_element = GetDocument().getElementById("rect");
+  auto* rect_element = GetDocument().getElementById(AtomicString("rect"));
   auto* rect = rect_element->GetLayoutObject();
-  auto* text_element = GetDocument().getElementById("text");
+  auto* text_element = GetDocument().getElementById(AtomicString("text"));
   auto* text = text_element->GetLayoutObject();
 
   EXPECT_FALSE(svg->TransformAffectsVectorEffect());
@@ -74,7 +74,7 @@ TEST_F(LayoutSVGContainerTest, TransformAffectsVectorEffectNestedSVG) {
   auto* svg = GetLayoutObjectByElementId("svg");
   auto* g = GetLayoutObjectByElementId("g");
   auto* nested_svg = GetLayoutObjectByElementId("nested-svg");
-  auto* rect_element = GetDocument().getElementById("rect");
+  auto* rect_element = GetDocument().getElementById(AtomicString("rect"));
   auto* rect = rect_element->GetLayoutObject();
 
   EXPECT_FALSE(svg->TransformAffectsVectorEffect());
@@ -130,8 +130,8 @@ TEST_F(LayoutSVGContainerTest, PatternWithContentVisibility) {
     </svg>
   )HTML");
 
-  auto* pattern = GetDocument().getElementById("pattern");
-  auto* polygon = GetDocument().getElementById("polygon");
+  auto* pattern = GetDocument().getElementById(AtomicString("pattern"));
+  auto* polygon = GetDocument().getElementById(AtomicString("polygon"));
 
   pattern->setAttribute("style", "contain: strict; content-visibility: hidden");
 

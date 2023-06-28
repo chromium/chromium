@@ -194,8 +194,9 @@ TEST_P(PaintLayerTest, HasFixedPositionDescendant) {
   EXPECT_TRUE(parent->HasFixedPositionDescendant());
   EXPECT_FALSE(child->HasFixedPositionDescendant());
 
-  GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
-                                                      "position: relative");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr, "position: relative");
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(parent->HasFixedPositionDescendant());
@@ -214,15 +215,17 @@ TEST_P(PaintLayerTest, HasNonContainedAbsolutePositionDescendant) {
   EXPECT_FALSE(parent->HasNonContainedAbsolutePositionDescendant());
   EXPECT_FALSE(child->HasNonContainedAbsolutePositionDescendant());
 
-  GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
-                                                      "position: absolute");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr, "position: absolute");
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_TRUE(parent->HasNonContainedAbsolutePositionDescendant());
   EXPECT_FALSE(child->HasNonContainedAbsolutePositionDescendant());
 
-  GetDocument().getElementById("parent")->setAttribute(html_names::kStyleAttr,
-                                                       "position: relative");
+  GetDocument()
+      .getElementById(AtomicString("parent"))
+      ->setAttribute(html_names::kStyleAttr, "position: relative");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(parent->HasNonContainedAbsolutePositionDescendant());
   EXPECT_FALSE(child->HasNonContainedAbsolutePositionDescendant());
@@ -345,8 +348,10 @@ TEST_P(ReorderOverlayOverflowControlsTest, StackedWithInFlowDescendant) {
               Pointee(ElementsAre(parent)));
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
-  GetDocument().getElementById("child")->setAttribute(
-      html_names::kStyleAttr, "position: relative; height: 80px");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr,
+                     "position: relative; height: 80px");
   UpdateAllLifecyclePhasesForTest();
   if (GetOverlayType() == kOverlayScrollbars) {
     EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
@@ -359,22 +364,27 @@ TEST_P(ReorderOverlayOverflowControlsTest, StackedWithInFlowDescendant) {
   }
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
-  GetDocument().getElementById("child")->setAttribute(
-      html_names::kStyleAttr, "position: relative; width: 200px; height: 80px");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr,
+                     "position: relative; width: 200px; height: 80px");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_THAT(LayersPaintingOverlayOverflowControlsAfter(child),
               Pointee(ElementsAre(parent)));
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
-  GetDocument().getElementById("child")->setAttribute(
-      html_names::kStyleAttr, "width: 200px; height: 80px");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr, "width: 200px; height: 80px");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
-  GetDocument().getElementById("child")->setAttribute(
-      html_names::kStyleAttr, "position: relative; width: 200px; height: 80px");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr,
+                     "position: relative; width: 200px; height: 80px");
   UpdateAllLifecyclePhasesForTest();
   child = GetPaintLayerByElementId("child");
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
@@ -412,13 +422,15 @@ TEST_P(ReorderOverlayOverflowControlsTest, StackedWithOutOfFlowDescendant) {
               Pointee(ElementsAre(parent)));
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
-  GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
-                                                      "");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr, "");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
 
-  GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
-                                                      "position: absolute");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr, "position: absolute");
   UpdateAllLifecyclePhasesForTest();
   child = GetPaintLayerByElementId("child");
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
@@ -457,15 +469,17 @@ TEST_P(ReorderOverlayOverflowControlsTest, StackedWithZIndexDescendant) {
               Pointee(ElementsAre(parent)));
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
-  GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
-                                                      "z-index: -1");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr, "z-index: -1");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_FALSE(LayersPaintingOverlayOverflowControlsAfter(child));
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
-  GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
-                                                      "z-index: 2");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr, "z-index: 2");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_THAT(LayersPaintingOverlayOverflowControlsAfter(child),
@@ -609,8 +623,9 @@ TEST_P(ReorderOverlayOverflowControlsTest, MultipleChildren) {
                                 ? "overflow: auto;"
                                 : "overflow: hidden; resize: both;";
   std::string new_style = extra_style + "position: absolute; z-index: 1";
-  GetDocument().getElementById("parent")->setAttribute(html_names::kStyleAttr,
-                                                       new_style.c_str());
+  GetDocument()
+      .getElementById(AtomicString("parent"))
+      ->setAttribute(html_names::kStyleAttr, new_style.c_str());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_FALSE(LayersPaintingOverlayOverflowControlsAfter(low_child));
@@ -619,8 +634,9 @@ TEST_P(ReorderOverlayOverflowControlsTest, MultipleChildren) {
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
   new_style = extra_style + "position: absolute;";
-  GetDocument().getElementById("parent")->setAttribute(html_names::kStyleAttr,
-                                                       new_style.c_str());
+  GetDocument()
+      .getElementById(AtomicString("parent"))
+      ->setAttribute(html_names::kStyleAttr, new_style.c_str());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_FALSE(LayersPaintingOverlayOverflowControlsAfter(low_child));
@@ -654,8 +670,10 @@ TEST_P(ReorderOverlayOverflowControlsTest, NonStackedWithInFlowDescendant) {
               Pointee(ElementsAre(parent)));
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
-  GetDocument().getElementById("child")->setAttribute(
-      html_names::kStyleAttr, "position: relative; height: 80px");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr,
+                     "position: relative; height: 80px");
   UpdateAllLifecyclePhasesForTest();
   if (GetOverlayType() == kOverlayResizer) {
     EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
@@ -667,22 +685,27 @@ TEST_P(ReorderOverlayOverflowControlsTest, NonStackedWithInFlowDescendant) {
   }
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
-  GetDocument().getElementById("child")->setAttribute(
-      html_names::kStyleAttr, "position: relative; width: 200px; height: 80px");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr,
+                     "position: relative; width: 200px; height: 80px");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_THAT(LayersPaintingOverlayOverflowControlsAfter(child),
               Pointee(ElementsAre(parent)));
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
-  GetDocument().getElementById("child")->setAttribute(
-      html_names::kStyleAttr, "width: 200px; height: 80px");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr, "width: 200px; height: 80px");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
-  GetDocument().getElementById("child")->setAttribute(
-      html_names::kStyleAttr, "position: relative; width: 200px; height: 80px");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr,
+                     "position: relative; width: 200px; height: 80px");
   UpdateAllLifecyclePhasesForTest();
   child = GetPaintLayerByElementId("child");
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
@@ -720,15 +743,17 @@ TEST_P(ReorderOverlayOverflowControlsTest,
               Pointee(ElementsAre(parent)));
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
-  GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
-                                                      "z-index: -1");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr, "z-index: -1");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_FALSE(LayersPaintingOverlayOverflowControlsAfter(child));
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
-  GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
-                                                      "z-index: 2");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr, "z-index: 2");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_THAT(LayersPaintingOverlayOverflowControlsAfter(child),
@@ -981,7 +1006,7 @@ TEST_P(ReorderOverlayOverflowControlsTest, AddRemoveStackedChild) {
   EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_EQ(parent->GetLayoutObject().GetNode(), HitTest(99, 99));
 
-  auto* child_element = GetDocument().getElementById("child");
+  auto* child_element = GetDocument().getElementById(AtomicString("child"));
   child_element->setAttribute(html_names::kStyleAttr, "display: block");
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
@@ -1067,8 +1092,9 @@ TEST_P(PaintLayerTest, NegativeZIndexChangeToPositive) {
   EXPECT_FALSE(
       PaintLayerPaintOrderIterator(target, kPositiveZOrderChildren).Next());
 
-  GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
-                                                      "z-index: 1");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr, "z-index: 1");
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(
@@ -1119,8 +1145,9 @@ TEST_P(PaintLayerTest, Has3DTransformedDescendantChangeStyle) {
   EXPECT_FALSE(parent->Has3DTransformedDescendant());
   EXPECT_FALSE(child->Has3DTransformedDescendant());
 
-  GetDocument().getElementById("child")->setAttribute(
-      html_names::kStyleAttr, "transform: translateZ(1px)");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr, "transform: translateZ(1px)");
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_TRUE(parent->Has3DTransformedDescendant());
@@ -1175,7 +1202,8 @@ TEST_P(PaintLayerTest, DescendantDependentFlagsStopsAtThrottledFrames) {
   )HTML");
 
   // Move the child frame offscreen so it becomes available for throttling.
-  auto* iframe = To<HTMLIFrameElement>(GetDocument().getElementById("iframe"));
+  auto* iframe = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("iframe")));
   iframe->setAttribute(html_names::kStyleAttr, "transform: translateY(5555px)");
   UpdateAllLifecyclePhasesForTest();
   // Ensure intersection observer notifications get delivered.
@@ -1614,7 +1642,7 @@ TEST_P(PaintLayerTest, PaintLayerTransformUpdatedOnStyleTransformAnimation) {
   SetBodyInnerHTML("<div id='target' style='will-change: transform'></div>");
 
   LayoutObject* target_object =
-      GetDocument().getElementById("target")->GetLayoutObject();
+      GetDocument().getElementById(AtomicString("target"))->GetLayoutObject();
   PaintLayer* target_paint_layer =
       To<LayoutBoxModelObject>(target_object)->Layer();
   EXPECT_EQ(nullptr, target_paint_layer->Transform());
@@ -1637,7 +1665,7 @@ TEST_P(PaintLayerTest, NeedsRepaintOnSelfPaintingStatusChange) {
   )HTML");
 
   auto* span_layer = GetPaintLayerByElementId("span");
-  auto* target_element = GetDocument().getElementById("target");
+  auto* target_element = GetDocument().getElementById(AtomicString("target"));
   auto* target_object = target_element->GetLayoutObject();
   auto* target_layer = To<LayoutBoxModelObject>(target_object)->Layer();
 
@@ -1669,7 +1697,7 @@ TEST_P(PaintLayerTest, NeedsRepaintOnRemovingStackedLayer) {
 
   auto* body = GetDocument().body();
   auto* body_layer = body->GetLayoutBox()->Layer();
-  auto* target_element = GetDocument().getElementById("target");
+  auto* target_element = GetDocument().getElementById(AtomicString("target"));
   auto* target_object = target_element->GetLayoutObject();
   auto* target_layer = To<LayoutBoxModelObject>(target_object)->Layer();
 
@@ -1710,7 +1738,7 @@ TEST_P(PaintLayerTest, ReferenceClipPathWithPageZoom) {
     </svg>
   )HTML");
 
-  auto* content = GetDocument().getElementById("content");
+  auto* content = GetDocument().getElementById(AtomicString("content"));
   auto* body = GetDocument().body();
 
   // A hit test on the content div within the clip should hit it.
@@ -1750,7 +1778,7 @@ TEST_P(PaintLayerTest, FragmentedHitTest) {
     </ul>
   )HTML");
 
-  auto* target = GetDocument().getElementById("target");
+  auto* target = GetDocument().getElementById(AtomicString("target"));
   EXPECT_EQ(target, GetDocument().ElementFromPoint(280, 30));
 }
 
@@ -1762,7 +1790,8 @@ TEST_P(PaintLayerTest, HitTestWithIgnoreClipping) {
   HitTestLocation location((gfx::Point(10, 900)));
   HitTestResult result(request, location);
   GetDocument().GetLayoutView()->HitTest(location, result);
-  EXPECT_EQ(GetDocument().getElementById("hit"), result.InnerNode());
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("hit")),
+            result.InnerNode());
 }
 
 TEST_P(PaintLayerTest, HitTestWithStopNode) {
@@ -1772,9 +1801,9 @@ TEST_P(PaintLayerTest, HitTestWithStopNode) {
     </div>
     <div id='overlap' style='position:relative;top:-50px;width:100px;height:100px'></div>
   )HTML");
-  Element* hit = GetDocument().getElementById("hit");
-  Element* child = GetDocument().getElementById("child");
-  Element* overlap = GetDocument().getElementById("overlap");
+  Element* hit = GetDocument().getElementById(AtomicString("hit"));
+  Element* child = GetDocument().getElementById(AtomicString("child"));
+  Element* overlap = GetDocument().getElementById(AtomicString("overlap"));
 
   // Regular hit test over 'child'
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
@@ -1835,8 +1864,8 @@ TEST_P(PaintLayerTest, HitTestTableWithStopNode) {
       </tr>
     </table>
     )HTML");
-  Element* table = GetDocument().getElementById("table");
-  Element* cell11 = GetDocument().getElementById("cell11");
+  Element* table = GetDocument().getElementById(AtomicString("table"));
+  Element* cell11 = GetDocument().getElementById(AtomicString("cell11"));
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
   HitTestLocation location((PhysicalOffset(50, 50)));
   HitTestResult result(request, location);
@@ -1856,8 +1885,8 @@ TEST_P(PaintLayerTest, HitTestSVGWithStopNode) {
       <circle id='circle' cx='50' cy='50' r='50' />
     </svg>
     )HTML");
-  Element* svg = GetDocument().getElementById("svg");
-  Element* circle = GetDocument().getElementById("circle");
+  Element* svg = GetDocument().getElementById(AtomicString("svg"));
+  Element* circle = GetDocument().getElementById(AtomicString("circle"));
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
   HitTestLocation location((PhysicalOffset(50, 50)));
   HitTestResult result(request, location);
@@ -1908,7 +1937,7 @@ TEST_P(PaintLayerTest, HitTestPseudoElementWithContinuation) {
     </style>
     <span id='target'></span>
   )HTML");
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
   HitTestLocation location(PhysicalOffset(10, 10));
   HitTestResult result(request, location);
@@ -1931,8 +1960,8 @@ TEST_P(PaintLayerTest, HitTestFirstLetterPseudoElement) {
       </div>
     </div>
   )HTML");
-  Element* target = GetDocument().getElementById("target");
-  Element* container = GetDocument().getElementById("container");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* container = GetDocument().getElementById(AtomicString("container"));
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
   HitTestLocation location(PhysicalOffset(10, 10));
   HitTestResult result(request, location);
@@ -1956,8 +1985,8 @@ TEST_P(PaintLayerTest, HitTestFirstLetterInBeforePseudoElement) {
       </div>
     </div>
   )HTML");
-  Element* target = GetDocument().getElementById("target");
-  Element* container = GetDocument().getElementById("container");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* container = GetDocument().getElementById(AtomicString("container"));
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
   HitTestLocation location(PhysicalOffset(10, 10));
   HitTestResult result(request, location);
@@ -1983,7 +2012,8 @@ TEST_P(PaintLayerTest, HitTestFloatInsideInlineBoxContainer) {
       </span>
     </div>
   )HTML");
-  Node* target = GetDocument().getElementById("target")->firstChild();
+  Node* target =
+      GetDocument().getElementById(AtomicString("target"))->firstChild();
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
   HitTestLocation location(PhysicalOffset(55, 5));  // At the center of "bar"
   HitTestResult result(request, location);
@@ -2005,8 +2035,8 @@ TEST_P(PaintLayerTest, HitTestFirstLetterPseudoElementDisplayContents) {
       </div>
     </div>
   )HTML");
-  Element* target = GetDocument().getElementById("target");
-  Element* container = GetDocument().getElementById("container");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* container = GetDocument().getElementById(AtomicString("container"));
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
   HitTestLocation location(PhysicalOffset(10, 10));
   HitTestResult result(request, location);
@@ -2123,12 +2153,16 @@ TEST_P(PaintLayerTest, MAYBE_HitTestScrollbarUnderClip) {
   )HTML");
 
   // Hit the visible part of the vertical scrollbar.
-  EXPECT_EQ(GetDocument().getElementById("target"), HitTest(245, 100));
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("target")),
+            HitTest(245, 100));
   // Should not hit the hidden part of the vertical scrollbar, the hidden
   // horizontal scrollbar, or the hidden scroll corner.
-  EXPECT_EQ(GetDocument().getElementById("below"), HitTest(245, 200));
-  EXPECT_EQ(GetDocument().getElementById("below"), HitTest(150, 245));
-  EXPECT_EQ(GetDocument().getElementById("below"), HitTest(245, 245));
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("below")),
+            HitTest(245, 200));
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("below")),
+            HitTest(150, 245));
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("below")),
+            HitTest(245, 245));
 }
 
 TEST_P(PaintLayerTest, HitTestPerspectiveBackfaceHiddenNotInverted) {
@@ -2142,8 +2176,10 @@ TEST_P(PaintLayerTest, HitTestPerspectiveBackfaceHiddenNotInverted) {
   )HTML");
 
   EXPECT_EQ(GetDocument().body(), HitTest(49, 79));
-  EXPECT_EQ(GetDocument().getElementById("target"), HitTest(50, 80));
-  EXPECT_EQ(GetDocument().getElementById("target"), HitTest(149, 179));
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("target")),
+            HitTest(50, 80));
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("target")),
+            HitTest(149, 179));
   EXPECT_EQ(GetDocument().documentElement(), HitTest(150, 180));
 }
 
@@ -2157,8 +2193,10 @@ TEST_P(PaintLayerTest, HitTestObscuredOverlayScrollbar) {
                            width: 200px; height: 200px"></div>
   )HTML");
 
-  EXPECT_EQ(GetDocument().getElementById("scroll"), HitTest(199, 1));
-  EXPECT_EQ(GetDocument().getElementById("above"), HitTest(199, 101));
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("scroll")),
+            HitTest(199, 1));
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("above")),
+            HitTest(199, 101));
 }
 
 TEST_P(PaintLayerTest, InlineWithBackdropFilterHasPaintLayer) {
@@ -2217,7 +2255,7 @@ TEST_P(PaintLayerTest, HitTestTinyLayerUnderLargeScale) {
     </div>
   )HTML");
 
-  auto* target = GetDocument().getElementById("target");
+  auto* target = GetDocument().getElementById(AtomicString("target"));
   // Before https://crrev.com/c/4250297,
   // HitTestingTransformState::BoundsOfMappedQuadInternal() might "randomly"
   // return an empty rect with some of the following hit test locations.
@@ -2242,8 +2280,9 @@ TEST_P(PaintLayerTest, AddLayerNeedsRepaintAndCullRectUpdate) {
   auto* child = GetLayoutBoxByElementId("child");
   EXPECT_FALSE(child->HasLayer());
 
-  GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
-                                                      "position: relative");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr, "position: relative");
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
   EXPECT_TRUE(parent_layer->DescendantNeedsRepaint());

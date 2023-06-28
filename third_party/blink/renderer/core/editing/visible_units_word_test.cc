@@ -174,12 +174,14 @@ TEST_F(VisibleUnitsWordTest, StartOfWordShadowDOM) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById("one")->firstChild();
-  Node* two = GetDocument().getElementById("two")->firstChild();
-  Node* three = GetDocument().getElementById("three")->firstChild();
-  Node* four = shadow_root->getElementById("four")->firstChild();
-  Node* five = shadow_root->getElementById("five")->firstChild();
-  Node* space = shadow_root->getElementById("space")->firstChild();
+  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
+  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
+  Node* three =
+      GetDocument().getElementById(AtomicString("three"))->firstChild();
+  Node* four = shadow_root->getElementById(AtomicString("four"))->firstChild();
+  Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
+  Node* space =
+      shadow_root->getElementById(AtomicString("space"))->firstChild();
 
   EXPECT_EQ(Position(one, 0),
             CreateVisiblePosition(
@@ -395,11 +397,12 @@ TEST_F(VisibleUnitsWordTest, EndOfWordShadowDOM) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById("one")->firstChild();
-  Node* two = GetDocument().getElementById("two")->firstChild();
-  Node* three = GetDocument().getElementById("three")->firstChild();
-  Node* four = shadow_root->getElementById("four")->firstChild();
-  Node* five = shadow_root->getElementById("five")->firstChild();
+  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
+  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
+  Node* three =
+      GetDocument().getElementById(AtomicString("three"))->firstChild();
+  Node* four = shadow_root->getElementById(AtomicString("four"))->firstChild();
+  Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
 
   EXPECT_EQ(Position(five, 5), EndOfWordPosition(Position(*one, 0)));
   EXPECT_EQ(PositionInFlatTree(five, 5),

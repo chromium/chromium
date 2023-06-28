@@ -439,8 +439,9 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
 
   // Change something that triggers a repaint but |target| should use cached
   // subsequence.
-  GetDocument().getElementById("change")->setAttribute(html_names::kStyleAttr,
-                                                       "display: block");
+  GetDocument()
+      .getElementById(AtomicString("change"))
+      ->setAttribute(html_names::kStyleAttr, "display: block");
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_FALSE(target_layer->SelfNeedsRepaint());
   PaintController::CounterForTesting counter;
@@ -508,13 +509,15 @@ TEST_P(PaintLayerPainterTest, PaintPhaseOutline) {
     </div>
   )HTML");
   LayoutObject& outline_div =
-      *GetDocument().getElementById("outline")->GetLayoutObject();
+      *GetDocument().getElementById(AtomicString("outline"))->GetLayoutObject();
   To<HTMLElement>(outline_div.GetNode())
       ->setAttribute(html_names::kStyleAttr, style_without_outline);
   UpdateAllLifecyclePhasesForTest();
 
   auto& self_painting_layer_object = *To<LayoutBoxModelObject>(
-      GetDocument().getElementById("self-painting-layer")->GetLayoutObject());
+      GetDocument()
+          .getElementById(AtomicString("self-painting-layer"))
+          ->GetLayoutObject());
   PaintLayer& self_painting_layer = *self_painting_layer_object.Layer();
   ASSERT_TRUE(self_painting_layer.IsSelfPaintingLayer());
   auto& non_self_painting_layer =
@@ -574,13 +577,15 @@ TEST_P(PaintLayerPainterTest, PaintPhaseFloat) {
     </div>
   )HTML");
   LayoutObject& float_div =
-      *GetDocument().getElementById("float")->GetLayoutObject();
+      *GetDocument().getElementById(AtomicString("float"))->GetLayoutObject();
   To<HTMLElement>(float_div.GetNode())
       ->setAttribute(html_names::kStyleAttr, style_without_float);
   UpdateAllLifecyclePhasesForTest();
 
   auto& self_painting_layer_object = *To<LayoutBoxModelObject>(
-      GetDocument().getElementById("self-painting-layer")->GetLayoutObject());
+      GetDocument()
+          .getElementById(AtomicString("self-painting-layer"))
+          ->GetLayoutObject());
   PaintLayer& self_painting_layer = *self_painting_layer_object.Layer();
   ASSERT_TRUE(self_painting_layer.IsSelfPaintingLayer());
   auto& non_self_painting_layer =
@@ -625,7 +630,7 @@ TEST_P(PaintLayerPainterTest, PaintPhaseFloatUnderInlineLayer) {
   UpdateAllLifecyclePhasesForTest();
 
   LayoutObject& float_div =
-      *GetDocument().getElementById("float")->GetLayoutObject();
+      *GetDocument().getElementById(AtomicString("float"))->GetLayoutObject();
   PaintLayer& span_layer = *GetPaintLayerByElementId("span");
   ASSERT_TRUE(&span_layer == float_div.EnclosingLayer());
   ASSERT_TRUE(span_layer.NeedsPaintPhaseFloat());
@@ -655,7 +660,9 @@ TEST_P(PaintLayerPainterTest, PaintPhasesUpdateOnLayerAddition) {
   )HTML");
 
   auto& layer_div = *To<LayoutBoxModelObject>(
-      GetDocument().getElementById("will-be-layer")->GetLayoutObject());
+      GetDocument()
+          .getElementById(AtomicString("will-be-layer"))
+          ->GetLayoutObject());
   EXPECT_FALSE(layer_div.HasLayer());
 
   PaintLayer& html_layer =

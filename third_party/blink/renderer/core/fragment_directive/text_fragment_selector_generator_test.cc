@@ -141,7 +141,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, EmptySelection) {
     <!DOCTYPE html>
     <p id='first'>First paragraph</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 5);
   const auto& selected_end = Position(first_paragraph, 6);
   ASSERT_EQ(" ", PlainText(EphemeralRange(selected_start, selected_end)));
@@ -160,7 +161,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector) {
     <p id='first'>First paragraph text that is longer than 20 chars</p>
     <p id='second'>Second paragraph text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
   const auto& selected_end = Position(first_paragraph, 28);
   ASSERT_EQ("First paragraph text that is",
@@ -181,7 +183,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_Long) {
     <div>Test page</div>
     <p id='first'>first_texts_and_last</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
   const auto& selected_end = Position(first_paragraph, 20);
   ASSERT_EQ("first_texts_and_last",
@@ -200,7 +203,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextWithNestedTextNodes) {
     <p id='first'>First paragraph text that is <i>longer than 20</i> chars</p>
     <p id='second'>Second paragraph text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first");
+  Node* first_paragraph = GetDocument().getElementById(AtomicString("first"));
   const auto& selected_start = Position(first_paragraph->firstChild(), 0);
   const auto& selected_end =
       Position(first_paragraph->firstChild()->nextSibling()->firstChild(), 6);
@@ -222,7 +225,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextWithExtraSpace) {
     <p id='second'>Second paragraph
       text</p>
   )HTML");
-  Node* second_paragraph = GetDocument().getElementById("second")->firstChild();
+  Node* second_paragraph =
+      GetDocument().getElementById(AtomicString("second"))->firstChild();
   const auto& selected_start = Position(second_paragraph, 0);
   const auto& selected_end = Position(second_paragraph, 27);
   ASSERT_EQ("Second paragraph text",
@@ -243,7 +247,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     <p id='first'>First paragraph prefix to unique snippet of text.</p>
     <p id='second'>Second paragraph</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 26);
   const auto& selected_end = Position(first_paragraph, 40);
   ASSERT_EQ("unique snippet",
@@ -265,7 +270,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     <p id='first'>First paragraph text that is longer than 20 chars</p>
     <p id='second'>Second paragraph text that is short</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 6);
   const auto& selected_end = Position(first_paragraph, 28);
   ASSERT_EQ("paragraph text that is",
@@ -287,7 +293,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     <p id='first'>First prefix to not unique snippet of text followed by suffix</p>
     <p id='second'>Second prefix to not unique snippet of text followed by suffix</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 16);
   const auto& selected_end = Position(first_paragraph, 42);
   ASSERT_EQ("not unique snippet of text",
@@ -311,7 +318,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     <p id='first'>First prefix      to not unique snippet of text followed       by suffix</p>
     <p id='second'>Second prefix to not unique snippet of text followed by suffix</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 21);
   const auto& selected_end = Position(first_paragraph, 47);
   ASSERT_EQ("not unique snippet of text",
@@ -334,7 +342,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_SamePrefix) {
     <p id='first'>Prefix to not unique snippet of text followed by different suffix</p>
     <p id='second'>Prefix to not unique snippet of text followed by suffix</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 10);
   const auto& selected_end = Position(first_paragraph, 36);
   ASSERT_EQ("not unique snippet of text",
@@ -357,7 +366,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_SameSuffix) {
     <p id='first'>First paragraph prefix to not unique snippet of text followed by suffix</p>
     <p id='second'>Second paragraph prefix to not unique snippet of text followed by suffix</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 26);
   const auto& selected_end = Position(first_paragraph, 52);
   ASSERT_EQ("not unique snippet of text",
@@ -380,7 +390,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_SamePrefixSuffix) {
     <p id='first'>Same paragraph prefix to not unique snippet of text followed by suffix</p>
     <p id='second'>Same paragraph prefix to not unique snippet of text followed by suffix</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 25);
   const auto& selected_end = Position(first_paragraph, 51);
   ASSERT_EQ("not unique snippet of text",
@@ -405,7 +416,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     <p id='second'>Second paragraph prefix one two three four five six seven
      eight nine ten to not unique snippet of text followed by suffix</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 80);
   const auto& selected_end = Position(first_paragraph, 106);
   ASSERT_EQ("not unique snippet of text",
@@ -424,7 +436,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_NoPrefix) {
     <p id='first'>Not unique snippet of text followed by first suffix</p>
     <p id='second'>Not unique snippet of text followed by second suffix</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
   const auto& selected_end = Position(first_paragraph, 26);
   ASSERT_EQ("Not unique snippet of text",
@@ -444,7 +457,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_NoSuffix) {
     <p id='first'>First prefix to not unique snippet of text</p>
     <p id='second'>Second prefix to not unique snippet of text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("second")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("second"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 17);
   const auto& selected_end = Position(first_paragraph, 43);
   ASSERT_EQ("not unique snippet of text",
@@ -466,7 +480,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_PrevNodePrefix) {
     <p id='first'>First paragraph with not unique snippet</p>
     <p id='second'>not unique snippet of text</p>
   )HTML");
-  Node* second_paragraph = GetDocument().getElementById("second")->firstChild();
+  Node* second_paragraph =
+      GetDocument().getElementById(AtomicString("second"))->firstChild();
   const auto& selected_start = Position(second_paragraph, 0);
   const auto& selected_end = Position(second_paragraph, 18);
   ASSERT_EQ("not unique snippet",
@@ -489,7 +504,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     text
     <p id='second'>not unique snippet of text</p>
   )HTML");
-  Node* second_paragraph = GetDocument().getElementById("second")->firstChild();
+  Node* second_paragraph =
+      GetDocument().getElementById(AtomicString("second"))->firstChild();
   const auto& selected_start = Position(second_paragraph, 0);
   const auto& selected_end = Position(second_paragraph, 18);
   ASSERT_EQ("not unique snippet",
@@ -510,7 +526,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_NextNodeSuffix) {
     <p id='first'>First paragraph with not unique snippet</p>
     <p id='second'>not unique snippet of text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 21);
   const auto& selected_end = Position(first_paragraph, 39);
   ASSERT_EQ("not unique snippet",
@@ -534,7 +551,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     text
     <p id='second'>not unique snippet of text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 21);
   const auto& selected_end = Position(first_paragraph, 39);
   ASSERT_EQ("not unique snippet",
@@ -553,8 +571,10 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector) {
     <p id='first'>First paragraph text that is longer than 20 chars</p>
     <p id='second'>Second paragraph text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  Node* second_paragraph = GetDocument().getElementById("second")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
+  Node* second_paragraph =
+      GetDocument().getElementById(AtomicString("second"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
   const auto& selected_end = Position(second_paragraph, 6);
   ASSERT_EQ("First paragraph text that is longer than 20 chars\n\nSecond",
@@ -578,7 +598,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_SameNode) {
     text text text text text text text text text text text text text
     text text text text text text text text text and last text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
   const auto& selected_end = Position(first_paragraph, 320);
   ASSERT_EQ(
@@ -608,7 +629,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     text text text text text text text text text text text text text
     text text text text text text text text text text and last text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
   const auto& selected_end = Position(first_paragraph, 325);
   ASSERT_EQ(
@@ -654,8 +676,10 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_RangeNotUnique) {
     <p id='first'>First paragraph</p><p id='text1'>text</p>
     <p id='second'>Second paragraph</p><p id='text2'>text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  Node* first_text = GetDocument().getElementById("text1")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
+  Node* first_text =
+      GetDocument().getElementById(AtomicString("text1"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 6);
   const auto& selected_end = Position(first_text, 4);
   ASSERT_EQ("paragraph\n\ntext",
@@ -678,8 +702,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     <!DOCTYPE html>
     <span id='foo'>foo</span> <span id='bar'>bar</span>
   )HTML");
-  Node* foo = GetDocument().getElementById("foo")->firstChild();
-  Node* bar = GetDocument().getElementById("bar")->firstChild();
+  Node* foo = GetDocument().getElementById(AtomicString("foo"))->firstChild();
+  Node* bar = GetDocument().getElementById(AtomicString("bar"))->firstChild();
   const auto& selected_start = Position(foo, 0);
   const auto& selected_end = Position(bar, 3);
   ASSERT_EQ("foo bar", PlainText(EphemeralRange(selected_start, selected_end)));
@@ -699,8 +723,10 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     <p id='first'>First paragraph</p><p id='text1'>text</p>
     <p id='second'>Second paragraph</p><p id='text2'>text</p>
   )HTML");
-  Node* second_paragraph = GetDocument().getElementById("second")->firstChild();
-  Node* second_text = GetDocument().getElementById("text2")->firstChild();
+  Node* second_paragraph =
+      GetDocument().getElementById(AtomicString("second"))->firstChild();
+  Node* second_text =
+      GetDocument().getElementById(AtomicString("text2"))->firstChild();
   const auto& selected_start = Position(second_paragraph, 7);
   const auto& selected_end = Position(second_text, 4);
   ASSERT_EQ("paragraph\n\ntext",
@@ -719,7 +745,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_LongWord) {
     <div>Test page</div>
     <p id='first'>First second third fourth fifth sixth text_text_text_text_text_text_text_text_text_text_text_text_text_and_last_text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
   const auto& selected_end = Position(first_paragraph, 116);
   ASSERT_EQ(
@@ -746,7 +773,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     <div>Test page</div>
     <p id='first'>one two three four five</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
   const auto& selected_end = Position(first_paragraph, 23);
   ASSERT_EQ("one two three four five",
@@ -769,7 +797,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_OverlapNeedsContext) {
     <p id='second'>Second paragraph text one two three four five six seven eight nine ten
     end of second paragraph</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 21);
   const auto& selected_end = Position(first_paragraph, 69);
   ASSERT_EQ("one two three four five six seven eight nine ten",
@@ -788,7 +817,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, WordLimit) {
     <div>Test page</div>
     <p id='first'>First paragraph text that is longer than 20 chars</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 7);
   const auto& selected_end = Position(first_paragraph, 33);
   ASSERT_EQ("aragraph text that is long",
@@ -810,7 +840,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, WordLimit_ExtraSpaces) {
     paragraph text
     that is longer than 20 chars</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 11);
   const auto& selected_end = Position(first_paragraph, 41);
   ASSERT_EQ("aragraph text that is long",
@@ -831,7 +862,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     <div>Test page</div>
     <p id='first'>First paragraph text that is longer  than 20 chars</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 5);
   const auto& selected_end = Position(first_paragraph, 37);
   ASSERT_EQ(" paragraph text that is longer ",
@@ -851,8 +883,9 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartsWithImage) {
     <img id="img">
     <p id='first'>First paragraph text that is longer  than 20 chars</p>
   )HTML");
-  Node* img = GetDocument().getElementById("img");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* img = GetDocument().getElementById(AtomicString("img"));
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = Position(img, 0);
   const auto& end = Position(first_paragraph, 5);
   ASSERT_EQ("\nFirst", PlainText(EphemeralRange(start, end)));
@@ -872,8 +905,9 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartsWithBlockWithImage) {
     </div>
     <p id='first'>First paragraph text that is longer  than 20 chars</p>
   )HTML");
-  Node* img = GetDocument().getElementById("img_div");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* img = GetDocument().getElementById(AtomicString("img_div"));
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = Position(img, 0);
   const auto& end = Position(first_paragraph, 5);
   ASSERT_EQ("\nFirst", PlainText(EphemeralRange(start, end)));
@@ -909,8 +943,9 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartsWithInlineBlockChild) {
   )HTML");
 
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  Node* img = GetDocument().getElementById("link1");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* img = GetDocument().getElementById(AtomicString("link1"));
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = Position::LastPositionInNode(*img);
   const auto& end = Position(first_paragraph, 5);
   ASSERT_EQ("  \nFirst", PlainText(EphemeralRange(start, end)));
@@ -929,8 +964,9 @@ TEST_F(TextFragmentSelectorGeneratorTest, EndswithImage) {
     <img id="img">
     </img>
   )HTML");
-  Node* img = GetDocument().getElementById("img");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* img = GetDocument().getElementById(AtomicString("img"));
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = Position(first_paragraph, 44);
   const auto& end = Position(img, 0);
   ASSERT_EQ("chars\n\n", PlainText(EphemeralRange(start, end)));
@@ -947,8 +983,10 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartIsEndofPrevBlock) {
     <p id='first'>First paragraph     </p>
     <p id='second'>Second paragraph</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  Node* second_paragraph = GetDocument().getElementById("second")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
+  Node* second_paragraph =
+      GetDocument().getElementById(AtomicString("second"))->firstChild();
   const auto& start = Position(first_paragraph, 18);
   const auto& end = Position(second_paragraph, 6);
   ASSERT_EQ("\nSecond", PlainText(EphemeralRange(start, end)));
@@ -965,8 +1003,10 @@ TEST_F(TextFragmentSelectorGeneratorTest, EndIsStartofNextBlock) {
     <p id='first'>First paragraph</p>
     <p id='second'>     Second paragraph</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  Node* second_paragraph = GetDocument().getElementById("second")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
+  Node* second_paragraph =
+      GetDocument().getElementById(AtomicString("second"))->firstChild();
   const auto& start = Position(first_paragraph, 0);
   const auto& end = Position(second_paragraph, 2);
   ASSERT_EQ("First paragraph\n\n", PlainText(EphemeralRange(start, end)));
@@ -998,8 +1038,9 @@ TEST_F(TextFragmentSelectorGeneratorTest, PrevNodeIsSiblingsChild) {
   <div><p id='start'>First paragraph</p></div><p id='end'>Second paragraph</p>
   )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
-  Node* first_paragraph = GetDocument().getElementById("start")->firstChild();
-  Node* second_paragraph = GetDocument().getElementById("end");
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("start"))->firstChild();
+  Node* second_paragraph = GetDocument().getElementById(AtomicString("end"));
   const auto& start = Position(first_paragraph, 0);
   const auto& end = Position(second_paragraph, 0);
   ASSERT_EQ("First paragraph\n\n", PlainText(EphemeralRange(start, end)));
@@ -1031,8 +1072,9 @@ TEST_F(TextFragmentSelectorGeneratorTest, PrevPrevNodeIsSiblingsChild) {
   <div><p id='start'>First paragraph</p></div><div style='display:none'>test</div><p id='end'>Second paragraph</p>
   )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
-  Node* first_paragraph = GetDocument().getElementById("start")->firstChild();
-  Node* second_paragraph = GetDocument().getElementById("end");
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("start"))->firstChild();
+  Node* second_paragraph = GetDocument().getElementById(AtomicString("end"));
   const auto& start = Position(first_paragraph, 0);
   const auto& end = Position(second_paragraph, 0);
   ASSERT_EQ("First paragraph\n\n", PlainText(EphemeralRange(start, end)));
@@ -1049,7 +1091,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_SameNode_Interrupted) {
     <!DOCTYPE html>
     <div id='first'>First <div>block text</div> paragraph text</div>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = Position(first_paragraph, 0);
   const auto& end = Position(first_paragraph->nextSibling()->nextSibling(), 10);
   ASSERT_EQ("First\nblock text\nparagraph",
@@ -1068,7 +1111,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, MultiwordContext) {
     <p id='first'>First paragraph text that is longer than 20 chars</p>
     <p id='second'>Second paragraph text that is short</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 6);
   const auto& selected_end = Position(first_paragraph, 28);
   ASSERT_EQ("paragraph text that is",
@@ -1088,8 +1132,10 @@ TEST_F(TextFragmentSelectorGeneratorTest, MultiWordRangeSelector) {
     <p id='first'>First paragraph text that is longer than 20 chars</p>
     <p id='second'>Second paragraph text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
-  Node* second_paragraph = GetDocument().getElementById("second")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
+  Node* second_paragraph =
+      GetDocument().getElementById(AtomicString("second"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
   const auto& selected_end = Position(second_paragraph, 6);
   ASSERT_EQ("First paragraph text that is longer than 20 chars\n\nSecond",
@@ -1111,8 +1157,9 @@ TEST_F(TextFragmentSelectorGeneratorTest, SelectionEndsWithNonText) {
   </div>
   )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
-  Node* first_paragraph = GetDocument().getElementById("start")->firstChild();
-  Node* div = GetDocument().getElementById("div");
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("start"))->firstChild();
+  Node* div = GetDocument().getElementById(AtomicString("div"));
   const auto& start = Position(first_paragraph, 0);
   const auto& end = Position(div, 2);
   ASSERT_EQ("First paragraph\n\n", PlainText(EphemeralRange(start, end)));
@@ -1132,8 +1179,9 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   </div>
   )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
-  Node* first_paragraph = GetDocument().getElementById("start")->firstChild();
-  Node* div = GetDocument().getElementById("div");
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("start"))->firstChild();
+  Node* div = GetDocument().getElementById(AtomicString("div"));
   const auto& start = Position(first_paragraph, 0);
   const auto& end =
       Position(div, 3);  // Points to the 3rd child of the div, which is <img>
@@ -1154,8 +1202,9 @@ TEST_F(TextFragmentSelectorGeneratorTest, SelectionEndsWithImageDiv) {
   </div>
   )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
-  Node* first_paragraph = GetDocument().getElementById("start")->firstChild();
-  Node* div = GetDocument().getElementById("div");
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("start"))->firstChild();
+  Node* div = GetDocument().getElementById(AtomicString("div"));
   const auto& start = Position(first_paragraph, 0);
   const auto& end =
       Position(div, 3);  // Points to the 3rd child of the div, which is div_img
@@ -1175,8 +1224,10 @@ TEST_F(TextFragmentSelectorGeneratorTest, OverlappingRange) {
     <div id='first'>First <div>block text</div>text suffix</div>
   )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
-  Node* start_node = GetDocument().getElementById("first")->firstChild();
-  Node* end_node = GetDocument().getElementById("first")->lastChild();
+  Node* start_node =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
+  Node* end_node =
+      GetDocument().getElementById(AtomicString("first"))->lastChild();
   const auto& start = Position(start_node, 0);
   const auto& end = Position(end_node, 4);
   ASSERT_EQ("First\nblock text\ntext", PlainText(EphemeralRange(start, end)));
@@ -1202,9 +1253,9 @@ TEST_F(TextFragmentSelectorGeneratorTest, Table) {
   )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
   Node* first_paragraph =
-      GetDocument().getElementById("row1-col1")->firstChild();
+      GetDocument().getElementById(AtomicString("row1-col1"))->firstChild();
   Node* second_paragraph =
-      GetDocument().getElementById("row1-col3")->firstChild();
+      GetDocument().getElementById(AtomicString("row1-col3"))->firstChild();
   const auto& start = Position(first_paragraph, 0);
   const auto& end = Position(second_paragraph, 9);
   ASSERT_EQ("row1 col1\trow1 col2\trow1 col3",
@@ -1224,7 +1275,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, Input) {
   </div>
   )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
-  Node* div = GetDocument().getElementById("div");
+  Node* div = GetDocument().getElementById(AtomicString("div"));
   const auto& start = Position(div->firstChild(), 0);
   const auto& end = Position(div->lastChild(), 7);
   ASSERT_EQ("First paragraph Second", PlainText(EphemeralRange(start, end)));
@@ -1244,7 +1295,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, InputSubmit) {
   </div>
   )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
-  Node* div = GetDocument().getElementById("div");
+  Node* div = GetDocument().getElementById(AtomicString("div"));
   const auto& start = Position(div->firstChild(), 0);
   const auto& end = Position(div->lastChild(), 7);
   ASSERT_EQ("First paragraph Second", PlainText(EphemeralRange(start, end)));
@@ -1262,7 +1313,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, EscapeSelectorSpecialChars) {
   <div id='div'>First paragraph with hyphen- ampersand& and comma,</div>
   )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
-  Node* div = GetDocument().getElementById("div");
+  Node* div = GetDocument().getElementById(AtomicString("div"));
   const auto& start = Position(div->firstChild(), 0);
   const auto& end = Position(div->firstChild(), 50);
   ASSERT_EQ("First paragraph with hyphen- ampersand& and comma,",
@@ -1285,7 +1336,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, InputSubmitPrefix) {
   </div>
   )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
-  Node* div = GetDocument().getElementById("div");
+  Node* div = GetDocument().getElementById(AtomicString("div"));
   const auto& start = Position(div->lastChild(), 0);
   const auto& end = Position(div->lastChild(), 10);
   ASSERT_EQ(" paragraph", PlainText(EphemeralRange(start, end)));
@@ -1305,7 +1356,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, InputSubmitOneWordPrefix) {
   </div>
   )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
-  Node* div = GetDocument().getElementById("div");
+  Node* div = GetDocument().getElementById(AtomicString("div"));
   const auto& start = Position(div->lastChild(), 0);
   const auto& end = Position(div->lastChild(), 10);
   ASSERT_EQ(" paragraph", PlainText(EphemeralRange(start, end)));
@@ -1325,7 +1376,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeBeginsOnShadowHost) {
   the quick brown fox jumped over the lazy dog.
   )HTML");
 
-  Element* host = GetDocument().getElementById("host");
+  Element* host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& root = host->AttachShadowRootInternal(ShadowRootType::kOpen);
   root.appendChild(MakeGarbageCollected<HTMLDivElement>(root.GetDocument()));
   root.appendChild(MakeGarbageCollected<HTMLDivElement>(root.GetDocument()));
@@ -1349,7 +1400,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, Multiline_paragraph) {
   first paragraph line<br>second paragraph line
   </p>
   )HTML");
-  Node* p = GetDocument().getElementById("p");
+  Node* p = GetDocument().getElementById(AtomicString("p"));
   const auto& start = Position(p->firstChild(), 0);
   const auto& end = Position(p->lastChild(), 24);
   ASSERT_EQ("first paragraph line\nsecond paragraph line",
@@ -1368,7 +1419,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, Nbsp_before_suffix) {
   <p id ='p1'>first paragraph line.&nbsp;</p>
   <p id ='p2'>&nbsp;second paragraph line.</p>
   )HTML");
-  Node* p = GetDocument().getElementById("p1");
+  Node* p = GetDocument().getElementById(AtomicString("p1"));
   const auto& start = Position(p->firstChild(), 16);
   const auto& end = Position(p->firstChild(), 21);
   ASSERT_EQ("line.", PlainText(EphemeralRange(start, end)));
@@ -1386,7 +1437,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, Nbsp_before_prefix) {
   <p id ='p1'>first paragraph line.&nbsp;    </p>
   <p id ='p2'>&nbsp;    second paragraph line.</p>
   )HTML");
-  Node* p = GetDocument().getElementById("p2");
+  Node* p = GetDocument().getElementById(AtomicString("p2"));
   const auto& start = Position(p->firstChild(), 5);
   const auto& end = Position(p->firstChild(), 11);
   ASSERT_EQ("second", PlainText(EphemeralRange(start, end)));
@@ -1409,8 +1460,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, ContextAfterMaxRange) {
   <p>I mean an elephone who tried to use a_telephone</p>
   )HTML");
 
-  Node* p1 = GetDocument().getElementById("p1");
-  Node* p2 = GetDocument().getElementById("p2");
+  Node* p1 = GetDocument().getElementById(AtomicString("p1"));
+  Node* p2 = GetDocument().getElementById(AtomicString("p2"));
   const auto& start = Position(p1->firstChild(), 0);
   const auto& end = Position(p2->firstChild(), 47);
   ASSERT_EQ(
@@ -1434,12 +1485,14 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextEndPosition_PrevNode) {
     <p id='first'>First paragraph text</p>
     <p id='second'>Second paragraph text</p>
   )HTML");
-  Node* second_paragraph = GetDocument().getElementById("second")->firstChild();
+  Node* second_paragraph =
+      GetDocument().getElementById(AtomicString("second"))->firstChild();
   const auto& start = PositionInFlatTree(second_paragraph, 0);
   const auto& end = PositionInFlatTree(second_paragraph, 6);
   ASSERT_EQ("Second", PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& expected_position =
       ToPositionInFlatTree(Position::LastPositionInNode(*first_paragraph));
   EXPECT_EQ(expected_position,
@@ -1456,12 +1509,14 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     <!DOCTYPE html>
     text<p id='first'>First paragraph text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = PositionInFlatTree(first_paragraph, 0);
   const auto& end = PositionInFlatTree(first_paragraph, 5);
   ASSERT_EQ("First", PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  Node* node = GetDocument().getElementById("first")->previousSibling();
+  Node* node =
+      GetDocument().getElementById(AtomicString("first"))->previousSibling();
   const auto& expected_position =
       ToPositionInFlatTree(Position::LastPositionInNode(*node));
   EXPECT_EQ(expected_position,
@@ -1478,12 +1533,13 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     <!DOCTYPE html>
     <div id='div'>nested<p id='first'>First paragraph text</p></div>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = PositionInFlatTree(first_paragraph, 0);
   const auto& end = PositionInFlatTree(first_paragraph, 5);
   ASSERT_EQ("First", PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  Node* node = GetDocument().getElementById("div")->firstChild();
+  Node* node = GetDocument().getElementById(AtomicString("div"))->firstChild();
   const auto& expected_position =
       ToPositionInFlatTree(Position::LastPositionInNode(*node));
   EXPECT_EQ(expected_position,
@@ -1503,12 +1559,14 @@ TEST_F(TextFragmentSelectorGeneratorTest,
       Second paragraph text
     </p>
   )HTML");
-  Node* second_paragraph = GetDocument().getElementById("second")->firstChild();
+  Node* second_paragraph =
+      GetDocument().getElementById(AtomicString("second"))->firstChild();
   const auto& start = PositionInFlatTree(second_paragraph, 6);
   const auto& end = PositionInFlatTree(second_paragraph, 13);
   ASSERT_EQ("Second", PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  Node* node = GetDocument().getElementById("first")->firstChild();
+  Node* node =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& expected_position =
       ToPositionInFlatTree(Position::LastPositionInNode(*node));
   EXPECT_EQ(expected_position,
@@ -1532,12 +1590,13 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     </div>
   )HTML");
   Node* second_paragraph =
-      GetDocument().getElementById("invisible")->nextSibling();
+      GetDocument().getElementById(AtomicString("invisible"))->nextSibling();
   const auto& start = PositionInFlatTree(second_paragraph, 6);
   const auto& end = PositionInFlatTree(second_paragraph, 13);
   ASSERT_EQ("Second", PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  Node* node = GetDocument().getElementById("first")->firstChild();
+  Node* node =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& expected_position =
       ToPositionInFlatTree(Position::LastPositionInNode(*node));
   EXPECT_EQ(expected_position,
@@ -1554,7 +1613,8 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     <!DOCTYPE html>
     <p id='first'>First paragraph text</p>
   )HTML");
-  Node* second_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* second_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = PositionInFlatTree(second_paragraph, 0);
   const auto& end = PositionInFlatTree(second_paragraph, 5);
   ASSERT_EQ("First", PlainText(EphemeralRangeInFlatTree(start, end)));
@@ -1576,13 +1636,15 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextStartPosition_NextNode) {
     <p id='first'>First paragraph text</p>
     <p id='second'>Second paragraph text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = PositionInFlatTree(first_paragraph, 0);
   const auto& end = PositionInFlatTree(first_paragraph, 20);
   ASSERT_EQ("First paragraph text",
             PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  Node* node = GetDocument().getElementById("second")->firstChild();
+  Node* node =
+      GetDocument().getElementById(AtomicString("second"))->firstChild();
   const auto& expected_position =
       ToPositionInFlatTree(Position::FirstPositionInNode(*node));
   EXPECT_EQ(expected_position,
@@ -1603,13 +1665,15 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     //-->
     <p id='second'>Second paragraph text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = PositionInFlatTree(first_paragraph, 0);
   const auto& end = PositionInFlatTree(first_paragraph, 20);
   ASSERT_EQ("First paragraph text",
             PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  Node* node = GetDocument().getElementById("second")->firstChild();
+  Node* node =
+      GetDocument().getElementById(AtomicString("second"))->firstChild();
   const auto& expected_position =
       ToPositionInFlatTree(Position::FirstPositionInNode(*node));
   EXPECT_EQ(expected_position,
@@ -1626,13 +1690,15 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     <!DOCTYPE html>
     <p id='first'>First paragraph text</p>text
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = PositionInFlatTree(first_paragraph, 0);
   const auto& end = PositionInFlatTree(first_paragraph, 20);
   ASSERT_EQ("First paragraph text",
             PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  Node* node = GetDocument().getElementById("first")->nextSibling();
+  Node* node =
+      GetDocument().getElementById(AtomicString("first"))->nextSibling();
   const auto& expected_position =
       ToPositionInFlatTree(Position::FirstPositionInNode(*node));
   EXPECT_EQ(expected_position,
@@ -1648,13 +1714,14 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextStartPosition_ParentNode) {
     <!DOCTYPE html>
     <div id='div'><p id='first'>First paragraph text</p>nested</div>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = PositionInFlatTree(first_paragraph, 0);
   const auto& end = PositionInFlatTree(first_paragraph, 20);
   ASSERT_EQ("First paragraph text",
             PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  Node* node = GetDocument().getElementById("div")->lastChild();
+  Node* node = GetDocument().getElementById(AtomicString("div"))->lastChild();
   const auto& expected_position =
       ToPositionInFlatTree(Position::FirstPositionInNode(*node));
   EXPECT_EQ(expected_position,
@@ -1674,12 +1741,14 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     </p>
     <p id='second'>Second paragraph text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = PositionInFlatTree(first_paragraph, 23);
   const auto& end = PositionInFlatTree(first_paragraph, 27);
   ASSERT_EQ("text", PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  Node* node = GetDocument().getElementById("second")->firstChild();
+  Node* node =
+      GetDocument().getElementById(AtomicString("second"))->firstChild();
   const auto& expected_position =
       ToPositionInFlatTree(Position::FirstPositionInNode(*node));
   EXPECT_EQ(expected_position,
@@ -1702,12 +1771,14 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     </div>
     <p id='second'>Second paragraph text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = PositionInFlatTree(first_paragraph, 23);
   const auto& end = PositionInFlatTree(first_paragraph, 27);
   ASSERT_EQ("text", PlainText(EphemeralRangeInFlatTree(start, end)));
 
-  Node* node = GetDocument().getElementById("second")->firstChild();
+  Node* node =
+      GetDocument().getElementById(AtomicString("second"))->firstChild();
   const auto& expected_position =
       ToPositionInFlatTree(Position::FirstPositionInNode(*node));
   EXPECT_EQ(expected_position,
@@ -1723,7 +1794,8 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextStartPosition_NoNextNode) {
     <!DOCTYPE html>
     <p id='first'>First paragraph text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = PositionInFlatTree(first_paragraph, 0);
   const auto& end = PositionInFlatTree(first_paragraph, 20);
   ASSERT_EQ("First paragraph text",
@@ -1744,7 +1816,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, BeforeAndAfterAnchor) {
     Bar
   )HTML");
 
-  Node* node = GetDocument().getElementById("first");
+  Node* node = GetDocument().getElementById(AtomicString("first"));
   const auto& start = Position(node, PositionAnchorType::kBeforeAnchor);
   const auto& end = Position(node, PositionAnchorType::kAfterAnchor);
   VerifySelectorFails(start, end, LinkGenerationError::kEmptySelection);
@@ -1759,9 +1831,9 @@ TEST_F(TextFragmentSelectorGeneratorTest,
     <!DOCTYPE html>
     <div id="host1"></div>
   )HTML");
-  ShadowRoot& shadow1 =
-      GetDocument().getElementById("host1")->AttachShadowRootInternal(
-          ShadowRootType::kOpen);
+  ShadowRoot& shadow1 = GetDocument()
+                            .getElementById(AtomicString("host1"))
+                            ->AttachShadowRootInternal(ShadowRootType::kOpen);
   shadow1.setInnerHTML(R"HTML(
     <p id='p'>Right click the link below to experience a crash:</p>
     <style>
@@ -1772,10 +1844,11 @@ TEST_F(TextFragmentSelectorGeneratorTest,
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(GetDocument().View()->NeedsLayout());
-  Node* first_paragraph = shadow1.getElementById("first")->firstChild();
+  Node* first_paragraph =
+      shadow1.getElementById(AtomicString("first"))->firstChild();
   const auto& start = PositionInFlatTree(first_paragraph, 0);
 
-  Node* node = shadow1.getElementById("p")->firstChild();
+  Node* node = shadow1.getElementById(AtomicString("p"))->firstChild();
   const auto& expected_position =
       ToPositionInFlatTree(Position::LastPositionInNode(*node));
   EXPECT_EQ(expected_position,
@@ -1800,7 +1873,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, RemoveLayoutObjectAsync) {
   )HTML");
 
   // Select the first instance of "Foo"
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
 
   Node* text = target->firstChild();
   const auto& selected_start = Position(text, 0);

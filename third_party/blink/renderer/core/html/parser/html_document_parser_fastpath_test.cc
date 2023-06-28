@@ -108,7 +108,7 @@ TEST(HTMLDocumentParserFastpathTest, MaximumHTMLParserDOMTreeDepth) {
 
   // Because kMaximumHTMLParserDOMTreeDepth was encountered, the deepest
   // node should have siblings.
-  Element* deepest = div->getElementById("deepest");
+  Element* deepest = div->getElementById(AtomicString("deepest"));
   ASSERT_TRUE(deepest);
   EXPECT_EQ(deepest->parentNode()->CountChildren(), 3u);
 }

@@ -18,7 +18,7 @@ TEST_F(HTMLDataListElementTest, FinishedParsingChildren) {
   LoadURL("https://example.com/");
   main_resource.Complete("<datalist id=list></datalist>");
 
-  auto* data_list = GetDocument().getElementById("list");
+  auto* data_list = GetDocument().getElementById(AtomicString("list"));
   ASSERT_TRUE(data_list);
   EXPECT_TRUE(data_list->IsFinishedParsingChildren());
 }

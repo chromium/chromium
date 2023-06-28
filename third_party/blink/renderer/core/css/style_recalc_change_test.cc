@@ -28,7 +28,7 @@ TEST_F(StyleRecalcChangeTest, SuppressRecalc) {
     <div id=element></div>
   )HTML");
 
-  Element* element = GetDocument().getElementById("element");
+  Element* element = GetDocument().getElementById(AtomicString("element"));
   ASSERT_TRUE(element);
   element->classList().Add("foo");
 
@@ -70,10 +70,10 @@ TEST_F(StyleRecalcChangeTestCQ, SkipStyleRecalcForContainer) {
   )HTML",
                                      ASSERT_NO_EXCEPTION);
 
-  Element* outer = GetDocument().getElementById("outer");
-  Element* container = GetDocument().getElementById("container");
-  Element* affected = GetDocument().getElementById("affected");
-  Element* flip = GetDocument().getElementById("flip");
+  Element* outer = GetDocument().getElementById(AtomicString("outer"));
+  Element* container = GetDocument().getElementById(AtomicString("container"));
+  Element* affected = GetDocument().getElementById(AtomicString("affected"));
+  Element* flip = GetDocument().getElementById(AtomicString("flip"));
 
   ASSERT_TRUE(outer);
   ASSERT_TRUE(container);
@@ -195,7 +195,7 @@ TEST_F(StyleRecalcChangeTestCQ, SkipStyleRecalcForContainerCleanSubtree) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* container = GetDocument().getElementById("container");
+  Element* container = GetDocument().getElementById(AtomicString("container"));
   ASSERT_TRUE(container);
   container->classList().Add("narrow");
   GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
@@ -225,8 +225,8 @@ TEST_F(StyleRecalcChangeTestCQ, SkipAttachLayoutTreeForContainer) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* container = GetDocument().getElementById("container");
-  Element* affected = GetDocument().getElementById("affected");
+  Element* container = GetDocument().getElementById(AtomicString("container"));
+  Element* affected = GetDocument().getElementById(AtomicString("affected"));
   ASSERT_TRUE(container);
   ASSERT_TRUE(affected);
   EXPECT_TRUE(container->GetLayoutObject());
@@ -258,10 +258,12 @@ TEST_F(StyleRecalcChangeTestCQ, DontSkipLayoutRoot) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* outer = GetDocument().getElementById("outer");
-  Element* inner = GetDocument().getElementById("inner");
-  Element* outer_child = GetDocument().getElementById("outer_child");
-  Element* inner_child = GetDocument().getElementById("inner_child");
+  Element* outer = GetDocument().getElementById(AtomicString("outer"));
+  Element* inner = GetDocument().getElementById(AtomicString("inner"));
+  Element* outer_child =
+      GetDocument().getElementById(AtomicString("outer_child"));
+  Element* inner_child =
+      GetDocument().getElementById(AtomicString("inner_child"));
 
   inner_child->GetLayoutObject()->SetNeedsLayout("test");
   outer_child->GetLayoutObject()->SetNeedsLayout("test");

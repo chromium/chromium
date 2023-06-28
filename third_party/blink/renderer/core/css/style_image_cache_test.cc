@@ -35,7 +35,7 @@ TEST_F(StyleImageCacheTest, DuplicateBackgroundImageURLs) {
     <div id="target"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
   ASSERT_FALSE(target->ComputedStyleRef().BackgroundLayers().GetImage());
 
@@ -64,7 +64,7 @@ TEST_F(StyleImageCacheTest, CustomPropertyURL) {
     <div id="target"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
 
   StyleImage* initial_image =
       target->ComputedStyleRef().BackgroundLayers().GetImage();
@@ -88,8 +88,8 @@ TEST_F(StyleImageCacheTest, ComputedValueRelativePath) {
     <div id="target2"></div>
   )HTML");
 
-  Element* target1 = GetDocument().getElementById("target1");
-  Element* target2 = GetDocument().getElementById("target2");
+  Element* target1 = GetDocument().getElementById(AtomicString("target1"));
+  Element* target2 = GetDocument().getElementById(AtomicString("target2"));
 
   // Resolves to the same absolute url. Can share StyleFetchedImage since the
   // computed value is the absolute url.
@@ -127,7 +127,7 @@ TEST_F(StyleImageCacheTest, WeakReferenceGC) {
       std::pair<String, float>{"http://test.com/url2.png", 0.0f}));
   EXPECT_EQ(FetchedImageMap().size(), 2u);
 
-  Element* sheet = GetDocument().getElementById("sheet");
+  Element* sheet = GetDocument().getElementById(AtomicString("sheet"));
   ASSERT_TRUE(sheet);
   sheet->remove();
   UpdateAllLifecyclePhasesForTest();

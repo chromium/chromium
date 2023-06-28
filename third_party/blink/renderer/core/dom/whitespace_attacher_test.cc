@@ -28,7 +28,7 @@ TEST_F(WhitespaceAttacherTest, WhitespaceAfterReattachedBlock) {
   GetDocument().body()->setInnerHTML("<div id=block></div> ");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* div = GetDocument().getElementById("block");
+  Element* div = GetDocument().getElementById(AtomicString("block"));
   auto* text = To<Text>(div->nextSibling());
   EXPECT_FALSE(text->GetLayoutObject());
 
@@ -47,7 +47,7 @@ TEST_F(WhitespaceAttacherTest, WhitespaceAfterReattachedInline) {
   GetDocument().body()->setInnerHTML("<span id=inline></span> ");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* span = GetDocument().getElementById("inline");
+  Element* span = GetDocument().getElementById(AtomicString("inline"));
   auto* text = To<Text>(span->nextSibling());
   EXPECT_TRUE(text->GetLayoutObject());
 
@@ -66,7 +66,7 @@ TEST_F(WhitespaceAttacherTest, WhitespaceAfterReattachedWhitespace) {
   GetDocument().body()->setInnerHTML("<span id=inline></span> <!-- --> ");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* span = GetDocument().getElementById("inline");
+  Element* span = GetDocument().getElementById(AtomicString("inline"));
   auto* first_whitespace = To<Text>(span->nextSibling());
   auto* second_whitespace =
       To<Text>(first_whitespace->nextSibling()->nextSibling());
@@ -92,7 +92,7 @@ TEST_F(WhitespaceAttacherTest, VisitBlockAfterReattachedWhitespace) {
   GetDocument().body()->setInnerHTML("<div id=block></div> ");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* div = GetDocument().getElementById("block");
+  Element* div = GetDocument().getElementById(AtomicString("block"));
   auto* text = To<Text>(div->nextSibling());
   EXPECT_FALSE(text->GetLayoutObject());
 
@@ -110,7 +110,7 @@ TEST_F(WhitespaceAttacherTest, VisitInlineAfterReattachedWhitespace) {
   GetDocument().body()->setInnerHTML("<span id=inline></span> ");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* span = GetDocument().getElementById("inline");
+  Element* span = GetDocument().getElementById(AtomicString("inline"));
   auto* text = To<Text>(span->nextSibling());
   EXPECT_TRUE(text->GetLayoutObject());
 
@@ -154,7 +154,7 @@ TEST_F(WhitespaceAttacherTest, ReattachWhitespaceInsideBlockExitingScope) {
   GetDocument().body()->setInnerHTML("<div id=block> </div>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* div = GetDocument().getElementById("block");
+  Element* div = GetDocument().getElementById(AtomicString("block"));
   auto* text = To<Text>(div->firstChild());
   EXPECT_FALSE(text->GetLayoutObject());
 
@@ -175,7 +175,7 @@ TEST_F(WhitespaceAttacherTest, ReattachWhitespaceInsideInlineExitingScope) {
   GetDocument().body()->setInnerHTML("<span id=inline> </span>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* span = GetDocument().getElementById("inline");
+  Element* span = GetDocument().getElementById(AtomicString("inline"));
   auto* text = To<Text>(span->firstChild());
   EXPECT_TRUE(text->GetLayoutObject());
 
@@ -194,7 +194,7 @@ TEST_F(WhitespaceAttacherTest, ReattachWhitespaceInsideInlineExitingScope) {
 
 TEST_F(WhitespaceAttacherTest, SlottedWhitespaceAfterReattachedBlock) {
   GetDocument().body()->setInnerHTML("<div id=host> </div>");
-  Element* host = GetDocument().getElementById("host");
+  Element* host = GetDocument().getElementById(AtomicString("host"));
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
@@ -202,7 +202,7 @@ TEST_F(WhitespaceAttacherTest, SlottedWhitespaceAfterReattachedBlock) {
   shadow_root.setInnerHTML("<div id=block></div><slot></slot>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* div = shadow_root.getElementById("block");
+  Element* div = shadow_root.getElementById(AtomicString("block"));
   auto* text = To<Text>(host->firstChild());
   EXPECT_FALSE(text->GetLayoutObject());
 
@@ -221,7 +221,7 @@ TEST_F(WhitespaceAttacherTest, SlottedWhitespaceAfterReattachedBlock) {
 
 TEST_F(WhitespaceAttacherTest, SlottedWhitespaceAfterReattachedInline) {
   GetDocument().body()->setInnerHTML("<div id=host> </div>");
-  Element* host = GetDocument().getElementById("host");
+  Element* host = GetDocument().getElementById(AtomicString("host"));
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
@@ -229,7 +229,7 @@ TEST_F(WhitespaceAttacherTest, SlottedWhitespaceAfterReattachedInline) {
   shadow_root.setInnerHTML("<span id=inline></span><slot></slot>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* span = shadow_root.getElementById("inline");
+  Element* span = shadow_root.getElementById(AtomicString("inline"));
   auto* text = To<Text>(host->firstChild());
   EXPECT_TRUE(text->GetLayoutObject());
 
@@ -252,7 +252,7 @@ TEST_F(WhitespaceAttacherTest,
       "<div id=block></div><span style='display:contents'> </span>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* div = GetDocument().getElementById("block");
+  Element* div = GetDocument().getElementById(AtomicString("block"));
   auto* contents = To<Element>(div->nextSibling());
   auto* text = To<Text>(contents->firstChild());
   EXPECT_FALSE(contents->GetLayoutObject());
@@ -277,7 +277,7 @@ TEST_F(WhitespaceAttacherTest,
       "<span id=inline></span><span style='display:contents'> </span>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* span = GetDocument().getElementById("inline");
+  Element* span = GetDocument().getElementById(AtomicString("inline"));
   auto* contents = To<Element>(span->nextSibling());
   auto* text = To<Text>(contents->firstChild());
   EXPECT_FALSE(contents->GetLayoutObject());
@@ -302,7 +302,7 @@ TEST_F(WhitespaceAttacherTest,
       "<div id=block></div><span style='display:contents'></span> ");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* div = GetDocument().getElementById("block");
+  Element* div = GetDocument().getElementById(AtomicString("block"));
   auto* contents = To<Element>(div->nextSibling());
   auto* text = To<Text>(contents->nextSibling());
   EXPECT_FALSE(contents->GetLayoutObject());
@@ -329,7 +329,7 @@ TEST_F(WhitespaceAttacherTest,
       "<span style='display:none'></span></span> ");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* div = GetDocument().getElementById("block");
+  Element* div = GetDocument().getElementById(AtomicString("block"));
   auto* contents = To<Element>(div->nextSibling());
   auto* text = To<Text>(contents->nextSibling());
   EXPECT_FALSE(contents->GetLayoutObject());
@@ -356,9 +356,10 @@ TEST_F(WhitespaceAttacherTest, WhitespaceDeepInsideDisplayContents) {
       "<span id=inner style='display:contents'> </span></span>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* span = GetDocument().getElementById("inline");
+  Element* span = GetDocument().getElementById(AtomicString("inline"));
   auto* contents = To<Element>(span->nextSibling());
-  auto* text = To<Text>(GetDocument().getElementById("inner")->firstChild());
+  auto* text = To<Text>(
+      GetDocument().getElementById(AtomicString("inner"))->firstChild());
   EXPECT_TRUE(text->GetLayoutObject());
 
   AdvanceToRebuildLayoutTree();
@@ -382,7 +383,7 @@ TEST_F(WhitespaceAttacherTest, MultipleDisplayContents) {
       "<span style='display:contents'> </span>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* span = GetDocument().getElementById("inline");
+  Element* span = GetDocument().getElementById(AtomicString("inline"));
   auto* first_contents = To<Element>(span->nextSibling());
   auto* second_contents = To<Element>(first_contents->nextSibling());
   auto* last_contents = To<Element>(second_contents->nextSibling());
@@ -406,7 +407,7 @@ TEST_F(WhitespaceAttacherTest, MultipleDisplayContents) {
 
 TEST_F(WhitespaceAttacherTest, SlottedWhitespaceInsideDisplayContents) {
   GetDocument().body()->setInnerHTML("<div id=host> </div>");
-  Element* host = GetDocument().getElementById("host");
+  Element* host = GetDocument().getElementById(AtomicString("host"));
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
@@ -416,7 +417,7 @@ TEST_F(WhitespaceAttacherTest, SlottedWhitespaceInsideDisplayContents) {
       "<div style='display:contents'><slot></slot></div>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* span = shadow_root.getElementById("inline");
+  Element* span = shadow_root.getElementById(AtomicString("inline"));
   auto* contents = To<Element>(span->nextSibling());
   auto* text = To<Text>(host->firstChild());
   EXPECT_TRUE(text->GetLayoutObject());
@@ -438,7 +439,7 @@ TEST_F(WhitespaceAttacherTest, RemoveInlineBeforeSpace) {
   GetDocument().body()->setInnerHTML("<span id=inline></span> ");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* span = GetDocument().getElementById("inline");
+  Element* span = GetDocument().getElementById(AtomicString("inline"));
   ASSERT_TRUE(span);
   EXPECT_TRUE(span->GetLayoutObject());
 
@@ -461,11 +462,11 @@ TEST_F(WhitespaceAttacherTest, RemoveInlineBeforeOutOfFlowBeforeSpace) {
       "<span id=inline></span><div id=float style='float:right'></div> ");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* span = GetDocument().getElementById("inline");
+  Element* span = GetDocument().getElementById(AtomicString("inline"));
   ASSERT_TRUE(span);
   EXPECT_TRUE(span->GetLayoutObject());
 
-  Element* floated = GetDocument().getElementById("float");
+  Element* floated = GetDocument().getElementById(AtomicString("float"));
   ASSERT_TRUE(floated);
   EXPECT_TRUE(floated->GetLayoutObject());
 
@@ -512,10 +513,11 @@ TEST_F(WhitespaceAttacherTest, RemoveInlineBeforeDisplayContentsWithSpace) {
       "<div><div><div id=innerdiv> </div></div></div>text");
   UpdateAllLifecyclePhasesForTest();
 
-  Node* span = GetDocument().getElementById("inline");
+  Node* span = GetDocument().getElementById(AtomicString("inline"));
   ASSERT_TRUE(span);
 
-  Node* space = GetDocument().getElementById("innerdiv")->firstChild();
+  Node* space =
+      GetDocument().getElementById(AtomicString("innerdiv"))->firstChild();
   ASSERT_TRUE(space);
   EXPECT_TRUE(space->IsTextNode());
   EXPECT_TRUE(space->GetLayoutObject());
@@ -530,7 +532,7 @@ TEST_F(WhitespaceAttacherTest, RemoveBlockBeforeSpace) {
   GetDocument().body()->setInnerHTML("A<div id=block></div> <span>B</span>");
   UpdateAllLifecyclePhasesForTest();
 
-  Node* div = GetDocument().getElementById("block");
+  Node* div = GetDocument().getElementById(AtomicString("block"));
   ASSERT_TRUE(div);
 
   Node* space = div->nextSibling();

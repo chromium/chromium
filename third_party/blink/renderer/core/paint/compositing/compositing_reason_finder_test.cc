@@ -303,8 +303,8 @@ TEST_P(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
     <iframe id=iframe></iframe>
   )HTML");
 
-  HTMLFrameOwnerElement* iframe =
-      To<HTMLFrameOwnerElement>(GetDocument().getElementById("iframe"));
+  HTMLFrameOwnerElement* iframe = To<HTMLFrameOwnerElement>(
+      GetDocument().getElementById(AtomicString("iframe")));
   ASSERT_TRUE(iframe);
   iframe->contentDocument()->OverrideIsInitialEmptyDocument();
   To<LocalFrame>(iframe->ContentFrame())->View()->BeginLifecycleUpdates();
@@ -323,7 +323,8 @@ TEST_P(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
     <!DOCTYPE html>
     <iframe id=iframe sandbox></iframe>
   )HTML");
-  iframe = To<HTMLFrameOwnerElement>(GetDocument().getElementById("iframe"));
+  iframe = To<HTMLFrameOwnerElement>(
+      GetDocument().getElementById(AtomicString("iframe")));
   iframe->contentDocument()->OverrideIsInitialEmptyDocument();
   To<LocalFrame>(iframe->ContentFrame())->View()->BeginLifecycleUpdates();
   UpdateAllLifecyclePhasesForTest();
@@ -554,8 +555,9 @@ TEST_P(CompositingReasonFinderTest, WillChangeScrollPosition) {
                      : CompositingReason::kOverflowScrolling,
                  DirectReasonsForPaintProperties(*target));
 
-  GetDocument().getElementById("target")->RemoveInlineStyleProperty(
-      CSSPropertyID::kWillChange);
+  GetDocument()
+      .getElementById(AtomicString("target"))
+      ->RemoveInlineStyleProperty(CSSPropertyID::kWillChange);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
       *target, CompositingReason::kNone));

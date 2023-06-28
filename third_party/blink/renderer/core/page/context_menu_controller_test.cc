@@ -228,7 +228,7 @@ TEST_F(ContextMenuControllerTest, CopyFromPlugin) {
   Document* document = GetDocument();
   ASSERT_TRUE(IsA<HTMLDocument>(document));
 
-  Element* embed_element = document->getElementById("embed");
+  Element* embed_element = document->getElementById(AtomicString("embed"));
   ASSERT_TRUE(IsA<HTMLEmbedElement>(embed_element));
 
   auto* embedded =
@@ -697,7 +697,7 @@ TEST_F(ContextMenuControllerTest, EditingActionsEnabledInSVGDocument) {
   Document* document = GetDocument();
   ASSERT_TRUE(document->IsSVGDocument());
 
-  Element* text_element = document->getElementById("t");
+  Element* text_element = document->getElementById(AtomicString("t"));
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   FrameSelection& selection = document->GetFrame()->Selection();
 
@@ -712,7 +712,7 @@ TEST_F(ContextMenuControllerTest, EditingActionsEnabledInSVGDocument) {
   EXPECT_EQ(context_menu_data.selected_text, "able tex");
 
   // <div contenteditable=true>
-  Element* editable_element = document->getElementById("e");
+  Element* editable_element = document->getElementById(AtomicString("e"));
   selection.SelectSubString(*editable_element, 0, 42);
   EXPECT_TRUE(ShowContextMenuForElement(editable_element, kMenuSourceMouse));
 
@@ -741,7 +741,7 @@ TEST_F(ContextMenuControllerTest, EditingActionsEnabledInXMLDocument) {
   ASSERT_TRUE(IsA<XMLDocument>(document));
   ASSERT_FALSE(IsA<HTMLDocument>(document));
 
-  Element* text_element = document->getElementById("t");
+  Element* text_element = document->getElementById(AtomicString("t"));
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   FrameSelection& selection = document->GetFrame()->Selection();
 
@@ -760,7 +760,7 @@ TEST_F(ContextMenuControllerTest, ShowNonLocatedContextMenuEvent) {
       "<input id='sample' type='text' size='5' value='Sample Input Text'>");
 
   Document* document = GetDocument();
-  Element* input_element = document->getElementById("sample");
+  Element* input_element = document->getElementById(AtomicString("sample"));
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   // Select the 'Sample' of |input|.
@@ -809,7 +809,8 @@ TEST_F(ContextMenuControllerTest,
       "width=\"200\" height=\"10000\" tabindex=\"-1\" />");
 
   Document* document = GetDocument();
-  Element* image_element = document->getElementById("sample_image");
+  Element* image_element =
+      document->getElementById(AtomicString("sample_image"));
   // Set focus on the image element.
   image_element->Focus();
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
@@ -837,7 +838,8 @@ TEST_F(ContextMenuControllerTest, SelectionRectClipped) {
       "<textarea id='text-area' cols=6 rows=2>Sample editable text</textarea>");
 
   Document* document = GetDocument();
-  Element* editable_element = document->getElementById("text-area");
+  Element* editable_element =
+      document->getElementById(AtomicString("text-area"));
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   FrameSelection& selection = document->GetFrame()->Selection();
 
@@ -1179,7 +1181,7 @@ TEST_F(ContextMenuControllerTest,
       MakeGarbageCollected<MockEventListener>();
   base::HistogramTester histograms;
 
-  Element* target_image = GetDocument()->getElementById("target");
+  Element* target_image = GetDocument()->getElementById(AtomicString("target"));
   target_image->addEventListener(event_type_names::kContextmenu,
                                  event_listener);
 
@@ -1247,7 +1249,7 @@ TEST_F(ContextMenuControllerTest,
       MakeGarbageCollected<MockEventListener>();
   base::HistogramTester histograms;
 
-  Element* target_image = GetDocument()->getElementById("target");
+  Element* target_image = GetDocument()->getElementById(AtomicString("target"));
   target_image->addEventListener(event_type_names::kContextmenu,
                                  event_listener);
 
@@ -1314,7 +1316,7 @@ TEST_F(ContextMenuControllerTest,
       MakeGarbageCollected<MockEventListener>();
   base::HistogramTester histograms;
 
-  Element* target_image = GetDocument()->getElementById("target");
+  Element* target_image = GetDocument()->getElementById(AtomicString("target"));
   target_image->addEventListener(event_type_names::kClick, event_listener);
 
   PhysicalOffset location(LayoutUnit(5), LayoutUnit(5));
@@ -1381,7 +1383,8 @@ TEST_F(ContextMenuControllerTest,
       MakeGarbageCollected<MockEventListener>();
   base::HistogramTester histograms;
 
-  Element* hidden_ancestor = GetDocument()->getElementById("hiddenancestor");
+  Element* hidden_ancestor =
+      GetDocument()->getElementById(AtomicString("hiddenancestor"));
   hidden_ancestor->addEventListener(event_type_names::kContextmenu,
                                     event_listener);
 
@@ -1460,7 +1463,8 @@ TEST_F(ContextMenuControllerTest,
       MakeGarbageCollected<MockEventListener>();
   base::HistogramTester histograms;
 
-  Element* hidden_ancestor = GetDocument()->getElementById("hiddenancestor");
+  Element* hidden_ancestor =
+      GetDocument()->getElementById(AtomicString("hiddenancestor"));
   hidden_ancestor->addEventListener(event_type_names::kContextmenu,
                                     event_listener);
 
@@ -1733,10 +1737,10 @@ TEST_F(ContextMenuControllerTest, OpenedFromHighlight) {
   Document* document = GetDocument();
   ASSERT_TRUE(IsA<HTMLDocument>(document));
 
-  Element* first_element = document->getElementById("one");
-  Element* middle_element = document->getElementById("one");
-  Element* third_element = document->getElementById("three");
-  Element* last_element = document->getElementById("four");
+  Element* first_element = document->getElementById(AtomicString("one"));
+  Element* middle_element = document->getElementById(AtomicString("one"));
+  Element* third_element = document->getElementById(AtomicString("three"));
+  Element* last_element = document->getElementById(AtomicString("four"));
 
   // Install a text fragment marker from the beginning of <p> one to near the
   // end of <p> three.
@@ -1776,7 +1780,8 @@ TEST_F(ContextMenuControllerTest,
     </body>
   )HTML");
 
-  Node* first_paragraph = GetDocument()->getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument()->getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 5);
   const auto& selected_end = Position(first_paragraph, 9);
 
@@ -1964,7 +1969,7 @@ TEST_F(ContextMenuControllerTest, SelectUnselectableContent) {
   )HTML");
 
   Document* document = GetDocument();
-  Element* element = document->getElementById("test");
+  Element* element = document->getElementById(AtomicString("test"));
 
   // Select text, which has nested unselectable and selectable content.
   const auto& start = Position(element->firstChild(), 0);

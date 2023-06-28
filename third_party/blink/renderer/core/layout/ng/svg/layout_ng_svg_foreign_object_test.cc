@@ -23,8 +23,8 @@ TEST_F(LayoutNGSVGForeignObjectTest, DivInForeignObject) {
     </svg>
   )HTML");
 
-  const auto& svg = *GetDocument().getElementById("svg");
-  const auto& foreign = *GetDocument().getElementById("foreign");
+  const auto& svg = *GetDocument().getElementById(AtomicString("svg"));
+  const auto& foreign = *GetDocument().getElementById(AtomicString("foreign"));
   const auto& foreign_object = *GetLayoutObjectByElementId("foreign");
   const auto& div = *GetLayoutObjectByElementId("div");
 
@@ -87,11 +87,12 @@ TEST_F(LayoutNGSVGForeignObjectTest, IframeInForeignObject) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  const auto& svg = *GetDocument().getElementById("svg");
-  const auto& foreign = *GetDocument().getElementById("foreign");
+  const auto& svg = *GetDocument().getElementById(AtomicString("svg"));
+  const auto& foreign = *GetDocument().getElementById(AtomicString("foreign"));
   const auto& foreign_object = *GetLayoutObjectByElementId("foreign");
-  const auto& iframe = *GetDocument().getElementById("iframe");
-  const auto& div = *ChildDocument().getElementById("div")->GetLayoutObject();
+  const auto& iframe = *GetDocument().getElementById(AtomicString("iframe"));
+  const auto& div =
+      *ChildDocument().getElementById(AtomicString("div"))->GetLayoutObject();
 
   EXPECT_EQ(gfx::RectF(100, 100, 300, 250), foreign_object.ObjectBoundingBox());
   EXPECT_EQ(AffineTransform(), foreign_object.LocalSVGTransform());
@@ -149,10 +150,10 @@ TEST_F(LayoutNGSVGForeignObjectTest, HitTestZoomedForeignObject) {
     </svg>
   )HTML");
 
-  const auto& svg = *GetDocument().getElementById("svg");
-  const auto& foreign = *GetDocument().getElementById("foreign");
+  const auto& svg = *GetDocument().getElementById(AtomicString("svg"));
+  const auto& foreign = *GetDocument().getElementById(AtomicString("foreign"));
   const auto& foreign_object = *GetLayoutObjectByElementId("foreign");
-  const auto& div = *GetDocument().getElementById("div");
+  const auto& div = *GetDocument().getElementById(AtomicString("div"));
 
   EXPECT_EQ(gfx::RectF(10, 10, 100, 150), foreign_object.ObjectBoundingBox());
   EXPECT_EQ(AffineTransform(), foreign_object.LocalSVGTransform());
@@ -214,9 +215,9 @@ TEST_F(LayoutNGSVGForeignObjectTest, HitTestViewBoxForeignObject) {
     </svg>
   )HTML");
 
-  const auto& svg = *GetDocument().getElementById("svg");
-  const auto& foreign = *GetDocument().getElementById("foreign");
-  const auto& div = *GetDocument().getElementById("div");
+  const auto& svg = *GetDocument().getElementById(AtomicString("svg"));
+  const auto& foreign = *GetDocument().getElementById(AtomicString("foreign"));
+  const auto& div = *GetDocument().getElementById(AtomicString("div"));
 
   // LocalToAncestorPoint
   EXPECT_EQ(
@@ -260,8 +261,9 @@ TEST_F(LayoutNGSVGForeignObjectTest, HitTestUnderClipPath) {
     </svg>
   )HTML");
 
-  const auto& svg = *GetDocument().getElementById("svg");
-  const auto& foreignObject = *GetDocument().getElementById("foreignObject");
+  const auto& svg = *GetDocument().getElementById(AtomicString("svg"));
+  const auto& foreignObject =
+      *GetDocument().getElementById(AtomicString("foreignObject"));
 
   // The fist and the third return |svg| because the circle clip-path
   // clips out the foreignObject.
@@ -287,9 +289,10 @@ TEST_F(LayoutNGSVGForeignObjectTest,
     </svg>
   )HTML");
 
-  const auto& svg = *GetDocument().getElementById("svg");
-  const auto& target = *GetDocument().getElementById("target");
-  const auto& foreignObject = *GetDocument().getElementById("foreignObject");
+  const auto& svg = *GetDocument().getElementById(AtomicString("svg"));
+  const auto& target = *GetDocument().getElementById(AtomicString("target"));
+  const auto& foreignObject =
+      *GetDocument().getElementById(AtomicString("foreignObject"));
 
   EXPECT_EQ(svg, GetDocument().ElementFromPoint(1, 1));
   EXPECT_EQ(foreignObject, GetDocument().ElementFromPoint(201, 201));
@@ -321,9 +324,10 @@ TEST_F(LayoutNGSVGForeignObjectTest,
     </svg>
   )HTML");
 
-  const auto& svg = *GetDocument().getElementById("svg");
-  const auto& target = *GetDocument().getElementById("target");
-  const auto& foreign_object = *GetDocument().getElementById("foreignObject");
+  const auto& svg = *GetDocument().getElementById(AtomicString("svg"));
+  const auto& target = *GetDocument().getElementById(AtomicString("target"));
+  const auto& foreign_object =
+      *GetDocument().getElementById(AtomicString("foreignObject"));
 
   EXPECT_EQ(svg, GetDocument().ElementFromPoint(1, 1));
   EXPECT_EQ(foreign_object, GetDocument().ElementFromPoint(231, 201));
@@ -355,8 +359,8 @@ TEST_F(LayoutNGSVGForeignObjectTest, HitTestUnderScrollingAncestor) {
     </div>
   )HTML");
 
-  auto& scroller = *GetDocument().getElementById("scroller");
-  const auto& target = *GetDocument().getElementById("target");
+  auto& scroller = *GetDocument().getElementById(AtomicString("scroller"));
+  const auto& target = *GetDocument().getElementById(AtomicString("target"));
 
   EXPECT_EQ(target, GetDocument().ElementFromPoint(450, 450));
 

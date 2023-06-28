@@ -349,7 +349,7 @@ TEST_F(AnnotationAgentImplTest, SuccessfulAttachCreatesMarker) {
   )HTML");
   Compositor().BeginFrame();
 
-  Element* p = GetDocument().getElementById("text");
+  Element* p = GetDocument().getElementById(AtomicString("text"));
 
   RangeInFlatTree* range_foo = CreateRangeToExpectedText(p, 5, 8, "FOO");
   auto* agent_foo = CreateAgentForRange(range_foo);
@@ -386,7 +386,7 @@ TEST_F(AnnotationAgentImplTest, RemovedAgentRemovesMarkers) {
   )HTML");
   Compositor().BeginFrame();
 
-  Element* p = GetDocument().getElementById("text");
+  Element* p = GetDocument().getElementById(AtomicString("text"));
 
   RangeInFlatTree* range_foo = CreateRangeToExpectedText(p, 5, 8, "FOO");
   auto* agent_foo = CreateAgentForRange(range_foo);
@@ -426,7 +426,7 @@ TEST_F(AnnotationAgentImplTest, AgentFailsAttachment) {
   auto* agent = CreateAgentFailsAttach();
   ASSERT_TRUE(agent);
 
-  Element* p = GetDocument().getElementById("text");
+  Element* p = GetDocument().getElementById(AtomicString("text"));
   RangeInFlatTree* range =
       CreateRangeToExpectedText(p, 0, 17, "TEST FOO PAGE BAR");
   ASSERT_EQ(NumMarkersInRange(*range), 0ul);
@@ -477,7 +477,7 @@ TEST_F(AnnotationAgentImplTest, AttachmentToOverlappingMarkerReportsToHost) {
   )HTML");
   Compositor().BeginFrame();
 
-  Element* element_text = GetDocument().getElementById("text");
+  Element* element_text = GetDocument().getElementById(AtomicString("text"));
 
   auto* agent = CreateAgentFailsAttach();
   ASSERT_TRUE(agent);
@@ -560,8 +560,8 @@ TEST_F(AnnotationAgentImplTest, AttachmentReportsRectsToHost) {
               ScrollOffset(0, 2700));
   }
 
-  Element* element_foo = GetDocument().getElementById("foo");
-  Element* element_bar = GetDocument().getElementById("bar");
+  Element* element_foo = GetDocument().getElementById(AtomicString("foo"));
+  Element* element_bar = GetDocument().getElementById(AtomicString("bar"));
 
   RangeInFlatTree* range_foo =
       CreateRangeToExpectedText(element_foo, 0, 3, "FOO");
@@ -622,7 +622,7 @@ TEST_F(AnnotationAgentImplTest, AgentScrollIntoView) {
   LoadAhem();
   Compositor().BeginFrame();
 
-  Element* element_foo = GetDocument().getElementById("foo");
+  Element* element_foo = GetDocument().getElementById(AtomicString("foo"));
 
   RangeInFlatTree* range_foo =
       CreateRangeToExpectedText(element_foo, 0, 3, "FOO");
@@ -685,7 +685,7 @@ TEST_F(AnnotationAgentImplTest, AgentScrollIntoViewZoomed) {
   // moves the visual viewport if the user pinch-zoomed in.
   WebView().SetPageScaleFactor(2);
 
-  Element* element_foo = GetDocument().getElementById("foo");
+  Element* element_foo = GetDocument().getElementById(AtomicString("foo"));
 
   RangeInFlatTree* range_foo =
       CreateRangeToExpectedText(element_foo, 0, 3, "FOO");
@@ -729,7 +729,7 @@ TEST_F(AnnotationAgentImplTest, ScrollIntoViewWithDirtyLayout) {
 
   Compositor().BeginFrame();
 
-  Element* element_text = GetDocument().getElementById("text");
+  Element* element_text = GetDocument().getElementById(AtomicString("text"));
 
   RangeInFlatTree* range_foo =
       CreateRangeToExpectedText(element_text, 0, 3, "FOO");
@@ -777,7 +777,7 @@ TEST_F(AnnotationAgentImplTest, ScrollIntoViewCollapsedRange) {
 
   Compositor().BeginFrame();
 
-  Element* element_text = GetDocument().getElementById("text");
+  Element* element_text = GetDocument().getElementById(AtomicString("text"));
 
   const auto& range_start =
       Position(element_text->firstChild(), PositionAnchorType::kBeforeAnchor);
@@ -829,7 +829,8 @@ TEST_F(AnnotationAgentImplTest, OpenDetailsElement) {
 
   Compositor().BeginFrame();
 
-  Element* element_details = GetDocument().getElementById("details");
+  Element* element_details =
+      GetDocument().getElementById(AtomicString("details"));
   ASSERT_FALSE(element_details->FastHasAttribute(html_names::kOpenAttr));
 
   auto* agent = CreateTextFinderAgent("foobar");
@@ -887,7 +888,7 @@ TEST_F(AnnotationAgentImplTest, OpenHiddenUntilFoundElement) {
 
   Compositor().BeginFrame();
 
-  Element* element = GetDocument().getElementById("section");
+  Element* element = GetDocument().getElementById(AtomicString("section"));
 
   auto* agent = CreateTextFinderAgent("foobar");
 
@@ -938,7 +939,7 @@ TEST_F(AnnotationAgentImplTest, ActivatesContentVisibilityAuto) {
 
   EXPECT_TRUE(agent->IsAttached());
 
-  Element* element = GetDocument().getElementById("section");
+  Element* element = GetDocument().getElementById(AtomicString("section"));
   RangeInFlatTree* range = CreateRangeToExpectedText(element, 0, 6, "foobar");
   EXPECT_FALSE(DisplayLockUtilities::NeedsActivationForFindInPage(
       range->ToEphemeralRange()));
@@ -955,7 +956,7 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntMutateDom) {
   )HTML");
   Compositor().BeginFrame();
 
-  Element* p = GetDocument().getElementById("text");
+  Element* p = GetDocument().getElementById(AtomicString("text"));
   ASSERT_TRUE(p->FastHasAttribute(html_names::kHiddenAttr));
 
   auto* agent_foo =
@@ -992,7 +993,7 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntAddMarkers) {
   RangeInFlatTree* doc_range = CreateRangeForWholeDocument(GetDocument());
   ASSERT_EQ(NumMarkersInRange(*doc_range), 0ul);
 
-  Element* p = GetDocument().getElementById("text");
+  Element* p = GetDocument().getElementById(AtomicString("text"));
   RangeInFlatTree* range_foo = CreateRangeToExpectedText(p, 5, 8, "FOO");
   auto* agent_foo =
       CreateAgentForRange(range_foo, mojom::blink::AnnotationType::kTextFinder);
@@ -1025,8 +1026,8 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindEmptyOverflowHidden) {
   )HTML");
   Compositor().BeginFrame();
 
-  Element* p = GetDocument().getElementById("text");
-  Element* container = GetDocument().getElementById("container");
+  Element* p = GetDocument().getElementById(AtomicString("text"));
+  Element* container = GetDocument().getElementById(AtomicString("container"));
   RangeInFlatTree* range_foo = CreateRangeToExpectedText(p, 0, 3, "FOO");
 
   // Empty container with `overflow: visible hidden` (y being hidden makes x

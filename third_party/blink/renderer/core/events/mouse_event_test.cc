@@ -103,7 +103,7 @@ TEST_F(MouseEventTest, LayerXY) {
         )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Node* target = GetDocument().getElementById("target");
+  Node* target = GetDocument().getElementById(AtomicString("target"));
 
   MouseEventInit& mouse_event_init = *MouseEventInit::Create();
   MouseEvent mouse_event("mousedown", &mouse_event_init);

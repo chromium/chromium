@@ -240,8 +240,8 @@ TEST_P(ViewTransitionTest, LayoutShift) {
   EXPECT_EQ(PhysicalSize(100, 100), container_box->Size());
 
   // View transition elements should not cause a layout shift.
-  auto* target =
-      To<LayoutBox>(GetDocument().getElementById("target")->GetLayoutObject());
+  auto* target = To<LayoutBox>(
+      GetDocument().getElementById(AtomicString("target"))->GetLayoutObject());
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
   EXPECT_EQ(PhysicalSize(100, 100), target->Size());
 
@@ -315,9 +315,9 @@ TEST_P(ViewTransitionTest, PrepareTransitionElementsWantToBeComposited) {
     <div id=e3></div>
   )HTML");
 
-  auto* e1 = GetDocument().getElementById("e1");
-  auto* e2 = GetDocument().getElementById("e2");
-  auto* e3 = GetDocument().getElementById("e3");
+  auto* e1 = GetDocument().getElementById(AtomicString("e1"));
+  auto* e2 = GetDocument().getElementById(AtomicString("e2"));
+  auto* e3 = GetDocument().getElementById(AtomicString("e3"));
 
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
@@ -377,9 +377,9 @@ TEST_P(ViewTransitionTest, StartTransitionElementsWantToBeComposited) {
     <div id=e3></div>
   )HTML");
 
-  auto* e1 = GetDocument().getElementById("e1");
-  auto* e2 = GetDocument().getElementById("e2");
-  auto* e3 = GetDocument().getElementById("e3");
+  auto* e1 = GetDocument().getElementById(AtomicString("e1"));
+  auto* e2 = GetDocument().getElementById(AtomicString("e2"));
+  auto* e3 = GetDocument().getElementById(AtomicString("e3"));
 
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
@@ -417,10 +417,10 @@ TEST_P(ViewTransitionTest, StartTransitionElementsWantToBeComposited) {
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {
         auto* data =
             static_cast<Data*>(info.Data().As<v8::External>()->Value());
-        data->document.getElementById("e1")->setAttribute(
-            html_names::kStyleAttr, "");
-        data->document.getElementById("e3")->setAttribute(
-            html_names::kStyleAttr, "");
+        data->document.getElementById(AtomicString("e1"))
+            ->setAttribute(html_names::kStyleAttr, "");
+        data->document.getElementById(AtomicString("e3"))
+            ->setAttribute(html_names::kStyleAttr, "");
         data->e1->setAttribute(html_names::kStyleAttr,
                                "view-transition-name: e1");
         data->e2->setAttribute(html_names::kStyleAttr,
@@ -640,7 +640,7 @@ TEST_P(ViewTransitionTest, ViewTransitionElementInvalidation) {
     <div id=element></div>
   )HTML");
 
-  auto* element = GetDocument().getElementById("element");
+  auto* element = GetDocument().getElementById(AtomicString("element"));
 
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();

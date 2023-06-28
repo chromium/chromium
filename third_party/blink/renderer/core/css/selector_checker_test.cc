@@ -181,7 +181,7 @@ TEST_P(ScopeProximityTest, All) {
   auto* style_rule = DynamicTo<StyleRule>(rule);
   ASSERT_TRUE(style_rule);
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
@@ -269,7 +269,7 @@ TEST_P(MatchFlagsTest, All) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* element = GetDocument().getElementById("target");
+  Element* element = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(element);
 
   CSSSelectorList* selector_list =
@@ -309,9 +309,15 @@ class ImpactTest : public PageTestBase {
     UpdateAllLifecyclePhasesForTest();
   }
 
-  Element& Outer() const { return *GetDocument().getElementById("outer"); }
-  Element& Middle() const { return *GetDocument().getElementById("middle"); }
-  Element& Inner() const { return *GetDocument().getElementById("inner"); }
+  Element& Outer() const {
+    return *GetDocument().getElementById(AtomicString("outer"));
+  }
+  Element& Middle() const {
+    return *GetDocument().getElementById(AtomicString("middle"));
+  }
+  Element& Inner() const {
+    return *GetDocument().getElementById(AtomicString("inner"));
+  }
 
   using Impact = SelectorChecker::Impact;
 
@@ -629,7 +635,7 @@ TEST_P(MatchFlagsShadowTest, Host) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* host = GetDocument().getElementById("host");
+  Element* host = GetDocument().getElementById(AtomicString("host"));
   ASSERT_TRUE(host);
   ASSERT_TRUE(host->GetShadowRoot());
 
@@ -757,7 +763,7 @@ TEST_F(SelectorCheckerTest, PseudoScopeWithoutScope) {
   ASSERT_TRUE(selector_list);
   ASSERT_TRUE(selector_list->First());
 
-  Element* foo = GetDocument().getElementById("foo");
+  Element* foo = GetDocument().getElementById(AtomicString("foo"));
   ASSERT_TRUE(foo);
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
@@ -780,7 +786,7 @@ TEST_F(SelectorCheckerTest, PseudoTrue) {
   selector.SetTrue();
   selector.SetLastInComplexSelector(true);
 
-  Element* foo = GetDocument().getElementById("foo");
+  Element* foo = GetDocument().getElementById(AtomicString("foo"));
   ASSERT_TRUE(foo);
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);

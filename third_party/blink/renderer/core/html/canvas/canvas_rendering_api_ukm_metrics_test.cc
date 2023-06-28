@@ -26,7 +26,8 @@ class CanvasRenderingAPIUkmMetricsTest : public PageTestBase {
     PageTestBase::SetUp();
     GetDocument().documentElement()->setInnerHTML(
         "<body><canvas id='c'></canvas></body>");
-    canvas_element_ = To<HTMLCanvasElement>(GetDocument().getElementById("c"));
+    canvas_element_ =
+        To<HTMLCanvasElement>(GetDocument().getElementById(AtomicString("c")));
     UpdateAllLifecyclePhasesForTest();
   }
 

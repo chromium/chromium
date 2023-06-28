@@ -42,7 +42,7 @@ TEST_F(LocalCaretRectTest, DOMAndFlatTrees) {
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
 
-  Element* one = GetDocument().getElementById("one");
+  Element* one = GetDocument().getElementById(AtomicString("one"));
 
   const LocalCaretRect& caret_rect_from_dom_tree = LocalCaretRectOfPosition(
       PositionWithAffinity(Position(one->firstChild(), 0)));
@@ -1145,7 +1145,7 @@ TEST_F(LocalCaretRectTest, LocalCaretAtBeginningOfNonEditableInFlatTree) {
       "<span contenteditable='false' id='foo2'>foo2</span>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
-  const Element* target = GetDocument().getElementById("host");
+  const Element* target = GetDocument().getElementById(AtomicString("host"));
   const Element* foo1_span = To<Element>(target->firstChild());
   const Node* foo1 = foo1_span->firstChild();
 
@@ -1256,8 +1256,8 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditableInFlatTree) {
       "<span contenteditable='false' id='foo2'>foo2</span>";
   SetBodyContent(body_content);
   auto* shadow_root = SetShadowContent(shadow_content, "host");
-  const Element* target = GetDocument().getElementById("host");
-  const Element* foo2_span = shadow_root->getElementById("foo2");
+  const Element* target = GetDocument().getElementById(AtomicString("host"));
+  const Element* foo2_span = shadow_root->getElementById(AtomicString("foo2"));
   const Node* foo2 = foo2_span->firstChild();
 
   const Position& position = Position::LastPositionInNode(*target);

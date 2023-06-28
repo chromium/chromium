@@ -1171,9 +1171,10 @@ TEST_F(ComputedStyleTest, BorderWidthZoom) {
     double expected_px;
     STACK_ALLOCATED();
   } tests[] = {
-      {document.getElementById("thin")->GetComputedStyle(), 1.0},
-      {document.getElementById("medium")->GetComputedStyle(), 3.0},
-      {document.getElementById("thick")->GetComputedStyle(), 5.0},
+      {document.getElementById(AtomicString("thin"))->GetComputedStyle(), 1.0},
+      {document.getElementById(AtomicString("medium"))->GetComputedStyle(),
+       3.0},
+      {document.getElementById(AtomicString("thick"))->GetComputedStyle(), 5.0},
   };
 
   for (const auto& test : tests) {
@@ -1243,16 +1244,16 @@ TEST_F(ComputedStyleTest, BorderWidthConversion) {
     double expected_px;
     STACK_ALLOCATED();
   } tests[] = {
-      {document.getElementById("t1")->GetComputedStyle(), 0.0},
-      {document.getElementById("t2")->GetComputedStyle(), 1.0},
-      {document.getElementById("t3")->GetComputedStyle(), 1.0},
-      {document.getElementById("t4")->GetComputedStyle(), 1.0},
-      {document.getElementById("t5")->GetComputedStyle(), 1.0},
-      {document.getElementById("t6")->GetComputedStyle(), 3.0},
-      {document.getElementById("t7")->GetComputedStyle(), 3.0},
-      {document.getElementById("t8")->GetComputedStyle(), 3.0},
-      {document.getElementById("t9")->GetComputedStyle(), 3.0},
-      {document.getElementById("t10")->GetComputedStyle(), 3.0},
+      {document.getElementById(AtomicString("t1"))->GetComputedStyle(), 0.0},
+      {document.getElementById(AtomicString("t2"))->GetComputedStyle(), 1.0},
+      {document.getElementById(AtomicString("t3"))->GetComputedStyle(), 1.0},
+      {document.getElementById(AtomicString("t4"))->GetComputedStyle(), 1.0},
+      {document.getElementById(AtomicString("t5"))->GetComputedStyle(), 1.0},
+      {document.getElementById(AtomicString("t6"))->GetComputedStyle(), 3.0},
+      {document.getElementById(AtomicString("t7"))->GetComputedStyle(), 3.0},
+      {document.getElementById(AtomicString("t8"))->GetComputedStyle(), 3.0},
+      {document.getElementById(AtomicString("t9"))->GetComputedStyle(), 3.0},
+      {document.getElementById(AtomicString("t10"))->GetComputedStyle(), 3.0},
   };
 
   for (const auto& test : tests) {
@@ -1323,19 +1324,19 @@ TEST_F(ComputedStyleTest, BorderWidthConversionWithZoom) {
     double expected_px;
     STACK_ALLOCATED();
   } tests[] = {
-      {document.getElementById("t1")->GetComputedStyle(), 2.0},
-      {document.getElementById("t2")->GetComputedStyle(), 6.0},
-      {document.getElementById("t3")->GetComputedStyle(), 10.0},
-      {document.getElementById("t4")->GetComputedStyle(), 0.0},
-      {document.getElementById("t5")->GetComputedStyle(), 1.0},
-      {document.getElementById("t6")->GetComputedStyle(), 1.0},
-      {document.getElementById("t7")->GetComputedStyle(), 1.0},
-      {document.getElementById("t8")->GetComputedStyle(), 2.0},
-      {document.getElementById("t9")->GetComputedStyle(), 3.0},
-      {document.getElementById("t10")->GetComputedStyle(), 6.0},
-      {document.getElementById("t11")->GetComputedStyle(), 6.0},
-      {document.getElementById("t12")->GetComputedStyle(), 7.0},
-      {document.getElementById("t13")->GetComputedStyle(), 7.0},
+      {document.getElementById(AtomicString("t1"))->GetComputedStyle(), 2.0},
+      {document.getElementById(AtomicString("t2"))->GetComputedStyle(), 6.0},
+      {document.getElementById(AtomicString("t3"))->GetComputedStyle(), 10.0},
+      {document.getElementById(AtomicString("t4"))->GetComputedStyle(), 0.0},
+      {document.getElementById(AtomicString("t5"))->GetComputedStyle(), 1.0},
+      {document.getElementById(AtomicString("t6"))->GetComputedStyle(), 1.0},
+      {document.getElementById(AtomicString("t7"))->GetComputedStyle(), 1.0},
+      {document.getElementById(AtomicString("t8"))->GetComputedStyle(), 2.0},
+      {document.getElementById(AtomicString("t9"))->GetComputedStyle(), 3.0},
+      {document.getElementById(AtomicString("t10"))->GetComputedStyle(), 6.0},
+      {document.getElementById(AtomicString("t11"))->GetComputedStyle(), 6.0},
+      {document.getElementById(AtomicString("t12"))->GetComputedStyle(), 7.0},
+      {document.getElementById(AtomicString("t13"))->GetComputedStyle(), 7.0},
   };
 
   for (const auto& test : tests) {
@@ -1367,11 +1368,11 @@ TEST_F(ComputedStyleTest,
   document.View()->UpdateAllLifecyclePhasesForTest();
 
   const ComputedStyle* style =
-      document.getElementById("style")->GetComputedStyle();
+      document.getElementById(AtomicString("style"))->GetComputedStyle();
   const ComputedStyle* clone =
-      document.getElementById("clone")->GetComputedStyle();
+      document.getElementById(AtomicString("clone"))->GetComputedStyle();
   const ComputedStyle* other =
-      document.getElementById("other")->GetComputedStyle();
+      document.getElementById(AtomicString("other"))->GetComputedStyle();
 
   EXPECT_EQ(TextDecorationLine::kUnderline, style->TextDecorationsInEffect());
 
@@ -1410,17 +1411,17 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
   document.View()->UpdateAllLifecyclePhasesForTest();
 
   const ComputedStyle* style =
-      document.getElementById("style")->GetComputedStyle();
+      document.getElementById(AtomicString("style"))->GetComputedStyle();
   const ComputedStyle* wavy =
-      document.getElementById("wavy")->GetComputedStyle();
+      document.getElementById(AtomicString("wavy"))->GetComputedStyle();
   const ComputedStyle* overline =
-      document.getElementById("overline")->GetComputedStyle();
+      document.getElementById(AtomicString("overline"))->GetComputedStyle();
   const ComputedStyle* thickness =
-      document.getElementById("thickness")->GetComputedStyle();
+      document.getElementById(AtomicString("thickness"))->GetComputedStyle();
   const ComputedStyle* offset =
-      document.getElementById("offset")->GetComputedStyle();
+      document.getElementById(AtomicString("offset"))->GetComputedStyle();
   const ComputedStyle* position =
-      document.getElementById("position")->GetComputedStyle();
+      document.getElementById(AtomicString("position"))->GetComputedStyle();
 
   // Change decoration style
   StyleDifference diff_decoration_style;

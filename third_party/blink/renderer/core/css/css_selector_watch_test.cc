@@ -57,9 +57,9 @@ TEST_F(CSSSelectorWatchTest, RecalcOnDocumentChange) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* x = GetDocument().getElementById("x");
-  Element* y = GetDocument().getElementById("y");
-  Element* z = GetDocument().getElementById("z");
+  Element* x = GetDocument().getElementById(AtomicString("x"));
+  Element* y = GetDocument().getElementById(AtomicString("y"));
+  Element* z = GetDocument().getElementById(AtomicString("z"));
   ASSERT_TRUE(x);
   ASSERT_TRUE(y);
   ASSERT_TRUE(z);

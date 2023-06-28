@@ -16,7 +16,7 @@ TEST_F(LayoutImageTest, HitTestUnderTransform) {
     </div>
   )HTML");
 
-  const auto& target = *GetDocument().getElementById("target");
+  const auto& target = *GetDocument().getElementById(AtomicString("target"));
   HitTestLocation location(PhysicalOffset(60, 10));
   HitTestResult result(
       HitTestRequest(HitTestRequest::kReadOnly | HitTestRequest::kActive |

@@ -76,7 +76,8 @@ TEST_F(SelectorFilterParentScopeTest, RootScope) {
   SelectorFilter& filter = GetDocument().GetStyleResolver().GetSelectorFilter();
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
 
-  SelectorFilterRootScope span_scope(GetDocument().getElementById("y"));
+  SelectorFilterRootScope span_scope(
+      GetDocument().getElementById(AtomicString("y")));
   SelectorFilterParentScope::EnsureParentStackIsPushed();
 
   HeapVector<CSSSelector> arena;

@@ -177,8 +177,8 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
         text
       </span>
     )HTML");
-    element_ = GetDocument().getElementById("test");
-    inline_ = GetDocument().getElementById("inline");
+    element_ = GetDocument().getElementById(AtomicString("test"));
+    inline_ = GetDocument().getElementById(AtomicString("inline"));
 
     helper_.Initialize(nullptr, nullptr, nullptr);
     helper_.Resize(gfx::Size(800, 600));
@@ -1028,7 +1028,7 @@ TEST_P(AnimationCompositorAnimationsTest, ForceReduceMotion) {
     </style>
     <div id='test' style='animation: slide 2s linear'></div>
   )HTML");
-  element_ = GetDocument().getElementById("test");
+  element_ = GetDocument().getElementById(AtomicString("test"));
   Animation* animation = element_->getAnimations()[0];
 
   // The effect should snap between keyframes at the halfway points.
@@ -1063,7 +1063,7 @@ TEST_P(AnimationCompositorAnimationsTest,
     </style>
     <div id='test' style='animation: slide 1s linear'></div>
   )HTML");
-  element_ = GetDocument().getElementById("test");
+  element_ = GetDocument().getElementById(AtomicString("test"));
   Animation* animation = element_->getAnimations()[0];
 
   // As the page has indicated support for reduce motion, the effect should not
@@ -1104,7 +1104,7 @@ TEST_P(AnimationCompositorAnimationsTest,
     <div id='child-anim' style='animation: slide 1s linear'></div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  element_ = GetDocument().getElementById("parent-anim");
+  element_ = GetDocument().getElementById(AtomicString("parent-anim"));
   Animation* animation = element_->getAnimations()[0];
 
   // As the parent document does not support reduce motion, the effect will jump
@@ -1115,7 +1115,8 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   // As the child document does support reduce motion, its animation will not be
   // snapped.
-  Element* child_element = ChildDocument().getElementById("child-anim");
+  Element* child_element =
+      ChildDocument().getElementById(AtomicString("child-anim"));
   Animation* child_animation = child_element->getAnimations()[0];
   child_animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(400),
                                   ASSERT_NO_EXCEPTION);
@@ -2206,7 +2207,7 @@ TEST_P(AnimationCompositorAnimationsTest, CompositedCustomProperty) {
                                 CreateReplaceOpKeyframe("--foo", "100", 1.0));
   LoadTestData("custom-property.html");
   Document* document = GetFrame()->GetDocument();
-  Element* target = document->getElementById("target");
+  Element* target = document->getElementById(AtomicString("target"));
   // Make sure the animation is started on the compositor.
   EXPECT_EQ(CheckCanStartElementOnCompositor(*target, *effect),
             CompositorAnimations::kNoFailure);
@@ -2215,7 +2216,7 @@ TEST_P(AnimationCompositorAnimationsTest, CompositedCustomProperty) {
 TEST_P(AnimationCompositorAnimationsTest, CompositedTransformAnimation) {
   LoadTestData("transform-animation.html");
   Document* document = GetFrame()->GetDocument();
-  Element* target = document->getElementById("target");
+  Element* target = document->getElementById(AtomicString("target"));
   const ObjectPaintProperties* properties =
       target->GetLayoutObject()->FirstFragment().PaintProperties();
   ASSERT_NE(nullptr, properties);
@@ -2245,7 +2246,7 @@ TEST_P(AnimationCompositorAnimationsTest, CompositedTransformAnimation) {
 TEST_P(AnimationCompositorAnimationsTest, CompositedScaleAnimation) {
   LoadTestData("scale-animation.html");
   Document* document = GetFrame()->GetDocument();
-  Element* target = document->getElementById("target");
+  Element* target = document->getElementById(AtomicString("target"));
   const ObjectPaintProperties* properties =
       target->GetLayoutObject()->FirstFragment().PaintProperties();
   ASSERT_NE(nullptr, properties);
@@ -2276,7 +2277,7 @@ TEST_P(AnimationCompositorAnimationsTest,
        NonAnimatedTransformPropertyChangeGetsUpdated) {
   LoadTestData("transform-animation-update.html");
   Document* document = GetFrame()->GetDocument();
-  Element* target = document->getElementById("target");
+  Element* target = document->getElementById(AtomicString("target"));
   const ObjectPaintProperties* properties =
       target->GetLayoutObject()->FirstFragment().PaintProperties();
   ASSERT_NE(nullptr, properties);
@@ -2335,7 +2336,7 @@ TEST_P(AnimationCompositorAnimationsTest,
        CannotStartElementOnCompositorEffectSVG) {
   LoadTestData("transform-animation-on-svg.html");
   Document* document = GetFrame()->GetDocument();
-  Element* target = document->getElementById("dots");
+  Element* target = document->getElementById(AtomicString("dots"));
   EXPECT_TRUE(
       CheckCanStartElementOnCompositor(*target, *keyframe_animation_effect2_) &
       CompositorAnimations::kTargetHasInvalidCompositingState);
@@ -2371,7 +2372,7 @@ TEST_P(AnimationCompositorAnimationsTest, DetachCompositorTimelinesTest) {
   Document* document = GetFrame()->GetDocument();
   cc::AnimationHost* host = document->View()->GetCompositorAnimationHost();
 
-  Element* target = document->getElementById("target");
+  Element* target = document->getElementById(AtomicString("target"));
   const Animation& animation =
       *target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_TRUE(animation.GetCompositorAnimation());
@@ -2443,7 +2444,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_FALSE(CanStartAnimation("svg-zoomed"));
   EXPECT_FALSE(CanStartAnimation("rect-zoomed"));
 
-  To<SVGElement>(GetDocument().getElementById("rect"))
+  To<SVGElement>(GetDocument().getElementById(AtomicString("rect")))
       ->SetWebAnimatedAttribute(
           svg_names::kXAttr,
           MakeGarbageCollected<SVGLength>(SVGLength::Initial::kPercent50,
@@ -2465,7 +2466,7 @@ TEST_P(AnimationCompositorAnimationsTest, UnsupportedSVGCSSProperty) {
     </svg>
   )HTML");
 
-  Element* element = GetDocument().getElementById("rect");
+  Element* element = GetDocument().getElementById(AtomicString("rect"));
   const Animation& animation =
       *element->GetElementAnimations()->Animations().begin()->key;
   EXPECT_EQ(CompositorAnimations::kUnsupportedCSSProperty,
@@ -2545,7 +2546,7 @@ TEST_P(AnimationCompositorAnimationsTest, Fragmented) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   const Animation& animation =
       *target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_TRUE(target->GetLayoutObject()->FirstFragment().NextFragment());
@@ -2626,7 +2627,7 @@ TEST_P(AnimationCompositorAnimationsTest,
     </style>
     <div id="target"></div>
   )HTML");
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   Animation* animation =
       target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_EQ(CompositorAnimations::kNoFailure,

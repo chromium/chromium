@@ -15,7 +15,7 @@ class ElementInnerTest : public EditingTestBase {};
 // http://crbug.com/877498
 TEST_F(ElementInnerTest, ListItemWithLeadingWhiteSpace) {
   SetBodyContent("<li id=target> abc</li>");
-  Element& target = *GetDocument().getElementById("target");
+  Element& target = *GetDocument().getElementById(AtomicString("target"));
   EXPECT_EQ("abc", target.innerText());
 }
 
@@ -25,7 +25,7 @@ TEST_F(ElementInnerTest, SVGElementAsTableCell) {
       "<div id=target>abc"
       "<svg><rect style='display:table-cell'></rect></svg>"
       "</div>");
-  Element& target = *GetDocument().getElementById("target");
+  Element& target = *GetDocument().getElementById(AtomicString("target"));
   EXPECT_EQ("abc", target.innerText());
 }
 
@@ -35,7 +35,7 @@ TEST_F(ElementInnerTest, SVGElementAsTableRow) {
       "<div id=target>abc"
       "<svg><rect style='display:table-row'></rect></svg>"
       "</div>");
-  Element& target = *GetDocument().getElementById("target");
+  Element& target = *GetDocument().getElementById(AtomicString("target"));
   EXPECT_EQ("abc", target.innerText());
 }
 
@@ -45,14 +45,14 @@ TEST_F(ElementInnerTest, OverflowingListItemWithFloatFirstLetter) {
       "div { display: list-item; overflow: hidden; }"
       "div::first-letter { float: right; }");
   SetBodyContent("<div id=target>foo</div>");
-  Element& target = *GetDocument().getElementById("target");
+  Element& target = *GetDocument().getElementById(AtomicString("target"));
   EXPECT_EQ("foo", target.innerText());
 }
 
 // https://crbug.com/1164747
 TEST_F(ElementInnerTest, GetInnerTextWithoutUpdate) {
   SetBodyContent("<div id=target>ab<span>c</span></div>");
-  Element& target = *GetDocument().getElementById("target");
+  Element& target = *GetDocument().getElementById(AtomicString("target"));
   EXPECT_EQ("abc", target.innerText());
   EXPECT_EQ("abc", target.GetInnerTextWithoutUpdate());
 }

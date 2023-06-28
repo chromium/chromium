@@ -83,8 +83,9 @@ class LocalFrameViewTest : public RenderingTest {
 
 TEST_F(LocalFrameViewTest, SetPaintInvalidationDuringUpdateAllLifecyclePhases) {
   SetBodyInnerHTML("<div id='a' style='color: blue'>A</div>");
-  GetDocument().getElementById("a")->setAttribute(html_names::kStyleAttr,
-                                                  "color: green");
+  GetDocument()
+      .getElementById(AtomicString("a"))
+      ->setAttribute(html_names::kStyleAttr, "color: green");
   GetAnimationMockChromeClient().has_scheduled_animation_ = false;
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(GetAnimationMockChromeClient().has_scheduled_animation_);
@@ -93,8 +94,9 @@ TEST_F(LocalFrameViewTest, SetPaintInvalidationDuringUpdateAllLifecyclePhases) {
 TEST_F(LocalFrameViewTest,
        SetPaintInvalidationDuringUpdateLifecyclePhasesToPrePaintClean) {
   SetBodyInnerHTML("<div id='a' style='color: blue'>A</div>");
-  GetDocument().getElementById("a")->setAttribute(html_names::kStyleAttr,
-                                                  "color: green");
+  GetDocument()
+      .getElementById(AtomicString("a"))
+      ->setAttribute(html_names::kStyleAttr, "color: green");
   GetAnimationMockChromeClient().has_scheduled_animation_ = false;
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
@@ -105,14 +107,14 @@ TEST_F(LocalFrameViewTest, SetPaintInvalidationOutOfUpdateAllLifecyclePhases) {
   SetBodyInnerHTML("<div id='a' style='color: blue'>A</div>");
   GetAnimationMockChromeClient().has_scheduled_animation_ = false;
   GetDocument()
-      .getElementById("a")
+      .getElementById(AtomicString("a"))
       ->GetLayoutObject()
       ->SetShouldDoFullPaintInvalidation();
   EXPECT_TRUE(GetAnimationMockChromeClient().has_scheduled_animation_);
   GetAnimationMockChromeClient().has_scheduled_animation_ = false;
   UpdateAllLifecyclePhasesForTest();
   GetDocument()
-      .getElementById("a")
+      .getElementById(AtomicString("a"))
       ->GetLayoutObject()
       ->SetShouldDoFullPaintInvalidation();
   EXPECT_TRUE(GetAnimationMockChromeClient().has_scheduled_animation_);
@@ -227,7 +229,7 @@ TEST_F(LocalFrameViewTest,
 
   Element* body = GetDocument().body();
   Element* html = GetDocument().documentElement();
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
 
   // Only body has fixed background. No main thread scrolling.
   body->setAttribute(html_names::kClassAttr, "fixed-background");
@@ -284,7 +286,7 @@ TEST_F(LocalFrameViewTest,
 
   Element* body = GetDocument().body();
   Element* html = GetDocument().documentElement();
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
 
   // When not prefer compositing, we use main thread scrolling when there is
   // any object with fixed-attachment background.
@@ -349,8 +351,8 @@ TEST_F(LocalFrameViewSimTest, FragmentNavChangesFocusWhileRenderingBlocked) {
 
   // Click on the anchor element. This will cause a synchronous same-document
   //  navigation.
-  auto* anchor =
-      To<HTMLAnchorElement>(GetDocument().getElementById("anchorlink"));
+  auto* anchor = To<HTMLAnchorElement>(
+      GetDocument().getElementById(AtomicString("anchorlink")));
   anchor->click();
 
   // Even though the navigation is synchronous, the active element shouldn't be
@@ -376,7 +378,7 @@ TEST_F(LocalFrameViewSimTest, FragmentNavChangesFocusWhileRenderingBlocked) {
   RunPendingTasks();
   Compositor().BeginFrame();
   ASSERT_TRUE(GetDocument().IsLoadCompleted());
-  EXPECT_EQ(GetDocument().getElementById("bottom"),
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("bottom")),
             GetDocument().ActiveElement())
       << "Active element wasn't changed after load completed.";
   EXPECT_NE(ScrollOffset(), viewport->GetScrollOffset())
@@ -481,8 +483,8 @@ TEST_F(LocalFrameViewSimTest, SameOriginPaintEligibility) {
       </iframe>
     )HTML");
 
-  auto* frame_element =
-      To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
+  auto* frame_element = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("frame")));
   auto* frame_document = frame_element->contentDocument();
   PaintTiming& frame_timing = PaintTiming::From(*frame_document);
 
@@ -510,8 +512,8 @@ TEST_F(LocalFrameViewSimTest, CrossOriginPaintEligibility) {
       </iframe>
     )HTML");
 
-  auto* frame_element =
-      To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
+  auto* frame_element = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("frame")));
   auto* frame_document = frame_element->contentDocument();
   PaintTiming& frame_timing = PaintTiming::From(*frame_document);
 
@@ -546,13 +548,13 @@ TEST_F(LocalFrameViewSimTest, NestedCrossOriginPaintEligibility) {
       </iframe>
     )HTML");
 
-  auto* outer_frame_element =
-      To<HTMLIFrameElement>(GetDocument().getElementById("outer"));
+  auto* outer_frame_element = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("outer")));
   auto* outer_frame_document = outer_frame_element->contentDocument();
   PaintTiming& outer_frame_timing = PaintTiming::From(*outer_frame_document);
 
-  auto* inner_frame_element =
-      To<HTMLIFrameElement>(outer_frame_document->getElementById("inner"));
+  auto* inner_frame_element = To<HTMLIFrameElement>(
+      outer_frame_document->getElementById(AtomicString("inner")));
   auto* inner_frame_document = inner_frame_element->contentDocument();
   PaintTiming& inner_frame_timing = PaintTiming::From(*inner_frame_document);
 

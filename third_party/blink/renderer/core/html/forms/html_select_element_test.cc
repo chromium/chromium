@@ -670,9 +670,9 @@ TEST_F(HTMLSelectElementTest, ChangeRenderingCrash3) {
     <div id="green">Green</div>
   )HTML");
 
-  auto* host = GetDocument().getElementById("host");
-  auto* select = GetDocument().getElementById("select");
-  auto* green = GetDocument().getElementById("green");
+  auto* host = GetDocument().getElementById(AtomicString("host"));
+  auto* select = GetDocument().getElementById(AtomicString("select"));
+  auto* green = GetDocument().getElementById(AtomicString("green"));
 
   // Make sure the select is outside the flat tree.
   host->AttachShadowRootInternal(ShadowRootType::kOpen);

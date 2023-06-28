@@ -252,7 +252,7 @@ TEST(SelectorQueryTest, FastPathScoped) {
       </body>
     </html>
   )HTML");
-  Element* scope = document->getElementById("first");
+  Element* scope = document->getElementById(AtomicString("first"));
   ASSERT_NE(nullptr, scope);
   ShadowRoot& shadowRoot =
       scope->AttachShadowRootInternal(ShadowRootType::kOpen);
@@ -293,7 +293,7 @@ TEST(SelectorQueryTest, FastPathScoped) {
     // Run all the tests a second time but with a scope inside a shadow root,
     // all the fast paths should behave the same.
     SCOPED_TRACE("Inside shadow root");
-    scope = shadowRoot.getElementById("first");
+    scope = shadowRoot.getElementById(AtomicString("first"));
     ASSERT_NE(nullptr, scope);
     RunTests(*scope, kTestCases);
   }
@@ -452,7 +452,7 @@ TEST(SelectorQueryTest, QueryHasPseudoClass) {
       </div>
     </main>
   )HTML");
-  Element* scope = document->getElementById("main");
+  Element* scope = document->getElementById(AtomicString("main"));
   {
     StaticElementList* result = scope->QuerySelectorAll(":has(> .a ~ .b)");
     ASSERT_EQ(4U, result->length());

@@ -126,7 +126,7 @@ TEST_F(CssSelectorFragmentAnchorTest, BasicTest) {
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  Element& img = *GetDocument().getElementById("image");
+  Element& img = *GetDocument().getElementById(AtomicString("image"));
 
   EXPECT_EQ(img, *GetDocument().CssTarget());
   EXPECT_EQ(true, IsSelectorFragmentAnchorCreated());
@@ -162,7 +162,7 @@ TEST_F(CssSelectorFragmentAnchorTest, TwoCssSelectorFragmentsOutlineFirst) {
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  Element& second = *GetDocument().getElementById("second");
+  Element& second = *GetDocument().getElementById(AtomicString("second"));
 
   EXPECT_EQ(second, *GetDocument().CssTarget());
   EXPECT_EQ(true, IsSelectorFragmentAnchorCreated());
@@ -193,7 +193,7 @@ TEST_F(CssSelectorFragmentAnchorTest, TwoCssSelectorFragmentsFirstNotFound) {
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  Element& first = *GetDocument().getElementById("first");
+  Element& first = *GetDocument().getElementById(AtomicString("first"));
 
   EXPECT_EQ(first, *GetDocument().CssTarget());
   EXPECT_EQ(true, IsSelectorFragmentAnchorCreated());
@@ -224,7 +224,7 @@ TEST_F(CssSelectorFragmentAnchorTest,
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  Element& first = *GetDocument().getElementById("first");
+  Element& first = *GetDocument().getElementById(AtomicString("first"));
 
   EXPECT_EQ(first, *GetDocument().CssTarget());
   EXPECT_EQ(true, IsSelectorFragmentAnchorCreated());
@@ -286,7 +286,7 @@ TEST_F(CssSelectorFragmentAnchorTest, FragmentStaysAfterUserClicks) {
                           ->GetHistoryItem()
                           ->Url();
 
-  Element& img = *GetDocument().getElementById("image");
+  Element& img = *GetDocument().getElementById(AtomicString("image"));
   EXPECT_EQ(img, *GetDocument().CssTarget());
   EXPECT_EQ(true, IsSelectorFragmentAnchorCreated());
 
@@ -351,7 +351,7 @@ TEST_F(CssSelectorFragmentAnchorTest, ValuePartHasCommaAndIsEncoded) {
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  Element& first = *GetDocument().getElementById("first");
+  Element& first = *GetDocument().getElementById(AtomicString("first"));
 
   EXPECT_EQ(first, *GetDocument().CssTarget());
   EXPECT_EQ(true, IsSelectorFragmentAnchorCreated());
@@ -402,7 +402,7 @@ TEST_F(CssSelectorFragmentAnchorTest,
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  Element& img = *GetDocument().getElementById("image");
+  Element& img = *GetDocument().getElementById(AtomicString("image"));
 
   EXPECT_FALSE(IsElementOutlined(img));
   EXPECT_EQ(img, *GetDocument().CssTarget());
@@ -425,7 +425,7 @@ TEST_F(CssSelectorFragmentAnchorTest,
 
   Compositor().BeginFrame();
 
-  Element& element = *GetDocument().getElementById("element");
+  Element& element = *GetDocument().getElementById(AtomicString("element"));
 
   EXPECT_FALSE(IsElementOutlined(element));
   EXPECT_EQ(element, *GetDocument().CssTarget());
@@ -456,14 +456,15 @@ TEST_F(CssSelectorFragmentAnchorTest, SelectorFragmentTargetOutline) {
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
-  Element& paragraph = *GetDocument().getElementById("paragraph");
-  Element& img = *GetDocument().getElementById("image");
+  Element& paragraph = *GetDocument().getElementById(AtomicString("paragraph"));
+  Element& img = *GetDocument().getElementById(AtomicString("image"));
 
   EXPECT_TRUE(IsElementOutlined(img));
   EXPECT_EQ(img, *GetDocument().CssTarget());
   EXPECT_EQ(true, IsSelectorFragmentAnchorCreated());
 
-  auto* anchor = To<HTMLAnchorElement>(GetDocument().getElementById("element"));
+  auto* anchor = To<HTMLAnchorElement>(
+      GetDocument().getElementById(AtomicString("element")));
   anchor->click();
 
   EXPECT_FALSE(IsElementOutlined(img));

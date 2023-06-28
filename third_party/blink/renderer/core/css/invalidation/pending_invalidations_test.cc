@@ -77,7 +77,9 @@ TEST_F(PendingInvalidationsTest, DescendantInvalidationOnDisplayNone) {
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   // We skip scheduling descendant invalidations on display:none elements.
-  GetDocument().getElementById("a")->setAttribute(html_names::kClassAttr, "a");
+  GetDocument()
+      .getElementById(AtomicString("a"))
+      ->setAttribute(html_names::kClassAttr, "a");
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 }
 

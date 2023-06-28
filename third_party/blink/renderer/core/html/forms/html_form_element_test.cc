@@ -313,8 +313,10 @@ TEST_F(HTMLFormElementTest, ListedElementsIncludeShadowTreesFormAttribute) {
 
   auto* form1 = To<HTMLFormElement>(GetElementById("form1"));
   auto* input1 = ListedElement::From(*GetElementById("input1"));
-  auto* input2 = ListedElement::From(
-      *GetElementById("shadowhost")->GetShadowRoot()->getElementById("input2"));
+  auto* input2 =
+      ListedElement::From(*GetElementById("shadowhost")
+                               ->GetShadowRoot()
+                               ->getElementById(AtomicString("input2")));
 
   EXPECT_THAT(form1->ListedElements(), ::testing::ElementsAre(input1));
   EXPECT_THAT(form1->ListedElements(/*include_shadow_trees=*/true),

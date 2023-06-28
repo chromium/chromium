@@ -1603,8 +1603,8 @@ TEST_F(BrowserControlsSimTest, MAYBE(ViewportUnitsWhenControlsLocked)) {
   ASSERT_EQ(100.f, WebView().GetBrowserControls().ContentOffset());
   ASSERT_EQ(300, GetDocument().View()->GetLayoutSize().height());
 
-  Element* abs_pos = GetDocument().getElementById("abs");
-  Element* fixed_pos = GetDocument().getElementById("fixed");
+  Element* abs_pos = GetDocument().getElementById(AtomicString("abs"));
+  Element* fixed_pos = GetDocument().getElementById(AtomicString("fixed"));
 
   // Lock the browser controls to hidden.
   {

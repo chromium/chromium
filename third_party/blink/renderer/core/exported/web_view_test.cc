@@ -676,7 +676,7 @@ TEST_F(WebViewTest, PlatformColorsChangedOnDeviceEmulation) {
   Document& document =
       *web_view_impl->MainFrameImpl()->GetFrame()->GetDocument();
 
-  Element* span1 = document.getElementById("span1");
+  Element* span1 = document.getElementById(AtomicString("span1"));
   ASSERT_TRUE(span1);
 
   // Check non-MobileLayoutTheme color.
@@ -1901,7 +1901,7 @@ TEST_F(
   };
 
   // Forward Navigation in form1 with NEXT
-  Element* input1 = document->getElementById("input1");
+  Element* input1 = document->getElementById(AtomicString("input1"));
   input1->Focus();
   Element* current_focus = nullptr;
   Element* next_focus = nullptr;
@@ -1951,7 +1951,7 @@ TEST_F(
 
   // Setting a non editable element as focus in form1, and ensuring editable
   // navigation is fine in forward and backward.
-  Element* button1 = document->getElementById("button1");
+  Element* button1 = document->getElementById(AtomicString("button1"));
   button1->Focus();
   next_previous_flags =
       active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
@@ -1965,7 +1965,8 @@ TEST_F(
   EXPECT_EQ(next_focus->GetIdAttribute(), "contenteditable1");
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusForIME(
       mojom::blink::FocusType::kForward);
-  Element* content_editable1 = document->getElementById("contenteditable1");
+  Element* content_editable1 =
+      document->getElementById(AtomicString("contenteditable1"));
   EXPECT_EQ(content_editable1, document->FocusedElement());
   button1->Focus();
   next_focus = document->GetPage()
@@ -1977,7 +1978,7 @@ TEST_F(
       mojom::blink::FocusType::kBackward);
   EXPECT_EQ(input1, document->FocusedElement());
 
-  Element* anchor1 = document->getElementById("anchor1");
+  Element* anchor1 = document->getElementById(AtomicString("anchor1"));
   anchor1->Focus();
   next_previous_flags =
       active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
@@ -2005,7 +2006,7 @@ TEST_F(
 
   // Navigation of elements which are not a part of any forms. All these
   // elements compose a <form>less form.
-  Element* text_area3 = document->getElementById("textarea3");
+  Element* text_area3 = document->getElementById(AtomicString("textarea3"));
   text_area3->Focus();
   next_previous_flags =
       active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
@@ -2016,8 +2017,9 @@ TEST_F(
                    ->GetFocusController()
                    .NextFocusableElementForImeAndAutofill(
                        text_area3, mojom::blink::FocusType::kForward);
-  Element* text_area4 = document->getElementById("textarea4");
-  Element* content_editable2 = document->getElementById("contenteditable2");
+  Element* text_area4 = document->getElementById(AtomicString("textarea4"));
+  Element* content_editable2 =
+      document->getElementById(AtomicString("contenteditable2"));
   EXPECT_EQ(next_focus, content_editable2);
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusForIME(
       mojom::blink::FocusType::kForward);
@@ -2035,7 +2037,7 @@ TEST_F(
 
   // Navigation from an element which is part of a form but not an editable
   // element.
-  Element* button2 = document->getElementById("button2");
+  Element* button2 = document->getElementById(AtomicString("button2"));
   button2->Focus();
   next_previous_flags =
       active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
@@ -2051,7 +2053,7 @@ TEST_F(
   // No Next element to this element within form1. Hence focus won't change wrt
   // NEXT.
   EXPECT_EQ(button2, document->FocusedElement());
-  Element* text_area2 = document->getElementById("textarea2");
+  Element* text_area2 = document->getElementById(AtomicString("textarea2"));
   next_focus = document->GetPage()
                    ->GetFocusController()
                    .NextFocusableElementForImeAndAutofill(
@@ -2155,7 +2157,7 @@ TEST_F(
   };
 
   // Forward Navigation in form2 with NEXT
-  Element* text_area5 = document->getElementById("textarea5");
+  Element* text_area5 = document->getElementById(AtomicString("textarea5"));
   text_area5->Focus();
   Element* current_focus = nullptr;
   Element* next_focus = nullptr;
@@ -2205,7 +2207,7 @@ TEST_F(
 
   // Setting a non editable element as focus in form1, and ensuring editable
   // navigation is fine in forward and backward.
-  Element* anchor2 = document->getElementById("anchor2");
+  Element* anchor2 = document->getElementById(AtomicString("anchor2"));
   anchor2->Focus();
   next_previous_flags =
       active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
@@ -2265,7 +2267,7 @@ TEST_F(WebViewTest,
 
   // Forward Navigation in form with NEXT which has tabindex attribute
   // which differs visual order.
-  Element* text_area6 = document->getElementById("textarea6");
+  Element* text_area6 = document->getElementById(AtomicString("textarea6"));
   text_area6->Focus();
   Element* current_focus = nullptr;
   Element* next_focus = nullptr;
@@ -2316,9 +2318,10 @@ TEST_F(WebViewTest,
 
   // Setting an element which has invalid tabindex and ensuring it is not
   // modifying further navigation.
-  Element* content_editable5 = document->getElementById("contenteditable5");
+  Element* content_editable5 =
+      document->getElementById(AtomicString("contenteditable5"));
   content_editable5->Focus();
-  Element* input6 = document->getElementById("input6");
+  Element* input6 = document->getElementById(AtomicString("input6"));
   next_focus = document->GetPage()
                    ->GetFocusController()
                    .NextFocusableElementForImeAndAutofill(
@@ -2364,7 +2367,8 @@ TEST_F(
   };
   // Forward Navigation in form with NEXT which has has disabled/enabled
   // elements which will gets skipped during navigation.
-  Element* content_editable6 = document->getElementById("contenteditable6");
+  Element* content_editable6 =
+      document->getElementById(AtomicString("contenteditable6"));
   content_editable6->Focus();
   Element* current_focus = nullptr;
   Element* next_focus = nullptr;
@@ -2615,7 +2619,8 @@ TEST_F(WebViewTest, FullscreenBackgroundColor) {
 
   // Enter fullscreen.
   LocalFrame* frame = web_view_impl->MainFrameImpl()->GetFrame();
-  Element* element = frame->GetDocument()->getElementById("fullscreenElement");
+  Element* element =
+      frame->GetDocument()->getElementById(AtomicString("fullscreenElement"));
   ASSERT_TRUE(element);
   LocalFrame::NotifyUserActivation(
       frame, mojom::UserActivationNotificationType::kTest);
@@ -2644,7 +2649,8 @@ TEST_F(WebViewTest, FullscreenRemovalTiming) {
   LocalFrame* frame = web_view_impl->MainFrameImpl()->GetFrame();
   Document* document = frame->GetDocument();
   ASSERT_TRUE(document);
-  Element* element = document->getElementById("fullscreenElement");
+  Element* element =
+      document->getElementById(AtomicString("fullscreenElement"));
   ASSERT_TRUE(element);
   LocalFrame::NotifyUserActivation(
       frame, mojom::UserActivationNotificationType::kTest);
@@ -4193,7 +4199,8 @@ TEST_F(WebViewTest, ChooseValueFromDateTimeChooser) {
   Document* document =
       web_view_impl->MainFrameImpl()->GetFrame()->GetDocument();
 
-  auto* input_element = To<HTMLInputElement>(document->getElementById("date"));
+  auto* input_element =
+      To<HTMLInputElement>(document->getElementById(AtomicString("date")));
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)->ResponseHandler(true, 0);
   EXPECT_EQ("1970-01-01", input_element->Value());
@@ -4203,8 +4210,8 @@ TEST_F(WebViewTest, ChooseValueFromDateTimeChooser) {
       ->ResponseHandler(true, std::numeric_limits<double>::quiet_NaN());
   EXPECT_EQ("", input_element->Value());
 
-  input_element =
-      To<HTMLInputElement>(document->getElementById("datetimelocal"));
+  input_element = To<HTMLInputElement>(
+      document->getElementById(AtomicString("datetimelocal")));
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)->ResponseHandler(true, 0);
   EXPECT_EQ("1970-01-01T00:00", input_element->Value());
@@ -4214,7 +4221,8 @@ TEST_F(WebViewTest, ChooseValueFromDateTimeChooser) {
       ->ResponseHandler(true, std::numeric_limits<double>::quiet_NaN());
   EXPECT_EQ("", input_element->Value());
 
-  input_element = To<HTMLInputElement>(document->getElementById("month"));
+  input_element =
+      To<HTMLInputElement>(document->getElementById(AtomicString("month")));
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)->ResponseHandler(true, 0);
   EXPECT_EQ("1970-01", input_element->Value());
@@ -4224,7 +4232,8 @@ TEST_F(WebViewTest, ChooseValueFromDateTimeChooser) {
       ->ResponseHandler(true, std::numeric_limits<double>::quiet_NaN());
   EXPECT_EQ("", input_element->Value());
 
-  input_element = To<HTMLInputElement>(document->getElementById("time"));
+  input_element =
+      To<HTMLInputElement>(document->getElementById(AtomicString("time")));
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)->ResponseHandler(true, 0);
   EXPECT_EQ("00:00", input_element->Value());
@@ -4234,7 +4243,8 @@ TEST_F(WebViewTest, ChooseValueFromDateTimeChooser) {
       ->ResponseHandler(true, std::numeric_limits<double>::quiet_NaN());
   EXPECT_EQ("", input_element->Value());
 
-  input_element = To<HTMLInputElement>(document->getElementById("week"));
+  input_element =
+      To<HTMLInputElement>(document->getElementById(AtomicString("week")));
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)->ResponseHandler(true, 0);
   EXPECT_EQ("1970-W01", input_element->Value());
@@ -4527,7 +4537,7 @@ TEST_F(TouchEventConsumersWebViewTest, SetHasTouchEventConsumers) {
             frame_widget_host.GetAndResetHasTouchEventHandlerCallCount(true));
 
   // Adding a handler on a div results in a has-handlers call.
-  Element* parent_div = document->getElementById("parentdiv");
+  Element* parent_div = document->getElementById(AtomicString("parentdiv"));
   DCHECK(parent_div);
   registry->DidAddEventHandler(*parent_div, kTouchEvent);
   base::RunLoop().RunUntilIdle();
@@ -4578,11 +4588,11 @@ TEST_F(TouchEventConsumersWebViewTest, SetHasTouchEventConsumers) {
             frame_widget_host.GetAndResetHasTouchEventHandlerCallCount(true));
 
   // Adding a handler inside of a child iframe results in a has-handlers call.
-  Element* child_frame = document->getElementById("childframe");
+  Element* child_frame = document->getElementById(AtomicString("childframe"));
   DCHECK(child_frame);
   Document* child_document =
       To<HTMLIFrameElement>(child_frame)->contentDocument();
-  Element* child_div = child_document->getElementById("childdiv");
+  Element* child_div = child_document->getElementById(AtomicString("childdiv"));
   DCHECK(child_div);
   registry->DidAddEventHandler(*child_div, kTouchEvent);
   base::RunLoop().RunUntilIdle();
@@ -4654,7 +4664,7 @@ TEST_F(WebViewTest, DeleteElementWithRegisteredHandler) {
 
   Persistent<Document> document =
       web_view_impl->MainFrameImpl()->GetFrame()->GetDocument();
-  Element* div = document->getElementById("div");
+  Element* div = document->getElementById(AtomicString("div"));
   EventHandlerRegistry& registry =
       document->GetFrame()->GetEventHandlerRegistry();
 
@@ -4687,7 +4697,8 @@ TEST_F(WebViewTest, TextInputFlags) {
   // (A) <input>
   // (A.1) Verifies autocorrect/autocomplete/spellcheck flags are Off and
   // autocapitalize is set to none.
-  auto* input_element = To<HTMLInputElement>(document->getElementById("input"));
+  auto* input_element =
+      To<HTMLInputElement>(document->getElementById(AtomicString("input")));
   document->SetFocusedElement(
       input_element, FocusParams(SelectionBehaviorOnFocus::kNone,
                                  mojom::blink::FocusType::kNone, nullptr));
@@ -4700,7 +4711,8 @@ TEST_F(WebViewTest, TextInputFlags) {
 
   // (A.2) Verifies autocorrect/autocomplete/spellcheck flags are On and
   // autocapitalize is set to sentences.
-  input_element = To<HTMLInputElement>(document->getElementById("input2"));
+  input_element =
+      To<HTMLInputElement>(document->getElementById(AtomicString("input2")));
   document->SetFocusedElement(
       input_element, FocusParams(SelectionBehaviorOnFocus::kNone,
                                  mojom::blink::FocusType::kNone, nullptr));
@@ -4713,8 +4725,8 @@ TEST_F(WebViewTest, TextInputFlags) {
 
   // (B) <textarea> Verifies the default text input flags are
   // WebTextInputFlagAutocapitalizeSentences.
-  auto* text_area_element =
-      To<HTMLTextAreaElement>(document->getElementById("textarea"));
+  auto* text_area_element = To<HTMLTextAreaElement>(
+      document->getElementById(AtomicString("textarea")));
   document->SetFocusedElement(
       text_area_element, FocusParams(SelectionBehaviorOnFocus::kNone,
                                      mojom::blink::FocusType::kNone, nullptr));
@@ -5467,7 +5479,7 @@ TEST_F(WebViewTest, ResizeForPrintingViewportUnits) {
 
   WebLocalFrameImpl* frame = web_view->MainFrameImpl();
   Document* document = frame->GetFrame()->GetDocument();
-  Element* vw_element = document->getElementById("vw");
+  Element* vw_element = document->getElementById(AtomicString("vw"));
 
   EXPECT_EQ(800, vw_element->OffsetWidth());
 
@@ -5511,7 +5523,7 @@ TEST_F(WebViewTest, WidthMediaQueryWithPageZoomAfterPrinting) {
 
   WebLocalFrameImpl* frame = web_view->MainFrameImpl();
   Document* document = frame->GetFrame()->GetDocument();
-  Element* div = document->getElementById("d");
+  Element* div = document->getElementById(AtomicString("d"));
 
   EXPECT_EQ(
       Color::FromRGB(0, 128, 0),
@@ -5548,8 +5560,8 @@ TEST_F(WebViewTest, ViewportUnitsPrintingWithPageZoom) {
 
   WebLocalFrameImpl* frame = web_view->MainFrameImpl();
   Document* document = frame->GetFrame()->GetDocument();
-  Element* t1 = document->getElementById("t1");
-  Element* t2 = document->getElementById("t2");
+  Element* t1 = document->getElementById(AtomicString("t1"));
+  Element* t2 = document->getElementById(AtomicString("t2"));
 
   EXPECT_EQ(400, t1->OffsetWidth());
   EXPECT_EQ(400, t2->OffsetWidth());
@@ -6299,11 +6311,11 @@ TEST_F(WebViewTest, LongPressThenLongTapLinkInIframeStartsContextMenu) {
 
   WebLocalFrameImpl* frame = web_view->MainFrameImpl();
   Document* document = frame->GetFrame()->GetDocument();
-  Element* child_frame = document->getElementById("childframe");
+  Element* child_frame = document->getElementById(AtomicString("childframe"));
   DCHECK(child_frame);
   Document* child_document =
       To<HTMLIFrameElement>(child_frame)->contentDocument();
-  Element* anchor = child_document->getElementById("anchorTag");
+  Element* anchor = child_document->getElementById(AtomicString("anchorTag"));
   gfx::Point center =
       To<WebLocalFrameImpl>(
           web_view->MainFrame()->FirstChild()->ToWebLocalFrame())
@@ -6373,8 +6385,8 @@ TEST_F(WebViewTest, EmulatingPopupRect) {
                                      base_url);
 
   LocalFrame* frame = web_view->MainFrameImpl()->GetFrame();
-  auto* select =
-      To<HTMLSelectElement>(frame->GetDocument()->getElementById("select"));
+  auto* select = To<HTMLSelectElement>(
+      frame->GetDocument()->getElementById(AtomicString("select")));
   ASSERT_TRUE(select);
 
   // Real screen rect set to 800x600.

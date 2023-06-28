@@ -47,8 +47,9 @@ TEST_F(LayoutShiftTrackerTest, IgnoreAfterInput) {
     </style>
     <div id='j'></div>
   )HTML");
-  GetDocument().getElementById("j")->setAttribute(html_names::kStyleAttr,
-                                                  AtomicString("top: 60px"));
+  GetDocument()
+      .getElementById(AtomicString("j"))
+      ->setAttribute(html_names::kStyleAttr, AtomicString("top: 60px"));
   SimulateInput();
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(0.0, GetLayoutShiftTracker().Score());
@@ -78,12 +79,14 @@ TEST_F(LayoutShiftTrackerTest, CompositedShiftBeforeFirstPaint) {
     </div>
   )HTML");
 
-  GetDocument().getElementById("B")->setAttribute(html_names::kClassAttr,
-                                                  AtomicString("tr"));
+  GetDocument()
+      .getElementById(AtomicString("B"))
+      ->setAttribute(html_names::kClassAttr, AtomicString("tr"));
   GetFrameView().UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
-  GetDocument().getElementById("A")->setAttribute(html_names::kClassAttr,
-                                                  AtomicString("hide"));
+  GetDocument()
+      .getElementById(AtomicString("A"))
+      ->setAttribute(html_names::kClassAttr, AtomicString("hide"));
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -111,12 +114,14 @@ TEST_F(LayoutShiftTrackerTest, IgnoreAfterChangeEvent) {
       <option value="1">1</option>
     </select>
   )HTML");
-  auto* select = To<HTMLSelectElement>(GetDocument().getElementById("sel"));
+  auto* select =
+      To<HTMLSelectElement>(GetDocument().getElementById(AtomicString("sel")));
   DCHECK(select);
   select->Focus();
   select->SelectOptionByPopup(1);
-  GetDocument().getElementById("j")->setAttribute(html_names::kStyleAttr,
-                                                  AtomicString("top: 60px"));
+  GetDocument()
+      .getElementById(AtomicString("j"))
+      ->setAttribute(html_names::kStyleAttr, AtomicString("top: 60px"));
 
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
@@ -157,7 +162,8 @@ TEST_F(LayoutShiftTrackerSimTest, SubframeWeighting) {
   WebLocalFrameImpl& child_frame =
       To<WebLocalFrameImpl>(*MainFrame().FirstChild());
 
-  Element* div = child_frame.GetFrame()->GetDocument()->getElementById("j");
+  Element* div =
+      child_frame.GetFrame()->GetDocument()->getElementById(AtomicString("j"));
   div->setAttribute(html_names::kStyleAttr, AtomicString("top: 60px"));
 
   Compositor().BeginFrame();
@@ -170,8 +176,9 @@ TEST_F(LayoutShiftTrackerSimTest, SubframeWeighting) {
   EXPECT_FLOAT_EQ(0.1 * (60.0 / 400.0), layout_shift_tracker.WeightedScore());
 
   // Move subframe halfway outside the viewport.
-  GetDocument().getElementById("i")->setAttribute(html_names::kStyleAttr,
-                                                  AtomicString("left: 600px"));
+  GetDocument()
+      .getElementById(AtomicString("i"))
+      ->setAttribute(html_names::kStyleAttr, AtomicString("left: 600px"));
 
   div->removeAttribute(html_names::kStyleAttr);
 
@@ -822,7 +829,7 @@ TEST_F(LayoutShiftTrackerTest, StableCompositingChanges) {
     <div id=outer><div id=inner></div></div>
   )HTML");
 
-  Element* element = GetDocument().getElementById("outer");
+  Element* element = GetDocument().getElementById(AtomicString("outer"));
   size_t state = 0;
   auto advance = [this, element, &state]() -> bool {
     //
@@ -884,7 +891,7 @@ TEST_F(LayoutShiftTrackerTest, CompositedOverflowExpansion) {
     <div id="drop" style="display: none"></div>
   )HTML");
 
-  Element* drop = GetDocument().getElementById("drop");
+  Element* drop = GetDocument().getElementById(AtomicString("drop"));
   drop->removeAttribute(html_names::kStyleAttr);
   UpdateAllLifecyclePhasesForTest();
 
@@ -893,7 +900,7 @@ TEST_F(LayoutShiftTrackerTest, CompositedOverflowExpansion) {
 
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 
-  Element* comp = GetDocument().getElementById("comp");
+  Element* comp = GetDocument().getElementById(AtomicString("comp"));
   comp->setAttribute(html_names::kClassAttr, AtomicString("sh"));
   drop->removeAttribute(html_names::kStyleAttr);
   UpdateAllLifecyclePhasesForTest();
@@ -1126,8 +1133,9 @@ TEST_F(LayoutShiftTrackerTest, ClipByVisualViewport) {
             GetDocument().View()->LayoutViewport()->VisibleContentRect());
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 
-  GetDocument().getElementById("target")->setAttribute(html_names::kStyleAttr,
-                                                       "top: 100px");
+  GetDocument()
+      .getElementById(AtomicString("target"))
+      ->setAttribute(html_names::kStyleAttr, "top: 100px");
   UpdateAllLifecyclePhasesForTest();
   // 50.0: visible width
   // 100.0 + 100.0: visible height + vertical shift
@@ -1158,7 +1166,7 @@ TEST_F(LayoutShiftTrackerTest, ScrollThenCauseScrollAnchoring) {
     <div class=big></div>
     <div class=big></div>
   )HTML");
-  auto* target_element = GetDocument().getElementById("target");
+  auto* target_element = GetDocument().getElementById(AtomicString("target"));
 
   // Scroll the window which accumulates a scroll in the layout shift tracker.
   GetDocument().domWindow()->scrollBy(0, 1000);
@@ -1309,13 +1317,14 @@ TEST_F(LayoutShiftTrackerTest, AnimatingTransformCreatesLayoutShiftRoot) {
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 
   GetDocument()
-      .getElementById("animation")
+      .getElementById(AtomicString("animation"))
       ->setAttribute(html_names::kStyleAttr, "top: 400px");
   // `animation` creates a layout shift root, so `child`'s shift doesn't
   // include the shift of `animation`. The 2px shift is below the threshold of
   // reporting a layout shift.
-  GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
-                                                      "top: 2px");
+  GetDocument()
+      .getElementById(AtomicString("child"))
+      ->setAttribute(html_names::kStyleAttr, "top: 2px");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 }

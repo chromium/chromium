@@ -316,7 +316,7 @@ TEST_F(SVGImageSimTest, PageVisibilityHiddenToVisible) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  Element* element = GetDocument().getElementById("image");
+  Element* element = GetDocument().getElementById(AtomicString("image"));
   ASSERT_TRUE(IsA<HTMLImageElement>(element));
 
   ImageResourceContent* image_content =
@@ -380,7 +380,7 @@ TEST_F(SVGImageSimTest, AnimationsPausedWhenImageScrolledOutOfView) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  Element* element = GetDocument().getElementById("image");
+  Element* element = GetDocument().getElementById(AtomicString("image"));
   ASSERT_TRUE(IsA<HTMLImageElement>(element));
 
   ImageResourceContent* image_content =
@@ -549,7 +549,7 @@ TEST_F(SVGImageSimTest, SpriteSheetCulling) {
 
   // Adjust the height so one green circle and three blue circles are visible,
   // and ensure four circles are recorded.
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
   div->setAttribute(html_names::kStyleAttr, "height: 200px;");
   Compositor().BeginFrame();
   record = GetDocument().View()->GetPaintRecord();
@@ -601,7 +601,7 @@ TEST_F(SVGImageSimTest, SpriteSheetCullingBorderRadius) {
 
   // Adjust the height so one green circle and three blue circles are visible,
   // and ensure four circles are recorded.
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
   div->setAttribute(html_names::kStyleAttr, "height: 200px;");
   Compositor().BeginFrame();
   record = GetDocument().View()->GetPaintRecord();
@@ -652,7 +652,7 @@ TEST_F(SVGImageSimTest, ClippedAbsoluteImageSpriteSheetCulling) {
 
   // Adjust the div's height so one green circle and three blue circles are
   // visible, and ensure four circles are recorded.
-  Element* div_element = GetDocument().getElementById("div");
+  Element* div_element = GetDocument().getElementById(AtomicString("div"));
   div_element->setAttribute(html_names::kStyleAttr, "height: 200px;");
   Compositor().BeginFrame();
   record = GetDocument().View()->GetPaintRecord();
@@ -660,7 +660,7 @@ TEST_F(SVGImageSimTest, ClippedAbsoluteImageSpriteSheetCulling) {
 
   // Adjust the image's position so only the three blue circles are visible,
   // and ensure three circles are recorded.
-  Element* image_element = GetDocument().getElementById("image");
+  Element* image_element = GetDocument().getElementById(AtomicString("image"));
   image_element->setAttribute(html_names::kStyleAttr, "top: -200px;");
   Compositor().BeginFrame();
   record = GetDocument().View()->GetPaintRecord();
@@ -709,7 +709,7 @@ TEST_F(SVGImageSimTest, ClippedStaticImageSpriteSheetCulling) {
 
   // Adjust the div's height so one green circle and three blue circles are
   // visible, and ensure four circles are recorded.
-  Element* div_element = GetDocument().getElementById("div");
+  Element* div_element = GetDocument().getElementById(AtomicString("div"));
   div_element->setAttribute(html_names::kStyleAttr, "height: 200px;");
   Compositor().BeginFrame();
   record = GetDocument().View()->GetPaintRecord();
@@ -717,7 +717,7 @@ TEST_F(SVGImageSimTest, ClippedStaticImageSpriteSheetCulling) {
 
   // Adjust the image's position so only the three blue circles are visible,
   // and ensure three circles are recorded.
-  Element* image_element = GetDocument().getElementById("image");
+  Element* image_element = GetDocument().getElementById(AtomicString("image"));
   image_element->setAttribute(html_names::kStyleAttr, "margin-top: -200px;");
   Compositor().BeginFrame();
   record = GetDocument().View()->GetPaintRecord();
@@ -777,7 +777,7 @@ TEST_F(SVGImageSimTest, InterestRectDoesNotCullImageSpriteSheet) {
 
   // Adjust the div's width and height so that it creates a cull rect that clips
   // to just a single circle, and ensure just one circle is recorded.
-  Element* div_element = GetDocument().getElementById("div");
+  Element* div_element = GetDocument().getElementById(AtomicString("div"));
   div_element->setAttribute(html_names::kStyleAttr,
                             "width: 100px; height: 200px;");
   Compositor().BeginFrame();

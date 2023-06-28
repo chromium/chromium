@@ -801,11 +801,15 @@ TEST_F(FindBufferTest, FindInTable) {
 TEST_F(FindBufferTest, IsInSameUninterruptedBlock) {
   SetBodyContent(
       "<div id=outer>a<div id=inner>b</div><i id='styled'>i</i>c</div>");
-  Node* text_node_a = GetDocument().getElementById("outer")->firstChild();
-  Node* styled = GetDocument().getElementById("styled");
-  Node* text_node_i = GetDocument().getElementById("styled")->firstChild();
-  Node* text_node_c = GetDocument().getElementById("outer")->lastChild();
-  Node* text_node_b = GetDocument().getElementById("inner")->firstChild();
+  Node* text_node_a =
+      GetDocument().getElementById(AtomicString("outer"))->firstChild();
+  Node* styled = GetDocument().getElementById(AtomicString("styled"));
+  Node* text_node_i =
+      GetDocument().getElementById(AtomicString("styled"))->firstChild();
+  Node* text_node_c =
+      GetDocument().getElementById(AtomicString("outer"))->lastChild();
+  Node* text_node_b =
+      GetDocument().getElementById(AtomicString("inner"))->firstChild();
 
   ASSERT_TRUE(
       FindBuffer::IsInSameUninterruptedBlock(*text_node_i, *text_node_c));
@@ -818,9 +822,11 @@ TEST_F(FindBufferTest, IsInSameUninterruptedBlock) {
 
 TEST_F(FindBufferTest, IsInSameUninterruptedBlock_input) {
   SetBodyContent("<div id='outer'>a<input value='input' id='input'>b</div>");
-  Node* text_node_a = GetDocument().getElementById("outer")->firstChild();
-  Node* text_node_b = GetDocument().getElementById("outer")->lastChild();
-  Node* input = GetDocument().getElementById("input");
+  Node* text_node_a =
+      GetDocument().getElementById(AtomicString("outer"))->firstChild();
+  Node* text_node_b =
+      GetDocument().getElementById(AtomicString("outer"))->lastChild();
+  Node* input = GetDocument().getElementById(AtomicString("input"));
   Node* editable_div = FlatTreeTraversal::Next(*input);
 
   // input elements are followed by an editable div that contains the input
@@ -845,8 +851,10 @@ TEST_F(FindBufferTest, IsInSameUninterruptedBlock_table) {
       "</tr>"
       "</tbody>"
       "</table>");
-  Node* text_node_1 = GetDocument().getElementById("c1")->firstChild();
-  Node* text_node_3 = GetDocument().getElementById("c3")->firstChild();
+  Node* text_node_1 =
+      GetDocument().getElementById(AtomicString("c1"))->firstChild();
+  Node* text_node_3 =
+      GetDocument().getElementById(AtomicString("c3"))->firstChild();
 
   ASSERT_FALSE(
       FindBuffer::IsInSameUninterruptedBlock(*text_node_1, *text_node_3));
@@ -856,19 +864,24 @@ TEST_F(FindBufferTest, IsInSameUninterruptedBlock_comment) {
   SetBodyContent(
       "<div id='text'><span id='span1'>abc</span><!--comment--><span "
       "id='span2'>def</span></div>");
-  Node* span_1 = GetDocument().getElementById("span1")->firstChild();
-  Node* span_2 = GetDocument().getElementById("span2")->firstChild();
+  Node* span_1 =
+      GetDocument().getElementById(AtomicString("span1"))->firstChild();
+  Node* span_2 =
+      GetDocument().getElementById(AtomicString("span2"))->firstChild();
 
   ASSERT_TRUE(FindBuffer::IsInSameUninterruptedBlock(*span_1, *span_2));
 }
 
 TEST_F(FindBufferTest, GetFirstBlockLevelAncestorInclusive) {
   SetBodyContent("<div id=outer>a<div id=inner>b</div>c</div>");
-  Node* outer_div = GetDocument().getElementById("outer");
-  Node* text_node_a = GetDocument().getElementById("outer")->firstChild();
-  Node* text_node_c = GetDocument().getElementById("outer")->lastChild();
-  Node* inner_div = GetDocument().getElementById("inner");
-  Node* text_node_b = GetDocument().getElementById("inner")->firstChild();
+  Node* outer_div = GetDocument().getElementById(AtomicString("outer"));
+  Node* text_node_a =
+      GetDocument().getElementById(AtomicString("outer"))->firstChild();
+  Node* text_node_c =
+      GetDocument().getElementById(AtomicString("outer"))->lastChild();
+  Node* inner_div = GetDocument().getElementById(AtomicString("inner"));
+  Node* text_node_b =
+      GetDocument().getElementById(AtomicString("inner"))->firstChild();
 
   ASSERT_EQ(outer_div,
             FindBuffer::GetFirstBlockLevelAncestorInclusive(*text_node_a));

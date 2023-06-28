@@ -22,7 +22,7 @@ TEST_F(NGAbstractInlineTextBoxTest, GetTextWithCollapsedWhiteSpace) {
     <style>* { font-size: 10px; }</style>
     <div id="target">abc </div>)HTML");
 
-  const Element& target = *GetDocument().getElementById("target");
+  const Element& target = *GetDocument().getElementById(AtomicString("target"));
   auto& layout_text = *To<LayoutText>(target.firstChild()->GetLayoutObject());
   auto* inline_text_box = layout_text.FirstAbstractInlineTextBox();
 
@@ -38,7 +38,7 @@ TEST_F(NGAbstractInlineTextBoxTest, GetTextWithLineBreakAtCollapsedWhiteSpace) {
     <style>* { font-size: 10px; }</style>
     <div style="width: 10ch"><label id=label>abc:</label> <input></div>)HTML");
 
-  const Element& label = *GetDocument().getElementById("label");
+  const Element& label = *GetDocument().getElementById(AtomicString("label"));
   auto& layout_text = *To<LayoutText>(label.firstChild()->GetLayoutObject());
   auto* inline_text_box = layout_text.FirstAbstractInlineTextBox();
 
@@ -55,7 +55,7 @@ TEST_F(NGAbstractInlineTextBoxTest,
     <style>* { font-size: 10px; }</style>
     <div id="target" style="width: 0ch">012 345</div>)HTML");
 
-  const Element& target = *GetDocument().getElementById("target");
+  const Element& target = *GetDocument().getElementById(AtomicString("target"));
   auto& layout_text = *To<LayoutText>(target.firstChild()->GetLayoutObject());
   auto* inline_text_box = layout_text.FirstAbstractInlineTextBox();
 
@@ -72,7 +72,7 @@ TEST_F(NGAbstractInlineTextBoxTest,
     <style>* { font-size: 10px; }</style>
     <p id="t1" style="width: 0ch">012<span id="t2"> </span>345</p>)HTML");
 
-  const Element& target1 = *GetDocument().getElementById("t1");
+  const Element& target1 = *GetDocument().getElementById(AtomicString("t1"));
   auto& layout_text1 = *To<LayoutText>(target1.firstChild()->GetLayoutObject());
   auto* inline_text_box1 = layout_text1.FirstAbstractInlineTextBox();
 
@@ -80,7 +80,7 @@ TEST_F(NGAbstractInlineTextBoxTest,
   EXPECT_EQ(3u, inline_text_box1->Len());
   EXPECT_FALSE(inline_text_box1->NeedsTrailingSpace());
 
-  const Element& target2 = *GetDocument().getElementById("t2");
+  const Element& target2 = *GetDocument().getElementById(AtomicString("t2"));
   auto& layout_text2 = *To<LayoutText>(target2.firstChild()->GetLayoutObject());
   auto* inline_text_box2 = layout_text2.FirstAbstractInlineTextBox();
 
@@ -96,7 +96,7 @@ TEST_F(NGAbstractInlineTextBoxTest, GetTextWithLineBreakAtTrailingWhiteSpace) {
     <style>* { font-size: 10px; }</style>
     <div style="width: 10ch"><label id=label>abc: <input></label></div>)HTML");
 
-  const Element& label = *GetDocument().getElementById("label");
+  const Element& label = *GetDocument().getElementById(AtomicString("label"));
   auto& layout_text = *To<LayoutText>(label.firstChild()->GetLayoutObject());
   auto* inline_text_box = layout_text.FirstAbstractInlineTextBox();
 
@@ -115,7 +115,8 @@ TEST_F(NGAbstractInlineTextBoxTest, GetTextOffsetInFormattingContext) {
     <p id="paragraph"><span>Offset</span>First sentence &#10; of the paragraph. Second sentence of &#10; the paragraph.</p>
     <br id="br">)HTML");
 
-  const Element& paragraph = *GetDocument().getElementById("paragraph");
+  const Element& paragraph =
+      *GetDocument().getElementById(AtomicString("paragraph"));
   const Node& text_node = *paragraph.firstChild()->nextSibling();
   auto& layout_text = *To<LayoutText>(text_node.GetLayoutObject());
 
@@ -149,7 +150,7 @@ TEST_F(NGAbstractInlineTextBoxTest, GetTextOffsetInFormattingContext) {
 
   // Ensure that calling TextOffsetInFormattingContext on a br gives the correct
   // result.
-  const Element& br_element = *GetDocument().getElementById("br");
+  const Element& br_element = *GetDocument().getElementById(AtomicString("br"));
   auto& br_text = *To<LayoutText>(br_element.GetLayoutObject());
   inline_text_box = br_text.FirstAbstractInlineTextBox();
   EXPECT_EQ("\n", inline_text_box->GetText());
@@ -162,7 +163,7 @@ TEST_F(NGAbstractInlineTextBoxTest, CharacterWidths) {
     <style>* { font-size: 10px; }</style>
     <div id="div" style="width: 0ch">012 345</div>)HTML");
 
-  const Element& div = *GetDocument().getElementById("div");
+  const Element& div = *GetDocument().getElementById(AtomicString("div"));
   auto& layout_text = *To<LayoutText>(div.firstChild()->GetLayoutObject());
   auto* inline_text_box = layout_text.FirstAbstractInlineTextBox();
 
@@ -179,7 +180,7 @@ TEST_F(NGAbstractInlineTextBoxTest, HeapCompactionNoCrash) {
   Persistent<TestVector> vector(MakeGarbageCollected<TestVector>(100));
   SetBodyInnerHTML(R"HTML(<div id="div">012 345</div>)HTML");
 
-  const Element& div = *GetDocument().getElementById("div");
+  const Element& div = *GetDocument().getElementById(AtomicString("div"));
   auto* inline_text_box = To<LayoutText>(div.firstChild()->GetLayoutObject())
                               ->FirstAbstractInlineTextBox();
   const auto* items = div.GetLayoutBox()->GetPhysicalFragment(0)->Items();

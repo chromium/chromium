@@ -44,7 +44,7 @@ TEST_F(EditingUtilitiesTest, DirectionOfEnclosingBlockOf) {
       "<slot name=#two></slot><p dir=rtl><slot name=#one></slot><p>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
-  Node* one = GetDocument().getElementById("one");
+  Node* one = GetDocument().getElementById(AtomicString("one"));
 
   EXPECT_EQ(TextDirection::kLtr, DirectionOfEnclosingBlockOf(Position(one, 0)));
   EXPECT_EQ(TextDirection::kRtl,
@@ -61,10 +61,10 @@ TEST_F(EditingUtilitiesTest,
       "<slot name=#two></slot><slot name=#one></slot><b id='three'>333</b>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
-  Element* host = GetDocument().getElementById("host");
-  Node* one = GetDocument().getElementById("one");
-  Node* two = GetDocument().getElementById("two");
-  Node* three = shadow_root->getElementById("three");
+  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Node* one = GetDocument().getElementById(AtomicString("one"));
+  Node* two = GetDocument().getElementById(AtomicString("two"));
+  Node* three = shadow_root->getElementById(AtomicString("three"));
 
   EXPECT_EQ(Position(one, 0),
             FirstEditablePositionAfterPositionInRoot(Position(one, 0), *host));
@@ -109,9 +109,9 @@ TEST_F(EditingUtilitiesTest, enclosingBlock) {
       "<slot name=#two></slot><div id='three'><slot name=#one></slot></div>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
-  Node* host = GetDocument().getElementById("host");
-  Node* one = GetDocument().getElementById("one");
-  Node* three = shadow_root->getElementById("three");
+  Node* host = GetDocument().getElementById(AtomicString("host"));
+  Node* one = GetDocument().getElementById(AtomicString("one"));
+  Node* three = shadow_root->getElementById(AtomicString("three"));
 
   EXPECT_EQ(host,
             EnclosingBlock(Position(one, 0), kCannotCrossEditingBoundary));
@@ -125,9 +125,9 @@ TEST_F(EditingUtilitiesTest, enclosingNodeOfType) {
       "<slot name=#two></slot><div id='three'><slot name=#one></div></slot>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
-  Node* host = GetDocument().getElementById("host");
-  Node* one = GetDocument().getElementById("one");
-  Node* three = shadow_root->getElementById("three");
+  Node* host = GetDocument().getElementById(AtomicString("host"));
+  Node* one = GetDocument().getElementById(AtomicString("one"));
+  Node* three = shadow_root->getElementById(AtomicString("three"));
 
   EXPECT_EQ(host, EnclosingNodeOfType(Position(one, 0), IsEnclosingBlock));
   EXPECT_EQ(three,
@@ -137,7 +137,7 @@ TEST_F(EditingUtilitiesTest, enclosingNodeOfType) {
 // http://crbug.com/873088
 TEST_F(EditingUtilitiesTest, IsEditablePositionWithHr) {
   SetBodyContent("<hr contenteditable id=target>");
-  Element& target = *GetDocument().getElementById("target");
+  Element& target = *GetDocument().getElementById(AtomicString("target"));
   EXPECT_FALSE(IsEditablePosition(Position::BeforeNode(target)));
   EXPECT_TRUE(IsEditablePosition(Position(target, 0)));
 }
@@ -145,7 +145,7 @@ TEST_F(EditingUtilitiesTest, IsEditablePositionWithHr) {
 // http://crbug.com/873088
 TEST_F(EditingUtilitiesTest, IsEditablePositionWithSpan) {
   SetBodyContent("<span contenteditable id=target>abc</span>");
-  Element& target = *GetDocument().getElementById("target");
+  Element& target = *GetDocument().getElementById(AtomicString("target"));
   EXPECT_FALSE(IsEditablePosition(Position::BeforeNode(target)));
   EXPECT_TRUE(IsEditablePosition(Position(target, 0)));
 }
@@ -308,8 +308,8 @@ TEST_F(EditingUtilitiesTest, DISABLED_tableElementJustBefore) {
       "<slot name=#two></slot><slot name=#table></slot>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
-  Node* host = GetDocument().getElementById("host");
-  Node* table = GetDocument().getElementById("table");
+  Node* host = GetDocument().getElementById(AtomicString("host"));
+  Node* table = GetDocument().getElementById(AtomicString("table"));
 
   EXPECT_EQ(table, TableElementJustBefore(VisiblePosition::AfterNode(*table)));
   // TODO(crbug.com/1157146): This returns null instead of the table.
@@ -350,10 +350,10 @@ TEST_F(EditingUtilitiesTest,
       "id='three'>333</b>";
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
-  Element* host = GetDocument().getElementById("host");
-  Node* one = GetDocument().getElementById("one");
-  Node* two = GetDocument().getElementById("two");
-  Node* three = shadow_root->getElementById("three");
+  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Node* one = GetDocument().getElementById(AtomicString("one"));
+  Node* two = GetDocument().getElementById(AtomicString("two"));
+  Node* three = shadow_root->getElementById(AtomicString("three"));
 
   EXPECT_EQ(Position(one, 0),
             LastEditablePositionBeforePositionInRoot(Position(one, 0), *host));
@@ -402,8 +402,8 @@ TEST_F(EditingUtilitiesTest, DISABLED_NextNodeIndex) {
   const char* shadow_content = "<slot name=#two></slot><slot name=#one></slot>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
-  Node* host = GetDocument().getElementById("host");
-  Node* two = GetDocument().getElementById("two");
+  Node* host = GetDocument().getElementById(AtomicString("host"));
+  Node* two = GetDocument().getElementById(AtomicString("two"));
 
   EXPECT_EQ(
       Position(host, 3),
@@ -422,9 +422,9 @@ TEST_F(EditingUtilitiesTest, NextVisuallyDistinctCandidate) {
       "<slot name=#two></slot><slot name=#one></slot><slot name=#three></slot>";
   SetBodyContent(body_content);
   SetShadowContent(shadow_content, "host");
-  Node* one = GetDocument().getElementById("one");
-  Node* two = GetDocument().getElementById("two");
-  Node* three = GetDocument().getElementById("three");
+  Node* one = GetDocument().getElementById(AtomicString("one"));
+  Node* two = GetDocument().getElementById(AtomicString("two"));
+  Node* three = GetDocument().getElementById(AtomicString("three"));
 
   EXPECT_EQ(Position(two->firstChild(), 0),
             NextVisuallyDistinctCandidate(Position(one, 1)));
@@ -435,7 +435,8 @@ TEST_F(EditingUtilitiesTest, NextVisuallyDistinctCandidate) {
 TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset_FirstLetter) {
   SetBodyContent(
       "<style>p::first-letter {color:red;}</style><p id='target'>abc</p>");
-  const Node& node = *GetDocument().getElementById("target")->firstChild();
+  const Node& node =
+      *GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(2, PreviousGraphemeBoundaryOf(node, 3));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(node, 2));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(node, 1));
@@ -456,7 +457,8 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset_FirstLetter) {
 TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset_textTransform) {
   SetBodyContent(
       "<style>p {text-transform:uppercase}</style><p id='target'>abc</p>");
-  const Node& node = *GetDocument().getElementById("target")->firstChild();
+  const Node& node =
+      *GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(2, PreviousGraphemeBoundaryOf(node, 3));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(node, 2));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(node, 1));
@@ -480,17 +482,18 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset_textTransform) {
 TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   // GB1: Break at the start of text.
   SetBodyContent("<p id='target'>a</p>");
-  Node* node = GetDocument().getElementById("target")->firstChild();
+  Node* node =
+      GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
 
   // GB2: Break at the end of text.
   SetBodyContent("<p id='target'>a</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(1, NextGraphemeBoundaryOf(*node, 0));
 
   // GB3: Do not break between CR and LF.
   SetBodyContent("<p id='target'>a&#x0D;&#x0A;b</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(3, PreviousGraphemeBoundaryOf(*node, 4));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -500,7 +503,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
 
   // GB4,GB5: Break before and after CR/LF/Control.
   SetBodyContent("<p id='target'>a&#x0D;b</p>");  // CR
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(2, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -508,7 +511,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   EXPECT_EQ(2, NextGraphemeBoundaryOf(*node, 1));
   EXPECT_EQ(3, NextGraphemeBoundaryOf(*node, 2));
   SetBodyContent("<p id='target'>a&#x0A;b</p>");  // LF
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(2, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -517,7 +520,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   EXPECT_EQ(3, NextGraphemeBoundaryOf(*node, 2));
   // U+00AD(SOFT HYPHEN) has Control property.
   SetBodyContent("<p id='target'>a&#xAD;b</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(2, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -537,7 +540,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   const std::string t =
       "&#x11A8;";  // U+11A8 (HANGUL JONGSEONG KIYEOK) has T property.
   SetBodyContent("<p id='target'>a" + l + l + "b</p>");  // L x L
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(3, PreviousGraphemeBoundaryOf(*node, 4));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -545,7 +548,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   EXPECT_EQ(3, NextGraphemeBoundaryOf(*node, 1));
   EXPECT_EQ(4, NextGraphemeBoundaryOf(*node, 3));
   SetBodyContent("<p id='target'>a" + l + v + "b</p>");  // L x V
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(3, PreviousGraphemeBoundaryOf(*node, 4));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -553,7 +556,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   EXPECT_EQ(3, NextGraphemeBoundaryOf(*node, 1));
   EXPECT_EQ(4, NextGraphemeBoundaryOf(*node, 3));
   SetBodyContent("<p id='target'>a" + l + lv + "b</p>");  // L x LV
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(3, PreviousGraphemeBoundaryOf(*node, 4));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -561,7 +564,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   EXPECT_EQ(3, NextGraphemeBoundaryOf(*node, 1));
   EXPECT_EQ(4, NextGraphemeBoundaryOf(*node, 3));
   SetBodyContent("<p id='target'>a" + l + lvt + "b</p>");  // L x LVT
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(3, PreviousGraphemeBoundaryOf(*node, 4));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -571,7 +574,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
 
   // GB7: Don't break Hangul sequence.
   SetBodyContent("<p id='target'>a" + lv + v + "b</p>");  // LV x V
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(3, PreviousGraphemeBoundaryOf(*node, 4));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -579,7 +582,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   EXPECT_EQ(3, NextGraphemeBoundaryOf(*node, 1));
   EXPECT_EQ(4, NextGraphemeBoundaryOf(*node, 3));
   SetBodyContent("<p id='target'>a" + lv + t + "b</p>");  // LV x T
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(3, PreviousGraphemeBoundaryOf(*node, 4));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -587,7 +590,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   EXPECT_EQ(3, NextGraphemeBoundaryOf(*node, 1));
   EXPECT_EQ(4, NextGraphemeBoundaryOf(*node, 3));
   SetBodyContent("<p id='target'>a" + v + v + "b</p>");  // V x V
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(3, PreviousGraphemeBoundaryOf(*node, 4));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -595,7 +598,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   EXPECT_EQ(3, NextGraphemeBoundaryOf(*node, 1));
   EXPECT_EQ(4, NextGraphemeBoundaryOf(*node, 3));
   SetBodyContent("<p id='target'>a" + v + t + "b</p>");  // V x T
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(3, PreviousGraphemeBoundaryOf(*node, 4));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -605,7 +608,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
 
   // GB8: Don't break Hangul sequence.
   SetBodyContent("<p id='target'>a" + lvt + t + "b</p>");  // LVT x T
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(3, PreviousGraphemeBoundaryOf(*node, 4));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -613,7 +616,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   EXPECT_EQ(3, NextGraphemeBoundaryOf(*node, 1));
   EXPECT_EQ(4, NextGraphemeBoundaryOf(*node, 3));
   SetBodyContent("<p id='target'>a" + t + t + "b</p>");  // T x T
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(3, PreviousGraphemeBoundaryOf(*node, 4));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -630,7 +633,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   const std::string flag = "&#x1F1FA;&#x1F1F8;";  // US flag.
   // ^(RI RI)* RI x RI
   SetBodyContent("<p id='target'>" + flag + flag + flag + flag + "a</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(16, PreviousGraphemeBoundaryOf(*node, 17));
   EXPECT_EQ(12, PreviousGraphemeBoundaryOf(*node, 16));
   EXPECT_EQ(8, PreviousGraphemeBoundaryOf(*node, 12));
@@ -646,7 +649,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   // regional indicator symbols before.
   // [^RI] (RI RI)* RI x RI
   SetBodyContent("<p id='target'>a" + flag + flag + flag + flag + "b</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(17, PreviousGraphemeBoundaryOf(*node, 18));
   EXPECT_EQ(13, PreviousGraphemeBoundaryOf(*node, 17));
   EXPECT_EQ(9, PreviousGraphemeBoundaryOf(*node, 13));
@@ -663,7 +666,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   // GB8c: Break if there is an odd number of regional indicator symbols before.
   SetBodyContent("<p id='target'>a" + flag + flag + flag + flag +
                  "&#x1F1F8;b</p>");  // RI ÷ RI
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(19, PreviousGraphemeBoundaryOf(*node, 20));
   EXPECT_EQ(17, PreviousGraphemeBoundaryOf(*node, 19));
   EXPECT_EQ(13, PreviousGraphemeBoundaryOf(*node, 17));
@@ -682,14 +685,14 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   // GB9: Do not break before extending characters or ZWJ.
   // U+0300(COMBINING GRAVE ACCENT) has Extend property.
   SetBodyContent("<p id='target'>a&#x0300;b</p>");  // x Extend
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(2, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(2, NextGraphemeBoundaryOf(*node, 0));
   EXPECT_EQ(3, NextGraphemeBoundaryOf(*node, 2));
   // U+200D is ZERO WIDTH JOINER.
   SetBodyContent("<p id='target'>a&#x200D;b</p>");  // x ZWJ
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(2, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(2, NextGraphemeBoundaryOf(*node, 0));
@@ -698,7 +701,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   // GB9a: Do not break before SpacingMarks.
   // U+0903(DEVANAGARI SIGN VISARGA) has SpacingMark property.
   SetBodyContent("<p id='target'>a&#x0903;b</p>");  // x SpacingMark
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(2, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(2, NextGraphemeBoundaryOf(*node, 0));
@@ -710,7 +713,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   // For https://bugs.webkit.org/show_bug.cgi?id=24342
   // The break should happens after Thai character.
   SetBodyContent("<p id='target'>a&#x0E40;b</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(2, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -721,7 +724,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   // Blink customization: Don't break before Japanese half-width katakana voiced
   // marks.
   SetBodyContent("<p id='target'>a&#xFF76;&#xFF9E;b</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(3, PreviousGraphemeBoundaryOf(*node, 4));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -736,7 +739,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   // U+094D is DEVANAGARI SIGN VIRAMA. This has Virama property.
   // U+0915 is DEVANAGARI LETTER KA.
   SetBodyContent("<p id='target'>a&#x0905;&#x094D;&#x0915;b</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(4, PreviousGraphemeBoundaryOf(*node, 5));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 4));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -748,7 +751,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   // Should break after U+0E3A since U+0E3A has Virama property but not listed
   // in IndicSyllabicCategory=Virama.
   SetBodyContent("<p id='target'>a&#x0E01;&#x0E3A;&#x0E01;b</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(4, PreviousGraphemeBoundaryOf(*node, 5));
   EXPECT_EQ(3, PreviousGraphemeBoundaryOf(*node, 4));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 3));
@@ -767,7 +770,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   // E_Modifier property.
   SetBodyContent(
       "<p id='target'>a&#x1F385;&#x1F3FB;b</p>");  // E_Base x E_Modifier
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(5, PreviousGraphemeBoundaryOf(*node, 6));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 5));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -777,7 +780,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   // U+1F466(BOY) used to have EBG property, but now has Extend property.
   SetBodyContent(
       "<p id='target'>a&#x1F466;&#x1F3FB;b</p>");  // EBG x E_Modifier
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(5, PreviousGraphemeBoundaryOf(*node, 6));
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 5));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 1));
@@ -790,13 +793,13 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   // So does U+1F466.
   SetBodyContent(
       "<p id='target'>a&#x200D;&#x2764;b</p>");  // ZWJ x Glue_After_Zwj
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(3, PreviousGraphemeBoundaryOf(*node, 4));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(3, NextGraphemeBoundaryOf(*node, 0));
   EXPECT_EQ(4, NextGraphemeBoundaryOf(*node, 3));
   SetBodyContent("<p id='target'>a&#x200D;&#x1F466;b</p>");  // ZWJ x EBG
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(4, PreviousGraphemeBoundaryOf(*node, 5));
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 4));
   EXPECT_EQ(4, NextGraphemeBoundaryOf(*node, 0));
@@ -804,81 +807,81 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
 
   // U+1F5FA(World Map) has Extended_Pictographic=True.
   SetBodyContent("<p id='target'>&#x200D;&#x1F5FA;</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(3, NextGraphemeBoundaryOf(*node, 0));
 
   // GB999: Otherwise break everywhere.
   // Breaks between Hangul syllable except for GB6, GB7, GB8.
   SetBodyContent("<p id='target'>" + l + t + "</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(1, NextGraphemeBoundaryOf(*node, 0));
   SetBodyContent("<p id='target'>" + v + l + "</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(1, NextGraphemeBoundaryOf(*node, 0));
   SetBodyContent("<p id='target'>" + v + lv + "</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(1, NextGraphemeBoundaryOf(*node, 0));
   SetBodyContent("<p id='target'>" + v + lvt + "</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(1, NextGraphemeBoundaryOf(*node, 0));
   SetBodyContent("<p id='target'>" + lv + l + "</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(1, NextGraphemeBoundaryOf(*node, 0));
   SetBodyContent("<p id='target'>" + lv + lv + "</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(1, NextGraphemeBoundaryOf(*node, 0));
   SetBodyContent("<p id='target'>" + lv + lvt + "</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(1, NextGraphemeBoundaryOf(*node, 0));
   SetBodyContent("<p id='target'>" + lvt + l + "</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(1, NextGraphemeBoundaryOf(*node, 0));
   SetBodyContent("<p id='target'>" + lvt + v + "</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(1, NextGraphemeBoundaryOf(*node, 0));
   SetBodyContent("<p id='target'>" + lvt + lv + "</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(1, NextGraphemeBoundaryOf(*node, 0));
   SetBodyContent("<p id='target'>" + lvt + lvt + "</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(1, NextGraphemeBoundaryOf(*node, 0));
   SetBodyContent("<p id='target'>" + t + l + "</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(1, NextGraphemeBoundaryOf(*node, 0));
   SetBodyContent("<p id='target'>" + t + v + "</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(1, NextGraphemeBoundaryOf(*node, 0));
   SetBodyContent("<p id='target'>" + t + lv + "</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(1, NextGraphemeBoundaryOf(*node, 0));
   SetBodyContent("<p id='target'>" + t + lvt + "</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(1, NextGraphemeBoundaryOf(*node, 0));
 
   // Per GB8, do not break before Extended|ZWJ. E_Modifier is obsolete
   // in Unicode 11 and is now a part of Extended.
   SetBodyContent("<p id='target'>a&#x1F3FB;</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 3));
   EXPECT_EQ(3, NextGraphemeBoundaryOf(*node, 0));
   SetBodyContent("<p id='target'>&#x1F5FA;&#x1F3FB;</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(0, PreviousGraphemeBoundaryOf(*node, 4));
   EXPECT_EQ(4, NextGraphemeBoundaryOf(*node, 0));
 
@@ -886,7 +889,7 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
   // after ZWJ.
   // U+1F5FA(WORLD MAP) doesn't have either Glue_After_Zwj or EBG.
   SetBodyContent("<p id='target'>&#x200D;a</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(1, PreviousGraphemeBoundaryOf(*node, 2));
   EXPECT_EQ(1, NextGraphemeBoundaryOf(*node, 0));
 }
@@ -894,7 +897,8 @@ TEST_F(EditingUtilitiesTest, uncheckedPreviousNextOffset) {
 TEST_F(EditingUtilitiesTest, previousPositionOf_Backspace) {
   // BMP characters. Only one code point should be deleted.
   SetBodyContent("<p id='target'>abc</p>");
-  Node* node = GetDocument().getElementById("target")->firstChild();
+  Node* node =
+      GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(Position(node, 2),
             PreviousPositionOf(Position(node, 3),
                                PositionMoveType::kBackwardDeletion));
@@ -909,7 +913,8 @@ TEST_F(EditingUtilitiesTest, previousPositionOf_Backspace) {
 TEST_F(EditingUtilitiesTest, previousPositionOf_Backspace_FirstLetter) {
   SetBodyContent(
       "<style>p::first-letter {color:red;}</style><p id='target'>abc</p>");
-  Node* node = GetDocument().getElementById("target")->firstChild();
+  Node* node =
+      GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(Position(node, 2),
             PreviousPositionOf(Position(node, 3),
                                PositionMoveType::kBackwardDeletion));
@@ -922,7 +927,7 @@ TEST_F(EditingUtilitiesTest, previousPositionOf_Backspace_FirstLetter) {
 
   SetBodyContent(
       "<style>p::first-letter {color:red;}</style><p id='target'>(a)bc</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(Position(node, 4),
             PreviousPositionOf(Position(node, 5),
                                PositionMoveType::kBackwardDeletion));
@@ -945,7 +950,8 @@ TEST_F(EditingUtilitiesTest, previousPositionOf_Backspace_TextTransform) {
   SetBodyContent(
       "<style>p {text-transform:uppercase}</style><p "
       "id='target'>&#x00DF;abc</p>");
-  Node* node = GetDocument().getElementById("target")->firstChild();
+  Node* node =
+      GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(Position(node, 3),
             PreviousPositionOf(Position(node, 4),
                                PositionMoveType::kBackwardDeletion));
@@ -970,7 +976,8 @@ TEST_F(EditingUtilitiesTest, previousPositionOf_Backspace_SurrogatePairs) {
   // Supplementary plane characters. Only one code point should be deleted.
   // &#x1F441; is EYE.
   SetBodyContent("<p id='target'>&#x1F441;&#x1F441;&#x1F441;</p>");
-  Node* node = GetDocument().getElementById("target")->firstChild();
+  Node* node =
+      GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(Position(node, 4),
             PreviousPositionOf(Position(node, 6),
                                PositionMoveType::kBackwardDeletion));
@@ -983,7 +990,7 @@ TEST_F(EditingUtilitiesTest, previousPositionOf_Backspace_SurrogatePairs) {
 
   // BMP and Supplementary plane case.
   SetBodyContent("<p id='target'>&#x1F441;a&#x1F441;a</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(Position(node, 5),
             PreviousPositionOf(Position(node, 6),
                                PositionMoveType::kBackwardDeletion));
@@ -1000,14 +1007,14 @@ TEST_F(EditingUtilitiesTest, previousPositionOf_Backspace_SurrogatePairs) {
   // Edge case: broken surrogate pairs.
   SetBodyContent(
       "<p id='target'>&#xD83D;</p>");  // &#xD83D; is unpaired lead surrogate.
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(Position(node, 0),
             PreviousPositionOf(Position(node, 1),
                                PositionMoveType::kBackwardDeletion));
 
   // &#xD83D; is unpaired lead surrogate.
   SetBodyContent("<p id='target'>&#x1F441;&#xD83D;&#x1F441;</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(Position(node, 3),
             PreviousPositionOf(Position(node, 5),
                                PositionMoveType::kBackwardDeletion));
@@ -1020,7 +1027,7 @@ TEST_F(EditingUtilitiesTest, previousPositionOf_Backspace_SurrogatePairs) {
 
   SetBodyContent(
       "<p id='target'>a&#xD83D;a</p>");  // &#xD83D; is unpaired lead surrogate.
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(Position(node, 2),
             PreviousPositionOf(Position(node, 3),
                                PositionMoveType::kBackwardDeletion));
@@ -1033,14 +1040,14 @@ TEST_F(EditingUtilitiesTest, previousPositionOf_Backspace_SurrogatePairs) {
 
   SetBodyContent(
       "<p id='target'>&#xDC41;</p>");  // &#xDC41; is unpaired trail surrogate.
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(Position(node, 0),
             PreviousPositionOf(Position(node, 1),
                                PositionMoveType::kBackwardDeletion));
 
   // &#xDC41; is unpaired trail surrogate.
   SetBodyContent("<p id='target'>&#x1F441;&#xDC41;&#x1F441;</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(Position(node, 3),
             PreviousPositionOf(Position(node, 5),
                                PositionMoveType::kBackwardDeletion));
@@ -1053,7 +1060,7 @@ TEST_F(EditingUtilitiesTest, previousPositionOf_Backspace_SurrogatePairs) {
 
   // &#xDC41; is unpaired trail surrogate.
   SetBodyContent("<p id='target'>a&#xDC41;a</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(Position(node, 2),
             PreviousPositionOf(Position(node, 3),
                                PositionMoveType::kBackwardDeletion));
@@ -1066,7 +1073,7 @@ TEST_F(EditingUtilitiesTest, previousPositionOf_Backspace_SurrogatePairs) {
 
   // Edge case: specify middle of surrogate pairs.
   SetBodyContent("<p id='target'>&#x1F441;&#x1F441;&#x1F441</p>");
-  node = GetDocument().getElementById("target")->firstChild();
+  node = GetDocument().getElementById(AtomicString("target"))->firstChild();
   EXPECT_EQ(Position(node, 4),
             PreviousPositionOf(Position(node, 5),
                                PositionMoveType::kBackwardDeletion));

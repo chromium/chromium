@@ -1025,8 +1025,10 @@ TEST_P(VisualViewportTest, TestWebViewResizeCausesViewportConstrainedLayout) {
   RegisterMockedHttpURLLoad("pinch-viewport-fixed-pos.html");
   NavigateTo(base_url_ + "pinch-viewport-fixed-pos.html");
 
-  LayoutObject* navbar =
-      GetFrame()->GetDocument()->getElementById("navbar")->GetLayoutObject();
+  LayoutObject* navbar = GetFrame()
+                             ->GetDocument()
+                             ->getElementById(AtomicString("navbar"))
+                             ->GetLayoutObject();
 
   EXPECT_FALSE(navbar->NeedsLayout());
 
@@ -1161,7 +1163,8 @@ TEST_P(VisualViewportTest, ScrollIntoViewFractionalOffset) {
   LocalFrameView& frame_view = *WebView()->MainFrameImpl()->GetFrameView();
   ScrollableArea* layout_viewport_scrollable_area = frame_view.LayoutViewport();
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
-  Element* inputBox = GetFrame()->GetDocument()->getElementById("box");
+  Element* inputBox =
+      GetFrame()->GetDocument()->getElementById(AtomicString("box"));
 
   WebView()->SetPageScaleFactor(2);
 
@@ -1969,7 +1972,8 @@ TEST_P(VisualViewportTest, WindowDimensionsOnLoad) {
   WebView()->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   NavigateTo(base_url_ + "window_dimensions.html");
 
-  Element* output = GetFrame()->GetDocument()->getElementById("output");
+  Element* output =
+      GetFrame()->GetDocument()->getElementById(AtomicString("output"));
   DCHECK(output);
   EXPECT_EQ("1600x1200", output->innerHTML());
 }
@@ -1984,7 +1988,8 @@ TEST_P(VisualViewportTest, WindowDimensionsOnLoadWideContent) {
   WebView()->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   NavigateTo(base_url_ + "window_dimensions_wide_div.html");
 
-  Element* output = GetFrame()->GetDocument()->getElementById("output");
+  Element* output =
+      GetFrame()->GetDocument()->getElementById(AtomicString("output"));
   DCHECK(output);
   EXPECT_EQ("2000x1500", output->innerHTML());
 }
@@ -2517,7 +2522,7 @@ TEST_F(VisualViewportScrollIntoViewTest,
 TEST_F(VisualViewportScrollIntoViewTest, ScrollingToFixedFromJavascript) {
   VisualViewport& visual_viewport = WebView().GetPage()->GetVisualViewport();
   EXPECT_EQ(0.f, visual_viewport.GetScrollOffset().y());
-  GetDocument().getElementById("bottom")->scrollIntoView();
+  GetDocument().getElementById(AtomicString("bottom"))->scrollIntoView();
   EXPECT_EQ(100.f, visual_viewport.GetScrollOffset().y());
 }
 

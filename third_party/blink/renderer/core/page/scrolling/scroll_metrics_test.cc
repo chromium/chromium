@@ -149,7 +149,7 @@ TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
     </div>
   )HTML");
 
-  Element* box = GetDocument().getElementById("box");
+  Element* box = GetDocument().getElementById(AtomicString("box"));
   absl::optional<HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
@@ -195,7 +195,7 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
     </div>
   )HTML");
 
-  Element* box = GetDocument().getElementById("box");
+  Element* box = GetDocument().getElementById(AtomicString("box"));
   absl::optional<HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
@@ -239,7 +239,7 @@ TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
     </div>
   )HTML");
 
-  Element* box = GetDocument().getElementById("box");
+  Element* box = GetDocument().getElementById(AtomicString("box"));
   absl::optional<HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
@@ -297,7 +297,7 @@ TEST_P(ScrollMetricsTest, NestedScrollersTest) {
     </div>
   )HTML");
 
-  Element* box = GetDocument().getElementById("inner");
+  Element* box = GetDocument().getElementById(AtomicString("inner"));
   absl::optional<HistogramTester> histogram_tester;
   histogram_tester.emplace();
 

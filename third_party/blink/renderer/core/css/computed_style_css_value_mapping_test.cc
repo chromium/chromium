@@ -18,7 +18,7 @@ TEST_F(ComputedStyleCSSValueMappingTest, GetVariablesOnOldStyle) {
   GetDocument().body()->setInnerHTML("<div id=target style='--x:red'></div>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
 
   auto before = ComputedStyleCSSValueMapping::GetVariables(

@@ -74,7 +74,7 @@ namespace {
 
 void TestGreenDiv(DummyPageHolder& page_holder) {
   const Document& doc = page_holder.GetDocument();
-  Element* div = doc.getElementById("div");
+  Element* div = doc.getElementById(AtomicString("div"));
   ASSERT_TRUE(div);
   ASSERT_TRUE(div->GetComputedStyle());
   EXPECT_EQ(

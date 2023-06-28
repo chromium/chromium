@@ -558,7 +558,7 @@ TEST_F(DocumentTest, StyleVersion) {
     <div id='x'><span class='c'></span></div>
   )HTML");
 
-  Element* element = GetDocument().getElementById("x");
+  Element* element = GetDocument().getElementById(AtomicString("x"));
   EXPECT_TRUE(element);
 
   uint64_t previous_style_version = GetDocument().StyleVersion();
@@ -830,19 +830,22 @@ TEST_F(DocumentTest,
   // Asking for any element that is not affected by a sticky element should only
   // advance the lifecycle to layout clean.
   GetDocument().EnsurePaintLocationDataValidForNode(
-      GetDocument().getElementById("ancestor"), DocumentUpdateReason::kTest);
+      GetDocument().getElementById(AtomicString("ancestor")),
+      DocumentUpdateReason::kTest);
   EXPECT_EQ(DocumentLifecycle::kLayoutClean,
             GetDocument().Lifecycle().GetState());
 
   GetDocument().EnsurePaintLocationDataValidForNode(
-      GetDocument().getElementById("nonSticky"), DocumentUpdateReason::kTest);
+      GetDocument().getElementById(AtomicString("nonSticky")),
+      DocumentUpdateReason::kTest);
   EXPECT_EQ(DocumentLifecycle::kLayoutClean,
             GetDocument().Lifecycle().GetState());
 
   // However, asking for either the sticky element or it's descendents should
   // clean compositing inputs as well.
   GetDocument().EnsurePaintLocationDataValidForNode(
-      GetDocument().getElementById("sticky"), DocumentUpdateReason::kTest);
+      GetDocument().getElementById(AtomicString("sticky")),
+      DocumentUpdateReason::kTest);
   EXPECT_EQ(DocumentLifecycle::kLayoutClean,
             GetDocument().Lifecycle().GetState());
 
@@ -852,7 +855,8 @@ TEST_F(DocumentTest,
             GetDocument().Lifecycle().GetState());
 
   GetDocument().EnsurePaintLocationDataValidForNode(
-      GetDocument().getElementById("stickyChild"), DocumentUpdateReason::kTest);
+      GetDocument().getElementById(AtomicString("stickyChild")),
+      DocumentUpdateReason::kTest);
   EXPECT_EQ(DocumentLifecycle::kLayoutClean,
             GetDocument().Lifecycle().GetState());
 }
@@ -869,7 +873,7 @@ TEST_F(DocumentTest, ViewportPropagationNoRecalc) {
 
   int old_element_count = GetDocument().GetStyleEngine().StyleForElementCount();
 
-  Element* div = GetDocument().getElementById("recalc");
+  Element* div = GetDocument().getElementById(AtomicString("recalc"));
   div->setAttribute("style", "color:green");
   GetDocument().UpdateStyleAndLayoutTree();
 
@@ -946,7 +950,7 @@ TEST_F(DocumentTest, ElementFromPointOnScrollbar) {
   EXPECT_EQ(GetDocument().ElementFromPoint(1, 590), GetDocument().body());
 
   // Add width which will cause a horizontal scrollbar.
-  auto* content = GetDocument().getElementById("content");
+  auto* content = GetDocument().getElementById(AtomicString("content"));
   content->setAttribute("style", "width: 101%;");
 
   // A hit test on the horizontal scrollbar should not return an element because
@@ -969,7 +973,7 @@ TEST_F(DocumentTest, ElementFromPointWithPageZoom) {
   )HTML");
 
   // A hit test on the content div should hit it.
-  auto* content = GetDocument().getElementById("content");
+  auto* content = GetDocument().getElementById(AtomicString("content"));
   EXPECT_EQ(GetDocument().ElementFromPoint(1, 8), content);
   // A hit test below the content div should not hit it.
   EXPECT_EQ(GetDocument().ElementFromPoint(1, 12), GetDocument().body());
@@ -1743,14 +1747,18 @@ TEST_F(UnassociatedListedElementTest, GetUnassociatedListedElements) {
       CreateElement("input").WithIsValue("a-b");
   unassociated_custom_element->SetIdAttribute("unassociated_custom_element");
   GetDocument().body()->AppendChild(unassociated_custom_element);
-  ASSERT_TRUE(GetDocument().getElementById("unassociated_custom_element"));
+  ASSERT_TRUE(GetDocument().getElementById(
+      AtomicString("unassociated_custom_element")));
 
   // Add associated form-associated custom element.
   Element* associated_custom_element =
       CreateElement("input").WithIsValue("a-b");
   associated_custom_element->SetIdAttribute("associated_custom_element");
-  GetDocument().getElementById("form")->AppendChild(associated_custom_element);
-  ASSERT_TRUE(GetDocument().getElementById("associated_custom_element"));
+  GetDocument()
+      .getElementById(AtomicString("form"))
+      ->AppendChild(associated_custom_element);
+  ASSERT_TRUE(
+      GetDocument().getElementById(AtomicString("associated_custom_element")));
 
   ListedElement::List expected_elements;
   expected_elements.push_back(GetElement(u"unassociated_button"));
@@ -1821,7 +1829,7 @@ TEST_F(UnassociatedListedElementTest,
       GetDocument().UnassociatedListedElements();
   EXPECT_THAT(listed_elements, ElementsAre(GetElement("input_id")));
 
-  GetDocument().getElementById("input_id")->remove();
+  GetDocument().getElementById(AtomicString("input_id"))->remove();
   listed_elements = GetDocument().UnassociatedListedElements();
   EXPECT_EQ(0u, listed_elements.size());
 }
@@ -1841,7 +1849,7 @@ TEST_F(UnassociatedListedElementTest,
   EXPECT_THAT(listed_elements, ElementsAre(GetElement("input_id")));
 
   GetDocument()
-      .getElementById("input_id")
+      .getElementById(AtomicString("input_id"))
       ->setAttribute(html_names::kFormAttr, "form_id");
   listed_elements = GetDocument().UnassociatedListedElements();
   EXPECT_EQ(0u, listed_elements.size());
@@ -1861,7 +1869,7 @@ TEST_F(UnassociatedListedElementTest,
   EXPECT_EQ(0u, listed_elements.size());
 
   GetDocument()
-      .getElementById("input_id")
+      .getElementById(AtomicString("input_id"))
       ->removeAttribute(html_names::kFormAttr);
   listed_elements = GetDocument().UnassociatedListedElements();
   EXPECT_THAT(listed_elements, ElementsAre(GetElement("input_id")));
@@ -1880,7 +1888,7 @@ TEST_F(UnassociatedListedElementTest,
   EXPECT_EQ(0u, listed_elements.size());
 
   GetDocument()
-      .getElementById("input_id")
+      .getElementById(AtomicString("input_id"))
       ->setAttribute(html_names::kFormAttr, "nonexistent_id");
   listed_elements = GetDocument().UnassociatedListedElements();
   EXPECT_THAT(listed_elements, ElementsAre(GetElement("input_id")));
@@ -1933,7 +1941,7 @@ TEST_F(UnassociatedListedElementTest,
       GetDocument().UnassociatedListedElements();
   EXPECT_THAT(listed_elements, ElementsAre(GetElement("input_id")));
 
-  auto* div = GetDocument().getElementById("div_id");
+  auto* div = GetDocument().getElementById(AtomicString("div_id"));
   div->remove();
   listed_elements = GetDocument().UnassociatedListedElements();
   EXPECT_EQ(0u, listed_elements.size());
@@ -2095,10 +2103,10 @@ TEST_F(DocumentTest, ActiveModalDialog) {
     <dialog popover id="popover"></dialog>
   )HTML");
 
-  HTMLDialogElement* modal =
-      DynamicTo<HTMLDialogElement>(GetDocument().getElementById("modal"));
-  HTMLDialogElement* popover =
-      DynamicTo<HTMLDialogElement>(GetDocument().getElementById("popover"));
+  HTMLDialogElement* modal = DynamicTo<HTMLDialogElement>(
+      GetDocument().getElementById(AtomicString("modal")));
+  HTMLDialogElement* popover = DynamicTo<HTMLDialogElement>(
+      GetDocument().getElementById(AtomicString("popover")));
 
   ASSERT_TRUE(modal);
   ASSERT_TRUE(popover);

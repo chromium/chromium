@@ -119,16 +119,16 @@ TEST_F(EphemeralRangeTest, rangeTraversalLimitedDOM) {
   SetBodyContent(body_content);
 
   Range* until_b = GetBodyRange();
-  until_b->setEnd(GetDocument().getElementById("one"), 0,
+  until_b->setEnd(GetDocument().getElementById(AtomicString("one")), 0,
                   IGNORE_EXCEPTION_FOR_TESTING);
   EXPECT_EQ("[BODY][P id=\"host\"][B id=\"zero\"][#text \"0\"][B id=\"one\"]",
             TraverseRange<>(until_b));
   EXPECT_EQ(TraverseRange<>(until_b), TraverseRange(EphemeralRange(until_b)));
 
   Range* from_b_to_span = GetBodyRange();
-  from_b_to_span->setStart(GetDocument().getElementById("one"), 0,
+  from_b_to_span->setStart(GetDocument().getElementById(AtomicString("one")), 0,
                            IGNORE_EXCEPTION_FOR_TESTING);
-  from_b_to_span->setEnd(GetDocument().getElementById("three"), 0,
+  from_b_to_span->setEnd(GetDocument().getElementById(AtomicString("three")), 0,
                          IGNORE_EXCEPTION_FOR_TESTING);
   EXPECT_EQ("[#text \"1\"][B id=\"two\"][#text \"22\"][SPAN id=\"three\"]",
             TraverseRange<>(from_b_to_span));
@@ -153,11 +153,12 @@ TEST_F(EphemeralRangeTest, rangeTraversalLimitedFlatTree) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  const PositionInFlatTree start_position(GetDocument().getElementById("one"),
-                                          0);
-  const PositionInFlatTree limit_position(shadow_root->getElementById("five"),
-                                          0);
-  const PositionInFlatTree end_position(shadow_root->getElementById("six"), 0);
+  const PositionInFlatTree start_position(
+      GetDocument().getElementById(AtomicString("one")), 0);
+  const PositionInFlatTree limit_position(
+      shadow_root->getElementById(AtomicString("five")), 0);
+  const PositionInFlatTree end_position(
+      shadow_root->getElementById(AtomicString("six")), 0);
   const EphemeralRangeInFlatTree from_b_to_span(start_position, limit_position);
   EXPECT_EQ("[#text \"1\"][SPAN id=\"five\"]", TraverseRange(from_b_to_span));
 
@@ -195,10 +196,12 @@ TEST_F(EphemeralRangeTest, commonAncesstorDOM) {
       "</p>";
   SetBodyContent(body_content);
 
-  const Position start_position(GetDocument().getElementById("one"), 0);
-  const Position end_position(GetDocument().getElementById("two"), 0);
+  const Position start_position(
+      GetDocument().getElementById(AtomicString("one")), 0);
+  const Position end_position(GetDocument().getElementById(AtomicString("two")),
+                              0);
   const EphemeralRange range(start_position, end_position);
-  EXPECT_EQ(GetDocument().getElementById("host"),
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("host")),
             range.CommonAncestorContainer());
 }
 
@@ -218,11 +221,12 @@ TEST_F(EphemeralRangeTest, commonAncesstorFlatTree) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  const PositionInFlatTree start_position(GetDocument().getElementById("one"),
-                                          0);
-  const PositionInFlatTree end_position(shadow_root->getElementById("five"), 0);
+  const PositionInFlatTree start_position(
+      GetDocument().getElementById(AtomicString("one")), 0);
+  const PositionInFlatTree end_position(
+      shadow_root->getElementById(AtomicString("five")), 0);
   const EphemeralRangeInFlatTree range(start_position, end_position);
-  EXPECT_EQ(GetDocument().getElementById("host"),
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("host")),
             range.CommonAncestorContainer());
 }
 
@@ -230,8 +234,8 @@ TEST_F(EphemeralRangeTest, EquivalentPositions) {
   SetBodyContent(
       "<div id='first'></div>"
       "<div id='last'></div>");
-  Element* first = GetDocument().getElementById("first");
-  Element* last = GetDocument().getElementById("last");
+  Element* first = GetDocument().getElementById(AtomicString("first"));
+  Element* last = GetDocument().getElementById(AtomicString("last"));
   Position after_first = Position::AfterNode(*first);
   Position before_last = Position::BeforeNode(*last);
 

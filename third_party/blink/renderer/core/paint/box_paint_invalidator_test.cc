@@ -42,7 +42,7 @@ class BoxPaintInvalidatorTest : public PaintAndRasterInvalidationTest {
     SCOPED_TRACE(test_title);
 
     UpdateAllLifecyclePhasesForTest();
-    auto& target = *GetDocument().getElementById("target");
+    auto& target = *GetDocument().getElementById(AtomicString("target"));
     auto& box = *target.GetLayoutBox();
     auto paint_offset = box.FirstFragment().PaintOffset();
     box.SetShouldCheckForPaintInvalidation();
@@ -99,7 +99,7 @@ INSTANTIATE_PAINT_TEST_SUITE_P(BoxPaintInvalidatorTest);
 // (tested in paint_and_raster_invalidation_test.cc).
 TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonEmptyContent) {
   SetUpHTML();
-  auto& target = *GetDocument().getElementById("target");
+  auto& target = *GetDocument().getElementById(AtomicString("target"));
   auto& box = *target.GetLayoutBox();
   // Remove border.
   target.setAttribute(html_names::kClassAttr, "");
@@ -127,7 +127,7 @@ TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonEmptyContent) {
 
 TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonBasic) {
   SetUpHTML();
-  auto& target = *GetDocument().getElementById("target");
+  auto& target = *GetDocument().getElementById(AtomicString("target"));
   auto& box = *target.GetLayoutBox();
   // Remove border.
   target.setAttribute(html_names::kClassAttr, "");
@@ -192,7 +192,7 @@ TEST_P(BoxPaintInvalidatorTest,
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  auto& target = *GetDocument().getElementById("target");
+  auto& target = *GetDocument().getElementById(AtomicString("target"));
   target.setAttribute(html_names::kStyleAttr, "");
   UpdateAllLifecyclePhasesForTest();
   // This test passes if no underinvalidation occurs.
@@ -200,7 +200,7 @@ TEST_P(BoxPaintInvalidatorTest,
 
 TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonOtherCases) {
   SetUpHTML();
-  auto& target = *GetDocument().getElementById("target");
+  auto& target = *GetDocument().getElementById(AtomicString("target"));
 
   // The target initially has border.
   ExpectFullPaintInvalidationOnGeometryChange("With border");
@@ -226,7 +226,7 @@ TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonOtherCases) {
 
 TEST_P(BoxPaintInvalidatorTest, ComputePaintInvalidationReasonOutline) {
   SetUpHTML();
-  auto& target = *GetDocument().getElementById("target");
+  auto& target = *GetDocument().getElementById(AtomicString("target"));
   auto* object = target.GetLayoutObject();
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
@@ -264,7 +264,7 @@ TEST_P(BoxPaintInvalidatorTest, InvalidateHitTestOnCompositingStyleChange) {
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  auto& target = *GetDocument().getElementById("target");
+  auto& target = *GetDocument().getElementById(AtomicString("target"));
   target.setAttribute(html_names::kStyleAttr, "");
   UpdateAllLifecyclePhasesForTest();
   // This test passes if no under-invalidation occurs.

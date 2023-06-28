@@ -31,7 +31,8 @@ TEST_F(MeterShadowElementTest, LayoutObjectIsNotNeeded) {
     <meter id='m' style='-webkit-appearance:none' />
   )HTML");
 
-  auto* meter = To<HTMLMeterElement>(GetDocument().getElementById("m"));
+  auto* meter =
+      To<HTMLMeterElement>(GetDocument().getElementById(AtomicString("m")));
   ASSERT_TRUE(meter);
 
   auto* shadow_element = To<Element>(meter->GetShadowRoot()->firstChild());
@@ -54,7 +55,8 @@ TEST_F(MeterShadowElementTest, OnlyChangeDirectionOnShadowElement) {
     <meter id='m' style='writing-mode:vertical-lr; direction: ltr;' />
   )HTML");
 
-  auto* meter = To<HTMLMeterElement>(GetDocument().getElementById("m"));
+  auto* meter =
+      To<HTMLMeterElement>(GetDocument().getElementById(AtomicString("m")));
   ASSERT_TRUE(meter);
 
   auto* shadow_element = To<Element>(meter->GetShadowRoot()->firstChild());

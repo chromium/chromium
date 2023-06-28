@@ -174,18 +174,22 @@ TEST_F(MAYBE_ScrollAnchorTest, VisualViewportAnchors) {
   EXPECT_EQ(nullptr, GetScrollAnchor(l_viewport).AnchorObject());
 
   // Scroll the visual viewport to bring #text to the top.
-  int top =
-      GetDocument().getElementById("text")->getBoundingClientRect()->top();
+  int top = GetDocument()
+                .getElementById(AtomicString("text"))
+                ->getBoundingClientRect()
+                ->top();
   v_viewport.SetLocation(gfx::PointF(0, top));
 
-  SetHeight(GetDocument().getElementById("div"), 10);
-  EXPECT_EQ(GetDocument().getElementById("text")->GetLayoutObject(),
-            GetScrollAnchor(l_viewport).AnchorObject());
+  SetHeight(GetDocument().getElementById(AtomicString("div")), 10);
+  EXPECT_EQ(
+      GetDocument().getElementById(AtomicString("text"))->GetLayoutObject(),
+      GetScrollAnchor(l_viewport).AnchorObject());
   EXPECT_EQ(top - 90, v_viewport.ScrollOffsetInt().y());
 
-  SetHeight(GetDocument().getElementById("div"), 100);
-  EXPECT_EQ(GetDocument().getElementById("text")->GetLayoutObject(),
-            GetScrollAnchor(l_viewport).AnchorObject());
+  SetHeight(GetDocument().getElementById(AtomicString("div")), 100);
+  EXPECT_EQ(
+      GetDocument().getElementById(AtomicString("text"))->GetLayoutObject(),
+      GetScrollAnchor(l_viewport).AnchorObject());
   EXPECT_EQ(top, v_viewport.ScrollOffsetInt().y());
 
   // Scrolling the visual viewport should clear the anchor.
@@ -209,15 +213,16 @@ TEST_F(MAYBE_ScrollAnchorTest, ClearScrollAnchorsOnAncestors) {
   ScrollableArea* viewport = LayoutViewport();
 
   ScrollLayoutViewport(ScrollOffset(0, 250));
-  SetHeight(GetDocument().getElementById("changer"), 300);
+  SetHeight(GetDocument().getElementById(AtomicString("changer")), 300);
 
   EXPECT_EQ(350, viewport->ScrollOffsetInt().y());
-  EXPECT_EQ(GetDocument().getElementById("anchor")->GetLayoutObject(),
-            GetScrollAnchor(viewport).AnchorObject());
+  EXPECT_EQ(
+      GetDocument().getElementById(AtomicString("anchor"))->GetLayoutObject(),
+      GetScrollAnchor(viewport).AnchorObject());
 
   // Scrolling the nested scroller should clear the anchor on the main frame.
-  ScrollableArea* scroller =
-      ScrollerForElement(GetDocument().getElementById("scroller"));
+  ScrollableArea* scroller = ScrollerForElement(
+      GetDocument().getElementById(AtomicString("scroller")));
   scroller->ScrollBy(ScrollOffset(0, 100), mojom::blink::ScrollType::kUser);
   EXPECT_EQ(nullptr, GetScrollAnchor(viewport).AnchorObject());
 }
@@ -242,9 +247,9 @@ TEST_F(MAYBE_ScrollAnchorTest, AncestorClearingWithSiblingReference) {
       <div class='space'></div>
     </div>
   )HTML");
-  Element* s1 = GetDocument().getElementById("s1");
-  Element* s2 = GetDocument().getElementById("s2");
-  Element* anchor = GetDocument().getElementById("anchor");
+  Element* s1 = GetDocument().getElementById(AtomicString("s1"));
+  Element* s2 = GetDocument().getElementById(AtomicString("s2"));
+  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
 
   // Set non-zero scroll offsets for #s1 and #document
   s1->setScrollTop(100);
@@ -274,8 +279,9 @@ TEST_F(MAYBE_ScrollAnchorTest, FractionalOffsetsAreRoundedBeforeComparing) {
   ScrollableArea* viewport = LayoutViewport();
   ScrollLayoutViewport(ScrollOffset(0, 100));
 
-  GetDocument().getElementById("block1")->setAttribute(html_names::kStyleAttr,
-                                                       "height: 50.6px");
+  GetDocument()
+      .getElementById(AtomicString("block1"))
+      ->setAttribute(html_names::kStyleAttr, "height: 50.6px");
   Update();
 
   EXPECT_EQ(101, viewport->ScrollOffsetInt().y());
@@ -292,8 +298,9 @@ TEST_F(MAYBE_ScrollAnchorTest, AvoidStickyAnchorWhichMovesWithScroll) {
   ScrollableArea* viewport = LayoutViewport();
   ScrollLayoutViewport(ScrollOffset(0, 60));
 
-  GetDocument().getElementById("block1")->setAttribute(html_names::kStyleAttr,
-                                                       "height: 100px");
+  GetDocument()
+      .getElementById(AtomicString("block1"))
+      ->setAttribute(html_names::kStyleAttr, "height: 100px");
   Update();
 
   EXPECT_EQ(60, viewport->ScrollOffsetInt().y());
@@ -313,10 +320,10 @@ TEST_F(MAYBE_ScrollAnchorTest, AnchorWithLayerInScrollingDiv) {
     </div></div>
   )HTML");
 
-  ScrollableArea* scroller =
-      ScrollerForElement(GetDocument().getElementById("scroller"));
-  Element* block1 = GetDocument().getElementById("block1");
-  Element* block2 = GetDocument().getElementById("block2");
+  ScrollableArea* scroller = ScrollerForElement(
+      GetDocument().getElementById(AtomicString("scroller")));
+  Element* block1 = GetDocument().getElementById(AtomicString("block1"));
+  Element* block2 = GetDocument().getElementById(AtomicString("block2"));
 
   scroller->ScrollBy(ScrollOffset(0, 150), mojom::blink::ScrollType::kUser);
 
@@ -350,11 +357,12 @@ TEST_F(MAYBE_ScrollAnchorTest, AnchorWhileDraggingScrollbar) {
     <div id='block2'>def</div>
     </div></div>
   )HTML");
-  Element* scroller_element = GetDocument().getElementById("scroller");
+  Element* scroller_element =
+      GetDocument().getElementById(AtomicString("scroller"));
   ScrollableArea* scroller = ScrollerForElement(scroller_element);
 
-  Element* block1 = GetDocument().getElementById("block1");
-  Element* block2 = GetDocument().getElementById("block2");
+  Element* block1 = GetDocument().getElementById(AtomicString("block1"));
+  Element* block2 = GetDocument().getElementById(AtomicString("block2"));
 
   Scrollbar* scrollbar = VerticalScrollbarForElement(scroller_element);
   scroller->MouseEnteredScrollbar(*scrollbar);
@@ -404,11 +412,11 @@ TEST_F(MAYBE_ScrollAnchorTest, RemoveScrollerWithLayerInScrollingDiv) {
   )HTML");
 
   ScrollableArea* viewport = LayoutViewport();
-  ScrollableArea* scroller =
-      ScrollerForElement(GetDocument().getElementById("scroller"));
-  Element* changer1 = GetDocument().getElementById("changer1");
-  Element* changer2 = GetDocument().getElementById("changer2");
-  Element* anchor = GetDocument().getElementById("anchor");
+  ScrollableArea* scroller = ScrollerForElement(
+      GetDocument().getElementById(AtomicString("scroller")));
+  Element* changer1 = GetDocument().getElementById(AtomicString("changer1"));
+  Element* changer2 = GetDocument().getElementById(AtomicString("changer2"));
+  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
 
   scroller->ScrollBy(ScrollOffset(0, 150), mojom::blink::ScrollType::kUser);
   ScrollLayoutViewport(ScrollOffset(0, 50));
@@ -424,7 +432,7 @@ TEST_F(MAYBE_ScrollAnchorTest, RemoveScrollerWithLayerInScrollingDiv) {
             GetScrollAnchor(viewport).AnchorObject());
 
   // Test that the inner scroller can be destroyed without crashing.
-  GetDocument().getElementById("scroller")->remove();
+  GetDocument().getElementById(AtomicString("scroller"))->remove();
   Update();
 }
 
@@ -452,10 +460,10 @@ TEST_F(MAYBE_ScrollAnchorTest, FlexboxDelayedClampingAlsoDelaysAdjustment) {
     </div>
   )HTML");
 
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   scroller->setScrollTop(100);
 
-  SetHeight(GetDocument().getElementById("before"), 100);
+  SetHeight(GetDocument().getElementById(AtomicString("before")), 100);
   EXPECT_EQ(150, ScrollerForElement(scroller)->ScrollOffsetInt().y());
 }
 
@@ -482,11 +490,12 @@ TEST_F(MAYBE_ScrollAnchorTest, FlexboxDelayedAdjustmentRespectsSANACLAP) {
     </div>
   )HTML");
 
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   scroller->setScrollTop(100);
 
-  GetDocument().getElementById("spacer")->setAttribute(html_names::kStyleAttr,
-                                                       "margin-top: 50px");
+  GetDocument()
+      .getElementById(AtomicString("spacer"))
+      ->setAttribute(html_names::kStyleAttr, "margin-top: 50px");
   Update();
   EXPECT_EQ(100, ScrollerForElement(scroller)->ScrollOffsetInt().y());
 }
@@ -556,9 +565,9 @@ TEST_F(MAYBE_ScrollAnchorTest, SerializeAnchorSetsIsAnchorBit) {
   ScrollLayoutViewport(ScrollOffset(0, 50));
   ValidateSerializedAnchor("#anchor", LayoutPoint(0, -50));
 
-  Element* s1 = GetDocument().getElementById("s1");
-  Element* anchor = GetDocument().getElementById("anchor");
-  // Remove the anchor. If the IsScrollAnchorOBject bit is set as it should be,
+  Element* s1 = GetDocument().getElementById(AtomicString("s1"));
+  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
+  // Remove the anchor. If the IsScrollAnchorObject bit is set as it should be,
   // the anchor object will get cleaned up correctly.
   s1->RemoveChild(anchor);
   // Trigger a re-layout, which will crash if it wasn't properly cleaned up when
@@ -579,7 +588,7 @@ TEST_F(MAYBE_ScrollAnchorTest, SerializeAnchorSetsSavedRelativeOffset) {
   GetScrollAnchor(LayoutViewport()).Clear();
   ValidateSerializedAnchor("#block2", LayoutPoint(0, -50));
 
-  SetHeight(GetDocument().getElementById("block1"), 200);
+  SetHeight(GetDocument().getElementById(AtomicString("block1")), 200);
   EXPECT_EQ(LayoutViewport()->ScrollOffsetInt().y(), 250);
 }
 
@@ -802,7 +811,7 @@ TEST_F(MAYBE_ScrollAnchorTest, SerializeAnchorFailsForShadowDOMElement) {
       <div id='host'></div>
       <div></div>
       <div></div>)HTML");
-  auto* host = GetDocument().getElementById("host");
+  auto* host = GetDocument().getElementById(AtomicString("host"));
   auto& shadow_root = host->AttachShadowRootInternal(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(R"HTML(
       <style>
@@ -837,10 +846,10 @@ TEST_F(MAYBE_ScrollAnchorTest, RestoreAnchorSimple) {
       GetScrollAnchor(LayoutViewport()).RestoreAnchor(serialized_anchor));
   EXPECT_EQ(LayoutViewport()->ScrollOffsetInt().y(), 100);
 
-  SetHeight(GetDocument().getElementById("block1"), 200);
+  SetHeight(GetDocument().getElementById(AtomicString("block1")), 200);
   EXPECT_EQ(LayoutViewport()->ScrollOffsetInt().y(), 200);
 
-  SetHeight(GetDocument().getElementById("block1"), 50);
+  SetHeight(GetDocument().getElementById(AtomicString("block1")), 50);
   EXPECT_EQ(LayoutViewport()->ScrollOffsetInt().y(), 50);
 }
 
@@ -870,7 +879,7 @@ TEST_F(MAYBE_ScrollAnchorTest, RestoreAnchorNonTrivialSelector) {
 
   EXPECT_EQ(LayoutViewport()->ScrollOffsetInt().y(), 350);
 
-  SetHeight(GetDocument().getElementById("block1"), 200);
+  SetHeight(GetDocument().getElementById(AtomicString("block1")), 200);
   EXPECT_EQ(LayoutViewport()->ScrollOffsetInt().y(), 450);
 }
 
@@ -918,7 +927,7 @@ TEST_F(MAYBE_ScrollAnchorTest, RestoreAnchorSucceedsForNonBoxNonTextElement) {
 
   EXPECT_EQ(LayoutViewport()->ScrollOffsetInt().y(), 100);
 
-  SetHeight(GetDocument().getElementById("block1"), 200);
+  SetHeight(GetDocument().getElementById(AtomicString("block1")), 200);
   EXPECT_EQ(LayoutViewport()->ScrollOffsetInt().y(), 200);
 
   SerializedAnchor serialized =
@@ -978,7 +987,7 @@ TEST_F(MAYBE_ScrollAnchorTest, DeleteAnonymousBlockCrash) {
   // https://chromium-review.googlesource.com/1193868 and therefore crash.
 
   ScrollLayoutViewport(ScrollOffset(0, 20000));
-  GetDocument().getElementById("deleteMe")->remove();
+  GetDocument().getElementById(AtomicString("deleteMe"))->remove();
   Update();
 }
 
@@ -1004,15 +1013,17 @@ TEST_F(MAYBE_ScrollAnchorTest, ClampAdjustsAnchorAnimation) {
   LayoutViewport()->SetScrollOffset(ScrollOffset(0, 2000),
                                     mojom::blink::ScrollType::kUser);
   Update();
-  GetDocument().getElementById("hidden")->setAttribute(html_names::kStyleAttr,
-                                                       "display:block");
+  GetDocument()
+      .getElementById(AtomicString("hidden"))
+      ->setAttribute(html_names::kStyleAttr, "display:block");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_EQ(gfx::Vector2d(0, 200),
             LayoutViewport()
                 ->GetScrollAnimator()
                 .ImplOnlyAnimationAdjustmentForTesting());
-  GetDocument().getElementById("hidden")->setAttribute(html_names::kStyleAttr,
-                                                       "");
+  GetDocument()
+      .getElementById(AtomicString("hidden"))
+      ->setAttribute(html_names::kStyleAttr, "");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   // The clamping scroll after resizing layout overflow to be smaller
   // should adjust the animation back to 0.
@@ -1028,7 +1039,7 @@ TEST_F(MAYBE_ScrollAnchorTest, DynamicMultiColumnCrash) {
         writing-mode:vertical-rl;">
     x</div>)HTML");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  Element* target = GetDocument().getElementById("id125");
+  Element* target = GetDocument().getElementById(AtomicString("id125"));
   target->SetInlineStyleProperty(CSSPropertyID::kFontSize, "0");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   target->SetInlineStyleProperty(CSSPropertyID::kColumns, "2");
@@ -1157,15 +1168,18 @@ TEST_F(MAYBE_ScrollAnchorFindInPageTest, FindInPageResultPrioritized) {
   ASSERT_EQ(1, client.Count());
 
   // Save the old bounds for comparison.
-  auto* old_bounds =
-      GetDocument().getElementById("target")->getBoundingClientRect();
+  auto* old_bounds = GetDocument()
+                         .getElementById(AtomicString("target"))
+                         ->getBoundingClientRect();
 
-  GetDocument().getElementById("growing")->setAttribute(html_names::kStyleAttr,
-                                                        "height: 3000px");
+  GetDocument()
+      .getElementById(AtomicString("growing"))
+      ->setAttribute(html_names::kStyleAttr, "height: 3000px");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* new_bounds =
-      GetDocument().getElementById("target")->getBoundingClientRect();
+  auto* new_bounds = GetDocument()
+                         .getElementById(AtomicString("target"))
+                         ->getBoundingClientRect();
 
   // The y coordinate of the target should not change.
   EXPECT_EQ(old_bounds->y(), new_bounds->y());
@@ -1201,22 +1215,27 @@ TEST_F(MAYBE_ScrollAnchorFindInPageTest, FocusPrioritizedOverFindInPage) {
   Find(search_text, client);
   ASSERT_EQ(1, client.Count());
 
-  GetDocument().getElementById("focus_target")->Focus();
+  GetDocument().getElementById(AtomicString("focus_target"))->Focus();
 
   // Save the old bounds for comparison.
-  auto* old_focus_bounds =
-      GetDocument().getElementById("focus_target")->getBoundingClientRect();
-  auto* old_find_bounds =
-      GetDocument().getElementById("find_target")->getBoundingClientRect();
+  auto* old_focus_bounds = GetDocument()
+                               .getElementById(AtomicString("focus_target"))
+                               ->getBoundingClientRect();
+  auto* old_find_bounds = GetDocument()
+                              .getElementById(AtomicString("find_target"))
+                              ->getBoundingClientRect();
 
-  GetDocument().getElementById("growing")->setAttribute(html_names::kStyleAttr,
-                                                        "height: 3000px");
+  GetDocument()
+      .getElementById(AtomicString("growing"))
+      ->setAttribute(html_names::kStyleAttr, "height: 3000px");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* new_focus_bounds =
-      GetDocument().getElementById("focus_target")->getBoundingClientRect();
-  auto* new_find_bounds =
-      GetDocument().getElementById("find_target")->getBoundingClientRect();
+  auto* new_focus_bounds = GetDocument()
+                               .getElementById(AtomicString("focus_target"))
+                               ->getBoundingClientRect();
+  auto* new_find_bounds = GetDocument()
+                              .getElementById(AtomicString("find_target"))
+                              ->getBoundingClientRect();
 
   // `focus_target` should remain where it is, since it is prioritized.
   // `find_target`, however, is shifted.
@@ -1252,19 +1271,22 @@ TEST_F(MAYBE_ScrollAnchorFindInPageTest, FocusedUnderStickyIsSkipped) {
   LayoutViewport()->SetScrollOffset(ScrollOffset(0, 150),
                                     mojom::blink::ScrollType::kUser);
 
-  GetDocument().getElementById("target")->Focus();
+  GetDocument().getElementById(AtomicString("target"))->Focus();
 
   // Save the old bounds for comparison. Use #check, since sticky won't move
   // regardless of scroll anchoring.
-  auto* old_bounds =
-      GetDocument().getElementById("check")->getBoundingClientRect();
+  auto* old_bounds = GetDocument()
+                         .getElementById(AtomicString("check"))
+                         ->getBoundingClientRect();
 
-  GetDocument().getElementById("growing")->setAttribute(html_names::kStyleAttr,
-                                                        "height: 3000px");
+  GetDocument()
+      .getElementById(AtomicString("growing"))
+      ->setAttribute(html_names::kStyleAttr, "height: 3000px");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* new_bounds =
-      GetDocument().getElementById("check")->getBoundingClientRect();
+  auto* new_bounds = GetDocument()
+                         .getElementById(AtomicString("check"))
+                         ->getBoundingClientRect();
 
   // The y coordinate of #check should change since #target is not a valid
   // anchor, so we should have selected one of the spacers as the anchor.
@@ -1291,8 +1313,8 @@ TEST_F(ScrollAnchorPageTest, SvgRelativeBoundsCrashAfterClearLayoutResults) {
   Document& doc = GetDocument();
   doc.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
-  doc.getElementById("target")->scrollIntoView();
-  doc.getElementById("scrollbarSummoner")
+  doc.getElementById(AtomicString("target"))->scrollIntoView();
+  doc.getElementById(AtomicString("scrollbarSummoner"))
       ->setAttribute(html_names::kStyleAttr,
                      "display:block; contain:size; height:0");
 

@@ -152,7 +152,7 @@ TEST_F(FlatTreeTraversalTest, ChildrenOf) {
       "<p id=sample>ZERO<span slot=three>three</b><span "
       "slot=one>one</b>FOUR</p>",
       "zero<slot name=one></slot>two<slot name=three></slot>four", 0);
-  Element* const sample = GetDocument().getElementById("sample");
+  Element* const sample = GetDocument().getElementById(AtomicString("sample"));
 
   HeapVector<Member<Node>> expected_nodes;
   for (Node* runner = FlatTreeTraversal::FirstChild(*sample); runner;
@@ -318,7 +318,7 @@ TEST_F(FlatTreeTraversalTest, SkippingChildrenFunctions) {
 
 TEST_F(FlatTreeTraversalTest, AncestorsOf) {
   SetupDocumentTree("<div><div><div id=sample></div></div></div>");
-  Element* const sample = GetDocument().getElementById("sample");
+  Element* const sample = GetDocument().getElementById(AtomicString("sample"));
 
   HeapVector<Member<Node>> expected_nodes;
   for (Node* parent = FlatTreeTraversal::Parent(*sample); parent;
@@ -335,7 +335,7 @@ TEST_F(FlatTreeTraversalTest, AncestorsOf) {
 
 TEST_F(FlatTreeTraversalTest, InclusiveAncestorsOf) {
   SetupDocumentTree("<div><div><div id=sample></div></div></div>");
-  Element* const sample = GetDocument().getElementById("sample");
+  Element* const sample = GetDocument().getElementById(AtomicString("sample"));
 
   HeapVector<Member<Node>> expected_nodes;
   for (Node* parent = sample; parent;

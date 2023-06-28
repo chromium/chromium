@@ -83,8 +83,8 @@ TEST_F(CSSStyleSheetTest,
 TEST_F(CSSStyleSheetTest, AdoptedStyleSheetMediaQueryEvalChange) {
   SetBodyInnerHTML("<div id=green></div><div id=blue></div>");
 
-  Element* green = GetDocument().getElementById("green");
-  Element* blue = GetDocument().getElementById("blue");
+  Element* green = GetDocument().getElementById(AtomicString("green"));
+  Element* blue = GetDocument().getElementById(AtomicString("blue"));
 
   CSSStyleSheetInit* init = CSSStyleSheetInit::Create();
   CSSStyleSheet* sheet =

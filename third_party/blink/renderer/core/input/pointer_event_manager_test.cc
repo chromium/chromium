@@ -787,7 +787,7 @@ TEST_F(PanActionPointerEventTest, PanActionNoneAndScroll) {
 
   // Pan action to be scroll when element under pointer allows panning but does
   // not allow both swipe to move cursor and stylus writing.
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   target->setAttribute(html_names::kStyleAttr, "touch-action: pan");
   widget->UpdateLifecycle(WebLifecycleUpdate::kAll,
                           DocumentUpdateReason::kTest);

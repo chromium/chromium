@@ -183,7 +183,7 @@ TEST_F(TextFragmentAnchorTest, BasicSmokeTest) {
 
   Compositor().BeginFrame();
 
-  Element& p = *GetDocument().getElementById("text");
+  Element& p = *GetDocument().getElementById(AtomicString("text"));
 
   EXPECT_EQ(p, *GetDocument().CssTarget());
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)))
@@ -267,7 +267,7 @@ TEST_F(TextFragmentAnchorTest, MultipleMatches) {
 
   Compositor().BeginFrame();
 
-  Element& first = *GetDocument().getElementById("first");
+  Element& first = *GetDocument().getElementById(AtomicString("first"));
 
   EXPECT_EQ(first, *GetDocument().CssTarget());
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(first)))
@@ -302,7 +302,7 @@ TEST_F(TextFragmentAnchorTest, NestedBlocks) {
 
   Compositor().BeginFrame();
 
-  Element& match = *GetDocument().getElementById("match");
+  Element& match = *GetDocument().getElementById(AtomicString("match"));
 
   EXPECT_EQ(match, *GetDocument().CssTarget());
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(match)))
@@ -338,7 +338,7 @@ TEST_F(TextFragmentAnchorTest, MultipleTextFragments) {
 
   Compositor().BeginFrame();
 
-  Element& first = *GetDocument().getElementById("first");
+  Element& first = *GetDocument().getElementById(AtomicString("first"));
 
   EXPECT_EQ(first, *GetDocument().CssTarget());
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(first)))
@@ -375,7 +375,7 @@ TEST_F(TextFragmentAnchorTest, FirstTextFragmentNotFound) {
 
   Compositor().BeginFrame();
 
-  Element& second = *GetDocument().getElementById("second");
+  Element& second = *GetDocument().getElementById(AtomicString("second"));
 
   EXPECT_EQ(second, *GetDocument().CssTarget());
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(second)))
@@ -408,7 +408,7 @@ TEST_F(TextFragmentAnchorTest, OnlyFirstTextFragmentFound) {
 
   Compositor().BeginFrame();
 
-  Element& p = *GetDocument().getElementById("text");
+  Element& p = *GetDocument().getElementById(AtomicString("text"));
 
   EXPECT_EQ(p, *GetDocument().CssTarget());
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)))
@@ -474,11 +474,13 @@ TEST_F(TextFragmentAnchorTest, SameElementTextRange) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  EXPECT_EQ(*GetDocument().getElementById("text"), *GetDocument().CssTarget());
+  EXPECT_EQ(*GetDocument().getElementById(AtomicString("text")),
+            *GetDocument().CssTarget());
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 
   // Expect marker on "This is a test page".
-  auto* text = To<Text>(GetDocument().getElementById("text")->firstChild());
+  auto* text = To<Text>(
+      GetDocument().getElementById(AtomicString("text"))->firstChild());
   DocumentMarkerVector markers = GetDocument().Markers().MarkersFor(
       *text, DocumentMarker::MarkerTypes::TextFragment());
   ASSERT_EQ(1u, markers.size());
@@ -511,7 +513,8 @@ TEST_F(TextFragmentAnchorTest, NeighboringElementTextRange) {
   EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
 
   // Expect marker on "test page"
-  auto* text1 = To<Text>(GetDocument().getElementById("text1")->firstChild());
+  auto* text1 = To<Text>(
+      GetDocument().getElementById(AtomicString("text1"))->firstChild());
   DocumentMarkerVector markers = GetDocument().Markers().MarkersFor(
       *text1, DocumentMarker::MarkerTypes::TextFragment());
   ASSERT_EQ(1u, markers.size());
@@ -519,7 +522,8 @@ TEST_F(TextFragmentAnchorTest, NeighboringElementTextRange) {
   EXPECT_EQ(19u, markers.at(0)->EndOffset());
 
   // Expect marker on "with another paragraph"
-  auto* text2 = To<Text>(GetDocument().getElementById("text2")->firstChild());
+  auto* text2 = To<Text>(
+      GetDocument().getElementById(AtomicString("text2"))->firstChild());
   markers = GetDocument().Markers().MarkersFor(
       *text2, DocumentMarker::MarkerTypes::TextFragment());
   ASSERT_EQ(1u, markers.size());
@@ -554,7 +558,8 @@ TEST_F(TextFragmentAnchorTest, DifferentDepthElementTextRange) {
   EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
 
   // Expect marker on "test page"
-  auto* text1 = To<Text>(GetDocument().getElementById("text1")->firstChild());
+  auto* text1 = To<Text>(
+      GetDocument().getElementById(AtomicString("text1"))->firstChild());
   DocumentMarkerVector markers = GetDocument().Markers().MarkersFor(
       *text1, DocumentMarker::MarkerTypes::TextFragment());
   ASSERT_EQ(1u, markers.size());
@@ -562,7 +567,8 @@ TEST_F(TextFragmentAnchorTest, DifferentDepthElementTextRange) {
   EXPECT_EQ(19u, markers.at(0)->EndOffset());
 
   // Expect marker on "with another paragraph"
-  auto* text2 = To<Text>(GetDocument().getElementById("text2")->firstChild());
+  auto* text2 = To<Text>(
+      GetDocument().getElementById(AtomicString("text2"))->firstChild());
   markers = GetDocument().Markers().MarkersFor(
       *text2, DocumentMarker::MarkerTypes::TextFragment());
   ASSERT_EQ(1u, markers.size());
@@ -626,7 +632,8 @@ TEST_F(TextFragmentAnchorTest, MultipleTextRanges) {
   EXPECT_EQ(3u, GetDocument().Markers().Markers().size());
 
   // Expect marker on "test page"
-  auto* text1 = To<Text>(GetDocument().getElementById("text1")->firstChild());
+  auto* text1 = To<Text>(
+      GetDocument().getElementById(AtomicString("text1"))->firstChild());
   DocumentMarkerVector markers = GetDocument().Markers().MarkersFor(
       *text1, DocumentMarker::MarkerTypes::TextFragment());
   ASSERT_EQ(1u, markers.size());
@@ -634,7 +641,8 @@ TEST_F(TextFragmentAnchorTest, MultipleTextRanges) {
   EXPECT_EQ(19u, markers.at(0)->EndOffset());
 
   // Expect markers on "with" and "paragraph of text"
-  auto* text2 = To<Text>(GetDocument().getElementById("text2")->firstChild());
+  auto* text2 = To<Text>(
+      GetDocument().getElementById(AtomicString("text2"))->firstChild());
   markers = GetDocument().Markers().MarkersFor(
       *text2, DocumentMarker::MarkerTypes::TextFragment());
   ASSERT_EQ(2u, markers.size());
@@ -661,7 +669,7 @@ TEST_F(TextFragmentAnchorTest, DistantElementTextRange) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  Element& p = *GetDocument().getElementById("text");
+  Element& p = *GetDocument().getElementById(AtomicString("text"));
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)))
       << "<p> Element wasn't scrolled into view, viewport's scroll offset: "
       << LayoutViewport()->GetScrollOffset().ToString();
@@ -679,11 +687,13 @@ TEST_F(TextFragmentAnchorTest, TextRangeWithContext) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  EXPECT_EQ(*GetDocument().getElementById("text"), *GetDocument().CssTarget());
+  EXPECT_EQ(*GetDocument().getElementById(AtomicString("text")),
+            *GetDocument().CssTarget());
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 
   // Expect marker on "is a test".
-  auto* text = To<Text>(GetDocument().getElementById("text")->firstChild());
+  auto* text = To<Text>(
+      GetDocument().getElementById(AtomicString("text"))->firstChild());
   DocumentMarkerVector markers = GetDocument().Markers().MarkersFor(
       *text, DocumentMarker::MarkerTypes::TextFragment());
   ASSERT_EQ(1u, markers.size());
@@ -745,12 +755,13 @@ TEST_F(TextFragmentAnchorTest, TextRangeWithCrossElementContext) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  EXPECT_EQ(*GetDocument().getElementById("expected"),
+  EXPECT_EQ(*GetDocument().getElementById(AtomicString("expected")),
             *GetDocument().CssTarget());
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 
   // Expect marker on the expected "A string of text".
-  auto* text = To<Text>(GetDocument().getElementById("expected")->firstChild());
+  auto* text = To<Text>(
+      GetDocument().getElementById(AtomicString("expected"))->firstChild());
   DocumentMarkerVector markers = GetDocument().Markers().MarkersFor(
       *text, DocumentMarker::MarkerTypes::TextFragment());
   ASSERT_EQ(1u, markers.size());
@@ -787,12 +798,13 @@ TEST_F(TextFragmentAnchorTest, CrossElementAndWhitespaceContext) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  EXPECT_EQ(*GetDocument().getElementById("expected"),
+  EXPECT_EQ(*GetDocument().getElementById(AtomicString("expected")),
             *GetDocument().CssTarget());
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 
   // Expect marker on the expected "cat".
-  auto* text = To<Text>(GetDocument().getElementById("expected")->firstChild());
+  auto* text = To<Text>(
+      GetDocument().getElementById(AtomicString("expected"))->firstChild());
   DocumentMarkerVector markers = GetDocument().Markers().MarkersFor(
       *text, DocumentMarker::MarkerTypes::TextFragment());
   ASSERT_EQ(1u, markers.size());
@@ -823,12 +835,13 @@ TEST_F(TextFragmentAnchorTest, CrossEmptySiblingAndParentElementContext) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  EXPECT_EQ(*GetDocument().getElementById("expected"),
+  EXPECT_EQ(*GetDocument().getElementById(AtomicString("expected")),
             *GetDocument().CssTarget());
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 
   // Expect marker on "match".
-  auto* text = To<Text>(GetDocument().getElementById("expected")->firstChild());
+  auto* text = To<Text>(
+      GetDocument().getElementById(AtomicString("expected"))->firstChild());
   DocumentMarkerVector markers = GetDocument().Markers().MarkersFor(
       *text, DocumentMarker::MarkerTypes::TextFragment());
   ASSERT_EQ(1u, markers.size());
@@ -856,7 +869,7 @@ TEST_F(TextFragmentAnchorTest, DistantElementContext) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  Element& p = *GetDocument().getElementById("text");
+  Element& p = *GetDocument().getElementById(AtomicString("text"));
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)))
       << "<p> Element wasn't scrolled into view, viewport's scroll offset: "
       << LayoutViewport()->GetScrollOffset().ToString();
@@ -879,10 +892,12 @@ TEST_F(TextFragmentAnchorTest, OneContextTerm) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  EXPECT_EQ(*GetDocument().getElementById("text1"), *GetDocument().CssTarget());
+  EXPECT_EQ(*GetDocument().getElementById(AtomicString("text1")),
+            *GetDocument().CssTarget());
 
   // Expect marker on the first "page"
-  auto* text1 = To<Text>(GetDocument().getElementById("text1")->firstChild());
+  auto* text1 = To<Text>(
+      GetDocument().getElementById(AtomicString("text1"))->firstChild());
   DocumentMarkerVector markers = GetDocument().Markers().MarkersFor(
       *text1, DocumentMarker::MarkerTypes::TextFragment());
   ASSERT_EQ(1u, markers.size());
@@ -890,7 +905,8 @@ TEST_F(TextFragmentAnchorTest, OneContextTerm) {
   EXPECT_EQ(19u, markers.at(0)->EndOffset());
 
   // Expect marker on the second "page"
-  auto* text2 = To<Text>(GetDocument().getElementById("text2")->firstChild());
+  auto* text2 = To<Text>(
+      GetDocument().getElementById(AtomicString("text2"))->firstChild());
   markers = GetDocument().Markers().MarkersFor(
       *text2, DocumentMarker::MarkerTypes::TextFragment());
   ASSERT_EQ(1u, markers.size());
@@ -955,7 +971,7 @@ TEST_P(TextFragmentAnchorScrollTest, ScrollCancelled) {
 
   Compositor().BeginFrame();
 
-  Element& p = *GetDocument().getElementById("text");
+  Element& p = *GetDocument().getElementById(AtomicString("text"));
 
   // If the scroll was a user scroll then we shouldn't try to keep the fragment
   // in view. Otherwise, we should.
@@ -1044,7 +1060,7 @@ TEST_F(TextFragmentAnchorTest, DisabledInIframes) {
   RunPendingTasks();
   Compositor().BeginFrame();
 
-  Element* iframe = GetDocument().getElementById("iframe");
+  Element* iframe = GetDocument().getElementById(AtomicString("iframe"));
   auto* child_frame =
       To<LocalFrame>(To<HTMLFrameOwnerElement>(iframe)->ContentFrame());
 
@@ -1150,7 +1166,7 @@ TEST_F(TextFragmentAnchorTest, CaseInsensitive) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  Element& p = *GetDocument().getElementById("text");
+  Element& p = *GetDocument().getElementById(AtomicString("text"));
 
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)))
       << "<p> Element wasn't scrolled into view, viewport's scroll offset: "
@@ -1184,7 +1200,7 @@ TEST_F(TextFragmentAnchorTest, TargetStaysInView) {
   ScrollOffset first_scroll_offset = LayoutViewport()->GetScrollOffset();
   ASSERT_NE(ScrollOffset(), first_scroll_offset);
 
-  Element& p = *GetDocument().getElementById("text");
+  Element& p = *GetDocument().getElementById(AtomicString("text"));
   gfx::Rect first_bounding_rect = BoundingRectInFrame(p);
   EXPECT_TRUE(ViewportRect().Contains(first_bounding_rect));
 
@@ -1232,7 +1248,8 @@ TEST_F(TextFragmentAnchorTest, OverlappingTextRanges) {
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 
   // Expect marker on "This is a test".
-  auto* text = To<Text>(GetDocument().getElementById("text")->firstChild());
+  auto* text = To<Text>(
+      GetDocument().getElementById(AtomicString("text"))->firstChild());
   DocumentMarkerVector markers = GetDocument().Markers().MarkersFor(
       *text, DocumentMarker::MarkerTypes::TextFragment());
   ASSERT_EQ(1u, markers.size());
@@ -1260,7 +1277,7 @@ TEST_F(TextFragmentAnchorTest, SpaceMatchesNbsp) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  Element& p = *GetDocument().getElementById("text");
+  Element& p = *GetDocument().getElementById(AtomicString("text"));
 
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)))
       << "<p> Element wasn't scrolled into view, viewport's scroll offset: "
@@ -1290,7 +1307,7 @@ TEST_F(TextFragmentAnchorTest, CSSTextTransform) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  Element& p = *GetDocument().getElementById("text");
+  Element& p = *GetDocument().getElementById(AtomicString("text"));
 
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)))
       << "<p> Element wasn't scrolled into view, viewport's scroll offset: "
@@ -1324,7 +1341,7 @@ TEST_F(TextFragmentAnchorTest, NoMatchFoundFallsBackToElementFragment) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  Element& p = *GetDocument().getElementById("element");
+  Element& p = *GetDocument().getElementById(AtomicString("element"));
 
   // At this point, the anchor should have been cleaned up.
   EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
@@ -1420,7 +1437,7 @@ TEST_F(TextFragmentAnchorTest, CheckForWordBoundaryWithPartialWord) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  Element& p = *GetDocument().getElementById("second");
+  Element& p = *GetDocument().getElementById(AtomicString("second"));
 
   EXPECT_EQ(p, *GetDocument().CssTarget());
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)))
@@ -1744,7 +1761,7 @@ TEST_F(TextFragmentAnchorTest, FragmentDirectiveDelimiterWithElementFragment) {
 
   EXPECT_EQ(GetDocument().Url(), "https://example.com/test.html#element");
 
-  Element& p = *GetDocument().getElementById("text");
+  Element& p = *GetDocument().getElementById(AtomicString("text"));
 
   EXPECT_EQ(p, *GetDocument().CssTarget());
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)))
@@ -1778,7 +1795,7 @@ TEST_F(TextFragmentAnchorTest, IdFragmentWithFragmentDirective) {
   RunPendingTasks();
   Compositor().BeginFrame();
 
-  Element& p = *GetDocument().getElementById("element");
+  Element& p = *GetDocument().getElementById(AtomicString("element"));
 
   EXPECT_EQ(p, *GetDocument().CssTarget());
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)))
@@ -1805,7 +1822,7 @@ TEST_F(TextFragmentAnchorTest, TextDirectiveInSvg) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  Element& text = *GetDocument().getElementById("text");
+  Element& text = *GetDocument().getElementById(AtomicString("text"));
 
   EXPECT_EQ(text, *GetDocument().CssTarget());
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(text)))
@@ -1853,7 +1870,8 @@ TEST_F(TextFragmentAnchorTest, DISABLED_HighlightOnReload) {
 
   Compositor().BeginFrame();
 
-  EXPECT_EQ(*GetDocument().getElementById("text"), *GetDocument().CssTarget());
+  EXPECT_EQ(*GetDocument().getElementById(AtomicString("text")),
+            *GetDocument().CssTarget());
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 }
 
@@ -1883,7 +1901,7 @@ TEST_F(TextFragmentAnchorTest, NonTextDirectives) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  Element& first = *GetDocument().getElementById("first");
+  Element& first = *GetDocument().getElementById(AtomicString("first"));
 
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(first)))
       << "First <p> wasn't scrolled into view, viewport's scroll offset: "
@@ -1916,7 +1934,7 @@ TEST_F(TextFragmentAnchorTest, CssTarget) {
   )CSS");
   RunUntilTextFragmentFinalization();
 
-  Element& p = *GetDocument().getElementById("text");
+  Element& p = *GetDocument().getElementById(AtomicString("text"));
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)));
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 }
@@ -1947,7 +1965,7 @@ TEST_F(TextFragmentAnchorTest, PageVisibility) {
   BeginEmptyFrame();
   BeginEmptyFrame();
 
-  Element& p = *GetDocument().getElementById("text");
+  Element& p = *GetDocument().getElementById(AtomicString("text"));
   EXPECT_FALSE(ViewportRect().Contains(BoundingRectInFrame(p)));
   EXPECT_EQ(0u, GetDocument().Markers().Markers().size());
   EXPECT_EQ(nullptr, GetDocument().CssTarget());
@@ -1987,7 +2005,7 @@ TEST_F(TextFragmentAnchorTest, ManualRestorationDoesntBlockFragment) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  Element& p = *GetDocument().getElementById("text");
+  Element& p = *GetDocument().getElementById(AtomicString("text"));
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)));
 }
 
@@ -2014,7 +2032,7 @@ TEST_F(TextFragmentAnchorTest, ReplaceStateDoesntBlockFragment) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  Element& p = *GetDocument().getElementById("text");
+  Element& p = *GetDocument().getElementById(AtomicString("text"));
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)));
 }
 
@@ -2038,7 +2056,7 @@ TEST_F(TextFragmentAnchorTest, MatchAcrossCommentNode) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  Element& div = *GetDocument().getElementById("text");
+  Element& div = *GetDocument().getElementById(AtomicString("text"));
 
   EXPECT_EQ(div, *GetDocument().CssTarget());
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(div)));
@@ -2065,7 +2083,7 @@ TEST_F(TextFragmentAnchorTest, SamePrefixAndText) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  Element& div = *GetDocument().getElementById("text");
+  Element& div = *GetDocument().getElementById(AtomicString("text"));
 
   EXPECT_EQ(div, *GetDocument().CssTarget());
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(div)));
@@ -2080,7 +2098,8 @@ TEST_F(TextFragmentAnchorTest, IsInSameUninterruptedBlock_OneTextNode) {
     <!DOCTYPE html>
     <div id='first'>First paragraph text</div>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = PositionInFlatTree(first_paragraph, 0);
   const auto& end = PositionInFlatTree(first_paragraph, 15);
   ASSERT_EQ("First paragraph", PlainText(EphemeralRangeInFlatTree(start, end)));
@@ -2098,7 +2117,8 @@ TEST_F(TextFragmentAnchorTest,
     <!DOCTYPE html>
     <div id='first'>First <i>styled text</i> paragraph text</div>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = PositionInFlatTree(first_paragraph, 0);
   const auto& end =
       PositionInFlatTree(first_paragraph->nextSibling()->nextSibling(), 10);
@@ -2117,7 +2137,8 @@ TEST_F(TextFragmentAnchorTest, IsInSameUninterruptedBlock_BlockInterruption) {
     <!DOCTYPE html>
     <div id='first'>First <div>block text</div> paragraph text</div>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = PositionInFlatTree(first_paragraph, 0);
   const auto& end =
       PositionInFlatTree(first_paragraph->nextSibling()->nextSibling(), 10);
@@ -2145,8 +2166,8 @@ TEST_F(TextFragmentAnchorTest, OpenedFromHighlightDoesNotSelectAdditionalText) {
       </html>)HTML");
   RunUntilTextFragmentFinalization();
 
-  Element* middle_element = GetDocument().getElementById("two");
-  Element* last_element = GetDocument().getElementById("four");
+  Element* middle_element = GetDocument().getElementById(AtomicString("two"));
+  Element* last_element = GetDocument().getElementById(AtomicString("four"));
 
   WebView().GetSettings()->SetEditingBehavior(
       mojom::EditingBehavior::kEditingMacBehavior);
@@ -2228,9 +2249,9 @@ TEST_F(TextFragmentAnchorTest, ShouldOpenContextMenuOnTap) {
                    .ContextMenuNodeForFrame(GetDocument().GetFrame()));
 
   Range* range = Range::Create(GetDocument());
-  range->setStart(GetDocument().getElementById("first"), 0,
+  range->setStart(GetDocument().getElementById(AtomicString("first")), 0,
                   IGNORE_EXCEPTION_FOR_TESTING);
-  range->setEnd(GetDocument().getElementById("first"), 1,
+  range->setEnd(GetDocument().getElementById(AtomicString("first")), 1,
                 IGNORE_EXCEPTION_FOR_TESTING);
   ASSERT_EQ("This is a test page", range->GetText());
 
@@ -2251,9 +2272,9 @@ TEST_F(TextFragmentAnchorTest, ShouldOpenContextMenuOnTap) {
 
   GetDocument().GetPage()->GetContextMenuController().ClearContextMenu();
 
-  range->setStart(GetDocument().getElementById("two"), 0,
+  range->setStart(GetDocument().getElementById(AtomicString("two")), 0,
                   IGNORE_EXCEPTION_FOR_TESTING);
-  range->setEndAfter(GetDocument().getElementById("two"),
+  range->setEndAfter(GetDocument().getElementById(AtomicString("two")),
                      IGNORE_EXCEPTION_FOR_TESTING);
   ASSERT_EQ("Second test page two", range->GetText());
 
@@ -2325,9 +2346,9 @@ TEST_F(TextFragmentAnchorTest,
                          WTF::Unretained(&mock_notifier)));
 
   Range* range = Range::Create(GetDocument());
-  range->setStart(GetDocument().getElementById("first"), 0,
+  range->setStart(GetDocument().getElementById(AtomicString("first")), 0,
                   IGNORE_EXCEPTION_FOR_TESTING);
-  range->setEnd(GetDocument().getElementById("first"), 1,
+  range->setEnd(GetDocument().getElementById(AtomicString("first")), 1,
                 IGNORE_EXCEPTION_FOR_TESTING);
   ASSERT_EQ("This is a test page", range->GetText());
 
@@ -2344,9 +2365,9 @@ TEST_F(TextFragmentAnchorTest,
     EXPECT_TRUE(mock_notifier.ReceiverIsBound());
   }
 
-  range->setStart(GetDocument().getElementById("two"), 0,
+  range->setStart(GetDocument().getElementById(AtomicString("two")), 0,
                   IGNORE_EXCEPTION_FOR_TESTING);
-  range->setEndAfter(GetDocument().getElementById("two"),
+  range->setEndAfter(GetDocument().getElementById(AtomicString("two")),
                      IGNORE_EXCEPTION_FOR_TESTING);
   ASSERT_EQ("Second test page two", range->GetText());
 
@@ -2460,7 +2481,7 @@ TEST_F(TextFragmentAnchorTest, InitialMatchingIsCollapsedCrash) {
   ASSERT_TRUE((*annotations.begin())->IsAttached());
 
   // Remove the matched text node; this will collapse the matched range.
-  Element& div = *GetDocument().getElementById("text");
+  Element& div = *GetDocument().getElementById(AtomicString("text"));
   div.firstChild()->remove();
   ASSERT_FALSE((*annotations.begin())->IsAttached());
 
@@ -2505,7 +2526,7 @@ TEST_F(TextFragmentAnchorTest, InitialMatchPendingBecomesCollapsed) {
   ASSERT_TRUE((*annotations.begin())->IsAttachmentPending());
 
   // Remove the matched text node; this will collapse the matched range.
-  Element& div = *GetDocument().getElementById("text");
+  Element& div = *GetDocument().getElementById(AtomicString("text"));
   div.firstChild()->remove();
 
   // Complete the <img> request (with an error). This will fire the load event
@@ -2561,7 +2582,7 @@ TEST_F(TextFragmentAnchorPostLoadTest, ContentAddedPostLoad) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  Element& match = *GetDocument().getElementById("match");
+  Element& match = *GetDocument().getElementById(AtomicString("match"));
   ASSERT_TRUE(GetDocument().CssTarget());
   EXPECT_EQ(match, *GetDocument().CssTarget());
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(match)))
@@ -2594,7 +2615,7 @@ TEST_F(TextFragmentAnchorPostLoadTest, HiddenAfterFoundPostLoad) {
   )HTML");
   RunUntilTextFragmentFinalization();
 
-  Element& match = *GetDocument().getElementById("match");
+  Element& match = *GetDocument().getElementById(AtomicString("match"));
   ASSERT_TRUE(GetDocument().CssTarget());
   EXPECT_EQ(match, *GetDocument().CssTarget());
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(match)))
@@ -2674,7 +2695,7 @@ TEST_F(TextFragmentAnchorPostLoadTest, PostLoadSearchTimesOut) {
 
   // The text should now be available.
   Compositor().BeginFrame();
-  Element& match = *GetDocument().getElementById("match");
+  Element& match = *GetDocument().getElementById(AtomicString("match"));
   ASSERT_EQ("A test page", match.innerText());
 
   // Waiting for the delay period shouldn't find the text because the DOM is

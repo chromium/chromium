@@ -46,7 +46,7 @@ class NGAbsoluteUtilsTest : public RenderingTest {
     )HTML");
     RunDocumentLifecycle();
 
-    element_ = GetDocument().getElementById("target");
+    element_ = GetDocument().getElementById(AtomicString("target"));
     ltr_space_ = CreateConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr});
     rtl_space_ = CreateConstraintSpace(

@@ -41,7 +41,7 @@ TEST_F(AnimationSimTest, CustomPropertyBaseComputedStyle) {
   LoadURL("https://example.com/");
   main_resource.Complete("<div id=\"target\"></div>");
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
 
   // CSS.registerProperty({
   //   name: '--x',

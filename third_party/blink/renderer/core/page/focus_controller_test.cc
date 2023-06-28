@@ -345,7 +345,7 @@ TEST_F(FocusControllerTestWithIframes,
   ASSERT_TRUE(child_frame);
   Document* child_document = child_frame->GetDocument();
   ASSERT_TRUE(child_document);
-  Element* checkbox = child_document->getElementById("checkbox");
+  Element* checkbox = child_document->getElementById(AtomicString("checkbox"));
   ASSERT_TRUE(checkbox);
 
   // |NextFocusableElementForImeAndAutofill| finds another element that needs

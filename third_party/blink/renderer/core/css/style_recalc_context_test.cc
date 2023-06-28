@@ -44,17 +44,21 @@ TEST_F(StyleRecalcContextTest, FromAncestors) {
     </div>
   )HTML");
 
-  auto* outer = GetDocument().getElementById("outer");
-  auto* inner = GetDocument().getElementById("inner");
-  auto* display_contents = GetDocument().getElementById("display_contents");
+  auto* outer = GetDocument().getElementById(AtomicString("outer"));
+  auto* inner = GetDocument().getElementById(AtomicString("inner"));
+  auto* display_contents =
+      GetDocument().getElementById(AtomicString("display_contents"));
   auto* in_display_contents =
-      GetDocument().getElementById("in_display_contents");
-  auto* display_none = GetDocument().getElementById("display_none");
-  auto* in_display_none = GetDocument().getElementById("in_display_none");
-  auto* inline_container = GetDocument().getElementById("inline_container");
+      GetDocument().getElementById(AtomicString("in_display_contents"));
+  auto* display_none =
+      GetDocument().getElementById(AtomicString("display_none"));
+  auto* in_display_none =
+      GetDocument().getElementById(AtomicString("in_display_none"));
+  auto* inline_container =
+      GetDocument().getElementById(AtomicString("inline_container"));
   auto* in_inline_container =
-      GetDocument().getElementById("in_inline_container");
-  auto* before = GetDocument().getElementById("before");
+      GetDocument().getElementById(AtomicString("in_inline_container"));
+  auto* before = GetDocument().getElementById(AtomicString("before"));
   auto* before_pseudo = before->GetPseudoElement(kPseudoIdBefore);
 
   // It is not valid to call ::FromInclusiveAncestors on an element
@@ -132,14 +136,14 @@ TEST_F(StyleRecalcContextTest, FromAncestors_ShadowIncluding) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* outer_host = GetDocument().getElementById("outer_host");
-  auto* outer_child = GetDocument().getElementById("outer_child");
+  auto* outer_host = GetDocument().getElementById(AtomicString("outer_host"));
+  auto* outer_child = GetDocument().getElementById(AtomicString("outer_child"));
   auto* outer_root = outer_host->GetShadowRoot();
-  auto* outer_slot = outer_root->getElementById("outer_slot");
-  auto* inner_host = outer_root->getElementById("inner_host");
-  auto* inner_child = outer_root->getElementById("inner_child");
+  auto* outer_slot = outer_root->getElementById(AtomicString("outer_slot"));
+  auto* inner_host = outer_root->getElementById(AtomicString("inner_host"));
+  auto* inner_child = outer_root->getElementById(AtomicString("inner_child"));
   auto* inner_root = inner_host->GetShadowRoot();
-  auto* inner_slot = inner_root->getElementById("inner_slot");
+  auto* inner_slot = inner_root->getElementById(AtomicString("inner_slot"));
 
   EXPECT_FALSE(StyleRecalcContext::FromAncestors(*outer_host).container);
   EXPECT_EQ(StyleRecalcContext::FromInclusiveAncestors(*outer_host).container,

@@ -142,7 +142,7 @@ TEST_F(SlotAssignmentTest, ScheduleVisualUpdate) {
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   auto* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  GetDocument().getElementById("host")->appendChild(div);
+  GetDocument().getElementById(AtomicString("host"))->appendChild(div);
   EXPECT_EQ(DocumentLifecycle::kVisualUpdatePending,
             GetDocument().Lifecycle().GetState());
 }

@@ -445,7 +445,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionStatusChange) {
   )HTML");
   auto* scrollable_area =
       GetLayoutBoxModelObjectByElementId("scroller")->GetScrollableArea();
-  auto* sticky = GetDocument().getElementById("sticky");
+  auto* sticky = GetDocument().getElementById(AtomicString("sticky"));
   auto* sticky_layer = sticky->GetLayoutBox()->Layer();
   ASSERT_TRUE(sticky_layer);
   EXPECT_TRUE(scrollable_area->HasStickyLayer(sticky_layer));
@@ -1199,7 +1199,7 @@ TEST_P(LayoutBoxModelObjectTest, InvalidatePaintLayerOnStackedChange) {
     </div>
   )HTML");
 
-  auto* target_element = GetDocument().getElementById("target");
+  auto* target_element = GetDocument().getElementById(AtomicString("target"));
   auto* target = target_element->GetLayoutBoxModelObject();
   auto* parent = target->Parent();
   auto* original_compositing_container =
@@ -1236,7 +1236,7 @@ TEST_P(LayoutBoxModelObjectTest, BackfaceVisibilityChange) {
       "width: 100px; height: 100px; background: blue; position: absolute";
   SetBodyInnerHTML("<div id='target' style='" + base_style + "'></div>");
 
-  auto* target = GetDocument().getElementById("target");
+  auto* target = GetDocument().getElementById(AtomicString("target"));
   auto* target_layer =
       To<LayoutBoxModelObject>(target->GetLayoutObject())->Layer();
   ASSERT_NE(nullptr, target_layer);
@@ -1272,7 +1272,7 @@ TEST_P(LayoutBoxModelObjectTest, ChangingFilterWithWillChange) {
 
   // Adding a filter should not need to check for paint invalidation because
   // will-change: filter is present.
-  auto* target = GetDocument().getElementById("target");
+  auto* target = GetDocument().getElementById(AtomicString("target"));
   target->setAttribute(html_names::kStyleAttr, "filter: grayscale(1)");
   GetDocument().UpdateStyleAndLayoutTree();
   EXPECT_FALSE(target->GetLayoutObject()->ShouldCheckForPaintInvalidation());
@@ -1304,7 +1304,7 @@ TEST_P(LayoutBoxModelObjectTest, ChangingWillChangeFilter) {
 
   // Adding will-change: filter should check for paint invalidation and create
   // a PaintLayer.
-  auto* target = GetDocument().getElementById("target");
+  auto* target = GetDocument().getElementById(AtomicString("target"));
   target->classList().Add("willChange");
   GetDocument().UpdateStyleAndLayoutTree();
   EXPECT_TRUE(target->GetLayoutObject()->ShouldCheckForPaintInvalidation());
@@ -1337,7 +1337,7 @@ TEST_P(LayoutBoxModelObjectTest, ChangingBackdropFilterWithWillChange) {
 
   // Adding a backdrop-filter should not need to check for paint invalidation
   // because will-change: backdrop-filter is present.
-  auto* target = GetDocument().getElementById("target");
+  auto* target = GetDocument().getElementById(AtomicString("target"));
   target->setAttribute(html_names::kStyleAttr, "backdrop-filter: grayscale(1)");
   GetDocument().UpdateStyleAndLayoutTree();
   EXPECT_FALSE(target->GetLayoutObject()->ShouldCheckForPaintInvalidation());
@@ -1369,7 +1369,7 @@ TEST_P(LayoutBoxModelObjectTest, ChangingWillChangeBackdropFilter) {
 
   // Adding will-change: backdrop-filter should check for paint invalidation and
   // create a PaintLayer.
-  auto* target = GetDocument().getElementById("target");
+  auto* target = GetDocument().getElementById(AtomicString("target"));
   target->classList().Add("willChange");
   GetDocument().UpdateStyleAndLayoutTree();
   EXPECT_TRUE(target->GetLayoutObject()->ShouldCheckForPaintInvalidation());
@@ -1409,7 +1409,7 @@ TEST_P(LayoutBoxModelObjectTest, UpdateStackingContextForOption) {
     </select>
   )HTML");
 
-  auto* option_element = GetDocument().getElementById("opt");
+  auto* option_element = GetDocument().getElementById(AtomicString("opt"));
   auto* option_layout = option_element->GetLayoutObject();
   ASSERT_TRUE(option_layout);
   EXPECT_TRUE(option_layout->IsStackingContext());
@@ -1458,7 +1458,7 @@ TEST_P(LayoutBoxModelObjectTest, RemoveStickyUnderContain) {
   auto* sticky_layer = GetPaintLayerByElementId("sticky");
   EXPECT_TRUE(scrollable_area->HasStickyLayer(sticky_layer));
 
-  GetDocument().getElementById("parent")->remove();
+  GetDocument().getElementById(AtomicString("parent"))->remove();
   EXPECT_FALSE(scrollable_area->HasStickyLayer(sticky_layer));
 
   UpdateAllLifecyclePhasesForTest();
@@ -1477,7 +1477,7 @@ TEST_P(LayoutBoxModelObjectTest, ChangeStickyStatusUnderContain) {
     <div id="target"></div>
   )HTML");
 
-  auto* target = GetDocument().getElementById("target");
+  auto* target = GetDocument().getElementById(AtomicString("target"));
   EXPECT_FALSE(target->GetLayoutBox()->StickyConstraints());
 
   target->setAttribute(html_names::kStyleAttr, "top: 1px; position: sticky");
@@ -1505,7 +1505,7 @@ TEST_P(LayoutBoxModelObjectTest, ChangeStickyStatusKeepLayerUnderContain) {
     <div id="target"></div>
   )HTML");
 
-  auto* target = GetDocument().getElementById("target");
+  auto* target = GetDocument().getElementById(AtomicString("target"));
   EXPECT_FALSE(target->GetLayoutBox()->StickyConstraints());
 
   target->setAttribute(html_names::kStyleAttr, "top: 1px; position: sticky");
@@ -1541,7 +1541,8 @@ TEST_P(LayoutBoxModelObjectTest,
   )HTML");
 
   auto* body = GetDocument().body()->GetLayoutBox();
-  auto* container_element = GetDocument().getElementById("container");
+  auto* container_element =
+      GetDocument().getElementById(AtomicString("container"));
   auto* container = container_element->GetLayoutBoxModelObject();
   auto* child = GetLayoutBoxModelObjectByElementId("child");
 

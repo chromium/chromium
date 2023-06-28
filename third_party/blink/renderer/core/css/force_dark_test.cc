@@ -117,7 +117,7 @@ TEST_F(ForceDarkTest, ForcedColorSchemeInvalidation) {
 
   ASSERT_TRUE(GetDocument().GetSettings()->GetForceDarkModeEnabled());
   GetDocument().GetSettings()->SetForceDarkModeEnabled(false);
-  auto* t3 = GetDocument().getElementById("t3");
+  auto* t3 = GetDocument().getElementById(AtomicString("t3"));
   t3->SetInlineStyleProperty(CSSPropertyID::kColorScheme, "dark");
   GetDocument().UpdateStyleAndLayoutTree();
 

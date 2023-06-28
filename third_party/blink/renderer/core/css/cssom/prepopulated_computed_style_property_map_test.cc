@@ -26,7 +26,7 @@ class PrepopulatedComputedStylePropertyMapTest : public PageTestBase {
   }
 
   const CSSValue* GetNativeValue(const CSSPropertyID& property_id) {
-    Element* node = GetDocument().getElementById("target");
+    Element* node = GetDocument().getElementById(AtomicString("target"));
     return CSSProperty::Get(property_id)
         .CSSValueFromComputedStyle(node->ComputedStyleRef(),
                                    nullptr /* layout_object */,

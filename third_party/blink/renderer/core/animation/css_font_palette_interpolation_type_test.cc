@@ -49,7 +49,7 @@ TEST_F(CSSFontPaletteInterpolationTypeTest,
   <div id="text">Filler text</div>
   )HTML");
   Document& document = GetDocument();
-  Element* element = document.getElementById("text");
+  Element* element = document.getElementById(AtomicString("text"));
   StyleResolverState state(document, *element, nullptr,
                            StyleRequest(element->GetComputedStyle()));
 

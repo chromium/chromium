@@ -142,7 +142,7 @@ TEST_F(StyleResolverTest, AnimationBaseComputedStyle) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
   ElementAnimations& animations = div->EnsureElementAnimations();
   animations.SetAnimationStyleChange(true);
 
@@ -185,7 +185,7 @@ TEST_F(StyleResolverTest, HasEmUnits) {
 TEST_F(StyleResolverTest, BaseReusableIfFontRelativeUnitsAbsent) {
   GetDocument().documentElement()->setInnerHTML("<div id=div>Test</div>");
   UpdateAllLifecyclePhasesForTest();
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
 
   auto* effect = CreateSimpleKeyframeEffectForTest(
       div, CSSPropertyID::kFontSize, "50px", "100px");
@@ -213,7 +213,7 @@ TEST_F(StyleResolverTest, AnimationNotMaskedByImportant) {
     <div id=div></div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
 
   auto* effect = CreateSimpleKeyframeEffectForTest(div, CSSPropertyID::kWidth,
                                                    "50px", "100px");
@@ -252,7 +252,7 @@ TEST_F(StyleResolverTest, AnimationNotMaskedWithoutBitset) {
     <div id=div></div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
 
   auto* effect = CreateSimpleKeyframeEffectForTest(div, CSSPropertyID::kWidth,
                                                    "50px", "100px");
@@ -283,7 +283,7 @@ TEST_F(StyleResolverTest, AnimationMaskedByImportant) {
     <div id=div></div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
 
   auto* effect = CreateSimpleKeyframeEffectForTest(div, CSSPropertyID::kHeight,
                                                    "50px", "100px");
@@ -363,7 +363,7 @@ TEST_P(StyleResolverFontRelativeUnitTest,
       String::Format("<div id=div style='width:1%s'>Test</div>", GetParam()));
   UpdateAllLifecyclePhasesForTest();
 
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
   auto* effect = CreateSimpleKeyframeEffectForTest(
       div, CSSPropertyID::kFontSize, "50px", "100px");
   GetDocument().Timeline().Play(effect);
@@ -387,7 +387,7 @@ TEST_P(StyleResolverFontRelativeUnitTest,
       String::Format("<div id=div style='width:1%s'>Test</div>", GetParam()));
   UpdateAllLifecyclePhasesForTest();
 
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
   auto* effect = CreateSimpleKeyframeEffectForTest(div, CSSPropertyID::kHeight,
                                                    "50px", "100px");
   GetDocument().Timeline().Play(effect);
@@ -521,22 +521,28 @@ TEST_F(StyleResolverTest, BackgroundImageFetch) {
   GetDocument().documentElement()->AppendChild(frameset1);
   GetDocument().documentElement()->AppendChild(frameset2);
 
-  GetDocument().getElementById("host")->AttachShadowRootInternal(
-      ShadowRootType::kOpen);
+  GetDocument()
+      .getElementById(AtomicString("host"))
+      ->AttachShadowRootInternal(ShadowRootType::kOpen);
   UpdateAllLifecyclePhasesForTest();
 
-  auto* none = GetDocument().getElementById("none");
-  auto* inside_none = GetDocument().getElementById("inside-none");
-  auto* none_image_set = GetDocument().getElementById("none-image-set");
-  auto* hidden = GetDocument().getElementById("hidden");
-  auto* inside_hidden = GetDocument().getElementById("inside-hidden");
-  auto* contents = GetDocument().getElementById("contents");
-  auto* inside_contents = GetDocument().getElementById("inside-contents");
-  auto* non_slotted = GetDocument().getElementById("non-slotted");
-  auto* no_pseudo = GetDocument().getElementById("no-pseudo");
-  auto* first_line = GetDocument().getElementById("first-line");
-  auto* first_line_span = GetDocument().getElementById("first-line-span");
-  auto* first_line_none = GetDocument().getElementById("first-line-none");
+  auto* none = GetDocument().getElementById(AtomicString("none"));
+  auto* inside_none = GetDocument().getElementById(AtomicString("inside-none"));
+  auto* none_image_set =
+      GetDocument().getElementById(AtomicString("none-image-set"));
+  auto* hidden = GetDocument().getElementById(AtomicString("hidden"));
+  auto* inside_hidden =
+      GetDocument().getElementById(AtomicString("inside-hidden"));
+  auto* contents = GetDocument().getElementById(AtomicString("contents"));
+  auto* inside_contents =
+      GetDocument().getElementById(AtomicString("inside-contents"));
+  auto* non_slotted = GetDocument().getElementById(AtomicString("non-slotted"));
+  auto* no_pseudo = GetDocument().getElementById(AtomicString("no-pseudo"));
+  auto* first_line = GetDocument().getElementById(AtomicString("first-line"));
+  auto* first_line_span =
+      GetDocument().getElementById(AtomicString("first-line-span"));
+  auto* first_line_none =
+      GetDocument().getElementById(AtomicString("first-line-none"));
 
   inside_none->EnsureComputedStyle();
   non_slotted->EnsureComputedStyle();
@@ -831,7 +837,7 @@ TEST_F(StyleResolverTest, CascadedValuesForElement) {
   UpdateAllLifecyclePhasesForTest();
 
   auto& resolver = GetDocument().GetStyleResolver();
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
   ASSERT_TRUE(div);
 
   auto map = resolver.CascadedValuesForElement(div, kPseudoIdNone);
@@ -873,7 +879,7 @@ TEST_F(StyleResolverTest, CascadedValuesForPseudoElement) {
   UpdateAllLifecyclePhasesForTest();
 
   auto& resolver = GetDocument().GetStyleResolver();
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
   ASSERT_TRUE(div);
 
   auto map = resolver.CascadedValuesForElement(div, kPseudoIdBefore);
@@ -903,7 +909,7 @@ TEST_F(StyleResolverTestCQ, CascadedValuesForElementInContainer) {
   UpdateAllLifecyclePhasesForTest();
 
   auto& resolver = GetDocument().GetStyleResolver();
-  Element* inner = GetDocument().getElementById("inner");
+  Element* inner = GetDocument().getElementById(AtomicString("inner"));
   ASSERT_TRUE(inner);
 
   auto map = resolver.CascadedValuesForElement(inner, kPseudoIdNone);
@@ -933,7 +939,7 @@ TEST_F(StyleResolverTestCQ, CascadedValuesForPseudoElementInContainer) {
   UpdateAllLifecyclePhasesForTest();
 
   auto& resolver = GetDocument().GetStyleResolver();
-  Element* inner = GetDocument().getElementById("inner");
+  Element* inner = GetDocument().getElementById(AtomicString("inner"));
   ASSERT_TRUE(inner);
 
   auto map = resolver.CascadedValuesForElement(inner, kPseudoIdBefore);
@@ -949,15 +955,16 @@ TEST_F(StyleResolverTest, EnsureComputedStyleSlotFallback) {
   )HTML");
 
   ShadowRoot& shadow_root =
-      GetDocument().getElementById("host")->AttachShadowRootInternal(
-          ShadowRootType::kOpen);
+      GetDocument()
+          .getElementById(AtomicString("host"))
+          ->AttachShadowRootInternal(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(R"HTML(
     <style>
       slot { color: red }
     </style>
     <slot><span id="fallback"></span></slot>
   )HTML");
-  Element* fallback = shadow_root.getElementById("fallback");
+  Element* fallback = shadow_root.getElementById(AtomicString("fallback"));
   ASSERT_TRUE(fallback);
 
   UpdateAllLifecyclePhasesForTest();
@@ -1057,7 +1064,7 @@ TEST_F(StyleResolverTest, ComputeValueStandardProperty) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
 
   // Unable to parse a variable reference with css_test_helpers::ParseLonghand.
@@ -1101,7 +1108,7 @@ TEST_F(StyleResolverTest, ComputeValueCustomProperty) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
 
   AtomicString custom_property_name = "--color";
@@ -1125,7 +1132,7 @@ TEST_F(StyleResolverTest, TreeScopedReferences) {
     </host>
   )HTML");
 
-  Element* host = GetDocument().getElementById("host");
+  Element* host = GetDocument().getElementById(AtomicString("host"));
   ASSERT_TRUE(host);
   ShadowRoot& root = host->AttachShadowRootInternal(ShadowRootType::kOpen);
   root.setInnerHTML(R"HTML(
@@ -1138,7 +1145,7 @@ TEST_F(StyleResolverTest, TreeScopedReferences) {
     </div>
   )HTML");
 
-  Element* inner_host = root.getElementById("inner-host");
+  Element* inner_host = root.getElementById(AtomicString("inner-host"));
   ASSERT_TRUE(inner_host);
   ShadowRoot& inner_root =
       inner_host->AttachShadowRootInternal(ShadowRootType::kOpen);
@@ -1178,7 +1185,7 @@ TEST_F(StyleResolverTest, TreeScopedReferences) {
   }
 
   {
-    auto* span = GetDocument().getElementById("slotted");
+    auto* span = GetDocument().getElementById(AtomicString("slotted"));
     StyleResolverState state(GetDocument(), *span);
     SelectorFilter filter;
     MatchResult match_result;
@@ -1235,7 +1242,7 @@ TEST_F(StyleResolverTest, InheritStyleImagesFromDisplayContents) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* child = GetDocument().getElementById("child");
+  auto* child = GetDocument().getElementById(AtomicString("child"));
   auto* style = child->GetComputedStyle();
   ASSERT_TRUE(style);
 
@@ -1292,7 +1299,7 @@ TEST_F(StyleResolverTest, TextShadowInHighlightPseudoNotCounted1) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
   const auto* element_style = target->GetComputedStyle();
   ASSERT_TRUE(element_style);
@@ -1333,7 +1340,7 @@ TEST_F(StyleResolverTest, TextShadowInHighlightPseudoNotCounted2) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
   const auto* element_style = target->GetComputedStyle();
   ASSERT_TRUE(element_style);
@@ -1373,7 +1380,7 @@ TEST_F(StyleResolverTest, TextShadowInHighlightPseudotNone) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
   const auto* element_style = target->GetComputedStyle();
   ASSERT_TRUE(element_style);
@@ -1410,7 +1417,7 @@ TEST_F(StyleResolverTest, TextShadowInHighlightPseudoNotNone1) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
   const auto* element_style = target->GetComputedStyle();
   ASSERT_TRUE(element_style);
@@ -1450,7 +1457,7 @@ TEST_F(StyleResolverTest, TextShadowInHighlightPseudoNotNone2) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
   const auto* element_style = target->GetComputedStyle();
   ASSERT_TRUE(element_style);
@@ -1490,11 +1497,11 @@ TEST_F(StyleResolverTestCQ, DependsOnSizeContainerQueries) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* a = GetDocument().getElementById("a");
-  auto* b = GetDocument().getElementById("b");
-  auto* c = GetDocument().getElementById("c");
-  auto* d = GetDocument().getElementById("d");
-  auto* e = GetDocument().getElementById("e");
+  auto* a = GetDocument().getElementById(AtomicString("a"));
+  auto* b = GetDocument().getElementById(AtomicString("b"));
+  auto* c = GetDocument().getElementById(AtomicString("c"));
+  auto* d = GetDocument().getElementById(AtomicString("d"));
+  auto* e = GetDocument().getElementById(AtomicString("e"));
 
   ASSERT_TRUE(a);
   ASSERT_TRUE(b);
@@ -1531,7 +1538,7 @@ TEST_F(StyleResolverTestCQ, DependsOnSizeContainerQueriesPseudo) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* a = GetDocument().getElementById("a");
+  auto* a = GetDocument().getElementById(AtomicString("a"));
   auto* before = a->GetPseudoElement(kPseudoIdBefore);
   auto* after = a->GetPseudoElement(kPseudoIdAfter);
 
@@ -1569,8 +1576,8 @@ TEST_F(StyleResolverTestCQ, DependsOnSizeContainerQueriesMPC) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* a = GetDocument().getElementById("a");
-  auto* b = GetDocument().getElementById("b");
+  auto* a = GetDocument().getElementById(AtomicString("a"));
+  auto* b = GetDocument().getElementById(AtomicString("b"));
 
   ASSERT_TRUE(a);
   ASSERT_TRUE(b);
@@ -1598,11 +1605,11 @@ TEST_F(StyleResolverTestCQ, DependsOnStyleContainerQueries) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* a = GetDocument().getElementById("a");
-  auto* b = GetDocument().getElementById("b");
-  auto* c = GetDocument().getElementById("c");
-  auto* d = GetDocument().getElementById("d");
-  auto* e = GetDocument().getElementById("e");
+  auto* a = GetDocument().getElementById(AtomicString("a"));
+  auto* b = GetDocument().getElementById(AtomicString("b"));
+  auto* c = GetDocument().getElementById(AtomicString("c"));
+  auto* d = GetDocument().getElementById(AtomicString("d"));
+  auto* e = GetDocument().getElementById(AtomicString("e"));
 
   ASSERT_TRUE(a);
   ASSERT_TRUE(b);
@@ -1634,7 +1641,8 @@ TEST_F(StyleResolverTest, NoCascadeLayers) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  StyleResolverState state(GetDocument(), *GetDocument().getElementById("a"));
+  StyleResolverState state(GetDocument(),
+                           *GetDocument().getElementById(AtomicString("a")));
   SelectorFilter filter;
   MatchResult match_result;
   ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
@@ -1681,7 +1689,8 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentSheets) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  StyleResolverState state(GetDocument(), *GetDocument().getElementById("a"));
+  StyleResolverState state(GetDocument(),
+                           *GetDocument().getElementById(AtomicString("a")));
   SelectorFilter filter;
   MatchResult match_result;
   ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
@@ -1740,7 +1749,7 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentTreeScopes) {
   UpdateAllLifecyclePhasesForTest();
 
   StyleResolverState state(GetDocument(),
-                           *GetDocument().getElementById("host"));
+                           *GetDocument().getElementById(AtomicString("host")));
   SelectorFilter filter;
   MatchResult match_result;
   ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
@@ -1762,8 +1771,9 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentTreeScopes) {
   EXPECT_TRUE(properties[1].properties->HasProperty(CSSPropertyID::kFontSize));
   EXPECT_EQ(0u, properties[1].types_.layer_order);
   EXPECT_EQ(properties[1].types_.origin, CascadeOrigin::kAuthor);
-  EXPECT_EQ(match_result.ScopeFromTreeOrder(properties[1].types_.tree_order),
-            GetDocument().getElementById("host")->GetShadowRoot());
+  EXPECT_EQ(
+      match_result.ScopeFromTreeOrder(properties[1].types_.tree_order),
+      GetDocument().getElementById(AtomicString("host"))->GetShadowRoot());
 
   // @layer foo { #host { color: green } }
   EXPECT_TRUE(properties[2].properties->HasProperty(CSSPropertyID::kColor));
@@ -1786,8 +1796,10 @@ TEST_F(StyleResolverTest, CascadeLayersAfterModifyingAnotherSheet) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  GetDocument().getElementById("addrule")->appendChild(
-      GetDocument().createTextNode("target { font-size: 10px; }"));
+  GetDocument()
+      .getElementById(AtomicString("addrule"))
+      ->appendChild(
+          GetDocument().createTextNode("target { font-size: 10px; }"));
 
   UpdateAllLifecyclePhasesForTest();
 
@@ -1827,8 +1839,9 @@ TEST_F(StyleResolverTest, CascadeLayersAddLayersWithImportantDeclarations) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  GetDocument().getElementById("addrule")->appendChild(
-      GetDocument().createTextNode(
+  GetDocument()
+      .getElementById(AtomicString("addrule"))
+      ->appendChild(GetDocument().createTextNode(
           "@layer { target { font-size: 20px !important; } }"
           "@layer { target { font-size: 10px !important; } }"));
 
@@ -2377,7 +2390,7 @@ TEST_F(StyleResolverTestCQ, StyleRulesForElementContainerQuery) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* target = GetDocument().getElementById("target");
+  auto* target = GetDocument().getElementById(AtomicString("target"));
   auto& resolver = GetDocument().GetStyleResolver();
 
   auto* rule_list =
@@ -3054,7 +3067,7 @@ TEST_F(StyleResolverTest,
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* element = GetDocument().getElementById("target");
+  auto* element = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(element);
   auto* before = element->GetPseudoElement(kPseudoIdBefore);
   ASSERT_TRUE(before);
@@ -3097,7 +3110,7 @@ TEST_F(StyleResolverTestCQ, ContainerUnitContext) {
     </div>
   )HTML");
 
-  Element* div = GetDocument().getElementById("div");
+  Element* div = GetDocument().getElementById(AtomicString("div"));
   ASSERT_TRUE(div);
 
   // Don't provide a StyleRecalcContext here.
@@ -3130,8 +3143,8 @@ TEST_F(StyleResolverTest, ScopedAnchorName) {
   Element* outer_anchor = GetElementById("outer-anchor");
   Element* host = GetElementById("host");
   ShadowRoot* shadow = host->GetShadowRoot();
-  Element* part = shadow->getElementById("part");
-  Element* inner_anchor = shadow->getElementById("inner-anchor");
+  Element* part = shadow->getElementById(AtomicString("part"));
+  Element* inner_anchor = shadow->getElementById(AtomicString("inner-anchor"));
 
   EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--outer", &GetDocument()),
             *outer_anchor->ComputedStyleRef().AnchorName());
@@ -3163,8 +3176,8 @@ TEST_F(StyleResolverTest, ScopedAnchorScroll) {
   Element* outer_anchor = GetElementById("outer-anchor");
   Element* host = GetElementById("host");
   ShadowRoot* shadow = host->GetShadowRoot();
-  Element* part = shadow->getElementById("part");
-  Element* inner_anchor = shadow->getElementById("inner-anchor");
+  Element* part = shadow->getElementById(AtomicString("part"));
+  Element* inner_anchor = shadow->getElementById(AtomicString("inner-anchor"));
 
   EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>("--outer", &GetDocument()),
             outer_anchor->ComputedStyleRef().AnchorScroll()->GetName());
@@ -3233,8 +3246,8 @@ TEST_F(StyleResolverTest, ScopedAnchorFunction) {
     Element* left = GetElementById("left");
     Element* bottom = GetElementById("bottom");
     ShadowRoot* shadow = bottom->GetShadowRoot();
-    Element* top = shadow->getElementById("top");
-    Element* right = shadow->getElementById("right");
+    Element* top = shadow->getElementById(AtomicString("top"));
+    Element* right = shadow->getElementById(AtomicString("right"));
 
     EXPECT_EQ(&GetDocument(),
               GetAnchorQueryTreeScope(GetLeft(left->ComputedStyleRef())));
@@ -3250,8 +3263,8 @@ TEST_F(StyleResolverTest, ScopedAnchorFunction) {
     Element* inline_start = GetElementById("inline-start");
     Element* block_end = GetElementById("block-end");
     ShadowRoot* shadow = block_end->GetShadowRoot();
-    Element* block_start = shadow->getElementById("block-start");
-    Element* inline_end = shadow->getElementById("inline-end");
+    Element* block_start = shadow->getElementById(AtomicString("block-start"));
+    Element* inline_end = shadow->getElementById(AtomicString("inline-end"));
 
     EXPECT_EQ(&GetDocument(), GetAnchorQueryTreeScope(
                                   GetLeft(inline_start->ComputedStyleRef())));
@@ -3307,9 +3320,9 @@ TEST_F(StyleResolverTest, ScopedAnchorSizeFunction) {
   Element* max_width = GetElementById("max-width");
   ShadowRoot* shadow1 = width->GetShadowRoot();
   ShadowRoot* shadow2 = max_width->GetShadowRoot();
-  Element* height = shadow1->getElementById("height");
-  Element* min_height = shadow2->getElementById("min-height");
-  Element* max_height = shadow2->getElementById("max-height");
+  Element* height = shadow1->getElementById(AtomicString("height"));
+  Element* min_height = shadow2->getElementById(AtomicString("min-height"));
+  Element* max_height = shadow2->getElementById(AtomicString("max-height"));
 
   EXPECT_EQ(&GetDocument(),
             GetAnchorQueryTreeScope(GetWidth(width->ComputedStyleRef())));
@@ -3340,9 +3353,9 @@ TEST_F(StyleResolverTestCQ, CanAffectAnimationsMPC) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* a = GetDocument().getElementById("a");
-  auto* b = GetDocument().getElementById("b");
-  auto* c = GetDocument().getElementById("c");
+  auto* a = GetDocument().getElementById(AtomicString("a"));
+  auto* b = GetDocument().getElementById(AtomicString("b"));
+  auto* c = GetDocument().getElementById(AtomicString("c"));
 
   ASSERT_TRUE(a);
   ASSERT_TRUE(b);
@@ -3373,7 +3386,7 @@ TEST_F(StyleResolverTest, HasAutoAnchorPositioning) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
 
   const ComputedStyle& base_style = target->ComputedStyleRef();
   EXPECT_TRUE(base_style.HasAutoAnchorPositioning());
@@ -3422,12 +3435,14 @@ TEST_F(StyleResolverTest, CssRulesForElementExcludeStartingStyle) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   EXPECT_EQ(target->GetComputedStyle(), nullptr);
   EXPECT_EQ(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
             nullptr);
 
-  GetDocument().getElementById("wrapper")->removeAttribute("hidden");
+  GetDocument()
+      .getElementById(AtomicString("wrapper"))
+      ->removeAttribute("hidden");
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_NE(target->GetComputedStyle(), nullptr);
@@ -3455,7 +3470,7 @@ TEST_F(StyleResolverTest, PseudoCSSRulesForElementExcludeStartingStyle) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   EXPECT_EQ(target->GetComputedStyle(), nullptr);
   EXPECT_EQ(target->GetPseudoElement(kPseudoIdBefore), nullptr);
 
@@ -3465,7 +3480,9 @@ TEST_F(StyleResolverTest, PseudoCSSRulesForElementExcludeStartingStyle) {
   ASSERT_NE(pseudo_rules, nullptr);
   EXPECT_EQ(pseudo_rules->size(), 1u);
 
-  GetDocument().getElementById("wrapper")->removeAttribute("hidden");
+  GetDocument()
+      .getElementById(AtomicString("wrapper"))
+      ->removeAttribute("hidden");
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_NE(target->GetComputedStyle(), nullptr);

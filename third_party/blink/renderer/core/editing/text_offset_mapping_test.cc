@@ -257,7 +257,7 @@ TEST_F(TextOffsetMappingTest, RangeOfEmptyBlock) {
           "<div><p>abc</p><p id='target'>|</p><p>ghi</p></div>")
           .Base());
   const LayoutObject* const target_layout_object =
-      GetDocument().getElementById("target")->GetLayoutObject();
+      GetDocument().getElementById(AtomicString("target"))->GetLayoutObject();
   const TextOffsetMapping::InlineContents inline_contents =
       TextOffsetMapping::FindForwardInlineContents(position);
   ASSERT_TRUE(inline_contents.IsNotNull());
@@ -560,7 +560,8 @@ TEST_F(TextOffsetMappingTest, ComputeTextOffsetWithBrokenImage) {
   UpdateAllLifecyclePhasesForTest();
   ShadowRoot* shadow = img->UserAgentShadowRoot();
   DCHECK(shadow);
-  const Element* alt_img = shadow->getElementById("alttext-image");
+  const Element* alt_img =
+      shadow->getElementById(AtomicString("alttext-image"));
   DCHECK(alt_img);
 
   const PositionInFlatTree position = PositionInFlatTree::BeforeNode(*alt_img);

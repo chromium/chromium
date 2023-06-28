@@ -135,7 +135,7 @@ TEST_P(CSSAnimationsTest, RetargetedTransition) {
     </style>
     <div id='test'>TEST</div>
   )HTML");
-  Element* element = GetDocument().getElementById("test");
+  Element* element = GetDocument().getElementById(AtomicString("test"));
   element->setAttribute(html_names::kClassAttr, "contrast1");
   UpdateAllLifecyclePhasesForTest();
   ElementAnimations* animations = element->GetElementAnimations();
@@ -169,7 +169,7 @@ TEST_P(CSSAnimationsTest, IncompatibleRetargetedTransition) {
     </style>
     <div id='test'>TEST</div>
   )HTML");
-  Element* element = GetDocument().getElementById("test");
+  Element* element = GetDocument().getElementById(AtomicString("test"));
   element->setAttribute(html_names::kClassAttr, "saturate");
   UpdateAllLifecyclePhasesForTest();
   ElementAnimations* animations = element->GetElementAnimations();
@@ -213,7 +213,7 @@ TEST_P(CSSAnimationsTest, CompositedBackgroundColorSnapshot) {
     </style>
     <div id='test'></div>
   )HTML");
-  Element* element = GetDocument().getElementById("test");
+  Element* element = GetDocument().getElementById(AtomicString("test"));
   ASSERT_TRUE(element);
   UpdateAllLifecyclePhasesForTest();
   ASSERT_TRUE(element->GetComputedStyle());
@@ -252,7 +252,7 @@ TEST_P(CSSAnimationsTest, AnimationFlags_Transitions) {
     </style>
     <div id=test></div>
   )HTML");
-  Element* element = GetDocument().getElementById("test");
+  Element* element = GetDocument().getElementById(AtomicString("test"));
   EXPECT_FALSE(element->ComputedStyleRef().HasCurrentFilterAnimation());
 
   // Newly created transition:
@@ -288,7 +288,7 @@ TEST_P(CSSAnimationsTest, AnimationFlags_Animations) {
     </style>
     <div id=test></div>
   )HTML");
-  Element* element = GetDocument().getElementById("test");
+  Element* element = GetDocument().getElementById(AtomicString("test"));
   EXPECT_FALSE(element->ComputedStyleRef().HasCurrentOpacityAnimation());
   EXPECT_FALSE(element->ComputedStyleRef().HasCurrentTransformAnimation());
 
@@ -450,7 +450,7 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_Transitions) {
     SCOPED_TRACE(html);
 
     SetBodyInnerHTML(html);
-    Element* element = GetDocument().getElementById("test");
+    Element* element = GetDocument().getElementById(AtomicString("test"));
     ASSERT_TRUE(element);
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
@@ -467,7 +467,7 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_Transitions_Compositor) {
     SCOPED_TRACE(html);
 
     SetBodyInnerHTML(html);
-    Element* element = GetDocument().getElementById("test");
+    Element* element = GetDocument().getElementById(AtomicString("test"));
     ASSERT_TRUE(element);
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
@@ -492,7 +492,7 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_CSSAnimations) {
     SCOPED_TRACE(html);
 
     SetBodyInnerHTML(html);
-    Element* element = GetDocument().getElementById("test");
+    Element* element = GetDocument().getElementById(AtomicString("test"));
     ASSERT_TRUE(element);
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
@@ -509,7 +509,7 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_CSSAnimations_Compositor) {
     SCOPED_TRACE(html);
 
     SetBodyInnerHTML(html);
-    Element* element = GetDocument().getElementById("test");
+    Element* element = GetDocument().getElementById(AtomicString("test"));
     ASSERT_TRUE(element);
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
@@ -533,7 +533,7 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_JSAnimations) {
     SCOPED_TRACE(data.property);
 
     SetBodyInnerHTML("<div id=test>Test</div>");
-    Element* element = GetDocument().getElementById("test");
+    Element* element = GetDocument().getElementById(AtomicString("test"));
     ASSERT_TRUE(element);
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
@@ -555,7 +555,7 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_JSAnimations_Compositor) {
     SCOPED_TRACE(data.property);
 
     SetBodyInnerHTML("<div id=test>Test</div>");
-    Element* element = GetDocument().getElementById("test");
+    Element* element = GetDocument().getElementById(AtomicString("test"));
     ASSERT_TRUE(element);
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
@@ -592,7 +592,7 @@ TEST_P(CSSAnimationsTest, AnimationFlags_CompositablePaintAnimationChanged) {
     <div id=test>Test</div>
   )HTML");
 
-  Element* element = GetDocument().getElementById("test");
+  Element* element = GetDocument().getElementById(AtomicString("test"));
   ASSERT_TRUE(element);
 
   // Not animating yet:
@@ -692,7 +692,7 @@ TEST_P(CSSAnimationsTest, UpdateAnimationFlags_AnimatingElement) {
     <div id=test>Test</div>
   )HTML");
 
-  Element* element = GetDocument().getElementById("test");
+  Element* element = GetDocument().getElementById(AtomicString("test"));
   ASSERT_TRUE(element);
 
   Element* before = element->GetPseudoElement(kPseudoIdBefore);
@@ -727,7 +727,7 @@ TEST_P(CSSAnimationsTest, CSSTransitionBlockedByAnimationUseCounter) {
     <div id=test class=animate>Test</div>
   )HTML");
 
-  Element* element = GetDocument().getElementById("test");
+  Element* element = GetDocument().getElementById(AtomicString("test"));
   ASSERT_TRUE(element);
 
   // Verify that we see animation effects.
@@ -789,7 +789,7 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
       <div id='test'>TEST</div>
     )HTML");
 
-    element_ = GetDocument().getElementById("test");
+    element_ = GetDocument().getElementById(AtomicString("test"));
     UpdateAllLifecyclePhasesForTest();
     ElementAnimations* animations = element_->GetElementAnimations();
     EXPECT_FALSE(animations);
@@ -1068,7 +1068,7 @@ TEST_P(CSSAnimationsTest, LingeringTimelineAttachments) {
     </div>
   )HTML");
 
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   ASSERT_TRUE(scroller);
 
   ElementAnimations* element_animations = scroller->GetElementAnimations();

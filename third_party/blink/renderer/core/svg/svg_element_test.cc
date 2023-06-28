@@ -37,9 +37,11 @@ TEST_F(SVGElementTest, BaseComputedStyleForSMILWithContainerQueries) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* rect1 = To<SVGElement>(GetDocument().getElementById("rect1"));
-  auto* rect2 = To<SVGElement>(GetDocument().getElementById("rect2"));
-  auto* g = To<SVGElement>(GetDocument().getElementById("g"));
+  auto* rect1 =
+      To<SVGElement>(GetDocument().getElementById(AtomicString("rect1")));
+  auto* rect2 =
+      To<SVGElement>(GetDocument().getElementById(AtomicString("rect2")));
+  auto* g = To<SVGElement>(GetDocument().getElementById(AtomicString("g")));
 
   auto force_needs_override_style = [](SVGElement& svg_element) {
     svg_element.EnsureSVGRareData()->SetNeedsOverrideComputedStyleUpdate();
@@ -85,7 +87,7 @@ TEST_F(SVGElementTest, ContainerUnitContext) {
     </div>
   )HTML");
 
-  auto* svg = To<SVGElement>(GetDocument().getElementById("svg"));
+  auto* svg = To<SVGElement>(GetDocument().getElementById(AtomicString("svg")));
   const auto* value = DynamicTo<CSSPrimitiveValue>(
       css_test_helpers::ParseValue(GetDocument(), "<length>", "100cqw"));
   EXPECT_FLOAT_EQ(200.0f, SVGLengthContext(svg).ResolveValue(

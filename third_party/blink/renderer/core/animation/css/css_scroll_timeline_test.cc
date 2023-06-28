@@ -70,7 +70,7 @@ TEST_F(CSSScrollTimelineTest, SharedTimelines) {
   // #scroller[1,2] etc is created in a separate lifecycle phase to ensure that
   // we get a layout box for #scroller[1,2] before the animations are started.
 
-  Element* main = GetDocument().getElementById("main");
+  Element* main = GetDocument().getElementById(AtomicString("main"));
   ASSERT_TRUE(main);
   main->setInnerHTML(R"HTML(
     <style>
@@ -85,8 +85,8 @@ TEST_F(CSSScrollTimelineTest, SharedTimelines) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* element1 = GetDocument().getElementById("element1");
-  Element* element2 = GetDocument().getElementById("element2");
+  Element* element1 = GetDocument().getElementById(AtomicString("element1"));
+  Element* element2 = GetDocument().getElementById(AtomicString("element2"));
   ASSERT_TRUE(element1);
   ASSERT_TRUE(element2);
   HeapVector<Member<Animation>> animations1 = element1->getAnimations();
@@ -141,7 +141,7 @@ TEST_F(CSSScrollTimelineTest, MultipleLifecyclePasses) {
     <div id=element></div>
   )HTML");
 
-  Element* element = GetDocument().getElementById("element");
+  Element* element = GetDocument().getElementById(AtomicString("element"));
   ASSERT_TRUE(element);
 
   // According to the rules of the spec [1], the timeline is now inactive,
@@ -216,7 +216,7 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
   scroller->setAttribute(blink::html_names::kIdAttr, "scroller");
   scroller->AppendChild(MakeGarbageCollected<HTMLDivElement>(GetDocument()));
 
-  Element* main = GetDocument().getElementById("main");
+  Element* main = GetDocument().getElementById(AtomicString("main"));
   ASSERT_TRUE(main);
   main->AppendChild(scroller);
   main->AppendChild(element);

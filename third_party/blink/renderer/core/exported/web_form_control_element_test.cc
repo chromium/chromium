@@ -66,7 +66,7 @@ class WebFormControlElementTest
 
   WebFormControlElement TestElement() {
     HTMLFormControlElement* control_element = DynamicTo<HTMLFormControlElement>(
-        GetDocument().getElementById("testElement"));
+        GetDocument().getElementById(AtomicString("testElement")));
     DCHECK(control_element);
     return WebFormControlElement(control_element);
   }

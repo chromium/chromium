@@ -90,8 +90,8 @@ TEST_P(SVGContainerPainterTest, ScaleAnimationFrom0) {
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON));
 
-  auto* rect1_element = GetDocument().getElementById("rect1");
-  auto* rect2_element = GetDocument().getElementById("rect2");
+  auto* rect1_element = GetDocument().getElementById(AtomicString("rect1"));
+  auto* rect2_element = GetDocument().getElementById(AtomicString("rect2"));
   rect1_element->setAttribute(html_names::kClassAttr, "scale");
   rect2_element->setAttribute(html_names::kClassAttr, "transform-scale");
   UpdateAllLifecyclePhasesForTest();

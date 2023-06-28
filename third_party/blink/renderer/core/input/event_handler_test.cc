@@ -321,7 +321,7 @@ TEST_F(EventHandlerTest, multiClickSelectionFromTap) {
       "<body contenteditable='true'><span class='line' id='line'>One Two "
       "Three</span></body>");
 
-  Node* line = GetDocument().getElementById("line")->firstChild();
+  Node* line = GetDocument().getElementById(AtomicString("line"))->firstChild();
 
   TapEventBuilder single_tap_event(gfx::PointF(0, 0), 1);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
@@ -362,7 +362,7 @@ TEST_F(EventHandlerTest, multiClickSelectionFromTapDisabledIfNotEditable) {
       "height: 30px; } </style>"
       "<span class='line' id='line'>One Two Three</span>");
 
-  Node* line = GetDocument().getElementById("line")->firstChild();
+  Node* line = GetDocument().getElementById(AtomicString("line"))->firstChild();
 
   TapEventBuilder single_tap_event(gfx::PointF(0, 0), 1);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
@@ -496,7 +496,8 @@ TEST_F(EventHandlerTest, ShadowChildCanOverrideUserSelectNone) {
   ShadowRoot* const shadow_root = SetShadowContent(
       "<span style='user-select: text' id='bla'>blabla</span>", "host");
 
-  Node* const text = shadow_root->getElementById("bla")->firstChild();
+  Node* const text =
+      shadow_root->getElementById(AtomicString("bla"))->firstChild();
   HitTestLocation location(
       text->GetLayoutObject()->AbsoluteBoundingBoxRect().CenterPoint());
   HitTestResult hit =
@@ -584,7 +585,8 @@ TEST_F(EventHandlerTest, ShadowChildCanOverrideUserSelectText) {
   ShadowRoot* const shadow_root = SetShadowContent(
       "<span style='user-select: none' id='bla'>blabla</span>", "host");
 
-  Node* const text = shadow_root->getElementById("bla")->firstChild();
+  Node* const text =
+      shadow_root->getElementById(AtomicString("bla"))->firstChild();
   HitTestLocation location(
       text->GetLayoutObject()->AbsoluteBoundingBoxRect().CenterPoint());
   HitTestResult hit =
@@ -616,8 +618,8 @@ TEST_F(EventHandlerTest, ReadOnlyInputDoesNotInheritUserSelect) {
       "<div style='user-select: none'>"
       "<input id='sample' readonly value='blabla'>"
       "</div>");
-  auto* const input =
-      To<HTMLInputElement>(GetDocument().getElementById("sample"));
+  auto* const input = To<HTMLInputElement>(
+      GetDocument().getElementById(AtomicString("sample")));
   Node* const text = input->InnerEditorElement()->firstChild();
 
   HitTestLocation location(
@@ -938,7 +940,7 @@ TEST_F(EventHandlerTest, SelectionOnDoublePress) {
         </div>
       )HTML");
 
-  Element* element = GetDocument().getElementById("target");
+  Element* element = GetDocument().getElementById(AtomicString("target"));
   gfx::PointF tap_point = gfx::PointF(element->BoundsInWidget().CenterPoint());
   TapDownEventBuilder single_tap_down_event(tap_point);
   single_tap_down_event.data.tap_down.tap_down_count = 1;
@@ -984,7 +986,7 @@ TEST_F(EventHandlerTest, SelectionOnDoublePressPreventDefaultMousePress) {
   GetDocument().body()->AppendChild(script);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
-  Element* element = GetDocument().getElementById("target");
+  Element* element = GetDocument().getElementById(AtomicString("target"));
   gfx::PointF tap_point = gfx::PointF(element->BoundsInWidget().CenterPoint());
   TapDownEventBuilder single_tap_down_event(tap_point);
   single_tap_down_event.data.tap_down.tap_down_count = 1;
@@ -1350,7 +1352,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromTabUpdatesTooltip) {
   e.dom_key = ui::DomKey::TAB;
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
 
-  Element* element = GetDocument().getElementById("b1");
+  Element* element = GetDocument().getElementById(AtomicString("b1"));
   EXPECT_EQ("my tooltip 1", LastToolTipText());
   EXPECT_EQ(element->BoundsInWidget(), LastToolTipBounds());
 
@@ -1358,7 +1360,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromTabUpdatesTooltip) {
   // still trigger a tooltip update. The browser-side TooltipController will
   // handle this case.
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
-  element = GetDocument().getElementById("b2");
+  element = GetDocument().getElementById(AtomicString("b2"));
   EXPECT_TRUE(LastToolTipText().IsNull());
   EXPECT_EQ(element->BoundsInWidget(), LastToolTipBounds());
 }
@@ -1387,7 +1389,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromAccessKeyUpdatesTooltip) {
   e.unmodified_text[0] = 'a';
   GetDocument().GetFrame()->GetEventHandler().HandleAccessKey(e);
 
-  Element* element = GetDocument().getElementById("b");
+  Element* element = GetDocument().getElementById(AtomicString("b"));
   EXPECT_EQ("my tooltip", LastToolTipText());
   EXPECT_EQ(element->BoundsInWidget(), LastToolTipBounds());
 }
@@ -1411,7 +1413,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromMouseDoesntUpdateTooltip) {
   EXPECT_EQ(WTF::String(), LastToolTipText());
   EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
 
-  Element* element = GetDocument().getElementById("b");
+  Element* element = GetDocument().getElementById(AtomicString("b"));
   gfx::PointF mouse_press_point =
       gfx::PointF(element->BoundsInWidget().CenterPoint());
   WebMouseEvent mouse_press_event(
@@ -1444,7 +1446,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromScriptDoesntUpdateTooltip) {
   EXPECT_EQ(WTF::String(), LastToolTipText());
   EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
 
-  Element* element = GetDocument().getElementById("b");
+  Element* element = GetDocument().getElementById(AtomicString("b"));
   element->Focus();
 
   EXPECT_TRUE(LastToolTipText().IsNull());
@@ -1494,7 +1496,7 @@ TEST_F(EventHandlerTooltipTest,
   e.native_key_code = e.windows_key_code = blink::VKEY_LEFT;
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
 
-  Element* element = GetDocument().getElementById("b1");
+  Element* element = GetDocument().getElementById(AtomicString("b1"));
   EXPECT_EQ("my tooltip 1", LastToolTipText());
   EXPECT_EQ(element->BoundsInWidget(), LastToolTipBounds());
 
@@ -1509,12 +1511,12 @@ TEST_F(EventHandlerTooltipTest,
   e2.native_key_code = e2.windows_key_code = blink::VKEY_RIGHT;
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e2);
 
-  element = GetDocument().getElementById("b2");
+  element = GetDocument().getElementById(AtomicString("b2"));
   EXPECT_TRUE(LastToolTipText().IsNull());
 
   // But when the Element::Focus() is called outside of a keypress context,
   // no tooltip is shown.
-  element = GetDocument().getElementById("b1");
+  element = GetDocument().getElementById(AtomicString("b1"));
   element->Focus(FocusOptions::Create());
   EXPECT_TRUE(LastToolTipText().IsNull());
 }
@@ -1546,17 +1548,17 @@ TEST_F(EventHandlerTooltipTest,
   e.dom_key = ui::DomKey::TAB;
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
 
-  Element* element = GetDocument().getElementById("b1");
+  Element* element = GetDocument().getElementById(AtomicString("b1"));
   EXPECT_EQ("my tooltip 1", LastToolTipText());
   EXPECT_EQ(element->BoundsInWidget(), LastToolTipBounds());
 
   // Validate that blurring an element that is not focused will not just hide
   // the tooltip. It wouldn't make sense.
-  element = GetDocument().getElementById("b2");
+  element = GetDocument().getElementById(AtomicString("b2"));
   element->blur();
 
   EXPECT_EQ("my tooltip 1", LastToolTipText());
-  EXPECT_EQ(GetDocument().getElementById("b1")->BoundsInWidget(),
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("b1"))->BoundsInWidget(),
             LastToolTipBounds());
 
   // Then, programmatically move the focus to another button that has no title
@@ -1570,7 +1572,7 @@ TEST_F(EventHandlerTooltipTest,
   // tooltip again.
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
 
-  element = GetDocument().getElementById("b1");
+  element = GetDocument().getElementById(AtomicString("b1"));
   EXPECT_EQ("my tooltip 1", LastToolTipText());
   EXPECT_EQ(element->BoundsInWidget(), LastToolTipBounds());
 
@@ -1604,7 +1606,7 @@ TEST_F(EventHandlerTooltipTest,
   EXPECT_EQ("tooltip", LastToolTipText());
 
   // Then, programmatically move the focus to another element.
-  Element* element = GetDocument().getElementById("b2");
+  Element* element = GetDocument().getElementById(AtomicString("b2"));
   element->Focus();
 
   EXPECT_EQ("tooltip", LastToolTipText());
@@ -1651,7 +1653,8 @@ TEST_F(EventHandlerLatencyTest, NeedsUnbufferedInput) {
       "<canvas style='width: 100px; height: 100px' id='first' "
       "onpointermove='return;'>");
 
-  auto& canvas = To<HTMLCanvasElement>(*GetDocument().getElementById("first"));
+  auto& canvas = To<HTMLCanvasElement>(
+      *GetDocument().getElementById(AtomicString("first")));
 
   ASSERT_FALSE(chrome_client_->ReceivedRequestForUnbufferedInput());
 
@@ -1920,7 +1923,8 @@ TEST_F(EventHandlerSimTest, MAYBE_GestureTapWithScrollSnaps) {
 
   // Ensure that there is an active animation on the scrollable area event
   // though GSE was handled. The actual handling should be deferred.
-  Element* scrollable_div = GetDocument().getElementById("container");
+  Element* scrollable_div =
+      GetDocument().getElementById(AtomicString("container"));
   ScrollableArea* scrollable_area =
       scrollable_div->GetLayoutBox()->GetScrollableArea();
   EXPECT_TRUE(scrollable_area->ExistingScrollAnimator());
@@ -2006,8 +2010,8 @@ TEST_F(EventHandlerSimTest, MouseLeaveIFrameResets) {
       Vector<WebMouseEvent>());
   EXPECT_FALSE(
       GetDocument().GetFrame()->GetEventHandler().IsMousePositionUnknown());
-  auto* child_frame =
-      To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
+  auto* child_frame = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("frame")));
   child_frame->contentDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kTest);
   EXPECT_TRUE(GetDocument().GetFrame()->Tree().FirstChild());
@@ -2109,8 +2113,8 @@ TEST_F(EventHandlerSimTest, TapActiveInFrame) {
   )HTML");
   Compositor().BeginFrame();
 
-  auto* iframe_element =
-      To<HTMLIFrameElement>(GetDocument().getElementById("iframe"));
+  auto* iframe_element = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("iframe")));
   Document* iframe_doc = iframe_element->contentDocument();
 
   TapDownEventBuilder tap_down(gfx::PointF(10, 10));
@@ -2177,9 +2181,9 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterCompositorScrollAtBeginFrame) {
   // Set mouse position and active web view.
   InitializeMousePositionAndActivateView(1, 1);
 
-  WebElement element1 = GetDocument().getElementById("line1");
-  WebElement element2 = GetDocument().getElementById("line2");
-  WebElement element3 = GetDocument().getElementById("line3");
+  WebElement element1 = GetDocument().getElementById(AtomicString("line1"));
+  WebElement element2 = GetDocument().getElementById(AtomicString("line2"));
+  WebElement element3 = GetDocument().getElementById(AtomicString("line3"));
   EXPECT_EQ("currently hovered", element1.InnerHTML().Utf8());
   EXPECT_EQ("hover over me", element2.InnerHTML().Utf8());
   EXPECT_EQ("hover over me", element3.InnerHTML().Utf8());
@@ -2250,9 +2254,9 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterMainThreadScrollAtBeginFrame) {
   // Set mouse position and active web view.
   InitializeMousePositionAndActivateView(1, 1);
 
-  WebElement element1 = GetDocument().getElementById("line1");
-  WebElement element2 = GetDocument().getElementById("line2");
-  WebElement element3 = GetDocument().getElementById("line3");
+  WebElement element1 = GetDocument().getElementById(AtomicString("line1"));
+  WebElement element2 = GetDocument().getElementById(AtomicString("line2"));
+  WebElement element3 = GetDocument().getElementById(AtomicString("line3"));
   EXPECT_EQ("currently hovered", element1.InnerHTML().Utf8());
   EXPECT_EQ("hover over me", element2.InnerHTML().Utf8());
   EXPECT_EQ("hover over me", element3.InnerHTML().Utf8());
@@ -2322,8 +2326,8 @@ TEST_F(EventHandlerSimTest,
   )HTML");
   Compositor().BeginFrame();
 
-  auto* iframe_element =
-      To<HTMLIFrameElement>(GetDocument().getElementById("iframe"));
+  auto* iframe_element = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("iframe")));
   Document* iframe_doc = iframe_element->contentDocument();
   FrameView* child_frame_view =
       iframe_element->GetLayoutEmbeddedContent()->ChildFrameView();
@@ -2334,7 +2338,7 @@ TEST_F(EventHandlerSimTest,
   // Set mouse position and active web view.
   InitializeMousePositionAndActivateView(100, 100);
 
-  Element* element = iframe_doc->getElementById("hoverarea");
+  Element* element = iframe_doc->getElementById(AtomicString("hoverarea"));
   EXPECT_TRUE(element->IsHovered());
 
   // Send scroll gesture events which will cause scroll happen in main thread
@@ -2379,7 +2383,7 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterJSScrollAtBeginFrame) {
   // Set mouse position and active web view.
   InitializeMousePositionAndActivateView(100, 100);
 
-  Element* element = GetDocument().getElementById("hoverarea");
+  Element* element = GetDocument().getElementById(AtomicString("hoverarea"));
   EXPECT_TRUE(element->IsHovered());
 
   // Find the scrollable area and set scroll offset.
@@ -2467,9 +2471,10 @@ TEST_F(EventHandlerSimTest,
   InitializeMousePositionAndActivateView(150, 150);
   Compositor().BeginFrame();
 
-  Element* const scroller = GetDocument().getElementById("scroller");
-  Element* target1 = GetDocument().getElementById("target1");
-  Element* target2 = GetDocument().getElementById("target2");
+  Element* const scroller =
+      GetDocument().getElementById(AtomicString("scroller"));
+  Element* target1 = GetDocument().getElementById(AtomicString("target1"));
+  Element* target2 = GetDocument().getElementById(AtomicString("target2"));
   EXPECT_TRUE(target1->IsHovered());
   EXPECT_FALSE(target2->IsHovered());
 
@@ -2555,9 +2560,10 @@ TEST_F(EventHandlerSimTest,
   InitializeMousePositionAndActivateView(150, 150);
   Compositor().BeginFrame();
 
-  Element* const scroller = GetDocument().getElementById("scroller");
-  Element* target1 = GetDocument().getElementById("target1");
-  Element* target2 = GetDocument().getElementById("target2");
+  Element* const scroller =
+      GetDocument().getElementById(AtomicString("scroller"));
+  Element* target1 = GetDocument().getElementById(AtomicString("target1"));
+  Element* target2 = GetDocument().getElementById(AtomicString("target2"));
   EXPECT_TRUE(target1->IsHovered());
   EXPECT_FALSE(target2->IsHovered());
 
@@ -2729,7 +2735,7 @@ TEST_F(EventHandlerSimTest, NeverExposeKeyboardEvent) {
   )HTML");
   Compositor().BeginFrame();
 
-  WebElement element = GetDocument().getElementById("log");
+  WebElement element = GetDocument().getElementById(AtomicString("log"));
   WebKeyboardEvent e{WebInputEvent::Type::kRawKeyDown,
                      WebInputEvent::kNoModifiers,
                      WebInputEvent::GetStaticTimeStampForTests()};
@@ -2799,7 +2805,7 @@ TEST_F(EventHandlerSimTest, NotExposeKeyboardEvent) {
   )HTML");
   Compositor().BeginFrame();
 
-  WebElement element = GetDocument().getElementById("log");
+  WebElement element = GetDocument().getElementById(AtomicString("log"));
   WebKeyboardEvent e{WebInputEvent::Type::kRawKeyDown,
                      WebInputEvent::kNoModifiers,
                      WebInputEvent::GetStaticTimeStampForTests()};
@@ -2832,7 +2838,7 @@ TEST_F(EventHandlerSimTest, NotExposeKeyboardEvent) {
   EXPECT_EQ("keyup cancelable=false", element.InnerHTML().Utf8());
 
   // Key send to js and cancellable in editor.
-  WebElement input = GetDocument().getElementById("input1");
+  WebElement input = GetDocument().getElementById(AtomicString("input1"));
   GetDocument().SetFocusedElement(
       input.Unwrap<Element>(),
       FocusParams(SelectionBehaviorOnFocus::kNone,
@@ -2902,7 +2908,8 @@ TEST_F(EventHandlerSimTest, DoNotScrollWithTouchpadIfOverflowIsHidden) {
   GetWebFrameWidget().DispatchThroughCcInputHandler(scroll_end_event);
 
   Compositor().BeginFrame();
-  EXPECT_EQ(0, GetDocument().getElementById("outer")->scrollLeft());
+  EXPECT_EQ(0,
+            GetDocument().getElementById(AtomicString("outer"))->scrollLeft());
 }
 
 TEST_F(EventHandlerSimTest, GestureScrollUpdateModifiedScrollChain) {
@@ -2966,7 +2973,8 @@ TEST_F(EventHandlerSimTest, GestureScrollUpdateModifiedScrollChain) {
   // Between the GSB (when the scroll chain is computed) and GSU, update the
   // scroller to be display:inline. Applying the scroll should handle this
   // by detecting a non-box LayoutObject in the scroll chain and not crash.
-  Element* const scroller = GetDocument().getElementById("scroller");
+  Element* const scroller =
+      GetDocument().getElementById(AtomicString("scroller"));
   scroller->setAttribute("class", "inline");
 
   WebView().MainFrameWidget()->HandleInputEvent(
@@ -3003,7 +3011,8 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScroll) {
   )HTML");
   Compositor().BeginFrame();
 
-  Element* const scroller = GetDocument().getElementById("scroller");
+  Element* const scroller =
+      GetDocument().getElementById(AtomicString("scroller"));
   constexpr float delta_y = 100;
   // Send GSB/GSU at 0,0 to target the viewport first, then verify that
   // the viewport scrolled accordingly.
@@ -3079,8 +3088,8 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollIFrame) {
   )HTML");
   Compositor().BeginFrame();
 
-  auto* const iframe =
-      To<HTMLFrameElementBase>(GetDocument().getElementById("iframe"));
+  auto* const iframe = To<HTMLFrameElementBase>(
+      GetDocument().getElementById(AtomicString("iframe")));
   FrameView* child_frame_view =
       iframe->GetLayoutEmbeddedContent()->ChildFrameView();
   auto* local_child_frame_view = DynamicTo<LocalFrameView>(child_frame_view);
@@ -3137,8 +3146,8 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollIFrameNoCrash) {
   )HTML");
   Compositor().BeginFrame();
 
-  auto* const iframe =
-      To<HTMLFrameElementBase>(GetDocument().getElementById("iframe"));
+  auto* const iframe = To<HTMLFrameElementBase>(
+      GetDocument().getElementById(AtomicString("iframe")));
   FrameView* child_frame_view =
       iframe->GetLayoutEmbeddedContent()->ChildFrameView();
   auto* local_child_frame_view = DynamicTo<LocalFrameView>(child_frame_view);
@@ -3245,7 +3254,7 @@ TEST_F(EventHandlerSimTest, SelecteTransformedTextWhenCapturing) {
                   .GetSelectionController()
                   .MouseDownMayStartSelect());
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   GetDocument().GetFrame()->GetEventHandler().SetPointerCapture(
       PointerEventFactory::kMouseId, target);
 
@@ -3376,7 +3385,7 @@ TEST_F(EventHandlerSimTest, PenDraggingOnElementActive) {
       WebCoalescedInputEvent(pen_move, ui::LatencyInfo()));
 
   EXPECT_EQ(GetDocument().GetActiveElement(),
-            GetDocument().getElementById("target"));
+            GetDocument().getElementById(AtomicString("target")));
 }
 
 TEST_F(EventHandlerSimTest, TestNoCrashOnMouseWheelZeroDelta) {
@@ -3403,7 +3412,7 @@ TEST_F(EventHandlerSimTest, TestNoCrashOnMouseWheelZeroDelta) {
   InitializeMousePositionAndActivateView(50, 50);
   Compositor().BeginFrame();
 
-  WebElement element = GetDocument().getElementById("log");
+  WebElement element = GetDocument().getElementById(AtomicString("log"));
   WebMouseWheelEvent wheel_event(
       blink::WebInputEvent::Type::kMouseWheel,
       blink::WebInputEvent::kNoModifiers,
@@ -3445,7 +3454,7 @@ TEST_F(EventHandlerSimTest, TestNoWheelEventWithPhaseMayBeginAndCancel) {
   InitializeMousePositionAndActivateView(50, 50);
   Compositor().BeginFrame();
 
-  WebElement element = GetDocument().getElementById("log");
+  WebElement element = GetDocument().getElementById(AtomicString("log"));
   WebMouseWheelEvent wheel_event(
       blink::WebInputEvent::Type::kMouseWheel,
       blink::WebInputEvent::kNoModifiers,
@@ -3489,7 +3498,7 @@ TEST_F(EventHandlerSimTest, TestWheelEventsWithDifferentPhases) {
   InitializeMousePositionAndActivateView(50, 50);
   Compositor().BeginFrame();
 
-  auto* element = GetDocument().getElementById("log");
+  auto* element = GetDocument().getElementById(AtomicString("log"));
   WebMouseWheelEvent wheel_event(
       blink::WebInputEvent::Type::kMouseWheel,
       blink::WebInputEvent::kNoModifiers,
@@ -3579,7 +3588,9 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresOnKeyUpAfterScroll) {
                      WebInputEvent::GetStaticTimeStampForTests()};
   const int num_keydowns = 5;
 
-  GetDocument().getElementById("scroller")->Focus(FocusOptions::Create());
+  GetDocument()
+      .getElementById(AtomicString("scroller"))
+      ->Focus(FocusOptions::Create());
   // Send first keyDown.
   e.windows_key_code = VKEY_DOWN;
   e.SetType(WebInputEvent::Type::kKeyDown);
@@ -3599,15 +3610,18 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresOnKeyUpAfterScroll) {
   Compositor().BeginFrame(0.15 * num_keydowns);
 
   // Verify that we have not yet fired scrollend.
-  EXPECT_EQ(GetDocument().getElementById("log")->innerHTML().Utf8(), "");
+  EXPECT_EQ(
+      GetDocument().getElementById(AtomicString("log"))->innerHTML().Utf8(),
+      "");
 
   // Fire keyUp, which should tigger a scrollend event.
   e.SetType(WebInputEvent::Type::kKeyUp);
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
 
   Compositor().BeginFrame();
-  EXPECT_EQ(GetDocument().getElementById("log")->innerHTML().Utf8(),
-            "scrollend");
+  EXPECT_EQ(
+      GetDocument().getElementById(AtomicString("log"))->innerHTML().Utf8(),
+      "scrollend");
 }
 
 TEST_F(EventHandlerSimTest, TestScrollendFiresAfterScrollWithEarlyKeyUp) {
@@ -3645,7 +3659,9 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresAfterScrollWithEarlyKeyUp) {
                      WebInputEvent::kNoModifiers,
                      WebInputEvent::GetStaticTimeStampForTests()};
 
-  GetDocument().getElementById("scroller")->Focus(FocusOptions::Create());
+  GetDocument()
+      .getElementById(AtomicString("scroller"))
+      ->Focus(FocusOptions::Create());
 
   // Send first keyDown.
   e.windows_key_code = VKEY_DOWN;
@@ -3661,7 +3677,9 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresAfterScrollWithEarlyKeyUp) {
   Compositor().BeginFrame();
 
   // Verify that we have not yet fired scrollend.
-  EXPECT_EQ(GetDocument().getElementById("log")->innerHTML().Utf8(), "");
+  EXPECT_EQ(
+      GetDocument().getElementById(AtomicString("log"))->innerHTML().Utf8(),
+      "");
 
   // Fire keyUp, which should not tigger a scrollend event since another scroll
   // is in progress.
@@ -3671,8 +3689,9 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresAfterScrollWithEarlyKeyUp) {
   // Tick second scroll to completion which should fire scrollend.
   Compositor().BeginFrame(0.30);
 
-  EXPECT_EQ(GetDocument().getElementById("log")->innerHTML().Utf8(),
-            "scrollend");
+  EXPECT_EQ(
+      GetDocument().getElementById(AtomicString("log"))->innerHTML().Utf8(),
+      "scrollend");
 }
 
 TEST_F(EventHandlerSimTest, TestScrollendFiresOnKeyUpAfterScrollInstant) {
@@ -3712,7 +3731,9 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresOnKeyUpAfterScrollInstant) {
                      WebInputEvent::GetStaticTimeStampForTests()};
   const int num_keydowns = 5;
 
-  GetDocument().getElementById("scroller")->Focus(FocusOptions::Create());
+  GetDocument()
+      .getElementById(AtomicString("scroller"))
+      ->Focus(FocusOptions::Create());
   // Send first keyDown.
   e.windows_key_code = VKEY_DOWN;
   e.SetType(WebInputEvent::Type::kKeyDown);
@@ -3727,15 +3748,18 @@ TEST_F(EventHandlerSimTest, TestScrollendFiresOnKeyUpAfterScrollInstant) {
   }
 
   // Verify that we have not yet fired scrollend.
-  EXPECT_EQ(GetDocument().getElementById("log")->innerHTML().Utf8(), "");
+  EXPECT_EQ(
+      GetDocument().getElementById(AtomicString("log"))->innerHTML().Utf8(),
+      "");
 
   // Fire keyUp, which should trigger a scrollend event.
   e.SetType(WebInputEvent::Type::kKeyUp);
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
 
   Compositor().BeginFrame();
-  EXPECT_EQ(GetDocument().getElementById("log")->innerHTML().Utf8(),
-            "scrollend");
+  EXPECT_EQ(
+      GetDocument().getElementById(AtomicString("log"))->innerHTML().Utf8(),
+      "scrollend");
 }
 
 }  // namespace blink

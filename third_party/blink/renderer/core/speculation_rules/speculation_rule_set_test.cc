@@ -2790,8 +2790,10 @@ TEST_F(DocumentRulesTest, SelectorMatchesAddsCandidates) {
     <div id="important-section"></div>
     <div id="unimportant-section"></div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
-  auto* unimportant_section = document.getElementById("unimportant-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
+  auto* unimportant_section =
+      document.getElementById(AtomicString("unimportant-section"));
 
   AddAnchor(*important_section, "https://foo.com/foo");
   AddAnchor(*unimportant_section, "https://foo.com/bar");
@@ -2822,8 +2824,10 @@ TEST_F(DocumentRulesTest, SelectorMatchesIsDynamic) {
     <div id="important-section"></div>
     <div id="unimportant-section"></div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
-  auto* unimportant_section = document.getElementById("unimportant-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
+  auto* unimportant_section =
+      document.getElementById(AtomicString("unimportant-section"));
 
   String speculation_script = R"(
     {"prefetch": [{
@@ -2869,8 +2873,10 @@ TEST_F(DocumentRulesTest, AddingDocumentRulesInvalidatesStyle) {
     <div id="important-section"></div>
     <div id="unimportant-section"></div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
-  auto* unimportant_section = document.getElementById("unimportant-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
+  auto* unimportant_section =
+      document.getElementById(AtomicString("unimportant-section"));
 
   AddAnchor(*important_section, "https://foo.com/fizz");
   AddAnchor(*unimportant_section, "https://foo.com/buzz");
@@ -2928,8 +2934,10 @@ TEST_F(DocumentRulesTest, BasicStyleInvalidation) {
     <div id="important-section"></div>
     <div id="unimportant-section"></div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
-  auto* unimportant_section = document.getElementById("unimportant-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
+  auto* unimportant_section =
+      document.getElementById(AtomicString("unimportant-section"));
 
   AddAnchor(*important_section, "https://foo.com/fizz");
   AddAnchor(*unimportant_section, "https://foo.com/buzz");
@@ -2961,8 +2969,10 @@ TEST_F(DocumentRulesTest, IrrelevantDOMChangeShouldNotInvalidateCandidateList) {
     <div id="important-section"></div>
     <div id="unimportant-section"></div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
-  auto* unimportant_section = document.getElementById("unimportant-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
+  auto* unimportant_section =
+      document.getElementById(AtomicString("unimportant-section"));
 
   AddAnchor(*important_section, "https://foo.com/fizz");
   AddAnchor(*unimportant_section, "https://foo.com/buzz");
@@ -2998,8 +3008,10 @@ TEST_F(DocumentRulesTest, SelectorMatchesInsideShadowTree) {
     <div id="important-section"></div>
     <div id="unimportant-section"></div>
   )HTML");
-  auto* important_section = shadow_root.getElementById("important-section");
-  auto* unimportant_section = shadow_root.getElementById("unimportant-section");
+  auto* important_section =
+      shadow_root.getElementById(AtomicString("important-section"));
+  auto* unimportant_section =
+      shadow_root.getElementById(AtomicString("unimportant-section"));
 
   AddAnchor(*important_section, "https://foo.com/fizz");
   AddAnchor(*unimportant_section, "https://foo.com/buzz");
@@ -3061,8 +3073,10 @@ TEST_F(DocumentRulesTest, UpdateQueueingWithSelectorMatches_1) {
     <div id="important-section"></div>
     <div id="unimportant-section"></div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
-  auto* unimportant_section = document.getElementById("unimportant-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
+  auto* unimportant_section =
+      document.getElementById(AtomicString("unimportant-section"));
 
   String speculation_script = R"(
     {"prefetch": [{
@@ -3134,7 +3148,8 @@ TEST_F(DocumentRulesTest, UpdateQueueingWithSelectorMatches_2) {
   document.body()->setInnerHTML(R"HTML(
     <div id="important-section"></div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
   AddAnchor(*important_section, "https://foo.com/bar");
   String speculation_script = R"(
     {"prefetch": [{
@@ -3176,7 +3191,8 @@ TEST_F(DocumentRulesTest, UpdateQueueingWithSelectorMatches_3) {
   document.body()->setInnerHTML(R"HTML(
     <div id="important-section"></div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
   String speculation_script = R"(
     {"prefetch": [{
       "source": "document",
@@ -3208,7 +3224,8 @@ TEST_F(DocumentRulesTest, UpdateQueueingWithSelectorMatches_4) {
   document.body()->setInnerHTML(R"HTML(
     <div id="important-section"></div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
   String speculation_script = R"(
     {"prefetch": [{
       "source": "document",
@@ -3246,7 +3263,8 @@ TEST_F(DocumentRulesTest, UpdateQueueingWithSelectorMatches_5) {
   document.body()->setInnerHTML(R"HTML(
     <div id="important-section"></div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
   AddAnchor(*important_section, "https://foo.com/bar");
   String speculation_script = R"(
     {"prefetch": [{
@@ -3279,7 +3297,8 @@ TEST_F(DocumentRulesTest, LinksWithoutComputedStyle) {
   document.body()->setInnerHTML(R"HTML(
     <div id="important-section"></div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
   AddAnchor(*important_section, "https://foo.com/bar");
 
   String speculation_script = R"(
@@ -3326,7 +3345,8 @@ TEST_F(DocumentRulesTest, LinksWithoutComputedStyle_HrefMatches) {
   document.body()->setInnerHTML(R"HTML(
     <div id="important-section"></div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
   auto* anchor = AddAnchor(*important_section, "https://foo.com/bar");
 
   String speculation_script = R"(
@@ -3360,7 +3380,8 @@ TEST_F(DocumentRulesTest, LinksWithoutComputedStyle_SelectorMatchesDisabled) {
   document.body()->setInnerHTML(R"HTML(
     <div id="important-section"></div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
   auto* anchor = AddAnchor(*important_section, "https://foo.com/bar");
 
   String speculation_script = R"(
@@ -3398,7 +3419,8 @@ TEST_F(DocumentRulesTest, LinkInsideDisplayLockedElement) {
   document.body()->setInnerHTML(R"HTML(
     <div id="important-section"></div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
   AddAnchor(*important_section, "https://foo.com/bar");
 
   String speculation_script = R"(
@@ -3438,8 +3460,9 @@ TEST_F(DocumentRulesTest, LinkInsideNestedDisplayLockedElement) {
       <div id="links"></div>
     </div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
-  auto* links = document.getElementById("links");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
+  auto* links = document.getElementById(AtomicString("links"));
   AddAnchor(*links, "https://foo.com/bar");
 
   String speculation_script = R"(
@@ -3568,7 +3591,8 @@ TEST_F(DocumentRulesTest, DisplayLockedLink) {
   document.body()->setInnerHTML(R"HTML(
     <div id="important-section"></div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
   auto* anchor = AddAnchor(*important_section, "https://foo.com/bar");
   anchor->setInnerText("Bar");
 
@@ -3608,7 +3632,8 @@ TEST_F(DocumentRulesTest, DisplayLockedElementWithoutSelectorMatchesEnabled) {
     <div id="important-section">
     </div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
   AddAnchor(*important_section, "https://bar.com/foo");
 
   String speculation_script = R"(
@@ -3648,7 +3673,8 @@ TEST_F(DocumentRulesTest, AddLinkToDisplayLockedContainer) {
     <div id="important-section">
     </div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
 
   String speculation_script = R"(
     {"prefetch": [{
@@ -3691,8 +3717,10 @@ TEST_F(DocumentRulesTest, DisplayLockedContainerTracking) {
     <div id="important-section"></div>
     <div id="irrelevant-section"><span></span></div>
   )HTML");
-  auto* important_section = document.getElementById("important-section");
-  auto* irrelevant_section = document.getElementById("irrelevant-section");
+  auto* important_section =
+      document.getElementById(AtomicString("important-section"));
+  auto* irrelevant_section =
+      document.getElementById(AtomicString("irrelevant-section"));
   auto* anchor_1 = AddAnchor(*important_section, "https://foo.com/bar");
   AddAnchor(*important_section, "https://foo.com/logout");
   AddAnchor(*document.body(), "https://foo.com/logout");

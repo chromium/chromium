@@ -61,7 +61,7 @@ class HTMLInputElementTest : public PageTestBase {
   }
 
   HTMLInputElement& TestElement() {
-    Element* element = GetDocument().getElementById("test");
+    Element* element = GetDocument().getElementById(AtomicString("test"));
     DCHECK(element);
     return To<HTMLInputElement>(*element);
   }

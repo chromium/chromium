@@ -487,7 +487,8 @@ TEST_P(ImagePaintTimingDetectorTest, UpdatePerformanceTimingToZero) {
           .LargestContentfulPaintDetailsForMetrics();
   EXPECT_EQ(largest_contentful_paint_details.image_paint_size, 25u);
   EXPECT_GT(largest_contentful_paint_details.image_paint_time, 0u);
-  GetDocument().body()->RemoveChild(GetDocument().getElementById("target"));
+  GetDocument().body()->RemoveChild(
+      GetDocument().getElementById(AtomicString("target")));
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   EXPECT_EQ(largest_contentful_paint_details.image_paint_size, 25u);
   EXPECT_GT(largest_contentful_paint_details.image_paint_time, 0u);
@@ -622,8 +623,9 @@ TEST_P(ImagePaintTimingDetectorTest,
   EXPECT_NE(LargestPaintTime(), base::TimeTicks());
   EXPECT_EQ(LargestPaintSize(), 25ul);
 
-  GetDocument().getElementById("parent")->RemoveChild(
-      GetDocument().getElementById("target"));
+  GetDocument()
+      .getElementById(AtomicString("parent"))
+      ->RemoveChild(GetDocument().getElementById(AtomicString("target")));
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   record = LargestImage();
   EXPECT_TRUE(record);
@@ -655,8 +657,9 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_UpdateOnRemoving) {
   EXPECT_NE(record1, record2);
   EXPECT_NE(first_largest_image_paint, second_largest_image_paint);
 
-  GetDocument().getElementById("parent")->RemoveChild(
-      GetDocument().getElementById("target2"));
+  GetDocument()
+      .getElementById(AtomicString("parent"))
+      ->RemoveChild(GetDocument().getElementById(AtomicString("target2")));
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   ImageRecord* record3 = LargestImage();
   EXPECT_EQ(record2, record3);
@@ -674,8 +677,9 @@ TEST_P(ImagePaintTimingDetectorTest,
   SetImageAndPaint("target", 5, 5);
   UpdateAllLifecyclePhases();
 
-  GetDocument().getElementById("parent")->RemoveChild(
-      GetDocument().getElementById("target"));
+  GetDocument()
+      .getElementById(AtomicString("parent"))
+      ->RemoveChild(GetDocument().getElementById(AtomicString("target")));
 
   InvokeCallback();
 
@@ -695,8 +699,9 @@ TEST_P(ImagePaintTimingDetectorTest,
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   EXPECT_EQ(ContainerTotalSize(), 2u);
 
-  GetDocument().getElementById("parent")->RemoveChild(
-      GetDocument().getElementById("target"));
+  GetDocument()
+      .getElementById(AtomicString("parent"))
+      ->RemoveChild(GetDocument().getElementById(AtomicString("target")));
   EXPECT_EQ(ContainerTotalSize(), 0u);
 }
 
@@ -724,7 +729,8 @@ TEST_P(ImagePaintTimingDetectorTest,
   // The out-of-viewport image will not have been recorded yet.
   EXPECT_EQ(ContainerTotalSize(), 1u);
 
-  GetDocument().body()->RemoveChild(GetDocument().getElementById("parent"));
+  GetDocument().body()->RemoveChild(
+      GetDocument().getElementById(AtomicString("parent")));
   EXPECT_EQ(ContainerTotalSize(), 0u);
 }
 
@@ -745,8 +751,9 @@ TEST_P(ImagePaintTimingDetectorTest,
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   EXPECT_EQ(ContainerTotalSize(), 2u);
 
-  GetDocument().getElementById("parent")->RemoveChild(
-      GetDocument().getElementById("target"));
+  GetDocument()
+      .getElementById(AtomicString("parent"))
+      ->RemoveChild(GetDocument().getElementById(AtomicString("target")));
   EXPECT_EQ(ContainerTotalSize(), 0u);
 }
 
@@ -761,8 +768,9 @@ TEST_P(ImagePaintTimingDetectorTest,
   UpdateAllLifecyclePhases();
   EXPECT_EQ(ContainerTotalSize(), 5u);
 
-  GetDocument().getElementById("parent")->RemoveChild(
-      GetDocument().getElementById("target"));
+  GetDocument()
+      .getElementById(AtomicString("parent"))
+      ->RemoveChild(GetDocument().getElementById(AtomicString("target")));
   // Lazy deletion from |images_queued_for_paint_time_|.
   EXPECT_EQ(ContainerTotalSize(), 1u);
   InvokeCallback();
@@ -777,7 +785,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   )HTML");
   auto* image = MakeGarbageCollected<HTMLImageElement>(GetDocument());
   image->setAttribute("id", "target");
-  GetDocument().getElementById("parent")->AppendChild(image);
+  GetDocument().getElementById(AtomicString("parent"))->AppendChild(image);
   SetImageAndPaint("target", 5, 5);
   test_task_runner_->FastForwardBy(base::Seconds(1));
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
@@ -789,7 +797,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   EXPECT_EQ(record->paint_time,
             base::TimeTicks() + base::Seconds(1) + kQuantumOfTime);
 
-  GetDocument().getElementById("parent")->RemoveChild(image);
+  GetDocument().getElementById(AtomicString("parent"))->RemoveChild(image);
   test_task_runner_->FastForwardBy(base::Seconds(1));
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();
   record = LargestImage();
@@ -797,7 +805,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   EXPECT_EQ(record->paint_time,
             base::TimeTicks() + base::Seconds(1) + kQuantumOfTime);
 
-  GetDocument().getElementById("parent")->AppendChild(image);
+  GetDocument().getElementById(AtomicString("parent"))->AppendChild(image);
   SetImageAndPaint("target", 5, 5);
   test_task_runner_->FastForwardBy(base::Seconds(1));
   UpdateAllLifecyclePhasesAndInvokeCallbackIfAny();

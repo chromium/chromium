@@ -209,7 +209,7 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
   LoadAhem();
   InsertStyleElement("body {font-family: Ahem}");
   SetBodyContent(body_content);
-  Element* host = GetDocument().getElementById("host");
+  Element* host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
       host->AttachShadowRootInternal(ShadowRootType::kOpen);
   shadow_root.setInnerHTML(shadow_content);

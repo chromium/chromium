@@ -153,7 +153,7 @@ void ScrollSnapTest::ScrollEnd(double x, double y, bool is_in_inertial_phase) {
 }
 
 void ScrollSnapTest::SetInitialScrollOffset(double x, double y) {
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   scroller->GetLayoutBoxForScrolling()
       ->GetScrollableArea()
       ->ScrollToAbsolutePosition(gfx::PointF(x, y),
@@ -169,7 +169,7 @@ TEST_F(ScrollSnapTest, ScrollSnapOnX) {
 
   GestureScroll(100, 100, -50, 0);
 
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   // Snaps to align the area at start.
   ASSERT_EQ(scroller->scrollLeft(), 200);
   // An x-locked scroll ignores snap points on y.
@@ -183,7 +183,7 @@ TEST_F(ScrollSnapTest, ScrollSnapOnY) {
 
   GestureScroll(100, 100, 0, -50);
 
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   // A y-locked scroll ignores snap points on x.
   ASSERT_EQ(scroller->scrollLeft(), 150);
   // Snaps to align the area at start.
@@ -197,7 +197,7 @@ TEST_F(ScrollSnapTest, ScrollSnapOnBoth) {
 
   GestureScroll(100, 100, -50, -50);
 
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   // A scroll gesture that has move in both x and y would snap on both axes.
   ASSERT_EQ(scroller->scrollLeft(), 200);
   ASSERT_EQ(scroller->scrollTop(), 200);
@@ -209,7 +209,7 @@ TEST_F(ScrollSnapTest, AnimateFlingToArriveAtSnapPoint) {
   SetInitialScrollOffset(0, 200);
   Compositor().BeginFrame();
 
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   ASSERT_EQ(scroller->scrollLeft(), 0);
   ASSERT_EQ(scroller->scrollTop(), 200);
 

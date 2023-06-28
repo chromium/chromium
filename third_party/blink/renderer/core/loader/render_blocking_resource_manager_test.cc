@@ -44,7 +44,9 @@ class RenderBlockingResourceManagerTest : public SimTest {
     return GetRenderBlockingResourceManager().FontPreloadTimerIsActiveForTest();
   }
 
-  Element* GetTarget() { return GetDocument().getElementById("target"); }
+  Element* GetTarget() {
+    return GetDocument().getElementById(AtomicString("target"));
+  }
 
   const Font& GetTargetFont() {
     return GetTarget()->GetLayoutObject()->Style()->GetFont();

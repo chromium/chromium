@@ -618,8 +618,11 @@ TEST_F(NGInlineNodeTest, MinMaxSizesNeedsLayout) {
 TEST_F(NGInlineNodeTest, AssociatedItemsWithControlItem) {
   SetBodyInnerHTML(
       "<pre id=t style='-webkit-rtl-ordering:visual'>ab\nde</pre>");
-  auto* const layout_text = To<LayoutText>(
-      GetDocument().getElementById("t")->firstChild()->GetLayoutObject());
+  auto* const layout_text =
+      To<LayoutText>(GetDocument()
+                         .getElementById(AtomicString("t"))
+                         ->firstChild()
+                         ->GetLayoutObject());
   ASSERT_TRUE(layout_text->HasValidInlineItems());
   Vector<const NGInlineItem*> items;
   for (const NGInlineItem& item : layout_text->InlineItems())

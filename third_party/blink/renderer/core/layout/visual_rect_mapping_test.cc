@@ -337,7 +337,7 @@ TEST_P(VisualRectMappingTest, LayoutViewSubpixelRounding) {
   auto* frame_container =
       To<LayoutBlock>(GetLayoutObjectByElementId("frameContainer"));
   LayoutObject* target =
-      ChildDocument().getElementById("target")->GetLayoutObject();
+      ChildDocument().getElementById(AtomicString("target"))->GetLayoutObject();
   PhysicalRect rect(0, 0, 100, 100);
   EXPECT_TRUE(target->MapToVisualRectInAncestorSpace(frame_container, rect));
   // When passing from the iframe to the parent frame, the rect of (0.5, 0, 100,
@@ -378,7 +378,7 @@ TEST_P(VisualRectMappingTest, LayoutViewDisplayNone) {
   EXPECT_TRUE(frame_div->MapToVisualRectInAncestorSpace(frame_container, rect));
   EXPECT_EQ(rect, PhysicalRect(4, 13, 20, 37));
 
-  Element* frame_element = GetDocument().getElementById("frame");
+  Element* frame_element = GetDocument().getElementById(AtomicString("frame"));
   frame_element->SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
   UpdateAllLifecyclePhasesForTest();
 
@@ -1136,7 +1136,8 @@ TEST_P(VisualRectMappingTest, FixedContentsInIframe) {
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  auto* fixed = ChildDocument().getElementById("fixed")->GetLayoutObject();
+  auto* fixed =
+      ChildDocument().getElementById(AtomicString("fixed"))->GetLayoutObject();
   auto* root_view = fixed->View();
   while (root_view->GetFrame()->OwnerLayoutObject())
     root_view = root_view->GetFrame()->OwnerLayoutObject()->View();
@@ -1171,7 +1172,8 @@ TEST_P(VisualRectMappingTest, FixedContentsWithScrollOffset) {
   )HTML");
 
   auto* ancestor = GetLayoutBoxByElementId("ancestor");
-  auto* fixed = GetDocument().getElementById("fixed")->GetLayoutObject();
+  auto* fixed =
+      GetDocument().getElementById(AtomicString("fixed"))->GetLayoutObject();
 
   CheckMapToVisualRectInAncestorSpace(PhysicalRect(0, 0, 400, 300),
                                       PhysicalRect(0, -10, 400, 300), fixed,
@@ -1198,7 +1200,8 @@ TEST_P(VisualRectMappingTest, FixedContentsUnderViewWithScrollOffset) {
     <div id='forcescroll' style='height:1000px;'></div>
   )HTML");
 
-  auto* fixed = GetDocument().getElementById("fixed")->GetLayoutObject();
+  auto* fixed =
+      GetDocument().getElementById(AtomicString("fixed"))->GetLayoutObject();
 
   CheckMapToVisualRectInAncestorSpace(
       PhysicalRect(0, 0, 400, 300), PhysicalRect(0, 0, 400, 300), fixed,

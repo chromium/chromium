@@ -733,7 +733,7 @@ TEST_F(LayoutBoxTest, HitTestContainPaint) {
     </div>
   )HTML");
 
-  auto* child = GetDocument().getElementById("child");
+  auto* child = GetDocument().getElementById(AtomicString("child"));
   EXPECT_EQ(GetDocument().documentElement(), HitTest(1, 1));
   EXPECT_EQ(child, HitTest(10, 10));
   EXPECT_EQ(GetDocument().FirstBodyElement(), HitTest(150, 10));
@@ -1864,9 +1864,10 @@ TEST_F(LayoutBoxTest, HitTestResizerWithTextAreaChild) {
     </div>
   )HTML");
 
-  EXPECT_EQ(GetDocument().getElementById("target"), HitTest(99, 99));
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("target")),
+            HitTest(99, 99));
   EXPECT_TRUE(HitTest(1, 1)->IsDescendantOrShadowDescendantOf(
-      GetDocument().getElementById("textarea")));
+      GetDocument().getElementById(AtomicString("textarea"))));
 }
 
 TEST_F(LayoutBoxTest, HitTestResizerStackedWithTextAreaChild) {
@@ -1879,9 +1880,10 @@ TEST_F(LayoutBoxTest, HitTestResizerStackedWithTextAreaChild) {
     </div>
   )HTML");
 
-  EXPECT_EQ(GetDocument().getElementById("target"), HitTest(99, 99));
+  EXPECT_EQ(GetDocument().getElementById(AtomicString("target")),
+            HitTest(99, 99));
   EXPECT_TRUE(HitTest(1, 1)->IsDescendantOrShadowDescendantOf(
-      GetDocument().getElementById("textarea")));
+      GetDocument().getElementById(AtomicString("textarea"))));
 }
 
 TEST_F(LayoutBoxTest, AnchorInFragmentedContainingBlock) {
@@ -2001,7 +2003,7 @@ TEST_F(LayoutBoxTest, IsUserScrollable) {
     </div>
   )HTML");
 
-  auto* target_element = GetDocument().getElementById("target");
+  auto* target_element = GetDocument().getElementById(AtomicString("target"));
   auto* target = target_element->GetLayoutBox();
   EXPECT_TRUE(target->ScrollsOverflow());
   EXPECT_TRUE(target->IsUserScrollable());
@@ -2012,8 +2014,9 @@ TEST_F(LayoutBoxTest, IsUserScrollable) {
   EXPECT_FALSE(target->IsUserScrollable());
 
   target_element->setAttribute(html_names::kStyleAttr, "");
-  GetDocument().getElementById("content")->setAttribute(html_names::kStyleAttr,
-                                                        "height: 0");
+  GetDocument()
+      .getElementById(AtomicString("content"))
+      ->setAttribute(html_names::kStyleAttr, "height: 0");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(target->ScrollsOverflow());
   EXPECT_FALSE(target->IsUserScrollable());
@@ -2034,8 +2037,9 @@ TEST_F(LayoutBoxTest, IsUserScrollableLayoutView) {
   EXPECT_FALSE(GetLayoutView().IsUserScrollable());
 
   GetDocument().body()->setAttribute(html_names::kStyleAttr, "");
-  GetDocument().getElementById("content")->setAttribute(html_names::kStyleAttr,
-                                                        "height: 0");
+  GetDocument()
+      .getElementById(AtomicString("content"))
+      ->setAttribute(html_names::kStyleAttr, "height: 0");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(GetLayoutView().ScrollsOverflow());
   EXPECT_FALSE(GetLayoutView().IsUserScrollable());

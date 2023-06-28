@@ -815,7 +815,7 @@ TEST_F(AnimationKeyframeEffectModel, CompositorSnapshotContainerRelative) {
       </div>
     </div>
   )HTML");
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   ASSERT_TRUE(target);
 
   StringKeyframeVector keyframes = KeyframesAtZeroAndOne(

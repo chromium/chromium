@@ -69,16 +69,16 @@ TEST_F(ShadowIncludingTreeOrderTraversalTest, Next) {
   ShadowRoot* shadow_root_1 = c01->GetShadowRoot();
   ASSERT_TRUE(shadow_root_1);
   RemoveWhiteSpaceOnlyTextNodes(*shadow_root_1);
-  auto* s0 = shadow_root_1->getElementById("s0");
-  auto* s1 = shadow_root_1->getElementById("s1");
-  auto* s10 = shadow_root_1->getElementById("s10");
+  auto* s0 = shadow_root_1->getElementById(AtomicString("s0"));
+  auto* s1 = shadow_root_1->getElementById(AtomicString("s1"));
+  auto* s10 = shadow_root_1->getElementById(AtomicString("s10"));
 
   ShadowRoot* shadow_root_2 = c02->GetShadowRoot();
   ASSERT_TRUE(shadow_root_2);
   RemoveWhiteSpaceOnlyTextNodes(*shadow_root_2);
-  auto* t0 = shadow_root_2->getElementById("t0");
-  auto* t00 = shadow_root_2->getElementById("t00");
-  auto* t01 = shadow_root_2->getElementById("t01");
+  auto* t0 = shadow_root_2->getElementById(AtomicString("t0"));
+  auto* t00 = shadow_root_2->getElementById(AtomicString("t00"));
+  auto* t01 = shadow_root_2->getElementById(AtomicString("t01"));
 
   // Test iteration order using Next.
   EXPECT_EQ(ShadowIncludingTreeOrderTraversal::Next(*GetDocument().body(),

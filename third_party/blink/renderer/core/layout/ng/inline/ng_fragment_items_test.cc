@@ -38,8 +38,9 @@ b AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 </button>)HTML");
   RunDocumentLifecycle();
 
-  GetDocument().getElementById("ruby1")->appendChild(
-      GetDocument().getElementById("rt1"));
+  GetDocument()
+      .getElementById(AtomicString("ruby1"))
+      ->appendChild(GetDocument().getElementById(AtomicString("rt1")));
   RunDocumentLifecycle();
 
   EXPECT_TRUE(GetLayoutObjectByElementId("span1")->EverHadLayout());

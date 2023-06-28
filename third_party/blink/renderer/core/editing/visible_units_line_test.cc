@@ -96,13 +96,15 @@ TEST_F(VisibleUnitsLineTest, endOfLine) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById("one")->firstChild();
-  Node* two = GetDocument().getElementById("two")->firstChild();
-  Node* three = GetDocument().getElementById("three")->firstChild();
-  Node* four = GetDocument().getElementById("four")->firstChild();
-  Node* five = shadow_root->getElementById("five")->firstChild();
-  Node* six = shadow_root->getElementById("six")->firstChild();
-  Node* seven = shadow_root->getElementById("seven")->firstChild();
+  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
+  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
+  Node* three =
+      GetDocument().getElementById(AtomicString("three"))->firstChild();
+  Node* four = GetDocument().getElementById(AtomicString("four"))->firstChild();
+  Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
+  Node* six = shadow_root->getElementById(AtomicString("six"))->firstChild();
+  Node* seven =
+      shadow_root->getElementById(AtomicString("seven"))->firstChild();
 
   EXPECT_EQ(
       Position(seven, 7),
@@ -192,13 +194,15 @@ TEST_F(VisibleUnitsLineTest, isEndOfLine) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById("one")->firstChild();
-  Node* two = GetDocument().getElementById("two")->firstChild();
-  Node* three = GetDocument().getElementById("three")->firstChild();
-  Node* four = GetDocument().getElementById("four")->firstChild();
-  Node* five = shadow_root->getElementById("five")->firstChild();
-  Node* six = shadow_root->getElementById("six")->firstChild();
-  Node* seven = shadow_root->getElementById("seven")->firstChild();
+  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
+  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
+  Node* three =
+      GetDocument().getElementById(AtomicString("three"))->firstChild();
+  Node* four = GetDocument().getElementById(AtomicString("four"))->firstChild();
+  Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
+  Node* six = shadow_root->getElementById(AtomicString("six"))->firstChild();
+  Node* seven =
+      shadow_root->getElementById(AtomicString("seven"))->firstChild();
 
   EXPECT_FALSE(IsEndOfLine(CreateVisiblePositionInDOMTree(*one, 0)));
   EXPECT_FALSE(IsEndOfLine(CreateVisiblePositionInFlatTree(*one, 0)));
@@ -244,13 +248,15 @@ TEST_F(VisibleUnitsLineTest, isLogicalEndOfLine) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById("one")->firstChild();
-  Node* two = GetDocument().getElementById("two")->firstChild();
-  Node* three = GetDocument().getElementById("three")->firstChild();
-  Node* four = GetDocument().getElementById("four")->firstChild();
-  Node* five = shadow_root->getElementById("five")->firstChild();
-  Node* six = shadow_root->getElementById("six")->firstChild();
-  Node* seven = shadow_root->getElementById("seven")->firstChild();
+  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
+  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
+  Node* three =
+      GetDocument().getElementById(AtomicString("three"))->firstChild();
+  Node* four = GetDocument().getElementById(AtomicString("four"))->firstChild();
+  Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
+  Node* six = shadow_root->getElementById(AtomicString("six"))->firstChild();
+  Node* seven =
+      shadow_root->getElementById(AtomicString("seven"))->firstChild();
 
   EXPECT_FALSE(IsLogicalEndOfLine(CreateVisiblePositionInDOMTree(*one, 0)));
   EXPECT_FALSE(IsLogicalEndOfLine(CreateVisiblePositionInFlatTree(*one, 0)));
@@ -367,13 +373,15 @@ TEST_F(VisibleUnitsLineTest, isStartOfLine) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById("one")->firstChild();
-  Node* two = GetDocument().getElementById("two")->firstChild();
-  Node* three = GetDocument().getElementById("three")->firstChild();
-  Node* four = GetDocument().getElementById("four")->firstChild();
-  Node* five = shadow_root->getElementById("five")->firstChild();
-  Node* six = shadow_root->getElementById("six")->firstChild();
-  Node* seven = shadow_root->getElementById("seven")->firstChild();
+  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
+  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
+  Node* three =
+      GetDocument().getElementById(AtomicString("three"))->firstChild();
+  Node* four = GetDocument().getElementById(AtomicString("four"))->firstChild();
+  Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
+  Node* six = shadow_root->getElementById(AtomicString("six"))->firstChild();
+  Node* seven =
+      shadow_root->getElementById(AtomicString("seven"))->firstChild();
 
   EXPECT_TRUE(IsStartOfLine(CreateVisiblePositionInDOMTree(*one, 0)));
   EXPECT_TRUE(IsStartOfLine(CreateVisiblePositionInFlatTree(*one, 0)));
@@ -419,13 +427,15 @@ TEST_F(VisibleUnitsLineTest, logicalEndOfLine) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById("one")->firstChild();
-  Node* two = GetDocument().getElementById("two")->firstChild();
-  Node* three = GetDocument().getElementById("three")->firstChild();
-  Node* four = GetDocument().getElementById("four")->firstChild();
-  Node* five = shadow_root->getElementById("five")->firstChild();
-  Node* six = shadow_root->getElementById("six")->firstChild();
-  Node* seven = shadow_root->getElementById("seven")->firstChild();
+  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
+  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
+  Node* three =
+      GetDocument().getElementById(AtomicString("three"))->firstChild();
+  Node* four = GetDocument().getElementById(AtomicString("four"))->firstChild();
+  Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
+  Node* six = shadow_root->getElementById(AtomicString("six"))->firstChild();
+  Node* seven =
+      shadow_root->getElementById(AtomicString("seven"))->firstChild();
 
   EXPECT_EQ(Position(seven, 7),
             LogicalEndOfLine(CreateVisiblePositionInDOMTree(*one, 0))
@@ -511,13 +521,15 @@ TEST_F(VisibleUnitsLineTest, logicalStartOfLine) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById("one")->firstChild();
-  Node* two = GetDocument().getElementById("two")->firstChild();
-  Node* three = GetDocument().getElementById("three")->firstChild();
-  Node* four = GetDocument().getElementById("four")->firstChild();
-  Node* five = shadow_root->getElementById("five")->firstChild();
-  Node* six = shadow_root->getElementById("six")->firstChild();
-  Node* seven = shadow_root->getElementById("seven")->firstChild();
+  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
+  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
+  Node* three =
+      GetDocument().getElementById(AtomicString("three"))->firstChild();
+  Node* four = GetDocument().getElementById(AtomicString("four"))->firstChild();
+  Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
+  Node* six = shadow_root->getElementById(AtomicString("six"))->firstChild();
+  Node* seven =
+      shadow_root->getElementById(AtomicString("seven"))->firstChild();
 
   EXPECT_EQ(Position(one, 0),
             LogicalStartOfLine(CreateVisiblePositionInDOMTree(*one, 0))
@@ -612,13 +624,15 @@ TEST_F(VisibleUnitsLineTest, startOfLine) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Node* one = GetDocument().getElementById("one")->firstChild();
-  Node* two = GetDocument().getElementById("two")->firstChild();
-  Node* three = GetDocument().getElementById("three")->firstChild();
-  Node* four = GetDocument().getElementById("four")->firstChild();
-  Node* five = shadow_root->getElementById("five")->firstChild();
-  Node* six = shadow_root->getElementById("six")->firstChild();
-  Node* seven = shadow_root->getElementById("seven")->firstChild();
+  Node* one = GetDocument().getElementById(AtomicString("one"))->firstChild();
+  Node* two = GetDocument().getElementById(AtomicString("two"))->firstChild();
+  Node* three =
+      GetDocument().getElementById(AtomicString("three"))->firstChild();
+  Node* four = GetDocument().getElementById(AtomicString("four"))->firstChild();
+  Node* five = shadow_root->getElementById(AtomicString("five"))->firstChild();
+  Node* six = shadow_root->getElementById(AtomicString("six"))->firstChild();
+  Node* seven =
+      shadow_root->getElementById(AtomicString("seven"))->firstChild();
 
   EXPECT_EQ(
       Position(one, 0),

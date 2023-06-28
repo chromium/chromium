@@ -274,7 +274,7 @@ TEST(InvalidationSetTest, ClassInvalidatesElement) {
   auto& document = dummy_page_holder->GetDocument();
   document.body()->setInnerHTML("<div id=test class='a b'>");
   document.View()->UpdateAllLifecyclePhasesForTest();
-  Element* element = document.getElementById("test");
+  Element* element = document.getElementById(AtomicString("test"));
   ASSERT_TRUE(element);
 
   scoped_refptr<InvalidationSet> set = DescendantInvalidationSet::Create();
@@ -300,7 +300,7 @@ TEST(InvalidationSetTest, AttributeInvalidatesElement) {
   auto& document = dummy_page_holder->GetDocument();
   document.body()->setInnerHTML("<div id=test a b>");
   document.View()->UpdateAllLifecyclePhasesForTest();
-  Element* element = document.getElementById("test");
+  Element* element = document.getElementById(AtomicString("test"));
   ASSERT_TRUE(element);
 
   scoped_refptr<InvalidationSet> set = DescendantInvalidationSet::Create();

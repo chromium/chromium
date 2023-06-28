@@ -454,7 +454,7 @@ TEST_F(UseCounterImplTest, CSSSelectorHostContextInLiveProfile) {
     </div>
   )HTML");
 
-  Element* host = document.getElementById("host");
+  Element* host = document.getElementById(AtomicString("host"));
   ASSERT_TRUE(host);
   ShadowRoot& shadow_root =
       host->AttachShadowRootInternal(ShadowRootType::kOpen);
@@ -487,7 +487,7 @@ TEST_F(UseCounterImplTest, CSSSelectorHostContextInSnapshotProfile) {
     </div>
   )HTML");
 
-  Element* host = document.getElementById("host");
+  Element* host = document.getElementById(AtomicString("host"));
   ASSERT_TRUE(host);
   ShadowRoot& shadow_root =
       host->AttachShadowRootInternal(ShadowRootType::kOpen);

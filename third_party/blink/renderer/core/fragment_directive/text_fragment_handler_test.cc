@@ -363,7 +363,8 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRect) {
 
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = Position(first_paragraph, 0);
   const auto& end = Position(first_paragraph, 19);
   ASSERT_EQ("This is a test page", PlainText(EphemeralRange(start, end)));
@@ -412,7 +413,8 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectScroll) {
 
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = Position(first_paragraph, 10);
   const auto& end = Position(first_paragraph, 19);
   ASSERT_EQ("test page", PlainText(EphemeralRange(start, end)));
@@ -461,7 +463,8 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectMultipleHighlight) {
 
   EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = Position(first_paragraph, 10);
   const auto& end = Position(first_paragraph, 19);
   ASSERT_EQ("test page", PlainText(EphemeralRange(start, end)));
@@ -510,7 +513,8 @@ TEST_F(TextFragmentHandlerTest,
 
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& start = Position(first_paragraph, 10);
   const auto& end = Position(first_paragraph, 19);
   ASSERT_EQ("test page", PlainText(EphemeralRange(start, end)));
@@ -573,7 +577,8 @@ TEST_F(TextFragmentHandlerTest, CheckPreemptiveGeneration) {
     <p id='first'>First paragraph</p>
     )HTML");
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
   const auto& selected_end = Position(first_paragraph, 5);
   ASSERT_EQ("First", PlainText(EphemeralRange(selected_start, selected_end)));
@@ -596,7 +601,8 @@ TEST_F(TextFragmentHandlerTest, CheckNoPreemptiveGenerationBlocklist) {
     <p id='first'>First paragraph</p>
     )HTML");
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
   const auto& selected_end = Position(first_paragraph, 5);
   ASSERT_EQ("First", PlainText(EphemeralRange(selected_start, selected_end)));
@@ -619,9 +625,9 @@ TEST_F(TextFragmentHandlerTest, CheckNoPreemptiveGenerationEditable) {
     <input type="text" id="input" value="default text in input">
     )HTML");
 
-  Node* input_text =
-      FlatTreeTraversal::Next(*GetDocument().getElementById("input"))
-          ->firstChild();
+  Node* input_text = FlatTreeTraversal::Next(
+                         *GetDocument().getElementById(AtomicString("input")))
+                         ->firstChild();
   const auto& selected_start = Position(input_text, 0);
   const auto& selected_end = Position(input_text, 12);
   ASSERT_EQ("default text",
@@ -647,7 +653,7 @@ TEST_F(TextFragmentHandlerTest, SecondGenerationCrash) {
   <p id='p'>First paragraph text</p>
   )HTML");
   GetDocument().UpdateStyleAndLayoutTree();
-  Node* p = GetDocument().getElementById("p");
+  Node* p = GetDocument().getElementById(AtomicString("p"));
   const auto& start = Position(p->lastChild(), 0);
   const auto& end = Position(p->lastChild(), 15);
   ASSERT_EQ("First paragraph", PlainText(EphemeralRange(start, end)));
@@ -677,7 +683,8 @@ TEST_F(TextFragmentHandlerTest, CheckMetrics_Success) {
     <p id='first'>First paragraph text that is longer than 20 chars</p>
     <p id='second'>Second paragraph text</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
   const auto& selected_end = Position(first_paragraph, 28);
   ASSERT_EQ("First paragraph text that is",
@@ -700,7 +707,8 @@ TEST_F(TextFragmentHandlerTest, CheckMetrics_Failure) {
     <p id='second'>Second paragraph prefix one two three four five six seven
      eight nine ten to not unique snippet of text followed by suffix</p>
   )HTML");
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 80);
   const auto& selected_end = Position(first_paragraph, 106);
   ASSERT_EQ("not unique snippet of text",
@@ -740,7 +748,7 @@ TEST_F(TextFragmentHandlerTest,
 
   Compositor().BeginFrame();
 
-  Element* iframe = GetDocument().getElementById("iframe");
+  Element* iframe = GetDocument().getElementById(AtomicString("iframe"));
   auto* child_frame =
       To<LocalFrame>(To<HTMLFrameOwnerElement>(iframe)->ContentFrame());
 
@@ -873,7 +881,8 @@ TEST_F(TextFragmentHandlerTest,
     <p id='second'>Second paragraph text</p>
   )HTML");
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 0);
   const auto& selected_end = Position(first_paragraph, 28);
   ASSERT_EQ("First paragraph text that is",
@@ -946,7 +955,7 @@ TEST_F(TextFragmentHandlerTest,
   // Render two frames to handle the async step added by the beforematch event.
   Compositor().BeginFrame();
 
-  Element* iframe = GetDocument().getElementById("iframe");
+  Element* iframe = GetDocument().getElementById(AtomicString("iframe"));
   auto* child_frame =
       To<LocalFrame>(To<HTMLFrameOwnerElement>(iframe)->ContentFrame());
   auto* main_frame = GetDocument().GetFrame();
@@ -1001,7 +1010,8 @@ TEST_F(TextFragmentHandlerTest, IfGeneratorResetShouldRecordCorrectError) {
     <p id='second'>Second paragraph text</p>
   )HTML");
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 5);
   const auto& selected_end = Position(first_paragraph, 6);
   ASSERT_EQ(" ", PlainText(EphemeralRange(selected_start, selected_end)));
@@ -1031,7 +1041,8 @@ TEST_F(TextFragmentHandlerTest, NotGenerated) {
     <p id='second'>Second paragraph text</p>
   )HTML");
 
-  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  Node* first_paragraph =
+      GetDocument().getElementById(AtomicString("first"))->firstChild();
   const auto& selected_start = Position(first_paragraph, 5);
   const auto& selected_end = Position(first_paragraph, 6);
   ASSERT_EQ(" ", PlainText(EphemeralRange(selected_start, selected_end)));
@@ -1075,8 +1086,8 @@ TEST_F(TextFragmentHandlerTest, InvalidateOverflowOnRemoval) {
   Compositor().BeginFrame();
 
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
-  Text* first_paragraph =
-      To<Text>(GetDocument().getElementById("first")->firstChild());
+  Text* first_paragraph = To<Text>(
+      GetDocument().getElementById(AtomicString("first"))->firstChild());
   LayoutText* layout_text = first_paragraph->GetLayoutObject();
   PhysicalRect marker_rect = layout_text->PhysicalVisualOverflowRect();
 

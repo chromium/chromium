@@ -44,7 +44,7 @@ TEST_F(LayoutBlockTest, WidthAvailableToChildrenChanged) {
       <div style='height:20px'>Item</div>
     </div>
   )HTML");
-  Element* list_element = GetDocument().getElementById("list");
+  Element* list_element = GetDocument().getElementById(AtomicString("list"));
   ASSERT_TRUE(list_element);
   auto* list_box = list_element->GetLayoutBox();
   Element* item_element = ElementTraversal::FirstChild(*list_element);
@@ -122,7 +122,8 @@ TEST_F(LayoutBlockTest, ContainmentStyleChange) {
     </div>
   )HTML");
 
-  Element* target_element = GetDocument().getElementById("target");
+  Element* target_element =
+      GetDocument().getElementById(AtomicString("target"));
   auto* target = To<LayoutBlockFlow>(target_element->GetLayoutObject());
   EXPECT_TRUE(target->GetSingleCachedLayoutResult()
                   ->PhysicalFragment()

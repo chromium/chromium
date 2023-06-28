@@ -540,7 +540,8 @@ TEST_P(LazyLoadFramesParamsTest,
                                  "text/html");
   }
 
-  Element* child_frame_element = GetDocument().getElementById("child_frame");
+  Element* child_frame_element =
+      GetDocument().getElementById(AtomicString("child_frame"));
   ASSERT_TRUE(child_frame_element);
   child_frame_element->setAttribute(html_names::kLoadingAttr, "eager");
 
@@ -1069,7 +1070,8 @@ TEST_F(LazyLoadFramesTest, LazyLoadFrameUnsetLoadingAttributeWithoutAutomatic) {
   SimRequest child_frame_resource("https://crossorigin.com/subframe.html",
                                   "text/html");
 
-  Element* child_frame_element = GetDocument().getElementById("child_frame");
+  Element* child_frame_element =
+      GetDocument().getElementById(AtomicString("child_frame"));
   ASSERT_TRUE(child_frame_element);
   child_frame_element->removeAttribute(html_names::kLoadingAttr);
 

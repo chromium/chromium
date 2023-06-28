@@ -1110,7 +1110,7 @@ TEST_P(PrintContextFrameTest, DISABLED_SubframePrintPageLayout) {
   // The child document element inside iframe.
   auto* child = ChildDocument().documentElement();
   // The iframe element in the document.
-  auto* target = GetDocument().getElementById("target");
+  auto* target = GetDocument().getElementById(AtomicString("target"));
 
   GetDocument().GetFrame()->StartPrinting(page_size, maximum_shrink_ratio);
   EXPECT_EQ(parent->OffsetWidth(), 440);

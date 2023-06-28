@@ -49,8 +49,8 @@ void OverscrollBehaviorTest::SetUp() {
 
   Compositor().BeginFrame();
 
-  Element* outer = GetDocument().getElementById("outer");
-  Element* inner = GetDocument().getElementById("inner");
+  Element* outer = GetDocument().getElementById(AtomicString("outer"));
+  Element* inner = GetDocument().getElementById(AtomicString("inner"));
 
   // Scrolls the outer element to its bottom-right extent, and makes sure the
   // inner element is at its top-left extent. So that if the scroll is up and
@@ -65,10 +65,11 @@ void OverscrollBehaviorTest::SetUp() {
 }
 
 void OverscrollBehaviorTest::SetInnerOverscrollBehavior(String x, String y) {
-  GetDocument().getElementById("inner")->setAttribute(
-      html_names::kStyleAttr,
-      AtomicString(
-          String::Format("overscroll-behavior-x: %s; overscroll-behavior-y: %s",
+  GetDocument()
+      .getElementById(AtomicString("inner"))
+      ->setAttribute(html_names::kStyleAttr,
+                     AtomicString(String::Format(
+                         "overscroll-behavior-x: %s; overscroll-behavior-y: %s",
                          x.Utf8().c_str(), y.Utf8().c_str())));
 }
 
@@ -121,7 +122,7 @@ void OverscrollBehaviorTest::Scroll(double x, double y) {
 TEST_F(OverscrollBehaviorTest, AutoAllowsPropagation) {
   SetInnerOverscrollBehavior("auto", "auto");
   Scroll(-100.0, -100.0);
-  Element* outer = GetDocument().getElementById("outer");
+  Element* outer = GetDocument().getElementById(AtomicString("outer"));
   ASSERT_EQ(outer->scrollLeft(), 100);
   ASSERT_EQ(outer->scrollTop(), 100);
 }
@@ -129,7 +130,7 @@ TEST_F(OverscrollBehaviorTest, AutoAllowsPropagation) {
 TEST_F(OverscrollBehaviorTest, ContainOnXPreventsPropagationsOnX) {
   SetInnerOverscrollBehavior("contain", "auto");
   Scroll(-100, 0.0);
-  Element* outer = GetDocument().getElementById("outer");
+  Element* outer = GetDocument().getElementById(AtomicString("outer"));
   ASSERT_EQ(outer->scrollLeft(), 200);
   ASSERT_EQ(outer->scrollTop(), 200);
 }
@@ -137,7 +138,7 @@ TEST_F(OverscrollBehaviorTest, ContainOnXPreventsPropagationsOnX) {
 TEST_F(OverscrollBehaviorTest, ContainOnXAllowsPropagationsOnY) {
   SetInnerOverscrollBehavior("contain", "auto");
   Scroll(0.0, -100.0);
-  Element* outer = GetDocument().getElementById("outer");
+  Element* outer = GetDocument().getElementById(AtomicString("outer"));
   ASSERT_EQ(outer->scrollLeft(), 200);
   ASSERT_EQ(outer->scrollTop(), 100);
 }
@@ -145,7 +146,7 @@ TEST_F(OverscrollBehaviorTest, ContainOnXAllowsPropagationsOnY) {
 TEST_F(OverscrollBehaviorTest, ContainOnXPreventsDiagonalPropagations) {
   SetInnerOverscrollBehavior("contain", "auto");
   Scroll(-100.0, -100.0);
-  Element* outer = GetDocument().getElementById("outer");
+  Element* outer = GetDocument().getElementById(AtomicString("outer"));
   ASSERT_EQ(outer->scrollLeft(), 200);
   ASSERT_EQ(outer->scrollTop(), 200);
 }
@@ -153,7 +154,7 @@ TEST_F(OverscrollBehaviorTest, ContainOnXPreventsDiagonalPropagations) {
 TEST_F(OverscrollBehaviorTest, ContainOnYPreventsPropagationsOnY) {
   SetInnerOverscrollBehavior("auto", "contain");
   Scroll(0.0, -100.0);
-  Element* outer = GetDocument().getElementById("outer");
+  Element* outer = GetDocument().getElementById(AtomicString("outer"));
   ASSERT_EQ(outer->scrollLeft(), 200);
   ASSERT_EQ(outer->scrollTop(), 200);
 }
@@ -161,7 +162,7 @@ TEST_F(OverscrollBehaviorTest, ContainOnYPreventsPropagationsOnY) {
 TEST_F(OverscrollBehaviorTest, ContainOnYAllowsPropagationsOnX) {
   SetInnerOverscrollBehavior("auto", "contain");
   Scroll(-100.0, 0.0);
-  Element* outer = GetDocument().getElementById("outer");
+  Element* outer = GetDocument().getElementById(AtomicString("outer"));
   ASSERT_EQ(outer->scrollLeft(), 100);
   ASSERT_EQ(outer->scrollTop(), 200);
 }
@@ -169,7 +170,7 @@ TEST_F(OverscrollBehaviorTest, ContainOnYAllowsPropagationsOnX) {
 TEST_F(OverscrollBehaviorTest, ContainOnYPreventsDiagonalPropagations) {
   SetInnerOverscrollBehavior("auto", "contain");
   Scroll(-100.0, -100.0);
-  Element* outer = GetDocument().getElementById("outer");
+  Element* outer = GetDocument().getElementById(AtomicString("outer"));
   ASSERT_EQ(outer->scrollLeft(), 200);
   ASSERT_EQ(outer->scrollTop(), 200);
 }
@@ -198,7 +199,7 @@ TEST_F(OverscrollBehaviorTest, LatchToTheElementPreventedByOverscrollBehavior) {
   ScrollEnd();
   Compositor().BeginFrame();
 
-  Element* inner = GetDocument().getElementById("inner");
+  Element* inner = GetDocument().getElementById(AtomicString("inner"));
   ASSERT_EQ(inner->scrollLeft(), 100);
   ASSERT_EQ(inner->scrollTop(), 100);
 }

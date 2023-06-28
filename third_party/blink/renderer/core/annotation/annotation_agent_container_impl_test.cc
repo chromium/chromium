@@ -625,7 +625,7 @@ TEST_F(AnnotationAgentContainerImplTest, ShutdownDocumentWhileGenerating) {
 
   FrameSelection& frame_selection = GetDocument().GetFrame()->Selection();
 
-  Element* target = GetDocument().getElementById("target");
+  Element* target = GetDocument().getElementById(AtomicString("target"));
   EphemeralRange range =
       EphemeralRange(Position(target, 0), Position(target, 1));
   ASSERT_EQ("TARGET", PlainText(range));

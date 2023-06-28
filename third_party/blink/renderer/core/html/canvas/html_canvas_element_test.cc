@@ -34,7 +34,8 @@ TEST_P(HTMLCanvasElementTest, CreateLayerUpdatesCompositing) {
   GetDocument().GetSettings()->SetScriptEnabled(true);
 
   SetBodyInnerHTML("<canvas id='canvas'></canvas>");
-  auto* canvas = To<HTMLCanvasElement>(GetDocument().getElementById("canvas"));
+  auto* canvas = To<HTMLCanvasElement>(
+      GetDocument().getElementById(AtomicString("canvas")));
   EXPECT_FALSE(canvas->GetLayoutObject()
                    ->FirstFragment()
                    .PaintProperties()

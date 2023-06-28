@@ -445,8 +445,8 @@ TEST_P(CaretDisplayItemClientTest, CompositingChange) {
 
   GetDocument().GetPage()->GetFocusController().SetActive(true);
   GetDocument().GetPage()->GetFocusController().SetFocused(true);
-  auto* container = GetDocument().getElementById("container");
-  auto* editor = GetDocument().getElementById("editor");
+  auto* container = GetDocument().getElementById(AtomicString("container"));
+  auto* editor = GetDocument().getElementById(AtomicString("editor"));
   auto* editor_block = To<LayoutBlock>(editor->GetLayoutObject());
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder().Collapse(Position(editor, 0)).Build());
@@ -483,14 +483,14 @@ TEST_P(CaretDisplayItemClientTest, PlainTextRTLCaretPosition) {
       "<div id='regular' dir='rtl'>&#1575;&#1582;&#1578;&#1576;&#1585;</div>"
       "<div id='plaintext'>&#1575;&#1582;&#1578;&#1576;&#1585;</div>");
 
-  auto* regular = GetDocument().getElementById("regular");
+  auto* regular = GetDocument().getElementById(AtomicString("regular"));
   auto* regular_text_node = regular->firstChild();
   const Position& regular_position =
       Position::FirstPositionInNode(*regular_text_node);
   const PhysicalRect regular_caret_rect =
       ComputeCaretRect(PositionWithAffinity(regular_position));
 
-  auto* plaintext = GetDocument().getElementById("plaintext");
+  auto* plaintext = GetDocument().getElementById(AtomicString("plaintext"));
   auto* plaintext_text_node = plaintext->firstChild();
   const Position& plaintext_position =
       Position::FirstPositionInNode(*plaintext_text_node);
@@ -521,7 +521,7 @@ TEST_P(CaretDisplayItemClientTest, MAYBE_InsertSpaceToWhiteSpacePreWrapRTL) {
       "<div id='editor' contentEditable='true' "
       "dir='rtl'>&#1575;&#1582;&#1578;&#1576;&#1585;</div>");
 
-  auto* editor = GetDocument().getElementById("editor");
+  auto* editor = GetDocument().getElementById(AtomicString("editor"));
   auto* editor_block = To<LayoutBlock>(editor->GetLayoutObject());
   auto* text_node = editor->firstChild();
   const Position& position = Position::LastPositionInNode(*text_node);
@@ -576,7 +576,7 @@ TEST_P(CaretDisplayItemClientTest, InsertSpaceToWhiteSpacePreWrap) {
       "</style>"
       "<div id='editor' contentEditable='true'>XXXXX</div>");
 
-  auto* editor = GetDocument().getElementById("editor");
+  auto* editor = GetDocument().getElementById(AtomicString("editor"));
   auto* editor_block = To<LayoutBlock>(editor->GetLayoutObject());
   auto* text_node = editor->firstChild();
   const Position position = Position::LastPositionInNode(*text_node);

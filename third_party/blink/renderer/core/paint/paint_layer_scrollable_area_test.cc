@@ -150,7 +150,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
     <div id="scroller"><div id="scrolled"></div></div>
   )HTML");
 
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 
   // Change the background to transparent
@@ -171,7 +171,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, OpaqueLayersPromotedOnStyleChange) {
     <div id="scroller"><div id="scrolled"></div></div>
   )HTML");
 
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   EXPECT_FALSE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 
   // Change the background to opaque
@@ -196,8 +196,8 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
     </div>
   )HTML");
 
-  Element* parent = GetDocument().getElementById("parent");
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* parent = GetDocument().getElementById(AtomicString("parent"));
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 
   // Change the parent to have a transform.
@@ -230,8 +230,8 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
     </div>
   )HTML");
 
-  Element* parent = GetDocument().getElementById("parent");
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* parent = GetDocument().getElementById(AtomicString("parent"));
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 
   // Change the parent to be partially translucent.
@@ -262,7 +262,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
     <div id="scroller"><div id="scrolled"></div></div>
   )HTML");
 
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   EXPECT_FALSE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 
   scroller->setAttribute(html_names::kStyleAttr, "will-change: transform");
@@ -286,7 +286,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, ScrollLayerOnPointerEvents) {
     <div id="scroller"><div id="scrolled"></div></div>
   )HTML");
 
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutBox()));
 
   // pointer-events: none does not affect whether composited scrolling is
@@ -318,7 +318,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, InputElementPromotionTest) {
     <input id='input' width=10 style='font-size:40pt;'/>
   )HTML");
 
-  Element* element = GetDocument().getElementById("input");
+  Element* element = GetDocument().getElementById(AtomicString("input"));
   EXPECT_FALSE(HasDirectCompositingReasons(element->GetLayoutObject()));
   EXPECT_FALSE(UsesCompositedScrolling(element->GetLayoutBox()));
 
@@ -344,7 +344,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, SelectElementPromotionTest) {
     </select>
   )HTML");
 
-  Element* element = GetDocument().getElementById("select");
+  Element* element = GetDocument().getElementById(AtomicString("select"));
   EXPECT_FALSE(HasDirectCompositingReasons(element->GetLayoutObject()));
   EXPECT_FALSE(UsesCompositedScrolling(element->GetLayoutBox()));
 
@@ -484,7 +484,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
     <div id="scroller"><div id="scrolled"></div></div>
   )HTML");
 
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   PaintLayerScrollableArea* scrollable_area =
       scroller->GetLayoutBox()->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
@@ -516,7 +516,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
     <div id="scroller"><div id="scrolled"></div></div>
   )HTML");
 
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   ASSERT_TRUE(scroller);
   PaintLayerScrollableArea* scrollable_area =
       scroller->GetLayoutBox()->GetScrollableArea();
@@ -552,7 +552,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
     </div>
   )HTML");
 
-  Element* outer_div = GetDocument().getElementById("outerDiv");
+  Element* outer_div = GetDocument().getElementById(AtomicString("outerDiv"));
   ASSERT_TRUE(outer_div);
   outer_div->GetLayoutBox()->SetNeedsLayout("test");
   UpdateAllLifecyclePhasesForTest();
@@ -582,7 +582,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, FloatOverflowInRtlContainer) {
     </div>
   )HTML");
 
-  Element* container = GetDocument().getElementById("container");
+  Element* container = GetDocument().getElementById(AtomicString("container"));
   ASSERT_TRUE(container);
   PaintLayerScrollableArea* scrollable_area =
       container->GetLayoutBox()->GetScrollableArea();
@@ -610,7 +610,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, ScrollOriginInRtlContainer) {
     </div>
   )HTML");
 
-  Element* container = GetDocument().getElementById("container");
+  Element* container = GetDocument().getElementById(AtomicString("container"));
   ASSERT_TRUE(container);
   PaintLayerScrollableArea* scrollable_area =
       container->GetLayoutBox()->GetScrollableArea();
@@ -1232,7 +1232,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
       <div style="height: 1000px;"></div>
     </div>
   )HTML");
-  Element* scroller = GetDocument().getElementById("scroller");
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
   {
     PaintLayerScrollableArea::DelayScrollOffsetClampScope scope;
     PaintLayerScrollableArea::DelayScrollOffsetClampScope::SetNeedsClamp(
@@ -1583,7 +1583,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
     </div>
   )HTML");
 
-  auto* scroller = GetDocument().getElementById("scroller");
+  auto* scroller = GetDocument().getElementById(AtomicString("scroller"));
   auto* scrollable_area = scroller->GetLayoutBox()->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   EXPECT_FALSE(scrollable_area->HasScrollbar());
@@ -1612,7 +1612,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, RemoveAddResizerWithoutScrollbars) {
     </div>
   )HTML");
 
-  auto* target = GetDocument().getElementById("target");
+  auto* target = GetDocument().getElementById(AtomicString("target"));
   auto* scrollable_area = target->GetLayoutBox()->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   EXPECT_FALSE(scrollable_area->HasScrollbar());
