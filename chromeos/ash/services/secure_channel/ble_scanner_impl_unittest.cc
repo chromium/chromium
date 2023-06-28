@@ -244,6 +244,7 @@ class SecureChannelBleScannerImplTest : public testing::Test {
       std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
       base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate) {
     EXPECT_FALSE(scan_session_ptr_);
+    EXPECT_TRUE(filter);
     auto scan_session =
         std::make_unique<device::MockBluetoothLowEnergyScanSession>(
             base::BindOnce(

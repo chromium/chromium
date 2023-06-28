@@ -19,6 +19,7 @@ constexpr const size_t kMaxConcurrentAdvertisements = 2;
 // The service UUID used for BLE advertisements.
 constexpr const char kAdvertisingServiceUuid[] =
     "0000fe50-0000-1000-8000-00805f9b34fb";
+const std::vector<uint8_t> kAdvertisingServiceUuidAsBytes = {0x50, 0xfe};
 
 // The GATT server UUID used for uWeave.
 constexpr const char kGattServerUuid[] = "b3b7e28e-a000-3e17-bd86-6e97b9e28c11";
