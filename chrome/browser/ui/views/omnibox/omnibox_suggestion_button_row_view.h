@@ -33,6 +33,9 @@ class OmniboxSuggestionButtonRowView : public views::View {
       const OmniboxSuggestionButtonRowView&) = delete;
   ~OmniboxSuggestionButtonRowView() override;
 
+  // views::View:
+  void Layout() override;
+
   // Called when the theme state may have changed.
   void SetThemeState(OmniboxPartState theme_state);
 

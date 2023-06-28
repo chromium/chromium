@@ -32,6 +32,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -177,17 +178,26 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
   // included in `GetTextIndent()`.
   if (OmniboxFieldTrial::IsCr23LayoutEnabled())
     left_margin += 4;
-  int bottom_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING);
+  int top_margin =
+      OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled() ? 6 : 0;
+  int bottom_margin =
+      OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled()
+          ? 6
+          : ChromeLayoutProvider::Get()->GetDistanceMetric(
+                DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetCrossAxisAlignment(views::LayoutAlignment::kStart)
       .SetCollapseMargins(true)
-      .SetInteriorMargin(gfx::Insets::TLBR(0, left_margin, bottom_margin, 0))
+      .SetInteriorMargin(
+          gfx::Insets::TLBR(top_margin, left_margin, bottom_margin, 0))
       .SetDefault(
           views::kMarginsKey,
           gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
                                  views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
   BuildViews();
+
+  if (OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled())
+    SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 }
 
 void OmniboxSuggestionButtonRowView::BuildViews() {
@@ -240,6 +250,18 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
 }
 
 OmniboxSuggestionButtonRowView::~OmniboxSuggestionButtonRowView() = default;
+
+void OmniboxSuggestionButtonRowView::Layout() {
+  View::Layout();
+
+  if (!OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled())
+    return;
+
+  auto bounds = GetLocalBounds();
+  SkPath path;
+  path.addRect(RectToSkRect(bounds), SkPathDirection::kCW, 0);
+  SetClipPath(path);
+}
 
 void OmniboxSuggestionButtonRowView::UpdateFromModel() {
   if (!HasMatch()) {

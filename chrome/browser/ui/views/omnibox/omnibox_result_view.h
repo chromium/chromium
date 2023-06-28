@@ -127,9 +127,6 @@ class OmniboxResultView : public views::View {
   // Accessible name (enables to emit certain events).
   std::u16string accessible_name_;
 
-  // Container for the first row (for everything expect |button_row_|).
-  raw_ptr<views::View> suggestion_container_;
-
   // Weak pointers for easy reference.
   raw_ptr<OmniboxMatchCellView>
       suggestion_view_;  // The leading (or left) view.
