@@ -88,9 +88,10 @@ if [[ "$VERBOSE" == "true" ]]; then
   )
 elif [[ "$HEADLESS" == "true" ]]; then
   # Parallelization is flaky in headful mode.
-  WPT_RUN_ARGS+=(
-    --processes "$(nproc)"
-  )
+  case "$(uname -s)" in
+    Darwin*) WPT_RUN_ARGS+=(--processes "$(sysctl -n hw.physicalcpu)");;
+    *) WPT_RUN_ARGS+=(--processes "$(nproc)")
+  esac
 fi
 
 if [[ "$CHROMEDRIVER" == "true" ]]; then
