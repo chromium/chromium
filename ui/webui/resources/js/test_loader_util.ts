@@ -51,3 +51,25 @@ export function loadTestModule(): Promise<boolean> {
     document.body.appendChild(script);
   });
 }
+
+export function loadMochaAdapter(): Promise<boolean> {
+  const params = new URLSearchParams(window.location.search);
+  const adapter = params.get('adapter') || 'mocha_adapter.js';
+  if (!['mocha_adapter.js', 'mocha_adapter_simple.js'].includes(adapter)) {
+    return Promise.reject(new Error(`Invalid adapter=${adapter} parameter`));
+  }
+
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.type = 'module';
+    const src = `chrome://webui-test/${adapter}`;
+    script.src = scriptPolicy.createScriptURL(src) as unknown as string;
+    script.onerror = function() {
+      reject(new Error(`test_loader_util: Failed to load ${src}`));
+    };
+    script.onload = function() {
+      resolve(true);
+    };
+    document.body.appendChild(script);
+  });
+}

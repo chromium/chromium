@@ -384,6 +384,7 @@ ts_library("build_ts") {
     "fake_settings_private.ts",
     "invalidations/invalidations_test.ts",
     "metrics_test_support.ts",
+    "mocha_adapter_simple.ts",
     "mock_controller.ts",
     "mocked_metrics_reporter.ts",
     "mock_timer_test.ts",
@@ -428,6 +429,7 @@ ts_library("build_ts") {
   definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/chrome_timeticks.d.ts",
+    "//tools/typescript/definitions/dom_automation_controller.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
   ]
