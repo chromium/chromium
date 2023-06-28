@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/arc_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -20,6 +21,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/arc_cert_installer_utils.h"
 #include "chrome/browser/ash/arc/keymaster/arc_keymaster_bridge.h"
+#include "chrome/browser/ash/arc/keymint/arc_keymint_bridge.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_impl.h"
@@ -332,7 +334,7 @@ void BuildCertDescription(net::ScopedCERTCertificate nss_cert,
 // CKA_ID, and the slot where it's stored. Note this slot is NOT the PKCS#11
 // CK_SLOT_ID, but a more abstract representation that can be used to find the
 // corresponding CK_SLOT_ID at runtime.
-std::vector<keymaster::mojom::ChromeOsKeyPtr> PrepareChromeOsKeys(
+std::vector<keymaster::mojom::ChromeOsKeyPtr> PrepareChromeOsKeysForKeymaster(
     const std::vector<CertDescription>& cert_descriptions) {
   std::vector<keymaster::mojom::ChromeOsKeyPtr> chrome_os_keys;
   for (const auto& certificate : cert_descriptions) {
@@ -343,6 +345,30 @@ std::vector<keymaster::mojom::ChromeOsKeyPtr> PrepareChromeOsKeys(
     keymaster::mojom::ChromeOsKeyPtr key = keymaster::mojom::ChromeOsKey::New(
         ExportSpki(certificate.placeholder_key.get()),
         keymaster::mojom::KeyData::NewChapsKeyData(std::move(key_data)));
+
+    chrome_os_keys.push_back(std::move(key));
+  }
+
+  return chrome_os_keys;
+}
+
+// Returns the list of Chrome OS keys with the data arc-keymintd needs to find
+// and execute operations on the certs in |cert_descriptions| through chaps.
+// Each ChromeOsKey instance contains a ChapsKeyData with its CKA_LABEL,
+// CKA_ID, and the slot where it's stored. Note this slot is NOT the PKCS#11
+// CK_SLOT_ID, but a more abstract representation that can be used to find the
+// corresponding CK_SLOT_ID at runtime.
+std::vector<keymint::mojom::ChromeOsKeyPtr> PrepareChromeOsKeysForKeyMint(
+    const std::vector<CertDescription>& cert_descriptions) {
+  std::vector<keymint::mojom::ChromeOsKeyPtr> chrome_os_keys;
+  for (const auto& certificate : cert_descriptions) {
+    // Build a mojo ChromeOsKey and store it in the output vector.
+    keymint::mojom::ChapsKeyDataPtr key_data =
+        keymint::mojom::ChapsKeyData::New(certificate.label, certificate.id,
+                                          certificate.slot);
+    keymint::mojom::ChromeOsKeyPtr key = keymint::mojom::ChromeOsKey::New(
+        ExportSpki(certificate.placeholder_key.get()),
+        keymint::mojom::KeyData::NewChapsKeyData(std::move(key_data)));
 
     chrome_os_keys.push_back(std::move(key));
   }
@@ -483,6 +509,43 @@ void CertStoreService::AppendCertDescriptionAndRecurse(
 void CertStoreService::OnBuiltAllowedCertDescriptions(
     keymanagement::mojom::ChapsSlot slot,
     std::vector<CertDescription> cert_descriptions) const {
+  if (ShouldUseArcKeyMint()) {
+    OnBuiltAllowedCertDescriptionsForKeyMint(slot,
+                                             std::move(cert_descriptions));
+  } else {
+    OnBuiltAllowedCertDescriptionsForKeymaster(slot,
+                                               std::move(cert_descriptions));
+  }
+}
+
+void CertStoreService::OnBuiltAllowedCertDescriptionsForKeyMint(
+    keymanagement::mojom::ChapsSlot slot,
+    std::vector<CertDescription> cert_descriptions) const {
+  ArcKeyMintBridge* const keymint_bridge =
+      ArcKeyMintBridge::GetForBrowserContext(context_);
+  if (!keymint_bridge) {
+    LOG(ERROR) << "Missing instance of ArcKeyMintBridge.";
+    return;
+  }
+
+  if (slot == keymanagement::mojom::ChapsSlot::kUser) {
+    ListCertsInSystemSlot(std::move(cert_descriptions));
+    return;
+  }
+  // At this point certs have been gathered from all available slots (i.e. user
+  // slot and potentially system slot if access is allowed to this user),
+  // proceed to send them to arc-keymint and ARC.
+  std::vector<keymint::mojom::ChromeOsKeyPtr> keys =
+      PrepareChromeOsKeysForKeyMint(cert_descriptions);
+  keymint_bridge->UpdatePlaceholderKeys(
+      std::move(keys), base::BindOnce(&CertStoreService::OnUpdatedKeys,
+                                      weak_ptr_factory_.GetMutableWeakPtr(),
+                                      std::move(cert_descriptions)));
+}
+
+void CertStoreService::OnBuiltAllowedCertDescriptionsForKeymaster(
+    keymanagement::mojom::ChapsSlot slot,
+    std::vector<CertDescription> cert_descriptions) const {
   ArcKeymasterBridge* const keymaster_bridge =
       ArcKeymasterBridge::GetForBrowserContext(context_);
   if (!keymaster_bridge) {
@@ -491,31 +554,30 @@ void CertStoreService::OnBuiltAllowedCertDescriptions(
   }
 
   if (slot == keymanagement::mojom::ChapsSlot::kUser) {
-    // Done with the user slot, so try to process additional certs in the
-    // system slot. If there is no system slot (e.g. the user is not allowed
-    // to access it), this call won't mutate |cert_descriptions|, and only
-    // return the user slot certificates. However, it's necessary to perform
-    // this check asynchronously on the IO thread (through ListCerts), because
-    // that's the only thread that knows if the system slot is enabled.
-    ListCerts(context_, keymanagement::mojom::ChapsSlot::kSystem,
-              base::BindOnce(&CertStoreService::OnCertificatesListed,
-                             weak_ptr_factory_.GetMutableWeakPtr(),
-                             keymanagement::mojom::ChapsSlot::kSystem,
-                             std::move(cert_descriptions)));
+    ListCertsInSystemSlot(std::move(cert_descriptions));
     return;
   }
   // At this point certs have been gathered from all available slots (i.e. user
   // slot and potentially system slot if access is allowed to this user),
   // proceed to send them to arc-keymaster and ARC.
   std::vector<keymaster::mojom::ChromeOsKeyPtr> keys =
-      PrepareChromeOsKeys(cert_descriptions);
+      PrepareChromeOsKeysForKeymaster(cert_descriptions);
   keymaster_bridge->UpdatePlaceholderKeys(
-      std::move(keys), base::BindOnce(&CertStoreService::OnUpdatedKeymasterKeys,
+      std::move(keys), base::BindOnce(&CertStoreService::OnUpdatedKeys,
                                       weak_ptr_factory_.GetMutableWeakPtr(),
                                       std::move(cert_descriptions)));
 }
 
-void CertStoreService::OnUpdatedKeymasterKeys(
+void CertStoreService::ListCertsInSystemSlot(
+    std::vector<CertDescription> cert_descriptions) const {
+  ListCerts(context_, keymanagement::mojom::ChapsSlot::kSystem,
+            base::BindOnce(&CertStoreService::OnCertificatesListed,
+                           weak_ptr_factory_.GetMutableWeakPtr(),
+                           keymanagement::mojom::ChapsSlot::kSystem,
+                           std::move(cert_descriptions)));
+}
+
+void CertStoreService::OnUpdatedKeys(
     std::vector<CertDescription> certificate_descriptions,
     bool success) {
   if (!success) {

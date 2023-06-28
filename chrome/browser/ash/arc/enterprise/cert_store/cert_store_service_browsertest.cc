@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
@@ -22,6 +23,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
 #include "chrome/browser/ash/arc/keymaster/arc_keymaster_bridge.h"
+#include "chrome/browser/ash/arc/keymint/arc_keymint_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
@@ -39,6 +41,7 @@
 #include "chrome/common/net/x509_certificate_model_nss.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
+#include "chrome/services/keymint/public/mojom/cert_store.mojom.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
@@ -88,6 +91,11 @@ struct TestCertData {
   std::string file_name;
   bool is_corporate_usage;
   keymanagement::mojom::ChapsSlot slot;
+};
+
+struct CertStoreServiceTestData {
+  std::vector<TestCertData> certs;
+  bool should_use_arc_keymint;
 };
 
 // Associates a |test_data| to its |nss_cert| once installed.
@@ -180,6 +188,32 @@ class FakeArcKeymasterBridge : public ArcKeymasterBridge {
 std::unique_ptr<KeyedService> BuildFakeArcKeymasterBridge(
     content::BrowserContext* profile) {
   return std::make_unique<FakeArcKeymasterBridge>(profile);
+}
+
+class FakeArcKeyMintBridge : public ArcKeyMintBridge {
+ public:
+  explicit FakeArcKeyMintBridge(content::BrowserContext* context)
+      : ArcKeyMintBridge(context, nullptr) {}
+  FakeArcKeyMintBridge(const FakeArcKeyMintBridge& other) = delete;
+  FakeArcKeyMintBridge& operator=(const FakeArcKeyMintBridge&) = delete;
+
+  void UpdatePlaceholderKeys(std::vector<keymint::mojom::ChromeOsKeyPtr> keys,
+                             UpdatePlaceholderKeysCallback callback) override {
+    keys_ = std::move(keys);
+    std::move(callback).Run(/*success=*/true);
+  }
+
+  const std::vector<keymint::mojom::ChromeOsKeyPtr>& placeholder_keys() const {
+    return keys_;
+  }
+
+ private:
+  std::vector<keymint::mojom::ChromeOsKeyPtr> keys_;
+};
+
+std::unique_ptr<KeyedService> BuildFakeArcKeyMintBridge(
+    content::BrowserContext* profile) {
+  return std::make_unique<FakeArcKeyMintBridge>(profile);
 }
 
 std::unique_ptr<KeyedService> BuildCertStoreService(
@@ -301,18 +335,22 @@ void RegisterCorporateKeyWithService(
 
 class CertStoreServiceTest
     : public MixinBasedInProcessBrowserTest,
-      public ::testing::WithParamInterface<std::vector<TestCertData>> {
+      public ::testing::WithParamInterface<CertStoreServiceTestData> {
  public:
   CertStoreServiceTest();
   CertStoreServiceTest(const CertStoreServiceTest& other) = delete;
   CertStoreServiceTest& operator=(const CertStoreServiceTest&) = delete;
 
  protected:
+  void SetUp() override;
+
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
   void SetUpInProcessBrowserTestFixture() override;
 
   void SetUpOnMainThread() override;
+
+  void TearDown() override;
 
   void TearDownOnMainThread() override;
 
@@ -347,7 +385,7 @@ class CertStoreServiceTest
   policy::DevicePolicyCrosTestHelper device_policy_helper_;
   policy::AffiliationMixin affiliation_mixin_{&mixin_host_,
                                               &device_policy_helper_};
-  std::vector<TestCertData> test_cert_data_vector_;
+  CertStoreServiceTestData test_data_;
 
  private:
   // Creates ScopedCERTCertificates for each |certs_to_setup| and appends them
@@ -378,13 +416,30 @@ class CertStoreServiceTest
 
   // Owned by the CertStoreService instance.
   raw_ptr<FakeArcKeymasterBridge, ExperimentalAsh> keymaster_bridge_;
+  raw_ptr<FakeArcKeyMintBridge, ExperimentalAsh> keymint_bridge_;
 
   ash::CryptohomeMixin cryptohome_mixin_{&mixin_host_};
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
-CertStoreServiceTest::CertStoreServiceTest()
-    : test_cert_data_vector_(GetParam()) {
+CertStoreServiceTest::CertStoreServiceTest() : test_data_(GetParam()) {
   cryptohome_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
+}
+
+void CertStoreServiceTest::SetUp() {
+  if (test_data_.should_use_arc_keymint) {
+    base::SysInfo::SetChromeOSVersionInfoForTest(
+        "CHROMEOS_ARC_ANDROID_SDK_VERSION=33",  // TM
+        base::SysInfo::GetLsbReleaseTime());
+    feature_list_.InitAndEnableFeature(arc::kSwitchToKeyMintOnT);
+  } else {
+    base::SysInfo::SetChromeOSVersionInfoForTest(
+        "CHROMEOS_ARC_ANDROID_SDK_VERSION=30",  // RVC
+        base::SysInfo::GetLsbReleaseTime());
+  }
+
+  MixinBasedInProcessBrowserTest::SetUp();
 }
 
 void CertStoreServiceTest::SetUpCommandLine(base::CommandLine* command_line) {
@@ -412,11 +467,20 @@ void CertStoreServiceTest::SetUpOnMainThread() {
 
   policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
 
-  // Use fake ArcKeymasterBridge.
-  ArcKeymasterBridge::GetFactory()->SetTestingFactoryAndUse(
-      profile(), base::BindRepeating(&BuildFakeArcKeymasterBridge));
-  auto* keymaster_bridge = ArcKeymasterBridge::GetForBrowserContext(profile());
-  keymaster_bridge_ = static_cast<FakeArcKeymasterBridge*>(keymaster_bridge);
+  if (test_data_.should_use_arc_keymint) {
+    // Use fake ArcKeyMintBridge.
+    ArcKeyMintBridge::GetFactory()->SetTestingFactoryAndUse(
+        profile(), base::BindRepeating(&BuildFakeArcKeyMintBridge));
+    auto* keymint_bridge = ArcKeyMintBridge::GetForBrowserContext(profile());
+    keymint_bridge_ = static_cast<FakeArcKeyMintBridge*>(keymint_bridge);
+  } else {
+    // Use fake ArcKeymasterBridge.
+    ArcKeymasterBridge::GetFactory()->SetTestingFactoryAndUse(
+        profile(), base::BindRepeating(&BuildFakeArcKeymasterBridge));
+    auto* keymaster_bridge =
+        ArcKeymasterBridge::GetForBrowserContext(profile());
+    keymaster_bridge_ = static_cast<FakeArcKeymasterBridge*>(keymaster_bridge);
+  }
 
   // Use fake ArcCertInstaller in CertStoreService.
   auto installer = std::make_unique<FakeArcCertInstaller>(
@@ -427,6 +491,12 @@ void CertStoreServiceTest::SetUpOnMainThread() {
                                      base::Passed(std::move(installer))));
 
   ASSERT_TRUE(IsSystemSlotAvailable(profile()));
+}
+
+void CertStoreServiceTest::TearDown() {
+  MixinBasedInProcessBrowserTest::TearDown();
+
+  base::SysInfo::ResetChromeOSVersionInfoForTest();
 }
 
 void CertStoreServiceTest::TearDownOnMainThread() {
@@ -506,8 +576,14 @@ void CertStoreServiceTest::CheckInstalledCerts(
   EXPECT_EQ(CountCorporateUsage(test_certs), installer_->certs().size());
   EXPECT_EQ(CountCorporateUsage(test_certs),
             service->get_required_cert_names().size());
-  EXPECT_EQ(CountCorporateUsage(test_certs),
-            keymaster_bridge_->placeholder_keys().size());
+  if (test_data_.should_use_arc_keymint) {
+    EXPECT_EQ(CountCorporateUsage(test_certs),
+              keymint_bridge_->placeholder_keys().size());
+
+  } else {
+    EXPECT_EQ(CountCorporateUsage(test_certs),
+              keymaster_bridge_->placeholder_keys().size());
+  }
 
   // Verify |test_certs| and |installed_certs_| have matching elements.
   ASSERT_EQ(test_certs.size(), installed_certs_.size());
@@ -585,11 +661,21 @@ void CertStoreServiceTest::ImportCert(CERTCertificate* const nss_cert,
 bool CertStoreServiceTest::PlaceholdersContainIdAndSlot(
     const std::string& id,
     keymanagement::mojom::ChapsSlot slot) {
-  for (const auto& key : keymaster_bridge_->placeholder_keys()) {
-    if (key->key_data->is_chaps_key_data() &&
-        key->key_data->get_chaps_key_data()->id == id &&
-        key->key_data->get_chaps_key_data()->slot == slot) {
-      return true;
+  if (test_data_.should_use_arc_keymint) {
+    for (const auto& key : keymint_bridge_->placeholder_keys()) {
+      if (key->key_data->is_chaps_key_data() &&
+          key->key_data->get_chaps_key_data()->id == id &&
+          key->key_data->get_chaps_key_data()->slot == slot) {
+        return true;
+      }
+    }
+  } else {
+    for (const auto& key : keymaster_bridge_->placeholder_keys()) {
+      if (key->key_data->is_chaps_key_data() &&
+          key->key_data->get_chaps_key_data()->id == id &&
+          key->key_data->get_chaps_key_data()->slot == slot) {
+        return true;
+      }
     }
   }
   return false;
@@ -628,10 +714,10 @@ IN_PROC_BROWSER_TEST_P(CertStoreServiceTest, HandlesCorporateUsageCerts) {
   ASSERT_TRUE(service);
 
   // Install all certs from parameter at once.
-  ASSERT_NO_FATAL_FAILURE(SetUpCerts(test_cert_data_vector_));
+  ASSERT_NO_FATAL_FAILURE(SetUpCerts(test_data_.certs));
 
   // Verify all certs are installed correctly.
-  ASSERT_NO_FATAL_FAILURE(CheckInstalledCerts(test_cert_data_vector_, service));
+  ASSERT_NO_FATAL_FAILURE(CheckInstalledCerts(test_data_.certs, service));
 }
 
 IN_PROC_BROWSER_TEST_P(CertStoreServiceTest,
@@ -645,24 +731,24 @@ IN_PROC_BROWSER_TEST_P(CertStoreServiceTest,
   ASSERT_TRUE(service);
 
   // Install certs from parameter one by one.
-  for (size_t i = 0; i < test_cert_data_vector_.size(); ++i) {
-    ASSERT_NO_FATAL_FAILURE(SetUpCerts({test_cert_data_vector_[i]}));
+  for (size_t i = 0; i < test_data_.certs.size(); ++i) {
+    ASSERT_NO_FATAL_FAILURE(SetUpCerts({test_data_.certs[i]}));
 
     // Verify only the first (i+1) certs are installed so far.
     ASSERT_NO_FATAL_FAILURE(CheckInstalledCerts(
-        std::vector<TestCertData>(test_cert_data_vector_.begin(),
-                                  test_cert_data_vector_.begin() + i + 1),
+        std::vector<TestCertData>(test_data_.certs.begin(),
+                                  test_data_.certs.begin() + i + 1),
         service));
   }
 
   // Uninstall certs from parameter one by one, from last to first.
-  for (size_t i = test_cert_data_vector_.size(); i--;) {
+  for (size_t i = test_data_.certs.size(); i--;) {
     DeleteCert(installed_certs_.back().nss_cert.get());
 
     // Verify only the first i certs are left after the uninstall.
     ASSERT_NO_FATAL_FAILURE(CheckInstalledCerts(
-        std::vector<TestCertData>(test_cert_data_vector_.begin(),
-                                  test_cert_data_vector_.begin() + i),
+        std::vector<TestCertData>(test_data_.certs.begin(),
+                                  test_data_.certs.begin() + i),
         service));
   }
 }
@@ -672,42 +758,92 @@ INSTANTIATE_TEST_SUITE_P(
     CertStoreServiceTest,
     ::testing::Values(
         // No corporate usage keys.
-        std::vector<TestCertData>{
-            TestCertData(kFileName1,
-                         false /* is_corporate_usage */,
-                         keymanagement::mojom::ChapsSlot::kUser),
-            TestCertData(kFileName2,
-                         false /* is_corporate_usage */,
-                         keymanagement::mojom::ChapsSlot::kUser)},
+        CertStoreServiceTestData{
+            std::vector<TestCertData>{
+                TestCertData(kFileName1,
+                             false /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kUser),
+                TestCertData(kFileName2,
+                             false /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kUser)},
+            true /* should_use_arc_keymint */},
+        CertStoreServiceTestData{
+            std::vector<TestCertData>{
+                TestCertData(kFileName1,
+                             false /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kUser),
+                TestCertData(kFileName2,
+                             false /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kUser)},
+            false /* should_use_arc_keymint */},
         // Corporate usage keys in user slot.
-        std::vector<TestCertData>{
-            TestCertData(kFileName1,
-                         true /* is_corporate_usage */,
-                         keymanagement::mojom::ChapsSlot::kUser),
-            TestCertData(kFileName2,
-                         true /* is_corporate_usage */,
-                         keymanagement::mojom::ChapsSlot::kUser)},
+        CertStoreServiceTestData{
+            std::vector<TestCertData>{
+                TestCertData(kFileName1,
+                             true /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kUser),
+                TestCertData(kFileName2,
+                             true /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kUser)},
+            true /* should_use_arc_keymint */},
+        CertStoreServiceTestData{
+            std::vector<TestCertData>{
+                TestCertData(kFileName1,
+                             true /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kUser),
+                TestCertData(kFileName2,
+                             true /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kUser)},
+            false /* should_use_arc_keymint */},
         // Corporate usage keys in system slot.
-        std::vector<TestCertData>{
-            TestCertData(kFileName1,
-                         true /* is_corporate_usage */,
-                         keymanagement::mojom::ChapsSlot::kSystem),
-            TestCertData(kFileName2,
-                         true /* is_corporate_usage */,
-                         keymanagement::mojom::ChapsSlot::kSystem)},
+        CertStoreServiceTestData{
+            std::vector<TestCertData>{
+                TestCertData(kFileName1,
+                             true /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kSystem),
+                TestCertData(kFileName2,
+                             true /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kSystem)},
+            true /* should_use_arc_keymint */},
+        CertStoreServiceTestData{
+            std::vector<TestCertData>{
+                TestCertData(kFileName1,
+                             true /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kSystem),
+                TestCertData(kFileName2,
+                             true /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kSystem)},
+            false /* should_use_arc_keymint */},
         // Corporate usage keys in both slots.
-        std::vector<TestCertData>{
-            TestCertData(kFileName1,
-                         true /* is_corporate_usage */,
-                         keymanagement::mojom::ChapsSlot::kUser),
-            TestCertData(kFileName2,
-                         true /* is_corporate_usage */,
-                         keymanagement::mojom::ChapsSlot::kSystem),
-            TestCertData(kFileName3,
-                         false /* is_corporate_usage */,
-                         keymanagement::mojom::ChapsSlot::kUser),
-            TestCertData(kFileName4,
-                         true /* is_corporate_usage */,
-                         keymanagement::mojom::ChapsSlot::kSystem)}));
+        CertStoreServiceTestData{
+            std::vector<TestCertData>{
+                TestCertData(kFileName1,
+                             true /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kUser),
+                TestCertData(kFileName2,
+                             true /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kSystem),
+                TestCertData(kFileName3,
+                             false /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kUser),
+                TestCertData(kFileName4,
+                             true /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kSystem)},
+            true /* should_use_arc_keymint */},
+        CertStoreServiceTestData{
+            std::vector<TestCertData>{
+                TestCertData(kFileName1,
+                             true /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kUser),
+                TestCertData(kFileName2,
+                             true /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kSystem),
+                TestCertData(kFileName3,
+                             false /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kUser),
+                TestCertData(kFileName4,
+                             true /* is_corporate_usage */,
+                             keymanagement::mojom::ChapsSlot::kSystem)},
+            false /* should_use_arc_keymint */}));
 
 }  // namespace arc

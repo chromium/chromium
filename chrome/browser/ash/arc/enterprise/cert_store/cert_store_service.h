@@ -135,6 +135,21 @@ class CertStoreService : public KeyedService,
   void OnBuiltAllowedCertDescriptions(
       keymanagement::mojom::ChapsSlot slot,
       std::vector<CertDescription> cert_descriptions) const;
+  void OnBuiltAllowedCertDescriptionsForKeymaster(
+      keymanagement::mojom::ChapsSlot slot,
+      std::vector<CertDescription> cert_descriptions) const;
+  void OnBuiltAllowedCertDescriptionsForKeyMint(
+      keymanagement::mojom::ChapsSlot slot,
+      std::vector<CertDescription> cert_descriptions) const;
+
+  // Done with the user slot, so try to process additional certs in the system
+  // slot. If there is no system slot (e.g. the user is not allowed to access
+  // it), this call won't mutate |cert_descriptions|, and only return the user
+  // slot certificates. However, it's necessary to perform this check
+  // asynchronously on the IO thread (through ListCerts), because that's the
+  // only thread that knows if the system slot is enabled.
+  void ListCertsInSystemSlot(
+      std::vector<CertDescription> cert_descriptions) const;
 
   // Processes metadata from |allowed_certs| stored in the given |slot| and
   // appends them to |certificates|.
@@ -142,8 +157,7 @@ class CertStoreService : public KeyedService,
       keymanagement::mojom::ChapsSlot slot,
       std::vector<CertDescription> certificates,
       net::ScopedCERTCertificateList allowed_certs);
-  void OnUpdatedKeymasterKeys(std::vector<CertDescription> certificates,
-                              bool success);
+  void OnUpdatedKeys(std::vector<CertDescription> certificates, bool success);
   void OnArcCertsInstalled(bool need_policy_update, bool success);
 
   const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
