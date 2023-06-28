@@ -464,7 +464,7 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
   const bool vbr_encoding =
       config.bitrate_allocation.GetMode() == Bitrate::Mode::kVariable;
   const double tolerance =
-      vbr_encoding ? kBitrateTolerance : kVariableBitrateTolerance;
+      vbr_encoding ? kVariableBitrateTolerance : kBitrateTolerance;
   if (!vbr_encoding) {
     config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck * 3;
   }
