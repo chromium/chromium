@@ -39,9 +39,6 @@ class MultiProfileUserController {
     // User is allowed in multi-profile session.
     ALLOWED,
 
-    // Owner of the device is not allowed to be added as a secondary user.
-    NOT_ALLOWED_OWNER_AS_SECONDARY,
-
     // Not allowed since primary user policy forbids it to be part of
     // multi-profiles session.
     NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS,
@@ -93,7 +90,6 @@ class MultiProfileUserController {
   static const char kBehaviorUnrestricted[];
   static const char kBehaviorPrimaryOnly[];
   static const char kBehaviorNotAllowed[];
-  static const char kBehaviorOwnerPrimaryOnly[];
 
  private:
   friend class MultiProfileUserControllerTest;

@@ -49,11 +49,6 @@ const char MultiProfileUserController::kBehaviorUnrestricted[] = "unrestricted";
 const char MultiProfileUserController::kBehaviorPrimaryOnly[] = "primary-only";
 const char MultiProfileUserController::kBehaviorNotAllowed[] = "not-allowed";
 
-// Note: this policy value is not a real one an is only returned locally for
-// owner users instead of default one kBehaviorUnrestricted.
-const char MultiProfileUserController::kBehaviorOwnerPrimaryOnly[] =
-    "owner-primary-only";
-
 MultiProfileUserController::MultiProfileUserController(
     PrefService* local_state,
     user_manager::UserManager* user_manager)
@@ -109,8 +104,6 @@ MultiProfileUserBehavior MultiProfileUserController::UserBehaviorStringToEnum(
     return MultiProfileUserBehavior::PRIMARY_ONLY;
   if (behavior == kBehaviorNotAllowed)
     return MultiProfileUserBehavior::NOT_ALLOWED;
-  if (behavior == kBehaviorOwnerPrimaryOnly)
-    return MultiProfileUserBehavior::OWNER_PRIMARY_ONLY;
 
   return MultiProfileUserBehavior::UNRESTRICTED;
 }
