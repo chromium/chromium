@@ -97,7 +97,12 @@
     </div>
 </if>
     <!-- Privacy note -->
-    <div id="privacy-note">$i18nRaw{privacyNote}</div>
+    <div id="privacy-note" class="privacy-note">$i18nRaw{privacyNote}</div>
+<if expr="chromeos_ash">
+    <div id="share-privacy-note" class="privacy-note">
+      $i18n{mayBeSharedWithPartnerNote}
+    </div>
+</if>
   </div>
   <!-- Buttons -->
   <div id="bottom-buttons-container" class="content">

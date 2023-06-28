@@ -175,7 +175,7 @@ body {
   margin-inline-end: 130px;
 }
 
-.content #privacy-note {
+.content .privacy-note {
   font-size: 12px;
   line-height: 20px;
   margin-bottom: 0;

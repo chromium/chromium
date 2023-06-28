@@ -21,6 +21,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -80,6 +81,8 @@ void AddStringResources(content::WebUIDataSource* source,
 
   source->AddLocalizedStrings(kStrings);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  source->AddLocalizedString("mayBeSharedWithPartnerNote",
+                             IDS_FEEDBACK_TOOL_MAY_BE_SHARED_NOTE);
   source->AddLocalizedString(
       "sysInfo",
       arc::IsArcPlayStoreEnabledForProfile(profile)
