@@ -48,7 +48,6 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelperWindows
 
  private:
   XrInstance GetOrCreateXrInstance();
-  bool IsArBlendModeSupported();
 
   // Accessing the LUID is handled via an extension method. We cache that
   // method here once we've loaded it so that we don't have to look it up again,

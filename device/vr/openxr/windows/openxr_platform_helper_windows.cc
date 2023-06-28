@@ -83,29 +83,14 @@ void OpenXrPlatformHelperWindows::GetPlatformCreateInfo(
 
 device::mojom::XRDeviceData OpenXrPlatformHelperWindows::GetXRDeviceData() {
   device::mojom::XRDeviceData device_data;
-  device_data.is_ar_blend_mode_supported = IsArBlendModeSupported();
+  device_data.is_ar_blend_mode_supported =
+      IsArBlendModeSupported(GetOrCreateXrInstance());
   // Only set the LUID if it exists and is nonzero.
   if (LUID luid; TryGetLuid(&luid)) {
     device_data.luid = CHROME_LUID{luid.LowPart, luid.HighPart};
   }
 
   return device_data;
-}
-
-bool OpenXrPlatformHelperWindows::IsArBlendModeSupported() {
-  XrSystemId system;
-  if (XR_FAILED(
-          OpenXrApiWrapper::GetSystem(GetOrCreateXrInstance(), &system))) {
-    return false;
-  }
-
-  std::vector<XrEnvironmentBlendMode> environment_blend_modes =
-      OpenXrApiWrapper::GetSupportedBlendModes(GetOrCreateXrInstance(), system);
-
-  return base::Contains(environment_blend_modes,
-                        XR_ENVIRONMENT_BLEND_MODE_ADDITIVE) ||
-         base::Contains(environment_blend_modes,
-                        XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND);
 }
 
 // Returns the LUID of the adapter the OpenXR runtime is on. Returns false and

@@ -78,7 +78,11 @@ bool OpenXrPlatformHelperAndroid::Initialize() {
 
 device::mojom::XRDeviceData OpenXrPlatformHelperAndroid::GetXRDeviceData() {
   device::mojom::XRDeviceData device_data;
-  device_data.is_ar_blend_mode_supported = false;
+  // TODO(https://crbug.com/1458584): Query if AR blending is supported from an
+  // XrInstance using IsArBlendModeSupported(). Statically returning `true`
+  // because AR support is currently gated by the "OpenXrExtendedFeatureSupport"
+  // flag in XRRuntimeManagerImpl::GetImmersiveArRuntime().
+  device_data.is_ar_blend_mode_supported = true;
   return device_data;
 }
 

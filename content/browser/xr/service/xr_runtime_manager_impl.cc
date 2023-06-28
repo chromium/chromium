@@ -253,19 +253,22 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveVrRuntime() {
 }
 
 BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveArRuntime() {
-#if BUILDFLAG(ENABLE_ARCORE)
-  auto* arcore_runtime =
-      GetRuntime(device::mojom::XRDeviceId::ARCORE_DEVICE_ID);
-  if (arcore_runtime && arcore_runtime->SupportsArBlendMode())
-    return arcore_runtime;
-#endif
-
 #if BUILDFLAG(ENABLE_OPENXR)
+  // If OpenXR is available and the runtime supports an AR blend mode, prefer
+  // it over ARCore to unify VR/AR rendering paths.
   if (base::FeatureList::IsEnabled(
           device::features::kOpenXrExtendedFeatureSupport)) {
     auto* openxr = GetRuntime(device::mojom::XRDeviceId::OPENXR_DEVICE_ID);
     if (openxr && openxr->SupportsArBlendMode())
       return openxr;
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_ARCORE)
+  auto* arcore_runtime =
+      GetRuntime(device::mojom::XRDeviceId::ARCORE_DEVICE_ID);
+  if (arcore_runtime && arcore_runtime->SupportsArBlendMode()) {
+    return arcore_runtime;
   }
 #endif
 

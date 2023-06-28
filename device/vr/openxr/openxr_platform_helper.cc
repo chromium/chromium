@@ -6,11 +6,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
+#include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_defs.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
@@ -187,6 +189,22 @@ XrResult OpenXrPlatformHelper::DestroyInstance(XrInstance& instance) {
     xr_instance_ = XR_NULL_HANDLE;
   }
   return result;
+}
+
+bool OpenXrPlatformHelper::IsArBlendModeSupported(XrInstance instance) {
+  XrSystemId system;
+
+  if (XR_FAILED(OpenXrApiWrapper::GetSystem(instance, &system))) {
+    return false;
+  }
+
+  std::vector<XrEnvironmentBlendMode> environment_blend_modes =
+      OpenXrApiWrapper::GetSupportedBlendModes(instance, system);
+
+  return base::Contains(environment_blend_modes,
+                        XR_ENVIRONMENT_BLEND_MODE_ADDITIVE) ||
+         base::Contains(environment_blend_modes,
+                        XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND);
 }
 
 }  // namespace device

@@ -113,6 +113,8 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
   // features.
   virtual device::mojom::XRDeviceData GetXRDeviceData() = 0;
 
+  bool IsArBlendModeSupported(XrInstance instance);
+
  protected:
   OpenXrPlatformHelper();
 
