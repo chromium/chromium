@@ -101,6 +101,13 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private static final float MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP = 12.f;
     private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
 
+    // Fade constants.
+    private static final float FADE_SHORT_WIDTH_DP = 72;
+    private static final float FADE_LONG_WIDTH_DP = 120;
+    static final float FADE_SHORT_TSR_WIDTH_DP = 60;
+    static final float FADE_MEDIUM_TSR_WIDTH_DP = 72;
+    static final float FADE_LONG_TSR_WIDTH_DP = 136;
+
     // Caching Variables
     private final RectF mStripFilterArea = new RectF();
 
@@ -126,6 +133,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private boolean mBrowserScrimShowing;
     private int mTabStripFadeShort;
     private int mTabStripFadeLong;
+    private float mTabStripFadeShortWidth;
+    private float mTabStripFadeLongWidth;
 
     private TabStripSceneLayer mTabStripTreeProvider;
 
@@ -320,6 +329,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             }
             mTabStripFadeShort = R.drawable.tab_strip_fade_short_tsr;
             mTabStripFadeLong = R.drawable.tab_strip_fade_long_tsr;
+            mTabStripFadeShortWidth = FADE_SHORT_TSR_WIDTH_DP;
+            mTabStripFadeLongWidth = FADE_LONG_TSR_WIDTH_DP;
 
             // Use toolbar menu button padding to align MSB with menu button.
             mMenuButtonPadding = context.getResources().getDimension(R.dimen.button_end_padding)
@@ -335,6 +346,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             mModelSelectorWidth = MODEL_SELECTOR_BUTTON_WIDTH_DP;
             mTabStripFadeShort = R.drawable.tab_strip_fade_short;
             mTabStripFadeLong = R.drawable.tab_strip_fade_long;
+            mTabStripFadeShortWidth = FADE_SHORT_WIDTH_DP;
+            mTabStripFadeLongWidth = FADE_LONG_WIDTH_DP;
         }
         mModelSelectorButton.setIncognito(false);
         mModelSelectorButton.setVisible(false);
@@ -543,13 +556,19 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         int leftFadeDrawable;
         if (mModelSelectorButton.isVisible() && LocalizationUtils.isLayoutRtl()) {
             leftFadeDrawable = mTabStripFadeLong;
+            mNormalHelper.setLeftFadeWidth(mTabStripFadeLongWidth);
+            mIncognitoHelper.setLeftFadeWidth(mTabStripFadeLongWidth);
         } else if (ChromeFeatureList.sTabStripRedesign.isEnabled()
                 && !mModelSelectorButton.isVisible() && LocalizationUtils.isLayoutRtl()) {
             // Use fade_medium for TSR left fade when RTL and model selector button not
             // visible.
             leftFadeDrawable = R.drawable.tab_strip_fade_medium_tsr;
+            mNormalHelper.setLeftFadeWidth(FADE_MEDIUM_TSR_WIDTH_DP);
+            mIncognitoHelper.setLeftFadeWidth(FADE_MEDIUM_TSR_WIDTH_DP);
         } else {
             leftFadeDrawable = mTabStripFadeShort;
+            mNormalHelper.setLeftFadeWidth(mTabStripFadeShortWidth);
+            mIncognitoHelper.setLeftFadeWidth(mTabStripFadeShortWidth);
         }
         return leftFadeDrawable;
     }
@@ -558,12 +577,18 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         int rightFadeDrawable;
         if (mModelSelectorButton.isVisible() && !LocalizationUtils.isLayoutRtl()) {
             rightFadeDrawable = mTabStripFadeLong;
+            mNormalHelper.setRightFadeWidth(mTabStripFadeLongWidth);
+            mIncognitoHelper.setRightFadeWidth(mTabStripFadeLongWidth);
         } else if (ChromeFeatureList.sTabStripRedesign.isEnabled()
                 && !mModelSelectorButton.isVisible() && !LocalizationUtils.isLayoutRtl()) {
             // Use fade_medium for TSR right fade when model selector button not visible.
             rightFadeDrawable = R.drawable.tab_strip_fade_medium_tsr;
+            mNormalHelper.setRightFadeWidth(FADE_MEDIUM_TSR_WIDTH_DP);
+            mIncognitoHelper.setRightFadeWidth(FADE_MEDIUM_TSR_WIDTH_DP);
         } else {
             rightFadeDrawable = mTabStripFadeShort;
+            mNormalHelper.setRightFadeWidth(mTabStripFadeShortWidth);
+            mIncognitoHelper.setRightFadeWidth(mTabStripFadeShortWidth);
         }
         return rightFadeDrawable;
     }

@@ -157,8 +157,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     private static final int MESSAGE_RESIZE = 1;
     private static final int MESSAGE_UPDATE_SPINNER = 2;
-    private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_END_MODEL_SELECTOR = 120.f;
-    private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_END = 72.f;
     private static final float CLOSE_BTN_VISIBILITY_THRESHOLD_START = 96.f;
     private static final long TAB_SWITCH_METRICS_MAX_ALLOWED_SCROLL_INTERVAL =
             DateUtils.MINUTE_IN_MILLIS;
@@ -221,6 +219,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private long mLastSpinnerUpdate;
     private float mLeftMargin;
     private float mRightMargin;
+    private float mLeftFadeWidth;
+    private float mRightFadeWidth;
 
     // New tab button with tab strip end padding
     private float mNewTabButtonWithTabStripEndPadding;
@@ -560,6 +560,22 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     /**
+     * Sets the left fade width based on which fade is showing.
+     * @param fadeWidth The width of the left fade.
+     */
+    public void setLeftFadeWidth(float fadeWidth) {
+        mLeftFadeWidth = fadeWidth;
+    }
+
+    /**
+     * Sets the right fade width based on which fade is showing.
+     * @param fadeWidth The width of the right fade.
+     */
+    public void setRightFadeWidth(float fadeWidth) {
+        mRightFadeWidth = fadeWidth;
+    }
+
+    /**
      * Updates the size of the virtual tab strip, making the tabs resize and move accordingly.
      * @param width  The new available width.
      * @param height The new height this stack should be.
@@ -849,28 +865,18 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             });
         }
 
-        // 4. Figure out which tab needs to be visible.
-        int selIndex = mModel.index();
-        StripLayoutTab tabToMakeVisible;
-        if (!selected && selIndex >= 0 && selIndex < mStripTabs.length) {
-            // Prioritize focusing on selected tab over newly created unselected tabs.
-            tabToMakeVisible = mStripTabs[selIndex];
-        } else {
-            tabToMakeVisible = tab;
+        // 4. If the new tab will be selected, scroll it to view. If the new tab will not be
+        // selected, scroll the currently selected tab to view. Skip auto-scrolling if the tab is
+        // being created due to a tab closure being undone.
+        if (tab != null && !closureCancelled) {
+            boolean animate = !onStartup && !mAnimationsDisabledForTesting;
+            if (selected) {
+                float delta = calculateDeltaToMakeTabVisible(tab);
+                setScrollForScrollingTabStacker(delta, animate, time);
+            } else {
+                bringSelectedTabToVisibleArea(time, animate);
+            }
         }
-
-        // 5. Scroll the stack so that the desired tab visible. Skip if tab was restored.
-        boolean skipAutoScroll = closureCancelled || onStartup;
-        if (tabToMakeVisible != null && !skipAutoScroll) {
-            float delta = calculateOffsetToMakeTabVisible(tabToMakeVisible, selected);
-            boolean shouldAnimate = !mAnimationsDisabledForTesting;
-
-            setScrollForScrollingTabStacker(delta, shouldAnimate, time);
-        }
-
-        // 6. When restoring tabs through startup, ensure the selected tab is visible, as the newly
-        // unfrozen tab may have pushed if off of the visible area of the strip.
-        if (onStartup) bringSelectedTabToVisibleArea(time, false);
 
         mUpdateHost.requestUpdate();
     }
@@ -1936,66 +1942,29 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     /**
-     * This method calculates the scroll offset to make a tab visible. This method assumes that the
-     * {@param tab} is either currently selected or was newly created. {@param tab} isn't
-     * necessarily the selected tab as it could have been created in the background.
-     * Note:
-     *   i) If {@param tab} isn't {@param selected}, and the currently selected tab is already fully
-     * visible, the tab strip does not scroll. If the currently selected tab isn't already fully
-     * visible, a minimum offset is scrolled to make it visible.
-     *  ii) This also means that {@param tab} is not always made visible if it is too far away from
-     * the selected tab or if the selected tab is towards the end of strip.
-     *
-     * @param tab The tab to make visible.
-     * @param selected Whether the tab to make visible will be focused.
-     * @return scroll offset to make the tab visible.
+     * @param tab The tab to make fully visible.
+     * @return Scroll delta to make the tab fully visible.
      */
-    private float calculateOffsetToMakeTabVisible(StripLayoutTab tab, boolean selected) {
+    private float calculateDeltaToMakeTabVisible(StripLayoutTab tab) {
         if (tab == null) return 0.f;
 
-        // 1. Calculate the optimal minimum and maximum scroll offsets to show the tab.
-        final int selIndex = mModel.index();
-        final int index = TabModelUtils.getTabIndexById(mModel, tab.getId());
-        final float stripWidth = getScrollableWidth();
+        // 1. Calculate offsets to fully show the tab at the start and end of the strip.
+        final boolean isRtl = LocalizationUtils.isLayoutRtl();
         final float tabWidth = mCachedTabWidth - mTabOverlapWidth;
-        float optimalLeft = -index * tabWidth;
-        float optimalRight = stripWidth - (index + 1) * tabWidth;
+        final float startOffset = (isRtl ? mRightFadeWidth : mLeftFadeWidth);
+        final float endOffset = (isRtl ? mLeftFadeWidth : mRightFadeWidth);
+        final int index = findIndexForTab(tab.getId());
 
-        // 2. If the newly created tab will not be selected, prioritize keeping the currently
-        // selected tab visible. If it already is, there's no need to scroll.
-        // TODO(https://crbug.com/1448717): This is counterintuitive to the naming of the method, so
-        //  planning to move this "prioritize selected tab" logic to wherever this method is
-        //  actually called.
-        StripLayoutTab currentlyFocusedTab = null;
-        if (selIndex >= 0 && selIndex < mStripTabs.length) {
-            currentlyFocusedTab = mStripTabs[selIndex];
-        }
+        final float optimalStart = startOffset + (-index * tabWidth);
+        final float optimalEnd = mWidth - endOffset - ((index + 1) * tabWidth) - mTabOverlapWidth;
 
-        if (currentlyFocusedTab != null && isSelectedTabCompletelyVisible(currentlyFocusedTab)
-                && !selected) {
-            return 0.f;
-        }
+        // 2. Return the scroll delta to make the given tab fully visible with the least scrolling.
+        // This will result in the tab being at either the start or end of the strip.
+        final float deltaToOptimalStart = optimalStart - mScrollOffset;
+        final float deltaToOptimalEnd = optimalEnd - mScrollOffset;
 
-        // 3. Need to buffer by one extra tab width depending on if the tab is to the left or right
-        // of the selected tab.
-        if (index < selIndex) {
-            // Tab is to the left of the selected tab
-            optimalRight -= tabWidth;
-        } else if (index > selIndex) {
-            // Tab is to the right of the selected tab
-            optimalLeft += tabWidth;
-        }
-
-        // 3. Return the proper deltaX that has to be applied to the current scroll to see the
-        // tab.
-        // Distance to make tab visible on the left edge and the right edge.
-        float offsetToOptimalLeft = optimalLeft - mScrollOffset;
-        float offsetToOptimalRight = optimalRight - mScrollOffset - mTabOverlapWidth;
-        // Scroll the minimum possible distance to bring the selected tab into visible area.
-        if (Math.abs(offsetToOptimalLeft) < Math.abs(offsetToOptimalRight)) {
-            return offsetToOptimalLeft;
-        }
-        return offsetToOptimalRight;
+        return Math.abs(deltaToOptimalStart) < Math.abs(deltaToOptimalEnd) ? deltaToOptimalStart
+                                                                           : deltaToOptimalEnd;
     }
 
     @VisibleForTesting
@@ -2919,52 +2888,30 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         StripLayoutTab selectedLayoutTab = findTabById(selectedTab.getId());
         if (selectedLayoutTab == null || isSelectedTabCompletelyVisible(selectedLayoutTab)) return;
 
-        float delta = calculateOffsetToMakeTabVisible(selectedLayoutTab, true);
+        float delta = calculateDeltaToMakeTabVisible(selectedLayoutTab);
         setScrollForScrollingTabStacker(delta, animate, time);
     }
 
     private boolean isSelectedTabCompletelyVisible(StripLayoutTab selectedTab) {
-        boolean isRtl = LocalizationUtils.isLayoutRtl();
-        if (isRtl) {
-            return selectedTab.isVisible()
-                    && selectedTab.getDrawX() >= getCloseBtnVisibilityThreshold(false)
-                    && selectedTab.getDrawX() + selectedTab.getWidth() <= mWidth;
-        } else {
-            return selectedTab.isVisible() && selectedTab.getDrawX() >= 0
-                    && selectedTab.getDrawX() + selectedTab.getWidth() <= getScrollableWidth();
-        }
-    }
-
-    /**
-     * When using the scrollable strip, margin from only one edge is subtracted because the side
-     * where the tab strip fade is shown, we only need to subtract the fade width.
-     * @return the width of the tab strip that is scrollable.
-     */
-    private float getScrollableWidth() {
-        return mWidth - getCloseBtnVisibilityThreshold(false)
-                - (LocalizationUtils.isLayoutRtl() ? mRightMargin : mLeftMargin);
+        return selectedTab.isVisible() && selectedTab.getDrawX() > mLeftFadeWidth
+                && selectedTab.getDrawX() + selectedTab.getWidth() < mWidth - mRightFadeWidth;
     }
 
     /**
      * To prevent accidental tab closures, when the close button of a tab is very close to the edge
      * of the tab strip, we hide the close button. The threshold for hiding is different based on
-     * the start or end of the strip and if the modelSelector and new tab button are visible.
+     * the length of the fade at the end of the strip.
      * @param start Whether its the start of the tab strip.
-     * @return the distance threshold from the edge of the tab strip to hide the close button.
+     * @return The distance threshold from the edge of the tab strip to hide the close button.
      */
     private float getCloseBtnVisibilityThreshold(boolean start) {
         if (start) {
-            //@TODO(zheliooo) Add unit tests to cover start tab cases for testTabSelected in
-            // StripLayoutHelperTest
-            // The start of the tab strip does not have the new tab and model selector button
-            // so the threshold is constant.
+            // TODO(zheliooo): Add unit tests to cover start tab cases for testTabSelected in
+            // StripLayoutHelperTest.
             return CLOSE_BTN_VISIBILITY_THRESHOLD_START;
+        } else {
+            return LocalizationUtils.isLayoutRtl() ? mLeftFadeWidth : mRightFadeWidth;
         }
-
-        // If the modelSelector button is visible, the threshold is slightly larger than when its
-        // invisible to account for the strip fade length.
-        return (mModelSelectorButton.isVisible() ? CLOSE_BTN_VISIBILITY_THRESHOLD_END_MODEL_SELECTOR
-                                                 : CLOSE_BTN_VISIBILITY_THRESHOLD_END);
     }
 
     /**
