@@ -111,6 +111,9 @@ public class Fido2CredentialRequestRobolectricTest {
         Mockito.when(mGURLUtilsJniMock.getOrigin(any(String.class)))
                 .thenReturn("https://subdomain.example.test:443");
 
+        mFido2ApiCallHelper = new FakeFido2ApiCallHelper();
+        Fido2ApiCallHelper.overrideInstanceForTesting(mFido2ApiCallHelper);
+
         mCreationOptions = Fido2ApiTestHelper.createDefaultMakeCredentialOptions();
         // Set rk=required and empty allowlist on the assumption that most test cases care about
         // exercising the passkeys case.
@@ -143,9 +146,6 @@ public class Fido2CredentialRequestRobolectricTest {
                 FakeAndroidCredentialOption.Builder.class, mMetricsHelper);
 
         mRequest.overrideBrowserBridgeForTesting(mBrowserBridgeMock);
-
-        mFido2ApiCallHelper = new FakeFido2ApiCallHelper();
-        Fido2ApiCallHelper.overrideInstanceForTesting(mFido2ApiCallHelper);
     }
 
     @Test
@@ -361,6 +361,32 @@ public class Fido2CredentialRequestRobolectricTest {
         assertThat(credManRequest).isNull();
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isTrue();
         assertThat(mFido2ApiCallHelper.mClientDataHash).isEqualTo(clientDataHash);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_credManNoCredentials_fallbackToPlayServices() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+
+        mCredentialManager.setErrorResponse(new FakeAndroidCredManException(
+                "android.credentials.GetCredentialException.TYPE_NO_CREDENTIAL", "Message"));
+        mFido2ApiCallHelper.mCredentialsError = new IllegalStateException("injected error");
+        mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
+        assertThat(credManRequest).isNotNull();
+        assertThat(
+                credManRequest.getData().getBoolean(
+                        "androidx.credentials.BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS"))
+                .isTrue();
+        assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isTrue();
+        assertThat(mCallback.getStatus())
+                .isEqualTo(Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
+        verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
     }
 
     @Test
@@ -668,6 +694,11 @@ public class Fido2CredentialRequestRobolectricTest {
                 OnFailureListener failureCallback) throws NoSuchAlgorithmException {
             mMakeCredentialCalled = true;
             mClientDataHash = clientDataHash;
+
+            if (mCredentialsError != null) {
+                failureCallback.onFailure(mCredentialsError);
+                return;
+            }
             // Don't make any actual calls to Play Services.
         }
 
@@ -677,6 +708,11 @@ public class Fido2CredentialRequestRobolectricTest {
                 OnFailureListener failureCallback) {
             mGetAssertionCalled = true;
             mClientDataHash = clientDataHash;
+
+            if (mCredentialsError != null) {
+                failureCallback.onFailure(mCredentialsError);
+                return;
+            }
             // Don't make any actual calls to Play Services.
         }
     }

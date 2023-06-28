@@ -90,11 +90,16 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             "android.credentials.CreateCredentialException.TYPE_USER_CANCELED";
     static final String CRED_MAN_EXCEPTION_GET_CREDENTIAL_TYPE_USER_CANCEL =
             "android.credentials.GetCredentialException.TYPE_USER_CANCELED";
+    static final String CRED_MAN_EXCEPTION_GET_CREDENTIAL_TYPE_NO_CREDENTIAL =
+            "android.credentials.GetCredentialException.TYPE_NO_CREDENTIAL";
     public static final int GMSCORE_MIN_VERSION_HYBRID_API = 231206000;
 
     private static Boolean sIsCredManEnabled;
 
     private final WebAuthenticationDelegate.IntentSender mIntentSender;
+    // mPlayServicesAvailable caches whether the Play Services FIDO API is
+    // available.
+    private final boolean mPlayServicesAvailable;
     private CredManMetricsHelper mMetricsHelper;
     private Context mContext;
     private GetAssertionResponseCallback mGetAssertionCallback;
@@ -140,6 +145,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     public Fido2CredentialRequest(WebAuthenticationDelegate.IntentSender intentSender) {
         mIntentSender = intentSender;
         mMetricsHelper = new CredManMetricsHelper();
+        mPlayServicesAvailable = Fido2ApiCallHelper.getInstance().arePlayServicesAvailable();
     }
 
     private void returnErrorAndResetCallback(int error) {
@@ -218,7 +224,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             return;
         }
 
-        if (!apiAvailable()) {
+        if (!mPlayServicesAvailable) {
             Log.e(TAG, "Google Play Services' Fido2PrivilegedApi is not available.");
             returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
             return;
@@ -268,7 +274,6 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         mGetAssertionCallback = callback;
         mErrorCallback = errorCallback;
         mFrameHost = frameHost;
-        final boolean playServicesAvailable = apiAvailable();
 
         if (frameHost != null) {
             WebAuthSecurityChecksResults webAuthSecurityChecksResults =
@@ -297,7 +302,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         if (payment == null && isCredManEnabled()) {
             if (options.isConditional) {
                 prefetchCredentialsViaCredMan(options, origin, /*maybeClientDataHash=*/null);
-            } else if (hasAllowCredentials && playServicesAvailable) {
+            } else if (hasAllowCredentials && mPlayServicesAvailable) {
                 // If the allowlist contains non-discoverable credentials then
                 // the request needs to be routed directly to Play Services.
                 checkForNonDiscoverableMatch(options, origin, maybeClientDataHash);
@@ -308,7 +313,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             return;
         }
 
-        if (!playServicesAvailable) {
+        if (!mPlayServicesAvailable) {
             Log.e(TAG, "Google Play Services' Fido2PrivilegedApi is not available.");
             returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
             return;
@@ -378,7 +383,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             return;
         }
 
-        if (!apiAvailable()) {
+        if (!mPlayServicesAvailable) {
             Log.e(TAG, "Google Play Services' Fido2PrivilegedApi is not available.");
             // Note that |IsUserVerifyingPlatformAuthenticatorAvailable| only returns
             // true or false, making it unable to handle any error status.
@@ -410,7 +415,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         assert mErrorCallback == null;
         mErrorCallback = errorCallback;
 
-        if (!apiAvailable()) {
+        if (!mPlayServicesAvailable) {
             Log.e(TAG, "Google Play Services' Fido2PrivilegedApi is not available.");
             returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
             return;
@@ -460,10 +465,6 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         mCredManGetRequestBuilderClassForTesting = getRequestBuilder;
         mCredManCredentialOptionBuilderClassForTesting = credentialOptionBuilder;
         mMetricsHelper = metricsHelper;
-    }
-
-    private boolean apiAvailable() {
-        return Fido2ApiCallHelper.getInstance().arePlayServicesAvailable();
     }
 
     private void onWebAuthnCredentialDetailsListReceived(PublicKeyCredentialRequestOptions options,
@@ -544,7 +545,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         assert options.allowCredentials != null;
         assert options.allowCredentials.length > 0;
         assert !options.isConditional;
-        assert apiAvailable();
+        assert mPlayServicesAvailable;
         assert sIsCredManEnabled;
 
         Fido2ApiCallHelper.getInstance().invokeFido2GetCredentials(options.relyingPartyId,
@@ -568,7 +569,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         assert options.allowCredentials != null;
         assert options.allowCredentials.length > 0;
         assert !options.isConditional;
-        assert apiAvailable();
+        assert mPlayServicesAvailable;
         assert sIsCredManEnabled;
 
         for (WebAuthnCredentialDetails credential : retrievedCredentials) {
@@ -906,8 +907,6 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 CRED_MAN_PREFIX + "BUNDLE_VALUE_SUBTYPE_CREATE_PUBLIC_KEY_CREDENTIAL_REQUEST");
         requestBundle.putString(CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_JSON", requestAsJson);
         requestBundle.putByteArray(CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH", clientDataHash);
-        requestBundle.putBoolean(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS", false);
 
         final Bundle displayInfoBundle = new Bundle();
         displayInfoBundle.putCharSequence(CRED_MAN_PREFIX + "BUNDLE_KEY_USER_ID",
@@ -1030,6 +1029,16 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
 
                     mMetricsHelper.reportGetCredentialMetrics(
                             CredManGetRequestEnum.CANCELLED, mConditionalUiState);
+                } else if (errorType.equals(CRED_MAN_EXCEPTION_GET_CREDENTIAL_TYPE_NO_CREDENTIAL)) {
+                    // This was a modal request and no credentials were found.
+                    // The UI that CredMan would show in this case is unsuitable
+                    // so the request is forwarded to Play Services instead. Play
+                    // Services shouldn't find any credentials either, but it
+                    // will show a bottomsheet to that effect.
+                    assert mConditionalUiState == ConditionalUiState.NONE;
+                    assert !options.isConditional;
+                    maybeDispatchGetAssertionRequest(options, convertOriginToString(origin),
+                            maybeClientDataHash, /*credentialId=*/null);
                 } else {
                     // Includes:
                     //  * GetCredentialException.TYPE_UNKNOWN
@@ -1137,8 +1146,9 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         mConditionalUiState = options.isConditional ? ConditionalUiState.REQUEST_SENT_TO_PLATFORM
                                                     : ConditionalUiState.NONE;
         try {
-            final Object getCredentialRequest = buildGetCredentialRequest(
-                    options, origin, maybeClientDataHash, requestPasswords);
+            final Object getCredentialRequest = buildGetCredentialRequest(options, origin,
+                    maybeClientDataHash, requestPasswords,
+                    /*preferImmediatelyAvailable=*/!options.isConditional);
             if (getCredentialRequest == null) {
                 mMetricsHelper.reportGetCredentialMetrics(
                         CredManGetRequestEnum.COULD_NOT_SEND_REQUEST, mConditionalUiState);
@@ -1235,8 +1245,9 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
 
         try {
             mConditionalUiState = ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST;
-            final Object getCredentialRequest = buildGetCredentialRequest(
-                    options, origin, maybeClientDataHash, /*requestPasswords=*/false);
+            final Object getCredentialRequest =
+                    buildGetCredentialRequest(options, origin, maybeClientDataHash,
+                            /*requestPasswords=*/false, /*preferImmediatelyAvailable=*/false);
             if (getCredentialRequest == null) {
                 mConditionalUiState = ConditionalUiState.NONE;
                 returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
@@ -1264,9 +1275,20 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         }
     }
 
+    /**
+     * Construct a CredMan request for credentials.
+     *
+     * @param options The WebAuthn get() call.
+     * @param origin The origin that made the WebAuthn request.
+     * @param maybeClientDataHash Either null, to have the ClientDataJSON built by this function and
+     *         populated in `mClientDataJson`, or else an explicit ClientDataJSON hash.
+     * @param requestPasswords True if password credentials should also be requested.
+     * @param preferImmediatelyAvailable True to make the eventual request fail with a
+     *         `NO_CREDENTIAL` error if there are no credentials found.
+     */
     private Object buildGetCredentialRequest(PublicKeyCredentialRequestOptions options,
-            Origin origin, byte[] maybeClientDataHash, boolean requestPasswords)
-            throws ReflectiveOperationException {
+            Origin origin, byte[] maybeClientDataHash, boolean requestPasswords,
+            boolean preferImmediatelyAvailable) throws ReflectiveOperationException {
         final String requestAsJson =
                 Fido2CredentialRequestJni.get().getOptionsToJson(options.serialize());
         final byte[] clientDataHash = maybeClientDataHash != null
@@ -1299,6 +1321,14 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         getCredentialRequestBundle.putParcelable(
                 CRED_MAN_PREFIX + "BUNDLE_KEY_PREFER_UI_BRANDING_COMPONENT_NAME",
                 GPM_COMPONENT_NAME);
+        // The CredMan UI for the case where there aren't any credentials isn't
+        // suitable for the modal case. This bundle key requests that the
+        // request fail immediately if there aren't any credentials. It'll fail
+        // with a `CRED_MAN_EXCEPTION_GET_CREDENTIAL_TYPE_NO_CREDENTIAL` error
+        // which is handled above by calling Play Services to render the error.
+        getCredentialRequestBundle.putBoolean(
+                CRED_MAN_PREFIX + "BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS",
+                preferImmediatelyAvailable && mPlayServicesAvailable);
         final Object getCredentialRequestBuilderObject =
                 getCredentialRequestBuilderClass.getConstructor(Bundle.class)
                         .newInstance(getCredentialRequestBundle);
@@ -1328,8 +1358,6 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_JSON", requestAsJson);
         publicKeyCredentialOptionBundle.putByteArray(
                 CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH", clientDataHash);
-        publicKeyCredentialOptionBundle.putBoolean(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS", false);
         publicKeyCredentialOptionBundle.putString(CHANNEL_KEY, getChannel());
         return publicKeyCredentialOptionBundle;
     }
