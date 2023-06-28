@@ -381,8 +381,12 @@ void CameraEffectsController::SetCameraEffects(
 
   // Update effects config with settings from feature flags.
   config->segmentation_model = GetSegmentationModelType();
-  config->light_intensity = GetFieldTrialParamByFeatureAsDouble(
-      ash::features::kVcLightIntensity, "light_intensity", 1.0);
+  double intensity = GetFieldTrialParamByFeatureAsDouble(
+      ash::features::kVcLightIntensity, "light_intensity", -1.0);
+  // Only set if its overridden by flags, otherwise use default from lib.
+  if (intensity > 0.0) {
+    config->light_intensity = intensity;
+  }
 
   // Directly calls the callback for testing case.
   if (in_testing_mode_) {
