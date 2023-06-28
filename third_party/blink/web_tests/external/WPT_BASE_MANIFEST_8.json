@@ -274347,11 +274347,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "c6dd4c4c77b06a62d8ae0b5528ddf5b10238af4e",
+     "b4d66b482d4915537982292f9c67398197bacaf2",
      []
     ],
     "mtime.json": [
-     "b431133cf6a9823d8ada3e4d8aa9ce69b0ad9736",
+     "fbf589faaa83f6165cac4bcac21af28b72a71f88",
      []
     ]
    },
@@ -286988,6 +286988,10 @@
        "51ec44e9cf55daa92b0822590933275a6706b9aa",
        []
       ],
+      "absolute-non-replaced-height-010.xht.ini": [
+       "e94f313b00b5739a5d3a5088c8d95bf418191160",
+       []
+      ],
       "absolute-non-replaced-max-001-ref.html": [
        "742b3063abd693a543ca4ce88bda161ae04d8668",
        []
@@ -298228,7 +298232,7 @@
       []
      ],
      "fit-content-item-001.html.ini": [
-      "cfe00742e2f5cbea1d612ec6c492578b81e23e5c",
+      "d1cc072d8040ea280e39f16d44b63dfb212bc3db",
       []
      ],
      "fixed-table-layout-with-percentage-width-in-flex-item-ref.html": [
@@ -300288,7 +300292,7 @@
       []
      ],
      "stretch-flex-item-checkbox-input.html.ini": [
-      "63968e3e8e8a1f7bcc28f0ec74185129bd03b86d",
+      "2f2d23f1e5756a9ba9400a19c7e6ff70e1de45ac",
       []
      ],
      "stretch-flex-item-radio-input-ref.html": [
@@ -312774,6 +312778,10 @@
       }
      },
      "fallback-intrinsic-sizes": {
+      "constructor-error.https.html.ini": [
+       "1244ec0ebc2cc18d26f4101095e6d3eb2cd70586",
+       []
+      ],
       "fallback-ref.html": [
        "6808e14eb683fde8c30a2c89318c6cccba12ca1a",
        []
@@ -331862,7 +331870,7 @@
         []
        ],
        "font-size-adjust.html.ini": [
-        "64e92c75075f0184164479c1a354a368f49b5236",
+        "1ea6d84d6e4fe59d91a2f2a22422ba5ec340f838",
         []
        ],
        "font-size-expected.txt": [
@@ -340388,7 +340396,7 @@
       []
      ],
      "backdrop-filters-contrast.html.ini": [
-      "923a67218fc2052a0b42d095c26ed22eaaf3c0ad",
+      "fc131d21d075b1be62195667bb8017af4b332030",
       []
      ],
      "backdrop-filters-grayscale-001.html.ini": [
@@ -340608,7 +340616,7 @@
       []
      ],
      "effect-reference-on-transparent-element.html.ini": [
-      "c1e39f8489802a36df955e901638e61ce8e92895",
+      "f9df782a8c3e548e9250dc1ef7a1523ec0cd293d",
       []
      ],
      "fecolormatrix-type-ref.html": [
@@ -341686,10 +341694,6 @@
       []
      ],
      "parsing": {
-      "offset-anchor-parsing-valid-expected.txt": [
-       "50b5afc614c2ed904412c36ba7ece7ea1f6226c4",
-       []
-      ],
       "offset-anchor-parsing-valid.html.ini": [
        "d29b9bc82ab0c18909e6ca5aea686342ec962a3d",
        []
@@ -341708,10 +341712,6 @@
       ],
       "offset-path-parsing-valid.html.ini": [
        "3904fa7f1f71a8b03a31fbd0964399404176907e",
-       []
-      ],
-      "offset-position-parsing-valid-expected.txt": [
-       "d59b7ae3bec46e5058b670a83ea9320868db11af",
        []
       ],
       "offset-position-parsing-valid.html.ini": [
@@ -342250,6 +342250,10 @@
       ],
       "nth-child-of-in-ancestor-ref.html": [
        "bc7ecb9ff7c1f7b16f13f2e062b378de24ff613a",
+       []
+      ],
+      "nth-child-of-in-is.html.ini": [
+       "f9fe3f144c32d2d4ad0e335da5b8f3f30fc914b5",
        []
       ],
       "nth-child-of-in-shadow-root-ref.html": [
@@ -379306,7 +379310,7 @@
       []
      ],
      "mediasource-worker-play-terminate-worker.html.ini": [
-      "3c9a865ebf8eb3cad5d7ea0867383fe22a0915ad",
+      "314869d225787c5b246c143edfbccffffcf46030",
       []
      ],
      "mediasource-worker-play-terminate-worker.js": [
@@ -383539,7 +383543,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "18f7393bb223f3036c7a80f1ac73a97f3d93e438",
+     "e573c5913ebab1de13a56802cbd2574945ad4790",
      []
     ],
     "modulepreload-expected.txt": [
@@ -398456,6 +398460,18 @@
      "5f8621ef83660c66f0d037ea28fafefb558140f1",
      []
     ],
+    "encoded-video-chunk.any-expected.txt": [
+     "bca2eae6d43d323efedcb12faaf60f98a510424b",
+     []
+    ],
+    "encoded-video-chunk.any.js.ini": [
+     "b9e31dfb31d97ca9a0717c82d2ee543b7ec31464",
+     []
+    ],
+    "encoded-video-chunk.any.worker-expected.txt": [
+     "bca2eae6d43d323efedcb12faaf60f98a510424b",
+     []
+    ],
     "encoded-video-chunk.crossOriginIsolated.https.any.js.headers": [
      "5f8621ef83660c66f0d037ea28fafefb558140f1",
      []
@@ -398517,7 +398533,7 @@
      []
     ],
     "full-cycle-test.https.any.js.ini": [
-     "ca6be7aa6ceed8d98c471eff11ef28dae57c547d",
+     "17b4bcdb912fb57e9f64da0186a724e64732c3cd",
      []
     ],
     "h264.annexb": [
@@ -398553,7 +398569,7 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "4be5117d7ae64849f5fb7719904268423fbcbaa8",
+     "42d752ba7ebd0468e33adcb5b071e9add02b002f",
      []
     ],
     "sfx-aac.mp4": [
@@ -399139,7 +399155,7 @@
        []
       ],
       "fixtures.py": [
-       "ba166ae8da87de03ec68c9c112f67c0d2a6036f3",
+       "957be6b0f462b1a7f1b61bcfb48cadb01c5f8f7d",
        []
       ],
       "fixtures_bidi.py": [
@@ -399682,7 +399698,7 @@
       []
      ],
      "021.html.ini": [
-      "275b8e8b8c4c5779a59f3f5a920c73d7ccb5e971",
+      "d2b2b309858fb7c29fb7924ca95d03436c892857",
       []
      ],
      "025-1.js": [
@@ -399705,7 +399721,7 @@
      []
     ],
     "idlharness.https.window.js.ini": [
-     "00aa467cf20852384ca9c1fdf07e247db4503dd5",
+     "65d07b5455944e251a37c200fc2f62f857117484",
      []
     ]
    },
@@ -458060,6 +458076,13 @@
        {}
       ]
      ],
+     "hit-test-in-vertical-rl.html": [
+      "526e33d7924668782fd0116c5a13d2aeda570b08",
+      [
+       null,
+       {}
+      ]
+     ],
      "hit-test-transformed-child.html": [
       "ac0fd54c9f35dda0f01f5b8eb92fd7df7a3b5bb7",
       [
@@ -476994,7 +477017,7 @@
        ]
       ],
       "offset-anchor-parsing-valid.html": [
-       "97a3c54131f1af3b71c635ee5ff37be8a3502ff0",
+       "6cb4d44117fa6361fc87efdee22e79bc6df749b5",
        [
         null,
         {}
@@ -477071,7 +477094,7 @@
        ]
       ],
       "offset-position-parsing-valid.html": [
-       "032a5b42b46d5bae228e6a112c50623d76dbc1b1",
+       "bc0d19a460f4f22f9a061ae6932f31637c7231d6",
        [
         null,
         {}
@@ -642265,7 +642288,7 @@
      ]
     ],
     "encoded-video-chunk.any.js": [
-     "0cf0d8de4408dc1dc634b064c9a3fd313a04f813",
+     "9b60e59a79311dea38d8cb4cad1d3d1cebf2ff3a",
      [
       "webcodecs/encoded-video-chunk.any.html",
       {
