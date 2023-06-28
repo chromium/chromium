@@ -310,7 +310,7 @@ JankMonitorImpl::ThreadExecutionState::CheckJankiness() {
   }
 
   // Mark that the target thread is janky and notify the monitor thread.
-  return task_execution_metadata_.back().identifier.get();
+  return task_execution_metadata_.back().identifier;
 }
 
 void JankMonitorImpl::ThreadExecutionState::WillRunTaskOrEvent(

@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "cc/base/simple_enclosed_region.h"
 #include "cc/cc_export.h"
 #include "cc/layers/effect_tree_layer_list_iterator.h"
@@ -62,7 +62,13 @@ class CC_EXPORT OcclusionTracker {
   struct StackObject {
     StackObject() : target(nullptr) {}
     explicit StackObject(const RenderSurfaceImpl* target) : target(target) {}
-    raw_ptr<const RenderSurfaceImpl> target;
+    // Not a raw_ptr<...> for performance reasons: on-stack (temporary) vector +
+    // based on analysis of sampling profiler data
+    // (LayerTreeImpl::UpdateDrawProperties -> OcclusionTracker::EnterLayer ->
+    // OcclusionTracker::EnterRenderTarget -> emplaces StackObject in a vector;
+    // ... -> OcclusionTracker::LeaveLayer ->
+    // OcclusionTracker::LeaveToRenderTarget -> pops StackObject from a vector).
+    RAW_PTR_EXCLUSION const RenderSurfaceImpl* target;
     SimpleEnclosedRegion occlusion_from_outside_target;
     SimpleEnclosedRegion occlusion_from_inside_target;
     bool ignores_parent_occlusion = false;
