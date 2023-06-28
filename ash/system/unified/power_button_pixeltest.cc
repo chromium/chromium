@@ -67,7 +67,7 @@ TEST_F(PowerButtonPixelTest, NoSession) {
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_menu",
-      /*revision_number=*/0, GetMenuView()));
+      /*revision_number=*/1, GetMenuView()));
 }
 
 // TODO(crbug.com/1451244): Re-enable this test
@@ -109,6 +109,6 @@ TEST_F(PowerButtonPixelTest, GuestMode) {
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_menu",
-      /*revision_number=*/0, GetMenuView()));
+      /*revision_number=*/1, GetMenuView()));
 }
 }  // namespace ash

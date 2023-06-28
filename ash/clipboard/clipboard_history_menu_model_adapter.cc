@@ -574,7 +574,7 @@ views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
   container->GetViewAccessibility().OverrideIsIgnored(true);
 
   // Margins are managed by `ClipboardHistoryItemView`.
-  container->SetMargins(/*top_margin=*/0, /*bottom_margin=*/0);
+  container->set_vertical_margin(0);
 
   const size_t num_items = clipboard_history_->GetItems().size();
   if (IsHeaderIndex(index)) {

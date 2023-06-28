@@ -23,33 +23,33 @@ MenuSeparator::MenuSeparator(ui::MenuSeparatorType type) : type_(type) {
 }
 
 void MenuSeparator::OnPaint(gfx::Canvas* canvas) {
-  if (type_ == ui::SPACING_SEPARATOR)
-    return;
-
   const MenuConfig& menu_config = MenuConfig::instance();
-  int pos = 0;
+  if (type_ == ui::SPACING_SEPARATOR ||
+      width() < menu_config.item_horizontal_border_padding * 2) {
+    return;
+  }
+
+  int y = 0;
   int separator_thickness = menu_config.separator_thickness;
   if (type_ == ui::DOUBLE_SEPARATOR)
     separator_thickness = menu_config.double_separator_thickness;
   switch (type_) {
     case ui::LOWER_SEPARATOR:
-      pos = height() - separator_thickness;
+      y = height() - separator_thickness;
       break;
     case ui::UPPER_SEPARATOR:
       break;
     default:
-      pos = (height() - separator_thickness) / 2;
+      y = (height() - separator_thickness) / 2;
       break;
   }
 
-  gfx::Rect paint_rect(0, pos, width(), separator_thickness);
+  gfx::Rect paint_rect(menu_config.item_horizontal_border_padding, y,
+                       width() - menu_config.item_horizontal_border_padding * 2,
+                       separator_thickness);
   if (type_ == ui::PADDED_SEPARATOR) {
     paint_rect.Inset(
-        gfx::Insets::TLBR(0, menu_config.padded_separator_left_margin, 0,
-                          menu_config.padded_separator_right_margin));
-  } else {
-    paint_rect.Inset(gfx::Insets::TLBR(0, menu_config.separator_left_margin, 0,
-                                       menu_config.separator_right_margin));
+        gfx::Insets::TLBR(0, menu_config.padded_separator_start_padding, 0, 0));
   }
 
   if (menu_config.use_outer_border && type_ != ui::PADDED_SEPARATOR) {

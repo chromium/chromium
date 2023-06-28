@@ -74,7 +74,7 @@ TEST_F(MenuItemViewUnitTest, TestMenuItemViewWithFlexibleWidthChild) {
   views::MenuItemView* flexible_view = root_menu.AppendMenuItem(2);
   flexible_view->AddChildView(new SquareView());
   // Set margins to 0 so that we know width should match height.
-  flexible_view->SetMargins(0, 0);
+  flexible_view->set_vertical_margin(0);
 
   views::SubmenuView* submenu = root_menu.GetSubmenu();
 

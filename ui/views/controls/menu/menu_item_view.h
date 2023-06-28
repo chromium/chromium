@@ -22,6 +22,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/view.h"
@@ -381,9 +382,14 @@ class VIEWS_EXPORT MenuItemView : public View {
   // item.
   bool has_mnemonics() const { return has_mnemonics_; }
 
-  // Set top and bottom margins in pixels.  If no margin is set or a
-  // negative margin is specified then MenuConfig values are used.
-  void SetMargins(int top_margin, int bottom_margin);
+  void set_vertical_margin(int vertical_margin) {
+    vertical_margin_ = vertical_margin;
+    invalidate_dimensions();
+  }
+  int vertical_margin() const {
+    return vertical_margin_.value_or(
+        MenuConfig::instance().item_vertical_margin);
+  }
 
   void set_children_use_full_width(bool children_use_full_width) {
     children_use_full_width_ = children_use_full_width;
@@ -569,8 +575,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Returns the max icon width; recurses over submenus.
   int GetMaxIconViewWidth() const;
 
-  // Returns true if the menu has items with a checkbox or a radio button.
-  bool HasChecksOrRadioButtons() const;
+  bool ContainsChecksOrRadioButtons() const;
+
+  bool ContainsActionableSubmenu() const;
 
   void invalidate_dimensions() { dimensions_.height = 0; }
   bool is_dimensions_valid() const { return dimensions_.height > 0; }
@@ -677,9 +684,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Removed items to be deleted in ChildrenChanged().
   std::vector<View*> removed_items_;
 
-  // Margins in pixels.
-  int top_margin_ = -1;
-  int bottom_margin_ = -1;
+  absl::optional<int> vertical_margin_;
 
   // Corner radius in pixels, for HIGHLIGHTED items placed at the end of a menu.
   int corner_radius_ = 0;

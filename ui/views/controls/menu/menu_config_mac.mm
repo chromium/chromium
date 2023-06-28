@@ -21,7 +21,6 @@ void InitMaterialMenuConfig(views::MenuConfig* config) {
   config->arrow_to_edge_padding = 16;
   config->check_width = 16;
   config->check_height = 16;
-  config->arrow_width = 8;
   config->separator_height = 9;
   config->separator_lower_height = 4;
   config->separator_upper_height = 4;
@@ -31,8 +30,6 @@ void InitMaterialMenuConfig(views::MenuConfig* config) {
   config->icons_in_label = true;
   config->corner_radius = 8;
   config->auxiliary_corner_radius = 4;
-  config->item_top_margin = 4;
-  config->item_bottom_margin = 4;
   config->item_horizontal_border_padding = 0;
 }
 

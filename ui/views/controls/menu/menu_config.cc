@@ -53,10 +53,7 @@ void MenuConfig::InitCR2023() {
   // CR2023 menu metrics
   reserve_dedicated_arrow_column = false;
   separator_height = 17;
-  separator_left_margin = 12;
-  separator_right_margin = 12;
-  item_top_margin = 6;
-  item_bottom_margin = 6;
+  item_vertical_margin = 6;
   item_horizontal_border_padding = 12;
 }
 

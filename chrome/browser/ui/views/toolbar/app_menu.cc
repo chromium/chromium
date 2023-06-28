@@ -366,7 +366,8 @@ void AddChipToProfileMenuItem(Browser* browser,
     // MenuItemView::Layout().
     auto profile_chip =
         views::Builder<views::BoxLayoutView>()
-            .SetInsideBorderInsets(gfx::Insets::VH(config.item_top_margin, 0))
+            .SetInsideBorderInsets(
+                gfx::Insets::VH(config.item_vertical_margin, 0))
             .AddChildren(
                 views::Builder<views::Label>()
                     .SetText(local_name)
@@ -1318,11 +1319,8 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
         model->GetCommandIdAt(i) == IDC_ZOOM_MENU) {
       // ChromeOS adds extra vertical space for the menu buttons.
       const MenuConfig& config = views::MenuConfig::instance();
-      int top_margin = config.item_top_margin + config.separator_height / 2 + 4;
-      int bottom_margin =
-          config.item_bottom_margin + config.separator_height / 2 + 5;
-
-      item->SetMargins(top_margin, bottom_margin);
+      item->set_vertical_margin(config.item_vertical_margin * 2 +
+                                config.separator_height / 2);
     }
 #endif
     if (model->GetTypeAt(i) == MenuModel::TYPE_SUBMENU) {
@@ -1335,9 +1333,9 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
           constexpr int background_corner_radii = 12;
           // Profile row margins are different from the menu config item
           // margins.
-          int vertical_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
-              DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
-          item->SetMargins(vertical_margin, vertical_margin);
+          item->set_vertical_margin(
+              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  DISTANCE_CONTENT_LIST_VERTICAL_MULTI));
           item->SetMenuItemBackground(MenuItemView::MenuItemBackground(
               0, background_horizontal_margin,
               ui::kColorAppMenuProfileRowBackground, background_corner_radii));
@@ -1350,7 +1348,7 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
             const MenuConfig& config = MenuConfig::instance();
             AddChipToProfileMenuItem(
                 browser_, item, profile_attributes->GetLocalProfileName(),
-                config.arrow_to_edge_padding + config.arrow_width,
+                config.arrow_to_edge_padding + views::kSubmenuArrowSize,
                 profile_menu_item_selected_subscription_list_);
           }
         }

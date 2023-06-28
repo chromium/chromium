@@ -57,15 +57,8 @@ struct VIEWS_EXPORT MenuConfig {
   // submenu and parent menu.
   int submenu_horizontal_inset = 3;
 
-  // Margins between the top of the item and the label.
-  int item_top_margin = 4;
-
-  // Margins between the bottom of the item and the label.
-  int item_bottom_margin = 3;
-
-  // Margins used if the menu doesn't have icons.
-  int item_no_icon_top_margin = 4;
-  int item_no_icon_bottom_margin = 4;
+  // Margins between the item top/bottom and its contents.
+  int item_vertical_margin = 4;
 
   // Minimum dimensions used for entire items. If these are nonzero, they
   // override the vertical margin constants given above - the item's text and
@@ -86,16 +79,12 @@ struct VIEWS_EXPORT MenuConfig {
   int item_horizontal_border_padding = 0;
 
   // Padding between the arrow and the edge.
-  int arrow_to_edge_padding = 5;
+  int arrow_to_edge_padding = 8;
 
   // The space reserved for the check. The actual size of the image may be
   // different.
   int check_width = kMenuCheckSize;
   int check_height = kMenuCheckSize;
-
-  // The horizontal space reserved for submenu arrow. The actual width of the
-  // image may be different.
-  int arrow_width = kSubmenuArrowSize;
 
   // Height of a normal separator (ui::NORMAL_SEPARATOR).
   int separator_height = 11;
@@ -117,10 +106,6 @@ struct VIEWS_EXPORT MenuConfig {
 
   // Thickness of the drawn separator line in pixels for double separator.
   int double_separator_thickness = 2;
-
-  // Left & right separator padding
-  int separator_left_margin = 0;
-  int separator_right_margin = 0;
 
   // Are mnemonics shown?
   bool show_mnemonics = false;
@@ -203,9 +188,8 @@ struct VIEWS_EXPORT MenuConfig {
   // Vertical padding for touchable menus.
   int vertical_touchable_menu_item_padding = 8;
 
-  // Left & right margin of padded separator (ui::PADDED_SEPARATOR).
-  int padded_separator_left_margin = 64;
-  int padded_separator_right_margin = 0;
+  // Padding at the start of a padded separator (ui::PADDED_SEPARATOR).
+  int padded_separator_start_padding = 64;
 
   // Whether arrow keys should wrap around the end of the menu when selecting.
   bool arrow_key_selection_wraps = true;
