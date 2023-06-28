@@ -396,11 +396,18 @@ LayoutPoint LayoutMultiColumnFlowThread::FlowThreadPointToVisualPoint(
                                       CoordinateSpaceConversion::kVisual);
 }
 
-LayoutPoint LayoutMultiColumnFlowThread::VisualPointToFlowThreadPoint(
-    const LayoutPoint& visual_point) const {
+PhysicalOffset LayoutMultiColumnFlowThread::VisualPointToFlowThreadPoint(
+    const PhysicalOffset& visual_point) const {
   NOT_DESTROYED();
   LayoutUnit block_offset =
-      IsHorizontalWritingMode() ? visual_point.Y() : visual_point.X();
+      IsHorizontalWritingMode() ? visual_point.top : visual_point.left;
+  if (RuntimeEnabledFeatures::FixOffsetInMultiColVerticalRlEnabled()) {
+    block_offset = visual_point
+                       .ConvertToLogical(
+                           {StyleRef().GetWritingMode(), TextDirection::kLtr},
+                           PhysicalSize(Size()), {})
+                       .block_offset;
+  }
   const LayoutMultiColumnSet* column_set = nullptr;
   for (const LayoutMultiColumnSet* candidate = FirstMultiColumnSet(); candidate;
        candidate = candidate->NextSiblingMultiColumnSet()) {
@@ -408,9 +415,33 @@ LayoutPoint LayoutMultiColumnFlowThread::VisualPointToFlowThreadPoint(
     if (candidate->LogicalBottom() > block_offset)
       break;
   }
-  return column_set ? column_set->VisualPointToFlowThreadPoint(ToLayoutPoint(
-                          visual_point + Location() - column_set->Location()))
-                    : visual_point;
+  if (!column_set) {
+    return visual_point;
+  }
+  const PhysicalOffset flow_thread_offset = PhysicalLocation();
+  const PhysicalOffset column_set_offset = column_set->PhysicalLocation();
+  const PhysicalOffset point_in_set =
+      visual_point + flow_thread_offset - column_set_offset;
+  if (RuntimeEnabledFeatures::FixOffsetInMultiColVerticalRlEnabled() &&
+      HasFlippedBlocksWritingMode()) {
+    // Pass a block-flipped physical offset to LayoutMultiColumnSet::
+    // VisualPointToFlowThreadPoint().
+    // TODO(layout-dev): Pass a logical offset.
+    const LayoutBlockFlow& container = *MultiColumnBlockFlow();
+    const LayoutUnit flow_thread_block_offset =
+        container.FlipForWritingMode(flow_thread_offset.left, LogicalHeight());
+    const LayoutUnit column_set_block_offset = container.FlipForWritingMode(
+        column_set_offset.left, column_set->LogicalHeight());
+    const LayoutPoint flipped_result =
+        column_set->VisualPointToFlowThreadPoint(LayoutPoint(
+            block_offset - flow_thread_block_offset - column_set_block_offset,
+            point_in_set.top));
+    return PhysicalOffset(
+        column_set->LogicalHeightInFlowThread() - flipped_result.X(),
+        flipped_result.Y());
+  }
+  return PhysicalOffset(
+      column_set->VisualPointToFlowThreadPoint(point_in_set.ToLayoutPoint()));
 }
 
 LayoutMultiColumnSet* LayoutMultiColumnFlowThread::ColumnSetAtBlockOffset(

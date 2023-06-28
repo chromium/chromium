@@ -172,8 +172,8 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
 
   virtual LayoutPoint FlowThreadPointToVisualPoint(
       const LayoutPoint& flow_thread_point) const = 0;
-  virtual LayoutPoint VisualPointToFlowThreadPoint(
-      const LayoutPoint& visual_point) const = 0;
+  virtual PhysicalOffset VisualPointToFlowThreadPoint(
+      const PhysicalOffset& visual_point) const = 0;
 
   virtual LayoutMultiColumnSet* ColumnSetAtBlockOffset(
       LayoutUnit,

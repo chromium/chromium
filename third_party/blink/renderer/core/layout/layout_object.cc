@@ -3365,9 +3365,7 @@ void LayoutObject::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
     PhysicalOffset visual_point = transform_state.MappedPoint();
     transform_state.Move(
         visual_point -
-        PhysicalOffsetToBeNoop(
-            To<LayoutFlowThread>(this)->VisualPointToFlowThreadPoint(
-                visual_point.ToLayoutPoint())));
+        To<LayoutFlowThread>(this)->VisualPointToFlowThreadPoint(visual_point));
   }
 
   if (skip_info.AncestorSkipped()) {
