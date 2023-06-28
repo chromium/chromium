@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/util/unittest_util.h"
+#include "chrome/updater/util/unit_test_util.h"
 
 #include <cstdint>
 #include <memory>
@@ -94,8 +94,9 @@ class CustomLogPrinter : public testing::TestEventListener {
   // Use Chromium's logging format, so that the process ID and timestamp of the
   // result can be recorded and compared to other lines in the log files.
   void OnTestPartResult(const testing::TestPartResult& result) override {
-    if (result.type() == testing::TestPartResult::kSuccess)
+    if (result.type() == testing::TestPartResult::kSuccess) {
       return;
+    }
     logging::LogMessage(result.file_name(), result.line_number(),
                         logging::LOGGING_ERROR)
             .stream()
@@ -225,16 +226,19 @@ bool DeleteFileAndEmptyParentDirectories(
     // Deletes recursively `dir` and its parents up, if dir is empty
     // and until one non-empty parent directory is found.
     static bool DeleteDirsIfEmpty(const base::FilePath& dir) {
-      if (!base::DirectoryExists(dir) || !base::IsDirectoryEmpty(dir))
+      if (!base::DirectoryExists(dir) || !base::IsDirectoryEmpty(dir)) {
         return true;
-      if (!base::DeleteFile(dir))
+      }
+      if (!base::DeleteFile(dir)) {
         return false;
+      }
       return DeleteDirsIfEmpty(dir.DirName());
     }
   };
 
-  if (!file_path || !base::DeleteFile(*file_path))
+  if (!file_path || !base::DeleteFile(*file_path)) {
     return false;
+  }
   return Local::DeleteDirsIfEmpty(file_path->DirName());
 }
 
@@ -279,8 +283,9 @@ void MaybeExcludePathsFromWindowsDefender() {
   constexpr char kTestLauncherExcludePathsFromWindowDefender[] =
       "exclude-paths-from-win-defender";
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(kTestLauncherExcludePathsFromWindowDefender))
+  if (!command_line->HasSwitch(kTestLauncherExcludePathsFromWindowDefender)) {
     return;
+  }
 
   if (!IsServiceRunning(L"WinDefend")) {
     VLOG(1) << "WinDefend is not running, no need to add exclusion paths.";
@@ -394,8 +399,9 @@ void StopProcmonLogging(const base::FilePath& pml_file) {
   }
 
   // Make a copy of the PML file in case the original gets deleted.
-  if (!base::CopyFile(pml_file, pml_file.ReplaceExtension(L".PML.BAK")))
+  if (!base::CopyFile(pml_file, pml_file.ReplaceExtension(L".PML.BAK"))) {
     LOG(ERROR) << __func__ << ": failed to backup pml file";
+  }
 }
 
 const base::ProcessIterator::ProcessEntries FindProcesses(
@@ -490,7 +496,7 @@ void SetupMockUpdater(const base::FilePath& mock_updater_path) {
 #if BUILDFLAG(IS_WIN)
   // A valid executable is needed for Windows.
   const base::FilePath test_executable(
-      GetTestProcessCommandLine(GetTestScope(), test::GetTestName())  // IN-TEST
+      GetTestProcessCommandLine(GetTestScope(), test::GetTestName())
           .GetProgram());
 #else
   // Create an empty temporary file.

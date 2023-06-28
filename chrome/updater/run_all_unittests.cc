@@ -18,7 +18,7 @@
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/util/unittest_util.h"
+#include "chrome/updater/util/unit_test_util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>

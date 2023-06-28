@@ -11,7 +11,7 @@
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/util/unittest_util.h"
+#include "chrome/updater/util/unit_test_util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/task_scheduler.h"
 #include "chrome/updater/win/test/test_executables.h"

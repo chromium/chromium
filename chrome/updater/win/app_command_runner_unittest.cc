@@ -24,7 +24,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_branding.h"
-#include "chrome/updater/util/unittest_util_win.h"
+#include "chrome/updater/util/unit_test_util_win.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"

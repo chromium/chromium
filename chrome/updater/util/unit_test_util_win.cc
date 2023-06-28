@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/util/unittest_util_win.h"
+#include "chrome/updater/util/unit_test_util_win.h"
 
 #include <windows.h>
 

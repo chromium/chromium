@@ -8,7 +8,7 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "chrome/updater/util/unittest_util.h"
+#include "chrome/updater/util/unit_test_util.h"
 #include "chrome/updater/win/tag_extractor.h"
 #include "chrome/updater/win/tag_extractor_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -688,12 +688,12 @@ if (is_win || is_mac || is_linux) {
     }
   }
 
-  source_set("unittest_util_sources") {
+  source_set("unit_test_util_sources") {
     testonly = true
     sources = [
       "test_scope.h",
-      "util/unittest_util.cc",
-      "util/unittest_util.h",
+      "util/unit_test_util.cc",
+      "util/unit_test_util.h",
     ]
     if (is_win) {
       sources += [
@@ -758,7 +758,7 @@ if (is_win || is_mac || is_linux) {
       "update_usage_stats_task_unittest.cc",
       "updater_scope_unittest.cc",
       "updater_unittest.cc",
-      "util/unittest_util_unittest.cc",
+      "util/unit_test_util_unittest.cc",
       "util/util_unittest.cc",
     ]
 
@@ -766,7 +766,7 @@ if (is_win || is_mac || is_linux) {
       ":base",
       ":branding_header",
       ":constants_test",
-      ":unittest_util_sources",
+      ":unit_test_util_sources",
       ":version_header",
       "//base",
       "//base/test:test_support",
@@ -799,8 +799,8 @@ if (is_win || is_mac || is_linux) {
         "cleanup_task_unittest.cc",
         "policy/win/group_policy_manager_unittest.cc",
         "test/integration_tests_win.cc",
-        "util/unittest_util_win.cc",
-        "util/unittest_util_win.h",
+        "util/unit_test_util_win.cc",
+        "util/unit_test_util_win.h",
         "util/util_win_unittest.cc",
         "util/win_util_unittest.cc",
         "win/app_command_runner_unittest.cc",
@@ -1018,7 +1018,7 @@ if (is_win || is_mac || is_linux) {
 
     deps = [
       ":base",
-      ":unittest_util_sources",
+      ":unit_test_util_sources",
       ":updater_test_sources",
       "//base/test:test_support",
       "//chrome/common:constants",
@@ -1056,7 +1056,7 @@ if (is_win || is_mac || is_linux) {
 
     deps = [
       ":base",
-      ":unittest_util_sources",
+      ":unit_test_util_sources",
       ":updater_test_sources",
       "//base/test:test_support",
       "//chrome/common:constants",
@@ -1106,7 +1106,7 @@ if (is_win || is_mac || is_linux) {
 
     deps = [
       ":base",
-      ":unittest_util_sources",
+      ":unit_test_util_sources",
       ":updater_test_sources",
       "//base",
       "//base/test:test_support",

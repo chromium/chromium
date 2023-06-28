@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_UTIL_UNITTEST_UTIL_H_
-#define CHROME_UPDATER_UTIL_UNITTEST_UTIL_H_
+#ifndef CHROME_UPDATER_UTIL_UNIT_TEST_UTIL_H_
+#define CHROME_UPDATER_UTIL_UNIT_TEST_UTIL_H_
 
 #include <string>
 
@@ -136,4 +136,4 @@ void ExpectOnlyMockUpdater(const base::FilePath& mock_updater_path);
 
 }  // namespace updater::test
 
-#endif  // CHROME_UPDATER_UTIL_UNITTEST_UTIL_H_
+#endif  // CHROME_UPDATER_UTIL_UNIT_TEST_UTIL_H_
