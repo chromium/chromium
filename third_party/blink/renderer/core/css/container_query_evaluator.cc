@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/container_query_scroll_snapshot.h"
 #include "third_party/blink/renderer/core/css/css_container_values.h"
@@ -179,6 +180,13 @@ absl::optional<double> ContainerQueryEvaluator::Height() const {
 ContainerQueryEvaluator::Result ContainerQueryEvaluator::Eval(
     const ContainerQuery& container_query) const {
   CHECK(media_query_evaluator_);
+
+  if (container_query.Selector().HasUnknownFeature()) {
+    Element* container =
+        media_query_evaluator_->GetMediaValues().ContainerElement();
+    CHECK(container);
+    container->GetDocument().CountUse(WebFeature::kContainerQueryEvalUnknown);
+  }
 
   MediaQueryResultFlags result_flags;
   bool value =

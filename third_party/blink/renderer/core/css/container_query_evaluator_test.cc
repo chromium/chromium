@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
@@ -915,6 +916,40 @@ TEST_F(ContainerQueryEvaluatorTest, DisplayContentsStyleQueryInvalidation) {
   // The ContainerQueryEvaluator should still be the same. No need to re-create
   // the evaluator if when the display changes.
   EXPECT_EQ(evaluator, container->GetContainerQueryEvaluator());
+}
+
+struct EvalUnknownQueries {
+  const char* query_string;
+  bool contains_unknown;
+};
+
+EvalUnknownQueries eval_unknown_queries[] = {
+    {"style(--foo: bar)", false},
+    {"style(--foo: bar) or (foo: bar)", true},
+    {"style(--foo: bar) and unknown()", true},
+    {"style(font-size: 10px)", true},
+    {"(width > 30px) and (height < 900px)", false},
+    {"(width > 0px) or (unknown())", true},
+    {"(height > 0px) and ((width > 20px) and unknown())", true},
+    {"(not (unknown: 10px)) or (height)", true},
+    {"(width: 'wide')", true},
+};
+
+class UseCountEvalUnknownTest
+    : public ContainerQueryEvaluatorTest,
+      public ::testing::WithParamInterface<EvalUnknownQueries> {};
+
+INSTANTIATE_TEST_SUITE_P(ContainerQueryEvaluatorTest,
+                         UseCountEvalUnknownTest,
+                         testing::ValuesIn(eval_unknown_queries));
+
+TEST_P(UseCountEvalUnknownTest, All) {
+  EvalUnknownQueries param = GetParam();
+  SCOPED_TRACE(param.query_string);
+
+  Eval(param.query_string, 100.0, 100.0, type_size, horizontal);
+  EXPECT_EQ(GetDocument().IsUseCounted(WebFeature::kContainerQueryEvalUnknown),
+            param.contains_unknown);
 }
 
 }  // namespace blink
