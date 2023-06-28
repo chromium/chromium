@@ -535,7 +535,8 @@ HRESULT TSFBridgeImpl::InitializeDocumentMapInternal() {
         use_null_text_store ? nullptr : &language_profile_cookie;
     scoped_refptr<TSFTextStore> text_store =
         use_null_text_store ? nullptr : new TSFTextStore();
-    if (text_store) {
+    if (text_store && input_type != TEXT_INPUT_TYPE_NONE) {
+      // No need to initialize for TEXT_INPUT_TYPE_NONE.
       HRESULT hr = text_store->Initialize();
       if (FAILED(hr))
         return hr;
