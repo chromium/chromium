@@ -1077,12 +1077,7 @@ void PCScanTask::SweepQuarantine() {
         SweepSuperPageWithBatchedFree(root, super_page, pcscan_epoch_, stat);
         (void)should_discard;
 #else
-#if BUILDFLAG(PA_DCHECK_IS_ON)
-        bool use_cookie = root->settings.allow_cookie;
-#else
-        constexpr bool use_cookie = false;
-#endif
-        if (PA_UNLIKELY(should_discard && !use_cookie)) {
+        if (PA_UNLIKELY(should_discard && !root->settings.use_cookie)) {
           SweepSuperPageAndDiscardMarkedQuarantine(root, super_page,
                                                    pcscan_epoch_, stat);
         } else {
