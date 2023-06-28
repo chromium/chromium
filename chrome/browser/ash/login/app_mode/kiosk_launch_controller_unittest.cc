@@ -122,7 +122,8 @@ class FakeNetworkMonitor : public ash::NetworkUiController::NetworkMonitor {
 
  private:
   bool online_ = false;
-  ash::NetworkUiController::NetworkMonitor::Observer* observer_;
+  raw_ptr<ash::NetworkUiController::NetworkMonitor::Observer, ExperimentalAsh>
+      observer_;
   base::WeakPtrFactory<FakeNetworkMonitor> weak_ptr_factory_{this};
 };
 
