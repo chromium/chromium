@@ -46,6 +46,10 @@ class ConfigHolder {
   // uses discrete mapping.
   bool IsLegacySegmentationKey(const std::string& segmentation_key) const;
 
+  // Returns the config for provided segmentation key, null if not found.
+  Config* GetConfigForSegmentationKey(
+      const std::string& segmentation_key) const;
+
  private:
   // All the active Config(s) in the service.
   const std::vector<std::unique_ptr<Config>> configs_;

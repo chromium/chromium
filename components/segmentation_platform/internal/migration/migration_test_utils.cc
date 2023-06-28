@@ -17,10 +17,11 @@ constexpr std::array<const char*, 5> kAdaptiveToolbarModelLabels = {
 
 std::unique_ptr<Config> GetTestConfigForBinaryClassifier(
     const std::string& segmentation_key,
+    const std::string& segmentation_uma_name,
     proto::SegmentId segment_id) {
   auto config = std::make_unique<Config>();
   config->segmentation_key = segmentation_key;
-  config->segmentation_uma_name = SegmentationKeyToUmaName(segmentation_key);
+  config->segmentation_uma_name = segmentation_uma_name;
   config->AddSegmentId(segment_id);
   config->segment_selection_ttl = base::Days(7);
   config->unknown_selection_ttl = base::Days(7);

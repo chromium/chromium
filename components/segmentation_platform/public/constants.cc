@@ -4,63 +4,9 @@
 
 #include "components/segmentation_platform/public/constants.h"
 
-#include "base/notreached.h"
-#include "base/strings/string_util.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
-
-const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
-  // Please keep in sync with SegmentationKey variant in
-  // //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
-  // Should also update the field trials allowlist in
-  // go/segmentation-field-trials-map.
-  if (segmentation_key == kAdaptiveToolbarSegmentationKey) {
-    return kAdaptiveToolbarUmaName;
-  } else if (segmentation_key == kChromeStartAndroidSegmentationKey) {
-    return kChromeStartAndroidUmaName;
-  } else if (segmentation_key == kChromeStartAndroidV2SegmentationKey) {
-    return kChromeStartAndroidV2UmaName;
-  } else if (segmentation_key == kQueryTilesSegmentationKey) {
-    return kQueryTilesUmaName;
-  } else if (segmentation_key == kChromeLowUserEngagementSegmentationKey) {
-    return kChromeLowUserEngagementUmaName;
-  } else if (segmentation_key == kFeedUserSegmentationKey) {
-    return kFeedUserSegmentUmaName;
-  } else if (segmentation_key == kShoppingUserSegmentationKey) {
-    return kShoppingUserUmaName;
-  } else if (segmentation_key == kContextualPageActionsKey) {
-    return kContextualPageActionsUmaName;
-  } else if (segmentation_key == kSearchUserKey) {
-    return kSearchUserUmaName;
-  } else if (segmentation_key == kPowerUserKey) {
-    return kPowerUserUmaName;
-  } else if (segmentation_key == kCrossDeviceUserKey) {
-    return kCrossDeviceUserUmaName;
-  } else if (segmentation_key == kFrequentFeatureUserKey) {
-    return kFrequentFeatureUserUmaName;
-  } else if (segmentation_key == kIntentionalUserKey) {
-    return kIntentionalUserUmaName;
-  } else if (segmentation_key == kResumeHeavyUserKey) {
-    return kResumeHeavyUserUmaName;
-  } else if (segmentation_key == kDeviceSwitcherKey) {
-    return kDeviceSwitcherUmaName;
-  } else if (segmentation_key == kTabletProductivityUserKey) {
-    return kTabletProductivityUserUmaName;
-  } else if (segmentation_key == kWebAppInstallationPromoKey) {
-    return kWebAppInstallationPromoUmaName;
-  } else if (segmentation_key == kDeviceTierKey) {
-    return kDeviceTierUmaName;
-  } else if (segmentation_key == kTabResumptionClassifierKey) {
-    return kTabResumptionClassifierUmaName;
-  } else if (segmentation_key == kPasswordManagerUserKey) {
-    return kPasswordManagerUserUmaName;
-  } else if (base::StartsWith(segmentation_key, "test_key")) {
-    return "TestKey";
-  }
-  NOTREACHED();
-  return "Unknown";
-}
 
 // Please keep in sync with SegmentationModel variant in
 // //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.

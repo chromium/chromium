@@ -67,4 +67,14 @@ bool ConfigHolder::IsLegacySegmentationKey(
   return legacy_output_segmentation_keys_.contains(segmentation_key);
 }
 
+Config* ConfigHolder::GetConfigForSegmentationKey(
+    const std::string& segmentation_key) const {
+  for (const auto& config : configs_) {
+    if (config->segmentation_key == segmentation_key) {
+      return config.get();
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace segmentation_platform

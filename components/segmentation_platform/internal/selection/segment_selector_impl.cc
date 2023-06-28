@@ -173,8 +173,13 @@ void SegmentSelectorImpl::GetSelectedSegmentOnDemand(
     scoped_refptr<InputContext> input_context,
     SegmentSelectionCallback callback) {
   DCHECK(config_->on_demand_execution);
+
+  // Wrap callback to record metrics.
+  auto wrapped_callback = base::BindOnce(
+      &SegmentSelectorImpl::CallbackWrapper, weak_ptr_factory_.GetWeakPtr(),
+      base::Time::Now(), std::move(callback));
   GetRankForNextSegment(std::make_unique<SegmentRanks>(), input_context,
-                        std::move(callback));
+                        std::move(wrapped_callback));
 }
 
 void SegmentSelectorImpl::OnModelExecutionCompleted(SegmentId segment_id) {
@@ -380,6 +385,15 @@ void SegmentSelectorImpl::RecordFieldTrials() const {
     group_name = "Unselected";
   }
   field_trial_register_->RegisterFieldTrial(trial_name, group_name);
+}
+
+void SegmentSelectorImpl::CallbackWrapper(
+    base::Time start_time,
+    SegmentSelectionCallback callback,
+    const SegmentSelectionResult& result) {
+  stats::RecordOnDemandSegmentSelectionDuration(*config_, result,
+                                                base::Time::Now() - start_time);
+  std::move(callback).Run(result);
 }
 
 }  // namespace segmentation_platform

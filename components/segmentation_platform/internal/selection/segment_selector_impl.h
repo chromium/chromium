@@ -115,6 +115,11 @@ class SegmentSelectorImpl : public SegmentSelector {
   std::pair<SegmentId, float> FindBestSegment(
       const SegmentRanks& segment_scores);
 
+  // Wrapped result callback for recording metrics.
+  void CallbackWrapper(base::Time start_time,
+                       SegmentSelectionCallback callback,
+                       const SegmentSelectionResult& result);
+
   std::unique_ptr<SegmentResultProvider> segment_result_provider_;
 
   // Helper class to read/write results to the prefs.

@@ -13,10 +13,14 @@ namespace segmentation_platform::migration_test_utils {
 
 std::unique_ptr<Config> GetTestConfigForBinaryClassifier(
     const std::string& segmentation_key,
+    const std::string& segmentation_uma_name,
     proto::SegmentId segment_id);
+
 std::unique_ptr<Config> GetTestConfigForAdaptiveToolbar();
+
 proto::OutputConfig GetTestOutputConfigForBinaryClassifier(
     proto::SegmentId segment_id);
+
 proto::OutputConfig GetTestOutputConfigForAdaptiveToolbar();
 
 }  // namespace segmentation_platform::migration_test_utils

@@ -12,7 +12,6 @@
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
-#include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -132,14 +131,13 @@ void RecordModelExecutionDurationTotal(SegmentId segment_id,
 // Records the total duration for GetClassificationResult API starting from the
 // time request arrives in segmentation service until the result has been
 // returned. It includes feature processing and model execution as well.
-void RecordClassificationRequestTotalDuration(
-    const std::string& segmentation_key,
-    base::TimeDelta duration);
+void RecordClassificationRequestTotalDuration(const Config& config,
+                                              base::TimeDelta duration);
 
 // Records the total duration of on-demand segment selection which includes
 // running all the models associated with the client and computing result.
 void RecordOnDemandSegmentSelectionDuration(
-    const std::string& segmentation_key,
+    const Config& config,
     const SegmentSelectionResult& result,
     base::TimeDelta duration);
 // Records the result value after successfully executing an ML model.
@@ -223,10 +221,6 @@ enum class SegmentationSelectionFailureReason {
 
 // Records the reason for failure or success to compute a segment selection.
 void RecordSegmentSelectionFailure(const Config& config,
-                                   SegmentationSelectionFailureReason reason);
-
-// Records the reason for failure or success to compute a segment selection.
-void RecordSegmentSelectionFailure(const std::string& segmentation_key,
                                    SegmentationSelectionFailureReason reason);
 
 // Keep in sync with SegmentationPlatformFeatureProcessingError in

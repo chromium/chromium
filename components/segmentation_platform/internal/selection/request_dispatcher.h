@@ -80,6 +80,14 @@ class RequestDispatcher {
                       scoped_refptr<InputContext> input_context,
                       AnnotatedNumericResultCallback callback);
 
+  // Wrap the result callback for recording metrics and converting raw result to
+  // necessary result type.
+  template <typename ResultType>
+  void CallbackWrapper(const std::string& segmentation_key,
+                       base::Time start_time,
+                       base::OnceCallback<void(const ResultType&)> callback,
+                       const RawResult& raw_result);
+
   // Configs for all registered clients.
   const raw_ptr<const ConfigHolder> config_holder_;
 

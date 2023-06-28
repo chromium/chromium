@@ -18,7 +18,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/segmentation_platform/internal/config_parser.h"
 #include "components/segmentation_platform/internal/constants.h"
-#include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/execution/processing/sync_device_info_observer.h"
 #include "components/segmentation_platform/internal/platform_options.h"
@@ -33,7 +32,6 @@
 #include "components/segmentation_platform/public/field_trial_register.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/input_delegate.h"
-#include "components/segmentation_platform/public/model_provider.h"
 
 namespace segmentation_platform {
 
@@ -200,19 +198,7 @@ void SegmentationPlatformServiceImpl::GetSelectedSegmentOnDemand(
 
   CHECK(segment_selectors_.find(segmentation_key) != segment_selectors_.end());
   auto& selector = segment_selectors_.at(segmentation_key);
-
-  // Wrap callback to record metrics.
-  auto wrapped_callback = base::BindOnce(
-      [](const std::string& segmentation_key, base::Time start_time,
-         SegmentSelectionCallback callback,
-         const SegmentSelectionResult& result) -> void {
-        stats::RecordOnDemandSegmentSelectionDuration(
-            segmentation_key, result, base::Time::Now() - start_time);
-        std::move(callback).Run(result);
-      },
-      segmentation_key, base::Time::Now(), std::move(callback));
-  selector->GetSelectedSegmentOnDemand(input_context,
-                                       std::move(wrapped_callback));
+  selector->GetSelectedSegmentOnDemand(input_context, std::move(callback));
 }
 
 void SegmentationPlatformServiceImpl::CollectTrainingData(

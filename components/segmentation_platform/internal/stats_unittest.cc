@@ -11,7 +11,6 @@
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
@@ -72,8 +71,7 @@ TEST(StatsTest, AdaptiveToolbarSegmentSwitch) {
   base::HistogramTester tester;
   Config config;
   config.segmentation_key = kAdaptiveToolbarSegmentationKey;
-  config.segmentation_uma_name =
-      SegmentationKeyToUmaName(config.segmentation_key);
+  config.segmentation_uma_name = kAdaptiveToolbarUmaName;
 
   // Share -> New tab.
   RecordSegmentSelectionComputed(
@@ -109,8 +107,7 @@ TEST(StatsTest, SegmentSwitchWithMultiOutput) {
   base::HistogramTester tester;
   Config config;
   config.segmentation_key = kPowerUserKey;
-  config.segmentation_uma_name =
-      SegmentationKeyToUmaName(config.segmentation_key);
+  config.segmentation_uma_name = kPowerUserUmaName;
 
   auto result_low = metadata_utils::CreatePredictionResult(
       /*model_scores=*/{0.2},
@@ -172,8 +169,7 @@ TEST(StatsTest, SegmentComputedWithMultiOutput) {
   base::HistogramTester tester;
   Config config;
   config.segmentation_key = kPowerUserKey;
-  config.segmentation_uma_name =
-      SegmentationKeyToUmaName(config.segmentation_key);
+  config.segmentation_uma_name = kPowerUserUmaName;
 
   auto result_low = metadata_utils::CreatePredictionResult(
       /*model_scores=*/{0.2},
@@ -211,8 +207,7 @@ TEST(StatsTest, BooleanSegmentSwitch) {
   base::HistogramTester tester;
   Config config;
   config.segmentation_key = kChromeStartAndroidSegmentationKey;
-  config.segmentation_uma_name =
-      SegmentationKeyToUmaName(config.segmentation_key);
+  config.segmentation_uma_name = kChromeStartAndroidUmaName;
   config.is_boolean_segment = true;
 
   // Start to none.

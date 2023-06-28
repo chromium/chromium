@@ -14,14 +14,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/config_holder.h"
-#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/internal/selection/request_handler.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/prediction_options.h"
-#include "components/segmentation_platform/public/proto/prediction_result.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/result.h"
 
@@ -43,26 +41,6 @@ void PostProcess(const RawResult& raw_result, ClassificationResult& result) {
 }
 void PostProcess(const RawResult& raw_result, AnnotatedNumericResult& result) {
   result = raw_result;
-}
-
-// Wrap callback to record metrics.
-template <typename ResultType>
-base::OnceCallback<void(const RawResult&)> GetWrappedCallback(
-    const std::string& segmentation_key,
-    base::OnceCallback<void(const ResultType&)> callback) {
-  auto wrapped_callback = base::BindOnce(
-      [](const std::string& segmentation_key, base::Time start_time,
-         base::OnceCallback<void(const ResultType&)> callback,
-         const RawResult& raw_result) -> void {
-        stats::RecordClassificationRequestTotalDuration(
-            segmentation_key, base::Time::Now() - start_time);
-        ResultType result(PredictionStatus::kFailed);
-        PostProcess(std::move(raw_result), result);
-        std::move(callback).Run(result);
-      },
-      segmentation_key, base::Time::Now(), std::move(callback));
-
-  return wrapped_callback;
 }
 
 }  // namespace
@@ -149,6 +127,22 @@ void RequestDispatcher::OnModelInitializationTimeout() {
   ExecuteAllPendingActions();
 }
 
+template <typename ResultType>
+void RequestDispatcher::CallbackWrapper(
+    const std::string& segmentation_key,
+    base::Time start_time,
+    base::OnceCallback<void(const ResultType&)> callback,
+    const RawResult& raw_result) {
+  Config* config =
+      config_holder_->GetConfigForSegmentationKey(segmentation_key);
+  CHECK(config);
+  stats::RecordClassificationRequestTotalDuration(
+      *config, base::Time::Now() - start_time);
+  ResultType result(PredictionStatus::kFailed);
+  PostProcess(std::move(raw_result), result);
+  std::move(callback).Run(result);
+}
+
 void RequestDispatcher::GetModelResult(
     const std::string& segmentation_key,
     const PredictionOptions& options,
@@ -157,6 +151,9 @@ void RequestDispatcher::GetModelResult(
   if (config_holder_->IsLegacySegmentationKey(segmentation_key)) {
     return;
   }
+  Config* config =
+      config_holder_->GetConfigForSegmentationKey(segmentation_key);
+  CHECK(config);
 
   if (!options.on_demand_execution) {
     // Returns result directly from prefs for non-ondemand models.
@@ -167,12 +164,12 @@ void RequestDispatcher::GetModelResult(
       raw_result = PostProcessor().GetRawResult(*pred_result,
                                                 PredictionStatus::kSucceeded);
       stats::RecordSegmentSelectionFailure(
-          segmentation_key, stats::SegmentationSelectionFailureReason::
-                                kClassificationResultFromPrefs);
+          *config, stats::SegmentationSelectionFailureReason::
+                       kClassificationResultFromPrefs);
     } else {
       stats::RecordSegmentSelectionFailure(
-          segmentation_key, stats::SegmentationSelectionFailureReason::
-                                kClassificationResultNotAvailableInPrefs);
+          *config, stats::SegmentationSelectionFailureReason::
+                       kClassificationResultNotAvailableInPrefs);
     }
 
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -201,8 +198,7 @@ void RequestDispatcher::GetModelResult(
   // results.
   if (!storage_init_status_.value()) {
     stats::RecordSegmentSelectionFailure(
-        segmentation_key,
-        stats::SegmentationSelectionFailureReason::kDBInitFailure);
+        *config, stats::SegmentationSelectionFailureReason::kDBInitFailure);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   RawResult(PredictionStatus::kFailed)));
@@ -211,10 +207,8 @@ void RequestDispatcher::GetModelResult(
 
   auto iter = request_handlers_.find(segmentation_key);
   CHECK(iter != request_handlers_.end());
-  auto wrapped_callback =
-      GetWrappedCallback(segmentation_key, std::move(callback));
   iter->second->GetPredictionResult(options, input_context,
-                                    std::move(wrapped_callback));
+                                    std::move(callback));
 }
 
 void RequestDispatcher::GetClassificationResult(
@@ -223,7 +217,9 @@ void RequestDispatcher::GetClassificationResult(
     scoped_refptr<InputContext> input_context,
     ClassificationResultCallback callback) {
   auto wrapped_callback =
-      GetWrappedCallback(segmentation_key, std::move(callback));
+      base::BindOnce(&RequestDispatcher::CallbackWrapper<ClassificationResult>,
+                     weak_ptr_factory_.GetWeakPtr(), segmentation_key,
+                     base::Time::Now(), std::move(callback));
   GetModelResult(segmentation_key, options, input_context,
                  std::move(wrapped_callback));
 }
@@ -233,8 +229,10 @@ void RequestDispatcher::GetAnnotatedNumericResult(
     const PredictionOptions& options,
     scoped_refptr<InputContext> input_context,
     AnnotatedNumericResultCallback callback) {
-  auto wrapped_callback =
-      GetWrappedCallback(segmentation_key, std::move(callback));
+  auto wrapped_callback = base::BindOnce(
+      &RequestDispatcher::CallbackWrapper<AnnotatedNumericResult>,
+      weak_ptr_factory_.GetWeakPtr(), segmentation_key, base::Time::Now(),
+      std::move(callback));
   GetModelResult(segmentation_key, options, input_context,
                  std::move(wrapped_callback));
 }

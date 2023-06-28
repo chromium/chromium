@@ -13,6 +13,7 @@
 #include "components/segmentation_platform/internal/migration/migration_test_utils.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,7 +37,7 @@ class PrefsMigratorTest : public testing::Test {
                                                  std::string());
     pref_service_.registry()->RegisterDictionaryPref(kSegmentationResultPref);
     configs_.push_back(migration_test_utils::GetTestConfigForBinaryClassifier(
-        kShoppingUserSegmentationKey,
+        kShoppingUserSegmentationKey, kShoppingUserUmaName,
         proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER));
     configs_.push_back(migration_test_utils::GetTestConfigForAdaptiveToolbar());
   }

@@ -6,6 +6,7 @@
 
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/migration/migration_test_utils.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,7 +39,7 @@ TEST_F(ResultMigrationUtilsTest, CreateClientResultForAdaptiveToolbar) {
 TEST_F(ResultMigrationUtilsTest, CreateClientResultForBinaryClassifier) {
   std::unique_ptr<Config> config =
       migration_test_utils::GetTestConfigForBinaryClassifier(
-          kShoppingUserSegmentationKey,
+          kShoppingUserSegmentationKey, kShoppingUserUmaName,
           SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER);
   SelectedSegment result(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER, 1);
