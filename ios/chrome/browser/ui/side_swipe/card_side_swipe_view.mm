@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/side_swipe/swipe_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/side_swipe_toolbar_snapshot_providing.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
@@ -76,8 +77,6 @@ const CGFloat kResizeFactor = 4;
 
 @synthesize backgroundTopConstraint = _backgroundTopConstraint;
 @synthesize delegate = _delegate;
-@synthesize topToolbarSnapshotProvider = _topToolbarSnapshotProvider;
-@synthesize bottomToolbarSnapshotProvider = _bottomToolbarSnapshotProvider;
 @synthesize topMargin = _topMargin;
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -172,11 +171,13 @@ const CGFloat kResizeFactor = 4;
   [card setHidden:NO];
 
   web::WebState* webState = _webStateList->GetWebStateAt(index);
-  UIImage* topToolbarSnapshot = [self.topToolbarSnapshotProvider
-      toolbarSideSwipeSnapshotForWebState:webState];
+  UIImage* topToolbarSnapshot = [self.toolbarSnapshotProvider
+      toolbarSideSwipeSnapshotForWebState:webState
+                          withToolbarType:ToolbarType::kPrimary];
   [card setTopToolbarImage:topToolbarSnapshot];
-  UIImage* bottomToolbarSnapshot = [self.bottomToolbarSnapshotProvider
-      toolbarSideSwipeSnapshotForWebState:webState];
+  UIImage* bottomToolbarSnapshot = [self.toolbarSnapshotProvider
+      toolbarSideSwipeSnapshotForWebState:webState
+                          withToolbarType:ToolbarType::kSecondary];
   [card setBottomToolbarImage:bottomToolbarSnapshot];
 
   __weak CardSideSwipeView* weakSelf = self;

@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_type.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
 
 class WebStateList;
 

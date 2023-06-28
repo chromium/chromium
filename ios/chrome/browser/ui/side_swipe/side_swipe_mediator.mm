@@ -135,9 +135,6 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
 @synthesize inSwipe = _inSwipe;
 @synthesize swipeDelegate = _swipeDelegate;
 @synthesize toolbarInteractionHandler = _toolbarInteractionHandler;
-@synthesize primaryToolbarSnapshotProvider = _primaryToolbarSnapshotProvider;
-@synthesize secondaryToolbarSnapshotProvider =
-    _secondaryToolbarSnapshotProvider;
 @synthesize snapshotDelegate = _snapshotDelegate;
 @synthesize tabStripDelegate = _tabStripDelegate;
 
@@ -474,10 +471,7 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
           [[CardSideSwipeView alloc] initWithFrame:frame
                                          topMargin:headerHeight
                                       webStateList:self.webStateList];
-      _tabSideSwipeView.topToolbarSnapshotProvider =
-          self.primaryToolbarSnapshotProvider;
-      _tabSideSwipeView.bottomToolbarSnapshotProvider =
-          self.secondaryToolbarSnapshotProvider;
+      _tabSideSwipeView.toolbarSnapshotProvider = self.toolbarSnapshotProvider;
 
       [_tabSideSwipeView setAutoresizingMask:UIViewAutoresizingFlexibleWidth |
                                              UIViewAutoresizingFlexibleHeight];

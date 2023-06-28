@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/switch_to_tab_animation_view.h"
 #import "ios/chrome/browser/ui/toolbar/public/side_swipe_toolbar_snapshot_providing.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
 #import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
@@ -323,10 +324,12 @@
           ->will_add_placeholder_for_next_navigation();
   NewTabPageTabHelper* NTPHelper =
       NewTabPageTabHelper::FromWebState(webStateBeingActivated);
-  UIImage* topToolbarImage = [self.primaryToolbarSnapshotProvider
-      toolbarSideSwipeSnapshotForWebState:webStateBeingActivated];
-  UIImage* bottomToolbarImage = [self.secondaryToolbarSnapshotProvider
-      toolbarSideSwipeSnapshotForWebState:webStateBeingActivated];
+  UIImage* topToolbarImage = [self.toolbarSnapshotProvider
+      toolbarSideSwipeSnapshotForWebState:webStateBeingActivated
+                          withToolbarType:ToolbarType::kPrimary];
+  UIImage* bottomToolbarImage = [self.toolbarSnapshotProvider
+      toolbarSideSwipeSnapshotForWebState:webStateBeingActivated
+                          withToolbarType:ToolbarType::kSecondary];
   SwitchToTabAnimationPosition position =
       newWebStateIndex > _webStateList->active_index()
           ? SwitchToTabAnimationPositionAfter

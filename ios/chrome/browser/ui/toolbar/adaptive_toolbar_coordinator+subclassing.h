@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
 
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_type.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
 
 @class ToolbarButtonFactory;
 namespace web {
@@ -19,10 +19,6 @@ class WebState;
 
 // Returns a button factory
 - (ToolbarButtonFactory*)buttonFactoryWithType:(ToolbarType)type;
-
-- (void)updateToolbarForSideSwipeSnapshot:(web::WebState*)webState;
-
-- (void)resetToolbarAfterSideSwipeSnapshot;
 
 @end
 

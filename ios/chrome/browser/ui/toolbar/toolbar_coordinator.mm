@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinatee.h"
@@ -37,8 +38,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface ToolbarCoordinator () <PrimaryToolbarCoordinatorDelegate,
-                                  PrimaryToolbarViewControllerDelegate,
+@interface ToolbarCoordinator () <PrimaryToolbarViewControllerDelegate,
                                   ToolbarCommands,
                                   ToolbarMediatorDelegate> {
   PrerenderService* _prerenderService;
@@ -117,7 +117,6 @@
       self.popupPresenterDelegate;
   [self.locationBarCoordinator start];
 
-  self.primaryToolbarCoordinator.delegate = self;
   self.primaryToolbarCoordinator.viewControllerDelegate = self;
   [self.primaryToolbarCoordinator start];
   [self.secondaryToolbarCoordinator start];
@@ -253,16 +252,6 @@
   return [self.locationBarCoordinator showingOmniboxPopup];
 }
 
-#pragma mark SnapshotProviding
-
-- (id<SideSwipeToolbarSnapshotProviding>)primaryToolbarSnapshotProvider {
-  return self.primaryToolbarCoordinator;
-}
-
-- (id<SideSwipeToolbarSnapshotProviding>)secondaryToolbarSnapshotProvider {
-  return self.secondaryToolbarCoordinator;
-}
-
 #pragma mark ToolbarHeightProviding
 
 - (CGFloat)collapsedPrimaryToolbarHeight {
@@ -371,25 +360,6 @@
   }
 }
 
-#pragma mark - PrimaryToolbarCoordinatorDelegate
-
-- (void)updateToolbarForSideSwipeSnapshot:(web::WebState*)webState {
-  BOOL isNTP = IsVisibleURLNewTabPage(webState);
-
-  // Don't do anything for a live non-ntp tab.
-  if (webState == self.browser->GetWebStateList()->GetActiveWebState() &&
-      !isNTP) {
-    [self.locationBarCoordinator.locationBarViewController.view setHidden:NO];
-  } else {
-    self.primaryToolbarViewController.view.hidden = NO;
-    [self.locationBarCoordinator.locationBarViewController.view setHidden:YES];
-  }
-}
-
-- (void)resetToolbarAfterSideSwipeSnapshot {
-  [self.locationBarCoordinator.locationBarViewController.view setHidden:NO];
-}
-
 #pragma mark - PrimaryToolbarViewControllerDelegate
 
 - (void)viewControllerTraitCollectionDidChange:
@@ -423,6 +393,57 @@
     }
   }
   return NO;
+}
+
+#pragma mark - SideSwipeToolbarSnapshotProviding
+
+- (UIImage*)toolbarSideSwipeSnapshotForWebState:(web::WebState*)webState
+                                withToolbarType:(ToolbarType)toolbarType {
+  AdaptiveToolbarCoordinator* adaptiveToolbarCoordinator =
+      [self coordinatorWithToolbarType:toolbarType];
+
+  [self updateLocationBarForSideSwipeSnapshot:webState];
+  [adaptiveToolbarCoordinator updateToolbarForSideSwipeSnapshot:webState];
+
+  UIImage* toolbarSnapshot = CaptureViewWithOption(
+      adaptiveToolbarCoordinator.viewController.view,
+      [[UIScreen mainScreen] scale], kClientSideRendering);
+
+  [adaptiveToolbarCoordinator resetToolbarAfterSideSwipeSnapshot];
+  [self resetLocationBarAfterSideSwipeSnapshot];
+
+  return toolbarSnapshot;
+}
+
+#pragma mark SideSwipeToolbarSnapshotProviding Private
+
+/// Returns the coordinator coresponding to `toolbarType`.
+- (AdaptiveToolbarCoordinator*)coordinatorWithToolbarType:
+    (ToolbarType)toolbarType {
+  switch (toolbarType) {
+    case ToolbarType::kPrimary:
+      return self.primaryToolbarCoordinator;
+    case ToolbarType::kSecondary:
+      return self.secondaryToolbarCoordinator;
+  }
+}
+
+/// Prepares location bar for a side swipe snapshot with`webState`.
+- (void)updateLocationBarForSideSwipeSnapshot:(web::WebState*)webState {
+  BOOL isNTP = IsVisibleURLNewTabPage(webState);
+  // Don't do anything for a live non-ntp tab.
+  if (webState == self.browser->GetWebStateList()->GetActiveWebState() &&
+      !isNTP) {
+    [self.locationBarCoordinator.locationBarViewController.view setHidden:NO];
+  } else {
+    self.primaryToolbarViewController.view.hidden = NO;
+    [self.locationBarCoordinator.locationBarViewController.view setHidden:YES];
+  }
+}
+
+/// Resets location bar after a side swipe snapshot.
+- (void)resetLocationBarAfterSideSwipeSnapshot {
+  [self.locationBarCoordinator.locationBarViewController.view setHidden:NO];
 }
 
 #pragma mark - ToolbarCommands

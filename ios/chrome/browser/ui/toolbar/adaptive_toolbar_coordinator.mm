@@ -112,6 +112,19 @@
   self.viewController.locationBarViewController = locationBarViewController;
 }
 
+- (void)updateToolbarForSideSwipeSnapshot:(web::WebState*)webState {
+  BOOL isNTP = IsVisibleURLNewTabPage(webState);
+
+  [self.mediator updateConsumerForWebState:webState];
+  [self.viewController updateForSideSwipeSnapshotOnNTP:isNTP];
+}
+
+- (void)resetToolbarAfterSideSwipeSnapshot {
+  [self.mediator updateConsumerForWebState:self.browser->GetWebStateList()
+                                               ->GetActiveWebState()];
+  [self.viewController resetAfterSideSwipeSnapshot];
+}
+
 #pragma mark - AdaptiveToolbarViewControllerDelegate
 
 - (void)exitFullscreen {
@@ -191,19 +204,6 @@
       [[ToolbarButtonVisibilityConfiguration alloc] initWithType:type];
 
   return buttonFactory;
-}
-
-- (void)updateToolbarForSideSwipeSnapshot:(web::WebState*)webState {
-  BOOL isNTP = IsVisibleURLNewTabPage(webState);
-
-  [self.mediator updateConsumerForWebState:webState];
-  [self.viewController updateForSideSwipeSnapshotOnNTP:isNTP];
-}
-
-- (void)resetToolbarAfterSideSwipeSnapshot {
-  [self.mediator updateConsumerForWebState:self.browser->GetWebStateList()
-                                               ->GetActiveWebState()];
-  [self.viewController resetAfterSideSwipeSnapshot];
 }
 
 @end

@@ -14,22 +14,10 @@ namespace web {
 class WebState;
 }
 
-// Delegate for events in `PrimaryToolbarCoordinator`.
-@protocol PrimaryToolbarCoordinatorDelegate <NSObject>
-
-// Updates toolbars and location bar for the upcoming snapshot with `webState`.
-- (void)updateToolbarForSideSwipeSnapshot:(web::WebState*)webState;
-// Resets toolbars and location bar after the snapshot.
-- (void)resetToolbarAfterSideSwipeSnapshot;
-
-@end
-
 // Coordinator for the primary part, the one at the top of the screen, of the
 // adaptive toolbar.
 @interface PrimaryToolbarCoordinator : AdaptiveToolbarCoordinator
 
-// Delegate for events in `PrimaryToolbarCoordinator`.
-@property(nonatomic, weak) id<PrimaryToolbarCoordinatorDelegate> delegate;
 // A reference to the view controller that implements the tooblar animation
 // protocol.
 @property(nonatomic, weak, readonly) id<ToolbarAnimatee> toolbarAnimatee;

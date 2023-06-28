@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_updating.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_type.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
 
 @protocol AdaptiveToolbarMenusProvider;

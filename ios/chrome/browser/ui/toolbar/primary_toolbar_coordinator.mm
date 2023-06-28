@@ -98,16 +98,4 @@
   [self.viewController triggerToolbarSlideInAnimationFromBelow:NO];
 }
 
-#pragma mark - Protected override
-
-- (void)updateToolbarForSideSwipeSnapshot:(web::WebState*)webState {
-  [super updateToolbarForSideSwipeSnapshot:webState];
-  [self.delegate updateToolbarForSideSwipeSnapshot:webState];
-}
-
-- (void)resetToolbarAfterSideSwipeSnapshot {
-  [super resetToolbarAfterSideSwipeSnapshot];
-  [self.delegate resetToolbarAfterSideSwipeSnapshot];
-}
-
 @end

@@ -819,10 +819,7 @@ enum class ToolbarKind {
                       webStateList:self.browser->GetWebStateList()];
   [_sideSwipeMediator setSnapshotDelegate:self];
   _sideSwipeMediator.toolbarInteractionHandler = _toolbarCoordinator;
-  _sideSwipeMediator.primaryToolbarSnapshotProvider =
-      _toolbarCoordinator.primaryToolbarSnapshotProvider;
-  _sideSwipeMediator.secondaryToolbarSnapshotProvider =
-      _toolbarCoordinator.secondaryToolbarSnapshotProvider;
+  _sideSwipeMediator.toolbarSnapshotProvider = _toolbarCoordinator;
 
   _bookmarksCoordinator =
       [[BookmarksCoordinator alloc] initWithBrowser:self.browser];
@@ -1306,10 +1303,7 @@ enum class ToolbarKind {
           restorationAgent:sessionRestorationBrowserAgent
               browserState:browserState
            loadingNotifier:_urlLoadingNotifierBrowserAgent];
-  self.tabEventsMediator.primaryToolbarSnapshotProvider =
-      _toolbarCoordinator.primaryToolbarSnapshotProvider;
-  self.tabEventsMediator.secondaryToolbarSnapshotProvider =
-      _toolbarCoordinator.secondaryToolbarSnapshotProvider;
+  self.tabEventsMediator.toolbarSnapshotProvider = _toolbarCoordinator;
   self.tabEventsMediator.consumer = browserViewController;
 
   browserViewController.reauthHandler =
