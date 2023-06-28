@@ -167,9 +167,6 @@ public class OverlayPanel extends OverlayPanelAnimation
     /** This is used to make sure there is one show request to one close request. */
     private boolean mPanelShown;
 
-    /** Sequence number for peekPanel() calls to distinguish stale from fresh. */
-    private int mLastPeekSequence;
-
     /**
      * Cache the viewport width and height of the screen to filter SceneOverlay#onSizeChanged
      * events.
@@ -285,10 +282,6 @@ public class OverlayPanel extends OverlayPanelAnimation
         }
     }
 
-    public int getLastPeekSequence() {
-        return mLastPeekSequence;
-    }
-
     @Override
     public void peekPanel(@StateChangeReason int reason) {
         // TODO(mdjones): This is making a protected API public and should be removed. Animation
@@ -297,7 +290,6 @@ public class OverlayPanel extends OverlayPanelAnimation
         // Since the OverlayPanelManager can show panels without requestPanelShow being called, the
         // flag for the panel being shown should be set to true here.
         mPanelShown = true;
-        ++mLastPeekSequence;
         super.peekPanel(reason);
     }
 
