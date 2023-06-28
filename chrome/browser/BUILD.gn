@@ -3350,6 +3350,7 @@ static_library("browser") {
       "//components/embedder_support/android:util",
       "//components/embedder_support/android:web_contents_delegate",
       "//components/endpoint_fetcher:endpoint_fetcher",
+      "//components/environment_integrity/android",
       "//components/external_intents/android",
       "//components/favicon/android",
       "//components/favicon/core:database",

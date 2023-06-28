@@ -224,6 +224,7 @@ source_set("browser") {
     "//components/embedder_support:embedder_support",
     "//components/embedder_support/android:util",
     "//components/embedder_support/origin_trials",
+    "//components/environment_integrity/android",
     "//components/favicon_base:favicon_base",
     "//components/flags_ui",
     "//components/keyed_service/content",

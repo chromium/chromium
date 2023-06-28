@@ -136,6 +136,7 @@ include_rules = [
   "+components/embedder_support",
   "+components/encrypted_messages",
   "+components/enterprise",
+  "+components/environment_integrity/android",
   "+components/error_page/content/browser",
   "+components/exo",
   "+components/external_intents",

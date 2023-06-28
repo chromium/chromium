@@ -405,6 +405,7 @@ source_set("browser_sources") {
     "storage_partition.h",
     "storage_partition_config.cc",
     "storage_partition_config.h",
+    "storage_partition_user_data.h",
     "storage_usage_info.h",
     "stored_payment_app.cc",
     "stored_payment_app.h",

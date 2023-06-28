@@ -1,0 +1,48 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+static_library("android") {
+  sources = [
+    "android_environment_integrity_data_manager.cc",
+    "android_environment_integrity_data_manager.h",
+    "android_environment_integrity_data_storage.cc",
+    "android_environment_integrity_data_storage.h",
+    "android_environment_integrity_service.cc",
+    "android_environment_integrity_service.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//sql",
+    "//third_party/blink/public/common:headers",
+    "//third_party/blink/public/mojom:mojom_core",
+    "//third_party/sqlite",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "android_environment_integrity_data_manager_unittest.cc",
+    "android_environment_integrity_data_storage_unittest.cc",
+  ]
+
+  deps = [
+    ":android",
+    "//base/test:test_support",
+    "//content/test:test_support",
+    "//sql",
+    "//sql:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//url",
+  ]
+}
