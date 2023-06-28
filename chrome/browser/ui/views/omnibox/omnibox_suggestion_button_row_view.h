@@ -61,7 +61,7 @@ class OmniboxSuggestionButtonRowView : public views::View {
   void SetPillButtonVisibility(OmniboxSuggestionRowButton* button,
                                OmniboxPopupSelection::LineState state);
 
-  void ButtonPressed(OmniboxPopupSelection::LineState state,
+  void ButtonPressed(const OmniboxPopupSelection selection,
                      const ui::Event& event);
 
   const raw_ptr<OmniboxPopupViewViews> popup_view_;

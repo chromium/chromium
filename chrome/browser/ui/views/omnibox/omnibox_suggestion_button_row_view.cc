@@ -213,17 +213,18 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
   // text depends on the actual match. That shouldn't produce a flicker, because
   // it's called directly from OmniboxResultView::SetMatch(). If this flickers,
   // then so does everything else in the result view.
-  keyword_button_ = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
-      base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
-                          base::Unretained(this),
-                          OmniboxPopupSelection::KEYWORD_MODE),
-      std::u16string(),
-      OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
-          ? vector_icons::kSearchChromeRefreshIcon
-          : vector_icons::kSearchIcon,
-      popup_view_,
-      OmniboxPopupSelection(model_index_,
-                            OmniboxPopupSelection::KEYWORD_MODE)));
+  {
+    OmniboxPopupSelection selection(model_index_,
+                                    OmniboxPopupSelection::KEYWORD_MODE);
+    keyword_button_ = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
+        base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
+                            base::Unretained(this), selection),
+        std::u16string(),
+        OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
+            ? vector_icons::kSearchChromeRefreshIcon
+            : vector_icons::kSearchIcon,
+        popup_view_, selection));
+  }
 
   if (!HasMatch()) {
     // Skip remaining code that depends on `match()`.
@@ -233,15 +234,14 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
   // Only create buttons for existent actions.
   for (size_t action_index = 0; action_index < match().actions.size();
        action_index++) {
+    OmniboxPopupSelection selection(
+        model_index_, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
+        action_index);
     auto* button = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
         base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
-                            base::Unretained(this),
-                            OmniboxPopupSelection::FOCUSED_BUTTON_ACTION),
+                            base::Unretained(this), selection),
         std::u16string(), match().actions[action_index]->GetVectorIcon(),
-        popup_view_,
-        OmniboxPopupSelection(model_index_,
-                              OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
-                              action_index)));
+        popup_view_, selection));
     action_buttons_.push_back(button);
   }
 }
@@ -360,10 +360,9 @@ void OmniboxSuggestionButtonRowView::SetPillButtonVisibility(
 }
 
 void OmniboxSuggestionButtonRowView::ButtonPressed(
-    OmniboxPopupSelection::LineState state,
+    const OmniboxPopupSelection selection,
     const ui::Event& event) {
-  const OmniboxPopupSelection selection(model_index_, state);
-  if (state == OmniboxPopupSelection::KEYWORD_MODE) {
+  if (selection.state == OmniboxPopupSelection::KEYWORD_MODE) {
     // TODO(yoangela): Port to PopupModel and merge with keyEvent
     // TODO(orinj): Clear out existing suggestions, particularly this one, as
     // once we AcceptKeyword, we are really in a new scope state and holding
