@@ -612,9 +612,11 @@ void FakeShillDeviceClient::NotifyObserversPropertyChanged(
     LOG(ERROR) << "Notify for unknown property: " << path << " : " << property;
     return;
   }
-  const base::Value* value = device_properties->Find(property);
+  // Notify using a clone instead of a pointer to the property to avoid the
+  // situation where an observer invalidates our pointer when notified.
+  const base::Value value = device_properties->Find(property)->Clone();
   for (auto& observer : GetObserverList(device_path)) {
-    observer.OnPropertyChanged(property, *value);
+    observer.OnPropertyChanged(property, value);
   }
 }
 
