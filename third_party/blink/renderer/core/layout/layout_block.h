@@ -44,8 +44,6 @@ typedef HeapHashMap<WeakMember<const LayoutBlock>,
 typedef HeapHashMap<WeakMember<const LayoutBox>, Member<LayoutBlock>>
     TrackedContainerMap;
 
-enum ContainingBlockState { kNewContainingBlock, kSameContainingBlock };
-
 // LayoutBlock is the class that is used by any LayoutObject
 // that is a containing block.
 // http://www.w3.org/TR/CSS2/visuren.html#containing-block
@@ -154,8 +152,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
 
-  void RemovePositionedObjects(LayoutObject*,
-                               ContainingBlockState = kSameContainingBlock);
+  void RemovePositionedObjects(LayoutObject*);
 
   void AddSvgTextDescendant(LayoutBox& svg_text);
   void RemoveSvgTextDescendant(LayoutBox& svg_text);

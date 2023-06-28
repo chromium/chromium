@@ -161,7 +161,7 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
       // parent-child order in the list. Remove our descendants here so they
       // will be re-inserted after us.
       if (LayoutBlock* cb = ContainingBlock()) {
-        cb->RemovePositionedObjects(this, kNewContainingBlock);
+        cb->RemovePositionedObjects(this);
       }
     }
   }
@@ -389,9 +389,7 @@ void LayoutBlock::ImageChanged(WrappedImagePtr image,
   }
 }
 
-void LayoutBlock::RemovePositionedObjects(
-    LayoutObject* stay_within,
-    ContainingBlockState containing_block_state) {
+void LayoutBlock::RemovePositionedObjects(LayoutObject* stay_within) {
   NOT_DESTROYED();
 
   auto ProcessPositionedObjectRemoval = [&](LayoutObject* positioned_object) {
@@ -400,8 +398,7 @@ void LayoutBlock::RemovePositionedObjects(
       return false;
     }
 
-    if (containing_block_state == kNewContainingBlock)
-      positioned_object->SetChildNeedsLayout(kMarkOnlyThis);
+    positioned_object->SetChildNeedsLayout(kMarkOnlyThis);
 
     // It is parent blocks job to add positioned child to positioned objects
     // list of its containing block.
