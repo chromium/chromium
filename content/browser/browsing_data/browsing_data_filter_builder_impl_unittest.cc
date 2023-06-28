@@ -310,6 +310,14 @@ TEST(BrowsingDataFilterBuilderImplTest,
     RunTestCase(test_case, builder.BuildCookieDeletionFilter());
 }
 
+TEST(BrowsingDataFilterBuilderImplTest, EmptyCookieDeletionFilter) {
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilderImpl::Mode::kDelete);
+  auto cookie_filter = builder.BuildCookieDeletionFilter();
+  EXPECT_TRUE(cookie_filter->including_domains.has_value());
+  EXPECT_FALSE(cookie_filter->excluding_domains.has_value());
+}
+
 TEST(BrowsingDataFilterBuilderImplTest,
      RegistrableDomainMatchesCookiesPreserveList) {
   BrowsingDataFilterBuilderImpl builder(
@@ -871,7 +879,7 @@ TEST(BrowsingDataFilterBuilderImplTest, GetRegisterableDomains) {
 
 TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
   BrowsingDataFilterBuilderImpl builder(
-      BrowsingDataFilterBuilderImpl::Mode::kDelete);
+      BrowsingDataFilterBuilderImpl::Mode::kPreserve);
 
   builder.SetPartitionedStateAllowedOnly(true);
 

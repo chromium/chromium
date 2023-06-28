@@ -459,6 +459,22 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
   EXPECT_EQ("F", cookies[2].Name());
 }
 
+// Regression test for https://crbug.com/1457600.
+IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
+                       ClearCookiesWithEmptyFilter) {
+  ASSERT_TRUE(SetCookie(GURL("https://a.com"), "A=0; secure",
+                        /*cookie_partition_key=*/absl::nullopt));
+  ASSERT_EQ(1u, GetAllCookies().size());
+
+  std::unique_ptr<BrowsingDataFilterBuilder> builder(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kDelete));
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES,
+                          std::move(builder));
+
+  EXPECT_EQ(1u, GetAllCookies().size());
+}
+
 IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
                        ClearSiteData_PartitionedStateAllowedOnly) {
   // Unpartitioned cookie should not be removed when third-party cookie blocking
