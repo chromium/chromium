@@ -54,7 +54,7 @@
     "exclusive_tests": ["http/tests/serviceworker/reduce-accept-language/fetch-event-headers.html",
                         "navigator_language/reduce_accept_language"],
     "args": ["--enable-features=ReduceAcceptLanguage"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jan 1, 2024"
   },
   {
     "prefix": "gpu",
