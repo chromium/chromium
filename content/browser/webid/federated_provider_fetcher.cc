@@ -4,6 +4,7 @@
 
 #include "content/browser/webid/federated_provider_fetcher.h"
 
+#include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"
 
 namespace content {
@@ -132,7 +133,8 @@ void FederatedProviderFetcher::OnWellKnownFetched(
     }
   }
 
-  if (urls.size() > kMaxProvidersInWellKnownFile) {
+  if (urls.size() > kMaxProvidersInWellKnownFile &&
+      !IsFedCmWithoutWellKnownEnforcementEnabled()) {
     OnError(fetch_result, FederatedAuthRequestResult::kErrorWellKnownTooBig,
             TokenStatus::kWellKnownTooBig,
             /*additional_console_error_message=*/absl::nullopt);

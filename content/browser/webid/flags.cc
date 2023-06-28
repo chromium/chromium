@@ -47,6 +47,11 @@ bool IsFedCmIdPRegistrationEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmIdPRegistration);
 }
 
+bool IsFedCmWithoutWellKnownEnforcementEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kFedCmWithoutWellKnownEnforcement);
+}
+
 bool IsWebIdentityMDocsEnabled() {
   return base::FeatureList::IsEnabled(features::kWebIdentityMDocs);
 }

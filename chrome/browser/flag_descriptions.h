@@ -918,6 +918,9 @@ extern const char kFedCmIdpSigninStatusDescription[];
 extern const char kFedCmWithoutThirdPartyCookiesName[];
 extern const char kFedCmWithoutThirdPartyCookiesDescription[];
 
+extern const char kFedCmWithoutWellKnownEnforcementName[];
+extern const char kFedCmWithoutWellKnownEnforcementDescription[];
+
 extern const char kWebIdentityMDocsName[];
 extern const char kWebIdentityMDocsDescription[];
 

@@ -35,6 +35,9 @@ bool IsFedCmSelectiveDisclosureEnabled();
 // Whether the IdP Registration API is enabled.
 bool IsFedCmIdPRegistrationEnabled();
 
+// Whether the well-known enforcement is bypassed.
+bool IsFedCmWithoutWellKnownEnforcementEnabled();
+
 // Whether the Web Identity MDocs API is enabled.
 bool IsWebIdentityMDocsEnabled();
 

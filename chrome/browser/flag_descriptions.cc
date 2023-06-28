@@ -1631,6 +1631,11 @@ const char kFedCmWithoutThirdPartyCookiesName[] =
 const char kFedCmWithoutThirdPartyCookiesDescription[] =
     "Allows the FedCM API to be enabled when third party cookies are disabled.";
 
+const char kFedCmWithoutWellKnownEnforcementName[] =
+    "FedCmWithoutWellKnownEnforcement";
+const char kFedCmWithoutWellKnownEnforcementDescription[] =
+    "Allows multiple provider urls in IdP's .well-known file.";
+
 const char kFedCmIdpSigninStatusName[] = "FedCmIdpSigninStatus";
 const char kFedCmIdpSigninStatusDescription[] =
     "Enables the FedCM IDP sign-in status API that allows IDPs to notify the "

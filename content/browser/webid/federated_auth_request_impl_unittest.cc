@@ -1267,6 +1267,37 @@ TEST_F(FederatedAuthRequestImplTest, WellKnownNotInList) {
   EXPECT_FALSE(DidFetch(FetchedEndpoint::ACCOUNTS));
 }
 
+// Test that the well-known file has too many provider urls.
+TEST_F(FederatedAuthRequestImplTest, WellKnownHasTooManyProviderUrls) {
+  RequestExpectations expectation = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorWellKnownTooBig,
+      /*standalone_console_message=*/absl::nullopt,
+      /*selected_idp_config_url=*/absl::nullopt};
+
+  MockConfiguration config = kConfigurationValid;
+  config.idp_info[kProviderUrlFull].well_known = {
+      {kProviderUrlFull, kProviderTwoUrlFull},
+      {ParseStatus::kSuccess, net::HTTP_OK}};
+  RunAuthTest(kDefaultRequestParameters, expectation, config);
+  EXPECT_TRUE(DidFetchWellKnownAndConfig());
+  EXPECT_FALSE(DidFetch(FetchedEndpoint::ACCOUNTS));
+}
+
+// Test that the well-known enforcement is bypassed.
+TEST_F(FederatedAuthRequestImplTest, WellKnownEnforcementBypassed) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmWithoutWellKnownEnforcement);
+
+  MockConfiguration config = kConfigurationValid;
+  config.idp_info[kProviderUrlFull].well_known = {
+      {kProviderUrlFull, kProviderTwoUrlFull},
+      {ParseStatus::kSuccess, net::HTTP_OK}};
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, config);
+  EXPECT_TRUE(DidFetchWellKnownAndConfig());
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
+}
+
 // Test that not having the filename in the well-known fails.
 TEST_F(FederatedAuthRequestImplTest, WellKnownHasNoFilename) {
   MockConfiguration config{kConfigurationValid};

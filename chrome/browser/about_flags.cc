@@ -8829,6 +8829,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmWithoutThirdPartyCookiesDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmWithoutThirdPartyCookies)},
 
+    {"fedcm-without-well-known-enforcement",
+     flag_descriptions::kFedCmWithoutWellKnownEnforcementName,
+     flag_descriptions::kFedCmWithoutWellKnownEnforcementDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmWithoutWellKnownEnforcement)},
+
     {"web-identity-mdocs", flag_descriptions::kWebIdentityMDocsName,
      flag_descriptions::kWebIdentityMDocsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kWebIdentityMDocs)},
