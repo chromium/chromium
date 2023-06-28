@@ -189,6 +189,12 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<SkRegion*>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kWindowPositionManagedTypeKey;
 
+// A property key to indicate whether the cursor should stay visible when a key
+// is pressed. ChromeOS normally hides the cursor when a key is pressed but this
+// results in undesirable interaction with games.
+ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
+    kShowCursorOnKeypress;
+
 // A property key to indicate pip window state.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kWindowPipTypeKey;

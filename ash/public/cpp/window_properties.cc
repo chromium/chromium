@@ -64,6 +64,7 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(SkRegion,
                                    kSystemGestureExclusionKey,
                                    nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowPositionManagedTypeKey, false)
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kShowCursorOnKeypress, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowPipTypeKey, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect,
