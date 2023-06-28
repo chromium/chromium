@@ -365,6 +365,10 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
                           }];
 }
 
+- (BOOL)hasOmnibox {
+  return self.locationBarViewController != nil;
+}
+
 #pragma mark - PopupMenuUIUpdating
 
 - (void)updateUIForOverflowMenuIPHDisplayed {

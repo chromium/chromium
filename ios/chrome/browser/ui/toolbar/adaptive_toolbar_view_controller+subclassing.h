@@ -13,6 +13,9 @@
 // Sets the progress of the progressBar to 1 then hides it.
 - (void)stopProgressBar;
 
+// Whether the toolbar has the omnibox.
+- (BOOL)hasOmnibox;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_ADAPTIVE_TOOLBAR_VIEW_CONTROLLER_SUBCLASSING_H_

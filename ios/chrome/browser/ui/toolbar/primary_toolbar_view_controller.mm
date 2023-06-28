@@ -77,7 +77,11 @@
   [super resetAfterSideSwipeSnapshot];
   self.view.backgroundColor =
       self.buttonFactory.toolbarConfiguration.backgroundColor;
-  self.view.locationBarContainer.hidden = NO;
+  if (self.hasOmnibox) {
+    self.view.locationBarContainer.hidden = NO;
+  } else {
+    DCHECK(IsBottomOmniboxSteadyStateEnabled());
+  }
 }
 
 #pragma mark - NewTabPageControllerDelegate
