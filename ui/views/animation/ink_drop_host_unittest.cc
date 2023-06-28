@@ -30,6 +30,7 @@
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
 #include "ui/views/animation/test/ink_drop_impl_test_api.h"
 #include "ui/views/animation/test/test_ink_drop.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/test/views_test_base.h"
 
@@ -412,6 +413,118 @@ TEST_F(InkDropInWidgetTest, SetBaseColorCallback) {
 
   ink_drop().SetBaseColor(SK_ColorBLUE);
   EXPECT_EQ(ink_drop().GetBaseColor(), SK_ColorBLUE);
+}
+
+// This fixture tests attention state.
+class InkDropHostAttentionTest : public ViewsTestBase {
+ public:
+  InkDropHostAttentionTest() = default;
+  InkDropHostAttentionTest(const InkDropHostAttentionTest&) = delete;
+  InkDropHostAttentionTest& operator=(const InkDropHostAttentionTest&) = delete;
+  ~InkDropHostAttentionTest() override = default;
+
+  ui::Layer* GetRootLayer() { return ink_drop_test_api_->GetRootLayer(); }
+
+ protected:
+  void SetUp() override {
+    ViewsTestBase::SetUp();
+    host_view_ = std::make_unique<views::View>();
+    InkDrop::Install(host_view_.get(),
+                     std::make_unique<InkDropHost>(host_view_.get()));
+    ink_drop_host_ = InkDrop::Get(host_view_.get());
+    widget_ = CreateTestWidget();
+    ink_drop_host_test_api_ =
+        std::make_unique<InkDropHostTestApi>(ink_drop_host_);
+
+    // Set up an InkDropHost. Clipping is based on the size of the view, so
+    // make sure the size is non empty.
+    ink_drop_host_->SetMode(views::InkDropHost::InkDropMode::ON);
+    host_view_->SetSize(gfx::Size(20, 20));
+
+    // The root layer of the ink drop is created the first time GetInkDrop is
+    // called and then kept alive until the host view is destroyed.
+    ink_drop_ =
+        static_cast<InkDropImpl*>(InkDrop::Get(host_view_.get())->GetInkDrop());
+    ink_drop_test_api_ = std::make_unique<test::InkDropImplTestApi>(ink_drop_);
+
+    widget_->SetContentsView(host_view_.get());
+  }
+
+  void TearDown() override {
+    ink_drop_ = nullptr;
+    ink_drop_host_ = nullptr;
+    ink_drop_test_api_.reset();
+    ink_drop_host_test_api_.reset();
+    host_view_.reset();
+    widget_.reset();
+    ViewsTestBase::TearDown();
+  }
+
+  InkDropHost* ink_drop_host() { return ink_drop_host_; }
+
+  const ui::ColorProvider& color_provider() {
+    return *widget_->GetColorProvider();
+  }
+
+  std::unique_ptr<Widget> widget_;
+
+  // Test target.
+  std::unique_ptr<views::View> host_view_;
+
+  // Provides internal access to ink drop host.
+  std::unique_ptr<InkDropHostTestApi> ink_drop_host_test_api_;
+
+  // Provides internal access to `host_view_`'s ink drop.
+  std::unique_ptr<test::InkDropImplTestApi> ink_drop_test_api_;
+
+  raw_ptr<InkDropHost> ink_drop_host_ = nullptr;
+
+  raw_ptr<InkDropImpl> ink_drop_ = nullptr;
+};
+
+TEST_F(InkDropHostAttentionTest, ToggleAttentionColor) {
+  // Give it an original color before flipping attention to true.
+  ink_drop_host()->SetBaseColorId(ui::kColorSeparator);
+  EXPECT_EQ(ink_drop_host()->GetBaseColor(),
+            color_provider().GetColor(ui::kColorSeparator));
+
+  // Flipping attention state to true triggers attention color.
+  ink_drop_host()->ToggleAttentionState(true);
+  EXPECT_EQ(
+      ink_drop_host()->GetBaseColor(),
+      color_provider().GetColor(ui::kColorButtonFeatureAttentionHighlight));
+
+  // Flipping attention state to false triggers color restore to original.
+  ink_drop_host()->ToggleAttentionState(false);
+  EXPECT_EQ(ink_drop_host()->GetBaseColor(),
+            color_provider().GetColor(ui::kColorSeparator));
+}
+
+TEST_F(InkDropHostAttentionTest, ToggleAttentionMask) {
+  // Set default state.
+  ink_drop_->SetHovered(true);
+  EXPECT_TRUE(GetRootLayer()->layer_mask_layer());
+
+  // Manually remove ink drop mask.
+  ink_drop_host_test_api_->RemoveInkDropMask();
+  EXPECT_FALSE(GetRootLayer()->layer_mask_layer());
+
+  // Flipping attention to true triggers pulsing mask applied.
+  ink_drop_host()->ToggleAttentionState(true);
+  EXPECT_TRUE(GetRootLayer()->layer_mask_layer());
+}
+
+TEST_F(InkDropHostAttentionTest, AttentionMaskCoexistWithClipping) {
+  views::InstallRectHighlightPathGenerator(host_view_.get());
+
+  // Clipping suppresses mask with attention off.
+  ink_drop_->SetHovered(true);
+  EXPECT_FALSE(GetRootLayer()->layer_mask_layer());
+
+  // Attention mask can be added while clipping is on.
+  ink_drop_host()->ToggleAttentionState(true);
+  EXPECT_TRUE(GetRootLayer()->layer_mask_layer());
+  EXPECT_FALSE(GetRootLayer()->clip_rect().IsEmpty());
 }
 
 }  // namespace views::test

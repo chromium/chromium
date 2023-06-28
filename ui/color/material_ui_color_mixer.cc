@@ -15,6 +15,8 @@
 #include "ui/color/color_transform.h"
 
 namespace ui {
+// This aligns with GM2 default InkDropHighlight::visible_opacity_.
+constexpr SkAlpha kAttentionHighlightAlpha = 0.128 * 255;
 
 void AddMaterialUiColorMixer(ColorProvider* provider,
                              const ColorProviderKey& key) {
@@ -46,6 +48,8 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
       {kColorSysStateFocus}, {kColorButtonBackgroundProminent})};
   mixer[kColorButtonBorder] = {kColorSysTonalOutline};
   mixer[kColorButtonBorderDisabled] = {kColorSysStateDisabled};
+  mixer[kColorButtonFeatureAttentionHighlight] =
+      SetAlpha({kColorSysPrimary}, kAttentionHighlightAlpha);
   mixer[kColorButtonForeground] = {kColorSysPrimary};
   mixer[kColorButtonForegroundDisabled] = {kColorSysStateDisabled};
   mixer[kColorButtonForegroundProminent] = {kColorSysOnPrimary};

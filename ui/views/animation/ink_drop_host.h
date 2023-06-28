@@ -99,9 +99,14 @@ class VIEWS_EXPORT InkDropHost {
 
   // Callback replacement of CreateInkDropMask().
   // TODO(pbos): Investigate removing this. It currently is only used by
-  // ToolbarButton.
+  // PieMenuView.
   void SetCreateMaskCallback(
       base::RepeatingCallback<std::unique_ptr<InkDropMask>()> callback);
+
+  // Toggles ink drop attention state on/off. If set on, a pulsing highlight
+  // is shown, prompting users to interact with `host_view_`.
+  // Called by components that want to call into user's attention, e.g. IPH.
+  void ToggleAttentionState(bool attention_on);
 
   // Returns the base color for the ink drop.
   SkColor GetBaseColor() const;
@@ -280,6 +285,13 @@ class VIEWS_EXPORT InkDropHost {
       create_ink_drop_mask_callback_;
 
   base::RepeatingClosureList highlighted_changed_callbacks_;
+
+  // Attention is a state we apply on Buttons' ink drop when we want to draw
+  // users' attention to this button and prompt users' interaction.
+  // It consists of two visual effects: a default light blue color and a pulsing
+  // effect. Current use case is IPH. Go to chrome://internals/user-education
+  // and press e.g. IPH_TabSearch to see the effects.
+  bool in_attention_state_ = false;
 };
 
 }  // namespace views
