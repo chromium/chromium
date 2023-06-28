@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
@@ -24,6 +25,12 @@ namespace ash {
 
 class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
  public:
+  static constexpr char kTestNotificationTitle[] = "Test Notification Title";
+  static constexpr char kTestNotificationBodyText[] =
+      "Test Notification Body Text";
+  static constexpr char kTestNotificationButtonText[] =
+      "Test Notification Button Text";
+
   ScalableIphBrowserTestBase();
   ~ScalableIphBrowserTestBase() override;
 
@@ -35,6 +42,7 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
  protected:
   // Allow sub-classes to initialize scoped feature list with different values.
   virtual void InitializeScopedFeatureList();
+  void AppendFakeUiParams(base::FieldTrialParams& params);
 
   feature_engagement::test::MockTracker* mock_tracker() {
     return mock_tracker_;

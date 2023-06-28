@@ -16,6 +16,7 @@
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
@@ -136,7 +137,26 @@ void ScalableIphBrowserTestBase::TearDownOnMainThread() {
 }
 
 void ScalableIphBrowserTestBase::InitializeScopedFeatureList() {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kScalableIph);
+  base::FieldTrialParams params;
+  AppendFakeUiParams(params);
+  base::test::FeatureRefAndParams test_config(kScalableIphTest, params);
+
+  base::test::FeatureRefAndParams scalable_iph_feature(
+      ash::features::kScalableIph, {});
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {scalable_iph_feature, test_config}, {});
+}
+
+void ScalableIphBrowserTestBase::AppendFakeUiParams(
+    base::FieldTrialParams& params) {
+  params[scalable_iph::kCustomUiTypeParamName] =
+      scalable_iph::kCustomUiTypeValueNotification;
+  params[scalable_iph::kCustomNotificationTitleParamName] =
+      kTestNotificationTitle;
+  params[scalable_iph::kCustomNotificationBodyTextParamName] =
+      kTestNotificationBodyText;
+  params[scalable_iph::kCustomNotificationButtonTextParamName] =
+      kTestNotificationButtonText;
 }
 
 bool ScalableIphBrowserTestBase::IsMockDelegateCreatedFor(Profile* profile) {

@@ -30,6 +30,7 @@ class ScalableIphBrowserTestNetworkConnection : public ScalableIphBrowserTest {
  protected:
   void InitializeScopedFeatureList() override {
     base::FieldTrialParams params;
+    AppendFakeUiParams(params);
     params[scalable_iph::kCustomConditionNetworkConnectionParamName] =
         scalable_iph::kCustomConditionNetworkConnectionOnline;
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
@@ -56,6 +57,7 @@ class ScalableIphBrowserTestClientAgeBase : public ScalableIphBrowserTest {
  protected:
   void InitializeScopedFeatureList() override {
     base::FieldTrialParams params;
+    AppendFakeUiParams(params);
     params[scalable_iph::kCustomConditionClientAgeInDaysParamName] =
         GetClientAgeTestValue();
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
@@ -135,15 +137,20 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, InvokeIph) {
   // Tracker::Dismissed must be called when an IPH gets dismissed.
   EXPECT_CALL(*mock_tracker(), Dismissed(::testing::Ref(TestIphFeature())));
 
-  scalable_iph::ScalableIphDelegate::BubbleParams expected_params;
-  EXPECT_CALL(*mock_delegate(),
-              ShowBubble(::testing::Eq(expected_params), ::testing::NotNull()))
-      .WillOnce(
-          [](const scalable_iph::ScalableIphDelegate::BubbleParams& params,
-             std::unique_ptr<scalable_iph::IphSession> session) {
-            // Simulate that an IPH gets dismissed.
-            session.reset();
-          });
+  scalable_iph::ScalableIphDelegate::NotificationParams expected_params;
+  expected_params.title = ScalableIphBrowserTestBase::kTestNotificationTitle;
+  expected_params.text = ScalableIphBrowserTestBase::kTestNotificationBodyText;
+  expected_params.button.text =
+      ScalableIphBrowserTestBase::kTestNotificationButtonText;
+
+  EXPECT_CALL(*mock_delegate(), ShowNotification(::testing::Eq(expected_params),
+                                                 ::testing::NotNull()))
+      .WillOnce([](const scalable_iph::ScalableIphDelegate::NotificationParams&
+                       params,
+                   std::unique_ptr<scalable_iph::IphSession> session) {
+        // Simulate that an IPH gets dismissed.
+        session.reset();
+      });
   scalable_iph::ScalableIph* scalable_iph =
       ScalableIphFactory::GetForBrowserContext(browser()->profile());
   scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
@@ -183,7 +190,8 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, TimeTickEvent) {
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNetworkConnection, Online) {
   EnableTestIphFeature();
 
-  EXPECT_CALL(*mock_delegate(), ShowBubble(::testing::_, ::testing::NotNull()))
+  EXPECT_CALL(*mock_delegate(),
+              ShowNotification(::testing::_, ::testing::NotNull()))
       .Times(1);
 
   AddOnlineNetwork();
@@ -193,7 +201,8 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNetworkConnectionOnline,
                        OnlineFromBeginning) {
   EnableTestIphFeature();
 
-  EXPECT_CALL(*mock_delegate(), ShowBubble(::testing::_, ::testing::NotNull()))
+  EXPECT_CALL(*mock_delegate(),
+              ShowNotification(::testing::_, ::testing::NotNull()))
       .Times(1);
 
   // We have to trigger a conditions check manually. The trigger condition check
@@ -206,7 +215,8 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeZero, Satisfied) {
   EnableTestIphFeature();
   browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
                                                   base::Hours(1));
-  EXPECT_CALL(*mock_delegate(), ShowBubble(::testing::_, ::testing::NotNull()))
+  EXPECT_CALL(*mock_delegate(),
+              ShowNotification(::testing::_, ::testing::NotNull()))
       .Times(1);
 
   TriggerConditionsCheckWithAFakeEvent();
@@ -217,7 +227,8 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeZero,
   EnableTestIphFeature();
   browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
                                                   base::Hours(25));
-  EXPECT_CALL(*mock_delegate(), ShowBubble(::testing::_, ::testing::NotNull()))
+  EXPECT_CALL(*mock_delegate(),
+              ShowNotification(::testing::_, ::testing::NotNull()))
       .Times(0);
 
   TriggerConditionsCheckWithAFakeEvent();
@@ -228,7 +239,8 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeZero,
   EnableTestIphFeature();
   browser()->profile()->SetCreationTimeForTesting(base::Time::Now() +
                                                   base::Hours(1));
-  EXPECT_CALL(*mock_delegate(), ShowBubble(::testing::_, ::testing::NotNull()))
+  EXPECT_CALL(*mock_delegate(),
+              ShowNotification(::testing::_, ::testing::NotNull()))
       .Times(0);
 
   TriggerConditionsCheckWithAFakeEvent();
@@ -238,7 +250,8 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeNonZero, Satisfied) {
   EnableTestIphFeature();
   browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
                                                   base::Hours(47));
-  EXPECT_CALL(*mock_delegate(), ShowBubble(::testing::_, ::testing::NotNull()))
+  EXPECT_CALL(*mock_delegate(),
+              ShowNotification(::testing::_, ::testing::NotNull()))
       .Times(1);
 
   TriggerConditionsCheckWithAFakeEvent();
@@ -248,7 +261,8 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeNonZero, NotSatisfied) {
   EnableTestIphFeature();
   browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
                                                   base::Hours(49));
-  EXPECT_CALL(*mock_delegate(), ShowBubble(::testing::_, ::testing::NotNull()))
+  EXPECT_CALL(*mock_delegate(),
+              ShowNotification(::testing::_, ::testing::NotNull()))
       .Times(0);
 
   TriggerConditionsCheckWithAFakeEvent();
@@ -259,7 +273,8 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeInvalidString,
   EnableTestIphFeature();
   browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
                                                   base::Hours(1));
-  EXPECT_CALL(*mock_delegate(), ShowBubble(::testing::_, ::testing::NotNull()))
+  EXPECT_CALL(*mock_delegate(),
+              ShowNotification(::testing::_, ::testing::NotNull()))
       .Times(0);
 
   TriggerConditionsCheckWithAFakeEvent();
@@ -270,7 +285,8 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeInvalidNumber,
   EnableTestIphFeature();
   browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
                                                   base::Hours(1));
-  EXPECT_CALL(*mock_delegate(), ShowBubble(::testing::_, ::testing::NotNull()))
+  EXPECT_CALL(*mock_delegate(),
+              ShowNotification(::testing::_, ::testing::NotNull()))
       .Times(0);
 
   TriggerConditionsCheckWithAFakeEvent();

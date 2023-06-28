@@ -63,6 +63,28 @@ constexpr char kCustomConditionNetworkConnectionOnline[] = "Online";
 constexpr char kCustomConditionClientAgeInDaysParamName[] =
     "x_CustomConditionClientAgeInDays";
 
+// `UiType` param indicates which IPH UI is used for an event config.
+// Notification is the only value supported now.
+constexpr char kCustomUiTypeParamName[] = "x_CustomUiType";
+constexpr char kCustomUiTypeValueNotification[] = "Notification";
+
+enum class UiType {
+  kNotification,
+  kBubble,
+  kHelpApp,
+};
+
+// Parameters for a notification UI. All fields are required field.
+// - Title: a title text of a notification.
+// - Body text: a body text of a notification.
+// - Button text: a text of a button in a notification.
+constexpr char kCustomNotificationTitleParamName[] =
+    "x_CustomNotificationTitle";
+constexpr char kCustomNotificationBodyTextParamName[] =
+    "x_CustomNotificationBodyText";
+constexpr char kCustomNotificationButtonTextParamName[] =
+    "x_CustomNotificationButtonText";
+
 }  // namespace scalable_iph
 
 #endif  // CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH_SCALABLE_IPH_CONSTANTS_H_

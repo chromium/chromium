@@ -22,6 +22,9 @@ namespace scalable_iph {
 
 namespace {
 
+using NotificationParams =
+    ::scalable_iph::ScalableIphDelegate::NotificationParams;
+
 constexpr char kFunctionCallAfterKeyedServiceShutdown[] =
     "Function call after keyed service shutdown.";
 
@@ -43,6 +46,33 @@ const std::vector<const base::Feature*>& GetFeatureListConstant() {
 }
 
 constexpr base::TimeDelta kTimeTickEventInterval = base::Minutes(5);
+
+UiType ParseUiType(const base::Feature& feature) {
+  std::string ui_type =
+      base::GetFieldTrialParamValueByFeature(feature, kCustomUiTypeParamName);
+  CHECK(ui_type == kCustomUiTypeValueNotification);
+  return UiType::kNotification;
+}
+
+NotificationParams ParseNotificationParams(const base::Feature& feature) {
+  // TODO(b/288167957): Implement a fallback for an invalid config, e.g. Do not
+  // show an IPH for the case instead of CHECK failure. Config is served from
+  // the server. This is not a constraint coming from client side.
+  NotificationParams param;
+  param.title = base::GetFieldTrialParamValueByFeature(
+      feature, kCustomNotificationTitleParamName);
+  CHECK(!param.title.empty())
+      << kCustomNotificationTitleParamName << " is a required field";
+  param.text = base::GetFieldTrialParamValueByFeature(
+      feature, kCustomNotificationBodyTextParamName);
+  CHECK(!param.text.empty())
+      << kCustomNotificationBodyTextParamName << " is a required field";
+  param.button.text = base::GetFieldTrialParamValueByFeature(
+      feature, kCustomNotificationButtonTextParamName);
+  CHECK(!param.button.text.empty())
+      << kCustomNotificationButtonTextParamName << " is a required field";
+  return param;
+}
 
 }  // namespace
 
@@ -172,12 +202,16 @@ void ScalableIph::CheckTriggerConditions() {
   DCHECK(tracker_->IsInitialized());
 
   for (const base::Feature* feature : GetFeatureList()) {
+    // TODO(b/289267799): Check our custom extension version number.
     if (CheckCustomConditions(*feature) &&
         tracker_->ShouldTriggerHelpUI(*feature)) {
-      // TODO(b/284053005): Add the actual implementations.
-      ScalableIphDelegate::BubbleParams params;
-      delegate_->ShowBubble(params,
-                            std::make_unique<IphSession>(*feature, tracker_));
+      // TODO(b/284053005): Support other ui types.
+      UiType ui_type = ParseUiType(*feature);
+      CHECK(ui_type == UiType::kNotification)
+          << "Only Notification is implemented now";
+      delegate_->ShowNotification(
+          ParseNotificationParams(*feature),
+          std::make_unique<IphSession>(*feature, tracker_));
     }
   }
 }
