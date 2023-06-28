@@ -7672,6 +7672,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
     ASSERT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url);
     EXPECT_TRUE(prerender_observer.was_activated());
   } else {
+    // Grant a grace period for retriggering.
+    base::RunLoop().RunUntilIdle();
+
     // The next page contains speculation rules for the prerendering page, but
     // it's not processed on BFCache restoration.
     EXPECT_FALSE(HasHostForUrl(prerendering_url));
@@ -7728,6 +7731,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
     ASSERT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url_a);
     EXPECT_TRUE(prerender_observer_a_retriggered.was_activated());
   } else {
+    // Grant a grace period for retriggering.
+    base::RunLoop().RunUntilIdle();
+
     // The initial page contains speculation rules for page A/B, but neither of
     // them are processed on BFCache restoration.
     EXPECT_FALSE(HasHostForUrl(prerendering_url_a));
