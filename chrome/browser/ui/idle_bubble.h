@@ -14,10 +14,11 @@ class Browser;
 // Show a bubble informing the user that IdleTimeoutActions just ran.
 void ShowIdleBubble(Browser* browser,
                     base::TimeDelta threshold,
-                    IdleDialog::ActionSet actions);
+                    IdleDialog::ActionSet actions,
+                    base::OnceClosure on_close);
 
 // TODO(crbug.com/1442224): Convert idle_service_browsertest.cc to an
 // InteractiveTest, and get rid of this.
-bool IsIdleBubbleOpenForTesting(Browser* browser);
+bool IsIdleBubbleOpen(Browser* browser);
 
 #endif  // CHROME_BROWSER_UI_IDLE_BUBBLE_H_

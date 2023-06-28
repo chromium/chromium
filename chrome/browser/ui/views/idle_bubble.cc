@@ -26,8 +26,10 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kIdleBubbleLabelElementId);
 
 void ShowIdleBubble(Browser* browser,
                     base::TimeDelta idle_threshold,
-                    IdleDialog::ActionSet actions) {
-  if (!browser || !browser->tab_strip_model()->GetActiveWebContents()) {
+                    IdleDialog::ActionSet actions,
+                    base::OnceClosure on_close) {
+  if (!browser || !browser->tab_strip_model()->GetActiveWebContents() ||
+      IsIdleBubbleOpen(browser)) {
     return;
   }
 
@@ -53,16 +55,18 @@ void ShowIdleBubble(Browser* browser,
                         ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
                                                ui::TimeFormat::LENGTH_LONG,
                                                idle_threshold))),
-                    std::u16string(), kIdleBubbleLabelElementId);
+                    std::u16string(), kIdleBubbleLabelElementId)
+      .SetIsAlertDialog()
+      .SetCloseActionCallback(std::move(on_close));
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       dialog_builder.Build(), anchor_view, views::BubbleBorder::TOP_RIGHT);
   bubble->set_close_on_deactivate(false);
 
-  views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
+  views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->ShowInactive();
 }
 
-bool IsIdleBubbleOpenForTesting(Browser* browser) {
+bool IsIdleBubbleOpen(Browser* browser) {
   ui::ElementContext context = browser->window()->GetElementContext();
   return nullptr !=
          ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
