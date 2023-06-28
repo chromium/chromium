@@ -656,7 +656,7 @@ void PaintLayerScrollableArea::VisibleSizeChanged() {
 PhysicalRect PaintLayerScrollableArea::LayoutContentRect(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
   // LayoutContentRect is conceptually the same as the box's client rect.
-  LayoutSize layer_size = Size();
+  PhysicalSize layer_size = Size();
   LayoutUnit border_width = GetLayoutBox()->BorderWidth();
   LayoutUnit border_height = GetLayoutBox()->BorderHeight();
   NGPhysicalBoxStrut scrollbars;
@@ -664,8 +664,8 @@ PhysicalRect PaintLayerScrollableArea::LayoutContentRect(
     scrollbars = GetLayoutBox()->ComputeScrollbars();
 
   PhysicalSize size(
-      layer_size.Width() - border_width - scrollbars.HorizontalSum(),
-      layer_size.Height() - border_height - scrollbars.VerticalSum());
+      layer_size.width - border_width - scrollbars.HorizontalSum(),
+      layer_size.height - border_height - scrollbars.VerticalSum());
   size.ClampNegativeToZero();
   return PhysicalRect(PhysicalOffset::FromPointFRound(ScrollPosition()), size);
 }
@@ -903,10 +903,10 @@ PaintLayer* PaintLayerScrollableArea::Layer() const {
   return layer_;
 }
 
-LayoutSize PaintLayerScrollableArea::Size() const {
+PhysicalSize PaintLayerScrollableArea::Size() const {
   return layer_->IsRootLayer()
-             ? LayoutSize(GetLayoutBox()->GetFrameView()->Size())
-             : GetLayoutBox()->Size().ToLayoutSize();
+             ? PhysicalSize(GetLayoutBox()->GetFrameView()->Size())
+             : GetLayoutBox()->Size();
 }
 
 LayoutUnit PaintLayerScrollableArea::ScrollWidth() const {
