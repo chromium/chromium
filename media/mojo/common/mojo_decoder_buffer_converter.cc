@@ -12,9 +12,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/media_util.h"
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_pipe_read_write_util.h"
 
@@ -179,6 +181,21 @@ void MojoDecoderBufferReader::ReadDecoderBuffer(
       mojo_buffer.To<scoped_refptr<DecoderBuffer>>());
   DCHECK(media_buffer);
 
+  if (MediaTraceIsEnabled() && !media_buffer->end_of_stream()) {
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+        "media,gpu", "MojoDecoderBufferReader::Read",
+        media_buffer->timestamp().InMicroseconds());
+    read_cb = base::BindOnce(
+        [](ReadCB read_cb, scoped_refptr<DecoderBuffer> buffer) {
+          TRACE_EVENT_NESTABLE_ASYNC_END2(
+              "media,gpu", "MojoDecoderBufferReader::Read",
+              buffer->timestamp().InMicroseconds(), "timestamp",
+              buffer->timestamp().InMicroseconds(), "read_bytes",
+              buffer->data_size());
+          std::move(read_cb).Run(std::move(buffer));
+        },
+        std::move(read_cb));
+  }
   // We don't want reads to complete out of order, so we queue them even if they
   // are zero-sized.
   pending_read_cbs_.push_back(std::move(read_cb));
@@ -275,8 +292,9 @@ void MojoDecoderBufferReader::ProcessPendingReads() {
 
     // TODO(sandersd): Make sure there are no possible re-entrancy issues
     // here.
-    if (bytes_read_ == buffer_size)
+    if (bytes_read_ == buffer_size) {
       CompleteCurrentRead();
+    }
 
     // Since we can still read, try to read more.
   }
@@ -374,6 +392,9 @@ mojom::DecoderBufferPtr MojoDecoderBufferWriter::WriteDecoderBuffer(
   if (media_buffer->end_of_stream() || media_buffer->data_size() == 0)
     return mojo_buffer;
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media,gpu",
+                                    "MojoDecoderBufferWriter::Write",
+                                    media_buffer->timestamp().InMicroseconds());
   // Queue writing the buffer's data into our DataPipe.
   pending_buffers_.push_back(std::move(media_buffer));
 
@@ -439,6 +460,10 @@ void MojoDecoderBufferWriter::ProcessPendingWrites() {
     DCHECK_GT(num_bytes, 0u);
     bytes_written_ += num_bytes;
     if (bytes_written_ == buffer_size) {
+      TRACE_EVENT_NESTABLE_ASYNC_END2(
+          "media,gpu", "MojoDecoderBufferWriter::Write",
+          buffer->timestamp().InMicroseconds(), "timestamp",
+          buffer->timestamp().InMicroseconds(), "write_bytes", bytes_written_);
       pending_buffers_.pop_front();
       bytes_written_ = 0;
     }
@@ -457,6 +482,15 @@ void MojoDecoderBufferWriter::OnPipeError(MojoResult result) {
     DVLOG(1) << __func__ << ": writing to data pipe failed. result=" << result
              << ", buffer size=" << pending_buffers_.front()->data_size()
              << ", num_bytes(written)=" << bytes_written_;
+    if (MediaTraceIsEnabled()) {
+      for (const auto& buffer : pending_buffers_) {
+        TRACE_EVENT_NESTABLE_ASYNC_END2(
+            "media,gpu", "MojoDecoderBufferWriter::Write",
+            buffer->timestamp().InMicroseconds(), "timestamp",
+            buffer->timestamp().InMicroseconds(), "write_bytes",
+            bytes_written_);
+      }
+    }
     pending_buffers_.clear();
     bytes_written_ = 0;
   }
