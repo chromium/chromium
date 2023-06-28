@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
@@ -129,6 +130,12 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddBoolean(
       "hasTouchScreen",
       !ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices().empty());
+
+  // If true, then the user may launch the setup flow for Microsoft 365.
+  source->AddBoolean(
+      "Microsoft365",
+      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile));
+
   // Checks if the Google Assistant is allowed on this device by going through
   // policies.
   assistant::AssistantAllowedState assistant_allowed_state =
