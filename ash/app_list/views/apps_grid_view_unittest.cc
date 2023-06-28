@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <list>
 #include <memory>
 #include <optional>
 #include <string>
@@ -569,6 +570,12 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
   void InitiateDragForView(AppsGridView::Pointer pointer,
                            AppListItemView* view,
                            AppsGridView* apps_grid_view) {
+    StartDragForViewAndFireTimer(pointer, view);
+    TriggerDragFlow(pointer);
+  }
+
+  void StartDragForViewAndFireTimer(AppsGridView::Pointer pointer,
+                                    AppListItemView* view) {
     DCHECK(view);
 
     gfx::Point from = view->GetBoundsInScreen().CenterPoint();
@@ -586,14 +593,16 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
       view->FireMouseDragTimerForTest();
     }
     current_drag_location_ = from;
+  }
 
+  void TriggerDragFlow(AppsGridView::Pointer pointer) {
+    DCHECK(current_drag_location_.has_value());
     // Call UpdateDrag to trigger |apps_grid_view| change to cardified_state -
     // the cardified state starts only once the drag distance exceeds a drag
     // threshold, so the pointer has to sufficiently move from the original
     // position.
-    // Move in steps, because the drag and drop controller notifies the drop
-    // target OnDragUpdate().
-    current_drag_location_ = from + gfx::Vector2d(10, 10);
+    current_drag_location_ =
+        current_drag_location_.value() + gfx::Vector2d(10, 10);
     UpdateDragInScreen(pointer, current_drag_location_.value(), 2);
   }
 
@@ -4673,16 +4682,22 @@ TEST_P(AppsGridViewDragTest, MousePointerIsGrabbingDuringDrag) {
   // Populate the apps grid and start dragging one of the items.
   GetTestModel()->PopulateApps(3);
   UpdateLayout();
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
-                                     apps_grid_view_);
 
-  // Ensure the cursor type is set to grabbing during the drag.
-  EXPECT_EQ(ui::mojom::CursorType::kGrabbing,
-            cursor_manager->GetCursor().type());
+  AppListItemView* const item_view = GetItemViewInTopLevelGrid(0);
+
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, item_view);
+
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Ensure the cursor type is set to grabbing during the drag.
+    EXPECT_EQ(ui::mojom::CursorType::kGrabbing,
+              cursor_manager->GetCursor().type());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
 
   // Release the left mouse button to cancel the drag and verify that the cursor
   // type is reset.
-  EndDrag();
   EXPECT_EQ(previous_cursor_type, cursor_manager->GetCursor().type());
 }
 
@@ -4693,17 +4708,25 @@ TEST_P(AppsGridViewDragTest, MousePointerIsResetOnCanceledDrag) {
   // Populate the apps grid and start dragging one of the items.
   GetTestModel()->PopulateApps(3);
   UpdateLayout();
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
-                                     apps_grid_view_);
 
-  // The cursor type should be set to grabbing during the drag.
-  ASSERT_EQ(ui::mojom::CursorType::kGrabbing,
-            cursor_manager->GetCursor().type());
+  AppListItemView* const item_view = GetItemViewInTopLevelGrid(0);
 
-  // Cancel the drag without releasing the left mouse button and verify that the
-  // cursor is still reset in this case.
-  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
-  EXPECT_EQ(previous_cursor_type, cursor_manager->GetCursor().type());
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, item_view);
+
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // The cursor type should be set to grabbing during the drag.
+    ASSERT_EQ(ui::mojom::CursorType::kGrabbing,
+              cursor_manager->GetCursor().type());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Cancel the drag without releasing the left mouse button and verify that
+    // the cursor is still reset in this case.
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
+    EXPECT_EQ(previous_cursor_type, cursor_manager->GetCursor().type());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
 }
 
 // Verify the cursor type when dragging one item over another item and back.
@@ -4717,28 +4740,35 @@ TEST_P(AppsGridViewDragTest, MouseDragItemToOtherItemAndBack) {
   gfx::Point starting_point = item0->GetBoundsInScreen().CenterPoint();
   AppListItemView* const item1 = GetItemViewInTopLevelGrid(1);
 
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
-                                     apps_grid_view_);
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, item0);
 
-  // Verify the cursor is grabbing now that the drag has started.
-  ASSERT_EQ(ui::mojom::CursorType::kGrabbing,
-            cursor_manager->GetCursor().type());
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Verify the cursor is grabbing now that the drag has started.
+    ASSERT_EQ(ui::mojom::CursorType::kGrabbing,
+              cursor_manager->GetCursor().type());
+    // Move the first item on top of the second item as if to create a folder,
+    // but don't actually create a folder.
+    UpdateDragInScreen(AppsGridView::MOUSE,
+                       item1->GetBoundsInScreen().CenterPoint());
+    // Verify the cursor is still grabbing in this state.
+    ASSERT_EQ(ui::mojom::CursorType::kGrabbing,
+              cursor_manager->GetCursor().type());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    // Move the first item back to its original position.
+    UpdateDragInScreen(AppsGridView::MOUSE, starting_point);
 
-  // Move the first item on top of the second item as if to create a folder, but
-  // don't actually create a folder.
-  UpdateDragInScreen(AppsGridView::MOUSE,
-                     item1->GetBoundsInScreen().CenterPoint());
+    // The cursor should still be grabbing.
+    EXPECT_EQ(ui::mojom::CursorType::kGrabbing,
+              cursor_manager->GetCursor().type());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
 
-  // Verify the cursor is still grabbing in this state.
-  ASSERT_EQ(ui::mojom::CursorType::kGrabbing,
-            cursor_manager->GetCursor().type());
-
-  // Move the first item back to its original position.
-  UpdateDragInScreen(AppsGridView::MOUSE, starting_point);
-
-  // The cursor should still be grabbing.
-  EXPECT_EQ(ui::mojom::CursorType::kGrabbing,
-            cursor_manager->GetCursor().type());
+  test_api_->WaitForItemMoveAnimationDone();
+  // Verify the cursor is not grabbing in this state.
+  ASSERT_EQ(ui::mojom::CursorType::kNull, cursor_manager->GetCursor().type());
 }
 
 TEST_P(AppsGridViewDragTest, NewInstallDotVisibilityDuringDrag) {
@@ -4756,18 +4786,21 @@ TEST_P(AppsGridViewDragTest, NewInstallDotVisibilityDuringDrag) {
   item_view->item()->SetIsNewInstall(true);
   ASSERT_TRUE(new_install_dot->GetVisible());
 
-  // Starts a mouse drag and verify new install dot hides during drag.
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
-                                     apps_grid_view_);
-  MaybeCheckHaptickEventsCount(1);
-  EXPECT_FALSE(new_install_dot->GetVisible());
+  StartDragForViewAndFireTimer(AppsGridView::MOUSE, item_view);
 
-  const gfx::Point to = GetItemRectOnCurrentPageAt(0, 2).CenterPoint();
-  UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_);
-  EXPECT_FALSE(new_install_dot->GetVisible());
+  std::list<base::OnceClosure> tasks;
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    MaybeCheckHaptickEventsCount(1);
+    EXPECT_FALSE(new_install_dot->GetVisible());
+
+    const gfx::Point to = GetItemRectOnCurrentPageAt(0, 2).CenterPoint();
+    UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_);
+    EXPECT_FALSE(new_install_dot->GetVisible());
+  }));
+  tasks.push_back(base::BindLambdaForTesting([&]() { EndDrag(); }));
+  MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/false);
 
   // When ending drag, the new install dot should be visible again.
-  EndDrag();
   EXPECT_TRUE(new_install_dot->GetVisible());
 }
 

@@ -46,8 +46,6 @@ class AppListItemViewTest : public AshTestBase,
           EXPECT_EQ(GetDragState(drag_view_),
                     AppListItemView::DragState::kStarted);
           GetEventGenerator()->ReleaseTouch();
-          EXPECT_EQ(GetDragState(drag_view_),
-                    AppListItemView::DragState::kNone);
         }),
         base::DoNothing());
   }
@@ -379,6 +377,49 @@ TEST_P(AppListItemViewTestWithDragDropController,
   EXPECT_FALSE(helper->IsInFolderView());
 
   EXPECT_TRUE(view->title()->GetVisible());
+}
+
+TEST_P(AppListItemViewTestWithDragDropController,
+       AppItemDragStateResetsAfterDrag) {
+  CreateAppListItem("TestItem 1");
+
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  auto* apps_grid_view = helper->GetScrollableAppsGridView();
+  AppListItemView* view = apps_grid_view->GetItemViewAt(0);
+  auto* generator = GetEventGenerator();
+  ASSERT_EQ(GetDragState(view), AppListItemView::DragState::kNone);
+
+  SetAppListItemViewForTest(view);
+
+  gfx::Point from = view->GetBoundsInScreen().CenterPoint();
+  generator->MoveTouch(from);
+  generator->PressTouch();
+  view->FireTouchDragTimerForTest();
+  EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kInitialized);
+
+  // Make sure that the item view has a started drag state during drag.
+  ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
+      base::BindLambdaForTesting([&]() {
+        drag_started_on_controller_++;
+        generator->MoveTouchBy(10, 10);
+        EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kStarted);
+        generator->MoveMouseTo(apps_grid_view->GetBoundsInScreen().top_right());
+        generator->MoveTouchBy(10, 10);
+        EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kStarted);
+        helper->Dismiss();
+        EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kStarted);
+        generator->ReleaseTouch();
+      }),
+      base::DoNothing());
+
+  generator->MoveTouchBy(10, 10);
+
+  EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kNone);
+  EXPECT_FALSE(view->FireTouchDragTimerForTest());
+  EXPECT_FALSE(IsIconScaled(view));
+  MaybeCheckDragStartedOnControllerCount(1);
 }
 
 }  // namespace ash

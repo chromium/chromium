@@ -278,10 +278,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // dot for new install.
   gfx::Rect GetDefaultTitleBoundsForTest();
 
-  // Called when the drag registered for this view ends.
-  // `drag_end_callback` passed to `GridDelegate::InitiateDrag()`.
-  void OnDragEnded();
-
   // Sets the most recent grid index for this item view. Also sets
   // `has_pending_row_change_` based on whether the grid index change is
   // considered a row change for the purposes of animating item views between
@@ -383,6 +379,10 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Called when the drag registered for this view starts moving.
   // `drag_start_callback` passed to `GridDelegate::InitiateDrag()`.
   void OnDragStarted();
+
+  // Called when the drag registered for this view ends.
+  // `drag_end_callback` passed to `GridDelegate::InitiateDrag()`.
+  void OnDragEnded();
 
   // AppListItemObserver overrides:
   void ItemIconChanged(AppListConfigType config_type) override;

@@ -805,7 +805,7 @@ void AppListItemView::ScaleAppIcon(bool scale_up) {
   // animation and just scale down.
   if (!layer() && !scale_up) {
     icon_scale_ = 1.0f;
-    SetIcon(icon_image_);
+    UpdateIconView(false);
     return;
   }
 
@@ -813,7 +813,7 @@ void AppListItemView::ScaleAppIcon(bool scale_up) {
   if (!is_folder_) {
     if (scale_up) {
       icon_scale_ = kDragDropAppIconScale;
-      SetIcon(icon_image_);
+      UpdateIconView(false);
       layer()->SetTransform(gfx::GetScaleTransform(
           GetContentsBounds().CenterPoint(), 1 / kDragDropAppIconScale));
     } else if (drag_state_ != DragState::kNone) {
@@ -947,6 +947,7 @@ void AppListItemView::OnDragEnded() {
 
 void AppListItemView::OnDragDone() {
   EnsureSelected();
+  OnDragEnded();
 }
 
 void AppListItemView::CancelContextMenu() {

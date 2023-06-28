@@ -454,9 +454,6 @@ void AppsGridView::EndDragCallback(
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   DCHECK(app_list_features::IsDragAndDropRefactorEnabled());
   output_drag_op = ui::mojom::DragOperation::kMove;
-  if (drag_view_) {
-    drag_view_->OnDragEnded();
-  }
   drag_image_layer_ = std::move(drag_image_layer_owner);
 
   EndDrag(/*cancel=*/false);
@@ -1126,11 +1123,6 @@ void AppsGridView::OnDragExited() {
   if (!app_list_features::IsDragAndDropRefactorEnabled()) {
     views::View::OnDragExited();
     return;
-  }
-
-  // TODO(b/261985897): Consider removing the direct call to OnDragEnded.
-  if (drag_view_) {
-    drag_view_->OnDragEnded();
   }
 
   // When the drag and drop host is a folder apps grid, close the folder when

@@ -584,6 +584,17 @@ void AshTestBase::WaitForShelfAnimation() {
 void AshTestBase::MaybeRunDragAndDropSequenceForAppList(
     std::list<base::OnceClosure>* tasks,
     bool is_touch) {
+  // The app list drag and drop require this extra step since drag actually
+  // starts when the cursor is moved. In the case of the drag and drop refactor,
+  // this movement is done outside of the LoopClosure, but a second one is
+  // required since OnDragEnter() is invoked when the drag is updated.
+  tasks->push_front(base::BindLambdaForTesting([&]() {
+    if (is_touch) {
+      GetEventGenerator()->MoveTouchBy(10, 10);
+      return;
+    }
+    GetEventGenerator()->MoveMouseBy(10, 10);
+  }));
   if (!app_list_features::IsDragAndDropRefactorEnabled()) {
     while (!tasks->empty()) {
       std::move(tasks->front()).Run();
@@ -598,15 +609,7 @@ void AshTestBase::MaybeRunDragAndDropSequenceForAppList(
         tasks->pop_front();
       }),
       base::DoNothing());
-  tasks->push_front(base::BindLambdaForTesting([&]() {
-    // Generate OnDragEnter() event for the host view.
-    if (is_touch) {
-      GetEventGenerator()->MoveTouchBy(10, 10);
-      return;
-    }
-    GetEventGenerator()->MoveMouseBy(10, 10);
-  }));
-  // Start Drag and Drop Sequence by moving the pointer.
+
   if (is_touch) {
     GetEventGenerator()->MoveTouchBy(10, 10);
     return;
