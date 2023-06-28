@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_presentation.h"
@@ -79,7 +80,8 @@
   self.tabStripController = [[TabStripController alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                           style:style];
+                           style:style
+               layoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)];
   self.tabStripController.presentationProvider = self.presentationProvider;
   self.tabStripController.animationWaitDuration = self.animationWaitDuration;
   [self.presentationProvider showTabStripView:[self.tabStripController view]];

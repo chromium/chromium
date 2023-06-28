@@ -9,17 +9,18 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/result.h"
 #import "ios/chrome/browser/first_run/first_run.h"
+#import "ios/chrome/browser/iph_for_new_chrome_user/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-namespace iph_for_new_chrome_user {
+namespace {
 
-struct ClassificationResult;
+base::TimeDelta new_user_first_run_recency = base::Days(60);
 
-bool IsUserEligible(
+bool IsUserNewChromeUser(
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher) {
   if (!dispatcher) {
     return false;
@@ -32,9 +33,9 @@ bool IsUserEligible(
     absl::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
     if (info.has_value()) {
       base::Time first_run_time = info.value().creation_time;
-      bool first_run_over_30_days_ago =
-          base::Time::Now() - first_run_time > base::Days(30);
-      if (first_run_over_30_days_ago) {
+      bool is_first_run_recent =
+          base::Time::Now() - first_run_time < new_user_first_run_recency;
+      if (!is_first_run_recent) {
         return false;
       }
     }
@@ -56,6 +57,19 @@ bool IsUserEligible(
   return base::Contains(
       result.ordered_labels,
       segmentation_platform::DeviceSwitcherModel::kSyncedAndFirstDeviceLabel);
+}
+}  // namespace
+namespace iph_for_new_chrome_user {
+
+struct ClassificationResult;
+
+bool IsUserEligible(
+    segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher) {
+  // Evaluate the experiment `kIPHForSafariSwitcher` only after
+  // `IsUserNewChromeUser` returns true, to avoid putting ineligible users in
+  // the experiment.
+  return IsUserNewChromeUser(dispatcher) &&
+         base::FeatureList::IsEnabled(kIPHForSafariSwitcher);
 }
 
 }  // namespace iph_for_new_chrome_user

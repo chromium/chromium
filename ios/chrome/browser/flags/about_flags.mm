@@ -76,6 +76,7 @@
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
 #import "ios/chrome/browser/follow/follow_features.h"
+#import "ios/chrome/browser/iph_for_new_chrome_user/features.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
@@ -1637,6 +1638,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tab-grid-refactoring", flag_descriptions::kTabGridRefactoringName,
      flag_descriptions::kTabGridRefactoringDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGridRefactoring)},
+    {"ios-iph-for-safari-switcher",
+     flag_descriptions::kIPHForSafariSwitcherName,
+     flag_descriptions::kIPHForSafariSwitcherDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIPHForSafariSwitcher)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -63,6 +63,7 @@ source_set("flags") {
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/find_in_page:features",
     "//ios/chrome/browser/follow:feature_flags",
+    "//ios/chrome/browser/iph_for_new_chrome_user",
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/policy:constants",

@@ -7098,6 +7098,23 @@
             ]
         }
     ],
+    "IOSIPHForSafariSwitcher": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Newtab_Tabgrid",
+                    "enable_features": [
+                        "IPHForSafariSwitcher",
+                        "IPH_iOSNewTabToolbarItemFeature",
+                        "IPH_iOSTabGridToolbarItemFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSIPHForSafariSwitcherHistoryOnly": [
         {
             "platforms": [

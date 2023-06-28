@@ -4823,6 +4823,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "ios-iph-for-safari-switcher",
+    "owners": [ "huitingyu", "bling-flags@google.com" ],
+    "expiry_milestone": 121
+  },
+  {
     "name": "ios-new-tab-page-retention",
     "owners": ["bwwilliams", "guiperez", "bling-flags@google.com"],
     "expiry_milestone": 120

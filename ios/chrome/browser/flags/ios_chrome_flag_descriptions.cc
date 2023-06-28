@@ -659,6 +659,10 @@ const char kIOSSharedHighlightingV2Description[] =
     "Enables improvements to text fragments UI, including a menu for removing "
     "or resharing a highlight.";
 
+const char kIPHForSafariSwitcherName[] = "IPH for Safari Switcher";
+const char kIPHForSafariSwitcherDescription[] =
+    "Enables displaying IPH for users who are considered Safari Switcher";
+
 const char kLockBottomToolbarName[] = "Lock bottom toolbar";
 const char kLockBottomToolbarDescription[] =
     "When enabled, the bottom toolbar will not get collapsed when scrolling "

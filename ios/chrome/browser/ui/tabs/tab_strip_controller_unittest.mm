@@ -8,6 +8,7 @@
 
 #import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -69,10 +70,11 @@ class TabStripControllerTest : public PlatformTest {
 
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
-    controller_ =
-        [[TabStripController alloc] initWithBaseViewController:nil
-                                                       browser:browser_.get()
-                                                         style:NORMAL];
+    controller_ = [[TabStripController alloc]
+        initWithBaseViewController:nil
+                           browser:browser_.get()
+                             style:NORMAL
+                 layoutGuideCenter:LayoutGuideCenterForBrowser(browser_.get())];
   }
 
   void TearDown() override {
