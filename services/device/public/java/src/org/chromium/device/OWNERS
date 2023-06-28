@@ -1,0 +1,2 @@
+# For exposing //device features to Java.
+per-file DeviceFeatureList.java=file://device/fido/OWNERS
