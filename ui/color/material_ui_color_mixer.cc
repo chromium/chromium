@@ -76,9 +76,13 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorListItemFolderIconForeground] = {kColorSysOnTonalContainer};
   mixer[kColorListItemUrlFaviconBackground] = {kColorSysNeutralContainer};
   mixer[kColorMenuButtonBackground] = {kColorSysNeutralContainer};
+  mixer[kColorMenuButtonBackgroundSelected] = {GetResultingPaintColor(
+      {kColorSysStateHoverOnSubtle}, {kColorMenuButtonBackground})};
   mixer[kColorMenuIcon] = {kColorSysOnSurfaceSubtle};
   mixer[kColorMenuItemForegroundSecondary] = {kColorSysOnSurfaceSubtle};
   mixer[kColorMenuItemForeground] = {kColorSysOnSurface};
+  mixer[kColorMenuSelectionBackground] = {GetResultingPaintColor(
+      {kColorSysStateHoverOnSubtle}, {kColorMenuBackground})};
   mixer[kColorPrimaryBackground] = {kColorSysSurface};
   mixer[kColorPrimaryForeground] = {kColorSysOnSurface};
   mixer[kColorProgressBar] = {ui::kColorSysPrimary};

@@ -238,9 +238,13 @@ class InMenuButtonBackground : public views::Background {
       if (features::IsChromeRefresh2023() &&
           views::IsViewClass<views::Button>(view)) {
         cc::PaintFlags flags;
-        flags.setColor(provider->GetColor(ui::kColorMenuButtonBackground));
+        flags.setColor(
+            provider->GetColor(state != views::Button::STATE_NORMAL
+                                   ? ui::kColorMenuButtonBackgroundSelected
+                                   : ui::kColorMenuButtonBackground));
         canvas->DrawRoundRect(gfx::RectF(bounds_rect),
                               params.menu_item.corner_radius, flags);
+        return;
       }
       if (state != views::Button::STATE_NORMAL) {
         view->GetNativeTheme()->Paint(

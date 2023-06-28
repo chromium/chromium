@@ -129,6 +129,8 @@ void AddUiColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
   mixer[kColorMenuBackground] = {kColorPrimaryBackground};
   mixer[kColorMenuBorder] = {kColorMidground};
   mixer[kColorMenuButtonBackground] = {kColorMenuBackground};
+  mixer[kColorMenuButtonBackgroundSelected] = {
+      kColorMenuItemBackgroundSelected};
   mixer[kColorMenuDropmarker] = {kColorPrimaryForeground};
   mixer[kColorMenuIcon] = {kColorIcon};
   mixer[kColorMenuItemBackgroundAlertedInitial] =
