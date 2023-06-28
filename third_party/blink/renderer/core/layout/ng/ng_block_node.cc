@@ -1697,10 +1697,9 @@ LogicalSize NGBlockNode::GetReplacedSizeOverrideIfAny(
   if (!box_->IsSVGRoot())
     return LogicalSize();
   const LayoutSVGRoot& svg_root = To<LayoutSVGRoot>(*box_);
-  LayoutSize size_override = svg_root.GetContainerSize();
+  PhysicalSize size_override = svg_root.GetContainerSize();
   if (!size_override.IsEmpty()) {
-    return PhysicalSize(size_override)
-        .ConvertToLogical(Style().GetWritingMode());
+    return size_override.ConvertToLogical(Style().GetWritingMode());
   }
   if (svg_root.IsEmbeddedThroughFrameContainingSVGDocument())
     return space.AvailableSize();

@@ -516,8 +516,10 @@ absl::optional<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
   // re-laying out the image.
   ImageObserverDisabler disable_image_observer(this);
 
-  if (LayoutSVGRoot* layout_root = LayoutRoot())
-    layout_root->SetContainerSize(RoundedLayoutSize(draw_info.ContainerSize()));
+  if (LayoutSVGRoot* layout_root = LayoutRoot()) {
+    layout_root->SetContainerSize(
+        PhysicalSize::FromSizeFFloor(draw_info.ContainerSize()));
+  }
   LocalFrameView* view = GetFrame()->View();
   const gfx::Size rounded_container_size = draw_info.RoundedContainerSize();
   view->Resize(rounded_container_size);
