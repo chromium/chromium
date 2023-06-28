@@ -58,6 +58,80 @@ class StatsEventSubscriber final : public RawEventSubscriber {
   static constexpr char kAudioStatsDictKey[] = "audio";
   static constexpr char kVideoStatsDictKey[] = "video";
 
+  enum CastStat {
+    // Capture frame rate.
+    CAPTURE_FPS,
+    // Encode frame rate.
+    ENCODE_FPS,
+    // Decode frame rate.
+    DECODE_FPS,
+    // Average capture latency in milliseconds.
+    AVG_CAPTURE_LATENCY_MS,
+    // Average encode duration in milliseconds.
+    AVG_ENCODE_TIME_MS,
+    // Duration from when a frame is encoded to when the packet is first
+    // sent.
+    AVG_QUEUEING_LATENCY_MS,
+    // Duration from when a packet is transmitted to when it is received.
+    // This measures latency from sender to receiver.
+    AVG_NETWORK_LATENCY_MS,
+    // Duration from when a frame is encoded to when the packet is first
+    // received.
+    AVG_PACKET_LATENCY_MS,
+    // Average latency between frame encoded and the moment when the frame
+    // is fully received.
+    AVG_FRAME_LATENCY_MS,
+    // Duration from when a frame is captured to when it should be played out.
+    AVG_E2E_LATENCY_MS,
+    // Encode bitrate in kbps.
+    ENCODE_KBPS,
+    // Packet transmission bitrate in kbps.
+    TRANSMISSION_KBPS,
+    // Packet retransmission bitrate in kbps.
+    RETRANSMISSION_KBPS,
+    // Duration in milliseconds since last receiver response.
+    MS_SINCE_LAST_RECEIVER_RESPONSE,
+    // Number of frames captured.
+    NUM_FRAMES_CAPTURED,
+    // Number of frames dropped by encoder.
+    NUM_FRAMES_DROPPED_BY_ENCODER,
+    // Number of late frames.
+    NUM_FRAMES_LATE,
+    // Number of packets that were sent (not retransmitted).
+    NUM_PACKETS_SENT,
+    // Number of packets that were retransmitted.
+    NUM_PACKETS_RETRANSMITTED,
+    // Number of packets that were received by receiver.
+    NUM_PACKETS_RECEIVED,
+    // Number of packets that had their retransmission cancelled.
+    NUM_PACKETS_RTX_REJECTED,
+    // Unix time in milliseconds of first event since reset.
+    FIRST_EVENT_TIME_MS,
+    // Unix time in milliseconds of last event since reset.
+    LAST_EVENT_TIME_MS,
+
+    // Histograms
+    CAPTURE_LATENCY_MS_HISTO,
+    ENCODE_TIME_MS_HISTO,
+    QUEUEING_LATENCY_MS_HISTO,
+    NETWORK_LATENCY_MS_HISTO,
+    PACKET_LATENCY_MS_HISTO,
+    FRAME_LATENCY_MS_HISTO,
+    E2E_LATENCY_MS_HISTO,
+    LATE_FRAME_MS_HISTO,
+
+    // Frame enqueuing rate.
+    ENQUEUE_FPS,
+    // Enum to handle an unknown Openscreen stat that is not yet implemented in
+    // Chrome.
+    UNKNOWN_OPEN_SCREEN_STAT,
+    // Enum to handle an unknown Openscreen histogram that is not yet
+    // implemented in Chrome.
+    UNKNOWN_OPEN_SCREEN_HISTO
+  };
+
+  static const char* CastStatToString(CastStat stat);
+
  private:
   // TODO(b/268543775): Replace friend class declarations with public getters
   // for tests.
@@ -119,69 +193,6 @@ class StatsEventSubscriber final : public RawEventSubscriber {
     std::vector<int> buckets_;
   };
 
-  enum CastStat {
-    // Capture frame rate.
-    CAPTURE_FPS,
-    // Encode frame rate.
-    ENCODE_FPS,
-    // Decode frame rate.
-    DECODE_FPS,
-    // Average capture latency in milliseconds.
-    AVG_CAPTURE_LATENCY_MS,
-    // Average encode duration in milliseconds.
-    AVG_ENCODE_TIME_MS,
-    // Duration from when a frame is encoded to when the packet is first
-    // sent.
-    AVG_QUEUEING_LATENCY_MS,
-    // Duration from when a packet is transmitted to when it is received.
-    // This measures latency from sender to receiver.
-    AVG_NETWORK_LATENCY_MS,
-    // Duration from when a frame is encoded to when the packet is first
-    // received.
-    AVG_PACKET_LATENCY_MS,
-    // Average latency between frame encoded and the moment when the frame
-    // is fully received.
-    AVG_FRAME_LATENCY_MS,
-    // Duration from when a frame is captured to when it should be played out.
-    AVG_E2E_LATENCY_MS,
-    // Encode bitrate in kbps.
-    ENCODE_KBPS,
-    // Packet transmission bitrate in kbps.
-    TRANSMISSION_KBPS,
-    // Packet retransmission bitrate in kbps.
-    RETRANSMISSION_KBPS,
-    // Duration in milliseconds since last receiver response.
-    MS_SINCE_LAST_RECEIVER_RESPONSE,
-    // Number of frames captured.
-    NUM_FRAMES_CAPTURED,
-    // Number of frames dropped by encoder.
-    NUM_FRAMES_DROPPED_BY_ENCODER,
-    // Number of late frames.
-    NUM_FRAMES_LATE,
-    // Number of packets that were sent (not retransmitted).
-    NUM_PACKETS_SENT,
-    // Number of packets that were retransmitted.
-    NUM_PACKETS_RETRANSMITTED,
-    // Number of packets that were received by receiver.
-    NUM_PACKETS_RECEIVED,
-    // Number of packets that had their retransmission cancelled.
-    NUM_PACKETS_RTX_REJECTED,
-    // Unix time in milliseconds of first event since reset.
-    FIRST_EVENT_TIME_MS,
-    // Unix time in milliseconds of last event since reset.
-    LAST_EVENT_TIME_MS,
-
-    // Histograms
-    CAPTURE_LATENCY_MS_HISTO,
-    ENCODE_TIME_MS_HISTO,
-    QUEUEING_LATENCY_MS_HISTO,
-    NETWORK_LATENCY_MS_HISTO,
-    PACKET_LATENCY_MS_HISTO,
-    FRAME_LATENCY_MS_HISTO,
-    E2E_LATENCY_MS_HISTO,
-    LATE_FRAME_MS_HISTO
-  };
-
   struct FrameInfo {
     FrameInfo();
     ~FrameInfo();
@@ -200,8 +211,6 @@ class StatsEventSubscriber final : public RawEventSubscriber {
       PacketEventTimeMap;
   typedef std::map<CastLoggingEvent, FrameLogStats> FrameStatsMap;
   typedef std::map<CastLoggingEvent, PacketLogStats> PacketStatsMap;
-
-  static const char* CastStatToString(CastStat stat);
 
   void InitHistograms();
 
