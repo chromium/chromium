@@ -492,6 +492,13 @@ void OmniboxResultView::ButtonPressed(OmniboxPopupSelection::LineState state,
                                       const ui::Event& event) {
   popup_view_->model()->OpenSelection(
       OmniboxPopupSelection(model_index_, state), event.time_stamp());
+  if (state == OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION) {
+    // The button could be pressed and the deletion successful, but the match
+    // may continue to appear with the X button remaining so it looked like it
+    // didn't delete. There may be a deeper async matches issue involved, but
+    // this seems to help in at least some cases (pedals + entities, e.g. dino).
+    UpdateRemoveSuggestionVisibility();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

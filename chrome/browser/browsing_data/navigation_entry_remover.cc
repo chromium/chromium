@@ -217,13 +217,6 @@ void RemoveNavigationEntries(Profile* profile,
   DCHECK(!profile->IsOffTheRecord());
   DCHECK(!deletion_info.is_from_expiration());
 
-  // For debugging crbug.com/1424800. Remove once this has been resolved.
-  LOG(ERROR) << "RemoveNavigationEntries(), deleted_rows count = "
-             << deletion_info.deleted_rows().size()
-             << ", is_from_expiration = " << deletion_info.is_from_expiration()
-             << ", deletion_reason = "
-             << static_cast<int>(deletion_info.deletion_reason());
-
   base::flat_set<GURL> url_set;
   if (!deletion_info.time_range().IsValid())
     url_set = CreateUrlSet(deletion_info.deleted_rows());

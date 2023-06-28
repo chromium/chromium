@@ -1865,7 +1865,10 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
                                          bool force_update_ui) {
   DCHECK(popup_view_);
 
-  if (controller_->result().empty()) {
+  // `force_update_ui` is precautionary to be sure the UI updates but
+  // omitting it doesn't necessarily mean a bug will appear. We have
+  // seen bugs in the past, though, and it seems to help.
+  if (controller_->result().empty() && !force_update_ui) {
     return;
   }
 
