@@ -15,6 +15,9 @@ const char kOemFolderId[] = "ddb1da55-d478-4243-8642-56d3041f0263";
 // Generated using crx_file::id_util::GenerateId("LinuxAppsFolder")
 const char kCrostiniFolderId[] = "ddolnhmblagmcagkedkbfejapapdimlk";
 
+// Generated using crx_file::id_util::GenerateId("BruschettaAppsFolder")
+const char kBruschettaFolderId[] = "olojmkekngdacpmgcffeipkflkgohcja";
+
 bool IsAppListSearchResultAnApp(AppListSearchResultType result_type) {
   switch (result_type) {
     case AppListSearchResultType::kInstalledApp:

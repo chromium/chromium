@@ -673,8 +673,10 @@ void AppListSyncableService::AddItem(
     VLOG(2) << this << ": AddItem: " << sync_item->ToString() << " Folder: '"
             << folder_id << "'";
 
-    if (folder_id == ash::kCrostiniFolderId)
-      MaybeAddOrUpdateCrostiniFolderSyncData();
+    if (folder_id == ash::kCrostiniFolderId ||
+        folder_id == ash::kBruschettaFolderId) {
+      MaybeAddOrUpdateGuestOsFolderSyncData(folder_id);
+    }
 
     // Create a folder if `app_item`'s parent folder does not exist.
     if (!folder_id.empty()) {
@@ -1689,38 +1691,45 @@ void AppListSyncableService::EnsureOemFolderExists() {
   model_updater_->AddItem(std::move(oem_folder));
 }
 
-void AppListSyncableService::MaybeAddOrUpdateCrostiniFolderSyncData() {
-  const std::string crostini_folder_id = ash::kCrostiniFolderId;
-  if (model_updater_->FindItem(crostini_folder_id)) {
-    // The Crostini folder exists. Therefore its sync data is update-to-date.
+void AppListSyncableService::MaybeAddOrUpdateGuestOsFolderSyncData(
+    const std::string& folder_id) {
+  if (model_updater_->FindItem(folder_id)) {
+    // The folder exists. Therefore its sync data is up-to-date.
     return;
   }
 
-  ChromeAppListItem crostini_folder(profile_, crostini_folder_id,
-                                    model_updater_.get());
-  crostini_folder.SetChromeName(
-      l10n_util::GetStringUTF8(IDS_APP_LIST_CROSTINI_DEFAULT_FOLDER_NAME));
-  crostini_folder.SetIsSystemFolder(true);
-  crostini_folder.SetChromeIsFolder(true);
+  int folder_name_resource = 0;
+  if (folder_id == ash::kCrostiniFolderId) {
+    folder_name_resource = IDS_APP_LIST_CROSTINI_DEFAULT_FOLDER_NAME;
+  } else if (folder_id == ash::kBruschettaFolderId) {
+    folder_name_resource = IDS_APP_LIST_BRUSCHETTA_DEFAULT_FOLDER_NAME;
+  } else {
+    return;
+  }
+  ChromeAppListItem folder(profile_, folder_id, model_updater_.get());
+  folder.SetChromeName(l10n_util::GetStringUTF8(folder_name_resource));
+  folder.SetIsSystemFolder(true);
+  folder.SetChromeIsFolder(true);
 
   // Calculate the Crostini folder's position.
-  const SyncItem* current_sync_data = GetSyncItem(crostini_folder_id);
+  const SyncItem* current_sync_data = GetSyncItem(folder_id);
   if (current_sync_data) {
     const syncer::StringOrdinal& item_position =
         current_sync_data->item_ordinal;
     DCHECK(item_position.IsValid());
-    crostini_folder.SetChromePosition(item_position);
+    folder.SetChromePosition(item_position);
   } else {
-    InitNewItemPosition(&crostini_folder);
+    InitNewItemPosition(&folder);
   }
 
-  // Add or update the Crostini folder's sync data.
+  // Add or update the folder's sync data.
   // Note that we cannot call `AddOrUpdateFromSyncItem()` here because
-  // the Crostini folder is not added to `model_updater_` yet.
-  if (current_sync_data)
-    UpdateSyncItem(&crostini_folder);
-  else
-    CreateSyncItemFromAppItem(&crostini_folder);
+  // the folder is not added to `model_updater_` yet.
+  if (current_sync_data) {
+    UpdateSyncItem(&folder);
+  } else {
+    CreateSyncItemFromAppItem(&folder);
+  }
 }
 
 bool AppListSyncableService::MaybeCreateFolderBeforeAddingItem(

@@ -390,9 +390,9 @@ class AppListSyncableService : public syncer::SyncableService,
   // already exist.
   void EnsureOemFolderExists();
 
-  // Creates or updates the Crostini folder sync data if the Crostini folder is
+  // Creates or updates a GuestOS folder's sync data if the folder is
   // missing.
-  void MaybeAddOrUpdateCrostiniFolderSyncData();
+  void MaybeAddOrUpdateGuestOsFolderSyncData(const std::string& folder_id);
 
   // Creates a folder if the parent folder is missing before adding `app_item`.
   // Returns true if the folder already existed, or if it got created. Returns

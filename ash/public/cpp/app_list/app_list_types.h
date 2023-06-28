@@ -42,6 +42,9 @@ ASH_PUBLIC_EXPORT extern const char kOemFolderId[];
 // The AppListItem ID of the "Linux apps" folder.
 ASH_PUBLIC_EXPORT extern const char kCrostiniFolderId[];
 
+// The AppListItem ID of the "Bruschetta apps" folder.
+ASH_PUBLIC_EXPORT extern const char kBruschettaFolderId[];
+
 // App list config types supported by AppListConfig.
 enum class AppListConfigType {
   // Config for tablet mode on typical size screens.
