@@ -586,7 +586,8 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
 
 // High Efficiency Dialog bubble should add the site it is currently on
 // to the exceptions list if the cancel button of the dialog bubble is clicked.
-// Opening the dialog button again will cause the cancel button to be disabled.
+// Opening the dialog button again will cause the cancel button to give users
+// the option to go to settings instead.
 IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
                        ModifyExceptionsListOnCancelButtonClick) {
   RunTestSequence(
@@ -619,14 +620,21 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
         EXPECT_EQ(current_site_host, added_exception);
       })),
       FlushEvents(),
-      // Dialog's cancel button should now be disabled since the site was added
-      // to the list
+      // Dialog's cancel button should now allow users to navigate to the
+      // performance settings page
       PressButton(kHighEfficiencyChipElementId),
       WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       CheckViewProperty(
           HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
-          &views::Button::GetState,
-          views::Button::ButtonState::STATE_DISABLED));
+          &views::LabelButton::GetText,
+          l10n_util::GetStringUTF16(IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT)),
+      PressButton(HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton),
+      WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      Check(base::BindLambdaForTesting(
+          [&]() { return browser()->tab_strip_model()->GetTabCount() == 3; })),
+      InstrumentTab(kPerformanceSettingsTab, 2),
+      WaitForWebContentsReady(kPerformanceSettingsTab,
+                              GURL(chrome::kChromeUIPerformanceSettingsURL)));
 }
 
 // High Efficiency Dialog bubble's cancel button's state should be preserved
@@ -644,33 +652,37 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
       PressButton(HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton),
       WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       FlushEvents(),
-      // Check that the cancel button is now disabled
+      // Check that the cancel button can go to settings page
       PressButton(kHighEfficiencyChipElementId),
       WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       CheckViewProperty(
           HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
-          &views::Button::GetState, views::Button::ButtonState::STATE_DISABLED),
+          &views::LabelButton::GetText,
+          l10n_util::GetStringUTF16(IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT)),
       PressButton(kHighEfficiencyChipElementId),
       WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
-      // Second tab's cancel button should be normal since the cancel button
-      // wasn't clicked for this tab
+      // Second tab's cancel button should allow users to exclude the site
+      // since this tab's site wasn't excluded yet
       SelectTab(kTabStripElementId, 1),
       PressButton(kHighEfficiencyChipElementId),
       WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       CheckViewProperty(
           HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
-          &views::Button::GetState, views::Button::ButtonState::STATE_NORMAL),
+          &views::LabelButton::GetText,
+          l10n_util::GetStringUTF16(
+              IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST)),
       PressButton(kHighEfficiencyChipElementId),
       WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
-      // Ensure that the first tab's cancel button stays disabled even after we
-      // navigated to another tab
+      // Ensure that the first tab's cancel button continues to allow users
+      // to navigate to the settings page even after we selected another tab
       SelectTab(kTabStripElementId, 0),
       PressButton(kHighEfficiencyChipElementId),
       WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       CheckViewProperty(
           HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton,
-          &views::Button::GetState,
-          views::Button::ButtonState::STATE_DISABLED));
+          &views::LabelButton::GetText,
+          l10n_util::GetStringUTF16(
+              IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT)));
 }
 
 struct FaviconScreenShotTestConfig {
