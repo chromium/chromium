@@ -107,11 +107,15 @@ class InsertObserver : public ui::InputMethodObserver {
 
   void OnTextInputStateChanged(const ui::TextInputClient* client) override {
     focus_change_count_++;
-    // 2 focus changes - 1 for loss of focus in emoji picker, second for
-    // focusing in the new text field.  You would expect this to fail if
-    // the emoji picker window does not have focus in the text field, but
-    // waiting for 2 focus changes is still correct behavior.
-    if (focus_change_count_ == 2) {
+    // At least 2 focus changes - 1 for loss of focus in emoji picker, second
+    // for focusing in the new text field.
+    // And in lacros, we may expect third change to correct text input type (
+    // from initial value to actual correct value).
+    // You would expect this to fail if the emoji picker window does not have
+    // focus in the text field, but waiting for at least 2 focus changes is
+    // still correct behavior.
+
+    if (focus_change_count_ >= 2) {
       // Need to get the client via the IME as InsertText is non-const.
       // Can't use this->ime_ either as it may not be active, want to ensure
       // that we get the active IME.
@@ -135,11 +139,10 @@ class InsertObserver : public ui::InputMethodObserver {
       }
 
       PerformInsert(input_client);
-      DestroySelf();
+      if (this->inserted_) {
+        DestroySelf();
+      }
       return;
-    }
-    if (focus_change_count_ > 2) {
-      DestroySelf();
     }
   }
   void OnFocus() override {}
@@ -172,6 +175,12 @@ class EmojiObserver : public InsertObserver {
       : InsertObserver(ime), emoji_to_insert_(emoji_to_insert) {}
 
   void PerformInsert(ui::TextInputClient* input_client) override {
+    if (input_client->GetTextInputType() ==
+        ui::TextInputType::TEXT_INPUT_TYPE_NONE) {
+      // In some clients (e.g. Sheets), there is an extra focus before the
+      // "real" text input field. so we skip this insertion.
+      return;
+    }
     input_client->InsertText(
         base::UTF8ToUTF16(emoji_to_insert_),
         ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);

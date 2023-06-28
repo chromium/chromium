@@ -104,6 +104,8 @@ class MockTextInputDelegate : public TextInput::Delegate {
               (override));
   MOCK_METHOD(bool, ConfirmComposition, (bool), (override));
   MOCK_METHOD(bool, SupportsConfirmPreedit, (), (override));
+  MOCK_METHOD(bool, HasImageInsertSupport, (), (override));
+  MOCK_METHOD(void, InsertImage, (const GURL& src), (override));
 };
 
 class TestingInputMethodObserver : public ui::InputMethodObserver {

@@ -165,6 +165,13 @@ int GetTextInputExtensionV1Version() {
     // We cannot enable confirm-composition only, because it will be hitting
     // the same issue at version 10. Thus, we'll set version 12 (including
     // all fixes + confirm-composition), or 9 (before everything).
+
+    // If GIF support is also enabled, we need version 13.
+    if (base::FeatureList::IsEnabled(
+            ash::features::kImeSystemEmojiPickerGIFSupport)) {
+      return 13;
+    }
+
     return 12;
   }
 

@@ -159,8 +159,10 @@ void TextInput::SetTypeModeFlags(ui::TextInputType type,
                                  bool should_do_learning,
                                  bool can_compose_inline,
                                  bool surrounding_text_supported) {
-  if (!input_method_)
+  if (!input_method_) {
     return;
+  }
+
   bool changed = (input_type_ != type) || (input_mode_ != mode) ||
                  (flags_ != flags) ||
                  (should_do_learning_ != should_do_learning) ||
@@ -291,6 +293,17 @@ void TextInput::InsertChar(const ui::KeyEvent& event) {
         delegate_->SendKey(event);
       }
     }
+  }
+}
+
+bool TextInput::CanInsertImage() {
+  return delegate_->HasImageInsertSupport() &&
+         input_type_ == ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE;
+}
+
+void TextInput::InsertImage(const GURL& src) {
+  if (CanInsertImage()) {
+    delegate_->InsertImage(src);
   }
 }
 

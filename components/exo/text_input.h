@@ -133,6 +133,12 @@ class TextInput : public ui::TextInputClient,
     // Does the current delegate support the new ConfirmComposition wayland
     // method name confirm_preedit?
     virtual bool SupportsConfirmPreedit() = 0;
+
+    // Checks if InsertImage() is supported via wayland.
+    virtual bool HasImageInsertSupport() = 0;
+
+    // Inserts image.
+    virtual void InsertImage(const GURL& src) = 0;
   };
 
   explicit TextInput(std::unique_ptr<Delegate> delegate);
@@ -201,6 +207,8 @@ class TextInput : public ui::TextInputClient,
   void InsertText(const std::u16string& text,
                   InsertTextCursorBehavior cursor_behavior) override;
   void InsertChar(const ui::KeyEvent& event) override;
+  bool CanInsertImage() override;
+  void InsertImage(const GURL& src) override;
   ui::TextInputType GetTextInputType() const override;
   ui::TextInputMode GetTextInputMode() const override;
   base::i18n::TextDirection GetTextDirection() const override;
