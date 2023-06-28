@@ -527,6 +527,10 @@ third_party/markdown 5 2
 third_party/markdown/extensions 1 1
 third_party/material_web_components/components-chromium/node_modules/lit-html 1 1
 third_party/material_web_components/components-chromium/node_modules/@types/trusted-types 1 1
+third_party/mediapipe/src 2 1
+third_party/mediapipe/src/.github/ISSUE_TEMPLATE 2 1
+third_party/mediapipe/src/mediapipe/calculators/core 1 1
+third_party/mediapipe/src/mediapipe/framework/api2 2 1
 third_party/metrics_proto 2 1
 third_party/microsoft_webauthn 1 1
 third_party/mocha 10 2

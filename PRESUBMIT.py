@@ -694,8 +694,14 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         're2::RE2 instead (crbug.com/755321)',
       ),
       True,
-      # Abseil's benchmarks never linked into chrome.
-      ['third_party/abseil-cpp/.*_benchmark.cc'],
+      [
+        # Abseil's benchmarks never linked into chrome.
+        'third_party/abseil-cpp/.*_benchmark.cc',
+
+        # TODO(b/283522287): MediaPipe is not built into chrome, but will be.
+        # This needs to be fixed first.
+        'third_party/mediapipe/src/.*',
+      ],
     ),
     BanRule(
       r'/\bstd::sto(i|l|ul|ll|ull)\b',

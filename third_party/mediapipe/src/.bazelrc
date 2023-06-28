@@ -1,0 +1,105 @@
+# The bazelrc file for MediaPipe OSS.
+
+# Tensorflow needs remote repo
+common --experimental_repo_remote_exec
+
+# Basic build settings
+build --jobs 128
+build --define='absl=1'  # for gtest
+build --enable_platform_specific_config
+
+# Enable stack traces
+test --test_env="GTEST_INSTALL_FAILURE_SIGNAL_HANDLER=1"
+
+# Linux
+build:linux --cxxopt=-std=c++17
+build:linux --host_cxxopt=-std=c++17
+build:linux --copt=-w
+
+# windows
+build:windows --cxxopt=/std:c++17
+build:windows --host_cxxopt=/std:c++17
+build:windows --copt=/w
+# For using M_* math constants on Windows with MSVC.
+build:windows --copt=/D_USE_MATH_DEFINES
+build:windows --host_copt=/D_USE_MATH_DEFINES
+
+# macOS
+build:macos --cxxopt=-std=c++17
+build:macos --host_cxxopt=-std=c++17
+build:macos --copt=-w
+
+# Sets the default Apple platform to macOS.
+build --apple_platform_type=macos
+
+# Compile ObjC++ files with C++17
+build --per_file_copt=.*\.mm\$@-std=c++17
+
+# Allow debugging with XCODE
+build --apple_generate_dsym
+
+# Android configs.
+# Note: the documentation tells us to use @androidndk//:default_crosstool, but
+# the automatic configuration transition uses //external:android/crosstool.
+# Using it here works and spares us from having two different config_settings
+# for Android.
+build:android --crosstool_top=//external:android/crosstool
+build:android --host_crosstool_top=@bazel_tools//tools/cpp:toolchain
+build:android --linkopt=-landroid
+build:android --linkopt=-ldl
+build:android --linkopt=-llog
+build:android --linkopt=-lm
+build:android --linkopt=-Wl,--gc-sections
+
+build:android_arm --config=android
+build:android_arm --cpu=armeabi-v7a
+build:android_arm --fat_apk_cpu=armeabi-v7a
+
+build:android_arm64 --config=android
+build:android_arm64 --cpu=arm64-v8a
+build:android_arm64 --fat_apk_cpu=arm64-v8a
+
+# iOS configs.
+build:ios --apple_platform_type=ios
+build:ios --copt=-fno-aligned-allocation
+
+build:ios_i386 --config=ios
+build:ios_i386 --cpu=ios_i386
+build:ios_i386 --watchos_cpus=i386
+
+build:ios_x86_64 --config=ios
+build:ios_x86_64 --cpu=ios_x86_64
+build:ios_x86_64 --watchos_cpus=i386
+
+build:ios_armv7 --config=ios
+build:ios_armv7 --cpu=ios_armv7
+build:ios_armv7 --watchos_cpus=armv7k
+
+build:ios_arm64 --config=ios
+build:ios_arm64 --cpu=ios_arm64
+build:ios_arm64 --watchos_cpus=armv7k
+
+build:ios_arm64e --config=ios
+build:ios_arm64e --cpu=ios_arm64e
+build:ios_arm64e --watchos_cpus=armv7k
+
+build:ios_fat --config=ios
+build:ios_fat --ios_multi_cpus=armv7,arm64
+build:ios_fat --watchos_cpus=armv7k
+
+build:ios_sim_fat --config=ios
+build:ios_sim_fat --ios_multi_cpus=x86_64,sim_arm64
+
+build:darwin_x86_64 --apple_platform_type=macos
+build:darwin_x86_64 --macos_minimum_os=10.12
+build:darwin_x86_64 --cpu=darwin_x86_64
+
+build:darwin_arm64 --apple_platform_type=macos
+build:darwin_arm64 --macos_minimum_os=10.16
+build:darwin_arm64 --cpu=darwin_arm64
+
+# This bazelrc file is meant to be written by a setup script.
+try-import %workspace%/.configure.bazelrc
+
+# This bazelrc file can be used for user-specific custom build settings.
+try-import %workspace%/.user.bazelrc
