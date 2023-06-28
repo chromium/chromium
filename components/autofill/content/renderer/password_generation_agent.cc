@@ -334,7 +334,10 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
   // static cast is workaround for linker error.
   DCHECK_LE(static_cast<size_t>(kMinimumLengthForEditedPassword),
             password.size());
-  DCHECK(current_generation_item_);
+  // Check that the navigation in between didn't reset the state.
+  if (!current_generation_item_) {
+    return;
+  }
   current_generation_item_->password_is_generated_ = true;
   current_generation_item_->password_edited_ = false;
   password_generation::LogPasswordGenerationEvent(

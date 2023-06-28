@@ -1069,6 +1069,21 @@ TEST_F(PasswordGenerationAgentTest, FallbackForSaving) {
   EXPECT_EQ(2, fake_driver_.called_inform_about_user_input_count());
 }
 
+TEST_F(PasswordGenerationAgentTest, AcceptAfterNavigation) {
+  LoadHTMLWithUserGesture(kAccountCreationFormHTML);
+  SetFoundFormEligibleForGeneration(
+      password_generation_, GetMainFrame()->GetDocument(),
+      /*new_password_id=*/"first_password", /*confirm_password_id=*/nullptr);
+  ExpectAutomaticGenerationAvailable("first_password", kAvailable);
+
+  // Navigation happens. Then browser UI accepts the generated password. It
+  // should not crash.
+  EXPECT_CALL(fake_pw_client_, GenerationElementLostFocus());
+  LoadHTMLWithUserGesture(kSigninFormHTML);
+  EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword).Times(0);
+  password_generation_->GeneratedPasswordAccepted(u"random_password");
+}
+
 TEST_F(PasswordGenerationAgentTest, FormClassifierDisabled) {
   LoadHTMLWithUserGesture(kSigninFormHTML);
   ExpectFormClassifierVoteReceived(false /* vote is not expected */,
