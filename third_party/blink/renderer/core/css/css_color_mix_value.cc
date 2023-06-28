@@ -58,23 +58,29 @@ bool CSSColorMixValue::Equals(const CSSColorMixValue& other) const {
          hue_interpolation_method_ == other.hue_interpolation_method_;
 }
 
+// https://drafts.csswg.org/css-color-5/#serial-color-mix
 String CSSColorMixValue::CustomCSSText() const {
-  // color-mix values with currentColor as one of the components cannot be
-  // eagerly resolved (https://github.com/w3c/csswg-drafts/issues/6168)
-  // Color keywords should be handled similarly.
   StringBuilder result;
   result.Append("color-mix(in ");
   result.Append(Color::SerializeInterpolationSpace(color_interpolation_space_,
                                                    hue_interpolation_method_));
   result.Append(", ");
   result.Append(color1_->CssText());
-  if (percentage1_) {
+  if (percentage1_ && percentage1_->GetDoubleValue() != 50.0) {
     result.Append(" ");
     result.Append(percentage1_->CssText());
   }
+  if (!percentage1_ && percentage2_ && percentage2_->GetDoubleValue() != 50.0) {
+    result.Append(" ");
+    result.AppendNumber(100.0 - percentage2_->GetDoubleValue());
+    result.Append("%");
+  }
   result.Append(", ");
   result.Append(color2_->CssText());
-  if (percentage2_) {
+  if (percentage1_ && percentage2_ &&
+      percentage1_->GetDoubleValue() + percentage2_->GetDoubleValue() !=
+          100.0 &&
+      percentage2_->GetDoubleValue() != 50.0) {
     result.Append(" ");
     result.Append(percentage2_->CssText());
   }
