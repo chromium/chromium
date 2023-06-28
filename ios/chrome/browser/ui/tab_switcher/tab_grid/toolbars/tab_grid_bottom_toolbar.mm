@@ -284,16 +284,7 @@
                            target:nil
                            action:nil];
 
-  if (@available(iOS 15, *)) {
-    _smallNewTabButton = [[TabGridNewTabButton alloc] initWithLargeSize:NO];
-  } else {
-    _smallNewTabButton = [[TabGridNewTabButton alloc]
-        initWithRegularImage:[UIImage
-                                 imageNamed:@"tab_grid_new_tab_button_ios14"]
-              incognitoImage:
-                  [UIImage
-                      imageNamed:@"tab_grid_new_tab_button_incognito_ios14"]];
-  }
+  _smallNewTabButton = [[TabGridNewTabButton alloc] initWithLargeSize:NO];
 
   _smallNewTabButton.translatesAutoresizingMaskIntoConstraints = NO;
   _smallNewTabButton.page = self.page;
@@ -332,32 +323,17 @@
   ];
 
   // For other layout, display a floating new tab button.
-  if (@available(iOS 15, *)) {
-    _largeNewTabButton = [[TabGridNewTabButton alloc] initWithLargeSize:YES];
+  _largeNewTabButton = [[TabGridNewTabButton alloc] initWithLargeSize:YES];
 
-    // When a11y font size is used, long press on UIBarButtonItem will show a
-    // built-in a11y modal panel with image and title if set. The size is not
-    // taken into account.
-    if (base::FeatureList::IsEnabled(kSFSymbolsFollowUp)) {
-      _newTabButtonItem.image =
-          CustomSymbolWithPointSize(kPlusCircleFillSymbol, 0);
-    } else {
-      _newTabButtonItem.image =
-          CustomSymbolWithPointSize(kLegacyPlusCircleFillSymbol, 0);
-    }
+  // When a11y font size is used, long press on UIBarButtonItem will show a
+  // built-in a11y modal panel with image and title if set. The size is not
+  // taken into account.
+  if (base::FeatureList::IsEnabled(kSFSymbolsFollowUp)) {
+    _newTabButtonItem.image =
+        CustomSymbolWithPointSize(kPlusCircleFillSymbol, 0);
   } else {
-    UIImage* regularImage =
-        [UIImage imageNamed:@"tab_grid_new_tab_floating_button_ios14"];
-    UIImage* incognitoImage = [UIImage
-        imageNamed:@"tab_grid_new_tab_floating_button_incognito_ios14"];
-    _largeNewTabButton =
-        [[TabGridNewTabButton alloc] initWithRegularImage:regularImage
-                                           incognitoImage:incognitoImage];
-
-    // When a11y font size is used, long press on UIBarButtonItem will show a
-    // built-in a11y modal panel with image and title if set. The size is not
-    // taken into account.
-    _newTabButtonItem.image = DefaultSymbolWithPointSize(kPlusSymbol, 0);
+    _newTabButtonItem.image =
+        CustomSymbolWithPointSize(kLegacyPlusCircleFillSymbol, 0);
   }
   _largeNewTabButton.translatesAutoresizingMaskIntoConstraints = NO;
   _largeNewTabButton.page = self.page;

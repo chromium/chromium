@@ -30,10 +30,6 @@ const CGFloat kLargeSymbolSize = 37;
 
 @interface TabGridNewTabButton ()
 
-// Images for the open new tab button.
-@property(nonatomic, strong) UIImage* regularImage;
-@property(nonatomic, strong) UIImage* incognitoImage;
-
 @property(nonatomic, strong) UIImage* symbol;
 
 @end
@@ -57,65 +53,16 @@ const CGFloat kLargeSymbolSize = 37;
   return self;
 }
 
-- (instancetype)initWithRegularImage:(UIImage*)regularImage
-                      incognitoImage:(UIImage*)incognitoImage {
-  self = [super initWithFrame:CGRectZero];
-  if (self) {
-    if (@available(iOS 15, *)) {
-      NOTREACHED();
-    }
-    _regularImage = regularImage;
-    _incognitoImage = incognitoImage;
-
-    self.pointerInteractionEnabled = YES;
-    self.pointerStyleProvider = CreateLiftEffectCirclePointerStyleProvider();
-  }
-  return self;
-}
-
 #pragma mark - Public
 
 - (void)setPage:(TabGridPage)page {
-  if (@available(iOS 15, *)) {
-    [self setSymbolPage:page];
-  } else {
-    [self setIconPage:page];
-  }
+  [self setSymbolPage:page];
 }
 
 #pragma mark - Private
 
-// Sets page using icon images.
-- (void)setIconPage:(TabGridPage)page {
-  if (@available(iOS 15, *)) {
-    NOTREACHED();
-  }
-  // self.page is inited to 0 (i.e. TabGridPageIncognito) so do not early return
-  // here, otherwise when app is launched in incognito mode the image will be
-  // missing.
-  UIImage* renderedImage;
-  switch (page) {
-    case TabGridPageIncognitoTabs:
-      self.accessibilityLabel =
-          l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_INCOGNITO_TAB);
-      renderedImage = [_incognitoImage
-          imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-      break;
-    case TabGridPageRegularTabs:
-      self.accessibilityLabel =
-          l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB);
-      renderedImage = [_regularImage
-          imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-      break;
-    case TabGridPageRemoteTabs:
-      break;
-  }
-  _page = page;
-  [self setImage:renderedImage forState:UIControlStateNormal];
-}
-
 // Sets page using a symbol image.
-- (void)setSymbolPage:(TabGridPage)page API_AVAILABLE(ios(15)) {
+- (void)setSymbolPage:(TabGridPage)page {
   switch (page) {
     case TabGridPageIncognitoTabs:
       self.accessibilityLabel =
