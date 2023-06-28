@@ -520,14 +520,11 @@ class PreflightController::PreflightLoader final {
     // Check if we need user permission to access the private network. This
     // only happens if we skipped the mixed content check before sending the
     // preflight.
-    //
-    // TODO(https://crbug.com/455121): check whether the request if
-    // potentially-trustworthy as what mixed content checks do instead.
     const bool needs_permission =
         base::FeatureList::IsEnabled(
             features::kPrivateNetworkAccessPermissionPrompt) &&
         client_security_state_->is_web_secure_context &&
-        !original_request_.url.SchemeIsCryptographic();
+        !IsUrlPotentiallyTrustworthy(original_request_.url);
     if (!needs_permission) {
       FinishHandleResponseHeader(net_error, std::move(detected_error_status),
                                  std::move(result));
