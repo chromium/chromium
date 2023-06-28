@@ -145,6 +145,7 @@ class MockNtpCustomBackgroundService : public NtpCustomBackgroundService {
   explicit MockNtpCustomBackgroundService(Profile* profile)
       : NtpCustomBackgroundService(profile) {}
   MOCK_METHOD(void, RefreshBackgroundIfNeeded, ());
+  MOCK_METHOD(void, VerifyCustomBackgroundImageURL, ());
   MOCK_METHOD(absl::optional<CustomBackground>, GetCustomBackground, ());
   MOCK_METHOD(void, AddObserver, (NtpCustomBackgroundServiceObserver*));
 };
@@ -276,9 +277,17 @@ class NewTabPageHandlerTest : public testing::Test {
     EXPECT_CALL(*mock_promo_service_, AddObserver)
         .Times(1)
         .WillOnce(testing::SaveArg<0>(&promo_service_observer_));
-    EXPECT_CALL(mock_page_, SetTheme).Times(1);
-    EXPECT_CALL(mock_ntp_custom_background_service_, RefreshBackgroundIfNeeded)
-        .Times(1);
+    if (!base::FeatureList::IsEnabled(
+            ntp_features::kNtpBackgroundImageErrorDetection)) {
+      EXPECT_CALL(mock_page_, SetTheme).Times(1);
+      EXPECT_CALL(mock_ntp_custom_background_service_,
+                  RefreshBackgroundIfNeeded)
+          .Times(1);
+    } else {
+      EXPECT_CALL(mock_ntp_custom_background_service_,
+                  VerifyCustomBackgroundImageURL)
+          .Times(1);
+    }
     webui::SetThemeProviderForTesting(&mock_theme_provider_);
     web_contents_->SetColorProviderSource(&mock_color_provider_source_);
     const std::vector<std::pair<const std::string, int>> module_id_names = {
@@ -370,7 +379,7 @@ class NewTabPageHandlerTest : public testing::Test {
 
 class NewTabPageHandlerThemeTest
     : public NewTabPageHandlerTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   NewTabPageHandlerThemeTest() {
     std::vector<base::test::FeatureRef> enabled_features;
@@ -388,12 +397,21 @@ class NewTabPageHandlerThemeTest
       disabled_features.push_back(ntp_features::kCustomizeChromeSidePanel);
     }
 
+    if (BackgroundImageErrorDetection()) {
+      enabled_features.push_back(
+          ntp_features::kNtpBackgroundImageErrorDetection);
+    } else {
+      disabled_features.push_back(
+          ntp_features::kNtpBackgroundImageErrorDetection);
+    }
+
     feature_list_.InitWithFeatures(std::move(enabled_features),
                                    std::move(disabled_features));
   }
 
   bool RemoveScrim() const { return std::get<0>(GetParam()); }
   bool CustomizeChromeSidePanel() const { return std::get<1>(GetParam()); }
+  bool BackgroundImageErrorDetection() const { return std::get<2>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -666,6 +684,7 @@ TEST_P(NewTabPageHandlerThemeTest, SetThirdPartyTheme) {
 INSTANTIATE_TEST_SUITE_P(All,
                          NewTabPageHandlerThemeTest,
                          ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool(),
                                             ::testing::Bool()));
 
 TEST_F(NewTabPageHandlerTest, Histograms) {

@@ -460,7 +460,12 @@ NewTabPageHandler::NewTabPageHandler(
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
   promo_service_observation_.Observe(promo_service_.get());
-  OnThemeChanged();
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kNtpBackgroundImageErrorDetection)) {
+    ntp_custom_background_service_->VerifyCustomBackgroundImageURL();
+  } else {
+    OnThemeChanged();
+  }
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(

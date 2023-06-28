@@ -17,6 +17,7 @@
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "ui/gfx/color_utils.h"
 
 class NtpCustomBackgroundServiceObserver;
@@ -92,9 +93,6 @@ class NtpCustomBackgroundService : public KeyedService,
   bool IsCustomBackgroundSet();
 
   void AddValidBackdropUrlForTesting(const GURL& url) const;
-  void AddValidBackdropCollectionForTesting(
-      const std::string& collection_id) const;
-  void SetNextCollectionImageForTesting(const CollectionImage& image) const;
   void SetClockForTesting(base::Clock* clock);
 
   // TODO: Make private when color extraction is refactored outside of this
@@ -105,8 +103,13 @@ class NtpCustomBackgroundService : public KeyedService,
       const gfx::Image& fetched_image,
       const image_fetcher::RequestMetadata& metadata);
 
+  // Requests an asynchronous fetch of a custom background image's URL headers.
+  // Virtual for testing.
+  virtual void VerifyCustomBackgroundImageURL();
+
  private:
   void SetBackgroundToLocalResource();
+  void ForceRefreshBackground();
   // Returns false if the custom background pref cannot be parsed, otherwise
   // returns true.
   bool IsCustomBackgroundPrefValid();
@@ -120,9 +123,16 @@ class NtpCustomBackgroundService : public KeyedService,
   void FetchCustomBackgroundAndExtractBackgroundColor(const GURL& image_url,
                                                       const GURL& fetch_url);
 
+  // Callback that updates custom background information after the fetch of its
+  // URL's headers has been completed.
+  void OnCustomBackgroundURLHeadersReceived(
+      const GURL& verified_custom_background_url,
+      int headers_response_code);
+
   const raw_ptr<Profile> profile_;
   raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   raw_ptr<ThemeService, DanglingUntriaged> theme_service_;
+  std::unique_ptr<network::SimpleURLLoader> custom_background_image_url_loader_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<NtpBackgroundService, DanglingUntriaged> background_service_;
   base::ScopedObservation<NtpBackgroundService, NtpBackgroundServiceObserver>

@@ -6,10 +6,12 @@
 
 #include <string>
 
+#include "base/barrier_callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -29,6 +31,9 @@
 #include "components/search/ntp_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/http/http_status_code.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_analysis.h"
@@ -473,16 +478,6 @@ void NtpCustomBackgroundService::AddValidBackdropUrlForTesting(
   background_service_->AddValidBackdropUrlForTesting(url);
 }
 
-void NtpCustomBackgroundService::AddValidBackdropCollectionForTesting(
-    const std::string& collection_id) const {
-  background_service_->AddValidBackdropCollectionForTesting(collection_id);
-}
-
-void NtpCustomBackgroundService::SetNextCollectionImageForTesting(
-    const CollectionImage& image) const {
-  background_service_->SetNextCollectionImageForTesting(image);
-}
-
 void NtpCustomBackgroundService::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
 }
@@ -505,10 +500,36 @@ void NtpCustomBackgroundService::UpdateCustomBackgroundColorAsync(
           weak_ptr_factory_.GetWeakPtr(), image_url));
 }
 
+void NtpCustomBackgroundService::VerifyCustomBackgroundImageURL() {
+  auto custom_background = GetCustomBackground();
+  if (custom_background && !custom_background->is_uploaded_image) {
+    GURL custom_background_url = custom_background->custom_background_url;
+    background_service_->VerifyImageURL(
+        custom_background_url,
+        base::BindOnce(
+            &NtpCustomBackgroundService::OnCustomBackgroundURLHeadersReceived,
+            weak_ptr_factory_.GetWeakPtr(), custom_background_url));
+  } else {
+    NotifyAboutBackgrounds();
+  }
+}
+
 void NtpCustomBackgroundService::SetBackgroundToLocalResource() {
   background_updated_timestamp_ = base::TimeTicks::Now();
   pref_service_->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice, true);
   NotifyAboutBackgrounds();
+}
+
+void NtpCustomBackgroundService::ForceRefreshBackground() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  const base::Value::Dict& background_info =
+      profile_->GetPrefs()->GetDict(prefs::kNtpCustomBackgroundDict);
+  std::string collection_id =
+      background_info.Find(kNtpCustomBackgroundCollectionId)->GetString();
+  std::string resume_token =
+      background_info.Find(kNtpCustomBackgroundResumeToken)->GetString();
+  background_service_->FetchNextCollectionImage(collection_id, resume_token);
 }
 
 bool NtpCustomBackgroundService::IsCustomBackgroundPrefValid() {
@@ -590,4 +611,28 @@ void NtpCustomBackgroundService::FetchCustomBackgroundAndExtractBackgroundColor(
           &NtpCustomBackgroundService::UpdateCustomBackgroundColorAsync,
           weak_ptr_factory_.GetWeakPtr(), image_url),
       std::move(params));
+}
+
+void NtpCustomBackgroundService::OnCustomBackgroundURLHeadersReceived(
+    const GURL& verified_custom_background_url,
+    int headers_response_code) {
+  // URL headers are fetched asynchronously. If the user's background changed
+  // during the header fetch, we do not need to do anything.
+  auto custom_background = GetCustomBackground();
+  if (!custom_background.has_value() ||
+      custom_background->custom_background_url !=
+          verified_custom_background_url) {
+    return;
+  }
+
+  if (headers_response_code != net::HTTP_NOT_FOUND) {
+    NotifyAboutBackgrounds();
+    return;
+  }
+
+  if (custom_background->daily_refresh_enabled) {
+    ForceRefreshBackground();
+  } else {
+    ResetCustomBackgroundInfo();
+  }
 }

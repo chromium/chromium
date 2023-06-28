@@ -4,7 +4,7 @@
 
 #include "chrome/browser/search/background/ntp_background_service.h"
 
-#include "base/barrier_callback.h"
+#include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
@@ -299,13 +299,20 @@ void NtpBackgroundService::OnCollectionImageInfoFetchComplete(
 
   if (base::FeatureList::IsEnabled(
           ntp_features::kNtpBackgroundImageErrorDetection)) {
-    const auto image_error_detection_callback = base::BarrierCallback<bool>(
-        images_response.images_size(),
-        base::BindOnce(&NtpBackgroundService::CollectionImagesURLsVerified,
-                       base::Unretained(this)));
+    const auto collection_urls_verification_complete_closure =
+        base::BarrierClosure(
+            images_response.images_size(),
+            base::BindOnce(&NtpBackgroundService::NotifyObservers,
+                           base::Unretained(this),
+                           FetchComplete::COLLECTION_IMAGE_INFO));
     for (int i = 0; i < images_response.images_size(); ++i) {
-      VerifyCollectionImageURL(images_response.images(i),
-                               image_error_detection_callback);
+      const ntp::background::Image image = images_response.images(i);
+      VerifyImageURL(
+          GURL(image.image_url()),
+          base::BindOnce(
+              &NtpBackgroundService::OnCollectionImageURLHeadersReceived,
+              base::Unretained(this), image,
+              collection_urls_verification_complete_closure));
     }
   } else {
     for (int i = 0; i < images_response.images_size(); ++i) {
@@ -316,11 +323,11 @@ void NtpBackgroundService::OnCollectionImageInfoFetchComplete(
   }
 }
 
-void NtpBackgroundService::VerifyCollectionImageURL(
-    const ntp::background::Image& image,
-    base::OnceCallback<void(bool)> callback) {
+void NtpBackgroundService::VerifyImageURL(
+    const GURL& url,
+    base::OnceCallback<void(int)> image_url_headers_received_callback) {
   constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("backdrop_image_link_verification",
+      net::DefineNetworkTrafficAnnotation("ntp_image_url_verification",
                                           R"(
         semantics {
           sender: "Desktop NTP Background Selector"
@@ -331,10 +338,11 @@ void NtpBackgroundService::VerifyCollectionImageURL(
             "This fetches a wallpaper image's link to make sure its "
             "resource is reachable."
           trigger:
-            "Clicking a theme collection on the New Tab page."
+            "When the user has a non-uploaded background image set and "
+            "opens the New Tab Page, or when a user clicks a theme "
+            "collection on the New Tab Page."
           data:
-            "The HTTP headers for each background image in the "
-            "theme collection."
+            "The HTTP headers for a NTP background image."
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
@@ -344,7 +352,7 @@ void NtpBackgroundService::VerifyCollectionImageURL(
           user_data {
             type: NONE
           }
-          last_reviewed: "2023-06-13"
+          last_reviewed: "2023-06-14"
         }
         policy {
           cookies_allowed: NO
@@ -360,7 +368,7 @@ void NtpBackgroundService::VerifyCollectionImageURL(
         })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = "GET";
-  resource_request->url = GURL(image.image_url());
+  resource_request->url = url;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   std::unique_ptr<network::SimpleURLLoader> image_url_header_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
@@ -378,32 +386,32 @@ void NtpBackgroundService::VerifyCollectionImageURL(
   image_url_header_loader_ptr->DownloadHeadersOnly(
       url_loader_factory_.get(),
       base::BindOnce(&NtpBackgroundService::OnImageURLHeadersFetchComplete,
-                     base::Unretained(this), std::move(it), image,
-                     std::move(callback)));
+                     base::Unretained(this), std::move(it),
+                     std::move(image_url_headers_received_callback)));
 }
 
 void NtpBackgroundService::OnImageURLHeadersFetchComplete(
     ImageURLHeaderLoaderList::iterator it,
-    const ntp::background::Image& image,
-    base::OnceCallback<void(bool)> callback,
+    base::OnceCallback<void(int)> image_url_headers_received_callback,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   if (pending_image_url_header_loaders_.empty()) {
     return;
   }
 
   pending_image_url_header_loaders_.erase(it);
-  if (headers && headers->response_code() == net::HTTP_OK) {
-    collection_images_.push_back(CollectionImage::CreateFromProto(
-        requested_collection_id_, image, image_options_));
-    std::move(callback).Run(true);
-  } else {
-    std::move(callback).Run(false);
-  }
+  std::move(image_url_headers_received_callback)
+      .Run(headers ? headers->response_code() : 0);
 }
 
-void NtpBackgroundService::CollectionImagesURLsVerified(
-    const std::vector<bool>& results) {
-  NotifyObservers(FetchComplete::COLLECTION_IMAGE_INFO);
+void NtpBackgroundService::OnCollectionImageURLHeadersReceived(
+    ntp::background::Image image,
+    base::OnceClosure collection_urls_verification_complete_closure,
+    int headers_response_code) {
+  if (headers_response_code == net::HTTP_OK) {
+    collection_images_.push_back(CollectionImage::CreateFromProto(
+        requested_collection_id_, image, image_options_));
+  }
+  std::move(collection_urls_verification_complete_closure).Run();
 }
 
 void NtpBackgroundService::FetchNextCollectionImage(

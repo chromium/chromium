@@ -285,10 +285,10 @@ after discussions on the right group.
       <annotation id="crash_file_uploader"/>
       <annotation id="glanceables_classroom_integration"/>
       <annotation id="promise_app_service_download_icon"/>
-      <annotation id="backdrop_image_link_verification"/>
       <annotation id="ip_protection_service_get_token"/>
       <annotation id="supervised_user_request_blocked_site_permission"/>
       <annotation id="password_sharing_recipients"/>
+      <annotation id="ntp_image_url_verification"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

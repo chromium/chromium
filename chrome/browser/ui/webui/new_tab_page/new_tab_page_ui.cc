@@ -649,7 +649,15 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
 
   // Populates the load time data with basic info.
   OnColorProviderChanged();
-  OnCustomBackgroundImageUpdated();
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kNtpBackgroundImageErrorDetection)) {
+    // The frontend expects a value for |backgroundImageUrl| at startup. We
+    // initialize it here then update the value after we verify the URL
+    // works using NtpCustomBackgroundService::VerifyCustomBackgroundImageURL.
+    source->AddString("backgroundImageUrl", "");
+  } else {
+    OnCustomBackgroundImageUpdated();
+  }
   OnLoad();
 }
 

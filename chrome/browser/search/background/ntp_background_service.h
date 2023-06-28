@@ -61,6 +61,11 @@ class NtpBackgroundService : public KeyedService {
       const std::string& collection_id,
       const absl::optional<std::string>& resume_token);
 
+  // Requests an asynchronous fetch of an image's URL headers.
+  virtual void VerifyImageURL(
+      const GURL& url,
+      base::OnceCallback<void(int)> image_url_headers_received_callback);
+
   // Add/remove observers. All observers must unregister themselves before the
   // NtpBackgroundService is destroyed.
   virtual void AddObserver(NtpBackgroundServiceObserver* observer);
@@ -70,7 +75,8 @@ class NtpBackgroundService : public KeyedService {
   bool IsValidBackdropUrl(const GURL& url) const;
 
   // Check that |collection_id| is one of the fetched collections.
-  bool IsValidBackdropCollection(const std::string& collection_id) const;
+  virtual bool IsValidBackdropCollection(
+      const std::string& collection_id) const;
 
   void AddValidBackdropUrlForTesting(const GURL& url);
   void AddValidBackdropCollectionForTesting(const std::string& collection_id);
@@ -148,26 +154,23 @@ class NtpBackgroundService : public KeyedService {
   void OnCollectionImageInfoFetchComplete(
       const std::unique_ptr<std::string> response_body);
 
+  // Callback that processes the response from VerifyCollectionImageURL request.
+  void OnImageURLHeadersFetchComplete(
+      ImageURLHeaderLoaderList::iterator it,
+      base::OnceCallback<void(int)> image_url_headers_received_callback,
+      scoped_refptr<net::HttpResponseHeaders> headers);
+  // Callback that refreshes the contents of collection_images_ with images
+  // whose resources could be reached.
+  void OnCollectionImageURLHeadersReceived(
+      ntp::background::Image image,
+      base::OnceClosure collection_urls_verification_complete_closure,
+      int headers_response_code);
+
   // Callback that processes the response from the FetchNextCollectionImage
   // request, refreshing the contents of next_collection_image_ and
   // next_resume_token_ with server-provided data.
   void OnNextImageInfoFetchComplete(
       const std::unique_ptr<std::string> response_body);
-
-  // Verifies that the resource at a collection image's URL can be reached.
-  void VerifyCollectionImageURL(const ntp::background::Image& image,
-                                base::OnceCallback<void(bool)> callback);
-  // Callback that processes the response from VerifyCollectionImageURL request,
-  // refreshing the contents of collection_images_ with images whose resources
-  // could be reached.
-  void OnImageURLHeadersFetchComplete(
-      ImageURLHeaderLoaderList::iterator it,
-      const ntp::background::Image& image,
-      base::OnceCallback<void(bool)> callback,
-      scoped_refptr<net::HttpResponseHeaders> headers);
-  // Callback that notifies observers that fetch of CollectionImages has
-  // completed.
-  void CollectionImagesURLsVerified(const std::vector<bool>& results);
 
   enum class FetchComplete {
     // Indicates that asynchronous fetch of CollectionInfo has completed.
