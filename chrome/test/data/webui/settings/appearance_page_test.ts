@@ -4,7 +4,7 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl,HomeUrlInputElement, SettingsAppearancePageElement, SystemTheme} from 'chrome://settings/settings.js';
+import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl, HomeUrlInputElement, SettingsAppearancePageElement, SettingsToggleButtonElement, SystemTheme} from 'chrome://settings/settings.js';
 import {assertEquals,assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -21,6 +21,7 @@ class TestAppearanceBrowserProxy extends TestBrowserProxy implements
       'getDefaultZoom',
       'getThemeInfo',
       'isChildAccount',
+      'recordHoverCardImagesEnabledChanged',
       'useDefaultTheme',
       // <if expr="is_linux">
       'useGtkTheme',
@@ -56,6 +57,10 @@ class TestAppearanceBrowserProxy extends TestBrowserProxy implements
   isChildAccount() {
     this.methodCalled('isChildAccount');
     return this.isChildAccount_;
+  }
+
+  recordHoverCardImagesEnabledChanged(enabled: boolean) {
+    this.methodCalled('recordHoverCardImagesEnabledChanged', enabled);
   }
 
   useDefaultTheme() {
@@ -355,5 +360,43 @@ suite('HomeUrlInput', function() {
         new CustomEvent('change', {bubbles: true, composed: true}));
     flush();
     assertEquals(homeUrlInput.value, 'test');
+  });
+});
+
+suite('HoverCardSettings', function() {
+  const HOVER_CARD_IMAGES_PREF = 'browser.hovercard_images_enabled';
+
+  setup(function() {
+    loadTimeData.overrideValues({
+      showHoverCardImagesOption: true,
+    });
+
+    createAppearancePage();
+    appearancePage.set('prefs.browser', {
+      hovercard_images_enabled: {
+        value: false,
+      },
+    });
+  });
+
+  test('hover card image preview toggle', async function() {
+    const toggle =
+        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#hoverCardImagesToggle');
+    assertTrue(!!toggle);
+    assertFalse(toggle.checked);
+
+    toggle.click();
+    assertTrue(toggle.checked);
+    assertTrue(appearancePage.getPref(HOVER_CARD_IMAGES_PREF).value);
+    assertTrue(await appearanceBrowserProxy.whenCalled(
+        'recordHoverCardImagesEnabledChanged'));
+
+    appearanceBrowserProxy.reset();
+    toggle.click();
+    assertFalse(toggle.checked);
+    assertFalse(appearancePage.getPref(HOVER_CARD_IMAGES_PREF).value);
+    assertFalse(await appearanceBrowserProxy.whenCalled(
+        'recordHoverCardImagesEnabledChanged'));
   });
 });

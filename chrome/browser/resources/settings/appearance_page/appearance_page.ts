@@ -19,6 +19,7 @@ import './home_url_input.js';
 import '/shared/settings/controls/settings_dropdown_menu.js';
 
 import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '/shared/settings/controls/settings_dropdown_menu.js';
+import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -397,6 +398,11 @@ export class SettingsAppearancePageElement extends
 
   private showHr_(previousIsVisible: boolean, nextIsVisible: boolean): boolean {
     return previousIsVisible && nextIsVisible;
+  }
+
+  private onHoverCardImagesEnabledChange_(event: Event) {
+    const enabled = (event.target as SettingsToggleButtonElement).checked;
+    this.appearanceBrowserProxy_.recordHoverCardImagesEnabledChanged(enabled);
   }
 
   private onManagedDialogClosed_() {

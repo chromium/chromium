@@ -238,6 +238,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.HoverCards.ImagePreview.Enabled"
+    enum="BooleanEnabled" expires_after="M120">
+  <owner>charlesmeng@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <summary>
+    Logged whether the hover card preview images setting is enabled or disabled
+    when it is toggled in chrome://settings/appearance.
+  </summary>
+</histogram>
+
 <histogram name="Settings.OpenSettingsFromMenu.PerProfileType"
     enum="BrowserProfileType" expires_after="2023-12-10">
   <owner>roagarwal@chromium.org</owner>
