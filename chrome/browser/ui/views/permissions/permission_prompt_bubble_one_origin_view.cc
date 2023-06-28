@@ -124,8 +124,6 @@ absl::optional<std::u16string> GetExtraText(
           url_formatter::FormatUrlForSecurityDisplay(
               delegate.GetEmbeddingOrigin(),
               url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-    case permissions::RequestType::kU2fApiRequest:
-      return l10n_util::GetStringUTF16(IDS_U2F_API_PERMISSION_EXPLANATION);
     default:
       return absl::nullopt;
   }

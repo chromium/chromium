@@ -83712,13 +83712,14 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="14" label="PERMISSION_MEDIASTREAM_CAMERA"/>
   <int value="15" label="PERMISSION_ACCESSIBILITY_EVENTS"/>
   <int value="16" label="PERMISSION_CLIPBOARD_READ__REMOVED_IN_M81"/>
-  <int value="17" label="PERMISSION_SECURITY_KEY_ATTESTATION"/>
+  <int value="17" label="PERMISSION_SECURITY_KEY_ATTESTATION__REMOVED_IN_M117"/>
   <int value="18" label="PERMISSION_PAYMENT_HANDLER"/>
   <int value="19" label="PERMISSION_NFC"/>
   <int value="20" label="PERMISSION_CLIPBOARD_READ_WRITE"/>
   <int value="21" label="PERMISSION_VR"/>
   <int value="22" label="PERMISSION_AR"/>
   <int value="23" label="PERMISSION_STORAGE_ACCESS"/>
+  <int value="29" label="PERMISSION_U2F_API_REQUEST__REMOVED_IN_M117"/>
   <int value="30" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
   <int value="31" label="PERMISSION_MIDI"/>
 </enum>

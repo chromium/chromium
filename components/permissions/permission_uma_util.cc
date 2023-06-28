@@ -109,10 +109,6 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
 #if !BUILDFLAG(IS_ANDROID)
     case RequestType::kRegisterProtocolHandler:
       return RequestTypeForUma::REGISTER_PROTOCOL_HANDLER;
-    case RequestType::kSecurityAttestation:
-      return RequestTypeForUma::PERMISSION_SECURITY_KEY_ATTESTATION;
-    case RequestType::kU2fApiRequest:
-      return RequestTypeForUma::PERMISSION_U2F_API_REQUEST;
 #endif
     case RequestType::kStorageAccess:
       return RequestTypeForUma::PERMISSION_STORAGE_ACCESS;
@@ -153,8 +149,6 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "AudioCapture";
     case RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA:
       return "VideoCapture";
-    case RequestTypeForUma::PERMISSION_SECURITY_KEY_ATTESTATION:
-      return "SecurityKeyAttestation";
     case RequestTypeForUma::PERMISSION_PAYMENT_HANDLER:
       return "PaymentHandler";
     case RequestTypeForUma::PERMISSION_NFC:
@@ -177,8 +171,6 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "LocalFonts";
     case RequestTypeForUma::PERMISSION_IDLE_DETECTION:
       return "IdleDetection";
-    case RequestTypeForUma::PERMISSION_U2F_API_REQUEST:
-      return "U2fApiRequest";
     case RequestTypeForUma::PERMISSION_ACCESSIBILITY_EVENTS:
       return "AccessibilityEvents";
 

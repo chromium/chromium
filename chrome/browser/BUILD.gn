@@ -4010,8 +4010,6 @@ static_library("browser") {
       "performance_manager/user_tuning/user_performance_tuning_manager.cc",
       "performance_manager/user_tuning/user_performance_tuning_notifier.cc",
       "performance_manager/user_tuning/user_performance_tuning_notifier.h",
-      "permissions/attestation_permission_request.cc",
-      "permissions/attestation_permission_request.h",
       "permissions/one_time_permissions_tracker.cc",
       "permissions/one_time_permissions_tracker.h",
       "permissions/one_time_permissions_tracker_factory.cc",

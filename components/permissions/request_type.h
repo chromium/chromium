@@ -47,12 +47,8 @@ enum class RequestType {
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   kRegisterProtocolHandler,
-  kSecurityAttestation,
 #endif
   kStorageAccess,
-#if !BUILDFLAG(IS_ANDROID)
-  kU2fApiRequest,
-#endif
   kVrSession,
 #if !BUILDFLAG(IS_ANDROID)
   kWindowManagement,

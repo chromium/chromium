@@ -612,9 +612,6 @@ extern const base::FeatureParam<base::TimeDelta> kSCTLogExpectedIngestionDelay;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta> kSCTLogMaxIngestionRandomDelay;
 
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kSecurityKeyAttestationPrompt);
-
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kSitePerProcess);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

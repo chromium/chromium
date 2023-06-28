@@ -1075,11 +1075,6 @@ const base::FeatureParam<base::TimeDelta> kSCTLogMaxIngestionRandomDelay{
     base::Hours(1),
 };
 
-// Controls whether the user is prompted when sites request attestation.
-BASE_FEATURE(kSecurityKeyAttestationPrompt,
-             "SecurityKeyAttestationPrompt",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Alternative to switches::kSitePerProcess, for turning on full site isolation.
 // Launch bug: https://crbug.com/810843.  This is a //chrome-layer feature to
 // avoid turning on site-per-process by default for *all* //content embedders

@@ -120,10 +120,6 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
 #endif
     case RequestType::kRegisterProtocolHandler:
       return vector_icons::kProtocolHandlerIcon;
-    case RequestType::kSecurityAttestation:
-      return kUsbSecurityKeyIcon;
-    case RequestType::kU2fApiRequest:
-      return kUsbSecurityKeyIcon;
     case RequestType::kStorageAccess:
     case RequestType::kTopLevelStorageAccess:
       return cr23 ? vector_icons::kCookieChromeRefreshIcon
@@ -386,17 +382,11 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
 #if !BUILDFLAG(IS_ANDROID)
     case permissions::RequestType::kRegisterProtocolHandler:
       return "register_protocol_handler";
-    case permissions::RequestType::kSecurityAttestation:
-      return "security_attestation";
 #endif
     case permissions::RequestType::kStorageAccess:
       return "storage_access";
     case permissions::RequestType::kTopLevelStorageAccess:
       return "top_level_storage_access";
-#if !BUILDFLAG(IS_ANDROID)
-    case permissions::RequestType::kU2fApiRequest:
-      return "u2f_api_request";
-#endif
     case permissions::RequestType::kVrSession:
       return "vr_session";
 #if !BUILDFLAG(IS_ANDROID)
