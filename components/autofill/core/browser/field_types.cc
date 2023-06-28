@@ -297,4 +297,166 @@ std::ostream& operator<<(std::ostream& o, ServerFieldTypeSet field_type_set) {
   return o;
 }
 
+base::StringPiece FieldTypeToDeveloperRepresentationString(
+    ServerFieldType type) {
+  switch (type) {
+    case NO_SERVER_DATA:
+    case UNKNOWN_TYPE:
+    case FIELD_WITH_DEFAULT_VALUE:
+    case EMPTY_TYPE:
+    case NOT_ACCOUNT_CREATION_PASSWORD:
+    case NOT_NEW_PASSWORD:
+    case NOT_PASSWORD:
+    case NOT_USERNAME:
+    case AMBIGUOUS_TYPE:
+    case NAME_SUFFIX:
+    case ADDRESS_HOME_ADDRESS:
+    case ADDRESS_HOME_ADDRESS_WITH_NAME:
+      return "";
+    case NUMERIC_QUANTITY:
+      return "Numeric quantity";
+    case MERCHANT_EMAIL_SIGNUP:
+      return "Merchant email signup";
+    case MERCHANT_PROMO_CODE:
+      return "Merchant promo code";
+    case PASSWORD:
+      return "Password";
+    case ACCOUNT_CREATION_PASSWORD:
+      return "Account creation password";
+    case USERNAME:
+    case SINGLE_USERNAME:
+      return "Username";
+    case USERNAME_AND_EMAIL_ADDRESS:
+      return "Username and email";
+    case PROBABLY_NEW_PASSWORD:
+    case NEW_PASSWORD:
+      return "New password";
+    case CONFIRMATION_PASSWORD:
+      return "Confirmation password";
+    case SEARCH_TERM:
+      return "Search term";
+    case PRICE:
+      return "Price";
+    case NAME_HONORIFIC_PREFIX:
+      return "Honorific prefix";
+    case NAME_FULL_WITH_HONORIFIC_PREFIX:
+      return "Full name with honorific prefix";
+    case NAME_FIRST:
+      return "First name";
+    case NAME_MIDDLE:
+      return "Middle name";
+    case NAME_LAST:
+      return "Last name";
+    case NAME_LAST_FIRST:
+      return "First last name";
+    case NAME_LAST_CONJUNCTION:
+      return "Last name conjunction";
+    case NAME_LAST_SECOND:
+      return "Second last name";
+    case NAME_MIDDLE_INITIAL:
+      return "Middle name initial";
+    case NAME_FULL:
+      return "Full name";
+    case EMAIL_ADDRESS:
+      return "Email address";
+    case PHONE_HOME_NUMBER:
+    case PHONE_HOME_WHOLE_NUMBER:
+    case PHONE_HOME_CITY_AND_NUMBER:
+    case PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
+      return "Phone number";
+    case PHONE_HOME_NUMBER_PREFIX:
+      return "Phone number prefix";
+    case PHONE_HOME_NUMBER_SUFFIX:
+      return "Phone number suffix";
+    case PHONE_HOME_CITY_CODE:
+    case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
+      return "Phone number city code";
+    case PHONE_HOME_COUNTRY_CODE:
+      return "Phone number country code";
+    case PHONE_HOME_EXTENSION:
+      return "Phone number extension";
+    case ADDRESS_HOME_FLOOR:
+      return "Floor";
+    case ADDRESS_HOME_LANDMARK:
+      return "Landmark";
+    case ADDRESS_HOME_STREET_NAME:
+      return "Street name";
+    case ADDRESS_HOME_DEPENDENT_STREET_NAME:
+      return "Dependent home street name";
+    case ADDRESS_HOME_HOUSE_NUMBER:
+      return "House number";
+    case ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME:
+      return "Street and dependent street name";
+    case ADDRESS_HOME_BETWEEN_STREETS:
+      return "Address between streets";
+    case ADDRESS_HOME_LINE1:
+      return "Address line 1";
+    case ADDRESS_HOME_LINE2:
+      return "Address line 2";
+    case ADDRESS_HOME_LINE3:
+      return "Address line 3";
+    case ADDRESS_HOME_PREMISE_NAME:
+      return "Address premise";
+    case ADDRESS_HOME_SUBPREMISE:
+      return "Address subpremise";
+    case ADDRESS_HOME_OTHER_SUBUNIT:
+      return "Address subunit";
+    case ADDRESS_HOME_ADMIN_LEVEL2:
+      return "Administrative area level 2";
+    case ADDRESS_HOME_STREET_ADDRESS:
+      return "Street address";
+    case ADDRESS_HOME_SORTING_CODE:
+      return "Sorting code";
+    case ADDRESS_HOME_DEPENDENT_LOCALITY:
+      return "Dependent locality";
+    case ADDRESS_HOME_APT_NUM:
+      return "Apt num";
+    case ADDRESS_HOME_CITY:
+      return "City";
+    case ADDRESS_HOME_STATE:
+      return "State";
+    case ADDRESS_HOME_ZIP:
+      return "Zip code";
+    case ADDRESS_HOME_COUNTRY:
+      return "Country";
+    case BIRTHDATE_DAY:
+      return "Birthdate day";
+    case BIRTHDATE_MONTH:
+      return "Birthdate month";
+    case BIRTHDATE_4_DIGIT_YEAR:
+      return "Birthdate year";
+    case CREDIT_CARD_NAME_FULL:
+      return "Credit card full name";
+    case CREDIT_CARD_NAME_FIRST:
+      return "Credit card first name";
+    case CREDIT_CARD_NAME_LAST:
+      return "Credit card last name";
+    case CREDIT_CARD_NUMBER:
+      return "Credit card number";
+    case CREDIT_CARD_EXP_MONTH:
+      return "Credit card exp month";
+    case CREDIT_CARD_EXP_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_4_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+    case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
+      return "Credit card exp year";
+    case CREDIT_CARD_TYPE:
+      return "Credit card type";
+    case CREDIT_CARD_VERIFICATION_CODE:
+      return "Credit card verification code";
+    case COMPANY_NAME:
+      return "Company name";
+    case UPI_VPA:
+      return "UPI VPA";
+    case IBAN_VALUE:
+      return "IBAN";
+    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
+    case ONE_TIME_CODE:
+      return "One time code";
+    case MAX_VALID_FIELD_TYPE:
+      return "";
+  }
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace autofill

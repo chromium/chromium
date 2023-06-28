@@ -430,6 +430,14 @@ bool IsFillableFieldType(ServerFieldType field_type);
 // static string, you don't need to worry about memory deallocation.
 base::StringPiece FieldTypeToStringPiece(ServerFieldType type);
 
+// Returns a StringPiece describing `type`. The devtools UI uses this string to
+// give developers feedback about autofill's filling decision. Note that
+// different field types can map to the same string representation for
+// simplicity of the feedback. Returns an empty string if the type is not
+// supported.
+base::StringPiece FieldTypeToDeveloperRepresentationString(
+    ServerFieldType type);
+
 // Inverse map of FieldTypeToStringPiece. Checks that only valid ServerFieldType
 // string representations are being passed.
 ServerFieldType TypeNameToFieldType(base::StringPiece type_name);
