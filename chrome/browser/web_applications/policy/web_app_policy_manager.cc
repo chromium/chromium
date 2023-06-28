@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -330,8 +331,13 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
 
     install_options.install_placeholder = true;
     // When the policy gets refreshed, we should try to reinstall placeholder
-    // apps but only if they are not being used.
-    install_options.wait_for_windows_closed = true;
+    // apps but only if they are not being used. In the non-placeholder case, we
+    // will not reinstall and there is no need to wait for windows being closed.
+    install_options.wait_for_windows_closed =
+        app_registrar_
+            ->LookupPlaceholderAppId(install_options.install_url,
+                                     WebAppManagement::kPolicy)
+            .has_value();
     install_options.reinstall_placeholder = true;
 
     absl::optional<AppId> app_id =
