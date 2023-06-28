@@ -1304,7 +1304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="MobileStartup.ToolbarInflationTime" units="ms"
-    expires_after="M82">
+    expires_after="2023-12-28">
   <owner>pasko@chromium.org</owner>
   <summary>
     Android: The time spent performing toolbar layout inflation.

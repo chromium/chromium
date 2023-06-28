@@ -3245,16 +3245,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.PlayServices.Installed" enum="BooleanInstalled"
-    expires_after="2022-12-25">
-  <owner>twellington@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <summary>
-    Whether Google Play Services is installed on the device. Recorded during
-    deferred startup.
-  </summary>
-</histogram>
-
 <histogram name="Android.PlayServices.Version" units="versioncode"
     expires_after="2023-11-12">
   <owner>twellington@chromium.org</owner>
