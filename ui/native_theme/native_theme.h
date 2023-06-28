@@ -220,12 +220,19 @@ class NATIVE_THEME_EXPORT NativeTheme {
     int corner_radius;
   };
 
+  enum class ArrowDirection : int {
+    kDown,
+    kLeft,
+    kRight,
+  };
+
   struct MenuListExtraParams {
     bool has_border;
     bool has_border_radius;
     int arrow_x;
     int arrow_y;
     int arrow_size;
+    ArrowDirection arrow_direction;
     SkColor arrow_color;
     SkColor background_color;
     int classic_state;  // Used on Windows when uxtheme is not available.

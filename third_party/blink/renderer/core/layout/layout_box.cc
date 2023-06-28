@@ -310,24 +310,27 @@ LayoutUnit ListBoxDefaultItemHeight(const LayoutBox& box) {
 // TODO(crbug.com/1040826): This function is written in LayoutObject API
 // so that this works in both of the legacy layout and LayoutNG. We
 // should have LayoutNG-specific code.
-LayoutUnit ListBoxItemHeight(const HTMLSelectElement& select,
-                             const LayoutBox& box) {
+LayoutUnit ListBoxItemBlockSize(const HTMLSelectElement& select,
+                                const LayoutBox& box) {
   const auto& items = select.GetListItems();
   if (items.empty() || box.ShouldApplySizeContainment())
     return ListBoxDefaultItemHeight(box);
 
-  LayoutUnit max_height;
+  LayoutUnit max_block_size;
   for (Element* element : items) {
     if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(element))
       element = &optgroup->OptGroupLabelElement();
-    LayoutUnit item_height;
-    if (auto* layout_box = element->GetLayoutBox())
-      item_height = layout_box->Size().height;
-    else
-      item_height = ListBoxDefaultItemHeight(box);
-    max_height = std::max(max_height, item_height);
+    LayoutUnit item_block_size;
+    if (auto* layout_box = element->GetLayoutBox()) {
+      item_block_size = box.StyleRef().IsHorizontalWritingMode()
+                            ? layout_box->Size().height
+                            : layout_box->Size().width;
+    } else {
+      item_block_size = ListBoxDefaultItemHeight(box);
+    }
+    max_block_size = std::max(max_block_size, item_block_size);
   }
-  return max_height;
+  return max_block_size;
 }
 
 LayoutUnit MenuListIntrinsicInlineSize(const HTMLSelectElement& select,
@@ -1365,7 +1368,7 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
   if (const auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
     if (select->UsesMenuList())
       return MenuListIntrinsicBlockSize(*select, *this);
-    return ListBoxItemHeight(*select, *this) * select->ListBoxSize() -
+    return ListBoxItemBlockSize(*select, *this) * select->ListBoxSize() -
            ComputeLogicalScrollbars().BlockSum();
   }
   if (IsTextField()) {

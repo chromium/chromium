@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS select[multiple][style="writing-mode: horizontal-tb"] scrolls correctly
-FAIL select[multiple][style="writing-mode: vertical-lr"] scrolls correctly assert_true: select should be scrollable in block axis expected true got false
-FAIL select[multiple][style="writing-mode: vertical-rl"] scrolls correctly assert_true: select should be scrollable in block axis expected true got false
-Harness: the test ran to completion.
-

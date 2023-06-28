@@ -1251,6 +1251,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kBreakWord ||
              value_id == CSSValueID::kAnywhere;
+    case CSSPropertyID::kInternalOverflowBlock:
+    case CSSPropertyID::kInternalOverflowInline:
     case CSSPropertyID::kOverflowBlock:
     case CSSPropertyID::kOverflowInline:
     case CSSPropertyID::kOverflowX:
@@ -1647,6 +1649,8 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kForcedColorAdjust,
     CSSPropertyID::kHyphens,
     CSSPropertyID::kImageRendering,
+    CSSPropertyID::kInternalOverflowBlock,
+    CSSPropertyID::kInternalOverflowInline,
     CSSPropertyID::kListStylePosition,
     CSSPropertyID::kMaskType,
     CSSPropertyID::kMathShift,

@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "skia/ext/platform_canvas.h"
+#include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/platform/graphics/scrollbar_theme_settings.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
 #include "ui/color/color_provider_utils.h"
@@ -88,7 +89,7 @@ static void GetNativeThemeExtraParams(
       native_theme_extra_params->text_field.zoom =
           extra_params->text_field.zoom;
       break;
-    case WebThemeEngine::kPartMenuList:
+    case WebThemeEngine::kPartMenuList: {
       native_theme_extra_params->menu_list.has_border =
           extra_params->menu_list.has_border;
       native_theme_extra_params->menu_list.has_border_radius =
@@ -99,12 +100,17 @@ static void GetNativeThemeExtraParams(
           extra_params->menu_list.arrow_y;
       native_theme_extra_params->menu_list.arrow_size =
           extra_params->menu_list.arrow_size;
+      //  Need to explicit cast so we can assign enum to enum.
+      ui::NativeTheme::ArrowDirection dir = ui::NativeTheme::ArrowDirection(
+          extra_params->menu_list.arrow_direction);
+      native_theme_extra_params->menu_list.arrow_direction = dir;
       native_theme_extra_params->menu_list.arrow_color =
           extra_params->menu_list.arrow_color;
       native_theme_extra_params->menu_list.background_color =
           extra_params->menu_list.background_color;
       native_theme_extra_params->menu_list.zoom = extra_params->menu_list.zoom;
       break;
+    }
     case WebThemeEngine::kPartSliderTrack:
       native_theme_extra_params->slider.thumb_x = extra_params->slider.thumb_x;
       native_theme_extra_params->slider.thumb_y = extra_params->slider.thumb_y;

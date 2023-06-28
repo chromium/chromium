@@ -3760,12 +3760,26 @@
       runtime_flag: "CSSLogicalOverflow",
     },
     {
+      name: "-internal-overflow-inline",
+      logical_property_group: {
+        name: "overflow",
+        resolver: "inline",
+      },
+    },
+    {
       name: "overflow-block",
       logical_property_group: {
         name: "overflow",
         resolver: "block",
       },
       runtime_flag: "CSSLogicalOverflow",
+    },
+    {
+      name: "-internal-overflow-block",
+      logical_property_group: {
+        name: "overflow",
+        resolver: "block",
+      },
     },
     {
       name: "overflow-clip-margin",

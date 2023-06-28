@@ -1074,6 +1074,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kInsetInlineEnd:
     case CSSPropertyID::kInsetBlockStart:
     case CSSPropertyID::kInsetBlockEnd:
+    case CSSPropertyID::kInternalOverflowBlock:
+    case CSSPropertyID::kInternalOverflowInline:
     case CSSPropertyID::kOverflowBlock:
     case CSSPropertyID::kOverflowInline:
     case CSSPropertyID::kOverscrollBehaviorBlock:

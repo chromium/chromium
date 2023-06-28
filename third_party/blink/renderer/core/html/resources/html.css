@@ -408,7 +408,7 @@ button {
 }
 
 /* Form controls don't go vertical. */
-input:not([type="range"]):not([type="color"]):not([type="button"]):not([type="reset"]):not([type="submit"]):not([type="file"]), select {
+input:not([type="range"]):not([type="color"]):not([type="button"]):not([type="reset"]):not([type="submit"]):not([type="file"]) {
     writing-mode: horizontal-tb !important;
 }
 
@@ -930,8 +930,8 @@ select:disabled {
 select:-internal-list-box {
     appearance: auto;
     align-items: flex-start;
-    overflow-x: hidden;
-    overflow-y: scroll;
+    -internal-overflow-inline: hidden;
+    -internal-overflow-block: scroll;
     vertical-align: text-bottom;
     white-space: nowrap;
     border-radius: 2px;

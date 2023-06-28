@@ -11,6 +11,6 @@
 
 /* TODO(crbug.com/681917): These form controls don't go vertical if
    FormControlsVerticalWritingModeSupport is disabled. */
-input[type="range"], input[type="color"],  input[type="button"], input[type="submit"], input[type="reset"], input[type="file"], textarea, meter, progress, button:not(::-internal-selectmenu-button) {
+input[type="range"], input[type="color"],  input[type="button"], input[type="submit"], input[type="reset"], input[type="file"], textarea, select, meter, progress, button:not(::-internal-selectmenu-button) {
   writing-mode: horizontal-tb !important;
 }

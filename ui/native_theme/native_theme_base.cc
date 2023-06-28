@@ -33,6 +33,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/common_theme.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace {
 
@@ -937,30 +938,65 @@ void NativeThemeBase::PaintMenuList(cc::PaintCanvas* canvas,
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(kMenuListArrowStrokeWidth);
 
-  float arrow_width = menu_list.arrow_size;
-  int arrow_height = arrow_width * 0.5;
-  gfx::Rect arrow(menu_list.arrow_x, menu_list.arrow_y - (arrow_height / 2),
-                  arrow_width, arrow_height);
-  arrow.Intersect(rect);
+  if (menu_list.arrow_direction == ui::NativeTheme::ArrowDirection::kDown) {
+    float arrow_width = menu_list.arrow_size;
+    int arrow_height = arrow_width * 0.5;
+    gfx::Rect arrow(menu_list.arrow_x, menu_list.arrow_y - (arrow_height / 2),
+                    arrow_width, arrow_height);
+    arrow.Intersect(rect);
 
-  if (arrow_width != arrow.width() || arrow_height != arrow.height()) {
-    // The arrow is clipped after being constrained to the paint rect so we
-    // need to recalculate its size.
-    int height_clip = arrow_height - arrow.height();
-    int width_clip = arrow_width - arrow.width();
-    if (height_clip > width_clip) {
-      arrow.set_width(arrow.height() * 1.6);
-    } else {
-      arrow.set_height(arrow.width() * 0.6);
+    if (arrow_width != arrow.width() || arrow_height != arrow.height()) {
+      // The arrow is clipped after being constrained to the paint rect so we
+      // need to recalculate its size.
+      int height_clip = arrow_height - arrow.height();
+      int width_clip = arrow_width - arrow.width();
+      if (height_clip > width_clip) {
+        arrow.set_width(arrow.height() * 1.6);
+      } else {
+        arrow.set_height(arrow.width() * 0.6);
+      }
+      arrow.set_y(menu_list.arrow_y - (arrow.height() / 2));
     }
-    arrow.set_y(menu_list.arrow_y - (arrow.height() / 2));
-  }
 
-  SkPath path;
-  path.moveTo(arrow.x(), arrow.y());
-  path.lineTo(arrow.x() + arrow.width() / 2, arrow.y() + arrow.height());
-  path.lineTo(arrow.x() + arrow.width(), arrow.y());
-  canvas->drawPath(path, flags);
+    SkPath path;
+    path.moveTo(arrow.x(), arrow.y());
+    path.lineTo(arrow.x() + arrow.width() / 2, arrow.y() + arrow.height());
+    path.lineTo(arrow.x() + arrow.width(), arrow.y());
+    canvas->drawPath(path, flags);
+  } else {
+    // Arrow direction is either left or right
+    float arrow_height = menu_list.arrow_size;
+    int arrow_width = arrow_height * 0.5;
+    gfx::Rect arrow(menu_list.arrow_x - (arrow_width / 2), menu_list.arrow_y,
+                    arrow_width, arrow_height);
+    arrow.Intersect(rect);
+
+    if (arrow_width != arrow.width() || arrow_height != arrow.height()) {
+      // The arrow is clipped after being constrained to the paint rect so we
+      // need to recalculate its size.
+      int height_clip = arrow_height - arrow.height();
+      int width_clip = arrow_width - arrow.width();
+      if (height_clip > width_clip) {
+        arrow.set_width(arrow.height() * 0.6);
+      } else {
+        arrow.set_height(arrow.width() * 1.6);
+      }
+      arrow.set_x(menu_list.arrow_x - (arrow.width() / 2));
+    }
+
+    SkPath path;
+    if (menu_list.arrow_direction == ui::NativeTheme::ArrowDirection::kLeft) {
+      path.moveTo(arrow.x() + arrow.width(), arrow.y());
+      path.lineTo(arrow.x(), arrow.y() + arrow.height() / 2);
+      path.lineTo(arrow.x() + arrow.width(), arrow.y() + arrow.height());
+    } else {
+      // Arrow direction is right
+      path.moveTo(arrow.x(), arrow.y());
+      path.lineTo(arrow.x() + arrow.width(), arrow.y() + arrow.height() / 2);
+      path.lineTo(arrow.x(), arrow.y() + arrow.height());
+    }
+    canvas->drawPath(path, flags);
+  }
 }
 
 void NativeThemeBase::PaintMenuPopupBackground(

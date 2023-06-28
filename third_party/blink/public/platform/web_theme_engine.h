@@ -132,6 +132,12 @@ class WebThemeEngine {
     float zoom;
   };
 
+  enum class ArrowDirection : int {
+    kDown,
+    kLeft,
+    kRight,
+  };
+
   // Extra parameters for PartMenuList
   struct MenuListExtraParams {
     bool has_border;
@@ -139,6 +145,7 @@ class WebThemeEngine {
     int arrow_x;
     int arrow_y;
     int arrow_size;
+    ArrowDirection arrow_direction;
     SkColor arrow_color;
     SkColor background_color;
     bool fill_content_area;
