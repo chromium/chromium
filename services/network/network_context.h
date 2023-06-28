@@ -835,8 +835,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
            base::UniquePtrComparator>
       restricted_cookie_managers_;
 
-  ResourceScheduler::ClientId current_resource_scheduler_client_id_{0};
-
   // Owned by the URLRequestContext
   raw_ptr<net::StaticHttpUserAgentSettings> user_agent_settings_ = nullptr;
 

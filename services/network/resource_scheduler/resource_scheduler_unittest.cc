@@ -82,10 +82,10 @@ void ExpectSampleIsAtLeastSpecifiedValue(
 class TestRequestFactory;
 
 using ClientId = ResourceScheduler::ClientId;
-constexpr ClientId kClientId1(30);
-constexpr ClientId kClientId2(60);
-constexpr ClientId kTrustedClientId(120);
-constexpr ClientId kBackgroundClientId(150);
+const ClientId kClientId1 = ClientId::CreateForTest(30);
+const ClientId kClientId2 = ClientId::CreateForTest(60);
+const ClientId kTrustedClientId = ClientId::CreateForTest(120);
+const ClientId kBackgroundClientId = ClientId::CreateForTest(150);
 
 const size_t kMaxNumDelayableRequestsPerHostPerClient = 6;
 

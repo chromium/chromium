@@ -77,10 +77,10 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
     url_request_context_ = url_request_context_builder.Build();
     url_loader_context_.set_url_request_context(url_request_context_.get());
 
-    constexpr network::ResourceScheduler::ClientId kClientId(3);
     resource_scheduler_client_ =
         base::MakeRefCounted<network::ResourceSchedulerClient>(
-            kClientId, network::IsBrowserInitiated(false), &resource_scheduler_,
+            network::ResourceScheduler::ClientId::Create(),
+            network::IsBrowserInitiated(false), &resource_scheduler_,
             url_request_context_->network_quality_estimator());
     url_loader_context_.set_resource_scheduler_client(
         resource_scheduler_client_);

@@ -294,11 +294,10 @@ void CorsURLLoaderTestBase::ResetFactory(absl::optional<url::Origin> initiator,
 
   auto resource_scheduler_client =
       base::MakeRefCounted<ResourceSchedulerClient>(
-          last_issued_resource_scheduler_client_id_,
+          ResourceScheduler::ClientId::Create(),
           IsBrowserInitiated(process_id == mojom::kBrowserProcessId),
           &resource_scheduler_,
           url_request_context_->network_quality_estimator());
-  last_issued_resource_scheduler_client_id_.Increment();
   cors_url_loader_factory_remote_.reset();
   cors_url_loader_factory_ = std::make_unique<CorsURLLoaderFactory>(
       network_context_.get(), std::move(factory_params),

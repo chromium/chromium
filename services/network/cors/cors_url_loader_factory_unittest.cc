@@ -35,7 +35,6 @@ namespace {
 
 constexpr int kProcessId = 123;
 constexpr int kRequestId = 456;
-constexpr ResourceScheduler::ClientId kResourceSchedulerClientId(99);
 
 }  // namespace
 
@@ -80,7 +79,7 @@ class CorsURLLoaderFactoryTest : public testing::Test {
         url::Origin::Create(test_server_.base_url());
     auto resource_scheduler_client =
         base::MakeRefCounted<ResourceSchedulerClient>(
-            kResourceSchedulerClientId, IsBrowserInitiated(false),
+            ResourceScheduler::ClientId::Create(), IsBrowserInitiated(false),
             &resource_scheduler_,
             url_request_context_->network_quality_estimator());
     cors_url_loader_factory_ = std::make_unique<CorsURLLoaderFactory>(

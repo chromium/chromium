@@ -69,20 +69,19 @@ namespace network {
 // the URLRequest.
 class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
  public:
-  class ClientId final {
+  class COMPONENT_EXPORT(NETWORK_SERVICE) ClientId final {
    public:
-    explicit constexpr ClientId(uint64_t id) : id_(id) {}
+    static ClientId Create();
+
     ~ClientId() = default;
 
-    void Increment() { ++id_; }
     bool operator<(const ClientId& that) const { return id_ < that.id_; }
     bool operator==(const ClientId& that) const { return id_ == that.id_; }
 
-    constexpr ClientId AddForTesting(uint64_t n) const {
-      return ClientId(id_ + n);
-    }
+    static ClientId CreateForTest(uint64_t id) { return ClientId(id); }
 
    private:
+    explicit ClientId(uint64_t id) : id_(id) {}
     uint64_t id_;
   };
 

@@ -345,8 +345,6 @@ class CorsURLLoaderTestBase : public testing::Test {
   // TestURLLoaderClient that records callback activities.
   std::unique_ptr<TestURLLoaderClient> test_cors_loader_client_;
 
-  ResourceScheduler::ClientId last_issued_resource_scheduler_client_id_{765};
-
   // Holds for allowed origin access lists.
   OriginAccessList origin_access_list_;
 

@@ -143,6 +143,12 @@ base::TimeDelta GetQueuedRequestsDispatchPeriodicity() {
       "queued_requests_dispatch_periodicity_ms", 100));
 }
 
+// static
+ResourceScheduler::ClientId ResourceScheduler::ClientId::Create() {
+  static uint64_t next_client_id = 0;
+  return ClientId(next_client_id++);
+}
+
 struct ResourceScheduler::RequestPriorityParams {
   RequestPriorityParams()
       : priority(net::DEFAULT_PRIORITY), intra_priority(0) {}

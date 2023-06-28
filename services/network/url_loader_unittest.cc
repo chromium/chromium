@@ -756,7 +756,7 @@ class URLLoaderTest : public testing::Test {
     url_request_context_ = context_builder.Build();
     context().set_url_request_context(url_request_context_.get());
     resource_scheduler_client_ = base::MakeRefCounted<ResourceSchedulerClient>(
-        kResourceSchedulerClientId, IsBrowserInitiated(false),
+        ResourceScheduler::ClientId::Create(), IsBrowserInitiated(false),
         &resource_scheduler_,
         url_request_context_->network_quality_estimator());
     context().set_resource_scheduler_client(resource_scheduler_client_.get());
@@ -1144,7 +1144,6 @@ class URLLoaderTest : public testing::Test {
 
   static constexpr int kProcessId = 4;
   static constexpr int kRouteId = 8;
-  static constexpr ResourceScheduler::ClientId kResourceSchedulerClientId{99};
 
   // |OnServerReceivedRequest| allows subclasses to register additional logic to
   // execute once a request reaches the test server.
