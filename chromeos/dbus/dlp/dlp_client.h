@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -30,6 +31,10 @@ class COMPONENT_EXPORT(DLP) DlpClient {
     ~Observer() override = default;
 
     virtual void DlpDaemonRestarted() {}
+
+    // Notifies that some files have been successfully added to the daemon.
+    virtual void OnFilesAddedToDlpDaemon(
+        const std::vector<base::FilePath>& files) {}
   };
 
   using SetDlpFilesPolicyCallback =
