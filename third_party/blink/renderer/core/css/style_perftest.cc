@@ -171,12 +171,16 @@ static StylePerfResult MeasureStyleForDumpedPage(
   {
     scoped_refptr<SharedBuffer> serialized =
         test::ReadFromFile(test::StylePerfTestDataPath(filename));
-    absl::optional<base::Value> json = base::JSONReader::Read(
-        base::StringPiece(serialized->Data(), serialized->size()));
-    if (!json.has_value()) {
+    if (!serialized) {
+      // Some test data is very large and needs to be downloaded separately,
+      // so it may not always be present. Do not fail, but report the test as
+      // skipped.
       result.skipped = true;
       return result;
     }
+    absl::optional<base::Value> json = base::JSONReader::Read(
+        base::StringPiece(serialized->Data(), serialized->size()));
+    CHECK(json.has_value());
     page = LoadDumpedPage(json->GetDict(), result.parse_time, reporter);
   }
 
