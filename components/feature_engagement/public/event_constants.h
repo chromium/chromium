@@ -6,6 +6,7 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_EVENT_CONSTANTS_H_
 
 #include "build/build_config.h"
+#include "components/feature_engagement/public/feature_constants.h"
 
 namespace feature_engagement {
 
@@ -82,6 +83,9 @@ extern const char kPerformanceMenuItemActivated[];
 
 // Extensions menu is opened when any extension has access to the current site.
 extern const char kExtensionsMenuOpenedWhileExtensionHasAccess[];
+
+// Th user clicked the extensions request access button in the toolbar.
+extern const char kExtensionsRequestAccessButtonClicked[];
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)

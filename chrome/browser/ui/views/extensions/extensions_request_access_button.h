@@ -48,6 +48,7 @@ class ExtensionsRequestAccessButton : public ToolbarButton {
 
   // ToolbarButton:
   std::u16string GetTooltipText(const gfx::Point& p) const override;
+  bool ShouldShowInkdropAfterIphInteraction() override;
 
   // Accessors used by tests:
   std::vector<extensions::ExtensionId> GetExtensionIdsForTesting() {

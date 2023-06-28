@@ -8609,6 +8609,16 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_IPH_ENTRY_POINT_BODY" desc="">
         From here, you can see and manage extension permissions for the site you're on
       </message>
+      <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_IPH_ENTRY_POINT_TITLE" desc="Title text shown on promotional UI appearing when the request access button in the toolbar is visible.">
+        {NUM_EXTENSIONS, plural,
+          =1 {Choose if this extension can read or change this site}
+          other {Choose if these extensions can read or change this site}}
+      </message>
+      <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_IPH_ENTRY_POINT_BODY" desc="Body text shown on promotional UI appearing when the request access button in the toolbar is visible.">
+        {NUM_EXTENSIONS, plural,
+          =1 {To manage it, open Extensions}
+          other {To manage them, open Extensions}}
+      </message>
       <message name="IDS_GLOBAL_MEDIA_CONTROLS_PROMO" desc="Text shown on promotional UI appearing next to the global media controls toolbar button.">
         New! Control your music, videos, and more.
       </message>

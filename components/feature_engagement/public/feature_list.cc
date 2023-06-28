@@ -148,6 +148,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDesktopCustomizeChromeFeature,
     &kIPHDownloadToolbarButtonFeature,
     &kIPHExtensionsMenuFeature,
+    &kIPHExtensionsRequestAccessButtonFeature,
     &kIPHFocusHelpBubbleScreenReaderPromoFeature,
     &kIPHGMCCastStartStopFeature,
     &kIPHHighEfficiencyModeFeature,

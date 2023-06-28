@@ -136,6 +136,8 @@ chromium-metrics-reviews@google.com.
       summary="new label on the context menu for Ephemeral Tab"/>
   <variant name="IPH_ExploreSitesTile" summary="Explore Sites feature"/>
   <variant name="IPH_ExtensionsMenu" summary="extensions menu opened"/>
+  <variant name="IPH_ExtensionsRequestAccessButton"
+      summary="extensions request access button shown"/>
   <variant name="IPH_FeatureNotificationGuideDefaultBrowserNotificationShown"
       summary="feature notification guide default browser notification"/>
   <variant name="IPH_FeatureNotificationGuideDefaultBrowserPromo"

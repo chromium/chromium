@@ -18,13 +18,18 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -55,7 +60,11 @@ ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(
       browser_(browser),
       extensions_container_(extensions_container),
       hover_card_coordinator_(
-          std::make_unique<ExtensionsRequestAccessHoverCardCoordinator>()) {}
+          std::make_unique<ExtensionsRequestAccessHoverCardCoordinator>()) {
+  // Set button for IPH.
+  SetProperty(views::kElementIdentifierKey,
+              kExtensionsRequestAccessButtonElementId);
+}
 
 ExtensionsRequestAccessButton::~ExtensionsRequestAccessButton() = default;
 
@@ -69,6 +78,13 @@ void ExtensionsRequestAccessButton::Update(
   if (extension_ids_.empty()) {
     return;
   }
+
+  // Show IPH when button is visible.
+  const int extensions_size = extension_ids.size();
+  browser_->window()->MaybeShowFeaturePromo(
+      feature_engagement::kIPHExtensionsRequestAccessButtonFeature,
+      /*close_callback=*/base::DoNothing(), /*body_params=*/extensions_size,
+      /*title_params=*/extensions_size);
 
   // TODO(crbug.com/1239772): Set the label and background color without borders
   // separately to match the mocks. For now, using SetHighlight to display that
@@ -133,7 +149,15 @@ std::u16string ExtensionsRequestAccessButton::GetTooltipText(
   return base::JoinString(tooltip_parts, u"\n");
 }
 
+bool ExtensionsRequestAccessButton::ShouldShowInkdropAfterIphInteraction() {
+  return false;
+}
+
 void ExtensionsRequestAccessButton::OnButtonPressed() {
+  // Record IPH usage.
+  browser_->window()->NotifyFeatureEngagementEvent(
+      feature_engagement::events::kExtensionsRequestAccessButtonClicked);
+
   content::WebContents* web_contents = GetActiveWebContents();
   extensions::ExtensionActionRunner* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);

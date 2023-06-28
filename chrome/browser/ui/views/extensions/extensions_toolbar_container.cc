@@ -217,6 +217,9 @@ ExtensionsToolbarContainer::~ExtensionsToolbarContainer() {
 void ExtensionsToolbarContainer::UpdateAllIcons() {
   // Display Extensions menu IPH. Toolbar view needs to be initialized, thus we
   // show IPH once the extensions container is updating its icons.
+  // TODO(crbug.com/1357159): UpdateAllIcons() gets called multiple time when
+  // transitioning from one button state to the other. This causes to display
+  // the IPH when it's not needed. Have a better check of when we show this.
   if (browser_->window() && GetVisible() &&
       GetExtensionsButton()->state() ==
           ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {

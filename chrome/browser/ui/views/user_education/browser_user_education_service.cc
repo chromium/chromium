@@ -338,6 +338,15 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_EXTENSIONS_MENU_IPH_ENTRY_POINT_BODY)
           .SetBubbleTitleText(IDS_EXTENSIONS_MENU_IPH_ENTRY_POINT_TITLE)));
 
+  // kIPHExtensionsRequestAccessButtonFeature
+  registry.RegisterFeature(std::move(
+      user_education::FeaturePromoSpecification::CreateForSnoozePromo(
+          feature_engagement::kIPHExtensionsRequestAccessButtonFeature,
+          kExtensionsRequestAccessButtonElementId,
+          IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_IPH_ENTRY_POINT_BODY)
+          .SetBubbleTitleText(
+              IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_IPH_ENTRY_POINT_TITLE)));
+
   // kIPHLiveCaptionFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(
       feature_engagement::kIPHLiveCaptionFeature, kMediaButtonElementId,
