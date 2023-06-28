@@ -90,7 +90,7 @@ GURL RemoveParameterFromUrl(const GURL& url) {
   return url.ReplaceComponents(replacements);
 }
 
-void CheckAndSetPrerenderHoldbackStatus(
+void MarkPreloadingAttemptAsDuplicate(
     content::PreloadingAttempt* preloading_attempt) {
   // In addition to the globally-controlled preloading config, check for the
   // feature-specific holdback. We disable the feature if the user is in either
@@ -99,7 +99,10 @@ void CheckAndSetPrerenderHoldbackStatus(
     preloading_attempt->SetHoldbackStatus(
         content::PreloadingHoldbackStatus::kHoldback);
   }
-  preloading_attempt->ShouldHoldback();
+  if (!preloading_attempt->ShouldHoldback()) {
+    preloading_attempt->SetTriggeringOutcome(
+        PreloadingTriggeringOutcome::kDuplicate);
+  }
 }
 
 content::PreloadingFailureReason ToPreloadingFailureReason(
@@ -356,9 +359,7 @@ PrerenderManager::StartPrerenderBookmark(
       preloading_attempt->SetEligibility(
           content::PreloadingEligibility::kEligible);
 
-      CheckAndSetPrerenderHoldbackStatus(preloading_attempt);
-      preloading_attempt->SetTriggeringOutcome(
-          PreloadingTriggeringOutcome::kDuplicate);
+      MarkPreloadingAttemptAsDuplicate(preloading_attempt);
       return bookmark_prerender_handle_->GetWeakPtr();
     }
     bookmark_prerender_handle_.reset();
@@ -396,11 +397,7 @@ PrerenderManager::StartPrerenderDirectUrlInput(
       preloading_attempt.SetEligibility(
           content::PreloadingEligibility::kEligible);
 
-      // Check and set the PreloadingHoldbackStatus before setting the
-      // TriggeringOutcome.
-      CheckAndSetPrerenderHoldbackStatus(&preloading_attempt);
-      preloading_attempt.SetTriggeringOutcome(
-          PreloadingTriggeringOutcome::kDuplicate);
+      MarkPreloadingAttemptAsDuplicate(&preloading_attempt);
       return direct_url_input_prerender_handle_->GetWeakPtr();
     }
 
@@ -614,11 +611,7 @@ bool PrerenderManager::ResetSearchPrerenderTaskIfNecessary(
       preloading_attempt->SetEligibility(
           content::PreloadingEligibility::kEligible);
 
-      // Check and set the PreloadingHoldbackStatus before setting the
-      // TriggeringOutcome.
-      CheckAndSetPrerenderHoldbackStatus(preloading_attempt.get());
-      preloading_attempt->SetTriggeringOutcome(
-          PreloadingTriggeringOutcome::kDuplicate);
+      MarkPreloadingAttemptAsDuplicate(preloading_attempt.get());
     }
     return false;
   }
