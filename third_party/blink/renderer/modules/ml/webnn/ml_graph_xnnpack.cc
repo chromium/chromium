@@ -2173,6 +2173,8 @@ xnn_status MLGraphXnnpack::CreateXnnSubgraph(
           // buffer into the newly-allocated buffer and it is used to initialize
           // the XNNPACK Value.
           const auto* array_buffer_view = operand->ArrayBufferView();
+          CHECK(array_buffer_view);
+          CHECK(!array_buffer_view->IsDetached());
           auto data =
               std::make_unique<uint8_t[]>(array_buffer_view->byteLength());
           DCHECK(data);
