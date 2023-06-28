@@ -330,7 +330,10 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
                    ? elem1.contents < elem2.contents
                    : elem1.relevance > elem2.relevance;
       });
-  if (shortcut_matches.size() > provider_max_matches_) {
+  bool ignore_provider_limit =
+      OmniboxFieldTrial::IsMlUrlScoringIncreaseNumCandidatesEnabled();
+  if (!ignore_provider_limit &&
+      shortcut_matches.size() > provider_max_matches_) {
     shortcut_matches.erase(shortcut_matches.begin() + provider_max_matches_,
                            shortcut_matches.end());
   }
@@ -356,6 +359,8 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
         }
         return match;
       });
+
+  ResizeMatches(provider_max_matches_, ignore_provider_limit);
   base::ranges::transform(
       history_cluster_shortcut_matches, std::back_inserter(matches_),
       [&](const auto& shortcut_match) {

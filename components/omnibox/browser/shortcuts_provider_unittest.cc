@@ -199,7 +199,7 @@ struct TestShortcutData shortcut_test_db[] = {
      AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
      ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 2, 2},
 
-    // 7 shortcuts to verify the interaction of the provider limit and
+    // 8 shortcuts to verify the interaction of the provider limit and
     // aggregating shortcuts.
     {GetGuid(), "zebra1", "", "https://wikipedia.org/zebra-a",
      AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
@@ -220,6 +220,9 @@ struct TestShortcutData shortcut_test_db[] = {
      AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
      ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 4},
     {GetGuid(), "zebra7", "", "https://wikipedia.org/zebra-c",
+     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 10},
+    {GetGuid(), "zebra8", "", "https://wikipedia.org/zebra-d",
      AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
      ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 1, 10},
 };
@@ -755,9 +758,10 @@ TEST_F(ShortcutsProviderTest, GetMatches) {
   {
     // The provider limit should not affect number of shortcuts aggregated, only
     // the matches returned, i.e. the number of aggregate shortcuts. There are
-    // 7 shortcuts matching the input with 3 unique URLs. The 3 aggregate
+    // 8 shortcuts matching the input with 4 unique URLs. The top 3 aggregate
     // shortcuts have the same aggregate score factors and should be scored the
-    // same (other than the `+ 1` limitation).
+    // same (other than the `+ 1` limitation). The 4th match is above the
+    // provider limit and should not be returned.
     AutocompleteInput input(u"zebra", metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     provider_->Start(input, false);
@@ -772,6 +776,35 @@ TEST_F(ShortcutsProviderTest, GetMatches) {
     EXPECT_EQ(matches[0].relevance, matches[1].relevance + 1);
     EXPECT_EQ(matches[1].relevance, matches[2].relevance + 1);
     EXPECT_GT(matches[2].relevance, 0);
+  }
+
+  {
+    // The provider should not limit the number of suggestions when ML scoring
+    // w/increased candidates is enabled. Any matches beyond the limit should be
+    // marked as culled_by_provider and have a relevance of 0.
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{omnibox::kUrlScoringModel, {}},
+         {omnibox::kMlUrlScoring,
+          {{"MlUrlScoringIncreaseNumCandidates", "true"}}}},
+        /*disabled_features=*/{});
+
+    OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
+
+    AutocompleteInput input(u"zebra", metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    provider_->Start(input, false);
+    const auto& matches = provider_->matches();
+    EXPECT_EQ(matches.size(), 4u);
+    // Matches below the limit.
+    EXPECT_FALSE(matches[0].culled_by_provider);
+    EXPECT_GT(matches[0].relevance, 0);
+
+    // Matches that would've originally been culled above the limit should be
+    // marked as such and have a zero relevance score.
+    EXPECT_TRUE(matches[3].culled_by_provider);
+    EXPECT_EQ(matches[3].relevance, 0);
   }
 }
 

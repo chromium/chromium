@@ -1058,7 +1058,9 @@ MLConfig::MLConfig() {
 }
 
 ScopedMLConfigForTesting::ScopedMLConfigForTesting()
-    : original_config_(std::make_unique<MLConfig>(GetMLConfig())) {}
+    : original_config_(std::make_unique<MLConfig>(GetMLConfig())) {
+  GetMLConfigInternal() = {};
+}
 
 ScopedMLConfigForTesting::~ScopedMLConfigForTesting() {
   GetMLConfigInternal() = *original_config_;
