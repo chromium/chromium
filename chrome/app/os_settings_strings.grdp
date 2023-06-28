@@ -3020,10 +3020,10 @@ Press an assigned switch or key to remove assignment.
   </message>
   <!-- TODO(b/286937607): Finalize and translate these strings -->
   <message name="IDS_SETTINGS_MODIFIER_KEYS_LABEL" translateable="false" desc="In the remap keyboard keys settings subpage, the label for the section that contains all of the modifier keys (Ctrl, Alt, etc).">
-    Modifier keys
+    Choose an action for each key
   </message>
   <message name="IDS_SETTINGS_OTHER_KEYS_LABEL" translateable="false" desc="In the remap keyboard keys settings subpage, the label for the section that contains all of the non-modifier keys (Backspace, Home, etc).">
-    Other keys
+    Choose a key combination to generate each action
   </message>
   <message name="IDS_SETTINGS_SIX_PACK_KEY_INSERT" translateable="false" desc="In the keyboard settings subpage, the text next to the dropdown for setting the shortcut used to trigger the insert 6-pack key action.">
     insert
