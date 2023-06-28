@@ -5,6 +5,9 @@
 import {PrinterSetupResult, PrintServerResult} from 'chrome://os-settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
+/**
+ * @implements {CupsPrintersBrowserProxy}
+ */
 export class TestCupsPrintersBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
@@ -25,6 +28,10 @@ export class TestCupsPrintersBrowserProxy extends TestBrowserProxy {
       'reconfigureCupsPrinter',
       'getEulaUrl',
       'requestPrinterStatusUpdate',
+      'retrieveCupsPrinterPpd',
+      'getCupsPrinterPpdPath',
+      'openPrintManagementApp',
+      'openScanningApp',
     ]);
 
     this.printerList = /** @type{?CupsPrintersList} */ ({printerList: []});
@@ -34,7 +41,15 @@ export class TestCupsPrintersBrowserProxy extends TestBrowserProxy {
         /** @type{?ManufacturersInfo} */ ({success: false, manufacturers: []});
     this.models =
         /** @type{?ModelsInfo} */ ({success: false, models: []});
-    this.printerInfo = {};
+    this.printerInfo =
+        /** @type{PrinterMakeModel} */
+        ({
+          makeAndModel: '',
+          autoconf: false,
+          ppdRefUserSuppliedPpdUrl: '',
+          ppdRefEffectiveMakeAndModel: '',
+          ppdReferenceResolved: false,
+        });
     this.printerPpdMakeModel =
         /** @type{PrinterPpdMakeModel */ ({ppdManufacturer: '', ppdModel: ''});
     this.printerStatusMap = {};
@@ -65,6 +80,8 @@ export class TestCupsPrintersBrowserProxy extends TestBrowserProxy {
      * @private {CupsPrinterInfo}
      */
     this.addDiscoveredFailedPrinter_ = null;
+
+    this.printerPpdPath = '';
   }
 
   /** @override */
@@ -172,6 +189,27 @@ export class TestCupsPrintersBrowserProxy extends TestBrowserProxy {
   requestPrinterStatusUpdate(printerId) {
     this.methodCalled('requestPrinterStatusUpdate', printerId);
     return Promise.resolve(this.printerStatusMap[printerId]);
+  }
+
+  /** @override */
+  retrieveCupsPrinterPpd(printerId, printerName, eula) {
+    this.methodCalled('retrieveCupsPrinterPpd', [printerId, printerName, eula]);
+  }
+
+  /** @override */
+  getCupsPrinterPpdPath() {
+    this.methodCalled('getCupsPrinterPpdPath');
+    return Promise.resolve(this.printerPpdPath);
+  }
+
+  /** @override */
+  openPrintManagementApp() {
+    this.methodCalled('openPrintManagementApp');
+  }
+
+  /** @override */
+  openScanningApp() {
+    this.methodCalled('openScanningApp');
   }
 
   /** @param {string} eulaUrl */

@@ -91,7 +91,7 @@ const SettingsCupsPrintersElementBase =
                 RouteObserverMixinInterface&DeepLinkingMixinInterface&
                 NetworkListenerBehaviorInterface>;
 
-interface SettingsCupsPrintersElement {
+export interface SettingsCupsPrintersElement {
   $: {
     errorToast: CrToastElement,
     printServerErrorToast: CrToastElement,
@@ -99,7 +99,8 @@ interface SettingsCupsPrintersElement {
   };
 }
 
-class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
+export class SettingsCupsPrintersElement extends
+    SettingsCupsPrintersElementBase {
   static get is() {
     return 'settings-cups-printers';
   }

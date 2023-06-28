@@ -195,10 +195,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['CellularNetworksList', 'cellular_networks_list_test.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
  [
-   'CupsPrinterLandingPage', 'cups_printer_landing_page_tests.js',
-   {enabled: ['ash::features::kPrinterSettingsPrinterStatus']}
- ],
- [
    'CupsPrinterPage', 'cups_printer_page_tests.js',
    {enabled: ['ash::features::kPrinterSettingsRevamp']}
  ],
@@ -612,6 +608,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_people_page/personalization_options_test.js',
  ],
  ['OsPrintingPage', 'os_printing_page/os_printing_page_test.js'],
+ [
+   'OsPrintingPageCupsPrinterLandingPage',
+   'os_printing_page/cups_printer_landing_page_test.js',
+   {enabled: ['ash::features::kPrinterSettingsPrinterStatus']}
+ ],
  [
    'OsPrintingPageCupsPrintersEntry',
    'os_printing_page/cups_printers_entry_test.js', {

@@ -198,12 +198,15 @@ export {SettingsLockScreenElement} from './os_people_page/lock_screen_subpage.js
 export {OsSettingsPersonalizationOptionsElement} from './os_people_page/os_personalization_options.js';
 export {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from './os_people_page/os_sync_browser_proxy.js';
 export {FingerprintSetupStep, SettingsSetupFingerprintDialogElement} from './os_people_page/setup_fingerprint_dialog.js';
+export {SettingsCupsEditPrinterDialogElement} from './os_printing_page/cups_edit_printer_dialog.js';
+export {SettingsCupsEnterprisePrintersElement} from './os_printing_page/cups_enterprise_printers.js';
+export {SettingsCupsNearbyPrintersElement} from './os_printing_page/cups_nearby_printers.js';
 export {PrinterListEntry, PrinterType} from './os_printing_page/cups_printer_types.js';
-export {PrinterSettingsUserAction} from './os_printing_page/cups_printers.js';
-export {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, PrinterSetupResult, PrintServerResult} from './os_printing_page/cups_printers_browser_proxy.js';
+export {PrinterSettingsUserAction, SettingsCupsPrintersElement} from './os_printing_page/cups_printers.js';
+export {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, PrinterSetupResult, PrintServerResult} from './os_printing_page/cups_printers_browser_proxy.js';
 export {SettingsCupsPrintersEntryElement} from './os_printing_page/cups_printers_entry.js';
 export {CupsPrintersEntryManager} from './os_printing_page/cups_printers_entry_manager.js';
-export {PRINTER_STATUS_QUERY_SHORT_DELAY_RANGE_MS} from './os_printing_page/cups_saved_printers.js';
+export {PRINTER_STATUS_QUERY_SHORT_DELAY_RANGE_MS, SettingsCupsSavedPrintersElement} from './os_printing_page/cups_saved_printers.js';
 export {OsSettingsPrintingPageElement} from './os_printing_page/os_printing_page.js';
 export {computePrinterState, getStatusReasonFromPrinterStatus, PrinterState, PrinterStatusReason, PrinterStatusSeverity} from './os_printing_page/printer_status.js';
 export {MediaDevicesProxy} from './os_privacy_page/media_devices_proxy.js';

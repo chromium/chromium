@@ -24,9 +24,8 @@ build_webui_tests("build") {
     "cellular_roaming_toggle_button_test.js",
     "crostini_extra_containers_subpage_test.js",
     "crostini_page_test.js",
-    "cups_printer_landing_page_tests.js",
     "cups_printer_page_tests.js",
-    "cups_printer_test_utils.js",
+    "cups_printer_test_utils.ts",
     "esim_install_error_dialog_test.js",
     "esim_remove_profile_dialog_test.js",
     "esim_rename_dialog_test.js",
@@ -240,6 +239,7 @@ build_webui_tests("build") {
     "os_people_page/test_fingerprint_browser_proxy.ts",
     "os_people_page/personalization_options_test.ts",
 
+    "os_printing_page/cups_printer_landing_page_test.ts",
     "os_printing_page/cups_printers_entry_test.ts",
     "os_printing_page/os_printing_page_test.ts",
     "os_printing_page/printer_status_test.ts",

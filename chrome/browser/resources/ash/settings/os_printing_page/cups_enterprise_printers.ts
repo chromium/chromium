@@ -47,7 +47,7 @@ export function moveEntryInPrinters(
 const SettingsCupsEnterprisePrintersElementBase =
     CupsPrintersEntryListMixin(WebUiListenerMixin(PolymerElement));
 
-class SettingsCupsEnterprisePrintersElement extends
+export class SettingsCupsEnterprisePrintersElement extends
     SettingsCupsEnterprisePrintersElementBase {
   static get is() {
     return 'settings-cups-enterprise-printers';

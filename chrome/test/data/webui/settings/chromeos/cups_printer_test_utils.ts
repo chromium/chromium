@@ -1,26 +1,21 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import {CupsPrinterInfo, PrinterListEntry, SettingsCupsPrintersEntryElement} from 'chrome://os-settings/lazy_load.js';
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-/**
- * @param {string} printerName
- * @param {string} printerAddress
- * @param {string} printerId
- * @param {boolean} isManaged
- * @return {!CupsPrinterInfo}
- * @private
- */
 export function createCupsPrinterInfo(
-    printerName, printerAddress, printerId, isManaged = false) {
+    printerName: string, printerAddress: string, printerId: string,
+    isManaged: boolean = false): CupsPrinterInfo {
   const printer = {
-    isManaged: isManaged,
+    isManaged,
     ppdManufacturer: '',
     ppdModel: '',
-    printerAddress: printerAddress,
+    printerAddress,
     printerDescription: '',
-    printerId: printerId,
+    printerId,
     printerMakeAndModel: '',
-    printerName: printerName,
+    printerName,
     printerPPDPath: '',
     printerPpdReference: {
       userSuppliedPpdUrl: '',
@@ -36,23 +31,20 @@ export function createCupsPrinterInfo(
 
 /**
  * Helper function that creates a new PrinterListEntry.
- * @param {string} printerName
- * @param {string} printerAddress
- * @param {string} printerId
- * @param {string} printerType
- * @return {!PrinterListEntry}
  */
 export function createPrinterListEntry(
-    printerName, printerAddress, printerId, printerType) {
+    printerName: string, printerAddress: string, printerId: string,
+    printerType: number): PrinterListEntry {
   const entry = {
     printerInfo: {
+      isManaged: false,
       ppdManufacturer: '',
       ppdModel: '',
-      printerAddress: printerAddress,
+      printerAddress,
       printerDescription: '',
-      printerId: printerId,
+      printerId,
       printerMakeAndModel: '',
-      printerName: printerName,
+      printerName,
       printerPPDPath: '',
       printerPpdReference: {
         userSuppliedPpdUrl: '',
@@ -63,7 +55,7 @@ export function createPrinterListEntry(
       printerQueue: 'moreinfohere',
       printServerUri: '',
     },
-    printerType: printerType,
+    printerType,
   };
   return entry;
 }
@@ -71,13 +63,12 @@ export function createPrinterListEntry(
 /**
  * Helper method to pull an array of CupsPrinterEntry out of a
  * |printersElement|.
- * @param {!HTMLElement} printersElement
- * @return {!Array<!HTMLElement>}
- * @private
  */
-export function getPrinterEntries(printersElement) {
+export function getPrinterEntries(printersElement: HTMLElement):
+    NodeListOf<SettingsCupsPrintersEntryElement> {
   const entryList =
-      printersElement.shadowRoot.querySelector('#printerEntryList');
+      printersElement.shadowRoot!.querySelector('#printerEntryList');
+  assertTrue(!!entryList);
   return entryList.querySelectorAll(
       'settings-cups-printers-entry:not([hidden])');
 }

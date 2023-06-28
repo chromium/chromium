@@ -54,7 +54,7 @@ const SettingsCupsEditPrinterDialogElementBase =
     Constructor<PolymerElement&I18nMixinInterface&
                 NetworkListenerBehaviorInterface>;
 
-class SettingsCupsEditPrinterDialogElement extends
+export class SettingsCupsEditPrinterDialogElement extends
     SettingsCupsEditPrinterDialogElementBase {
   static get is() {
     return 'settings-cups-edit-printer-dialog';
