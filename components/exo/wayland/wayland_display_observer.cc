@@ -195,6 +195,9 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
     XdgOutputSendLogicalPosition(output_metrics.logical_origin);
     XdgOutputSendLogicalSize(output_metrics.logical_size);
     XdgOutputSendDescription(output_metrics.description);
+    if (wl_resource_get_version(xdg_output_resource_) < 3) {
+      zxdg_output_v1_send_done(xdg_output_resource_);
+    }
   } else {
     if (wl_resource_get_version(output_resource_) >=
         WL_OUTPUT_SCALE_SINCE_VERSION) {
