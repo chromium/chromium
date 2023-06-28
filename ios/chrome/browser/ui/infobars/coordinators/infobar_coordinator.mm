@@ -11,6 +11,7 @@
 #import "base/timer/timer.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/fullscreen/animated_scoped_fullscreen_disabler.h"
@@ -234,9 +235,22 @@
 - (CGFloat)bannerYPosition {
   LayoutGuideCenter* layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
-  UIView* omnibox = [layoutGuideCenter referencedViewUnderName:kOmniboxGuide];
-  CGRect omniboxFrame = [omnibox convertRect:omnibox.bounds toView:nil];
-  return CGRectGetMaxY(omniboxFrame);
+  UIView* topOmnibox =
+      [layoutGuideCenter referencedViewUnderName:kTopOmniboxGuide];
+  CGRect omniboxFrame = [topOmnibox convertRect:topOmnibox.bounds toView:nil];
+  CGFloat omniboxMaxY = CGRectGetMaxY(omniboxFrame);
+
+  // Use the top toolbar's layout guide when the omnibox is at the bottom.
+  if (IsBottomOmniboxSteadyStateEnabled() && topOmnibox.hidden) {
+    UIView* topToolbar =
+        [layoutGuideCenter referencedViewUnderName:kPrimaryToolbarGuide];
+    CGRect topToolbarFrame = [topToolbar convertRect:topToolbar.bounds
+                                              toView:nil];
+    CGFloat topToolbarMaxY =
+        CGRectGetMaxY(topToolbarFrame) + kInfobarTopPaddingBottomOmnibox;
+    return topToolbarMaxY;
+  }
+  return omniboxMaxY;
 }
 
 - (UIView*)bannerView {

@@ -147,10 +147,10 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 
   self.fakeOmniboxWidthConstraint.constant = self.headerView.bounds.size.width;
   [self.headerView layoutIfNeeded];
-  UIView* omnibox =
-      [self.layoutGuideCenter referencedViewUnderName:kOmniboxGuide];
-  CGRect omniboxFrameInFakebox = [omnibox convertRect:omnibox.bounds
-                                               toView:self.fakeOmnibox];
+  UIView* topOmnibox =
+      [self.layoutGuideCenter referencedViewUnderName:kTopOmniboxGuide];
+  CGRect omniboxFrameInFakebox = [topOmnibox convertRect:topOmnibox.bounds
+                                                  toView:self.fakeOmnibox];
   self.headerView.fakeLocationBarLeadingConstraint.constant =
       omniboxFrameInFakebox.origin.x;
   self.headerView.fakeLocationBarTrailingConstraint.constant =

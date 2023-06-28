@@ -129,7 +129,7 @@
   [self.view setUp];
 
   [self.layoutGuideCenter referenceView:self.view.locationBarContainer
-                              underName:kOmniboxGuide];
+                              underName:kTopOmniboxGuide];
   self.view.locationBarBottomConstraint.constant =
       [self verticalMarginForLocationBarForFullscreenProgress:1];
 }

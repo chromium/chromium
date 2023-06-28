@@ -11,7 +11,7 @@
 GuideName* const kContentAreaGuide = @"ContentAreaGuide";
 GuideName* const kPrimaryToolbarGuide = @"kPrimaryToolbarGuide";
 GuideName* const kSecondaryToolbarGuide = @"kSecondaryToolbarGuide";
-GuideName* const kOmniboxGuide = @"kOmniboxGuide";
+GuideName* const kTopOmniboxGuide = @"kTopOmniboxGuide";
 GuideName* const kOmniboxLeadingImageGuide = @"kOmniboxLeadingImageGuide";
 GuideName* const kOmniboxTextFieldGuide = @"kOmniboxTextFieldGuide";
 GuideName* const kBackButtonGuide = @"kBackButtonGuide";

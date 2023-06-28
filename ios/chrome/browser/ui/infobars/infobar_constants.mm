@@ -10,6 +10,8 @@
 
 const int kInfobarBackgroundColor = 0xfafafa;
 
+const CGFloat kInfobarTopPaddingBottomOmnibox = 4.0;
+
 // a11y identifier so that automation can tap on either infobar button
 NSString* const kConfirmInfobarButton1AccessibilityIdentifier =
     @"confirmInfobarButton1AXID";

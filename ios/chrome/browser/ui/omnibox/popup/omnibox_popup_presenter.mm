@@ -205,13 +205,13 @@ const CGFloat kPopupBottomPaddingTablet = 80;
       constraintGreaterThanOrEqualToAnchor:popup.bottomAnchor
                                   constant:kPopupBottomPaddingTablet];
 
-  // Install in the superview the guide tracking the omnibox.
-  UILayoutGuide* omniboxGuide =
-      [self.layoutGuideCenter makeLayoutGuideNamed:kOmniboxGuide];
-  [[popup superview] addLayoutGuide:omniboxGuide];
+  // Install in the superview the guide tracking the top omnibox.
+  UILayoutGuide* topOmniboxGuide =
+      [self.layoutGuideCenter makeLayoutGuideNamed:kTopOmniboxGuide];
+  [[popup superview] addLayoutGuide:topOmniboxGuide];
   // Position the top anchor of the popup relatively to that layout guide.
   NSLayoutConstraint* topConstraint =
-      [popup.topAnchor constraintEqualToAnchor:omniboxGuide.bottomAnchor
+      [popup.topAnchor constraintEqualToAnchor:topOmniboxGuide.bottomAnchor
                                       constant:kVerticalOffset];
 
   NSMutableArray<NSLayoutConstraint*>* constraintsToActivate =
@@ -220,9 +220,10 @@ const CGFloat kPopupBottomPaddingTablet = 80;
   if (IsIpadPopoutOmniboxEnabled() &&
       IsRegularXRegularSizeClass(self.popupContainerView)) {
     [constraintsToActivate addObjectsFromArray:@[
-      [popup.leadingAnchor constraintEqualToAnchor:omniboxGuide.leadingAnchor],
+      [popup.leadingAnchor
+          constraintEqualToAnchor:topOmniboxGuide.leadingAnchor],
       [popup.trailingAnchor
-          constraintEqualToAnchor:omniboxGuide.trailingAnchor],
+          constraintEqualToAnchor:topOmniboxGuide.trailingAnchor],
     ]];
   } else {
     [constraintsToActivate addObjectsFromArray:@[

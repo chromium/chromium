@@ -18,6 +18,7 @@ source_set("coordinators") {
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/infobars:constants",

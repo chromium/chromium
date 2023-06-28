@@ -268,10 +268,7 @@
 - (CGFloat)collapsedPrimaryToolbarHeight {
   if (_omniboxPosition == ToolbarType::kSecondary) {
     CHECK(IsBottomOmniboxSteadyStateEnabled());
-    // TODO(crbug.com/1455030): Return 0 here once overlay message is fixed.
-    // Currently, it's in a infinite loop when we try to show a message with a
-    // non-expanded primary toolbar.
-    return self.expandedPrimaryToolbarHeight;
+    return 0.0;
   }
 
   return ToolbarCollapsedHeight(
@@ -281,9 +278,7 @@
 - (CGFloat)expandedPrimaryToolbarHeight {
   if (_omniboxPosition == ToolbarType::kSecondary) {
     CHECK(IsBottomOmniboxSteadyStateEnabled());
-    // TODO(crbug.com/1455030): Return 0 here once overlay message is fixed.
-    // Currently, it's in a infinite loop when we try to show a message with a
-    // non-expanded primary toolbar.
+    return 0.0;
   }
 
   CGFloat height =

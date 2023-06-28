@@ -130,7 +130,7 @@ BOOL ShouldDismissKeyboardOnScroll() {
 /// content inset.
 @property(nonatomic, assign) CGFloat cachedContentHeight;
 
-/// Layout guide that tracks the position of the omnibox.
+/// Layout guide that tracks the position of the omnibox in the top toolbar.
 /// This is useful to add constraints to, or to derive manual layout values off
 /// of.
 @property(nonatomic, readonly) UILayoutGuide* omniboxGuide;
@@ -1099,7 +1099,8 @@ BOOL ShouldDismissKeyboardOnScroll() {
 
 - (UILayoutGuide*)omniboxGuide {
   if (!_omniboxGuide) {
-    _omniboxGuide = [self.layoutGuideCenter makeLayoutGuideNamed:kOmniboxGuide];
+    _omniboxGuide =
+        [self.layoutGuideCenter makeLayoutGuideNamed:kTopOmniboxGuide];
     [self.view addLayoutGuide:_omniboxGuide];
   }
   return _omniboxGuide;
