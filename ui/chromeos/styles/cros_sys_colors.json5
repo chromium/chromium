@@ -161,6 +161,10 @@
       light: '$cros.ref.error10',
       dark:  '$cros.ref.error90',
     },
+    'error-highlight': {
+      light: 'rgba($cros.ref.error40.rgb, 0.30)',
+      dark: 'rgba($cros.ref.error80.rgb, 0.30)',
+    },
 
     /* Neutral */
     'surface-variant': {
