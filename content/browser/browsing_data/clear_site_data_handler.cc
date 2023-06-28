@@ -313,6 +313,9 @@ bool ClearSiteDataHandler::ParseHeader(
       data_type = clear_storage;
     } else if (input_type == kDatatypeCache) {
       data_type = clear_cache;
+    } else if (AreExperimentalFeaturesEnabled() &&
+               input_type == kDatatypeWildcard) {
+      continue;
     } else {
       delegate->AddMessage(
           current_url,

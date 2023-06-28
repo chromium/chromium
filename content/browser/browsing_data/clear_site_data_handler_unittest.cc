@@ -491,6 +491,7 @@ TEST_F(ClearSiteDataHandlerTest, FormattedConsoleOutput) {
     const char* header;
     const char* url;
     const char* output;
+    bool experimental;
   } kTestCases[] = {
       // Successful deletion outputs one line, and in case of cookies, also
       // a disclaimer about omitted data (https://crbug.com/798760).
@@ -498,44 +499,67 @@ TEST_F(ClearSiteDataHandlerTest, FormattedConsoleOutput) {
        "Clear-Site-Data header on 'https://origin1.com/foo': "
        "Cleared data types: \"cookies\". "
        "Clearing channel IDs and HTTP authentication cache is currently "
-       "not supported, as it breaks active network connections.\n"},
+       "not supported, as it breaks active network connections.\n",
+       false},
 
       // Another successful deletion.
       {"\"storage\"", "https://origin2.com/foo",
        "Clear-Site-Data header on 'https://origin2.com/foo': "
-       "Cleared data types: \"storage\".\n"},
+       "Cleared data types: \"storage\".\n",
+       false},
 
       // Redirect to the same URL. Unsuccessful deletion outputs two lines.
       {"\"foo\"", "https://origin2.com/foo",
        "Clear-Site-Data header on 'https://origin2.com/foo': "
        "Unrecognized type: \"foo\".\n"
        "Clear-Site-Data header on 'https://origin2.com/foo': "
-       "No recognized types specified.\n"},
+       "No recognized types specified.\n",
+       false},
 
       // Redirect to another URL. Another unsuccessful deletion.
       {"\"some text\"", "https://origin3.com/bar",
        "Clear-Site-Data header on 'https://origin3.com/bar': "
        "Unrecognized type: \"some text\".\n"
        "Clear-Site-Data header on 'https://origin3.com/bar': "
-       "No recognized types specified.\n"},
+       "No recognized types specified.\n",
+       false},
 
       // Yet another on the same URL.
       {"\"passwords\"", "https://origin3.com/bar",
        "Clear-Site-Data header on 'https://origin3.com/bar': "
        "Unrecognized type: \"passwords\".\n"
        "Clear-Site-Data header on 'https://origin3.com/bar': "
-       "No recognized types specified.\n"},
+       "No recognized types specified.\n",
+       false},
 
       // Successful deletion on the same URL.
       {"\"cache\"", "https://origin3.com/bar",
        "Clear-Site-Data header on 'https://origin3.com/bar': "
-       "Cleared data types: \"cache\".\n"},
+       "Cleared data types: \"cache\".\n",
+       false},
+
+      // Failed deletion as experimental types are disabled here.
+      {"\"*\"", "https://origin3.com/bar",
+       "Clear-Site-Data header on 'https://origin3.com/bar': Unrecognized "
+       "type: \"*\".\nClear-Site-Data header on 'https://origin3.com/bar': No "
+       "recognized types specified.\n",
+       false},
+
+      // Successful deletion with experimental types on.
+      {"\"*\"", "https://origin3.com/bar",
+       "Clear-Site-Data header on 'https://origin3.com/bar': Cleared data "
+       "types: \"cookies\", \"storage\", \"cache\". Clearing channel IDs and "
+       "HTTP authentication cache is currently not supported, as it breaks "
+       "active network connections.\n",
+       true},
 
       // Redirect to the original URL.
       // Successful deletion outputs one line.
       {"", "https://origin1.com/foo",
        "Clear-Site-Data header on 'https://origin1.com/foo': "
-       "No recognized types specified.\n"}};
+       "No recognized types specified.\n",
+       false},
+  };
 
   // TODO(crbug.com/876931): Delay output until next frame for navigations.
   bool kHandlerTypeIsNavigation[] = {false};
@@ -553,11 +577,16 @@ TEST_F(ClearSiteDataHandlerTest, FormattedConsoleOutput) {
 
     // |NetworkServiceClient| creates a new |ClearSiteDataHandler| for each
     // navigation, redirect, or subresource header responses.
-    for (size_t i = 0; i < std::size(kTestCases); i++) {
+    for (const auto& test : kTestCases) {
+      base::test::ScopedCommandLine scoped_command_line;
+      if (test.experimental) {
+        scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+            switches::kEnableExperimentalWebPlatformFeatures);
+      }
       TestHandler handler(
           base::BindRepeating(&FakeBrowserContextGetter),
-          base::BindRepeating(&FakeWebContentsGetter), GURL(kTestCases[i].url),
-          kTestCases[i].header, request->load_flags(),
+          base::BindRepeating(&FakeWebContentsGetter), GURL(test.url),
+          test.header, request->load_flags(),
           /*cookie_partition_key=*/absl::nullopt, /*storage_key=*/absl::nullopt,
           /*partitioned_state_allowed_only=*/false, base::DoNothing(),
           std::make_unique<StringConsoleMessagesDelegate>(&output_buffer));
@@ -568,8 +597,7 @@ TEST_F(ClearSiteDataHandlerTest, FormattedConsoleOutput) {
       if (navigation) {
         EXPECT_TRUE(output_buffer.empty());
       } else {
-        EXPECT_EQ(last_seen_console_output + kTestCases[i].output,
-                  output_buffer);
+        EXPECT_EQ(last_seen_console_output + test.output, output_buffer);
       }
 
       last_seen_console_output = output_buffer;
