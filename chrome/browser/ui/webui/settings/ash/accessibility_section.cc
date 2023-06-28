@@ -445,10 +445,6 @@ bool IsAccessibilityChromeVoxPageMigrationEnabled() {
   return ::features::IsAccessibilityChromeVoxPageMigrationEnabled();
 }
 
-bool IsAccessibilitySelectToSpeakPageMigrationEnabled() {
-  return ::features::IsAccessibilitySelectToSpeakPageMigrationEnabled();
-}
-
 bool AreExperimentalAccessibilityColorEnhancementSettingsEnabled() {
   return ::features::
       AreExperimentalAccessibilityColorEnhancementSettingsEnabled();
@@ -1103,9 +1099,6 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("isAccessibilityChromeVoxPageMigrationEnabled",
                           IsAccessibilityChromeVoxPageMigrationEnabled());
 
-  html_source->AddBoolean("isAccessibilitySelectToSpeakPageMigrationEnabled",
-                          IsAccessibilitySelectToSpeakPageMigrationEnabled());
-
   html_source->AddBoolean(
       "areExperimentalAccessibilityColorEnhancementSettingsEnabled",
       AreExperimentalAccessibilityColorEnhancementSettingsEnabled());
@@ -1211,20 +1204,18 @@ void AccessibilitySection::RegisterHierarchy(
         mojom::kChromeVoxSubpagePath);
   }
   // Select to speak options page.
-  if (IsAccessibilitySelectToSpeakPageMigrationEnabled()) {
-    generator->RegisterTopLevelSubpage(
-        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_LINK_TITLE,
-        mojom::Subpage::kSelectToSpeak, mojom::SearchResultIcon::kA11y,
-        mojom::SearchResultDefaultRank::kMedium,
-        mojom::kSelectToSpeakSubpagePath);
-    static constexpr mojom::Setting kSelectToSpeakSettings[] = {
-        mojom::Setting::kSelectToSpeakWordHighlight,
-        mojom::Setting::kSelectToSpeakBackgroundShading,
-        mojom::Setting::kSelectToSpeakNavigationControls,
-    };
-    RegisterNestedSettingBulk(mojom::Subpage::kSelectToSpeak,
-                              kSelectToSpeakSettings, generator);
-  }
+  generator->RegisterTopLevelSubpage(
+      IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_LINK_TITLE,
+      mojom::Subpage::kSelectToSpeak, mojom::SearchResultIcon::kA11y,
+      mojom::SearchResultDefaultRank::kMedium,
+      mojom::kSelectToSpeakSubpagePath);
+  static constexpr mojom::Setting kSelectToSpeakSettings[] = {
+      mojom::Setting::kSelectToSpeakWordHighlight,
+      mojom::Setting::kSelectToSpeakBackgroundShading,
+      mojom::Setting::kSelectToSpeakNavigationControls,
+  };
+  RegisterNestedSettingBulk(mojom::Subpage::kSelectToSpeak,
+                            kSelectToSpeakSettings, generator);
   // Display and magnification page.
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_TITLE,

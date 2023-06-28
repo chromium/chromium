@@ -93,14 +93,6 @@ export class SettingsTextToSpeechSubpageElement extends
         },
       },
 
-      isAccessibilitySelectToSpeakPageMigrationEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isAccessibilitySelectToSpeakPageMigrationEnabled');
-        },
-      },
-
       /**
        * |pdfOcrProgress_| stores the downloading progress in percentage of
        * the ScreenAI library.
@@ -137,7 +129,6 @@ export class SettingsTextToSpeechSubpageElement extends
   private deviceBrowserProxy_: DevicePageBrowserProxy;
   private hasKeyboard_: boolean;
   private isAccessibilityChromeVoxPageMigrationEnabled_: boolean;
-  private isAccessibilitySelectToSpeakPageMigrationEnabled_: boolean;
   private route_: Route;
   private pdfOcrProgress_: number;
   private pdfOcrStatus_: ScreenAiInstallStatus;

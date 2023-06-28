@@ -91,17 +91,6 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
       },
 
       /**
-       * Whether Select-to-speak page migration is enabled.
-       */
-      isAccessibilitySelectToSpeakPageMigrationEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isAccessibilitySelectToSpeakPageMigrationEnabled');
-        },
-      },
-
-      /**
        * Whether the user is in kiosk mode.
        */
       isKioskModeActive_: {
@@ -145,7 +134,6 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
   private section_: Section;
   private showAccessibilityLabelsSetting_: boolean;
   private isAccessibilityChromeVoxPageMigrationEnabled_: boolean;
-  private isAccessibilitySelectToSpeakPageMigrationEnabled_: boolean;
 
   constructor() {
     super();

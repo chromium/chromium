@@ -7535,12 +7535,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          features::kAccessibilitySelectToSpeakHoverTextImprovements)},
 
-    {"enable-accessibility-select-to-speak-page-migration",
-     flag_descriptions::kAccessibilitySelectToSpeakPageMigrationName,
-     flag_descriptions::kAccessibilitySelectToSpeakPageMigrationDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAccessibilitySelectToSpeakPageMigration)},
-
     {"enable-accessibility-chromevox-page-migration",
      flag_descriptions::kAccessibilityChromeVoxPageMigrationName,
      flag_descriptions::kAccessibilityChromeVoxPageMigrationDescription,

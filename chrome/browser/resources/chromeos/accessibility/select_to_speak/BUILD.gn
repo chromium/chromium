@@ -52,13 +52,10 @@ run_jsbundler("select_to_speak_copied_files") {
     "earcons/null_selection.ogg",
     "input_handler.js",
     "metrics_utils.js",
-    "options.css",
-    "options.html",
     "prefs_manager.js",
     "select_to_speak-2x.svg",
     "select_to_speak.js",
     "select_to_speak_constants.js",
-    "select_to_speak_options.js",
     "sts-icon-128.png",
     "sts-icon-16.png",
     "sts-icon-48.png",
@@ -104,7 +101,6 @@ js2gtest("select_to_speak_extjs_tests") {
     "select_to_speak_keystroke_selection_test.js",
     "select_to_speak_mouse_selection_test.js",
     "select_to_speak_navigation_control_test.js",
-    "select_to_speak_options_test.js",
     "select_to_speak_prefs_test.js",
   ]
 
@@ -145,7 +141,6 @@ js_type_check("closure_compile") {
     ":prefs_manager",
     ":select_to_speak",
     ":select_to_speak_constants",
-    ":select_to_speak_options",
     ":tts_manager",
     ":ui_manager",
     "../common:automation_predicate",
@@ -185,16 +180,6 @@ js_library("select_to_speak") {
     "$externs_path/clipboard.js",
     "$externs_path/command_line_private.js",
     "$externs_path/pending.js",
-    "$externs_path/tts.js",
-  ]
-}
-
-js_library("select_to_speak_options") {
-  deps = [ ":prefs_manager" ]
-  externs_list = [
-    "$externs_path/accessibility_private.js",
-    "$externs_path/automation.js",
-    "$externs_path/metrics_private.js",
     "$externs_path/tts.js",
   ]
 }

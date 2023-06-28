@@ -437,14 +437,9 @@ export function createRoutes(): OsSettingsRoutes {
         r.A11Y_TEXT_TO_SPEECH, routesMojom.CHROME_VOX_SUBPAGE_PATH,
         Subpage.kChromeVox);
   }
-  if (loadTimeData.valueExists(
-          'isAccessibilitySelectToSpeakPageMigrationEnabled') &&
-      loadTimeData.getBoolean(
-          'isAccessibilitySelectToSpeakPageMigrationEnabled')) {
-    r.A11Y_SELECT_TO_SPEAK = createSubpage(
-        r.A11Y_TEXT_TO_SPEECH, routesMojom.SELECT_TO_SPEAK_SUBPAGE_PATH,
-        Subpage.kSelectToSpeak);
-  }
+  r.A11Y_SELECT_TO_SPEAK = createSubpage(
+      r.A11Y_TEXT_TO_SPEECH, routesMojom.SELECT_TO_SPEAK_SUBPAGE_PATH,
+      Subpage.kSelectToSpeak);
   r.MANAGE_TTS_SETTINGS = createSubpage(
       loadTimeData.getBoolean('isKioskModeActive') ? r.MANAGE_ACCESSIBILITY :
                                                      r.A11Y_TEXT_TO_SPEECH,

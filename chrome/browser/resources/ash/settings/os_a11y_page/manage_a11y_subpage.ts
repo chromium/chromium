@@ -313,14 +313,6 @@ export class SettingsManageA11ySubpageElement extends
         },
       },
 
-      isAccessibilitySelectToSpeakPageMigrationEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isAccessibilitySelectToSpeakPageMigrationEnabled');
-        },
-      },
-
       /**
        * Boolean indicating whether shelf navigation buttons should implicitly
        * be enabled in tablet mode - the navigation buttons are implicitly
@@ -402,7 +394,6 @@ export class SettingsManageA11ySubpageElement extends
   private hasPointingStick_: boolean;
   private hasTouchpad_: boolean;
   private isAccessibilityChromeVoxPageMigrationEnabled_: boolean;
-  private isAccessibilitySelectToSpeakPageMigrationEnabled_: boolean;
   private isGuest_: boolean;
   private isKioskModeActive_: boolean;
   private manageBrowserProxy_: ManageA11ySubpageBrowserProxy;

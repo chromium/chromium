@@ -1101,12 +1101,6 @@ const char kAccessibilityDeprecateChromeVoxTabsDescription[] =
     "Enabling this option will remove the ChromeVox tabs menu from the "
     "ChromeVox menus.";
 
-const char kAccessibilitySelectToSpeakPageMigrationName[] =
-    "Select-to-Speak Page Migration";
-const char kAccessibilitySelectToSpeakPageMigrationDescription[] =
-    "This option enables Select-to-Speak page migration from extension options "
-    "page to a Chrome OS settings page.";
-
 const char kAccessibilityChromeVoxPageMigrationName[] =
     "ChromeVox Page Migration";
 const char kAccessibilityChromeVoxPageMigrationDescription[] =

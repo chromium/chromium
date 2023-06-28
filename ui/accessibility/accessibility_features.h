@@ -132,13 +132,6 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 AX_BASE_EXPORT bool
 AreExperimentalAccessibilityColorEnhancementSettingsEnabled();
 
-// Enables Select-to-Speak settings page migration from extension options page
-// to Chrome OS settings page.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySelectToSpeakPageMigration);
-
-// Returns true if Select-to-Speak settings page migration enabled.
-AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakPageMigrationEnabled();
-
 // Enables ChromeVox settings page migration from extension options page to
 // Chrome OS settings page.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityChromeVoxPageMigration);

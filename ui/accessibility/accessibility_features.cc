@@ -172,15 +172,6 @@ bool AreExperimentalAccessibilityColorEnhancementSettingsEnabled() {
       ::features::kExperimentalAccessibilityColorEnhancementSettings);
 }
 
-BASE_FEATURE(kAccessibilitySelectToSpeakPageMigration,
-             "AccessibilitySelectToSpeakPageMigration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsAccessibilitySelectToSpeakPageMigrationEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilitySelectToSpeakPageMigration);
-}
-
 BASE_FEATURE(kAccessibilityChromeVoxPageMigration,
              "AccessibilityChromeVoxPageMigration",
              base::FEATURE_ENABLED_BY_DEFAULT);
