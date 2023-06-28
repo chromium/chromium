@@ -223,7 +223,8 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   // Enable the IPH Demo Mode feature to ensure the IPH triggers
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(base::StringPrintf(
-      "--enable-features=%s:chosen_feature/IPH_iOSHistoryOnOverflowMenuFeature",
+      "--enable-features=%s:chosen_feature/"
+      "IPH_iOSHistoryOnOverflowMenuFeature,IPHForSafariSwitcher",
       feature_engagement::kIPHDemoMode.name));
   // Force the conditions that allow the iph to show.
   config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
