@@ -692,8 +692,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
   void ClickOnCloseButton() {
     SaveCardBubbleViews* save_card_bubble_views = GetSaveCardBubbleViews();
     CHECK(save_card_bubble_views);
-    ClickOnDialogViewAndWait(save_card_bubble_views->GetBubbleFrameView()
-                                 ->GetCloseButtonForTesting());
+    ClickOnDialogViewAndWait(
+        save_card_bubble_views->GetBubbleFrameView()->close_button());
     CHECK(!GetSaveCardBubbleViews());
   }
 

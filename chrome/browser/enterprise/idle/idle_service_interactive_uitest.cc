@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/idle_bubble.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/profile_ui_test_utils.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -205,7 +206,7 @@ class IdleServiceTest : public InProcessBrowserTest {
   }
 
   void ActivateBrowserImpl(Browser* browser) {
-    if (IsIdleBubbleOpen(browser)) {
+    if (GetIdleBubble(browser)) {
       return;
     }
     CHECK(browser);
@@ -233,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, Basic) {
 
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // 59s, does nothing.
@@ -242,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, Basic) {
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // 60s, threshold is reached. This should show the dialog.
@@ -251,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, Basic) {
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_TRUE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
@@ -272,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DidNotClose) {
 
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // 60s, threshold is reached. The user dismisses the dialog though, so we do
@@ -282,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DidNotClose) {
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_TRUE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
@@ -291,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DidNotClose) {
   task_runner()->FastForwardBy(base::Seconds(30));
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
@@ -304,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, TenMinutes) {
 
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // 599s, does nothing.
@@ -313,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, TenMinutes) {
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // 600s, threshold is reached. Close browsers, then show the Profile Picker.
@@ -322,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, TenMinutes) {
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_TRUE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
@@ -377,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MAYBE_MultiProfile) {
   EXPECT_EQ(1, GetBrowserCount(profile2));
   EXPECT_EQ(1, GetBrowserCount(profile3));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // 299s, does nothing.
@@ -388,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MAYBE_MultiProfile) {
   EXPECT_EQ(1, GetBrowserCount(profile2));
   EXPECT_EQ(1, GetBrowserCount(profile3));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // 300s, threshold is reached. Close browsers, then show the Profile Picker.
@@ -442,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest,
   EXPECT_EQ(2, GetBrowserCount(profile));
   EXPECT_EQ(1, GetBrowserCount(profile2));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // 299s, does nothing.
@@ -452,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest,
   EXPECT_EQ(2, GetBrowserCount(profile));
   EXPECT_EQ(1, GetBrowserCount(profile2));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // 300s, threshold is reached for `profile`. Close its browsers, then show the
@@ -497,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DialogDismissedByUser) {
 
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // 59s, does nothing.
@@ -506,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DialogDismissedByUser) {
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // 60s, threshold is reached. Close browsers, then show the Profile
@@ -515,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DialogDismissedByUser) {
       .WillOnce(Return(base::Seconds(60)));
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   DialogManager::GetInstance()->DismissDialogForTesting();
 
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
@@ -523,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DialogDismissedByUser) {
   task_runner()->FastForwardBy(base::Seconds(30));
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
@@ -539,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, NoActions) {
 
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // 60s, threshold is reached. This should not show the dialog, because there
@@ -549,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, NoActions) {
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
@@ -559,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, NoActions) {
   // Nothing happened: no browsers closed, no Profile Picker.
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
@@ -576,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, JustCloseBrowsers) {
 
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // 60s, threshold is reached. This should show the dialog.
@@ -585,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, JustCloseBrowsers) {
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_TRUE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
@@ -614,7 +615,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DISABLED_JustShowProfilePicker) {
 
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // 60s, threshold is reached. This should show NOT show the dialog, which is
@@ -623,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DISABLED_JustShowProfilePicker) {
       .WillOnce(Return(base::Seconds(60)));
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_TRUE(ProfilePicker::IsOpen());
 
   // Browsers are still open.
@@ -639,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, ReloadPages) {
 
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
@@ -684,7 +685,54 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, ShowBubbleImmediately) {
 
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+
+  // 60s, threshold is reached. This should show NOT show the dialog, which is
+  // tied to the "close_browsers" action.
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+      .WillOnce(Return(base::Seconds(60)));
+  task_runner()->FastForwardBy(base::Seconds(1));
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+      .WillRepeatedly(Return(base::Seconds(15)));
+  task_runner()->FastForwardBy(base::Seconds(30));
+  EXPECT_FALSE(IsDialogOpen());
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+  ASSERT_EQ(1, GetBrowserCount(profile));
+
+  // Bring the browser back into focus.
+  ActivateBrowser(browser());
+  // Bubble should be visible on that browser.
+  EXPECT_TRUE(GetIdleBubble(browser()));
+}
+
+// It should be possible to focus the bubble with the "focus dialog" hotkey
+// combination (Alt+Shift+A).
+// TODO(https://crbug.com/1350659): Probably flaky on macOS.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CanFocusBubbleWithFocusDialogHotkey \
+  DISABLED_CanFocusBubbleWithFocusDialogHotkey
+#else
+#define MAYBE_CanFocusBubbleWithFocusDialogHotkey \
+  CanFocusBubbleWithFocusDialogHotkey
+#endif
+IN_PROC_BROWSER_TEST_F(IdleServiceTest,
+                       MAYBE_CanFocusBubbleWithFocusDialogHotkey) {
+  browser()->window()->Activate();
+  BrowserList::SetLastActive(browser());
+
+  // Use "reload_pages" as our action, because:
+  // - It runs synchronously (succeeds immediately).
+  // - It doesn't close browsers.
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+      .WillOnce(Return(base::Seconds(58)));
+  Profile* profile = browser()->profile();
+  SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1,
+                         /*idle_timeout_actions=*/{"reload_pages"});
+
+  EXPECT_EQ(1, GetBrowserCount(profile));
+  EXPECT_FALSE(IsDialogOpen());
+  EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_FALSE(ProfilePicker::IsOpen());
 
   // 60s, threshold is reached. This should show NOT show the dialog, which is
@@ -702,8 +750,71 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, ShowBubbleImmediately) {
   // Bring the browser back into focus.
   ActivateBrowser(browser());
 
-  // Bubble should be visible on that browser.
-  EXPECT_TRUE(IsIdleBubbleOpen(browser()));
+  // Bubble should be visible on that browser, and initially inactive.
+  views::View* bubble = GetIdleBubble(browser());
+  EXPECT_TRUE(bubble);
+  EXPECT_FALSE(bubble->GetWidget()->IsActive());
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  browser_view->FocusInactivePopupForAccessibility();
+  EXPECT_TRUE(bubble->GetWidget()->IsActive());
+}
+
+// It should be possible to focus the bubble with the "rotate pane focus" (F6)
+// hotkey.
+// TODO(crbug.com/1343849): Probably flaky on macOS.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey \
+  DISABLED_CanFocusBubbleWithRotatePaneFocusHotkey
+#else
+#define MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey \
+  CanFocusBubbleWithRotatePaneFocusHotkey
+#endif
+IN_PROC_BROWSER_TEST_F(IdleServiceTest,
+                       MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey) {
+  browser()->window()->Activate();
+  BrowserList::SetLastActive(browser());
+
+  // Use "reload_pages" as our action, because:
+  // - It runs synchronously (succeeds immediately).
+  // - It doesn't close browsers.
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+      .WillOnce(Return(base::Seconds(58)));
+  Profile* profile = browser()->profile();
+  SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1,
+                         /*idle_timeout_actions=*/{"reload_pages"});
+
+  EXPECT_EQ(1, GetBrowserCount(profile));
+  EXPECT_FALSE(IsDialogOpen());
+  EXPECT_FALSE(GetIdleBubble(browser()));
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+
+  // 60s, threshold is reached. This should show NOT show the dialog, which is
+  // tied to the "close_browsers" action.
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+      .WillOnce(Return(base::Seconds(60)));
+  task_runner()->FastForwardBy(base::Seconds(1));
+  EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
+      .WillRepeatedly(Return(base::Seconds(15)));
+  task_runner()->FastForwardBy(base::Seconds(30));
+  EXPECT_FALSE(IsDialogOpen());
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+  ASSERT_EQ(1, GetBrowserCount(profile));
+
+  // Bring the browser back into focus.
+  ActivateBrowser(browser());
+
+  // Bubble should be visible on that browser, and initially inactive.
+  views::View* bubble = GetIdleBubble(browser());
+  EXPECT_TRUE(bubble);
+  EXPECT_FALSE(bubble->GetWidget()->IsActive());
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  browser_view->RotatePaneFocus(true);
+  // Rotate pane focus is expected to keep the bubble focused until the user
+  // deals with it, so a second call should have no effect.
+  browser_view->RotatePaneFocus(true);
+  EXPECT_TRUE(bubble->GetWidget()->IsActive());
 }
 
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, PRE_ShowBubbleOnStartup) {
@@ -713,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, PRE_ShowBubbleOnStartup) {
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1);
 
   EXPECT_EQ(1, GetBrowserCount(profile));
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
 
   // 60s, threshold is reached. This should show the dialog.
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
@@ -721,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, PRE_ShowBubbleOnStartup) {
   task_runner()->FastForwardBy(base::Seconds(1));
   ASSERT_EQ(1, GetBrowserCount(profile));
   ASSERT_TRUE(IsDialogOpen());
-  EXPECT_FALSE(IsIdleBubbleOpen(browser()));
+  EXPECT_FALSE(GetIdleBubble(browser()));
 
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillRepeatedly(Return(base::Seconds(15)));
@@ -738,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, ShowBubbleOnStartup) {
   // The bubble is visible, from the last browsing session.
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1);
   ActivateBrowser(browser());
-  EXPECT_TRUE(IsIdleBubbleOpen(browser()));
+  EXPECT_TRUE(GetIdleBubble(browser()));
 }
 
 }  // namespace enterprise_idle

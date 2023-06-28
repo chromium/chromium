@@ -505,11 +505,10 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
       PressButton(kHighEfficiencyChipElementId),
       WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       NameView(kDialogCloseButton, base::BindLambdaForTesting([&]() {
-                 return static_cast<views::View*>(
-                     GetPageActionIconView()
-                         ->GetBubble()
-                         ->GetBubbleFrameView()
-                         ->GetCloseButtonForTesting());
+                 return static_cast<views::View*>(GetPageActionIconView()
+                                                      ->GetBubble()
+                                                      ->GetBubbleFrameView()
+                                                      ->close_button());
                })),
       PressButton(kDialogCloseButton),
       EnsureNotPresent(

@@ -493,13 +493,13 @@ class LocalCardMigrationBrowserTest
     return icon;
   }
 
-  views::View* GetCloseButton() {
+  views::View* close_button() {
     LocalCardMigrationBubbleViews* local_card_migration_bubble_views =
         static_cast<LocalCardMigrationBubbleViews*>(
             GetLocalCardMigrationOfferBubbleViews());
     CHECK(local_card_migration_bubble_views);
     return local_card_migration_bubble_views->GetBubbleFrameView()
-        ->GetCloseButtonForTesting();
+        ->close_button();
   }
 
   views::View* GetCardListView() {
@@ -696,7 +696,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
   SaveLocalCard(kFirstCardNumber);
   SaveLocalCard(kSecondCardNumber);
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
-  ClickOnDialogViewAndWait(GetCloseButton(),
+  ClickOnDialogViewAndWait(close_button(),
                            GetLocalCardMigrationOfferBubbleViews());
 
   // No bubble should be showing.
@@ -727,7 +727,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
   SaveLocalCard(kFirstCardNumber);
   SaveLocalCard(kSecondCardNumber);
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
-  ClickOnDialogViewAndWait(GetCloseButton(),
+  ClickOnDialogViewAndWait(close_button(),
                            GetLocalCardMigrationOfferBubbleViews());
   ClickOnView(GetLocalCardMigrationIconView());
 
@@ -939,7 +939,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
   SaveLocalCard(kFirstCardNumber);
   SaveLocalCard(kSecondCardNumber);
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
-  ClickOnDialogViewAndWait(GetCloseButton(),
+  ClickOnDialogViewAndWait(close_button(),
                            GetLocalCardMigrationOfferBubbleViews());
 
   // No bubble should be showing.
@@ -962,11 +962,11 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
   SaveLocalCard(kFirstCardNumber);
   SaveLocalCard(kSecondCardNumber);
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
-  ClickOnDialogViewAndWait(GetCloseButton(),
+  ClickOnDialogViewAndWait(close_button(),
                            GetLocalCardMigrationOfferBubbleViews());
   // Do it again for the same tab.
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
-  ClickOnDialogViewAndWait(GetCloseButton(),
+  ClickOnDialogViewAndWait(close_button(),
                            GetLocalCardMigrationOfferBubbleViews());
 
   // No bubble should be showing.
@@ -992,7 +992,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
   SaveLocalCard(kFirstCardNumber);
   SaveLocalCard(kSecondCardNumber);
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
-  ClickOnDialogViewAndWait(GetCloseButton(),
+  ClickOnDialogViewAndWait(close_button(),
                            GetLocalCardMigrationOfferBubbleViews());
   base::HistogramTester histogram_tester;
   ClickOnView(GetLocalCardMigrationIconView());
@@ -1003,7 +1003,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
                            GetLocalCardMigrationOfferBubbleViews())
           ->GetVisible());
 
-  ClickOnDialogViewAndWait(GetCloseButton(),
+  ClickOnDialogViewAndWait(close_button(),
                            GetLocalCardMigrationOfferBubbleViews());
 
   // Metrics
@@ -1033,7 +1033,7 @@ IN_PROC_BROWSER_TEST_F(LocalCardMigrationBrowserTest,
   SaveLocalCard(kFirstCardNumber);
   SaveLocalCard(kSecondCardNumber);
   UseCardAndWaitForMigrationOffer(kFirstCardNumber);
-  ClickOnDialogViewAndWait(GetCloseButton(),
+  ClickOnDialogViewAndWait(close_button(),
                            GetLocalCardMigrationOfferBubbleViews());
 
   EXPECT_THAT(histogram_tester.GetAllSamples(

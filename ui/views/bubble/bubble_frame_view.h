@@ -202,7 +202,8 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
                                    const gfx::Size& client_size,
                                    bool adjust_to_fit_available_bounds);
 
-  Button* GetCloseButtonForTesting() { return close_; }
+  Button* close_button() { return close_; }
+  const Button* close_button() const { return close_; }
 
   View* GetHeaderViewForTesting() const { return header_view_; }
 

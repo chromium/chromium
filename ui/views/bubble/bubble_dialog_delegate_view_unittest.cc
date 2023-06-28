@@ -609,7 +609,7 @@ TEST_F(BubbleDialogDelegateViewTest, CustomTitle) {
   bubble_frame->InvalidateLayout();
   views::test::RunScheduledLayout(bubble_frame);
 
-  Button* close_button = bubble_frame->GetCloseButtonForTesting();
+  Button* close_button = bubble_frame->close_button();
   // Title moves over for the close button.
   EXPECT_GT(close_button->x(), title_container->bounds().right());
 

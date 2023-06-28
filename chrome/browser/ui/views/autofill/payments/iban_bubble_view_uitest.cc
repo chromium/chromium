@@ -242,8 +242,7 @@ class IbanBubbleViewFullFormBrowserTest
     SaveIbanBubbleView* save_iban_bubble_views = GetSaveIbanBubbleView();
     CHECK(save_iban_bubble_views);
     ClickOnDialogViewAndWaitForWidgetDestruction(
-        save_iban_bubble_views->GetBubbleFrameView()
-            ->GetCloseButtonForTesting());
+        save_iban_bubble_views->GetBubbleFrameView()->close_button());
     CHECK(!GetSaveIbanBubbleView());
   }
 

@@ -141,8 +141,8 @@ class MandatoryReauthBubbleViewUiTest : public InProcessBrowserTest {
 
   void ClickOnCloseButton(
       views::BubbleDialogDelegate* mandatory_reauth_bubble) {
-    views::View* close_button = mandatory_reauth_bubble->GetBubbleFrameView()
-                                    ->GetCloseButtonForTesting();
+    views::View* close_button =
+        mandatory_reauth_bubble->GetBubbleFrameView()->close_button();
     ClickOnViewAndWait(close_button, mandatory_reauth_bubble);
   }
 
