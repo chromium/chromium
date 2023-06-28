@@ -64,6 +64,7 @@ class GpuIntegrationTest(
   _disable_log_uploads = False
   _extra_intel_device_id_with_overlays = None
   _skip_post_test_cleanup_and_debug_info = False
+  _skip_post_failure_browser_restart = False
 
   # Several of the tests in this directory need to be able to relaunch
   # the browser on demand with a new set of command line arguments
@@ -152,6 +153,8 @@ class GpuIntegrationTest(
     """
     cls._skip_post_test_cleanup_and_debug_info =\
         options.skip_post_test_cleanup_and_debug_info
+    cls._skip_post_failure_browser_restart =\
+        options.no_browser_restart_on_failure
 
   @classmethod
   def SetUpProcess(cls) -> None:
@@ -182,6 +185,12 @@ class GpuIntegrationTest(
                             'fails. This can can speed up local testing at the '
                             'cost of providing less actionable data when a '
                             'test does fail.'))
+    parser.add_option('--no-browser-restart-on-failure',
+                      action='store_true',
+                      help=('Disables the automatic browser restarts after '
+                            'failing tests. This can speed up local testing at '
+                            'the cost of potentially leaving bad state around '
+                            'after a test fails.'))
 
   @classmethod
   def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
@@ -584,14 +593,16 @@ class GpuIntegrationTest(
       # For robustness, shut down the browser and restart it
       # between flaky test failures, to make sure any state
       # doesn't propagate to the next iteration.
-      self._RestartBrowser('flaky test failure')
+      if self._ShouldRestartBrowserAfterFailure():
+        self._RestartBrowser('flaky test failure')
     else:
       logging.exception('Expected exception while running %s', test_name)
       # Even though this is a known failure, the browser might still
       # be in a bad state; for example, certain kinds of timeouts
       # will affect the next test. Restart the browser to prevent
       # these kinds of failures propagating to the next test.
-      self._RestartBrowser('expected test failure')
+      if self._ShouldRestartBrowserAfterFailure():
+        self._RestartBrowser('expected test failure')
 
   def _HandleUnexpectedFailure(self, test_name: str) -> None:
     """Helper method for handling an unexpected failure in a test."""
@@ -608,7 +619,11 @@ class GpuIntegrationTest(
     # This failure might have been caused by a browser or renderer
     # crash, so restart the browser to make sure any state doesn't
     # propagate to the next test iteration.
-    self._RestartBrowser('unexpected test failure')
+    if self._ShouldRestartBrowserAfterFailure():
+      self._RestartBrowser('unexpected test failure')
+
+  def _ShouldRestartBrowserAfterFailure(self) -> bool:
+    return not self._skip_post_failure_browser_restart
 
   def _ShouldCollectDebugInfo(self) -> bool:
     # We need a browser in order to collect debug info.
