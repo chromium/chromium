@@ -127,9 +127,8 @@ bool IsDiscoverFeedTopSyncPromoEnabled() {
 SigninPromoViewStyle GetTopOfFeedPromoStyle() {
   CHECK(IsDiscoverFeedTopSyncPromoEnabled());
   // Defaults to Compact Vertical.
-  // TODO(b/288959414):GetTopOfFeedPromoStyle() returning a strange value.
-  // Remove return below for GetFieldTrialParamByFeatureAsInt().
-  return SigninPromoViewStyle::SigninPromoViewStyleCompactVertical;
+  return (SigninPromoViewStyle)base::GetFieldTrialParamByFeatureAsInt(
+      kEnableDiscoverFeedTopSyncPromo, kDiscoverFeedTopSyncPromoStyle, 2);
 }
 
 bool ShouldIgnoreFeedEngagementConditionForTopSyncPromo() {
