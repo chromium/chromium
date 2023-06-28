@@ -25,7 +25,6 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowUserManager;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
@@ -36,9 +35,6 @@ import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.components.policy.PolicySwitches;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Unit test for {@link FirstRunAppRestrictionInfo}.
  */
@@ -46,10 +42,6 @@ import java.util.List;
 @Config(manifest = Config.NONE, shadows = {ShadowPostTask.class, ShadowUserManager.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class FirstRunAppRestrictionInfoTest {
-    private static final List<String> HISTOGRAM_NAMES =
-            Arrays.asList("Enterprise.FirstRun.AppRestrictionLoadTime",
-                    "Enterprise.FirstRun.AppRestrictionLoadTime.Medium");
-
     @Mock
     private Bundle mMockBundle;
 
@@ -82,13 +74,6 @@ public class FirstRunAppRestrictionInfoTest {
         FirstRunAppRestrictionInfo.setInitializedInstanceForTest(null);
     }
 
-    private void verifyHistograms(int expectedCallCount) {
-        for (String name : HISTOGRAM_NAMES) {
-            Assert.assertEquals("Histogram record count doesn't match.", expectedCallCount,
-                    RecordHistogram.getHistogramTotalCountForTesting(name));
-        }
-    }
-
     @Test
     @SmallTest
     public void testInitWithRestriction() {
@@ -115,7 +100,6 @@ public class FirstRunAppRestrictionInfoTest {
 
         Assert.assertEquals(withRestriction, appResCallbackHelper.getOnlyPayloadBlocking());
         Assert.assertEquals(1, completionCallbackHelper.getCallCount());
-        verifyHistograms(1);
     }
 
     @Test
@@ -167,8 +151,6 @@ public class FirstRunAppRestrictionInfoTest {
         Assert.assertEquals(1, completionCallbackHelper1.getCallCount());
         Assert.assertEquals(1, completionCallbackHelper2.getCallCount());
         Assert.assertEquals(1, completionCallbackHelper3.getCallCount());
-
-        verifyHistograms(1);
     }
 
     @Test
@@ -194,7 +176,6 @@ public class FirstRunAppRestrictionInfoTest {
                 "CallbackHelper should not triggered yet.", 0, appResCallbackHelper.getCallCount());
         Assert.assertEquals("CallbackHelper should not triggered yet.", 0,
                 completionCallbackHelper.getCallCount());
-        verifyHistograms(0);
     }
 
     @Test
@@ -207,6 +188,5 @@ public class FirstRunAppRestrictionInfoTest {
                         -> FirstRunAppRestrictionInfo.takeMaybeInitialized().getHasAppRestriction(
                                 appResCallbackHelper::notifyCalled));
         Assert.assertTrue(appResCallbackHelper.getOnlyPayloadBlocking());
-        verifyHistograms(1);
     }
 }

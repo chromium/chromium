@@ -2036,29 +2036,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.FirstRun.AppRestrictionLoadTime" units="ms"
-    expires_after="2022-01-09">
-  <owner>wenyufu@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Records the time it takes to retrieve application restrictions from the
-    system using an AsyncTask. Recording during first run experience on Android
-    only.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.FirstRun.AppRestrictionLoadTime.Medium" units="ms"
-    expires_after="2022-04-24">
-  <owner>skym@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Records the time it takes to retrieve application restrictions from the
-    system using an AsyncTask. Recording during first run experience on Android
-    only. Has a bigger range (0-3 minutes) than the non-Medium version.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.InvalidDevicePolicyFilesStatus"
     enum="InvalidDevicePolicyFilesStatus" expires_after="2023-12-01">
   <owner>emaxx@chromium.org</owner>
