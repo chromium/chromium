@@ -153,6 +153,9 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // e.g. it is not policy installed.
   bool CanUserUninstallWebApp(const AppId& app_id) const;
 
+  // Returns true if the prevent-close feature is enabled for the given app
+  bool IsPreventCloseEnabled(const AppId& app_id) const;
+
   // Returns the AppIds and URLs of apps externally installed from
   // |install_source|.
   base::flat_map<AppId, base::flat_set<GURL>> GetExternallyInstalledApps(

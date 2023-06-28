@@ -40,6 +40,7 @@ source_set("browser_tests") {
     "web_app_engagement_browsertest.cc",
     "web_app_file_handling_browsertest.cc",
     "web_app_launch_handler_browsertest.cc",
+    "web_app_launch_prevent_close_browsertest.cc",
     "web_app_menu_model_browsertest.cc",
     "web_app_metrics_browsertest.cc",
     "web_app_navigate_browsertest.cc",

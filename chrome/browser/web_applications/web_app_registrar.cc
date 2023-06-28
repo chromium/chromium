@@ -815,6 +815,10 @@ bool WebAppRegistrar::CanUserUninstallWebApp(const AppId& app_id) const {
   return web_app && web_app->CanUserUninstallWebApp();
 }
 
+bool WebAppRegistrar::IsPreventCloseEnabled(const AppId& app_id) const {
+  return policy_manager_->IsPreventCloseEnabled(app_id);
+}
+
 bool WebAppRegistrar::IsAllowedLaunchProtocol(
     const AppId& app_id,
     const std::string& protocol_scheme) const {

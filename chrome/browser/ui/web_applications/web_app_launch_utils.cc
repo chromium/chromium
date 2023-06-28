@@ -292,7 +292,8 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
 
   if (web_app->launch_handler()
           .value_or(LaunchHandler{})
-          .TargetsExistingClients()) {
+          .TargetsExistingClients() ||
+      registrar.IsPreventCloseEnabled(web_app->app_id())) {
     if (Browser* browser =
             AppBrowserController::FindForWebApp(*profile, app_id)) {
       // TODO(crbug.com/1385226): Use apps::AppServiceProxy::LaunchAppWithUrl()
