@@ -272,7 +272,9 @@ void ForceDawnTogglesForWebGPU(
 void ForceDawnTogglesForSkiaGraphite(
     std::vector<const char*>* force_enabled_toggles,
     std::vector<const char*>* force_disabled_toggles) {
-#if !DCHECK_IS_ON()
+#if DCHECK_IS_ON()
+  force_enabled_toggles->push_back("use_user_defined_labels_in_backend");
+#else
   force_enabled_toggles->push_back("disable_robustness");
   force_enabled_toggles->push_back("skip_validation");
   force_disabled_toggles->push_back("lazy_clear_resource_on_first_use");

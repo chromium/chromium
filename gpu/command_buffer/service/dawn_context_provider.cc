@@ -124,20 +124,23 @@ bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
   // info for about:gpu should be updated as well.
   wgpu::DeviceDescriptor descriptor;
 
-  // Disable validation in non-DCHECK builds.
-#if !DCHECK_IS_ON()
-  // TODO(crbug.com/1456492): check if below toggles are necessary.
-  const char* kForceEnabledToggles[] = {"disable_robustness",
-                                        "skip_validation"};
-  const char* kForceDisabledToggles[] = {"lazy_clear_resource_on_first_use"};
-
   wgpu::DawnTogglesDescriptor toggles_desc;
-  toggles_desc.enabledToggles = kForceEnabledToggles;
-  toggles_desc.enabledTogglesCount = std::size(kForceEnabledToggles);
-  toggles_desc.disabledToggles = kForceDisabledToggles;
-  toggles_desc.disabledTogglesCount = std::size(kForceDisabledToggles);
-  descriptor.nextInChain = &toggles_desc;
+  std::vector<const char*> enabled_toggles;
+  std::vector<const char*> disabled_toggles;
+#if DCHECK_IS_ON()
+  enabled_toggles.push_back("use_user_defined_labels_in_backend");
+#else
+  // Disable validation in non-DCHECK builds.
+  // TODO(crbug.com/1456492): check if below toggles are necessary.
+  enabled_toggles.push_back("disable_robustness");
+  enabled_toggles.push_back("skip_validation");
+  disabled_toggles.push_back("lazy_clear_resource_on_first_use");
 #endif
+  toggles_desc.enabledToggles = enabled_toggles.data();
+  toggles_desc.enabledTogglesCount = enabled_toggles.size();
+  toggles_desc.disabledToggles = disabled_toggles.data();
+  toggles_desc.disabledTogglesCount = disabled_toggles.size();
+  descriptor.nextInChain = &toggles_desc;
 
   // TODO(crbug.com/1456492): verify the required features.
   std::vector<wgpu::FeatureName> features = {
