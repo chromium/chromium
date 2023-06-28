@@ -225,9 +225,13 @@ suite(destination_dialog_cros_test.suiteName, function() {
         // Printer setup element should not be displayed when there are
         // valid destinations.
         const printerSetupInfo = dialog.shadowRoot!.querySelector<HTMLElement>(
-            'print-preview-printer-setup-info-cros');
-        assertTrue(!!printerSetupInfo);
-        assertTrue(printerSetupInfo!.hidden);
+            'print-preview-printer-setup-info-cros')!;
+        assertTrue(printerSetupInfo.hidden);
+
+        // Destination list should display if there are valid destinations.
+        const destinationList =
+            dialog.shadowRoot!.querySelector<HTMLElement>('#printList');
+        assertTrue(isVisible(destinationList));
       });
 
   // Test that the correct elements are displayed when the printer setup
@@ -270,8 +274,12 @@ suite(destination_dialog_cros_test.suiteName, function() {
         // Printer setup element should be displayed when there are no valid
         // destinations.
         const printerSetupInfo = dialog.shadowRoot!.querySelector<HTMLElement>(
-            'print-preview-printer-setup-info-cros');
-        assertTrue(!!printerSetupInfo);
-        assertFalse(printerSetupInfo!.hidden);
+            'print-preview-printer-setup-info-cros')!;
+        assertFalse(printerSetupInfo.hidden);
+
+        // Destination list should be hidden if there are no valid destinations.
+        const destinationList =
+            dialog.shadowRoot!.querySelector<HTMLElement>('#printList');
+        assertFalse(isVisible(destinationList));
       });
 });
