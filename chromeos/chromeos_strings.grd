@@ -285,8 +285,9 @@
       <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE_V2" desc="A11y description template for the Quick Answers view (V2 version).">
         <ph name="QUERY_TEXT">$1<ex>interested</ex></ph>; <ph name="RESULT_TEXT">$2<ex>showing curiosity or concern about something or someone; having a feeling of interest.</ex></ph>; Press Search plus Space to see result in Google Search.
       </message>
+      <!-- TODO(b/259440976): Remove navigation directions once the QA Rich Card feature launches. -->
       <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT" desc="A11y name text for the Quick Answers view.">
-        Info related to your selection
+        Info related to your selection. Use Left or Right arrow keys to access controls.
       </message>
       <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_DESC" desc="A11y retry label description for the Quick Answers view.">
         Cannot connect to the internet. Click to try again.
