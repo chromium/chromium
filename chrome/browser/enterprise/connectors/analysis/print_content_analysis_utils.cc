@@ -45,9 +45,11 @@ void ScanAndPrint(scoped_refptr<base::RefCountedMemory> data,
         std::move(callback).Run(result.page_result);
       },
       std::move(on_verdict));
+  // TODO(b/289243948): Add browser test coverage for web contents received and
+  // passed to the delegate.
   ContentAnalysisDelegate::CreateForWebContents(
-      initiator, std::move(scanning_data), std::move(on_scan_result),
-      safe_browsing::DeepScanAccessPoint::PRINT);
+      initiator->GetOutermostWebContents(), std::move(scanning_data),
+      std::move(on_scan_result), safe_browsing::DeepScanAccessPoint::PRINT);
 }
 
 }  // namespace
