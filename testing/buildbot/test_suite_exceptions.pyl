@@ -3738,14 +3738,10 @@
     ],
     'modifications': {
       'linux-ubsan-vptr': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              # TODO(crbug.com/1456464): Move this test to jammy.
-              'os': 'Ubuntu-18.04',
-            },
-          ],
-        },
+        'args': [
+          # TODO(crbug.com/1456464): Remove this.
+          '--gtest_filter=-SandboxBPF.ApplyBasicAllowlistPolicy:SandboxBPF.SyntheticPolicy:SandboxBPF.UnsafeTrapWithCond',
+        ],
       },
     },
   },
