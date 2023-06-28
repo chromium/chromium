@@ -626,16 +626,28 @@ void RenderFrameProxyHost::RouteMessageEvent(
         translated_source_token = source_proxy_in_target_group->GetFrameToken();
       }
 
-      source_page_ukm_source_id = source_rfh->GetPageUkmSourceId();
+      if (!source_rfh->IsInLifecycleState(
+              RenderFrameHost::LifecycleState::kPrerendering)) {
+        // ukm::SourceId is available only when the page is not in the
+        // prerendering state.
+        source_page_ukm_source_id = source_rfh->GetPageUkmSourceId();
+      }
       source_storage_key = source_rfh->storage_key();
     }
   }
 
   // Record UKM metrics for the postMessage event and don't send message if
   // gating indicates it should be dropped.
+  ukm::SourceId target_page_ukm_source_id = ukm::kInvalidSourceId;
+  if (!target_rfh->IsInLifecycleState(
+          RenderFrameHost::LifecycleState::kPrerendering)) {
+    // ukm::SourceId is available only when the page is not in the
+    // prerendering state.
+    target_page_ukm_source_id = target_rfh->GetPageUkmSourceId();
+  }
   if (!post_message_counter_.RecordMessageAndCheckIfShouldSend(
           source_page_ukm_source_id, source_storage_key,
-          target_rfh->GetPageUkmSourceId(), target_rfh->storage_key(),
+          target_page_ukm_source_id, target_rfh->storage_key(),
           ukm::UkmRecorder::Get())) {
     return;
   };
