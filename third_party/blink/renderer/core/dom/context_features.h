@@ -58,7 +58,6 @@ class ContextFeatures final : public GarbageCollected<ContextFeatures>,
       : Supplement(nullptr), client_(std::move(client)) {}
 
   bool IsEnabled(Document*, FeatureType, bool) const;
-  void UrlDidChange(Document*);
 
  private:
   std::unique_ptr<ContextFeaturesClient> client_;
@@ -76,7 +75,6 @@ class ContextFeaturesClient {
                          bool default_value) {
     return default_value;
   }
-  virtual void UrlDidChange(Document*) {}
 };
 
 CORE_EXPORT void ProvideContextFeaturesTo(
@@ -90,17 +88,6 @@ inline bool ContextFeatures::IsEnabled(Document* document,
   if (!client_)
     return default_value;
   return client_->IsEnabled(document, type, default_value);
-}
-
-inline void ContextFeatures::UrlDidChange(Document* document) {
-  // FIXME: The original code, commented out below, is obviously
-  // wrong, but the seemingly correct fix of negating the test to
-  // the more logical 'if (!client_)' crashes the renderer.
-  // See issue 294180
-  //
-  // if (client_)
-  //   return;
-  // client_->UrlDidChange(document);
 }
 
 }  // namespace blink

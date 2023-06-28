@@ -4379,7 +4379,6 @@ void Document::SetURL(const KURL& url) {
 
   url_ = new_url;
   UpdateBaseURL();
-  GetContextFeatures().UrlDidChange(this);
 
   if (GetFrame()) {
     if (FrameScheduler* frame_scheduler = GetFrame()->GetFrameScheduler())

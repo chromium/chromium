@@ -84,14 +84,11 @@ class ContextFeaturesCache final
     return entries_[index];
   }
 
-  void ValidateAgainst(Document*);
-
   void Trace(Visitor* visitor) const override {
     Supplement<Document>::Trace(visitor);
   }
 
  private:
-  String domain_;
   Entry entries_[ContextFeatures::kFeatureTypeSize];
 };
 
@@ -108,16 +105,6 @@ ContextFeaturesCache& ContextFeaturesCache::From(Document& document) {
   return *cache;
 }
 
-void ContextFeaturesCache::ValidateAgainst(Document* document) {
-  String current_domain =
-      document->GetExecutionContext()->GetSecurityOrigin()->Domain();
-  if (current_domain == domain_)
-    return;
-  domain_ = current_domain;
-  for (size_t i = 0; i < ContextFeatures::kFeatureTypeSize; ++i)
-    entries_[i] = Entry();
-}
-
 bool ContextFeaturesClientImpl::IsEnabled(Document* document,
                                           ContextFeatures::FeatureType type,
                                           bool default_value) {
@@ -127,11 +114,6 @@ bool ContextFeaturesClientImpl::IsEnabled(Document* document,
   if (cache.NeedsRefresh(default_value))
     cache.Set(AskIfIsEnabled(document, type, default_value), default_value);
   return cache.IsEnabled();
-}
-
-void ContextFeaturesClientImpl::UrlDidChange(Document* document) {
-  DCHECK(document);
-  ContextFeaturesCache::From(*document).ValidateAgainst(document);
 }
 
 bool ContextFeaturesClientImpl::AskIfIsEnabled(
