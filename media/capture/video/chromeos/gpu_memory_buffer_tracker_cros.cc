@@ -36,7 +36,7 @@ bool GpuMemoryBufferTrackerCros::Init(const gfx::Size& dimensions,
   buffer_ =
       buffer_factory_.CreateGpuMemoryBuffer(dimensions, *gfx_format, usage);
   if (!buffer_) {
-    NOTREACHED() << "Failed to create GPU memory buffer";
+    DLOG(ERROR) << "Failed to create GPU memory buffer";
     return false;
   }
   return true;
