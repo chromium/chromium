@@ -5,7 +5,7 @@
   children: [
     {
       name: "isolated_font_provider",
-      url: "fuchsia-pkg://fuchsia.com/fonts#meta/fonts.cm",
+      url: "fuchsia-pkg://fuchsia.com/fonts_hermetic_for_test#meta/font_provider_hermetic_for_test.cm",
     },
   ],
   use: [
@@ -15,12 +15,6 @@
     },
   ],
   offer: [
-    {
-      directory: "config-data",
-      from: "parent",
-      to: "#isolated_font_provider",
-      subdir: "fonts",
-    },
     {
       protocol: [
         "fuchsia.logger.LogSink",
@@ -32,7 +26,9 @@
   ],
   facets: {
     "fuchsia.test": {
-      "deprecated-allowed-packages": [ "fonts" ],
+      // TODO(crbug.com/1408597): Remove when the isolated font provider
+      // component is subpackaged.
+      "deprecated-allowed-packages": [ "fonts_hermetic_for_test" ],
     },
   },
 }

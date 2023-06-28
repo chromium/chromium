@@ -103,19 +103,18 @@ void AddVulkanRoutesFromParent(RealmBuilder& realm_builder,
 void AddFontService(RealmBuilder& realm_builder, base::StringPiece child_name) {
   static constexpr char kFontsService[] = "isolated_fonts";
   static constexpr char kFontsUrl[] =
-      "fuchsia-pkg://fuchsia.com/fonts#meta/fonts.cm";
+      "fuchsia-pkg://fuchsia.com/fonts_hermetic_for_test"
+      "#meta/font_provider_hermetic_for_test.cm";
   realm_builder.AddChild(kFontsService, kFontsUrl);
   AddSyslogRoutesFromParent(realm_builder, kFontsService);
   ChildRef child_ref{std::string_view(child_name.data(), child_name.size())};
   realm_builder
-      .AddRoute(
-          Route{.capabilities =
-                    {
-                        Directory{.name = "config-data", .subdir = "fonts"},
-                        Protocol{"fuchsia.tracing.provider.Registry"},
-                    },
-                .source = ParentRef{},
-                .targets = {ChildRef{kFontsService}}})
+      .AddRoute(Route{.capabilities =
+                          {
+                              Protocol{"fuchsia.tracing.provider.Registry"},
+                          },
+                      .source = ParentRef{},
+                      .targets = {ChildRef{kFontsService}}})
       .AddRoute(Route{.capabilities = {Protocol{"fuchsia.fonts.Provider"}},
                       .source = ChildRef{kFontsService},
                       .targets = {std::move(child_ref)}});
