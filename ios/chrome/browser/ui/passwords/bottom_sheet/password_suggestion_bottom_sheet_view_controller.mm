@@ -41,15 +41,6 @@
   // Height constraint for the bottom sheet when showing all suggestions.
   NSLayoutConstraint* _fullHeightConstraint;
 
-  // Table view for the list of suggestions.
-  UITableView* _tableView;
-
-  // TableView's width constraint in portrait mode.
-  NSLayoutConstraint* _portraitTableWidthConstraint;
-
-  // TableView's width constraint in landscape mode.
-  NSLayoutConstraint* _landscapeTableWidthConstraint;
-
   // List of suggestions in the bottom sheet
   // The property is defined by PasswordSuggestionBottomSheetConsumer protocol.
   NSArray<FormSuggestion*>* _suggestions;
@@ -112,13 +103,14 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-  // Update height constraints for the table view.
-  CGFloat minimizedTableViewHeight = _tableView.contentSize.height;
-  if (minimizedTableViewHeight > 0 &&
-      minimizedTableViewHeight != [self tableViewEstimatedRowHeight]) {
-    _minimizedHeightConstraint.constant = minimizedTableViewHeight;
-    _fullHeightConstraint.constant =
-        minimizedTableViewHeight * _suggestions.count;
+  // When this is called (when the view appears), the table view is minimized,
+  // and its height is the (dynamic) height of just one cell.
+  CGFloat effectiveRowHeight = [self tableViewHeight];
+  if (effectiveRowHeight > 0 &&
+      effectiveRowHeight != [self tableViewEstimatedRowHeight]) {
+    // Update height constraints for the table view.
+    _minimizedHeightConstraint.constant = effectiveRowHeight;
+    _fullHeightConstraint.constant = effectiveRowHeight * _suggestions.count;
   }
 
   [super viewWillAppear:animated];
@@ -154,11 +146,11 @@
 
   if (_tableViewIsMinimized) {
     _tableViewIsMinimized = NO;
-    [_tableView cellForRowAtIndexPath:indexPath].accessoryView = nil;
+    [tableView cellForRowAtIndexPath:indexPath].accessoryView = nil;
     // Make separator visible on first cell.
-    [_tableView cellForRowAtIndexPath:indexPath].separatorInset =
+    [tableView cellForRowAtIndexPath:indexPath].separatorInset =
         UIEdgeInsetsMake(0.f, kTableViewHorizontalSpacing, 0.f, 0.f);
-    [self addSuggestionsToTableView];
+    [self addRemainingRowsToTableView:tableView];
 
     // Update table view height.
     __weak __typeof(self) weakSelf = self;
@@ -231,7 +223,7 @@
   // Make separator invisible on last cell
   CGFloat separatorLeftMargin =
       (_tableViewIsMinimized || [self isLastRow:indexPath])
-          ? _tableView.bounds.size.width
+          ? tableView.bounds.size.width
           : kTableViewHorizontalSpacing;
   cell.separatorInset = UIEdgeInsetsMake(0.f, separatorLeftMargin, 0.f, 0.f);
 
@@ -260,7 +252,7 @@
 
 - (void)confirmationAlertPrimaryAction {
   // Use password button
-  [self.delegate willSelectSuggestion:_tableView.indexPathForSelectedRow.row];
+  [self.delegate willSelectSuggestion:[self selectedRow]];
   __weak __typeof(self) weakSelf = self;
   [self dismissViewControllerAnimated:NO
                            completion:^{
@@ -296,24 +288,23 @@
 // Creates the password bottom sheet's table view, initially at minimized
 // height.
 - (UITableView*)createTableView {
-  _tableView = [super createTableView];
+  UITableView* tableView = [super createTableView];
 
-  _tableView.dataSource = self;
-  _tableView.accessibilityIdentifier =
-      kPasswordSuggestionBottomSheetTableViewId;
-  [_tableView registerClass:TableViewURLCell.class
+  tableView.dataSource = self;
+  tableView.accessibilityIdentifier = kPasswordSuggestionBottomSheetTableViewId;
+  [tableView registerClass:TableViewURLCell.class
       forCellReuseIdentifier:@"cell"];
 
-  _minimizedHeightConstraint = [_tableView.heightAnchor
+  _minimizedHeightConstraint = [tableView.heightAnchor
       constraintEqualToConstant:[self tableViewEstimatedRowHeight]];
   _minimizedHeightConstraint.active = YES;
 
-  _fullHeightConstraint = [_tableView.heightAnchor
+  _fullHeightConstraint = [tableView.heightAnchor
       constraintEqualToConstant:[self tableViewEstimatedRowHeight] *
                                 _suggestions.count];
   _fullHeightConstraint.active = NO;
 
-  return _tableView;
+  return tableView;
 }
 
 // Loads the favicon associated with the provided cell.
@@ -341,7 +332,7 @@
 
 // Notifies the delegate that a password suggestion was selected by the user.
 - (void)didSelectSuggestion {
-  [self.delegate didSelectSuggestion:_tableView.indexPathForSelectedRow.row];
+  [self.delegate didSelectSuggestion:[self selectedRow]];
 }
 
 // Returns whether the provided index path points to the last row of the table
@@ -357,16 +348,20 @@
 
 // Starting with a table view containing a single suggestion, add all other
 // suggestions to the table view.
-- (void)addSuggestionsToTableView {
-  [_tableView beginUpdates];
-  NSMutableArray<NSIndexPath*>* indexPaths =
-      [NSMutableArray arrayWithCapacity:_suggestions.count - 1];
-  for (NSUInteger i = 1; i < _suggestions.count; i++) {
-    [indexPaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
+- (void)addRemainingRowsToTableView:(UITableView*)tableView {
+  NSUInteger currentNumberOfRows = [tableView numberOfRowsInSection:0];
+  NSUInteger maximumNumberOfRows = _suggestions.count;
+  if (maximumNumberOfRows > currentNumberOfRows) {
+    [tableView beginUpdates];
+    NSMutableArray<NSIndexPath*>* indexPaths = [NSMutableArray
+        arrayWithCapacity:maximumNumberOfRows - currentNumberOfRows];
+    for (NSUInteger i = currentNumberOfRows; i < maximumNumberOfRows; i++) {
+      [indexPaths addObject:[NSIndexPath indexPathForRow:i inSection:0]];
+    }
+    [tableView insertRowsAtIndexPaths:indexPaths
+                     withRowAnimation:UITableViewRowAnimationNone];
+    [tableView endUpdates];
   }
-  [_tableView insertRowsAtIndexPaths:indexPaths
-                    withRowAnimation:UITableViewRowAnimationNone];
-  [_tableView endUpdates];
 }
 
 // Creates the UI action used to open the password manager.

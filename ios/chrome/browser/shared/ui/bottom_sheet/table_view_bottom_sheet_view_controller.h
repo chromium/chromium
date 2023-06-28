@@ -21,6 +21,12 @@
 // Returns the estimated height of a single row in the table view.
 - (CGFloat)tableViewEstimatedRowHeight;
 
+// Returns the currently selected row.
+- (NSInteger)selectedRow;
+
+// Return the height of the table view.
+- (CGFloat)tableViewHeight;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_BOTTOM_SHEET_TABLE_VIEW_BOTTOM_SHEET_VIEW_CONTROLLER_H_

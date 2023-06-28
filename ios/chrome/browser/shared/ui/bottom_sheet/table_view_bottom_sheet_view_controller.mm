@@ -118,10 +118,22 @@ CGFloat const kInitialHeightPadding = 5;
           UISheetPresentationControllerDetentIdentifierLarge;
     }];
   }
+
+  [_tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
+                          animated:NO
+                    scrollPosition:UITableViewScrollPositionNone];
 }
 
 - (CGFloat)tableViewEstimatedRowHeight {
   return kTableViewEstimatedRowHeight;
+}
+
+- (NSInteger)selectedRow {
+  return _tableView.indexPathForSelectedRow.row;
+}
+
+- (CGFloat)tableViewHeight {
+  return _tableView.contentSize.height;
 }
 
 #pragma mark - UIViewController
@@ -160,7 +172,6 @@ CGFloat const kInitialHeightPadding = 5;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-  // Update height constraints for the table view.
   [self.view layoutIfNeeded];
 
   // Update the custom detent with the correct initial height for the bottom
