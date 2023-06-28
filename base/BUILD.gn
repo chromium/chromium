@@ -1092,7 +1092,6 @@ component("base") {
   deps = [
     ":message_pump_buildflags",
     "//base/allocator:buildflags",
-    "//base/allocator/partition_allocator:allocator_shim",
     "//base/allocator/partition_allocator:raw_ptr",
     "//base/third_party/double_conversion",
     "//base/third_party/dynamic_annotations",
@@ -1136,7 +1135,6 @@ component("base") {
     ":sanitizer_buildflags",
     ":synchronization_buildflags",
     ":tracing_buildflags",
-    "//base/allocator/partition_allocator:allocator_shim",
     "//base/allocator/partition_allocator:buildflags",
     "//base/numerics:base_numerics",
     "//build:chromecast_buildflags",

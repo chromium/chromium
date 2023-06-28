@@ -8,9 +8,9 @@
 #include <malloc/malloc.h>
 #include <stddef.h>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/third_party/apple_apsl/malloc.h"
-#include "base/base_export.h"
 
 namespace allocator_shim {
 
@@ -57,10 +57,12 @@ struct MallocZoneFunctions {
   const ChromeMallocZone* context;
 };
 
-BASE_EXPORT void StoreZoneFunctions(const ChromeMallocZone* zone,
-                                    MallocZoneFunctions* functions);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void StoreZoneFunctions(const ChromeMallocZone* zone,
+                        MallocZoneFunctions* functions);
 static constexpr int kMaxZoneCount = 30;
-BASE_EXPORT extern MallocZoneFunctions g_malloc_zones[kMaxZoneCount];
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+extern MallocZoneFunctions g_malloc_zones[kMaxZoneCount];
 
 // The array g_malloc_zones stores all information about malloc zones before
 // they are shimmed. This information needs to be accessed during dispatch back
@@ -84,14 +86,16 @@ BASE_EXPORT extern MallocZoneFunctions g_malloc_zones[kMaxZoneCount];
 // default allocator is stored as the first MallocZoneFunctions.
 //
 // Returns whether the zone was successfully stored.
-BASE_EXPORT bool StoreMallocZone(ChromeMallocZone* zone);
-BASE_EXPORT bool IsMallocZoneAlreadyStored(ChromeMallocZone* zone);
-BASE_EXPORT bool DoesMallocZoneNeedReplacing(
-    ChromeMallocZone* zone,
-    const MallocZoneFunctions* functions);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+bool StoreMallocZone(ChromeMallocZone* zone);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+bool IsMallocZoneAlreadyStored(ChromeMallocZone* zone);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+bool DoesMallocZoneNeedReplacing(ChromeMallocZone* zone,
+                                 const MallocZoneFunctions* functions);
 
-BASE_EXPORT int GetMallocZoneCountForTesting();
-BASE_EXPORT void ClearAllMallocZonesForTesting();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) int GetMallocZoneCountForTesting();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) void ClearAllMallocZonesForTesting();
 
 inline MallocZoneFunctions& GetFunctionsForZone(void* zone) {
   for (unsigned int i = 0; i < kMaxZoneCount; ++i) {
