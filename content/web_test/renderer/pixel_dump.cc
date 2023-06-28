@@ -46,26 +46,11 @@ namespace content {
 SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame,
                             const gfx::Size& page_size_in_pixels,
                             const printing::PageRanges& page_ranges) {
-  // TODO(crbug.com/1450167): Get rid of this conversion, and rebaseline /
-  // rewrite tests, and use page_size_in_pixels everywhere. There used to be
-  // some pixel vs points confusion. The test runner code passed the window
-  // size, thinking that the API took pixels, although it did in fact take
-  // points. This is no longer the case, now that we use CSS pixels everywhere
-  // we can. So we compensate here for now.
-  gfx::SizeF borked_size(page_size_in_pixels);
-  static constexpr float kPrintingMinimumShrinkFactor = 1.33333333f;
-  borked_size.set_width(
-      floorf(borked_size.width() * kPrintingMinimumShrinkFactor));
-  borked_size.set_height(
-      floorf(borked_size.height() * borked_size.width() /
-             static_cast<float>(page_size_in_pixels.width())));
-
   auto* frame_widget = web_frame->LocalRoot()->FrameWidget();
   frame_widget->UpdateAllLifecyclePhases(blink::DocumentUpdateReason::kTest);
 
   uint32_t page_count = web_frame->PrintBegin(
-      blink::WebPrintParams(borked_size), blink::WebNode());
-
+      blink::WebPrintParams(gfx::SizeF(page_size_in_pixels)), blink::WebNode());
   blink::WebVector<uint32_t> pages(
       printing::PageNumber::GetPages(page_ranges, page_count));
   gfx::Size spool_size =

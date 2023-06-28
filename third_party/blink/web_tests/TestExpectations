@@ -5677,8 +5677,6 @@ crbug.com/1349576 [ Debug Linux ] external/wpt/pointerevents/pointerevent_mouse_
 crbug.com/1358312 [ Linux ] external/wpt/touch-events/single-touch-vertical-rl.html [ Failure Pass ]
 
 # unskip print ref tests
-crbug.com/1090628 external/wpt/css/css-break/block-002-wm-vlr-print.html [ Failure ]
-crbug.com/1090628 external/wpt/css/css-break/block-002-wm-vrl-print.html [ Failure ]
 crbug.com/1090628 external/wpt/css/css-break/float-with-large-margin-bottom-cross-page-001-print.html [ Failure ]
 crbug.com/1090628 external/wpt/css/css-break/ink-overflow-001-print.html [ Failure ]
 crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-print.sub.html [ Failure ]

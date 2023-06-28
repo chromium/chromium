@@ -459,14 +459,6 @@ class ChromePrintContext : public PrintContext {
         current_height += page_size_in_pixels.width() + 1;
       }
 
-      // TODO(crbug.com/1450167): Remove weird scaling, and rebaseline / rewrite
-      // tests instead. We previously converted from points to pixels inside
-      // PrintContext, but not anymore. In order to avoid minor pixel
-      // differences in tests, we need to use the actual widths involved, rather
-      // than 72/96 directly.
-      float scale = page_size_in_pixels.width() / printed_page_width_;
-      transform.Scale(scale, scale);
-
       context.Save();
       context.ConcatCTM(transform);
 

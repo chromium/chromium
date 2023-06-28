@@ -12,7 +12,7 @@ if (window.internals)
 </script>
 <!-- TODO(mstensho): Try to come up with something that doesn't make assumptions about page
      height. Currently, there's no way of specifying it for layout tests. This test currently
-     assumes that 5 lines will fit in each column on the first page, and the remaining ones on the
+     assumes that 4 lines will fit in each column on the first page, and the remaining ones on the
      next page. -->
 <p>There should be three columns in this document - on this page, and on the next page. The numbers
     should be in ascending order when reading columns from left to right, page by page.</p>
@@ -23,27 +23,27 @@ if (window.internals)
             02<br>
             03<br>
             04<br>
-            05<br>
-            16<br>
-            17<br>
-            18<br>
-        </div>
-        <div class="fakeColumn">
-            06<br>
-            07<br>
-            08<br>
-            09<br>
-            10<br>
-            19<br>
-            20<br>
-            21<br>
-        </div>
-        <div class="fakeColumn">
-            11<br>
-            12<br>
             13<br>
             14<br>
             15<br>
+            16<br>
+        </div>
+        <div class="fakeColumn">
+            05<br>
+            06<br>
+            07<br>
+            08<br>
+            17<br>
+            18<br>
+            19<br>
+            20<br>
+        </div>
+        <div class="fakeColumn">
+            09<br>
+            10<br>
+            11<br>
+            12<br>
+            21<br>
             22<br>
             23<br>
         </div>

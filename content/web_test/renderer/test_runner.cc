@@ -95,10 +95,17 @@ namespace content {
 
 namespace {
 
-// Default page dimensions for WPT print reftests (5x3 inches at 72 DPI
-// with 0.5 inch margins).
-const int kWPTPrintWidth = 4 * 72;
-const int kWPTPrintHeight = 2 * 72;
+// According to http://web-platform-tests.org/writing-tests/print-reftests.html
+// the default page size for print reftests is 5 by 3 inches. Margins aren't
+// mentioned, but there are quite a few existing reftests that specify a page
+// *box* size of 5x3 inches, along with a 0.5 inch margin on every side. For
+// Chromium to pass those, operate with a page *area* size of 4 by 2 inches.
+// There are 96 CSS pixels per inch, so multiply by that.
+//
+// TODO(crbug.com/1416181): Change this to 5 by 3 inches, once it's possible to
+// specify the page size and margins with @page rules in WPT reftests.
+const int kWPTPrintWidth = 4 * 96;
+const int kWPTPrintHeight = 2 * 96;
 
 // A V8 callback with bound arguments, and the ability to pass additional
 // arguments at time of calling Run().
