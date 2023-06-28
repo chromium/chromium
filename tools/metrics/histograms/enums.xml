@@ -63262,6 +63262,7 @@ from previous Chrome versions.
   <int value="-275164173" label="QuickUnlockPinSignin:enabled"/>
   <int value="-273821346"
       label="MaintainShelfStateWhenEnteringOverview:disabled"/>
+  <int value="-273573364" label="TabHoverCardImageSettings:enabled"/>
   <int value="-273570157" label="EnableBloom:enabled"/>
   <int value="-273534119" label="LacrosAuraCapture:enabled"/>
   <int value="-272668067"
@@ -66418,6 +66419,7 @@ from previous Chrome versions.
   <int value="1384102751" label="AutofillParseIBANFields:enabled"/>
   <int value="1384614036" label="disable-unified-media-pipeline"/>
   <int value="1385833812" label="WinrtGeolocationImplementation:disabled"/>
+  <int value="1385846825" label="TabHoverCardImageSettings:disabled"/>
   <int value="1386300777"
       label="OmniboxUIExperimentHideSuggestionUrlTrivialSubdomains:disabled"/>
   <int value="1387356699" label="PolicyAtomicGroup:enabled"/>

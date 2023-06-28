@@ -1826,6 +1826,9 @@ extern const char kTabGroupsContinuationAndroidDescription[];
 extern const char kTabGroupsSaveName[];
 extern const char kTabGroupsSaveDescription[];
 
+extern const char kTabHoverCardImageSettingsName[];
+extern const char kTabHoverCardImageSettingsDescription[];
+
 extern const char kTabHoverCardImagesName[];
 extern const char kTabHoverCardImagesDescription[];
 

@@ -7465,6 +7465,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "tab-hover-card-image-settings",
+    "owners": [ "charlesmeng", "estalin" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "tab-hover-card-images",
     "owners": [ "dfried", "estalin" ],
     "expiry_milestone": 116
