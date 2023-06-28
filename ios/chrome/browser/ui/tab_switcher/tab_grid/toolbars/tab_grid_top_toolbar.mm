@@ -41,7 +41,6 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 @implementation TabGridTopToolbar {
   UIBarButtonItem* _leadingButton;
   UIBarButtonItem* _spaceItem;
-  UIBarButtonItem* _newTabButton;
   UIBarButtonItem* _iconButtonAdditionalSpaceItem;
   UIBarButtonItem* _selectionModeFixedSpace;
   UIBarButtonItem* _selectAllButton;
@@ -125,11 +124,6 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   }
 }
 
-- (void)setNewTabButtonTarget:(id)target action:(SEL)action {
-  _newTabButton.target = target;
-  _newTabButton.action = action;
-}
-
 - (void)setSelectAllButtonTarget:(id)target action:(SEL)action {
   _selectAllButton.target = target;
   _selectAllButton.action = action;
@@ -156,10 +150,6 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
 - (void)setSearchButtonEnabled:(BOOL)enabled {
   _searchButton.enabled = enabled;
-}
-
-- (void)setNewTabButtonEnabled:(BOOL)enabled {
-  _newTabButton.enabled = enabled;
 }
 
 - (void)setCloseAllButtonTarget:(id)target action:(SEL)action {
@@ -479,12 +469,6 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   [_searchBarView addSubview:_searchBar];
   [_searchBarView sizeToFit];
   _searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:_searchBarView];
-
-  _newTabButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                           target:nil
-                           action:nil];
-  _newTabButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
 
   _iconButtonAdditionalSpaceItem = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace

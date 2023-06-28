@@ -1425,7 +1425,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         self.incognitoTabsViewController.contentNeedsAuthentication);
   BOOL allowNewTab = !isRecentTabPage && allowedByContentAuthentication;
   [self.bottomToolbar setNewTabButtonEnabled:allowNewTab];
-  [self.topToolbar setNewTabButtonEnabled:allowNewTab];
 }
 
 - (void)configureDoneButtonBasedOnPage:(TabGridPage)page {
@@ -1495,7 +1494,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.bottomToolbar setCloseAllButtonEnabled:enabled];
   [self.bottomToolbar setEditButtonEnabled:enabled];
   [self.topToolbar setEditButtonEnabled:enabled];
-  [self.topToolbar setNewTabButtonEnabled:enabled];
 }
 
 // Shows the two toolbars and the floating button. Suitable for use in
@@ -2188,7 +2186,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.topToolbar setDoneButtonEnabled:NO];
   self.topToolbar.pageControl.userInteractionEnabled = NO;
   [self.bottomToolbar setDoneButtonEnabled:NO];
-  [self.topToolbar setNewTabButtonEnabled:NO];
   [self.topToolbar setSelectAllButtonEnabled:NO];
   [self.topToolbar setEditButtonEnabled:NO];
   [self.topToolbar setSearchButtonEnabled:NO];

@@ -37,8 +37,6 @@
 // title (singular or plural).
 @property(nonatomic, assign) int selectedTabsCount;
 
-// Sets target/action for tapping event on new tab button.
-- (void)setNewTabButtonTarget:(id)target action:(SEL)action;
 // Sets target/action for tapping event on select all button.
 - (void)setSelectAllButtonTarget:(id)target action:(SEL)action;
 // Sets target/action for tapping event on close all button.
@@ -53,8 +51,6 @@
 - (void)setSearchBarDelegate:(id<UISearchBarDelegate>)delegate;
 // Set `enabled` on the search button.
 - (void)setSearchButtonEnabled:(BOOL)enabled;
-// Set `enabled` on the new tab button.
-- (void)setNewTabButtonEnabled:(BOOL)enabled;
 // Set `enabled` on the select all button.
 - (void)setSelectAllButtonEnabled:(BOOL)enabled;
 // Set `enabled` on the done button.

@@ -36,7 +36,6 @@
   [topToolbar setCloseAllButtonTarget:self
                                action:@selector(closeAllButtonTapped:)];
   [topToolbar setDoneButtonTarget:self action:@selector(doneButtonTapped:)];
-  [topToolbar setNewTabButtonTarget:self action:@selector(newTabButtonTapped:)];
   [topToolbar setSelectAllButtonTarget:self
                                 action:@selector(selectAllButtonTapped:)];
   [topToolbar setSearchButtonTarget:self action:@selector(searchButtonTapped:)];
