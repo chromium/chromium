@@ -199,6 +199,12 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, WinLargeBlob) {
   fake_api.set_version(WEBAUTHN_API_VERSION_3);
   device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&fake_api);
 
+  auto virtual_device_factory =
+      std::make_unique<device::test::VirtualFidoDeviceFactory>();
+  virtual_device_factory->set_discover_win_webauthn_api_authenticator(true);
+  content::ScopedAuthenticatorEnvironmentForTesting auth_env(
+      std::move(virtual_device_factory));
+
   constexpr char kMakeCredentialLargeBlob[] = R"(
     let cred_id;
     const blob = "blobby volley";
