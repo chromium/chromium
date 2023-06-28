@@ -68,6 +68,7 @@ void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
     ResumeBlockedRequests();
   }
   delegate_->OnCookieExpirationDateChanged();
+  MaybeScheduleCookieRotation();
 }
 
 std::unique_ptr<BoundSessionRefreshCookieFetcher>
@@ -83,6 +84,7 @@ bool BoundSessionCookieControllerImpl::IsCookieFresh() {
 }
 
 void BoundSessionCookieControllerImpl::MaybeRefreshCookie() {
+  cookie_refresh_timer_.Stop();
   if (refresh_cookie_fetcher_) {
     return;
   }
@@ -110,6 +112,24 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
     delegate_->TerminateSession();
     // `this` should be deleted.
   }
+}
+
+void BoundSessionCookieControllerImpl::MaybeScheduleCookieRotation() {
+  const base::TimeDelta kCookieRefreshInterval = base::Minutes(2);
+  base::TimeDelta refresh_in =
+      cookie_expiration_time_ - base::Time::Now() - kCookieRefreshInterval;
+  if (!refresh_in.is_positive()) {
+    MaybeRefreshCookie();
+    return;
+  }
+
+  // If a refresh task is already scheduled, this will reschedule it.
+  // `base::Unretained(this)` is safe because `this` owns
+  // `cookie_rotation_timer_`.
+  cookie_refresh_timer_.Start(
+      FROM_HERE, refresh_in,
+      base::BindRepeating(&BoundSessionCookieControllerImpl::MaybeRefreshCookie,
+                          base::Unretained(this)));
 }
 
 void BoundSessionCookieControllerImpl::ResumeBlockedRequests() {

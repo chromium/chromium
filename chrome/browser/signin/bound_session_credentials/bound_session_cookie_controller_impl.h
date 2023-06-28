@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -58,6 +59,7 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
   void MaybeRefreshCookie();
   void SetCookieExpirationTimeAndNotify(base::Time expiration_time);
   void OnCookieRefreshFetched(BoundSessionRefreshCookieFetcher::Result result);
+  void MaybeScheduleCookieRotation();
   void ResumeBlockedRequests();
 
   void set_refresh_cookie_fetcher_factory_for_testing(
@@ -71,6 +73,8 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
   std::unique_ptr<BoundSessionCookieObserver> cookie_observer_;
   std::unique_ptr<BoundSessionRefreshCookieFetcher> refresh_cookie_fetcher_;
   std::vector<base::OnceClosure> resume_blocked_requests_;
+  // Used to schedule preemptive cookie refresh.
+  base::OneShotTimer cookie_refresh_timer_;
 
   RefreshCookieFetcherFactoryForTesting
       refresh_cookie_fetcher_factory_for_testing_;
