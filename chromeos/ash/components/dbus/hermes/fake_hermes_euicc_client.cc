@@ -349,6 +349,11 @@ void FakeHermesEuiccClient::SetNextInstallProfileFromActivationCodeResult(
   next_install_profile_result_ = status;
 }
 
+void FakeHermesEuiccClient::SetNextRefreshSmdxProfilesResult(
+    std::vector<dbus::ObjectPath> profiles) {
+  next_refresh_smdx_profiles_result_ = std::move(profiles);
+}
+
 void FakeHermesEuiccClient::SetInteractiveDelay(base::TimeDelta delay) {
   interactive_delay_ = delay;
 }
@@ -592,21 +597,49 @@ void FakeHermesEuiccClient::DoRefreshSmdxProfiles(
 
   DVLOG(1) << "Refresh SM-DX Profiles Requested";
 
-  std::vector<dbus::ObjectPath> profile_paths;
-
+  HermesResponseStatus status = HermesResponseStatus::kSuccess;
   if (!error_status_queue_.empty()) {
-    std::move(callback).Run(error_status_queue_.front(), profile_paths);
+    status = error_status_queue_.front();
     error_status_queue_.pop();
+  }
+
+  if (next_refresh_smdx_profiles_result_.has_value()) {
+    std::move(callback).Run(status, next_refresh_smdx_profiles_result_.value());
+    next_refresh_smdx_profiles_result_ = absl::nullopt;
     return;
   }
 
-  // Configure a single profile that uses the activation code that was provided
-  // and immediately return the path to this profile.
-  profile_paths.push_back(AddFakeCarrierProfile(
-      euicc_path, hermes::profile::State::kPending, activation_code,
-      AddCarrierProfileBehavior::kAddProfileWithService));
+  std::vector<dbus::ObjectPath> profile_paths;
 
-  std::move(callback).Run(HermesResponseStatus::kSuccess, profile_paths);
+  if (status != HermesResponseStatus::kSuccess) {
+    std::move(callback).Run(error_status_queue_.front(), profile_paths);
+    return;
+  }
+
+  Properties* euicc_properties = GetProperties(euicc_path);
+  DCHECK(euicc_properties);
+
+  // Collect all of the existing, pending profiles that have an activation code
+  // that matches |activation_code| to be returned.
+  for (const auto& profile_path :
+       GetPendingProfiles(euicc_properties).value()) {
+    HermesProfileClient::Properties* properties =
+        HermesProfileClient::Get()->GetProperties(profile_path);
+    if (properties &&
+        properties->activation_code().value() == activation_code &&
+        properties->state().value() == hermes::profile::State::kPending) {
+      profile_paths.push_back(profile_path);
+    }
+  }
+
+  // If no pending profiles exist with a matching activation code, create one.
+  if (profile_paths.empty()) {
+    profile_paths.push_back(AddFakeCarrierProfile(
+        euicc_path, hermes::profile::State::kPending, activation_code,
+        AddCarrierProfileBehavior::kAddProfileWithService));
+  }
+
+  std::move(callback).Run(status, profile_paths);
 }
 
 void FakeHermesEuiccClient::DoRequestPendingProfiles(

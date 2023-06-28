@@ -117,6 +117,12 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
     virtual void SetNextInstallProfileFromActivationCodeResult(
         HermesResponseStatus status) = 0;
 
+    // Sets the return for the next call to
+    // HermesEuiccClient::RefreshSmdxProfiles(). The caller is responsible for
+    // guaranteeing that fake profiles exist for each of the paths provided.
+    virtual void SetNextRefreshSmdxProfilesResult(
+        std::vector<dbus::ObjectPath> profiles) = 0;
+
     // Set delay for interactive methods.
     virtual void SetInteractiveDelay(base::TimeDelta delay) = 0;
 
