@@ -19952,7 +19952,7 @@
        ]
       ],
       "abspos-containing-block-initial-007.xht": [
-       "5adbb6daf44aa5b246575d28230a8e700a8b7a4b",
+       "0b70e1e63e7bd8edf806bfd961ed37124886388f",
        [
         null,
         [
@@ -247365,7 +247365,7 @@
       ]
      ],
      "offset-path-coord-box-001.html": [
-      "d4e903e69dfc5535a109b84868e77af03a9c27ee",
+      "15f378e038615dafa6b6ddbf00ca3155f81686b9",
       [
        null,
        [
@@ -247394,7 +247394,7 @@
       ]
      ],
      "offset-path-coord-box-002.html": [
-      "0446e2caa16c43ece32a0f3c0659c3d227f01ce9",
+      "40b94727d373fd47859ff29d909a28c00276a6e3",
       [
        null,
        [
@@ -247407,7 +247407,7 @@
       ]
      ],
      "offset-path-coord-box-003.html": [
-      "d3ea7f92a8ed17521a957aebcd631906b0ceb86b",
+      "e793c18830df60560a6fa746081fd714ea9ad3ab",
       [
        null,
        [
@@ -247419,13 +247419,13 @@
        {}
       ]
      ],
-     "offset-path-geometry-box.html": [
-      "1e9399441c2ec31e868e7fca6d2fa6d1169f366c",
+     "offset-path-coord-box-004.html": [
+      "c84bae6832ee6154862d472e0997989ca54dad59",
       [
        null,
        [
         [
-         "/css/motion/offset-path-geometry-box-ref.html",
+         "/css/motion/offset-path-coord-box-004-ref.html",
          "=="
         ]
        ],
@@ -247748,7 +247748,7 @@
       ]
      ],
      "offset-path-shape-circle-001.html": [
-      "4874ba339298a18fb0a733e0254053579bbe50ac",
+      "2205d9d3f69b24c29347f92c870bfc014c648e93",
       [
        null,
        [
@@ -247764,7 +247764,7 @@
           [
            [
             0,
-            1
+            35
            ],
            [
             0,
@@ -247790,7 +247790,7 @@
       ]
      ],
      "offset-path-shape-circle-003.html": [
-      "1911d425a16997d6a6da3edb0474e527c8b1e2b6",
+      "ef69e7e41b623e00663e3512cab838d4abf4a4ae",
       [
        null,
        [
@@ -247806,11 +247806,11 @@
           [
            [
             0,
-            10
+            110
            ],
            [
             0,
-            20
+            500
            ]
           ]
          ]
@@ -247819,7 +247819,7 @@
       ]
      ],
      "offset-path-shape-circle-004.html": [
-      "f0a8523dd16f15075828d9bcbbf31f62a97ff35d",
+      "d22665636e62e7369b50b97da768e55c3d3f1918",
       [
        null,
        [
@@ -247828,11 +247828,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            80
+           ],
+           [
+            0,
+            310
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "offset-path-shape-circle-005.html": [
-      "0ca93306c609fbf77da660636b23d0aebfff2c02",
+      "2ba5bc1650a4e497124a948b3b5ceefa22ec84ee",
       [
        null,
        [
@@ -247841,11 +247857,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            18
+           ],
+           [
+            0,
+            400
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "offset-path-shape-ellipse-001.html": [
-      "b8254458d38d71038f47dd80ffddbd971190b665",
+      "be3ade57c6ddcfed63b9796c3c3eb0b32530fb26",
       [
        null,
        [
@@ -247861,7 +247893,7 @@
           [
            [
             0,
-            1
+            24
            ],
            [
             0,
@@ -247887,7 +247919,7 @@
       ]
      ],
      "offset-path-shape-ellipse-003.html": [
-      "540c56dba7b39ccb93f29e766c9178585c82238a",
+      "38ef5eb9bbfa9c955c2d4fd53440ab2d21c8a26e",
       [
        null,
        [
@@ -247896,7 +247928,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            25
+           ],
+           [
+            0,
+            450
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "offset-path-shape-ellipse-004.html": [
@@ -247913,7 +247961,7 @@
       ]
      ],
      "offset-path-shape-ellipse-005.html": [
-      "27eae4a5c491907c3455e5adae7c226190ee8f83",
+      "2b2c0abeff95564680680bd231752a8a0fa46544",
       [
        null,
        [
@@ -247922,7 +247970,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            18
+           ],
+           [
+            0,
+            400
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "offset-path-shape-inset-001.html": [
@@ -247955,7 +248019,7 @@
       ]
      ],
      "offset-path-shape-inset-002.html": [
-      "6279cdd35ebe1c1e977c67b30733fe82524a56dd",
+      "5ca502e8b1c30124204d9fd61d2db9fdcb630312",
       [
        null,
        [
@@ -247964,7 +248028,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            75
+           ],
+           [
+            0,
+            500
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "offset-path-shape-polygon-001.html": [
@@ -274265,6 +274345,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "10f044a478ece8e6be84f91dbc206ed3411dd985",
+     []
+    ],
+    "mtime.json": [
+     "653f86c7cf8557c381ec1012c6c48bfd6f7f0751",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -277360,6 +277450,58 @@
      "66ad9243c7dc54e59052fa4fe64124cd63d0e84e",
      []
     ],
+    "clear-site-data": {
+     "clear-site-data-all.https-expected.txt": [
+      "0736a758a3750744e7b23bd8fc53f8681c6c0dd3",
+      []
+     ],
+     "clear-site-data-all.https.html.headers": [
+      "226bb1c3b10489842901a1184b2b8822d2976075",
+      []
+     ],
+     "clear-site-data-all.https.html.ini": [
+      "821afb454a514008b651399725940aefe8e203dd",
+      []
+     ],
+     "clear-site-data-cache.https-expected.txt": [
+      "877d3a4dbc894d73d6a314911d04836e1d41ec27",
+      []
+     ],
+     "clear-site-data-cache.https.html.headers": [
+      "226bb1c3b10489842901a1184b2b8822d2976075",
+      []
+     ],
+     "clear-site-data-cache.https.html.ini": [
+      "ff33d2dca3bbc5513d13c70d6a994d19ed3ad74a",
+      []
+     ],
+     "clear-site-data-cookies.https-expected.txt": [
+      "8730fe978c825a9bf04a6356223f7f9460421915",
+      []
+     ],
+     "clear-site-data-cookies.https.html.headers": [
+      "226bb1c3b10489842901a1184b2b8822d2976075",
+      []
+     ],
+     "clear-site-data-cookies.https.html.ini": [
+      "2eeb2e722a64c0d6ffd01a79110ca6cfa2ecc35d",
+      []
+     ],
+     "clear-site-data-storage.https.html.headers": [
+      "226bb1c3b10489842901a1184b2b8822d2976075",
+      []
+     ],
+     "resources": {
+      "check-client-hints.py": [
+       "f5172300028711ca36c1812230d4ce0148cb0390",
+       []
+      ],
+      "clear-site-data.py": [
+       "fd16be9fbcb0ffba3c440b5525e0580efd088f37",
+       []
+      ]
+     }
+    },
     "critical-ch": {
      "critical-ch.navigation-timing.restart.https.html.headers": [
       "b221a32886fffa1fd8dc5562fa211b8446db835b",
@@ -281685,7 +281827,7 @@
      []
     ],
     "fedcm-context.https.html.ini": [
-     "1c05a503f3cdb6ef07296fb39c63a3cbe451f1d0",
+     "efb9046e0a222185db053fb901db40ea7d4f4660",
      []
     ],
     "fedcm-cross-origin-policy.https.html.ini": [
@@ -290257,6 +290399,10 @@
      ],
      "anchor-default-ref.html": [
       "4d7de12447c8297b8f0fc04338d80a028a3e9798",
+      []
+     ],
+     "anchor-getComputedStyle-002.html.ini": [
+      "38158ef3dfbab2473735216e58251ec217ea1e97",
       []
      ],
      "anchor-name-basics-expected.txt": [
@@ -310888,18 +311034,6 @@
       []
      ],
      "image-set": {
-      "image-set-negative-resolution-rendering-3.html.ini": [
-       "76678b94be2aebda06ee45819172776d1a289d48",
-       []
-      ],
-      "image-set-parsing-expected.txt": [
-       "fe796a84efbe1e34612ae0a2578753ec18c64092",
-       []
-      ],
-      "image-set-parsing.html.ini": [
-       "7fab77a5e9cb5589446dfda9b94b7b681d5cfc3e",
-       []
-      ],
       "image-set-resolution-001-ref.html": [
        "46c4d729ed59525b1a138f1f60aa6e6074251211",
        []
@@ -313599,7 +313733,7 @@
        []
       ],
       "clip-rect-auto-004.html.ini": [
-       "e27c778b80257d2850fba0096be6b34fcfc909cd",
+       "1a7832d03774a12e6d3d79083cc6b751b3a08f4b",
        []
       ],
       "clip-rect-auto-006.html.ini": [
@@ -326371,7 +326505,7 @@
        []
       ],
       "text-transform-capitalize-030.html.ini": [
-       "650e35a282e6d4cfd10e2972b42914762d65629a",
+       "946010327b30f60d5aa9cc6ca4c1b86b96cbc98c",
        []
       ],
       "text-transform-capitalize-033-ref.html": [
@@ -329684,7 +329818,7 @@
       []
      ],
      "preserve3d-and-flattening-z-order-006.html.ini": [
-      "35ff7069b81f3bd1616dfaa6490eba5d9cf58c7a",
+      "bee645517b8cbd1b0a9384888d40899513ae3def",
       []
      ],
      "preserve3d-and-flattening-z-order-007.html.ini": [
@@ -332829,7 +332963,7 @@
        []
       ],
       "kind-of-widget-fallback-input-search-border-right-style-001.html.ini": [
-       "c51bdf26c47a0a64df6518a1ecbcc406599d7b9e",
+       "18aa580c519c022ddb0529909a04f449db5090b0",
        []
       ],
       "kind-of-widget-fallback-input-search-border-start-end-radius-001.html.ini": [
@@ -332997,7 +333131,7 @@
        []
       ],
       "kind-of-widget-fallback-input-submit-background-size-001.html.ini": [
-       "7a7295b5171271d9a78788d4810e745ecbeab4b8",
+       "ef3d23e26aba9e955f2753105cbaa639f4ea7fc2",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-block-end-color-001.html.ini": [
@@ -335019,14 +335153,6 @@
       "944e180f8d1ccbca7dc50952e92ff26bf580db6f",
       []
      ],
-     "calc-infinity-nan-serialize-resolution-expected.txt": [
-      "fa5daba651eec8e455adfaa4d413d85df9eb3740",
-      []
-     ],
-     "calc-infinity-nan-serialize-resolution.html.ini": [
-      "9fba4d756475f251760ebe640de60f5f03f27ebd",
-      []
-     ],
      "calc-linear-radial-conic-gradient-001-expected.txt": [
       "24ac49996bfe296a87537349daee950d56d860ee",
       []
@@ -335161,10 +335287,6 @@
      ],
      "exp-log-compute.html.ini": [
       "beb0f9fc620395b26bdb0037cd14bdbb92ae1e61",
-      []
-     ],
-     "exp-log-serialize-expected.txt": [
-      "16ba188a215de786891552c8b1d71e06d2c163ac",
       []
      ],
      "exp-log-serialize.html.ini": [
@@ -335372,15 +335494,11 @@
       []
      ],
      "round-mod-rem-serialize-expected.txt": [
-      "f2130569f7b8d712a01f31f74eea5e5354d22668",
+      "7b9ab6574c115538916c232c591782fb1064945c",
       []
      ],
      "round-mod-rem-serialize.html.ini": [
-      "4eac495149576b3d26991589758a8a0b6b53990d",
-      []
-     ],
-     "signs-abs-computed-expected.txt": [
-      "8ab6135e2ce7445dfa3e51dd1c823b6c77d2bb75",
+      "d4d4fa6c4ce72f84d6b6360794619415971f322c",
       []
      ],
      "signs-abs-computed.html.ini": [
@@ -339341,12 +339459,8 @@
       "cf3372122e3daa9cc2e6b46d8223039602158283",
       []
      ],
-     "getComputedStyle-insets-absolute.html.ini": [
-      "250658376abcb8af1aa7a2f67c273207815c68fc",
-      []
-     ],
-     "getComputedStyle-insets-fixed.html.ini": [
-      "125f1cbf4bb54a98505a8846f246f50fa0fa4bc0",
+     "getComputedStyle-insets-relpos-inline.html.ini": [
+      "63a16ee920aeedb4b65ab7dfb02bb85fd048154c",
       []
      ],
      "getComputedStyle-pseudo-expected.txt": [
@@ -341364,18 +341478,18 @@
       []
      ],
      "offset-path-coord-box-001-ref.html": [
-      "e9a7fbb808feefff1838dcd1476b1829231ddbba",
+      "8b86ce26e1652bd3d06bbc0a7852084470cc7e17",
       []
      ],
      "offset-path-coord-box-002-ref.html": [
-      "b7bee52a1e389b84b3fe0f8ae0749ecf5a2647a5",
+      "41f65dc0164b896c3f84da20e6d8efee78c99d0b",
       []
      ],
      "offset-path-coord-box-003-ref.html": [
-      "5b9b445dd8fbc921416db58e95834aa699a9a3d2",
+      "0fa94d4c31b4fbeeb44603e1f1c3e50ca08b2bf2",
       []
      ],
-     "offset-path-geometry-box-ref.html": [
+     "offset-path-coord-box-004-ref.html": [
       "60870c815e140ac15502e723ea477678cdc848a7",
       []
      ],
@@ -341472,7 +341586,7 @@
       []
      ],
      "offset-path-shape-circle-001-ref.html": [
-      "7bc29af79c6ce74f1b7748f0234ac8346984e18e",
+      "6d6b64d32e3c622be1b27a9dae4c7293207fcab3",
       []
      ],
      "offset-path-shape-circle-002-ref.html": [
@@ -341480,11 +341594,11 @@
       []
      ],
      "offset-path-shape-circle-003-ref.html": [
-      "327d325137c399499b681f6552750ff3d008968c",
+      "c005984f768aed32b96779045addf9264c09da2b",
       []
      ],
      "offset-path-shape-circle-004-ref.html": [
-      "86c67dcdedcb2625216cd064384545113f2a96fc",
+      "925abdb8b4f04decd267bae83486b02730438eec",
       []
      ],
      "offset-path-shape-circle-005-ref.html": [
@@ -341492,7 +341606,11 @@
       []
      ],
      "offset-path-shape-ellipse-001-ref.html": [
-      "32236bbc239a98c6a512d64037fcda32a8c5e976",
+      "0e53fa2d355e16156f1f6e313910f688c7e97d0c",
+      []
+     ],
+     "offset-path-shape-ellipse-001.html.ini": [
+      "6863fbd59948730c0613c1e7f4e4b0e9cf8fd416",
       []
      ],
      "offset-path-shape-ellipse-002-ref.html": [
@@ -341500,7 +341618,7 @@
       []
      ],
      "offset-path-shape-ellipse-003-ref.html": [
-      "4a9fed4c86ab7d08bbe1d32ff74d26e42f50e675",
+      "2239210e49b563d4df210b2084d50d4c32a8d9bc",
       []
      ],
      "offset-path-shape-ellipse-004-ref.html": [
@@ -341516,7 +341634,7 @@
       []
      ],
      "offset-path-shape-inset-002-ref.html": [
-      "28195129f3282fadc8a2e691321425f886eef6c3",
+      "1bb649474aacd6d83601936bf12b918d2d1f9ed8",
       []
      ],
      "offset-path-shape-polygon-001-ref.html": [
@@ -341537,10 +341655,6 @@
      ],
      "offset-path-shape-rect-002-ref.html": [
       "7e9e07cccf3d26c8090ba98ee788565eca799b07",
-      []
-     ],
-     "offset-path-shape-ref.html": [
-      "a659b287fdab1ed7bda453c36c17140e0c2740f2",
       []
      ],
      "offset-path-shape-xywh-001-ref.html": [
@@ -344956,7 +345070,7 @@
     ],
     "include": {
      "editor-test-utils.js": [
-      "a4c24c94edb8e7b0660c7dfdac10b77add02a43c",
+      "6c8a9fc82adfc3ebd36015aa3d97dd1f1d1f560d",
       []
      ],
      "implementation.js": [
@@ -344990,7 +345104,7 @@
       []
      ],
      "cloning-attributes-at-splitting-element.tentative-expected.txt": [
-      "01fba894e98634c249bdfbf3566020ef9b68439c",
+      "8dd8941c9325787e1c06bc234276eba7d95dc8bd",
       []
      ],
      "cloning-attributes-at-splitting-element.tentative.html.ini": [
@@ -345006,19 +345120,19 @@
       []
      ],
      "delete-in-child-of-head.tentative_designMode=off_method=backspace-expected.txt": [
-      "43d56431517b9725e84ab56fb7c107d07fe25f44",
+      "344c727a7f6da75e7a575bf7b1449a9feb95133c",
       []
      ],
      "delete-in-child-of-head.tentative_designMode=off_method=forwarddelete-expected.txt": [
-      "fb21d627af606ea8d6f5df331bc2661e684d86ff",
+      "001e6cc7ee69a1ce336a1b2ff46642dbae94320c",
       []
      ],
      "delete-in-child-of-head.tentative_designMode=on_method=backspace-expected.txt": [
-      "43d56431517b9725e84ab56fb7c107d07fe25f44",
+      "344c727a7f6da75e7a575bf7b1449a9feb95133c",
       []
      ],
      "delete-in-child-of-head.tentative_designMode=on_method=forwarddelete-expected.txt": [
-      "fb21d627af606ea8d6f5df331bc2661e684d86ff",
+      "001e6cc7ee69a1ce336a1b2ff46642dbae94320c",
       []
      ],
      "delete-in-child-of-html.tentative.html.ini": [
@@ -345026,31 +345140,31 @@
       []
      ],
      "delete-in-child-of-html.tentative_designMode=off_method=backspace-expected.txt": [
-      "ec4c7c86648aa97932fa6ad0eb9b2ff76fc66655",
+      "704074834667dc2d75a4633c72ec74b0a33ef442",
       []
      ],
      "delete-in-child-of-html.tentative_designMode=off_method=forwarddelete-expected.txt": [
-      "bee7adda77004a0e5f7fad5b676d57b5bb283c47",
+      "1a4f1eaf1f2d280831d183202d083acf3d742834",
       []
      ],
      "delete-in-child-of-html.tentative_designMode=on_method=backspace-expected.txt": [
-      "ec4c7c86648aa97932fa6ad0eb9b2ff76fc66655",
+      "704074834667dc2d75a4633c72ec74b0a33ef442",
       []
      ],
      "delete-in-child-of-html.tentative_designMode=on_method=forwarddelete-expected.txt": [
-      "bee7adda77004a0e5f7fad5b676d57b5bb283c47",
+      "1a4f1eaf1f2d280831d183202d083acf3d742834",
       []
      ],
      "delete-in-last-definition-list-item-when-parent-list-is-editing-host.html.ini": [
-      "ad59242213ed112cdbe2e9da69310d496850d72f",
+      "d1c0eb456aea119ffb796a04124694794def2b3a",
       []
      ],
      "delete-in-last-definition-list-item-when-parent-list-is-editing-host_action=Backspace-expected.txt": [
-      "c9ef59e980c3eca3bf6f681aea43d133737da6b3",
+      "b64fd31ca8879b000b1a795ddd2ca58e007caef4",
       []
      ],
      "delete-in-last-definition-list-item-when-parent-list-is-editing-host_action=Delete-expected.txt": [
-      "e68f8436b2399f0a6580f8b00625bef02153d1b2",
+      "a72b75b2089d2126c65a5d7882e9deba3c29d684",
       []
      ],
      "delete-in-last-list-item-when-parent-list-is-editing-host.html.ini": [
@@ -345058,19 +345172,19 @@
       []
      ],
      "delete-in-last-list-item-when-parent-list-is-editing-host_list=ol_action=Backspace-expected.txt": [
-      "abb6eae6e6a3ec1f481b0d476c2a1b25e6174944",
+      "98c80996f75e15886d6d5b986c0cc7f442d49b40",
       []
      ],
      "delete-in-last-list-item-when-parent-list-is-editing-host_list=ol_action=Delete-expected.txt": [
-      "0d146035ee584ac411ec425501cfdd2b226fdd58",
+      "6e08f4d8a0470e3cdfd38f034902f622712ebfa8",
       []
      ],
      "delete-in-last-list-item-when-parent-list-is-editing-host_list=ul_action=Backspace-expected.txt": [
-      "4cf1f3b5366f411539e6f2c62a416bae72bc52b3",
+      "5e9a5bb5ab0d2260bb54f089998c83cded604053",
       []
      ],
      "delete-in-last-list-item-when-parent-list-is-editing-host_list=ul_action=Delete-expected.txt": [
-      "21b4c1d2ab54ae81fb5200f5ab6af66b5175fdca",
+      "f0725c997e73f226f848ee5e1dd0e70f529d746c",
       []
      ],
      "delete.html.ini": [
@@ -345094,7 +345208,11 @@
       []
      ],
      "editable-state-and-focus-in-shadow-dom-in-designMode.tentative-expected.txt": [
-      "1ae0ddc586da5194782f2a6c169908f2802d2ca0",
+      "7d3183040f7d38f20cc9c4e302d2b3f03eb3759a",
+      []
+     ],
+     "editable-state-and-focus-in-shadow-dom-in-designMode.tentative.html.ini": [
+      "cd6c57b830a4a93acf5e514d7dd5a891bed4a9d5",
       []
      ],
      "editing-around-select-element.tentative.html.ini": [
@@ -345254,35 +345372,35 @@
       []
      ],
      "insertparagraph-in-child-of-head.tentative_designMode=off_white-space=normal-expected.txt": [
-      "c22ae9c091e73ceee67b350a95495618b1cfe97c",
+      "3c0482dddaacf873b018d7e87d12c7d2826eb289",
       []
      ],
      "insertparagraph-in-child-of-head.tentative_designMode=off_white-space=pre-expected.txt": [
-      "8b3c576e522c7d34898e99dba3c3f025f1be5cf7",
+      "b94fc5eee5478ff212caeaee4505e226fe6e3e15",
       []
      ],
      "insertparagraph-in-child-of-head.tentative_designMode=off_white-space=pre-line-expected.txt": [
-      "025a992fe3d570fc89c7f9643283dfaf30060456",
+      "44d046ca529dc88a9dac19e94d797baccef56801",
       []
      ],
      "insertparagraph-in-child-of-head.tentative_designMode=off_white-space=pre-wrap-expected.txt": [
-      "22eb4feb8ce68f2dfa850fb8fc9c14f9089770d8",
+      "e07d5bb47dd19b1880f856d2374d065e505c0e0b",
       []
      ],
      "insertparagraph-in-child-of-head.tentative_designMode=on_white-space=normal-expected.txt": [
-      "c22ae9c091e73ceee67b350a95495618b1cfe97c",
+      "3c0482dddaacf873b018d7e87d12c7d2826eb289",
       []
      ],
      "insertparagraph-in-child-of-head.tentative_designMode=on_white-space=pre-expected.txt": [
-      "8b3c576e522c7d34898e99dba3c3f025f1be5cf7",
+      "b94fc5eee5478ff212caeaee4505e226fe6e3e15",
       []
      ],
      "insertparagraph-in-child-of-head.tentative_designMode=on_white-space=pre-line-expected.txt": [
-      "025a992fe3d570fc89c7f9643283dfaf30060456",
+      "44d046ca529dc88a9dac19e94d797baccef56801",
       []
      ],
      "insertparagraph-in-child-of-head.tentative_designMode=on_white-space=pre-wrap-expected.txt": [
-      "22eb4feb8ce68f2dfa850fb8fc9c14f9089770d8",
+      "e07d5bb47dd19b1880f856d2374d065e505c0e0b",
       []
      ],
      "insertparagraph-in-child-of-html.tentative.html.ini": [
@@ -345290,43 +345408,39 @@
       []
      ],
      "insertparagraph-in-child-of-html.tentative_designMode=off_white-space=normal-expected.txt": [
-      "19b5ed7d15aa2775e80d1b8cda3632325e813bff",
+      "06a3353a38761299475a50953d84b2a90246db3d",
       []
      ],
      "insertparagraph-in-child-of-html.tentative_designMode=off_white-space=pre-expected.txt": [
-      "ff7e9caf6c6f27b58acbe5f1cdb778e5da66c710",
+      "6c980de747d1218b040783fdccb0aa6cd5637427",
       []
      ],
      "insertparagraph-in-child-of-html.tentative_designMode=off_white-space=pre-line-expected.txt": [
-      "0d3b27319261e7757070f6b6795ca2ec0bcc125f",
+      "82b6c03ed5ce5f150b9a241a11ea7ff136175a8f",
       []
      ],
      "insertparagraph-in-child-of-html.tentative_designMode=off_white-space=pre-wrap-expected.txt": [
-      "606258aca76751bdf8bae3ba4e57dd2c45ac31f5",
+      "d1660fa0fa55365762bbd914bbc8f528a7ec22ee",
       []
      ],
      "insertparagraph-in-child-of-html.tentative_designMode=on_white-space=normal-expected.txt": [
-      "19b5ed7d15aa2775e80d1b8cda3632325e813bff",
+      "06a3353a38761299475a50953d84b2a90246db3d",
       []
      ],
      "insertparagraph-in-child-of-html.tentative_designMode=on_white-space=pre-expected.txt": [
-      "ff7e9caf6c6f27b58acbe5f1cdb778e5da66c710",
+      "6c980de747d1218b040783fdccb0aa6cd5637427",
       []
      ],
      "insertparagraph-in-child-of-html.tentative_designMode=on_white-space=pre-line-expected.txt": [
-      "0d3b27319261e7757070f6b6795ca2ec0bcc125f",
+      "82b6c03ed5ce5f150b9a241a11ea7ff136175a8f",
       []
      ],
      "insertparagraph-in-child-of-html.tentative_designMode=on_white-space=pre-wrap-expected.txt": [
-      "606258aca76751bdf8bae3ba4e57dd2c45ac31f5",
+      "d1660fa0fa55365762bbd914bbc8f528a7ec22ee",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative.html.ini": [
-      "89b392252a233a5cc61d2a1d30975a4638a29667",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=normal_display=block_method=enter-expected.txt": [
-      "2b91b55d5065907fe531bae628fc7f035642306e",
+      "18f38954ba28cee9be8f9533a01eb3ac94779e17",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=normal_display=block_method=shift-enter-expected.txt": [
@@ -345334,7 +345448,7 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=normal_display=inline-block_method=enter-expected.txt": [
-      "6d20c1c239f15a6696e3880709653cc163a63860",
+      "5455af2f167579368f0f71e331bf5f2fcf0984a6",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=normal_display=inline-block_method=shift-enter-expected.txt": [
@@ -345342,15 +345456,11 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=normal_display=inline_method=enter-expected.txt": [
-      "b1347c48e2cfd29152c4b8c6902f07e6360116f6",
+      "ea86cc329f57db39ceab2ade090fa69ac1556be4",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=normal_display=inline_method=shift-enter-expected.txt": [
       "6a70a7b92106700d259af967425d8d89d2061a97",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=normal_display=list-item_method=enter-expected.txt": [
-      "0fc14c064d0d39b793f8dd36e4f88bf962cca41f",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=normal_display=list-item_method=shift-enter-expected.txt": [
@@ -345358,7 +345468,7 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=normal_display=table-cell_method=enter-expected.txt": [
-      "f26533e94c1d767a8156b32f1d17d83d83ff2952",
+      "feaf17f8ee1f35bb948645d516de8970b48bc238",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=normal_display=table-cell_method=shift-enter-expected.txt": [
@@ -345366,7 +345476,7 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=block_method=enter-expected.txt": [
-      "c4f612cfc32edfeb7e55f245c0004d2403f31527",
+      "9afea60cfdb8bb02873c87255199ab3d3af075ef",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=block_method=shift-enter-expected.txt": [
@@ -345374,7 +345484,7 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=inline-block_method=enter-expected.txt": [
-      "4ffcaa87723572e0b453c8d203fe5e902b513469",
+      "17e6cb7988e40148e5f1e661bce282ea535264c6",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=inline-block_method=shift-enter-expected.txt": [
@@ -345382,7 +345492,7 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=inline_method=enter-expected.txt": [
-      "0c28e63b8c08455250ecfab641730435ace3e935",
+      "ebcfa9ca103f5bfc73644532b4eb3c5661d639a4",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=inline_method=shift-enter-expected.txt": [
@@ -345390,7 +345500,7 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=list-item_method=enter-expected.txt": [
-      "0066dbfb0cfa018d9646873984a55b503b950ada",
+      "b7655e2d2bb1c522568b75a779cd6fa93cb079bb",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=list-item_method=shift-enter-expected.txt": [
@@ -345398,15 +345508,11 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=table-cell_method=enter-expected.txt": [
-      "cf1ef039f447fe729330d07901abd4b9be5126c7",
+      "33699f219d79eb99a3a9c00969ad8d75e35c38e9",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-line_display=table-cell_method=shift-enter-expected.txt": [
       "c116b10a22622cf588aa7c8e54712f1d597a5131",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre-wrap_display=block_method=enter-expected.txt": [
-      "abff586c4bef5ab064fb99e79a419bce0216f779",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-wrap_display=block_method=shift-enter-expected.txt": [
@@ -345414,7 +345520,7 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-wrap_display=inline-block_method=enter-expected.txt": [
-      "1963800915b13694bacec031a9055ab092cd1dd9",
+      "90e88980579aca6f4bdb919fc1d1c975108630ae",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-wrap_display=inline-block_method=shift-enter-expected.txt": [
@@ -345422,15 +345528,11 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-wrap_display=inline_method=enter-expected.txt": [
-      "bb734f196d90cafee036abb9f60fe7e4cfacb064",
+      "3b2e855ca8ac59569055329bac51db0b53b9b522",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-wrap_display=inline_method=shift-enter-expected.txt": [
       "dab08b4133a47111d5c7f716ae1b15e841f9c3d9",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre-wrap_display=list-item_method=enter-expected.txt": [
-      "a35bfcb291ed3fff3bf7a170715c6ec0e9e0f403",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-wrap_display=list-item_method=shift-enter-expected.txt": [
@@ -345438,15 +345540,11 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-wrap_display=table-cell_method=enter-expected.txt": [
-      "cf03dd02aa50757a54fe912380456446bc118768",
+      "50d62de573ef4d179d4226b41539c935be562a3a",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre-wrap_display=table-cell_method=shift-enter-expected.txt": [
       "b437977f040024ac4e36b8f521ed627e784f027f",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre_display=block_method=enter-expected.txt": [
-      "f360c9500d9c1f0fbd389ec4c494e169dc1258a9",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre_display=block_method=shift-enter-expected.txt": [
@@ -345454,7 +345552,7 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre_display=inline-block_method=enter-expected.txt": [
-      "0982e88bf18077fc2401f12d56e991cef9614868",
+      "934ea7022a5d1a5ff9c5bcd535629385e38117d1",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre_display=inline-block_method=shift-enter-expected.txt": [
@@ -345462,15 +345560,11 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre_display=inline_method=enter-expected.txt": [
-      "34bb8cf9b0e36fa5f2de5b841c3caced9b8e5290",
+      "ce4d6db2c0d1bfe8d002a86aed3a3820bbea65bd",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre_display=inline_method=shift-enter-expected.txt": [
       "0f09b48ca299ab0315daa746b91e8397cd533b67",
-      []
-     ],
-     "insertparagraph-in-inline-editing-host.tentative_white-space=pre_display=list-item_method=enter-expected.txt": [
-      "01f5224adb9854c4e7a4508828b008b115bd72fc",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre_display=list-item_method=shift-enter-expected.txt": [
@@ -345478,7 +345572,7 @@
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre_display=table-cell_method=enter-expected.txt": [
-      "eb85b26f518a01753d09f8136df014e632a4989f",
+      "640a742f3ca47fd00a3284869bf36c0e9b2138c5",
       []
      ],
      "insertparagraph-in-inline-editing-host.tentative_white-space=pre_display=table-cell_method=shift-enter-expected.txt": [
@@ -345486,7 +345580,7 @@
       []
      ],
      "insertparagraph-in-non-splittable-element-expected.txt": [
-      "c1499bc01b6eb87ae729981351c282d418e72401",
+      "dec3f4e7ad997c7b8769ad80e61898bd78b3c48f",
       []
      ],
      "insertparagraph-in-non-splittable-element.html.ini": [
@@ -345518,287 +345612,175 @@
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=normal_right-white-space=nowrap-expected.txt": [
-      "00c868ab66f15e2849df914669cbbdfb1243fcf1",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=normal_right-white-space=pre-expected.txt": [
-      "54826aaf380dec97b7b581ab6d911df73330a3bb",
+      "c51f49c988e0fa8a9021c584bf7b69f6890924f0",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=normal_right-white-space=pre-line-expected.txt": [
-      "57ebf697fdca78d8ac6c02871348348dcbe37b4a",
+      "2ae18e271435fd681e14b9931fe05fa716df6ad7",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=normal_right-white-space=pre-wrap-expected.txt": [
-      "8cb24e2988d51adf5d029c81b33bff747a1d083a",
+      "55b01ae94bf28be0ab9963d82ed74e9c2d93f9e8",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=nowrap_right-white-space=normal-expected.txt": [
-      "df4145be81bbf4aed7144120ab6a709cf2cfad6c",
+      "112c6732154d8c319f51f16ebdd973e9521dd0a8",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=nowrap_right-white-space=pre-expected.txt": [
-      "1d983cb5f27be4909b70a800fc130c6fc7aff680",
+      "665a3d6483090f36a3befb7a22168dbfe7340783",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=nowrap_right-white-space=pre-line-expected.txt": [
-      "a324c46aad7db6662258714e7ef56bcbaae9970a",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=nowrap_right-white-space=pre-wrap-expected.txt": [
-      "294a47881528f31b4d0155129f77e48fc3052c74",
+      "d0cd30fe30ca4abbe3a5fcf22651c793d4ef3a03",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-line_right-white-space=normal-expected.txt": [
-      "3d8453b130e806f527190576cdaaa63d437733f0",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-line_right-white-space=nowrap-expected.txt": [
-      "5247f2fe2625bcc5ecd5b458b2aa10e6f1c696fc",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-line_right-white-space=pre-expected.txt": [
-      "b79e9d2a3cc31a30e35d9da37eaca7e54a0c8b8f",
+      "b0282f64ce39c86e56ec9d1bf539832b8801af8d",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-line_right-white-space=pre-wrap-expected.txt": [
-      "11b99e9fd630c5d46387f5301adbdf7fff851184",
+      "a99654346eebc80ceedbcfe1d1074e4a98f6b4e0",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-wrap_right-white-space=normal-expected.txt": [
-      "5ba2b618ffcaab7110dd9b766a59b09b4749befd",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-wrap_right-white-space=nowrap-expected.txt": [
-      "94a31cfc233be4b2a30ba3539768de8ee45374a1",
+      "2fb4ceb9188a44907c79379e790cd885d5978a13",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-wrap_right-white-space=pre-expected.txt": [
-      "ff0ca3f8fa0b7686db22135db05f3dcc411746b1",
+      "3c1b52aed8cf5a0dec46c581c11db277a433ee48",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-wrap_right-white-space=pre-line-expected.txt": [
-      "f3bb617954c60a08c3fc4958d2cfd1088d0b9385",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre_right-white-space=normal-expected.txt": [
-      "4f658923af9b576d527fa2dcd1de401915a7925c",
+      "ea4c93919c2b131929f3ab33cf2c9f438634fc4d",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre_right-white-space=nowrap-expected.txt": [
-      "69bb376154f207f1be77f5b1c01086b95c101d8a",
+      "48837cc9dc35edec9e425c99856120e779f1d38a",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre_right-white-space=pre-line-expected.txt": [
-      "71beb46b96a2aeb95f9be77b18dea0145e033b01",
+      "48e81c03adc962a97221567ee210570748740ecc",
       []
      ],
      "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre_right-white-space=pre-wrap-expected.txt": [
-      "4bbccdf02152a8dab6731d5163b0e5cd51667012",
+      "01d6b2cb36f825cd811e29870a3fc06361a83efd",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=normal_right-white-space=nowrap-expected.txt": [
-      "444afbe5689784ab95ae95dcfd74c956af0bfddf",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=normal_right-white-space=pre-expected.txt": [
-      "d6d9c0a92cb9109d8ccf56d5c06c087cf7921ee1",
+      "8ba3ff61880ccc80f4db4febc02d89adfa984e8f",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=normal_right-white-space=pre-line-expected.txt": [
-      "1cd12d7ebf9ce6558b3a3f7c7d4c010f33925146",
+      "2a602d20d15c50ae2dedebe14bf44b69dffd01a8",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=normal_right-white-space=pre-wrap-expected.txt": [
-      "08a62106f98662aac3d7e91d3af41c6a1375d694",
+      "076531357c176c2ba3b85a42b0751cc1e48307d0",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=nowrap_right-white-space=normal-expected.txt": [
-      "b39f8c235259fdf7db9e2bd896a8a026ad7153bd",
+      "28cd96c46bf12ee3b3cae8d4b8d8a3576fc71e38",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=nowrap_right-white-space=pre-expected.txt": [
-      "20e67d903c7c59de644546302691173145b840a1",
+      "acff8637214deddad29dd74a0feb59b4bcf16f10",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=nowrap_right-white-space=pre-line-expected.txt": [
-      "90a0c646f60e2e558a6be3a14b0b032ca127389e",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=nowrap_right-white-space=pre-wrap-expected.txt": [
-      "43e29795bd0153a9abb9367505fda33bff6cf83d",
+      "743d0d8f7cbf02dfc4f5a009f4f4498b6e1c1a54",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-line_right-white-space=normal-expected.txt": [
-      "efcb97c9ee351b7fb034ac62c88888b6b90cde14",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-line_right-white-space=nowrap-expected.txt": [
-      "a9b16d386d5cbfd7256d14ed85f3258b8613e074",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-line_right-white-space=pre-expected.txt": [
-      "25e82d82a443a339c0c16ea76faa14f444cdfa7d",
+      "bb3ed1f316877e28448638c5068f5c92f415ceac",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-line_right-white-space=pre-wrap-expected.txt": [
-      "043757b881d36fa1833a97ef8fa4d8557c0c5045",
+      "b75f410acb65a6f27bf25a01e174e7098c87668a",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-wrap_right-white-space=normal-expected.txt": [
-      "4afc66fabbe352ba845f637b56dbadedcd4c7c3f",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-wrap_right-white-space=nowrap-expected.txt": [
-      "4dde0a67c078e1d879667962122f419c75a975bd",
+      "29c71489e9f088b64df82ff7dfc443eb412ea0cb",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-wrap_right-white-space=pre-expected.txt": [
-      "f03f1676f63658996783efd81fcf837ccae7d64b",
+      "93207e5eb1531b214283d6d0237616b241ae23e9",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-wrap_right-white-space=pre-line-expected.txt": [
-      "2589d52335d0677654186322e0a88bf1b100eaf5",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre_right-white-space=normal-expected.txt": [
-      "c13baab632fc5c25ff3f292a8cc68b4ffa38c956",
+      "b630f0b47584d7539d1d2cacb156afc58b3f36ac",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre_right-white-space=nowrap-expected.txt": [
-      "54c9cb50f7f84a8edc0efc6857efec2d1bd18802",
+      "ae57f8b93f6512886f550b721c15d27cb4794a55",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre_right-white-space=pre-line-expected.txt": [
-      "2be61a5a040b063a05965490a778863713b5ed82",
+      "e124d4d1b1a8c02d6495a9c6900532e082401349",
       []
      ],
      "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre_right-white-space=pre-wrap-expected.txt": [
-      "a392ee0208edfc177351a7a518e00c4fd7c6f19e",
+      "1f0dc96a9c6eeb06d31c84e904dbdc1f9e64ce42",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=normal_right-white-space=nowrap-expected.txt": [
-      "a54e1c1b05d1e17b55565c9fec192fbe76afdfc7",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=normal_right-white-space=pre-expected.txt": [
-      "a5f21a7439a69514a112e5767378ae477c953d4e",
+      "94068a107b09446c0f52eac9ad4494497820c81b",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=normal_right-white-space=pre-line-expected.txt": [
-      "7f3d0af06caaa8455db4a82a8c2df1faf0580b13",
+      "4619a11d6c9f8660ebd02b9135e247e5c36bad5a",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=normal_right-white-space=pre-wrap-expected.txt": [
-      "5abe8e4e44d609e306377ba8be506e8d220346cc",
+      "2bdac31f16b97fc9fdc01c72074b90d628bd8e73",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=nowrap_right-white-space=normal-expected.txt": [
-      "edeb6fdf4e103a9de424de50ddefbe33f180cc47",
+      "eeffe18ecd0a187c4f420ce3dbf5b8fe933cf420",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=nowrap_right-white-space=pre-expected.txt": [
-      "e6fb38b6fec57fc615b765adeb5a835831590fe1",
+      "dc9222d55006e1ceb4479d1281b9354ed6832a71",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=nowrap_right-white-space=pre-line-expected.txt": [
-      "8792aa35b47263e14a83ccda261bc437ed249b5f",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=nowrap_right-white-space=pre-wrap-expected.txt": [
-      "711a9f53f4517d0769b78dca1290368f1cc6b91e",
+      "08f14f68a10c961f90875e00975824ff62c20196",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-line_right-white-space=normal-expected.txt": [
-      "4ef29a765263b77fb88bd991788cefbf9a8f27ff",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-line_right-white-space=nowrap-expected.txt": [
-      "93f941c0123c12fc3e7c8b44669c3d5d7c8f69e1",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-line_right-white-space=pre-expected.txt": [
-      "86c0cab4afa620933ec02098c0d544f00954470f",
+      "f034f3a67391625385f0c06211fa95bb30b0e780",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-line_right-white-space=pre-wrap-expected.txt": [
-      "e3ab0bedde4db435b1bd1c69eec34cb153be1bc9",
+      "1626295a3ccb54f70367b867650f573daaf74542",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-wrap_right-white-space=normal-expected.txt": [
-      "5899cda074ff0fac1c3e5eb4322369433e585b36",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-wrap_right-white-space=nowrap-expected.txt": [
-      "06f9da13865dcd55ac58b584465975899ed94bc1",
+      "c66d0bc40059e4ece8e92da6367a4f029a1e8834",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-wrap_right-white-space=pre-expected.txt": [
-      "8cec9a8eae799412448c02709b1ccb427659acfd",
+      "85d36c2637a785efa44f04fd261a44a53bf092da",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-wrap_right-white-space=pre-line-expected.txt": [
-      "f9636037ffccc7ac95c3dccbfaf3cc911cb9cb2a",
-      []
-     ],
-     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre_right-white-space=normal-expected.txt": [
-      "f6f7fcc3fc5ae06754540e8d133c51b773d53a4e",
+      "e3127525af942d463d952fb99881a36b6a469203",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre_right-white-space=nowrap-expected.txt": [
-      "482ea5451d99c646819e5e1668167920cf975371",
+      "708f4697c18afa05190c5a3d97c241853a933ed3",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre_right-white-space=pre-line-expected.txt": [
-      "6379ebabda5ddf976071bc34a1863e12d77d241b",
+      "e7c0c51b47d0ae3600bde90ea9cb6e9ac6405a66",
       []
      ],
      "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre_right-white-space=pre-wrap-expected.txt": [
-      "b2a4819e2e6e316ce32b86e4565c772ef27497e8",
+      "dd0debe70471584855545c4d76deb61c20189b83",
       []
      ],
-     "join-pre-and-other-block_method=backspace_block=blockquote-expected.txt": [
-      "a1f0be4fbfe340b7e0d0d7990444cc18c8364ec0",
-      []
-     ],
-     "join-pre-and-other-block_method=backspace_block=div-expected.txt": [
-      "a959985963dbaec4a6e66bd3132bace1a25c2284",
-      []
-     ],
-     "join-pre-and-other-block_method=backspace_block=p-expected.txt": [
-      "b99cfbf1986d6fba43fbf63b56b137e780ddd501",
-      []
-     ],
-     "join-pre-and-other-block_method=forwarddelete_block=blockquote-expected.txt": [
-      "7793517651b493442bc879ffa15a983cf8924a0f",
-      []
-     ],
-     "join-pre-and-other-block_method=forwarddelete_block=div-expected.txt": [
-      "232b8022af119ab5053b51adbd28c9021572b678",
-      []
-     ],
-     "join-pre-and-other-block_method=forwarddelete_block=p-expected.txt": [
-      "ecaa59d51a40cd277ddedb3ebcb7c578a8c9346c",
-      []
-     ],
-     "join-pre-and-other-block_method=select-boundary_block=blockquote-expected.txt": [
-      "2357fa8329342d7098bb9825d747d2477dbe7185",
-      []
-     ],
-     "join-pre-and-other-block_method=select-boundary_block=div-expected.txt": [
-      "000c034a1889d2c6534a40ebf8c45a3f3bdeb976",
-      []
-     ],
-     "join-pre-and-other-block_method=select-boundary_block=p-expected.txt": [
-      "9ae71ed111c358905f6766f8defe0c3833dc92f4",
-      []
-     ],
-     "keeping-attributes-at-joining-elements.tentative_method=backspace-expected.txt": [
-      "9c4ac28390f0a9007360e09720e64a1c6bd5ed68",
-      []
-     ],
-     "keeping-attributes-at-joining-elements.tentative_method=forwarddelete-expected.txt": [
-      "9c4ac28390f0a9007360e09720e64a1c6bd5ed68",
+     "join-pre-and-other-block.html.ini": [
+      "e430e00e35c1423ef020e165253144ea7d9b7d24",
       []
      ],
      "link-boundaries-insertion-expected.txt": [
@@ -345838,51 +345820,43 @@
       []
      ],
      "typing-around-link-element-after-joining-paragraphs_action=Backspace-expected.txt": [
-      "77c5349d9791661de813b84210ecf5180a5b2e23",
+      "616c2502e1554dab795ce38cacbabd92919767d4",
       []
      ],
      "typing-around-link-element-after-joining-paragraphs_action=Delete-expected.txt": [
-      "56f9a0951c8d1d844eb23019c49e2a4c9c3354ef",
+      "10fbea7d114cf3ce03130b7b51185eaf57337a5a",
       []
      ],
      "typing-around-link-element-at-collapsed-selection.tentative.html.ini": [
-      "8f0d895cc086e10f06883a468d49bb94bd2d26ff",
-      []
-     ],
-     "typing-around-link-element-at-collapsed-selection.tentative_target=DesignMode-expected.txt": [
-      "2653987de7cbcdf11761d18fa7ab6e8f79393983",
+      "8b072091610c0c73baa16dc798d75b394baf0c75",
       []
      ],
      "typing-around-link-element-at-collapsed-selection.tentative_target=DesignMode_child=b-expected.txt": [
-      "8dbb96e8c586d8adc7339308a7dfc79bf5596584",
-      []
-     ],
-     "typing-around-link-element-at-collapsed-selection.tentative_target=DesignMode_parent=b-expected.txt": [
-      "d7d76e198393f294e08659ca0b0ad14b1cc34a01",
+      "a37ba54e691622ab44d71449d5e73a33db6397c1",
       []
      ],
      "typing-around-link-element-at-collapsed-selection.tentative_target=DesignMode_parent=b_child=i-expected.txt": [
-      "ee9b42be74a559dce9a00a4efc7f399e071a2fc5",
+      "3b5409670c382c6cbef8e32e3d4007545ef7cf35",
       []
      ],
      "typing-around-link-element-at-non-collapsed-selection.tentative.html.ini": [
-      "4d1341a4775c45c7da3950eabb49c26451acfb41",
+      "a36944ea7424cbf5e1156b515f5ef2c3aed1f0d5",
       []
      ],
      "typing-around-link-element-at-non-collapsed-selection.tentative_target=DesignMode-expected.txt": [
-      "2774722af7cec7ffbd7d5634fe047c7cf6a3e044",
+      "1fcba89f7c02a1c2d3ede9d783f5053debb9fb9a",
       []
      ],
      "typing-around-link-element-at-non-collapsed-selection.tentative_target=DesignMode_child=b-expected.txt": [
-      "7a6fc54479d51e4cc46c520f4fd4c0d792335a95",
+      "77f3c248657dece3c668f361514df098471c21f7",
       []
      ],
      "typing-around-link-element-at-non-collapsed-selection.tentative_target=DesignMode_parent=b-expected.txt": [
-      "9b425c4d0519ea4749cd598459343ce30e274155",
+      "d41cb6d72e1ec3cb1fa4838a70bbaaa337ad588a",
       []
      ],
      "typing-around-link-element-at-non-collapsed-selection.tentative_target=DesignMode_parent=b_child=i-expected.txt": [
-      "2cd75e33ab0d7c88da6bd362285873e7cf727fb9",
+      "1770c575a0145cda53407c611084336b1d9b1c02",
       []
      ],
      "typing-space-in-editable-button.tentative-expected.txt": [
@@ -345899,10 +345873,6 @@
      ],
      "typing-space-in-editable-summary.tentative.html.ini": [
       "a0cf51b304baf29702d14efc5e3bc9837bdeaed6",
-      []
-     ],
-     "undo-insertparagraph-after-moving-split-nodes-expected.txt": [
-      "5fa84a5fa219d5b1c01c1db6d9f2962ce13350c9",
       []
      ]
     },
@@ -377343,6 +377313,10 @@
       "6604450991a122e3e241e40b1b9e0516c525389d",
       []
      ],
+     "modulepreload-as-worker.h2.window.js.ini": [
+      "ced9857353cfd20ebcecb7dfd638cb22b33855cb",
+      []
+     ],
      "resources": {
       "404-with-early-hints.h2.py": [
        "bb75bc0cbd427aaa8d99734dfa7eb9fbe01d67a3",
@@ -377445,11 +377419,11 @@
        []
       ],
       "modulepreload-in-early-hints.h2.py": [
-       "231b3bc69cb9dd47e3e298398214f3f9e0a433e9",
+       "cefd02a96a83acac7297b7dbab1f5eb9270a4dee",
        []
       ],
       "modulepreload-in-early-hints.html": [
-       "44aebf720a05d90db5f12477dbe83327c0e25a7b",
+       "64a02855040dbaa1af595487f80460f7106f2f0c",
        []
       ],
       "multiple-early-hints-responses.h2.py": [
@@ -383561,7 +383535,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "907e2ba7b4e4cca9dbc390560f92b034d1894ef6",
+     "bd7f4a2b61c7eb45f3d4a59039cc7ad1a81aa2f2",
      []
     ],
     "modulepreload-expected.txt": [
@@ -398531,7 +398505,7 @@
      []
     ],
     "full-cycle-test.https.any.js.ini": [
-     "23ba1324feee1c59efa935b3a7b308de7fe89ef7",
+     "ca6be7aa6ceed8d98c471eff11ef28dae57c547d",
      []
     ],
     "h264.annexb": [
@@ -398567,7 +398541,7 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "389021e563ee97f97962ff7b747e9017446fa8fc",
+     "4be5117d7ae64849f5fb7719904268423fbcbaa8",
      []
     ],
     "sfx-aac.mp4": [
@@ -399670,7 +399644,7 @@
       []
      ],
      "020.html.ini": [
-      "6250cfd59c53b1d49a37bd2f065c9d4877fbb803",
+      "90f96dea4d7ed520b1687ea4611831cc27849850",
       []
      ],
      "021.html.ini": [
@@ -403247,7 +403221,7 @@
          []
         ],
         "non-standard-pseudo-elements.html.ini": [
-         "04e50d9b2b06a76ac60c36de1f9c20b944caaa39",
+         "6aecb83f11597028a942cd10a534e73e8fe051cd",
          []
         ],
         "single_quote-ref.html": [
@@ -430169,6 +430143,36 @@
       {}
      ]
     ],
+    "clear-site-data": {
+     "clear-site-data-all.https.html": [
+      "4abc620c9dc3e8586f715d43a4f839c9821133fe",
+      [
+       null,
+       {}
+      ]
+     ],
+     "clear-site-data-cache.https.html": [
+      "bb1f8aa43e7930d0484e5cc8c18e2ba1c6b22d34",
+      [
+       null,
+       {}
+      ]
+     ],
+     "clear-site-data-cookies.https.html": [
+      "72b7f6794e9fceed910dfe0b309aa1fb16e5559f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "clear-site-data-storage.https.html": [
+      "49578134f56767923415287c5ce60b8713713066",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "critical-ch": {
      "critical-ch.navigation-timing.no-restart.https.html": [
       "a7c2ad705db844db61f6038ed0bba496a0598ce2",
@@ -443714,8 +443718,22 @@
        {}
       ]
      ],
-     "anchor-getComputedStyle.html": [
+     "anchor-getComputedStyle-001.html": [
       "6d77cf9a9d4cc34f5b2c787502f0d7753ff41c94",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-getComputedStyle-002.html": [
+      "ae697fcc7498917e165b471ae169068880ef46e0",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-getComputedStyle-003.html": [
+      "f9fca976544f1aaac8d84e9acd918c7538b7e86d",
       [
        null,
        {}
@@ -448235,6 +448253,13 @@
         {}
        ]
       ],
+      "inheritance-from-container.html": [
+       "97dfff2fd02fe6e825f3d547caeb88fefef2d0ca",
+       [
+        null,
+        {}
+       ]
+      ],
       "inline-size-and-min-width.html": [
        "8ddcbc614cae184b65295ab722ce392df4491f5d",
        [
@@ -449135,7 +449160,7 @@
     },
     "css-easing": {
      "cubic-bezier-timing-functions-output.html": [
-      "168f4cd907ec93d84bafcd11b00a7c78878569c8",
+      "4e14ef3bb3e5db60f501ff64ee87cc9401b372f7",
       [
        null,
        {}
@@ -456423,7 +456448,7 @@
      },
      "image-set": {
       "image-set-computed.sub.html": [
-       "a3e781007aa5c143e4f9f8822c67058d5cbc85cc",
+       "532e48e6e869e322e6816f2f0d3289aeea7786c6",
        [
         null,
         {}
@@ -458450,7 +458475,7 @@
       ]
      ],
      "invalid-inner-rules.html": [
-      "ffb53420e2dacfead07094be6c8521f87633c9ed",
+      "87c7c9a93481c95345223c2a7a4f8cab62529826",
       [
        null,
        {}
@@ -460295,7 +460320,7 @@
       ]
      ],
      "register-property-syntax-parsing.html": [
-      "16cbdf0c571a5f5d7fa328b6d9a6295bfd3a5db0",
+      "5bda1c4c5b23ecc95ac98ef939a9bbba62cf196d",
       [
        null,
        {}
@@ -461351,7 +461376,7 @@
      ],
      "input": {
       "keyboard.html": [
-       "7b0c6c057420e98b0122cbcb2f7502037e370e21",
+       "187ac0fb9e3ee5b12e73ec75d3cd4f465e6b319e",
        [
         null,
         {
@@ -472532,7 +472557,7 @@
       ]
      ],
      "exp-log-serialize.html": [
-      "9eca44e68290dc8b96a915db6da6a843bab75f43",
+      "6108278d9624daad216f2bde26e6d65b7dd6f50f",
       [
        null,
        {}
@@ -472833,7 +472858,7 @@
       ]
      ],
      "round-mod-rem-serialize.html": [
-      "39569995b3ab09d834796f94bea9605dae7846f6",
+      "aa7c768b952b3fa4c28618fbbd59451b827e828f",
       [
        null,
        {}
@@ -474703,6 +474728,13 @@
        {}
       ]
      ],
+     "getComputedStyle-insets-grid.html": [
+      "08b55733a1595abca152e75cb24f0b1219fce8d1",
+      [
+       null,
+       {}
+      ]
+     ],
      "getComputedStyle-insets-nobox.html": [
       "236abf17f9cab8652b350c1168f2c27c1f84a631",
       [
@@ -474712,6 +474744,13 @@
      ],
      "getComputedStyle-insets-relative.html": [
       "1abfc62c0165a0a47b2e988111723acb55f996ce",
+      [
+       null,
+       {}
+      ]
+     ],
+     "getComputedStyle-insets-relpos-inline.html": [
+      "d5f197ee9bc6cd53ec636889773438391d698120",
       [
        null,
        {}
@@ -563119,7 +563158,7 @@
        ]
       ],
       "popover-focus-2.html": [
-       "be6923e604a18cef5b5f2150ec8345e62bebfbd5",
+       "2fa1b7a23dee262e19c4c04f7243cecef1c0f0fd",
        [
         null,
         {
@@ -567364,7 +567403,7 @@
         ]
        ],
        "disabled.html": [
-        "8808675eb69b17c7763b407ea7ce4458e9e08fda",
+        "142a12dd122b555dcc6eee18334f796dc9269961",
         [
          null,
          {}
@@ -577136,8 +577175,62 @@
        {}
       ]
      ],
+     "modulepreload-as-worker-cross-origin.h2.window.js": [
+      "3756d7f7fa24e943e7e90a42a71806faadba358d",
+      [
+       "loading/early-hints/modulepreload-as-worker-cross-origin.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "modulepreload-as-worker.h2.window.js": [
+      "2fd36dfbf3dc0898f020715afdfb0a71eeb6f81a",
+      [
+       "loading/early-hints/modulepreload-as-worker.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "modulepreload-cross-origin.h2.window.js": [
+      "3499b4d60d0743d1ce118a4e16b50e29f8428126",
+      [
+       "loading/early-hints/modulepreload-cross-origin.h2.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "modulepreload-in-early-hints.h2.window.js": [
-      "5627f04a0fefe1c6996e493ef280826c924ec7bd",
+      "bd592b0396dd7bcb5b8ba479ba06739b224f59d1",
       [
        "loading/early-hints/modulepreload-in-early-hints.h2.window.html",
        {
@@ -627572,14 +627665,14 @@
        ]
       ],
       "SVGLength-px-with-context.html": [
-       "067948d5454d3b0ca715e58f72f7ab1840a4712d",
+       "b5c2149b692eea53d7565031d135317526736c44",
        [
         null,
         {}
        ]
       ],
       "SVGLength-px.html": [
-       "321be5912b84c3ad0df8a68231213311171386d5",
+       "25ce286197a49e9d06dc184b2fc8a89d15cd5ed5",
        [
         null,
         {}
@@ -649803,7 +649896,7 @@
      ]
     ],
     "RTCRtpTransceiver-headerExtensionControl.html": [
-     "79eba02727bb35b745cee0a3b6246e37fb216e06",
+     "796d35dcb6bfffab5d62439da8dd93fc28aec9c9",
      [
       null,
       {}
