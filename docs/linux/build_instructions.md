@@ -18,8 +18,10 @@ Are you a Google employee? See
 *   You must have Git and Python v3.6+ installed already (and `python3` must point
     to a Python v3.6+ binary).
 
-Most development is done on Ubuntu (currently 18.04, Bionic Beaver). There are
-some instructions for other distros below, but they are mostly unsupported.
+
+Most development is done on Ubuntu (Chromium's build infrastructure currently
+runs 22.04, Jammy Jellyfish). There are some instructions for other distros
+below, but they are mostly unsupported.
 
 ### Docker requirements
 
