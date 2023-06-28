@@ -21,7 +21,6 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -91,10 +90,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
 
   bool dragged_item_over_bar() const { return dragged_item_over_bar_; }
 
-  OverviewGrid* overview_grid() const { return overview_grid_; }
-  void set_overview_grid(OverviewGrid* overview_grid) {
-    overview_grid_ = overview_grid;
-  }
+  OverviewGrid* overview_grid() const { return overview_grid_.get(); }
 
   const std::vector<DeskMiniView*>& mini_views() const { return mini_views_; }
 
@@ -409,7 +405,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
 
   // The `OverviewGrid` that contains this object if this is a `Type::kOverview`
   // bar, nullptr otherwise.
-  raw_ptr<OverviewGrid, ExperimentalAsh> overview_grid_ = nullptr;
+  base::WeakPtr<OverviewGrid> overview_grid_;
 
   // The views representing desks mini_views. They're owned by views hierarchy.
   std::vector<DeskMiniView*> mini_views_;

@@ -4,14 +4,12 @@
 
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 
-#include "ui/aura/window.h"
-
 namespace ash {
 
 // -----------------------------------------------------------------------------
 // LegacyDeskBarView:
 
-LegacyDeskBarView::LegacyDeskBarView(OverviewGrid* overview_grid)
+LegacyDeskBarView::LegacyDeskBarView(base::WeakPtr<OverviewGrid> overview_grid)
     : DeskBarViewBase(overview_grid->root_window(),
                       DeskBarViewBase::Type::kOverview) {
   overview_grid_ = overview_grid;

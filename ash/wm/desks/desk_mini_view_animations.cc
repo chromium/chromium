@@ -15,7 +15,6 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
@@ -209,9 +208,10 @@ class RemovedMiniViewAnimation : public ui::ImplicitAnimationObserver {
       return;
     }
 
+    CHECK(bar_view_);
+    bar_view_->UpdateDeskButtonsVisibility();
+
     if (overview_controller->InOverviewSession()) {
-      DCHECK(bar_view_);
-      bar_view_->UpdateDeskButtonsVisibility();
       UpdateAccessibilityFocusInOverview();
     }
   }

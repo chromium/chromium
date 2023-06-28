@@ -9277,6 +9277,21 @@ TEST_P(DeskBarTest, DeskTextfieldOutsideOverview) {
   desk_text_view->CommitChanges(widget.get());
 }
 
+// Tests that shutting down when desk bar is alive does not crash without
+// animation.
+TEST_P(DeskBarTest, ShutdownNoAnimation) {
+  OpenDeskBar();
+}
+
+// Tests that shutting down when desk bar is alive does not crash with
+// animation.
+TEST_P(DeskBarTest, ShutdownWithAnimation) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  OpenDeskBar();
+}
+
 struct DeskBarTestBasicCase {
   std::string test_name;
 

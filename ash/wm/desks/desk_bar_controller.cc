@@ -35,10 +35,13 @@ DeskBarController::DeskBarController() {
   DesksController::Get()->AddObserver(this);
   Shell::Get()->activation_client()->AddObserver(this);
   Shell::Get()->AddPreTargetHandler(this);
+  Shell::Get()->AddShellObserver(this);
 }
 
 DeskBarController::~DeskBarController() {
   CloseAllDeskBars();
+  DestroyAllDeskBars();
+  Shell::Get()->RemoveShellObserver(this);
   Shell::Get()->RemovePreTargetHandler(this);
   Shell::Get()->activation_client()->RemoveObserver(this);
   DesksController::Get()->RemoveObserver(this);
@@ -66,6 +69,15 @@ void DeskBarController::OnOverviewModeWillStart() {
   CloseAllDeskBars();
 }
 
+void DeskBarController::OnShellDestroying() {
+  is_shell_destroying = true;
+
+  // The desk bar widgets should not outlive shell. Unlike `DeleteSoon`, we get
+  // rid of it right away.
+  desk_bar_views_.clear();
+  desk_bar_widgets_.clear();
+}
+
 void DeskBarController::OnTabletModeStarting() {
   CloseAllDeskBars();
 }
@@ -73,6 +85,10 @@ void DeskBarController::OnTabletModeStarting() {
 void DeskBarController::OnWindowActivated(ActivationReason reason,
                                           aura::Window* gained_active,
                                           aura::Window* lost_active) {
+  if (is_shell_destroying) {
+    return;
+  }
+
   // Closing the bar for "press" type events is handled by
   // `ui::EventHandler`. Activation can change when a user merely moves the
   // cursor outside the bar when `FocusFollowsCursor` is enabled, so losing

@@ -10,11 +10,11 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/shell_observer.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_button/desk_button.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_observer.h"
-#include "base/observer_list.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
@@ -33,6 +33,7 @@ namespace ash {
 class ASH_EXPORT DeskBarController : public DesksController::Observer,
                                      public ui::EventHandler,
                                      public OverviewObserver,
+                                     public ShellObserver,
                                      public TabletModeObserver,
                                      public wm::ActivationChangeObserver {
  public:
@@ -52,6 +53,9 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
 
   // OverviewObserver:
   void OnOverviewModeWillStart() override;
+
+  // ShellObserver:
+  void OnShellDestroying() override;
 
   // TabletModeObserver:
   void OnTabletModeStarting() override;
@@ -150,6 +154,9 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
   // desk button desk bar. Support for overview desk bar will be added later.
   std::vector<std::unique_ptr<views::Widget>> desk_bar_widgets_;
   std::vector<DeskBarViewBase*> desk_bar_views_;
+
+  // Indicates that shell is destroying.
+  bool is_shell_destroying = false;
 };
 
 }  // namespace ash

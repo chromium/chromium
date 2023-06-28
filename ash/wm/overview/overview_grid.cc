@@ -28,7 +28,6 @@
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
-#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
@@ -57,7 +56,6 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/workspace/backdrop_controller.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
@@ -562,15 +560,16 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
   // overview grid to `DesksBarSlideAnimation` which is a self-deleting object,
   // when the animation is done, it will delete itself and destroy
   // `desks_widget_` as well.
-  if (chromeos::features::IsJellyrollEnabled() && desks_widget_ &&
-      exit_type != OverviewEnterExitType::kImmediateExit) {
-    bool is_zero_state = desks_bar_view_->IsZeroState();
-    desks_bar_view_->set_overview_grid(nullptr);
-    desks_bar_view_ = nullptr;
-    new DesksBarSlideAnimation(std::move(desks_widget_), is_zero_state);
-  } else {
-    desks_bar_view_ = nullptr;
-    desks_widget_.reset();
+  if (desks_widget_) {
+    if (chromeos::features::IsJellyrollEnabled() &&
+        exit_type != OverviewEnterExitType::kImmediateExit) {
+      new DesksBarSlideAnimation(std::move(desks_widget_),
+                                 desks_bar_view_->IsZeroState());
+      desks_bar_view_ = nullptr;
+    } else {
+      desks_widget_.reset();
+      desks_bar_view_ = nullptr;
+    }
   }
 }
 
@@ -2099,7 +2098,7 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // distracting to the user to have the button animate behind moving windows.
   ScopedOverviewAnimationSettings settings(
       visibility_changed || in_desk_animation ||
-              ShouldUseScrollingLayout(/*ignored_items=*/0)
+              ShouldUseScrollingLayout(/*ignored_items_size=*/0)
           ? OVERVIEW_ANIMATION_NONE
           : OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW,
       save_desk_button_container_widget_->GetNativeWindow());
@@ -2262,8 +2261,8 @@ void OverviewGrid::MaybeInitDesksWidget() {
   // must be called before LegacyDeskBarView:: Init(). This is needed because
   // the desks mini views need to access the widget to get the root window in
   // order to know how to layout themselves.
-  desks_bar_view_ =
-      desks_widget_->SetContentsView(std::make_unique<LegacyDeskBarView>(this));
+  desks_bar_view_ = desks_widget_->SetContentsView(
+      std::make_unique<LegacyDeskBarView>(weak_ptr_factory_.GetWeakPtr()));
   desks_bar_view_->Init();
 
   desks_widget_->Show();
