@@ -6,16 +6,13 @@
 
 #include <errno.h>
 #include <sys/mman.h>
-#include <sys/select.h>
 #include <sys/socket.h>
 #include <sys/syscall.h>
-#include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
 
 #include "base/check_op.h"
 #include "base/clang_profiling_buildflags.h"
-#include "base/debug/stack_trace.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
@@ -132,20 +129,6 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
     return Allow();
   }
 #endif
-
-  if (base::debug::IsEnabledInProcessStackDumping()) {
-    // This is necessary to ensure the process dies at most a couple seconds
-    // after receiving a signal that is supposed to be fatal.
-#if defined(__NR_alarm)
-    if (sysno == __NR_alarm) {
-      return Allow();
-    }
-#endif  // defined(__NR_alarm)
-    if (sysno == __NR_setitimer) {
-      const Arg<int> which(0);
-      return If(which == ITIMER_REAL, Allow()).Else(Error(EPERM));
-    }
-  }
 
   if (sysno == __NR_uname) {
     return Allow();

@@ -121,11 +121,7 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPtrace();
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPkeyAllocFlags();
 
 // Restrict the which argument to getitimer() and setitimer().
-// In case of failing these restrictions, `default_result` is used as the
-// result.
-SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictGoogle3Threading(
-    int sysno,
-    bpf_dsl::ResultExpr default_result);
+SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictGoogle3Threading(int sysno);
 
 // Restrict the flags of pipe2().
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPipe2();

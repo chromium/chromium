@@ -63,8 +63,7 @@ bool EndsWith(const std::string& s, const std::string& suffix) {
 namespace base {
 namespace debug {
 
-namespace internal {
-bool EnableInProcessStackDumpingImpl() {
+bool EnableInProcessStackDumping() {
   // When running in an application, our code typically expects SIGPIPE
   // to be ignored.  Therefore, when testing that same code, it should run
   // with SIGPIPE ignored as well.
@@ -75,7 +74,6 @@ bool EnableInProcessStackDumpingImpl() {
   sigemptyset(&action.sa_mask);
   return (sigaction(SIGPIPE, &action, NULL) == 0);
 }
-}  // namespace internal
 
 size_t CollectStackTrace(void** trace, size_t count) {
   StackCrawlState state(reinterpret_cast<uintptr_t*>(trace), count);

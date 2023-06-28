@@ -67,8 +67,7 @@ ResultExpr LibassistantProcessPolicy::EvaluateSyscall(int sysno) const {
       return Allow();
     default:
       if (SyscallSets::IsGoogle3Threading(sysno)) {
-        return RestrictGoogle3Threading(sysno,
-                                        BPFBasePolicy::EvaluateSyscall(sysno));
+        return RestrictGoogle3Threading(sysno);
       }
 
       auto* sandbox_linux = SandboxLinux::GetInstance();

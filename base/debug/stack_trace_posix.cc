@@ -927,8 +927,7 @@ class SandboxSymbolizeHelper {
 
 }  // namespace
 
-namespace internal {
-bool EnableInProcessStackDumpingImpl() {
+bool EnableInProcessStackDumping() {
 #if defined(USE_SYMBOLIZE)
   SandboxSymbolizeHelper::GetInstance();
 #endif  // USE_SYMBOLIZE
@@ -963,7 +962,6 @@ bool EnableInProcessStackDumpingImpl() {
 
   return success;
 }
-}  // namespace internal
 
 #if !BUILDFLAG(IS_NACL)
 bool SetStackDumpFirstChanceCallback(bool (*handler)(int, siginfo_t*, void*)) {
