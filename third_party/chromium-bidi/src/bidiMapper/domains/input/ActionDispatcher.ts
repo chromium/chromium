@@ -567,18 +567,16 @@ export class ActionDispatcher {
     // --- Platform-specific code begins here ---
     // The spread is a little hack so JS gives us an array of unicode characters
     // to measure.
-    let unmodifiedText = [...key].length === 1 ? key : undefined;
-    if (source.shift) {
-      unmodifiedText = unmodifiedText?.toLocaleUpperCase('en-US');
-    }
+    const unmodifiedText = getKeyEventUnmodifiedText(key, source);
+    const text = getKeyEventText(code ?? '', source) ?? unmodifiedText;
     return this.#context.cdpTarget.cdpClient.sendCommand(
       'Input.dispatchKeyEvent',
       {
-        type: unmodifiedText ? 'keyDown' : 'rawKeyDown',
+        type: text ? 'keyDown' : 'rawKeyDown',
         windowsVirtualKeyCode: KeyToKeyCode[key],
         key,
         code,
-        text: unmodifiedText,
+        text,
         unmodifiedText,
         autoRepeat: repeat,
         isSystemKey: source.alt || undefined,
@@ -618,10 +616,8 @@ export class ActionDispatcher {
     // --- Platform-specific code begins here ---
     // The spread is a little hack so JS gives us an array of unicode characters
     // to measure.
-    let unmodifiedText = [...key].length === 1 ? key : undefined;
-    if (source.shift) {
-      unmodifiedText = unmodifiedText?.toLocaleUpperCase('en-US');
-    }
+    const unmodifiedText = getKeyEventUnmodifiedText(key, source);
+    const text = getKeyEventText(code ?? '', source) ?? unmodifiedText;
     return this.#context.cdpTarget.cdpClient.sendCommand(
       'Input.dispatchKeyEvent',
       {
@@ -629,7 +625,7 @@ export class ActionDispatcher {
         windowsVirtualKeyCode: KeyToKeyCode[key],
         key,
         code,
-        text: unmodifiedText,
+        text,
         unmodifiedText,
         location: location < 3 ? location : undefined,
         isSystemKey: source.alt || undefined,
@@ -640,3 +636,96 @@ export class ActionDispatcher {
     // --- Platform-specific code ends here ---
   }
 }
+
+const getKeyEventUnmodifiedText = (key: string, source: KeySource) => {
+  if (key === 'Enter') {
+    return '\r';
+  }
+  return [...key].length === 1
+    ? source.shift
+      ? key.toLocaleUpperCase('en-US')
+      : key
+    : undefined;
+};
+
+const getKeyEventText = (code: string, source: KeySource) => {
+  if (source.ctrl) {
+    switch (code) {
+      case 'Digit2':
+        if (source.shift) {
+          return '\x00';
+        }
+        break;
+      case 'KeyA':
+        return '\x01';
+      case 'KeyB':
+        return '\x02';
+      case 'KeyC':
+        return '\x03';
+      case 'KeyD':
+        return '\x04';
+      case 'KeyE':
+        return '\x05';
+      case 'KeyF':
+        return '\x06';
+      case 'KeyG':
+        return '\x07';
+      case 'KeyH':
+        return '\x08';
+      case 'KeyI':
+        return '\x09';
+      case 'KeyJ':
+        return '\x0A';
+      case 'KeyK':
+        return '\x0B';
+      case 'KeyL':
+        return '\x0C';
+      case 'KeyM':
+        return '\x0D';
+      case 'KeyN':
+        return '\x0E';
+      case 'KeyO':
+        return '\x0F';
+      case 'KeyP':
+        return '\x10';
+      case 'KeyQ':
+        return '\x11';
+      case 'KeyR':
+        return '\x12';
+      case 'KeyS':
+        return '\x13';
+      case 'KeyT':
+        return '\x14';
+      case 'KeyU':
+        return '\x15';
+      case 'KeyV':
+        return '\x16';
+      case 'KeyW':
+        return '\x17';
+      case 'KeyX':
+        return '\x18';
+      case 'KeyY':
+        return '\x19';
+      case 'KeyZ':
+        return '\x1A';
+      case 'BracketLeft':
+        return '\x1B';
+      case 'Backslash':
+        return '\x1C';
+      case 'BracketRight':
+        return '\x1D';
+      case 'Digit6':
+        if (source.shift) {
+          return '\x1E';
+        }
+        break;
+      case 'Minus':
+        return '\x1F';
+    }
+    return '';
+  }
+  if (source.alt) {
+    return '';
+  }
+  return;
+};
