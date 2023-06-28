@@ -1371,7 +1371,14 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
 
   // Subgrids compute auto repetitions differently than standalone grids.
   // See https://drafts.csswg.org/css-grid-2/#auto-repeat.
-  if (subgrid_span.IsTranslatedDefinite()) {
+  if (track_list.IsSubgriddedAxis()) {
+    if (subgrid_span.IsIndefinite()) {
+      // From https://drafts.csswg.org/css-grid-2/#subgrid-listing
+      // "If there is no parent grid, ..., the used value is the initial
+      // value, 'none', and the grid container is not a subgrid.
+      return 0;
+    }
+
     return ComputeAutomaticRepetitionsForSubgrid(subgrid_span.IntegerSpan(),
                                                  track_direction);
   }

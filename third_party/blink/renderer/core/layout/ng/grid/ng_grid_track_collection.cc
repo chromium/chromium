@@ -93,8 +93,13 @@ NGGridRangeBuilder::NGGridRangeBuilder(
     const wtf_size_t repeater_track_count =
         explicit_tracks_.RepeatCount(i, auto_repetitions_) *
         explicit_tracks_.RepeatSize(i);
-    DCHECK_NE(repeater_track_count, 0u);
 
+    // Subgrids can have zero auto repetitions.
+    if (explicit_tracks_.IsSubgriddedAxis() && repeater_track_count == 0) {
+      continue;
+    }
+
+    DCHECK_NE(repeater_track_count, 0u);
     start_lines_.emplace_back(current_repeater_start_line);
     current_repeater_start_line += repeater_track_count;
     end_lines_.emplace_back(current_repeater_start_line);

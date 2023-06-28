@@ -2036,16 +2036,27 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
     is_track_list_empty = positions.size() == 1;
   }
 
-  const bool is_subgrid = computed_grid_track_list.IsSubgriddedAxis();
+  const bool is_subgrid_specified = computed_grid_track_list.IsSubgriddedAxis();
+  const bool is_subgrid_valid =
+      grid ? grid->CachedPlacementData().line_resolver.SubgridSpanSize(
+                 direction) != kNotFound
+           : false;
+  const bool is_subgrid = is_subgrid_specified && is_subgrid_valid;
 
-  // Even if the track list is empty or it's not actually a grid/subgrid in
-  // layout, if the author specified `subgrid`, the computed value should always
-  // begin with `subgrid` and cannot be `none`.
+  // Standalone grids with empty track lists should compute to `none`, but
+  // this is not the case for subgrids. Subgrids need to account for the
+  // following: "If there is no parent grid, this value is equivalent to the
+  // initial value, `none`, and the grid container is not a subgrid."
+  // https://www.w3.org/TR/css-grid-2/#subgrid-listing
+  //
+  // Interestingly, specifying `subgrid` on a non-grid *will* compute to
+  // `subgrid` syntax.
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (is_subgrid) {
+  if (is_subgrid || (is_subgrid_specified && !grid)) {
     list->Append(
         *MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kSubgrid));
-  } else if (is_track_list_empty) {
+  } else if ((!is_subgrid_specified && is_track_list_empty) ||
+             (grid && is_subgrid_specified && !is_subgrid_valid)) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
 
@@ -2098,8 +2109,8 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   // Otherwise, the resolved value is the computed value, preserving repeat().
   OrderedNamedLinesCollector collector(
       computed_grid_track_list.ordered_named_grid_lines,
-      computed_grid_track_list.auto_repeat_ordered_named_grid_lines, is_subgrid,
-      !!grid);
+      computed_grid_track_list.auto_repeat_ordered_named_grid_lines,
+      is_subgrid_specified, !!grid);
   PopulateGridTrackListForNonGrid(list, collector, ng_track_list, style);
   return list;
 }

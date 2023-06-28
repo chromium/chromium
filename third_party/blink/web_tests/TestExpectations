@@ -3462,8 +3462,6 @@ crbug.com/764235 external/wpt/css/css-grid/alignment/grid-baseline-align-001.htm
 crbug.com/764235 external/wpt/css/css-grid/alignment/grid-baseline-justify-001.html [ Failure ]
 
 # [css-subgrid]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/crashtests/subgridded-axis-auto-repeater-001.html [ Crash Timeout ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/crashtests/subgridded-axis-auto-repeater-002.html [ Crash Timeout ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/line-names-007.html [ Failure ]
 
 # [css-animations]
