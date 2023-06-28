@@ -2364,6 +2364,7 @@
         'args': [
           '--disable-field-trial-config',
         ],
+        'ci_only': True,
         'swarming': {
           'shards': 2,
           'cipd_packages': [
@@ -6842,6 +6843,7 @@
       'chromium_gtests': {},
       'chromium_gtests_for_devices_with_graphical_output': {},
       'fieldtrial_android_tests': {},
+      'fieldtrial_webview_tests': {},
       'linux_flavor_specific_chromium_gtests': {},
       'system_webview_shell_instrumentation_tests': {}, # Not an experimental test
       'webview_trichrome_64_cts_tests': {
