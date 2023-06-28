@@ -71,23 +71,24 @@ void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
   std::vector<gfx::Rect> opaque_region;
   const bool should_have_rounded_corners = corner_radius > 0;
   if (showing_frame && should_have_rounded_corners) {
-    GetContentWindow()->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(corner_radius, corner_radius, 0, 0));
+    auto rounded_corners_f =
+        gfx::RoundedCornersF(corner_radius, corner_radius, 0, 0);
+    GetContentWindow()->layer()->SetRoundedCornerRadius(rounded_corners_f);
     GetContentWindow()->layer()->SetIsFastRoundedCorner(true);
 
     // The opaque region is a list of rectangles that contain only fully
     // opaque pixels of the window.  We need to convert the clipping
     // rounded-rect into this format.
-    const SkVector radii[4]{
-        {corner_radius, corner_radius}, {corner_radius, corner_radius}, {}, {}};
-    SkRRect rrect;
-    rrect.setRectRadii(gfx::RectToSkRect(view->GetLocalBounds()), radii);
-    gfx::RectF rectf = gfx::SkRectToRectF(rrect.rect());
-    rectf.Scale(scale);
+    gfx::Rect local_bounds = view->GetLocalBounds();
+    gfx::RRectF rounded_corners_rect(gfx::RectF(local_bounds),
+                                     rounded_corners_f);
+    gfx::RectF rect_f = rounded_corners_rect.rect();
+    rect_f.Scale(scale);
+
     // It is acceptable to omit some pixels that are opaque, but the region
     // must not include any translucent pixels.  Therefore, we must
     // conservatively scale to the enclosed rectangle.
-    gfx::Rect rect = gfx::ToEnclosedRect(rectf);
+    gfx::Rect rect = gfx::ToEnclosedRect(rect_f);
 
     // Create the initial region from the clipping rectangle without rounded
     // corners.
@@ -95,17 +96,17 @@ void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
 
     // Now subtract out the small rectangles that cover the corners.
     struct {
-      SkRRect::Corner corner;
+      gfx::RRectF::Corner corner;
       bool left;
       bool upper;
     } kCorners[] = {
-        {SkRRect::kUpperLeft_Corner, true, true},
-        {SkRRect::kUpperRight_Corner, false, true},
-        {SkRRect::kLowerLeft_Corner, true, false},
-        {SkRRect::kLowerRight_Corner, false, false},
+        {gfx::RRectF::Corner::kUpperLeft, true, true},
+        {gfx::RRectF::Corner::kUpperRight, false, true},
+        {gfx::RRectF::Corner::kLowerLeft, true, false},
+        {gfx::RRectF::Corner::kLowerRight, false, false},
     };
     for (const auto& corner : kCorners) {
-      auto corner_radii = rrect.radii(corner.corner);
+      auto corner_radii = rounded_corners_rect.GetCornerRadii(corner.corner);
       auto rx = std::ceil(scale * corner_radii.x());
       auto ry = std::ceil(scale * corner_radii.y());
       auto corner_rect = SkIRect::MakeXYWH(
