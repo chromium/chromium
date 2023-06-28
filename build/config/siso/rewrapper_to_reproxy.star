@@ -201,9 +201,10 @@ def __step_config(ctx, step_config):
         mojom_parser_rule,
         {
             # TODO(b/278225415): change gn so this wrapper (and by extension this rule) becomes unnecessary.
-            "name": "clang_code_coverage_wrapper",
-            "command_prefix": "python3 ../../build/toolchain/clang_code_coverage_wrapper.py",
-            "handler": "rewrite_clang_code_coverage_wrapper",
+            "name": "clang-coverage/cxx",
+            "command_prefix": "\"python3\" ../../build/toolchain/clang_code_coverage_wrapper.py",
+            # Fall back to rewrapper for now until reclient can recognize clang_code_coverage_wrapper during input processing.
+            "use_remote_exec_wrapper": True,
         },
         {
             "name": "action_remote",
