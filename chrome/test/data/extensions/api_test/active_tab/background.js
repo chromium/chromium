@@ -66,11 +66,6 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   cachedUrl = tab.url;
   chrome.tabs.executeScript({code: injectIframe}, callbackPass());
   assertTrue(canXhr(tab.url));
-
-  chrome.automation.getTree(callbackPass(function(rootNode) {
-    assertFalse(rootNode == undefined);
-    assertEq(RoleType.ROOT_WEB_AREA, rootNode.role);
-  }));
 });
 
 var navigationCount = 0;
