@@ -94,6 +94,10 @@ BASE_DECLARE_FEATURE(kWebAuthnListSyncedPasskeys);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthConditionalUIExperimentation);
 
+// Handle caBLE requests on Android with the CredMan-capable code path.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnCableViaCredMan);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

@@ -32,6 +32,8 @@ android_library("java") {
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//ui/android:ui_full_java",
+    "//url:gurl_java",
+    "//url:origin_java",
   ]
 
   resources_package = "org.chromium.chrome.browser.webauth.authenticator"

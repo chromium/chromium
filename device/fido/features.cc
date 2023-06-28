@@ -123,4 +123,9 @@ BASE_FEATURE(kWebAuthConditionalUIExperimentation,
              "WebAuthenticationConditionalUIExperimentation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enabled in M117. Remove in or after M120.
+BASE_FEATURE(kWebAuthnCableViaCredMan,
+             "WebAuthenticationCableViaCredMan",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device

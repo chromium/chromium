@@ -32,6 +32,11 @@ import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.components.webauthn.Fido2ApiCall;
+import org.chromium.components.webauthn.Fido2CredentialRequest;
+import org.chromium.device.DeviceFeatureList;
+import org.chromium.device.DeviceFeatureMap;
+import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
@@ -128,6 +133,35 @@ class CableAuthenticator {
     public void makeCredential(byte[] serializedParams) {
         PublicKeyCredentialCreationOptions params =
                 PublicKeyCredentialCreationOptions.deserialize(ByteBuffer.wrap(serializedParams));
+
+        if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_CABLE_VIA_CREDMAN)) {
+            final Fido2CredentialRequest request = new Fido2CredentialRequest(mUi);
+            final Origin origin = Origin.create(new GURL("https://" + params.relyingParty.id));
+            request.handleMakeCredentialRequest(mContext, params, null, params.challenge, origin,
+                    (status, response)
+                            -> {
+                        mTaskRunner.postTask(
+                                ()
+                                        -> CableAuthenticatorJni.get()
+                                                   .onAuthenticatorAttestationResponse(CTAP2_OK,
+                                                           response.attestationObject,
+                                                           // DPK was never default-enabled and thus
+                                                           // isn't wired up here.
+                                                           /*devicePublicKeySignature=*/null,
+                                                           response.prf));
+                        mUi.onAuthenticatorResult(Result.REGISTER_OK);
+                    },
+                    (status) -> {
+                        mTaskRunner.postTask(()
+                                                     -> CableAuthenticatorJni.get()
+                                                                .onAuthenticatorAttestationResponse(
+                                                                        CTAP2_ERR_OPERATION_DENIED,
+                                                                        null, null, false));
+                        mUi.onAuthenticatorResult(Result.REGISTER_ERROR);
+                    });
+            return;
+        }
+
         mAttestationAcceptable =
                 params.authenticatorSelection.residentKey == ResidentKeyRequirement.DISCOURAGED;
 
@@ -154,6 +188,35 @@ class CableAuthenticator {
     public void getAssertion(byte[] serializedParams, byte[] tunnelId) {
         PublicKeyCredentialRequestOptions params =
                 PublicKeyCredentialRequestOptions.deserialize(ByteBuffer.wrap(serializedParams));
+
+        if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_CABLE_VIA_CREDMAN)) {
+            final Fido2CredentialRequest request = new Fido2CredentialRequest(mUi);
+            final Origin origin = Origin.create(new GURL("https://" + params.relyingPartyId));
+            request.handleGetAssertionRequest(mContext, params, /*frameHost=*/null,
+                    /*maybeClientDataHash=*/params.challenge, origin, origin,
+                    /*payment=*/null,
+                    (status, response)
+                            -> {
+                        response.info.clientDataJson = new byte[0];
+                        ByteBuffer buffer = response.serialize();
+                        byte[] serialized = new byte[buffer.remaining()];
+                        buffer.get(serialized);
+                        mTaskRunner.postTask(()
+                                                     -> CableAuthenticatorJni.get()
+                                                                .onAuthenticatorAssertionResponse(
+                                                                        CTAP2_OK, serialized));
+                        mUi.onAuthenticatorResult(Result.SIGN_OK);
+                    },
+                    (status) -> {
+                        mTaskRunner.postTask(
+                                ()
+                                        -> CableAuthenticatorJni.get()
+                                                   .onAuthenticatorAssertionResponse(
+                                                           CTAP2_ERR_OPERATION_DENIED, null));
+                        mUi.onAuthenticatorResult(Result.SIGN_ERROR);
+                    });
+            return;
+        }
 
         Fido2ApiCall call = new Fido2ApiCall(mContext);
         Parcel args = call.start();
