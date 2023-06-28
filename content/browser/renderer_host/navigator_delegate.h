@@ -22,6 +22,10 @@ namespace blink {
 struct UserAgentOverride;
 }  // namespace blink
 
+namespace network::mojom {
+class SharedDictionaryAccessDetails;
+}  // namespace network::mojom
+
 namespace content {
 
 class CommitDeferringCondition;
@@ -126,6 +130,12 @@ class NavigatorDelegate {
   virtual void OnTrustTokensAccessed(
       NavigationHandle* navigation,
       const TrustTokenAccessDetails& details) = 0;
+
+  // Called when a network request issued by this navigation accesses a shared
+  // dictionary.
+  virtual void OnSharedDictionaryAccessed(
+      NavigationHandle* navigation,
+      const network::mojom::SharedDictionaryAccessDetails& details) = 0;
 
   // Does a global walk of the session history and all committed/pending-commit
   // origins, and registers origins that match |origin| to their respective

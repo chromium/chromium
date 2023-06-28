@@ -205,6 +205,8 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
       client_security_state_(params->client_security_state.Clone()),
       url_loader_network_service_observer_(
           std::move(params->url_loader_network_observer)),
+      shared_dictionary_observer_(
+          std::move(params->shared_dictionary_observer)),
       origin_access_list_(origin_access_list) {
   DCHECK(context_);
   DCHECK(origin_access_list_);
@@ -371,7 +373,10 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
         HasFactoryOverride(!!factory_override_), *isolation_info_ptr,
         std::move(devtools_observer), client_security_state_.get(),
         std::move(observer_remote), cross_origin_embedder_policy_,
-        shared_dictionary_storage_, context_);
+        shared_dictionary_storage_,
+        shared_dictionary_observer_ ? shared_dictionary_observer_.get()
+                                    : nullptr,
+        context_);
     auto* raw_loader = loader.get();
     OnCorsURLLoaderCreated(std::move(loader));
     raw_loader->Start();
@@ -718,6 +723,12 @@ CorsURLLoaderFactory::GetDevToolsObserver(
       observer->Clone(devtools_observer.InitWithNewPipeAndPassReceiver());
   }
   return devtools_observer;
+}
+
+mojom::SharedDictionaryAccessObserver*
+CorsURLLoaderFactory::GetSharedDictionaryAccessObserver() const {
+  return shared_dictionary_observer_ ? shared_dictionary_observer_.get()
+                                     : nullptr;
 }
 
 }  // namespace network::cors

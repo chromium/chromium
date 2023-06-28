@@ -49,6 +49,10 @@ namespace ui::mojom {
 enum class VirtualKeyboardMode;
 }  // namespace ui::mojom
 
+namespace network::mojom {
+class SharedDictionaryAccessDetails;
+}  // namespace network::mojom
+
 namespace content {
 
 class NavigationEntry;
@@ -483,6 +487,13 @@ class CONTENT_EXPORT WebContentsObserver {
   // will be attributed to the RenderFrameHost created by the navigation.
   virtual void OnTrustTokensAccessed(NavigationHandle* navigation_handle,
                                      const TrustTokenAccessDetails& details) {}
+
+  virtual void OnSharedDictionaryAccessed(
+      RenderFrameHost* render_frame_host,
+      const network::mojom::SharedDictionaryAccessDetails& details) {}
+  virtual void OnSharedDictionaryAccessed(
+      NavigationHandle* navigation_handle,
+      const network::mojom::SharedDictionaryAccessDetails& details) {}
 
   // This method is invoked when a new non-pending navigation entry is created.
   // This corresponds to one NavigationController entry being created

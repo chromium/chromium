@@ -2290,7 +2290,7 @@ void URLLoader::SetRawRequestHeadersAndNotify(
 }
 
 bool URLLoader::IsSharedDictionaryReadAllowed() {
-  return shared_dictionary_checker_->IsAllowedToRead(
+  return shared_dictionary_checker_->CheckAllowedToReadAndReport(
       url_request_->url(), url_request_->site_for_cookies(),
       url_request_->isolation_info());
 }

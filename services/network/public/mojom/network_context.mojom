@@ -45,6 +45,7 @@ import "services/network/public/mojom/proxy_lookup_client.mojom";
 import "services/network/public/mojom/proxy_resolving_socket.mojom";
 import "services/network/public/mojom/reporting_service.mojom";
 import "services/network/public/mojom/restricted_cookie_manager.mojom";
+import "services/network/public/mojom/shared_dictionary_access_observer.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/socket_broker.mojom";
 import "services/network/public/mojom/ssl_config.mojom";
@@ -778,6 +779,9 @@ struct URLLoaderFactoryParams {
 
   // Used to notify clients about Trust Token accesses.
   pending_remote<TrustTokenAccessObserver>? trust_token_observer;
+
+  // Used to notify clients about shared dictionary reads or writes.
+  pending_remote<SharedDictionaryAccessObserver>? shared_dictionary_observer;
 
   // Used to notify clients about authentication and certificate events.
   pending_remote<URLLoaderNetworkServiceObserver>? url_loader_network_observer;

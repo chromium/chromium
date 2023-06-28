@@ -276,6 +276,7 @@ CorsURLLoader::CorsURLLoader(
         url_loader_network_service_observer,
     const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage,
+    raw_ptr<mojom::SharedDictionaryAccessObserver> shared_dictionary_observer,
     NetworkContext* context)
     : receiver_(this, std::move(loader_receiver)),
       process_id_(process_id),
@@ -303,7 +304,8 @@ CorsURLLoader::CorsURLLoader(
       net_log_(net::NetLogWithSource::Make(net::NetLog::Get(),
                                            net::NetLogSourceType::URL_REQUEST)),
       context_(context),
-      shared_dictionary_storage_(std::move(shared_dictionary_storage)) {
+      shared_dictionary_storage_(std::move(shared_dictionary_storage)),
+      shared_dictionary_observer_(shared_dictionary_observer) {
   if (ignore_isolated_world_origin)
     request_.isolated_world_origin = absl::nullopt;
 
@@ -540,8 +542,9 @@ void CorsURLLoader::OnReceiveResponse(
     auto writer = shared_dictionary_storage_->MaybeCreateWriter(
         request_.url, response_head->response_time, *response_head->headers,
         base::BindOnce(
-            &SharedDictionaryAccessChecker::IsAllowedToWrite,
-            std::make_unique<SharedDictionaryAccessChecker>(*context_),
+            &SharedDictionaryAccessChecker::CheckAllowedToWriteAndReport,
+            std::make_unique<SharedDictionaryAccessChecker>(
+                *context_, shared_dictionary_observer_),
             request_.url, request_.site_for_cookies, isolation_info_));
     if (writer) {
       shared_dictionary_data_pipe_writer_ =

@@ -463,6 +463,7 @@ mojom("url_loader_base") {
     "parsed_headers.mojom",
     "referrer_policy.mojom",
     "request_priority.mojom",
+    "shared_dictionary_access_observer.mojom",
     "source_location.mojom",
     "supports_loading_mode.mojom",
     "timing_allow_origin.mojom",

@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -22,9 +23,12 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -61,7 +65,7 @@ const std::string kErrorInvalidHashString =
 const std::string kErrorNoSbrAcceptEncodingString =
     "test(\"sbr is not set in accept-encoding header.\");";
 
-const std::string kCompressedDataOrigialString =
+const std::string kCompressedDataOriginalString =
     "test(\"This is compressed test data using a test dictionary\");";
 const uint8_t kCompressedData[] = {
     0xa1, 0xe0, 0x01, 0x00, 0x64, 0x9c, 0xa4, 0xaa, 0xd7, 0x47, 0xe0, 0x26,
@@ -71,6 +75,36 @@ const uint8_t kCompressedData[] = {
 const std::string kCompressedDataString =
     std::string(reinterpret_cast<const char*>(kCompressedData),
                 sizeof(kCompressedData));
+
+class SharedDictionaryAccessObserver : public WebContentsObserver {
+ public:
+  SharedDictionaryAccessObserver(WebContents* web_contents,
+                                 base::RepeatingClosure on_accessed_callback)
+      : WebContentsObserver(web_contents),
+        on_accessed_callback_(std::move(on_accessed_callback)) {}
+
+  const network::mojom::SharedDictionaryAccessDetailsPtr& details() const {
+    return details_;
+  }
+
+ private:
+  // WebContentsObserver overrides:
+  void OnSharedDictionaryAccessed(
+      NavigationHandle* navigation,
+      const network::mojom::SharedDictionaryAccessDetails& details) override {
+    details_ = details.Clone();
+    on_accessed_callback_.Run();
+  }
+  void OnSharedDictionaryAccessed(
+      RenderFrameHost* rfh,
+      const network::mojom::SharedDictionaryAccessDetails& details) override {
+    details_ = details.Clone();
+    on_accessed_callback_.Run();
+  }
+
+  base::RepeatingClosure on_accessed_callback_;
+  network::mojom::SharedDictionaryAccessDetailsPtr details_;
+};
 
 bool WaitForHistogram(const std::string& histogram_name,
                       absl::optional<base::TimeDelta> timeout = absl::nullopt) {
@@ -234,6 +268,10 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
                               const std::string& histogram_name,
                               bool expect_success) {
     EXPECT_TRUE(NavigateToURL(shell, page_url));
+    base::RunLoop write_loop;
+    auto write_observer = std::make_unique<SharedDictionaryAccessObserver>(
+        shell->web_contents(), write_loop.QuitClosure());
+
     base::HistogramTester histogram_tester;
     std::string script;
     switch (fetch_type) {
@@ -254,9 +292,21 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
         break;
     }
     EXPECT_TRUE(ExecJs(shell->web_contents()->GetPrimaryMainFrame(), script));
+    if (expect_success) {
+      write_loop.Run();
+      ASSERT_TRUE(write_observer->details());
+      EXPECT_EQ(network::mojom::SharedDictionaryAccessDetails::Type::kWrite,
+                write_observer->details()->type);
+      EXPECT_EQ(dictionary_url, write_observer->details()->url);
+      EXPECT_EQ(net::SharedDictionaryIsolationKey(url::Origin::Create(page_url),
+                                                  net::SchemefulSite(page_url)),
+                write_observer->details()->isolation_key);
+      EXPECT_FALSE(write_observer->details()->is_blocked);
+    }
 
     if (!expect_success) {
       EXPECT_FALSE(WaitForHistogram(histogram_name, base::Milliseconds(100)));
+      EXPECT_FALSE(write_observer->details());
 
       EXPECT_EQ(kUncompressedDataString,
                 EvalJs(shell->web_contents()->GetPrimaryMainFrame(),
@@ -268,11 +318,24 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
     histogram_tester.ExpectBucketCount(
         histogram_name, GetTestDataFileSize("shared_dictionary/test.dict"),
         /*expected_count=*/1);
+    base::RunLoop read_loop;
 
-    EXPECT_EQ(kCompressedDataOrigialString,
+    auto read_observer = std::make_unique<SharedDictionaryAccessObserver>(
+        shell->web_contents(), read_loop.QuitClosure());
+    EXPECT_EQ(kCompressedDataOriginalString,
               EvalJs(shell->web_contents()->GetPrimaryMainFrame(),
                      FetchTargetDataScript(dictionary_url))
                   .ExtractString());
+    read_loop.Run();
+    ASSERT_TRUE(read_observer->details());
+    EXPECT_EQ(network::mojom::SharedDictionaryAccessDetails::Type::kRead,
+              read_observer->details()->type);
+    EXPECT_EQ(dictionary_url.Resolve("path/test"),
+              read_observer->details()->url);
+    EXPECT_EQ(net::SharedDictionaryIsolationKey(url::Origin::Create(page_url),
+                                                net::SchemefulSite(page_url)),
+              read_observer->details()->isolation_key);
+    EXPECT_FALSE(read_observer->details()->is_blocked);
   }
 
   void RegisterTestRequestHandler(net::EmbeddedTestServer& server) {
@@ -290,7 +353,13 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
     }
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
-    response->set_content_type("application/javascript");
+
+    if (request.GetURL().query() == "html") {
+      response->set_content_type("text/html");
+    } else {
+      response->set_content_type("application/javascript");
+    }
+
     if (request.GetURL().query() != "no_acao") {
       response->AddCustomHeader("access-control-allow-origin", "*");
     }
@@ -835,6 +904,43 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
         )",
                              cross_origin_server()->GetURL(
                                  "/shared_dictionary/path/test?no_acao")))
+                .ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, Navigation) {
+  Shell* target_shell = GetBrowserType() == BrowserType::kNormal
+                            ? shell()
+                            : CreateOffTheRecordBrowser();
+  RunWriteDictionaryTest(
+      target_shell, FetchType::kFetchApi,
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"),
+      embedded_test_server()->GetURL("/shared_dictionary/test.dict"),
+      GetBrowserType() == BrowserType::kNormal
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
+          : "Net.SharedDictionaryWriterInMemory.DictionarySize",
+      /*expect_success=*/true);
+
+  const GURL target_url =
+      embedded_test_server()->GetURL("/shared_dictionary/path/test?html");
+
+  base::RunLoop loop;
+  auto observer = std::make_unique<SharedDictionaryAccessObserver>(
+      target_shell->web_contents(), loop.QuitClosure());
+  EXPECT_TRUE(NavigateToURL(target_shell, target_url));
+  loop.Run();
+
+  ASSERT_TRUE(observer->details());
+  EXPECT_EQ(network::mojom::SharedDictionaryAccessDetails::Type::kRead,
+            observer->details()->type);
+  EXPECT_EQ(target_url, observer->details()->url);
+  EXPECT_EQ(net::SharedDictionaryIsolationKey(url::Origin::Create(target_url),
+                                              net::SchemefulSite(target_url)),
+            observer->details()->isolation_key);
+  EXPECT_FALSE(observer->details()->is_blocked);
+
+  EXPECT_EQ(kCompressedDataOriginalString,
+            EvalJs(target_shell->web_contents()->GetPrimaryMainFrame(),
+                   "document.body.innerText")
                 .ExtractString());
 }
 

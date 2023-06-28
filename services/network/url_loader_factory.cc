@@ -310,8 +310,20 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
 
   std::unique_ptr<SharedDictionaryAccessChecker> shared_dictionary_checker;
   if (context_->GetSharedDictionaryManager()) {
-    shared_dictionary_checker =
-        std::make_unique<SharedDictionaryAccessChecker>(*context_);
+    if (resource_request.trusted_params &&
+        resource_request.trusted_params->shared_dictionary_observer) {
+      shared_dictionary_checker =
+          std::make_unique<SharedDictionaryAccessChecker>(
+              *context_, std::move(const_cast<mojo::PendingRemote<
+                                       mojom::SharedDictionaryAccessObserver>&>(
+                             resource_request.trusted_params
+                                 ->shared_dictionary_observer)));
+    } else {
+      shared_dictionary_checker =
+          std::make_unique<SharedDictionaryAccessChecker>(
+              *context_,
+              cors_url_loader_factory_->GetSharedDictionaryAccessObserver());
+    }
   }
 
   mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer;

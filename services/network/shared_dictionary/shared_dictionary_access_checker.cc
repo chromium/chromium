@@ -13,29 +13,62 @@
 namespace network {
 
 SharedDictionaryAccessChecker::SharedDictionaryAccessChecker(
-    NetworkContext& context)
-    : context_(context) {}
+    NetworkContext& context,
+    mojo::PendingRemote<mojom::SharedDictionaryAccessObserver>
+        shared_dictionary_observer_remote)
+    : context_(context),
+      shared_dictionary_observer_remote_(
+          std::move(shared_dictionary_observer_remote)),
+      shared_dictionary_observer_(shared_dictionary_observer_remote_.get()) {}
+
+SharedDictionaryAccessChecker::SharedDictionaryAccessChecker(
+    NetworkContext& context,
+    mojom::SharedDictionaryAccessObserver* shared_dictionary_observer)
+    : context_(context),
+      shared_dictionary_observer_(shared_dictionary_observer) {}
 
 SharedDictionaryAccessChecker::~SharedDictionaryAccessChecker() = default;
 
-bool SharedDictionaryAccessChecker::IsAllowedToWrite(
+bool SharedDictionaryAccessChecker::CheckAllowedToWriteAndReport(
     const GURL& dictionary_url,
     const net::SiteForCookies& site_for_cookies,
     const net::IsolationInfo& isolation_info) {
-  // TODO(crbug.com/1413922): Notify the usage and the check result to the
-  // browser process.
-  return IsAllowedToUseSharedDictionary(dictionary_url, site_for_cookies,
-                                        isolation_info);
+  absl::optional<net::SharedDictionaryIsolationKey> isolation_key =
+      net::SharedDictionaryIsolationKey::MaybeCreate(isolation_info);
+  CHECK(isolation_key);
+
+  bool allowed = IsAllowedToUseSharedDictionary(
+      dictionary_url, site_for_cookies, isolation_info);
+  if (shared_dictionary_observer_) {
+    // Asynchronously reports the usage to the browser process to show a UI that
+    // indicates that site data was used or blocked.
+    shared_dictionary_observer_->OnSharedDictionaryAccessed(
+        mojom::SharedDictionaryAccessDetails::New(
+            mojom::SharedDictionaryAccessDetails::Type::kWrite, dictionary_url,
+            *isolation_key, !allowed));
+  }
+  return allowed;
 }
 
-bool SharedDictionaryAccessChecker::IsAllowedToRead(
+bool SharedDictionaryAccessChecker::CheckAllowedToReadAndReport(
     const GURL& target_resource_url,
     const net::SiteForCookies& site_for_cookies,
     const net::IsolationInfo& isolation_info) {
-  // TODO(crbug.com/1413922): Notify the usage and the check result to the
-  // browser process.
-  return IsAllowedToUseSharedDictionary(target_resource_url, site_for_cookies,
-                                        isolation_info);
+  absl::optional<net::SharedDictionaryIsolationKey> isolation_key =
+      net::SharedDictionaryIsolationKey::MaybeCreate(isolation_info);
+  CHECK(isolation_key);
+
+  bool allowed = IsAllowedToUseSharedDictionary(
+      target_resource_url, site_for_cookies, isolation_info);
+  if (shared_dictionary_observer_) {
+    // Asynchronously reports the usage to the browser process to show a UI that
+    // indicates that site data was used or blocked.
+    shared_dictionary_observer_->OnSharedDictionaryAccessed(
+        mojom::SharedDictionaryAccessDetails::New(
+            mojom::SharedDictionaryAccessDetails::Type::kRead,
+            target_resource_url, *isolation_key, !allowed));
+  }
+  return allowed;
 }
 
 bool SharedDictionaryAccessChecker::IsAllowedToUseSharedDictionary(

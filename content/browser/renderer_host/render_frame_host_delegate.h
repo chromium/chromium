@@ -92,6 +92,10 @@ class ScreenOrientation;
 }
 }  // namespace device
 
+namespace network::mojom {
+class SharedDictionaryAccessDetails;
+}  // namespace network::mojom
+
 namespace ui {
 class ClipboardFormatType;
 }
@@ -597,6 +601,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   virtual void OnTrustTokensAccessed(RenderFrameHostImpl* render_frame_host,
                                      const TrustTokenAccessDetails& details) {}
+  virtual void OnSharedDictionaryAccessed(
+      RenderFrameHostImpl* render_frame_host,
+      const network::mojom::SharedDictionaryAccessDetails& details) {}
 
   // Notified that the renderer responded after calling GetSavableResourceLinks.
   virtual void SavableResourceLinksResponse(

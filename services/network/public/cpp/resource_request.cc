@@ -79,6 +79,20 @@ mojo::PendingRemote<mojom::AcceptCHFrameObserver> Clone(
   observer = remote.Unbind();
   return new_remote;
 }
+
+mojo::PendingRemote<mojom::SharedDictionaryAccessObserver> Clone(
+    mojo::PendingRemote<mojom::SharedDictionaryAccessObserver>& observer) {
+  if (!observer) {
+    return mojo::NullRemote();
+  }
+  mojo::Remote<mojom::SharedDictionaryAccessObserver> remote(
+      std::move(observer));
+  mojo::PendingRemote<mojom::SharedDictionaryAccessObserver> new_remote;
+  remote->Clone(new_remote.InitWithNewPipeAndPassReceiver());
+  observer = remote.Unbind();
+  return new_remote;
+}
+
 // Returns true iff either holds true:
 //
 //  - both |lhs| and |rhs| are nullopt, or
@@ -153,6 +167,9 @@ ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
   accept_ch_frame_observer =
       Clone(const_cast<mojo::PendingRemote<mojom::AcceptCHFrameObserver>&>(
           other.accept_ch_frame_observer));
+  shared_dictionary_observer = Clone(
+      const_cast<mojo::PendingRemote<mojom::SharedDictionaryAccessObserver>&>(
+          other.shared_dictionary_observer));
   return *this;
 }
 

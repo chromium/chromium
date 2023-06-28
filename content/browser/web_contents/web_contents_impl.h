@@ -104,6 +104,10 @@ class WakeLock;
 }
 }  // namespace device
 
+namespace network::mojom {
+class SharedDictionaryAccessDetails;
+}  // namespace network::mojom
+
 namespace service_manager {
 class InterfaceProvider;
 }  // namespace service_manager
@@ -718,6 +722,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                          const CookieAccessDetails& details) override;
   void OnTrustTokensAccessed(RenderFrameHostImpl*,
                              const TrustTokenAccessDetails& details) override;
+  void OnSharedDictionaryAccessed(
+      RenderFrameHostImpl*,
+      const network::mojom::SharedDictionaryAccessDetails& details) override;
 
   // Called when WebAudio starts or stops playing audible audio in an
   // AudioContext.
@@ -901,6 +908,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                          const CookieAccessDetails& details) override;
   void OnTrustTokensAccessed(NavigationHandle*,
                              const TrustTokenAccessDetails& details) override;
+  void OnSharedDictionaryAccessed(
+      NavigationHandle*,
+      const network::mojom::SharedDictionaryAccessDetails& details) override;
+
   void RegisterExistingOriginAsHavingDefaultIsolation(
       const url::Origin& origin,
       NavigationRequest* navigation_request_to_exclude) override;

@@ -140,6 +140,7 @@ class NavigationURLLoaderTest : public testing::Test {
         nullptr, nullptr, nullptr, delegate,
         NavigationURLLoader::LoaderType::kRegular, mojo::NullRemote(),
         /* trust_token_observer=*/mojo::NullRemote(),
+        /* shared_dictionary_observer=*/mojo::NullRemote(),
         /* url_loader_network_observer */ mojo::NullRemote(),
         /*devtools_observer=*/mojo::NullRemote());
   }
