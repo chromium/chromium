@@ -35,6 +35,7 @@
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_page_popup.h"
+#include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
@@ -49,12 +50,38 @@ SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame,
   auto* frame_widget = web_frame->LocalRoot()->FrameWidget();
   frame_widget->UpdateAllLifecyclePhases(blink::DocumentUpdateReason::kTest);
 
+  gfx::SizeF used_page_size(page_size_in_pixels);
+
   uint32_t page_count = web_frame->PrintBegin(
-      blink::WebPrintParams(gfx::SizeF(page_size_in_pixels)), blink::WebNode());
+      blink::WebPrintParams(used_page_size), blink::WebNode());
+
+  // Check the desired size of the first page, according to Blink, and use that
+  // as the actual size for all pages. This is similar to what regular Chrome
+  // printing (PrintRenderFrameHelper & co) does, in order to honor @page CSS
+  // rules. This will need to change when adding support for mixed page
+  // sizes. See crbug.com/835358
+  blink::WebPrintPageDescription description;
+  description.size = used_page_size;
+  web_frame->GetPageDescription(0, &description);
+  gfx::SizeF first_page_area_size(
+      description.size.width() -
+          (description.margin_left + description.margin_right),
+      description.size.height() -
+          (description.margin_top + description.margin_bottom));
+
+  if (used_page_size != first_page_area_size &&
+      first_page_area_size.width() >= 1 && first_page_area_size.height() >= 1) {
+    // A valid and different page size has been specified in CSS. Relayout.
+    web_frame->PrintEnd();
+    used_page_size = first_page_area_size;
+    page_count = web_frame->PrintBegin(blink::WebPrintParams(used_page_size),
+                                       blink::WebNode());
+  }
+
   blink::WebVector<uint32_t> pages(
       printing::PageNumber::GetPages(page_ranges, page_count));
-  gfx::Size spool_size =
-      web_frame->SpoolSizeInPixelsForTesting(page_size_in_pixels, pages);
+  gfx::Size spool_size = web_frame->SpoolSizeInPixelsForTesting(
+      gfx::ToFlooredSize(used_page_size), pages);
 
   bool is_opaque = false;
 
@@ -70,8 +97,8 @@ SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame,
                                   printing::PrintSettings::NewCookie());
   cc::SkiaPaintCanvas canvas(bitmap);
   canvas.SetPrintingMetafile(&metafile);
-  web_frame->PrintPagesForTesting(&canvas, page_size_in_pixels, spool_size,
-                                  &pages);
+  web_frame->PrintPagesForTesting(&canvas, gfx::ToFlooredSize(used_page_size),
+                                  spool_size, &pages);
   web_frame->PrintEnd();
   return bitmap;
 }
