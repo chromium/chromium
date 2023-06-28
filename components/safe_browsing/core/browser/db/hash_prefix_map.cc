@@ -357,7 +357,8 @@ MmapHashPrefixMap::~MmapHashPrefixMap() {
 }
 
 void MmapHashPrefixMap::Clear() {
-  if (kMmapSafeBrowsingDatabaseAsync.Get()) {
+  if (kMmapSafeBrowsingDatabaseAsync.Get() &&
+      !task_runner_->RunsTasksInCurrentSequence()) {
     // Clear the map on the db task runner, since the memory mapped files should
     // be destroyed on the same thread they were created. base::Unretained is
     // safe since the map is destroyed on the db task runner.
