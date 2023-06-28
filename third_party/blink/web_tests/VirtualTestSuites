@@ -969,7 +969,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/client-hints", "wpt_internal/client-hints"],
     "args": ["--disable-features=UserAgentClientHint"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "web-bluetooth-new-permissions-backend",
@@ -1095,21 +1095,21 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/browsers/windows/post-message"],
     "args": ["--enable-features=PostMessageFirstPartyToThirdPartyDifferentBucketSameOriginBlocked"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "post-message-third-party-to-first-party-different-bucket-same-origin-blocked",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/browsers/windows/post-message"],
     "args": ["--enable-features=PostMessageThirdPartyToFirstPartyDifferentBucketSameOriginBlocked"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "post-message-third-party-to-third-party-different-bucket-same-origin-blocked",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/browsers/windows/post-message"],
     "args": ["--enable-features=PostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlocked"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
 
   "isInputPending requires threaded compositing and layerized iframes",
