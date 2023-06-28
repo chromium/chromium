@@ -61,7 +61,7 @@ export class KeySource {
     if (value) {
       this.#modifiers |= bit;
     } else {
-      this.#modifiers ^= bit;
+      this.#modifiers &= ~bit;
     }
   }
 }
