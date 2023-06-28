@@ -11,6 +11,7 @@
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/resources/grit/login_resources.h"
 #include "ash/login/ui/arrow_button_view.h"
+#include "ash/login/ui/disabled_auth_message_view.h"
 #include "ash/login/ui/fingerprint_auth_factor_model.h"
 #include "ash/login/ui/horizontal_image_sequence_animation_decoder.h"
 #include "ash/login/ui/lock_screen.h"
@@ -39,7 +40,6 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/time_of_day.h"
 #include "base/functional/bind.h"
-#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -55,7 +55,6 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/l10n/time_format.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -111,9 +110,6 @@ const int kDistanceFromPinKeyboardToBigUserViewBottomDp = 50;
 // Distance from the top of the user view to the user icon.
 constexpr int kDistanceFromTopOfBigUserViewToUserIconDp = 24;
 
-// Date time format containing only the day of the week, for example: "Tuesday".
-constexpr char kDayOfWeekOnlyTimeFormat[] = "EEEE";
-
 constexpr int kDistanceBetweenPasswordFieldAndAuthFactorsViewDp = 90;
 
 constexpr base::TimeDelta kChallengeResponseResetAfterFailureDelay =
@@ -123,17 +119,6 @@ constexpr int kSpacingBetweenChallengeResponseArrowAndIconDp = 100;
 constexpr int kSpacingBetweenChallengeResponseIconAndLabelDp = 15;
 constexpr int kChallengeResponseIconSizeDp = 28;
 constexpr int kDistanceBetweenPwdFieldAndChallengeResponseViewDp = 0;
-
-constexpr int kDisabledAuthMessageVerticalBorderDp = 16;
-constexpr int kDisabledAuthMessageHorizontalBorderDp = 16;
-constexpr int kDisabledAuthMessageChildrenSpacingDp = 4;
-constexpr int kDisabledAuthMessageTimeWidthDp = 204;
-constexpr int kDisabledAuthMessageMultiprofileWidthDp = 304;
-constexpr int kDisabledAuthMessageHeightDp = 98;
-constexpr int kDisabledAuthMessageIconSizeDp = 24;
-constexpr int kDisabledAuthMessageTitleFontSizeDeltaDp = 3;
-constexpr int kDisabledAuthMessageContentsFontSizeDeltaDp = -1;
-constexpr int kDisabledAuthMessageRoundedCornerRadiusDp = 8;
 
 constexpr int kLockedTpmMessageVerticalBorderDp = 16;
 constexpr int kLockedTpmMessageHorizontalBorderDp = 16;
@@ -205,103 +190,6 @@ ui::CallbackLayerAnimationObserver* BuildObserverToNotifyA11yLocationChanged(
         return true;
       },
       view));
-}
-
-// The content needed to render the disabled auth message view.
-struct LockScreenMessage {
-  std::u16string title;
-  std::u16string content;
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> icon;
-};
-
-// Returns the message used when the device was locked due to a time window
-// limit.
-LockScreenMessage GetWindowLimitMessage(const base::Time& unlock_time,
-                                        bool use_24hour_clock) {
-  LockScreenMessage message;
-  message.title = l10n_util::GetStringUTF16(IDS_ASH_LOGIN_TIME_FOR_BED_MESSAGE);
-
-  base::Time local_midnight = base::Time::Now().LocalMidnight();
-
-  std::u16string time_to_display;
-  if (use_24hour_clock) {
-    time_to_display = base::TimeFormatTimeOfDayWithHourClockType(
-        unlock_time, base::k24HourClock, base::kDropAmPm);
-  } else {
-    time_to_display = base::TimeFormatTimeOfDayWithHourClockType(
-        unlock_time, base::k12HourClock, base::kKeepAmPm);
-  }
-
-  if (unlock_time < local_midnight + base::Days(1)) {
-    // Unlock time is today.
-    message.content = l10n_util::GetStringFUTF16(
-        IDS_ASH_LOGIN_COME_BACK_MESSAGE, time_to_display);
-  } else if (unlock_time < local_midnight + base::Days(2)) {
-    // Unlock time is tomorrow.
-    message.content = l10n_util::GetStringFUTF16(
-        IDS_ASH_LOGIN_COME_BACK_TOMORROW_MESSAGE, time_to_display);
-  } else {
-    message.content = l10n_util::GetStringFUTF16(
-        IDS_ASH_LOGIN_COME_BACK_DAY_OF_WEEK_MESSAGE,
-        base::TimeFormatWithPattern(unlock_time, kDayOfWeekOnlyTimeFormat),
-        time_to_display);
-  }
-  message.icon = &kLockScreenTimeLimitMoonIcon;
-  return message;
-}
-
-// Returns the message used when the device was locked due to a time usage
-// limit.
-LockScreenMessage GetUsageLimitMessage(const base::TimeDelta& used_time) {
-  LockScreenMessage message;
-
-  // 1 minute is used instead of 0, because the device is used for a few
-  // milliseconds before locking.
-  if (used_time < base::Minutes(1)) {
-    // The device was locked all day.
-    message.title = l10n_util::GetStringUTF16(IDS_ASH_LOGIN_TAKE_BREAK_MESSAGE);
-    message.content =
-        l10n_util::GetStringUTF16(IDS_ASH_LOGIN_LOCKED_ALL_DAY_MESSAGE);
-  } else {
-    // The usage limit is over.
-    message.title = l10n_util::GetStringUTF16(IDS_ASH_LOGIN_TIME_IS_UP_MESSAGE);
-
-    const std::u16string used_time_string = ui::TimeFormat::Detailed(
-        ui::TimeFormat::Format::FORMAT_DURATION,
-        ui::TimeFormat::Length::LENGTH_LONG, /*cutoff=*/3, used_time);
-    message.content = l10n_util::GetStringFUTF16(
-        IDS_ASH_LOGIN_SCREEN_TIME_USED_MESSAGE, used_time_string);
-  }
-  message.icon = &kLockScreenTimeLimitTimerIcon;
-  return message;
-}
-
-// Returns the message used when the device was locked due to a time limit
-// override.
-LockScreenMessage GetOverrideMessage() {
-  LockScreenMessage message;
-  message.title =
-      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_TIME_FOR_A_BREAK_MESSAGE);
-  message.content =
-      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_MANUAL_LOCK_MESSAGE);
-  message.icon = &kLockScreenTimeLimitLockIcon;
-  return message;
-}
-
-LockScreenMessage GetLockScreenMessage(AuthDisabledReason lock_reason,
-                                       const base::Time& unlock_time,
-                                       const base::TimeDelta& used_time,
-                                       bool use_24hour_clock) {
-  switch (lock_reason) {
-    case AuthDisabledReason::kTimeWindowLimit:
-      return GetWindowLimitMessage(unlock_time, use_24hour_clock);
-    case AuthDisabledReason::kTimeUsageLimit:
-      return GetUsageLimitMessage(used_time);
-    case AuthDisabledReason::kTimeLimitOverride:
-      return GetOverrideMessage();
-    default:
-      NOTREACHED();
-  }
 }
 
 }  // namespace
@@ -431,147 +319,6 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
   raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
   base::OneShotTimer reset_state_timer_;
-};
-
-// The message shown to the user when auth is disabled. This could happen when:
-// -auth method is |AUTH_DISABLED|
-// -auth method is |AUTH_ONLINE_SIGN_IN| and the user is on the secondary login
-//  screen
-// -the selected account has a restricted multiprofile policy set and the user
-// is on the secondary login screen
-class LoginAuthUserView::DisabledAuthMessageView : public views::View {
- public:
-  class ASH_EXPORT TestApi {
-   public:
-    explicit TestApi(DisabledAuthMessageView* view) : view_(view) {}
-    ~TestApi() = default;
-
-    const std::u16string& GetDisabledAuthMessageContent() const {
-      return view_->message_contents_->GetText();
-    }
-
-   private:
-    const raw_ptr<DisabledAuthMessageView, ExperimentalAsh> view_;
-  };
-
-  DisabledAuthMessageView() {
-    SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical,
-        gfx::Insets::VH(kDisabledAuthMessageVerticalBorderDp,
-                        kDisabledAuthMessageHorizontalBorderDp),
-        kDisabledAuthMessageChildrenSpacingDp));
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-    SetFocusBehavior(FocusBehavior::ALWAYS);
-
-    // The icon size has to be defined later if the image will be visible.
-    message_icon_ = AddChildView(std::make_unique<views::ImageView>());
-    message_icon_->SetImageSize(gfx::Size(kDisabledAuthMessageIconSizeDp,
-                                          kDisabledAuthMessageIconSizeDp));
-
-    auto decorate_label = [](views::Label* label) {
-      label->SetSubpixelRenderingEnabled(false);
-      label->SetAutoColorReadabilityEnabled(false);
-      label->SetFocusBehavior(FocusBehavior::ALWAYS);
-    };
-    message_title_ = AddChildView(std::make_unique<views::Label>(
-        std::u16string(), views::style::CONTEXT_LABEL,
-        views::style::STYLE_PRIMARY));
-    message_title_->SetFontList(
-        gfx::FontList().Derive(kDisabledAuthMessageTitleFontSizeDeltaDp,
-                               gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
-    decorate_label(message_title_);
-
-    message_contents_ = AddChildView(std::make_unique<views::Label>(
-        std::u16string(), views::style::CONTEXT_LABEL,
-        views::style::STYLE_PRIMARY));
-    message_contents_->SetFontList(
-        gfx::FontList().Derive(kDisabledAuthMessageContentsFontSizeDeltaDp,
-                               gfx::Font::NORMAL, gfx::Font::Weight::NORMAL));
-    decorate_label(message_contents_);
-    message_contents_->SetMultiLine(true);
-  }
-
-  DisabledAuthMessageView(const DisabledAuthMessageView&) = delete;
-  DisabledAuthMessageView& operator=(const DisabledAuthMessageView&) = delete;
-
-  ~DisabledAuthMessageView() override = default;
-
-  // Set the parameters needed to render the message.
-  void SetAuthDisabledMessage(const AuthDisabledData& auth_disabled_data,
-                              bool use_24hour_clock) {
-    LockScreenMessage message = GetLockScreenMessage(
-        auth_disabled_data.reason, auth_disabled_data.auth_reenabled_time,
-        auth_disabled_data.device_used_time, use_24hour_clock);
-    SetPreferredSize(gfx::Size(kDisabledAuthMessageTimeWidthDp,
-                               kDisabledAuthMessageHeightDp));
-    message_icon_->SetVisible(true);
-    message_vector_icon_ = message.icon;
-    message_title_->SetText(message.title);
-    message_contents_->SetText(message.content);
-    UpdateColors();
-  }
-
-  void SetAuthDisabledMessage(const std::u16string& title,
-                              const std::u16string& content) {
-    SetPreferredSize(gfx::Size(kDisabledAuthMessageMultiprofileWidthDp,
-                               kDisabledAuthMessageHeightDp));
-    message_icon_->SetVisible(false);
-    message_title_->SetText(title);
-    message_contents_->SetText(content);
-    UpdateColors();
-  }
-
-  // views::View:
-  void OnPaint(gfx::Canvas* canvas) override {
-    views::View::OnPaint(canvas);
-
-    cc::PaintFlags flags;
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(
-        PinRequestView::GetChildUserDialogColor(false /*using blur*/));
-    canvas->DrawRoundRect(GetContentsBounds(),
-                          kDisabledAuthMessageRoundedCornerRadiusDp, flags);
-  }
-
-  // views::View:
-  void RequestFocus() override { message_title_->RequestFocus(); }
-
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    // Any view which claims to be focusable is expected to have an accessible
-    // name and accessible role so that screen readers know what to present to
-    // the user when it gains focus. In the case of this particular view,
-    // `RequestFocus` gives focus to the `message_title_` label. As a result,
-    // this view is not end-user focusable. However, its official focusability
-    // will cause the accessibility paint checks to fail. Give this view a
-    // container role. If the `message_title_` has text, set the accessible
-    // name to that text; otherwise set the name explicitly empty to prevent
-    // the paint check from failing during tests.
-    node_data->role = ax::mojom::Role::kPane;
-    if (message_title_->GetText().empty()) {
-      node_data->SetNameExplicitlyEmpty();
-    } else {
-      node_data->SetNameChecked(message_title_->GetText());
-    }
-  }
-
- private:
-  void UpdateColors() {
-    message_title_->SetEnabledColorId(kColorAshTextColorPrimary);
-    message_contents_->SetEnabledColorId(kColorAshTextColorPrimary);
-    if (message_vector_icon_) {
-      message_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-          *message_vector_icon_, kColorAshIconColorPrimary,
-          kDisabledAuthMessageIconSizeDp));
-    }
-  }
-
-  raw_ptr<views::Label, ExperimentalAsh> message_title_;
-  raw_ptr<views::Label, ExperimentalAsh> message_contents_;
-  raw_ptr<views::ImageView, ExperimentalAsh> message_icon_;
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> message_vector_icon_ =
-      nullptr;
 };
 
 // The message shown to user when TPM is locked.
@@ -774,8 +521,7 @@ void LoginAuthUserView::TestApi::SetSmartLockState(SmartLockState state) const {
 
 const std::u16string&
 LoginAuthUserView::TestApi::GetDisabledAuthMessageContent() const {
-  return LoginAuthUserView::DisabledAuthMessageView::TestApi(
-             view_->disabled_auth_message_)
+  return DisabledAuthMessageView::TestApi(view_->disabled_auth_message_)
       .GetDisabledAuthMessageContent();
 }
 
