@@ -105,6 +105,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "journeys.icon",
     "key.icon",
     "key_chrome_refresh.icon",
+    "key_open_chrome_refresh.icon",
     "keyboard_arrow_down.icon",
     "keyboard_arrow_down_chrome_refresh.icon",
     "keyboard_arrow_right.icon",

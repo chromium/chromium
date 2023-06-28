@@ -83,7 +83,7 @@ bool ManagePasswordsIconViews::OnMousePressed(const ui::MouseEvent& event) {
 
 const gfx::VectorIcon& ManagePasswordsIconViews::GetVectorIcon() const {
   return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? kKeyChromeRefreshIcon
+             ? kKeyOpenChromeRefreshIcon
              : kKeyIcon;
 }
 
