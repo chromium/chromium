@@ -102,6 +102,8 @@ export class Preview {
 
   private onPreviewExpired: WaitableEvent|null = null;
 
+  private enableFaceOverlay = false;
+
   /**
    * @param onNewStreamNeeded Callback to request new stream.
    */
@@ -322,9 +324,9 @@ export class Preview {
       }, 100);
       await this.updateFacing();
       this.deviceId = getVideoTrackSettings(this.getVideoTrack()).deviceId;
-      this.updateShowMetadata();
       await this.updatePTZ();
 
+      this.enableFaceOverlay = false;
       const deviceOperator = DeviceOperator.getInstance();
       if (deviceOperator !== null) {
         const {deviceId} = getVideoTrackSettings(this.getVideoTrack());
@@ -337,9 +339,12 @@ export class Preview {
               new Error(
                   'Cannot disable camera frame rotation. ' +
                   'The camera is probably being used by another app.'));
+        } else {
+          this.enableFaceOverlay = true;
         }
         this.vidPid = await deviceOperator.getVidPid(deviceId);
       }
+      this.updateShowMetadata();
 
       assert(
           this.onPreviewExpired === null || this.onPreviewExpired.isSignaled());
@@ -360,6 +365,7 @@ export class Preview {
     // Pause video element to avoid black frames during transition.
     this.video.pause();
     this.disableShowMetadata();
+    this.enableFaceOverlay = false;
     if (this.streamInternal !== null && this.isStreamAlive()) {
       const track = this.getVideoTrack();
       const {deviceId} = getVideoTrackSettings(track);
@@ -545,25 +551,25 @@ export class Preview {
     const activeArraySize = await deviceOperator.getActiveArraySize(deviceId);
     const cameraFrameRotation =
         await deviceOperator.getCameraFrameRotation(deviceId);
-    this.faceOverlay =
-        new FaceOverlay(activeArraySize, cameraFrameRotation, deviceId);
-
+    if (this.enableFaceOverlay) {
+      this.faceOverlay =
+          new FaceOverlay(activeArraySize, cameraFrameRotation, deviceId);
+    }
     const updateFace =
         (mode: AndroidStatisticsFaceDetectMode, rects: number[]) => {
-          assert(this.faceOverlay !== null);
           if (mode ===
               AndroidStatisticsFaceDetectMode
                   .ANDROID_STATISTICS_FACE_DETECT_MODE_OFF) {
             dom.get('#preview-num-faces', HTMLDivElement).style.display =
                 'none';
-            this.faceOverlay.clearRects();
+            this.faceOverlay?.clearRects();
             return;
           }
           assert(rects.length % 4 === 0);
           const numFaces = rects.length / 4;
           const label = numFaces >= 2 ? 'Faces' : 'Face';
           showValue('#preview-num-faces', `${numFaces} ${label}`);
-          this.faceOverlay.show(rects);
+          this.faceOverlay?.show(rects);
         };
 
     const callback = (metadata: CameraMetadata) => {
