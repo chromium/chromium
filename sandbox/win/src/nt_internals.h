@@ -193,12 +193,6 @@ typedef NTSTATUS(WINAPI* NtQueryInformationProcessFunction)(
     IN ULONG ProcessInformationLength,
     OUT PULONG ReturnLength OPTIONAL);
 
-typedef NTSTATUS(WINAPI* NtSetInformationProcessFunction)(
-    HANDLE ProcessHandle,
-    IN PROCESSINFOCLASS ProcessInformationClass,
-    IN PVOID ProcessInformation,
-    IN ULONG ProcessInformationLength);
-
 typedef NTSTATUS(WINAPI* NtOpenThreadTokenFunction)(IN HANDLE ThreadHandle,
                                                     IN ACCESS_MASK
                                                         DesiredAccess,
@@ -222,18 +216,6 @@ typedef NTSTATUS(WINAPI* NtOpenProcessTokenExFunction)(
     IN ACCESS_MASK DesiredAccess,
     IN ULONG HandleAttributes,
     OUT PHANDLE TokenHandle);
-
-typedef NTSTATUS(WINAPI* RtlCreateUserThreadFunction)(
-    IN HANDLE Process,
-    IN PSECURITY_DESCRIPTOR ThreadSecurityDescriptor,
-    IN BOOLEAN CreateSuspended,
-    IN ULONG ZeroBits,
-    IN SIZE_T MaximumStackSize,
-    IN SIZE_T CommittedStackSize,
-    IN LPTHREAD_START_ROUTINE StartAddress,
-    IN PVOID Parameter,
-    OUT PHANDLE Thread,
-    OUT PCLIENT_ID ClientId);
 
 // -----------------------------------------------------------------------
 // Memory

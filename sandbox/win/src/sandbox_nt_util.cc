@@ -136,9 +136,7 @@ void InitGlobalNt() {
   INIT_NT(DuplicateObject);
   INIT_NT(FreeVirtualMemory);
   INIT_NT(MapViewOfSection);
-  INIT_NT(OpenFile);
   INIT_NT(OpenThread);
-  INIT_NT(OpenProcess);
   INIT_NT(OpenProcessTokenEx);
   INIT_NT(ProtectVirtualMemory);
   INIT_NT(QueryAttributesFile);
@@ -148,16 +146,13 @@ void InitGlobalNt() {
   INIT_NT(QuerySection);
   INIT_NT(QueryVirtualMemory);
   INIT_NT(SetInformationFile);
-  INIT_NT(SetInformationProcess);
   INIT_NT(SignalAndWaitForSingleObject);
   INIT_NT(UnmapViewOfSection);
   INIT_NT(WaitForSingleObject);
-
   INIT_RTL(RtlAllocateHeap);
   INIT_RTL(RtlAnsiStringToUnicodeString);
   INIT_RTL(RtlCompareUnicodeString);
   INIT_RTL(RtlCreateHeap);
-  INIT_RTL(RtlCreateUserThread);
   INIT_RTL(RtlDestroyHeap);
   INIT_RTL(RtlFreeHeap);
   INIT_RTL(RtlNtStatusToDosError);
