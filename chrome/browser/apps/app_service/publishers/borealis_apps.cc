@@ -186,7 +186,8 @@ AppPtr BorealisApps::CreateApp(
   DCHECK_NE(registration.app_id(), borealis::kInstallerAppId);
   DCHECK_NE(registration.app_id(), borealis::kLauncherSearchAppId);
 
-  bool shown = !registration.NoDisplay();
+  bool shown = !(registration.NoDisplay() ||
+                 borealis::ShouldHideIrrelevantApp(registration.Name()));
   auto app = AppPublisher::MakeApp(
       AppType::kBorealis, registration.app_id(),
       shown ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy,

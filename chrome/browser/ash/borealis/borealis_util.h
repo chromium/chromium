@@ -54,6 +54,13 @@ struct CompatToolInfo {
 // Note that this does not check if the app is from the Borealis VM.
 bool IsNonGameBorealisApp(const std::string& app_id);
 
+// Steam started putting "Proton X.0", "Steam Linux Runtime - XXX" apps in the
+// launcher recently, we shouldn't show them.
+//
+// TODO(b/288176160): Valve probably shouldn't be doing this, we want a more
+// thorough fix long term.
+bool ShouldHideIrrelevantApp(const std::string& desktop_name);
+
 // Returns a Borealis app ID parsed from |exec|, or nullopt on failure.
 // TODO(b/173547790): This should probably be moved when we've decided
 // the details of how/where it will be used.
