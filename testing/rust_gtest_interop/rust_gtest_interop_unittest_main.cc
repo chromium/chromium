@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
+#include "base/test/test_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include <iostream>
@@ -27,13 +28,13 @@ int main(int argc, char** argv) {
   // We verify that the test suite and test name written in the #[gtest] macro
   // is being propagated to Gtest by using a test filter that matches on the
   // test suites/names.
-  std::string filter =
-      base::StringPrintf("--gtest_filter=Test.*:ExactSuite.ExactTest");
+  std::string filter = "--gtest_filter=Test.*:ExactSuite.ExactTest";
 
   int my_argc = argc + 2;
   char** my_argv = new char*[argc];
-  for (int i = 0; i < argc; ++i)
+  for (int i = 0; i < argc; ++i) {
     my_argv = argv;
+  }
   my_argv[argc] = single_process.data();
   my_argv[argc + 1] = filter.data();
 
@@ -53,6 +54,8 @@ int main(int argc, char** argv) {
       std::cerr << "***ERROR***: Expected " << expected_success
                 << " tests to succeed, but we saw: " << succeed << '\n';
       return 1;
+    } else {
+      std::cerr << "***OK***: Ran " << succeed << " tests, yay!\n";
     }
   }
 

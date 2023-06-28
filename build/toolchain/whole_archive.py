@@ -5,7 +5,7 @@
 import re
 
 
-def wrap_with_whole_archive(command):
+def wrap_with_whole_archive(command, is_apple=False):
   """Modify and return `command` such that -LinkWrapper,add-whole-archive=X
   becomes a linking inclusion X (-lX) but wrapped in whole-archive
   modifiers."""
@@ -41,11 +41,17 @@ def wrap_with_whole_archive(command):
       # The arg is a full path to a library, we look if the the library name (a
       # suffix of the full arg) is one of `libnames`.
       if has_any_suffix(arg, libnames):
-        out.extend([before, arg, after])
+        out.extend([before, arg])
+        if after:
+          out.append(after)
       else:
         out.append(arg)
     return out
 
-  # Apply --whole-archive to the libraries that desire it.
-  return wrap_libs_with(command, whole_archive_libs, "-Wl,--whole-archive",
-                        "-Wl,--no-whole-archive")
+  if is_apple:
+    # Apply -force_load to the libraries that desire it.
+    return wrap_libs_with(command, whole_archive_libs, "-Wl,-force_load", None)
+  else:
+    # Apply --whole-archive to the libraries that desire it.
+    return wrap_libs_with(command, whole_archive_libs, "-Wl,--whole-archive",
+                          "-Wl,--no-whole-archive")

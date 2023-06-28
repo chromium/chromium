@@ -138,7 +138,7 @@ class LinkerDriver(object):
         # test target. This is determined by switch
         # `-LinkWrapper,add-whole-archive`.
         compiler_driver_args = whole_archive.wrap_with_whole_archive(
-            compiler_driver_args)
+            compiler_driver_args, is_apple=True)
 
         linker_driver_outputs = [self._get_linker_output()]
 

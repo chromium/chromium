@@ -502,14 +502,15 @@ template("single_apple_toolchain") {
         link_command += " -Wl,-install_name,@rpath/\"{{target_output_name}}{{output_extension}}\" "
       }
       link_command += dsym_switch
-      link_command += "{{ldflags}} -o \"$dylib\" \"@$rspfile\""
+      link_command += "{{ldflags}} -o \"$dylib\" \"@$rspfile\" {{rlibs}}"
 
       replace_command = "if ! cmp -s \"$temporary_tocname\" \"$tocname\"; then mv \"$temporary_tocname\" \"$tocname\""
       extract_toc_command = "{ $otool -l \"$dylib\" | grep LC_ID_DYLIB -A 5; $nm -gPp \"$dylib\" | cut -f1-2 -d' ' | grep -v U\$\$; true; }"
 
       command = "if $does_reexport_command ; then $link_command && $extract_toc_command > \"$tocname\"; else $link_command && $extract_toc_command > \"$temporary_tocname\" && $replace_command ; fi; fi"
 
-      rspfile_content = "{{inputs}} {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}} {{rlibs}}"
+      rspfile_content =
+          "{{inputs}} {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}}"
 
       description = "SOLINK {{output}}"
 
@@ -549,12 +550,12 @@ template("single_apple_toolchain") {
       rspfile = sofile + ".rsp"
       pool = "//build/toolchain:link_pool($default_toolchain)"
 
-      link_command =
-          "$linker_driver $ld -bundle {{ldflags}} -o \"$sofile\" \"@$rspfile\""
+      link_command = "$linker_driver $ld -bundle {{ldflags}} -o \"$sofile\" \"@$rspfile\" {{rlibs}}"
       link_command += dsym_switch
       command = link_command
 
-      rspfile_content = "{{inputs}} {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}} {{rlibs}}"
+      rspfile_content =
+          "{{inputs}} {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}}"
 
       description = "SOLINK_MODULE {{output}}"
 
@@ -579,9 +580,10 @@ template("single_apple_toolchain") {
       rspfile = "$outfile.rsp"
       pool = "//build/toolchain:link_pool($default_toolchain)"
 
-      command = "$linker_driver $ld $dsym_switch {{ldflags}} -o \"$outfile\" \"@$rspfile\""
+      command = "$linker_driver $ld $dsym_switch {{ldflags}} -o \"$outfile\" \"@$rspfile\" {{rlibs}}"
       description = "LINK $outfile"
-      rspfile_content = "{{inputs}} {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}} {{rlibs}}"
+      rspfile_content =
+          "{{inputs}} {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}}"
       outputs = [ outfile ]
 
       if (_enable_dsyms) {
