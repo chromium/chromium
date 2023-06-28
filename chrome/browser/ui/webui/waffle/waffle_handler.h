@@ -13,7 +13,7 @@ class WaffleHandler : public waffle::mojom::PageHandler {
  public:
   explicit WaffleHandler(
       mojo::PendingReceiver<waffle::mojom::PageHandler> receiver,
-      base::OnceClosure display_dialog_callback);
+      base::OnceCallback<void(int)> display_dialog_callback_);
 
   WaffleHandler(const WaffleHandler&) = delete;
   WaffleHandler& operator=(const WaffleHandler&) = delete;
@@ -21,11 +21,11 @@ class WaffleHandler : public waffle::mojom::PageHandler {
   ~WaffleHandler() override;
 
   // waffle::mojom::PageHandler:
-  void DisplayDialog() override;
+  void DisplayDialog(uint32_t content_height) override;
 
  private:
   mojo::Receiver<waffle::mojom::PageHandler> receiver_;
-  base::OnceClosure display_dialog_callback_;
+  base::OnceCallback<void(int)> display_dialog_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WAFFLE_WAFFLE_HANDLER_H_

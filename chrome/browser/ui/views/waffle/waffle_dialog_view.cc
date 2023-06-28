@@ -21,6 +21,9 @@ namespace {
 // Temporary until the mocks are ready.
 constexpr int kDialogWidth = 800;
 constexpr int kDialogHeight = 600;
+// TODO(b/280753754): Update based on finalized design to minimum value that
+// still allows buttons to be visible on a reasonably small zoom level.
+constexpr int kMinHeight = 25;
 }  // namespace
 
 void ShowWaffleDialog(Browser& browser) {
@@ -69,8 +72,24 @@ void WaffleDialogView::Initialize() {
   SetUseDefaultFillLayout(true);
 }
 
-void WaffleDialogView::ShowNativeView() {
-  GetWidget()->Show();
+void WaffleDialogView::ShowNativeView(int content_height) {
+  auto* widget = GetWidget();
+  if (!widget) {
+    return;
+  }
+
+  const int max_height = browser_->window()
+                             ->GetWebContentsModalDialogHost()
+                             ->GetMaximumDialogSize()
+                             .height();
+  // For hardening against inappropriate data coming from the renderer, we also
+  // set a minimum height that still allows to interact with this dialog.
+  const int target_height = std::clamp(content_height, kMinHeight, max_height);
+  web_view_->SetPreferredSize(
+      gfx::Size(web_view_->GetPreferredSize().width(), target_height));
+  constrained_window::UpdateWebContentsModalDialogPosition(
+      widget, browser_->window()->GetWebContentsModalDialogHost());
+  widget->Show();
   web_view_->RequestFocus();
 }
 

@@ -13,7 +13,7 @@ interface PageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
-  // Displays the Waffle dialog. Triggered by the displayDialog() call in
-  // chrome/browser/resources/waffle/app.ts
-  DisplayDialog();
+  // Displays the Waffle dialog using the height of its content. Triggered by
+  // the `displayDialog()` call in `chrome/browser/resources/waffle/app.ts`
+  DisplayDialog(uint32 content_height);
 };

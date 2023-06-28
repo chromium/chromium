@@ -25,8 +25,8 @@ class WaffleDialogView : public views::View {
   void Initialize();
 
  private:
-  // Shows the dialog widget.
-  void ShowNativeView();
+  // Show the dialog widget. `content_height` sets setting the dialog's height.
+  void ShowNativeView(int content_height);
 
   raw_ptr<views::WebView> web_view_ = nullptr;
   const raw_ptr<const Browser> browser_;

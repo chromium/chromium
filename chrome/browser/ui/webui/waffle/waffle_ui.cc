@@ -87,7 +87,8 @@ void WaffleUI::BindInterface(
   page_factory_receiver_.Bind(std::move(receiver));
 }
 
-void WaffleUI::Initialize(base::OnceClosure display_dialog_callback) {
+void WaffleUI::Initialize(
+    base::OnceCallback<void(int)> display_dialog_callback) {
   CHECK(display_dialog_callback);
   display_dialog_callback_ = std::move(display_dialog_callback);
 }

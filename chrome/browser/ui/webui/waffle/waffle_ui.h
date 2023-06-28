@@ -28,9 +28,8 @@ class WaffleUI : public ui::MojoWebUIController,
 
   // Initializes the callbacks that need to be passed to the handler.
   // `display_dialog_callback` is how we display the waffle dialog. It will
-  // be called when the page content is laid out, so that the dialog will be
-  // able to measure the page to fit to its size.
-  void Initialize(base::OnceClosure display_dialog_callback);
+  // be called when the page's static content is rendered.
+  void Initialize(base::OnceCallback<void(int)> display_dialog_callback);
 
  private:
   // waffle::mojom::PageHandlerFactory:
@@ -42,7 +41,7 @@ class WaffleUI : public ui::MojoWebUIController,
   mojo::Receiver<waffle::mojom::PageHandlerFactory> page_factory_receiver_{
       this};
 
-  base::OnceClosure display_dialog_callback_;
+  base::OnceCallback<void(int)> display_dialog_callback_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
