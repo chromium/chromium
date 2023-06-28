@@ -2778,11 +2778,13 @@ void Document::SetIsXrOverlay(bool val, Element* overlay_element) {
 }
 
 void Document::ScheduleUseShadowTreeUpdate(SVGUseElement& element) {
+  recordreplay::Assert("[RUN-1436-2260] Document::ScheduleUseShadowTreeUpdate %d", element.RecordReplayId());
   use_elements_needing_update_.insert(&element);
   ScheduleLayoutTreeUpdateIfNeeded();
 }
 
 void Document::UnscheduleUseShadowTreeUpdate(SVGUseElement& element) {
+  recordreplay::Assert("[RUN-1436-2260] Document::UnscheduleUseShadowTreeUpdate %d", element.RecordReplayId());
   use_elements_needing_update_.erase(&element);
 }
 

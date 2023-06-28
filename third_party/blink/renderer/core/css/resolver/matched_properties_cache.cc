@@ -51,6 +51,11 @@ void CachedMatchedProperties::Set(const ComputedStyle& style,
   for (const auto& new_matched_properties : properties) {
     matched_properties.push_back(new_matched_properties.properties);
     matched_properties_types.push_back(new_matched_properties.types_);
+
+    if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers",
+                                             "CachedMatchedProperties"))
+      replay_matched_properties_strong_.push_back(
+          new_matched_properties.properties);
   }
 
   // Note that we don't cache the original ComputedStyle instance. It may be
@@ -63,6 +68,7 @@ void CachedMatchedProperties::Set(const ComputedStyle& style,
 void CachedMatchedProperties::Clear() {
   matched_properties.clear();
   matched_properties_types.clear();
+  replay_matched_properties_strong_.clear();
   computed_style = nullptr;
   parent_computed_style = nullptr;
 }
