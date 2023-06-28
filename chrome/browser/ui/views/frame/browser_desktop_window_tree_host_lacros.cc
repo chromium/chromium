@@ -92,7 +92,7 @@ void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
 
     // Create the initial region from the clipping rectangle without rounded
     // corners.
-    SkRegion region(gfx::RectToSkIRect(rect));
+    cc::Region region(rect);
 
     // Now subtract out the small rectangles that cover the corners.
     struct {
@@ -109,15 +109,16 @@ void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
       auto corner_radii = rounded_corners_rect.GetCornerRadii(corner.corner);
       auto rx = std::ceil(scale * corner_radii.x());
       auto ry = std::ceil(scale * corner_radii.y());
-      auto corner_rect = SkIRect::MakeXYWH(
-          corner.left ? rect.x() : rect.right() - rx,
-          corner.upper ? rect.y() : rect.bottom() - ry, rx, ry);
-      region.op(corner_rect, SkRegion::kDifference_Op);
+      auto corner_rect =
+          gfx::Rect(corner.left ? rect.x() : rect.right() - rx,
+                    corner.upper ? rect.y() : rect.bottom() - ry, rx, ry);
+      region.Subtract(corner_rect);
     }
 
     // Convert the region to a list of rectangles.
-    for (SkRegion::Iterator i(region); !i.done(); i.next())
-      opaque_region.push_back(gfx::SkIRectToRect(i.rect()));
+    for (gfx::Rect i : region) {
+      opaque_region.push_back(i);
+    }
   } else {
     GetContentWindow()->layer()->SetRoundedCornerRadius({});
     GetContentWindow()->layer()->SetIsFastRoundedCorner(false);
