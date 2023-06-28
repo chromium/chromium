@@ -335,7 +335,7 @@ void WaylandSurface::set_opaque_region(
     pending_state_.opaque_region_px = *region_px;
 
   if (apply_state_immediately_) {
-    state_.opaque_region_px.swap(pending_state_.opaque_region_px);
+    state_.opaque_region_px = pending_state_.opaque_region_px;
     wl_surface_set_opaque_region(
         surface_.get(),
         pending_state_.opaque_region_px.empty()
