@@ -174,12 +174,12 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
                              DISTANCE_SUBSECTION_HORIZONTAL_INDENT)),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
 
-  constexpr int kPermissionIconSize = 18;
+  const int kPermissionIconSize = features::IsChromeRefresh2023() ? 20 : 18;
   auto* icon = line_container->AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           permissions::GetIconId(request->request_type()), ui::kColorIcon,
           kPermissionIconSize)));
-  icon->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+  icon->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
 
   auto* label = line_container->AddChildView(
       std::make_unique<views::Label>(request->GetMessageTextFragment()));
@@ -189,5 +189,9 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
   if (features::IsChromeRefresh2023()) {
     label->SetTextStyle(views::style::STYLE_BODY_3);
     label->SetEnabledColorId(kColorPermissionPromptRequestText);
+
+    constexpr int kPermissionBodyTopMargin = 10;
+    line_container->SetProperty(
+        views::kMarginsKey, gfx::Insets().set_top(kPermissionBodyTopMargin));
   }
 }

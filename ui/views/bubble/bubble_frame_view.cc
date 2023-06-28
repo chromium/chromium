@@ -147,7 +147,9 @@ std::unique_ptr<Label> BubbleFrameView::CreateDefaultTitleLabel(
 std::unique_ptr<Button> BubbleFrameView::CreateCloseButton(
     Button::PressedCallback callback) {
   auto close_button = CreateVectorImageButtonWithNativeTheme(
-      std::move(callback), vector_icons::kCloseRoundedIcon);
+      std::move(callback), features::IsChromeRefresh2023()
+                               ? vector_icons::kCloseChromeRefreshIcon
+                               : vector_icons::kCloseRoundedIcon);
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   close_button->SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   close_button->SizeToPreferredSize();

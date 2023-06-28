@@ -23,7 +23,7 @@ enum class RequestType;
 
 class Browser;
 
-constexpr int DISTANCE_BUTTON_VERTICAL = 12;
+constexpr int DISTANCE_BUTTON_VERTICAL = 8;
 
 // Base bubble view that prompts the user to grant or deny a permission request
 // from a website. Should not be used directly, instead create one of the more
