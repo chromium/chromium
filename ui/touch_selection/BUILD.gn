@@ -22,8 +22,6 @@ component("touch_selection") {
     "touch_selection_controller.cc",
     "touch_selection_controller.h",
     "touch_selection_draggable.h",
-    "touch_selection_magnifier_runner.cc",
-    "touch_selection_magnifier_runner.h",
     "touch_selection_menu_runner.cc",
     "touch_selection_menu_runner.h",
     "ui_touch_selection_export.h",
@@ -44,14 +42,20 @@ component("touch_selection") {
     deps += [
       "//skia:skia",
       "//ui/aura",
+      "//ui/color",
+      "//ui/color:mixers",
       "//ui/compositor:compositor",
       "//ui/gfx:gfx",
+      "//ui/native_theme",
+      "//ui/native_theme:native_theme_browser",
       "//ui/resources",
     ]
 
     sources += [
       "touch_handle_drawable_aura.cc",
       "touch_handle_drawable_aura.h",
+      "touch_selection_magnifier_aura.cc",
+      "touch_selection_magnifier_aura.h",
     ]
   }
 }
@@ -92,6 +96,12 @@ test("ui_touch_selection_unittests") {
   ]
 
   data_deps = [ "//third_party/mesa_headers" ]
+
+  if (use_aura) {
+    deps += [ "//ui/compositor:compositor" ]
+
+    sources += [ "touch_selection_magnifier_aura_unittest.cc" ]
+  }
 }
 
 if (is_android) {

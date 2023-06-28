@@ -26,7 +26,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/resources/grit/ui_resources.h"
-#include "ui/touch_selection/touch_selection_magnifier_runner.h"
+#include "ui/touch_selection/touch_selection_magnifier_aura.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
@@ -531,8 +531,6 @@ void TouchSelectionControllerImpl::ShowQuickMenuImmediatelyForTesting() {
 void TouchSelectionControllerImpl::OnDragBegin(EditingHandleView* handle) {
   DCHECK_EQ(handle, GetDraggingHandle());
   UpdateQuickMenu();
-  ShowMagnifier(handle == GetSelectionHandle1() ? selection_bound_1_
-                                                : selection_bound_2_);
   if (handle == GetCursorHandle()) {
     return;
   }
@@ -735,26 +733,28 @@ gfx::Rect TouchSelectionControllerImpl::GetQuickMenuAnchorRect() const {
 
 void TouchSelectionControllerImpl::ShowMagnifier(
     const gfx::SelectionBound& focus_bound_in_screen) {
-  if (auto* magnifier_runner =
-          ui::TouchSelectionMagnifierRunner::GetInstance()) {
-    // Convert focus bound to client native view coordinates.
-    const aura::Window* window = client_view_->GetNativeView();
-    gfx::Point edge_start = focus_bound_in_screen.edge_start_rounded();
-    gfx::Point edge_end = focus_bound_in_screen.edge_end_rounded();
-    wm::ConvertPointFromScreen(window, &edge_start);
-    wm::ConvertPointFromScreen(window, &edge_end);
-    gfx::SelectionBound focus_bound(focus_bound_in_screen);
-    focus_bound.SetEdge(gfx::PointF(edge_start), gfx::PointF(edge_end));
-
-    magnifier_runner->ShowMagnifier(client_view_->GetNativeView(), focus_bound);
+  if (!::features::IsTouchTextEditingRedesignEnabled()) {
+    return;
   }
+
+  aura::Window* root_window = client_view_->GetNativeView()->GetRootWindow();
+  DCHECK(root_window);
+  if (!touch_selection_magnifier_) {
+    touch_selection_magnifier_ =
+        std::make_unique<ui::TouchSelectionMagnifierAura>();
+  }
+
+  // Convert focus bound to root window coordinates.
+  gfx::Point focus_start = focus_bound_in_screen.edge_start_rounded();
+  gfx::Point focus_end = focus_bound_in_screen.edge_end_rounded();
+  wm::ConvertPointFromScreen(root_window, &focus_start);
+  wm::ConvertPointFromScreen(root_window, &focus_end);
+  touch_selection_magnifier_->ShowFocusBound(root_window->layer(), focus_start,
+                                             focus_end);
 }
 
 void TouchSelectionControllerImpl::HideMagnifier() {
-  if (auto* magnifier_runner =
-          ui::TouchSelectionMagnifierRunner::GetInstance()) {
-    magnifier_runner->CloseMagnifier();
-  }
+  touch_selection_magnifier_ = nullptr;
 }
 
 void TouchSelectionControllerImpl::CreateHandleWidgets() {

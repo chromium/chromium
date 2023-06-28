@@ -34,7 +34,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/render_text.h"
-#include "ui/touch_selection/touch_selection_magnifier_runner.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
@@ -68,31 +67,6 @@ int CompareTextSelectionBounds(const gfx::SelectionBound& b1,
   return 1;
 }
 
-// A mock touch selection magnifier runner to use whenever a default one is not
-// installed.
-class TestTouchSelectionMagnifierRunner
-    : public ui::TouchSelectionMagnifierRunner {
- public:
-  TestTouchSelectionMagnifierRunner() = default;
-  TestTouchSelectionMagnifierRunner(const TestTouchSelectionMagnifierRunner&) =
-      delete;
-  TestTouchSelectionMagnifierRunner& operator=(
-      const TestTouchSelectionMagnifierRunner&) = delete;
-  ~TestTouchSelectionMagnifierRunner() override = default;
-
- private:
-  void ShowMagnifier(aura::Window* context,
-                     const gfx::SelectionBound& focus_bound) override {
-    magnifier_running_ = true;
-  }
-
-  void CloseMagnifier() override { magnifier_running_ = false; }
-
-  bool IsRunning() const override { return magnifier_running_; }
-
-  bool magnifier_running_ = false;
-};
-
 }  // namespace
 
 namespace views {
@@ -117,13 +91,6 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
     ViewsTestBase::SetUp();
     test_cursor_client_ =
         std::make_unique<aura::test::TestCursorClient>(GetContext());
-    // TODO(b/273368423): Ideally, we should know exactly when the mock
-    // magnifier runner needs to be created or only run magnifier tests for
-    // platforms which have the magnifier enabled. Deal with this after figuring
-    // out which platforms the magnifier will be implemented for.
-    if (!ui::TouchSelectionMagnifierRunner::GetInstance()) {
-      magnifier_runner_ = std::make_unique<TestTouchSelectionMagnifierRunner>();
-    }
   }
 
   void TearDown() override {
@@ -274,6 +241,10 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
     return ui::TouchSelectionMenuRunner::GetInstance()->IsRunning();
   }
 
+  bool IsMagnifierVisible() {
+    return GetSelectionController()->touch_selection_magnifier_ != nullptr;
+  }
+
   gfx::RenderText* GetRenderText() {
     return textfield_test_api_->GetRenderText();
   }
@@ -376,7 +347,6 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
   std::unique_ptr<TextfieldTestApi> textfield_test_api_;
   std::unique_ptr<ViewsTouchEditingControllerFactory> views_tsc_factory_;
   std::unique_ptr<aura::test::TestCursorClient> test_cursor_client_;
-  std::unique_ptr<TestTouchSelectionMagnifierRunner> magnifier_runner_;
 };
 
 // Tests that the selection handles are placed appropriately when selection in
@@ -731,6 +701,11 @@ TEST_F(TouchSelectionControllerImplTest,
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(TouchSelectionControllerImplTest,
        MagnifierShownWhenDraggingCursorHandle) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
   CreateTextfield();
   textfield_->SetText(u"some text in a textfield");
   ui::test::EventGenerator generator(
@@ -739,7 +714,7 @@ TEST_F(TouchSelectionControllerImplTest,
   // Tap the textfield to make the cursor handle appear.
   generator.GestureTapAt(gfx::Point(10, 10));
   EXPECT_TRUE(IsCursorHandleVisible());
-  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
+  EXPECT_FALSE(IsMagnifierVisible());
 
   // Drag the cursor handle. Magnifier should be shown while dragging the
   // handle, then hidden once dragging ends.
@@ -748,18 +723,22 @@ TEST_F(TouchSelectionControllerImplTest,
   generator.GestureScrollSequenceWithCallback(
       drag_start, drag_end, /*duration=*/base::Milliseconds(50),
       /*steps=*/5,
-      base::BindRepeating([](ui::EventType event_type,
-                             const gfx::Vector2dF& offset) {
-        if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
-          EXPECT_TRUE(
-              ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
-        }
-      }));
-  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
+      base::BindLambdaForTesting(
+          [&](ui::EventType event_type, const gfx::Vector2dF& offset) {
+            if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
+              EXPECT_TRUE(IsMagnifierVisible());
+            }
+          }));
+  EXPECT_FALSE(IsMagnifierVisible());
 }
 
 TEST_F(TouchSelectionControllerImplTest,
        MagnifierShownWhenDraggingSelectionHandles) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
   CreateTextfield();
   textfield_->SetText(u"some text in a textfield");
   textfield_->SetSelectedRange(gfx::Range(2, 15));
@@ -769,7 +748,7 @@ TEST_F(TouchSelectionControllerImplTest,
   // Tap on the selected text to make selection handles appear.
   generator.GestureTapAt(gfx::Point(30, 15));
   EXPECT_TRUE(IsSelectionHandle1Visible());
-  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
+  EXPECT_FALSE(IsMagnifierVisible());
 
   // Drag selection handles. Magnifier should be shown while dragging handles,
   // then hidden once dragging ends.
@@ -778,28 +757,26 @@ TEST_F(TouchSelectionControllerImplTest,
   generator.GestureScrollSequenceWithCallback(
       drag_start, drag_end, /*duration=*/base::Milliseconds(50),
       /*steps=*/5,
-      base::BindRepeating([](ui::EventType event_type,
-                             const gfx::Vector2dF& offset) {
-        if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
-          EXPECT_TRUE(
-              ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
-        }
-      }));
-  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
+      base::BindLambdaForTesting(
+          [&](ui::EventType event_type, const gfx::Vector2dF& offset) {
+            if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
+              EXPECT_TRUE(IsMagnifierVisible());
+            }
+          }));
+  EXPECT_FALSE(IsMagnifierVisible());
 
   drag_start = GetSelectionHandle2Bounds().CenterPoint();
   drag_end = drag_start + gfx::Vector2d(-60, 0);
   generator.GestureScrollSequenceWithCallback(
       drag_start, drag_end, /*duration=*/base::Milliseconds(50),
       /*steps=*/5,
-      base::BindRepeating([](ui::EventType event_type,
-                             const gfx::Vector2dF& offset) {
-        if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
-          EXPECT_TRUE(
-              ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
-        }
-      }));
-  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
+      base::BindLambdaForTesting(
+          [&](ui::EventType event_type, const gfx::Vector2dF& offset) {
+            if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
+              EXPECT_TRUE(IsMagnifierVisible());
+            }
+          }));
+  EXPECT_FALSE(IsMagnifierVisible());
 }
 
 // Tests that the magnifier is shown when directly dragging the cursor in the
@@ -825,14 +802,13 @@ TEST_F(TouchSelectionControllerImplTest, MagnifierShownWhenDraggingCursor) {
   generator.GestureScrollSequenceWithCallback(
       drag_start, drag_end, /*duration=*/base::Milliseconds(50),
       /*steps=*/5,
-      base::BindRepeating([](ui::EventType event_type,
-                             const gfx::Vector2dF& offset) {
-        if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
-          EXPECT_TRUE(
-              ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
-        }
-      }));
-  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
+      base::BindLambdaForTesting(
+          [&](ui::EventType event_type, const gfx::Vector2dF& offset) {
+            if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
+              EXPECT_TRUE(IsMagnifierVisible());
+            }
+          }));
+  EXPECT_FALSE(IsMagnifierVisible());
 }
 
 // Tests that touch handles are correctly shown when directly dragging the

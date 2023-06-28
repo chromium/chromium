@@ -180,7 +180,6 @@
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/touch/ash_touch_transform_controller.h"
 #include "ash/touch/touch_devices_controller.h"
-#include "ash/touch/touch_selection_magnifier_runner_ash.h"
 #include "ash/tray_action/tray_action.h"
 #include "ash/user_education/user_education_controller.h"
 #include "ash/user_education/user_education_delegate.h"
@@ -1021,8 +1020,6 @@ Shell::~Shell() {
 
   partial_magnifier_controller_.reset();
 
-  touch_selection_magnifier_runner_ash_.reset();
-
   laser_pointer_controller_.reset();
 
   if (display_change_observer_) {
@@ -1468,11 +1465,6 @@ void Shell::Init(
   laser_pointer_controller_ = std::make_unique<LaserPointerController>();
   partial_magnifier_controller_ =
       std::make_unique<PartialMagnifierController>();
-  if (::features::IsTouchTextEditingRedesignEnabled()) {
-    touch_selection_magnifier_runner_ash_ =
-        std::make_unique<TouchSelectionMagnifierRunnerAsh>(
-            kShellWindowId_ImeWindowParentContainer);
-  }
 
   fullscreen_magnifier_controller_ =
       std::make_unique<FullscreenMagnifierController>();

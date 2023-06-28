@@ -20,6 +20,10 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget_observer.h"
 
+namespace ui {
+class TouchSelectionMagnifierAura;
+}
+
 namespace views {
 
 // Touch specific implementation of TouchEditingControllerDeprecated.
@@ -140,6 +144,9 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   views::UniqueWidgetPtr selection_handle_1_widget_;
   views::UniqueWidgetPtr selection_handle_2_widget_;
   views::UniqueWidgetPtr cursor_handle_widget_;
+
+  // Magnifier which is shown when touch dragging to adjust the selection.
+  std::unique_ptr<ui::TouchSelectionMagnifierAura> touch_selection_magnifier_;
 
   bool command_executed_ = false;
   base::TimeTicks selection_start_time_;
