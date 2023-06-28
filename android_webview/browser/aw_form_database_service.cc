@@ -8,12 +8,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/webdata/common/webdata_constants.h"
+#include "content/public/browser/browser_thread.h"
 
 using base::WaitableEvent;
 
@@ -35,20 +36,17 @@ AwFormDatabaseService::AwFormDatabaseService(const base::FilePath path)
       has_form_data_completion_(
           base::WaitableEvent::ResetPolicy::AUTOMATIC,
           base::WaitableEvent::InitialState::NOT_SIGNALED) {
-  auto ui_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
-  // TODO(pkasting): http://crbug.com/740773 This should likely be sequenced,
-  // not single-threaded; it's also possible these objects can each use their
-  // own sequences instead of sharing this one.
-  auto db_task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
+  auto db_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
   web_database_ = new WebDatabaseService(path.Append(kWebDataFilename),
-                                         ui_task_runner, db_task_runner);
+                                         content::GetUIThreadTaskRunner({}),
+                                         db_task_runner);
   web_database_->AddTable(base::WrapUnique(new autofill::AutofillTable));
   web_database_->LoadDatabase();
 
   autofill_data_ = new autofill::AutofillWebDataService(
-      web_database_, ui_task_runner, db_task_runner);
+      web_database_, content::GetUIThreadTaskRunner({}), db_task_runner);
   autofill_data_->Init(base::BindOnce(&DatabaseErrorCallback));
 }
 

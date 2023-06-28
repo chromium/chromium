@@ -14,7 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -106,12 +106,8 @@ class WebDataServiceTest : public testing::Test {
  public:
   WebDataServiceTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
-        // TODO(pkasting): http://crbug.com/740773 This should likely be
-        // sequenced, not single-threaded; it's also possible the various uses
-        // of this below should each use their own sequences instead of sharing
-        // this one.
-        db_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
-            {base::MayBlock()})) {}
+        db_task_runner_(
+            base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {}
 
  protected:
   void SetUp() override {
@@ -120,14 +116,12 @@ class WebDataServiceTest : public testing::Test {
     OSCryptMocker::SetUp();
 
     wdbs_ = new WebDatabaseService(
-        path, base::SingleThreadTaskRunner::GetCurrentDefault(),
-        db_task_runner_);
+        path, base::SequencedTaskRunner::GetCurrentDefault(), db_task_runner_);
     wdbs_->AddTable(std::make_unique<AutofillTable>());
     wdbs_->LoadDatabase();
 
     wds_ = new AutofillWebDataService(
-        wdbs_, base::SingleThreadTaskRunner::GetCurrentDefault(),
-        db_task_runner_);
+        wdbs_, base::SequencedTaskRunner::GetCurrentDefault(), db_task_runner_);
     wds_->Init(base::NullCallback());
   }
 
@@ -144,7 +138,7 @@ class WebDataServiceTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::FilePath profile_dir_;
-  scoped_refptr<base::SingleThreadTaskRunner> db_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
   scoped_refptr<WebDatabaseService> wdbs_;
   scoped_refptr<AutofillWebDataService> wds_;
 };
