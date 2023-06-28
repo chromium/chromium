@@ -52,10 +52,10 @@ class AttributionRequestHelper {
     kMaxValue = kNonSuitable,
   };
 
-  // TODO(crbug.com/1440744): Review the number of verification tokens per
-  // trigger. The higher the number, the more work and bandwidth is needed to
-  // generate report verification tokens. The lower the number, the more likely
-  // it is that some reports will be sent without a verification token.
+  // The higher the number, the more work and bandwidth is needed to generate
+  // report verification tokens. The lower the number, the more likely it is
+  // that some reports will be sent without a verification token. Using 3, the
+  // probability of failure is ~.04%. See. https://crbug.com/1440744#c1
   static constexpr size_t kVerificationTokensPerTrigger = 3;
 
   // Creates an AttributionRequestHelper instance if needed.
