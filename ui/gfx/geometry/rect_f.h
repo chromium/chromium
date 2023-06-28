@@ -30,6 +30,7 @@ class GEOMETRY_EXPORT RectF {
   constexpr RectF(float x, float y, float width, float height)
       : origin_(x, y), size_(width, height) {}
   constexpr explicit RectF(const SizeF& size) : size_(size) {}
+  constexpr explicit RectF(const Size& size) : size_(size) {}
   constexpr RectF(const PointF& origin, const SizeF& size)
       : origin_(origin), size_(size) {}
 
