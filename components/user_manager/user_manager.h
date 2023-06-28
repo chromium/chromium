@@ -435,12 +435,6 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns "Local State" PrefService instance.
   virtual PrefService* GetLocalState() const = 0;
 
-  // Checks for platform-specific known users matching given |user_email|. If
-  // data matches a known account, fills |out_account_id| with account id and
-  // returns true.
-  virtual bool GetPlatformKnownUserId(const std::string& user_email,
-                                      AccountId* out_account_id) const = 0;
-
   // Returns account id of the Guest user.
   virtual const AccountId& GetGuestAccountId() const = 0;
 

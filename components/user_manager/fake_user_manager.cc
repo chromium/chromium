@@ -368,20 +368,6 @@ void FakeUserManager::UpdateLoginState(const User* active_user,
                                        const User* primary_user,
                                        bool is_current_user_owner) const {}
 
-bool FakeUserManager::GetPlatformKnownUserId(const std::string& user_email,
-                                             AccountId* out_account_id) const {
-  if (user_email == kStubUserEmail) {
-    *out_account_id = StubAccountId();
-    return true;
-  }
-
-  if (user_email == kGuestUserName) {
-    *out_account_id = GuestAccountId();
-    return true;
-  }
-  return false;
-}
-
 const AccountId& FakeUserManager::GetGuestAccountId() const {
   return GuestAccountId();
 }

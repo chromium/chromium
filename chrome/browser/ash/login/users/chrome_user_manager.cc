@@ -11,7 +11,6 @@
 #include "chrome/browser/browser_process.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 
 namespace ash {
@@ -42,27 +41,6 @@ void ChromeUserManager::UpdateLoginState(const user_manager::User* active_user,
   }
 
   LoginState::Get()->SetLoggedInState(logged_in_state, logged_in_user_type);
-}
-
-bool ChromeUserManager::GetPlatformKnownUserId(
-    const std::string& user_email,
-    AccountId* out_account_id) const {
-  if (user_email == user_manager::kStubUserEmail) {
-    *out_account_id = user_manager::StubAccountId();
-    return true;
-  }
-
-  if (user_email == user_manager::kStubAdUserEmail) {
-    *out_account_id = user_manager::StubAdAccountId();
-    return true;
-  }
-
-  if (user_email == user_manager::kGuestUserName) {
-    *out_account_id = user_manager::GuestAccountId();
-    return true;
-  }
-
-  return false;
 }
 
 LoginState::LoggedInUserType ChromeUserManager::GetLoggedInUserType(

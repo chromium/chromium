@@ -128,8 +128,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   void UpdateLoginState(const User* active_user,
                         const User* primary_user,
                         bool is_current_user_owner) const override;
-  bool GetPlatformKnownUserId(const std::string& user_email,
-                              AccountId* out_account_id) const override;
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
