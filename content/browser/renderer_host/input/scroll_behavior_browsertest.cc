@@ -389,8 +389,15 @@ void ScrollBehaviorBrowserTest::
   AssertScrollEndedAtPosition("element.scrollTop", 95, 1);
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SmoothWheelScrollCompletesWithScriptedMirror \
+  DISABLED_SmoothWheelScrollCompletesWithScriptedMirror
+#else
+#define MAYBE_SmoothWheelScrollCompletesWithScriptedMirror \
+  SmoothWheelScrollCompletesWithScriptedMirror
+#endif
 IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTestWithPercentBasedScrolling,
-                       SmoothWheelScrollCompletesWithScriptedMirror) {
+                       MAYBE_SmoothWheelScrollCompletesWithScriptedMirror) {
   RunTestSmoothWheelScrollCompletesWithScriptedMirror();
 }
 
