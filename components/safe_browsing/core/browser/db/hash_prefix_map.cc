@@ -351,14 +351,27 @@ MmapHashPrefixMap::MmapHashPrefixMap(
                        ? std::move(task_runner)
                        : base::SequencedTaskRunner::GetCurrentDefault()),
       buffer_size_(buffer_size) {}
-MmapHashPrefixMap::~MmapHashPrefixMap() = default;
+
+MmapHashPrefixMap::~MmapHashPrefixMap() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+}
 
 void MmapHashPrefixMap::Clear() {
-  // Destruct the map on the db task runner, since the memory mapped files
-  // should be destroyed on the same thread they were created.
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce([](std::unordered_map<PrefixSize, FileInfo>) {},
-                                std::move(map_)));
+  if (kMmapSafeBrowsingDatabaseAsync.Get()) {
+    // Clear the map on the db task runner, since the memory mapped files should
+    // be destroyed on the same thread they were created. base::Unretained is
+    // safe since the map is destroyed on the db task runner.
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&MmapHashPrefixMap::ClearOnTaskRunner,
+                                          base::Unretained(this)));
+  } else {
+    map_.clear();
+  }
+}
+
+void MmapHashPrefixMap::ClearOnTaskRunner() {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  map_.clear();
 }
 
 HashPrefixMapView MmapHashPrefixMap::view() const {

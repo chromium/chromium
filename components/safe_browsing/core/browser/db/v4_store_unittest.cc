@@ -1141,6 +1141,8 @@ TEST_F(V4StoreTest, FileSizeIncludesHashFiles) {
 
   int64_t original_file_size = write_store.file_size();
 
+  static_cast<MmapHashPrefixMap*>(write_store.hash_prefix_map_.get())
+      ->ClearAndWaitForTesting();
   write_store.Reset();
   write_store.hash_prefix_map_->Append(4, "abcd");
   write_store.hash_prefix_map_->Append(4, "efgh");

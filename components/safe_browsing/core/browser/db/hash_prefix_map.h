@@ -224,6 +224,7 @@ class MmapHashPrefixMap : public HashPrefixMap {
   };
 
   FileInfo& GetFileInfo(PrefixSize size);
+  void ClearOnTaskRunner();
 
   base::FilePath store_path_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
