@@ -36,16 +36,11 @@ async def test_cdp_sendCommand_resultReturned(websocket):
 
 
 @pytest.mark.asyncio
-async def test_cdp_subscribe_toSpecificEvent(websocket, context_id):
+async def test_cdp_subscribe_toSpecificEvent(websocket, context_id,
+                                             get_cdp_session_id):
     await subscribe(websocket, "cdp.Runtime.consoleAPICalled")
 
-    command_result = await execute_command(websocket, {
-        "method": "cdp.getSession",
-        "params": {
-            "context": context_id
-        }
-    })
-    session_id = command_result["session"]
+    session_id = await get_cdp_session_id(context_id)
 
     await send_JSON_command(
         websocket, {

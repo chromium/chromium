@@ -138,6 +138,21 @@ def read_sorted_messages(websocket):
 
 
 @pytest.fixture
+def get_cdp_session_id(websocket):
+    """Return the CDP session ID from the given context."""
+    async def get_cdp_session_id(context_id: str) -> str:
+        result = await execute_command(websocket, {
+            "method": "cdp.getSession",
+            "params": {
+                "context": context_id
+            }
+        })
+        return result["session"]
+
+    return get_cdp_session_id
+
+
+@pytest.fixture
 def html():
     """Return a factory for HTML data URL with the given content."""
     def html(content=""):

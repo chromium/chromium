@@ -57,21 +57,15 @@ def save_png(png_bytes_or_str: bytes | str, output_file: str):
         "gradient_without_alpha_channel.png",
     ],
     ids=["gradient with alpha channel", "gradient without alpha channel"])
-async def test_screenshot(websocket, context_id, png_filename):
+async def test_screenshot(websocket, context_id, png_filename,
+                          get_cdp_session_id):
     with open(Path(__file__).parent.resolve() / png_filename,
               'rb') as image_file:
         png_base64 = base64.b64encode(image_file.read()).decode('utf-8')
 
         await goto_url(websocket, context_id,
                        f'data:image/png;base64,{png_base64}')
-
-        command_result = await execute_command(websocket, {
-            "method": "cdp.getSession",
-            "params": {
-                "context": context_id
-            }
-        })
-        session_id = command_result["session"]
+        session_id = await get_cdp_session_id(context_id)
 
         # Set a fixed viewport to make the test deterministic.
         await execute_command(
@@ -107,7 +101,8 @@ async def test_screenshot(websocket, context_id, png_filename):
 
 @pytest.mark.asyncio
 @pytest.mark.skip(reason="TODO: fails on CI")
-async def test_screenshot_oopif(websocket, context_id, html, iframe):
+async def test_screenshot_oopif(websocket, context_id, html, iframe,
+                                get_cdp_session_id):
     await goto_url(websocket,
                    context_id,
                    html(iframe("https://www.example.com")),
@@ -117,13 +112,7 @@ async def test_screenshot_oopif(websocket, context_id, html, iframe):
         websocket, context_id))["contexts"][0]["children"][0]["context"]
     assert iframe_context_id != context_id
 
-    command_result = await execute_command(websocket, {
-        "method": "cdp.getSession",
-        "params": {
-            "context": context_id
-        }
-    })
-    session_id = command_result["session"]
+    session_id = await get_cdp_session_id(context_id)
 
     # Set a fixed viewport to make the test deterministic.
     await execute_command(
