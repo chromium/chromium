@@ -20,9 +20,9 @@ import "services/accessibility/public/mojom/tts.mojom";
 // be the main OS browser process, renderers, or other accessibility tree
 // sources or aggregators.
 interface Automation {
-  // // Forwards an accessibility tree destroyed event from any accessibility
-  // // tree from client to the accessibility service.
-  // DispatchTreeDestroyedEvent(ax.mojom.AXTreeID tree_id);
+  // Forwards an accessibility tree destroyed event from any accessibility tree
+  // from client to the accessibility service.
+  DispatchTreeDestroyedEvent(ax.mojom.AXTreeID tree_id);
 
   // // Forwards an action result from any accessibility tree from client
   // // (e.g. Chrome OS Ash, Chrome browser process) to the service.
@@ -141,7 +141,7 @@ interface AccessibilityServiceClient {
   // In Chrome OS this may be called once per feature to provide
   // automation connections to each V8 isolate.
   BindAutomation(
-    pending_remote<Automation> automation,
+    pending_associated_remote<Automation> automation,
     pending_receiver<AutomationClient> automation_client);
 
   // Binds to a Text-to-Speech client implemented in the main OS process,

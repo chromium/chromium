@@ -50,6 +50,9 @@ specific_include_rules = {
   "extension_throttle_unittest.cc": [
     "+net/url_request/redirect_info.h",
   ],
+  "ipc_message_sender.h": [
+    "+services/accessibility/public/mojom",
+  ],
 
   # The following could be hoisted up (they don't violate any conceptual
   # layering), but they're really only needed here, and localization_peer is

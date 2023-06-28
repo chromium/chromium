@@ -397,13 +397,9 @@ class AutomationWebContentsObserver
   void AccessibilityLocationChangesReceived(
       const std::vector<content::AXLocationChangeNotificationDetails>& details)
       override {
+    AutomationEventRouter* router = AutomationEventRouter::GetInstance();
     for (const auto& src : details) {
-      ExtensionMsg_AccessibilityLocationChangeParams dst;
-      dst.id = src.id;
-      dst.tree_id = src.ax_tree_id;
-      dst.new_location = src.new_location;
-      AutomationEventRouter* router = AutomationEventRouter::GetInstance();
-      router->DispatchAccessibilityLocationChange(dst);
+      router->DispatchAccessibilityLocationChange(src);
     }
   }
 

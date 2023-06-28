@@ -159,7 +159,7 @@ class AutomationEventWaiter
     }
   }
   void DispatchAccessibilityLocationChange(
-      const ExtensionMsg_AccessibilityLocationChangeParams& params) override {}
+      const content::AXLocationChangeNotificationDetails& details) override {}
   void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) override {}
   void DispatchActionResult(
       const ui::AXActionData& data,

@@ -16,6 +16,7 @@
 #include "gin/v8_initializer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enum_util.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/platform/automation/automation_v8_bindings.h"
 #include "ui/accessibility/platform/automation/automation_v8_router.h"
 #include "v8/include/v8-context.h"
@@ -126,15 +127,26 @@ class FakeAutomationV8Router : public AutomationV8Router {
 
   void DispatchEvent(const std::string& event_name,
                      const base::Value::List& event_args) const override {
-    if (!notify_event_ ||
-        event_name != "automationInternal.onAccessibilityEvent")
+    if (!notify_event_ && !notify_tree_destroyed_) {
       return;
+    }
 
-    const base::Value::Dict* dict = event_args[0].GetIfDict();
-    DCHECK(dict);
-    const std::string* event_type_string = dict->FindString("eventType");
-    DCHECK(event_type_string);
-    notify_event_.Run(*event_type_string);
+    if (notify_event_ &&
+        event_name == "automationInternal.onAccessibilityEvent") {
+      const base::Value::Dict* dict = event_args[0].GetIfDict();
+      ASSERT_TRUE(dict);
+      const std::string* event_type_string = dict->FindString("eventType");
+      ASSERT_TRUE(event_type_string);
+      notify_event_.Run(*event_type_string);
+    }
+
+    if (notify_tree_destroyed_ &&
+        event_name == "automationInternal.onAccessibilityTreeDestroyed") {
+      const std::string* tree_id_str = event_args[0].GetIfString();
+      ASSERT_TRUE(tree_id_str);
+      ui::AXTreeID tree_id = ui::AXTreeID::FromString(*tree_id_str);
+      notify_tree_destroyed_.Run(tree_id);
+    }
   }
 
   // For tests.
@@ -143,10 +155,17 @@ class FakeAutomationV8Router : public AutomationV8Router {
     notify_event_ = std::move(callback);
   }
 
+  // For tests.
+  void AddTreeDestroyedCallback(
+      base::RepeatingCallback<void(const ui::AXTreeID&)> callback) {
+    notify_tree_destroyed_ = std::move(callback);
+  }
+
  private:
   std::unique_ptr<gin::IsolateHolder> isolate_holder_;
   std::unique_ptr<gin::ContextHolder> context_holder_;
   base::RepeatingCallback<void(const std::string&)> notify_event_;
+  base::RepeatingCallback<void(const ui::AXTreeID&)> notify_tree_destroyed_;
 };
 
 // Tests for AutomationTreeManagerOwner.
@@ -185,6 +204,10 @@ class AutomationTreeManagerOwnerTest : public testing::Test {
                                                mouse_location, true);
   }
 
+  void SendOnTreeDestroyedEvent(const ui::AXTreeID& tree_id) {
+    tree_manager_owner_->DispatchTreeDestroyedEvent(tree_id);
+  }
+
   bool CallGetFocusInternal(ui::AutomationAXTreeWrapper* top_wrapper,
                             ui::AutomationAXTreeWrapper** focused_wrapper,
                             ui::AXNode** focused_node) {
@@ -204,6 +227,11 @@ class AutomationTreeManagerOwnerTest : public testing::Test {
   void AddEventCallback(
       base::RepeatingCallback<void(const std::string&)> callback) {
     router_->AddEventCallback(std::move(callback));
+  }
+
+  void AddTreeDestroyedCallback(
+      base::RepeatingCallback<void(const ui::AXTreeID&)> callback) {
+    router_->AddTreeDestroyedCallback(std::move(callback));
   }
 
  private:
@@ -893,6 +921,16 @@ TEST_F(AutomationTreeManagerOwnerTest, FireEventsWithListeners) {
 
   ASSERT_EQ(1U, events.size());
   EXPECT_EQ("clicked none", events[0]);
+
+  // Finally, check if sending an event to delete the tree correctly notify
+  // listeners.
+  bool tree_destroyed = false;
+  AddTreeDestroyedCallback(base::BindLambdaForTesting(
+      [&](const ui::AXTreeID& tree_id) { tree_destroyed = true; }));
+
+  SendOnTreeDestroyedEvent(updates[0].tree_data.tree_id);
+
+  EXPECT_TRUE(tree_destroyed);
 }
 
 }  // namespace ui

@@ -49,6 +49,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "extensions/browser/api/messaging/messaging_api_message_filter.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
@@ -74,6 +75,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
+#include "extensions/common/mojom/automation_registry.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "extensions/common/mojom/renderer_host.mojom.h"
@@ -842,6 +844,10 @@ void ChromeContentBrowserClientExtensionsPart::ExposeInterfacesToRenderer(
       &RendererStartupHelper::BindForRenderer, host->GetID()));
   associated_registry->AddInterface<mojom::ServiceWorkerHost>(
       base::BindRepeating(&ServiceWorkerHost::BindReceiver, host->GetID()));
+  associated_registry
+      ->AddInterface<extensions::mojom::RendererAutomationRegistry>(
+          base::BindRepeating(&AutomationEventRouter::BindForRenderer,
+                              host->GetID()));
 }
 
 }  // namespace extensions

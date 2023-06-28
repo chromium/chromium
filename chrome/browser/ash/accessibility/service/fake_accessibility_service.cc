@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
 
@@ -24,9 +25,9 @@ void FakeAccessibilityService::BindAccessibilityServiceClient(
 }
 
 void FakeAccessibilityService::BindAnotherAutomation() {
-  mojo::PendingRemote<ax::mojom::Automation> automation_remote;
-  automation_receivers_.Add(this,
-                            automation_remote.InitWithNewPipeAndPassReceiver());
+  mojo::PendingAssociatedRemote<ax::mojom::Automation> automation_remote;
+  automation_receivers_.Add(
+      this, automation_remote.InitWithNewEndpointAndPassReceiver());
 
   mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client_receiver;
   automation_client_remotes_.Add(

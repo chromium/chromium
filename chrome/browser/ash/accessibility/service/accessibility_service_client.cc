@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom-shared.h"
 
 namespace ash {
@@ -25,7 +26,7 @@ AccessibilityServiceClient::~AccessibilityServiceClient() {
 }
 
 void AccessibilityServiceClient::BindAutomation(
-    mojo::PendingRemote<ax::mojom::Automation> automation,
+    mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
     mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client) {
   automation_client_->Bind(std::move(automation), std::move(automation_client));
 }

@@ -9,6 +9,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
@@ -42,8 +43,8 @@ class FakeAccessibilityService
       const std::vector<ax::mojom::AssistiveTechnologyType>& enabled_features)
       override;
 
-  // TODO(crbug.com/1355633): Override from ax::mojom::Automation:
-  void DispatchTreeDestroyedEvent(const ui::AXTreeID& tree_id);
+  // ax::mojom::Automation:
+  void DispatchTreeDestroyedEvent(const ui::AXTreeID& tree_id) override;
   void DispatchActionResult(const ui::AXActionData& data, bool result);
   void DispatchAccessibilityEvents(
       const ui::AXTreeID& tree_id,
@@ -137,7 +138,7 @@ class FakeAccessibilityService
   std::vector<ui::AXTreeID> accessibility_events_;
   std::vector<ui::AXTreeID> location_changes_;
 
-  mojo::ReceiverSet<ax::mojom::Automation> automation_receivers_;
+  mojo::AssociatedReceiverSet<ax::mojom::Automation> automation_receivers_;
   mojo::RemoteSet<ax::mojom::AutomationClient> automation_client_remotes_;
 
   mojo::RemoteSet<ax::mojom::Tts> tts_remotes_;

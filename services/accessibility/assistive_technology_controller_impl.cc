@@ -34,7 +34,7 @@ void AssistiveTechnologyControllerImpl::BindAccessibilityServiceClient(
 }
 
 void AssistiveTechnologyControllerImpl::BindAutomation(
-    mojo::PendingRemote<mojom::Automation> automation,
+    mojo::PendingAssociatedRemote<mojom::Automation> automation,
     mojo::PendingReceiver<mojom::AutomationClient> automation_client) {
   accessibility_service_client_remote_->BindAutomation(
       std::move(automation), std::move(automation_client));

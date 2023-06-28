@@ -269,6 +269,7 @@ source_set("renderer") {
     "//extensions/common/api",
     "//gin",
     "//mojo/public/js:resources",
+    "//services/accessibility/public/mojom",
     "//services/metrics/public/cpp:metrics_cpp",
     "//skia",
     "//storage/common",

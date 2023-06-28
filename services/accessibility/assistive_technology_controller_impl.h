@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -41,10 +42,11 @@ class AssistiveTechnologyControllerImpl
   // Called by AutomationInternalBindings owned by a V8 instance
   // to request binding of mojo interfaces in the OS.
   // mojom::AccessibilityServiceClient:
-  void BindAutomation(mojo::PendingRemote<mojom::Automation> automation,
-                      mojo::PendingReceiver<mojom::AutomationClient>
-                          automation_client) override;
   void BindTts(mojo::PendingReceiver<mojom::Tts> tts_receiver) override;
+  void BindAutomation(
+      mojo::PendingAssociatedRemote<mojom::Automation> automation,
+      mojo::PendingReceiver<mojom::AutomationClient> automation_client)
+      override;
 
   // mojom::AssistiveTechnologyController:
   void EnableAssistiveTechnology(

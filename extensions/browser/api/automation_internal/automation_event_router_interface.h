@@ -24,8 +24,6 @@ namespace ui {
 struct AXActionData;
 }  // namespace ui
 
-struct ExtensionMsg_AccessibilityLocationChangeParams;
-
 namespace extensions {
 
 class AutomationEventRouterInterface {
@@ -36,7 +34,7 @@ class AutomationEventRouterInterface {
       const gfx::Point& mouse_location,
       std::vector<ui::AXEvent> events) = 0;
   virtual void DispatchAccessibilityLocationChange(
-      const ExtensionMsg_AccessibilityLocationChangeParams& params) = 0;
+      const content::AXLocationChangeNotificationDetails& details) = 0;
 
   // Notify all automation extensions that an accessibility tree was
   // destroyed. If |browser_context| is null, use the currently active context.

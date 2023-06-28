@@ -4,6 +4,8 @@
 
 #include "services/accessibility/fake_service_client.h"
 
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+
 namespace ax {
 FakeServiceClient::FakeServiceClient(mojom::AccessibilityService* service)
     : service_(service) {}
@@ -11,7 +13,7 @@ FakeServiceClient::FakeServiceClient(mojom::AccessibilityService* service)
 FakeServiceClient::~FakeServiceClient() = default;
 
 void FakeServiceClient::BindAutomation(
-    mojo::PendingRemote<ax::mojom::Automation> automation,
+    mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
     mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client) {
   automation_client_receivers_.Add(this, std::move(automation_client));
   automation_remotes_.Add(std::move(automation));

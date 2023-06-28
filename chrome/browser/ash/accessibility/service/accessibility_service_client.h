@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
@@ -36,10 +37,11 @@ class AccessibilityServiceClient
   ~AccessibilityServiceClient() override;
 
   // ax::mojom::AccessibilityServiceClient:
-  void BindAutomation(mojo::PendingRemote<ax::mojom::Automation> automation,
-                      mojo::PendingReceiver<ax::mojom::AutomationClient>
-                          automation_client) override;
   void BindTts(mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) override;
+  void BindAutomation(
+      mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
+      mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client)
+      override;
 
   void SetProfile(content::BrowserContext* profile);
 

@@ -22,6 +22,7 @@
 #include "extensions/renderer/ipc_message_sender.h"
 #include "extensions/renderer/string_source_map.h"
 #include "extensions/renderer/test_extensions_renderer_client.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "v8/include/v8-forward.h"
@@ -77,6 +78,10 @@ class TestIPCMessageSender : public IPCMessageSender {
                     const std::string& event_name,
                     const base::Value::Dict& filter,
                     bool remove_lazy_listener));
+  MOCK_METHOD2(
+      SendBindAutomationIPC,
+      void(ScriptContext* context,
+           mojo::PendingAssociatedRemote<ax::mojom::Automation> remote));
 
   MOCK_METHOD5(SendOpenMessageChannel,
                void(ScriptContext* script_context,

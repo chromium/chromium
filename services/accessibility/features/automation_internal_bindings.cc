@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "gin/function_template.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/accessibility/assistive_technology_controller_impl.h"
 #include "services/accessibility/automation_impl.h"
 #include "services/accessibility/features/bindings_isolate_holder.h"
@@ -196,24 +197,16 @@ void AutomationInternalBindings::Bind(
       FROM_HERE,
       base::BindOnce(
           [](base::WeakPtr<mojom::AccessibilityServiceClient> ax_service_client,
-             mojo::PendingReceiver<mojom::AutomationClient> remote,
-             mojo::PendingRemote<mojom::Automation> receiver) {
+             mojo::PendingReceiver<mojom::AutomationClient> receiver,
+             mojo::PendingAssociatedRemote<mojom::Automation> remote) {
             if (ax_service_client) {
-              ax_service_client->BindAutomation(std::move(receiver),
-                                                std::move(remote));
+              ax_service_client->BindAutomation(std::move(remote),
+                                                std::move(receiver));
             }
           },
           ax_service_client,
           automation_client_remote_.BindNewPipeAndPassReceiver(),
-          automation_receiver_.BindNewPipeAndPassRemote()));
-}
-
-void AutomationInternalBindings::DispatchTreeDestroyedEvent(
-    const ui::AXTreeID& tree_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1357889): Dispatch to V8, via
-  // automationInternal.OnAccessibilityTreeDestroyed, paralleling
-  // extensions/browser/api/automation_internal/automation_event_router.cc.
+          GetPendingRemote()));
 }
 
 void AutomationInternalBindings::DispatchActionResult(

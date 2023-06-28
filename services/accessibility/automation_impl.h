@@ -31,9 +31,8 @@ class AutomationImpl : public mojom::Automation {
       mojo::PendingReceiver<mojom::Automation> automation_receiver);
 
  private:
-  // TODO(crbug.com/1355633): Override these from
   // mojom::Automation:
-  void DispatchTreeDestroyedEvent(const ui::AXTreeID& tree_id);
+  void DispatchTreeDestroyedEvent(const ui::AXTreeID& tree_id) override;
   void DispatchActionResult(const ui::AXActionData& data, bool result);
   void DispatchAccessibilityEvents(
       const ui::AXTreeID& tree_id,

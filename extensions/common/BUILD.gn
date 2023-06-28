@@ -71,6 +71,7 @@ mojom("mojom") {
     "mojom/api_permission_id.mojom",
     "mojom/app_window.mojom",
     "mojom/automation_query.mojom",
+    "mojom/automation_registry.mojom",
     "mojom/channel.mojom",
     "mojom/code_injection.mojom",
     "mojom/css_origin.mojom",
@@ -99,6 +100,7 @@ mojom("mojom") {
     "//content/public/common:interfaces",
     "//extensions/common/api:mojom",
     "//mojo/public/mojom/base",
+    "//services/accessibility/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
