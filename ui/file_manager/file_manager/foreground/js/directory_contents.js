@@ -460,6 +460,7 @@ export class SearchV2ContentScanner extends ContentScanner {
           // Error callback.
           () => {
             if (!this.cancelled_ && collectedEntries.length >= maxResults) {
+              metrics.recordInterval(`Search.${metricVariant}.Latency`);
               resolve(collectedEntries);
             } else {
               reject();
