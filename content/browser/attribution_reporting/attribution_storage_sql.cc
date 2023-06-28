@@ -1316,7 +1316,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                                   AggregatableResult::kInternalError);
   }
 
-  // Early exit if done modifying the storage. Dropped reports still need to
+  // Early exit if done modifying the storage. Noised reports still need to
   // clean sources.
   if (!IsSuccessResult(store_event_level_status) &&
       !IsSuccessResult(store_aggregatable_status) &&
