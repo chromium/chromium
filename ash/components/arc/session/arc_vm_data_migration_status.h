@@ -47,6 +47,15 @@ enum class ArcVmDataMigrationFinishReason {
   kMaxValue = kMigrationFailure,
 };
 
+enum class ArcVmDataMigrationStrategy {
+  // The user should not be prompted to go through /data migration.
+  kDoNotPrompt = 0,
+  // The user should be prompted to go through /data migration via
+  // a notification.
+  kPrompt = 1,
+  kMaxValue = kPrompt,
+};
+
 std::ostream& operator<<(std::ostream& os, ArcVmDataMigrationStatus status);
 
 }  // namespace arc

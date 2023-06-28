@@ -32634,6 +32634,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1096" label="DeviceLoginScreenGeolocationAccessLevel"/>
   <int value="1097" label="DeviceReportNetworkEvents"/>
   <int value="1098" label="SafeBrowsingExtensionProtectionAllowed"/>
+  <int value="1125" label="ArcVmDataMigrationStrategy"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

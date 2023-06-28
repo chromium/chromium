@@ -167,6 +167,10 @@ const char kArcVmmSwapOutTime[] = "arc_vmm_swap_out_time";
 // current ARC session.
 const char kWebViewProcessStarted[] = "arc.webview.started";
 
+// An integer preference to indicate the strategy of ARCVM /data migration for
+// enterprise user.
+const char kArcVmDataMigrationStrategy[] = "arc.vm_data_migration_strategy";
+
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Sorted in lexicographical order.
   RegisterDailyMetricsPrefs(registry);
@@ -226,6 +230,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       kArcVmDataMigrationStatus,
       static_cast<int>(ArcVmDataMigrationStatus::kUnnotified));
+  registry->RegisterIntegerPref(
+      kArcVmDataMigrationStrategy,
+      static_cast<int>(ArcVmDataMigrationStrategy::kDoNotPrompt));
 }
 
 }  // namespace prefs
