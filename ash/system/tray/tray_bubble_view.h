@@ -46,6 +46,18 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
  public:
   METADATA_HEADER(TrayBubbleView);
 
+  // All the types of tray bubbles. This is defined in the init params when
+  // constructing the bubble.
+  enum class TrayBubbleType {
+    // Default. This contains bubbles that are anchored to a shelf pod.
+    kShelfPodBubble = 0,
+    // Bubble used for accessibility.
+    kAccessibilityBubble = 1,
+    // This contains slider bubbles and toast bubbles.
+    kSecondaryBubble = 2,
+    kMaxValue = kSecondaryBubble
+  };
+
   class ASH_EXPORT Delegate {
    public:
     Delegate();
@@ -138,6 +150,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     bool transparent = false;
     // Should use the fixed max_height from this param.
     bool use_fixed_height = false;
+    // The type of this tray bubble.
+    TrayBubbleType type = TrayBubbleType::kShelfPodBubble;
   };
 
   explicit TrayBubbleView(const InitParams& init_params);

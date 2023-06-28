@@ -299,6 +299,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
 
   TrayBubbleView::InitParams init_params =
       CreateInitParamsForTrayBubble(tray_, /*anchor_to_shelf_corner=*/true);
+  init_params.type = TrayBubbleView::TrayBubbleType::kSecondaryBubble;
   init_params.reroute_event_handler = false;
 
   // Use this controller as the delegate rather than the tray.

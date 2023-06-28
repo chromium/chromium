@@ -44,6 +44,7 @@ void SwitchAccessBackButtonBubbleController::ShowBackButton(
     init_params.is_anchored_to_status_area = false;
     init_params.preferred_width = back_button_view_->size().width();
     init_params.translucent = true;
+    init_params.type = TrayBubbleView::TrayBubbleType::kAccessibilityBubble;
 
     bubble_view_ = new TrayBubbleView(init_params);
     bubble_view_->SetArrow(views::BubbleBorder::BOTTOM_RIGHT);
