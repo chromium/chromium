@@ -169,6 +169,10 @@ class CORE_EXPORT NGLayoutResult final
     return oof_insets_for_get_computed_style_;
   }
 
+  // Called after subtree layout to make sure the fields for out-of-flow
+  // positioned nodes are set.
+  void CopyMutableOutOfFlowData(const NGLayoutResult& previous_result) const;
+
   // Returns if we can use the first-tier OOF-positioned cache.
   bool CanUseOutOfFlowPositionedFirstTierCache() const {
     DCHECK(physical_fragment_->IsOutOfFlowPositioned());

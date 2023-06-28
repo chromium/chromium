@@ -302,6 +302,18 @@ NGLayoutResult::RareData* NGLayoutResult::EnsureRareData() {
   return rare_data_;
 }
 
+void NGLayoutResult::CopyMutableOutOfFlowData(
+    const NGLayoutResult& other) const {
+  if (bitfields_.has_oof_insets_for_get_computed_style) {
+    return;
+  }
+  GetMutableForOutOfFlow().SetOutOfFlowInsetsForGetComputedStyle(
+      other.OutOfFlowInsetsForGetComputedStyle(),
+      other.CanUseOutOfFlowPositionedFirstTierCache());
+  GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
+      other.OutOfFlowPositionedOffset());
+}
+
 #if DCHECK_IS_ON()
 void NGLayoutResult::CheckSameForSimplifiedLayout(
     const NGLayoutResult& other,

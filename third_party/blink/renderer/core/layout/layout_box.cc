@@ -960,6 +960,10 @@ void LayoutBox::LayoutSubtreeRoot() {
   const NGLayoutResult* result = NGBlockNode(this).Layout(space);
   GetDocument().GetFrame()->GetInputMethodController().DidLayoutSubtree(*this);
 
+  if (IsOutOfFlowPositioned()) {
+    result->CopyMutableOutOfFlowData(*previous_result);
+  }
+
   // Even if we are a layout root, our baseline may have shifted. In this
   // (rare) case, mark our containing-block for layout.
   //
