@@ -226,10 +226,9 @@
       --oobe-optin-title-font-family: var(--cros-button-2-font-family);
       --oobe-optin-title-font-weight: var(--cros-button-2-font-weight);
 
-      /* TODO(b/287611153): Replace this with display0 token when ready. */
-      --oobe-welcome-header-font-size: 52px;
-      --oobe-welcome-header-line-height: 60px;
+      --oobe-welcome-header-font-size: var(--cros-display-0-font-size);
       --oobe-welcome-header-font-weight: 400; /* regular */
+      --oobe-welcome-header-line-height: var(--cros-display-0-line-height);
 
       --oobe-welcome-subheader-font-size:
           var(--cros-display-6_regular-font-size);
@@ -238,8 +237,7 @@
     }
 
     html.simon-enabled {
-      /* TODO(b/287611153): Replace this with display0 token when ready. */
-      --oobe-welcome-header-font-size: 52px;
-      --oobe-welcome-header-line-height: 60px;
+      --oobe-welcome-header-font-size: var(--cros-display-0-font-size);
       --oobe-welcome-header-font-weight: 400; /* regular */
+      --oobe-welcome-header-line-height: var(--cros-display-0-line-height);
     }
