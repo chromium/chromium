@@ -27,7 +27,9 @@ export interface Feature {
 
 export interface ExperimentalFeaturesData {
   supportedFeatures: Feature[];
+  // <if expr="not is_ios">
   unsupportedFeatures: Feature[];
+  // </if>
   needsRestart: boolean;
   showBetaChannelPromotion: boolean;
   showDevChannelPromotion: boolean;
@@ -36,7 +38,9 @@ export interface ExperimentalFeaturesData {
 }
 
 export interface FlagsBrowserProxy {
+  // <if expr="not is_ios">
   restartBrowser(): void;
+  // </if>
   // <if expr="is_chromeos">
   crosUrlFlagsRedirect(): void;
   // </if>
@@ -48,9 +52,11 @@ export interface FlagsBrowserProxy {
 }
 
 export class FlagsBrowserProxyImpl implements FlagsBrowserProxy {
+  // <if expr="not is_ios">
   restartBrowser() {
     chrome.send('restartBrowser');
   }
+  // </if>
 
   // <if expr="is_chromeos">
   crosUrlFlagsRedirect() {

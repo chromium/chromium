@@ -6,19 +6,16 @@
 import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
-import 'chrome://resources/js/jstemplate_compiled.js';
 import './strings.m.js';
 import './experiment.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {isIOS} from 'chrome://resources/js/platform.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {$, getDeepActiveElement, getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 import {FlagsExperimentElement} from './experiment.js';
-import {ExperimentalFeaturesData, FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
+import {ExperimentalFeaturesData, Feature, FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
 
 let lastChanged: HTMLElement|null = null;
 let lastFocused: HTMLElement|null = null;
@@ -63,15 +60,6 @@ function selectTab(selectedTabEl: HTMLElement) {
   }
 }
 
-declare global {
-  class JsEvalContext {
-    constructor(data: any);
-  }
-
-  function jstGetTemplate(id: string): HTMLElement;
-  function jstProcess(context: JsEvalContext, template: HTMLElement): void;
-}
-
 /**
  * This variable structure is here to document the structure that the template
  * expects to correctly populate the page.
@@ -79,58 +67,35 @@ declare global {
 
 /**
  * Takes the |experimentalFeaturesData| input argument which represents data
- * about all the current feature entries and populates the html jstemplate with
+ * about all the current feature entries and populates the page with
  * that data. It expects an object structure like the above.
  * @param experimentalFeaturesData Information about all experiments.
  */
-function renderTemplate(experimentalFeaturesData: ExperimentalFeaturesData) {
-  const templateToProcess = jstGetTemplate('tab-content-available-template');
-  const context = new JsEvalContext(experimentalFeaturesData);
-  const content = getRequiredElement('tab-content-available');
+function render(experimentalFeaturesData: ExperimentalFeaturesData) {
+  const defaultFeatures: Feature[] = [];
+  const nonDefaultFeatures: Feature[] = [];
 
-  // Duplicate the template into the content area.
-  // This prevents the misrendering of available flags when the template
-  // is rerendered. Example - resetting flags.
-  content.textContent = '';
-  content.appendChild(templateToProcess);
+  experimentalFeaturesData.supportedFeatures.forEach(
+      f => (f.is_default ? defaultFeatures : nonDefaultFeatures).push(f));
 
-  // Process the templates: available / unavailable flags.
-  jstProcess(context, templateToProcess);
+  renderExperiments(
+      nonDefaultFeatures, getRequiredElement('non-default-experiments'));
 
-  // Unavailable flags are not shown on iOS.
-  const unavailableTemplate = $('tab-content-unavailable');
-  if (unavailableTemplate) {
-    jstProcess(context, getRequiredElement('tab-content-unavailable'));
-  }
+  renderExperiments(defaultFeatures, getRequiredElement('default-experiments'));
+
+  // <if expr="not is_ios">
+  renderExperiments(
+      experimentalFeaturesData.unsupportedFeatures,
+      getRequiredElement('unavailable-experiments'));
+  // </if>
 
   showRestartToast(experimentalFeaturesData.needsRestart);
 
-  // Add handlers to dynamically created HTML elements.
-  const experiments = document.body.querySelectorAll('flags-experiment');
-  for (const experiment of experiments) {
-    const select = experiment.getSelect();
-    if (select) {
-      experiment.addEventListener('select-change', () => {
-        showRestartToast(true);
-        lastChanged = select;
-        return false;
-      });
-      registerFocusEvents(select);
-    }
-
-    const textarea = experiment.getTextarea();
-    if (textarea) {
-      experiment.addEventListener('textarea-change', () => {
-        showRestartToast(true);
-        return false;
-      });
-    }
-  }
-
-  assert(restartButton || isIOS);
+  // <if expr="not is_ios">
   if (restartButton) {
     restartButton.onclick = FlagsBrowserProxyImpl.getInstance().restartBrowser;
   }
+  // </if>
 
   // Tab panel selection.
   for (const tab of tabs) {
@@ -243,6 +208,34 @@ function resetAllFlags() {
   requestExperimentalFeaturesData();
 }
 
+function renderExperiments(features: Feature[], container: HTMLElement) {
+  const fragment = document.createDocumentFragment();
+  for (const feature of features) {
+    const experiment = document.createElement('flags-experiment');
+    experiment.data = feature;
+    experiment.id = feature.internal_name;
+    const select = experiment.getSelect();
+    if (select) {
+      experiment.addEventListener('select-change', () => {
+        showRestartToast(true);
+        lastChanged = select;
+        return false;
+      });
+      registerFocusEvents(select);
+    }
+
+    const textarea = experiment.getTextarea();
+    if (textarea) {
+      experiment.addEventListener('textarea-change', () => {
+        showRestartToast(true);
+        return false;
+      });
+    }
+    fragment.appendChild(experiment);
+  }
+  container.replaceChildren(fragment);
+}
+
 /**
  * Show the restart toast.
  * @param show Setting to toggle showing / hiding the toast.
@@ -265,7 +258,7 @@ function showRestartToast(show: boolean) {
 function returnExperimentalFeatures(
     experimentalFeaturesData: ExperimentalFeaturesData) {
   const bodyContainer = getRequiredElement('body-container');
-  renderTemplate(experimentalFeaturesData);
+  render(experimentalFeaturesData);
 
   if (experimentalFeaturesData.showBetaChannelPromotion) {
     getRequiredElement('channel-promo-beta').hidden = false;
