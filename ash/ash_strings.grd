@@ -6710,6 +6710,9 @@ New install
       <message name="IDS_GLANCEABLES_TASKS_ACTION_BUTTON_LABEL" desc="The glanceable displays tasks from a task list that's selected in a drop-down box within the glanceable UI. Interacting with the button and label at the bottom of the glanceable opens the Tasks companion app.">
         See all
       </message>
+      <message name="IDS_GLANCEABLES_CLASSROOM_ASSIGNMENT_DUE_TODAY" desc="Classroom glanceable displays upcoming/missed/completed assignments from Google Classroom. This text is displayed for assignments that are due today. In other cases date formatter is used and no translation is needed.">
+        Today
+      </message>
 
       <!-- Do not disturb notification -->
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do not disturb' feature is enabled.">

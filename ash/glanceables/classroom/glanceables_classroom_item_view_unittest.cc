@@ -4,11 +4,16 @@
 
 #include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
 
+#include <string>
+#include <vector>
+
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "base/time/time.h"
+#include "base/time/time_override.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/image_view.h"
@@ -74,32 +79,37 @@ TEST_F(GlanceablesClassroomItemViewTest, RendersWithoutDueDateTime) {
 }
 
 TEST_F(GlanceablesClassroomItemViewTest, RendersWithDueDateTime) {
+  // "Now" equals to Sunday, 4/9/2023 5:15pm in the overridden timezone.
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() {
+        base::Time now;
+        EXPECT_TRUE(base::Time::FromString("10 Apr 2023 00:15 GMT", &now));
+        return now;
+      },
+      nullptr, nullptr);
   ash::system::ScopedTimezoneSettings tz(u"America/Los_Angeles");
 
-  base::Time due;
-  ASSERT_TRUE(base::Time::FromString("10 Apr 2023 00:15 GMT", &due));
+  const std::vector<std::u16string> expected_due_date_labels{
+      u"Apr 8", u"Today", u"Mon", u"Tue",   u"Wed",
+      u"Thu",   u"Fri",   u"Sat", u"Apr 16"};
 
-  const auto assignment = GlanceablesClassroomStudentAssignment(
-      "Algebra", "Solve equation",
-      GURL("https://classroom.google.com/test-link-1"), due);
-  const auto view = GlanceablesClassroomItemView(&assignment);
+  // For 9 subsequent assignments starting from "yesterday", check their due
+  // date and time labels.
+  base::Time due = base::Time::Now() - base::Days(1);
+  for (size_t i = 0; i < 9; ++i) {
+    const auto assignment = GlanceablesClassroomStudentAssignment(
+        "Algebra", "Solve equation",
+        GURL("https://classroom.google.com/test-link-1"), due);
+    const auto view = GlanceablesClassroomItemView(&assignment);
 
-  const auto* const icon_view = GetIconView(view);
-  const auto* const course_work_title_label = GetCourseWorkTitleLabel(view);
-  const auto* const course_title_label = GetCourseTitleLabel(view);
-  const auto* const due_date_label = GetDueDateLabel(view);
-  const auto* const due_time_label = GetDueTimeLabel(view);
+    const auto* const due_date_label = GetDueDateLabel(view);
+    const auto* const due_time_label = GetDueTimeLabel(view);
 
-  ASSERT_TRUE(icon_view);
-  ASSERT_TRUE(course_work_title_label);
-  ASSERT_TRUE(course_title_label);
-  ASSERT_TRUE(due_date_label);
-  ASSERT_TRUE(due_time_label);
+    EXPECT_EQ(due_date_label->GetText(), expected_due_date_labels.at(i));
+    EXPECT_EQ(due_time_label->GetText(), u"5:15\x202FPM");
 
-  EXPECT_EQ(course_work_title_label->GetText(), u"Solve equation");
-  EXPECT_EQ(course_title_label->GetText(), u"Algebra");
-  EXPECT_EQ(due_date_label->GetText(), u"Today");
-  EXPECT_EQ(due_time_label->GetText(), u"5:15\x202FPM");
+    due += base::Days(1);
+  }
 }
 
 TEST_F(GlanceablesClassroomItemViewTest, RendersDueTimeIn24HrFormat) {
@@ -117,6 +127,24 @@ TEST_F(GlanceablesClassroomItemViewTest, RendersDueTimeIn24HrFormat) {
 
   ASSERT_TRUE(due_time_label);
   EXPECT_EQ(due_time_label->GetText(), u"17:15");
+}
+
+TEST_F(GlanceablesClassroomItemViewTest, DoesNotRenderDueTimeFor2359) {
+  // 1 - for ICU formatters; 2 - for `base::Time::LocalExplode`.
+  ash::system::ScopedTimezoneSettings tz(u"America/Los_Angeles");
+  calendar_test_utils::ScopedLibcTimeZone libc_tz("America/Los_Angeles");
+
+  base::Time due;
+  ASSERT_TRUE(base::Time::FromString("10 Apr 2023 06:59 GMT", &due));
+
+  const auto assignment = GlanceablesClassroomStudentAssignment(
+      "Algebra", "Solve equation",
+      GURL("https://classroom.google.com/test-link-1"), due);
+  const auto view = GlanceablesClassroomItemView(&assignment);
+  const auto* const due_time_label = GetDueTimeLabel(view);
+
+  ASSERT_TRUE(due_time_label);
+  EXPECT_TRUE(due_time_label->GetText().empty());
 }
 
 }  // namespace ash

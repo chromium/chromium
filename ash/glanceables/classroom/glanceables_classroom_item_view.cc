@@ -10,13 +10,17 @@
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
+#include "ash/system/time/date_helper.h"
+#include "base/check.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -49,12 +53,41 @@ constexpr int kIconSize = 20;
 // Styles for the container containing due date and time labels.
 constexpr auto kDueLabelsMargin = gfx::Insets::VH(0, 16);
 
+constexpr char kDayOfWeekFormatterPattern[] = "EEE";      // "Wed"
+constexpr char kMonthAndDayFormatterPattern[] = "MMM d";  // "Feb 28"
+
 std::u16string GetFormattedDueDate(const base::Time& due) {
-  // TODO(b/283370862): return "Today" / day of week / formatted date label.
-  return u"Today";
+  const auto midnight_today = base::Time::Now().LocalMidnight();
+  const auto midnight_tomorrow = midnight_today + base::Days(1);
+
+  if (midnight_today <= due && due < midnight_tomorrow) {
+    return l10n_util::GetStringUTF16(
+        IDS_GLANCEABLES_CLASSROOM_ASSIGNMENT_DUE_TODAY);
+  }
+
+  const auto midnight_in_7_days_from_today = midnight_today + base::Days(7);
+  auto* const date_helper = DateHelper::GetInstance();
+  CHECK(date_helper);
+
+  const auto formatter = date_helper->CreateSimpleDateFormatter(
+      midnight_tomorrow <= due && due < midnight_in_7_days_from_today
+          ? kDayOfWeekFormatterPattern
+          : kMonthAndDayFormatterPattern);
+  return date_helper->GetFormattedTime(&formatter, due);
 }
 
 std::u16string GetFormattedDueTime(const base::Time& due) {
+  base::Time::Exploded exploded_due;
+  due.LocalExplode(&exploded_due);
+  if (exploded_due.hour == 23 && exploded_due.minute == 59) {
+    // Do not render time for assignments without specified due time (in this
+    // case API automatically sets due time to 23:59).
+    // NOTE: there is no way to differentiate missing due time vs. explicitly
+    // set to 23:59 by user. Though the second case is less likely and
+    // rendering it do not bring much value.
+    return u"";
+  }
+
   const bool use_12_hour_clock =
       Shell::Get()->system_tray_model()->clock()->hour_clock_type() ==
       base::k12HourClock;
