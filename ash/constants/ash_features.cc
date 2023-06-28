@@ -313,9 +313,7 @@ BASE_FEATURE(kBorealisStorageBallooning,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable or disable calendar jelly.
-BASE_FEATURE(kCalendarJelly,
-             "CalendarJelly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCalendarJelly, "CalendarJelly", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables to allow time-lapse video recording in the camera app.
 BASE_FEATURE(kCameraAppTimeLapse,
