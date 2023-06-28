@@ -3885,8 +3885,6 @@ if (!is_android) {
         "../browser/ash/accessibility/live_caption/system_live_caption_service_browsertest.cc",
         "../browser/ash/accessibility/magnification_controller_browsertest.cc",
         "../browser/ash/accessibility/magnification_manager_browsertest.cc",
-        "../browser/ash/accessibility/magnifier_animation_waiter.cc",
-        "../browser/ash/accessibility/magnifier_animation_waiter.h",
         "../browser/ash/accessibility/select_to_speak_browsertest.cc",
         "../browser/ash/accessibility/service/accessibility_service_client_browsertest.cc",
         "../browser/ash/accessibility/spoken_feedback_app_list_browsertest.cc",
