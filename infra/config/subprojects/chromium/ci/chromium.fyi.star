@@ -1494,9 +1494,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "lnx",
     ),
-    # TODO(b/273407069): enable reproxy mode by default.
-    siso_configs = ["remote_all", "rewrapper_to_reproxy"],
-    siso_experiments = ["use-reproxy"],
 )
 
 build_perf_builder(
@@ -1528,6 +1525,8 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "lnxss",
     ),
+    # TODO(b/273407069): enable reproxy mode by default.
+    siso_configs = ["remote_all", "rewrapper_to_reproxy"],
 )
 
 build_perf_builder(
