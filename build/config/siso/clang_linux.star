@@ -27,6 +27,7 @@ __filegroups = {
         "type": "glob",
         "includes": ["*.h", "crtbegin.o"],
     },
+    # TODO: remove buildtools/third_party/lib* once migrated to third_party/lib*
     "buildtools/third_party/libc++/trunk/include:headers": {
         "type": "glob",
         "includes": ["*"],
@@ -44,6 +45,16 @@ __filegroups = {
     "third_party/android_toolchain/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/local/include:include": {
         "type": "glob",
         "includes": ["*"],
+    },
+
+    "third_party/libc++/trunk/include:headers": {
+        "type": "glob",
+        "includes": ["*"],
+        # can't use "*.h", because c++ headers have no extension.
+    },
+    "third_party/libc++abi/trunk/include:headers": {
+        "type": "glob",
+        "includes": ["*.h"],
     },
 
     # toolchain root
@@ -114,8 +125,12 @@ def __step_config(ctx, step_config):
         # buildtools/third_party/libc++/trunk/include:headers,
         # but scandeps doesn't scan `__config` file, which uses
         # `#include <__config_site>`
+        # TODO: remove buildtools/third_party/lib* once migrated to third_party/lib*
         "buildtools/third_party/libc++": [
             "buildtools/third_party/libc++/__config_site",
+        ],
+        "third_party/libc++": [
+            "third_party/libc++/__config_site",
         ],
     })
     step_config["rules"].extend([
