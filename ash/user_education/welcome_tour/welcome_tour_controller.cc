@@ -17,6 +17,7 @@
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
 #include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
+#include "ash/user_education/welcome_tour/welcome_tour_notification_blocker.h"
 #include "ash/user_education/welcome_tour/welcome_tour_scrim.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check_op.h"
@@ -316,9 +317,9 @@ void WelcomeTourController::StartTutorial() {
 // TODO(http://b/277091733): Stabilize continue section in launcher.
 // TODO(http://b/277091715): Stabilize pods in shelf.
 // TODO(http://b/277091619): Stabilize wallpaper.
-// TODO(http://b/277091643): Stabilize notifications.
 // TODO(http://b/277091624): Stabilize nudges/toasts.
 void WelcomeTourController::OnWelcomeTourStarted() {
+  notification_blocker_ = std::make_unique<WelcomeTourNotificationBlocker>();
   scrim_ = std::make_unique<WelcomeTourScrim>();
 
   for (auto& observer : observer_list_) {
@@ -332,7 +333,6 @@ void WelcomeTourController::OnWelcomeTourStarted() {
 // TODO(http://b/277091733): Restore continue section in launcher.
 // TODO(http://b/277091715): Restore pods in shelf.
 // TODO(http://b/277091619): Restore wallpaper.
-// TODO(http://b/277091643): Restore notifications.
 // TODO(http://b/277091624): Restore nudges/toasts.
 void WelcomeTourController::OnWelcomeTourEnded(bool completed) {
   if (completed) {
@@ -341,6 +341,7 @@ void WelcomeTourController::OnWelcomeTourEnded(bool completed) {
         display::Screen::GetScreen()->GetPrimaryDisplay().id());
   }
 
+  notification_blocker_.reset();
   scrim_.reset();
 
   tablet_mode_observation_.Reset();

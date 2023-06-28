@@ -22,6 +22,7 @@ namespace ash {
 
 class SessionController;
 class WelcomeTourControllerObserver;
+class WelcomeTourNotificationBlocker;
 class WelcomeTourScrim;
 
 // Controller responsible for the Welcome Tour feature tutorial. Note that the
@@ -72,6 +73,11 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   // regardless of whether the tour was `completed` or aborted.
   void OnWelcomeTourStarted();
   void OnWelcomeTourEnded(bool completed);
+
+  // Blocks all notifications while the Welcome Tour is in progress. Any
+  // notifications received during the tour will appear in the Notification
+  // Center after the tour is over.
+  std::unique_ptr<WelcomeTourNotificationBlocker> notification_blocker_;
 
   // Used to apply a scrim to the help bubble container on all root windows
   // while the Welcome Tour is in progress. Exists only while the Welcome Tour

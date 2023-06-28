@@ -9,9 +9,12 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/system_notification_builder.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/power/battery_notification.h"
 #include "ash/user_education/mock_user_education_delegate.h"
 #include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/user_education_constants.h"
@@ -25,6 +28,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
@@ -38,6 +42,9 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/views/test/widget_test.h"
 
 namespace ash {
@@ -121,6 +128,39 @@ MATCHER_P3(EventStep,
          Matches(ElementSpecifierEq(element_specifier))(arg) &&
          arg.context_mode() == context_mode &&
          arg.name_elements_callback().is_null() != has_name_elements_callback;
+}
+
+// Helpers ---------------------------------------------------------------------
+
+// Adds a simple notification to the `message_center::MessageCenter` with the
+// given `id`. If the optional argument `is_system_priority` is true, it will be
+// set to the highest priority.
+void AddNotification(const std::string& id, bool is_system_priority = false) {
+  auto notification =
+      SystemNotificationBuilder()
+          .SetId(id)
+          .SetCatalogName(NotificationCatalogName::kTestCatalogName)
+          .SetDelegate(
+              base::MakeRefCounted<message_center::NotificationDelegate>())
+          .BuildPtr();
+  if (is_system_priority) {
+    notification->SetSystemPriority();
+  }
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
+}
+
+// Checks the given expected notification counts against the current actual
+// values in `message_center::MessageCenter`.
+void ExpectNotificationCounts(size_t total_notifications,
+                              size_t visible_notifications,
+                              size_t popup_notifications) {
+  auto* message_center = message_center::MessageCenter::Get();
+  EXPECT_EQ(message_center->GetNotifications().size(), total_notifications);
+  EXPECT_EQ(message_center->GetVisibleNotifications().size(),
+            visible_notifications);
+  EXPECT_EQ(message_center->GetPopupNotifications().size(),
+            popup_notifications);
 }
 
 }  // namespace
@@ -399,6 +439,110 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
 };
 
 // Tests -----------------------------------------------------------------------
+
+// Verifies that notifications are blocked during and only during the Welcome
+// Tour.
+TEST_F(WelcomeTourControllerRunTest, NotificationBlocking) {
+  constexpr char kSystemPriorityId[] = "system";
+  auto* message_center = message_center::MessageCenter::Get();
+
+  // Case: Before Welcome Tour.
+  // Most notifications should be muted, with few exceptions, because no user is
+  // logged in.
+  {
+    SCOPED_TRACE("Initial state");
+    ExpectNotificationCounts(/*total_notifications=*/0u,
+                             /*visible_notifications=*/0u,
+                             /*popup_notifications=*/0u);
+  }
+
+  {
+    SCOPED_TRACE("Simple notification before login");
+    AddNotification("test1");
+    ExpectNotificationCounts(
+        /*total_notifications=*/1u,
+        /*visible_notifications=*/0u,
+        /*popup_notifications=*/0u);
+  }
+
+  {
+    SCOPED_TRACE("Battery notification before login");
+
+    // Use the id from `BatteryNotification` to confirm that those notifications
+    // are not muted, as battery notifications show even during OOBE. Note that
+    // it does not have system priority; the OOBE exception is based on its id.
+    AddNotification(BatteryNotification::kNotificationId);
+    ExpectNotificationCounts(
+        /*total_notifications=*/2u,
+        /*visible_notifications=*/1u,
+        /*popup_notifications=*/1u);
+  }
+
+  // Case: During Welcome Tour.
+  // Notification blocking should hide notifications, including hiding any
+  // existing popups.
+  ASSERT_NO_FATAL_FAILURE(
+      Run(/*in_progress_callback=*/base::BindLambdaForTesting([&]() {
+        {
+          SCOPED_TRACE("Beginning of Welcome Tour");
+
+          // TODO(http:/b/286590651): Once `NotificationBlocker` properly
+          // updates notification visibility on construction,
+          // `visible_notifications` should be `0u` here.
+          ExpectNotificationCounts(
+              /*total_notifications=*/2u,
+              /*visible_notifications=*/2u,
+              /*popup_notifications=*/0u);
+        }
+
+        {
+          SCOPED_TRACE("Simple notification during Welcome Tour");
+          AddNotification("test2");
+          ExpectNotificationCounts(
+              /*total_notifications=*/3u,
+              /*visible_notifications=*/0u,
+              /*popup_notifications=*/0u);
+        }
+
+        {
+          SCOPED_TRACE("System priority notification during Welcome Tour");
+
+          // System priority notifications should show a popup after the tour is
+          // over.
+          AddNotification(kSystemPriorityId, /*is_system_priority=*/true);
+          ExpectNotificationCounts(
+              /*total_notifications=*/4u,
+              /*visible_notifications=*/0u,
+              /*popup_notifications=*/0u);
+        }
+      })));
+
+  // Case: After Welcome Tour.
+  // All notifications should now be shown in the list. Notifications that
+  // happened before or during the tour should not have popups, but new
+  // notifications should.
+  {
+    SCOPED_TRACE("Just after Welcome Tour");
+    ExpectNotificationCounts(
+        /*total_notifications=*/4u,
+        /*visible_notifications=*/4u,
+        /*popup_notifications=*/1u);
+  }
+
+  // Confirm that the one popup showing is the one with system priority.
+  EXPECT_THAT(message_center->GetPopupNotifications(),
+              ElementsAre(Property(&message_center::Notification::id,
+                                   Eq(kSystemPriorityId))));
+
+  {
+    SCOPED_TRACE("Notification after Welcome Tour");
+    AddNotification("test3");
+    ExpectNotificationCounts(
+        /*total_notifications=*/5u,
+        /*visible_notifications=*/5u,
+        /*popup_notifications=*/2u);
+  }
+}
 
 // Verifies that scrims are added to all root windows only while the Welcome
 // Tour is in progress.

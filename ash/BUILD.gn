@@ -917,6 +917,8 @@ component("ash") {
     "user_education/welcome_tour/welcome_tour_controller_observer.h",
     "user_education/welcome_tour/welcome_tour_dialog.cc",
     "user_education/welcome_tour/welcome_tour_dialog.h",
+    "user_education/welcome_tour/welcome_tour_notification_blocker.cc",
+    "user_education/welcome_tour/welcome_tour_notification_blocker.h",
     "user_education/welcome_tour/welcome_tour_scrim.cc",
     "user_education/welcome_tour/welcome_tour_scrim.h",
     "wm/multi_display/persistent_window_controller.cc",
