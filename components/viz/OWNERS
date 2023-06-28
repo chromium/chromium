@@ -9,7 +9,6 @@
 vmpstr@chromium.org
 
 # renderers (GL/Skia/Software)
-rjkroege@chromium.org
 ccameron@chromium.org
 penghuang@chromium.org
 vasilyt@chromium.org
@@ -18,7 +17,6 @@ vasilyt@chromium.org
 per-file skia_*=michaelludwig@google.com
 
 # display_embedder / ozone
-rjkroege@chromium.org
 
 # frame sinks / surfaces
 kylechar@chromium.org
@@ -28,7 +26,6 @@ jonross@chromium.org
 kylechar@chromium.org
 
 # hit testing
-rjkroege@chromium.org
 jonross@chromium.org
 
 # math / geometry
