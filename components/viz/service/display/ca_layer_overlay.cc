@@ -33,17 +33,17 @@ namespace {
 // disabled.
 constexpr size_t kLayerLimitDefault = 128;
 
-// The new limit if kCALayerNewLimit is enabled. It can be overriden by the
+// The new limit if kCALayerNewLimit is enabled. It can be overridden by the
 // "default" feature parameters.
-constexpr size_t kLayerNewLimitDefault = 512;
+constexpr size_t kLayerNewLimitDefault = 1024;
 
 // The default CALayer number allowed for CoreAnimation with many videos (video
 // count >= kMaxNumVideos) when kCALayerNewLimit is disabled.
 constexpr size_t kLayerLimitWithManyVideos = 300;
 
 // The new limit with many videos if kCALayerNewLimit is enabled. It can be
-// overriden by the "many-video" feature parameters.
-constexpr size_t kLayerNewLimitWithManyVideos = 512;
+// overridden by the "many-video" feature parameters.
+constexpr size_t kLayerNewLimitWithManyVideos = 1024;
 
 // If there are too many RenderPassDrawQuads, we shouldn't use Core
 // Animation to present them as individual layers, since that potentially
