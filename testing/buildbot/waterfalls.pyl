@@ -1842,7 +1842,7 @@
       'ToTLinuxOfficial': {
         'mixins': [
           'chrome-tester-service-account',
-          'linux-bionic',
+          'linux-jammy',
           'chrome-swarming-pool',
         ],
         'test_suites': {
