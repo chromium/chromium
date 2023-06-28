@@ -3567,10 +3567,6 @@ const char kZeroCopyDescription[] =
 const char kEnableVulkanName[] = "Vulkan";
 const char kEnableVulkanDescription[] = "Use vulkan as the graphics backend.";
 
-const char kSharedHighlightingAmpName[] = "Shared Highlighting for AMP Viewers";
-const char kSharedHighlightingAmpDescription[] =
-    "Enables Shared Highlighting for AMP Viwers.";
-
 const char kSharedHighlightingManagerName[] = "Refactoring Shared Highlighting";
 const char kSharedHighlightingManagerDescription[] =
     "Refactors Shared Highlighting by centralizing the IPC calls in a Manager.";

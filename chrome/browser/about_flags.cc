@@ -8095,9 +8095,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kCopyLinkToText)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-    {"shared-highlighting-amp", flag_descriptions::kSharedHighlightingAmpName,
-     flag_descriptions::kSharedHighlightingAmpDescription, kOsAll,
-     FEATURE_VALUE_TYPE(shared_highlighting::kSharedHighlightingAmp)},
     {"shared-highlighting-manager",
      flag_descriptions::kSharedHighlightingManagerName,
      flag_descriptions::kSharedHighlightingManagerDescription, kOsAll,

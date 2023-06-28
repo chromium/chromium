@@ -719,9 +719,6 @@ TEST_F(TextFragmentHandlerTest, CheckMetrics_Failure) {
 
 TEST_F(TextFragmentHandlerTest,
        ShouldCreateTextFragmentHandlerAndRemoveHighlightForIframes) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingAmp);
   SimRequest main_request("https://example.com/test.html", "text/html");
   SimRequest child_request("https://example.com/child.html", "text/html");
   LoadURL("https://example.com/test.html");

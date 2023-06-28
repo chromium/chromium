@@ -2058,9 +2058,6 @@ extern const char kZeroCopyDescription[];
 extern const char kEnableVulkanName[];
 extern const char kEnableVulkanDescription[];
 
-extern const char kSharedHighlightingAmpName[];
-extern const char kSharedHighlightingAmpDescription[];
-
 extern const char kSharedHighlightingManagerName[];
 extern const char kSharedHighlightingManagerDescription[];
 

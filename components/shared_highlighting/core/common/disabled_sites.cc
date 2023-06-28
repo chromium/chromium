@@ -14,11 +14,22 @@
 
 namespace shared_highlighting {
 
+namespace {
+
+bool IsAmpGenerationEnabled() {
+#if BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(kSharedHighlightingAmp);
+#else
+  return true;
+#endif
+}
+
+}  // namespace
+
 bool ShouldOfferLinkToText(const GURL& url) {
   // If a URL's host matches a key in the map, then the path will be tested
   // against the RE stored in the value. For example, {"foo.com", ".*"} means
   // any page on the foo.com domain.
-  re2::RE2 amp("^\\/amp\\/.*");
   static constexpr auto kBlocklist =
       base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
           {{"facebook.com", ".*"},
@@ -42,8 +53,7 @@ bool ShouldOfferLinkToText(const GURL& url) {
     domain = domain.substr(7);
   }
 
-  if (base::FeatureList::IsEnabled(kSharedHighlightingAmp) &&
-      domain.compare("google.com") == 0) {
+  if (IsAmpGenerationEnabled() && domain.compare("google.com") == 0) {
     return true;
   }
 

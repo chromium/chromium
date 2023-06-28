@@ -15,14 +15,11 @@ BASE_FEATURE(kPreemptiveLinkToTextGeneration,
 constexpr base::FeatureParam<int> kPreemptiveLinkGenTimeoutLengthMs{
     &kPreemptiveLinkToTextGeneration, "TimeoutLengthMs", 500};
 
+#if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kSharedHighlightingAmp,
              "SharedHighlightingAmp",
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
-);
 
 BASE_FEATURE(kIOSSharedHighlightingV2,
              "IOSSharedHighlightingV2",

@@ -112,7 +112,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kMetricsSettingsAndroid,
     &features::kNetworkServiceInProcess,
     &shared_highlighting::kPreemptiveLinkToTextGeneration,
-    &shared_highlighting::kSharedHighlightingAmp,
     &features::kElasticOverscroll,
     &features::kPrivacyGuideAndroid,
     &features::kPrivacyGuideAndroidPostMVP,

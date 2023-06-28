@@ -19,17 +19,27 @@ TEST(DisabledSitesTest, AllPaths) {
   EXPECT_FALSE(ShouldOfferLinkToText(GURL("https://m.youtube.com/somepage")));
   EXPECT_FALSE(ShouldOfferLinkToText(GURL("https://youtube.com")));
   EXPECT_FALSE(ShouldOfferLinkToText(GURL("https://youtube.com/somepage")));
-}
 
-TEST(DisabledSitesTest, SpecificPages) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(kSharedHighlightingAmp);
+#if BUILDFLAG(IS_IOS)
+  // Don't rewrite this to just reference the kSharedHighlightingAmp feature -
+  // the purpose of this test is to assert that the shared highlighting AMP
+  // behavior is as expected per platform, so when we decide to enable shared
+  // highlighting for iOS, set this constant to true. That way, if we
+  // accidentally do enable it too early, this test will fail.
+  constexpr bool kIsAmpEnabled = false;
+#else
+  constexpr bool kIsAmpEnabled = true;
+#endif
 
   // Paths starting with /amp/ are disabled.
-  EXPECT_FALSE(ShouldOfferLinkToText(GURL("https://www.google.com/amp/")));
-  EXPECT_FALSE(ShouldOfferLinkToText(GURL("https://www.google.com/amp/foo")));
-  EXPECT_FALSE(ShouldOfferLinkToText(GURL("https://google.com/amp/")));
-  EXPECT_FALSE(ShouldOfferLinkToText(GURL("https://google.com/amp/foo")));
+  EXPECT_EQ(kIsAmpEnabled,
+            ShouldOfferLinkToText(GURL("https://www.google.com/amp/")));
+  EXPECT_EQ(kIsAmpEnabled,
+            ShouldOfferLinkToText(GURL("https://www.google.com/amp/foo")));
+  EXPECT_EQ(kIsAmpEnabled,
+            ShouldOfferLinkToText(GURL("https://google.com/amp/")));
+  EXPECT_EQ(kIsAmpEnabled,
+            ShouldOfferLinkToText(GURL("https://google.com/amp/foo")));
 
   // Other paths are not.
   EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.google.com")));
@@ -42,18 +52,17 @@ TEST(DisabledSitesTest, SpecificPages) {
   EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://google.com/foo/amp/bar")));
 }
 
-TEST(DisabledSitesTest, NonMatchingHost) {
-  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.example.com")));
-}
-
-TEST(DisabledSitesTest, AmpFeatureEnabled) {
-  base::test::ScopedFeatureList feature;
-  feature.InitWithFeatures({kSharedHighlightingAmp}, {});
-
+#if !BUILDFLAG(IS_IOS)
+TEST(DisabledSitesTest, SpecificPagesAmpEnabled) {
   EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.google.com/amp/")));
   EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.google.com/amp/foo")));
   EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://google.com/amp/")));
   EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://google.com/amp/foo")));
+}
+#endif  // !IS_IOS
+
+TEST(DisabledSitesTest, NonMatchingHost) {
+  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.example.com")));
 }
 
 TEST(DisabledSitesTest, SupportsLinkGenerationInIframe) {
