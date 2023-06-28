@@ -3592,6 +3592,9 @@ extern const char kLacrosSupportDescription[];
 extern const char kLacrosWaylandLoggingName[];
 extern const char kLacrosWaylandLoggingDescription[];
 
+extern const char kLanguagePacksInSettingsName[];
+extern const char kLanguagePacksInSettingsDescription[];
+
 extern const char kLauncherItemSuggestName[];
 extern const char kLauncherItemSuggestDescription[];
 

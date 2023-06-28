@@ -6265,6 +6265,11 @@ const char kLacrosProfileBackwardMigrationDescription[] =
     "profile directory on next restart. Set this flag only together with "
     "disabling the Lacros availability flag, otherwise it has no effect.";
 
+const char kLanguagePacksInSettingsName[] = "Language Packs in Settings";
+const char kLanguagePacksInSettingsDescription[] =
+    "Enables the UI and logic to manage Language Packs in Settings. This is "
+    "used for languages and input methods.";
+
 const char kLauncherItemSuggestName[] = "Launcher ItemSuggest";
 const char kLauncherItemSuggestDescription[] =
     "Allows configuration of experiment parameters for ItemSuggest in the "

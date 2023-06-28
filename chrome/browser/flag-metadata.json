@@ -5022,6 +5022,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "language-packs-in-settings",
+    "owners": ["mlcui", "claudiomagni", "cros-borders-eng@google.com"],
+    "expiry_milestone": 121
+  },
+  {
     "name": "large-favicon-from-google",
     "owners": [
       "bttk"
