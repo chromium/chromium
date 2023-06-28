@@ -44,6 +44,7 @@
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
@@ -374,6 +375,9 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   SetModalType(params.modality);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_SHARE));
+  if (features::IsChromeRefresh2023()) {
+    SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, ui::ButtonStyle::kTonal);
+  }
   RegisterDeleteDelegateCallback(base::BindOnce(
       [](DesktopMediaPickerDialogView* dialog) {
         // If the dialog is being closed then notify the parent about it.
