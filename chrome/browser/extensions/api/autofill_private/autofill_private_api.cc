@@ -870,6 +870,8 @@ AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
   const std::u16string message =
       l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT);
 
+  base::RecordAction(base::UserMetricsAction(
+      "PaymentsUserAuthTriggeredForMandatoryAuthToggle"));
   // We will be modifying the pref `kAutofillPaymentMethodsMandatoryReauth`
   // asynchronously. The pref value directly correlates to the mandatory auth
   // toggle.
@@ -880,8 +882,6 @@ AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
               UpdateMandatoryAuthTogglePref,
           this)
           .Then(base::IgnoreArgs(std::move(bind_device_authenticator))));
-  base::RecordAction(base::UserMetricsAction(
-      "PaymentsUserAuthTriggeredForMandatoryAuthToggle"));
   return RespondNow(NoArguments());
 #else
   return RespondNow(Error(kErrorDeviceAuthUnavailable));
@@ -892,12 +892,18 @@ AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
 void AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
     UpdateMandatoryAuthTogglePref(bool reauth_succeeded) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  if (reauth_succeeded && browser_context()) {
-    PrefService* prefs =
-        Profile::FromBrowserContext(browser_context())->GetPrefs();
-    autofill::prefs::SetPaymentMethodsMandatoryReauthEnabled(
-        prefs, !prefs->GetBoolean(
-                   autofill::prefs::kAutofillPaymentMethodsMandatoryReauth));
+  content::WebContents* sender_web_contents = GetSenderWebContents();
+  if (sender_web_contents && reauth_succeeded) {
+    autofill::ContentAutofillClient* client =
+        autofill::ContentAutofillClient::FromWebContents(sender_web_contents);
+    CHECK(client);
+    autofill::PersonalDataManager* personal_data_manager =
+        client->GetPersonalDataManager();
+    // This function is not called in incognito mode and therefore a
+    // PersonalDataManager should always exist.
+    CHECK(personal_data_manager);
+    personal_data_manager->SetPaymentMethodsMandatoryReauthEnabled(
+        !personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled());
     base::RecordAction(base::UserMetricsAction(
         "PaymentsUserAuthSuccessfulForMandatoryAuthToggle"));
   }

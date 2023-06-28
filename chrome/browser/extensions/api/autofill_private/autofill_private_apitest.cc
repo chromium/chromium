@@ -45,6 +45,8 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     content::RunAllPendingInMessageLoop();
+    autofill_client()->GetPersonalDataManager()->SetPrefService(
+        autofill_client()->GetPrefs());
   }
 
  protected:
@@ -61,9 +63,6 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
     return test_autofill_client_injector_
         [browser()->tab_strip_model()->GetActiveWebContents()];
   }
-
-  std::unique_ptr<autofill::TestPersonalDataManager>
-      test_personal_data_manager_;
 
  private:
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
