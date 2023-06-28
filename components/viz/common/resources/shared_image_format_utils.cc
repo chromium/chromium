@@ -238,50 +238,24 @@ SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
 bool CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(
     SharedImageFormat format) {
   CHECK(format.is_single_plane());
-  switch (format.resource_format()) {
-    case BGRA_8888:
+  return (format == SinglePlaneFormat::kBGRA_8888 ||
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(crbug.com/1307837): On ARM devices LaCrOS can't create RED_8
-    // GpuMemoryBuffer Objects with GBM device. This capability should be
-    // plumbed and known by clients requesting shared images as overlay
-    // candidate.
-    case RED_8:
+          // TODO(crbug.com/1307837): On ARM devices LaCrOS can't create RED_8
+          // GpuMemoryBuffer Objects with GBM device. This capability should be
+          // plumbed and known by clients requesting shared images as overlay
+          // candidate.
+          format == SinglePlaneFormat::kR_8 ||
 #endif
 #if BUILDFLAG(IS_APPLE)
-    case BGRX_8888:
-    case RGBX_8888:
+          format == SinglePlaneFormat::kBGRX_8888 ||
+          format == SinglePlaneFormat::kRGBX_8888 ||
 #endif
-    case R16_EXT:
-    case RGBA_4444:
-    case RGBA_8888:
-    case RGBA_1010102:
-    case BGRA_1010102:
-    case RGBA_F16:
-      return true;
-    // These formats have no BufferFormat equivalent or are only used
-    // for external textures, or have no GL equivalent formats.
-    case ETC1:
-    case ALPHA_8:
-    case LUMINANCE_8:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    case RED_8:
-#endif
-#if !BUILDFLAG(IS_APPLE)
-    case BGRX_8888:
-    case RGBX_8888:
-#endif
-    case RGB_565:
-    case LUMINANCE_F16:
-    case BGR_565:
-    case RG_88:
-    case RG16_EXT:
-    case YVU_420:
-    case YUV_420_BIPLANAR:
-    case YUVA_420_TRIPLANAR:
-    case P010:
-      return false;
-  }
-  NOTREACHED_NORETURN();
+          format == SinglePlaneFormat::kR_16 ||
+          format == SinglePlaneFormat::kRGBA_4444 ||
+          format == SinglePlaneFormat::kRGBA_8888 ||
+          format == SinglePlaneFormat::kRGBA_1010102 ||
+          format == SinglePlaneFormat::kBGRA_1010102 ||
+          format == SinglePlaneFormat::kRGBA_F16);
 }
 
 bool HasEquivalentBufferFormat(SharedImageFormat format) {
