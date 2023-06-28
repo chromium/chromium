@@ -169,7 +169,7 @@ std::string GetSiteForDIPS(const GURL& url);
 // in an iframe of the primary frame tree.
 inline bool IsInPrimaryPageIFrame(
     content::NavigationHandle* navigation_handle) {
-  return navigation_handle->GetParentFrame()
+  return navigation_handle && navigation_handle->GetParentFrame()
              ? navigation_handle->GetParentFrame()->GetPage().IsPrimary()
              : false;
 }
@@ -184,7 +184,7 @@ inline bool IsSameSiteForDIPS(const GURL& url1, const GURL& url2) {
 // in any frame of the primary page.
 // NOTE: This does not include fenced frames.
 inline bool IsInPrimaryPage(content::NavigationHandle* navigation_handle) {
-  return navigation_handle->GetParentFrame()
+  return navigation_handle && navigation_handle->GetParentFrame()
              ? navigation_handle->GetParentFrame()->GetPage().IsPrimary()
              : navigation_handle->IsInPrimaryMainFrame();
 }
@@ -197,7 +197,11 @@ inline bool IsInPrimaryPage(content::RenderFrameHost* rfh) {
 
 // Returns the last committed or the to be committed url of the main frame of
 // the page containing the `navigation_handle`.
-inline GURL GetFirstPartyURL(content::NavigationHandle* navigation_handle) {
+inline absl::optional<GURL> GetFirstPartyURL(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle) {
+    return absl::nullopt;
+  }
   return navigation_handle->GetParentFrame()
              ? navigation_handle->GetParentFrame()
                    ->GetMainFrame()

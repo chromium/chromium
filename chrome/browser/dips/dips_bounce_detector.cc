@@ -621,16 +621,20 @@ void DIPSWebContentsObserver::OnCookiesAccessed(
     return;
   }
 
-  // All access within the primary page iframes are attributed to the URL of the
-  // main frame (ie the first party URL).
+  // All accesses within the primary page iframes are attributed to the URL of
+  // the main frame (ie the first party URL).
   if (IsInPrimaryPageIFrame(navigation_handle)) {
-    if (!HasCHIPS(details.cookie_list) &&
-        !IsSameSiteForDIPS(GetFirstPartyURL(navigation_handle), details.url)) {
+    const absl::optional<GURL> fpu = GetFirstPartyURL(navigation_handle);
+    if (!fpu.has_value()) {
       return;
     }
 
-    detector_.OnClientSiteDataAccessed(GetFirstPartyURL(navigation_handle),
-                                       details.type);
+    if (!HasCHIPS(details.cookie_list) &&
+        !IsSameSiteForDIPS(fpu.value(), details.url)) {
+      return;
+    }
+
+    detector_.OnClientSiteDataAccessed(fpu.value(), details.type);
     return;
   }
 
