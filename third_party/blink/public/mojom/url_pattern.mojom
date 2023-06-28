@@ -8,9 +8,8 @@ module blink.mojom;
 // https://wicg.github.io/urlpattern/.
 // This currently only represents the pathname part of the pattern but
 // other parts can be added as needed.
-// Due to a security concern, it won't support regex pattern.
-struct SafeUrlPattern {
-  array<SafeUrlPatternPart> pathname;
+struct UrlPattern {
+  array<UrlPatternPart> pathname;
 };
 
 // Represents a fixed string part of a URLPattern as described in:
@@ -47,7 +46,7 @@ enum Modifier {
 // A part of a UrlPattern as described in:
 // https://wicg.github.io/urlpattern/#parts.
 // Strings are limited to 4 x 1024 characters.
-struct SafeUrlPatternPart {
+struct UrlPatternPart {
   PatternTemplate pattern;
 
   Modifier modifier;

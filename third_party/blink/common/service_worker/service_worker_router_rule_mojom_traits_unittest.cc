@@ -33,7 +33,7 @@ TEST(ServiceWorkerRouterRulesTest, SimpleRoundTrip) {
       blink::ServiceWorkerRouterCondition condition;
       condition.type =
           blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-      blink::SafeUrlPattern url_pattern;
+      blink::UrlPattern url_pattern;
       auto parse_result = liburlpattern::Parse(
           "/test/*",
           [](base::StringPiece input) { return std::string(input); });

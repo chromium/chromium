@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SAFE_URL_PATTERN_MOJOM_TRAITS_H_
-#define THIRD_PARTY_BLINK_PUBLIC_COMMON_SAFE_URL_PATTERN_MOJOM_TRAITS_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_URL_PATTERN_MOJOM_TRAITS_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_URL_PATTERN_MOJOM_TRAITS_H_
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/safe_url_pattern.h"
-#include "third_party/blink/public/mojom/safe_url_pattern.mojom.h"
+#include "third_party/blink/public/common/url_pattern.h"
+#include "third_party/blink/public/mojom/url_pattern.mojom.h"
 #include "third_party/liburlpattern/pattern.h"
 
 namespace mojo {
@@ -99,8 +99,7 @@ struct BLINK_COMMON_EXPORT
 
 template <>
 struct BLINK_COMMON_EXPORT
-    StructTraits<blink::mojom::SafeUrlPatternPartDataView,
-                 ::liburlpattern::Part> {
+    StructTraits<blink::mojom::UrlPatternPartDataView, ::liburlpattern::Part> {
   static const liburlpattern::Part& pattern(
       const ::liburlpattern::Part& pattern) {
     return pattern;
@@ -111,22 +110,22 @@ struct BLINK_COMMON_EXPORT
     return pattern.modifier;
   }
 
-  static bool Read(blink::mojom::SafeUrlPatternPartDataView data,
+  static bool Read(blink::mojom::UrlPatternPartDataView data,
                    ::liburlpattern::Part* out);
 };
 
 template <>
-struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::SafeUrlPatternDataView,
-                                        ::blink::SafeUrlPattern> {
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::UrlPatternDataView, ::blink::UrlPattern> {
   static const std::vector<liburlpattern::Part>& pathname(
-      const ::blink::SafeUrlPattern& pattern) {
+      const ::blink::UrlPattern& pattern) {
     return pattern.pathname;
   }
 
-  static bool Read(blink::mojom::SafeUrlPatternDataView data,
-                   ::blink::SafeUrlPattern* out);
+  static bool Read(blink::mojom::UrlPatternDataView data,
+                   ::blink::UrlPattern* out);
 };
 
 }  // namespace mojo
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_SAFE_URL_PATTERN_MOJOM_TRAITS_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_URL_PATTERN_MOJOM_TRAITS_H_

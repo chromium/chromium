@@ -27,7 +27,7 @@ TEST(ServiceWorkerRouterTypeConverterTest, Basic) {
   blink::ServiceWorkerRouterCondition expected_condition;
   expected_condition.type =
       blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-  blink::SafeUrlPattern expected_url_pattern;
+  blink::UrlPattern expected_url_pattern;
   auto parse_result = liburlpattern::Parse(
       kFakeUrlPattern,
       [](base::StringPiece input) { return std::string(input); });

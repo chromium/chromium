@@ -4,14 +4,14 @@
 
 module blink.mojom;
 
-import "third_party/blink/public/mojom/safe_url_pattern.mojom";
+import "third_party/blink/public/mojom/url_pattern.mojom";
 
 // This represents a condition of the router rule.
 // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
 // TODO(crbug.com/1371756): implement other conditions in the full picture.
 union ServiceWorkerRouterCondition {
   // URLPattern to be used for matching.
-  SafeUrlPattern url_pattern;
+  UrlPattern url_pattern;
 };
 
 // This is used for specifying the source is network.

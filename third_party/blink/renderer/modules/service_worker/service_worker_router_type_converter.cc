@@ -46,7 +46,7 @@ RouterUrlPatternConditionToBlink(
   blink::ServiceWorkerRouterCondition condition;
   condition.type =
       blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-  blink::SafeUrlPattern url_pattern;
+  blink::UrlPattern url_pattern;
   url_pattern.pathname = std::move(part_list);
   condition.url_pattern = std::move(url_pattern);
   return condition;

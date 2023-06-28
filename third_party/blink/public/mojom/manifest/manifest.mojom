@@ -4,16 +4,16 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/string16.mojom";
 import "services/device/public/mojom/screen_orientation_lock_types.mojom";
-import "third_party/blink/public/mojom/manifest/capture_links.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "third_party/blink/public/mojom/url_pattern.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
+import "third_party/blink/public/mojom/manifest/capture_links.mojom";
 import "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
-import "third_party/blink/public/mojom/safe_url_pattern.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
+import "url/mojom/origin.mojom";
 
 
 // The Manifest structure is an internal representation of the Manifest file
@@ -386,7 +386,7 @@ struct HomeTabParams {
   array<ManifestImageResource> icons;
 
   // TODO(crbug.com/1381374): Use URLPatternList once available.
-  array<SafeUrlPattern> scope_patterns;
+  array<UrlPattern> scope_patterns;
 };
 
 // Structure representing the new tab button customization to the tab strip.

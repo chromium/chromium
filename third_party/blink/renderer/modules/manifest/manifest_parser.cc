@@ -15,8 +15,8 @@
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
+#include "third_party/blink/public/common/url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
@@ -2160,9 +2160,9 @@ ManifestParser::ParseTabStripMemberVisibility(const JSONValue* json_value) {
   return mojom::blink::TabStripMemberVisibility::kAuto;
 }
 
-Vector<SafeUrlPattern> ManifestParser::ParseScopePatterns(
+Vector<UrlPattern> ManifestParser::ParseScopePatterns(
     const JSONObject* object) {
-  Vector<SafeUrlPattern> result;
+  Vector<UrlPattern> result;
 
   if (!object->Get("scope_patterns")) {
     return result;
@@ -2174,7 +2174,7 @@ Vector<SafeUrlPattern> ManifestParser::ParseScopePatterns(
   }
 
   for (wtf_size_t i = 0; i < scope_patterns_list->size(); ++i) {
-    SafeUrlPattern url_pattern;
+    UrlPattern url_pattern;
 
     JSONObject* pattern_object = JSONObject::Cast(scope_patterns_list->at(i));
     if (!pattern_object) {
