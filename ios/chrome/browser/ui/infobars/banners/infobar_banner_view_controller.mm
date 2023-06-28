@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -48,6 +50,13 @@ const CGFloat kContainerStackSpacing = 10.0;
 const CGFloat kContainerStackVerticalPadding = 18.0;
 const CGFloat kContainerStackHorizontalPadding = 15.0;
 
+// Favicon constants.
+const CGFloat kFaviconSize = 24.0;
+const CGFloat kFaviconCornerRadius = 5.0;
+const CGFloat kFaviconContainerSize = 56.0;
+const CGFloat kFaviconContainerRadius = 12.0;
+const CGFloat kFaviconBackgroundAlphaComponent = 0.15;
+
 // Icon constants.
 const CGFloat kIconWidth = 28.0;
 const CGFloat kIconHeight = 28.0;
@@ -63,6 +72,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 // Properties backing the InfobarBannerConsumer protocol.
 @property(nonatomic, copy) NSString* bannerAccessibilityLabel;
 @property(nonatomic, copy) NSString* buttonText;
+@property(nonatomic, strong) UIImage* faviconImage;
 @property(nonatomic, strong) UIImage* iconImage;
 @property(nonatomic, assign) BOOL presentsModal;
 @property(nonatomic, copy) NSString* titleText;
@@ -71,7 +81,9 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 @property(nonatomic, assign) BOOL ignoreIconColorWithTint;
 @property(nonatomic, strong) UIColor* iconImageTintColor;
 @property(nonatomic, strong) UIColor* iconBackgroundColor;
-@property(nonatomic, assign) BOOL restrictSubtitleTextToSingleLine;
+@property(nonatomic, assign) NSInteger titleNumberOfLines;
+@property(nonatomic, assign) NSInteger subtitleNumberOfLines;
+@property(nonatomic, assign) NSLineBreakMode subtitleLineBreakMode;
 
 // The original position of this InfobarVC view in the parent's view coordinate
 // system.
@@ -118,7 +130,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
     _presentsModal = presentsModal;
     _useIconBackgroundTint = YES;
     _ignoreIconColorWithTint = YES;
-    _restrictSubtitleTextToSingleLine = NO;
+    _subtitleLineBreakMode = NSLineBreakByTruncatingTail;
   }
   return self;
 }
@@ -145,49 +157,11 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 
   // Icon setup.
   UIView* iconContainerView = nil;
+  if (self.faviconImage) {
+    iconContainerView = [self configureFaviconImageContainer];
+  }
   if (self.iconImage) {
-    // If the icon image requires a background tint, ignore the original color
-    // information and draw the image as a template image.
-    if (self.useIconBackgroundTint && self.ignoreIconColorWithTint) {
-      self.iconImage = [self.iconImage
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    }
-    UIImageView* iconImageView =
-        [[UIImageView alloc] initWithImage:self.iconImage];
-    iconImageView.contentMode = UIViewContentModeScaleAspectFit;
-    iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    iconImageView.tintColor = self.iconImageTintColor;
-
-    UIView* backgroundIconView =
-        [[UIView alloc] initWithFrame:iconImageView.frame];
-    backgroundIconView.layer.cornerRadius = kIconCornerRadius;
-    if (self.useIconBackgroundTint) {
-      backgroundIconView.backgroundColor =
-          self.iconBackgroundColor ? self.iconBackgroundColor
-                                   : [UIColor colorNamed:kBlueHaloColor];
-    }
-    backgroundIconView.translatesAutoresizingMaskIntoConstraints = NO;
-
-    iconContainerView = [[UIView alloc] init];
-    [iconContainerView addSubview:backgroundIconView];
-    [iconContainerView addSubview:iconImageView];
-    iconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-
-    [NSLayoutConstraint activateConstraints:@[
-      [backgroundIconView.centerXAnchor
-          constraintEqualToAnchor:iconContainerView.centerXAnchor],
-      [backgroundIconView.centerYAnchor
-          constraintEqualToAnchor:iconContainerView.centerYAnchor],
-      [backgroundIconView.widthAnchor constraintEqualToConstant:kIconWidth],
-      [backgroundIconView.heightAnchor constraintEqualToConstant:kIconHeight],
-      [iconImageView.centerXAnchor
-          constraintEqualToAnchor:iconContainerView.centerXAnchor],
-      [iconImageView.centerYAnchor
-          constraintEqualToAnchor:iconContainerView.centerYAnchor],
-      [iconImageView.widthAnchor constraintEqualToConstant:kIconWidth],
-      [iconContainerView.widthAnchor
-          constraintEqualToAnchor:backgroundIconView.widthAnchor],
-    ]];
+    iconContainerView = [self configureIconImageContainer];
   }
 
   // Labels setup.
@@ -196,7 +170,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   self.titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   self.titleLabel.adjustsFontForContentSizeCategory = YES;
   self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  self.titleLabel.numberOfLines = 0;
+  self.titleLabel.numberOfLines = _titleNumberOfLines;
   self.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
   [self.titleLabel
       setContentCompressionResistancePriority:UILayoutPriorityRequired
@@ -208,11 +182,9 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
       [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   self.subTitleLabel.adjustsFontForContentSizeCategory = YES;
   self.subTitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  if (_restrictSubtitleTextToSingleLine) {
-    self.subTitleLabel.numberOfLines = 1;
-  } else {
-    self.subTitleLabel.numberOfLines = 0;
-  }
+  self.subTitleLabel.numberOfLines = _subtitleNumberOfLines;
+  self.subTitleLabel.lineBreakMode = _subtitleLineBreakMode;
+
   // If `self.subTitleText` hasn't been set or is empty, hide the label to keep
   // the title label centered in the Y axis.
   self.subTitleLabel.hidden = !self.subtitleText.length;
@@ -442,12 +414,95 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   _iconBackgroundColor = iconBackgroundColor;
 }
 
-- (void)setRestrictSubtitleTextToSingleLine:
-    (BOOL)restrictSubtitleTextToSingleLine {
-  _restrictSubtitleTextToSingleLine = restrictSubtitleTextToSingleLine;
+#pragma mark - Private Methods
+
+// Configures and returns the UIView that contains the `faviconImage`.
+- (UIView*)configureFaviconImageContainer {
+  DCHECK(!self.iconImage);
+
+  UIView* faviconContainerView = [[UIView alloc] init];
+  faviconContainerView.layer.masksToBounds = YES;
+  faviconContainerView.layer.cornerRadius = kFaviconContainerRadius;
+
+  GradientView* gradientView = [[GradientView alloc]
+      initWithStartColor:UIColor.clearColor
+                endColor:[UIColor.blackColor
+                             colorWithAlphaComponent:
+                                 kFaviconBackgroundAlphaComponent]
+              startPoint:CGPointMake(0.0f, 0.0f)
+                endPoint:CGPointMake(0.0f, 1.0f)];
+  gradientView.clipsToBounds = YES;
+  gradientView.translatesAutoresizingMaskIntoConstraints = NO;
+  [faviconContainerView addSubview:gradientView];
+
+  UIImageView* faviconImageView =
+      [[UIImageView alloc] initWithImage:self.faviconImage];
+  faviconImageView.contentMode = UIViewContentModeScaleToFill;
+  faviconImageView.clipsToBounds = YES;
+  faviconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  faviconImageView.layer.cornerRadius = kFaviconCornerRadius;
+  [faviconContainerView addSubview:faviconImageView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [faviconContainerView.widthAnchor
+        constraintEqualToConstant:kFaviconContainerSize],
+    [faviconContainerView.heightAnchor
+        constraintEqualToConstant:kFaviconContainerSize],
+
+    [faviconImageView.widthAnchor constraintEqualToConstant:kFaviconSize],
+    [faviconImageView.heightAnchor constraintEqualToConstant:kFaviconSize],
+
+  ]];
+  AddSameConstraints(faviconContainerView, gradientView);
+  AddSameCenterConstraints(faviconContainerView, faviconImageView);
+
+  return faviconContainerView;
 }
 
-#pragma mark - Private Methods
+// Configures and returns the UIView that contains the `iconImage`.
+- (UIView*)configureIconImageContainer {
+  DCHECK(!self.faviconImage);
+
+  // If the icon image requires a background tint, ignore the original color
+  // information and draw the image as a template image.
+  if (self.useIconBackgroundTint && self.ignoreIconColorWithTint) {
+    self.iconImage = [self.iconImage
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  }
+  UIImageView* iconImageView =
+      [[UIImageView alloc] initWithImage:self.iconImage];
+  iconImageView.contentMode = UIViewContentModeScaleAspectFit;
+  iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  iconImageView.tintColor = self.iconImageTintColor;
+
+  UIView* backgroundIconView =
+      [[UIView alloc] initWithFrame:iconImageView.frame];
+  backgroundIconView.layer.cornerRadius = kIconCornerRadius;
+  if (self.useIconBackgroundTint) {
+    backgroundIconView.backgroundColor =
+        self.iconBackgroundColor ? self.iconBackgroundColor
+                                 : [UIColor colorNamed:kBlueHaloColor];
+  }
+  backgroundIconView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIView* iconContainerView = [[UIView alloc] init];
+  [iconContainerView addSubview:backgroundIconView];
+  [iconContainerView addSubview:iconImageView];
+  iconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [backgroundIconView.widthAnchor constraintEqualToConstant:kIconWidth],
+    [backgroundIconView.heightAnchor constraintEqualToConstant:kIconHeight],
+
+    [iconImageView.widthAnchor constraintEqualToConstant:kIconWidth],
+    [iconContainerView.widthAnchor
+        constraintEqualToAnchor:backgroundIconView.widthAnchor],
+  ]];
+  AddSameCenterConstraints(iconContainerView, backgroundIconView);
+  AddSameCenterConstraints(iconContainerView, iconImageView);
+
+  return iconImageView;
+}
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
   [self.interactionDelegate infobarBannerStartedInteraction];

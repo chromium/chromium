@@ -12,6 +12,7 @@
 // Redefine InfobarBannerConsumer properties as readwrite.
 @property(nonatomic, copy) NSString* bannerAccessibilityLabel;
 @property(nonatomic, copy) NSString* buttonText;
+@property(nonatomic, strong) UIImage* faviconImage;
 @property(nonatomic, strong) UIImage* iconImage;
 @property(nonatomic, assign) BOOL presentsModal;
 @property(nonatomic, copy) NSString* titleText;
@@ -20,7 +21,9 @@
 @property(nonatomic, strong) UIColor* iconImageTintColor;
 @property(nonatomic, assign) BOOL useIconBackgroundTint;
 @property(nonatomic, assign) BOOL ignoreIconColorWithTint;
-@property(nonatomic, assign) BOOL restrictSubtitleTextToSingleLine;
+@property(nonatomic, assign) NSInteger titleNumberOfLines;
+@property(nonatomic, assign) NSInteger subtitleNumberOfLines;
+@property(nonatomic, assign) NSLineBreakMode subtitleLineBreakMode;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_INFOBARS_BANNERS_TEST_FAKE_INFOBAR_BANNER_CONSUMER_H_

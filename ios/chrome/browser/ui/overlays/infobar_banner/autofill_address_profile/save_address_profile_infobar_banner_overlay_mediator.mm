@@ -69,7 +69,7 @@ using autofill_address_profile_infobar_overlays::
   if (!self.config->is_migration_to_account() &&
       (!self.config->is_profile_an_account_profile() ||
        self.config->is_update_banner())) {
-    [self.consumer setRestrictSubtitleTextToSingleLine:YES];
+    [self.consumer setSubtitleNumberOfLines:1];
   }
 
   [self.consumer setIconImage:CustomSymbolWithPointSize(

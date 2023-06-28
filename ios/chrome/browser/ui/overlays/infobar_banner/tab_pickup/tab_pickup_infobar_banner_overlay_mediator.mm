@@ -87,12 +87,13 @@ const CGFloat kFaviconPointSize = 24.0f;
   }
 
   [self.consumer setTitleText:title];
+  [self.consumer setTitleNumberOfLines:2];
   [self.consumer setSubtitleText:subtitle];
+  [self.consumer setSubtitleNumberOfLines:2];
+  [self.consumer setSubtitleLineBreakMode:NSLineBreakByTruncatingHead];
   [self.consumer
       setButtonText:l10n_util::GetNSString(IDS_IOS_TAB_PICKUP_BANNER_BUTTON)];
-  // TODO(crbug.com/1457175): Update this when the favicon property has been
-  // added to the consumer.
-  [self.consumer setIconImage:faviconImage];
+  [self.consumer setFaviconImage:faviconImage];
   [self.consumer setPresentsModal:NO];
 }
 
