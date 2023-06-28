@@ -21,7 +21,29 @@
 #include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/mac/mac_util.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace partition_alloc::internal {
+
+// Aligns up (on 8B boundary) and returns `ref_count_size` if needed.
+// *  Known to be needed on MacOS 13: https://crbug.com/1378822.
+// *  Thought to be needed on MacOS 14: https://crbug.com/1457756.
+// *  No-op everywhere else.
+//
+// Placed outside `BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)`
+// intentionally to accommodate usage in contexts also outside
+// this gating.
+PA_ALWAYS_INLINE size_t AlignUpRefCountSizeForMac(size_t ref_count_size) {
+#if BUILDFLAG(IS_MAC)
+  if (internal::base::mac::IsOS13() || internal::base::mac::IsOS14()) {
+    return internal::base::bits::AlignUp(ref_count_size, 8);
+  }
+#endif  // BUILDFLAG(IS_MAC)
+  return ref_count_size;
+}
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 

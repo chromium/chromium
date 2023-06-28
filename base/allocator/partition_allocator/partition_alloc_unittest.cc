@@ -464,11 +464,7 @@ class PartitionAllocTest
       if (!ref_count_size) {
         ref_count_size = kPartitionRefCountSizeAdjustment;
       }
-#if BUILDFLAG(IS_MAC)
-      if (internal::base::mac::IsOS13()) {
-        ref_count_size = internal::base::bits::AlignUp(ref_count_size, 8);
-      }
-#endif  // BUILDFLAG(IS_MAC)
+      ref_count_size = AlignUpRefCountSizeForMac(ref_count_size);
 #if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
       if (allocator.root()->IsMemoryTaggingEnabled()) {
         ref_count_size = partition_alloc::internal::base::bits::AlignUp(

@@ -946,13 +946,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
       if (!ref_count_size) {
         ref_count_size = internal::kPartitionRefCountSizeAdjustment;
       }
-#if BUILDFLAG(IS_MAC)
-      // On macOS 13, fake PartitionRefCount to be a multiple of 8B to work
-      // around crbug.com/1378822.
-      if (internal::base::mac::IsOS13()) {
-        ref_count_size = internal::base::bits::AlignUp(ref_count_size, 8);
-      }
-#endif  // BUILDFLAG(IS_MAC)
+      ref_count_size = internal::AlignUpRefCountSizeForMac(ref_count_size);
 #if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
       if (IsMemoryTaggingEnabled()) {
         ref_count_size = internal::base::bits::AlignUp(
