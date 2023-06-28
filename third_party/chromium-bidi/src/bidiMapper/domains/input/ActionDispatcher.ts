@@ -39,6 +39,10 @@ const CALCULATE_IN_VIEW_CENTER_PT_DECL = ((i: Element) => {
   return [e + ((n - e) >> 1), h + ((m - h) >> 1)];
 }).toString();
 
+const IS_MAC_DECL = (() => {
+  return navigator.platform.toLowerCase().includes('mac');
+}).toString();
+
 async function getElementCenter(
   context: BrowsingContextImpl,
   element: CommonDataTypes.SharedReference
@@ -70,13 +74,28 @@ async function getElementCenter(
 }
 
 export class ActionDispatcher {
+  static isMacOS = async (context: BrowsingContextImpl) => {
+    const {result} = await (
+      await context.getOrCreateSandbox(undefined)
+    ).callFunction(IS_MAC_DECL, {type: 'undefined'}, [], false, 'none', {});
+    assert(result.type !== 'exception');
+    assert(result.result.type === 'boolean');
+    return result.result.value;
+  };
+
   #tickStart = 0;
   #tickDuration = 0;
   #inputState: InputState;
   #context: BrowsingContextImpl;
-  constructor(inputState: InputState, context: BrowsingContextImpl) {
+  #isMacOS: boolean;
+  constructor(
+    inputState: InputState,
+    context: BrowsingContextImpl,
+    isMacOS: boolean
+  ) {
     this.#inputState = inputState;
     this.#context = context;
+    this.#isMacOS = isMacOS;
   }
 
   async dispatchActions(
@@ -569,6 +588,30 @@ export class ActionDispatcher {
     // to measure.
     const unmodifiedText = getKeyEventUnmodifiedText(key, source);
     const text = getKeyEventText(code ?? '', source) ?? unmodifiedText;
+    let command: string | undefined;
+    // The following commands need to be declared because Chromium doesn't
+    // handle them. See
+    // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/editing/editing_behavior.cc;l=169;drc=b8143cf1dfd24842890fcd831c4f5d909bef4fc4;bpv=0;bpt=1.
+    if (this.#isMacOS && source.meta) {
+      switch (code) {
+        case 'KeyA':
+          command = 'SelectAll';
+          break;
+        case 'KeyC':
+          command = 'Copy';
+          break;
+        case 'KeyV':
+          command = source.shift ? 'PasteAndMatchStyle' : 'Paste';
+          break;
+        case 'KeyX':
+          command = 'Cut';
+          break;
+        case 'KeyZ':
+          command = source.shift ? 'Redo' : 'Undo';
+          break;
+        default:
+      }
+    }
     return this.#context.cdpTarget.cdpClient.sendCommand(
       'Input.dispatchKeyEvent',
       {
@@ -583,6 +626,7 @@ export class ActionDispatcher {
         location: location < 3 ? location : undefined,
         isKeypad: location === 3,
         modifiers,
+        commands: command ? [command] : undefined,
       }
     );
     // --- Platform-specific code ends here ---

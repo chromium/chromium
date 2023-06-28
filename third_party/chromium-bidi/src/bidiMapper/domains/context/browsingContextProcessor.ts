@@ -420,7 +420,11 @@ export class BrowsingContextProcessor {
     const context = this.#browsingContextStorage.getContext(params.context);
     const inputState = this.#inputStateManager.get(context.top);
     const actionsByTick = this.#getActionsByTick(params, inputState);
-    const dispatcher = new ActionDispatcher(inputState, context);
+    const dispatcher = new ActionDispatcher(
+      inputState,
+      context,
+      await ActionDispatcher.isMacOS(context).catch(() => false)
+    );
     await dispatcher.dispatchActions(actionsByTick);
     return {result: {}};
   }
@@ -471,7 +475,11 @@ export class BrowsingContextProcessor {
     const context = this.#browsingContextStorage.getContext(params.context);
     const topContext = context.top;
     const inputState = this.#inputStateManager.get(topContext);
-    const dispatcher = new ActionDispatcher(inputState, context);
+    const dispatcher = new ActionDispatcher(
+      inputState,
+      context,
+      await ActionDispatcher.isMacOS(context).catch(() => false)
+    );
     await dispatcher.dispatchTickActions(inputState.cancelList.reverse());
     this.#inputStateManager.delete(topContext);
     return {result: {}};
