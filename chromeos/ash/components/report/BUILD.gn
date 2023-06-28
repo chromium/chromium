@@ -17,3 +17,20 @@ source_set("fresnel_prefs") {
     "//chromeos/ash/components/report/prefs/fresnel_pref_names.h",
   ]
 }
+
+proto_library("fresnel_service_proto") {
+  sources = [ "//chromeos/ash/components/report/proto/fresnel_service.proto" ]
+
+  extra_configs =
+      [ "//third_party/private_membership:private_membership_config" ]
+
+  import_dirs = [
+    "//third_party/private_membership/src",
+    "//third_party/shell-encryption/src",
+    ".",
+  ]
+
+  proto_in_dir = "//"
+
+  link_deps = [ "//third_party/private_membership:private_membership_proto" ]
+}
