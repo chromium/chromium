@@ -671,7 +671,24 @@ TEST_F(
 TEST_F('PrintPreviewDestinationStoreTestCros', 'DriveNotMounted', function() {
   this.runMochaTest(destination_store_test.TestNames.DriveNotMounted);
 });
-GEN('#endif');
+
+var PrintPreviewPrinterSetupInfoCrosTest = class extends PrintPreviewTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://print/test_loader.html?module=print_preview/' +
+        'printer_setup_info_cros_test.js';
+  }
+
+  /** @override */
+  get suiteName() {
+    return printer_setup_info_cros_test.suiteName;
+  }
+};
+
+TEST_F('PrintPreviewPrinterSetupInfoCrosTest', 'ElementDisplays', function() {
+  this.runMochaTest(printer_setup_info_cros_test.TestNames.ElementDisplays);
+});
+GEN('#endif')
 
 GEN('#if BUILDFLAG(IS_CHROMEOS)');
 var PrintPreviewPrintServerStoreTestCros = class extends PrintPreviewTest {

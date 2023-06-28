@@ -70,6 +70,7 @@ build_webui_tests("build") {
       "native_layer_cros_stub.ts",
       "pin_settings_test.ts",
       "print_server_store_test.ts",
+      "printer_setup_info_cros_test.ts",
     ]
   } else {
     files += [

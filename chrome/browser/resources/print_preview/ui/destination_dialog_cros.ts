@@ -15,6 +15,7 @@ import './destination_list.js';
 import './print_preview_search_box.js';
 import './print_preview_shared.css.js';
 import './print_preview_vars.css.js';
+import './printer_setup_info_cros.js';
 import './provisional_destination_resolver.js';
 import '../strings.m.js';
 import './throbber.css.js';

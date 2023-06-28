@@ -46,6 +46,9 @@
         search-query="[[searchQuery_]]"
         on-destination-selected="onDestinationSelected_">
     </print-preview-destination-list>
+    <print-preview-printer-setup-info-cros
+        hidden$="[[!isShowingPrinterSetupAssistance]]">
+    </print-preview-printer-setup-info-cros>
     <print-preview-provisional-destination-resolver id="provisionalResolver"
         destination-store="[[destinationStore]]">
     </print-preview-provisional-destination-resolver>

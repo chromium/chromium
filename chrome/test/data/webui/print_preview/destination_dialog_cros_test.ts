@@ -221,6 +221,13 @@ suite(destination_dialog_cros_test.suiteName, function() {
             dialog.shadowRoot!.querySelector<HTMLElement>(
                 'cr-button:not(.cancel-button)');
         assertTrue(isVisible(managePrintersButton));
+
+        // Printer setup element should not be displayed when there are
+        // valid destinations.
+        const printerSetupInfo = dialog.shadowRoot!.querySelector<HTMLElement>(
+            'print-preview-printer-setup-info-cros');
+        assertTrue(!!printerSetupInfo);
+        assertTrue(printerSetupInfo!.hidden);
       });
 
   // Test that the correct elements are displayed when the printer setup
@@ -259,5 +266,12 @@ suite(destination_dialog_cros_test.suiteName, function() {
             dialog.shadowRoot!.querySelector<HTMLElement>(
                 'cr-button:not(.cancel-button)');
         assertFalse(isVisible(managePrintersButton));
+
+        // Printer setup element should be displayed when there are no valid
+        // destinations.
+        const printerSetupInfo = dialog.shadowRoot!.querySelector<HTMLElement>(
+            'print-preview-printer-setup-info-cros');
+        assertTrue(!!printerSetupInfo);
+        assertFalse(printerSetupInfo!.hidden);
       });
 });

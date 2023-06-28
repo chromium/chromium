@@ -52,6 +52,7 @@ build_webui("build") {
       "ui/destination_list_item_cros.ts",
       "ui/destination_select_cros.ts",
       "ui/pin_settings.ts",
+      "ui/printer_setup_info_cros.ts",
       "ui/provisional_destination_resolver.ts",
       "ui/destination_dialog_cros.ts",
     ]
