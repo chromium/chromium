@@ -2453,6 +2453,11 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
     return nullptr;
   }
 
+#if BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/1326754): enable use DRIME_PRIME_2 API on Linux with the
+  // iHD driver.
+  const bool use_drm_prime_2 = false;
+#else
   // TODO(b/233894465): use the DRM_PRIME_2 API with the Mesa Gallium driver
   // when AMD supports it.
   // TODO(b/233924862): use the DRM_PRIME_2 API with protected content.
@@ -2463,6 +2468,7 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
       GetImplementationType() == VAImplementation::kIntelIHD &&
       !protected_content &&
       pixmap->GetBufferFormatModifier() != gfx::NativePixmapHandle::kNoModifier;
+#endif
 
   union {
     VADRMPRIMESurfaceDescriptor descriptor;
