@@ -727,12 +727,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
             @Override
             public void onSSLStateUpdated(Tab tab) {
+                onBackPressStateChanged();
                 if (mLocationBarModel.getTab() == null) return;
 
                 assert tab == mLocationBarModel.getTab();
                 mLocationBarModel.notifySecurityStateChanged();
                 mLocationBarModel.notifyUrlChanged();
-                onBackPressStateChanged();
             }
 
             @Override
@@ -755,6 +755,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
             @Override
             public void onShown(Tab tab, @TabSelectionType int type) {
+                onBackPressStateChanged();
                 if (tab.getUrl().isEmpty()) return;
                 mControlContainer.setReadyForBitmapCapture(true);
             }
@@ -768,12 +769,14 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
             @Override
             public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
+                onBackPressStateChanged();
                 if (!toDifferentDocument) return;
                 updateTabLoadingState(true);
             }
 
             @Override
             public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
+                onBackPressStateChanged();
                 if (!toDifferentDocument) return;
                 updateTabLoadingState(true);
             }
@@ -791,15 +794,16 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
             @Override
             public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
+                onBackPressStateChanged();
                 if (!didStartLoad) return;
                 mLocationBarModel.notifyWebContentsSwapped();
                 mLocationBarModel.notifyUrlChanged();
-                onBackPressStateChanged();
                 mLocationBarModel.notifySecurityStateChanged();
             }
 
             @Override
             public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
+                onBackPressStateChanged();
                 NewTabPage ntp = getNewTabPageForCurrentTab();
                 if (ntp == null) return;
                 if (!UrlUtilities.isNTPUrl(params.getUrl())
@@ -825,6 +829,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             @Override
             public void onDidFinishNavigationInPrimaryMainFrame(
                     Tab tab, NavigationHandle navigation) {
+                onBackPressStateChanged();
                 if (navigation.hasCommitted() && !navigation.isSameDocument()) {
                     mToolbar.onNavigatedToDifferentPage();
                     maybeTriggerCacheRefreshForZeroSuggest(navigation.getUrl());
@@ -843,12 +848,14 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
             @Override
             public void onDidFinishNavigationEnd() {
+                onBackPressStateChanged();
                 mLocationBarModel.notifyDidFinishNavigationEnd();
             }
 
             @Override
             public void onDidStartNavigationInPrimaryMainFrame(
                     Tab tab, NavigationHandle navigationHandle) {
+                onBackPressStateChanged();
                 mLocationBarModel.notifyDidStartNavigation(navigationHandle.isSameDocument());
             }
 
@@ -857,6 +864,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 if (tab == mLocationBarModel.getTab()) {
                     updateButtonStatus();
                 }
+                onBackPressStateChanged();
             }
 
             @Override
