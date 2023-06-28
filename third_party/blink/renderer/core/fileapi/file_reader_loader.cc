@@ -97,7 +97,7 @@ void FileReaderLoader::StartInternal(scoped_refptr<BlobDataHandle> blob_data,
   }
 
   blob_data->ReadAll(std::move(producer_handle),
-                     receiver_.BindNewPipeAndPassRemote());
+                     receiver_.BindNewPipeAndPassRemote(task_runner_));
 
   if (IsSyncLoad()) {
     // Wait for OnCalculatedSize, which will also synchronously drain the data
