@@ -5811,6 +5811,9 @@
             "experiments": [
                 {
                     "name": "Enabled_20230221",
+                    "params": {
+                        "FirstPartySetsNavigationThrottleTimeout": "0s"
+                    },
                     "enable_features": [
                         "FirstPartySets",
                         "PrivacySandboxFirstPartySetsUI"
