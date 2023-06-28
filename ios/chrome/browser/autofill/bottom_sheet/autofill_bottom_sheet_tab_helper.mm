@@ -91,10 +91,6 @@ void AutofillBottomSheetTabHelper::OnFormMessageReceived(
 
 void AutofillBottomSheetTabHelper::ShowPasswordBottomSheet(
     const autofill::FormActivityParams params) {
-  if (!commands_handler_ || !password_account_storage_notice_handler_) {
-    return;
-  }
-
   if (![password_account_storage_notice_handler_
           shouldShowAccountStorageNotice]) {
     [commands_handler_ showPasswordBottomSheet:params];
