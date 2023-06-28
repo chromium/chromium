@@ -6,6 +6,7 @@
 #define ASH_WM_DESKS_DESK_BUTTON_DESK_BUTTON_H_
 
 #include "ash/ash_export.h"
+#include "ash/shelf/shelf.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
@@ -55,6 +56,7 @@ class ASH_EXPORT DeskButton : public views::Button,
   ~DeskButton() override;
 
   bool is_hovered() const { return is_hovered_; }
+  bool is_activated() const { return is_activated_; }
   DeskSwitchButton* prev_desk_button() const { return prev_desk_button_; }
   DeskSwitchButton* next_desk_button() const { return next_desk_button_; }
 
@@ -103,6 +105,11 @@ class ASH_EXPORT DeskButton : public views::Button,
   // Determines whether the desk switch buttons can be shown.
   void MaybeUpdateDeskSwitchButtonVisibility();
 
+  // Updates the shelf auto-hide disabler given `should_enable_shelf_auto_hide`.
+  void UpdateShelfAutoHideDisabler(
+      absl::optional<Shelf::ScopedDisableAutoHide>& disabler,
+      bool should_enable_shelf_auto_hide);
+
   // Widget that maintains this object.
   // TODO(b/272383056): Remove this and this class's dependence on accessing it.
   raw_ptr<DeskButtonWidget> desk_button_widget_;
@@ -133,6 +140,12 @@ class ASH_EXPORT DeskButton : public views::Button,
   // Indicates that the shelf is horizontal and therefore the button should
   // always be expanded.
   bool force_expanded_state_ = false;
+
+  // Used to suspend the shelf from audo-hiding when the button is activated or
+  // hovered.
+  absl::optional<Shelf::ScopedDisableAutoHide>
+      disable_shelf_auto_hide_activation_;
+  absl::optional<Shelf::ScopedDisableAutoHide> disable_shelf_auto_hide_hover_;
 };
 
 }  // namespace ash

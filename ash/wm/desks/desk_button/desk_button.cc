@@ -159,6 +159,9 @@ void DeskButton::SetActivation(bool is_activated) {
 
   is_activated_ = is_activated;
 
+  UpdateShelfAutoHideDisabler(disable_shelf_auto_hide_activation_,
+                              !is_activated_);
+
   if (!force_expanded_state_) {
     if (!is_activated_ && is_hovered_) {
       desk_button_widget_->SetExpanded(true);
@@ -211,6 +214,8 @@ void DeskButton::OnMouseEntered(const ui::MouseEvent& event) {
 
   is_hovered_ = true;
 
+  UpdateShelfAutoHideDisabler(disable_shelf_auto_hide_hover_, !is_hovered_);
+
   if (is_activated_) {
     return;
   }
@@ -230,6 +235,8 @@ void DeskButton::OnMouseExited(const ui::MouseEvent& event) {
   }
 
   is_hovered_ = false;
+
+  UpdateShelfAutoHideDisabler(disable_shelf_auto_hide_hover_, !is_hovered_);
 
   if (is_activated_) {
     return;
@@ -339,6 +346,22 @@ void DeskButton::MaybeUpdateDeskSwitchButtonVisibility() {
                                 can_show_prev_desk_button);
   next_desk_button_->SetVisible(can_show_desk_switch_buttons &&
                                 can_show_next_desk_button);
+}
+
+void DeskButton::UpdateShelfAutoHideDisabler(
+    absl::optional<Shelf::ScopedDisableAutoHide>& disabler,
+    bool should_enable_shelf_auto_hide) {
+  // If shelf is not set to always hide, no need to disable.
+  if (desk_button_widget_->shelf()->auto_hide_behavior() !=
+      ShelfAutoHideBehavior::kAlways) {
+    return;
+  }
+
+  if (should_enable_shelf_auto_hide) {
+    disabler.reset();
+  } else {
+    disabler.emplace(desk_button_widget_->shelf());
+  }
 }
 
 BEGIN_METADATA(DeskButton, Button)

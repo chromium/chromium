@@ -9913,6 +9913,31 @@ class DeskButtonTest
     waiter.Wait();
   }
 
+  // Clicks on the desk button.
+  void ClickDeskButton() {
+    auto* event_generator = GetEventGenerator();
+    auto* desk_button = GetDeskButton();
+    ASSERT_TRUE(desk_button);
+    event_generator->MoveMouseTo(
+        desk_button->GetBoundsInScreen().CenterPoint());
+    event_generator->ClickLeftButton();
+  }
+
+  // Hovers on the desk button.
+  void HoverDeskButton() {
+    auto* event_generator = GetEventGenerator();
+    auto* desk_button = GetDeskButton();
+    ASSERT_TRUE(desk_button);
+    event_generator->MoveMouseTo(
+        desk_button->GetBoundsInScreen().CenterPoint());
+  }
+
+  // Unhovers away from the desk button.
+  void UnhoverDeskButton() {
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseTo(0, 0);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ShelfViewTestAPI> shelf_test_api_;
@@ -10046,6 +10071,50 @@ TEST_P(DeskButtonTest, UpdateShelfAlignmentDuringTest) {
   GetPrimaryShelf()->SetAlignment(bottom_at_start ? ShelfAlignment::kLeft
                                                   : ShelfAlignment::kBottom);
   EXPECT_EQ(bottom_at_start ? u"S" : u"school", desk_button->GetTextForTest());
+}
+
+// Tests that when the desk button is activated, shelf auto-hide should be
+// suspended.
+TEST_P(DeskButtonTest, SuspendShelfAutoHideWhenActivated) {
+  auto* shelf = GetPrimaryShelf();
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  ASSERT_FALSE(shelf->disable_auto_hide());
+
+  auto* desk_button = GetDeskButton();
+  ASSERT_TRUE(desk_button);
+
+  ClickDeskButton();
+  UnhoverDeskButton();
+  EXPECT_TRUE(desk_button->is_activated());
+  EXPECT_FALSE(desk_button->is_hovered());
+  EXPECT_TRUE(shelf->disable_auto_hide());
+
+  ClickDeskButton();
+  UnhoverDeskButton();
+  EXPECT_FALSE(desk_button->is_activated());
+  EXPECT_FALSE(desk_button->is_hovered());
+  ASSERT_FALSE(shelf->disable_auto_hide());
+}
+
+// Tests that when the desk button is hovered, shelf auto-hide should be
+// suspended.
+TEST_P(DeskButtonTest, SuspendShelfAutoHideWhenHovered) {
+  auto* shelf = GetPrimaryShelf();
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  ASSERT_FALSE(shelf->disable_auto_hide());
+
+  auto* desk_button = GetDeskButton();
+  ASSERT_TRUE(desk_button);
+
+  HoverDeskButton();
+  EXPECT_FALSE(desk_button->is_activated());
+  EXPECT_TRUE(desk_button->is_hovered());
+  EXPECT_TRUE(shelf->disable_auto_hide());
+
+  UnhoverDeskButton();
+  EXPECT_FALSE(desk_button->is_activated());
+  EXPECT_FALSE(desk_button->is_hovered());
+  EXPECT_FALSE(shelf->disable_auto_hide());
 }
 
 // TODO(afakhry): Add more tests:
