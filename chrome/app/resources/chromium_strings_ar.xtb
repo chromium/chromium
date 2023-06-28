@@ -8,6 +8,7 @@
 <translation id="1104942323762546749">‏يرغب Chromium في تصدير كلمات المرور، لذا يُرجى كتابة كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="113122355610423240">‏Chromium هو متصفحك التلقائي</translation>
 <translation id="1131805035311359397">‏للتحقُّق مما إذا كانت كلمات المرور آمنة من عمليات اختراق البيانات ومشاكل الأمان الأخرى، يُرجى <ph name="BEGIN_LINK" />تسجيل الدخول إلى Chromium<ph name="END_LINK" />.</translation>
+<translation id="1153368717515616349">‏انقر على قائمة Chromium.</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{‏إضافات Chromium كانت لديها إمكانية الوصول إلى أجهزة HID}=1{‏إضافات Chromium لديها إمكانية الوصول إلى جهاز HID واحد}two{‏إضافات Chromium لديها إمكانية الوصول إلى جهازَي HID}few{‏إضافات Chromium لديها إمكانية الوصول إلى # أجهزة HID}many{‏إضافات Chromium لديها إمكانية الوصول إلى # جهاز HID}other{‏إضافات Chromium لديها إمكانية الوصول إلى # جهاز HID}}</translation>
 <translation id="1185134272377778587">‏لمحة عن Chromium</translation>
 <translation id="1203500561924088507">شكرًا على التثبيت. عليك إعادة تشغيل المتصفِّح قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
@@ -55,6 +56,7 @@
 <translation id="2384373936468275798">‏تعذّر على نظام التشغيل Chromium مزامنة بياناتك لأن تفاصيل تسجيل الدخول إلى حسابك قديمة.</translation>
 <translation id="2396765026452590966">‏غيّرت الإضافة "<ph name="EXTENSION_NAME" />" الصفحة التي تظهر عند بدء Chromium.</translation>
 <translation id="2401032172288869980">‏يحتاج Chromium إلى إذن للوصول إلى الكاميرا والميكروفون من أجل هذا الموقع الإلكتروني.</translation>
+<translation id="2451727308784734061">استخدِم الاختصار للوصول بسرعة إلى "مدير كلمات المرور". بإمكانك نقل هذا الاختصار إلى الشاشة الرئيسية أو مشغِّل التطبيقات في جهاز الكمبيوتر.</translation>
 <translation id="2478295928299953161">‏سيتم إغلاق Chromium قريبًا</translation>
 <translation id="2483889755041906834">‏في Chromium</translation>
 <translation id="2485422356828889247">إزالة التثبيت</translation>
@@ -246,6 +248,7 @@
 <translation id="6333502561965082103">‏عملية أخرى على Chromium قيد التقدم. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="6334986366598267305">‏الآن أصبح استخدام Chromium مع حسابك في Google وفي أجهزة الكمبيوتر المشتركة أكثر سهولة.</translation>
 <translation id="6373523479360886564">‏هل تريد فعلًا إزالة Chromium؟</translation>
+<translation id="6375219077595103062">إضافة اختصار إلى "مدير كلمات المرور"</translation>
 <translation id="6384011394608460044">‏<ph name="BEGIN_BOLD" />آلية استخدامنا لهذه البيانات:<ph name="END_BOLD" /> بإمكان متصفّح Chromium تقدير اهتماماتك. وبعد ذلك، يمكن للموقع الإلكتروني الذي تنتقل إليه أن يطلب من Chromium معرفة اهتماماتك من أجل تخصيص الإعلانات التي تظهر لك.</translation>
 <translation id="6403826409255603130">‏ إن Chromium هو متصفح ويب يشغّل صفحات الويب والتطبيقات بسرعة مذهلة. إنه سريع وثابت وسهل الاستخدام. يمكنك تصفح الويب بشكل أكثر أمانًا من خلال ميزات الحماية من البرامج الضارة والتصيّد الاحتيالي المدمجة في Chromium.</translation>
 <translation id="6442900851116057561">‏إعادة تشغيل نظام التشغيل Chromium</translation>
@@ -370,6 +373,7 @@
 <translation id="8697124171261953979">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chromium أو إجراء بحث من المربع متعدد الاستخدامات.</translation>
 <translation id="8704119203788522458">‏هذا هو Chromium الخاص بك</translation>
 <translation id="8796602469536043152">‏يحتاج Chromium إلى إذن للوصول إلى الكاميرا والميكروفون من أجل الموقع الإلكتروني هذا.</translation>
+<translation id="8826492472752484139">انقر على "مدير كلمات المرور".</translation>
 <translation id="8833697763442816810">‏نظام التشغيل Chromium</translation>
 <translation id="8846118132221683440">‏<ph name="BEGIN_BOLD" />البيانات المستخدَمة:<ph name="END_BOLD" /> سجلّ تصفّحك، وهو سجل يشمل المواقع الإلكترونية التي زرتها باستخدام Chromium على هذا الجهاز.</translation>
 <translation id="8862326446509486874">لا تملك الحقوق الكافية للتثبيت على مستوى النظام. جرّب تشغيل المثبِّت بصفة مشرف.</translation>

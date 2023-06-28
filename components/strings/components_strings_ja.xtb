@@ -430,6 +430,7 @@
 <translation id="1870473978371099486">個別指導サービス</translation>
 <translation id="1871208020102129563">プロキシは .pac スクリプト URL ではなく固定プロキシ サーバーを使用するように設定されています。</translation>
 <translation id="1871284979644508959">必須フィールド</translation>
+<translation id="1871739799120352748">高価格</translation>
 <translation id="1873899211667975540">ロック ミュージック</translation>
 <translation id="1874224422119691492">パスワード入力で画面ロックを使用するかどうかは、<ph name="SETTINGS" /> で変更できます</translation>
 <translation id="1875025161375567525">フォトトレイ</translation>
@@ -474,6 +475,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> から、ローカルのパソコンに大きなデータを永続的に保存する許可を求められています</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{他 1 個}other{他 # 個}}</translation>
+<translation id="2001469757375372617">エラーが発生しました。変更は保存されませんでした。</translation>
 <translation id="2003709556000175978">今すぐパスワードを再設定してください</translation>
 <translation id="2003775180883135320">4 穴パンチ（上）</translation>
 <translation id="2009942480257059311">[予定を作成] ボタンです。実行すると、Google カレンダーで新しい予定をすばやく作成できます</translation>
@@ -533,6 +535,7 @@
 <translation id="2118132148597630479">C5 封筒</translation>
 <translation id="2119505898009119320">発行先: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">パンチ（右下）</translation>
+<translation id="2122214041802369259">高価格</translation>
 <translation id="2122719317867821810">このポリシーは想定どおり動作していますが、競合する値が設定されている別のポリシーによってオーバーライドされています。</translation>
 <translation id="2126374524350484896">PDF 変換アプリケーション:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode ポリシーが設定されていないため、指定したテンプレートを適用できない可能性があります。</translation>
@@ -921,6 +924,7 @@
 <translation id="3054512251683174387">Chrome では、4 週間以上経過したトピックは自動削除されます。ブラウジングを続けていると、トピックがリストに再度表示される場合もあります。サイトと共有したくないトピックはブロックできます。詳しくは、Chrome で広告のプライバシーを管理する方法についての説明をご覧ください。</translation>
 <translation id="3061707000357573562">サービスへのパッチの適用</translation>
 <translation id="306573536155379004">ゲームを開始しました。</translation>
+<translation id="3067505415088964188">低価格</translation>
 <translation id="3068991664510324412">TV ゲーム、PC ゲーム</translation>
 <translation id="3080254622891793721">グラフィック</translation>
 <translation id="3081538120861307764">また、広告効果を測定するため、広告が表示された日時など、限られた種類のデータがウェブサイト間で共有されます。</translation>
@@ -2230,6 +2234,7 @@
 <translation id="5967592137238574583">連絡先情報の編集</translation>
 <translation id="5967867314010545767">履歴から削除</translation>
 <translation id="5968022600320704045">検索結果はありません</translation>
+<translation id="5969199813874624822">保存して価格をトラッキング</translation>
 <translation id="5974052231147553524">ロール 6</translation>
 <translation id="5975083100439434680">縮小する</translation>
 <translation id="5979084224081478209">パスワードを確認</translation>
@@ -3670,6 +3675,7 @@
 <translation id="9141013498910525015">住所を管理</translation>
 <translation id="9144951720726881238">有効期限:</translation>
 <translation id="9148507642005240123">編集の取り消し（&amp;U）</translation>
+<translation id="9148599396704355100">低価格</translation>
 <translation id="9150045010208374699">カメラを使用する</translation>
 <translation id="9150685862434908345">管理者はブラウザの設定をリモートで変更できます。このデバイスでのアクティビティは、Chrome 以外でも管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">更新完了</translation>

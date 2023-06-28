@@ -140,6 +140,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1550406609415860283">Dispositivos disponibles</translation>
 <translation id="1550523713251050646">Haz clic para obtener más opciones</translation>
 <translation id="1555130319947370107">Azul</translation>
+<translation id="1557622599341396706">Mostrar el nombre del escritorio</translation>
 <translation id="1576511610858879060">Tu Chromebook o dispositivo Bluetooth usan una versión anterior de Bluetooth. Usa otra entrada para obtener una mejor calidad de audio.</translation>
 <translation id="1576623706766186887">Alejar cuando la lupa esté activada</translation>
 <translation id="1586324912145647027">Ir al escritorio 1 al 8</translation>
@@ -990,6 +991,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319712128756744240">Vincular dispositivo nuevo</translation>
 <translation id="5322611492012084517">No podemos encontrar tu teléfono</translation>
+<translation id="5323994101633366939">Ocultar el nombre del escritorio</translation>
 <translation id="5327248766486351172">Nombre</translation>
 <translation id="5329548388331921293">Conectando…</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (puerto lateral izquierdo trasero)</translation>
@@ -1172,6 +1174,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">Se descargaron los archivos de voz en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
+<translation id="6119972796024789243">Corrección de colores</translation>
 <translation id="6121838516699723042">Confirmar la descarga de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">El Asistente de Google no está disponible en las sesiones de invitado.</translation>
 <translation id="6129953537138746214">Espacio</translation>
@@ -1640,6 +1643,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
 <translation id="8255234195843591763">Restablecer para actualizar</translation>
 <translation id="8261506727792406068">Borrar</translation>
+<translation id="8262312463845990408">Activar o desactivar la reproducción</translation>
 <translation id="8270450402312105425">{0,plural, =1{Cambia el dispositivo a la versión anterior en el transcurso de una hora}other{Cambia el dispositivo a la versión anterior en el transcurso de # horas}}</translation>
 <translation id="8277261673056602147">Destacar texto en la pantalla</translation>
 <translation id="8284362522226889623">Para cambiar al escritorio anterior, desliza cuatro dedos hacia la izquierda.</translation>

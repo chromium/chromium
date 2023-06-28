@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">המכשירים הזמינים</translation>
 <translation id="1550523713251050646">יש ללחוץ לקבלת אפשרויות נוספות</translation>
 <translation id="1555130319947370107">כחול</translation>
+<translation id="1557622599341396706">הצגת השם של שולחן העבודה הווירטואלי</translation>
 <translation id="1576511610858879060">‏ב-Chromebook או במכשיר ה-Bluetooth שלך יש גרסה ישנה יותר של Bluetooth. לשיפור איכות האודיו, צריך להשתמש במקור קלט אחר.</translation>
 <translation id="1576623706766186887">הקטנת התצוגה כשמפעילים את הזכוכית המגדלת</translation>
 <translation id="1586324912145647027">מעבר לשולחנות העבודה הווירטואליים 1 עד 8</translation>
@@ -987,6 +988,7 @@
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5319712128756744240">התאמת מכשיר חדש</translation>
 <translation id="5322611492012084517">לא ניתן למצוא את הטלפון</translation>
+<translation id="5323994101633366939">הסתרת השם של שולחן העבודה הווירטואלי</translation>
 <translation id="5327248766486351172">שם</translation>
 <translation id="5329548388331921293">מתבצעת התחברות…</translation>
 <translation id="5331975486040154427">‏מכשיר עם יציאת USB-C (יציאה שמאלית-אחורית)</translation>
@@ -1169,6 +1171,7 @@
 <translation id="6103838137565245112">מערכת</translation>
 <translation id="6114505516289286752">הורדת קובצי הדיבור של <ph name="LANGUAGE" /> הסתיימה</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">תיקון צבע</translation>
 <translation id="6121838516699723042">אישור ההורדה של <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">‏Google Assistant לא זמינה בגלישה כאורח.</translation>
 <translation id="6129953537138746214">רווח</translation>
@@ -1639,6 +1642,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />, אפליקציה</translation>
 <translation id="8255234195843591763">עליך לאפס כדי לעדכן</translation>
 <translation id="8261506727792406068">מחיקה</translation>
+<translation id="8262312463845990408">הפעלה או השהיה של הקראת הטקסט</translation>
 <translation id="8270450402312105425">{0,plural, =1{שינוי המכשיר לגרסה קודמת בתוך שעה}one{שינוי המכשיר לגרסה קודמת בתוך # שעות}two{שינוי המכשיר לגרסה קודמת בתוך שעתיים}other{שינוי המכשיר לגרסה קודמת בתוך # שעות}}</translation>
 <translation id="8277261673056602147">יש להדגיש טקסט במסך</translation>
 <translation id="8284362522226889623">יש להחליק ימינה בעזרת ארבע אצבעות כדי לעבור לשולחן העבודה הווירטואלי הקודם</translation>

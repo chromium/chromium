@@ -6068,6 +6068,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Configuració de Kerberos</translation>
 <translation id="6163522313638838258">Desplega-ho tot...</translation>
+<translation id="6164393601566177235">Afegeix llocs web</translation>
 <translation id="6164832038898943453">Afegeix idiomes perquè es tradueixin automàticament</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6166185671393271715">Importeu contrasenyes a Chrome</translation>
@@ -6220,7 +6221,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="630065524203833229">S&amp;urt</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> no s'ha pogut configurar automàticament. Especifica els detalls avançats de la impressora. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="6301300352769835063">Permet que Google utilitzi les dades del maquinari per ajudar a millorar <ph name="DEVICE_OS" />. Si rebutges aquesta opció, les dades encara s'enviaran a Google per veure si cal fer alguna actualització rellevant, però no s'emmagatzemaran ni s'utilitzaran de cap altra manera. Obtén més informació a g.co/flex/HWDataCollection.</translation>
-<translation id="6302661287897119265">Filtra</translation>
+<translation id="6302661287897119265">Filtre</translation>
 <translation id="630292539633944562">Suggeriments sobre informació personal</translation>
 <translation id="6305607932814307878">Política global:</translation>
 <translation id="6305702903308659374">Reprodueix a un volum normal encara que ChromeVox parli</translation>

@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">利用可能なデバイス</translation>
 <translation id="1550523713251050646">クリックするとその他のオプションが表示されます</translation>
 <translation id="1555130319947370107">青</translation>
+<translation id="1557622599341396706">デスク名を表示</translation>
 <translation id="1576511610858879060">Chromebook または Bluetooth デバイスで古いバージョンの Bluetooth が使用されています。音質を改善するには別の入力ソースを使用してください。</translation>
 <translation id="1576623706766186887">拡大鏡がオンのときにズームアウトします</translation>
 <translation id="1586324912145647027">デスク 1～8 に移動する</translation>
@@ -989,6 +990,7 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5319712128756744240">新しいデバイスとペア設定</translation>
 <translation id="5322611492012084517">スマートフォンが見つかりません</translation>
+<translation id="5323994101633366939">デスク名を非表示</translation>
 <translation id="5327248766486351172">名前</translation>
 <translation id="5329548388331921293">接続中…</translation>
 <translation id="5331975486040154427">USB-C デバイス（左奥のポート）</translation>
@@ -1171,6 +1173,7 @@
 <translation id="6103838137565245112">システム</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />の音声ファイルをダウンロードしました</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">色補正</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> のダウンロードの確認</translation>
 <translation id="612734058257491180">Google アシスタントは、ゲスト セッションではご利用いただけません。</translation>
 <translation id="6129953537138746214">Space</translation>
@@ -1640,6 +1643,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />、アプリ</translation>
 <translation id="8255234195843591763">リセットして更新してください</translation>
 <translation id="8261506727792406068">削除</translation>
+<translation id="8262312463845990408">再生を切り替える</translation>
 <translation id="8270450402312105425">{0,plural, =1{1 時間以内にデバイスを以前のバージョンに戻してください}other{# 時間以内にデバイスを以前のバージョンに戻してください}}</translation>
 <translation id="8277261673056602147">画面上のテキストを選択</translation>
 <translation id="8284362522226889623">前のデスクに切り替えるには 4 本の指で左にスワイプします</translation>

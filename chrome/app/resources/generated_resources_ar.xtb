@@ -79,6 +79,7 @@
 <translation id="1061130374843955397">مرحبًا بك في <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">إنشاء رمز الاستجابة السريعة لهذا الرابط</translation>
 <translation id="1061904396131502319">سيتم قفل الجهاز بعد قليل</translation>
+<translation id="10619348099955377">نسخ الاسم المعروض</translation>
 <translation id="1062407476771304334">استبدال</translation>
 <translation id="1062628064301375934">مساعدتنا في تصميم تجربة تصفُّح أكثر خصوصية</translation>
 <translation id="1066964438793906105">فحص الملف بحثًا عن البرامج الضارة</translation>
@@ -580,6 +581,7 @@
 <translation id="1481537595330271162">حدث خطأ أثناء تغيير حجم القرص.</translation>
 <translation id="1482626744466814421">وضع إشارة مرجعية لعلامة التبويب هذه</translation>
 <translation id="1482772681918035149">تعديل كلمات المرور</translation>
+<translation id="1483431819520123112">تم نسخ الاسم المعروض إلى الحافظة</translation>
 <translation id="1483493594462132177">إرسال</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">يستخدم الموقع الإلكتروني البلوتوث.</translation>
@@ -959,6 +961,7 @@
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{ملاحظة واحدة}zero{# ملاحظة}two{ملاحظتان}few{# ملاحظات}many{# ملاحظة}other{# ملاحظة}}</translation>
 <translation id="1784707308176068866">التشغيل في الخلفية عندما يطلبه تطبيق تعاون أصلي</translation>
 <translation id="1784849162047402014">مساحة القرص الموجودة على الجهاز منخفضة.</translation>
+<translation id="1786290960428378411">تتطلب الإضافة إذنًا بقراءة محتوى الموقع الإلكتروني وتغييره</translation>
 <translation id="1787350673646245458">صورة المستخدم</translation>
 <translation id="1790976235243700817">إزالة إمكانية الوصول</translation>
 <translation id="1792619191750875668">شاشة تم توسيعها</translation>
@@ -1291,6 +1294,7 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{انقر لتثبيت الإضافة.}zero{انقر لتثبيت الإضافات.}two{انقر لتثبيت هاتَين الإضافتَين.}few{انقر لتثبيت هذه الإضافات.}many{انقر لتثبيت هذه الإضافات.}other{انقر لتثبيت هذه الإضافات.}}</translation>
 <translation id="2073496667646280609">قد لا تتوفّر مساحة تخزين كافية على جهازك أو في المكان المُحدَّد للاحتفاظ بنسخة احتياطية. يُرجى إخلاء مساحة أو اختيار مكان آخر.</translation>
 <translation id="2073505299004274893">يجب استخدام ما لا يزيد عن <ph name="CHARACTER_LIMIT" /> حرف.</translation>
+<translation id="2075088158103027942">الانتقال إلى الاشتراك</translation>
 <translation id="2075474481720804517">البطارية <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2076269580855484719">إخفاء هذا المكون الإضافي</translation>
 <translation id="2076672359661571384">متوسط (موصى به)</translation>
@@ -2111,6 +2115,7 @@
 <translation id="2731700343119398978">يرجى الانتظار...</translation>
 <translation id="2731971182069536520">في المرة القادمة التي يتم فيها إعادة تشغيل الجهاز، سيُجري مشرفك تحديثًا لمرة واحدة، ما سيؤدي إلى حذف البيانات المحلية.</translation>
 <translation id="2732134891301408122">المحتوى الإضافي <ph name="CURRENT_ELEMENT" /> من أصل <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733992589856193783">أنشأت مفتاح مرور لهذا الموقع الإلكتروني. يجب استخدام جهازك الجوّال لتسجيل الدخول.</translation>
 <translation id="27349076983469322">خلفية فاتحة</translation>
 <translation id="2735712963799620190">الجدول الزمني</translation>
 <translation id="2737363922397526254">تصغير...</translation>
@@ -3098,6 +3103,7 @@
 <translation id="3610241585790874201">المواقع الإلكترونية غير المسموح لها بحفظ البيانات على جهازك</translation>
 <translation id="3610369246614755442">تحتاج مروحة تبريد محطة الإرساء إلى الصيانة.</translation>
 <translation id="3610961622607302617">تغيير كلمة مرور <ph name="WEBSITE" /></translation>
+<translation id="3611634011145829814">الانتقال إلى صفحة الاشتراك</translation>
 <translation id="3611658447322220736">السماح للمواقع الإلكترونية التي تم إغلاقها مؤخرًا بإنهاء إرسال البيانات واستلامها</translation>
 <translation id="3612673635130633812">‏تم تحميلها من قبل &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">عرض <ph name="FOLDER_NAME" /></translation>
@@ -3784,6 +3790,7 @@
 <translation id="4176463684765177261">غير مفعّل</translation>
 <translation id="4176864026061939326">هذا الجهاز يديره أحد المشرفين. ويطلب هذا المشرف إنشاء ملف شخصي جديد لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4177501066905053472">مواضيع الإعلانات</translation>
+<translation id="4178220097446335546">لحذف هذا الاشتراك والشبكات المرتبطة به، انتقِل إلى صفحة اشتراك نقطة المرور لإزالة الاشتراك.</translation>
 <translation id="4180788401304023883">‏هل تريد حذف شهادة المرجع المصدق (CA) "<ph name="CERTIFICATE_NAME" />"؟</translation>
 <translation id="4181602000363099176">20 ضعفًا</translation>
 <translation id="4181841719683918333">اللغات</translation>
@@ -3936,6 +3943,7 @@
 <translation id="4316850752623536204">الموقع الإلكتروني للمطوّر</translation>
 <translation id="4317733381297736564">عمليات شراء داخل التطبيق</translation>
 <translation id="4317820549299924617">تعذَّر إثبات الملكية</translation>
+<translation id="4319441675152393296">انقر على رمز هذه الإضافة لمنحها إذنًا بقراءة محتوى <ph name="HOST" /> وتغييره.</translation>
 <translation id="4320177379694898372">لا يتوفر اتصال بالإنترنت</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197">‏إظهار "<ph name="FILE_NAME" />" في Finder</translation>
@@ -4619,6 +4627,7 @@
 <translation id="4899052647152077033">قلب الألوان</translation>
 <translation id="4899696330053002588">يتضمّن إعلانات</translation>
 <translation id="489985760463306091">لإنهاء إزالة البرامج الضارة، أعد تشغيل الكمبيوتر</translation>
+<translation id="490031510406860025">الإضافات غير مسموح بها على هذا الموقع الإلكتروني.</translation>
 <translation id="4900392736118574277">تم تغيير صفحة بدء التشغيل إلى <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> هرتز - متداخل</translation>
 <translation id="4900652253009739885">تتعذّر إزالة مفتاح التحكّم الوحيد المخصَّص للإجراء "اختيار". اضغط على أي مفتاح من أجل <ph name="RESPONSE" />.</translation>
@@ -6053,6 +6062,7 @@
 <translation id="6163363155248589649">&amp;عادي</translation>
 <translation id="6163376401832887457">‏إعدادات Kerberos</translation>
 <translation id="6163522313638838258">توسيع الكل...</translation>
+<translation id="6164393601566177235">إضافة المواقع الإلكترونية</translation>
 <translation id="6164832038898943453">إضافة اللغات إلى قائمة "لغات أريد ترجمتها تلقائيًا"</translation>
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6166185671393271715">‏استيراد كلمات المرور إلى Chrome</translation>
@@ -7354,6 +7364,7 @@
 <translation id="7299515639584427954">هل تريد تغيير التطبيق التلقائي لفتح الروابط المتوافقة؟</translation>
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">‏يمكنك طرح السؤال "Ok Google، ما هو اسم هذه الأغنية؟" أو "Ok Google، ما الذي تعرضه شاشتي؟".</translation>
+<translation id="7301812050652048720">تم حذف مفتاح المرور</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{‏قد يمنع هذا التطبيق تشغيل Chrome بشكلٍ صحيح.}zero{‏قد تمنع هذه التطبيقات تشغيل Chrome بشكلٍ صحيح.}two{‏قد يمنع هذان التطبيقان تشغيل Chrome بشكلٍ صحيح.}few{‏قد تمنع هذه التطبيقات تشغيل Chrome بشكلٍ صحيح.}many{‏قد تمنع هذه التطبيقات تشغيل Chrome بشكلٍ صحيح.}other{‏قد تمنع هذه التطبيقات تشغيل Chrome بشكلٍ صحيح.}}</translation>
 <translation id="7303281435234579599">عفوًا، لقد حدث خطأ أثناء إعداد الوضع التجريبي.</translation>
 <translation id="7303900363563182677">تم حظر هذا الموقع من الاطلاع على النصوص والصور التي تم نسخها إلى الحافظة.</translation>
@@ -7896,6 +7907,7 @@
 <translation id="7744192722284567281">تم العثور عليها في عملية اختراق البيانات.</translation>
 <translation id="7744649840067671761">اضغط على مفتاح تحكّم جديد أو مفتاح معيّن على لوحة المفاتيح لبدء التخصيص.
 ولإزالة مفتاح تحكّم أو مفتاح على لوحة المفاتيح مخصّص حاليًا، اضغط عليه.</translation>
+<translation id="7745677556280361868">هل تريد إزالة هذه الشبكة من خلال صفحة اشتراك نقطة المرور؟</translation>
 <translation id="7746045113967198252">تتيح لك هذه الميزة تكبير حجم العناصر المعروضة على شاشتك أو تصغيرها، بما في ذلك النصوص. يمكنك أيضًا العثور على هذه الميزة لاحقًا في الإعدادات &gt; الجهاز &gt; الشاشات.</translation>
 <translation id="7746739418892731373">‏تظهر لك أهمّ الصور والفيديوهات من مكتبة "صور Google". يمكنك التحكّم في المحتوى الذي يتم عرضه في الفيديوهات والصور المميّزة من خلال الانتقال إلى <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.
         <ph name="BREAK" />
@@ -8108,6 +8120,7 @@
 <translation id="7920363873148656176">بإمكان <ph name="ORIGIN" /> عرض الملف <ph name="FILENAME" />.</translation>
 <translation id="7920482456679570420">يُرجى إضافة كلمات تريد أن يتخطاها التدقيق الإملائي.</translation>
 <translation id="7921347341284348270">لا يمكنك الاطّلاع على إشعارات هاتفك من خلال هذا الحساب المُدار. يُرجى إعادة المحاولة من خلال حساب مختلف. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
+<translation id="7921901223958867679">يمكن لهذه الإضافة قراءة محتوى <ph name="HOST" /> وتغييره.</translation>
 <translation id="7922606348470480702">إضافة واحدة</translation>
 <translation id="7922935920104868876">عرض تفاصيل حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفّح المتخفي</translation>
 <translation id="7923564237306226146">‏اكتملت ترقية نظام التشغيل Linux</translation>
@@ -9641,6 +9654,7 @@
 <translation id="930551443325541578">تكرار ضغطة المفتاح وإظهار علامات التشكيل</translation>
 <translation id="930893132043726269">يتم حاليًا استخدام خدمة التجوال.</translation>
 <translation id="930991362911221750">هل تريد السماح لتطبيق "<ph name="APP_NAME" />" بالاطّلاع على علامة التبويب هذه؟</translation>
+<translation id="931273044114601262">الإضافات مسموح بها على هذا الموقع الإلكتروني.</translation>
 <translation id="93140074055951850">‏تم إيقاف تطبيقات Android</translation>
 <translation id="932327136139879170">الصفحة الرئيسية</translation>
 <translation id="932508678520956232">تعذر بدء الطباعة.</translation>

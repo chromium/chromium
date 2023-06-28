@@ -3465,7 +3465,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3888586133700543064">Ove informacije nam pomažu da bolje razumijemo problem s Asistentom. Pohranjuju se do 90 dana i pristup je ograničen na određene timove za inženjering i povratne informacije.</translation>
 <translation id="3890064827463908288">Uključivanje Sinhronizacije Chromea radi korištenja WiFi sinhronizacije</translation>
 <translation id="389313931326656921">Dodijeli prekidač za "Naprijed"</translation>
-<translation id="3893268973182382220">Učitavanje ove ploče trenutačno nije moguće</translation>
+<translation id="3893268973182382220">Trenutno nije moguće učitati ploču</translation>
 <translation id="3893295674388762059">Da obrišete podatke, zatvorite sve anonimne prozore</translation>
 <translation id="3893536212201235195">Čitanje i mijenjanje postavki pristupačnosti</translation>
 <translation id="3893630138897523026">ChromeVox (govorne povratne informacije)</translation>
@@ -6085,6 +6085,7 @@ Možete ga poslati Googleu da provjeri je li nesiguran. Skeniranja obično traju
 <translation id="6163363155248589649">&amp;Normalno</translation>
 <translation id="6163376401832887457">Postavke za Kerberos</translation>
 <translation id="6163522313638838258">Proširi sve...</translation>
+<translation id="6164393601566177235">Dodaj web-lokacije</translation>
 <translation id="6164832038898943453">Dodavanje jezika za automatsko prevođenje</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6166185671393271715">Uvoz lozinki u Chrome</translation>

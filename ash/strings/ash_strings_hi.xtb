@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">उपलब्ध डिवाइस</translation>
 <translation id="1550523713251050646">ज़्यादा विकल्पों के लिए क्लिक करें</translation>
 <translation id="1555130319947370107">नीला</translation>
+<translation id="1557622599341396706">डेस्क का नाम दिखाएं</translation>
 <translation id="1576511610858879060">आपके Chromebook या ब्लूटूथ डिवाइस में, ब्लूटूथ के पुराने वर्शन का इस्तेमाल किया जा रहा है. बेहतर ऑडियो क्वालिटी के लिए किसी दूसरे इनपुट सोर्स का इस्तेमाल करें.</translation>
 <translation id="1576623706766186887">ज़ूम करने की सुविधा चालू होने पर ज़ूम आउट करने के लिए</translation>
 <translation id="1586324912145647027">पहली डेस्क से आठवीं डेस्क पर जाएं</translation>
@@ -990,6 +991,7 @@
 <translation id="5317780077021120954">सेव करें</translation>
 <translation id="5319712128756744240">नया डिवाइस जोड़ें</translation>
 <translation id="5322611492012084517">आपका फ़ोन नहीं मिला</translation>
+<translation id="5323994101633366939">डेस्क का नाम छिपाएं</translation>
 <translation id="5327248766486351172">नाम</translation>
 <translation id="5329548388331921293">कनेक्ट हो रहा है...</translation>
 <translation id="5331975486040154427">USB-C डिवाइस (बायां पिछला पोर्ट)</translation>
@@ -1172,6 +1174,7 @@
 <translation id="6103838137565245112">सिस्टम</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> स्पीच फ़ाइलें डाउनलोड हो गई हैं</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">रंग में सुधार करने की सुविधा</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> डाउनलोड की पुष्टि करें</translation>
 <translation id="612734058257491180">Google Assistant की सुविधा मेहमान के तौर पर ब्राउज़ करने के सेशन में उपलब्ध नहीं है.</translation>
 <translation id="6129953537138746214">Space</translation>
@@ -1640,6 +1643,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ऐप्लिकेशन</translation>
 <translation id="8255234195843591763">अपडेट करने के लिए रीसेट करें</translation>
 <translation id="8261506727792406068">मिटाएं</translation>
+<translation id="8262312463845990408">'चुनें और सुनें' सुविधा को रोकें या चालू करें</translation>
 <translation id="8270450402312105425">{0,plural, =1{डिवाइस को एक घंटे के अंदर पिछले वर्शन पर ले जाएं}one{डिवाइस को # घंटे के अंदर पिछले वर्शन पर ले जाएं}other{डिवाइस को # घंटों के अंदर पिछले वर्शन पर ले जाएं}}</translation>
 <translation id="8277261673056602147">अपनी स्क्रीन पर मौजूद टेक्स्ट को हाइलाइट करें</translation>
 <translation id="8284362522226889623">पिछले डेस्क पर स्विच करने के लिए, चार उंगलियों से बाईं ओर स्वाइप करें</translation>

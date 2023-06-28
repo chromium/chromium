@@ -309,6 +309,19 @@ Die Muster für diese Richtlinie dürfen allerdings keine „/path“- oder „@
 <translation id="1272798957154751008">Migration von Chromad-Geräten zur Cloud-Verwaltung aktivieren</translation>
 <translation id="1274997165432133392">Cookies und andere Websitedaten</translation>
 <translation id="1277411517984768103">Ausführung von <ph name="BOREALIS_NAME" /> für einen Nutzer zulassen</translation>
+<translation id="1280005879732594593">Diese Richtlinie bestimmt, ob <ph name="PRODUCT_NAME" /> Kyber, einen Post-Quanten-Algorithmus für Schlüsselvereinbarungen, in TLS anbietet. So können Server, die dies unterstützen, Nutzertraffic vor der späteren Entschlüsselung durch Quantencomputer schützen.
+
+Wenn diese Richtlinie aktiviert ist, bietet <ph name="PRODUCT_NAME" /> in TLS-Verbindungen Kyber an. TLS-Verbindungen werden bei der Kommunikation mit kompatiblen Servern, die während des TLS-Handshakes Kyber auswählen, durch eine Kyber-Schlüsselvereinbarung geschützt.
+
+Ist die Richtlinie deaktiviert, bietet <ph name="PRODUCT_NAME" /> in TLS-Verbindungen kein Kyber an. Der Nutzertraffic ist dann nicht vor Quantencomputern geschützt.
+
+Wenn diese Richtlinie nicht konfiguriert ist, folgt <ph name="PRODUCT_NAME" /> dem standardmäßigen Einführungsprozess für das Anbieten von Kyber.
+
+Das Anbieten von Kyber ist abwärtskompatibel. Bei vorhandenen TLS-Servern und Netzwerk-Middleware wird die neue Option voraussichtlich ignoriert und es werden die früheren Optionen ausgewählt.
+
+Auf Geräten, auf denen TLS nicht korrekt implementiert ist, kann eine Fehlfunktion auftreten, wenn die neue Option angeboten wird. Beispielsweise kann bei unbekannten Optionen oder den resultierenden umfangreicheren Nachrichten die Verbindung dieser Geräte unterbrochen werden. Solche Geräte sind nicht post-quanten-kompatibel und beeinträchtigen die Post-Quanten-Umstellung von Unternehmen. Administratoren sollten in solchen Fällen den Anbieter fragen, wie sich das Problem beheben lässt.
+
+Die Richtlinie ist eine vorübergehende Maßnahme. Sie wird aus künftigen Versionen von <ph name="PRODUCT_NAME" /> entfernt. Sie kann aktiviert werden, um zu prüfen, ob es Probleme gibt, und lässt sich zum Beheben etwaiger Probleme deaktivieren.</translation>
 <translation id="1285819498003746288">Die Event.path API ist nicht verfügbar.</translation>
 <translation id="1290722184971934486">Wenn die Richtlinie auf <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (Wert 2) gesetzt ist, wird die Berechtigung für die Fensterverwaltung automatisch auf allen Websites verweigert. Dadurch wird die Fähigkeit von Websites eingeschränkt, Informationen zum Bildschirm des Geräts abzurufen und zu nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
 
@@ -320,7 +333,7 @@ Dies ersetzt die eingestellte Richtlinie <ph name="DEFAULT_WINDOW_PLACEMENT_SETT
 <translation id="129206366270737897">Dadurch werden alle asynchronen Methoden von <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> deaktiviert.</translation>
 <translation id="1294263471858445589">Aktiviert die passive Authentifizierung für Inkognito- und reguläre Sitzungen.</translation>
 <translation id="1295737447968372331">Hiermit wird die Funktion "Spracheingabe" auf dem Anmeldebildschirm aktiviert</translation>
-<translation id="1297182715641689552">PAC-Proxy-Skript verwenden</translation>
+<translation id="1297182715641689552">PAC-Proxy-Script verwenden</translation>
 <translation id="1297961932043741908">Festlegen, wie viel Megabyte Arbeitsspeicher eine einzelne Instanz von Chrome nutzen darf.</translation>
 <translation id="1304973015437969093">Ohne Nutzereingriff zu installierende Erweiterungs-/App-IDs und Aktualisierungs-URLs</translation>
 <translation id="1305400589435476516">Wenn die Richtlinie aktiviert ist, wird Daten-Roaming für das Gerät zugelassen.
@@ -780,7 +793,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
        Durch Festlegen der Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“ werden die folgenden Felder übernommen:
 * „<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />“ legt fest, welcher Proxyserver von Chrome verwendet werden soll, und verhindert, dass Nutzer die Proxyeinstellungen ändern
 * „<ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />“, eine URL zu einer PAC-Proxydatei
-* „<ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />“ sorgt dafür, dass der Netzwerkstapel auch bei ungültigem oder nicht verfügbarem PAC-Skript keine direkten Verbindungen nutzt
+* „<ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />“ sorgt dafür, dass der Netzwerkstapel auch bei ungültigem oder nicht verfügbarem PAC-Script keine direkten Verbindungen nutzt
 * „<ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />“, eine URL des Proxyservers
 * „<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />“, eine Liste mit Hosts, für die der Proxy umgangen wird
 
@@ -1483,6 +1496,7 @@ In <ph name="PRODUCT_OS_NAME" /> Kiosk bietet diese Richtlinie nicht die Option 
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="2299220924812062390">Liste der aktivierten Plug-ins angeben</translation>
+<translation id="2299815818824242485">Keine weitergeleiteten Suchen mit erhöhter Sicherheit zulassen</translation>
 <translation id="2303795211377219696">Autofill für Kreditkartendaten zulassen</translation>
 <translation id="2304009805995145854">Seit <ph name="PRODUCT_NAME" />-Version 67 ist die Website-Isolierung auf allen Desktop-Plattformen standardmäßig aktiviert. Dadurch wird jede Website in einem eigenen Prozess ausgeführt. Eine Website ist ein Protokoll plus eTLD+1 (z. B. https://beispiel.de). Wenn diese Richtlinie aktiviert ist, verändert sich dieses Verhalten nicht. Es wird lediglich verhindert, dass Nutzer die Einstellung ändern können und z. B. „Disable site isolation“ in chrome://flags verwenden. Seit <ph name="PRODUCT_NAME" />-Version 76 wird die Website-Isolierung nicht deaktiviert, wenn die Richtlinie deaktiviert oder nicht konfiguriert wird. Nutzer können sie stattdessen selbst deaktivieren.
 
@@ -1888,6 +1902,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Ist diese Richtlinie deaktiviert und ausgehende UDP-Verbindungen werden von einer Firewall gefiltert, lässt dieser Computer Verbindungen von Client-Computern ausschließlich innerhalb des lokalen Netzwerks zu.</translation>
 <translation id="2714756912981510828">Erkennung der Preisgabe von Passwörtern aktivieren</translation>
+<translation id="2716071441112588786">Weitergeleitete Suchen mit erhöhter Sicherheit zulassen</translation>
 <translation id="2716623398185506073">Wenn die Richtlinie aktiviert ist, werden über registrierte Geräte Hardwarestatistiken und Kennzeichnungen im Zusammenhang mit der Stromversorgung gemeldet.
 
       Ist sie deaktiviert oder nicht konfiguriert, melden registrierte Geräte keine Statistiken zur Stromversorgung.</translation>
@@ -2954,6 +2969,15 @@ Denke daran, diese Richtlinie nicht dauerhaft aktiviert zu lassen, insbesondere 
 <translation id="3591584750136265240">Verhalten der Log-in-Authentifizierung konfigurieren</translation>
 <translation id="3593905652755912452">Bei deaktivierten Formularsteuerelementen wird die alte Ereignisweiterleitung verwendet.</translation>
 <translation id="3596112486106491038">Befehlszeilenzugriff auf virtuellen Maschinen aktivieren</translation>
+<translation id="3596651403637948128">Hiermit wird festgelegt, ob im Standardschutzmodus von Safe Browsing Teil-Hashes der URL über einen Proxy über Oblivious HTTP an Google gesendet werden dürfen, um festzustellen, ob die URL sicher aufgerufen werden kann.
+
+Über den Proxy können Browser anonym Teil-Hashes von URLs zu Google hochladen. Außerdem können Browser häufiger Daten hochladen, um den Safe Browsing-Schutz zu verbessern.
+
+Diese Richtlinie wird ignoriert, wenn Safe Browsing deaktiviert oder der erweiterte Schutzmodus aktiviert ist.
+
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden weitergeleitete Suchen mit erhöhter Sicherheit zugelassen.
+
+Ist die Richtlinie deaktiviert, sind keine weitergeleiteten Suchen mit erhöhter Sicherheit zugelassen. URLs werden viel seltener direkt zu Google hochgeladen.</translation>
 <translation id="3603469950773500315">Einschränkungen von <ph name="CORS" />-Prüfungen in der neuen <ph name="CORS" />-Implementierung erlauben, wodurch Erweiterungen kompatibles Verhalten beibehalten können und <ph name="PRODUCT_NAME" /> angegebene Header ohne <ph name="CORS" />-Prüfungen senden kann.
 
       Wird diese Liste leergelassen, versucht <ph name="PRODUCT_NAME" />, Erweiterungen auf kompatible Weise auszuführen und setzt keine <ph name="API" />-Änderungen für Version 79 von <ph name="PRODUCT_NAME" /> um, wie unter <ph name="WEB_REQUEST_API_MANUAL" /> erläutert.
@@ -3528,6 +3552,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, ist die Bildschirmtastatur erst einmal deaktiviert, kann aber jederzeit von Nutzern aktiviert werden.</translation>
 <translation id="412697421478384751">Nutzern erlauben, schwache PINs als Sperrbildschirm-PIN festzulegen</translation>
+<translation id="4132809439883883106">Standardwert für den für TLS aktivierten Kyber-Post-Quanten-Algorithmus für Schlüsselvereinbarungen verwenden</translation>
 <translation id="4136603825567209889">Erfassen personenbezogener Daten aktivieren</translation>
 <translation id="4138655880188755661">Zeitlimit</translation>
 <translation id="4140646780789794190">Weitergabe von Diagnosedaten an PluginVm deaktivieren</translation>
@@ -4058,6 +4083,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, muss vor dem Aufruf dieser APIs un
       Wenn die Richtlinie nicht konfiguriert ist, findet für keine Website eine automatische Auswahl statt.</translation>
 <translation id="4611983465824842867">In unsicheren Formularen keine Warnungen anzeigen und auch nicht Autofill deaktivieren</translation>
 <translation id="4615003180013429835">Parsing-Modus für Websiteliste</translation>
+<translation id="4616706248182656871">Für TLS aktivierten Kyber-Post-Quanten-Algorithmus für Schlüsselvereinbarungen deaktivieren</translation>
 <translation id="4617338332148204752">Metatag-Überprüfung in <ph name="PRODUCT_FRAME_NAME" /> überspringen</translation>
 <translation id="461901491675418689">Funktion „NewBaseUrlInheritanceBehavior“ verfügbar</translation>
 <translation id="4624006912948309924">Wenn diese Richtlinie konfiguriert ist, werden die App-IDs festgelegt, die unter <ph name="PRODUCT_OS_NAME" /> als angepinnte Apps in der Launcherleiste angezeigt werden. Sie können nicht von Nutzern geändert werden.
@@ -4759,6 +4785,11 @@ Hinweis: Diese Richtlinie gilt nicht für HSTS-Umstellungen.</translation>
 <translation id="5345910753471481870">Schaltfläche „Google Lens“ nicht im Suchfeld auf der Seite „Neuer Tab“ anzeigen.</translation>
 <translation id="5346587320074666194">Den Zugriff auf Sensoren für diese Websites sperren</translation>
 <translation id="534836255587440809">„Automatischer Klick“ auf dem Anmeldebildschirm deaktivieren</translation>
+<translation id="5348658899015174540">Die <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API erlaubt Web-Apps, mehrere Oberflächen gleichzeitig aufzunehmen.
+      Diese Richtlinie macht das Attribut <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> für Web-Apps an definierten Ursprüngen verfügbar.
+      Wenn das Attribut <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> in einer <ph name="GET_DISPLAY_MEDIA_SET_NAME" />-Anfrage definiert ist, werden alle Bildschirmoberflächen automatisch aufgenommen, ohne dass eine explizite Genehmigung durch den Nutzer erforderlich ist.
+      Ist die Richtlinie nicht konfiguriert, steht <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> keinen Web-Apps zur Verfügung.
+Zur Verbesserung des Datenschutzes kann diese Richtlinie ab <ph name="PRODUCT_NAME" />-Version 116 nicht mehr dynamisch aktualisiert werden. Der Nutzer kann sich somit darauf verlassen, dass nach der Anmeldung keine Seiten den Bildschirm erfassen können, denen das nicht schon zu Beginn der Sitzung erlaubt war.</translation>
 <translation id="5361167871898066799">Autokorrektur bei Nutzung der physischen Tastatur steuern</translation>
 <translation id="5361708558735884308">Mit dieser Richtlinie kann auf die aufgeführten URLs zugegriffen werden (als Ausnahmen von „<ph name="URL_BLOCKLIST_POLICY_NAME" />“). Informationen zum Format der Einträge in der Liste findest du in der Beschreibung der Richtlinie. Beispielsweise werden alle Anfragen blockiert, wenn du „<ph name="URL_BLOCKLIST_POLICY_NAME" />“ auf * setzt. Du kannst diese Richtlinie verwenden, um den Zugriff auf eine eingeschränkte Liste mit URLs zu erlauben. Mit ihr lassen sich bei Verwendung des unter https://support.google.com/chrome/a?p=url_blocklist_filter_format angegebenen Formats Ausnahmen für bestimmte Schemas, Subdomains anderer Domains, Ports oder bestimmte Pfade festlegen. Mit dem spezifischsten Filter wird festgelegt, ob eine URL blockiert oder zulässig ist. Die Richtlinie „<ph name="URL_ALLOWLIST_POLICY_NAME" />“ hat Vorrang vor „<ph name="URL_BLOCKLIST_POLICY_NAME" />“. Diese Richtlinie ist auf 1.000 Einträge beschränkt.
 
@@ -4850,7 +4881,7 @@ Ab Version 92 von <ph name="PRODUCT_NAME" /> wird diese Richtlinie auch im moni
 
       Ist die Richtlinie nicht konfiguriert, kann der Nutzer sein Avatarbild für den Anmeldebildschirm selbst auswählen.</translation>
 <translation id="5428716437928918274">Einstellungen für die Privacy Sandbox</translation>
-<translation id="5431392643649571773">Wenn die "<ph name="PRODUCT_NAME" />"-Funktion aktiviert ist, ermöglicht sie die Nutzung des Back-Forward-Cache. Wenn eine Seite verlassen wird, bleibt der aktuelle Status (Dokumentbaum, Skript etc.) im Back-Forward-Cache erhalten. Wenn der Browser zur Seite zurückkehrt, wird sie aus dem Back-Forward-Cache wiederhergestellt und in dem Status angezeigt, in dem sie war, bevor sie in den Cache geladen wurde.
+<translation id="5431392643649571773">Wenn die "<ph name="PRODUCT_NAME" />"-Funktion aktiviert ist, ermöglicht sie die Nutzung des Back-Forward-Cache. Wenn eine Seite verlassen wird, bleibt der aktuelle Status (Dokumentbaum, Script etc.) im Back-Forward-Cache erhalten. Wenn der Browser zur Seite zurückkehrt, wird sie aus dem Back-Forward-Cache wiederhergestellt und in dem Status angezeigt, in dem sie war, bevor sie in den Cache geladen wurde.
 
           Diese Funktion kann manchen Websites Probleme bereiten, da sie dieses Caching nicht erwarten. Insbesondere hängen manche Websites davon ab, dass das "<ph name="UNLOAD_HANDLER_NAME" />"-Ereignis gesendet wird, wenn der Browser die Seite verlässt. Das "<ph name="UNLOAD_HANDLER_NAME" />"-Ereignis wird nicht gesendet, wenn die Seite in den Back-Forward-Cache geladen wird.
 
@@ -5860,6 +5891,11 @@ Weitere Informationen findest du unter https://developer.chrome.com/blog/immutab
       URLs, die ein Schema aus dieser Liste verwenden, werden nicht geladen und können nicht aufgerufen werden.
 
       Falls diese Richtlinie nicht konfiguriert oder die Liste leer ist, besteht in <ph name="PRODUCT_NAME" /> Zugriff auf alle Schemas.</translation>
+<translation id="6338831500376286321">Damit kannst du die Zugriffsebene für die Standortbestimmung auf Geräteebene für das <ph name="PRODUCT_OS_NAME" />-System festlegen. Diese gilt, bevor sich ein Nutzer anmeldet. Nach der Anmeldung können Nutzer die Zugriffsebene für die Standortbestimmung über die Einstellung pro Nutzer festlegen.
+
+Wenn die Richtlinie nicht konfiguriert oder auf „<ph name="ALLOW" />“ festgelegt ist, ist der Zugriff auf die Standortbestimmung auf dem Anmeldebildschirm für verwaltete Geräte zulässig. Wenn ein ungültiger Richtlinienwert gesendet wird, wird der Zugriff auf „<ph name="DISALLOW" />“ zurückgesetzt. Bei nicht verwalteten Geräten lautet der Wert immer „<ph name="ALLOW" />“.
+
+ACHTUNG: Du musst vorsichtig sein, wenn du diese Einstellung änderst, da dadurch möglicherweise andere Richtlinien nicht mehr funktionieren, die die Standortbestimmung betreffen (z. B. „<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />“). Speziell die Optionen „<ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" />“ und „<ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />“ der Richtlinie „<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />“ funktionieren nicht mehr, wenn diese Richtlinie auf „<ph name="DISALLOW" />“ gesetzt ist. Sie verwenden dann nur die <ph name="IP" />-basierte Standortauflösung auf dem Anmeldebildschirm (<ph name="LOG_IN" />).</translation>
 <translation id="6338982178236723271">Systeminformationen melden</translation>
 <translation id="6339355882150329269">Nutzer wird während der Videowiedergabe nicht als inaktiv angesehen</translation>
 <translation id="6352714113109004581">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer bitten dürfen, ihnen Zugriff auf ein HID-Gerät zu gewähren.
@@ -6391,7 +6427,7 @@ Ist diese Richtlinie auf „true“ gesetzt, wird WebSQL im Zusammenhang mit Dri
 <translation id="6788500377069760677">Weitergabe von Diagnosedaten an PluginVm aktivieren</translation>
 <translation id="6789319144568227749">Damit wird die Unterstützung für CORS-Anfrageheader ohne Platzhalter konfiguriert.
 
-      Mit der Version 97 von <ph name="PRODUCT_NAME" /> wird die Unterstützung für CORS-Anfrageheader ohne Platzhalter eingeführt. Wenn in Skripts eine ursprungsübergreifende Netzwerkanfrage per fetch() und XMLHttpRequest mit einem per Skript hinzugefügten Autorisierungsheader gestellt wird, muss der Header durch den Header „Access-Control-Allow-Headers“ in der CORS-Preflight-Antwort explizit zugelassen werden. „Explizit“ bedeutet hier, dass sich das Platzhaltersymbol „*“ nicht auf den Autorisierungsheader beziehen darf. Nähere Informationen findest du unter <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" />.
+      Mit der Version 97 von <ph name="PRODUCT_NAME" /> wird die Unterstützung für CORS-Anfrageheader ohne Platzhalter eingeführt. Wenn in Scripts eine ursprungsübergreifende Netzwerkanfrage per fetch() und XMLHttpRequest mit einem per Script hinzugefügten Autorisierungsheader gestellt wird, muss der Header durch den Header „Access-Control-Allow-Headers“ in der CORS-Preflight-Antwort explizit zugelassen werden. „Explizit“ bedeutet hier, dass sich das Platzhaltersymbol „*“ nicht auf den Autorisierungsheader beziehen darf. Nähere Informationen findest du unter <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" />.
 
       Wenn diese Richtlinie nicht festgelegt bzw. auf „Wahr“ gesetzt wird, unterstützt <ph name="PRODUCT_NAME" /> die CORS-Anfrageheader ohne Platzhalter und verhält sich wie oben beschrieben.
 
@@ -7109,6 +7145,7 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="7421230730436851224">Audiovorgang nie in einer Sandbox ausführen</translation>
 <translation id="7421483919690710988">Cache-Größe für Mediendatenträger in Byte festlegen</translation>
 <translation id="7424751532654212117">Liste der Ausnahmen von der Liste der deaktivierten Plug-ins</translation>
+<translation id="7425076578809444474">Für TLS Post-Quanten-Algorithmus für Schlüsselvereinbarungen aktivieren</translation>
 <translation id="7426112309807051726">Diese Richtlinie legt fest, ob die <ph name="TLS_FALSE_START" />-Optimierung deaktiviert werden soll. Aus Gründen, die mit dem Hergang der Funktion zu tun haben, heißt diese Richtlinie "DisableSSLRecordSplitting".
 
       Wenn die Richtlinie nicht konfiguriert oder auf "false" festgelegt ist, wird die Funktion "<ph name="TLS_FALSE_START" />" aktiviert. Ist "true" festgelegt, wird die Funktion "<ph name="TLS_FALSE_START" />" deaktiviert.</translation>
@@ -7118,6 +7155,7 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="7434202861148928348">Erforderliche Domainnamen für Remotezugriff-Clients konfigurieren</translation>
 <translation id="7436939516497076240">Dadurch werden die Suchergebnisseiten der Standardsuchmaschine nicht in der Seitenleiste des Browsers angezeigt.</translation>
 <translation id="7443356543619955157">Wenn die Richtlinie konfiguriert ist, ermöglicht sie, Netzwerkkonfigurationen für alle Nutzer eines <ph name="PRODUCT_OS_NAME" />-Geräts zu übernehmen. Die Netzwerkkonfiguration ist ein String im JSON-Format, der der Definition des ONC-Formats (Open Network Configuration) entspricht.</translation>
+<translation id="7446978687387327623">Weitergeleitete Safe Browsing-Echtzeitprüfungen zulassen</translation>
 <translation id="7448430478749155471">Hiermit wird die Funktion "Vorlesen" auf dem Anmeldebildschirm aktiviert</translation>
 <translation id="7456922722153109956">Diese Richtlinie legt die Sichtbarkeit der Information im mittleren Slot auf der Seite „Neuer Tab“ fest.
 
@@ -8230,15 +8268,15 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden nur die re
 <translation id="8470317291588703478">Eingeschränkten Modus für YouTube nicht erzwingen</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC verwendet bei der Suche nach dem besten Pfad alle verfügbaren Schnittstellen.</translation>
-<translation id="8483004350080020634">Entfernt datenschutz- und sicherheitsrelevante Teile aus https://-URLs, bevor diese an PAC-Skripts (Proxy Auto Config) übergeben werden, die <ph name="PRODUCT_NAME" /> während der Proxy-Auflösung verwendet.
+<translation id="8483004350080020634">Entfernt datenschutz- und sicherheitsrelevante Teile aus https://-URLs, bevor diese an PAC-Scripts (Proxy Auto Config) übergeben werden, die <ph name="PRODUCT_NAME" /> während der Proxy-Auflösung verwendet.
 
-Wenn diese Richtlinie auf "true" gesetzt ist, wird die Sicherheitsfunktion aktiviert und ein Stripping für https://-URLs durchgeführt, bevor diese an ein PAC-Skript übergeben werden. Auf diese Weise können für das PAC-Skript keine Daten eingesehen werden, die normalerweise durch einen verschlüsselten Kanal geschützt sind, etwa Pfad und Abfrage der URL.
+Wenn diese Richtlinie auf "true" gesetzt ist, wird die Sicherheitsfunktion aktiviert und ein Stripping für https://-URLs durchgeführt, bevor diese an ein PAC-Script übergeben werden. Auf diese Weise können für das PAC-Script keine Daten eingesehen werden, die normalerweise durch einen verschlüsselten Kanal geschützt sind, etwa Pfad und Abfrage der URL.
 
-Wird die Richtlinie auf "false" gesetzt, ist die Sicherheitsfunktion deaktiviert und für PAC-Skripts können alle Komponenten einer https://-URL eingesehen werden. Diese Einstellung gilt für alle PAC-Skripts, unabhängig von ihrem Ursprung. Sie schließt auch PAC-Skripts ein, die über WPAD gefunden oder über ein unsicheres Transportprotokoll abgerufen wurden.
+Wird die Richtlinie auf "false" gesetzt, ist die Sicherheitsfunktion deaktiviert und für PAC-Scripts können alle Komponenten einer https://-URL eingesehen werden. Diese Einstellung gilt für alle PAC-Scripts, unabhängig von ihrem Ursprung. Sie schließt auch PAC-Scripts ein, die über WPAD gefunden oder über ein unsicheres Transportprotokoll abgerufen wurden.
 
 Standardmäßig ist die Richtlinie auf "true" gesetzt und die Sicherheitsfunktion aktiviert.
 
-Diese Richtlinie sollte auf "true" gesetzt sein und nur zu "false" geändert werden, wenn Kompatibilitätsprobleme mit bestehenden PAC-Skripts auftreten.
+Diese Richtlinie sollte auf "true" gesetzt sein und nur zu "false" geändert werden, wenn Kompatibilitätsprobleme mit bestehenden PAC-Scripts auftreten.
 
 Die Richtlinie wird in M75 entfernt.</translation>
 <translation id="8484375800789836289">Browser erlauben, URL-Parameter zu filtern.</translation>
@@ -8376,6 +8414,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
           Wenn die Richtlinie nicht konfiguriert ist, wird ein Standardwert verwendet.
 
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden.</translation>
+<translation id="859316804517480666">Für TLS aktivierten Kyber-Post-Quanten-Algorithmus für Schlüsselvereinbarungen aktivieren</translation>
 <translation id="859579553230883285">Dadurch wird die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung für Nutzer deaktiviert.</translation>
 <translation id="8597758693275075382">SMBIOS-OEM-Strings, die während der Installation an die VM weitergeleitet werden. Die Standardeinstellung ist die leere Liste.</translation>
 <translation id="8598786284856179541">Erfassen von Versionsinformationen aktivieren</translation>
