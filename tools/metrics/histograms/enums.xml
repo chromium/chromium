@@ -92661,6 +92661,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2"
       label="Either sync was not enabled, no tabs were synced or synced tabs
              were not finished syncing"/>
+  <int value="3" label="Promo was not shown due to a null profile"/>
 </enum>
 
 <enum name="RestoreTabsOnFRERestoredTabsResult">

@@ -19,14 +19,16 @@ public class RestoreTabsMetricsHelper {
     // numeric values should never be reused.
     @IntDef({RestoreTabsOnFREPromoShowResult.SHOWN, RestoreTabsOnFREPromoShowResult.NOT_ELIGIBLE,
             RestoreTabsOnFREPromoShowResult.NO_SYNCED_TABS,
+            RestoreTabsOnFREPromoShowResult.NULL_PROFILE,
             RestoreTabsOnFREPromoShowResult.NUM_ENTRIES})
     public @interface RestoreTabsOnFREPromoShowResult {
         int SHOWN = 0;
         int NOT_ELIGIBLE = 1;
         int NO_SYNCED_TABS = 2;
+        int NULL_PROFILE = 3;
 
         // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 3;
+        int NUM_ENTRIES = 4;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and

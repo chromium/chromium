@@ -1305,7 +1305,10 @@ public class RootUiCoordinator
                     if (mFindToolbarManager != null) mFindToolbarManager.hideToolbar();
                     hideAppMenu();
                     // Attempt to show the promo sheet for the restore tabs feature.
-                    if (RestoreTabsFeatureHelper.RESTORE_TABS_PROMO.isEnabled()) {
+                    // Do not attempt to show the promo if in incognito mode.
+                    if (RestoreTabsFeatureHelper.RESTORE_TABS_PROMO.isEnabled()
+                            && !mTabModelSelectorSupplier.get().isIncognitoSelected()) {
+                        // TODO(1458646): Add support for triggering in incognito mode.
                         attemptToShowRestoreTabsPromo();
                     }
                 }
@@ -1659,11 +1662,10 @@ public class RootUiCoordinator
 
     private void attemptToShowRestoreTabsPromo() {
         if (mRestoreTabsFeatureHelper == null) {
-            mRestoreTabsFeatureHelper =
-                    new RestoreTabsFeatureHelper(mActivity, mProfileSupplier.get(),
-                            mTabCreatorManagerSupplier.get(), getBottomSheetController());
+            mRestoreTabsFeatureHelper = new RestoreTabsFeatureHelper();
         }
-        mRestoreTabsFeatureHelper.maybeShowPromo();
+        mRestoreTabsFeatureHelper.maybeShowPromo(mActivity, mProfileSupplier.get(),
+                mTabCreatorManagerSupplier.get(), getBottomSheetController());
     }
 
     // Testing methods
