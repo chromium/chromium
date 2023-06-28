@@ -285,34 +285,37 @@ class TabGridViewBinder {
     private static void updateThumbnail(ViewLookupCachingFrameLayout view, PropertyModel model) {
         TabGridThumbnailView thumbnail =
                 (TabGridThumbnailView) view.fastFindViewById(R.id.tab_thumbnail);
-        final TabListMediator.ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
-        // To GC on hide remove the thumbnail and set a background color.
-        boolean isSelected = model.get(TabProperties.IS_SELECTED);
-        thumbnail.updateThumbnailPlaceholder(model.get(TabProperties.IS_INCOGNITO), isSelected);
-        thumbnail.setImageDrawable(null);
-        if (fetcher == null) {
-            return;
-        }
 
+        // To GC on hide set a background color and remove the thumbnail.
+        final boolean isSelected = model.get(TabProperties.IS_SELECTED);
+        thumbnail.updateThumbnailPlaceholder(model.get(TabProperties.IS_INCOGNITO), isSelected);
+
+        final TabListMediator.ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
         final Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
-        if (cardSize == null) {
+        if (fetcher == null || cardSize == null) {
+            thumbnail.setImageDrawable(null);
             return;
         }
 
         // TODO(crbug/1395467): Consider unsetting the bitmap early to allow memory reuse if needed.
         final Size thumbnailSize = TabUtils.deriveThumbnailSize(cardSize, view.getContext());
         Callback<Bitmap> callback = result -> {
+            final boolean isMostRecentRequest =
+                    fetcher == model.get(TabProperties.THUMBNAIL_FETCHER)
+                    && cardSize.equals(model.get(TabProperties.GRID_CARD_SIZE));
             if (result != null) {
                 // TODO(crbug/1395467): look into cancelling if there are multiple in-flight
                 // requests. Ensure only the most recently requested bitmap it used.
-                if (fetcher != model.get(TabProperties.THUMBNAIL_FETCHER)
-                        || !cardSize.equals(model.get(TabProperties.GRID_CARD_SIZE))) {
+                if (!isMostRecentRequest) {
                     result.recycle();
                     return;
                 }
                 // Adjust bitmap to thumbnail.
                 updateThumbnailMatrix(thumbnail, result, thumbnailSize);
                 thumbnail.setImageBitmap(result);
+            } else if (isMostRecentRequest) {
+                // If the most recent request is a null bitmap ensure a placeholder is visible.
+                thumbnail.setImageDrawable(null);
             }
         };
         if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())
