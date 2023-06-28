@@ -6961,8 +6961,8 @@
   },
   {
     "name": "send-tab-to-self-v2",
-    "owners": ["ellyjones", "chrome-with-friends-robots@google.com"],
-    "expiry_milestone": 109
+    "owners": ["ellyjones", "jeffreycohen", "chrome-with-friends-robots@google.com"],
+    "expiry_milestone": 119
   },
   {
     "name": "service-worker-bypass-fetch-handler",
