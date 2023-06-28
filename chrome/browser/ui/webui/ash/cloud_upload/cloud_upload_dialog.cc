@@ -1295,4 +1295,8 @@ bool ShowConnectOneDriveDialog(gfx::NativeWindow modal_parent) {
   return true;
 }
 
+void LaunchMicrosoft365Setup(Profile* profile, gfx::NativeWindow modal_parent) {
+  // TODO(b/283171260) Implement setup flow.
+}
+
 }  // namespace ash::cloud_upload

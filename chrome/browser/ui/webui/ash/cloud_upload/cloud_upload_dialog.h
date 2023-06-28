@@ -254,6 +254,9 @@ absl::optional<ODFSFileSystemAndPath> AndroidOneDriveUrlToODFS(
 // need it.
 bool ShowConnectOneDriveDialog(gfx::NativeWindow modal_parent);
 
+// Launches the setup flow to set up opening Office files in Microsoft 365.
+void LaunchMicrosoft365Setup(Profile* profile, gfx::NativeWindow modal_parent);
+
 // Defines the web dialog used to help users upload Office files to the cloud.
 class CloudUploadDialog : public SystemWebDialogDelegate {
  public:
