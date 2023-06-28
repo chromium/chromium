@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALLOW_DELETE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE_RUNNABLE;
@@ -221,6 +222,7 @@ public class AddressEditor
                                     mContext.getString(R.string.autofill_profile_editor_country))
                             .with(DROPDOWN_KEY_VALUE_LIST,
                                     AutofillProfileBridge.getSupportedCountries())
+                            .with(IS_REQUIRED, false)
                             .build();
         }
 
@@ -322,6 +324,7 @@ public class AddressEditor
                                .with(DONE_RUNNABLE, this::onDone)
                                .with(CANCEL_RUNNABLE, this::onCancel)
                                .with(FORM_VALID, true)
+                               .with(ALLOW_DELETE, false)
                                .build();
         mEditorMCP = PropertyModelChangeProcessor.create(
                 mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView);
@@ -588,6 +591,8 @@ public class AddressEditor
                 field.set(REQUIRED_ERROR_MESSAGE,
                         mContext.getString(
                                 R.string.pref_edit_dialog_field_required_validation_message));
+            } else {
+                field.set(IS_REQUIRED, false);
             }
 
             field.set(CUSTOM_ERROR_MESSAGE, getAddressError(component.id));

@@ -202,6 +202,7 @@ class AddressEditorMediator {
                         .with(DROPDOWN_KEY_VALUE_LIST,
                                 getSupportedCountries(isAccountAddressProfile()
                                         && mUserFlow != CREATE_NEW_ADDRESS_PROFILE))
+                        .with(IS_REQUIRED, false)
                         .build();
 
         // Honorific prefix is present only for autofill settings.
@@ -212,6 +213,7 @@ class AddressEditorMediator {
                           .with(LABEL,
                                   mContext.getString(
                                           R.string.autofill_profile_editor_honorific_prefix))
+                          .with(IS_REQUIRED, false)
                           .build()
                 : null;
 
@@ -252,6 +254,7 @@ class AddressEditorMediator {
                 ? new PropertyModel.Builder(TEXT_ALL_KEYS)
                           .with(TEXT_INPUT_TYPE, PLAIN_TEXT_INPUT)
                           .with(LABEL, "Label")
+                          .with(IS_REQUIRED, false)
                           .build()
                 : null;
 
@@ -404,6 +407,8 @@ class AddressEditorMediator {
                 // into account for the error.
                 field.set(IS_REQUIRED, true);
                 field.set(REQUIRED_ERROR_MESSAGE, message);
+            } else {
+                field.set(IS_REQUIRED, false);
             }
 
             final boolean isFullLine = component.isFullLine || component.id == AddressField.LOCALITY

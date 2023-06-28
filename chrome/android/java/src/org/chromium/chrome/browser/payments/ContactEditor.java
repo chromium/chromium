@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALLOW_DELETE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE_RUNNABLE;
@@ -302,6 +303,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                                .with(DONE_RUNNABLE, this::onDone)
                                .with(CANCEL_RUNNABLE, this::onCancel)
                                .with(FORM_VALID, true)
+                               .with(ALLOW_DELETE, false)
                                .build();
 
         mEditorMCP = PropertyModelChangeProcessor.create(
