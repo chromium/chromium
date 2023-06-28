@@ -281,13 +281,12 @@ Several important subsets of ServerFieldTypes exist:
   * Not all supported types of AutofillProfile are stored, since types following a standard format can unambiguously be derived from
     another type. See derived types below.
   * Since parsing and formatting are not necessarily inverse operations, most supported types of AutofillProfile are stored.
-* Derived types of AutofillProfile: The relative complement of stored types in the supported types of AutofillProfile. Every derived type is derived directly from a stored type. Examples include:
-  * PHONE_HOME_COUNTRY_CODE is parsed from the PHONE_HOME_WHOLE_NUMBER.
-  * ADDRESS_HOME_LINE{1,2,3} is parsed from the different lines of ADDRESS_HOME_STREET_ADDRESS.
-  * ADDRESS_HOME_ADDRESS is a special case: Since it is not stored, it is considered derived. It only exists as an artificial
-    [root node in the address tree](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/data_model/autofill_structured_address.h;l=244;drc=ecd18b587cccb10ed916e80c8cd352960dd075a1)
-    and is unused for filling.
+* Derived types of AutofillProfile: The relative complement of stored types in the supported types of AutofillProfile. Every derived type is derived directly from a stored type. The set of derived types and their corresponding stored types are listed [here](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/profile_token_quality.cc;l=32-62;drc=c50f718fc17e5a616359370bb4bbe9e702934aa1).
 * Setting-visible types of AutofillProfiles: The types shown in the "Addresses and more" settings UI. They correspond to the top-level types of the hierarchy: NAME_FULL, ADDRESS_HOME_COUNTRY, etc.
+
+## How to introduce new field types?
+
+See [go/autofill-new-fieldtypes-in-data-model-dd](http://go/autofill-new-fieldtypes-in-data-model-dd).
 
 ## How is data represented internally?
 * See `components/autofill/core/browser/data_model/`
@@ -387,10 +386,6 @@ The cache is flushed on form submission.
 As the votes generation is asynchronous, it is not guaranteed that the results
 are available by the time the upload cache is flushed. In this case, votes are
 only uploaded on the next navigation.
-
-## How to introduce new field types?
-
-See go/autofill-new-fieldtypes-in-data-model-dd.
 
 <!-- TODO:
 ## How are addresses compared, updated or added?
