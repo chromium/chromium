@@ -167,7 +167,7 @@ struct ViewConfig {
   self.accessibilityTraits += UIAccessibilityTraitNotEnabled;
 
   // Set up the label crossfades.
-  UIColor* newTextColor = [UIColor colorNamed:kTextQuaternaryColor];
+  UIColor* newTextColor = [UIColor colorNamed:kTextSecondaryColor];
   [_title setUpCrossfadeWithTextColor:newTextColor
                        attributedText:Strikethrough(_title.text)];
   [_description setUpCrossfadeWithTextColor:newTextColor
@@ -274,7 +274,7 @@ struct ViewConfig {
           : [UIFont preferredFontForTextStyle:_config.title_font];
   label.adjustsFontForContentSizeCategory = YES;
   if (_complete) {
-    label.textColor = [UIColor colorNamed:kTextQuaternaryColor];
+    label.textColor = [UIColor colorNamed:kTextSecondaryColor];
     label.attributedText = Strikethrough(label.text);
   } else {
     label.textColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -290,11 +290,9 @@ struct ViewConfig {
   label.numberOfLines = 4;
   label.lineBreakMode = NSLineBreakByTruncatingTail;
   label.font = [UIFont preferredFontForTextStyle:_config.description_font];
+  label.textColor = [UIColor colorNamed:kTextSecondaryColor];
   if (_complete) {
-    label.textColor = [UIColor colorNamed:kTextQuaternaryColor];
     label.attributedText = Strikethrough(label.text);
-  } else {
-    label.textColor = [UIColor colorNamed:kTextSecondaryColor];
   }
   return label;
 }
