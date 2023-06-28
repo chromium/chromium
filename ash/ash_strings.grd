@@ -3017,7 +3017,7 @@ Connect your device to power.
       </message>
 
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_NBS_MESSAGE" desc="label used to warn that NBS is in use">
-        Your Chromebook or Bluetooth device is using an older version of Bluetooth. Use another input source for better audio quality.
+        Your Chromebook or Bluetooth device is using an older version of Bluetooth. Use the internal microphone for better audio quality.
       </message>
 
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_INPUT_AGC_INFO" desc="label used for the information of who is controlling mic input gain. [ICU Syntax]">
