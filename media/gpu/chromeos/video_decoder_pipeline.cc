@@ -18,6 +18,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/async_destroy_video_decoder.h"
 #include "media/base/media_log.h"
@@ -723,8 +724,11 @@ void VideoDecoderPipeline::OnResetDone(base::OnceClosure reset_cb) {
 void VideoDecoderPipeline::Decode(scoped_refptr<DecoderBuffer> buffer,
                                   DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
+  CHECK(buffer);
   DVLOGF(4);
-
+  TRACE_EVENT1(
+      "media,gpu", "VideoDecoderPipeline::Decode", "timestamp",
+      (buffer->end_of_stream() ? 0 : buffer->timestamp().InMicroseconds()));
   decoder_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoDecoderPipeline::DecodeTask, decoder_weak_this_,
@@ -735,8 +739,11 @@ void VideoDecoderPipeline::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
                                       DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(decoder_);
+  CHECK(buffer);
   DVLOGF(4);
-
+  TRACE_EVENT1(
+      "media,gpu", "VideoDecoderPipeline::DecodeTask", "timestamp",
+      (buffer->end_of_stream() ? 0 : buffer->timestamp().InMicroseconds()));
   if (has_error_) {
     client_task_runner_->PostTask(
         FROM_HERE,
@@ -785,7 +792,8 @@ void VideoDecoderPipeline::OnDecodeDone(bool is_flush,
 void VideoDecoderPipeline::OnFrameDecoded(scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4);
-
+  TRACE_EVENT1("media,gpu", "VideoDecoderPipeline::OnFrameDecoded", "timestamp",
+               (frame ? frame->timestamp().InMicroseconds() : 0));
   if (uses_oop_video_decoder_) {
     oop_decoder_can_read_without_stalling_.store(
         decoder_->CanReadWithoutStalling(), std::memory_order_seq_cst);
@@ -807,7 +815,8 @@ void VideoDecoderPipeline::OnFrameDecoded(scoped_refptr<VideoFrame> frame) {
 void VideoDecoderPipeline::OnFrameProcessed(scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4);
-
+  TRACE_EVENT1("media,gpu", "VideoDecoderPipeline::OnFrameProcessed",
+               "timestamp", (frame ? frame->timestamp().InMicroseconds() : 0));
   if (frame_converter_)
     frame_converter_->ConvertFrame(std::move(frame));
   else
@@ -817,7 +826,8 @@ void VideoDecoderPipeline::OnFrameProcessed(scoped_refptr<VideoFrame> frame) {
 void VideoDecoderPipeline::OnFrameConverted(scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4);
-
+  TRACE_EVENT1("media,gpu", "VideoDecoderPipeline::OnFrameConverted",
+               "timestamp", (frame ? frame->timestamp().InMicroseconds() : 0));
   if (!frame)
     return OnError("Frame converter returns null frame.");
   if (has_error_) {
