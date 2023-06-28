@@ -11,14 +11,20 @@
 #include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 
 namespace {
+
+constexpr char kUnidentifiedKeyString[] = "Unidentified";
 
 // This map is for KeyboardCodes that don't return a key_display from
 // `KeycodeToKeyString`. The string values here were arbitrarily chosen
@@ -515,6 +521,16 @@ std::u16string GetKeyDisplay(ui::KeyboardCode key_code) {
   if (it != GetKeyDisplayMap().end()) {
     return it->second;
   } else {
+    const std::string converted_string =
+        base::UTF16ToUTF8(KeycodeToKeyString(key_code));
+    // If `KeycodeToKeyString` fails to get a proper string, fallback to
+    // the domcode string.
+    if (converted_string == kUnidentifiedKeyString) {
+      ui::DomCode converted_domcode =
+          ui::UsLayoutKeyboardCodeToDomCode(key_code);
+      return base::UTF8ToUTF16(
+          ui::KeycodeConverter::DomCodeToCodeString(converted_domcode));
+    }
     // Otherwise, get the key_display from a util function.
     return KeycodeToKeyString(key_code);
   }
