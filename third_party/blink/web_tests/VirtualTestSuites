@@ -667,7 +667,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/performance-timeline/tentative"],
     "args": ["--disable-site-isolation-trials"],
-    "expires": "Jul 1, 2023"
+    "expires": "never"
   },
   "---------------------- New Base Url Inheritance Behavior -----------------",
   "Some wpt tests are specific to the new base-url inheritance behavior,",
