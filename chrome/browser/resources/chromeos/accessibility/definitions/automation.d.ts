@@ -938,6 +938,8 @@ declare namespace chrome {
     export function getAccessibilityFocus(callback: FocusCallback): void;
     export function getDesktop(callback: RootCallback): void;
     export function getFocus(callback: FocusCallback): void;
+    export function getTree(tabId: number|undefined, callback: RootCallback):
+        void;
     export function removeTreeChangeObserver(observer: TreeChangeObserver):
         void;
     export function setDocumentSelection(params: SetDocumentSelectionParams):

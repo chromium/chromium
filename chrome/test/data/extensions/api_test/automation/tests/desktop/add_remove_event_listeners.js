@@ -148,5 +148,4 @@ var allTests = [
   }
 ];
 
-setUpAndRunTestsInPage(
-    allTests, 'add_remove_event_listeners.html', /* ensurePersists = */ false);
+setUpAndRunTestsInPage(allTests, 'add_remove_event_listeners.html');

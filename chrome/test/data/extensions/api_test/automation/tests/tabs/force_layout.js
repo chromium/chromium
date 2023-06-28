@@ -7,13 +7,12 @@ var allTests = [
     var node = rootNode.find({ role: 'button'});
     assertEq('button', node.role);
     rootNode.addEventListener('focus', (evt) => {
-      if (evt.target.role !== 'button') {
-        return;
-      }
-
       // The underlying DOM button has not changed, but its layout has. This
       // listener ensures we at least get a focus event on a new valid
-      // accessibility object.
+      // accessibility object. Once display none nodes are in the tree, it's
+      // likely that |node| == |evt.target|.
+      assertFalse(evt.target == node);
+      assertEq(undefined, node.role);
       assertEq('button', evt.target.role);
       chrome.test.succeed();
     });

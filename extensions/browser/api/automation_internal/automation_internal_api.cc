@@ -523,6 +523,61 @@ class AutomationWebContentsObserver
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AutomationWebContentsObserver);
 
+ExtensionFunction::ResponseAction AutomationInternalEnableTabFunction::Run() {
+  const AutomationInfo* automation_info = AutomationInfo::Get(extension());
+  EXTENSION_FUNCTION_VALIDATE(automation_info);
+
+  using api::automation_internal::EnableTab::Params;
+  absl::optional<Params> params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  content::WebContents* contents = nullptr;
+  AutomationInternalApiDelegate* automation_api_delegate =
+      ExtensionsAPIClient::Get()->GetAutomationInternalApiDelegate();
+  int tab_id = -1;
+  if (params->args.tab_id) {
+    tab_id = *params->args.tab_id;
+    std::string error_string;
+    if (!automation_api_delegate->GetTabById(tab_id, browser_context(),
+                                             include_incognito_information(),
+                                             &contents, &error_string)) {
+      return RespondNow(Error(error_string, base::NumberToString(tab_id)));
+    }
+  } else {
+    contents = automation_api_delegate->GetActiveWebContents(this);
+    if (!contents)
+      return RespondNow(Error("No active tab"));
+
+    tab_id = automation_api_delegate->GetTabId(contents);
+  }
+
+  content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
+  if (!rfh)
+    return RespondNow(Error("Could not enable accessibility for active tab"));
+
+  if (!automation_api_delegate->CanRequestAutomation(
+          extension(), automation_info, contents)) {
+    return RespondNow(Error(kCannotRequestAutomationOnPage));
+  }
+
+  AutomationWebContentsObserver::CreateForWebContents(contents);
+
+  ui::AXTreeID ax_tree_id = rfh->GetAXTreeID();
+
+  // The AXTreeID is not yet ready/set.
+  if (ax_tree_id == ui::AXTreeIDUnknown())
+    return RespondNow(Error("Tab is not ready."));
+
+  // This gets removed when the extension process dies.
+  AutomationEventRouter::GetInstance()->RegisterListenerForOneTree(
+      extension_id(), source_process_id(), GetSenderWebContents(), ax_tree_id);
+
+  api::automation_internal::EnableTabCallbackInfo info;
+  info.tab_id = tab_id;
+  info.tree_id = ax_tree_id.ToString();
+  return RespondNow(
+      ArgumentList(api::automation_internal::EnableTab::Results::Create(info)));
+}
+
 absl::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
     const ui::AXTreeID& ax_tree_id,
     const ExtensionId& extension_id) {

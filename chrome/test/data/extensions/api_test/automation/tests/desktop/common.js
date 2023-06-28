@@ -32,24 +32,7 @@ function runWithDocument(docString, callback) {
     url: url
   };
   createTabAndWaitUntilLoaded(url, function(tab) {
-    chrome.automation.getDesktop(desktop => {
-      const url = tab.url || tab.pendingUrl;
-      let rootNode = desktop.find({attributes: {docUrl: url}});
-      if (rootNode && rootNode.docLoaded) {
-        callback(rootNode);
-        return;
-      }
-
-      let listener = () => {
-        rootNode = desktop.find({attributes: {docUrl: url}});
-        if (rootNode && rootNode.docLoaded) {
-          desktop.removeEventListener('loadComplete', listener);
-          desktop.addEventListener('focus', () => {});
-          callback(rootNode);
-        }
-      };
-      desktop.addEventListener('loadComplete', listener);
-    });
+    chrome.automation.getTree(tab.id, callback);
   });
 }
 
@@ -68,27 +51,19 @@ function setUpAndRunTests(allTests) {
   });
 }
 
-function setUpAndRunTestsInPage(allTests, opt_path, opt_ensurePersists = true) {
+function setUpAndRunTestsInPage(allTests, opt_path) {
   var path = opt_path || 'index.html';
   getUrlFromConfig(path, function(url) {
     createTabAndWaitUntilLoaded(url, function(unused_tab) {
-      chrome.automation.getDesktop(function(desktop) {
-        rootNode = desktop.find({attributes: {docUrl: url}});
-        if (rootNode && rootNode.docLoaded) {
+      chrome.automation.getTree(function (returnedRootNode) {
+        rootNode = returnedRootNode;
+        if (rootNode.docLoaded) {
           chrome.test.runTests(allTests);
           return;
         }
-        function listener() {
-          rootNode = desktop.find({attributes: {docUrl: url}});
-          if (rootNode && rootNode.docLoaded) {
-            desktop.removeEventListener('loadComplete', listener);
-            if (opt_ensurePersists) {
-              desktop.addEventListener('focus', () => {});
-            }
-            chrome.test.runTests(allTests);
-          }
-        }
-        desktop.addEventListener('loadComplete', listener);
+        rootNode.addEventListener('loadComplete', function() {
+          chrome.test.runTests(allTests);
+        });
       });
     });
   });
