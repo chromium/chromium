@@ -94,7 +94,8 @@ scoped_refptr<SharedDictionaryWriter>
 SharedDictionaryStorage::MaybeCreateWriter(
     const GURL& url,
     base::Time response_time,
-    const net::HttpResponseHeaders& headers) {
+    const net::HttpResponseHeaders& headers,
+    base::OnceCallback<bool()> access_allowed_check_callback) {
   absl::optional<UseAsDictionaryHeaderInfo> info =
       ParseUseAsDictionaryHeaderInfo(headers);
   if (!info) {
@@ -112,6 +113,9 @@ SharedDictionaryStorage::MaybeCreateWriter(
                   "sha-256") == info->algorithms->end()) {
       return nullptr;
     }
+  }
+  if (!std::move(access_allowed_check_callback).Run()) {
+    return nullptr;
   }
 
   return CreateWriter(url, response_time, expiration, info->match);

@@ -257,6 +257,9 @@ class MockNetworkTransaction
       base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback)
       override;
 
+  void SetIsSharedDictionaryReadAllowedCallback(
+      base::RepeatingCallback<bool()> callback) override {}
+
   int ResumeNetworkStart() override;
 
   ConnectionAttempts GetConnectionAttempts() const override;

@@ -792,6 +792,11 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // is received from the remote party.
   void SetEarlyResponseHeadersCallback(ResponseHeadersCallback callback);
 
+  // Set a callback that will be invoked when a matching shared dictionary is
+  // available to determine whether it is allowed to use the dictionary.
+  void SetIsSharedDictionaryReadAllowedCallback(
+      base::RepeatingCallback<bool()> callback);
+
   // Sets socket tag to be applied to all sockets used to execute this request.
   // Must be set before Start() is called.  Only currently supported for HTTP
   // and HTTPS requests on Android; UID tagging requires
@@ -1108,6 +1113,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   RequestHeadersCallback request_headers_callback_;
   ResponseHeadersCallback early_response_headers_callback_;
   ResponseHeadersCallback response_headers_callback_;
+
+  // See SetIsSharedDictionaryReadAllowedCallback() above for details.
+  base::RepeatingCallback<bool()> is_shared_dictionary_read_allowed_callback_;
 
   // The index of the request URL in Cache Transparency's Pervasive Payloads
   // List. This is only used for logging purposes. It is initialized as -1 to

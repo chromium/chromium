@@ -207,6 +207,9 @@ class NET_EXPORT_PRIVATE HttpTransaction {
   virtual void SetModifyRequestHeadersCallback(
       base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback) = 0;
 
+  virtual void SetIsSharedDictionaryReadAllowedCallback(
+      base::RepeatingCallback<bool()> callback) = 0;
+
   // Resumes the transaction after being deferred.
   virtual int ResumeNetworkStart() = 0;
 

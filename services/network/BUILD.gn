@@ -135,6 +135,8 @@ component("network_service") {
     "session_cleanup_cookie_store.cc",
     "session_cleanup_cookie_store.h",
     "shared_dictionary/shared_dictionary.h",
+    "shared_dictionary/shared_dictionary_access_checker.cc",
+    "shared_dictionary/shared_dictionary_access_checker.h",
     "shared_dictionary/shared_dictionary_constants.cc",
     "shared_dictionary/shared_dictionary_constants.h",
     "shared_dictionary/shared_dictionary_data_pipe_writer.cc",

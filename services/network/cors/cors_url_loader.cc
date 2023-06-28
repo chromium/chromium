@@ -33,6 +33,7 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
 #include "services/network/shared_dictionary/shared_dictionary_data_pipe_writer.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
@@ -537,7 +538,11 @@ void CorsURLLoader::OnReceiveResponse(
     // requests, responses containing a valid Access-Control-Allow-Origin header
     // even if the request mode was not Cors.)
     auto writer = shared_dictionary_storage_->MaybeCreateWriter(
-        request_.url, response_head->response_time, *response_head->headers);
+        request_.url, response_head->response_time, *response_head->headers,
+        base::BindOnce(
+            &SharedDictionaryAccessChecker::IsAllowedToWrite,
+            std::make_unique<SharedDictionaryAccessChecker>(*context_),
+            request_.url, request_.site_for_cookies, isolation_info_));
     if (writer) {
       shared_dictionary_data_pipe_writer_ =
           SharedDictionaryDataPipeWriter::Create(

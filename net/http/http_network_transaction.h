@@ -97,6 +97,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   void SetModifyRequestHeadersCallback(
       base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback)
       override;
+  void SetIsSharedDictionaryReadAllowedCallback(
+      base::RepeatingCallback<bool()> callback) override;
   int ResumeNetworkStart() override;
   void CloseConnectionOnDestruction() override;
 

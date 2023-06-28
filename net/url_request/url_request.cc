@@ -651,6 +651,10 @@ void URLRequest::StartJob(std::unique_ptr<URLRequestJob> job) {
   job_->SetPriority(priority_);
   job_->SetRequestHeadersCallback(request_headers_callback_);
   job_->SetEarlyResponseHeadersCallback(early_response_headers_callback_);
+  if (is_shared_dictionary_read_allowed_callback_) {
+    job_->SetIsSharedDictionaryReadAllowedCallback(
+        is_shared_dictionary_read_allowed_callback_);
+  }
   job_->SetResponseHeadersCallback(response_headers_callback_);
 
   if (upload_data_stream_.get())
@@ -1231,6 +1235,13 @@ void URLRequest::SetEarlyResponseHeadersCallback(
   DCHECK(!job_.get());
   DCHECK(early_response_headers_callback_.is_null());
   early_response_headers_callback_ = std::move(callback);
+}
+
+void URLRequest::SetIsSharedDictionaryReadAllowedCallback(
+    base::RepeatingCallback<bool()> callback) {
+  DCHECK(!job_.get());
+  DCHECK(is_shared_dictionary_read_allowed_callback_.is_null());
+  is_shared_dictionary_read_allowed_callback_ = std::move(callback);
 }
 
 void URLRequest::set_socket_tag(const SocketTag& socket_tag) {

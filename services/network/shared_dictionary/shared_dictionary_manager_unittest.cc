@@ -96,8 +96,9 @@ void WriteDictionary(SharedDictionaryStorage* storage,
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
            ": match=\"/", match, "\"\n\n"}));
   ASSERT_TRUE(headers);
-  scoped_refptr<SharedDictionaryWriter> writer =
-      storage->MaybeCreateWriter(dictionary_url, now_time, *headers);
+  scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
+      dictionary_url, now_time, *headers,
+      /*access_allowed_check_callback=*/base::BindOnce([]() { return true; }));
   ASSERT_TRUE(writer);
   for (const std::string& data : data_list) {
     writer->Append(data.c_str(), data.size());
@@ -244,7 +245,8 @@ TEST_P(SharedDictionaryManagerTest, NoWriterForNoUseAsDictionaryHeader) {
       net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\n");
   ASSERT_TRUE(headers);
   scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      GURL("https://origin1.test/testfile.txt"), base::Time::Now(), *headers);
+      GURL("https://origin1.test/testfile.txt"), base::Time::Now(), *headers,
+      /*access_allowed_check_callback=*/base::BindOnce([]() { return true; }));
   EXPECT_FALSE(writer);
 }
 
@@ -313,9 +315,62 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryHeader) {
              ": ", testcase.header_string, "\n\n"}));
     ASSERT_TRUE(headers);
     scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-        GURL("https://origin1.test/testfile.txt"), base::Time::Now(), *headers);
+        GURL("https://origin1.test/testfile.txt"), base::Time::Now(), *headers,
+        /*access_allowed_check_callback=*/base::BindOnce([]() {
+          return true;
+        }));
     EXPECT_EQ(testcase.expect_success, !!writer);
   }
+}
+
+TEST_P(SharedDictionaryManagerTest, AccessAllowedCheckReturnTrue) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      net::HttpResponseHeaders::TryToCreate(base::StrCat(
+          {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
+           ": match=\"test\"\n\n"}));
+  ASSERT_TRUE(headers);
+  bool callback_called = false;
+  scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
+      GURL("https://origin1.test/testfile.txt"), base::Time::Now(), *headers,
+      /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
+        callback_called = true;
+        return true;
+      }));
+  EXPECT_TRUE(writer);
+  EXPECT_TRUE(callback_called);
+}
+
+TEST_P(SharedDictionaryManagerTest, AccessAllowedCheckReturnFalse) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
+                                                  kSite1);
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      net::HttpResponseHeaders::TryToCreate(base::StrCat(
+          {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
+           ": match=\"test\"\n\n"}));
+  ASSERT_TRUE(headers);
+  bool callback_called = false;
+  scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
+      GURL("https://origin1.test/testfile.txt"), base::Time::Now(), *headers,
+      /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
+        callback_called = true;
+        return false;
+      }));
+  EXPECT_FALSE(writer);
+  EXPECT_TRUE(callback_called);
 }
 
 TEST_P(SharedDictionaryManagerTest, WriteAndGetDictionary) {

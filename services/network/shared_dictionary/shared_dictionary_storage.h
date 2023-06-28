@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/pattern.h"
 #include "base/time/time.h"
@@ -39,11 +40,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
   virtual std::unique_ptr<SharedDictionary> GetDictionary(const GURL& url) = 0;
 
   // Returns a SharedDictionaryWriter if `headers` has a valid
-  // `use-as-dictionary` header.
+  // `use-as-dictionary` header, and `access_allowed_check_callback`
+  // returns true,
   scoped_refptr<SharedDictionaryWriter> MaybeCreateWriter(
       const GURL& url,
       base::Time response_time,
-      const net::HttpResponseHeaders& headers);
+      const net::HttpResponseHeaders& headers,
+      base::OnceCallback<bool()> access_allowed_check_callback);
 
  protected:
   friend class base::RefCounted<SharedDictionaryStorage>;

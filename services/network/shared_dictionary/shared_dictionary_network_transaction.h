@@ -88,6 +88,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
   void SetModifyRequestHeadersCallback(
       base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback)
       override;
+  void SetIsSharedDictionaryReadAllowedCallback(
+      base::RepeatingCallback<bool()> callback) override;
   int ResumeNetworkStart() override;
   net::ConnectionAttempts GetConnectionAttempts() const override;
   void CloseConnectionOnDestruction() override;
@@ -137,6 +139,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
   HeaderStatus header_status_ = HeaderStatus::kUnknown;
 
   std::unique_ptr<PendingReadTask> pending_read_task_;
+
+  base::RepeatingCallback<bool()> is_shared_dictionary_read_allowed_callback_;
 
   // The network side transaction.
   std::unique_ptr<net::HttpTransaction> network_transaction_;

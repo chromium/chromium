@@ -615,6 +615,12 @@ void HttpCache::Transaction::SetModifyRequestHeadersCallback(
   NOTREACHED();
 }
 
+void HttpCache::Transaction::SetIsSharedDictionaryReadAllowedCallback(
+    base::RepeatingCallback<bool()> callback) {
+  DCHECK(!network_trans_);
+  is_shared_dictionary_read_allowed_callback_ = std::move(callback);
+}
+
 int HttpCache::Transaction::ResumeNetworkStart() {
   if (network_trans_)
     return network_trans_->ResumeNetworkStart();
@@ -1877,6 +1883,10 @@ int HttpCache::Transaction::DoSendRequest() {
   network_trans_->SetEarlyResponseHeadersCallback(
       early_response_headers_callback_);
   network_trans_->SetResponseHeadersCallback(response_headers_callback_);
+  if (is_shared_dictionary_read_allowed_callback_) {
+    network_trans_->SetIsSharedDictionaryReadAllowedCallback(
+        is_shared_dictionary_read_allowed_callback_);
+  }
 
   // Old load timing information, if any, is now obsolete.
   network_transaction_info_.old_network_trans_load_timing.reset();

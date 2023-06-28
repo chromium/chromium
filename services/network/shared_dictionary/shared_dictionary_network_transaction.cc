@@ -132,6 +132,12 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
   if (!shared_dictionary_) {
     return;
   }
+
+  CHECK(is_shared_dictionary_read_allowed_callback_);
+  if (!is_shared_dictionary_read_allowed_callback_.Run()) {
+    return;
+  }
+
   request_headers->SetHeader(
       network::shared_dictionary::kSecAvailableDictionaryHeaderName,
       base::ToLowerASCII(
@@ -331,6 +337,12 @@ void SharedDictionaryNetworkTransaction::SetModifyRequestHeadersCallback(
     base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback) {
   // This method should not be called for this class.
   NOTREACHED();
+}
+
+void SharedDictionaryNetworkTransaction::
+    SetIsSharedDictionaryReadAllowedCallback(
+        base::RepeatingCallback<bool()> callback) {
+  is_shared_dictionary_read_allowed_callback_ = std::move(callback);
 }
 
 net::ConnectionAttempts

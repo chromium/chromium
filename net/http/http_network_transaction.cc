@@ -603,6 +603,12 @@ void HttpNetworkTransaction::SetModifyRequestHeadersCallback(
   modify_headers_callbacks_ = std::move(callback);
 }
 
+void HttpNetworkTransaction::SetIsSharedDictionaryReadAllowedCallback(
+    base::RepeatingCallback<bool()> callback) {
+  // This method should not be called for this class.
+  NOTREACHED();
+}
+
 int HttpNetworkTransaction::ResumeNetworkStart() {
   DCHECK_EQ(next_state_, STATE_CREATE_STREAM);
   return DoLoop(OK);

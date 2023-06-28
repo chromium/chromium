@@ -52,6 +52,10 @@ const net::SchemefulSite kSite(kUrl);
 const std::string kTestData1 = "Hello world";
 const std::string kTestData2 = "Bonjour le monde";
 
+base::OnceCallback<bool()> DummyAccessAllowedCheckCallback() {
+  return base::BindOnce([]() { return true; });
+}
+
 void WriteDictionary(SharedDictionaryStorage* storage,
                      const GURL& dictionary_url,
                      const std::string& match,
@@ -62,7 +66,8 @@ void WriteDictionary(SharedDictionaryStorage* storage,
            ": match=\"/", match, "\"\n\n"}));
   ASSERT_TRUE(headers);
   scoped_refptr<SharedDictionaryWriter> writer =
-      storage->MaybeCreateWriter(dictionary_url, base::Time::Now(), *headers);
+      storage->MaybeCreateWriter(dictionary_url, base::Time::Now(), *headers,
+                                 DummyAccessAllowedCheckCallback());
   ASSERT_TRUE(writer);
   writer->Append(data.c_str(), data.size());
   writer->Finish();
@@ -79,7 +84,8 @@ void WriteDictionaryWithExpiry(SharedDictionaryStorage* storage,
            "\", expires=", base::NumberToString(expires.InSeconds()), "\n\n"}));
   ASSERT_TRUE(headers);
   scoped_refptr<SharedDictionaryWriter> writer =
-      storage->MaybeCreateWriter(dictionary_url, base::Time::Now(), *headers);
+      storage->MaybeCreateWriter(dictionary_url, base::Time::Now(), *headers,
+                                 DummyAccessAllowedCheckCallback());
   ASSERT_TRUE(writer);
   writer->Append(data.c_str(), data.size());
   writer->Finish();
@@ -283,7 +289,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 
   // MaybeCreateWriter() must return nullptr, after `manager` was deleted.
   scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      GURL("https://origin.test/dict"), base::Time::Now(), *headers);
+      GURL("https://origin.test/dict"), base::Time::Now(), *headers,
+      DummyAccessAllowedCheckCallback());
   EXPECT_FALSE(writer);
 }
 
@@ -1654,7 +1661,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
            ": match=\"/p*\"\n\n"}));
   ASSERT_TRUE(headers);
   scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      GURL("https://target1.test/d"), base::Time::Now(), *headers);
+      GURL("https://target1.test/d"), base::Time::Now(), *headers,
+      DummyAccessAllowedCheckCallback());
   ASSERT_TRUE(writer);
   writer->Append(kTestData1.c_str(), kTestData1.size());
 

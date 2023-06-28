@@ -31,6 +31,7 @@
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
+#include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
 #include "services/network/trust_tokens/trust_token_request_helper_factory.h"
 #include "services/network/url_loader.h"
 #include "services/network/web_bundle/web_bundle_url_loader_factory.h"
@@ -307,6 +308,12 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
             params_->isolation_info));
   }
 
+  std::unique_ptr<SharedDictionaryAccessChecker> shared_dictionary_checker;
+  if (context_->GetSharedDictionaryManager()) {
+    shared_dictionary_checker =
+        std::make_unique<SharedDictionaryAccessChecker>(*context_);
+  }
+
   mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer;
   if (resource_request.trusted_params &&
       resource_request.trusted_params->cookie_observer) {
@@ -370,10 +377,10 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
       request_id, keepalive_request_size,
       std::move(keepalive_statistics_recorder), std::move(trust_token_factory),
-      std::move(cookie_observer), std::move(trust_token_observer),
-      std::move(url_loader_network_observer), std::move(devtools_observer),
-      std::move(accept_ch_frame_observer), third_party_cookies_enabled,
-      params_->cookie_setting_overrides,
+      std::move(shared_dictionary_checker), std::move(cookie_observer),
+      std::move(trust_token_observer), std::move(url_loader_network_observer),
+      std::move(devtools_observer), std::move(accept_ch_frame_observer),
+      third_party_cookies_enabled, params_->cookie_setting_overrides,
       context_->cache_transparency_settings(),
       std::move(attribution_request_helper));
 

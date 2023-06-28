@@ -173,6 +173,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   void SetModifyRequestHeadersCallback(
       base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback)
       override;
+  void SetIsSharedDictionaryReadAllowedCallback(
+      base::RepeatingCallback<bool()> callback) override;
   int ResumeNetworkStart() override;
   ConnectionAttempts GetConnectionAttempts() const override;
   void CloseConnectionOnDestruction() override;
@@ -716,6 +718,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   std::unique_ptr<PartialData> partial_;  // We are dealing with range requests.
   CompletionRepeatingCallback io_callback_;
   CompletionRepeatingCallback cache_io_callback_;  // cache-specific IO callback
+  base::RepeatingCallback<bool()> is_shared_dictionary_read_allowed_callback_;
 
   // Error code to be returned from a subsequent Read call if shared writing
   // failed in a separate transaction.

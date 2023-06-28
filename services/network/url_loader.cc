@@ -93,6 +93,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/sec_header_helpers.h"
+#include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
 #include "services/network/throttling/scoped_throttling_token.h"
 #include "services/network/trust_tokens/trust_token_request_helper.h"
 #include "services/network/url_loader_factory.h"
@@ -491,6 +492,7 @@ URLLoader::URLLoader(
     int keepalive_request_size,
     base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder,
     std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_helper_factory,
+    std::unique_ptr<SharedDictionaryAccessChecker> shared_dictionary_checker,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
     mojo::PendingRemote<mojom::TrustTokenAccessObserver> trust_token_observer,
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
@@ -539,6 +541,7 @@ URLLoader::URLLoader(
           factory_params_->client_security_state.get(),
           options_),
       trust_token_helper_factory_(std::move(trust_token_helper_factory)),
+      shared_dictionary_checker_(std::move(shared_dictionary_checker)),
       attribution_request_helper_(std::move(attribution_request_helper)),
       origin_access_list_(context.GetOriginAccessList()),
       cookie_observer_remote_(std::move(cookie_observer)),
@@ -735,6 +738,10 @@ URLLoader::URLLoader(
 
   url_request_->SetRequestHeadersCallback(base::BindRepeating(
       &URLLoader::SetRawRequestHeadersAndNotify, base::Unretained(this)));
+  if (shared_dictionary_checker_) {
+    url_request_->SetIsSharedDictionaryReadAllowedCallback(base::BindRepeating(
+        &URLLoader::IsSharedDictionaryReadAllowed, base::Unretained(this)));
+  }
 
   if (devtools_request_id()) {
     url_request_->SetResponseHeadersCallback(base::BindRepeating(
@@ -2280,6 +2287,12 @@ void URLLoader::SetRawRequestHeadersAndNotify(
           devtools_request_id()));
     }
   }
+}
+
+bool URLLoader::IsSharedDictionaryReadAllowed() {
+  return shared_dictionary_checker_->IsAllowedToRead(
+      url_request_->url(), url_request_->site_for_cookies(),
+      url_request_->isolation_info());
 }
 
 void URLLoader::DispatchOnRawRequest(
