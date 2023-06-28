@@ -1666,8 +1666,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
   self.activePage = page;
   [self.tabPresentationDelegate showActiveTabInPage:page
-                                       focusOmnibox:focusOmnibox
-                                       closeTabGrid:YES];
+                                       focusOmnibox:focusOmnibox];
 }
 
 // Creates and shows a new regular tab.
@@ -2000,8 +1999,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self setCurrentIdlePageStatus:NO];
 
   [self.tabPresentationDelegate showActiveTabInPage:self.currentPage
-                                       focusOmnibox:NO
-                                       closeTabGrid:YES];
+                                       focusOmnibox:NO];
 }
 
 - (void)pinnedTabsViewController:
@@ -2112,8 +2110,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.activePage = self.currentPage;
 
   [self.tabPresentationDelegate showActiveTabInPage:self.currentPage
-                                       focusOmnibox:NO
-                                       closeTabGrid:YES];
+                                       focusOmnibox:NO];
 }
 
 - (void)gridViewController:(GridViewController*)gridViewController
@@ -2272,8 +2269,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // disabled. Ensure that action is only taken on a valid state.
   if ([self tabsPresentForPage:newActivePage]) {
     [self.tabPresentationDelegate showActiveTabInPage:newActivePage
-                                         focusOmnibox:NO
-                                         closeTabGrid:YES];
+                                         focusOmnibox:NO];
     // Record when users exit the tab grid to return to the current foreground
     // tab.
     base::RecordAction(base::UserMetricsAction("MobileTabGridDone"));

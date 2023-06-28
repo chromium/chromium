@@ -738,9 +738,7 @@ void InjectNTP(Browser* browser) {
         [self shouldOpenNTPTabOnActivationOfBrowser:self.currentInterface
                                                         .browser]) {
       DCHECK(!self.activatingBrowser);
-      [self beginActivatingBrowser:self.mainInterface.browser
-                dismissTabSwitcher:YES
-                      focusOmnibox:NO];
+      [self beginActivatingBrowser:self.mainInterface.browser focusOmnibox:NO];
 
       OpenNewTabCommand* command = [OpenNewTabCommand commandWithIncognito:NO];
       command.userInitiated = NO;
@@ -748,7 +746,7 @@ void InjectNTP(Browser* browser) {
       id<ApplicationCommands> applicationHandler = HandlerForProtocol(
           browser->GetCommandDispatcher(), ApplicationCommands);
       [applicationHandler openURLInNewTab:command];
-      [self finishActivatingBrowserDismissingTabSwitcher:YES];
+      [self finishActivatingBrowserDismissingTabSwitcher];
     }
   }
 
@@ -1037,10 +1035,8 @@ void InjectNTP(Browser* browser) {
 
   if (self.mainCoordinator.isTabGridActive) {
     DCHECK(!self.activatingBrowser);
-    [self beginActivatingBrowser:self.mainInterface.browser
-              dismissTabSwitcher:YES
-                    focusOmnibox:NO];
-    [self finishActivatingBrowserDismissingTabSwitcher:YES];
+    [self beginActivatingBrowser:self.mainInterface.browser focusOmnibox:NO];
+    [self finishActivatingBrowserDismissingTabSwitcher];
   }
 
   // If this web state list should have an NTP created when it activates, then
@@ -2202,19 +2198,15 @@ void InjectNTP(Browser* browser) {
 
 - (void)tabGrid:(TabGridCoordinator*)tabGrid
     shouldActivateBrowser:(Browser*)browser
-           dismissTabGrid:(BOOL)dismissTabGrid
              focusOmnibox:(BOOL)focusOmnibox {
-  DCHECK(dismissTabGrid);
-  [self beginActivatingBrowser:browser
-            dismissTabSwitcher:dismissTabGrid
-                  focusOmnibox:focusOmnibox];
+  [self beginActivatingBrowser:browser focusOmnibox:focusOmnibox];
 }
 
 - (void)tabGridDismissTransitionDidEnd:(TabGridCoordinator*)tabGrid {
   if (!self.sceneState.UIEnabled) {
     return;
   }
-  [self finishActivatingBrowserDismissingTabSwitcher:YES];
+  [self finishActivatingBrowserDismissingTabSwitcher];
 }
 
 - (TabGridPage)activePageForTabGrid:(TabGridCoordinator*)tabGrid {
@@ -2222,19 +2214,12 @@ void InjectNTP(Browser* browser) {
 }
 
 // Begins the process of activating the given current model, switching which BVC
-// is suspended if necessary. If `dismissTabSwitcher` is set, the tab switcher
-// will also be dismissed. Note that this means that a browser can be activated
-// without closing the tab switcher (e.g. thumb strip), but dismissing the tab
-// switcher requires activating a browser. The omnibox will be focused after the
-// tab switcher dismissal is completed if `focusOmnibox` is YES.
-// TODO(crbug.com/1457148): Modify this function to remove `dismissTabSwitcher`
-// as it is only needed for thumbstrip which is deprecated.
+// is suspended if necessary. The omnibox will be focused after the tab switcher
+// dismissal is completed if `focusOmnibox` is YES.
 - (void)beginActivatingBrowser:(Browser*)browser
-            dismissTabSwitcher:(BOOL)dismissTabSwitcher
                   focusOmnibox:(BOOL)focusOmnibox {
   DCHECK(browser == self.mainInterface.browser ||
          browser == self.incognitoInterface.browser);
-  DCHECK(dismissTabSwitcher);
 
   self.activatingBrowser = YES;
   ApplicationMode mode = (browser == self.mainInterface.browser)
@@ -2244,19 +2229,13 @@ void InjectNTP(Browser* browser) {
 
   // The call to set currentBVC above does not actually display the BVC, because
   // _activatingBrowser is YES.  So: Force the BVC transition to start.
-  [self displayCurrentBVCAndFocusOmnibox:focusOmnibox
-                      dismissTabSwitcher:dismissTabSwitcher];
-  // If the tab switcher was not dismissed, finish the activation process now.
-  if (!dismissTabSwitcher) {
-    [self finishActivatingBrowserDismissingTabSwitcher:NO];
-  }
+  [self displayCurrentBVCAndFocusOmnibox:focusOmnibox];
 }
 
 // Completes the process of activating the given browser. If necessary, also
 // finishes dismissing the tab switcher, removing it from the
 // screen and showing the appropriate BVC.
-- (void)finishActivatingBrowserDismissingTabSwitcher:
-    (BOOL)dismissingTabSwitcher {
+- (void)finishActivatingBrowserDismissingTabSwitcher {
   // In real world devices, it is possible to have an empty tab model at the
   // finishing block of a BVC presentation animation. This can happen when the
   // following occur: a) There is JS that closes the last incognito tab, b) that
@@ -2269,11 +2248,9 @@ void InjectNTP(Browser* browser) {
       self.currentInterface.browser->GetWebStateList() &&
       self.currentInterface.browser->GetWebStateList()->count() == 0U) {
     self.activatingBrowser = NO;
-    if (dismissingTabSwitcher) {
-      self.modeToDisplayOnTabSwitcherDismissal = TabSwitcherDismissalMode::NONE;
-      self.NTPActionAfterTabSwitcherDismissal = NO_ACTION;
-      [self showTabSwitcher];
-    }
+    self.modeToDisplayOnTabSwitcherDismissal = TabSwitcherDismissalMode::NONE;
+    self.NTPActionAfterTabSwitcherDismissal = NO_ACTION;
+    [self showTabSwitcher];
     return;
   }
 
@@ -2286,15 +2263,13 @@ void InjectNTP(Browser* browser) {
   }
   self.activatingBrowser = NO;
 
-  if (dismissingTabSwitcher) {
-    self.modeToDisplayOnTabSwitcherDismissal = TabSwitcherDismissalMode::NONE;
+  self.modeToDisplayOnTabSwitcherDismissal = TabSwitcherDismissalMode::NONE;
 
-    ProceduralBlock action = [self completionBlockForTriggeringAction:
-                                       self.NTPActionAfterTabSwitcherDismissal];
-    self.NTPActionAfterTabSwitcherDismissal = NO_ACTION;
-    if (action) {
-      action();
-    }
+  ProceduralBlock action = [self completionBlockForTriggeringAction:
+                                     self.NTPActionAfterTabSwitcherDismissal];
+  self.NTPActionAfterTabSwitcherDismissal = NO_ACTION;
+  if (action) {
+    action();
   }
 }
 
@@ -2596,7 +2571,7 @@ void InjectNTP(Browser* browser) {
   self.browserViewWrangler.currentInterface = newInterface;
 
   if (!self.activatingBrowser) {
-    [self displayCurrentBVCAndFocusOmnibox:NO dismissTabSwitcher:YES];
+    [self displayCurrentBVCAndFocusOmnibox:NO];
   }
 
   // Tell the BVC that was made current that it can use the web.
@@ -2927,13 +2902,7 @@ void InjectNTP(Browser* browser) {
 }
 
 // Displays current (incognito/normal) BVC and optionally focuses the omnibox.
-// If `dismissTabSwitcher` is NO, then the tab switcher is not dismissed,
-// although the BVC will be visible. `dismissTabSwitcher` is only used in the
-// thumb strip feature.
-// TODO(crbug.com/1457148): Modify this function to remove `dismissTabSwitcher`
-// as it is only needed for thumbstrip which is deprecated.
-- (void)displayCurrentBVCAndFocusOmnibox:(BOOL)focusOmnibox
-                      dismissTabSwitcher:(BOOL)dismissTabSwitcher {
+- (void)displayCurrentBVCAndFocusOmnibox:(BOOL)focusOmnibox {
   ProceduralBlock completion = nil;
   if (focusOmnibox) {
     id<OmniboxCommands> omniboxHandler = HandlerForProtocol(
@@ -2945,7 +2914,6 @@ void InjectNTP(Browser* browser) {
   [self.mainCoordinator
       showTabViewController:self.currentInterface.viewController
                   incognito:self.currentInterface.incognito
-         shouldCloseTabGrid:dismissTabSwitcher
                  completion:completion];
   [HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
                       ApplicationCommands)
@@ -3387,7 +3355,7 @@ void InjectNTP(Browser* browser) {
       /*in_background=*/false, /*inherit_opener=*/false,
       /*should_show_start_surface=*/false,
       /*should_skip_new_tab_animation=*/urlLoadParams.from_external);
-  [self beginActivatingBrowser:browser dismissTabSwitcher:YES focusOmnibox:NO];
+  [self beginActivatingBrowser:browser focusOmnibox:NO];
 }
 
 #pragma mark - Handling of destroying the incognito BrowserState

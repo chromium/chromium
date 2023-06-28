@@ -61,17 +61,10 @@ class Browser;
 // Displays the TabGrid.
 - (void)showTabGrid;
 
-// Displays the given view controller. If `closeTabGrid` is yes, any
-// TabSwitchers or other view controllers that may currently be visible will be
-// replaced. Otherwise, the view controller is added to the current container.
+// Displays the given view controller.
 // Runs the given `completion` block after the view controller is visible.
-// `shouldCloseTabGrid` is only used for the thumb strip, where the
-// tab container view controller is never dismissed.
-// TODO(crbug.com/1457148): Modify this function to remove `shouldCloseTabGrid`
-// as it is only needed for thumbstrip which is deprecated.
 - (void)showTabViewController:(UIViewController*)viewController
                     incognito:(BOOL)incognito
-           shouldCloseTabGrid:(BOOL)shouldCloseTabGrid
                    completion:(ProceduralBlock)completion;
 
 // Sets the `page` as the active (visible) one. The active page must not be the

@@ -454,11 +454,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)showTabViewController:(UIViewController*)viewController
                     incognito:(BOOL)incognito
-           shouldCloseTabGrid:(BOOL)shouldCloseTabGrid
                    completion:(ProceduralBlock)completion {
   DCHECK(viewController || self.bvcContainer);
 
-  if (shouldCloseTabGrid && !self.tabGridEnterTime.is_null()) {
+  if (!self.tabGridEnterTime.is_null()) {
     // Record when the tab switcher is dismissed.
     base::RecordAction(base::UserMetricsAction("MobileTabGridExited"));
 
@@ -877,11 +876,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 #pragma mark - TabPresentationDelegate
 
-- (void)showActiveTabInPage:(TabGridPage)page
-               focusOmnibox:(BOOL)focusOmnibox
-               closeTabGrid:(BOOL)closeTabGrid {
+- (void)showActiveTabInPage:(TabGridPage)page focusOmnibox:(BOOL)focusOmnibox {
   DCHECK(self.regularBrowser && self.incognitoBrowser);
-  DCHECK(closeTabGrid);
 
   Browser* activeBrowser = nullptr;
   switch (page) {
@@ -903,7 +899,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // into this coordinator.
   [self.delegate tabGrid:self
       shouldActivateBrowser:activeBrowser
-             dismissTabGrid:closeTabGrid
                focusOmnibox:focusOmnibox];
 }
 
@@ -1057,7 +1052,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   regularWebStateList->ActivateWebStateAt(toInsertIndex);
   [self.delegate tabGrid:self
       shouldActivateBrowser:self.regularBrowser
-             dismissTabGrid:YES
                focusOmnibox:NO];
 }
 
@@ -1076,7 +1070,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)showActiveRegularTabFromRecentTabs {
   [self.delegate tabGrid:self
       shouldActivateBrowser:self.regularBrowser
-             dismissTabGrid:YES
                focusOmnibox:NO];
 }
 
@@ -1090,14 +1083,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)showActiveRegularTabFromHistory {
   [self.delegate tabGrid:self
       shouldActivateBrowser:self.regularBrowser
-             dismissTabGrid:YES
                focusOmnibox:NO];
 }
 
 - (void)showActiveIncognitoTabFromHistory {
   [self.delegate tabGrid:self
       shouldActivateBrowser:self.incognitoBrowser
-             dismissTabGrid:YES
                focusOmnibox:NO];
 }
 

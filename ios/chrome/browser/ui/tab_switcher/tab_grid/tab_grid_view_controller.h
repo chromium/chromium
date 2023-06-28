@@ -49,16 +49,8 @@ enum class TabGridPageConfiguration {
 // from the tab grid.
 @protocol TabPresentationDelegate <NSObject>
 // Show the active tab in `page`, presented on top of the tab grid.  The
-// omnibox will be focused after the animation if `focusOmnibox` is YES. If
-// `closeTabGrid` is NO, then the tab grid will not be closed, and the active
-// tab will simply be displayed in its current position.
-// This last parameter is used for the thumb strip, where the
-// BVCContainerViewController is never dismissed.
-// TODO(crbug.com/1457148): Modify this function to remove `closeTabGrid` as it
-// is only needed for thumbstrip which is deprecated.
-- (void)showActiveTabInPage:(TabGridPage)page
-               focusOmnibox:(BOOL)focusOmnibox
-               closeTabGrid:(BOOL)closeTabGrid;
+// omnibox will be focused after the animation if `focusOmnibox` is YES.
+- (void)showActiveTabInPage:(TabGridPage)page focusOmnibox:(BOOL)focusOmnibox;
 @end
 
 @protocol TabGridViewControllerDelegate <NSObject>
