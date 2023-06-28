@@ -11,8 +11,12 @@ source_set("tab_pickup") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
+    "//base",
     "//components/infobars/core",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/overlays/public/default",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/tabs/tab_pickup:infobar_delegate",
     "//ios/chrome/browser/ui/infobars/banners",
     "//ios/chrome/browser/ui/overlays:coordinators",

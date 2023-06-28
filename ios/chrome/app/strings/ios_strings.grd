@@ -4179,6 +4179,12 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_TAB_GRID_CREATE_NEW_TAB" desc="The accessibility label for the button that creates new regular tabs (as opposed to Incognito tabs). [iOS only]">
         Create New Tab
       </message>
+      <message name="IDS_IOS_TAB_PICKUP_BANNER_BUTTON" desc="Infobar button to open a previously opened tab from another device.">
+        Open
+      </message>
+      <message name="IDS_IOS_TAB_PICKUP_BANNER_TITLE" desc="Infobar title to open a previously opened tab from another device.">
+        Last Tab Used on <ph name="SOURCE_DEVICE">$1<ex>iPad</ex></ph>
+      </message>
       <message name="IDS_IOS_TAB_STRIP_ENTER_TAB_SWITCHER" desc="The accessibility label of the tab strip button to enter the tab switcher. The tab switcher is a view showing the opened tabs, and allows users to switch, close, and open new tabs. [iOS only]">
         Enter Tab Switcher
       </message>

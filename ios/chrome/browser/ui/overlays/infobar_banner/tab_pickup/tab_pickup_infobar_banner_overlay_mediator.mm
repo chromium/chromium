@@ -4,15 +4,29 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/tab_pickup/tab_pickup_infobar_banner_overlay_mediator.h"
 
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/time/time.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/tabs/tab_pickup/tab_pickup_infobar_delegate.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/time_format.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+const CGFloat kFaviconPointSize = 24.0f;
+
+}  // anonymous namespace.
 
 @interface TabPickupBannerOverlayMediator ()
 
@@ -45,7 +59,7 @@
 #pragma mark - InfobarOverlayRequestMediator
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
-  // TODO(crbug.com/1129482): Implement this.
+  // TODO(crbug.com/1457175): Implement this.
 }
 
 @end
@@ -53,7 +67,67 @@
 @implementation TabPickupBannerOverlayMediator (ConsumerSupport)
 
 - (void)configureConsumer {
-  // TODO(crbug.com/1129482): Implement this.
+  TabPickupInfobarDelegate* delegate = self.tabPickupDelegate;
+
+  NSString* title =
+      l10n_util::GetNSStringF(IDS_IOS_TAB_PICKUP_BANNER_TITLE,
+                              base::UTF8ToUTF16(delegate->GetSessionName()));
+
+  const GURL& tabURL = delegate->GetTabURL();
+  NSString* hostname = [self hostnameFromGURL:tabURL];
+  NSString* subtitle = [NSString
+      stringWithFormat:@"%@ • %@", hostname,
+                       [self lastSyncTimeStringFromTime:delegate
+                                                            ->GetSyncedTime()]];
+
+  UIImage* faviconImage = delegate->GetFaviconImage();
+  if (!faviconImage) {
+    faviconImage =
+        DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kFaviconPointSize);
+  }
+
+  [self.consumer setTitleText:title];
+  [self.consumer setSubtitleText:subtitle];
+  [self.consumer
+      setButtonText:l10n_util::GetNSString(IDS_IOS_TAB_PICKUP_BANNER_BUTTON)];
+  // TODO(crbug.com/1457175): Update this when the favicon property has been
+  // added to the consumer.
+  [self.consumer setIconImage:faviconImage];
+  [self.consumer setPresentsModal:NO];
+}
+
+#pragma mark - Private
+
+// Returns the tab hostname from the given `URL`.
+- (NSString*)hostnameFromGURL:(GURL)URL {
+  return base::SysUTF16ToNSString(
+      url_formatter::
+          FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+              URL));
+}
+
+// Returns the last sync string from the given `time`.
+- (NSString*)lastSyncTimeStringFromTime:(base::Time)time {
+  NSString* timeString;
+  base::TimeDelta lastUsedDelta = base::Time::Now() - time;
+
+  if (lastUsedDelta.InMicroseconds() < base::Time::kMicrosecondsPerMinute) {
+    timeString = l10n_util::GetNSString(IDS_IOS_OPEN_TABS_RECENTLY_SYNCED);
+    // This will return something similar to "Seconds ago".
+    return [NSString stringWithFormat:@"%@", timeString];
+  }
+
+  NSDate* date = [NSDate dateWithTimeIntervalSince1970:time.ToTimeT()];
+  timeString =
+      [NSDateFormatter localizedStringFromDate:date
+                                     dateStyle:NSDateFormatterNoStyle
+                                     timeStyle:NSDateFormatterShortStyle];
+
+  timeString = base::SysUTF16ToNSString(
+      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
+                             ui::TimeFormat::LENGTH_SHORT, lastUsedDelta));
+  // This will return something similar to "1 min/hour ago".
+  return [NSString stringWithFormat:@"%@", timeString];
 }
 
 @end
