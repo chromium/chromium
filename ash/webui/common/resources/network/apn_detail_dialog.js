@@ -19,8 +19,9 @@ import '//resources/cr_elements/md_select.css.js';
 
 import {assert} from '//resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnState, ApnType, CrosNetworkConfigInterface} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './apn_detail_dialog.html.js';
 import {ApnDetailDialogMode} from './cellular_utils.js';
@@ -205,6 +206,26 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
     /** @private {!CrosNetworkConfigInterface} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+
+    // Set the default focus when the dialog opens.
+    afterNextRender(this, function() {
+      let element;
+      switch (this.mode) {
+        case ApnDetailDialogMode.CREATE:
+        case ApnDetailDialogMode.EDIT:
+          element = this.shadowRoot.querySelector('cr-input');
+          break;
+        case ApnDetailDialogMode.VIEW:
+          element = this.shadowRoot.querySelector('#apnDoneBtn');
+          break;
+      }
+      focusWithoutInk(element);
+    });
   }
 
   /**
