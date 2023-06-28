@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -64,6 +65,7 @@ class ArcSplashScreenDialogViewTest : public CompatModeTestBase {
   views::Widget* parent_widget() { return parent_widget_.get(); }
 
  private:
+  ash::AshColorProvider ash_color_provider_;
   std::unique_ptr<views::Widget> parent_widget_;
   raw_ptr<views::View, ExperimentalAsh> anchor_{nullptr};
 };
