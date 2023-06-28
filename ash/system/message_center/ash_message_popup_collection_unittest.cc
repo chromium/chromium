@@ -23,6 +23,7 @@
 #include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/message_center/message_center_test_util.h"
 #include "ash/system/message_center/message_popup_animation_waiter.h"
+#include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_slider_view.h"
@@ -34,6 +35,8 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
+#include "chromeos/ash/components/phonehub/feature_status.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
@@ -48,7 +51,6 @@
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_view_base.h"
 #include "ui/views/controls/button/label_button.h"
-
 namespace ash {
 namespace {
 
@@ -176,8 +178,17 @@ class AshMessagePopupCollectionTest : public AshTestBase,
     return id;
   }
 
+  phonehub::FakePhoneHubManager* phone_hub_manager() {
+    return &phone_hub_manager_;
+  }
+
  private:
   int notification_id_ = 0;
+
+  // Fake phone hub manager to show the phone hub tray. Used to test the popup
+  // collection when the phone hub bubble is showing.
+  phonehub::FakePhoneHubManager phone_hub_manager_;
+
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
@@ -1154,6 +1165,81 @@ TEST_P(AshMessagePopupCollectionTest,
       /*system_tray=*/second_shelf->status_area_widget()->unified_system_tray(),
       /*popup_collection=*/&secondary_popup_collection,
       /*popup=*/secondary_popup);
+}
+
+// Tests that when a shelf pod bubble other than the main status area bubbles
+// (QS, calendar, notifications) is shown and a slider appears, the popup will
+// be on top of the shelf pod bubble, not the slider. We will use the phone hub
+// tray for this test.
+TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForTrayBubbleAndSlider) {
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  UpdateDisplay("1001x900");
+
+  phone_hub_manager()->fake_feature_status_provider()->SetStatus(
+      phonehub::FeatureStatus::kEnabledAndConnected);
+  auto* phone_hub_tray =
+      GetPrimaryShelf()->status_area_widget()->phone_hub_tray();
+  phone_hub_tray->SetPhoneHubManager(phone_hub_manager());
+  ASSERT_TRUE(phone_hub_tray->GetVisible());
+
+  phone_hub_tray->ShowBubble();
+
+  auto* system_tray = GetPrimaryUnifiedSystemTray();
+  system_tray->ShowVolumeSliderBubble();
+  auto* slider_view = system_tray->GetSliderView();
+  ASSERT_TRUE(slider_view);
+
+  AddNotification(/*has_image=*/true);
+  auto* popup = GetLastPopUpAdded();
+  ASSERT_TRUE(popup);
+
+  auto* popup_collection = GetPrimaryPopupCollection();
+  auto* bubble_view = phone_hub_tray->GetBubbleView();
+
+  // The added popup should appears on top of the tray bubble, separated by a
+  // padding of `kMarginBetweenPopups` (not on top of the slider).
+  EXPECT_EQ(popup->GetBoundsInScreen().bottom() +
+                message_center::kMarginBetweenPopups,
+            bubble_view->GetBoundsInScreen().y());
+  EXPECT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
+            popup_collection->baseline_offset_for_test());
+
+  // Close and then show the slider. Popup should stay the same.
+  system_tray->CloseSecondaryBubbles();
+  EXPECT_EQ(popup->GetBoundsInScreen().bottom() +
+                message_center::kMarginBetweenPopups,
+            bubble_view->GetBoundsInScreen().y());
+  EXPECT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
+            popup_collection->baseline_offset_for_test());
+
+  system_tray->ShowVolumeSliderBubble();
+  EXPECT_EQ(popup->GetBoundsInScreen().bottom() +
+                message_center::kMarginBetweenPopups,
+            bubble_view->GetBoundsInScreen().y());
+  EXPECT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
+            popup_collection->baseline_offset_for_test());
+
+  // Increase the bubble height so that there's not enough space to
+  // display the bubble on top of it. Note that this only works with
+  // screen height of 900 (set above), and the test might fail if we
+  // change the height of bubble width or notification width in the
+  // future.
+  auto* bubble_widget = phone_hub_tray->GetBubbleWidget();
+  auto bubble_bounds = bubble_widget->GetWindowBoundsInScreen();
+  bubble_widget->SetBounds(gfx::Rect(bubble_bounds.x(), bubble_bounds.y() - 100,
+                                     bubble_bounds.width(),
+                                     bubble_bounds.height() + 100));
+
+  // The popup should move down because there's not enough space (overlap with
+  // the phone hub tray).
+  EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+
+  // The popup is adjusted to be at the baseline without the offset.
+  EXPECT_EQ(popup->GetBoundsInScreen().bottom(),
+            popup_collection->GetBaseline());
 }
 
 }  // namespace ash

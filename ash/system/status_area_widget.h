@@ -176,8 +176,9 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // Overridden from views::Widget:
   bool OnNativeWidgetActivationChanged(bool active) override;
 
-  // Sets the value for `open_tray_bubble_`.
-  void SetOpenTrayBubble(TrayBubbleView* open_tray_bubble);
+  // Sets the value for `open_shelf_pod_bubble_`. Note that we only keep track
+  // of tray bubble of type `TrayBubbleType::kTrayBubble`.
+  void SetOpenShelfPodBubble(TrayBubbleView* open_tray_bubble);
 
   // TODO(jamescook): Introduce a test API instead of these methods.
   LogoutButtonTray* logout_button_tray_for_testing() {
@@ -196,7 +197,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
     return animation_controller_.get();
   }
 
-  TrayBubbleView* open_tray_bubble() { return open_tray_bubble_; }
+  TrayBubbleView* open_shelf_pod_bubble() { return open_shelf_pod_bubble_; }
 
  private:
   friend class MediaTrayTest;
@@ -274,7 +275,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
 
   // The active tray bubble that is opened on the display where this status area
   // widget lives.
-  raw_ptr<TrayBubbleView> open_tray_bubble_ = nullptr;
+  raw_ptr<TrayBubbleView> open_shelf_pod_bubble_ = nullptr;
 
   // All tray items are owned by StatusAreaWidgetDelegate, and destroyed
   // explicitly in a shutdown call in the StatusAreaWidget dtor.

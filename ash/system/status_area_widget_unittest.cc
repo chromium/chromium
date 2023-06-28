@@ -166,14 +166,14 @@ TEST_F(StatusAreaWidgetTest, OpenTrayBubble) {
   // `status_area`.
   LeftClickOn(system_tray);
 
-  EXPECT_EQ(status_area->open_tray_bubble(),
+  EXPECT_EQ(status_area->open_shelf_pod_bubble(),
             system_tray->bubble()->GetBubbleView());
 
   // Clicking on the ime menu should set the open tray bubble in
   // `status_area`.
   LeftClickOn(ime_menu);
 
-  EXPECT_EQ(status_area->open_tray_bubble(), ime_menu->GetBubbleView());
+  EXPECT_EQ(status_area->open_shelf_pod_bubble(), ime_menu->GetBubbleView());
 }
 
 class SystemTrayFocusTestObserver : public SystemTrayObserver {
@@ -806,7 +806,7 @@ TEST_F(StatusAreaWidgetEcheTest, EcheTrayShowHide) {
   EXPECT_FALSE(status_area->ShouldShowShelf());
 }
 
-// Tests that `StatusAreaWidget` keep track of its `open_tray_bubble()`
+// Tests that `StatusAreaWidget` keep track of its `open_shelf_pod_bubble()`
 // when eche is showing/hiding its bubble.
 TEST_F(StatusAreaWidgetEcheTest, StatusAreaOpenTrayBubble) {
   StatusAreaWidget* status_area =
@@ -823,11 +823,11 @@ TEST_F(StatusAreaWidgetEcheTest, StatusAreaOpenTrayBubble) {
       eche_app::mojom::AppStreamLaunchEntryPoint::APPS_LIST);
   eche_tray->ShowBubble();
 
-  EXPECT_EQ(eche_tray->GetBubbleView(), status_area->open_tray_bubble());
+  EXPECT_EQ(eche_tray->GetBubbleView(), status_area->open_shelf_pod_bubble());
 
   eche_tray->HideBubble();
 
-  EXPECT_EQ(nullptr, status_area->open_tray_bubble());
+  EXPECT_EQ(nullptr, status_area->open_shelf_pod_bubble());
 }
 
 }  // namespace ash

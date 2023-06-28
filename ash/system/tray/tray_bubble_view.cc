@@ -437,6 +437,10 @@ void TrayBubbleView::StopReroutingEvents() {
   reroute_event_handler_.reset();
 }
 
+TrayBubbleView::TrayBubbleType TrayBubbleView::GetBubbleType() const {
+  return params_.type;
+}
+
 void TrayBubbleView::OnWidgetClosing(Widget* widget) {
   // We no longer need to watch key events for activation if the widget is
   // closing.
@@ -603,8 +607,10 @@ void TrayBubbleView::OnNotificationDisplayed(
 void TrayBubbleView::NotifyTrayBubbleOpen() {
   DCHECK(IsAnchoredToStatusArea());
 
-  StatusAreaWidget::ForWindow(GetWidget()->GetNativeView())
-      ->SetOpenTrayBubble(this);
+  if (GetBubbleType() == TrayBubbleType::kShelfPodBubble) {
+    StatusAreaWidget::ForWindow(GetWidget()->GetNativeView())
+        ->SetOpenShelfPodBubble(this);
+  }
 
   Shell::Get()
       ->system_tray_notifier()
@@ -618,13 +624,13 @@ void TrayBubbleView::NotifyTrayBubbleClosed() {
   auto* status_area = StatusAreaWidget::ForWindow(GetWidget()->GetNativeView());
 
   // `TrayBubbleView` may live longer than `StatusAreaWidget`.
-  if (status_area) {
-    status_area->SetOpenTrayBubble(nullptr);
+  if (status_area && GetBubbleType() == TrayBubbleType::kShelfPodBubble) {
+    status_area->SetOpenShelfPodBubble(nullptr);
   }
 
   Shell::Get()
       ->system_tray_notifier()
-      ->NotifyStatusAreaAnchoredBubbleVisibilityChanged(/*tray_bubble=*/nullptr,
+      ->NotifyStatusAreaAnchoredBubbleVisibilityChanged(/*tray_bubble=*/this,
                                                         /*visible=*/false);
 }
 

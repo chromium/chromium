@@ -27,6 +27,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/check.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/compositor/compositor.h"
@@ -200,7 +201,7 @@ void AshMessagePopupCollection::NotifyPopupCollectionHeightChanged() {
     return;
   }
 
-  AdjustBaselineBasedOnTrayBubble();
+  AdjustBaselineBasedOnShelfPodBubble();
 }
 
 bool AshMessagePopupCollection::AdjustAndEvaluateShouldDisplayPopupItem(
@@ -282,25 +283,12 @@ void AshMessagePopupCollection::OnTabletModeEnded() {
 void AshMessagePopupCollection::OnStatusAreaAnchoredBubbleVisibilityChanged(
     TrayBubbleView* tray_bubble,
     bool visible) {
-  if (!features::IsQsRevampEnabled()) {
-    return;
-  }
-
-  if (!visible) {
-    SetBaselineOffset(0);
-    return;
-  }
-
-  AdjustBaselineBasedOnTrayBubble();
+  AdjustBaselineBasedOnBubble(tray_bubble, visible);
 }
 
 void AshMessagePopupCollection::OnTrayBubbleBoundsChanged(
     TrayBubbleView* tray_bubble) {
-  if (!features::IsQsRevampEnabled()) {
-    return;
-  }
-
-  AdjustBaselineBasedOnTrayBubble();
+  AdjustBaselineBasedOnBubble(tray_bubble, /*visible=*/true);
 }
 
 bool AshMessagePopupCollection::IsWidgetAPopupNotification(
@@ -363,15 +351,32 @@ void AshMessagePopupCollection::UpdateWorkArea() {
   ResetBounds();
 }
 
-void AshMessagePopupCollection::AdjustBaselineBasedOnTrayBubble() {
+void AshMessagePopupCollection::AdjustBaselineBasedOnBubble(
+    TrayBubbleView* tray_bubble,
+    bool visible) {
+  if (!features::IsQsRevampEnabled()) {
+    return;
+  }
+
+  if (tray_bubble && tray_bubble->GetBubbleType() ==
+                         TrayBubbleView::TrayBubbleType::kSecondaryBubble) {
+    AdjustBaselineBasedOnSecondaryBubble(tray_bubble, visible);
+    return;
+  }
+
+  AdjustBaselineBasedOnShelfPodBubble();
+}
+
+void AshMessagePopupCollection::AdjustBaselineBasedOnShelfPodBubble() {
   CHECK(features::IsQsRevampEnabled());
 
   auto* status_area = StatusAreaWidget::ForWindow(shelf_->GetWindow());
-  auto* tray_bubble = status_area ? status_area->open_tray_bubble() : nullptr;
+  auto* shelf_pod_bubble =
+      status_area ? status_area->open_shelf_pod_bubble() : nullptr;
 
   // The tray bubble might already be closed/deleted. We also only put the popup
   // on top of tray bubble that is anchored to the shelf corner.
-  if (!tray_bubble || !tray_bubble->IsAnchoredToShelfCorner()) {
+  if (!shelf_pod_bubble || !shelf_pod_bubble->IsAnchoredToShelfCorner()) {
     SetBaselineOffset(0);
     return;
   }
@@ -380,7 +385,7 @@ void AshMessagePopupCollection::AdjustBaselineBasedOnTrayBubble() {
   // popup collection (the portion of the screen from 0 to the origin of the
   // tray bubble), we will just display the popup on top of the tray bubble
   // (adjust the baseline back to zero and move down the popups).
-  if (tray_bubble->GetBoundsInScreen().y() -
+  if (shelf_pod_bubble->GetBoundsInScreen().y() -
           message_center::kMarginBetweenPopups <
       popup_collection_bounds().height()) {
     SetBaselineOffset(0);
@@ -388,7 +393,28 @@ void AshMessagePopupCollection::AdjustBaselineBasedOnTrayBubble() {
     return;
   }
 
-  SetBaselineOffset(tray_bubble->height());
+  SetBaselineOffset(shelf_pod_bubble->height());
+}
+
+void AshMessagePopupCollection::AdjustBaselineBasedOnSecondaryBubble(
+    TrayBubbleView* tray_bubble,
+    bool visible) {
+  DCHECK(tray_bubble);
+  DCHECK_EQ(tray_bubble->GetBubbleType(),
+            TrayBubbleView::TrayBubbleType::kSecondaryBubble);
+
+  auto* status_area = StatusAreaWidget::ForWindow(shelf_->GetWindow());
+  auto* current_open_shelf_pod_bubble =
+      status_area ? status_area->open_shelf_pod_bubble() : nullptr;
+
+  // If there's a current open shelf pod bubble, the popup should be on top of
+  // that bubble, not on top of the secondary bubble, so do nothing here.
+  if (current_open_shelf_pod_bubble &&
+      current_open_shelf_pod_bubble != tray_bubble) {
+    return;
+  }
+
+  SetBaselineOffset(visible ? tray_bubble->height() : 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

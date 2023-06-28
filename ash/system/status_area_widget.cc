@@ -185,7 +185,7 @@ StatusAreaWidget::~StatusAreaWidget() {
 
   // `TrayBubbleView` might be deleted after `StatusAreaWidget`, so we reset the
   // pointer here to avoid dangling pointer.
-  open_tray_bubble_ = nullptr;
+  open_shelf_pod_bubble_ = nullptr;
 
   status_area_widget_delegate_->Shutdown();
 }
@@ -642,7 +642,7 @@ bool StatusAreaWidget::ShouldShowShelf() const {
   // Some TrayBackgroundViews' cache their bubble, the shelf should only be
   // forced to show if the bubble is visible, and we should not show the shelf
   // for cached, hidden bubbles.
-  if (open_tray_bubble_) {
+  if (open_shelf_pod_bubble_) {
     for (TrayBackgroundView* tray_button : tray_buttons_) {
       if (!tray_button->GetBubbleView()) {
         continue;
@@ -687,36 +687,40 @@ bool StatusAreaWidget::OnNativeWidgetActivationChanged(bool active) {
   return true;
 }
 
-void StatusAreaWidget::SetOpenTrayBubble(TrayBubbleView* open_tray_bubble) {
-  if (open_tray_bubble_ == open_tray_bubble) {
+void StatusAreaWidget::SetOpenShelfPodBubble(
+    TrayBubbleView* open_shelf_pod_bubble) {
+  if (open_shelf_pod_bubble_ == open_shelf_pod_bubble) {
     return;
   }
 
   DCHECK(unified_system_tray_);
   // We will ignore the message center bubble, since this bubble is on top of
   // the Quick Settings and will be consider a "secondary bubble". As a result,
-  // it should not be set to be `open_tray_bubble_`. Note that this bubble will
-  // be removed when `kQsRevamp` is enabled.
+  // it should not be set to be `open_shelf_pod_bubble_`. Note that this bubble
+  // will be removed when `kQsRevamp` is enabled.
   if (unified_system_tray_->message_center_bubble() &&
-      open_tray_bubble ==
+      open_shelf_pod_bubble ==
           unified_system_tray_->message_center_bubble()->GetBubbleView()) {
     DCHECK(!features::IsQsRevampEnabled());
     return;
   }
 
-  if (open_tray_bubble) {
+  if (open_shelf_pod_bubble) {
+    DCHECK(open_shelf_pod_bubble->GetBubbleType() ==
+           TrayBubbleView::TrayBubbleType::kShelfPodBubble);
+
     // We only keep track of bubbles that are anchored to the status area
     // widget.
-    DCHECK(open_tray_bubble->IsAnchoredToStatusArea());
+    DCHECK(open_shelf_pod_bubble->IsAnchoredToStatusArea());
 
     // There should not be 2 tray bubbles that are open at the same time (with
     // the exception of message center bubble mentioned above).
-    DCHECK(!open_tray_bubble_);
+    DCHECK(!open_shelf_pod_bubble_);
   }
 
-  open_tray_bubble_ = open_tray_bubble;
+  open_shelf_pod_bubble_ = open_shelf_pod_bubble;
   shelf()->shelf_layout_manager()->OnShelfTrayBubbleVisibilityChanged(
-      /*bubble_shown=*/open_tray_bubble_);
+      /*bubble_shown=*/open_shelf_pod_bubble_);
 }
 
 void StatusAreaWidget::OnViewVisibilityChanged(views::View* observed_view,

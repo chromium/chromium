@@ -210,6 +210,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // rerouting events, then this function will be idempotent.
   void StopReroutingEvents();
 
+  TrayBubbleType GetBubbleType() const;
+
   Delegate* delegate() { return delegate_.get(); }
 
   void set_gesture_dragging(bool dragging) { is_gesture_dragging_ = dragging; }
