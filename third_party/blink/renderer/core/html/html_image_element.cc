@@ -595,32 +595,32 @@ unsigned HTMLImageElement::height() {
   return LayoutBoxHeight();
 }
 
-LayoutSize HTMLImageElement::DensityCorrectedIntrinsicDimensions() const {
+PhysicalSize HTMLImageElement::DensityCorrectedIntrinsicDimensions() const {
   if (IsDefaultIntrinsicSize()) {
-    return LayoutSize(LayoutReplaced::kDefaultWidth,
-                      LayoutReplaced::kDefaultHeight);
+    return PhysicalSize(LayoutUnit(LayoutReplaced::kDefaultWidth),
+                        LayoutUnit(LayoutReplaced::kDefaultHeight));
   }
   ImageResourceContent* image_content = GetImageLoader().GetContent();
   if (!image_content || !image_content->HasImage())
-    return LayoutSize();
+    return PhysicalSize();
 
   float pixel_density = image_device_pixel_ratio_;
   if (image_content->HasDevicePixelRatioHeaderValue() &&
       image_content->DevicePixelRatioHeaderValue() > 0)
     pixel_density = 1 / image_content->DevicePixelRatioHeaderValue();
 
-  LayoutSize natural_size(
+  PhysicalSize natural_size(
       image_content->GetImage()->Size(kRespectImageOrientation));
   natural_size.Scale(pixel_density);
   return natural_size;
 }
 
 unsigned HTMLImageElement::naturalWidth() const {
-  return DensityCorrectedIntrinsicDimensions().Width().ToUnsigned();
+  return DensityCorrectedIntrinsicDimensions().width.ToUnsigned();
 }
 
 unsigned HTMLImageElement::naturalHeight() const {
-  return DensityCorrectedIntrinsicDimensions().Height().ToUnsigned();
+  return DensityCorrectedIntrinsicDimensions().height.ToUnsigned();
 }
 
 unsigned HTMLImageElement::LayoutBoxWidth() const {
