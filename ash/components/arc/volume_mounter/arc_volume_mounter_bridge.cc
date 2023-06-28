@@ -52,6 +52,9 @@ constexpr char kMyFilesUuid[] = "0000000000000000000000000000CAFEF00D2019";
 // Dummy UUID for testing.
 constexpr char kDummyUuid[] = "00000000000000000000000000000000DEADBEEF";
 
+constexpr char kArcppMediaSharingServicesJobName[] =
+    "arcpp_2dmedia_2dsharing_2dservices";
+
 // The minimum and maximum values of app UID in Android. Defined in Android's
 // system/core/libcutils/include/private/android_filesystem_config.h.
 constexpr uint32_t kAndroidAppUidStart = 10000;
@@ -318,7 +321,7 @@ void ArcVolumeMounterBridge::SendMountEventForRemovableMedia(
 
 void ArcVolumeMounterBridge::OnConnectionClosed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  arcvm_external_storage_mount_points_are_ready_ = false;
+  external_storage_mount_points_are_ready_ = false;
 }
 
 void ArcVolumeMounterBridge::RequestAllMountPoints() {
@@ -334,11 +337,11 @@ bool ArcVolumeMounterBridge::IsReadyToSendMountingEvents() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
   // Check whether external storage mount points are set up and file system
-  // watchers are watching file system changes. In ARC++ container, we can
-  // assume that the mount points are set up in an earlier boot stage, whereas
-  // in ARCVM they need to be set up by SetUpExternalStorageMountPoints().
-  return (!IsArcVmEnabled() ||
-          arcvm_external_storage_mount_points_are_ready_) &&
+  // watchers are watching file system changes. In ARC P, we can assume that the
+  // mount points are set up in an earlier boot stage, whereas in ARC R+ they
+  // need to be set up by SetUpExternalStorageMountPoints().
+  return (GetArcAndroidSdkVersionAsInt() < arc::kArcVersionR ||
+          external_storage_mount_points_are_ready_) &&
          delegate_->IsWatchingFileSystemChanges();
 }
 
@@ -346,7 +349,7 @@ void ArcVolumeMounterBridge::SetUpExternalStorageMountPoints(
     uint32_t media_provider_uid,
     SetUpExternalStorageMountPointsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(IsArcVmEnabled());
+  DCHECK(GetArcAndroidSdkVersionAsInt() >= arc::kArcVersionR);
   if (media_provider_uid < kAndroidAppUidStart ||
       media_provider_uid > kAndroidAppUidEnd) {
     LOG(ERROR) << "Invalid MediaProvider UID: " << media_provider_uid;
@@ -354,48 +357,55 @@ void ArcVolumeMounterBridge::SetUpExternalStorageMountPoints(
     return;
   }
 
-  if (arcvm_external_storage_mount_points_are_ready_) {
+  if (external_storage_mount_points_are_ready_) {
     std::move(callback).Run(true);
     return;
   }
 
   DVLOG(1) << "MediaProvider UID is " << media_provider_uid;
 
+  const bool is_arcvm = IsArcVmEnabled();
+  const std::string job_name = is_arcvm ? kArcVmMediaSharingServicesJobName
+                                        : kArcppMediaSharingServicesJobName;
   const std::string chromeos_user = GetChromeOsUserId();
   DCHECK(!chromeos_user.empty());
   std::vector<std::string> environment{
       "CHROMEOS_USER=" + chromeos_user,
       base::StringPrintf("MEDIA_PROVIDER_UID=%u", media_provider_uid)};
+  if (!is_arcvm) {
+    // We need to explicitly tell R container to use MediaProvider UID.
+    environment.push_back("IS_ANDROID_CONTAINER_RVC=true");
+  }
 
   // Post OnSetUpExternalStorageMountPoints() as a task on the current thread
   // because it eventually calls ArcFileSystemWatcherService's methods to attach
   // watchers that need to be called on the UI thread.
   ash::UpstartClient::Get()->StartJobWithErrorDetails(
-      kArcVmMediaSharingServicesJobName, std::move(environment),
+      job_name, std::move(environment),
       base::BindPostTask(
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::BindOnce(
               &ArcVolumeMounterBridge::OnSetUpExternalStorageMountPoints,
-              weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+              weak_ptr_factory_.GetWeakPtr(), job_name, std::move(callback))));
 }
 
 void ArcVolumeMounterBridge::OnSetUpExternalStorageMountPoints(
+    const std::string& job_name,
     SetUpExternalStorageMountPointsCallback callback,
     bool result,
     absl::optional<std::string> error_name,
     absl::optional<std::string> error_message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!arcvm_external_storage_mount_points_are_ready_);
+  DCHECK(!external_storage_mount_points_are_ready_);
   if (!result) {
     // Check if the job has already been running, in which case we treat the
     // result as a success. It can happen when Android's system services are
     // restarted without rebooting.
     if (error_name.has_value() &&
         error_name.value() == ash::UpstartClient::kAlreadyStartedError) {
-      DVLOG(1) << kArcVmMediaSharingServicesJobName << " is already running";
+      DVLOG(1) << job_name << " is already running";
     } else {
-      LOG(ERROR) << "Failed to start " << kArcVmMediaSharingServicesJobName
-                 << ": "
+      LOG(ERROR) << "Failed to start " << job_name << ": "
                  << (error_name.has_value() ? error_name.value()
                                             : "unknown error")
                  << ": "
@@ -405,7 +415,7 @@ void ArcVolumeMounterBridge::OnSetUpExternalStorageMountPoints(
     }
   }
 
-  arcvm_external_storage_mount_points_are_ready_ = true;
+  external_storage_mount_points_are_ready_ = true;
   std::move(callback).Run(true);
 }
 

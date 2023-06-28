@@ -111,6 +111,7 @@ class ArcVolumeMounterBridge
   bool IsReadyToSendMountingEvents();
 
   void OnSetUpExternalStorageMountPoints(
+      const std::string& job_name,
       SetUpExternalStorageMountPointsCallback callback,
       bool result,
       absl::optional<std::string> error_name,
@@ -124,7 +125,7 @@ class ArcVolumeMounterBridge
   const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   PrefChangeRegistrar change_registerar_;
 
-  bool arcvm_external_storage_mount_points_are_ready_ = false;
+  bool external_storage_mount_points_are_ready_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
