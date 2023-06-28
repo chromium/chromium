@@ -122,9 +122,11 @@ absl::optional<media::test::EncoderPerfTestMode> g_test_mode;
 
 constexpr size_t kNumEncodeFramesForSpeedPerformance = 300;
 
-// The event timeout used in perf tests because encoding 2160p
-// |kNumEncodeFramesForSpeedPerformance| frames take much time.
-constexpr base::TimeDelta kPerfEventTimeout = base::Seconds(180);
+// We use a longer event timeout because it takes much longer to encode,
+// especially in 2160p, |kNumEncodeFramesForSpeedPerformance| frames in speed
+// tests and decode and encode the entire videos in quality tests.
+constexpr base::TimeDelta kSpeedTestEventTimeout = base::Minutes(3);
+constexpr base::TimeDelta kQualityTestEventTimeout = base::Minutes(15);
 
 // Default output folder used to store performance metrics.
 constexpr const base::FilePath::CharType* kDefaultOutputFolder =
@@ -808,7 +810,7 @@ TEST_F(VideoEncoderTest, MeasureUncappedPerformance) {
         << "Skip because this test case is to measure speed performance";
   }
   auto encoder = CreateVideoEncoder();
-  encoder->SetEventWaitTimeout(kPerfEventTimeout);
+  encoder->SetEventWaitTimeout(kSpeedTestEventTimeout);
 
   performance_evaluator_->StartMeasuring();
   encoder->Encode();
@@ -844,7 +846,7 @@ TEST_F(VideoEncoderTest,
       kMinSupportedConcurrentEncoders);
   for (size_t i = 0; i < kMinSupportedConcurrentEncoders; ++i) {
     encoders[i] = CreateVideoEncoder();
-    encoders[i]->SetEventWaitTimeout(kPerfEventTimeout);
+    encoders[i]->SetEventWaitTimeout(kSpeedTestEventTimeout);
   }
 
   performance_evaluator_->StartMeasuring();
@@ -878,7 +880,7 @@ TEST_F(VideoEncoderTest, DISABLED_MeasureCappedPerformance) {
   }
   const uint32_t kEncodeRate = 30;
   auto encoder = CreateVideoEncoder(/*encode_rate=*/kEncodeRate);
-  encoder->SetEventWaitTimeout(kPerfEventTimeout);
+  encoder->SetEventWaitTimeout(kSpeedTestEventTimeout);
 
   performance_evaluator_->StartMeasuring();
   encoder->Encode();
@@ -904,7 +906,7 @@ TEST_F(VideoEncoderTest, MeasureProducedBitstreamQuality) {
       CreateVideoEncoder(/*encode_rate=*/absl::nullopt,
                          /*measure_quality=*/true,
                          /*num_encode_frames=*/g_env->Video()->NumFrames());
-  encoder->SetEventWaitTimeout(kPerfEventTimeout);
+  encoder->SetEventWaitTimeout(kQualityTestEventTimeout);
 
   encoder->Encode();
   EXPECT_TRUE(encoder->WaitForFlushDone());
