@@ -158,7 +158,6 @@ void UdpSocket::OnReceived(
     client_->OnRead(this, Error::Code::kSocketReadFailure);
   } else if (data) {
     UdpPacket packet(data->begin(), data->end());
-    packet.set_socket(this);
     if (source_endpoint) {
       packet.set_source(
           openscreen_platform::ToOpenScreenEndPoint(source_endpoint.value()));
