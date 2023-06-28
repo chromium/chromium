@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/execution/processing/custom_input_processor.h"
 
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
@@ -221,6 +222,11 @@ QueryProcessor::Tensor CustomInputProcessor::ProcessSingleCustomInput(
     feature_processor_state->SetError(
         stats::FeatureProcessingError::kCustomInputError);
     NOTREACHED() << "InputDelegate is not found";
+  } else if (custom_input.fill_policy() == proto::CustomInput::FILL_RANDOM) {
+    if (!AddRandom(custom_input, tensor_result)) {
+      feature_processor_state->SetError(
+          stats::FeatureProcessingError::kCustomInputError);
+    }
   }
 
   return tensor_result;
@@ -325,5 +331,14 @@ bool CustomInputProcessor::AddDevicePPI(
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+bool CustomInputProcessor::AddRandom(const proto::CustomInput& custom_input,
+                                     std::vector<ProcessedValue>& out_tensor) {
+  if (custom_input.tensor_length() != 1) {
+    return false;
+  }
+  out_tensor.emplace_back(base::RandFloat());
+  return true;
 }
 }  // namespace segmentation_platform::processing

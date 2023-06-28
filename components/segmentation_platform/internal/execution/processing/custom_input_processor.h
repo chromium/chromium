@@ -100,6 +100,11 @@ class CustomInputProcessor : public QueryProcessor {
                            FeatureProcessorState* feature_processor_state,
                            std::vector<ProcessedValue>& out_tensor);
 
+  // Add a random number for CustomInput::FILL_RANDOM and return whether it
+  // succeeded.
+  bool AddRandom(const proto::CustomInput& custom_input,
+                 std::vector<ProcessedValue>& out_tensor);
+
   const raw_ptr<InputDelegateHolder, DanglingUntriaged> input_delegate_holder_;
 
   // List of custom inputs to process into input tensors.
