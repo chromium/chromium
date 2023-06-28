@@ -299,6 +299,7 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   void RunPowerButtonRoutine(uint32_t timeout_seconds,
                              RunPowerButtonRoutineCallback callback) override;
   void RunAudioDriverRoutine(RunAudioDriverRoutineCallback callback) override;
+  void RunUfsLifetimeRoutine(RunUfsLifetimeRoutineCallback callback) override;
 
   // CrosHealthdEventService overrides:
   void DEPRECATED_AddBluetoothObserver(

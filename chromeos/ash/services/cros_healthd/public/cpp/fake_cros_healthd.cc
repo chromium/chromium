@@ -719,6 +719,12 @@ void FakeCrosHealthd::RunAudioDriverRoutine(
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
+void FakeCrosHealthd::RunUfsLifetimeRoutine(
+    RunUfsLifetimeRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kUfsLifetime;
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+
 void FakeCrosHealthd::DEPRECATED_AddBluetoothObserver(
     mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer) {
   NOTREACHED();

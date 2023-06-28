@@ -646,6 +646,10 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
       NOTIMPLEMENTED();
       break;
     }
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kUfsLifetime: {
+      NOTIMPLEMENTED();
+      break;
+    }
   }
 }
 

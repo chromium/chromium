@@ -54,7 +54,7 @@ interface CrosHealthdServiceFactory {
 
 // Diagnostics interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 13, NextIndex: 47
+// NextMinVersion: 14, NextIndex: 48
 [Stable]
 interface CrosHealthdDiagnosticsService {
   // Returns an array of all diagnostic routines that the platform supports.
@@ -756,6 +756,16 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   [MinVersion=12] RunAudioDriverRoutine@46() => (RunRoutineResponse response);
+
+  // Requests that the UfsLifetime routine is created and started on the
+  // platform. This routine checks the UFS drive's life time.
+  // The availability of this routine can be determined by checking that
+  // kUfsLifetime is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=13] RunUfsLifetimeRoutine@47() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.
