@@ -331,13 +331,12 @@ bool PasswordGenerationAgent::DidClearGenerationSuggestion(
 
 void PasswordGenerationAgent::GeneratedPasswordAccepted(
     const std::u16string& password) {
-  // static cast is workaround for linker error.
-  DCHECK_LE(static_cast<size_t>(kMinimumLengthForEditedPassword),
-            password.size());
   // Check that the navigation in between didn't reset the state.
   if (!current_generation_item_) {
     return;
   }
+  CHECK(!password.empty());
+  CHECK_LE(kMinimumLengthForEditedPassword, password.size());
   current_generation_item_->password_is_generated_ = true;
   current_generation_item_->password_edited_ = false;
   password_generation::LogPasswordGenerationEvent(
@@ -355,7 +354,10 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
     // Advance focus to the next input field. We assume password fields in
     // an account creation form are always adjacent.
     render_frame()->GetWebView()->AdvanceFocus(false);
+    CHECK_EQ(password, password_element.Value().Utf16());
   }
+  CHECK(base::Contains(current_generation_item_->password_elements_,
+                       current_generation_item_->generation_element_));
 
   std::unique_ptr<FormData> presaved_form_data(CreateFormDataToPresave());
   std::u16string generated_password =
