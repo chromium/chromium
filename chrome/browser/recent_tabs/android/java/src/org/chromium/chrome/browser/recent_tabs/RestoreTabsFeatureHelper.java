@@ -35,19 +35,9 @@ public class RestoreTabsFeatureHelper {
     private RestoreTabsController mController;
     private RestoreTabsControllerDelegate mDelegate;
     private RestoreTabsControllerDelegate mDelegateForTesting;
-    private Activity mActivity;
-    private Profile mProfile;
-    private TabCreatorManager mTabCreatorManager;
-    private BottomSheetController mBottomSheetController;
     private ForeignSessionHelper mForeignSessionHelper;
 
-    public RestoreTabsFeatureHelper(Activity activity, Profile profile,
-            TabCreatorManager tabCreatorManager, BottomSheetController bottomSheetController) {
-        mActivity = activity;
-        mProfile = profile;
-        mTabCreatorManager = tabCreatorManager;
-        mBottomSheetController = bottomSheetController;
-    }
+    public RestoreTabsFeatureHelper() {}
 
     public void destroy() {
         if (mForeignSessionHelper != null) {
@@ -68,8 +58,15 @@ public class RestoreTabsFeatureHelper {
     /**
      * Check the criteria for displaying the restore tabs promo.
      */
-    public void maybeShowPromo() {
-        Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
+    public void maybeShowPromo(Activity activity, Profile profile,
+            TabCreatorManager tabCreatorManager, BottomSheetController bottomSheetController) {
+        if (profile == null || profile.isOffTheRecord()) {
+            RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
+                    RestoreTabsOnFREPromoShowResult.NULL_PROFILE);
+            return;
+        }
+
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
 
         if (!RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.getValue()
                 && !tracker.wouldTriggerHelpUI(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE)) {
@@ -78,7 +75,7 @@ public class RestoreTabsFeatureHelper {
             return;
         }
 
-        mForeignSessionHelper = new ForeignSessionHelper(mProfile);
+        mForeignSessionHelper = new ForeignSessionHelper(profile);
         List<ForeignSession> sessions = mForeignSessionHelper.getMobileAndTabletForeignSessions();
 
         // Determines whether the promo is to be shown for the first or second time.
@@ -103,7 +100,7 @@ public class RestoreTabsFeatureHelper {
                 && (RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.getValue()
                         || tracker.shouldTriggerHelpUI(
                                 FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE))) {
-            setDelegate();
+            setDelegate(activity, profile, tabCreatorManager, bottomSheetController);
             mDelegate.showPromo(sessions);
             RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
                     RestoreTabsOnFREPromoShowResult.SHOWN);
@@ -120,7 +117,8 @@ public class RestoreTabsFeatureHelper {
         }
     }
 
-    private void setDelegate() {
+    private void setDelegate(Activity activity, Profile profile,
+            TabCreatorManager tabCreatorManager, BottomSheetController bottomSheetController) {
         mDelegate = (mDelegateForTesting != null)
                 ? mDelegateForTesting
                 : new RestoreTabsControllerDelegate() {
@@ -129,7 +127,7 @@ public class RestoreTabsFeatureHelper {
                       @Override
                       public void showPromo(List<ForeignSession> sessions) {
                           mController = RestoreTabsControllerFactory.createInstance(
-                                  mActivity, mProfile, mTabCreatorManager, mBottomSheetController);
+                                  activity, profile, tabCreatorManager, bottomSheetController);
                           mController.showHomeScreen(mForeignSessionHelper, sessions, mDelegate);
                       }
 
@@ -139,7 +137,7 @@ public class RestoreTabsFeatureHelper {
                           mWasDismissed = true;
 
                           if (!RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.getValue()) {
-                              TrackerFactory.getTrackerForProfile(mProfile).dismissed(
+                              TrackerFactory.getTrackerForProfile(profile).dismissed(
                                       FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE);
                           }
 
