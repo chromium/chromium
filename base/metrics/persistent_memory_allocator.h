@@ -23,10 +23,6 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
-namespace metrics {
-class FileMetricsProvider;
-}
-
 namespace base {
 
 class HistogramBase;
@@ -121,16 +117,6 @@ class BASE_EXPORT PersistentMemoryAllocator {
     // having this extra status means a future reader can realize what
     // should have happened.
     MEMORY_DELETED = 2,
-
-    // The data should be considered complete. This is usually set when the
-    // browser is going to exit to indicate that it terminated cleanly and that
-    // the memory should be well-formed. In theory, this is not perfect as it is
-    // possible for the browser/device to crash after this has been set, but in
-    // practice this should be a reasonable indication as to whether the data
-    // comes from a completed or crashed session (if file-backed). Note that
-    // this might not be set on certain platforms (e.g. Android, iOS) due to not
-    // having a guaranteed clean shutdown path.
-    MEMORY_COMPLETED = 3,
 
     // Outside code can create states starting with this number; these too
     // must also never change between code versions.
@@ -689,7 +675,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // Actual method for doing the allocation.
   Reference AllocateImpl(size_t size, uint32_t type_id);
 
-  // Gets the block header associated with a specific reference.
+  // Get the block header associated with a specific reference.
   const volatile BlockHeader* GetBlock(Reference ref,
                                        uint32_t type_id,
                                        size_t size,
@@ -705,7 +691,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
             ref, type_id, size, queue_ok, free_ok));
   }
 
-  // Gets the actual data within a block associated with a specific reference.
+  // Get the actual data within a block associated with a specific reference.
   const volatile void* GetBlockData(Reference ref,
                                     uint32_t type_id,
                                     size_t size) const;
@@ -715,14 +701,8 @@ class BASE_EXPORT PersistentMemoryAllocator {
             ref, type_id, size));
   }
 
-  // Records an error in the internal histogram.
+  // Record an error in the internal histogram.
   void RecordError(int error) const;
-
-  // Returns the offset to the first free space segment.
-  uint32_t freeptr() const;
-
-  // Returns the metadata version used in this allocator.
-  uint32_t version() const;
 
   const bool readonly_;                // Indicates access to read-only memory.
   mutable std::atomic<bool> corrupt_;  // Local version of "corrupted" flag.
@@ -731,7 +711,6 @@ class BASE_EXPORT PersistentMemoryAllocator {
   raw_ptr<HistogramBase> used_histogram_;    // Histogram recording used space.
   raw_ptr<HistogramBase> errors_histogram_;  // Histogram recording errors.
 
-  friend class metrics::FileMetricsProvider;
   friend class PersistentMemoryAllocatorTest;
   FRIEND_TEST_ALL_PREFIXES(PersistentMemoryAllocatorTest, AllocateAndIterate);
 };

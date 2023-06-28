@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "base/bits.h"
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/files/memory_mapped_file.h"
@@ -50,10 +49,7 @@ constexpr uint32_t kGlobalCookie = 0x408305DC;
 // The current version of the metadata. If updates are made that change
 // the metadata, the version number can be queried to operate in a backward-
 // compatible manner until the memory segment is completely re-initalized.
-// Note: If you update the metadata in a non-backwards compatible way, reset
-// |kCompatibleVersions|. Otherwise, add the previous version.
-constexpr uint32_t kGlobalVersion = 3;
-static constexpr uint32_t kOldCompatibleVersions[] = {2};
+constexpr uint32_t kGlobalVersion = 2;
 
 // Constant values placed in the block headers to indicate its state.
 constexpr uint32_t kBlockCookieFree = 0;
@@ -414,9 +410,7 @@ PersistentMemoryAllocator::PersistentMemoryAllocator(Memory memory,
     shared_meta()->memory_state.store(MEMORY_INITIALIZED,
                                       std::memory_order_release);
   } else {
-    if (shared_meta()->size == 0 ||
-        (shared_meta()->version != kGlobalVersion &&
-         !Contains(kOldCompatibleVersions, shared_meta()->version)) ||
+    if (shared_meta()->size == 0 || shared_meta()->version != kGlobalVersion ||
         shared_meta()->freeptr.load(std::memory_order_relaxed) == 0 ||
         shared_meta()->tailptr == 0 || shared_meta()->queue.cookie == 0 ||
         shared_meta()->queue.next.load(std::memory_order_relaxed) == 0) {
@@ -938,14 +932,6 @@ void PersistentMemoryAllocator::FlushPartial(size_t length, bool sync) {
 void PersistentMemoryAllocator::RecordError(int error) const {
   if (errors_histogram_)
     errors_histogram_->Add(error);
-}
-
-uint32_t PersistentMemoryAllocator::freeptr() const {
-  return shared_meta()->freeptr.load(std::memory_order_relaxed);
-}
-
-uint32_t PersistentMemoryAllocator::version() const {
-  return shared_meta()->version;
 }
 
 const volatile void* PersistentMemoryAllocator::GetBlockData(
