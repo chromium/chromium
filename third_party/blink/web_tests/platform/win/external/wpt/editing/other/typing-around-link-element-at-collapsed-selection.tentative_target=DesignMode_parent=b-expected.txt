@@ -3,10 +3,10 @@ PASS Testing inserting content around link element
 FAIL Replacing text in a link in <b> with "XY" in <p><b>[abc]</b></p> assert_in_array: value "<p><b>XY</b></p>" not in array ["<p><b><a href=\"about:blank\">XY</b></a></p>", "<p><b><a href=\"about:blank\">XY</b></a><br></p>"]
 PASS Inserting "XY" after making a link in <b> (following Selection.collapseToEnd) in <p><b>[abc]</b></p>
 PASS Inserting "XY" after making a link in <b> (following ArrowRight key press) in <p><b>[abc]</b></p>
-FAIL Inserting "XY" after making a link in <b> (following End key press) in <p><b>[abc]</b></p> promise_test: Unhandled rejection with value: object "Error: No support for this code: U+e010"
+FAIL Inserting "XY" after making a link in <b> (following End key press) in <p><b>[abc]</b></p> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
 PASS Inserting "XY" after making a link in <b> (following Selection.collapseToStart) in <p><b>[abc]</b></p>
 PASS Inserting "XY" after making a link in <b> (following ArrowLeft key press) in <p><b>[abc]</b></p>
-FAIL Inserting "XY" after making a link in <b> (following Home key press) in <p><b>[abc]</b></p> promise_test: Unhandled rejection with value: object "Error: No support for this code: U+e011"
+FAIL Inserting "XY" after making a link in <b> (following Home key press) in <p><b>[abc]</b></p> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
 PASS Inserting "XY" after setting caret position to middle of a link in <b> (Selection.collapse) in <p><b><a href="about:blank">[]abc</a></b></p>
 PASS Inserting "XY" after setting caret position to middle of a link in <b> (Selection.addRange) in <p><b><a href="about:blank">[]abc</a></b></p>
 PASS Inserting "XY" after setting caret position to start of a link in <b> (Selection.collapse) in <p><b><a href="about:blank">ab[]c</a></b></p>

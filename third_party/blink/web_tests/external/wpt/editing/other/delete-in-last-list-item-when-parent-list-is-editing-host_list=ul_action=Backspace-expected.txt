@@ -4,7 +4,7 @@ FAIL Backspace in "<ul contenteditable><li><ul><li>{}</li></ul></li></ul>" asser
 FAIL Backspace in "<ul contenteditable><li><ol><li>{}</li></ol></li></ul>" assert_in_array: value "<li></li><li><br></li>" not in array ["<li></li>", "<li><br></li>"]
 PASS Backspace in "<ul contenteditable><ul><li>{}</li></ul></ul>"
 PASS Backspace in "<ul contenteditable><ol><li>{}</li></ol></ul>"
-FAIL Backspace in "<ul contenteditable><dl><dt>{}</dt></dl></ul>" promise_test: Unhandled rejection with value: object "Error: element send_keys intercepted error"
-FAIL Backspace in "<ul contenteditable><dl><dd>{}</dd></dl></ul>" promise_test: Unhandled rejection with value: object "Error: element send_keys intercepted error"
+FAIL Backspace in "<ul contenteditable><dl><dt>{}</dt></dl></ul>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Backspace in "<ul contenteditable><dl><dd>{}</dd></dl></ul>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
 Harness: the test ran to completion.
 

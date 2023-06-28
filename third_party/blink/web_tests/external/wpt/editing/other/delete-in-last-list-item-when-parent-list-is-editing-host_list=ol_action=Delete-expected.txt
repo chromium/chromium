@@ -4,7 +4,7 @@ FAIL Delete in "<ol contenteditable><li><ul><li>{}</li></ul></li></ol>" assert_i
 FAIL Delete in "<ol contenteditable><li><ol><li>{}</li></ol></li></ol>" assert_in_array: value "<li><ol><li></li></ol></li>" not in array ["<li></li>", "<li><br></li>"]
 FAIL Delete in "<ol contenteditable><ul><li>{}</li></ul></ol>" assert_in_array: value "<ul><li></li></ul>" not in array ["<li></li>", "<li><br></li>"]
 FAIL Delete in "<ol contenteditable><ol><li>{}</li></ol></ol>" assert_in_array: value "<ol><li></li></ol>" not in array ["<li></li>", "<li><br></li>"]
-FAIL Delete in "<ol contenteditable><dl><dt>{}</dt></dl></ol>" promise_test: Unhandled rejection with value: object "Error: element send_keys intercepted error"
-FAIL Delete in "<ol contenteditable><dl><dd>{}</dd></dl></ol>" promise_test: Unhandled rejection with value: object "Error: element send_keys intercepted error"
+FAIL Delete in "<ol contenteditable><dl><dt>{}</dt></dl></ol>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
+FAIL Delete in "<ol contenteditable><dl><dd>{}</dd></dl></ol>" promise_test: Unhandled rejection with value: object "Error: We do not support keydown and keyup actions, please use test_driver.send_keys. See crbug.com/893480."
 Harness: the test ran to completion.
 
