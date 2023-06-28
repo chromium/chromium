@@ -1344,7 +1344,7 @@ void ServiceWorkerVersion::OnStarting() {
 
 void ServiceWorkerVersion::OnStarted(
     blink::mojom::ServiceWorkerStartStatus start_status,
-    FetchHandlerType fetch_handler_type) {
+    FetchHandlerType new_fetch_handler_type) {
   DCHECK_EQ(EmbeddedWorkerStatus::RUNNING, running_status());
 
   // TODO(falken): This maps kAbruptCompletion to kErrorScriptEvaluated, which
@@ -1356,31 +1356,31 @@ void ServiceWorkerVersion::OnStarted(
       mojo::ConvertTo<blink::ServiceWorkerStatusCode>(start_status);
 
   if (status == blink::ServiceWorkerStatusCode::kOk) {
-    if (fetch_handler_type_ && fetch_handler_type_ != fetch_handler_type) {
+    if (fetch_handler_type_ && fetch_handler_type_ != new_fetch_handler_type) {
       context_->registry()->UpdateFetchHandlerType(
-          registration_id_, key_, fetch_handler_type,
+          registration_id_, key_, new_fetch_handler_type,
           // Ignore errors; bumping the update fetch handler type is
           // just best-effort.
           base::DoNothing());
       base::UmaHistogramEnumeration(
           "ServiceWorker.OnStarted.UpdatedFetchHandlerType",
-          fetch_handler_type);
+          new_fetch_handler_type);
       base::UmaHistogramEnumeration(
           base::StrCat(
               {"ServiceWorker.OnStarted.UpdatedFetchHandlerTypeBySourceType",
                FetchHandlerTypeToSuffix(*fetch_handler_type_)}),
-          fetch_handler_type);
+          new_fetch_handler_type);
     }
     if (!fetch_handler_type_) {
       // When the new service worker starts, the fetch handler type is unknown
       // until this point.
-      set_fetch_handler_type(fetch_handler_type);
+      set_fetch_handler_type(new_fetch_handler_type);
     } else {
       // Starting the installed service worker should not change the existence
       // of the fetch handler.
       DCHECK_EQ(*fetch_handler_type_ != FetchHandlerType::kNoHandler,
-                fetch_handler_type != FetchHandlerType::kNoHandler);
-      fetch_handler_type_ = fetch_handler_type;
+                new_fetch_handler_type != FetchHandlerType::kNoHandler);
+      fetch_handler_type_ = new_fetch_handler_type;
     }
   }
 

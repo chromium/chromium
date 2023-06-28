@@ -879,7 +879,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   void OnScriptLoaded() override;
   void OnStarting() override;
   void OnStarted(blink::mojom::ServiceWorkerStartStatus status,
-                 FetchHandlerType fetch_handler_type) override;
+                 FetchHandlerType new_fetch_handler_type) override;
   void OnStopping() override;
   void OnStopped(EmbeddedWorkerStatus old_status) override;
   void OnDetached(EmbeddedWorkerStatus old_status) override;
