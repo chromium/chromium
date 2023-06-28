@@ -22,9 +22,10 @@
 
 // static
 DiscoverFeedService* DiscoverFeedServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state,
+    bool create) {
   return static_cast<DiscoverFeedService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(browser_state, create));
 }
 
 // static

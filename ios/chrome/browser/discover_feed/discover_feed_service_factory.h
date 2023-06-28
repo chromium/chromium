@@ -16,7 +16,8 @@ class DiscoverFeedService;
 class DiscoverFeedServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   static DiscoverFeedService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state,
+      bool create = true);
 
   static DiscoverFeedServiceFactory* GetInstance();
 

@@ -83,7 +83,10 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
       IsFeedAppCloseBackgroundRefreshEnabled()) {
     [self scheduleBackgroundRefresh];
   } else if (IsFeedAppCloseForegroundRefreshEnabled()) {
-    [self feedService]->RefreshFeed(FeedRefreshTrigger::kForegroundAppClose);
+    if ([self feedServiceIfCreated]) {
+      [self feedServiceIfCreated]->RefreshFeed(
+          FeedRefreshTrigger::kForegroundAppClose);
+    }
   }
 }
 
@@ -106,7 +109,13 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
   // should create background objects before this method is called. This line is
   // intended to crash if DiscoverFeedService is not available.
   return DiscoverFeedServiceFactory::GetForBrowserState(
-      self.appState.mainBrowserState);
+      self.appState.mainBrowserState, /*create=*/true);
+}
+
+// Returns the DiscoverFeedService if created.
+- (DiscoverFeedService*)feedServiceIfCreated {
+  return DiscoverFeedServiceFactory::GetForBrowserState(
+      self.appState.mainBrowserState, /*create=*/false);
 }
 
 // Returns the FeedMetricsRecorder.
