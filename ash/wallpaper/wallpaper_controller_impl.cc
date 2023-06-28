@@ -1629,7 +1629,7 @@ void WallpaperControllerImpl::OnCheckpointChanged(
   }
   AccountId account_id = GetActiveAccountId();
   WallpaperInfo info;
-  if (!pref_manager_->GetLocalWallpaperInfo(account_id, &info)) {
+  if (!pref_manager_->GetUserWallpaperInfo(account_id, &info)) {
     return;
   }
   if (!IsOnlineWallpaper(info.type)) {

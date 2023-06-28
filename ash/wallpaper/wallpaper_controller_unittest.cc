@@ -13,6 +13,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/schedule_enums.h"
+#include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/test/test_image_decoder.h"
@@ -4391,49 +4392,59 @@ TEST_F(WallpaperControllerTest,
 }
 
 TEST_F(WallpaperControllerTest, UpdateWallpaperOnScheduleCheckpointChanged) {
-  SimulateUserLogin(kAccountId1);
+  for (const bool is_guest : {false, true}) {
+    if (is_guest) {
+      SimulateGuestLogin();
+    } else {
+      SimulateUserLogin(kAccountId1);
+    }
 
-  // Enable dark mode by default.
-  Shell::Get()->dark_light_mode_controller()->SetDarkModeEnabledForTest(true);
+    const AccountId active_account_id =
+        Shell::Get()->session_controller()->GetActiveAccountId();
+    // Enable dark mode by default.
+    Shell::Get()->dark_light_mode_controller()->SetDarkModeEnabledForTest(true);
 
-  auto run_loop = std::make_unique<base::RunLoop>();
-  ClearWallpaperCount();
-  std::vector<OnlineWallpaperVariant> variants;
-  variants.emplace_back(kAssetId, GURL(kDummyUrl),
-                        backdrop::Image::IMAGE_TYPE_DARK_MODE);
-  variants.emplace_back(kAssetId2, GURL(kDummyUrl2),
-                        backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
-  const OnlineWallpaperParams& params =
-      OnlineWallpaperParams(kAccountId1, kAssetId, GURL(kDummyUrl),
-                            TestWallpaperControllerClient::kDummyCollectionId,
-                            WALLPAPER_LAYOUT_CENTER_CROPPED,
-                            /*preview_mode=*/false, /*from_user=*/true,
-                            /*daily_refresh_enabled=*/false, kUnitId, variants);
-  // Use dark mode wallpaper initially.
-  controller_->SetOnlineWallpaper(
-      params, base::BindLambdaForTesting([&run_loop](bool success) {
-        EXPECT_TRUE(success);
-        run_loop->Quit();
-      }));
-  run_loop->Run();
-  EXPECT_EQ(1, GetWallpaperCount());
-  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
+    auto run_loop = std::make_unique<base::RunLoop>();
+    ClearWallpaperCount();
+    std::vector<OnlineWallpaperVariant> variants;
+    variants.emplace_back(kAssetId, GURL(kDummyUrl),
+                          backdrop::Image::IMAGE_TYPE_DARK_MODE);
+    variants.emplace_back(kAssetId2, GURL(kDummyUrl2),
+                          backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
+    const OnlineWallpaperParams& params = OnlineWallpaperParams(
+        active_account_id, kAssetId, GURL(kDummyUrl),
+        TestWallpaperControllerClient::kDummyCollectionId,
+        WALLPAPER_LAYOUT_CENTER_CROPPED,
+        /*preview_mode=*/false, /*from_user=*/true,
+        /*daily_refresh_enabled=*/false, kUnitId, variants);
+    // Use dark mode wallpaper initially.
+    controller_->SetOnlineWallpaper(
+        params, base::BindLambdaForTesting([&run_loop](bool success) {
+          EXPECT_TRUE(success);
+          run_loop->Quit();
+        }));
+    run_loop->Run();
+    EXPECT_EQ(1, GetWallpaperCount());
+    EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
 
-  // Switch to light mode and simulate schedule checkpoint change to reflect
-  // light mode.
-  EXPECT_TRUE(Shell::Get()->dark_light_mode_controller()->IsDarkModeEnabled());
-  Shell::Get()->dark_light_mode_controller()->ToggleColorMode();
-  RunAllTasksUntilIdle();
-  EXPECT_EQ(2, GetWallpaperCount());
-  WallpaperInfo expected = WallpaperInfo(OnlineWallpaperParams(
-      kAccountId1, kAssetId2, GURL(kDummyUrl2),
-      TestWallpaperControllerClient::kDummyCollectionId,
-      WALLPAPER_LAYOUT_CENTER_CROPPED, /*preview_mode=*/false,
-      /*from_user=*/true,
-      /*daily_refresh_enabled=*/false, kUnitId, variants));
-  WallpaperInfo actual;
-  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual));
-  EXPECT_TRUE(actual.MatchesAsset(expected));
+    // Switch to light mode and simulate schedule checkpoint change to reflect
+    // light mode.
+    EXPECT_TRUE(
+        Shell::Get()->dark_light_mode_controller()->IsDarkModeEnabled());
+    Shell::Get()->dark_light_mode_controller()->ToggleColorMode();
+    RunAllTasksUntilIdle();
+    EXPECT_EQ(2, GetWallpaperCount());
+    WallpaperInfo expected = WallpaperInfo(OnlineWallpaperParams(
+        active_account_id, kAssetId2, GURL(kDummyUrl2),
+        TestWallpaperControllerClient::kDummyCollectionId,
+        WALLPAPER_LAYOUT_CENTER_CROPPED, /*preview_mode=*/false,
+        /*from_user=*/true,
+        /*daily_refresh_enabled=*/false, kUnitId, variants));
+    WallpaperInfo actual;
+    EXPECT_TRUE(
+        pref_manager_->GetUserWallpaperInfo(active_account_id, &actual));
+    EXPECT_TRUE(actual.MatchesAsset(expected));
+  }
 }
 
 TEST_F(WallpaperControllerTest,
