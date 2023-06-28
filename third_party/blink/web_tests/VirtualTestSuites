@@ -660,7 +660,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": ["--disable-site-isolation-trials"],
-    "expires": "Jul 1, 2023"
+    "expires": "never"
   },
   {
     "prefix": "not-site-per-process-nonexclusive",
