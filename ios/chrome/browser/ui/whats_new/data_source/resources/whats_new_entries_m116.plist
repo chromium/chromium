@@ -210,9 +210,9 @@
             <string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_STEP_3</string>
             </array>
             <key>HasPrimaryAction</key>
-            <true/>
+            <false/>
             <key>PrimaryActionTitle</key>
-            <string>IDS_IOS_WHATS_NEW_GOT_TO_SETTINGS_BUTTON_TITLE</string>
+            <string></string>
             <key>LearnMoreUrlString</key>
             <string>https://support.google.com/chrome/?p=ios_chrome_actions</string>
         </dict>
