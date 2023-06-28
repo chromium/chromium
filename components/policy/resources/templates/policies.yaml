@@ -1108,6 +1108,22 @@ policies:
   1107: GoogleSearchSidePanelEnabled
   1108: PdfUseSkiaRendererEnabled
   1109: DataUrlInSvgUseEnabled
+  1110: ''
+  1111: ''
+  1112: ''
+  1113: ''
+  1114: ''
+  1115: ''
+  1116: ''
+  1117: ''
+  1118: ''
+  1119: ''
+  1120: ''
+  1121: ''
+  1122: ''
+  1123: ''
+  1124: ''
+  1125: ArcVmDataMigrationStrategy
 atomic_groups:
   1: Homepage
   2: RemoteAccess
