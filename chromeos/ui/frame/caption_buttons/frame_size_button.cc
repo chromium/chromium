@@ -16,6 +16,7 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "chromeos/ui/wm/features.h"
+#include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
@@ -387,7 +388,10 @@ void FrameSizeButton::StateChanged(views::Button::ButtonState old_state) {
   }
 
   // Pie animation will start on both active/inactive window.
-  if (GetState() == views::Button::STATE_HOVERED) {
+  if (aura::client::CursorClient* cursor_client = aura::client::GetCursorClient(
+          GetWidget()->GetNativeWindow()->GetRootWindow());
+      cursor_client && cursor_client->IsCursorVisible() &&
+      GetState() == views::Button::STATE_HOVERED) {
     // On animation end we should show the multitask menu.
     // Note that if the window is not active, after the pie animation this will
     // activate the window.
