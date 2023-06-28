@@ -47,8 +47,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
-import java.util.List;
-
 /**
  * Unit tests for Quick Delete dialog.
  */
@@ -69,10 +67,6 @@ public class QuickDeleteDialogDelegateUnitTest {
     private TabModel mTabModelMock;
     @Mock
     private IdentityManager mIdentityManagerMock;
-    @Mock
-    private QuickDeleteTabsFilter mQuickDeleteTabsFilterMock;
-    @Mock
-    private List<Tab> mClosedTabListMock;
 
     private FakeModalDialogManager mModalDialogManager;
 
@@ -107,9 +101,9 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testCancelQuickDelete() {
         setSignedInStatus(false);
-        new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mQuickDeleteTabsFilterMock)
-                .showDialog();
+        new QuickDeleteDialogDelegate(
+                mActivity, mModalDialogManager, mOnDismissCallbackMock, mTabModelSelectorMock)
+                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData());
 
         mModalDialogManager.clickNegativeButton();
         verify(mOnDismissCallbackMock, times(1))
@@ -120,9 +114,9 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testConfirmQuickDelete() {
         setSignedInStatus(false);
-        new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mQuickDeleteTabsFilterMock)
-                .showDialog();
+        new QuickDeleteDialogDelegate(
+                mActivity, mModalDialogManager, mOnDismissCallbackMock, mTabModelSelectorMock)
+                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData());
 
         mModalDialogManager.clickPositiveButton();
         verify(mOnDismissCallbackMock, times(1))
@@ -133,9 +127,9 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testSearchHistoryDisambiguationNotShown_WhenUserIsSignedOut() {
         setSignedInStatus(false);
-        new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mQuickDeleteTabsFilterMock)
-                .showDialog();
+        new QuickDeleteDialogDelegate(
+                mActivity, mModalDialogManager, mOnDismissCallbackMock, mTabModelSelectorMock)
+                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData());
 
         View dialogView =
                 mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
@@ -150,9 +144,9 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testSearchHistoryDisambiguation_SearchHistoryLink() {
         setSignedInStatus(true);
-        new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mQuickDeleteTabsFilterMock)
-                .showDialog();
+        new QuickDeleteDialogDelegate(
+                mActivity, mModalDialogManager, mOnDismissCallbackMock, mTabModelSelectorMock)
+                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData());
 
         View dialogView =
                 mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
@@ -176,9 +170,9 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testSearchHistoryDisambiguation_OtherActivityLink() {
         setSignedInStatus(true);
-        new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mQuickDeleteTabsFilterMock)
-                .showDialog();
+        new QuickDeleteDialogDelegate(
+                mActivity, mModalDialogManager, mOnDismissCallbackMock, mTabModelSelectorMock)
+                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData());
 
         View dialogView =
                 mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
@@ -201,12 +195,9 @@ public class QuickDeleteDialogDelegateUnitTest {
     @Test
     @SmallTest
     public void testTabsToBeClosed_ZeroTabs_RemovesTheTabsClosedText() {
-        when(mClosedTabListMock.size()).thenReturn(0);
-        when(mQuickDeleteTabsFilterMock.getListOfTabsToBeClosed()).thenReturn(mClosedTabListMock);
-
-        new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mQuickDeleteTabsFilterMock)
-                .showDialog();
+        new QuickDeleteDialogDelegate(
+                mActivity, mModalDialogManager, mOnDismissCallbackMock, mTabModelSelectorMock)
+                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData());
 
         View dialogView =
                 mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
@@ -219,12 +210,10 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testTabsToBeClosed_OneTab_UpdatesTabsClosedText_Singular() {
         final int tabsToBeClosed = 1;
-        when(mClosedTabListMock.size()).thenReturn(tabsToBeClosed);
-        when(mQuickDeleteTabsFilterMock.getListOfTabsToBeClosed()).thenReturn(mClosedTabListMock);
 
-        new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mQuickDeleteTabsFilterMock)
-                .showDialog();
+        new QuickDeleteDialogDelegate(
+                mActivity, mModalDialogManager, mOnDismissCallbackMock, mTabModelSelectorMock)
+                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData(tabsToBeClosed));
 
         View dialogView =
                 mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
@@ -241,12 +230,10 @@ public class QuickDeleteDialogDelegateUnitTest {
     @SmallTest
     public void testTabsToBeClosed_MultipleTab_UpdatesTabsClosedText_Plural() {
         final int tabsToBeClosed = 2;
-        when(mClosedTabListMock.size()).thenReturn(tabsToBeClosed);
-        when(mQuickDeleteTabsFilterMock.getListOfTabsToBeClosed()).thenReturn(mClosedTabListMock);
 
-        new QuickDeleteDialogDelegate(mActivity, mModalDialogManager, mOnDismissCallbackMock,
-                mTabModelSelectorMock, mQuickDeleteTabsFilterMock)
-                .showDialog();
+        new QuickDeleteDialogDelegate(
+                mActivity, mModalDialogManager, mOnDismissCallbackMock, mTabModelSelectorMock)
+                .showDialog(new QuickDeleteDialogDelegate.QuickDeleteDialogData(tabsToBeClosed));
 
         View dialogView =
                 mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);

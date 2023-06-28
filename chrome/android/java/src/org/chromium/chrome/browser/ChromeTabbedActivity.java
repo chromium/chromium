@@ -2298,12 +2298,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     QuickDeleteMetricsDelegate.QuickDeleteAction.MENU_ITEM_CLICKED);
 
             ViewStub animationStub = findViewById(R.id.quick_delete_animation_stub);
-            QuickDeleteController quickDeleteController = new QuickDeleteController(this,
-                    new QuickDeleteDelegateImpl(), getModalDialogManager(), getSnackbarManager(),
-                    getLayoutManager(), mTabModelSelector,
+            new QuickDeleteController(this, new QuickDeleteDelegateImpl(), getModalDialogManager(),
+                    getSnackbarManager(), getLayoutManager(), mTabModelSelector,
                     animationStub != null ? animationStub.inflate()
                                           : findViewById(R.id.quick_delete_animation_layout));
-            quickDeleteController.triggerQuickDeleteFlow();
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu);
         }

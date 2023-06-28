@@ -62,11 +62,17 @@ public class QuickDeleteController {
         mLayoutManager = layoutManager;
         mDeleteTabsFilter =
                 new QuickDeleteTabsFilter(tabModelSelector.getModel(/*incognito=*/false));
-        mDialogDelegate = new QuickDeleteDialogDelegate(context, modalDialogManager,
-                this::onDialogDismissed, tabModelSelector, mDeleteTabsFilter);
+        mDialogDelegate = new QuickDeleteDialogDelegate(
+                context, modalDialogManager, this::onDialogDismissed, tabModelSelector);
 
         mAnimationView = animationView;
         mAnimationView.setBackgroundResource(R.drawable.quick_delete_animation);
+
+        // TODO(crbug.com/1412087): Fetch the domain related data.
+        QuickDeleteDialogDelegate.QuickDeleteDialogData data =
+                new QuickDeleteDialogDelegate.QuickDeleteDialogData(
+                        mDeleteTabsFilter.getListOfTabsToBeClosed().size());
+        mDialogDelegate.showDialog(data);
     }
 
     /**
@@ -74,13 +80,6 @@ public class QuickDeleteController {
      */
     public static boolean isQuickDeleteEnabled() {
         return sQuickDeleteForAndroidFlag.isEnabled();
-    }
-
-    /**
-     * A method responsible for triggering the quick delete flow.
-     */
-    public void triggerQuickDeleteFlow() {
-        mDialogDelegate.showDialog();
     }
 
     /**

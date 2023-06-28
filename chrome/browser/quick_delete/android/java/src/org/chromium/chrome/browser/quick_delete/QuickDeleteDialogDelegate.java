@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -40,7 +41,6 @@ class QuickDeleteDialogDelegate {
     private final @NonNull Context mContext;
     private final @NonNull Callback<Integer> mOnDismissCallback;
     private final @NonNull TabModelSelector mTabModelSelector;
-    private final @NonNull QuickDeleteTabsFilter mQuickDeleteTabsFilter;
     /**The {@link PropertyModel} of the underlying dialog where the quick dialog view would be
      * shown.*/
     private PropertyModel mModalDialogPropertyModel;
@@ -68,6 +68,28 @@ class QuickDeleteDialogDelegate {
             };
 
     /**
+     * Stores the data needed for the dialog.
+     *
+     * TODO(crbug.com/1412087): Update the class to include domain related data.
+     */
+    static class QuickDeleteDialogData {
+        private final int mTabsToCloseCount;
+
+        /**
+         * @param tabsToCloseCount the count of tabs that the user visited within range and will
+         *         be closed with the deletion.
+         */
+        QuickDeleteDialogData(int tabsToCloseCount) {
+            mTabsToCloseCount = tabsToCloseCount;
+        }
+
+        @VisibleForTesting
+        QuickDeleteDialogData() {
+            mTabsToCloseCount = 0;
+        }
+    }
+
+    /**
      * @param context               The associated {@link Context}.
      * @param modalDialogManager    A {@link ModalDialogManager} responsible for showing the quick
      *                              delete modal dialog.
@@ -76,28 +98,23 @@ class QuickDeleteDialogDelegate {
      *                              cancels the deletion;
      * @param tabModelSelector      {@link TabModelSelector} to use for opening the links in search
      *                              history disambiguation notice.
-     * @param quickDeleteTabsFilter {@link QuickDeleteTabsFilter} which is used to get the list of
-     *         tabs which would be closed.
      */
     QuickDeleteDialogDelegate(@NonNull Context context,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull Callback<Integer> onDismissCallback,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull QuickDeleteTabsFilter quickDeleteTabsFilter) {
+            @NonNull TabModelSelector tabModelSelector) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mOnDismissCallback = onDismissCallback;
         mTabModelSelector = tabModelSelector;
-        mQuickDeleteTabsFilter = quickDeleteTabsFilter;
     }
 
     /**
      * A method to create the dialog attributes for the quick delete dialog.
-     *
-     * TODO(crbug.com/1412087): Update the browsing history text as per the mocks and update the
-     * screenshot for Quick Delete strings in android_chrome_strings.grd
+     * @param quickDeleteDialogData The dialog related data.
      */
-    private PropertyModel createQuickDeleteDialogProperty() {
+    private PropertyModel createQuickDeleteDialogProperty(
+            @NonNull QuickDeleteDialogData quickDeleteDialogData) {
         View quickDeleteDialogView =
                 LayoutInflater.from(mContext).inflate(R.layout.quick_delete_dialog, /*root=*/null);
 
@@ -109,7 +126,7 @@ class QuickDeleteDialogDelegate {
         // Add the tabs close row.
         TextViewWithCompoundDrawables quickDeleteTabsCloseRow =
                 quickDeleteDialogView.findViewById(R.id.quick_delete_tabs_close_row);
-        addTabsCloseRowIfAvailable(quickDeleteTabsCloseRow);
+        addTabsCloseRowIfAvailable(quickDeleteTabsCloseRow, quickDeleteDialogData);
 
         // Add search history disambiguation notice.
         TextViewWithClickableSpans searchHistoryDisambiguation =
@@ -161,14 +178,14 @@ class QuickDeleteDialogDelegate {
     /**
      * Checks whether the user has any tabs in range to close and updates the views accordingly.
      * @param row The tabs close row view.
+     * @param data The dialog related data.
      */
-    private void addTabsCloseRowIfAvailable(@NonNull TextViewWithCompoundDrawables row) {
-        final int countOfTabsToBeClosed = mQuickDeleteTabsFilter.getListOfTabsToBeClosed().size();
-
-        if (countOfTabsToBeClosed > 0) {
+    private void addTabsCloseRowIfAvailable(
+            @NonNull TextViewWithCompoundDrawables row, @NonNull QuickDeleteDialogData data) {
+        if (data.mTabsToCloseCount > 0) {
             String tabDescription = mContext.getResources().getQuantityString(
-                    R.plurals.quick_delete_dialog_tabs_closed_text, countOfTabsToBeClosed,
-                    countOfTabsToBeClosed);
+                    R.plurals.quick_delete_dialog_tabs_closed_text, data.mTabsToCloseCount,
+                    data.mTabsToCloseCount);
             row.setText(tabDescription);
         } else {
             row.setVisibility(View.GONE);
@@ -226,9 +243,10 @@ class QuickDeleteDialogDelegate {
 
     /**
      * Shows the Quick delete dialog.
+     * @param quickDeleteDialogData The dialog related data.
      */
-    void showDialog() {
-        mModalDialogPropertyModel = createQuickDeleteDialogProperty();
+    void showDialog(@NonNull QuickDeleteDialogData quickDeleteDialogData) {
+        mModalDialogPropertyModel = createQuickDeleteDialogProperty(quickDeleteDialogData);
         mModalDialogManager.showDialog(
                 mModalDialogPropertyModel, ModalDialogManager.ModalDialogType.APP);
     }
