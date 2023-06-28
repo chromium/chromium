@@ -374,6 +374,14 @@ void ExtensionsMenuViewController::OnSiteSettingsToggleButtonPressed(
       ->SetReloadRequired(site_setting);
   PermissionsManager::Get(browser_->profile())
       ->UpdateUserSiteSetting(origin, site_setting);
+
+  if (is_on) {
+    base::RecordAction(
+        base::UserMetricsAction("Extensions.Menu.AllowByExtensionSelected"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("Extensions.Menu.ExtensionsBlockedSelected"));
+  }
 }
 
 void ExtensionsMenuViewController::OnExtensionToggleSelected(

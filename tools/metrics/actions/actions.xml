@@ -8912,6 +8912,26 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Extensions.Menu.AllowByExtensionSelected">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user interacted with the &quot;site settings&quot; toggle in the
+    extensions menu to allow site access by extension on the current site. This
+    is recorded for both keyboard and mouse activations.
+  </description>
+</action>
+
+<action name="Extensions.Menu.ExtensionsBlockedSelected">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user interacted with the &quot;site settings&quot; toggle in the
+    extensions menu to block all extensions on the current site. This is
+    recorded for both keyboard and mouse activations.
+  </description>
+</action>
+
 <action name="Extensions.Menu.OnAllSitesSelected">
   <owner>emiliapaz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
