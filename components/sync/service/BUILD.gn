@@ -27,6 +27,8 @@ static_library("service") {
     "glue/sync_engine_impl.h",
     "glue/sync_transport_data_prefs.cc",
     "glue/sync_transport_data_prefs.h",
+    "history_sync_session_durations_metrics_recorder.cc",
+    "history_sync_session_durations_metrics_recorder.h",
     "model_load_manager.cc",
     "model_load_manager.h",
     "model_type_controller.cc",

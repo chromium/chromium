@@ -719,6 +719,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.TotalDurationMax1Day.WithHistorySync" units="ms"
+    expires_after="2024-06-15">
+  <owner>mastiz@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    The amount of active browsing time that was spent with history sync enabled.
+    This means the user opted in to sync and did not disable history, OR (on
+    supported platforms) the user is signed-in and specifically opted in to
+    history. If history is disabled by enterprise policy, that counts as
+    &quot;not opted in&quot;.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their history sync
+    status changes. These end-points are when the metric is emitted. For details
+    on how &quot;stopped interacting with the browser&quot; is decided, see the
+    description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+  </summary>
+</histogram>
+
 <histogram name="Session.TotalDurationMax1Day.WithoutAccount" units="ms"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
@@ -761,6 +794,37 @@ chromium-metrics-reviews@google.com.
 
     This histogram is of special interest to the chrome-signin-team@. Do not
     change its semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Session.TotalDurationMax1Day.WithoutHistorySync" units="ms"
+    expires_after="2024-06-15">
+  <owner>mastiz@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    The amount of active browsing time that was spent with history sync NOT
+    enabled. See the description of Session.TotalDurationMax1Day.WithHistorySync
+    for what exactly &quot;history sync enabled&quot; means.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their history sync
+    status changes. These end-points are when the metric is emitted. For details
+    on how &quot;stopped interacting with the browser&quot; is decided, see the
+    description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
   </summary>
 </histogram>
 
