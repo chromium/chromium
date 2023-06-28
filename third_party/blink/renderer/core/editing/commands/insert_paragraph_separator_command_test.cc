@@ -116,7 +116,8 @@ TEST_F(InsertParagraphSeparatorCommandTest, CrashWithObjectWithFloat) {
       SetSelectionOptions());
   base::RunLoop().RunUntilIdle();  // prepare <object> fallback content
 
-  Element& object_element = *GetDocument().QuerySelector("object");
+  Element& object_element =
+      *GetDocument().QuerySelector(AtomicString("object"));
   object_element.appendChild(Text::Create(GetDocument(), "XYZ"));
 
   auto* command =

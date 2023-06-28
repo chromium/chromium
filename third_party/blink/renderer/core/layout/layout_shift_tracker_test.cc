@@ -97,8 +97,9 @@ TEST_F(LayoutShiftTrackerTest, IgnoreSVG) {
               stroke="black" stroke-width="3" fill="red" />
     </svg>
   )HTML");
-  GetDocument().QuerySelector("circle")->setAttribute(svg_names::kCxAttr,
-                                                      AtomicString("100"));
+  GetDocument()
+      .QuerySelector(AtomicString("circle"))
+      ->setAttribute(svg_names::kCxAttr, AtomicString("100"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 }

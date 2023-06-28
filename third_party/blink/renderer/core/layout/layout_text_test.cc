@@ -1127,7 +1127,7 @@ TEST_F(LayoutTextTest, PhysicalLinesBoundingBoxVerticalRL) {
 TEST_F(LayoutTextTest, WordBreakElement) {
   SetBasicBody("foo <wbr> bar");
 
-  const Element* wbr = GetDocument().QuerySelector("wbr");
+  const Element* wbr = GetDocument().QuerySelector(AtomicString("wbr"));
   DCHECK(wbr->GetLayoutObject()->IsText());
   const auto* layout_wbr = To<LayoutText>(wbr->GetLayoutObject());
 

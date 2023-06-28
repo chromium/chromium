@@ -134,7 +134,7 @@ TEST_F(CSSComputedStyleDeclarationTest, SVGBlockSizeLayoutDependent) {
     </svg>
   )HTML");
 
-  Element* rect = GetDocument().QuerySelector("rect");
+  Element* rect = GetDocument().QuerySelector(AtomicString("rect"));
   auto* computed = MakeGarbageCollected<CSSComputedStyleDeclaration>(rect);
 
   EXPECT_EQ("400px", computed->GetPropertyValue(CSSPropertyID::kBlockSize));
@@ -153,7 +153,7 @@ TEST_F(CSSComputedStyleDeclarationTest, SVGInlineSizeLayoutDependent) {
     </svg>
   )HTML");
 
-  Element* rect = GetDocument().QuerySelector("rect");
+  Element* rect = GetDocument().QuerySelector(AtomicString("rect"));
   auto* computed = MakeGarbageCollected<CSSComputedStyleDeclaration>(rect);
 
   EXPECT_EQ("400px", computed->GetPropertyValue(CSSPropertyID::kInlineSize));

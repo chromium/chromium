@@ -664,7 +664,7 @@ TEST_F(TextPaintTimingDetectorTest, TreatEllipsisAsText) {
 
 TEST_F(TextPaintTimingDetectorTest, CaptureFileUploadController) {
   SetBodyInnerHTML("<input type='file'>");
-  Element* element = GetDocument().QuerySelector("input");
+  Element* element = GetDocument().QuerySelector(AtomicString("input"));
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
 
   EXPECT_EQ(CountRecordedSize(), 1u);
@@ -691,7 +691,8 @@ TEST_F(TextPaintTimingDetectorTest, CaptureSVGText) {
     </svg>
   )HTML");
 
-  auto* elem = To<SVGTextContentElement>(GetDocument().QuerySelector("text"));
+  auto* elem = To<SVGTextContentElement>(
+      GetDocument().QuerySelector(AtomicString("text")));
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
   EXPECT_EQ(CountRecordedSize(), 1u);
   EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, elem);

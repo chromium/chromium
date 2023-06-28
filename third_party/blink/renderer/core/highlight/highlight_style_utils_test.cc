@@ -177,9 +177,10 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextInputShadow) {
 
   Compositor().BeginFrame();
 
-  auto* text_node = To<HTMLInputElement>(GetDocument().QuerySelector("input"))
-                        ->InnerEditorElement()
-                        ->firstChild();
+  auto* text_node =
+      To<HTMLInputElement>(GetDocument().QuerySelector(AtomicString("input")))
+          ->InnerEditorElement()
+          ->firstChild();
   const ComputedStyle& text_style = text_node->ComputedStyleRef();
 
   std::unique_ptr<PaintController> controller{

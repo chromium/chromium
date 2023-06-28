@@ -88,7 +88,7 @@ TEST_F(SelectionSampleTest, SetEmpty2) {
 TEST_F(SelectionSampleTest, SetElement) {
   const SelectionInDOMTree& selection = SelectionSample::SetSelectionText(
       GetDocument().body(), "<p>^<a>0</a>|<b>1</b></p>");
-  const Element* const sample = GetDocument().QuerySelector("p");
+  const Element* const sample = GetDocument().QuerySelector(AtomicString("p"));
   EXPECT_EQ(2u, sample->CountChildren())
       << "We should remove Text node for '^' and '|'.";
   EXPECT_EQ(SelectionInDOMTree::Builder()
@@ -374,9 +374,10 @@ TEST_F(SelectionSampleTest, TraverseShadowContentWithSlot) {
       Position(GetDocument().getElementById(AtomicString("host"))->firstChild(),
                0),
       selection.Base());
-  EXPECT_EQ(
-      Position(shadow_root->QuerySelector("[name=slot1]")->firstChild(), 4),
-      selection.Extent());
+  EXPECT_EQ(Position(shadow_root->QuerySelector(AtomicString("[name=slot1]"))
+                         ->firstChild(),
+                     4),
+            selection.Extent());
 }
 
 TEST_F(SelectionSampleTest, TraverseMultipleShadowContents) {

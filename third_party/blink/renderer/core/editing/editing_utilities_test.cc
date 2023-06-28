@@ -179,7 +179,8 @@ TEST_F(EditingUtilitiesTest,
       "345</div>");
   const auto& sample = *GetElementById("sample");
   const auto& text_012 = *To<Text>(sample.firstChild());
-  const auto& input = ToTextControl(*GetDocument().QuerySelector("input"));
+  const auto& input =
+      ToTextControl(*GetDocument().QuerySelector(AtomicString("input")));
   const auto& inner_editor = *input.InnerEditorElement();
   const auto& text_abc = *To<Text>(inner_editor.firstChild());
 
@@ -212,7 +213,8 @@ TEST_F(EditingUtilitiesTest,
       "345</div>");
   const auto& sample = *GetElementById("sample");
   const auto& text_012 = *To<Text>(sample.firstChild());
-  const auto& input = ToTextControl(*GetDocument().QuerySelector("input"));
+  const auto& input =
+      ToTextControl(*GetDocument().QuerySelector(AtomicString("input")));
   const auto& inner_editor = *input.InnerEditorElement();
   const auto& text_abc = *To<Text>(inner_editor.firstChild());
 
@@ -246,7 +248,8 @@ TEST_F(EditingUtilitiesTest,
       "345</div>");
   const auto& sample = *GetElementById("sample");
   const auto& text_012 = *To<Text>(sample.firstChild());
-  const auto& input = ToTextControl(*GetDocument().QuerySelector("input"));
+  const auto& input =
+      ToTextControl(*GetDocument().QuerySelector(AtomicString("input")));
   const auto& inner_editor = *input.InnerEditorElement();
   const auto& text_abc = *To<Text>(inner_editor.firstChild());
 
@@ -968,7 +971,7 @@ TEST_F(EditingUtilitiesTest, previousPositionOf_Backspace_TextTransform) {
 
 TEST_F(EditingUtilitiesTest, IsTabHTMLSpanElementOnDisplayNone) {
   SetBodyContent("<span style=\"display:none\">\t</span>");
-  const Node* const node = GetDocument().QuerySelector("span");
+  const Node* const node = GetDocument().QuerySelector(AtomicString("span"));
   EXPECT_EQ(false, IsTabHTMLSpanElement(node));
 }
 

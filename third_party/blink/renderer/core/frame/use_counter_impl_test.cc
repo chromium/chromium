@@ -498,7 +498,8 @@ TEST_F(UseCounterImplTest, CSSSelectorHostContextInSnapshotProfile) {
   UpdateAllLifecyclePhases(document);
   EXPECT_FALSE(document.IsUseCounted(feature));
 
-  Element* span = shadow_root.QuerySelector(":host-context(#parent) span");
+  Element* span =
+      shadow_root.QuerySelector(AtomicString(":host-context(#parent) span"));
   EXPECT_TRUE(span);
   EXPECT_TRUE(document.IsUseCounted(feature));
 }

@@ -363,9 +363,9 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
   };
 
   Element& body = *GetDocument().body();
-  Element& none = *body.QuerySelector("none");
-  Element& bar = *body.QuerySelector("bar");
-  Element& def = *body.QuerySelector("default");
+  Element& none = *body.QuerySelector(AtomicString("none"));
+  Element& bar = *body.QuerySelector(AtomicString("bar"));
+  Element& def = *body.QuerySelector(AtomicString("default"));
   AtomicString defNs = "http://example.org/default";
 
   // Cases that only make sense without a default @namespace.

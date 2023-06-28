@@ -183,7 +183,7 @@ TEST_F(CounterStyleMapTest, UpdateReferencesInChildScope) {
   const CounterStyle& bar = GetCounterStyle(shadow, "bar");
   EXPECT_EQ(&foo, &bar.GetExtendedStyle());
 
-  GetDocument().QuerySelector("style")->remove();
+  GetDocument().QuerySelector(AtomicString("style"))->remove();
   UpdateAllLifecyclePhasesForTest();
 
   // After counter style rule changes in the parent scope, the original

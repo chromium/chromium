@@ -62,9 +62,9 @@ TEST_F(SelectMenuPartTraversalTest, Siblings) {
     <selectmenu></selectmenu>)");
 
   Element* body = GetDocument().body();
-  Element* c0 = body->QuerySelector("#c0");
-  Element* c1 = body->QuerySelector("#c1");
-  Element* c2 = body->QuerySelector("#c2");
+  Element* c0 = body->QuerySelector(AtomicString("#c0"));
+  Element* c1 = body->QuerySelector(AtomicString("#c1"));
+  Element* c2 = body->QuerySelector(AtomicString("#c2"));
 
   EXPECT_EQ(c0, SelectMenuPartTraversal::FirstChild(*body));
   EXPECT_EQ(c2, SelectMenuPartTraversal::LastChild(*body));
@@ -92,11 +92,11 @@ TEST_F(SelectMenuPartTraversalTest, IsDescendantOf) {
     </select>)");
 
   Element* body = GetDocument().body();
-  Element* c0 = body->QuerySelector("#c0");
-  Element* c1 = body->QuerySelector("#c1");
-  Element* c2 = body->QuerySelector("#c2");
-  Element* c3 = body->QuerySelector("#c3");
-  Element* c4 = body->QuerySelector("#c4");
+  Element* c0 = body->QuerySelector(AtomicString("#c0"));
+  Element* c1 = body->QuerySelector(AtomicString("#c1"));
+  Element* c2 = body->QuerySelector(AtomicString("#c2"));
+  Element* c3 = body->QuerySelector(AtomicString("#c3"));
+  Element* c4 = body->QuerySelector(AtomicString("#c4"));
 
   EXPECT_FALSE(SelectMenuPartTraversal::IsDescendantOf(*body, *body));
   EXPECT_FALSE(SelectMenuPartTraversal::IsDescendantOf(*c0, *body));
@@ -132,9 +132,9 @@ TEST_F(SelectMenuPartTraversalTest, NextPrevious) {
     </div>)");
 
   Element* body = GetDocument().body();
-  Element* c1 = body->QuerySelector("#c1");
-  Element* c2 = body->QuerySelector("#c2");
-  Element* c3 = body->QuerySelector("#c3");
+  Element* c1 = body->QuerySelector(AtomicString("#c1"));
+  Element* c2 = body->QuerySelector(AtomicString("#c2"));
+  Element* c3 = body->QuerySelector(AtomicString("#c3"));
 
   EXPECT_EQ(nullptr, SelectMenuPartTraversal::Previous(*c1, body));
   EXPECT_EQ(body, SelectMenuPartTraversal::Previous(*c1, nullptr));

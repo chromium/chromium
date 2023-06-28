@@ -230,9 +230,9 @@ TEST_F(InsertListCommandTest, NonCanonicalVisiblePosition) {
   SetBodyInnerHTML(
       "<textarea></textarea><svg></svg><select></select><div><input></div>");
   const Position& base =
-      Position::BeforeNode(*document.QuerySelector("select"));
+      Position::BeforeNode(*document.QuerySelector(AtomicString("select")));
   const Position& extent =
-      Position::AfterNode(*document.QuerySelector("input"));
+      Position::AfterNode(*document.QuerySelector(AtomicString("input")));
   Selection().SetSelection(
       SelectionInDOMTree::Builder().Collapse(base).Extend(extent).Build(),
       SetSelectionOptions());

@@ -2774,7 +2774,7 @@ TEST_P(ScrollingSimTest, CompositedStickyTracksMainRepaintScroll) {
   )HTML");
 
   Compositor().BeginFrame(0.016, /* raster */ true);
-  Element* scroller = GetDocument().QuerySelector(".scroller");
+  Element* scroller = GetDocument().QuerySelector(AtomicString(".scroller"));
   LayoutBox* box = To<LayoutBox>(scroller->GetLayoutObject());
   EXPECT_EQ(0, GetActiveScrollOffset(box->GetScrollableArea()).y());
 
@@ -2814,7 +2814,7 @@ TEST_P(ScrollingSimTest, CompositedStickyTracksMainRepaintScroll) {
   auto* lthi = GetLayerTreeHostImpl();
   lthi->PrepareToDraw(&frame);
 
-  Element* sticky = GetDocument().QuerySelector(".sticky");
+  Element* sticky = GetDocument().QuerySelector(AtomicString(".sticky"));
   cc::ElementId sticky_translation = CompositorElementIdFromUniqueObjectId(
       sticky->GetLayoutObject()->UniqueId(),
       CompositorElementIdNamespace::kStickyTranslation);

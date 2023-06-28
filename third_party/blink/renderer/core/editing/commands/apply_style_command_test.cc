@@ -37,7 +37,7 @@ TEST_F(ApplyStyleCommandTest, RemoveRedundantBlocksWithStarEditableStyle) {
       "</li>"
       "</ul></div></div>");
 
-  Element* li = GetDocument().QuerySelector("li");
+  Element* li = GetDocument().QuerySelector(AtomicString("li"));
 
   LocalFrame* frame = GetDocument().GetFrame();
   frame->Selection().SetSelection(
@@ -166,7 +166,8 @@ TEST_F(ApplyStyleCommandTest, StyledInlineElementIsActuallyABlock) {
   Selection().SetSelection(SetSelectionTextToBody("^<sub>a</sub>|"),
                            SetSelectionOptions());
   GetDocument().setDesignMode("on");
-  Element* styled_inline_element = GetDocument().QuerySelector("sub");
+  Element* styled_inline_element =
+      GetDocument().QuerySelector(AtomicString("sub"));
   bool remove_only = true;
   // Shouldn't crash.
   MakeGarbageCollected<ApplyStyleCommand>(styled_inline_element, remove_only)
@@ -180,8 +181,8 @@ TEST_F(ApplyStyleCommandTest, ItalicCrossingIgnoredContentBoundary) {
   SetBodyContent("a<select multiple><option></option></select>b");
 
   Element* body = GetDocument().body();
-  Element* select = GetDocument().QuerySelector("select");
-  Element* option = GetDocument().QuerySelector("option");
+  Element* select = GetDocument().QuerySelector(AtomicString("select"));
+  Element* option = GetDocument().QuerySelector(AtomicString("option"));
   EXPECT_FALSE(EditingIgnoresContent(*body));
   EXPECT_TRUE(EditingIgnoresContent(*select));
   EXPECT_FALSE(EditingIgnoresContent(*option));
@@ -216,8 +217,8 @@ TEST_F(ApplyStyleCommandTest, RemoveEmptyItalic) {
   InsertStyleElement("i {display: inline-block; width: 1px; height: 1px}");
   SetBodyContent("<div><input><i></i>&#x20;</div>A");
 
-  Element* div = GetDocument().QuerySelector("div");
-  Element* i = GetDocument().QuerySelector("i");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* i = GetDocument().QuerySelector(AtomicString("i"));
   Selection().SetSelection(
       SelectionInDOMTree::Builder().Collapse(Position(i, 0)).Build(),
       SetSelectionOptions());

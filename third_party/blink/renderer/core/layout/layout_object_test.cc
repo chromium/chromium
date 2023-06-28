@@ -1053,27 +1053,27 @@ TEST_F(LayoutObjectTest, HasDistortingVisualEffects) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* outer = GetDocument().getElementById(AtomicString("opaque"));
-  Element* inner = outer->QuerySelector(".inner");
+  Element* inner = outer->QuerySelector(AtomicString(".inner"));
   ASSERT_FALSE(inner->GetLayoutObject()->HasDistortingVisualEffects());
 
   outer = GetDocument().getElementById(AtomicString("transparent"));
-  inner = outer->QuerySelector(".inner");
+  inner = outer->QuerySelector(AtomicString(".inner"));
   ASSERT_TRUE(inner->GetLayoutObject()->HasDistortingVisualEffects());
 
   outer = GetDocument().getElementById(AtomicString("blurred"));
-  inner = outer->QuerySelector(".inner");
+  inner = outer->QuerySelector(AtomicString(".inner"));
   ASSERT_TRUE(inner->GetLayoutObject()->HasDistortingVisualEffects());
 
   outer = GetDocument().getElementById(AtomicString("blended"));
-  inner = outer->QuerySelector(".inner");
+  inner = outer->QuerySelector(AtomicString(".inner"));
   ASSERT_TRUE(inner->GetLayoutObject()->HasDistortingVisualEffects());
 
   outer = GetDocument().getElementById(AtomicString("good-transform"));
-  inner = outer->QuerySelector(".inner");
+  inner = outer->QuerySelector(AtomicString(".inner"));
   ASSERT_FALSE(inner->GetLayoutObject()->HasDistortingVisualEffects());
 
   outer = GetDocument().getElementById(AtomicString("bad-transform"));
-  inner = outer->QuerySelector(".inner");
+  inner = outer->QuerySelector(AtomicString(".inner"));
   ASSERT_TRUE(inner->GetLayoutObject()->HasDistortingVisualEffects());
 }
 
@@ -1142,7 +1142,7 @@ TEST_F(LayoutObjectSimTest, TouchActionUpdatesSubframeEventHandler) {
       "<div id='inner'></div>"
       "</body></html>");
 
-  Element* iframe_element = GetDocument().QuerySelector("iframe");
+  Element* iframe_element = GetDocument().QuerySelector(AtomicString("iframe"));
   auto* frame_owner_element = To<HTMLFrameOwnerElement>(iframe_element);
   Document* iframe_doc = frame_owner_element->contentDocument();
   Element* inner = iframe_doc->getElementById(AtomicString("inner"));
@@ -1194,7 +1194,7 @@ TEST_F(LayoutObjectSimTest, HitTestForOcclusionInIframe) {
   )HTML");
 
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  Element* iframe_element = GetDocument().QuerySelector("iframe");
+  Element* iframe_element = GetDocument().QuerySelector(AtomicString("iframe"));
   auto* frame_owner_element = To<HTMLFrameOwnerElement>(iframe_element);
   Document* iframe_doc = frame_owner_element->contentDocument();
   Element* target = iframe_doc->getElementById(AtomicString("target"));

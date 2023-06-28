@@ -653,7 +653,7 @@ class RuleSetCascadeLayerTest : public SimTest {
  protected:
   const RuleSet& GetRuleSet() {
     RuleSet& rule_set =
-        To<HTMLStyleElement>(GetDocument().QuerySelector("style"))
+        To<HTMLStyleElement>(GetDocument().QuerySelector(AtomicString("style")))
             ->sheet()
             ->Contents()
             ->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()));

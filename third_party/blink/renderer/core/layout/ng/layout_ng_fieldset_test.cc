@@ -20,7 +20,8 @@ TEST_F(LayoutNGFieldsetTest, AddChildWhitespaceCrash) {
 </fieldset>)HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Node* text = GetDocument().QuerySelector("small")->nextSibling();
+  Node* text =
+      GetDocument().QuerySelector(AtomicString("small"))->nextSibling();
   ASSERT_TRUE(IsA<Text>(text));
   text->remove();
   UpdateAllLifecyclePhasesForTest();

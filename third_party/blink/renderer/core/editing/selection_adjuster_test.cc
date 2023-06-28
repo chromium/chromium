@@ -24,7 +24,8 @@ TEST_F(SelectionAdjusterTest, AdjustShadowToCollpasedInDOMTree) {
 
 TEST_F(SelectionAdjusterTest, AdjustShadowToCollpasedInFlatTree) {
   SetBodyContent("<input value=abc>");
-  const auto& input = ToTextControl(*GetDocument().QuerySelector("input"));
+  const auto& input =
+      ToTextControl(*GetDocument().QuerySelector(AtomicString("input")));
   const SelectionInFlatTree& selection =
       SelectionInFlatTree::Builder()
           .Collapse(PositionInFlatTree::AfterNode(input))
@@ -129,8 +130,8 @@ TEST_F(SelectionAdjusterTest, ShadowRootAsRootBoundaryElement) {
   SetBodyContent(body_content);
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
-  Element* foo = shadow_root->QuerySelector("#foo");
-  Element* bar = shadow_root->QuerySelector("#bar");
+  Element* foo = shadow_root->QuerySelector(AtomicString("#foo"));
+  Element* bar = shadow_root->QuerySelector(AtomicString("#bar"));
 
   // DOM tree selection.
   const SelectionInDOMTree& selection =
@@ -170,7 +171,7 @@ TEST_F(SelectionAdjusterTest, ShadowRootAsRootBoundaryElementEditable) {
   ShadowRoot* shadow_root = SetShadowContent(shadow_content, "host");
 
   const Node* foo = shadow_root->firstChild();
-  const Element* bar = shadow_root->QuerySelector("#bar");
+  const Element* bar = shadow_root->QuerySelector(AtomicString("#bar"));
 
   // Select from foo to bar in DOM tree.
   const SelectionInDOMTree& selection =
@@ -249,7 +250,7 @@ TEST_F(SelectionAdjusterTest, ShadowDistributedNodesWithoutEditingBoundary) {
   shadow_root.setInnerHTML(shadow_content);
 
   Element* foo = GetDocument().getElementById(AtomicString("foo"));
-  Element* s1 = shadow_root.QuerySelector("#s1");
+  Element* s1 = shadow_root.QuerySelector(AtomicString("#s1"));
 
   // Select from 111 to foo.
   const SelectionInFlatTree& selection =
@@ -316,8 +317,8 @@ TEST_F(SelectionAdjusterTest, ShadowDistributedNodesWithEditingBoundary) {
 
   Element* foo = GetDocument().getElementById(AtomicString("foo"));
   Element* bar = GetDocument().getElementById(AtomicString("bar"));
-  Element* s1 = shadow_root.QuerySelector("#s1");
-  Element* s2 = shadow_root.QuerySelector("#s2");
+  Element* s1 = shadow_root.QuerySelector(AtomicString("#s1"));
+  Element* s2 = shadow_root.QuerySelector(AtomicString("#s2"));
 
   // Select from 111 to foo.
   const SelectionInFlatTree& selection =
@@ -412,7 +413,7 @@ TEST_F(SelectionAdjusterTest, EditingBoundaryOutsideOfShadowTree) {
   ShadowRoot* shadow_root =
       SetShadowContent("<div id=extent>extent</div>", "host");
   Element* base = GetDocument().getElementById(AtomicString("base"));
-  Element* extent = shadow_root->QuerySelector("#extent");
+  Element* extent = shadow_root->QuerySelector(AtomicString("#extent"));
 
   const SelectionInFlatTree& selection =
       SelectionInFlatTree::Builder()
@@ -448,7 +449,7 @@ TEST_F(SelectionAdjusterTest, EditingBoundaryInsideOfShadowTree) {
                                              "host");
 
   Element* base = GetDocument().getElementById(AtomicString("base"));
-  Element* extent = shadow_root->QuerySelector("#extent");
+  Element* extent = shadow_root->QuerySelector(AtomicString("#extent"));
 
   const SelectionInFlatTree& selection =
       SelectionInFlatTree::Builder()
@@ -483,7 +484,7 @@ TEST_F(SelectionAdjusterTest, ShadowHostAndShadowTreeAreEditable) {
       SetShadowContent("<div contenteditable id=bar>bar</div>", "host");
 
   Element* foo = GetDocument().getElementById(AtomicString("foo"));
-  Element* bar = shadow_root->QuerySelector("#bar");
+  Element* bar = shadow_root->QuerySelector(AtomicString("#bar"));
 
   // Select from foo to bar.
   const SelectionInFlatTree& selection =

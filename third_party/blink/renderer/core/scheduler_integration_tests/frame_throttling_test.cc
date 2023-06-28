@@ -1974,7 +1974,8 @@ TEST_P(FrameThrottlingTest, ClearPaintArtifactOnThrottlingLocalRoot) {
       "<div style='will-change:transform'>Hello, world!</div>");
   CompositeFrame();
   LocalFrameView* view = LocalFrameRoot().GetFrame()->View();
-  Element* div = view->GetFrame().GetDocument()->QuerySelector("div");
+  Element* div =
+      view->GetFrame().GetDocument()->QuerySelector(AtomicString("div"));
   EXPECT_FALSE(
       view->GetPaintControllerForTesting().GetPaintArtifact().IsEmpty());
 

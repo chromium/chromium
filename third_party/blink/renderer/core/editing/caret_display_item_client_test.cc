@@ -618,7 +618,7 @@ TEST_P(CaretDisplayItemClientTest, CaretAtStartInWhiteSpacePreWrapRTL) {
       "<div dir=rtl contenteditable>&#1575;&#1582;&#1578;&#1576;&#1585; "
       "</div>");
 
-  const Element& div = *GetDocument().QuerySelector("div");
+  const Element& div = *GetDocument().QuerySelector(AtomicString("div"));
   const Position& position = Position::FirstPositionInNode(div);
   const PhysicalRect& rect = ComputeCaretRect(PositionWithAffinity(position));
   EXPECT_EQ(94, rect.X());

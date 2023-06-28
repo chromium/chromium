@@ -134,10 +134,10 @@ TEST_F(VisibleUnitsTest, canonicalPositionOfWithHTMLHtmlElement) {
       "contenteditable=false>333</span></html>";
   SetBodyContent(body_content);
 
-  Node* one = GetDocument().QuerySelector("#one");
-  Node* two = GetDocument().QuerySelector("#two");
-  Node* three = GetDocument().QuerySelector("#three");
-  Node* four = GetDocument().QuerySelector("#four");
+  Node* one = GetDocument().QuerySelector(AtomicString("#one"));
+  Node* two = GetDocument().QuerySelector(AtomicString("#two"));
+  Node* three = GetDocument().QuerySelector(AtomicString("#three"));
+  Node* four = GetDocument().QuerySelector(AtomicString("#four"));
   Element* html = GetDocument().CreateRawElement(html_names::kHTMLTag);
   // Move two, three and four into second html element.
   html->AppendChild(two);
@@ -172,7 +172,7 @@ TEST_F(VisibleUnitsTest, canonicalPositionOfWithHTMLHtmlElement) {
 // For http://crbug.com/695317
 TEST_F(VisibleUnitsTest, canonicalPositionOfWithInputElement) {
   SetBodyContent("<input>123");
-  Element* const input = GetDocument().QuerySelector("input");
+  Element* const input = GetDocument().QuerySelector(AtomicString("input"));
 
   EXPECT_EQ(Position::BeforeNode(*input),
             CanonicalPositionOf(Position::FirstPositionInNode(
@@ -195,12 +195,12 @@ TEST_F(VisibleUnitsTest, canonicalPositionOfWithCrossBlockFlowlement) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* const one = GetDocument().QuerySelector("#one");
-  Element* const two = GetDocument().QuerySelector("#two");
-  Element* const three = GetDocument().QuerySelector("#three");
-  Element* const one_span = one->QuerySelector("span");
-  Element* const two_span = two->QuerySelector("span");
-  Element* const three_span = three->QuerySelector("span");
+  Element* const one = GetDocument().QuerySelector(AtomicString("#one"));
+  Element* const two = GetDocument().QuerySelector(AtomicString("#two"));
+  Element* const three = GetDocument().QuerySelector(AtomicString("#three"));
+  Element* const one_span = one->QuerySelector(AtomicString("span"));
+  Element* const two_span = two->QuerySelector(AtomicString("span"));
+  Element* const three_span = three->QuerySelector(AtomicString("span"));
   Position one_text_pos(one_span->firstChild(), 1);
   Position two_text_pos(two_span->firstChild(), 1);
   Position three_text_pos(three_span->firstChild(), 1);
@@ -348,10 +348,10 @@ TEST_F(VisibleUnitsTest, IsVisuallyEquivalentCandidateWithHTMLHtmlElement) {
       "contenteditable=false>333</span></html>";
   SetBodyContent(body_content);
 
-  Node* one = GetDocument().QuerySelector("#one");
-  Node* two = GetDocument().QuerySelector("#two");
-  Node* three = GetDocument().QuerySelector("#three");
-  Node* four = GetDocument().QuerySelector("#four");
+  Node* one = GetDocument().QuerySelector(AtomicString("#one"));
+  Node* two = GetDocument().QuerySelector(AtomicString("#two"));
+  Node* three = GetDocument().QuerySelector(AtomicString("#three"));
+  Node* four = GetDocument().QuerySelector(AtomicString("#four"));
   Element* html = GetDocument().CreateRawElement(html_names::kHTMLTag);
   // Move two, three and four into second html element.
   html->AppendChild(two);
@@ -385,10 +385,10 @@ TEST_F(VisibleUnitsTest, isVisuallyEquivalentCandidateWithHTMLBodyElement) {
       "contenteditable=false>333</span>";
   SetBodyContent(body_content);
 
-  Node* one = GetDocument().QuerySelector("#one");
-  Node* two = GetDocument().QuerySelector("#two");
-  Node* three = GetDocument().QuerySelector("#three");
-  Node* four = GetDocument().QuerySelector("#four");
+  Node* one = GetDocument().QuerySelector(AtomicString("#one"));
+  Node* two = GetDocument().QuerySelector(AtomicString("#two"));
+  Node* three = GetDocument().QuerySelector(AtomicString("#three"));
+  Node* four = GetDocument().QuerySelector(AtomicString("#four"));
   Element* body = GetDocument().CreateRawElement(html_names::kBodyTag);
   Element* empty_body = GetDocument().CreateRawElement(html_names::kBodyTag);
   Element* div = GetDocument().CreateRawElement(html_names::kDivTag);
@@ -853,7 +853,7 @@ TEST_F(VisibleUnitsTest,
       "<button> </button><script>document.designMode = 'on'</script>";
   SetBodyContent(body_content);
 
-  Node* button = GetDocument().QuerySelector("button");
+  Node* button = GetDocument().QuerySelector(AtomicString("button"));
   EXPECT_TRUE(EndsOfNodeAreVisuallyDistinctPositions(button));
 }
 
@@ -864,7 +864,7 @@ TEST_F(VisibleUnitsTest,
       "<button><rt><script>document.designMode = 'on'</script></rt></button>";
   SetBodyContent(body_content);
 
-  Node* button = GetDocument().QuerySelector("button");
+  Node* button = GetDocument().QuerySelector(AtomicString("button"));
   EXPECT_TRUE(EndsOfNodeAreVisuallyDistinctPositions(button));
 }
 
@@ -873,7 +873,7 @@ TEST_F(VisibleUnitsTest,
        canonicalizationWithCollapsedSpaceAndIsolatedCombiningCharacter) {
   SetBodyContent("<p>  &#x20E3;</p>");  // Leading space is necessary
 
-  Node* paragraph = GetDocument().QuerySelector("p");
+  Node* paragraph = GetDocument().QuerySelector(AtomicString("p"));
   Node* text = paragraph->firstChild();
   Position start = CanonicalPositionOf(Position::BeforeNode(*paragraph));
   EXPECT_EQ(Position(text, 2), start);
@@ -883,14 +883,15 @@ TEST_F(VisibleUnitsTest, MostForwardCaretPositionWithInvisibleFirstLetter) {
   InsertStyleElement("div::first-letter{visibility:hidden}");
   // Use special syntax to set input position DIV@0
   const Position position = SetCaretTextToBody("<div><!--|-->foo</div>");
-  const Node* foo = GetDocument().QuerySelector("div")->firstChild();
+  const Node* foo =
+      GetDocument().QuerySelector(AtomicString("div"))->firstChild();
   EXPECT_EQ(Position(foo, 1), MostForwardCaretPosition(position));
 }
 
 // Regression test for crbug.com/1172091
 TEST_F(VisibleUnitsTest, MostBackwardOrForwardCaretPositionWithBrInOptgroup) {
   SetBodyContent("<optgroup><br></optgroup>");
-  Node* br = GetDocument().QuerySelector("br");
+  Node* br = GetDocument().QuerySelector(AtomicString("br"));
   const Position& before = Position::BeforeNode(*br);
   EXPECT_EQ(before, MostBackwardCaretPosition(before));
   EXPECT_EQ(before, MostForwardCaretPosition(before));
@@ -923,7 +924,7 @@ TEST_F(VisibleUnitsTest, SnapBackwardWithZeroWidthSpace) {
 TEST_F(VisibleUnitsTest, SnapForwardWithImg) {
   SetBodyContent("<img>");
   const auto& body = *GetDocument().body();
-  const auto& img = *GetDocument().QuerySelector("img");
+  const auto& img = *GetDocument().QuerySelector(AtomicString("img"));
 
   EXPECT_EQ(Position::BeforeNode(img),
             MostForwardCaretPosition(Position::FirstPositionInNode(body)));
@@ -942,7 +943,7 @@ TEST_F(VisibleUnitsTest, SnapForwardWithImg) {
 TEST_F(VisibleUnitsTest, SnapForwardWithInput) {
   SetBodyContent("<input>");
   const auto& body = *GetDocument().body();
-  const auto& input = *GetDocument().QuerySelector("input");
+  const auto& input = *GetDocument().QuerySelector(AtomicString("input"));
 
   EXPECT_EQ(Position::BeforeNode(input),
             MostForwardCaretPosition(Position::FirstPositionInNode(body)));
@@ -965,7 +966,7 @@ TEST_F(VisibleUnitsTest, SnapForwardWithSelect) {
       "<select><option>1</option><option>2</option><option>3</option></"
       "select>");
   const auto& body = *GetDocument().body();
-  const auto& select = *GetDocument().QuerySelector("select");
+  const auto& select = *GetDocument().QuerySelector(AtomicString("select"));
 
   EXPECT_EQ(Position::BeforeNode(select),
             MostForwardCaretPosition(Position(body, 0)));
@@ -1027,9 +1028,9 @@ TEST_F(VisibleUnitsTest, SnapForwardWithSelect) {
 // From ReplaceSelectionCommandTest.TableAndImages)
 TEST_F(VisibleUnitsTest, SnapForwardWithTableAndImages) {
   SetBodyContent("<table> <tbody></tbody> </table>");
-  const auto& table = *GetDocument().QuerySelector("table");
+  const auto& table = *GetDocument().QuerySelector(AtomicString("table"));
   const auto& body = *GetDocument().body();
-  auto& tbody = *GetDocument().QuerySelector("tbody");
+  auto& tbody = *GetDocument().QuerySelector(AtomicString("tbody"));
   auto& img1 = *GetDocument().CreateRawElement(html_names::kImgTag);
   tbody.AppendChild(&img1);
   auto& img2 = *GetDocument().CreateRawElement(html_names::kImgTag);

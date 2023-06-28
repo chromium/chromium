@@ -204,8 +204,8 @@ TEST_F(LayoutInlineTest, RelativePositionedHitTest) {
   const PhysicalOffset hit_location(18, 15);
   HitTestLocation location(hit_location);
 
-  Element* div = GetDocument().QuerySelector("div");
-  Element* span = GetDocument().QuerySelector("span");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* span = GetDocument().QuerySelector(AtomicString("span"));
   Node* text = span->firstChild();
 
   // Shouldn't hit anything in SPAN as it's in another paint layer
@@ -299,7 +299,7 @@ TEST_F(LayoutInlineTest, MultilineRelativePositionedHitTest) {
   {
     PhysicalOffset hit_location(13, 33);
     HitTestLocation location(hit_location);
-    Node* target = GetDocument().QuerySelector("img");
+    Node* target = GetDocument().QuerySelector(AtomicString("img"));
 
     HitTestResult hit_result(hit_request, location);
     bool hit_outcome =

@@ -240,8 +240,8 @@ TEST_F(InsertTextCommandTest, NoVisibleSelectionAfterDeletingSelection) {
 TEST_F(InsertTextCommandTest, CheckTabSpanElementNoCrash) {
   InsertStyleElement(
       "head {-webkit-text-stroke-color: black; display: list-item;}");
-  Element* head = GetDocument().QuerySelector("head");
-  Element* style = GetDocument().QuerySelector("style");
+  Element* head = GetDocument().QuerySelector(AtomicString("head"));
+  Element* style = GetDocument().QuerySelector(AtomicString("style"));
   Element* body = GetDocument().body();
   body->parentNode()->appendChild(style);
   GetDocument().setDesignMode("on");
@@ -276,8 +276,8 @@ TEST_F(InsertTextCommandTest, AnchorElementWithBlockCrash) {
   //   </a>
   // </a>
   // Since the HTML parser rejects it as there are nested <a> elements.
-  // We are contructing the remaining DOM manually.
-  Element* const anchor = GetDocument().QuerySelector("a");
+  // We are constructing the remaining DOM manually.
+  Element* const anchor = GetDocument().QuerySelector(AtomicString("a"));
   Element* nested_anchor = GetDocument().CreateRawElement(html_names::kATag);
   Element* iElement = GetDocument().CreateRawElement(html_names::kITag);
 

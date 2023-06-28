@@ -2256,7 +2256,7 @@ TEST_F(StyleEngineTest, RejectSelectorForPseudoElement) {
   ASSERT_TRUE(stats);
   EXPECT_EQ(0u, stats->rules_fast_rejected);
 
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   ASSERT_TRUE(div);
   div->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
 
@@ -4267,7 +4267,7 @@ TEST_F(StyleEngineTest, ScrollbarPartPseudoDoesNotMatchElement) {
   ASSERT_TRUE(stats);
   EXPECT_EQ(0u, stats->rules_matched);
 
-  Element* div = GetDocument().QuerySelector(".child");
+  Element* div = GetDocument().QuerySelector(AtomicString(".child"));
   ASSERT_TRUE(div);
   div->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
 
@@ -4446,7 +4446,7 @@ TEST_F(StyleEngineTest, SystemFontsObeyDefaultFontSize) {
   // <input> get assigned "font: -webkit-small-control" in the UA sheet.
   Element* body = GetDocument().body();
   body->setInnerHTML("<input>");
-  Element* input = GetDocument().QuerySelector("input");
+  Element* input = GetDocument().QuerySelector(AtomicString("input"));
 
   // Test the standard font sizes that can be chosen in chrome://settings/
   for (int fontSize : {9, 12, 16, 20, 24}) {
@@ -4537,7 +4537,7 @@ TEST_F(StyleEngineTest, CascadeLayersInOriginsAndTreeScopes) {
   ASSERT_TRUE(document_layer_map);
 
   const CascadeLayer& document_outer_layer =
-      To<HTMLStyleElement>(GetDocument().QuerySelector("style"))
+      To<HTMLStyleElement>(GetDocument().QuerySelector(AtomicString("style")))
           ->sheet()
           ->Contents()
           ->GetRuleSet()
@@ -4564,7 +4564,7 @@ TEST_F(StyleEngineTest, CascadeLayersInOriginsAndTreeScopes) {
   ASSERT_TRUE(shadow_layer_map);
 
   const CascadeLayer& shadow_outer_layer =
-      To<HTMLStyleElement>(shadow->QuerySelector("style"))
+      To<HTMLStyleElement>(shadow->QuerySelector(AtomicString("style")))
           ->sheet()
           ->Contents()
           ->GetRuleSet()
@@ -4693,8 +4693,8 @@ TEST_F(StyleEngineTest, CascadeLayersSheetsRemoved) {
   ASSERT_TRUE(shadow->GetScopedStyleResolver());
   ASSERT_TRUE(shadow->GetScopedStyleResolver()->GetCascadeLayerMap());
 
-  GetDocument().QuerySelector("style")->remove();
-  shadow->QuerySelector("style")->remove();
+  GetDocument().QuerySelector(AtomicString("style"))->remove();
+  shadow->QuerySelector(AtomicString("style"))->remove();
   UpdateAllLifecyclePhases();
 
   // When all sheets are removed, document ScopedStyleResolver is not cleared

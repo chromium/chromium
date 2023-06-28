@@ -433,9 +433,10 @@ TEST_F(ExternalPopupMenuTest, RemoveFrameOnChange) {
 
   // Open a popup.
   auto* iframe = To<HTMLIFrameElement>(
-      MainFrame()->GetFrame()->GetDocument()->QuerySelector("iframe"));
-  auto* select =
-      To<HTMLSelectElement>(iframe->contentDocument()->QuerySelector("select"));
+      MainFrame()->GetFrame()->GetDocument()->QuerySelector(
+          AtomicString("iframe")));
+  auto* select = To<HTMLSelectElement>(
+      iframe->contentDocument()->QuerySelector(AtomicString("select")));
   auto* layout_object = select->GetLayoutObject();
   ASSERT_TRUE(layout_object);
 

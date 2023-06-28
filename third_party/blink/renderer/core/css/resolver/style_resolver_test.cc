@@ -721,7 +721,7 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
     Element* li = lis->item(i);
     PseudoElement* marker = li->GetPseudoElement(kPseudoIdMarker);
     PseudoElement* before =
-        li->QuerySelector("b")->GetPseudoElement(kPseudoIdBefore);
+        li->QuerySelector(AtomicString("b"))->GetPseudoElement(kPseudoIdBefore);
     PseudoElement* nested_marker = before->GetPseudoElement(kPseudoIdMarker);
 
     // Check that UA styles for list markers don't set HasPseudoElementStyle
@@ -752,7 +752,7 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
   for (unsigned i = 0; i < lis->length(); ++i) {
     Element* li = lis->item(i);
     PseudoElement* before =
-        li->QuerySelector("b")->GetPseudoElement(kPseudoIdBefore);
+        li->QuerySelector(AtomicString("b"))->GetPseudoElement(kPseudoIdBefore);
 
     // Check that author styles for list markers do set HasPseudoElementStyle
     const ComputedStyle* li_style = li->GetComputedStyle();
@@ -1805,8 +1805,8 @@ TEST_F(StyleResolverTest, CascadeLayersAfterModifyingAnotherSheet) {
 
   ASSERT_TRUE(GetDocument().GetScopedStyleResolver()->GetCascadeLayerMap());
 
-  StyleResolverState state(GetDocument(),
-                           *GetDocument().QuerySelector("target"));
+  StyleResolverState state(
+      GetDocument(), *GetDocument().QuerySelector(AtomicString("target")));
   SelectorFilter filter;
   MatchResult match_result;
   ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
@@ -1849,8 +1849,8 @@ TEST_F(StyleResolverTest, CascadeLayersAddLayersWithImportantDeclarations) {
 
   ASSERT_TRUE(GetDocument().GetScopedStyleResolver()->GetCascadeLayerMap());
 
-  StyleResolverState state(GetDocument(),
-                           *GetDocument().QuerySelector("target"));
+  StyleResolverState state(
+      GetDocument(), *GetDocument().QuerySelector(AtomicString("target")));
   SelectorFilter filter;
   MatchResult match_result;
   ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
@@ -1931,9 +1931,10 @@ TEST_F(StyleResolverTest, IsInertWithAttributeAndDialog) {
   )HTML");
   Element* html = document.documentElement();
   Element* body = document.body();
-  Element* div = document.QuerySelector("div");
+  Element* div = document.QuerySelector(AtomicString("div"));
   Node* div_text = div->firstChild();
-  auto* dialog = To<HTMLDialogElement>(document.QuerySelector("dialog"));
+  auto* dialog =
+      To<HTMLDialogElement>(document.QuerySelector(AtomicString("dialog")));
   Node* dialog_text = dialog->firstChild();
   UpdateAllLifecyclePhasesForTest();
 
@@ -2010,7 +2011,7 @@ TEST_F(StyleResolverTest, IsInertWithDialogs) {
   Node* dialog1_text = dialog1->firstChild();
   auto* dialog2 = To<HTMLDialogElement>(dialogs->item(1));
   Node* dialog2_text = dialog2->firstChild();
-  Element* div = document.QuerySelector("div");
+  Element* div = document.QuerySelector(AtomicString("div"));
   auto* dialog3 = To<HTMLDialogElement>(dialogs->item(2));
   Node* dialog3_text = dialog3->firstChild();
   UpdateAllLifecyclePhasesForTest();
@@ -2121,11 +2122,11 @@ TEST_F(StyleResolverTest, IsInertWithFullscreen) {
   )HTML");
   Element* html = document.documentElement();
   Element* body = document.body();
-  Element* div = document.QuerySelector("div");
+  Element* div = document.QuerySelector(AtomicString("div"));
   Node* div_text = div->firstChild();
-  Element* span = document.QuerySelector("span");
+  Element* span = document.QuerySelector(AtomicString("span"));
   Node* span_text = span->firstChild();
-  Element* p = document.QuerySelector("p");
+  Element* p = document.QuerySelector(AtomicString("p"));
   Node* p_text = p->firstChild();
   UpdateAllLifecyclePhasesForTest();
 
@@ -2194,7 +2195,7 @@ TEST_F(StyleResolverTest, IsInertWithFrameAndFullscreen) {
   )HTML");
   Element* html = document.documentElement();
   Element* body = document.body();
-  Element* div = document.QuerySelector("div");
+  Element* div = document.QuerySelector(AtomicString("div"));
   Node* div_text = div->firstChild();
   UpdateAllLifecyclePhasesForTest();
 
@@ -2243,7 +2244,8 @@ TEST_F(StyleResolverTest, IsInertWithBackdrop) {
   )HTML");
   Element* html = document.documentElement();
   Element* body = document.body();
-  auto* dialog = To<HTMLDialogElement>(document.QuerySelector("dialog"));
+  auto* dialog =
+      To<HTMLDialogElement>(document.QuerySelector(AtomicString("dialog")));
 
   auto IsBackdropInert = [](Element* element) {
     PseudoElement* backdrop = element->GetPseudoElement(kPseudoIdBackdrop);
@@ -2298,8 +2300,9 @@ TEST_F(StyleResolverTest, IsInertWithDialogAndFullscreen) {
   )HTML");
   Element* html = document.documentElement();
   Element* body = document.body();
-  Element* div = document.QuerySelector("div");
-  auto* dialog = To<HTMLDialogElement>(document.QuerySelector("dialog"));
+  Element* div = document.QuerySelector(AtomicString("div"));
+  auto* dialog =
+      To<HTMLDialogElement>(document.QuerySelector(AtomicString("dialog")));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(html->GetComputedStyle()->IsInert());

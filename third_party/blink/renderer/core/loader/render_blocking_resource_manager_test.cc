@@ -371,7 +371,7 @@ TEST_F(RenderBlockingResourceManagerTest, OptionalFontRemoveAndReadd) {
 
   font_resource.Complete(ReadAhemWoff2());
 
-  Element* style = GetDocument().QuerySelector("style");
+  Element* style = GetDocument().QuerySelector(AtomicString("style"));
   style->remove();
   GetDocument().head()->appendChild(style);
 
@@ -623,7 +623,7 @@ TEST_F(RenderBlockingResourceManagerTest, ParserBlockingScriptBeforeFont) {
   EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
 
   // Parser is blocked by the synchronous script, so <link> isn't inserted yet.
-  EXPECT_FALSE(GetDocument().QuerySelector("link"));
+  EXPECT_FALSE(GetDocument().QuerySelector(AtomicString("link")));
 
   // Preload scanner should have started font preloading and also the timer.
   // This should happen before the parser sets up the preload link element.

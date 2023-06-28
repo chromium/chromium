@@ -373,7 +373,8 @@ bool IsDOMException(ScriptState* script_state,
 
 TEST_F(DocumentTest, CreateRangeAdjustedToTreeScopeWithPositionInShadowTree) {
   GetDocument().body()->setInnerHTML("<div><select><option>012</option></div>");
-  Element* const select_element = GetDocument().QuerySelector("select");
+  Element* const select_element =
+      GetDocument().QuerySelector(AtomicString("select"));
   const Position& position =
       Position(*select_element->UserAgentShadowRoot(),
                select_element->UserAgentShadowRoot()->CountChildren());
@@ -1065,7 +1066,8 @@ TEST_F(DocumentTest, FindInPageUkmInFrame) {
       DocumentUpdateReason::kTest);
 
   Document* top_doc = web_view_impl->MainFrameImpl()->GetFrame()->GetDocument();
-  auto* iframe = To<HTMLIFrameElement>(top_doc->QuerySelector("iframe"));
+  auto* iframe =
+      To<HTMLIFrameElement>(top_doc->QuerySelector(AtomicString("iframe")));
   Document* document = iframe->contentDocument();
   ASSERT_TRUE(document);
   ASSERT_FALSE(document->IsInMainFrame());
@@ -2080,7 +2082,7 @@ TEST_F(DocumentSimTest, HeaderPreloadRemoveReaddClient) {
 
   // Remove and garbage-collect the pending stylesheet link element, which will
   // remove it from the list of ResourceClients of the Resource being preloaded.
-  GetDocument().QuerySelector("link")->remove();
+  GetDocument().QuerySelector(AtomicString("link"))->remove();
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   // Removing the ResourceClient should not affect the preloading.
@@ -2093,7 +2095,7 @@ TEST_F(DocumentSimTest, HeaderPreloadRemoveReaddClient) {
     <div class="target"></div>
   )HTML");
 
-  Element* target = GetDocument().QuerySelector(".target");
+  Element* target = GetDocument().QuerySelector(AtomicString(".target"));
   EXPECT_EQ(100, target->OffsetWidth());
 }
 

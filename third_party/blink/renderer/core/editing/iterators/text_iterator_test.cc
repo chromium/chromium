@@ -639,7 +639,7 @@ TEST_F(TextIteratorTest, EndingConditionWithDisplayNone) {
       "<div style='display: none'><span>hello</span>world</div>Lorem ipsum "
       "dolor sit amet.");
   Position start(&GetDocument(), 0);
-  Position end(GetDocument().QuerySelector("span"), 0);
+  Position end(GetDocument().QuerySelector(AtomicString("span")), 0);
   TextIterator iter(start, end);
   EXPECT_TRUE(iter.AtEnd());
 }
@@ -665,7 +665,7 @@ TEST_F(TextIteratorTest, EndingConditionWithDisplayNoneInShadowTree) {
 
 TEST_F(TextIteratorTest, PreserveLeadingSpace) {
   SetBodyContent("<div style='width: 2em;'><b><i>foo</i></b> bar</div>");
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Position start(div->firstChild()->firstChild()->firstChild(), 0);
   Position end(div->lastChild(), 4);
   EXPECT_EQ("foo bar",
@@ -676,7 +676,7 @@ TEST_F(TextIteratorTest, PreserveLeadingSpace) {
 // emit alt text, this tests for that bug
 TEST_F(TextIteratorTest, PreserveLeadingSpaceWithoutEmittingAltText) {
   SetBodyContent("<div style='width: 2em;'><b><i>foo</i></b> bar</div>");
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Position start(div->firstChild()->firstChild()->firstChild(), 0);
   Position end(div->lastChild(), 4);
   EXPECT_EQ("foo bar", PlainText(EphemeralRange(start, end)));
@@ -685,7 +685,7 @@ TEST_F(TextIteratorTest, PreserveLeadingSpaceWithoutEmittingAltText) {
 TEST_F(TextIteratorTest, PreserveOnlyLeadingSpace) {
   SetBodyContent(
       "<div style='width: 2em;'><b><i id='foo'>foo </i></b> bar</div>");
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Position start(
       GetDocument().getElementById(AtomicString("foo"))->firstChild(), 0);
   Position end(div->lastChild(), 4);
@@ -696,7 +696,7 @@ TEST_F(TextIteratorTest, PreserveOnlyLeadingSpace) {
 TEST_F(TextIteratorTest, StartAtFirstLetter) {
   SetBodyContent("<style>div:first-letter {color:red;}</style><div>Axyz</div>");
 
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Node* text = div->firstChild();
   Position start(text, 0);
   Position end(text, 4);
@@ -723,7 +723,7 @@ TEST_F(TextIteratorTest, StartInMultiCharFirstLetterWithCollapsedSpace) {
   SetBodyContent(
       "<style>div:first-letter {color:red;}</style><div>  (A)  xyz</div>");
 
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Node* text = div->firstChild();
   Position start(text, 3);
   Position end(text, 10);
@@ -757,7 +757,7 @@ TEST_F(TextIteratorTest, StartAndEndInMultiCharFirstLetterWithCollapsedSpace) {
   SetBodyContent(
       "<style>div:first-letter {color:red;}</style><div>  (A)  xyz</div>");
 
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Node* text = div->firstChild();
   Position start(text, 3);
   Position end(text, 4);
@@ -776,7 +776,7 @@ TEST_F(TextIteratorTest, StartAndEndInMultiCharFirstLetterWithCollapsedSpace) {
 TEST_F(TextIteratorTest, StartAtRemainingText) {
   SetBodyContent("<style>div:first-letter {color:red;}</style><div>Axyz</div>");
 
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Node* text = div->firstChild();
   Position start(text, 1);
   Position end(text, 4);
@@ -795,7 +795,7 @@ TEST_F(TextIteratorTest, StartAtRemainingText) {
 TEST_F(TextIteratorTest, StartAtFirstLetterInPre) {
   SetBodyContent("<style>pre:first-letter {color:red;}</style><pre>Axyz</pre>");
 
-  Element* pre = GetDocument().QuerySelector("pre");
+  Element* pre = GetDocument().QuerySelector(AtomicString("pre"));
   Node* text = pre->firstChild();
   Position start(text, 0);
   Position end(text, 4);
@@ -822,7 +822,7 @@ TEST_F(TextIteratorTest, StartInMultiCharFirstLetterInPre) {
   SetBodyContent(
       "<style>pre:first-letter {color:red;}</style><pre>(A)xyz</pre>");
 
-  Element* pre = GetDocument().QuerySelector("pre");
+  Element* pre = GetDocument().QuerySelector(AtomicString("pre"));
   Node* text = pre->firstChild();
   Position start(text, 1);
   Position end(text, 6);
@@ -849,7 +849,7 @@ TEST_F(TextIteratorTest, StartAndEndInMultiCharFirstLetterInPre) {
   SetBodyContent(
       "<style>pre:first-letter {color:red;}</style><pre>(A)xyz</pre>");
 
-  Element* pre = GetDocument().QuerySelector("pre");
+  Element* pre = GetDocument().QuerySelector(AtomicString("pre"));
   Node* text = pre->firstChild();
   Position start(text, 1);
   Position end(text, 2);
@@ -876,7 +876,7 @@ TEST_F(TextIteratorTest, FirstLetterAndReaminingAreDifferentBlocks) {
 TEST_F(TextIteratorTest, StartAtRemainingTextInPre) {
   SetBodyContent("<style>pre:first-letter {color:red;}</style><pre>Axyz</pre>");
 
-  Element* pre = GetDocument().QuerySelector("pre");
+  Element* pre = GetDocument().QuerySelector(AtomicString("pre"));
   Node* text = pre->firstChild();
   Position start(text, 1);
   Position end(text, 4);

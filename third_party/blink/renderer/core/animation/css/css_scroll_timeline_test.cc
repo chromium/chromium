@@ -276,7 +276,7 @@ TEST_F(CSSScrollTimelineTest, ViewTimelineHost) {
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* target = GetDocument().QuerySelector(".target");
+  Element* target = GetDocument().QuerySelector(AtomicString(".target"));
   ASSERT_TRUE(target);
   HeapVector<Member<Animation>> animations = target->getAnimations();
   ASSERT_EQ(1u, animations.size());
@@ -317,7 +317,7 @@ TEST_F(CSSScrollTimelineTest, ViewTimelineSlotted) {
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* target = GetDocument().QuerySelector(".target");
+  Element* target = GetDocument().QuerySelector(AtomicString(".target"));
   ASSERT_TRUE(target);
   HeapVector<Member<Animation>> animations = target->getAnimations();
   ASSERT_EQ(1u, animations.size());
@@ -359,10 +359,11 @@ TEST_F(CSSScrollTimelineTest, ViewTimelinePart) {
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* host = GetDocument().QuerySelector(".host");
+  Element* host = GetDocument().QuerySelector(AtomicString(".host"));
   ASSERT_TRUE(host);
   ASSERT_TRUE(host->GetShadowRoot());
-  Element* target = host->GetShadowRoot()->QuerySelector(".target");
+  Element* target =
+      host->GetShadowRoot()->QuerySelector(AtomicString(".target"));
   ASSERT_TRUE(target);
   HeapVector<Member<Animation>> animations = target->getAnimations();
   ASSERT_EQ(1u, animations.size());
@@ -405,7 +406,7 @@ TEST_F(CSSScrollTimelineTest, ScrollTimelineHost) {
     </main>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* target = GetDocument().QuerySelector(".target");
+  Element* target = GetDocument().QuerySelector(AtomicString(".target"));
   ASSERT_TRUE(target);
   HeapVector<Member<Animation>> animations = target->getAnimations();
   ASSERT_EQ(1u, animations.size());
@@ -446,7 +447,7 @@ TEST_F(CSSScrollTimelineTest, ScrollTimelineSlotted) {
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* target = GetDocument().QuerySelector(".target");
+  Element* target = GetDocument().QuerySelector(AtomicString(".target"));
   ASSERT_TRUE(target);
   HeapVector<Member<Animation>> animations = target->getAnimations();
   ASSERT_EQ(1u, animations.size());
@@ -488,10 +489,11 @@ TEST_F(CSSScrollTimelineTest, ScrollTimelinePart) {
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* host = GetDocument().QuerySelector(".host");
+  Element* host = GetDocument().QuerySelector(AtomicString(".host"));
   ASSERT_TRUE(host);
   ASSERT_TRUE(host->GetShadowRoot());
-  Element* target = host->GetShadowRoot()->QuerySelector(".target");
+  Element* target =
+      host->GetShadowRoot()->QuerySelector(AtomicString(".target"));
   ASSERT_TRUE(target);
   HeapVector<Member<Animation>> animations = target->getAnimations();
   ASSERT_EQ(1u, animations.size());

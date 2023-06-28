@@ -286,7 +286,8 @@ class HTMLDocumentParserProcessImmediatelyTest : public PageTestBase {
 
     Document* top_doc =
         web_view_impl->MainFrameImpl()->GetFrame()->GetDocument();
-    auto* iframe = To<HTMLIFrameElement>(top_doc->QuerySelector("iframe"));
+    auto* iframe =
+        To<HTMLIFrameElement>(top_doc->QuerySelector(AtomicString("iframe")));
     Document* child_document = iframe->contentDocument();
     return child_document ? CreateParser(To<HTMLDocument>(*child_document))
                           : nullptr;

@@ -131,7 +131,7 @@ TEST_F(InspectorStyleResolverTest, HighlightPseudoInheritance) {
   Element* target = GetDocument().getElementById(AtomicString("target"));
   Element* middle = GetDocument().getElementById(AtomicString("middle"));
   Element* outer = GetDocument().getElementById(AtomicString("outer"));
-  Element* body = GetDocument().QuerySelector("body");
+  Element* body = GetDocument().QuerySelector(AtomicString("body"));
   InspectorStyleResolver resolver(target, kPseudoIdNone, g_null_atom);
   HeapVector<Member<InspectorCSSMatchedPseudoElements>> parent_pseudos =
       resolver.ParentPseudoElementRules();

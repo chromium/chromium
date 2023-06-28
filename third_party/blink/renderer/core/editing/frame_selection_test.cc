@@ -579,7 +579,7 @@ TEST_F(FrameSelectionTest, MoveRangeSelectionNoLiveness) {
 // For http://crbug.com/695317
 TEST_F(FrameSelectionTest, SelectAllWithInputElement) {
   SetBodyContent("<input>123");
-  Element* const input = GetDocument().QuerySelector("input");
+  Element* const input = GetDocument().QuerySelector(AtomicString("input"));
   Node* const last_child = GetDocument().body()->lastChild();
   Selection().SelectAll();
   const SelectionInDOMTree& result_in_dom_tree =
@@ -709,7 +709,7 @@ TEST_F(FrameSelectionTest, SelectionOnRangeHidesHandles) {
 TEST_F(FrameSelectionTest, SelectInvalidPositionInFlatTreeDoesntCrash) {
   SetBodyContent("foo<option><select></select></option>");
   Element* body = GetDocument().body();
-  Element* select = GetDocument().QuerySelector("select");
+  Element* select = GetDocument().QuerySelector(AtomicString("select"));
   Node* foo = body->firstChild();
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
@@ -868,7 +868,8 @@ TEST_F(FrameSelectionTest, FocusingButtonHidesRangeInReadOnlyTextControl) {
   EXPECT_FALSE(Selection().SelectionHasFocus());
   EXPECT_TRUE(Selection().IsHidden());
 
-  Element* const textarea = GetDocument().QuerySelector("textarea");
+  Element* const textarea =
+      GetDocument().QuerySelector(AtomicString("textarea"));
   textarea->Focus();
   EXPECT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
 
@@ -877,7 +878,7 @@ TEST_F(FrameSelectionTest, FocusingButtonHidesRangeInReadOnlyTextControl) {
   EXPECT_TRUE(Selection().SelectionHasFocus());
   EXPECT_FALSE(Selection().IsHidden());
 
-  Element* const submit = GetDocument().QuerySelector("input");
+  Element* const submit = GetDocument().QuerySelector(AtomicString("input"));
   submit->Focus();
   EXPECT_TRUE(Selection().GetSelectionInDOMTree().IsRange());
   EXPECT_FALSE(Selection().SelectionHasFocus());
@@ -892,7 +893,8 @@ TEST_F(FrameSelectionTest, FocusingButtonHidesRangeInDisabledTextControl) {
   EXPECT_FALSE(Selection().SelectionHasFocus());
   EXPECT_TRUE(Selection().IsHidden());
 
-  Element* const textarea = GetDocument().QuerySelector("textarea");
+  Element* const textarea =
+      GetDocument().QuerySelector(AtomicString("textarea"));
   textarea->Focus();
   EXPECT_TRUE(Selection().GetSelectionInDOMTree().IsNone());
 
@@ -913,7 +915,7 @@ TEST_F(FrameSelectionTest, FocusingButtonHidesRangeInDisabledTextControl) {
   EXPECT_TRUE(Selection().SelectionHasFocus());
   EXPECT_FALSE(Selection().IsHidden());
 
-  Element* const submit = GetDocument().QuerySelector("input");
+  Element* const submit = GetDocument().QuerySelector(AtomicString("input"));
   submit->Focus();
   EXPECT_TRUE(Selection().GetSelectionInDOMTree().IsRange());
   EXPECT_FALSE(Selection().SelectionHasFocus());

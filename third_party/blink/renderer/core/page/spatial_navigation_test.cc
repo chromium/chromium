@@ -165,8 +165,8 @@ TEST_F(SpatialNavigationTest, FindContainerWhenEnclosingContainerIsIframe) {
       "<a>link</a>");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* iframe = GetDocument().QuerySelector("iframe");
-  Element* link = ChildDocument().QuerySelector("a");
+  Element* iframe = GetDocument().QuerySelector(AtomicString("iframe"));
+  Element* link = ChildDocument().QuerySelector(AtomicString("a"));
   Node* enclosing_container = ScrollableAreaOrDocumentOf(link);
 
   EXPECT_FALSE(IsOffscreen(iframe));
@@ -525,8 +525,8 @@ TEST_F(SpatialNavigationTest,
       "<a id='link'>link</a>");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* link = ChildDocument().QuerySelector("a");
-  Element* iframe = GetDocument().QuerySelector("iframe");
+  Element* link = ChildDocument().QuerySelector(AtomicString("a"));
+  Element* iframe = GetDocument().QuerySelector(AtomicString("iframe"));
 
   // The <iframe> is not displayed in the visual viewport. In other words, it is
   // being offscreen. And so is also its content, the <a>.
@@ -561,9 +561,9 @@ TEST_F(SpatialNavigationTest, DivsCanClipIframes) {
       "<a>link</a>");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* div = GetDocument().QuerySelector("div");
-  Element* iframe = GetDocument().QuerySelector("iframe");
-  Element* link = ChildDocument().QuerySelector("a");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* iframe = GetDocument().QuerySelector(AtomicString("iframe"));
+  Element* link = ChildDocument().QuerySelector(AtomicString("a"));
   EXPECT_FALSE(IsOffscreen(div));
 
   // TODO(crbug.com/889840):

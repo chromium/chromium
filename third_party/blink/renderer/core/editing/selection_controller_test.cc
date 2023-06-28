@@ -228,7 +228,7 @@ TEST_F(SelectionControllerTest, AdjustSelectionWithTrailingWhitespace) {
   SetBodyContent(
       "<input type=checkbox>"
       "<div style='user-select:none'>abc</div>");
-  Element* const input = GetDocument().QuerySelector("input");
+  Element* const input = GetDocument().QuerySelector(AtomicString("input"));
 
   const SelectionInFlatTree& selection = ExpandWithGranularity(
       SelectionInFlatTree::Builder()
@@ -531,7 +531,7 @@ TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithInput) {
     <div id="two">22</div>)HTML");
 
   Element* one = GetDocument().getElementById(AtomicString("one"));
-  Element* input = GetDocument().QuerySelector("input");
+  Element* input = GetDocument().QuerySelector(AtomicString("input"));
 
   const SelectionInFlatTree& selection =
       ExpandWithGranularity(SelectionInFlatTree::Builder()

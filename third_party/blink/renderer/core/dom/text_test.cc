@@ -31,7 +31,7 @@ TEST_F(TextTest, SetDataToChangeFirstLetterTextNode) {
 TEST_F(TextTest, RemoveFirstLetterPseudoElementWhenNoLetter) {
   SetBodyContent("<style>*::first-letter{font:icon;}</style><pre>AB\n</pre>");
 
-  Element* pre = GetDocument().QuerySelector("pre");
+  Element* pre = GetDocument().QuerySelector(AtomicString("pre"));
   auto* text = To<Text>(pre->firstChild());
 
   auto* range = MakeGarbageCollected<Range>(GetDocument(), text, 0, text, 2);

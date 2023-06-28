@@ -59,7 +59,8 @@ TEST_F(RangeTest, extractContentsWithDOMMutationEvent) {
       "});");
   GetDocument().body()->AppendChild(script_element);
 
-  Element* const span_element = GetDocument().QuerySelector("span");
+  Element* const span_element =
+      GetDocument().QuerySelector(AtomicString("span"));
   auto* const range = MakeGarbageCollected<Range>(GetDocument(), span_element,
                                                   0, span_element, 1);
   Element* const result = GetDocument().CreateRawElement(html_names::kDivTag);
@@ -79,7 +80,7 @@ TEST_F(RangeTest, IntersectsNode) {
       "<span id='s1'>s1</span>"
       "<span id='s2'>s2</span>"
       "</div>");
-  Element* const div = GetDocument().QuerySelector("div");
+  Element* const div = GetDocument().QuerySelector(AtomicString("div"));
   Element* const s0 = GetDocument().getElementById(AtomicString("s0"));
   Element* const s1 = GetDocument().getElementById(AtomicString("s1"));
   Element* const s2 = GetDocument().getElementById(AtomicString("s2"));
@@ -246,7 +247,7 @@ TEST_F(RangeTest, NotMarkedValidByIrrelevantTextInsert) {
   GetDocument().body()->setInnerHTML(
       "<div><span id=span1>foo</span>bar<span id=span2>baz</span></div>");
 
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Element* span1 = GetDocument().getElementById(AtomicString("span1"));
   Element* span2 = GetDocument().getElementById(AtomicString("span2"));
   auto* text = To<Text>(div->childNodes()->item(1));
@@ -268,7 +269,7 @@ TEST_F(RangeTest, NotMarkedValidByIrrelevantTextRemove) {
   GetDocument().body()->setInnerHTML(
       "<div><span id=span1>foofoo</span>bar<span id=span2>baz</span></div>");
 
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   Element* span1 = GetDocument().getElementById(AtomicString("span1"));
   Element* span2 = GetDocument().getElementById(AtomicString("span2"));
   auto* text = To<Text>(div->childNodes()->item(1));
@@ -306,7 +307,7 @@ TEST_F(RangeTest, BoundingRectMustIndependentFromSelection) {
   LoadAhem();
   GetDocument().body()->setInnerHTML(
       "<div style='font: Ahem; width: 2em;letter-spacing: 5px;'>xx xx </div>");
-  Node* const div = GetDocument().QuerySelector("div");
+  Node* const div = GetDocument().QuerySelector(AtomicString("div"));
   // "x^x
   //  x|x "
   auto* const range = MakeGarbageCollected<Range>(
@@ -329,8 +330,8 @@ TEST_F(RangeTest, BorderAndTextQuadsWithInputInBetween) {
   GetDocument().body()->setInnerHTML("<div>foo <u><input> bar</u></div>");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
-  Node* foo = GetDocument().QuerySelector("div")->firstChild();
-  Node* bar = GetDocument().QuerySelector("u")->lastChild();
+  Node* foo = GetDocument().QuerySelector(AtomicString("div"))->firstChild();
+  Node* bar = GetDocument().QuerySelector(AtomicString("u"))->lastChild();
   auto* range = MakeGarbageCollected<Range>(GetDocument(), foo, 2, bar, 2);
 
   Vector<gfx::QuadF> quads;

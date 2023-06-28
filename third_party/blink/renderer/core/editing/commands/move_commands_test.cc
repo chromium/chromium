@@ -328,7 +328,7 @@ TEST_F(MoveCommandsTest, CaretBrowsingSelectionUpdate) {
       SetSelectionTextToBody("<div>|a<a href=\"foo\">b</a></div>"),
       SetSelectionOptions());
   GetDocument().SetFocusedElement(
-      GetDocument().QuerySelector("a"),
+      GetDocument().QuerySelector(AtomicString("a")),
       FocusParams(SelectionBehaviorOnFocus::kNone,
                   mojom::blink::FocusType::kNone, nullptr));
   GetDocument().GetFrame()->GetSettings()->SetCaretBrowsingEnabled(true);

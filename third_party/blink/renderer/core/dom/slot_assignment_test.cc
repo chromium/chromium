@@ -80,7 +80,7 @@ TEST_F(SlotAssignmentTest, DeclarativeShadowDOM) {
     </div>
   )HTML");
 
-  Element* host = GetDocument().QuerySelector("#host");
+  Element* host = GetDocument().QuerySelector(AtomicString("#host"));
   ASSERT_NE(nullptr, host);
   ASSERT_NE(nullptr, host->OpenShadowRoot());
 }
@@ -96,12 +96,12 @@ TEST_F(SlotAssignmentTest, NestedDeclarativeShadowDOM) {
     </div>
   )HTML");
 
-  Element* host1 = GetDocument().QuerySelector("#host1");
+  Element* host1 = GetDocument().QuerySelector(AtomicString("#host1"));
   ASSERT_NE(nullptr, host1);
   ShadowRoot* shadow_root1 = host1->OpenShadowRoot();
   ASSERT_NE(nullptr, shadow_root1);
 
-  Element* host2 = shadow_root1->QuerySelector("#host2");
+  Element* host2 = shadow_root1->QuerySelector(AtomicString("#host2"));
   ASSERT_NE(nullptr, host2);
   ShadowRoot* shadow_root2 = host2->OpenShadowRoot();
   ASSERT_NE(nullptr, shadow_root2);
@@ -117,10 +117,12 @@ TEST_F(SlotAssignmentTest, AssignedNodesAreSet) {
     </div>
   )HTML");
 
-  Element* host = GetDocument().QuerySelector("#host");
-  Element* host_child = GetDocument().QuerySelector("#host-child");
+  Element* host = GetDocument().QuerySelector(AtomicString("#host"));
+  Element* host_child =
+      GetDocument().QuerySelector(AtomicString("#host-child"));
   ShadowRoot* shadow_root = host->OpenShadowRoot();
-  auto* slot = DynamicTo<HTMLSlotElement>(shadow_root->QuerySelector("slot"));
+  auto* slot = DynamicTo<HTMLSlotElement>(
+      shadow_root->QuerySelector(AtomicString("slot")));
   ASSERT_NE(nullptr, slot);
 
   EXPECT_EQ(slot, host_child->AssignedSlot());

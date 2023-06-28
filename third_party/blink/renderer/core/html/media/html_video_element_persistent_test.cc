@@ -44,11 +44,12 @@ class HTMLVideoElementPersistentTest : public PageTestBase {
   }
 
   HTMLVideoElement* VideoElement() {
-    return To<HTMLVideoElement>(GetDocument().QuerySelector("video"));
+    return To<HTMLVideoElement>(
+        GetDocument().QuerySelector(AtomicString("video")));
   }
 
   HTMLDivElement* DivElement() {
-    return To<HTMLDivElement>(GetDocument().QuerySelector("div"));
+    return To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
   }
 
   Element* FullscreenElement() {

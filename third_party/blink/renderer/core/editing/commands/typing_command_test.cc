@@ -61,7 +61,7 @@ TEST_F(TypingCommandTest, insertLineBreakWithIllFormedHTML) {
   tr->AppendChild(input2);
   tr->AppendChild(rbc);
 
-  Element* div = GetDocument().QuerySelector("div");
+  Element* div = GetDocument().QuerySelector(AtomicString("div"));
   div->AppendChild(input1);
   div->AppendChild(tr);
 
@@ -121,7 +121,7 @@ TEST_F(TypingCommandTest, ForwardDeleteInvalidatesSelection) {
 // crbug.com/1382250
 TEST_F(TypingCommandTest, ForwardDeleteAtTableEnd) {
   SetBodyContent("<table contenteditable></table>");
-  Element* table = GetDocument().QuerySelector("table");
+  Element* table = GetDocument().QuerySelector(AtomicString("table"));
   table->setTextContent("a");
   UpdateAllLifecyclePhasesForTest();
   Selection().SetSelection(SelectionInDOMTree::Builder()
