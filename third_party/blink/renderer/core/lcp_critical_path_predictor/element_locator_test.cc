@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.pb.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
@@ -93,20 +94,34 @@ class TokenStreamMatcherTest : public ::testing::Test {
     for (const Expectation& exp : exps) {
       SCOPED_TRACE(testing::Message() << "expectation index = " << i);
       AtomicString tag_name(exp.tag_name);
+      EXPECT_TRUE(tag_name.Impl()->IsStatic());
 
       switch (exp.type) {
         case Expectation::Type::kStartTag: {
-          AtomicString id_attr = g_null_atom;
+          HTMLToken token;
+          {
+            const char* c = exp.tag_name;
+            token.BeginStartTag(static_cast<LChar>(*c++));
+            for (; *c != 0; ++c) {
+              token.AppendToName(static_cast<UChar>(*c));
+            }
+          }
+
           if (exp.id_attr) {
-            id_attr = AtomicString(exp.id_attr);
+            token.AddNewAttribute('i');
+            token.AppendToAttributeName('d');
+
+            for (const char* c = exp.id_attr; *c != 0; ++c) {
+              token.AppendToAttributeValue(static_cast<LChar>(*c));
+            }
           }
 
           bool matched =
-              matcher.ObserveStartTagAndReportMatch(tag_name, id_attr);
+              matcher.ObserveStartTagAndReportMatch(tag_name.Impl(), token);
           EXPECT_EQ(matched, exp.should_match);
         } break;
         case Expectation::Type::kEndTag:
-          matcher.ObserveEndTag(tag_name);
+          matcher.ObserveEndTag(tag_name.Impl());
           break;
       }
 

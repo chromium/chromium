@@ -15,6 +15,7 @@
 namespace blink {
 
 class Element;
+class HTMLToken;
 
 namespace element_locator {
 
@@ -34,15 +35,15 @@ struct HTMLStackItem {
   // The container element's tag name.
   // Note that we only track element's local name, which means no support for
   // the XML namespaces.
-  AtomicString tag_name;
+  const StringImpl* tag_name;
 
   // The container element's id attribute value.
   AtomicString id_attr;
 
   // Number of children elements by its `tag_name`.
-  HashMap<AtomicString, int> children_counts;
+  HashMap<const StringImpl*, int> children_counts;
 
-  void IncrementChildrenCount(const AtomicString& tag_name);
+  void IncrementChildrenCount(const StringImpl* tag_name);
 };
 
 class CORE_EXPORT TokenStreamMatcher {
@@ -52,11 +53,11 @@ class CORE_EXPORT TokenStreamMatcher {
 
   // Observe a start tag token and returns `true` iff any of the `locators_`
   // match.
-  bool ObserveStartTagAndReportMatch(const AtomicString& tag_name,
-                                     const AtomicString& id_attr);
+  bool ObserveStartTagAndReportMatch(const StringImpl* tag_name,
+                                     const HTMLToken& token);
 
   // Observe a end tag token.
-  void ObserveEndTag(const AtomicString& tag_name);
+  void ObserveEndTag(const StringImpl* tag_name);
 
  private:
 #ifndef NDEBUG
