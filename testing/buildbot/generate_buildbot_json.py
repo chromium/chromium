@@ -431,7 +431,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       args.mixins_pyl_path = os.path.join(args.infra_config_dir, 'generated',
                                           'testing', 'mixins.pyl')
     else:
-      args.mixins_pyl_path = absolute_file_path('mixins_pyl')
+      args.mixins_pyl_path = absolute_file_path('mixins.pyl')
 
     return args
 
