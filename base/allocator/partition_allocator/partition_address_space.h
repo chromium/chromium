@@ -5,10 +5,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ADDRESS_SPACE_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ADDRESS_SPACE_H_
 
-#include <algorithm>
-#include <array>
 #include <cstddef>
-#include <limits>
+#include <utility>
 
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
@@ -23,8 +21,11 @@
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/allocator/partition_allocator/thread_isolation/alignment.h"
-#include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
+
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
+#endif
 
 // The feature is not applicable to 32-bit address space.
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
