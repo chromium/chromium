@@ -55,6 +55,7 @@
        personalDataManager:self.personalDataManager];
   self.viewController =
       [[PaymentsSuggestionBottomSheetViewController alloc] init];
+  self.mediator.consumer = self.viewController;
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
                                       completion:nil];

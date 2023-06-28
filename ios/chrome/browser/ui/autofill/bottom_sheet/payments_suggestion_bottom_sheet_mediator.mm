@@ -85,12 +85,18 @@
 - (void)setConsumer:(id<PaymentsSuggestionBottomSheetConsumer>)consumer {
   _consumer = consumer;
 
-  if (!_consumer || !_personalDataManager) {
+  if (!_consumer) {
+    return;
+  }
+
+  if (!_personalDataManager) {
+    [_consumer dismiss];
     return;
   }
 
   const auto& creditCards = _personalDataManager->GetCreditCardsToSuggest();
   if (creditCards.empty()) {
+    [_consumer dismiss];
     return;
   }
 
@@ -168,7 +174,7 @@
 #pragma mark - Private
 
 - (void)onWebStateChange {
-  // TODO(crbug.com/1450214): Handle changes in web state
+  [self.consumer dismiss];
 }
 
 // Returns the icon associated with the provided credit card.

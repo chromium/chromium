@@ -68,6 +68,10 @@
   _creditCardData = creditCardData;
 }
 
+- (void)dismiss {
+  [self dismissViewControllerAnimated:NO completion:NULL];
+}
+
 #pragma mark - Private
 
 // Configures the title view of this ViewController.

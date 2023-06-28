@@ -17,6 +17,9 @@
 - (void)setCreditCardData:
     (NSArray<id<PaymentsSuggestionBottomSheetData>>*)creditCardData;
 
+// Request to dismiss the bottom sheet.
+- (void)dismiss;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_CONSUMER_H_
