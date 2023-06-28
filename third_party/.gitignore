@@ -249,9 +249,9 @@
 /requests/src
 /robolectric/lib/
 /robolectric/robolectric
+/rust-src
 /rust-toolchain
 /rust-toolchain-intermediate
-/rust_src/src
 /ruy/src
 /scan-build/src
 /scons-2.0.1

@@ -94,7 +94,7 @@ CLANG_SCRIPTS_DIR = os.path.join(CHROMIUM_DIR, 'tools', 'clang', 'scripts')
 RUST_GIT_URL = ('https://chromium.googlesource.com/external/' +
                 'github.com/rust-lang/rust')
 
-RUST_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'rust_src', 'src')
+RUST_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-src')
 RUST_BOOTSTRAP_DIST_RS = os.path.join(RUST_SRC_DIR, 'src', 'bootstrap',
                                       'dist.rs')
 STAGE0_JSON_PATH = os.path.join(RUST_SRC_DIR, 'src', 'stage0.json')
