@@ -619,9 +619,9 @@ def main():
     parser.add_argument('--skip-checkout',
                         action='store_true',
                         help='do not create or update any checkouts')
-    parser.add_argument('--update-deps',
+    parser.add_argument('--sync-for-gnrt',
                         action='store_true',
-                        help='update dependencies and exit.')
+                        help='sync checkout and deps for gnrt run then quit.')
     parser.add_argument('--skip-clean',
                         action='store_true',
                         help='skip x.py clean step')
@@ -660,12 +660,11 @@ def main():
         print('--build-mac-arm only valid on intel to cross-build arm')
         return 1
 
-    if args.update_deps:
-        args.skip_checkout = True
+    if args.sync_for_gnrt:
         args.skip_llvm_build = True
 
     args.gcc_toolchain = None
-    if sys.platform.startswith('linux') and not args.update_deps:
+    if sys.platform.startswith('linux') and not args.sync_for_gnrt:
         # Fetch GCC package here and pass it to build.py to avoid it doing the
         # same again. Used for the LLVM build and for any C/C++ targets inside
         # the Rust toolchain build.
@@ -687,7 +686,7 @@ def main():
     # builder, but we should change to using a package from 3pp when it is
     # available.
     if (sys.platform != 'win32' and not args.build_mac_arm
-            and not args.update_deps):
+            and not args.sync_for_gnrt):
         # Building cargo depends on OpenSSL.
         AddOpenSSLToEnv(args.build_mac_arm)
 
@@ -722,13 +721,25 @@ def main():
     if not args.skip_checkout:
         CheckoutGitRepo('Rust', RUST_GIT_URL, checkout_revision, RUST_SRC_DIR)
 
-    if not args.update_deps:
-        VerifyStage0JsonHash()
-        if args.verify_stage0_hash:
-            # The above function exits and prints the actual hash if
-            # verification failed so we just quit here; if we reach this point,
-            # the hash is valid.
-            return 0
+    path = FetchBetaPackage('cargo', checkout_revision)
+    if sys.platform == 'win32':
+        cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo.exe')
+    else:
+        cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo')
+    CargoVendor(cargo_bin)
+
+    # Gnrt needs the checkout to be up-to-date, workspace submodules to be
+    # synced for cargo to work, and the cargo binary itself. All this is done,
+    # so quit.
+    if args.sync_for_gnrt:
+        return 0
+
+    VerifyStage0JsonHash()
+    if args.verify_stage0_hash:
+        # The above function exits and prints the actual hash if
+        # verification failed so we just quit here; if we reach this point,
+        # the hash is valid.
+        return 0
 
     (x86_64_llvm_config, aarch64_llvm_config,
      target_llvm_dir) = BuildLLVMLibraries(args.skip_llvm_build,
@@ -740,16 +751,9 @@ def main():
     # Set up config.toml in Rust source tree.
     xpy.configure(args.build_mac_arm, x86_64_llvm_config, aarch64_llvm_config)
 
-    path = FetchBetaPackage('cargo', checkout_revision)
-    if sys.platform == 'win32':
-        cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo.exe')
-    else:
-        cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo')
-    CargoVendor(cargo_bin)
-
     # Deps are updated, so we're done now. All steps needed for --run-xpy to
     # work should be above this.
-    if args.update_deps or args.prepare_run_xpy:
+    if args.prepare_run_xpy:
         return 0
 
     building_on_host_triple = RustTargetTriple()

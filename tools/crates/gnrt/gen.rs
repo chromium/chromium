@@ -229,15 +229,9 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
 
     // The Rust source tree, containing the standard library and vendored
     // dependencies.
-    let rust_src_root = {
-        let for_std_value = args.get_one::<String>("for-std").unwrap();
-        if !for_std_value.is_empty() {
-            for_std_value.clone()
-        } else {
-            paths.rust_src_installed.to_string_lossy().to_string()
-        }
-    };
-    println!("Generating stdlib GN rules from {rust_src_root}");
+    let rust_src_root = args.get_one::<String>("for-std").unwrap().clone();
+
+    println!("Generating stdlib GN rules from {}", rust_src_root);
 
     let cargo_config = std::fs::read_to_string(paths.std_fake_root_config_template)
         .unwrap()
