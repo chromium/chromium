@@ -659,4 +659,78 @@ var kApplicationServerKey = new Uint8Array([
   EXPECT_TRUE(AppBrowserController::IsWebApp(new_app_window));
 }
 
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, SharedWorker) {
+  std::string register_worker_js = R"(
+    const policy = trustedTypes.createPolicy('default', {
+      createScriptURL: (url) => url,
+    });
+    const worker = new SharedWorker(
+        policy.createScriptURL('/shared_worker.js'));
+
+    let listener = null;
+    worker.port.addEventListener('message', (e) => {
+      listener(e.data);
+      listener = null;
+    });
+    worker.port.start();
+
+    function sendMessage(body) {
+      if (listener !== null) {
+        return Promise.reject('Already have pending request');
+      }
+      return new Promise((resolve) => {
+        listener = resolve;
+        worker.port.postMessage(body);
+      });
+    }
+  )";
+
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server().GetOrigin());
+  content::RenderFrameHost* app_frame1 = OpenApp(url_info.app_id());
+  ASSERT_TRUE(ExecJs(app_frame1, register_worker_js));
+
+  EXPECT_EQ("none", EvalJs(app_frame1, "sendMessage('hello')"));
+  EXPECT_EQ("hello", EvalJs(app_frame1, "sendMessage('world')"));
+
+  // Open a second window and make sure it uses the same worker instance.
+  content::RenderFrameHost* app_frame2 = OpenApp(url_info.app_id());
+  ASSERT_TRUE(ExecJs(app_frame2, register_worker_js));
+
+  EXPECT_EQ("world", EvalJs(app_frame2, "sendMessage('frame2!')"));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, DedicatedWorker) {
+  std::string register_worker_js = R"(
+    const policy = trustedTypes.createPolicy('default', {
+      createScriptURL: (url) => url,
+    });
+    const worker = new Worker(policy.createScriptURL('/dedicated_worker.js'));
+
+    let listener = null;
+    worker.addEventListener('message', (e) => {
+      listener(e.data);
+      listener = null;
+    });
+
+    function sendMessage(body) {
+      if (listener !== null) {
+        return Promise.reject('Already have pending request');
+      }
+      return new Promise((resolve) => {
+        listener = resolve;
+        worker.postMessage(body);
+      });
+    }
+  )";
+
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server().GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  ASSERT_TRUE(ExecJs(app_frame, register_worker_js));
+
+  EXPECT_EQ("none", EvalJs(app_frame, "sendMessage('hello')"));
+  EXPECT_EQ("hello", EvalJs(app_frame, "sendMessage('world')"));
+}
+
 }  // namespace web_app
