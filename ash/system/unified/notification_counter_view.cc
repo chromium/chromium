@@ -173,11 +173,11 @@ void NotificationCounterView::Update() {
 
   int icon_id = std::min(notification_count, kTrayNotificationMaxCount + 1);
   if (icon_id != count_for_display_) {
+    count_for_display_ = icon_id;
     image_view()->SetImage(
         gfx::CanvasImageSource::MakeImageSkia<NumberIconImageSource>(this,
                                                                      icon_id));
     UpdateLabelOrImageViewColor(is_active());
-    count_for_display_ = icon_id;
   }
   SetVisible(true);
 }

@@ -270,6 +270,10 @@ class ASH_EXPORT UnifiedSystemTray
 
   CameraMicTrayItemView* mic_view() { return mic_view_; }
 
+  NotificationIconsController* notification_icons_controller() {
+    return notification_icons_controller_.get();
+  }
+
  private:
   static const base::TimeDelta kNotificationCountUpdateDelay;
 

@@ -3910,6 +3910,7 @@ test("ash_pixeltests") {
     "system/unified/feature_tile_pixeltest.cc",
     "system/unified/power_button_pixeltest.cc",
     "system/unified/unified_slider_view_pixeltest.cc",
+    "system/unified/unified_system_tray_pixeltest.cc",
     "system/update/eol_notice_quick_settings_view_pixeltest.cc",
     "system/video_conference/bubble/bubble_view_pixeltest.cc",
     "system/video_conference/video_conference_tray_pixeltest.cc",
