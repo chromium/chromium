@@ -34,6 +34,21 @@ chromium-metrics-reviews@google.com.
   <variant name="Shown" summary="shown"/>
 </variants>
 
+<histogram name="SBClientDownload.AutoOpen{State}FileType"
+    enum="SBClientDownloadExtensions" expires_after="2024-06-27">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the extension of files downloaded with auto-open {State}. This can
+    be used to decide the impact of changing the `auto_open_hint` in the file
+    type policy. It is logged on every successful download.
+  </summary>
+  <token key="State">
+    <variant name="Disabled" summary="disabled"/>
+    <variant name="Enabled" summary="enabled"/>
+  </token>
+</histogram>
+
 <histogram name="SBClientDownload.CheckDownloadStats"
     enum="SBClientDownloadCheckDownloadStats" expires_after="2023-12-04">
   <owner>vakh@chromium.org</owner>

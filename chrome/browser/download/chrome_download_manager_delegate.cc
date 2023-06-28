@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
@@ -601,7 +602,19 @@ bool ChromeDownloadManagerDelegate::ShouldAutomaticallyOpenFile(
   if (path.MatchesExtension(extensions::kExtensionFileExtension))
     return false;
 #endif
-  return download_prefs_->IsAutoOpenEnabled(url, path);
+
+  bool should_open = download_prefs_->IsAutoOpenEnabled(url, path);
+  int64_t file_type_uma_value =
+      safe_browsing::FileTypePolicies::GetInstance()->UmaValueForFile(path);
+  if (should_open) {
+    base::UmaHistogramSparse("SBClientDownload.AutoOpenEnabledFileType",
+                             file_type_uma_value);
+  } else {
+    base::UmaHistogramSparse("SBClientDownload.AutoOpenDisabledFileType",
+                             file_type_uma_value);
+  }
+
+  return should_open;
 }
 
 bool ChromeDownloadManagerDelegate::ShouldAutomaticallyOpenFileByPolicy(
