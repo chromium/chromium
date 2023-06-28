@@ -205,6 +205,8 @@ async def test_network_network_response_completed_event_emitted(
         })
 
     resp = await read_JSON_message(websocket)
+    headersSize = compute_response_headers_size(
+        resp["params"]["response"]["headers"])
 
     assert resp == {
         "method": "network.responseCompleted",
@@ -232,7 +234,7 @@ async def test_network_network_response_completed_event_emitted(
                 "headers": ANY_LIST,
                 "mimeType": "text/html",
                 "bytesReceived": ANY_NUMBER,
-                "headersSize": ANY_NUMBER,
+                "headersSize": headersSize,
                 "bodySize": 0,
                 "content": {
                     "size": 0
@@ -319,3 +321,7 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
             "timestamp": ANY_TIMESTAMP
         }
     }
+
+
+def compute_response_headers_size(headers: list[dict[str, str]]) -> int:
+    return sum(sum(len(v) for v in header.values()) + 4 for header in headers)

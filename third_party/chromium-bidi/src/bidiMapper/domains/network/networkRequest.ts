@@ -292,6 +292,10 @@ export class NetworkRequest {
       this.#responseReceivedExtraInfoEvent = undefined;
     }
 
+    const headers = NetworkRequest.#getHeaders(
+      this.#responseReceivedEvent.response.headers
+    );
+
     return {
       method: Network.EventNames.ResponseCompletedEvent,
       params: {
@@ -307,13 +311,10 @@ export class NetworkRequest {
             this.#responseReceivedEvent.response.fromDiskCache ||
             this.#responseReceivedEvent.response.fromPrefetchCache ||
             this.#servedFromCache,
-          headers: NetworkRequest.#getHeaders(
-            this.#responseReceivedEvent.response.headers
-          ),
+          headers,
           mimeType: this.#responseReceivedEvent.response.mimeType,
           bytesReceived: this.#responseReceivedEvent.response.encodedDataLength,
-          headersSize:
-            this.#responseReceivedExtraInfoEvent?.headersText?.length ?? 0,
+          headersSize: this.#computeResponseHeadersSize(headers),
           // TODO: consider removing from spec.
           bodySize: 0,
           content: {
@@ -323,6 +324,12 @@ export class NetworkRequest {
         },
       },
     };
+  }
+
+  #computeResponseHeadersSize(headers: Network.Header[]): number {
+    return headers.reduce((total, header) => {
+      return total + header.name.length + (header.value?.length ?? 0) + 4; // 4 = ': ' + '\r\n'
+    }, 0);
   }
 
   #isIgnoredEvent(): boolean {
