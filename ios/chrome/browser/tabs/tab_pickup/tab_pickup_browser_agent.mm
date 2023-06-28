@@ -24,6 +24,7 @@
 BROWSER_USER_DATA_KEY_IMPL(TabPickupBrowserAgent)
 
 bool TabPickupBrowserAgent::transition_time_metric_recorded = false;
+bool TabPickupBrowserAgent::infobar_displayed = false;
 
 TabPickupBrowserAgent::TabPickupBrowserAgent(Browser* browser)
     : browser_(browser),
@@ -38,6 +39,14 @@ TabPickupBrowserAgent::TabPickupBrowserAgent(Browser* browser)
       session_sync_service_->SubscribeToForeignSessionsChanged(
           base::BindRepeating(&TabPickupBrowserAgent::ForeignSessionsChanged,
                               base::Unretained(this)));
+
+  foreground_notification_observer_ = [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIApplicationWillEnterForegroundNotification
+                  object:nil
+                   queue:nil
+              usingBlock:^(NSNotification* notification) {
+                this->AppWillEnterForeground();
+              }];
 }
 
 TabPickupBrowserAgent::~TabPickupBrowserAgent() {
@@ -98,7 +107,7 @@ void TabPickupBrowserAgent::ForeignSessionsChanged() {
     return;
   }
 
-  if (!active_web_state_ || infobar_in_progress_) {
+  if (!active_web_state_ || infobar_in_progress_ || infobar_displayed) {
     return;
   }
 
@@ -155,6 +164,7 @@ void TabPickupBrowserAgent::ShowInfoBar() {
       InfobarType::kInfobarTypeTabPickup, std::move(delegate_));
   infobar_ = infobar_manager->AddInfoBar(std::move(infobar),
                                          /*replace_existing=*/true);
+  infobar_displayed = true;
 }
 
 void TabPickupBrowserAgent::RecordTransitionTime() {
@@ -174,4 +184,8 @@ void TabPickupBrowserAgent::RecordTransitionTime() {
                                   time_since_last_sync, base::Minutes(1),
                                   base::Days(24), 50);
   }
+}
+
+void TabPickupBrowserAgent::AppWillEnterForeground() {
+  infobar_displayed = false;
 }

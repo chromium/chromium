@@ -56,6 +56,9 @@ class TabPickupBrowserAgent : public BrowserObserver,
   // Adds/replaces the infobar and show the banner.
   void ShowInfoBar();
 
+  // Called when the app has been foregrounded.
+  void AppWillEnterForeground();
+
   // BrowserObserver methods.
   void BrowserDestroyed(Browser* browser) override;
 
@@ -73,8 +76,10 @@ class TabPickupBrowserAgent : public BrowserObserver,
   // infobars::InfoBarManager::Observer methods.
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
 
-  // Track if an infobar will be displayed.
+  // Tracks if an infobar will be displayed.
   bool infobar_in_progress_ = false;
+  // Tracks if an infobar has been displayed since the last app foreground.
+  static bool infobar_displayed;
   // Tracks if the `IOS.TabPickup.TimeSinceLastCrossDeviceSync` metric has been
   // recorded.
   static bool transition_time_metric_recorded;
@@ -98,6 +103,8 @@ class TabPickupBrowserAgent : public BrowserObserver,
   base::ScopedObservation<infobars::InfoBarManager,
                           infobars::InfoBarManager::Observer>
       infobar_manager_scoped_observation_{this};
+  // Holds references to foreground NSNotification callback observer.
+  id foreground_notification_observer_;
 };
 
 #endif  // IOS_CHROME_BROWSER_TABS_TAB_PICKUP_TAB_PICKUP_BROWSER_AGENT_H_
