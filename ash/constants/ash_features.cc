@@ -943,6 +943,12 @@ BASE_FEATURE(kFeatureManagement16Desks,
              "FeatureManagement16Desks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, shows a system update notification. This flag is intended to be
+// controlled by the feature management module.
+BASE_FEATURE(kFeatureManagementUpdateNotification,
+             "FeatureManagementUpdateNotification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows borealis on certain boards whose features are determined by
 // FeatureManagement. This feature does not apply to all boards, and does not
 // guarantee borealis will be available (due to additional hardware checks).
@@ -2642,6 +2648,10 @@ bool IsAutoEnrollmentKioskInOobeEnabled() {
 
 bool Is16DesksEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagement16Desks);
+}
+
+bool IsUpdateNotificationEnabled() {
+  return base::FeatureList::IsEnabled(kFeatureManagementUpdateNotification);
 }
 
 bool IsAdaptiveChargingEnabled() {
