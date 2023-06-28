@@ -855,10 +855,51 @@ be describing additional metrics about the same event.
       Aggregated across all components for a multi-seller auctions, this records
       the max latency in millis of calls to GenerateSingleBid. This is related
       to UMA metric, Ads.InterestGroup.Auction.GenerateBidTime, except that it's
-      already aggregated across all GenerateSingleBid calls for this auction.
-      Like the UMA metric, this measures each distinct call to
-      GenerateSingleBid, for which there could be two for a given InterestGroup,
-      one that satisfies the kAnon threshold, and one that doesn't.
+      aggregated across all GenerateSingleBid calls for this auction. Like the
+      UMA metric, this measures each distinct call to GenerateSingleBid, for
+      which there could be two for a given InterestGroup, one that satisfies the
+      kAnon threshold, and one that doesn't.
+    </summary>
+  </metric>
+  <metric name="MaxScoreAdCodeReadyLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the max time in millis that ScoreAd waited for the Script load.
+    </summary>
+  </metric>
+  <metric name="MaxScoreAdDirectFromSellerSignalsLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the max time in millis that ScoreAd waited for the download of the
+      DirectFromSellerSignals. This combines the SellerSignals and
+      AuctionSignals, and as such, this is the latency of the slower of the two
+      to complete.
+    </summary>
+  </metric>
+  <metric name="MaxScoreAdFlowLatencyInMillis">
+    <summary>
+      Aggregated across all components for a multi-seller auctions, this
+      records, across all of the ads scored, the max latency in millis between
+      InterestGroupAuction::ScoreBidIfReady (the second call to it, which in
+      turn calls SellerWorklet::ScoreAd) and
+      InterestGroupAuction::OnScoreAdComplete.
+    </summary>
+  </metric>
+  <metric name="MaxScoreAdLatencyInMillis">
+    <summary>
+      Aggregated across all components for a multi-seller auctions, this records
+      the max latency in millis of calls to V8State::ScoreAd. This is related to
+      UMA metric, Ads.InterestGroup.Auction.ScoreAdTime, except that it's
+      aggregated across all GenerateSingleBid calls for this auction.
+    </summary>
+  </metric>
+  <metric name="MaxScoreAdTrustedScoringSignalsLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the max time in millis that ScoreAd waited for the download of the
+      TrustedScoringSignals. This includes *all* TrustedScoringSignals for that
+      buyer, because of how those all need to be available in order to
+      reprioritize InterestGroups and apply per-buyer group limits.
     </summary>
   </metric>
   <metric name="MeanBidForOneInterestGroupLatencyInMillis">
@@ -962,10 +1003,79 @@ be describing additional metrics about the same event.
       Aggregated across all components for a multi-seller auctions, this records
       the mean latency in millis of calls to GenerateSingleBid. This is related
       to UMA metric, Ads.InterestGroup.Auction.GenerateBidTime, except that it's
-      already aggregated across all GenerateSingleBid calls for this auction.
-      Like the UMA metric, this measures each distinct call to
-      GenerateSingleBid, for which there could be two for a given InterestGroup,
-      one that satisfies the kAnon threshold, and one that doesn't.
+      aggregated across all GenerateSingleBid calls for this auction. Like the
+      UMA metric, this measures each distinct call to GenerateSingleBid, for
+      which there could be two for a given InterestGroup, one that satisfies the
+      kAnon threshold, and one that doesn't.
+    </summary>
+  </metric>
+  <metric name="MeanScoreAdCodeReadyCriticalPathLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean critical path latency in millis, the time after all other ScoreAd
+      dependencies were satisfied that ScoreAd was blocked waiting for the
+      Script load.
+    </summary>
+  </metric>
+  <metric name="MeanScoreAdCodeReadyLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean time in millis that ScoreAd waited for the Script load.
+    </summary>
+  </metric>
+  <metric name="MeanScoreAdDirectFromSellerSignalsCriticalPathLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean critical path latency in millis, the time after all other ScoreAd
+      dependencies were satisfied that ScoreAd was blocked waiting for the
+      download of the DirectFromSellerSignals. This combines the SellerSignals
+      and AuctionSignals since they should arrive at roughly the same time.
+    </summary>
+  </metric>
+  <metric name="MeanScoreAdDirectFromSellerSignalsLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean time in millis that ScoreAd waited for the download of the
+      DirectFromSellerSignals. This combines the SellerSignals and
+      AuctionSignals, and as such, this is the latency of the slower of the two
+      to complete.
+    </summary>
+  </metric>
+  <metric name="MeanScoreAdFlowLatencyInMillis">
+    <summary>
+      Aggregated across all components for a multi-seller auctions, this
+      records, across all of the ads scored, the mean latency in millis between
+      InterestGroupAuction::ScoreBidIfReady (the second call to it, which in
+      turn calls SellerWorklet::ScoreAd) and
+      InterestGroupAuction::OnScoreAdComplete.
+    </summary>
+  </metric>
+  <metric name="MeanScoreAdLatencyInMillis">
+    <summary>
+      Aggregated across all components for a multi-seller auctions, this records
+      the mean latency in millis of calls to V8State::ScoreAd. This is related
+      to UMA metric, Ads.InterestGroup.Auction.ScoreAdTime, except that it's
+      aggregated across all GenerateSingleBid calls for this auction.
+    </summary>
+  </metric>
+  <metric name="MeanScoreAdTrustedScoringSignalsCriticalPathLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean critical path latency in millis, the time after all other ScoreAd
+      dependencies were satisfied that ScoreAd was blocked waiting for the
+      download of the TrustedScoringSignals. This includes *all*
+      TrustedScoringSignals for that buyer, because of how those all need to be
+      available in order to reprioritize InterestGroups and apply per-buyer
+      group limits.
+    </summary>
+  </metric>
+  <metric name="MeanScoreAdTrustedScoringSignalsLatencyInMillis">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the mean time in millis that ScoreAd waited for the download of the
+      TrustedScoringSignals. This includes *all* TrustedScoringSignals for that
+      buyer, because of how those all need to be available in order to
+      reprioritize InterestGroups and apply per-buyer group limits.
     </summary>
   </metric>
   <metric name="MeanTimeBidsQueuedWaitingForConfigPromisesInMillis">
@@ -1185,6 +1295,28 @@ be describing additional metrics about the same event.
       negative. However, it counts a buyer repeatedly for each component auction
       that buyer participates in. No value is defined for this metric if there
       are no bidders eligible to participate in this auction.
+    </summary>
+  </metric>
+  <metric name="NumScoreAdCodeReadyOnCriticalPath">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the number of occurrences in which ScoreAd was blocked waiting for the
+      Script load.
+    </summary>
+  </metric>
+  <metric name="NumScoreAdDirectFromSellerSignalsOnCriticalPath">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the number of occurrences in which ScoreAd was blocked waiting for the
+      download of the DirectFromSellerSignals. This combines the SellerSignals
+      and AuctionSignals since they should arrive at roughly the same time.
+    </summary>
+  </metric>
+  <metric name="NumScoreAdTrustedScoringSignalsOnCriticalPath">
+    <summary>
+      Aggregated across all components for multi-seller auctions, this records
+      the number of occurrences in which ScoreAd was blocked waiting for the
+      download of the TrustedScoringSignals.
     </summary>
   </metric>
   <metric name="NumSellersWithBidders">

@@ -268,7 +268,6 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         absl::optional<GURL> debug_win_report_url,
         PrivateAggregationRequests pa_requests,
         base::TimeDelta scoring_latency,
-        base::TimeDelta trusted_signals_fetch_latency,
         std::vector<std::string> errors)>;
     using ReportResultCallbackInternal =
         base::OnceCallback<void(absl::optional<std::string> signals_for_winner,
@@ -311,7 +310,6 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         uint32_t browser_signal_bidding_duration_msecs,
         const absl::optional<base::TimeDelta> seller_timeout,
         uint64_t trace_id,
-        base::TimeDelta trusted_signals_fetch_latency,
         base::ScopedClosureRunner cleanup_score_ad_task,
         ScoreAdCallbackInternal callback);
 
@@ -354,6 +352,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     // report URLs, even if the methods to set them have been invoked.
     void PostScoreAdCallbackToUserThreadOnError(
         ScoreAdCallbackInternal callback,
+        base::TimeDelta scoring_latency,
         std::vector<std::string> errors,
         PrivateAggregationRequests pa_requests = {});
 
@@ -369,7 +368,6 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         absl::optional<GURL> debug_win_report_url,
         PrivateAggregationRequests pa_requests,
         base::TimeDelta scoring_latency,
-        base::TimeDelta trusted_signals_fetch_latency,
         std::vector<std::string> errors);
 
     void PostReportResultCallbackToUserThread(
@@ -453,7 +451,6 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       absl::optional<GURL> debug_win_report_url,
       PrivateAggregationRequests pa_requests,
       base::TimeDelta scoring_latency,
-      base::TimeDelta trusted_signals_fetch_latency,
       std::vector<std::string> errors);
 
   // Removes `task` from `score_ad_tasks_` only. Used in case where the

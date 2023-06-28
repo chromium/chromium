@@ -177,8 +177,8 @@ class CONTENT_EXPORT InterestGroupAuction
     void EndTracingKAnonScoring();
 
     // Use a unique pointer so this can be more safely moved to the
-    // InterestGroupAuctionReporter. Doing so both preserves pointers, and make sure
-    // there's a crash if this is dereferenced after move.
+    // InterestGroupAuctionReporter. Doing so both preserves pointers, and make
+    // sure there's a crash if this is dereferenced after move.
     std::unique_ptr<StorageInterestGroup> bidder;
 
     // Set of render keys that are k-anonymous and correspond to ad or ad
@@ -376,6 +376,9 @@ class CONTENT_EXPORT InterestGroupAuction
     // How long various inputs were waited for.
     base::TimeDelta wait_worklet;
     base::TimeDelta wait_promises;
+
+    // Time we called ScoreAd on the SellerWorklet.
+    base::TimeTicks seller_worklet_score_ad_start;
   };
 
   // Combines a Bid with seller score and seller state needed to invoke its
@@ -805,7 +808,8 @@ class CONTENT_EXPORT InterestGroupAuction
       const absl::optional<GURL>& debug_win_report_url,
       PrivateAggregationRequests pa_requests,
       base::TimeDelta scoring_latency,
-      base::TimeDelta trusted_signals_fetch_latency,
+      auction_worklet::mojom::ScoreAdDependencyLatenciesPtr
+          score_ad_dependency_latencies,
       const std::vector<std::string>& errors) override;
 
   PrivateAggregationPhase seller_phase() const {
