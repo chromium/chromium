@@ -699,6 +699,9 @@ interface CSSSkewY : CSSTransformComponent
     getter ay
     method constructor
     setter ay
+interface CSSStartingStyleRule : CSSGroupingRule
+    attribute @@toStringTag
+    method constructor
 interface CSSStyleDeclaration
     attribute @@toStringTag
     getter cssFloat

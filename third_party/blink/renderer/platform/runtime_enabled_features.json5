@@ -1084,7 +1084,7 @@
     {
       // https://drafts.csswg.org/css-transitions-2/#defining-before-change-style-the-starting-style-rule
       name: "CSSStartingStyle",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Explainer: https://drafts.csswg.org/css-values/#round-func
