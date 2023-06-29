@@ -79,7 +79,7 @@ public class RestoreTabsUiRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_RECENT_TABS)
-                    .setRevision(2)
+                    .setRevision(3)
                     .build();
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
