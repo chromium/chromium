@@ -47,7 +47,9 @@ import {PerformanceTestRunner} from 'performance_test_runner';
     TestRunner.addResult('Tests accessibility in performance Details view using the axe-core linter');
 
     // Details pane gets data from the parent TimelineDetails view
-    detailsView.setModel(model, PerformanceTestRunner.mainTrack());
+    // model = SDK Performance Model
+    // null = where we would pass in the new TraceEngine data, if we had it.
+    detailsView.setModel(model, null, PerformanceTestRunner.mainTrackEvents());
 
     const tabbedPane = detailsView.tabbedPane;
     tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.Details);
