@@ -1519,6 +1519,9 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
       case ClientSafeBrowsingReportRequest::HASH_PREFIX_REAL_TIME_EXPERIMENT:
         report_type = "HASH_PREFIX_REAL_TIME_EXPERIMENT";
         break;
+      case ClientSafeBrowsingReportRequest::PHISHY_SITE_INTERACTIONS:
+        report_type = "PHISHY_SITE_INTERACTIONS";
+        break;
     }
     report_request.Set("type", report_type);
   }

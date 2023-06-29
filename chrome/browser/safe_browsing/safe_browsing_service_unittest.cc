@@ -123,6 +123,51 @@ class SafeBrowsingServiceTest : public testing::Test {
     EXPECT_EQ(actual_request->token(), "download_token");
   }
 
+  void VerifyInteractionOccurrenceCount(
+      const ClientSafeBrowsingReportRequest& report,
+      const ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+          PhishySiteInteractionType& expected_interaction_type,
+      const int& expected_occurrence_count) {
+    // Find the interaction within the report by comparing
+    // security_interstitial_interaction.
+    for (auto interaction : report.phishy_site_interactions()) {
+      if (interaction.phishy_site_interaction_type() ==
+          expected_interaction_type) {
+        EXPECT_EQ(interaction.occurrence_count(), expected_occurrence_count);
+        break;
+      }
+    }
+  }
+
+  void VerifyPhishySiteReportRequest(
+      ClientSafeBrowsingReportRequest* actual_request,
+      GURL& expected_url,
+      int expected_interaction_size,
+      int expected_click_occurrences,
+      int expected_key_occurrences,
+      int expected_paste_occurrences) {
+    EXPECT_EQ(actual_request->type(),
+              ClientSafeBrowsingReportRequest::PHISHY_SITE_INTERACTIONS);
+    EXPECT_EQ(actual_request->url(), expected_url.spec());
+    EXPECT_EQ(actual_request->phishy_site_interactions_size(),
+              expected_interaction_size);
+    VerifyInteractionOccurrenceCount(
+        *actual_request,
+        ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+            PHISHY_CLICK_EVENT,
+        expected_click_occurrences);
+    VerifyInteractionOccurrenceCount(
+        *actual_request,
+        ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+            PHISHY_KEY_EVENT,
+        expected_key_occurrences);
+    VerifyInteractionOccurrenceCount(
+        *actual_request,
+        ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+            PHISHY_PASTE_EVENT,
+        expected_paste_occurrences);
+  }
+
   void VerifyDownloadWarningAction(
       const ClientSafeBrowsingReportRequest::DownloadWarningAction&
           warning_action,
@@ -208,6 +253,16 @@ TEST_F(
       /*show_download_in_folder=*/true));
 }
 
+TEST_F(SafeBrowsingServiceTest, SendPhishyInteractionsReport_Disabled) {
+  SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
+  GURL test_url("http://phishing.com");
+  GURL test_page_url("http://page_url.com");
+  PhishySiteInteractionMap test_map = PhishySiteInteractionMap();
+
+  EXPECT_FALSE(sb_service_->SendPhishyInteractionsReport(
+      profile(), test_url, test_page_url, test_map));
+}
+
 class SafeBrowsingServiceTestWithCsbrrNewTriggerDisabled
     : public SafeBrowsingServiceTest {
  public:
@@ -243,6 +298,81 @@ TEST_F(SafeBrowsingServiceTestWithCsbrrNewTriggerDisabled,
       ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED,
       /*did_proceed=*/true,
       /*show_download_in_folder=*/true));
+}
+
+class SafeBrowsingServiceTestWithAntiPhishingTelemetryEnabled
+    : public SafeBrowsingServiceTest {
+ public:
+  SafeBrowsingServiceTestWithAntiPhishingTelemetryEnabled() {
+    feature_list_.InitAndEnableFeature(safe_browsing::kAntiPhishingTelemetry);
+  }
+
+ protected:
+  PhishySiteInteractionMap SetUpPhishyInteractionMap(
+      int expected_click_occurrences,
+      int expected_key_occurrences,
+      int expected_paste_occurrences) {
+    PhishySiteInteractionMap new_map;
+    if (expected_click_occurrences > 0) {
+      new_map.insert_or_assign(
+          ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+              PHISHY_CLICK_EVENT,
+          PhishyPageInteractionDetails(expected_click_occurrences,
+                                       base::Time::Now().ToJavaTime(),
+                                       base::Time::Now().ToJavaTime()));
+    }
+    if (expected_key_occurrences > 0) {
+      new_map.insert_or_assign(
+          ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+              PHISHY_KEY_EVENT,
+          PhishyPageInteractionDetails(expected_key_occurrences,
+                                       base::Time::Now().ToJavaTime(),
+                                       base::Time::Now().ToJavaTime()));
+    }
+    if (expected_paste_occurrences > 0) {
+      new_map.insert_or_assign(
+          ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+              PHISHY_PASTE_EVENT,
+          PhishyPageInteractionDetails(expected_paste_occurrences,
+                                       base::Time::Now().ToJavaTime(),
+                                       base::Time::Now().ToJavaTime()));
+    }
+    return new_map;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SafeBrowsingServiceTestWithAntiPhishingTelemetryEnabled,
+       SendPhishyInteractionsReport_Success) {
+  const int kExpectedClickEventCount = 5;
+  const int kExpectedKeyEventCount = 2;
+  const int kExpectedPasteEventCount = 0;
+  SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
+  GURL test_url("http://phishing.com");
+  GURL test_page_url("http://page_url.com");
+  PhishySiteInteractionMap test_map = SetUpPhishyInteractionMap(
+      kExpectedClickEventCount, kExpectedKeyEventCount,
+      kExpectedPasteEventCount);
+
+  auto* ping_manager =
+      ChromePingManagerFactory::GetForBrowserContext(profile());
+  network::TestURLLoaderFactory test_url_loader_factory;
+  test_url_loader_factory.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        std::unique_ptr<ClientSafeBrowsingReportRequest> actual_request =
+            GetActualRequest(request);
+        VerifyPhishySiteReportRequest(
+            actual_request.get(), test_url, 2, kExpectedClickEventCount,
+            kExpectedKeyEventCount, kExpectedPasteEventCount);
+      }));
+  ping_manager->SetURLLoaderFactoryForTesting(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory));
+
+  EXPECT_TRUE(sb_service_->SendPhishyInteractionsReport(
+      profile(), test_url, test_page_url, test_map));
 }
 
 }  // namespace safe_browsing

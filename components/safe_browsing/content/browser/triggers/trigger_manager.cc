@@ -47,6 +47,10 @@ bool TriggerNeedsOptInForCollection(const TriggerType trigger_type) {
       // APK download collection happens in the background so the user must
       // already be opted in before the trigger is allowed to run.
       return true;
+    case TriggerType::PHISHY_SITE_INTERACTION:
+      // For phishy site interactions reporting, the user must already be
+      // opted in before the trigger is allowed to run.
+      return true;
     case TriggerType::DEPRECATED_AD_POPUP:
     case TriggerType::DEPRECATED_AD_REDIRECT:
       NOTREACHED() << "These triggers have been handled in "
