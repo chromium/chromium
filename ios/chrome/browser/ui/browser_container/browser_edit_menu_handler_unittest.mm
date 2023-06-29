@@ -62,6 +62,117 @@ NSString* kPageHTML = @"<html>"
                        "    This is a simple HTML file."
                        "  </body>"
                        "</html>";
+
+// Return the base menu depending on the environment.
+NSMutableArray* GetExpectedMenu() {
+  if (@available(iOS 17, *)) {
+    return [NSMutableArray arrayWithArray:@[
+      @"0:m:com.apple.menu.standard-edit",
+      @"1:c:cut:",
+      @"1:c:copy:",
+      @"1:c:paste:",
+      @"1:c:delete:",
+      @"1:c:select:",
+      @"1:c:selectAll:",
+      @"0:m:com.apple.menu.replace",
+      @"1:c:_promptForReplace:",
+      @"1:c:_transliterateChinese:",
+      @"1:m:com.apple.menu.insert",
+      @"2:c:_insertDrawing:",
+      @"2:c:captureTextFromCamera:",
+      @"2:m:com.apple.menu.insert-from-external-sources",
+      @"2:c:orderFrontCharacterPalette:",
+      @"0:m:com.apple.menu.open",
+      @"0:m:com.apple.menu.format",
+      @"1:m:com.apple.menu.text-style",
+      @"2:c:toggleBoldface:",
+      @"2:c:toggleItalics:",
+      @"2:c:toggleUnderline:",
+      @"1:m:com.apple.menu.writing-direction",
+      @"2:c:makeTextWritingDirectionRightToLeft:",
+      @"2:c:makeTextWritingDirectionLeftToRight:",
+      @"1:c:_showTextFormattingOptions:",
+      @"0:m:com.apple.menu.lookup",
+      @"1:c:_findSelected:",
+      @"1:c:_define:",
+      @"1:c:_translate:",
+      @"0:m:com.apple.menu.learn",
+      @"1:c:_addShortcut:",
+      @"0:m:com.apple.command.speech",
+      @"1:c:_accessibilitySpeak:",
+      @"1:c:_accessibilitySpeakLanguageSelection:",
+      @"1:c:_accessibilityPauseSpeaking:",
+      @"0:m:com.apple.menu.share",
+      @"1:c:_share:"
+    ]];
+  }
+  NSMutableArray* expectedMenuDescription = [NSMutableArray arrayWithArray:@[
+    @"0:m:com.apple.menu.standard-edit",
+    @"1:c:cut:",
+    @"1:c:copy:",
+    @"1:c:paste:",
+    @"1:c:delete:",
+    @"1:c:select:",
+    @"1:c:selectAll:",
+    @"0:m:com.apple.menu.replace",
+    @"1:c:_promptForReplace:",
+    @"1:c:_transliterateChinese:",
+    @"1:c:_insertDrawing:",
+    @"1:c:captureTextFromCamera:",
+    @"0:m:com.apple.menu.open",
+    @"0:m:com.apple.menu.format",
+    @"1:m:com.apple.menu.text-style",
+    @"2:c:toggleBoldface:",
+    @"2:c:toggleItalics:",
+    @"2:c:toggleUnderline:",
+    @"1:m:com.apple.menu.writing-direction",
+    @"2:c:makeTextWritingDirectionRightToLeft:",
+    @"2:c:makeTextWritingDirectionLeftToRight:",
+    @"0:m:com.apple.menu.lookup",
+    @"1:c:_findSelected:",
+    @"1:c:_define:",
+    @"1:c:_translate:",
+    @"0:m:com.apple.menu.learn",
+    @"1:c:_addShortcut:",
+    @"0:m:com.apple.command.speech",
+    @"1:c:_accessibilitySpeak:",
+    @"1:c:_accessibilitySpeakLanguageSelection:",
+    @"1:c:_accessibilityPauseSpeaking:",
+    @"0:m:com.apple.menu.share",
+    @"1:c:_share:"
+  ]];
+  return expectedMenuDescription;
+}
+
+// Add Open In New Canvas on iPad
+void AddOpenInNewCanvas(NSMutableArray* menu) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  for (unsigned int i = 0; i < menu.count; i++) {
+    if ([menu[i] isEqualToString:@"0:m:com.apple.menu.format"]) {
+      [menu insertObject:@"1:c:_openInNewCanvas:" atIndex:i];
+      return;
+    }
+  }
+}
+
+// Modify the expected menu for partial translate
+void AddPartialTranslate(NSMutableArray* menu) {
+  for (unsigned int i = 0; i < menu.count; i++) {
+    if ([menu[i] isEqualToString:@"1:c:_translate:"]) {
+      menu[i] = @"1:c:chromePartialTranslate:";
+      return;
+    }
+  }
+}
+
+// Modify the expected menu for Link to text
+void AddLinkToText(NSMutableArray* menu) {
+  [menu addObjectsFromArray:@[
+    @"0:m:chromecommand.linktotext", @"1:c:linkToText:"
+  ]];
+}
 }  // namespace
 
 // A delegate used to intercept the menu of the webView.
@@ -156,98 +267,22 @@ class BrowserEditMenuHandlerTest : public PlatformTest {
 // Test the base structure of the menu.
 TEST_F(BrowserEditMenuHandlerTest, CheckBaseMenuDescription) {
   if (@available(iOS 16, *)) {
-    NSMutableArray* expectedIOS16MenuDescription =
-        [NSMutableArray arrayWithArray:@[
-          @"0:m:com.apple.menu.standard-edit",
-          @"1:c:cut:",
-          @"1:c:copy:",
-          @"1:c:paste:",
-          @"1:c:delete:",
-          @"1:c:select:",
-          @"1:c:selectAll:",
-          @"0:m:com.apple.menu.replace",
-          @"1:c:_promptForReplace:",
-          @"1:c:_transliterateChinese:",
-          @"1:c:_insertDrawing:",
-          @"1:c:captureTextFromCamera:",
-          @"0:m:com.apple.menu.open",
-          @"0:m:com.apple.menu.format",
-          @"1:m:com.apple.menu.text-style",
-          @"2:c:toggleBoldface:",
-          @"2:c:toggleItalics:",
-          @"2:c:toggleUnderline:",
-          @"1:m:com.apple.menu.writing-direction",
-          @"2:c:makeTextWritingDirectionRightToLeft:",
-          @"2:c:makeTextWritingDirectionLeftToRight:",
-          @"0:m:com.apple.menu.lookup",
-          @"1:c:_findSelected:",
-          @"1:c:_define:",
-          @"1:c:_translate:",
-          @"0:m:com.apple.menu.learn",
-          @"1:c:_addShortcut:",
-          @"0:m:com.apple.command.speech",
-          @"1:c:_accessibilitySpeak:",
-          @"1:c:_accessibilitySpeakLanguageSelection:",
-          @"1:c:_accessibilityPauseSpeaking:",
-          @"0:m:com.apple.menu.share",
-          @"1:c:_share:"
-        ]];
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-      [expectedIOS16MenuDescription insertObject:@"1:c:_openInNewCanvas:"
-                                         atIndex:13];
-    }
+    NSMutableArray* expectedMenuDescription = GetExpectedMenu();
+    AddOpenInNewCanvas(expectedMenuDescription);
     [base_view_controller_.view addSubview:web_state_->GetView()];
     web::test::LoadHtml(kPageHTML, web_state_.get());
 
-    EXPECT_NSEQ(expectedIOS16MenuDescription, GetMenuDescription());
+    EXPECT_NSEQ(expectedMenuDescription, GetMenuDescription());
   }
 }
 
 // Test the structure of the menu with Chrome actions.
 TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
   if (@available(iOS 16, *)) {
-    NSMutableArray* expectedCustomMenuDescription =
-        [NSMutableArray arrayWithArray:@[
-          @"0:m:com.apple.menu.standard-edit",
-          @"1:c:cut:",
-          @"1:c:copy:",
-          @"1:c:paste:",
-          @"1:c:delete:",
-          @"1:c:select:",
-          @"1:c:selectAll:",
-          @"0:m:com.apple.menu.replace",
-          @"1:c:_promptForReplace:",
-          @"1:c:_transliterateChinese:",
-          @"1:c:_insertDrawing:",
-          @"1:c:captureTextFromCamera:",
-          @"0:m:com.apple.menu.open",
-          @"0:m:com.apple.menu.format",
-          @"1:m:com.apple.menu.text-style",
-          @"2:c:toggleBoldface:",
-          @"2:c:toggleItalics:",
-          @"2:c:toggleUnderline:",
-          @"1:m:com.apple.menu.writing-direction",
-          @"2:c:makeTextWritingDirectionRightToLeft:",
-          @"2:c:makeTextWritingDirectionLeftToRight:",
-          @"0:m:com.apple.menu.lookup",
-          @"1:c:_findSelected:",
-          @"1:c:_define:",
-          @"1:c:chromePartialTranslate:",
-          @"0:m:com.apple.menu.learn",
-          @"1:c:_addShortcut:",
-          @"0:m:com.apple.command.speech",
-          @"1:c:_accessibilitySpeak:",
-          @"1:c:_accessibilitySpeakLanguageSelection:",
-          @"1:c:_accessibilityPauseSpeaking:",
-          @"0:m:com.apple.menu.share",
-          @"1:c:_share:",
-          @"0:m:chromecommand.linktotext",
-          @"1:c:linkToText:"
-        ]];
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-      [expectedCustomMenuDescription insertObject:@"1:c:_openInNewCanvas:"
-                                          atIndex:13];
-    }
+    NSMutableArray* expectedMenuDescription = GetExpectedMenu();
+    AddOpenInNewCanvas(expectedMenuDescription);
+    AddPartialTranslate(expectedMenuDescription);
+    AddLinkToText(expectedMenuDescription);
     base::test::ScopedFeatureList feature_list_;
     feature_list_.InitWithFeatures(
         {kIOSEditMenuPartialTranslate, kIOSCustomBrowserEditMenu}, {});
@@ -266,6 +301,6 @@ TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
     [container_vc setContentView:web_state_->GetView()];
     web::test::LoadHtml(kPageHTML, web_state_.get());
 
-    EXPECT_NSEQ(expectedCustomMenuDescription, GetMenuDescription());
+    EXPECT_NSEQ(expectedMenuDescription, GetMenuDescription());
   }
 }
