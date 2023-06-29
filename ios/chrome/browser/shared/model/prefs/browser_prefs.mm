@@ -80,7 +80,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_field_trial.h"
-#import "ios/chrome/browser/ui/ntp/synced_segments_field_trial.h"
 #import "ios/chrome/browser/voice/voice_search_prefs_registration.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/web/common/features.h"
@@ -152,7 +151,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   update_client::RegisterPrefs(registry);
   variations::VariationsService::RegisterPrefs(registry);
   new_tab_page_field_trial::RegisterLocalStatePrefs(registry);
-  synced_segments_field_trial::RegisterLocalStatePrefs(registry);
   component_updater::RegisterComponentUpdateServicePrefs(registry);
   component_updater::AutofillStatesComponentInstallerPolicy::RegisterPrefs(
       registry);
