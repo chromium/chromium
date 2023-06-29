@@ -40,9 +40,6 @@ const char kAccessiblePDFFormName[] = "Accessible PDF Forms";
 const char kAccessiblePDFFormDescription[] =
     "Enables accessibility support for PDF forms.";
 
-const char kPdfPortfolioName[] = "PDF portfolio";
-const char kPdfPortfolioDescription[] = "Enable PDF portfolio feature.";
-
 const char kPdfUseSkiaRendererName[] =
     "Use Skia Renderer. This flag will have no effect if the renderer choice "
     "is controlled by an enterprise policy.";

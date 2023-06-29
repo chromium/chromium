@@ -6304,11 +6304,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "pdf-portfolio",
-    "owners": [ "nigi", "//pdf/OWNERS" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "pdf-use-skia-renderer",
     "owners": [ "nigi", "//pdf/OWNERS" ],
     "expiry_milestone": 122
