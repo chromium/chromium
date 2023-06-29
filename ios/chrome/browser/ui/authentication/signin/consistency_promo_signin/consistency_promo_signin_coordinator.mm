@@ -83,7 +83,7 @@
 
 #pragma mark - SigninCoordinator
 
-- (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
   [self.alertCoordinator stop];
   self.alertCoordinator = nil;
@@ -154,7 +154,7 @@
 // Finishes the interrupt process. This method needs to be called once all
 // other dialogs on top of ConsistencyPromoSigninCoordinator are properly
 // dismissed.
-- (void)finalizeInterruptWithAction:(SigninCoordinatorInterruptAction)action
+- (void)finalizeInterruptWithAction:(SigninCoordinatorInterrupt)action
                          completion:(ProceduralBlock)interruptCompletion {
   DCHECK(!self.alertCoordinator);
   DCHECK(!self.addAccountCoordinator);
@@ -170,13 +170,13 @@
     }
   };
   switch (action) {
-    case SigninCoordinatorInterruptActionNoDismiss:
+    case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
       finishCompletionBlock();
       break;
-    case SigninCoordinatorInterruptActionDismissWithoutAnimation:
-    case SigninCoordinatorInterruptActionDismissWithAnimation: {
+    case SigninCoordinatorInterrupt::DismissWithoutAnimation:
+    case SigninCoordinatorInterrupt::DismissWithAnimation: {
       BOOL animated =
-          action == SigninCoordinatorInterruptActionDismissWithAnimation;
+          action == SigninCoordinatorInterrupt::DismissWithAnimation;
       [self.navigationController.presentingViewController
           dismissViewControllerAnimated:animated
                              completion:finishCompletionBlock];
@@ -313,7 +313,7 @@
 
 - (void)consistencyDefaultAccountCoordinatorAllIdentityRemoved:
     (ConsistencyDefaultAccountCoordinator*)coordinator {
-  [self interruptWithAction:SigninCoordinatorInterruptActionDismissWithAnimation
+  [self interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
                  completion:nil];
 }
 

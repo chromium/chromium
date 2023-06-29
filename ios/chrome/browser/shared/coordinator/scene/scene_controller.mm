@@ -1172,7 +1172,7 @@ void InjectNTP(Browser* browser) {
   // SigninCoordinator teardown is performed by the `signinCompletion` on
   // termination of async events, do not add additional teardown here.
   [self.signinCoordinator
-      interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
+      interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
                completion:nil];
 
   [self.historyCoordinator stop];
@@ -3039,9 +3039,9 @@ void InjectNTP(Browser* browser) {
 - (void)interruptSigninCoordinatorAnimated:(BOOL)animated
                                 completion:(ProceduralBlock)completion {
   DCHECK(self.signinCoordinator);
-  SigninCoordinatorInterruptAction action =
-      animated ? SigninCoordinatorInterruptActionDismissWithAnimation
-               : SigninCoordinatorInterruptActionDismissWithoutAnimation;
+  SigninCoordinatorInterrupt action =
+      animated ? SigninCoordinatorInterrupt::DismissWithAnimation
+               : SigninCoordinatorInterrupt::DismissWithoutAnimation;
 
   self.dismissingSigninPromptFromExternalTrigger = YES;
   [self.signinCoordinator interruptWithAction:action completion:completion];

@@ -179,7 +179,7 @@ TEST_F(UserSigninCoordinatorTest, StartAndInterruptCoordinator) {
   EXPECT_NE(nil, coordinator_.unifiedConsentViewController);
   EXPECT_NE(nil, view_controller_present_completion_);
   [coordinator_
-      interruptWithAction:SigninCoordinatorInterruptActionDismissWithAnimation
+      interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
                completion:^{
                  EXPECT_TRUE(completion_done);
                  EXPECT_FALSE(interrupt_done);

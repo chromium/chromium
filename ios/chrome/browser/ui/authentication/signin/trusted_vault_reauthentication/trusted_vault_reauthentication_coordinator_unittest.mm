@@ -156,12 +156,12 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterrupt) {
       }));
   // Interrupt the coordinator.
   __block bool interrupt_completion_called = false;
-  [signinCoordinator interruptWithAction:
-                         SigninCoordinatorInterruptActionDismissWithoutAnimation
-                              completion:^() {
-                                EXPECT_TRUE(signin_completion_called);
-                                interrupt_completion_called = true;
-                              }];
+  [signinCoordinator
+      interruptWithAction:SigninCoordinatorInterrupt::DismissWithoutAnimation
+               completion:^() {
+                 EXPECT_TRUE(signin_completion_called);
+                 interrupt_completion_called = true;
+               }];
   // Test the completion block.
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool() {

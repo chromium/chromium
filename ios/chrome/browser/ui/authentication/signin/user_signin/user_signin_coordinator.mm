@@ -176,7 +176,7 @@ using signin_metrics::PromoAction;
 // be called before `completion()`.
 // `action` action describing how to interrupt the sign-in.
 // `completion` called once the sign-in is fully interrupted.
-- (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
   if (self.mediator.isAuthenticationInProgress) {
     [self.logger
@@ -199,7 +199,7 @@ using signin_metrics::PromoAction;
     // The add account view should not be dismissed since the
     // `self.viewController` will take care of that according to `action`.
     [self.addAccountSigninCoordinator
-        interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
+        interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
                  completion:^{
                    // `self.addAccountSigninCoordinator.signinCompletion`
                    // is expected to be called before this block.
@@ -489,7 +489,7 @@ using signin_metrics::PromoAction;
 // This method should not be called if `self.addAccountSigninCoordinator` has
 // not been stopped before. `signinCompletionInfo` is used for the signin
 // callback.
-- (void)interruptUserSigninUIWithAction:(SigninCoordinatorInterruptAction)action
+- (void)interruptUserSigninUIWithAction:(SigninCoordinatorInterrupt)action
                    signinCompletionInfo:
                        (SigninCompletionInfo*)signinCompletinInfo
                              completion:(ProceduralBlock)completion {
@@ -522,13 +522,13 @@ using signin_metrics::PromoAction;
     }
   };
   switch (action) {
-    case SigninCoordinatorInterruptActionNoDismiss: {
+    case SigninCoordinatorInterrupt::UIShutdownNoDismiss: {
       [self.mediator
           cancelAndDismissAuthenticationFlowAnimated:NO
                                           completion:runCompletionCallback];
       break;
     }
-    case SigninCoordinatorInterruptActionDismissWithAnimation: {
+    case SigninCoordinatorInterrupt::DismissWithAnimation: {
       ProceduralBlock dismissViewController = ^() {
         [weakSelf.viewController.presentingViewController
             dismissViewControllerAnimated:YES
@@ -539,7 +539,7 @@ using signin_metrics::PromoAction;
                                           completion:dismissViewController];
       break;
     }
-    case SigninCoordinatorInterruptActionDismissWithoutAnimation: {
+    case SigninCoordinatorInterrupt::DismissWithoutAnimation: {
       ProceduralBlock dismissViewController = ^() {
         [weakSelf.viewController.presentingViewController
             dismissViewControllerAnimated:NO

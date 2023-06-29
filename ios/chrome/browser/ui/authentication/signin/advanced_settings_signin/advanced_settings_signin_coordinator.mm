@@ -102,26 +102,26 @@ using l10n_util::GetNSString;
                  completion:nil];
 }
 
-- (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
   DCHECK(self.advancedSettingsSigninNavigationController);
   [self.syncSettingsCoordinator stop];
   self.syncSettingsCoordinator = nil;
 
   switch (action) {
-    case SigninCoordinatorInterruptActionNoDismiss:
+    case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
       [self finishedWithSigninResult:SigninCoordinatorResultInterrupted];
       if (completion) {
         completion();
       }
       break;
-    case SigninCoordinatorInterruptActionDismissWithoutAnimation:
+    case SigninCoordinatorInterrupt::DismissWithoutAnimation:
       [self dismissViewControllerAndFinishWithResult:
                 SigninCoordinatorResultInterrupted
                                             animated:NO
                                           completion:completion];
       break;
-    case SigninCoordinatorInterruptActionDismissWithAnimation:
+    case SigninCoordinatorInterrupt::DismissWithAnimation:
       [self dismissViewControllerAndFinishWithResult:
                 SigninCoordinatorResultInterrupted
                                             animated:YES

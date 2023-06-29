@@ -60,17 +60,17 @@ using l10n_util::GetNSStringF;
 
 #pragma mark - SigninCoordinator
 
-- (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
   BOOL animated;
   switch (action) {
-    case SigninCoordinatorInterruptActionNoDismiss:
+    case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
       // Not supported by Trusted Vault UI, replaced by dismiss without
       // animation.
-    case SigninCoordinatorInterruptActionDismissWithoutAnimation:
+    case SigninCoordinatorInterrupt::DismissWithoutAnimation:
       animated = NO;
       break;
-    case SigninCoordinatorInterruptActionDismissWithAnimation:
+    case SigninCoordinatorInterrupt::DismissWithAnimation:
       animated = YES;
       break;
   }

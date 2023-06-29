@@ -140,7 +140,7 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
   // Shut it down.
   __block BOOL interrupt_completion_done = NO;
   [coordinator_
-      interruptWithAction:SigninCoordinatorInterruptActionDismissWithAnimation
+      interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
                completion:^{
                  interrupt_completion_done = YES;
                }];

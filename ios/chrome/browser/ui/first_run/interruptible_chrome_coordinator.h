@@ -19,7 +19,7 @@
 // interruption is for shutdown (e.g., tearing down the scene). `completion` is
 // called when the interruption is done. Simply calls `completion` if the
 // method is not overridden.
-- (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion;
 
 @end

@@ -26,13 +26,15 @@ typedef NS_ENUM(NSUInteger, IdentitySigninState) {
 };
 
 // Action to do when the sign-in dialog needs to be interrupted.
-typedef NS_ENUM(NSUInteger, SigninCoordinatorInterruptAction) {
+enum class SigninCoordinatorInterrupt {
   // Stops the sign-in coordinator without dismissing the view.
-  SigninCoordinatorInterruptActionNoDismiss,
+  // This should be only used when UI shutdown.
+  // See crbug.com/1455216.
+  UIShutdownNoDismiss,
   // Stops the sign-in coordinator and dismisses the view without animation.
-  SigninCoordinatorInterruptActionDismissWithoutAnimation,
+  DismissWithoutAnimation,
   // Stops the sign-in coordinator and dismisses the view with animation.
-  SigninCoordinatorInterruptActionDismissWithAnimation,
+  DismissWithAnimation,
 };
 
 // Name of accessibility identifier for the skip sign-in button.

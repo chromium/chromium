@@ -165,7 +165,7 @@ class PrefRegistrySyncable;
 // be called before `completion()`.
 // `action` action describing how to interrupt the sign-in.
 // `completion` called once the sign-in is fully interrupted.
-- (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion;
 
 // ChromeCoordinator.

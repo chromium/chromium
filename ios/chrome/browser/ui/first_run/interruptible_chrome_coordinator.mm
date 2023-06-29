@@ -10,7 +10,7 @@
 
 @implementation InterruptibleChromeCoordinator
 
-- (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
   if (completion) {
     completion();

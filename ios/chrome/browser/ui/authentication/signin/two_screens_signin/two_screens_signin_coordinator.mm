@@ -88,7 +88,7 @@ using base::UserMetricsAction;
 - (void)stop {
   if (_navigationController) {
     __block BOOL completionBlockCalled = NO;
-    [self interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
+    [self interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
                    completion:^{
                      completionBlockCalled = YES;
                    }];
@@ -200,7 +200,7 @@ using base::UserMetricsAction;
 
 #pragma mark - SigninCoordinator
 
-- (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
   __weak __typeof(self) weakSelf = self;
   __weak __typeof(_navigationController) weakNavigationController =
@@ -213,9 +213,9 @@ using base::UserMetricsAction;
   };
   BOOL animated = NO;
   switch (action) {
-    case SigninCoordinatorInterruptActionNoDismiss: {
+    case SigninCoordinatorInterrupt::UIShutdownNoDismiss: {
       [_childCoordinator
-          interruptWithAction:SigninCoordinatorInterruptActionNoDismiss
+          interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
                    completion:^{
                      [weakNavigationController.presentingViewController
                          dismissViewControllerAnimated:NO
@@ -224,11 +224,11 @@ using base::UserMetricsAction;
                    }];
       return;
     }
-    case SigninCoordinatorInterruptActionDismissWithoutAnimation: {
+    case SigninCoordinatorInterrupt::DismissWithoutAnimation: {
       animated = NO;
       break;
     }
-    case SigninCoordinatorInterruptActionDismissWithAnimation: {
+    case SigninCoordinatorInterrupt::DismissWithAnimation: {
       animated = YES;
       break;
     }
@@ -237,8 +237,7 @@ using base::UserMetricsAction;
   // Interrupt the child coordinator UI first before dismissing the new
   // sign-in navigation controller.
   [_childCoordinator
-      interruptWithAction:
-          SigninCoordinatorInterruptActionDismissWithoutAnimation
+      interruptWithAction:SigninCoordinatorInterrupt::DismissWithoutAnimation
                completion:^{
                  UIViewController* presentingViewController =
                      weakNavigationController.presentingViewController;
@@ -257,8 +256,7 @@ using base::UserMetricsAction;
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   RecordAction(UserMetricsAction("Signin_TwoScreens_SwipeDismiss"));
-  [self interruptWithAction:
-            SigninCoordinatorInterruptActionDismissWithoutAnimation
+  [self interruptWithAction:SigninCoordinatorInterrupt::DismissWithoutAnimation
                  completion:nil];
 }
 
