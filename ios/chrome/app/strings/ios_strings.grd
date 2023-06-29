@@ -2114,7 +2114,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         To disable Lockdown Mode in Chrome turn it off on your device.
       </message>
       <message name="IDS_IOS_LOCKDOWN_MODE_FOOTER" desc="Title for Lockdown Mode.">
-        When Chrome is in Lockdown Mode, certain web technologies are blocked, which might cause some websites to load more slowly or not operate correctly.
+        When turned on, certain web technologies are blocked, which might cause some websites to load more slowly or not operate correctly.
       </message>
       <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY" desc="Summary for Privacy Safe Browsing enhanced protection mode.">
         Faster, proactive protection against dangerous websites, downloads, and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.

@@ -28,7 +28,6 @@ namespace {
 // List of sections.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierLockdownMode = kSectionIdentifierEnumZero,
-  SectionIdentifierFooter,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -70,11 +69,10 @@ NSString* const kLockdownModeCellId = @"kLockdownModeCellId";
   [super loadModel];
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierLockdownMode];
-  [model addSectionWithIdentifier:SectionIdentifierFooter];
   [model addItem:self.lockdownModeItem
       toSectionWithIdentifier:SectionIdentifierLockdownMode];
   [model setFooter:[self showLockdownModeFooter]
-      forSectionWithIdentifier:SectionIdentifierFooter];
+      forSectionWithIdentifier:SectionIdentifierLockdownMode];
 }
 
 #pragma mark - LockdownModeConsumer
