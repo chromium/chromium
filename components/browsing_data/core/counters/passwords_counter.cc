@@ -230,13 +230,14 @@ const char* PasswordsCounter::GetPrefName() const {
 }
 
 void PasswordsCounter::Count() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
   remaining_tasks_ = 2;
-  profile_store_fetcher_->Fetch(
-      GetPeriodStart(), GetPeriodEnd(),
-      base::BindOnce(&PasswordsCounter::OnFetchDone, base::Unretained(this)));
-  account_store_fetcher_->Fetch(
-      GetPeriodStart(), GetPeriodEnd(),
-      base::BindOnce(&PasswordsCounter::OnFetchDone, base::Unretained(this)));
+  profile_store_fetcher_->Fetch(GetPeriodStart(), GetPeriodEnd(),
+                                base::BindOnce(&PasswordsCounter::OnFetchDone,
+                                               weak_ptr_factory_.GetWeakPtr()));
+  account_store_fetcher_->Fetch(GetPeriodStart(), GetPeriodEnd(),
+                                base::BindOnce(&PasswordsCounter::OnFetchDone,
+                                               weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PasswordsCounter::OnPasswordsFetchDone() {
@@ -252,8 +253,9 @@ PasswordsCounter::MakeResult() {
 }
 
 void PasswordsCounter::OnFetchDone() {
-  if (--remaining_tasks_ == 0)
+  if (--remaining_tasks_ == 0) {
     OnPasswordsFetchDone();
+  }
 }
 
 }  // namespace browsing_data

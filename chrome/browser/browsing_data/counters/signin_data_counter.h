@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "components/browsing_data/core/counters/passwords_counter.h"
 #include "device/fido/platform_credential_store.h"
 
@@ -55,7 +56,7 @@ class SigninDataCounter : public PasswordsCounter {
   bool webauthn_credentials_fetch_done_ = false;
   int num_webauthn_credentials_ = 0;
 
-  base::WeakPtrFactory<SigninDataCounter> weak_factory_{this};
+  base::WeakPtrFactory<SigninDataCounter> weak_ptr_factory_{this};
 };
 
 }  // namespace browsing_data

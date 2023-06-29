@@ -338,4 +338,27 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, MostCommonDomains) {
   EXPECT_EQ(domain_examples, GetDomainExamples());
 }
 
+// Tests that the counter doesn't crash if restarted in a quick succession.
+// TODO(crbug.com/1458605): Upgrade this test to use SigninDataCounter.
+IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, MultipleRestarts) {
+  Profile* profile = browser()->profile();
+  browsing_data::PasswordsCounter counter(
+      PasswordStoreFactory::GetForProfile(profile,
+                                          ServiceAccessType::EXPLICIT_ACCESS),
+      AccountPasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS),
+      SyncServiceFactory::GetForProfile(profile));
+  counter.Init(profile->GetPrefs(),
+               browsing_data::ClearBrowsingDataTab::ADVANCED,
+               base::BindRepeating(&PasswordsCounterTest::Callback,
+                                   base::Unretained(this)));
+  counter.Restart();
+  counter.Restart();
+  counter.Restart();
+
+  // Previous restarts should be invalidated, so we only need to wait for
+  // counting once.
+  WaitForCounting();
+}
+
 }  // namespace
