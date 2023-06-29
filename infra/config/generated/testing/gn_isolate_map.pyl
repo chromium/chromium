@@ -1899,6 +1899,10 @@
       "${ISOLATED_OUTDIR}",
     ],
   },
+  "weblayer_browsertests": {
+    "label": "//weblayer/test:weblayer_browsertests",
+    "type": "windowed_test_launcher",
+  },
   "webview_cts_tests": {
     "label": "//android_webview/test:webview_cts_tests",
     "type": "script",
@@ -1958,6 +1962,14 @@
       "--use-apk-under-test-flags-file",
       "-v",
     ],
+  },
+  "webengine_support_instrumentation_test_apk": {
+    "label": "//weblayer/browser/android/javatests:webengine_support_instrumentation_test_apk",
+    "type": "console_test_launcher",
+  },
+  "weblayer_junit_tests": {
+    "label": "//weblayer/browser/java:weblayer_junit_tests",
+    "type": "junit_test",
   },
   "webview_instrumentation_test_apk": {
     "label": "//android_webview/test:webview_instrumentation_test_apk",
