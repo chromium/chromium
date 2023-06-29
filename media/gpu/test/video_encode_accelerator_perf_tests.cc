@@ -897,21 +897,23 @@ TEST_F(VideoEncoderTest, DISABLED_MeasureCappedPerformance) {
 }
 
 TEST_F(VideoEncoderTest, MeasureProducedBitstreamQuality) {
+  const size_t num_frames = g_test_mode ? g_env->Video()->NumFrames()
+                                        : kNumEncodeFramesForSpeedPerformance;
   if (g_test_mode &&
       (*g_test_mode == media::test::EncoderPerfTestMode::kSpeed)) {
     GTEST_SKIP()
         << "Skip because this test case is to measure quality performance";
   }
-  auto encoder =
-      CreateVideoEncoder(/*encode_rate=*/absl::nullopt,
-                         /*measure_quality=*/true,
-                         /*num_encode_frames=*/g_env->Video()->NumFrames());
+
+  auto encoder = CreateVideoEncoder(/*encode_rate=*/absl::nullopt,
+                                    /*measure_quality=*/true,
+                                    /*num_encode_frames=*/num_frames);
   encoder->SetEventWaitTimeout(kQualityTestEventTimeout);
 
   encoder->Encode();
   EXPECT_TRUE(encoder->WaitForFlushDone());
   EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
-  EXPECT_EQ(encoder->GetFrameReleasedCount(), g_env->Video()->NumFrames());
+  EXPECT_EQ(encoder->GetFrameReleasedCount(), num_frames);
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 
   const VideoEncoderStats stats = encoder->GetStats();
