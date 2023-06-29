@@ -414,7 +414,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Certificate.ChangeNotifications"
+<histogram name="Net.Certificate.ChangeNotification"
     enum="CertificateChangeNotificationType" expires_after="never">
 <!-- expires-never: core cert verifier metric; monitored by Chirps -->
 
