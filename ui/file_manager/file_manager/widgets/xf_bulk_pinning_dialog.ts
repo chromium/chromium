@@ -142,6 +142,7 @@ export class XfBulkPinningDialog extends XfBase {
   }
 
   async show() {
+    this.stage_ = BulkPinStage.LISTING_FILES;
     this.state = DialogState.LISTING;
     this.$dialog_.showModal();
     this.store_.subscribe(this);
