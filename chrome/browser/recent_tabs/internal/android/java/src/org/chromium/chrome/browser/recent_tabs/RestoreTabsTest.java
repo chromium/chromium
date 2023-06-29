@@ -173,6 +173,8 @@ public class RestoreTabsTest {
         onView(withId(R.id.restore_tabs_promo_sheet_device_icon)).check(matches(isDisplayed()));
         onView(withId(R.id.restore_tabs_promo_sheet_device_name))
                 .check(matches(withText("John's iPad Air")));
+        onView(withId(R.id.restore_tabs_promo_sheet_session_info))
+                .check(matches(withText("3 tabs, last updated: Dec 31, 1969")));
         onView(withId(R.id.restore_tabs_button_open_tabs)).check(matches(withText("Open 3 tabs")));
 
         // Clicking on it opens the device sheet.
