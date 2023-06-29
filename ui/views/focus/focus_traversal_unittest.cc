@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -113,10 +114,10 @@ class PaneView : public View, public FocusTraversable {
 
   // Overridden from View:
   FocusTraversable* GetPaneFocusTraversable() override {
-    if (focus_search_)
+    if (focus_search_) {
       return this;
-    else
-      return nullptr;
+    }
+    return nullptr;
   }
 
   // Overridden from FocusTraversable:
@@ -822,6 +823,7 @@ TEST_F(FocusTraversalTest, PaneTraversal) {
   // Traverse in reverse order.
   FindViewByID(APPLE_TEXTFIELD_ID)->RequestFocus();
   AdvanceEntireFocusLoop(kLeftTraversalIDs, true);
+  left_container_->EnablePaneFocus(nullptr);
 
   // Now test the right container, but this time with accessibility mode.
   // Make some links not focusable, but mark one of them as
@@ -847,6 +849,7 @@ TEST_F(FocusTraversalTest, PaneTraversal) {
   // Traverse in reverse order.
   FindViewByID(BROCCOLI_BUTTON_ID)->RequestFocus();
   AdvanceEntireFocusLoop(kRightTraversalIDs, true);
+  right_container_->EnablePaneFocus(nullptr);
 }
 
 TEST_F(FocusTraversalTest, TraversesFocusInFocusOrder) {
