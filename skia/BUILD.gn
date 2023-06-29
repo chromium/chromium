@@ -32,11 +32,12 @@ buildflag_header("buildflags") {
 }
 
 if (use_typeface_fontations) {
-  static_library("path_bridge_headers") {
+  source_set("path_bridge") {
     sources = [
       "//third_party/skia/src/ports/fontations/src/skpath_bridge.cpp",
       "//third_party/skia/src/ports/fontations/src/skpath_bridge.h",
     ]
+    deps = [ ":skia_core_public_headers" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
       ":skia_config",
@@ -50,7 +51,7 @@ if (use_typeface_fontations) {
     sources = [ "//third_party/skia/src/ports/fontations/src/ffi.rs" ]
     cxx_bindings = [ "//third_party/skia/src/ports/fontations/src/ffi.rs" ]
     deps = [
-      ":path_bridge_headers",
+      ":path_bridge",
       "//third_party/rust/font_types/v0_3:lib",
       "//third_party/rust/read_fonts/v0_5:lib",
       "//third_party/rust/skrifa/v0_4:lib",
@@ -233,6 +234,13 @@ config("skia_library_config") {
   }
 }
 
+# Split out into separate target so that path_bridge can depend on the public
+# headers only and we can avoid a cyclic dependency when building the C++ native
+# code for the Fontations rust backend.
+source_set("skia_core_public_headers") {
+  public = skia_core_public
+}
+
 source_set("skcms") {
   cflags = []
   if (!is_win || is_clang) {
@@ -357,7 +365,8 @@ component("skia") {
     ]
   }
 
-  public += skia_core_public
+  # skia_core_public is included via public_deps instead as the path_bridge
+  # target needs it as well.
   public += skia_utils_public
   public += skia_effects_public
   public += skia_effects_imagefilter_public
@@ -452,6 +461,7 @@ component("skia") {
     ]
     deps += [
       ":bridge_rust_side",
+      ":path_bridge",
       "//third_party/rust/read_fonts/v0_5:lib",
       "//third_party/rust/skrifa/v0_4:lib",
     ]
@@ -545,6 +555,7 @@ component("skia") {
   public_deps = [
     ":buildflags",
     ":skia_core_and_effects",
+    ":skia_core_public_headers",
   ]
 
   if (use_blink) {
