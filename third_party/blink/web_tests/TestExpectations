@@ -6612,3 +6612,7 @@ crbug.com/1457850 [ Linux ] virtual/plz-dedicated-worker/http/tests/inspector-pr
 # Fix importer 2023-06-27
 crbug.com/626703 external/wpt/css/motion/offset-path-shape-ellipse-001.html [ Failure ]
 crbug.com/626703 external/wpt/loading/early-hints/modulepreload-as-worker.h2.window.html [ Failure ]
+
+# Gardener 2023-06-29
+# Failing on Webkit Linux Leak
+crbug.com/1459159 [ Linux ] fast/events/touch/gesture/gesture-tap-mouse-events.html [ Failure Pass ]
