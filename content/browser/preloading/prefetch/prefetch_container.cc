@@ -274,6 +274,17 @@ void RecordBlockUntilHeadDurationHistogram(
       block_until_head_duration);
 }
 
+ukm::SourceId GetUkmSourceId(
+    base::WeakPtr<PrefetchDocumentManager>& prefetch_document_manager) {
+  if (!prefetch_document_manager) {
+    return ukm::kInvalidSourceId;
+  }
+  // Prerendering page should not trigger prefetches.
+  CHECK(!prefetch_document_manager->render_frame_host().IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kPrerendering));
+  return prefetch_document_manager->render_frame_host().GetPageUkmSourceId();
+}
+
 }  // namespace
 
 // Holds the state for the request for a single URL in the context of the
@@ -350,10 +361,7 @@ PrefetchContainer::PrefetchContainer(
       referring_site_(net::SchemefulSite(referrer_.url)),
       no_vary_search_hint_(std::move(no_vary_search_hint)),
       prefetch_document_manager_(prefetch_document_manager),
-      ukm_source_id_(prefetch_document_manager_
-                         ? prefetch_document_manager_->render_frame_host()
-                               .GetPageUkmSourceId()
-                         : ukm::kInvalidSourceId),
+      ukm_source_id_(GetUkmSourceId(prefetch_document_manager_)),
       request_id_(base::UnguessableToken::Create().ToString()) {
   auto* rfhi = RenderFrameHostImpl::FromID(referring_render_frame_host_id);
   // Note: |rfhi| is only nullptr in unit tests.
