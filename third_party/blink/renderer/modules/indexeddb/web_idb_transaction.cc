@@ -63,6 +63,10 @@ void WebIDBTransaction::Put(int64_t object_store_id,
 
   size_t arg_size =
       value->DataSize() + primary_key->SizeEstimate() + index_keys_size;
+
+  recordreplay::Assert("[RUN-1806-2265] WebIDBTransaction::Put %lld %lld %zu",
+                       transaction_id_, object_store_id, arg_size);
+
   if (arg_size >= max_put_value_size_) {
     callbacks->Error(
         mojom::blink::IDBException::kUnknownError,
@@ -73,6 +77,10 @@ void WebIDBTransaction::Put(int64_t object_store_id,
   }
 
   callbacks->SetState(nullptr, transaction_id_);
+
+  mojo::internal::AutoRecordReplayAssertBufferAllocations rraba(
+      "RUN-1806-2265");
+
   transaction_->Put(object_store_id, std::move(value), std::move(primary_key),
                     put_mode, std::move(index_keys),
                     WTF::BindOnce(&WebIDBTransaction::PutCallback,
