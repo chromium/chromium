@@ -96,37 +96,25 @@ void NearbyPresence::StartScan(mojom::ScanRequestPtr scan_request,
            },
        .on_discovered_cb =
            [this](::nearby::presence::PresenceDevice device) {
-             // TODO(b/286564727): Remove hex encoding once endpoint_id is
-             // alphanumeric.
-             auto hex_encoded_endpoint_id = base::HexEncode(
-                 device.GetEndpointId().data(), device.GetEndpointId().size());
              // TODO(b/276642472): Properly plumb type and stable_device_id.
              scan_observer_remote_->OnDeviceFound(mojom::PresenceDevice::New(
-                 hex_encoded_endpoint_id, device.GetMetadata().device_name(),
+                 device.GetEndpointId(), device.GetMetadata().device_name(),
                  mojom::PresenceDeviceType::kPhone,
                  /*stable_device_id=*/absl::nullopt));
            },
        .on_updated_cb =
            [this](::nearby::presence::PresenceDevice device) {
-             // TODO(b/286564727): Remove hex encoding once endpoint_id is
-             // alphanumeric.
-             auto hex_encoded_endpoint_id = base::HexEncode(
-                 device.GetEndpointId().data(), device.GetEndpointId().size());
              // TODO(b/276642472): Properly plumb type and stable_device_id.
              scan_observer_remote_->OnDeviceChanged(mojom::PresenceDevice::New(
-                 hex_encoded_endpoint_id, device.GetMetadata().device_name(),
+                 device.GetEndpointId(), device.GetMetadata().device_name(),
                  mojom::PresenceDeviceType::kPhone,
                  /*stable_device_id=*/absl::nullopt));
            },
        .on_lost_cb =
            [this](::nearby::presence::PresenceDevice device) {
-             // TODO(b/286564727): Remove hex encoding once endpoint_id is
-             // alphanumeric.
-             auto hex_encoded_endpoint_id = base::HexEncode(
-                 device.GetEndpointId().data(), device.GetEndpointId().size());
              // TODO(b/276642472): Properly plumb type and stable_device_id.
              scan_observer_remote_->OnDeviceLost(mojom::PresenceDevice::New(
-                 hex_encoded_endpoint_id, device.GetMetadata().device_name(),
+                 device.GetEndpointId(), device.GetMetadata().device_name(),
                  mojom::PresenceDeviceType::kPhone,
                  /*stable_device_id=*/absl::nullopt));
            }});
