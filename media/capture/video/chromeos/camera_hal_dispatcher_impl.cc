@@ -1194,9 +1194,11 @@ void CameraHalDispatcherImpl::BindToMojoServiceManagerOnUIThread(
 void CameraHalDispatcherImpl::Request(
     chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
     mojo::ScopedMessagePipeHandle receiver) {
-  receiver_set_.Add(this,
-                    mojo::PendingReceiver<cros::mojom::CameraHalDispatcher>(
-                        std::move(receiver)));
+  // Unretained reference is safe here because CameraHalDispatcherImpl owns
+  // |proxy_thread_|.
+  proxy_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&CameraHalDispatcherImpl::OnPeerConnected,
+                                base::Unretained(this), std::move(receiver)));
   VLOG(1) << "New CameraHalDispatcher binding added from Mojo Service Manager.";
 }
 
