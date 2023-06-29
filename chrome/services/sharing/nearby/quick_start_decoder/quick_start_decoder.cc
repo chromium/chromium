@@ -38,6 +38,7 @@ constexpr uint8_t kCtapDeviceResponseSuccess = 0x00;
 constexpr int kCborDecoderNoError = 0;
 constexpr int kCborDecoderUnknownError = 14;
 constexpr uint8_t kCtap2ErrInvalidCBOR = 0x12;
+constexpr uint8_t kCtap2ErrMissingParameter = 0x14;
 constexpr char kFidoMessageKey[] = "fidoMessage";
 
 // Key in Wifi Information response containing information about the wifi
@@ -88,6 +89,17 @@ std::pair<int, absl::optional<cbor::Value>> CborDecodeGetAssertionResponse(
   return std::make_pair(kCborDecoderNoError, std::move(cbor));
 }
 
+mojom::GetAssertionResponsePtr BuildGetAssertionResponseError(
+    GetAssertionStatus status,
+    uint8_t ctap_device_response_code,
+    int cbor_decoder_error) {
+  return mojom::GetAssertionResponse::New(status, ctap_device_response_code,
+                                          cbor_decoder_error,
+                                          /*email=*/"", /*credential_id=*/"",
+                                          /*auth_data=*/std::vector<uint8_t>{},
+                                          /*signature=*/std::vector<uint8_t>{});
+}
+
 mojom::GetAssertionResponsePtr ParseGetAssertionResponse(
     cbor::Value decoded_response) {
   const cbor::Value::MapValue& response_map = decoded_response.GetMap();
@@ -105,6 +117,13 @@ mojom::GetAssertionResponsePtr ParseGetAssertionResponse(
     }
   }
 
+  if (credential_id.empty()) {
+    LOG(ERROR) << "credential_id is empty in FIDO Message";
+    return BuildGetAssertionResponseError(GetAssertionStatus::kCborDecoderError,
+                                          kCtap2ErrMissingParameter,
+                                          kCborDecoderUnknownError);
+  }
+
   // According to FIDO CTAP2 GetAssertionResponse, authData is stored at CBOR
   // index 0x02.
   auto auth_data_value_it = response_map.find(CBOR(0x02));
@@ -114,6 +133,13 @@ mojom::GetAssertionResponsePtr ParseGetAssertionResponse(
     auth_data = auth_data_value_it->second.GetBytestring();
   }
 
+  if (auth_data.empty()) {
+    LOG(ERROR) << "auth_data is empty in FIDO Message";
+    return BuildGetAssertionResponseError(GetAssertionStatus::kCborDecoderError,
+                                          kCtap2ErrMissingParameter,
+                                          kCborDecoderUnknownError);
+  }
+
   // According to FIDO CTAP2 GetAssertionResponse, signature is stored at CBOR
   // index 0x03.
   auto signature_value_it = response_map.find(CBOR(0x03));
@@ -121,6 +147,13 @@ mojom::GetAssertionResponsePtr ParseGetAssertionResponse(
   if (signature_value_it != response_map.end() &&
       signature_value_it->second.is_bytestring()) {
     signature = signature_value_it->second.GetBytestring();
+  }
+
+  if (signature.empty()) {
+    LOG(ERROR) << "signature is empty in FIDO Message";
+    return BuildGetAssertionResponseError(GetAssertionStatus::kCborDecoderError,
+                                          kCtap2ErrMissingParameter,
+                                          kCborDecoderUnknownError);
   }
 
   // According to FIDO CTAP2 GetAssertionResponse, user is stored at CBOR index
@@ -136,22 +169,18 @@ mojom::GetAssertionResponsePtr ParseGetAssertionResponse(
     }
   }
 
+  if (email.empty()) {
+    LOG(ERROR) << "email is empty in FIDO Message";
+    return BuildGetAssertionResponseError(GetAssertionStatus::kCborDecoderError,
+                                          kCtap2ErrMissingParameter,
+                                          kCborDecoderUnknownError);
+  }
+
   return mojom::GetAssertionResponse::New(
       /*status=*/GetAssertionStatus::kSuccess,
       /*ctap_device_response_code=*/kCtapDeviceResponseSuccess,
       /*cbor_decoder_error=*/kCborDecoderNoError, email, credential_id,
       auth_data, signature);
-}
-
-mojom::GetAssertionResponsePtr BuildGetAssertionResponseError(
-    GetAssertionStatus status,
-    uint8_t ctap_device_response_code,
-    int cbor_decoder_error) {
-  return mojom::GetAssertionResponse::New(status, ctap_device_response_code,
-                                          cbor_decoder_error,
-                                          /*email=*/"", /*credential_id=*/"",
-                                          /*auth_data=*/std::vector<uint8_t>{},
-                                          /*signature=*/std::vector<uint8_t>{});
 }
 
 }  // namespace

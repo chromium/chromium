@@ -32,6 +32,7 @@ constexpr char kExampleCryptauthDeviceId[] = "helloworld";
 constexpr char kFidoMessageKey[] = "fidoMessage";
 constexpr uint8_t kSuccess = 0x00;
 constexpr uint8_t kCtap2ErrInvalidCBOR = 0x12;
+constexpr uint8_t kCtap2ErrMissingParameter = 0x14;
 constexpr int kCborDecoderErrorInvalidUtf8 = 6;
 constexpr int kCborDecoderNoError = 0;
 constexpr int kCborDecoderUnknownError = 14;
@@ -274,7 +275,7 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_Valid) {
   EXPECT_EQ(response->signature, kValidSignature);
 }
 
-TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_ValidEmptyValues) {
+TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_InvalidEmptyValues) {
   std::vector<uint8_t> credential_id = {};
   std::string expected_credential_id(credential_id.begin(),
                                      credential_id.end());
@@ -287,13 +288,9 @@ TEST_F(QuickStartDecoderTest, DecodeGetAssertionResponse_ValidEmptyValues) {
   std::vector<uint8_t> message = BuildSecondDeviceAuthPayload(data);
   mojom::GetAssertionResponsePtr response =
       DoDecodeGetAssertionResponse(std::move(message));
-  EXPECT_EQ(response->ctap_device_response_code, kSuccess);
-  EXPECT_EQ(response->cbor_decoder_error, kCborDecoderNoError);
-  EXPECT_EQ(response->status, GetAssertionStatus::kSuccess);
-  EXPECT_EQ(response->credential_id, expected_credential_id);
-  EXPECT_EQ(response->email, email);
-  EXPECT_EQ(response->auth_data, kValidAuthData);
-  EXPECT_EQ(response->signature, kValidSignature);
+  EXPECT_EQ(response->ctap_device_response_code, kCtap2ErrMissingParameter);
+  EXPECT_EQ(response->cbor_decoder_error, kCborDecoderUnknownError);
+  EXPECT_EQ(response->status, GetAssertionStatus::kCborDecoderError);
 }
 
 TEST_F(QuickStartDecoderTest,
