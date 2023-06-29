@@ -9,6 +9,7 @@ sync_protocol_sources = [
   "arc_package_specifics.proto",
   "autofill_offer_specifics.proto",
   "autofill_specifics.proto",
+  "autofill_wallet_credential_specifics.proto",
   "autofill_wallet_usage_specifics.proto",
   "bookmark_model_metadata.proto",
   "bookmark_specifics.proto",

@@ -12,6 +12,7 @@
 #include "components/sync/protocol/arc_package_specifics.pb.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
 #include "components/sync/protocol/autofill_wallet_usage_specifics.pb.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/contact_info_specifics.pb.h"
@@ -267,6 +268,12 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillSpecifics& proto) {
   VISIT(value);
   VISIT_REP(usage_timestamp);
   VISIT(profile);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::AutofillWalletCredentialSpecifics& proto) {
+  VISIT(instrument_id);
+  VISIT(cvc);
+  VISIT(last_updated_time_unix_epoch_millis);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillWalletUsageSpecifics& proto) {
