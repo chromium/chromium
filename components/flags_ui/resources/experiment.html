@@ -114,14 +114,19 @@
     color: white;
   }
 
+  .experiment-switched option {
+    background: white;
+    color: var(--link-color);
+  }
+
   @media (prefers-color-scheme: dark) {
     .experiment-switched select {
       color: var(--google-grey-900);
     }
 
     .experiment-switched option {
-      background: inherit;
-      color: inherit;
+      background: var(--toolbar-color);
+      color: var(--primary-color);
     }
   }
 
