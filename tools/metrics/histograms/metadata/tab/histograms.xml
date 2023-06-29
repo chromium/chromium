@@ -1568,6 +1568,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.PinnedCountAtStartup" units="tabs"
+    expires_after="2024-06-28">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <summary>[iOS] The number of pinned tabs opened at cold launch.</summary>
+</histogram>
+
 <histogram
     name="Tabs.RecentlyClosed.EntriesRestoredInPage.{RecentlyClosedType}"
     units="entries restored" expires_after="2023-08-05">
