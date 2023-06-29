@@ -6142,6 +6142,17 @@ test("unit_tests") {
     ]
   }
 
+  # Support v8_unwinder_unittest on Android.
+  if (is_android && enable_arm_cfi_table) {
+    configs -= [ "//build/config/compiler:default_symbols" ]
+    if (symbol_level == 2) {
+      configs += [ "//build/config/compiler:symbols" ]
+    } else {
+      configs += [ "//build/config/compiler:minimal_symbols" ]
+    }
+    add_unwind_tables_in_apk = true
+  }
+
   configs += [ "//build/config:precompiled_headers" ]
   configs += [ ":disable_thinlto_cache_flags" ]
 
