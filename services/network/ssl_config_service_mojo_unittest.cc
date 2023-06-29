@@ -8,8 +8,8 @@
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -49,14 +49,14 @@ class TestSSLConfigServiceObserver : public net::SSLConfigService::Observer {
   }
 
   ~TestSSLConfigServiceObserver() override {
-    EXPECT_TRUE(config_changed_calls_.IsEmpty())
+    EXPECT_FALSE(config_changed_call_.IsReady())
         << "Unexpected calls to OnSSLContextConfigChanged()";
     ssl_config_service_->RemoveObserver(this);
   }
 
   // net::SSLConfigService::Observer implementation:
   void OnSSLContextConfigChanged() override {
-    config_changed_calls_.AddValue(ssl_config_service_->GetSSLContextConfig());
+    config_changed_call_.SetValue(ssl_config_service_->GetSSLContextConfig());
   }
 
   // Waits for a SSLContextConfig change. The first time it's called, waits for
@@ -65,23 +65,23 @@ class TestSSLConfigServiceObserver : public net::SSLConfigService::Observer {
   // happens, and fails if more than once change happens between calls, or
   // during a call.
   net::SSLContextConfig WaitForChange() {
-    EXPECT_TRUE(config_changed_calls_.Wait())
+    EXPECT_TRUE(config_changed_call_.Wait())
         << "Missing call to OnSSLContextConfigChanged()";
-    return config_changed_calls_.Take();
+    return config_changed_call_.Take();
   }
 
  private:
   const raw_ptr<net::SSLConfigService> ssl_config_service_;
 
-  // All calls to OnSSLContextConfigChanged().
-  base::test::RepeatingTestFuture<net::SSLContextConfig> config_changed_calls_;
+  // Most recent call to OnSSLContextConfigChanged().
+  base::test::TestFuture<net::SSLContextConfig> config_changed_call_;
 };
 
 class TestCertVerifierConfigObserver : public net::CertVerifier {
  public:
   TestCertVerifierConfigObserver() = default;
   ~TestCertVerifierConfigObserver() override {
-    EXPECT_TRUE(set_config_calls_.IsEmpty())
+    EXPECT_FALSE(set_config_call_.IsReady())
         << "Unexpected call to SetConfig()";
   }
 
@@ -95,7 +95,7 @@ class TestCertVerifierConfigObserver : public net::CertVerifier {
     return net::ERR_FAILED;
   }
   void SetConfig(const Config& config) override {
-    set_config_calls_.AddValue(config);
+    set_config_call_.SetValue(config);
   }
   void AddObserver(Observer* observer) override {}
   void RemoveObserver(Observer* observer) override {}
@@ -105,13 +105,13 @@ class TestCertVerifierConfigObserver : public net::CertVerifier {
   // for the second, etc. Must be called once for each change that happens, and
   // fails it more than once change happens between calls, or during a call.
   net::CertVerifier::Config WaitForChange() {
-    EXPECT_TRUE(set_config_calls_.Wait()) << "Missing call to SetConfig()";
-    return set_config_calls_.Take();
+    EXPECT_TRUE(set_config_call_.Wait()) << "Missing call to SetConfig()";
+    return set_config_call_.Take();
   }
 
  private:
-  // All calls to SetConfig().
-  base::test::RepeatingTestFuture<Config> set_config_calls_;
+  // Most recent call to SetConfig().
+  base::test::TestFuture<Config> set_config_call_;
 };
 
 class NetworkServiceSSLConfigServiceTest : public testing::Test {
