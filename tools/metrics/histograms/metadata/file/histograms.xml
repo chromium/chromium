@@ -64,7 +64,12 @@ chromium-metrics-reviews@google.com.
   <variant name="GetAccessTokenFromCode"/>
   <variant name="GetAccessTokenFromRefreshToken"/>
   <variant name="GetAuthCode"/>
-  <variant name="GetDelta"/>
+  <variant name="GetDelta"
+      summary="delta HTTP call fetching a single results page"/>
+  <variant name="GetDeltaAllIncremental"
+      summary="incremental delta fetch (sum of all result pages)"/>
+  <variant name="GetDeltaAllInitial"
+      summary="initial delta fetch (sum of all result pages)"/>
   <variant name="GetDrive"/>
   <variant name="GetEntry"/>
   <variant name="GetProfile"/>
@@ -955,6 +960,21 @@ chromium-metrics-reviews@google.com.
     time.
   </summary>
   <token key="API-FSP" variants="API-FSP"/>
+</histogram>
+
+<histogram name="FileBrowser.OfficeFiles.ODFS.GraphAPI.DeltaSize.{Case}"
+    units="count" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: number of entries returned in one Graph API delta
+    call (this includes multiple requests to fetch all result pages of one delta
+    request).
+  </summary>
+  <token key="Case">
+    <variant name="Incremental"/>
+    <variant name="Initial"/>
+  </token>
 </histogram>
 
 <histogram
