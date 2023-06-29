@@ -94,6 +94,11 @@ class CompanionPageHandler
   // resulted in an error page.
   void OnNavigationError();
 
+  // Notifies the companion side panel about a link click that happened in
+  // the side panel that maybe was handled by the browser (either new tab or
+  // same tab).
+  void NotifyLinkOpened(GURL opened_url, bool was_handled);
+
  private:
   // Notifies the companion side panel about the URL of the main frame. Based on
   // the call site, either does a full reload of the side panel or does a

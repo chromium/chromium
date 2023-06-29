@@ -51,6 +51,9 @@ enum MethodType {
 
   // Method corresponding to `CompanionPage.OnDeviceVisualClassificationResult`.
   kOnDeviceVisualClassificationResult = 33,
+
+  // Method corresponding to `CompanionPage.NotifyLinkOpen`.
+  kNotifyLinkOpen = 34,
 };
 
 // Types of promos shown in the companion UI.
@@ -233,4 +236,10 @@ interface CompanionPage {
   // Called when the companion page attempts a navigation that resulted in an
   // error page.
   OnNavigationError();
+
+  // Notify the frontend that the user clicked a link that is meant to open
+  // outside of side panel. `opened_url` is the link the user clicked on and
+  // `was_handled` is true if the browser handled the link click by opened the
+  // link and false if the link click was ignored.
+  NotifyLinkOpen(url.mojom.Url opened_url, bool was_handled);
 };
