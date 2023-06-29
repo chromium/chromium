@@ -16,3 +16,12 @@ subword units (e.g., byte-pair-encoding (BPE) [Sennrich et al.]) and unigram
 language model [Kudo.]) with the extension of direct training from raw
 sentences. SentencePiece allows us to make a purely end-to-end system that does
 not depend on language-specific pre/postprocessing.
+
+Making new patches:
+1. git commit changes, be sure to write a helpful commit message
+2. Run `git format-patch -o third_party/sentencepiece/patches/ origin/main third_party/sentencepiece/src/`
+
+Patches:
+* rename_version.patch - Renames the src/VERSION file because otherwise C++
+includes of the form `#include <version>` will find that text file instead of
+the header they are meant to find.
