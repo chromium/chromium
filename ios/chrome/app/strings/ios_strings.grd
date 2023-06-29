@@ -1990,8 +1990,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD" desc="The action button to use the selected credentials to fill the username and password fields on the webpage.">
         Use Password
       </message>
-      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD" desc="The action button to dismiss the password bottom sheet and revert to using the keyboard to fill in username and password information on the webpage.">
-        Use Keyboard
+      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS" desc="The action button to dismiss the password bottom sheet and revert to using the keyboard to fill in username and password information on the webpage.">
+        No Thanks
       </message>
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_USERNAME" desc="Text shown for an option in a list of the user's saved passwords, when the user did not save a username along with the password.">
         No Username ••••••••
