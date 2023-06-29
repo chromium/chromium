@@ -2,4 +2,3 @@ monorail {
   component: "Blink>HTML"
 }
 team_email: "dom-dev@chromium.org"
-
