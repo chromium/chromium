@@ -22,6 +22,7 @@
  *    </pin-keyboard>
  */
 
+import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
