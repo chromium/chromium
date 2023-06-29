@@ -1046,6 +1046,12 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, MoveFloatedWindow) {
     // persist after releasing the mouse button.
     EXPECT_EQ(delegate()->requested_bounds(), expected_bounds);
   }
+
+  // Minimize and unminimize the window. Test that its bounds are restored.
+  window_state()->Minimize();
+  window_state()->Restore();
+  ApplyPendingRequestedBounds();
+  EXPECT_EQ(delegate()->requested_bounds(), expected_bounds);
 }
 
 TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {

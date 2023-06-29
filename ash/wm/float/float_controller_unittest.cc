@@ -348,6 +348,41 @@ TEST_F(WindowFloatTest, WindowFloatingResize) {
             window_state2->GetStateType());
 }
 
+// Tests that manually resized floated bounds (by dragging the caption area) are
+// restored across desk switches.
+TEST_F(WindowFloatTest, RestoreResizeBounds) {
+  auto* desks_controller = DesksController::Get();
+  NewDesk();
+  ASSERT_EQ(2u, desks_controller->desks().size());
+
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+
+  // Drag the floated window away from its default bounds.
+  auto* event_generator = GetEventGenerator();
+  chromeos::HeaderView* header_view = GetHeaderView(window.get());
+  event_generator->set_current_screen_location(
+      header_view->GetBoundsInScreen().CenterPoint());
+  event_generator->DragMouseTo(gfx::Point(100, 100));
+  const gfx::Rect resize_bounds(window->bounds());
+
+  // Switch to desk 2.
+  ActivateDesk(desks_controller->desks()[1].get());
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+  ASSERT_FALSE(window->IsVisible());
+
+  // Switch back to desk 1. Test that the new floated bounds are restored.
+  ActivateDesk(desks_controller->desks()[0].get());
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+  ASSERT_TRUE(window->IsVisible());
+  EXPECT_EQ(resize_bounds, window->bounds());
+
+  // Test that minimizing and unminimizing also restores resized bounds.
+  auto* window_state = WindowState::Get(window.get());
+  window_state->Minimize();
+  window_state->Restore();
+  EXPECT_EQ(resize_bounds, window->bounds());
+}
+
 // Test that the float acclerator does not work on a non-floatable window.
 TEST_F(WindowFloatTest, CantFloatAccelerator) {
   // Test window is NON_APP by default, which cannot be floated.
@@ -369,8 +404,7 @@ TEST_F(WindowFloatTest, DragToOtherDisplayThenMaximize) {
   // Drag the window to the secondary display. Note that the event generator
   // does not update the display associated with the cursor, so we have to
   // manually do it here.
-  auto* frame = NonClientFrameViewAsh::Get(window.get());
-  chromeos::HeaderView* header_view = frame->GetHeaderView();
+  chromeos::HeaderView* header_view = GetHeaderView(window.get());
   auto* event_generator = GetEventGenerator();
   event_generator->set_current_screen_location(
       header_view->GetBoundsInScreen().CenterPoint());

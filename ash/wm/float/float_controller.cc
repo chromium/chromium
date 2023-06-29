@@ -715,15 +715,18 @@ void FloatController::OnDeskActivationChanged(const Desk* activated,
       });
   if (deactivated_desk_floated_window_info_iter !=
       floated_window_info_map_.end()) {
-    deactivated_desk_floated_window_info_iter->second->MaybeUntuckWindow(
-        /*animate=*/false);
+    // If we are currently not in tablet mode, no need to untuck, which would
+    // update the window bounds.
+    if (Shell::Get()->IsInTabletMode()) {
+      deactivated_desk_floated_window_info_iter->second->MaybeUntuckWindow(
+          /*animate=*/false);
+    }
     HideFloatedWindow(deactivated_desk_floated_window_info_iter->first);
   }
 
   if (auto* activated_desk_floated_window =
           FindFloatedWindowOfDesk(activated)) {
     ShowFloatedWindow(activated_desk_floated_window);
-
     // Activate the floated window if it is the top window. This is normally
     // done in `Desk::Activate`, but floated windows are technically not owned
     // by the desk, and the window is still hidden at that point so it isn't in
