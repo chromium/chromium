@@ -11,11 +11,15 @@
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_lacros.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/platform_window.h"
 
@@ -71,17 +75,20 @@ void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
   std::vector<gfx::Rect> opaque_region;
   const bool should_have_rounded_corners = corner_radius > 0;
   if (showing_frame && should_have_rounded_corners) {
-    auto rounded_corners_f =
-        gfx::RoundedCornersF(corner_radius, corner_radius, 0, 0);
-    GetContentWindow()->layer()->SetRoundedCornerRadius(rounded_corners_f);
+    gfx::RoundedCornersF frame_radii{corner_radius, corner_radius, 0, 0};
+    if (chromeos::features::IsRoundedWindowsEnabled()) {
+      frame_radii.set_lower_left(corner_radius);
+      frame_radii.set_lower_right(corner_radius);
+    }
+
+    GetContentWindow()->layer()->SetRoundedCornerRadius(frame_radii);
     GetContentWindow()->layer()->SetIsFastRoundedCorner(true);
 
     // The opaque region is a list of rectangles that contain only fully
     // opaque pixels of the window.  We need to convert the clipping
     // rounded-rect into this format.
     gfx::Rect local_bounds = view->GetLocalBounds();
-    gfx::RRectF rounded_corners_rect(gfx::RectF(local_bounds),
-                                     rounded_corners_f);
+    gfx::RRectF rounded_corners_rect(gfx::RectF(local_bounds), frame_radii);
     gfx::RectF rect_f = rounded_corners_rect.rect();
     rect_f.Scale(scale);
 
