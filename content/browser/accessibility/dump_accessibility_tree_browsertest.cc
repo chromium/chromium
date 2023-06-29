@@ -2192,8 +2192,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInPageLinks) {
   RunHtmlTest(FILE_PATH_LITERAL("in-page-links.html"));
 }
 
+// TODO(crbug.com/1459354): Flaky on CrOS MSan.
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_InertAttribute DISABLED_InertAttribute
+#else
+#define MAYBE_InertAttribute InertAttribute
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestWithIgnoredNodes,
-                       InertAttribute) {
+                       MAYBE_InertAttribute) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kEnableBlinkFeatures, "InertAttribute");
   RunHtmlTest(FILE_PATH_LITERAL("inert-attribute.html"));
