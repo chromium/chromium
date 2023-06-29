@@ -1008,6 +1008,7 @@ template("mojom") {
     if (defined(invoker.testonly)) {
       testonly = invoker.testonly
     }
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
     deps = []
     public_deps = []
     if (output_file_base_paths != []) {
@@ -1892,6 +1893,7 @@ template("mojom") {
             "$root_gen_dir/${base_path}-webui-js-bridge-impl.h",
           ]
         }
+        configs += [ "//build/config/compiler:wexit_time_destructors" ]
         deps = [
           ":$cpp_target_name",
           ":$generator_webui_js_bridge_impl_target_name",
