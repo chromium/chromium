@@ -8,17 +8,16 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
+#include "chrome/browser/ui/views/desktop_capture/rounded_corner_image_view.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "media/base/video_util.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/layout_provider.h"
 
 namespace {
 
@@ -66,36 +65,6 @@ void HandleCapturedBitmap(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(reply), hash, image));
 }
-
-// TODO(crbug.com/1458354): Add support for rounded image corners to ImageView
-class RoundedCornerImageView : public views::ImageView {
- public:
-  METADATA_HEADER(RoundedCornerImageView);
-  RoundedCornerImageView() = default;
-  RoundedCornerImageView(const RoundedCornerImageView&) = delete;
-  RoundedCornerImageView& operator=(const RoundedCornerImageView&) = delete;
-
-  // views::ImageView:
-  bool GetCanProcessEventsWithinSubtree() const override { return false; }
-
- protected:
-  // views::ImageView:
-  void OnPaint(gfx::Canvas* canvas) override;
-};
-
-void RoundedCornerImageView::OnPaint(gfx::Canvas* canvas) {
-  SkPath mask;
-  CHECK(GetLayoutProvider());
-  const int corner_radius =
-      GetLayoutProvider()->GetCornerRadiusMetric(views::Emphasis::kMedium);
-  mask.addRoundRect(gfx::RectToSkRect(GetImageBounds()), corner_radius,
-                    corner_radius);
-  canvas->ClipPath(mask, true);
-  ImageView::OnPaint(canvas);
-}
-
-BEGIN_METADATA(RoundedCornerImageView, views::ImageView)
-END_METADATA
 
 }  // namespace
 
