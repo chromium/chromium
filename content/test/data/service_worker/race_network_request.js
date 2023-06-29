@@ -18,10 +18,16 @@ const composeCustomResponse = () => {
 
 self.addEventListener('install', e => {
   if (e.registerRouter) {
-    e.registerRouter({
-      condition: {urlPattern: "/service_worker/race_network_and_fetch"},
-      source: "race-network-and-fetch-handler"
-    });
+    e.registerRouter([
+      {
+        condition: {urlPattern: "/service_worker/race_network_and_fetch"},
+        source: "race-network-and-fetch-handler"
+      },
+      {
+        condition: {urlPattern: "/service_worker/no_race"},
+        source: "fetch-event"
+      }
+    ]);
   }
   self.skipWaiting();
 });

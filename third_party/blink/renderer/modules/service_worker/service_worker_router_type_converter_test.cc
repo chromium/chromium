@@ -104,6 +104,38 @@ TEST(ServiceWorkerRouterTypeConverterTest, Race) {
   EXPECT_EQ(expected_rule, *blink_rule);
 }
 
+TEST(ServiceWorkerRouterTypeConverterTest, FetchEvent) {
+  constexpr const char kFakeUrlPattern[] = "/fake";
+  auto* idl_rule = blink::RouterRule::Create();
+  auto* idl_url_pattern = blink::RouterUrlPatternCondition::Create();
+  idl_url_pattern->setUrlPattern(kFakeUrlPattern);
+  idl_rule->setCondition(idl_url_pattern);
+  idl_rule->setSource(blink::V8RouterSourceEnum::Enum::kFetchEvent);
+
+  blink::ServiceWorkerRouterRule expected_rule;
+  blink::ServiceWorkerRouterCondition expected_condition;
+  expected_condition.type =
+      blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
+  blink::SafeUrlPattern expected_url_pattern;
+  auto parse_result = liburlpattern::Parse(
+      kFakeUrlPattern,
+      [](base::StringPiece input) { return std::string(input); });
+  ASSERT_TRUE(parse_result.ok());
+  expected_url_pattern.pathname = parse_result.value().PartList();
+  expected_condition.url_pattern = std::move(expected_url_pattern);
+  expected_rule.conditions.emplace_back(expected_condition);
+  blink::ServiceWorkerRouterSource expected_source;
+  expected_source.type =
+      blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
+  expected_source.fetch_event_source.emplace();
+  expected_rule.sources.emplace_back(expected_source);
+
+  auto blink_rule =
+      mojo::ConvertTo<absl::optional<blink::ServiceWorkerRouterRule>>(idl_rule);
+  EXPECT_TRUE(blink_rule.has_value());
+  EXPECT_EQ(expected_rule, *blink_rule);
+}
+
 }  // namespace
 
 }  // namespace blink

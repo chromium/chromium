@@ -67,6 +67,12 @@ absl::optional<blink::ServiceWorkerRouterSource> RouterSourceEnumToBlink(
     source.race_source.emplace();
     return source;
   }
+  if (v8_source_enum == blink::V8RouterSourceEnum::Enum::kFetchEvent) {
+    blink::ServiceWorkerRouterSource source;
+    source.type = blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
+    source.fetch_event_source.emplace();
+    return source;
+  }
   return absl::nullopt;
 }
 
