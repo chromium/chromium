@@ -999,6 +999,7 @@ Microsoft::WRL::ComPtr<ID3D11Device> SharedContextState::GetD3D11Device()
     const {
   switch (gr_context_type_) {
     case GrContextType::kGL:
+    case GrContextType::kVulkan:
       return gl::QueryD3D11DeviceObjectFromANGLE();
     case GrContextType::kGraphiteDawn:
       return dawn_context_provider_->GetD3D11Device();
