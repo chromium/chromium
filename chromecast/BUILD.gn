@@ -702,6 +702,8 @@ if (is_android) {
     target_sdk_version = 33
 
     shared_libraries = [ "//chromecast/android:libcast_shell_android" ]
+    srcjar_deps =
+        [ "//chromecast/android:libcast_shell_android__jni_registration" ]
 
     deps = [
       ":cast_shell_apk_assets",
@@ -741,6 +743,8 @@ if (is_android) {
         package_id = 125
 
         shared_libraries = [ "//chromecast/android:libcast_browser_android" ]
+        srcjar_deps =
+            [ "//chromecast/android:libcast_browser_android__jni_registration" ]
         deps = [
           "//base:base_java",
           "//base:jni_java",
