@@ -498,7 +498,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     if (!cmd.HasSwitch(switches::kDisableRGBA4444Textures) &&
         base::SysInfo::AmountOfPhysicalMemoryMB() <= 512 &&
         !::features::IsUsingVulkan()) {
-      settings.use_rgba_4444 = viz::RGBA_4444;
+      settings.use_rgba_4444 = true;
 
       // If we are going to unpremultiply and dither these tiles, we need to
       // allocate an additional RGBA_8888 intermediate for each tile
