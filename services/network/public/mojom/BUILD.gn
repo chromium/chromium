@@ -215,9 +215,12 @@ mojom("mojom_network_isolation_key") {
   ]
 }
 
-mojom("mojom_shared_dictionary_isolation_key") {
+mojom("mojom_shared_dictionary") {
   generate_java = true
-  sources = [ "shared_dictionary_isolation_key.mojom" ]
+  sources = [
+    "shared_dictionary_isolation_key.mojom",
+    "shared_dictionary_usage_info.mojom",
+  ]
 
   public_deps = [
     ":mojom_schemeful_site",
@@ -245,6 +248,17 @@ mojom("mojom_shared_dictionary_isolation_key") {
         "//net:shared_dictionary",
         "//services/network/public/cpp:schemeful_site_mojom_support",
       ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.SharedDictionaryUsageInfo"
+          cpp = "::net::SharedDictionaryUsageInfo"
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/shared_dictionary_usage_info_mojom_traits.h" ]
+      traits_sources = [ "//services/network/public/cpp/shared_dictionary_usage_info_mojom_traits.cc" ]
+      traits_public_deps = [ "//net:shared_dictionary" ]
     },
   ]
 }
@@ -489,7 +503,7 @@ mojom("url_loader_base") {
     ":mojom_network_param",
     ":mojom_proxy_config",
     ":mojom_schemeful_site",
-    ":mojom_shared_dictionary_isolation_key",
+    ":mojom_shared_dictionary",
     "//mojo/public/mojom/base",
     "//services/proxy_resolver/public/mojom",
     "//url/mojom:url_mojom_gurl",
@@ -1374,6 +1388,7 @@ mojom("mojom") {
     ":mojom_network_param",
     ":mojom_proxy_config",
     ":mojom_schemeful_site",
+    ":mojom_shared_dictionary",
     ":mojom_structured_headers",
     ":url_loader_base",
     ":websocket_mojom",

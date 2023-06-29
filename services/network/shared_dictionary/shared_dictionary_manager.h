@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
 
 namespace base {
 namespace android {
@@ -71,6 +72,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
                          base::Time end_time,
                          base::RepeatingCallback<bool(const GURL&)> url_matcher,
                          base::OnceClosure callback) = 0;
+  virtual void ClearDataForIsolationKey(
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      base::OnceClosure callback) = 0;
+  virtual void GetUsageInfo(
+      base::OnceCallback<void(
+          const std::vector<net::SharedDictionaryUsageInfo>&)> callback) = 0;
 
  protected:
   SharedDictionaryManager();

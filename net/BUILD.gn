@@ -1832,6 +1832,7 @@ component("shared_dictionary") {
     "extras/shared_dictionary/shared_dictionary_info.h",
     "extras/shared_dictionary/shared_dictionary_isolation_key.cc",
     "extras/shared_dictionary/shared_dictionary_isolation_key.h",
+    "extras/shared_dictionary/shared_dictionary_usage_info.h",
   ]
   defines = [ "IS_NET_SHARED_DICTIONARY_IMPL" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

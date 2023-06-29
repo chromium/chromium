@@ -76,6 +76,48 @@ class SharedDictionaryManagerOnDisk::ClearDataTask
   base::WeakPtrFactory<ClearDataTask> weak_factory_{this};
 };
 
+class SharedDictionaryManagerOnDisk::ClearDataForIsolationKeyTask
+    : public SharedDictionaryManagerOnDisk::SerializedTask {
+ public:
+  ClearDataForIsolationKeyTask(
+      raw_ptr<SharedDictionaryManagerOnDisk> manager,
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      base::OnceClosure callback)
+      : manager_(manager),
+        isolation_key_(isolation_key),
+        callback_(std::move(callback)) {}
+  ~ClearDataForIsolationKeyTask() override = default;
+
+  ClearDataForIsolationKeyTask(const ClearDataForIsolationKeyTask&) = delete;
+  ClearDataForIsolationKeyTask& operator=(const ClearDataForIsolationKeyTask&) =
+      delete;
+
+  void Start() override {
+    manager_->metadata_store().ClearDictionariesForIsolationKey(
+        isolation_key_,
+        base::BindOnce(
+            &ClearDataForIsolationKeyTask::OnClearDictionariesFinished,
+            weak_factory_.GetWeakPtr()));
+  }
+
+ private:
+  void OnClearDictionariesFinished(
+      net::SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
+          result) {
+    if (result.has_value()) {
+      manager_->OnDictionaryDeleted(result.value(),
+                                    /*need_to_doom_disk_cache_entries=*/true);
+    }
+    std::move(callback_).Run();
+    manager_->OnFinishSerializedTask();
+  }
+
+  raw_ptr<SharedDictionaryManagerOnDisk> manager_;
+  const net::SharedDictionaryIsolationKey isolation_key_;
+  base::OnceClosure callback_;
+  base::WeakPtrFactory<ClearDataForIsolationKeyTask> weak_factory_{this};
+};
+
 class SharedDictionaryManagerOnDisk::ClearDataTaskInfo
     : public SharedDictionaryManagerOnDisk::SerializedTaskInfo {
  public:
@@ -103,6 +145,32 @@ class SharedDictionaryManagerOnDisk::ClearDataTaskInfo
   const base::Time start_time_;
   const base::Time end_time_;
   base::RepeatingCallback<bool(const GURL&)> url_matcher_;
+  base::OnceClosure callback_;
+};
+
+class SharedDictionaryManagerOnDisk::ClearDataForIsolationKeyTaskInfo
+    : public SharedDictionaryManagerOnDisk::SerializedTaskInfo {
+ public:
+  ClearDataForIsolationKeyTaskInfo(
+      net::SharedDictionaryIsolationKey isolation_key,
+      base::OnceClosure callback)
+      : isolation_key_(std::move(isolation_key)),
+        callback_(std::move(callback)) {}
+  ~ClearDataForIsolationKeyTaskInfo() override = default;
+
+  ClearDataForIsolationKeyTaskInfo(const ClearDataForIsolationKeyTaskInfo&) =
+      delete;
+  ClearDataForIsolationKeyTaskInfo& operator=(
+      const ClearDataForIsolationKeyTaskInfo&) = delete;
+
+  std::unique_ptr<SerializedTask> CreateTask(
+      SharedDictionaryManagerOnDisk* manager) override {
+    return std::make_unique<ClearDataForIsolationKeyTask>(
+        manager, isolation_key_, std::move(callback_));
+  }
+
+ private:
+  const net::SharedDictionaryIsolationKey isolation_key_;
   base::OnceClosure callback_;
 };
 
@@ -416,6 +484,22 @@ void SharedDictionaryManagerOnDisk::SetCacheMaxSize(uint64_t cache_max_size) {
   MaybePostCacheEvictionTask();
 }
 
+void SharedDictionaryManagerOnDisk::GetUsageInfo(
+    base::OnceCallback<void(const std::vector<net::SharedDictionaryUsageInfo>&)>
+        callback) {
+  metadata_store_.GetUsageInfo(base::BindOnce(
+      [](base::OnceCallback<void(
+             const std::vector<net::SharedDictionaryUsageInfo>&)> callback,
+         net::SQLitePersistentSharedDictionaryStore::UsageInfoOrError result) {
+        if (result.has_value()) {
+          std::move(callback).Run(std::move(result.value()));
+        } else {
+          std::move(callback).Run({});
+        }
+      },
+      std::move(callback)));
+}
+
 scoped_refptr<SharedDictionaryWriter>
 SharedDictionaryManagerOnDisk::CreateWriter(
     const net::SharedDictionaryIsolationKey& isolation_key,
@@ -533,6 +617,14 @@ void SharedDictionaryManagerOnDisk::ClearData(
   MaybePostExpiredDictionaryDeletionTask();
   MaybePostCacheEvictionTask();
   MaybePostMismatchingEntryDeletionTask();
+}
+
+void SharedDictionaryManagerOnDisk::ClearDataForIsolationKey(
+    const net::SharedDictionaryIsolationKey& isolation_key,
+    base::OnceClosure callback) {
+  PostSerializedTask(std::make_unique<ClearDataForIsolationKeyTaskInfo>(
+      isolation_key, std::move(callback)));
+  MaybePostExpiredDictionaryDeletionTask();
 }
 
 void SharedDictionaryManagerOnDisk::PostSerializedTask(

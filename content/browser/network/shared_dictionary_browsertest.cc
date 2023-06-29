@@ -9,11 +9,14 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/clear_site_data_utils.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
@@ -27,9 +30,14 @@
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
+#include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
+
+using ::testing::UnorderedElementsAreArray;
 
 namespace content {
 
@@ -620,6 +628,40 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
       /*expect_success=*/GetFeatureState() != FeatureState::kDisabled);
 }
 
+IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
+                       ClearSharedDictionaryCacheForIsolationKey) {
+  network::mojom::NetworkContext* network_context =
+      shell()
+          ->web_contents()
+          ->GetBrowserContext()
+          ->GetDefaultStoragePartition()
+          ->GetNetworkContext();
+  base::RunLoop loop;
+  net::SharedDictionaryIsolationKey isolation_key =
+      net::SharedDictionaryIsolationKey(
+          url::Origin::Create(GURL("https://example.test/")),
+          net::SchemefulSite(GURL("https://example.test/")));
+  network_context->ClearSharedDictionaryCacheForIsolationKey(
+      isolation_key, loop.QuitClosure());
+  loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest, GetUsageInfo) {
+  network::mojom::NetworkContext* network_context =
+      shell()
+          ->web_contents()
+          ->GetBrowserContext()
+          ->GetDefaultStoragePartition()
+          ->GetNetworkContext();
+  base::RunLoop loop;
+  network_context->GetSharedDictionaryUsageInfo(base::BindLambdaForTesting(
+      [&](const std::vector<net::SharedDictionaryUsageInfo>& usage_info) {
+        EXPECT_TRUE(usage_info.empty());
+        loop.Quit();
+      }));
+  loop.Run();
+}
+
 // Tests end to end functionality of "compression dictionary transport" feature
 // with fully enabled features.
 class SharedDictionaryBrowserTest
@@ -942,6 +984,61 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, Navigation) {
             EvalJs(target_shell->web_contents()->GetPrimaryMainFrame(),
                    "document.body.innerText")
                 .ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SharedDictionaryBrowserTest,
+    GetUsageInfoAndClearSharedDictionaryCacheForIsolationKey) {
+  Shell* target_shell = GetBrowserType() == BrowserType::kNormal
+                            ? shell()
+                            : CreateOffTheRecordBrowser();
+  RunWriteDictionaryTest(
+      target_shell, FetchType::kLinkRelDictionary,
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"),
+      embedded_test_server()->GetURL("/shared_dictionary/test.dict"),
+      GetBrowserType() == BrowserType::kNormal
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
+          : "Net.SharedDictionaryWriterInMemory.DictionarySize",
+      /*expect_success=*/true);
+
+  net::SharedDictionaryIsolationKey isolation_key =
+      net::SharedDictionaryIsolationKey(
+          url::Origin::Create(embedded_test_server()->GetURL("/")),
+          net::SchemefulSite(embedded_test_server()->GetURL("/")));
+  network::mojom::NetworkContext* network_context =
+      target_shell->web_contents()
+          ->GetBrowserContext()
+          ->GetDefaultStoragePartition()
+          ->GetNetworkContext();
+  {
+    base::RunLoop loop;
+    network_context->GetSharedDictionaryUsageInfo(base::BindLambdaForTesting(
+        [&](const std::vector<net::SharedDictionaryUsageInfo>& usage_info) {
+          EXPECT_THAT(
+              usage_info,
+              UnorderedElementsAreArray({net::SharedDictionaryUsageInfo{
+                  .isolation_key = isolation_key,
+                  .total_size_bytes = static_cast<uint64_t>(
+                      GetTestDataFileSize("shared_dictionary/test.dict"))}}));
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+  {
+    base::RunLoop loop;
+    network_context->ClearSharedDictionaryCacheForIsolationKey(
+        isolation_key, loop.QuitClosure());
+    loop.Run();
+  }
+  {
+    base::RunLoop loop;
+    network_context->GetSharedDictionaryUsageInfo(base::BindLambdaForTesting(
+        [&](const std::vector<net::SharedDictionaryUsageInfo>& usage_info) {
+          EXPECT_TRUE(usage_info.empty());
+          loop.Quit();
+        }));
+    loop.Run();
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, ClearSiteData) {

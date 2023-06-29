@@ -66,6 +66,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/mapped_host_resolver.h"
+#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/extras/sqlite/sqlite_persistent_cookie_store.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/http/http_auth.h"
@@ -125,6 +126,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/shared_dictionary/shared_dictionary_network_transaction_factory.h"
+#include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/ssl_config_service_mojo.h"
 #include "services/network/throttling/network_conditions.h"
 #include "services/network/throttling/throttling_controller.h"
@@ -2940,6 +2942,26 @@ void NetworkContext::ClearSharedDictionaryCache(
                                                       filter->domains.end()))
           : base::RepeatingCallback<bool(const GURL&)>(),
       std::move(callback));
+}
+
+void NetworkContext::ClearSharedDictionaryCacheForIsolationKey(
+    const net::SharedDictionaryIsolationKey& isolation_key,
+    ClearSharedDictionaryCacheForIsolationKeyCallback callback) {
+  if (!shared_dictionary_manager_) {
+    std::move(callback).Run();
+    return;
+  }
+  shared_dictionary_manager_->ClearDataForIsolationKey(isolation_key,
+                                                       std::move(callback));
+}
+
+void NetworkContext::GetSharedDictionaryUsageInfo(
+    GetSharedDictionaryUsageInfoCallback callback) {
+  if (!shared_dictionary_manager_) {
+    std::move(callback).Run({});
+    return;
+  }
+  shared_dictionary_manager_->GetUsageInfo(std::move(callback));
 }
 
 }  // namespace network

@@ -115,6 +115,18 @@ void SharedDictionaryManagerInMemory::ClearData(
   std::move(callback).Run();
 }
 
+void SharedDictionaryManagerInMemory::ClearDataForIsolationKey(
+    const net::SharedDictionaryIsolationKey& isolation_key,
+    base::OnceClosure callback) {
+  auto it = storages().find(isolation_key);
+  if (it != storages().end()) {
+    SharedDictionaryStorageInMemory* storage =
+        reinterpret_cast<SharedDictionaryStorageInMemory*>(it->second.get());
+    storage->ClearAllDictionaries();
+  }
+  std::move(callback).Run();
+}
+
 void SharedDictionaryManagerInMemory::MaybeRunCacheEvictionPerSite(
     const net::SchemefulSite& top_frame_site) {
   RunCacheEvictionImpl(top_frame_site, cache_max_size_ / 2, cache_max_size_ / 2,
@@ -189,6 +201,28 @@ void SharedDictionaryManagerInMemory::RunCacheEvictionImpl(
   for (auto& candidate : eviction_candidates) {
     candidate.storage()->DeleteDictionary(candidate.host(), candidate.match());
   }
+}
+
+void SharedDictionaryManagerInMemory::GetUsageInfo(
+    base::OnceCallback<void(const std::vector<net::SharedDictionaryUsageInfo>&)>
+        callback) {
+  std::vector<net::SharedDictionaryUsageInfo> result;
+  for (auto& it : storages()) {
+    SharedDictionaryStorageInMemory* storage =
+        reinterpret_cast<SharedDictionaryStorageInMemory*>(it.second.get());
+    net::SharedDictionaryUsageInfo usage;
+
+    for (const auto& it1 : storage->GetDictionaryMap()) {
+      for (const auto& it2 : it1.second) {
+        usage.total_size_bytes += it2.second.size();
+      }
+    }
+    if (usage.total_size_bytes != 0) {
+      usage.isolation_key = it.first;
+      result.emplace_back(usage);
+    }
+  }
+  std::move(callback).Run(std::move(result));
 }
 
 }  // namespace network

@@ -516,6 +516,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       base::Time end_time,
       mojom::ClearDataFilterPtr filter,
       ClearSharedDictionaryCacheCallback callback) override;
+  void ClearSharedDictionaryCacheForIsolationKey(
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      ClearSharedDictionaryCacheForIsolationKeyCallback callback) override;
+  void GetSharedDictionaryUsageInfo(
+      GetSharedDictionaryUsageInfoCallback callback) override;
 
   // Destroys |request| when a proxy lookup completes.
   void OnProxyLookupComplete(ProxyLookupRequest* proxy_lookup_request);

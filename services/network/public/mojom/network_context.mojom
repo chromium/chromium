@@ -46,6 +46,8 @@ import "services/network/public/mojom/proxy_resolving_socket.mojom";
 import "services/network/public/mojom/reporting_service.mojom";
 import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/shared_dictionary_access_observer.mojom";
+import "services/network/public/mojom/shared_dictionary_isolation_key.mojom";
+import "services/network/public/mojom/shared_dictionary_usage_info.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/socket_broker.mojom";
 import "services/network/public/mojom/ssl_config.mojom";
@@ -1097,6 +1099,11 @@ interface NetworkContext {
                              mojo_base.mojom.Time end_time,
                              ClearDataFilter? filter) => ();
 
+  // Clears dictionaries registered for `isolation_key` from the shared
+  // dictionary cache.
+  ClearSharedDictionaryCacheForIsolationKey(
+      SharedDictionaryIsolationKey isolation_key) => ();
+
   // Configures per-resource reporting endpoints set with the
   // Reporting-Endpoints header.
   // |reporting_source| is a token which identifies the document or worker with
@@ -1580,6 +1587,10 @@ interface NetworkContext {
   // events for Reporting API reports currently stored in the reporting service.
   [EnableIf=enable_reporting]
   AddReportingApiObserver(pending_remote<ReportingApiObserver> observer);
+
+  // Get the usage information of shared dictionaries.
+  GetSharedDictionaryUsageInfo()
+      => (array<SharedDictionaryUsageInfo> usage_info);
 
   // Sets maximum size of the shared dictionary cache.
   SetSharedDictionaryCacheMaxSize(uint64 cache_max_size);

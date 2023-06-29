@@ -102,6 +102,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
   void ClearData(base::Time start_time,
                  base::Time end_time,
                  base::RepeatingCallback<bool(const GURL&)> url_matcher);
+  void ClearAllDictionaries();
 
  private:
   friend class SharedDictionaryManagerTest;

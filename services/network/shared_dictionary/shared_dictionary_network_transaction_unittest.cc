@@ -138,6 +138,12 @@ class DummySharedDictionaryManager : public SharedDictionaryManager {
                  base::Time end_time,
                  base::RepeatingCallback<bool(const GURL&)> url_matcher,
                  base::OnceClosure callback) override {}
+  void ClearDataForIsolationKey(
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      base::OnceClosure callback) override {}
+  void GetUsageInfo(base::OnceCallback<
+                    void(const std::vector<net::SharedDictionaryUsageInfo>&)>
+                        callback) override {}
 
  private:
   scoped_refptr<DummySharedDictionaryStorage> storage_;

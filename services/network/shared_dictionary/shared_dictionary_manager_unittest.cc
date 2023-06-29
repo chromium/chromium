@@ -24,6 +24,7 @@
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/disk_cache_test_util.h"
 #include "net/extras/shared_dictionary/shared_dictionary_info.h"
+#include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/shared_dictionary/shared_dictionary.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
@@ -33,9 +34,12 @@
 #include "services/network/shared_dictionary/shared_dictionary_storage_in_memory.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+using ::testing::UnorderedElementsAreArray;
 
 namespace network {
 
@@ -1104,6 +1108,107 @@ TEST_P(SharedDictionaryManagerTest, ClearDataDoNotInvalidateActiveDictionary) {
   EXPECT_EQ(kTestData2,
             std::string(reinterpret_cast<const char*>(dict->data()->data()),
                         dict->size()));
+}
+
+TEST_P(SharedDictionaryManagerTest, ClearDataForIsolationKey) {
+  net::SharedDictionaryIsolationKey isolation_key1(
+      url::Origin::Create(GURL("https://frame1.test/")),
+      net::SchemefulSite(GURL("https://target1.test")));
+  net::SharedDictionaryIsolationKey isolation_key2(
+      url::Origin::Create(GURL("https://frame2.test/")),
+      net::SchemefulSite(GURL("https://target2.test")));
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  scoped_refptr<SharedDictionaryStorage> storage1 =
+      manager->GetStorage(isolation_key1);
+  WriteDictionary(storage1.get(), GURL("https://origin1.test/1"), "p1*",
+                  {kTestData1});
+  WriteDictionary(storage1.get(), GURL("https://origin1.test/2"), "p2*",
+                  {kTestData1});
+
+  scoped_refptr<SharedDictionaryStorage> storage2 =
+      manager->GetStorage(isolation_key2);
+  WriteDictionary(storage2.get(), GURL("https://origin2.test/1"), "p1*",
+                  {kTestData1});
+  WriteDictionary(storage2.get(), GURL("https://origin2.test/2"), "p2*",
+                  {kTestData1});
+
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  EXPECT_TRUE(storage1->GetDictionary(GURL("https://origin1.test/p1?")));
+  EXPECT_TRUE(storage1->GetDictionary(GURL("https://origin1.test/p2?")));
+  EXPECT_TRUE(storage2->GetDictionary(GURL("https://origin2.test/p1?")));
+  EXPECT_TRUE(storage2->GetDictionary(GURL("https://origin2.test/p2?")));
+
+  base::RunLoop run_loop;
+  manager->ClearDataForIsolationKey(isolation_key1, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(storage1->GetDictionary(GURL("https://origin1.test/p1?")));
+  EXPECT_FALSE(storage1->GetDictionary(GURL("https://origin1.test/p2?")));
+  EXPECT_TRUE(storage2->GetDictionary(GURL("https://origin2.test/p1?")));
+  EXPECT_TRUE(storage2->GetDictionary(GURL("https://origin2.test/p2?")));
+}
+
+TEST_P(SharedDictionaryManagerTest, GetUsageInfo) {
+  net::SharedDictionaryIsolationKey isolation_key1(
+      url::Origin::Create(GURL("https://frame1.test/")),
+      net::SchemefulSite(GURL("https://target1.test")));
+  net::SharedDictionaryIsolationKey isolation_key2(
+      url::Origin::Create(GURL("https://frame2.test/")),
+      net::SchemefulSite(GURL("https://target2.test")));
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  scoped_refptr<SharedDictionaryStorage> storage1 =
+      manager->GetStorage(isolation_key1);
+  WriteDictionary(storage1.get(), GURL("https://origin1.test/1"), "p1*",
+                  {kTestData1});
+  WriteDictionary(storage1.get(), GURL("https://origin1.test/2"), "p2*",
+                  {kTestData2});
+
+  scoped_refptr<SharedDictionaryStorage> storage2 =
+      manager->GetStorage(isolation_key2);
+  WriteDictionary(storage2.get(), GURL("https://origin2.test/1"), "p1*",
+                  {kTestData2});
+  WriteDictionary(storage2.get(), GURL("https://origin2.test/2"), "p2*",
+                  {kTestData2});
+
+  if (GetParam() == TestManagerType::kOnDisk) {
+    FlushCacheTasks();
+  }
+
+  base::RunLoop run_loop;
+  manager->GetUsageInfo(base::BindLambdaForTesting(
+      [&](const std::vector<net::SharedDictionaryUsageInfo>& usage_info) {
+        EXPECT_THAT(
+            usage_info,
+            UnorderedElementsAreArray(
+                {net::SharedDictionaryUsageInfo{
+                     .isolation_key = isolation_key1,
+                     .total_size_bytes = kTestData1.size() + kTestData2.size()},
+                 net::SharedDictionaryUsageInfo{
+                     .isolation_key = isolation_key2,
+                     .total_size_bytes = kTestData2.size() * 2}}));
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_P(SharedDictionaryManagerTest, GetUsageInfoEmptyResult) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  base::RunLoop run_loop;
+  manager->GetUsageInfo(base::BindLambdaForTesting(
+      [&](const std::vector<net::SharedDictionaryUsageInfo>& usage_info) {
+        EXPECT_TRUE(usage_info.empty());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 }  // namespace network

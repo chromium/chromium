@@ -67,6 +67,10 @@ void SharedDictionaryStorageInMemory::ClearData(
                 [](auto& it) { return it.second.empty(); });
 }
 
+void SharedDictionaryStorageInMemory::ClearAllDictionaries() {
+  dictionary_info_map_.clear();
+}
+
 scoped_refptr<SharedDictionaryWriter>
 SharedDictionaryStorageInMemory::CreateWriter(const GURL& url,
                                               base::Time response_time,

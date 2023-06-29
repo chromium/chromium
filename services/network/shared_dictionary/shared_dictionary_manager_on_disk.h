@@ -63,6 +63,12 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
                  base::Time end_time,
                  base::RepeatingCallback<bool(const GURL&)> url_matcher,
                  base::OnceClosure callback) override;
+  void ClearDataForIsolationKey(
+      const net::SharedDictionaryIsolationKey& isolation_key,
+      base::OnceClosure callback) override;
+  void GetUsageInfo(base::OnceCallback<
+                    void(const std::vector<net::SharedDictionaryUsageInfo>&)>
+                        callback) override;
 
   SharedDictionaryDiskCache& disk_cache() { return disk_cache_; }
   net::SQLitePersistentSharedDictionaryStore& metadata_store() {
@@ -97,11 +103,13 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   };
 
   class ClearDataTask;
+  class ClearDataForIsolationKeyTask;
   class MismatchingEntryDeletionTask;
   class CacheEvictionTask;
   class ExpiredDictionaryDeletionTask;
 
   class ClearDataTaskInfo;
+  class ClearDataForIsolationKeyTaskInfo;
   class MismatchingEntryDeletionTaskInfo;
   class CacheEvictionTaskInfo;
   class ExpiredDictionaryDeletionTaskInfo;
