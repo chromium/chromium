@@ -11,7 +11,7 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {createRoutesForTesting, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsMenuElement, OsSettingsRoutes, OsSettingsUiElement, Router, routesMojom} from 'chrome://os-settings/os_settings.js';
+import {createRoutesForTesting, CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsMenuElement, OsSettingsRoutes, OsSettingsUiElement, Router, routesMojom, SettingsIdleLoadElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -48,10 +48,12 @@ suite('<os-settings-ui> page visibility', () => {
     assert(menuEl);
     menu = menuEl;
 
-    const idleRender =
-        mainPageContainer.shadowRoot!.querySelector('settings-idle-load');
-    assert(idleRender);
-    await idleRender.get();
+    // Force load advanced page container
+    const advancedPageTemplate =
+        mainPageContainer.shadowRoot!.querySelector<SettingsIdleLoadElement>(
+            '#advancedPageTemplate');
+    assert(advancedPageTemplate);
+    await advancedPageTemplate.get();
     flush();
   }
 
@@ -122,6 +124,7 @@ suite('<os-settings-ui> page visibility', () => {
   });
 
   const pageNames: PageName[] = [
+    'kAboutChromeOs',
     'kAccessibility',
     'kApps',
     'kBluetooth',

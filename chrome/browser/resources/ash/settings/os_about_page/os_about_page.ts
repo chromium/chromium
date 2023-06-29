@@ -37,11 +37,11 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {isCrostiniSupported} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
-import {MainPageMixin} from '../main_page_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {isAboutRoute, Route, Router, routes} from '../router.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {Route, Router, routes} from '../router.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, RegulatoryInfo, TpmFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
 import {getTemplate} from './os_about_page.html.js';
@@ -52,19 +52,19 @@ declare global {
   }
 }
 
-interface OsSettingsAboutPageElement {
+interface OsAboutPageElement {
   $: {
     updateStatusMessageInner: HTMLDivElement,
     'product-logo': HTMLImageElement,
   };
 }
 
-const OsSettingsAboutPageBaseElement = DeepLinkingMixin(
-    MainPageMixin(I18nMixin(WebUiListenerMixin(PolymerElement))));
+const OsAboutPageBase = DeepLinkingMixin(
+    RouteObserverMixin(I18nMixin(WebUiListenerMixin(PolymerElement))));
 
-class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
+class OsAboutPageElement extends OsAboutPageBase {
   static get is() {
-    return 'os-settings-about-page';
+    return 'os-about-page' as const;
   }
 
   static get template() {
@@ -198,9 +198,9 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
         type: Object,
         value() {
           const map = new Map();
-          if (routes.DETAILED_BUILD_INFO) {
+          if (routes.ABOUT_DETAILED_BUILD_INFO) {
             map.set(
-                routes.DETAILED_BUILD_INFO.path,
+                routes.ABOUT_DETAILED_BUILD_INFO.path,
                 '#detailed-build-info-trigger');
           }
           return map;
@@ -336,13 +336,9 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
     }
   }
 
-  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
-    // MainPageMixin#currentRouteChanged() should be the super class method
-    // See https://crbug.com/1324103 for more details.
-    super.currentRouteChanged(newRoute, oldRoute);
-
+  override currentRouteChanged(newRoute: Route): void {
     // Does not apply to this page.
-    if (newRoute !== routes.ABOUT_ABOUT) {
+    if (newRoute !== routes.ABOUT) {
       return;
     }
 
@@ -354,10 +350,6 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
         this.isPendingOsUpdateDeepLink_ = true;
       }
     });
-  }
-
-  override containsRoute(route: Route|undefined) {
-    return !route || isAboutRoute(route);
   }
 
   private startListening_() {
@@ -612,7 +604,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
   }
 
   private onDetailedBuildInfoClick_() {
-    Router.getInstance().navigateTo(routes.DETAILED_BUILD_INFO);
+    Router.getInstance().navigateTo(routes.ABOUT_DETAILED_BUILD_INFO);
   }
 
   private getRelaunchButtonText_(): string {
@@ -738,9 +730,8 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'os-settings-about-page': OsSettingsAboutPageElement;
+    [OsAboutPageElement.is]: OsAboutPageElement;
   }
 }
 
-customElements.define(
-    OsSettingsAboutPageElement.is, OsSettingsAboutPageElement);
+customElements.define(OsAboutPageElement.is, OsAboutPageElement);

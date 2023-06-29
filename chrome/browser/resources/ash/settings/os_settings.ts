@@ -184,6 +184,7 @@ export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, 
 export {OsSettingsMainElement} from './os_settings_main/os_settings_main.js';
 export {OsSettingsMenuElement} from './os_settings_menu/os_settings_menu.js';
 export {OsSettingsSectionElement} from './os_settings_page/os_settings_section.js';
+export {SettingsIdleLoadElement} from './os_settings_page/settings_idle_load.js';
 export {createRoutes as createRoutesForTesting, createSection as createSectionForTesting, createSubpage as createSubpageForTesting, OsSettingsRoutes} from './os_settings_routes.js';
 export {OsSettingsSearchBoxElement} from './os_settings_search_box/os_settings_search_box.js';
 export {OsSettingsSearchBoxBrowserProxyImpl} from './os_settings_search_box/os_settings_search_box_browser_proxy.js';

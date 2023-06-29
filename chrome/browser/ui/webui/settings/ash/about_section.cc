@@ -46,7 +46,6 @@
 namespace ash::settings {
 
 namespace mojom {
-using ::chromeos::settings::mojom::kAboutChromeOsDetailsSubpagePath;
 using ::chromeos::settings::mojom::kAboutChromeOsSectionPath;
 using ::chromeos::settings::mojom::kDetailedBuildInfoSubpagePath;
 using ::chromeos::settings::mojom::Section;
@@ -65,17 +64,17 @@ const std::vector<SearchConcept>& GetAboutSearchConcepts() {
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kDetailedBuildInfo}},
       {IDS_SETTINGS_ABOUT_OS,
-       mojom::kAboutChromeOsDetailsSubpagePath,
+       mojom::kAboutChromeOsSectionPath,
        mojom::SearchResultIcon::kChrome,
        mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kAboutChromeOsDetails}},
+       mojom::SearchResultType::kSection,
+       {.section = mojom::Section::kAboutChromeOs}},
       {IDS_OS_SETTINGS_TAG_OS_VERSION,
-       mojom::kAboutChromeOsDetailsSubpagePath,
+       mojom::kAboutChromeOsSectionPath,
        mojom::SearchResultIcon::kChrome,
        mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kAboutChromeOsDetails}},
+       mojom::SearchResultType::kSection,
+       {.section = mojom::Section::kAboutChromeOs}},
       {IDS_OS_SETTINGS_TAG_ABOUT_CHROME_OS_CHANNEL,
        mojom::kDetailedBuildInfoSubpagePath,
        mojom::SearchResultIcon::kChrome,
@@ -89,19 +88,19 @@ const std::vector<SearchConcept>& GetAboutSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kCopyDetailedBuildInfo}},
       {IDS_OS_SETTINGS_TAG_ABOUT_OS_UPDATE,
-       mojom::kAboutChromeOsDetailsSubpagePath,
+       mojom::kAboutChromeOsSectionPath,
        mojom::SearchResultIcon::kChrome,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kCheckForOsUpdate}},
       {IDS_OS_SETTINGS_TAG_ABOUT_HELP,
-       mojom::kAboutChromeOsDetailsSubpagePath,
+       mojom::kAboutChromeOsSectionPath,
        mojom::SearchResultIcon::kChrome,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kGetHelpWithChromeOs}},
       {IDS_OS_SETTINGS_TAG_ABOUT_RELEASE_NOTES,
-       mojom::kAboutChromeOsDetailsSubpagePath,
+       mojom::kAboutChromeOsSectionPath,
        mojom::SearchResultIcon::kChrome,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -115,7 +114,7 @@ const std::vector<SearchConcept>& GetAboutSearchConcepts() {
 const std::vector<SearchConcept>& GetDiagnosticsAppSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS,
-       mojom::kAboutChromeOsDetailsSubpagePath,
+       mojom::kAboutChromeOsSectionPath,
        mojom::SearchResultIcon::kChrome,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -131,7 +130,7 @@ const std::vector<SearchConcept>& GetDiagnosticsAppSearchConcepts() {
 const std::vector<SearchConcept>& GetFirmwareUpdatesAppSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_ABOUT_FIRMWARE_UPDATES,
-       mojom::kAboutChromeOsDetailsSubpagePath,
+       mojom::kAboutChromeOsSectionPath,
        mojom::SearchResultIcon::kChrome,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -157,7 +156,7 @@ const std::vector<SearchConcept>& GetDeviceNameSearchConcepts() {
 const std::vector<SearchConcept>& GetAboutTermsOfServiceSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_ABOUT_TERMS_OF_SERVICE,
-       mojom::kAboutChromeOsDetailsSubpagePath,
+       mojom::kAboutChromeOsSectionPath,
        mojom::SearchResultIcon::kChrome,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -169,7 +168,7 @@ const std::vector<SearchConcept>& GetAboutTermsOfServiceSearchConcepts() {
 const std::vector<SearchConcept>& GetAboutReportIssueSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_ABOUT_REPORT_ISSUE,
-       mojom::kAboutChromeOsDetailsSubpagePath,
+       mojom::kAboutChromeOsSectionPath,
        mojom::SearchResultIcon::kChrome,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -512,24 +511,20 @@ bool AboutSection::LogMetric(mojom::Setting setting, base::Value& value) const {
 }
 
 void AboutSection::RegisterHierarchy(HierarchyGenerator* generator) const {
-  // About Chrome OS.
-  generator->RegisterTopLevelSubpage(
-      IDS_SETTINGS_ABOUT_OS, mojom::Subpage::kAboutChromeOsDetails,
-      mojom::SearchResultIcon::kChrome, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kAboutChromeOsDetailsSubpagePath);
-  static constexpr mojom::Setting kAboutChromeOsDetailsSettings[] = {
-      mojom::Setting::kCheckForOsUpdate,    mojom::Setting::kSeeWhatsNew,
-      mojom::Setting::kGetHelpWithChromeOs, mojom::Setting::kReportAnIssue,
-      mojom::Setting::kTermsOfService,      mojom::Setting::kDiagnostics,
-      mojom::Setting::kFirmwareUpdates};
-  RegisterNestedSettingBulk(mojom::Subpage::kAboutChromeOsDetails,
-                            kAboutChromeOsDetailsSettings, generator);
+  // Top-level About section
+  generator->RegisterTopLevelSetting(mojom::Setting::kCheckForOsUpdate);
+  generator->RegisterTopLevelSetting(mojom::Setting::kSeeWhatsNew);
+  generator->RegisterTopLevelSetting(mojom::Setting::kGetHelpWithChromeOs);
+  generator->RegisterTopLevelSetting(mojom::Setting::kReportAnIssue);
+  generator->RegisterTopLevelSetting(mojom::Setting::kTermsOfService);
+  generator->RegisterTopLevelSetting(mojom::Setting::kDiagnostics);
+  generator->RegisterTopLevelSetting(mojom::Setting::kFirmwareUpdates);
 
   // Detailed build info.
-  generator->RegisterNestedSubpage(
+  generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_ABOUT_PAGE_DETAILED_BUILD_INFO,
-      mojom::Subpage::kDetailedBuildInfo, mojom::Subpage::kAboutChromeOsDetails,
-      mojom::SearchResultIcon::kChrome, mojom::SearchResultDefaultRank::kMedium,
+      mojom::Subpage::kDetailedBuildInfo, mojom::SearchResultIcon::kChrome,
+      mojom::SearchResultDefaultRank::kMedium,
       mojom::kDetailedBuildInfoSubpagePath);
   static constexpr mojom::Setting kDetailedBuildInfoSettings[] = {
       mojom::Setting::kChangeChromeChannel, mojom::Setting::kChangeDeviceName,

@@ -12,7 +12,6 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/js/search_highlight_utils.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../os_about_page/os_about_page.js';
 import '../main_page_container/main_page_container.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
@@ -23,14 +22,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {assertExists} from '../assert_extras.js';
 import {OsPageAvailability} from '../os_page_availability.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
-import {Route, Router, routes} from '../router.js';
+import {isAboutRoute, Route} from '../router.js';
 
 import {getTemplate} from './os_settings_main.html.js';
-
-interface MainPageVisibility {
-  about: boolean;
-  settings: boolean;
-}
 
 declare global {
   interface HTMLElementEventMap {
@@ -78,14 +72,13 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
       },
 
       /**
-       * Controls which main pages are displayed via dom-ifs, based on the
-       * current route.
+       * When OsSettingsRevampWayfinding feature flag is disabled,
+       * os-about-page and main-page-container are mututally exclusive. Only one
+       * can be visible at a time.
        */
-      showPages_: {
+      isShowingAboutPage_: {
         type: Object,
-        value() {
-          return {about: false, settings: false};
-        },
+        value: false,
       },
 
       isShowingSubpage_: Boolean,
@@ -108,7 +101,7 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
   toolbarSpinnerActive: boolean;
   pageAvailability: OsPageAvailability;
   private overscroll_: number;
-  private showPages_: MainPageVisibility;
+  private isShowingAboutPage_: boolean;
   private isShowingSubpage_: boolean;
   private boundScroll_: (() => void)|null;
 
@@ -169,8 +162,8 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
    * current route.
    */
   override currentRouteChanged(newRoute: Route) {
-    const inAbout = routes.ABOUT.contains(Router.getInstance().currentRoute);
-    this.showPages_ = {about: inAbout, settings: !inAbout};
+    const inAbout = isAboutRoute(newRoute);
+    this.isShowingAboutPage_ = inAbout;
 
     if (!newRoute.isSubpage()) {
       document.title = inAbout ? loadTimeData.getStringF(
@@ -209,7 +202,7 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
   }
 
   private showManagedHeader_(): boolean {
-    return !this.isShowingSubpage_ && !this.showPages_.about;
+    return !this.isShowingSubpage_ && !this.isShowingAboutPage_;
   }
 }
 

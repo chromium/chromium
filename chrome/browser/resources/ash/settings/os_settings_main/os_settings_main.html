@@ -33,21 +33,13 @@
   }
 </style>
 <template is="dom-if"
-    if="[[showManagedHeader_(isShowingSubpage_, showPages_.about)]]">
+    if="[[showManagedHeader_(isShowingSubpage_, isShowingAboutPage_)]]">
   <managed-footnote show-device-info></managed-footnote>
 </template>
-<template is="dom-if" if="[[showPages_.settings]]">
-  <main-page-container
-      class="cr-centered-card-container"
-      prefs="{{prefs}}"
-      page-availability="[[pageAvailability]]"
-      advanced-toggle-expanded="{{advancedToggleExpanded}}">
-  </main-page-container>
-</template>
-<template is="dom-if" if="[[showPages_.about]]">
-  <os-settings-about-page role="main"
-      class="cr-centered-card-container"
-      prefs="{{prefs}}">
-  </os-settings-about-page>
-</template>
+<main-page-container
+    class="cr-centered-card-container"
+    prefs="{{prefs}}"
+    page-availability="[[pageAvailability]]"
+    advanced-toggle-expanded="{{advancedToggleExpanded}}">
+</main-page-container>
 <div id="overscroll" style="padding-bottom: [[overscroll_]]px"></div>

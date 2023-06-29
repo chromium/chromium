@@ -172,7 +172,7 @@ enum Subpage {
   // Note: Reset section has no subpages.
 
   // About Chrome OS section.
-  kAboutChromeOsDetails = 1700,
+  // 1700 was used for kAboutChromeOsDetails. Do not reuse.
   kDetailedBuildInfo = 1701,
 
   // Kerberos section.
@@ -319,7 +319,6 @@ const string kResetSectionPath = "osReset";
 
 // About Chrome OS section.
 const string kAboutChromeOsSectionPath = "help";
-const string kAboutChromeOsDetailsSubpagePath = "help/about";
 const string kDetailedBuildInfoSubpagePath = "help/details";
 
 // Kerberos section.

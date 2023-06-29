@@ -112,6 +112,13 @@ suite('<main-page-container> Route Navigation', () => {
     assertNull(mainPageContainer.shadowRoot.activeElement);
   });
 
+  test('Advanced page is not directly navigable', () => {
+    Router.getInstance().navigateTo(routes.ADVANCED);
+
+    // Should redirect to BASIC route
+    assertEquals(routes.BASIC, Router.getInstance().currentRoute);
+  });
+
   suite('From Root', () => {
     test('to Page should activate and focus that page', async () => {
       // Simulate navigating from root to Bluetooth page

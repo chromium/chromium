@@ -72,7 +72,7 @@ suite('AboutPageTest', function() {
     aboutBrowserProxy.reset();
     lifetimeBrowserProxy.reset();
     PolymerTest.clearBody();
-    page = document.createElement('os-settings-about-page');
+    page = document.createElement('os-about-page');
     Router.getInstance().navigateTo(routes.ABOUT);
     document.body.appendChild(page);
     return Promise.all([
@@ -89,7 +89,7 @@ suite('AboutPageTest', function() {
   function navigateToSettingsPageWithId(id) {
     const params = new URLSearchParams();
     params.append('settingId', id);
-    Router.getInstance().navigateTo(routes.ABOUT_ABOUT, params);
+    Router.getInstance().navigateTo(routes.ABOUT, params);
 
     flush();
   }
@@ -439,7 +439,7 @@ suite('AboutPageTest', function() {
 
     const params = new URLSearchParams();
     params.append('settingId', '1703');
-    Router.getInstance().navigateTo(routes.ABOUT_ABOUT, params);
+    Router.getInstance().navigateTo(routes.ABOUT, params);
 
     flush();
 
@@ -1071,7 +1071,7 @@ suite('DetailedBuildInfoTest', function() {
 
     const params = new URLSearchParams();
     params.append('settingId', '1700');
-    Router.getInstance().navigateTo(routes.DETAILED_BUILD_INFO, params);
+    Router.getInstance().navigateTo(routes.ABOUT_DETAILED_BUILD_INFO, params);
 
     flush();
 
@@ -1124,7 +1124,7 @@ suite('DetailedBuildInfoTest', function() {
 
     const params = new URLSearchParams();
     params.append('settingId', '1708');
-    Router.getInstance().navigateTo(routes.DETAILED_BUILD_INFO, params);
+    Router.getInstance().navigateTo(routes.ABOUT_DETAILED_BUILD_INFO, params);
 
     flush();
 
@@ -1555,7 +1555,7 @@ suite('AboutPageTest_OfficialBuild', function() {
     browserProxy = new TestAboutPageBrowserProxyChromeOS();
     AboutPageBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
-    page = document.createElement('os-settings-about-page');
+    page = document.createElement('os-about-page');
     document.body.appendChild(page);
   });
 
@@ -1578,7 +1578,7 @@ suite('AboutPageTest_OfficialBuild', function() {
 
     const params = new URLSearchParams();
     params.append('settingId', '1705');
-    Router.getInstance().navigateTo(routes.ABOUT_ABOUT, params);
+    Router.getInstance().navigateTo(routes.ABOUT, params);
 
     flush();
 
@@ -1597,7 +1597,7 @@ suite('AboutPageTest_OfficialBuild', function() {
 
     const params = new URLSearchParams();
     params.append('settingId', '1706');
-    Router.getInstance().navigateTo(routes.ABOUT_ABOUT, params);
+    Router.getInstance().navigateTo(routes.ABOUT, params);
 
     flush();
 

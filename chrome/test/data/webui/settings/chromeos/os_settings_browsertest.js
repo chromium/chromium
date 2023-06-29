@@ -645,7 +645,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['OsSettingsHatsUi', 'os_settings_ui/os_settings_hats_ui_test.js'],
  ['OsSettingsMenu', 'os_settings_menu/os_settings_menu_test.js'],
  ['OsSettingsUi', 'os_settings_ui/os_settings_ui_test.js'],
- ['OsSettingsUiAboutPage', 'os_settings_ui/os_settings_ui_about_page_test.js'],
+ [
+   'OsSettingsUiAboutPage',
+   'os_settings_ui/os_settings_ui_about_page_test.js',
+   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  ['OsSettingsUiMenu', 'os_settings_ui/os_settings_ui_menu_test.js'],
  [
    'OsSettingsUiPageAvailability',

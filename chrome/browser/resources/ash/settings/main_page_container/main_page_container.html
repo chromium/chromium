@@ -98,9 +98,9 @@
     margin-top: 20px;
   }
 </style>
-<template is="dom-if" if="[[showBasicPage_(
-    currentRoute_, isShowingSubpage_)]]">
-  <div id="basicPage">
+
+<div id="basicPageContainer"
+    hidden$="[[!shouldShowBasicPageContainer_]]">
     <template is="dom-if" if="[[computeShowUpdateRequiredEolBanner_(
         isShowingSubpage_, showUpdateRequiredEolBanner_,
         showEOLIncentive_)]]">
@@ -221,8 +221,7 @@
         </os-settings-a11y-page>
       </page-displayer>
     </template>
-  </div>
-</template>
+</div>
 
 <template is="dom-if" if="[[shouldShowAdvancedToggle_]]">
   <div id="toggleSpacer"></div>
@@ -240,9 +239,8 @@
 
 <settings-idle-load id="advancedPageTemplate">
   <template>
-    <div id="advancedPage" hidden$="[[!showAdvancedPage_(
-        currentRoute_, isShowingSubpage_,
-        advancedToggleExpanded)]]">
+    <div id="advancedPageContainer"
+        hidden$="[[!shouldShowAdvancedPageContainer_]]">
       <template is="dom-if"
           if="[[shouldStampPage_(pageAvailability, Section.kDateAndTime)]]"
           restamp>
@@ -289,6 +287,17 @@
           restamp>
         <page-displayer section="[[Section.kReset]]">
           <os-settings-reset-page></os-settings-reset-page>
+        </page-displayer>
+      </template>
+    </div>
+
+    <div id="aboutPageContainer"
+        hidden$="[[!shouldShowAboutPageContainer_]]">
+      <template is="dom-if"
+          if="[[shouldStampPage_(pageAvailability, Section.kAboutChromeOs)]]"
+          restamp>
+        <page-displayer section="[[Section.kAboutChromeOs]]">
+          <os-about-page prefs="{{prefs}}"></os-about-page>
         </page-displayer>
       </template>
     </div>

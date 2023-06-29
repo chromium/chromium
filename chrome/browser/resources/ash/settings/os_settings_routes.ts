@@ -77,7 +77,7 @@ export class Route {
   }
 
   /**
-   * Returns true if this route matches or is an ancestor of the parameter.
+   * Returns true if this route matches, or is an ancestor of, the parameter.
    */
   contains(route: Route): boolean {
     for (let curr: Route|null = route; curr !== null; curr = curr.parent) {
@@ -115,7 +115,7 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   A11Y_CHROMEVOX: Route;
   A11Y_SELECT_TO_SPEAK: Route;
   ABOUT: Route;
-  ABOUT_ABOUT: Route;
+  ABOUT_DETAILED_BUILD_INFO: Route;
   ACCOUNTS: Route;
   ACCOUNT_MANAGER: Route;
   ADVANCED: Route;
@@ -151,7 +151,6 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   DARK_MODE: Route;
   DATETIME: Route;
   DATETIME_TIMEZONE_SUBPAGE: Route;
-  DETAILED_BUILD_INFO: Route;
   DEVICE: Route;
   DISPLAY: Route;
   EXTERNAL_STORAGE_PREFERENCES: Route;
@@ -214,9 +213,14 @@ export interface OsSettingsRoutes extends MinimumRoutes {
 }
 
 export function createSection(
-    parent: Route, path: string, section: routesMojom.Section,
+    parent: Route|null, path: string, section: routesMojom.Section,
     title?: string): Route {
-  const route = parent.createChild(`/${path}`, title);
+  let route: Route;
+  if (parent) {
+    route = parent.createChild(`/${path}`, title);
+  } else {
+    route = new Route(`/${path}`, title);
+  }
   route.section = section;
   return route;
 }
@@ -235,10 +239,11 @@ export function createRoutes(): OsSettingsRoutes {
   const {Section, Subpage} = routesMojom;
 
   // Special routes:
-  // - BASIC is the main page which loads if no path is provided
-  // - ADVANCED is the bottom section of the main page which is not
-  //   visible unless the user enables it
+  // BASIC is the main page which loads if no path is provided. AKA Root page.
   r.BASIC = new Route('/');
+  // ADVANCED is a non-navigable route. It only serves as a parent to group
+  // child routes under the advanced section and is never allowed direct
+  // navigation.
   r.ADVANCED = new Route('/advanced');
 
   // Network section.
@@ -579,16 +584,12 @@ export function createRoutes(): OsSettingsRoutes {
         r.ADVANCED, routesMojom.RESET_SECTION_PATH, Section.kReset);
   }
 
-  // About section. Note that this section is a special case, since it is not
-  // part of the main page. In this case, the "About Chrome OS" subpage is
-  // implemented using createSection().
-  // TODO(khorimoto): Add Section.kAboutChromeOs to Route object.
-  r.ABOUT = new Route('/' + routesMojom.ABOUT_CHROME_OS_SECTION_PATH);
-  r.ABOUT_ABOUT = createSection(
-      r.ABOUT, routesMojom.ABOUT_CHROME_OS_DETAILS_SUBPAGE_PATH,
+  // About section.
+  r.ABOUT = createSection(
+      /*parent=*/ null, routesMojom.ABOUT_CHROME_OS_SECTION_PATH,
       Section.kAboutChromeOs);
-  r.DETAILED_BUILD_INFO = createSubpage(
-      r.ABOUT_ABOUT, routesMojom.DETAILED_BUILD_INFO_SUBPAGE_PATH,
+  r.ABOUT_DETAILED_BUILD_INFO = createSubpage(
+      r.ABOUT, routesMojom.DETAILED_BUILD_INFO_SUBPAGE_PATH,
       Subpage.kDetailedBuildInfo);
 
   return r as OsSettingsRoutes;

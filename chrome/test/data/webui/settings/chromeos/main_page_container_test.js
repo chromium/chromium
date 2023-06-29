@@ -137,6 +137,12 @@ suite('<main-page-container>', function() {
           pageName: 'kReset',
           elementName: 'os-settings-reset-page',
         },
+
+        // About page
+        {
+          pageName: 'kAboutChromeOs',
+          elementName: 'os-about-page',
+        },
     ].forEach(({pageName, elementName}) => {
       test(`${pageName} page is controlled by pageAvailability`, () => {
         // Make page available

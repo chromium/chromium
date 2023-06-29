@@ -217,7 +217,7 @@ class SettingsDetailedBuildInfoSubpageElement extends
 
   override currentRouteChanged(route: Route, _oldRoute?: Route) {
     // Does not apply to this page.
-    if (route !== routes.DETAILED_BUILD_INFO) {
+    if (route !== routes.ABOUT_DETAILED_BUILD_INFO) {
       return;
     }
 

@@ -318,13 +318,14 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
       recordNavigation();
     }
 
-    if (newRoute.depth <= 1) {
-      // Main page uses scroll visibility to determine shadow.
-      this.enableShadowBehavior(true);
-    } else {
+    if (newRoute.isSubpage()) {
       // Sub-pages always show the top-container shadow.
       this.enableShadowBehavior(false);
       this.showDropShadows();
+    } else {
+      // All other pages including the root page should show shadow depending
+      // on scroll position.
+      this.enableShadowBehavior(true);
     }
   }
 

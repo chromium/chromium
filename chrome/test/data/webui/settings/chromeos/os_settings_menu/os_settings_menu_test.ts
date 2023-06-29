@@ -8,6 +8,7 @@ import {createPageAvailabilityForTesting, OsSettingsMenuElement, Router, routes,
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 /** @fileoverview Runs tests for the OS settings menu. */
 suite('<os-settings-menu>', () => {
@@ -152,6 +153,11 @@ suite('<os-settings-menu> page availability', () => {
     return settingsMenu.shadowRoot!.querySelector<HTMLElement>(
         `a.item[data-section="${Section[pageName]}"]`);
   }
+
+  test('About page menu item should always be visible', () => {
+    const menuItem = queryMenuItem('kAboutChromeOs');
+    assertTrue(isVisible(menuItem));
+  });
 
   const pageNames: PageName[] = [
     // Basic pages

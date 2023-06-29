@@ -11,9 +11,10 @@
  */
 
 import './strings.m.js';
-/** Top-level Advanced section pages */
+/** Top-level Advanced pages & About page */
 import './crostini_page/crostini_page.js';
 import './date_time_page/date_time_page.js';
+import './os_about_page/os_about_page.js';
 import './os_files_page/os_files_page.js';
 import './os_languages_page/os_languages_section.js';
 import './os_printing_page/os_printing_page.js';

@@ -13,7 +13,7 @@ import {PageDisplayerElement} from './main_page_container/page_displayer.js';
 import {Section} from './mojom-webui/routes.mojom-webui.js';
 import {SettingsIdleLoadElement} from './os_settings_page/settings_idle_load.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from './route_observer_mixin.js';
-import {isAdvancedRoute, Route, Router, routes} from './router.js';
+import {isAboutRoute, isAdvancedRoute, Route, Router, routes} from './router.js';
 
 /**
  * A categorization of every possible Settings URL, necessary for implementing
@@ -39,7 +39,7 @@ function classifyRoute(route: Route|undefined): RouteState {
     return RouteState.INITIAL;
   }
   const routes = Router.getInstance().routes;
-  if (route === routes.BASIC || route === routes.ABOUT) {
+  if (route === routes.BASIC) {
     return RouteState.ROOT;
   }
   if (route.isSubpage()) {
@@ -102,10 +102,6 @@ export const MainPageMixin = dedupingMixin(
         private get scroller_(): HTMLElement {
           const hostEl = (this.getRootNode() as ShadowRoot).host;
           return castExists(hostEl ? hostEl.parentElement : document.body);
-        }
-
-        private get isMainPageContainer(): boolean {
-          return this.tagName === 'MAIN-PAGE-CONTAINER';
         }
 
         /**
@@ -200,11 +196,7 @@ export const MainPageMixin = dedupingMixin(
          * should be the default visible page when the root page is visited.
          */
         private activateInitialPage(): void {
-          // The About page does not have the Network page so we should not
-          // attempt to activate it.
-          // TODO(b/282961146) Investigate removing MainPageMixin from
-          // the About page so this check can be removed.
-          if (isRevampWayfindingEnabled() && this.isMainPageContainer) {
+          if (isRevampWayfindingEnabled()) {
             // Note: This should not focus the Network page since the search box
             // should be the element initially focused after app load.
             this.activatePage(FIRST_PAGE_ROUTE, {focus: false});
@@ -416,7 +408,7 @@ export const MainPageMixin = dedupingMixin(
           const waitFn = beforeNextRender.bind(null, this);
 
           return new Promise(resolve => {
-            if (this.isMainPageContainer && isAdvancedRoute(route)) {
+            if (isAdvancedRoute(route) || isAboutRoute(route)) {
               this.dispatchCustomEvent_('hide-container');
               waitFn(async () => {
                 await this.loadAdvancedPage();

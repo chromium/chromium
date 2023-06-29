@@ -49,7 +49,7 @@ import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {AboutPageBrowserProxyImpl} from '../os_about_page/about_page_browser_proxy.js';
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.js';
 import {OsPageAvailability} from '../os_page_availability.js';
-import {isAdvancedRoute, isBasicRoute, Route, Router} from '../router.js';
+import {isAboutRoute, isAdvancedRoute, isBasicRoute, Route, Router} from '../router.js';
 
 import {getTemplate} from './main_page_container.html.js';
 
@@ -123,7 +123,10 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
         value: !!loadTimeData.getString('updateRequiredEolBannerText'),
       },
 
-      currentRoute_: Object,
+      currentRoute_: {
+        type: Object,
+        value: null,
+      },
 
       showEolIncentive_: {
         type: Boolean,
@@ -142,10 +145,29 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
         },
       },
 
+      shouldShowBasicPageContainer_: {
+        type: Boolean,
+        computed: 'computeShouldShowBasicPageContainer_(' +
+            'currentRoute_, isShowingSubpage_, isRevampWayfindingEnabled_)',
+      },
+
+      shouldShowAdvancedPageContainer_: {
+        type: Boolean,
+        computed: 'computeShouldShowAdvancedPageContainer(' +
+            'advancedToggleExpanded, currentRoute_, isShowingSubpage_, ' +
+            'isRevampWayfindingEnabled_)',
+      },
+
       shouldShowAdvancedToggle_: {
         type: Boolean,
-        computed: 'computeShouldShowAdvancedToggle_(' +
-            'isRevampWayfindingEnabled_, isShowingSubpage_)',
+        computed: 'computeShouldShowAdvancedToggle(' +
+            'currentRoute_, isShowingSubpage_, isRevampWayfindingEnabled_)',
+      },
+
+      shouldShowAboutPageContainer_: {
+        type: Boolean,
+        computed: 'computeShouldShowAboutPageContainer(' +
+            'currentRoute_, isRevampWayfindingEnabled_)',
       },
     };
   }
@@ -156,7 +178,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
   private isShowingSubpage_: boolean;
   private showSecondaryUserBanner_: boolean;
   private showUpdateRequiredEolBanner_: boolean;
-  private currentRoute_: Route;
+  private currentRoute_: Route|null;
   /**
    * Used to avoid handling a new toggle while currently toggling.
    */
@@ -164,7 +186,10 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
   private showEolIncentive_: boolean;
   private shouldShowOfferText_: boolean;
   private isRevampWayfindingEnabled_: boolean;
+  private shouldShowBasicPageContainer_: boolean;
+  private shouldShowAdvancedPageContainer_: boolean;
   private shouldShowAdvancedToggle_: boolean;
+  private shouldShowAboutPageContainer_: boolean;
 
   constructor() {
     super();
@@ -215,8 +240,9 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
     super.currentRouteChanged(newRoute, oldRoute);
   }
 
-  override containsRoute(route: Route|undefined) {
-    return !route || isBasicRoute(route) || isAdvancedRoute(route);
+  override containsRoute(_route: Route|undefined) {
+    // All routes are contained under this element.
+    return true;
   }
 
   /** Stamp page in the DOM depending on page availability */
@@ -237,10 +263,6 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
 
   private computeShowEolIncentive_(): boolean {
     return !this.isShowingSubpage_ && this.showEolIncentive_;
-  }
-
-  private computeShouldShowAdvancedToggle_(): boolean {
-    return !this.isRevampWayfindingEnabled_ && !this.isShowingSubpage_;
   }
 
   private androidAppsInfoUpdate_(info: AndroidAppsInfo) {
@@ -316,17 +338,62 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
     }
   }
 
-  private showBasicPage_(): boolean {
-    return !this.isShowingSubpage_ || isBasicRoute(this.currentRoute_);
+  private computeShouldShowBasicPageContainer_(): boolean {
+    if (this.isRevampWayfindingEnabled_) {
+      return isBasicRoute(this.currentRoute_);
+    }
+
+    // When infinite scroll exists, never show when the about page is visible.
+    if (isAboutRoute(this.currentRoute_)) {
+      return false;
+    }
+
+    // Show if:
+    // 1. On the main page (not a subpage)
+    // 2. OR if the current subpage exists within the basic page
+    if (this.isShowingSubpage_) {
+      return isBasicRoute(this.currentRoute_);
+    }
+    return true;
   }
 
-  private showAdvancedPage_(): boolean {
+  private computeShouldShowAdvancedPageContainer(): boolean {
+    if (this.isRevampWayfindingEnabled_) {
+      return isAdvancedRoute(this.currentRoute_);
+    }
+
+    // When infinite scroll exists, never show when the about page is visible.
+    if (isAboutRoute(this.currentRoute_)) {
+      return false;
+    }
+
+    // Show if:
+    // 1. On the main page and the advanced toggle is expanded
+    // 2. OR if the current subpage exists within the advanced page
     if (this.isShowingSubpage_) {
-      // Show the Advanced page only if the current route is an Advanced
-      // subpage.
       return isAdvancedRoute(this.currentRoute_);
     }
     return this.advancedToggleExpanded;
+  }
+
+  private computeShouldShowAdvancedToggle(): boolean {
+    if (this.isRevampWayfindingEnabled_) {
+      // Under the Settings Revamp, the advanced toggle should never show.
+      return false;
+    }
+
+    // When infinite scroll exists, never show when the about page is visible.
+    if (isAboutRoute(this.currentRoute_)) {
+      return false;
+    }
+
+    // Only show if on the main page (not a subpage)
+    return !this.isShowingSubpage_;
+  }
+
+  private computeShouldShowAboutPageContainer(): boolean {
+    // Only show if the current route exists within the about page
+    return isAboutRoute(this.currentRoute_);
   }
 
   /**

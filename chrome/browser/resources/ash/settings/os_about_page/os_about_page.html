@@ -80,7 +80,6 @@
     query-matches="{{isDarkModeActive_}}">
 </iron-media-query>
 
-<page-displayer section="[[section_]]">
   <os-settings-animated-pages id="pages"
       section="[[section_]]"
       focus-config="[[focusConfig_]]">
@@ -296,7 +295,6 @@
       </os-settings-subpage>
     </template>
   </os-settings-animated-pages>
-</page-displayer>
 
 <template is="dom-if" if="[[showUpdateWarningDialog_]]" restamp>
   <settings-update-warning-dialog update-info="[[updateInfo_]]"

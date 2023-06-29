@@ -96,7 +96,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         value: () => {
           return {
             pageName: Section.kAboutChromeOs,
-            href: `/${routesMojom.ABOUT_CHROME_OS_DETAILS_SUBPAGE_PATH}`,
+            href: `/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`,
           };
         },
       },

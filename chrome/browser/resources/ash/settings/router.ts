@@ -153,8 +153,9 @@ export class Router {
     // Allow trailing slash in paths.
     const canonicalPath = path.replace(CANONICAL_PATH_REGEX, '$1$2');
 
-    const matchingRoute = Object.values(this.routesMap_)
-                              .find(route => route.path === canonicalPath);
+    const matchingRoute = Object.values(this.routes_).find(route => {
+      return route.path === canonicalPath && isNavigableRoute(route);
+    });
     return matchingRoute || null;
   }
 
@@ -191,9 +192,7 @@ export class Router {
   navigateTo(
       route: Route, dynamicParameters?: URLSearchParams,
       removeSearch?: boolean): void {
-    // The ADVANCED route only serves as a parent of subpages, and should not
-    // be possible to navigate to it directly.
-    if (route === this.routes_.ADVANCED) {
+    if (!isNavigableRoute(route)) {
       route = this.routes_.BASIC;
     }
 
@@ -251,8 +250,7 @@ export class Router {
     // record all incorrect paths as hitting the main settings page.
     this.recordMetrics_(route ? route.path : this.routes_.BASIC.path);
 
-    // Never allow direct navigation to ADVANCED.
-    if (route && route !== this.routes_.ADVANCED) {
+    if (route && isNavigableRoute(route)) {
       this.currentRoute_ = route;
       this.currentQueryParameters_ =
           new URLSearchParams(window.location.search);
@@ -306,9 +304,12 @@ export const routes = Router.getInstance().routes;
  * Note: Use the routes contained by the Router instance to ensure the routes
  * are up-to-date (ie. in the case the routes are overridden in tests)
  */
-export function isAdvancedRoute(route: Route): boolean {
+export function isAdvancedRoute(route: Route|null): boolean {
+  if (!route) {
+    return false;
+  }
   const routes = Router.getInstance().routes;
-  return routes.ADVANCED && routes.ADVANCED.contains(route);
+  return routes.ADVANCED.contains(route);
 }
 
 /**
@@ -317,7 +318,10 @@ export function isAdvancedRoute(route: Route): boolean {
  * Note: Use the routes contained by the Router instance to ensure the routes
  * are up-to-date (ie. in the case the routes are overridden in tests)
  */
-export function isBasicRoute(route: Route): boolean {
+export function isBasicRoute(route: Route|null): boolean {
+  if (!route) {
+    return false;
+  }
   const routes = Router.getInstance().routes;
   return routes.BASIC.contains(route);
 }
@@ -327,7 +331,25 @@ export function isBasicRoute(route: Route): boolean {
  * Note: Use the routes contained by the Router instance to ensure the routes
  * are up-to-date (ie. in the case the routes are overridden in tests)
  */
-export function isAboutRoute(route: Route): boolean {
+export function isAboutRoute(route: Route|null): boolean {
+  if (!route) {
+    return false;
+  }
   const routes = Router.getInstance().routes;
   return routes.ABOUT.contains(route);
+}
+
+/**
+ * @returns true if |route| is able to be directly navigated to (ie. there
+ * is a dedicated page or subpage that exists for the given route).
+ */
+export function isNavigableRoute(route: Route|null): boolean {
+  if (!route) {
+    return false;
+  }
+  const routes = Router.getInstance().routes;
+
+  // The ADVANCED route is not navigable. It only serves as a parent to group
+  // child routes.
+  return route !== routes.ADVANCED;
 }
