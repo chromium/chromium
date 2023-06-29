@@ -14,6 +14,7 @@
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/view_shadow.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/ui/captive_portal_dialog_delegate.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
@@ -40,11 +41,14 @@
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/web_dialogs/web_dialog_delegate.h"
 
 namespace ash {
 namespace {
 
 constexpr char kGaiaURL[] = "chrome://oobe/gaia-signin";
+constexpr int kOobeDialogShadowElevation = 12;
+constexpr int kOobeDialogCornerRadius = 24;
 
 }  // namespace
 
@@ -54,7 +58,13 @@ class OobeWebDialogView : public views::WebDialogView {
   OobeWebDialogView(content::BrowserContext* context,
                     ui::WebDialogDelegate* delegate,
                     std::unique_ptr<WebContentsHandler> handler)
-      : views::WebDialogView(context, delegate, std::move(handler)) {}
+      : views::WebDialogView(context, delegate, std::move(handler)) {
+    if (features::IsOobeJellyEnabled() || features::IsOobeSimonEnabled()) {
+      set_use_round_corners(/*round=*/true);
+      set_corner_radius(kOobeDialogCornerRadius);
+    }
+  }
+
   OobeWebDialogView(const OobeWebDialogView&) = delete;
   OobeWebDialogView& operator=(const OobeWebDialogView&) = delete;
 
@@ -132,6 +142,13 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
       : dialog_delegate_(dialog_delegate), oobe_view_(oobe_view) {
     SetFocusTraversesOut(true);
     AddChildView(oobe_view_.get());
+
+    if (features::IsOobeJellyEnabled() || features::IsOobeSimonEnabled()) {
+      // Create a shadow for the OOBE dialog.
+      view_shadow_ = std::make_unique<ViewShadow>(oobe_view_.get(),
+                                                  kOobeDialogShadowElevation);
+      view_shadow_->SetRoundedCornerRadius(kOobeDialogCornerRadius);
+    }
   }
 
   LayoutWidgetDelegateView(const LayoutWidgetDelegateView&) = delete;
@@ -160,9 +177,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
 
   void Layout() override {
     if (fullscreen_) {
-      for (views::View* child : children()) {
-        child->SetBoundsRect(GetContentsBounds());
-      }
+      oobe_view_->SetBoundsRect(GetContentsBounds());
       return;
     }
 
@@ -173,10 +188,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
     const bool is_horizontal = display_size.width() > display_size.height();
     CalculateOobeDialogBounds(GetContentsBounds(), shelf_height, is_horizontal,
                               &bounds);
-
-    for (views::View* child : children()) {
-      child->SetBoundsRect(bounds);
-    }
+    oobe_view_->SetBoundsRect(bounds);
   }
 
   View* GetInitiallyFocusedView() override { return oobe_view_; }
@@ -186,6 +198,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
       nullptr;  // Owned by us.
   raw_ptr<OobeWebDialogView, ExperimentalAsh> oobe_view_ =
       nullptr;  // Owned by views hierarchy.
+  std::unique_ptr<ViewShadow> view_shadow_;
 
   // Indicates whether Oobe web view should fully occupy the hosting widget.
   bool fullscreen_ = false;
@@ -225,7 +238,6 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
   dialog_view_ =
       new OobeWebDialogView(ProfileHelper::GetSigninProfile(), this,
                             std::make_unique<ChromeWebContentsHandler>());
-
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   ash_util::SetupWidgetInitParamsForContainerInPrimary(
@@ -457,6 +469,13 @@ void OobeUIDialogDelegate::OnDestroyingOobeUI() {
 void OobeUIDialogDelegate::OnFocusLeavingSystemTray(bool reverse) {
   if (dialog_view_)
     dialog_view_->AboutToRequestFocusFromTabTraversal(reverse);
+}
+
+ui::WebDialogDelegate::FrameKind OobeUIDialogDelegate::GetWebDialogFrameKind()
+    const {
+  return (features::IsOobeJellyEnabled() || features::IsOobeSimonEnabled())
+             ? ui::WebDialogDelegate::FrameKind::kDialog
+             : ui::WebDialogDelegate::FrameKind::kNonClient;
 }
 
 }  // namespace ash
