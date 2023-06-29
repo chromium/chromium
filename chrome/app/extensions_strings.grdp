@@ -500,10 +500,10 @@
     Site
   </message>
   <message name="IDS_EXTENSIONS_SIDEBAR_EXTENSIONS" desc="The text displayed in the sidebar to go to the extensions section of the page.">
-    Extensions
+    My extensions
   </message>
-  <message name="IDS_EXTENSIONS_SIDEBAR_OPEN_CHROME_WEB_STORE" desc="The text for the link to get more extensions in the extensions page.">
-    Open Chrome Web Store
+  <message name="IDS_EXTENSIONS_SIDEBAR_DISCOVER_MORE" desc="The text displayed in the sidebar to open the Chrome Web Store to get more extensions.">
+    Discover more extensions and themes on the <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt; <ex>&lt;/a&gt;</ex> </ph>
   </message>
   <message name="IDS_EXTENSIONS_SIDEBAR_KEYBOARD_SHORTCUTS" desc="The text for the link to manage keyboard shortcuts for extensions.">
     Keyboard shortcuts

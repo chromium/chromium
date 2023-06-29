@@ -132,7 +132,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
     {"errorContextUnknown", IDS_EXTENSIONS_ERROR_CONTEXT_UNKNOWN},
     {"stackTrace", IDS_EXTENSIONS_ERROR_STACK_TRACE},
     // TODO(dpapad): Unify with Settings' IDS_SETTINGS_WEB_STORE.
-    {"openChromeWebStore", IDS_EXTENSIONS_SIDEBAR_OPEN_CHROME_WEB_STORE},
+    {"sidebarDiscoverMore", IDS_EXTENSIONS_SIDEBAR_DISCOVER_MORE},
     {"keyboardShortcuts", IDS_EXTENSIONS_SIDEBAR_KEYBOARD_SHORTCUTS},
     {"incognitoInfoWarning", IDS_EXTENSIONS_INCOGNITO_WARNING},
     {"hostPermissionsDescription", IDS_EXTENSIONS_HOST_PERMISSIONS_DESCRIPTION},

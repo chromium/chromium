@@ -32,7 +32,7 @@ suite(extension_sidebar_tests.suiteName, function() {
   });
 
   test(extension_sidebar_tests.TestNames.SetSelected, function() {
-    const selector = '.section-item.iron-selected';
+    const selector = '.cr-nav-menu-item.iron-selected';
     assertFalse(!!sidebar.shadowRoot!.querySelector(selector));
 
     window.history.replaceState(undefined, '', '/shortcuts');
@@ -107,8 +107,8 @@ suite(extension_sidebar_tests.suiteName, function() {
         sidebar.$.sectionsSitePermissions.getAttribute('href'));
     assertEquals(
         '/shortcuts', sidebar.$.sectionsShortcuts.getAttribute('href'));
-    assertTrue(sidebar.$.moreExtensions.getAttribute('href')!.includes(
-        'utm_source=ext_sidebar'));
+    assertTrue(sidebar.$.moreExtensions.querySelector('a')!
+                   .getAttribute('href')!.includes('utm_source=ext_sidebar'));
     done();
   });
 });
