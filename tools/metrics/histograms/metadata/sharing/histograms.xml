@@ -211,72 +211,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.RemoteCopyDecodeImageTime" units="ms"
-    expires_after="M97">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>The time to decode an image for Remote Copy. Desktop only.</summary>
-</histogram>
-
-<histogram name="Sharing.RemoteCopyHandleMessageResult"
-    enum="SharingRemoteCopyHandleMessageResult" expires_after="M97">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The result of handling a Remote Copy message. Logged once per message, when
-    the handler for the Remote Copy FCM message is finished handling it. Desktop
-    only.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.RemoteCopyLoadImageStatusCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M97">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    Result code from loading an image for Remote Copy. Logs net::Error if it's
-    not net::OK. Logs net::OK if response header is not present. Otherwise, logs
-    HTTP status code. Desktop only.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.RemoteCopyLoadImageTime" units="ms"
-    expires_after="M97">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>The time to load an image for Remote Copy. Desktop only.</summary>
-</histogram>
-
-<histogram name="Sharing.RemoteCopyReceivedImageSizeAfterDecode" units="bytes"
-    expires_after="M97">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The size of the image loaded from the image URL specified in a Remote Copy
-    message received from FCM, after decoding. Desktop only.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.RemoteCopyReceivedImageSizeBeforeDecode" units="bytes"
-    expires_after="M97">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The size of the image loaded from the image URL specified in a Remote Copy
-    message received from FCM, before decoding. Desktop only.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.RemoteCopyReceivedTextSize" units="bytes"
-    expires_after="2022-05-01">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The size of the text in a Remote Copy message received from FCM. Desktop
-    only.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.Screenshot.Action" enum="SharingScreenshotAction"
     expires_after="2023-11-19">
   <owner>jeffreycohen@chromium.org</owner>
@@ -374,16 +308,6 @@ chromium-metrics-reviews@google.com.
     The index of the device selected by the user for Shared Clipboard gets
     recorded when the user chooses the destination device for sharing text. Zero
     based.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.SharedClipboardSelectedTextSize" units="characters"
-    expires_after="M88">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The size of the selected text in Shared Clipboard gets recorded when the
-    user shares selected text.
   </summary>
 </histogram>
 

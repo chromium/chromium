@@ -64,7 +64,6 @@ class RemoteCopyMessageHandler : public SharingMessageHandler,
   raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   std::string device_name_;
-  base::ElapsedTimer timer_;
   GURL allowed_origin_;
 };
 

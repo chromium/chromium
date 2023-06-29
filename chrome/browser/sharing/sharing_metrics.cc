@@ -278,39 +278,3 @@ void LogSendSharingMessageResult(
         result);
   }
 }
-
-void LogSharedClipboardSelectedTextSize(size_t size) {
-  base::UmaHistogramCounts100000("Sharing.SharedClipboardSelectedTextSize",
-                                 size);
-}
-
-void LogRemoteCopyHandleMessageResult(RemoteCopyHandleMessageResult result) {
-  base::UmaHistogramEnumeration("Sharing.RemoteCopyHandleMessageResult",
-                                result);
-}
-
-void LogRemoteCopyReceivedTextSize(size_t size) {
-  base::UmaHistogramCounts100000("Sharing.RemoteCopyReceivedTextSize", size);
-}
-
-void LogRemoteCopyReceivedImageSizeBeforeDecode(size_t size) {
-  base::UmaHistogramCounts10M("Sharing.RemoteCopyReceivedImageSizeBeforeDecode",
-                              size);
-}
-
-void LogRemoteCopyReceivedImageSizeAfterDecode(size_t size) {
-  base::UmaHistogramCustomCounts(
-      "Sharing.RemoteCopyReceivedImageSizeAfterDecode", size, 1, 100000000, 50);
-}
-
-void LogRemoteCopyLoadImageStatusCode(int code) {
-  base::UmaHistogramSparse("Sharing.RemoteCopyLoadImageStatusCode", code);
-}
-
-void LogRemoteCopyLoadImageTime(base::TimeDelta time) {
-  base::UmaHistogramMediumTimes("Sharing.RemoteCopyLoadImageTime", time);
-}
-
-void LogRemoteCopyDecodeImageTime(base::TimeDelta time) {
-  base::UmaHistogramMediumTimes("Sharing.RemoteCopyDecodeImageTime", time);
-}
