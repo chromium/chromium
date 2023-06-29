@@ -6594,3 +6594,4 @@ crbug.com/626703 external/wpt/loading/early-hints/modulepreload-as-worker.h2.win
 # Gardener 2023-06-29
 # Failing on Webkit Linux Leak
 crbug.com/1459159 [ Linux ] fast/events/touch/gesture/gesture-tap-mouse-events.html [ Failure Pass ]
+crbug.com/1459188 [ Linux ] inspector-protocol/input/dispatchMouseEvent-dragging.js [ Failure Pass ]
