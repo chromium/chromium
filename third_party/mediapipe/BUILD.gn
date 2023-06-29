@@ -10,6 +10,10 @@ config("mediapipe_config") {
   include_dirs = [
     "src",
     "shims",
+
+    # TODO(b/283522287): Change the file under this directory to a gn action
+    # instead.
+    "generated",
   ]
 }
 
