@@ -7,6 +7,7 @@
 #import <memory>
 #import <utility>
 
+#import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
@@ -33,10 +34,8 @@ scoped_refptr<password_manager::PasswordStoreInterface>
 WebViewAccountPasswordStoreFactory::GetForBrowserState(
     WebViewBrowserState* browser_state,
     ServiceAccessType access_type) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
-    return nullptr;
-  }
+  CHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kEnablePasswordsAccountStorage));
 
   // |browser_state| always gets redirected to a the recording version in
   // |GetBrowserStateToUse|.

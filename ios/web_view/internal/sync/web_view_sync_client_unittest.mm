@@ -44,11 +44,8 @@ class WebViewSyncClientTest : public PlatformTest {
         profile_password_store_(
             base::MakeRefCounted<password_manager::TestPasswordStore>()),
         account_password_store_(
-            base::FeatureList::IsEnabled(
-                password_manager::features::kEnablePasswordsAccountStorage)
-                ? base::MakeRefCounted<password_manager::TestPasswordStore>(
-                      password_manager::IsAccountStore(true))
-                : nullptr),
+            base::MakeRefCounted<password_manager::TestPasswordStore>(
+                password_manager::IsAccountStore(true))),
         client_(profile_web_data_service_.get(),
                 account_web_data_service_.get(),
                 profile_password_store_.get(),

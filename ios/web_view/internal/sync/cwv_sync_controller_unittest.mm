@@ -12,7 +12,6 @@
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/image_fetcher/ios/ios_image_decoder_impl.h"
@@ -53,9 +52,6 @@ const char kTestEmail[] = "johndoe@chromium.org";
 class CWVSyncControllerTest : public PlatformTest {
  protected:
   CWVSyncControllerTest() {
-    scoped_feature_.InitAndEnableFeature(
-        password_manager::features::kEnablePasswordsAccountStorage);
-
     pref_service_.registry()->RegisterDictionaryPref(
         autofill::prefs::kAutofillSyncTransportOptIn);
 
@@ -64,7 +60,6 @@ class CWVSyncControllerTest : public PlatformTest {
         syncer::SyncService::TransportState::DISABLED);
   }
 
-  base::test::ScopedFeatureList scoped_feature_;
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_environment_;
   syncer::TestSyncService sync_service_;
