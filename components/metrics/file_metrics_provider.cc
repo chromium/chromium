@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -664,6 +665,29 @@ bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
     SourceInfo* source,
     ChromeUserMetricsExtension* uma_proto,
     base::HistogramSnapshotManager* snapshot_manager) {
+  // Include various crash keys about the file/allocator being read so that if
+  // there is ever a crash report being dumped while reading its contents, we
+  // have some info about its state.
+  // TODO(crbug.com/1432981): Clean this up.
+
+  // Useful to know the metadata version of the source (e.g. to know if some
+  // fields like memory_state below are up to date).
+  SCOPED_CRASH_KEY_NUMBER("PMA", "version",
+                          source->allocator->memory_allocator()->version());
+  // Useful to know whether the source comes from a crashed session.
+  SCOPED_CRASH_KEY_NUMBER(
+      "PMA", "memory_state",
+      source->allocator->memory_allocator()->GetMemoryState());
+  // Useful to know the freeptr as it can help determine if the source comes
+  // from a session that crashed due to failing to allocate an object across
+  // different pages.
+  SCOPED_CRASH_KEY_NUMBER("PMA", "freeptr",
+                          source->allocator->memory_allocator()->freeptr());
+  SCOPED_CRASH_KEY_BOOL("PMA", "full",
+                        source->allocator->memory_allocator()->IsFull());
+  SCOPED_CRASH_KEY_BOOL("PMA", "corrupt",
+                        source->allocator->memory_allocator()->IsCorrupt());
+
   SystemProfileProto* system_profile_proto =
       uma_proto->mutable_system_profile();
 
