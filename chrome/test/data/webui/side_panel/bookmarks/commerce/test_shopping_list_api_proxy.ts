@@ -40,6 +40,9 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
       'getProductInfoForCurrentUrl',
       'getPriceInsightsInfoForCurrentUrl',
       'showInsightsSidePanelUi',
+      'isShoppingListEligible',
+      'getPriceTrackingStatusForCurrentUrl',
+      'setPriceTrackingStatusForCurrentUrl',
     ]);
 
     this.callbackRouter = new PageCallbackRouter();
@@ -82,6 +85,18 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
 
   showInsightsSidePanelUi() {
     this.methodCalled('showInsightsSidePanelUi');
+  }
+
+  isShoppingListEligible() {
+    return this.methodCalled('isShoppingListEligible');
+  }
+
+  getPriceTrackingStatusForCurrentUrl() {
+    return this.methodCalled('getPriceTrackingStatusForCurrentUrl');
+  }
+
+  setPriceTrackingStatusForCurrentUrl(track: boolean) {
+    this.methodCalled('setPriceTrackingStatusForCurrentUrl', track);
   }
 
   getCallbackRouter() {

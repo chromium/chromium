@@ -214,3 +214,14 @@ var ShoppingInsightsAppTest = class extends SidePanelBrowserTest {
 TEST_F('ShoppingInsightsAppTest', 'All', function() {
   mocha.run();
 });
+
+var PriceTrackingSectionTest = class extends SidePanelBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://shopping-insights-side-panel.top-chrome/test_loader.html?module=side_panel/commerce/price_tracking_section_test.js';
+  }
+};
+
+TEST_F('PriceTrackingSectionTest', 'All', function() {
+  mocha.run();
+});

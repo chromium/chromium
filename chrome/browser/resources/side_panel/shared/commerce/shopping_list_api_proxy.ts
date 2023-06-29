@@ -19,6 +19,9 @@ export interface ShoppingListApiProxy {
   getPriceInsightsInfoForCurrentUrl():
       Promise<{priceInsightsInfo: PriceInsightsInfo}>;
   showInsightsSidePanelUi(): void;
+  isShoppingListEligible(): Promise<{eligible: boolean}>;
+  getPriceTrackingStatusForCurrentUrl(): Promise<{tracked: boolean}>;
+  setPriceTrackingStatusForCurrentUrl(track: boolean): void;
   getCallbackRouter(): PageCallbackRouter;
 }
 
@@ -63,6 +66,18 @@ export class ShoppingListApiProxyImpl implements ShoppingListApiProxy {
 
   showInsightsSidePanelUi() {
     this.handler.showInsightsSidePanelUI();
+  }
+
+  isShoppingListEligible() {
+    return this.handler.isShoppingListEligible();
+  }
+
+  getPriceTrackingStatusForCurrentUrl() {
+    return this.handler.getPriceTrackingStatusForCurrentUrl();
+  }
+
+  setPriceTrackingStatusForCurrentUrl(track: boolean) {
+    this.handler.setPriceTrackingStatusForCurrentUrl(track);
   }
 
   getCallbackRouter() {

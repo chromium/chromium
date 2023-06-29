@@ -1,0 +1,48 @@
+<style include="cr-hidden-style">
+  #toggleSection {
+    align-items: center;
+    display: flex;
+    margin-top: 16px;
+    max-width: 100%;
+  }
+
+  #toggleTitle {
+    color: var(--cr-primary-text-color);
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  #toggleAnnotation {
+    display: inline;
+    font-size: 11px;
+    overflow: hidden;
+    white-space: initial;
+  }
+
+  #toggleText {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    line-height: 20px;
+    margin: 0 16px;
+    max-width: 100%;
+  }
+
+  #toggle {
+    margin-inline-end: 16px;
+    margin-inline-start: auto;
+  }
+</style>
+
+<div id="toggleSection">
+  <div id="toggleText">
+    <div id="toggleTitle">$i18n{trackPriceTitle}</div>
+    <div id="toggleAnnotation"
+        >[[getToggleAnnotationText_(isProductTracked_)]]</div>
+  </div>
+  <cr-toggle id="toggle" checked="{{isProductTracked_}}"
+      on-change="onPriceTrackingToggled_" title="$i18n{trackPriceTitle}"
+      aria-describedby="toggleAnnotation">
+  </cr-toggle>
+</div>

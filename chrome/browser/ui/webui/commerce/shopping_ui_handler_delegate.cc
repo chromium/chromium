@@ -5,17 +5,24 @@
 #include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/webui/shopping_list_handler.h"
 #include "content/public/browser/web_ui.h"
 
 namespace commerce {
 
 ShoppingUiHandlerDelegate::ShoppingUiHandlerDelegate(
-    ShoppingInsightsSidePanelUI* insights_side_panel_ui)
-    : insights_side_panel_ui_(insights_side_panel_ui) {}
+    ShoppingInsightsSidePanelUI* insights_side_panel_ui,
+    Profile* profile)
+    : insights_side_panel_ui_(insights_side_panel_ui),
+      profile_(profile),
+      bookmark_model_(BookmarkModelFactory::GetForBrowserContext(profile)) {}
 
 ShoppingUiHandlerDelegate::~ShoppingUiHandlerDelegate() = default;
 
@@ -42,4 +49,31 @@ void ShoppingUiHandlerDelegate::ShowInsightsSidePanelUI() {
   }
 }
 
+const bookmarks::BookmarkNode*
+ShoppingUiHandlerDelegate::GetOrAddBookmarkForCurrentUrl() {
+  auto* browser = chrome::FindLastActive();
+  if (!browser) {
+    return nullptr;
+  }
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  const bookmarks::BookmarkNode* existing_node =
+      bookmark_model_->GetMostRecentlyAddedUserNodeForURL(
+          web_contents->GetLastCommittedURL());
+  if (existing_node != nullptr) {
+    return existing_node;
+  }
+  GURL url;
+  std::u16string title;
+  if (chrome::GetURLAndTitleToBookmark(web_contents, &url, &title)) {
+    const bookmarks::BookmarkNode* other_node = bookmark_model_->other_node();
+    return bookmark_model_->AddNewURL(other_node, other_node->children().size(),
+                                      title, url);
+  }
+  return nullptr;
+}
 }  // namespace commerce
