@@ -7634,6 +7634,9 @@ others/histograms.xml -->
   <int value="21"
       label="The Picture-in-picture window overlaps with the autofill
              suggestion."/>
+  <int value="22"
+      label="The context menu was open after the autofill popup, which could
+             overlap with the autofill popup."/>
 </enum>
 
 <enum name="AutofillPredictionsComparisonResult">

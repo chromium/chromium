@@ -23,6 +23,8 @@ enum class PopupType {
 // This reason is passed whenever a popup needs to be closed.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// When adding a value to this enum, please update
+// tools/metrics/histograms/enums.xml.
 enum class PopupHidingReason {
   // A suggestion was accepted.
   kAcceptSuggestion = 0,
@@ -71,7 +73,10 @@ enum class PopupHidingReason {
   kOverlappingWithFastCheckoutSurface = 20,
   // The picture-in-picture window overlaps with the autofill suggestions.
   kOverlappingWithPictureInPictureWindow = 21,
-  kMaxValue = kOverlappingWithPictureInPictureWindow
+  // The context menu was opened. We hide the autofill popup to make sure it
+  // does not overlap with it.
+  kContextMenuOpened = 22,
+  kMaxValue = kContextMenuOpened
 };
 
 }  // namespace autofill

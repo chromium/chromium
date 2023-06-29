@@ -118,6 +118,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/popup_types.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/download/public/common/download_url_parameters.h"
@@ -1229,6 +1231,19 @@ void RenderViewContextMenu::InitMenu() {
   // menu, meaning that each menu item added/removed in this function will cause
   // it to visibly jump on the screen (see b/173569669).
   AppendQuickAnswersItems();
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillPopupDoesNotOverlapWithContextMenu)) {
+    // If the autofill popup is shown the context menu could
+    // overlap with the autofill popup, therefore we hide the autofill popup.
+    content::WebContents* web_contents = GetWebContents();
+    autofill::AutofillClient* autofill_client =
+        autofill::ContentAutofillClient::FromWebContents(web_contents);
+    if (autofill_client) {
+      autofill_client->HideAutofillPopup(
+          autofill::PopupHidingReason::kContextMenuOpened);
+    }
+  }
 }
 
 Profile* RenderViewContextMenu::GetProfile() const {
