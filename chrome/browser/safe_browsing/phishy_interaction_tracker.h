@@ -9,25 +9,31 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 
 namespace safe_browsing {
 
+struct PhishyPageInteractionDetails {
+  PhishyPageInteractionDetails(int occurrence_count,
+                               int64_t first_timestamp,
+                               int64_t last_timestamp);
+  int occurrence_count;
+  int64_t first_timestamp;
+  int64_t last_timestamp;
+};
+
+using PhishySiteInteractionMap =
+    std::map<ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+                 PhishySiteInteractionType,
+             PhishyPageInteractionDetails>;
+
 // PhishyInteractionTracker manages and logs interactions that users have with
 // pages they've reached after bypassing the Safe Browsing interstitial.
 class PhishyInteractionTracker {
  public:
-  // Type of user interaction with phishy page.
-  enum class PhishyPageInteraction {
-    PHISHY_UNSPECIFIED = 0,
-    // User clicks on the page.
-    PHISHY_CLICK_EVENT = 1,
-    // User enters key on the page.
-    PHISHY_KEY_EVENT = 2,
-    // User pastes onto the page.
-    PHISHY_PASTE_EVENT = 3
-  };
   explicit PhishyInteractionTracker(content::WebContents* web_contents);
 
   PhishyInteractionTracker(const PhishyInteractionTracker&) = delete;
@@ -64,11 +70,15 @@ class PhishyInteractionTracker {
 
   // Handles logging for phishy events. Posts a delayed task that logs phishy
   // event data if the user is inactive.
-  void HandlePhishyInteraction(const PhishyPageInteraction& interaction);
+  void HandlePhishyInteraction(
+      const ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+          PhishySiteInteractionType& interaction);
 
   // Logs the first event user action. Called on the first occurrence of each
   // type of interaction.
-  void RecordFirstInteractionOccurrence(PhishyPageInteraction interaction);
+  void RecordFirstInteractionOccurrence(
+      ClientSafeBrowsingReportRequest::PhishySiteInteraction::
+          PhishySiteInteractionType interaction);
 
   // Returns true if the user has been inactive on the page for at least
   // inactivity_delay_.
@@ -87,8 +97,9 @@ class PhishyInteractionTracker {
   raw_ptr<content::WebContents> web_contents_ = nullptr;
 
   // Records the number of occurrences of different user interactions with a
-  // phishy page. Used for recording metrics.
-  std::map<PhishyPageInteraction, int> new_page_interaction_counts_;
+  // phishy page and first/last timestamps of the interaction occurrences. Used
+  // for recording metrics.
+  PhishySiteInteractionMap phishy_page_interaction_data_;
 
   // Tracks the latest phishy page interaction occurrence so that we can log
   // metrics after some period of inactivity.
@@ -100,6 +111,13 @@ class PhishyInteractionTracker {
 
   // Used to call a method if the user is inactive for a period of time.
   base::OneShotTimer inactivity_timer_;
+
+  // Tracks the URL so that if metric recording is necessary, we have access to
+  // the phishy URL after the page changes.
+  GURL current_url_;
+
+  // Tracks the page URL for metric recording.
+  GURL current_page_url_;
 
   // Returns true if the data for the current site has been logged already.
   bool is_data_logged_ = false;

@@ -1509,6 +1509,7 @@ message ClientSafeBrowsingReportRequest {
     BLOCKED_AD_POPUP = 20;
     // TODO(crbug.com/1410253): Deprecate this once the experiment is complete.
     HASH_PREFIX_REAL_TIME_EXPERIMENT = 21;
+    PHISHY_SITE_INTERACTIONS = 22;
   }
 
   message HTTPHeader {
@@ -1866,6 +1867,33 @@ message ClientSafeBrowsingReportRequest {
 
   // List of user interactions that the user performs with the interstitial.
   repeated InterstitialInteraction interstitial_interactions = 30;
+
+  // Information about user interactions with a phishy site.
+  message PhishySiteInteraction {
+    // Type of interaction with phishy site.
+    enum PhishySiteInteractionType {
+      UNSPECIFIED = 0;
+      // User interactions.
+      PHISHY_CLICK_EVENT = 1;
+      PHISHY_KEY_EVENT = 2;
+      PHISHY_PASTE_EVENT = 3;
+    }
+
+    // Type of security interstitial interaction that occurred.
+    optional PhishySiteInteractionType phishy_site_interaction_type = 1;
+
+    // Number of phishy site interaction occurrences.
+    optional int32 occurrence_count = 2;
+
+    // Timestamp of first phishy site interaction occurrence.
+    optional int64 first_interaction_timestamp_msec = 3;
+
+    // Timestamp of last phishy site interaction occurrence.
+    optional int64 last_interaction_timestamp_msec = 4;
+  }
+
+  // List of user interactions that the user performs with a phishy site.
+  repeated PhishySiteInteraction phishy_site_interactions = 31;
 }
 
 // An HTML Element on the page (eg: iframe, div, script, etc).

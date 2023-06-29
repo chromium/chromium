@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chrome/browser/safe_browsing/phishy_interaction_tracker.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
@@ -195,6 +196,14 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
       ClientSafeBrowsingReportRequest::ReportType report_type,
       bool did_proceed,
       absl::optional<bool> show_download_in_folder);
+
+  // Sends phishy site report to backend. Returns true if the report is sent
+  // successfully.
+  virtual bool SendPhishyInteractionsReport(
+      Profile* profile,
+      const GURL& url,
+      const GURL& page_url,
+      const PhishySiteInteractionMap& phishy_interaction_data);
 #endif
 
   // Create the default v4 protocol config struct. This just calls into a helper
