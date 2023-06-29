@@ -8932,6 +8932,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Extensions.Menu.HideRequestsInToolbarPressed">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user blocked an extension to show site access requests in the toolbar by
+    toggling the extension's show requests toggle off in the extensions menu.
+    This is recorded for both keyboard and mouse activations.
+  </description>
+</action>
+
 <action name="Extensions.Menu.OnAllSitesSelected">
   <owner>emiliapaz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -8962,12 +8972,21 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Extensions.Menu.ShowRequestsInToolbarPressed">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user allowed an extension to show site access requests in the toolbar by
+    toggling the extension's show requests toggle on in the extensions menu.
+    This is recorded for both keyboard and mouse activations.
+  </description>
+</action>
+
 <action name="Extensions.Menu.SitePermissionsPageOpened">
   <owner>emiliapaz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <description>
     The user opened an extension's site permissions page in the extensions menu.
-    This is recorded for both keyboard and mouse activations.
   </description>
 </action>
 

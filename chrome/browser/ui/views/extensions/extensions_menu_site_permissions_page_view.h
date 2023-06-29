@@ -50,10 +50,6 @@ class ExtensionsMenuSitePermissionsPageView : public views::View {
   // Updates `show_requests_toggle_` state to `is_on`.
   void UpdateShowRequestsToggle(bool is_on);
 
-  // Sets whether the extension pointed by `extension_id_` can request access
-  // the toolbar.
-  void OnShowRequestsTogglePressed();
-
   extensions::ExtensionId extension_id() { return extension_id_; }
 
   // Accessors used by tests:

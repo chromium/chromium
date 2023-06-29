@@ -49,6 +49,12 @@ class ExtensionsMenuHandler {
   // on the current web contents.
   virtual void OnDismissExtensionClicked(
       const extensions::ExtensionId& extension_id) = 0;
+
+  // Sets whether `extension_id` can show site access requests in the toolbar
+  // according to `is_on`.
+  virtual void OnShowRequestsTogglePressed(
+      const extensions::ExtensionId& extension_id,
+      bool is_on) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_HANDLER_H_

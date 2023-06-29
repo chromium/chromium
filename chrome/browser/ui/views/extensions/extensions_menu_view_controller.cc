@@ -484,6 +484,21 @@ void ExtensionsMenuViewController::OnDismissExtensionClicked(
       "Extensions.Toolbar.ExtensionRequestDismissedFromMenu"));
 }
 
+void ExtensionsMenuViewController::OnShowRequestsTogglePressed(
+    const extensions::ExtensionId& extension_id,
+    bool is_on) {
+  extensions::SitePermissionsHelper(browser_->profile())
+      .SetShowAccessRequestsInToolbar(extension_id, is_on);
+
+  if (is_on) {
+    base::RecordAction(base::UserMetricsAction(
+        "Extensions.Menu.ShowRequestsInToolbarPressed"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "Extensions.Menu.HideRequestsInToolbarPressed"));
+  }
+}
+
 void ExtensionsMenuViewController::TabChangedAt(content::WebContents* contents,
                                                 int index,
                                                 TabChangeType change_type) {
