@@ -31,5 +31,9 @@ jobs:
         run: npm ci
       - name: Verify mapper size
         run: du -sh lib/iife/mapperTab.js
-      - name: Run unit tests
-        run: npm run unit
+      - name: Run unit tests with coverage
+        run: npx nyc --reporter=lcov npm run unit && npx codecov
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d # v3.1.4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

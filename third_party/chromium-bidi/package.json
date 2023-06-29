@@ -5,7 +5,6 @@
   "scripts": {
     "build": "wireit",
     "clean": "rimraf lib .eslintcache .wireit",
-    "coverage": "nyc mocha",
     "e2e-headful": "wireit",
     "e2e-headless": "wireit",
     "e2e": "npm run e2e-headless --",
@@ -203,6 +202,7 @@
     "chai": "4.3.7",
     "chai-as-promised": "7.1.1",
     "chai-exclude": "2.1.0",
+    "codecov": "3.8.3",
     "debug": "4.3.4",
     "devtools-protocol": "0.0.1163380",
     "eslint": "8.43.0",

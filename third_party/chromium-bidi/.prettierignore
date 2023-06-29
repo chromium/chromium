@@ -8,3 +8,4 @@ tests/__pycache__
 wpt/
 wpt-metadata/*/
 CHANGELOG.md
+coverage/

@@ -16,3 +16,4 @@ wptreport*.json
 .wireit/
 MANIFEST.json
 *.png
+coverage/
