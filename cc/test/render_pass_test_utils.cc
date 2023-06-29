@@ -146,7 +146,8 @@ QuadType* AddRenderPassQuadInternal(RenderPassType* to_pass,
   auto* quad = to_pass->template CreateAndAppendDrawQuad<QuadType>();
   quad->SetNew(shared_state, output_rect, output_rect, contributing_pass->id,
                viz::kInvalidResourceId, gfx::RectF(), gfx::Size(),
-               gfx::Vector2dF(), gfx::PointF(), gfx::RectF(), false, 1.0f);
+               gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(), gfx::RectF(), false,
+               1.0f);
   return quad;
 }
 
@@ -232,8 +233,8 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
         to_pass->CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
     render_pass_quad->SetNew(shared_state, rect, visible_rect, child_pass_id,
                              resource5, gfx::RectF(rect), gfx::Size(73, 26),
-                             gfx::Vector2dF(), gfx::PointF(), gfx::RectF(),
-                             false, 1.0f);
+                             gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(),
+                             gfx::RectF(), false, 1.0f);
   }
 
   auto* solid_color_quad =

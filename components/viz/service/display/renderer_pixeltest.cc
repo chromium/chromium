@@ -207,14 +207,14 @@ void CreateTestRenderPassDrawQuad(const SharedQuadState* shared_state,
   auto* quad =
       render_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   quad->SetNew(shared_state, rect, rect, pass_id,
-               kInvalidResourceId,  // mask_resource_id
-               gfx::RectF(),        // mask_uv_rect
-               gfx::Size(),         // mask_texture_size
-               gfx::Vector2dF(),    // filters scale
-               gfx::PointF(),       // filter origin
-               gfx::RectF(rect),    // tex_coord_rect
-               false,               // force_anti_aliasing_off
-               1.0f);               // backdrop_filter_quality
+               kInvalidResourceId,    // mask_resource_id
+               gfx::RectF(),          // mask_uv_rect
+               gfx::Size(),           // mask_texture_size
+               gfx::Vector2dF(1, 1),  // filters scale
+               gfx::PointF(),         // filter origin
+               gfx::RectF(rect),      // tex_coord_rect
+               false,                 // force_anti_aliasing_off
+               1.0f);                 // backdrop_filter_quality
 }
 
 // Create a TextureDrawDrawQuad with two given colors.
@@ -3146,7 +3146,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad) {
       gfx::ScaleRect(gfx::RectF(sub_rect), 2.f / mask_rect.width(),
                      2.f / mask_rect.height()),  // mask_uv_rect
       gfx::Size(mask_rect.size()),               // mask_texture_size
-      gfx::Vector2dF(),                          // filters scale
+      gfx::Vector2dF(1.0f, 1.0f),                // filters scale
       gfx::PointF(),                             // filter origin
       gfx::RectF(sub_rect),                      // tex_coord_rect
       false,                                     // force_anti_aliasing_off
@@ -3244,7 +3244,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad2) {
       gfx::ScaleRect(gfx::RectF(sub_rect), 2.f / mask_rect.width(),
                      2.f / mask_rect.height()),  // mask_uv_rect
       gfx::Size(mask_rect.size()),               // mask_texture_size
-      gfx::Vector2dF(),                          // filters scale
+      gfx::Vector2dF(1.0f, 1.0f),                // filters scale
       gfx::PointF(),                             // filter origin
       gfx::RectF(sub_rect),                      // tex_coord_rect
       false,                                     // force_anti_aliasing_off
@@ -3330,7 +3330,7 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCorner) {
       gfx::ScaleRect(gfx::RectF(viewport_rect), 1.f / mask_rect.width(),
                      1.f / mask_rect.height()),  // mask_uv_rect
       gfx::Size(mask_rect.size()),               // mask_texture_size
-      gfx::Vector2dF(),                          // filters scale
+      gfx::Vector2dF(1.0f, 1.0f),                // filters scale
       gfx::PointF(),                             // filter origin
       gfx::RectF(viewport_rect),                 // tex_coord_rect
       false,                                     // force_anti_aliasing_off
@@ -3848,7 +3848,7 @@ TEST_P(GPURendererPixelTest, RenderPassDrawQuadForceAntiAliasingOff) {
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   pass_quad->SetAll(pass_shared_state, rect, rect, needs_blending,
                     child_pass_id, kInvalidResourceId, gfx::RectF(),
-                    gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
+                    gfx::Size(), gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(),
                     gfx::RectF(rect), force_anti_aliasing_off,
                     backdrop_filter_quality, intersects_damage_under);
 
@@ -4011,7 +4011,7 @@ TEST_P(GPURendererPixelTest, TrilinearFiltering) {
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   child_pass_quad->SetNew(
       child_pass_shared_state, child_pass_rect, child_pass_rect, child_pass_id,
-      kInvalidResourceId, gfx::RectF(), gfx::Size(), gfx::Vector2dF(),
+      kInvalidResourceId, gfx::RectF(), gfx::Size(), gfx::Vector2dF(1.0f, 1.0f),
       gfx::PointF(), gfx::RectF(child_pass_rect), false, 1.0f);
 
   AggregatedRenderPassList pass_list;

@@ -455,8 +455,8 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     auto* quad = pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
     quad->SetAll(shared_state, output_rect, output_rect,
                  /*needs_blending=*/true, render_pass_id, kInvalidResourceId,
-                 gfx::RectF(), gfx::Size(), gfx::Vector2dF(), gfx::PointF(),
-                 gfx::RectF(),
+                 gfx::RectF(), gfx::Size(), gfx::Vector2dF(1.0f, 1.0f),
+                 gfx::PointF(), gfx::RectF(),
                  /*force_anti_aliasing_off=*/false,
                  /*backdrop_filter_quality=*/1.0f, intersects_damage_under);
   }

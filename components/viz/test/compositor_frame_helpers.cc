@@ -183,11 +183,11 @@ RenderPassBuilder& RenderPassBuilder::AddRenderPassQuad(
     const RenderPassQuadParams& params) {
   auto* sqs = AppendDefaultSharedQuadState(rect, visible_rect);
   auto* quad = pass_->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
-  quad->SetAll(sqs, rect, visible_rect, params.needs_blending, id,
-               kInvalidResourceId, gfx::RectF(), gfx::Size(), gfx::Vector2dF(),
-               gfx::PointF(), gfx::RectF(), params.force_anti_aliasing_off,
-               /*backdrop_filter_quality=*/1.0f,
-               params.intersects_damage_under);
+  quad->SetAll(
+      sqs, rect, visible_rect, params.needs_blending, id, kInvalidResourceId,
+      gfx::RectF(), gfx::Size(), gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(),
+      gfx::RectF(), params.force_anti_aliasing_off,
+      /*backdrop_filter_quality=*/1.0f, params.intersects_damage_under);
 
   return *this;
 }
