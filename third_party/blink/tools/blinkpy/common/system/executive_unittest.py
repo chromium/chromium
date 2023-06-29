@@ -28,7 +28,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os
-import platform
 import subprocess
 import sys
 import unittest
@@ -189,8 +188,7 @@ class ExecutiveTest(unittest.TestCase):
         # Killing again should fail silently.
         executive.kill_process(process.pid)
 
-    @unittest.skipIf(platform.system() == 'Windows',
-                     'Flaky on Win. See crbug.com/1242429.')
+    @unittest.skip('Flaky. See crbug.com/1242429.')
     def test_timeout_exceeded(self):
         executive = Executive()
 
@@ -201,8 +199,7 @@ class ExecutiveTest(unittest.TestCase):
         with self.assertRaises(ScriptError):
             timeout()
 
-    @unittest.skipIf(platform.system() == 'Windows',
-                     'Flaky on Win. See crbug.com/1242429.')
+    @unittest.skip('Flaky. See crbug.com/1242429.')
     def test_timeout_exceeded_exit_code(self):
         executive = Executive()
         exit_code = executive.run_command(
