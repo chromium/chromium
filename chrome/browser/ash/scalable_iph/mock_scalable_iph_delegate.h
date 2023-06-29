@@ -48,11 +48,13 @@ class MockScalableIphDelegate : public scalable_iph::ScalableIphDelegate {
   void SetDelegate(std::unique_ptr<scalable_iph::ScalableIphDelegate> delegate);
   void FakeObservers();
   void FakeClientAgeInDays();
+  void FakeShowNotification();
 
  private:
   std::unique_ptr<scalable_iph::ScalableIphDelegate> delegate_;
   bool observers_fake_enabled_ = false;
   bool client_age_fake_enabled_ = false;
+  bool show_notification_fake_enabled_ = false;
 };
 
 }  // namespace test

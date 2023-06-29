@@ -56,6 +56,10 @@ class ScalableIph : public KeyedService, public ScalableIphDelegate::Observer {
   // feature engagement framework.
   void PerformAction(ActionType action_type);
 
+  void set_show_notification_for_testing() {
+    show_notification_for_testing_ = true;
+  }
+
  private:
   void EnsureTimerStarted();
   void RecordTimeTickEvent();
@@ -75,7 +79,10 @@ class ScalableIph : public KeyedService, public ScalableIphDelegate::Observer {
   raw_ptr<feature_engagement::Tracker> tracker_;
   std::unique_ptr<ScalableIphDelegate> delegate_;
   base::RepeatingTimer timer_;
-  bool online_;
+  bool online_ = false;
+
+  // Remove after we can set up test to show notifications.
+  bool show_notification_for_testing_ = false;
 
   std::vector<const base::Feature*> feature_list_for_testing_;
 

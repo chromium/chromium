@@ -45,5 +45,20 @@ void MockScalableIphDelegate::FakeClientAgeInDays() {
   });
 }
 
+void MockScalableIphDelegate::FakeShowNotification() {
+  CHECK(delegate_) << "Delegate must be set to enable fake behaviors";
+  CHECK(!show_notification_fake_enabled_)
+      << "Fake is already set for showing notifications";
+  show_notification_fake_enabled_ = true;
+
+  ON_CALL(*this, ShowNotification)
+      .WillByDefault(
+          [this](const scalable_iph::ScalableIphDelegate::NotificationParams&
+                     params,
+                 std::unique_ptr<scalable_iph::IphSession> iph_session) {
+            return delegate_->ShowNotification(params, std::move(iph_session));
+          });
+}
+
 }  // namespace test
 }  // namespace ash

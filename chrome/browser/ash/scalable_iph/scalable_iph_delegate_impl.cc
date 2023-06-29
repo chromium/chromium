@@ -17,10 +17,12 @@
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace ash {
 
 namespace {
+
 using ::chromeos::network_config::mojom::ConnectionStateType;
 using ::chromeos::network_config::mojom::FilterType;
 using ::chromeos::network_config::mojom::kNoLimit;
@@ -28,14 +30,15 @@ using ::chromeos::network_config::mojom::NetworkFilter;
 using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using ::chromeos::network_config::mojom::NetworkType;
 using Observer = ::scalable_iph::ScalableIphDelegate::Observer;
-using NotificationType = scalable_iph::ScalableIphDelegate::NotificationType;
 using NotificationParams =
-    scalable_iph::ScalableIphDelegate::NotificationParams;
+    ::scalable_iph::ScalableIphDelegate::NotificationParams;
+using NotificationType = ::scalable_iph::ScalableIphDelegate::NotificationType;
 
 constexpr char kNotificationSourceName[] = "ChromeOS";
 constexpr char kWallpaperNotificationType[] = "wallpaper_notification_type";
 constexpr char kNotifierId[] = "scalable_iph";
 constexpr char kWallpaperNotificationId[] = "scalable_iph_wallpaper";
+constexpr char kButtonIndex = 0;
 
 bool HasOnlineNetwork(const std::vector<NetworkStatePropertiesPtr>& networks) {
   for (const NetworkStatePropertiesPtr& network : networks) {
@@ -87,6 +90,42 @@ std::string GetNotificationId(const NotificationParams& params) {
   NOTREACHED_NORETURN();
 }
 
+class ScalableIphNotificationDelegate
+    : public message_center::NotificationDelegate {
+ public:
+  // TODO(b/284158779): Add `ActionType`.
+  ScalableIphNotificationDelegate(
+      std::unique_ptr<scalable_iph::IphSession> iph_session,
+      std::string notification_id)
+      : iph_session_(std::move(iph_session)),
+        notification_id_(notification_id) {}
+
+  // message_center::NotificationDelegate:
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
+    if (!button_index.has_value() || button_index.value() != kButtonIndex) {
+      return;
+    }
+
+    // TODO(b/284158779): Handle action.
+    // iph_session->PerformAction(action_type_)
+
+    message_center::MessageCenter::Get()->RemoveNotification(notification_id_,
+                                                             /*by_user=*/false);
+  }
+
+  void Close(bool by_user) override {
+    // TODO(b/284158779): Handle dismiss.
+    // iph_session->Dismiss(action_type_, by_user);
+  }
+
+ private:
+  ~ScalableIphNotificationDelegate() override = default;
+
+  std::unique_ptr<scalable_iph::IphSession> iph_session_;
+  std::string notification_id_;
+};
+
 }  // namespace
 
 ScalableIphDelegateImpl::ScalableIphDelegateImpl(Profile* profile)
@@ -124,9 +163,11 @@ void ScalableIphDelegateImpl::ShowNotification(
   std::string notification_source_name = kNotificationSourceName;
   std::string notification_title = params.title;
   std::string notification_text = params.text;
-  std::string button_text = params.button.text;
 
   message_center::RichNotificationData rich_notification_data;
+  CHECK(!params.button.text.empty())
+      << "Scalable IPH notification should have a button";
+  std::string button_text = params.button.text;
   message_center::ButtonInfo button_info;
   button_info.title = base::UTF8ToUTF16(button_text);
   rich_notification_data.buttons.push_back(button_info);
@@ -138,7 +179,8 @@ void ScalableIphDelegateImpl::ShowNotification(
           base::UTF8ToUTF16(notification_text),
           base::UTF8ToUTF16(notification_source_name), GURL(), GetNotifierId(),
           rich_notification_data,
-          /*message_center::HandleNotificationClickDelegate=*/nullptr,
+          base::MakeRefCounted<ScalableIphNotificationDelegate>(
+              std::move(iph_session), GetNotificationId(params)),
           gfx::kNoneIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   if (IsWallpaperNotification(params)) {

@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_browser_test_base.h"
@@ -16,6 +17,9 @@
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_observer.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace {
 
@@ -25,6 +29,8 @@ using TestEnvironment =
     ::ash::CustomizableTestEnvBrowserTestBase::TestEnvironment;
 using UserSessionType =
     ::ash::CustomizableTestEnvBrowserTestBase::UserSessionType;
+
+constexpr char kWallpaperNotificationId[] = "scalable_iph_wallpaper";
 
 class ScalableIphBrowserTestNetworkConnection : public ScalableIphBrowserTest {
  protected:
@@ -113,6 +119,47 @@ class ScalableIphBrowserTestParameterized
 
     ash::CustomizableTestEnvBrowserTestBase::SetUp();
   }
+};
+
+class MockMessageCenterObserver
+    : public testing::NiceMock<message_center::MessageCenterObserver> {
+ public:
+  // MessageCenterObserver:
+  MOCK_METHOD(void,
+              OnNotificationAdded,
+              (const std::string& notification_id),
+              (override));
+
+  MOCK_METHOD(void,
+              OnNotificationUpdated,
+              (const std::string& notification_id),
+              (override));
+};
+
+class ScalableIphBrowserTestNotification : public ScalableIphBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    ScalableIphBrowserTest::SetUpOnMainThread();
+
+    auto* message_center = message_center::MessageCenter::Get();
+    scoped_observation_.Observe(message_center);
+    EXPECT_CALL(mock_, OnNotificationAdded(kWallpaperNotificationId));
+
+    mock_delegate()->FakeShowNotification();
+  }
+
+  void TearDownOnMainThread() override {
+    scoped_observation_.Reset();
+
+    ScalableIphBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  // Observe notifications.
+  MockMessageCenterObserver mock_;
+  base::ScopedObservation<message_center::MessageCenter,
+                          message_center::MessageCenterObserver>
+      scoped_observation_{&mock_};
 };
 
 }  // namespace
@@ -290,6 +337,45 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestClientAgeInvalidNumber,
       .Times(0);
 
   TriggerConditionsCheckWithAFakeEvent();
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotification, ShowNotification) {
+  EnableTestIphFeature();
+
+  // Tracker::Dismissed must be called when an IPH gets dismissed.
+  EXPECT_CALL(*mock_tracker(), Dismissed(::testing::Ref(TestIphFeature())));
+
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForBrowserContext(browser()->profile());
+  scalable_iph->set_show_notification_for_testing();
+  scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
+
+  auto* message_center = message_center::MessageCenter::Get();
+  auto* notification =
+      message_center->FindVisibleNotificationById(kWallpaperNotificationId);
+  EXPECT_TRUE(notification);
+  message_center->RemoveNotification(kWallpaperNotificationId,
+                                     /*by_user=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotification,
+                       ClickNotificationButton) {
+  EnableTestIphFeature();
+
+  // Tracker::Dismissed must be called when an IPH gets dismissed.
+  EXPECT_CALL(*mock_tracker(), Dismissed(::testing::Ref(TestIphFeature())));
+
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForBrowserContext(browser()->profile());
+  scalable_iph->set_show_notification_for_testing();
+  scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
+
+  auto* message_center = message_center::MessageCenter::Get();
+  auto* notification =
+      message_center->FindVisibleNotificationById(kWallpaperNotificationId);
+  EXPECT_TRUE(notification);
+  EXPECT_TRUE(notification->delegate());
+  notification->delegate()->Click(/*button_index=*/0, /*reply=*/absl::nullopt);
 }
 
 INSTANTIATE_TEST_SUITE_P(

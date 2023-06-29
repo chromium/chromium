@@ -205,13 +205,26 @@ void ScalableIph::CheckTriggerConditions() {
     // TODO(b/289267799): Check our custom extension version number.
     if (CheckCustomConditions(*feature) &&
         tracker_->ShouldTriggerHelpUI(*feature)) {
-      // TODO(b/284053005): Support other ui types.
-      UiType ui_type = ParseUiType(*feature);
-      CHECK(ui_type == UiType::kNotification)
-          << "Only Notification is implemented now";
-      delegate_->ShowNotification(
-          ParseNotificationParams(*feature),
-          std::make_unique<IphSession>(*feature, tracker_));
+      // TODO(b/289286456): Set up browser test and clean up.
+      if (show_notification_for_testing_) {
+        // Only show notification once in the test for now.
+        show_notification_for_testing_ = false;
+        ScalableIphDelegate::NotificationParams notification_params;
+        notification_params.type =
+            ScalableIphDelegate::NotificationType::kWallpaper;
+        notification_params.button.text = "test";
+        delegate_->ShowNotification(
+            notification_params,
+            std::make_unique<IphSession>(*feature, tracker_));
+      } else {
+        // TODO(b/284053005): Support other ui types.
+        UiType ui_type = ParseUiType(*feature);
+        CHECK(ui_type == UiType::kNotification)
+            << "Only Notification is implemented now";
+        delegate_->ShowNotification(
+            ParseNotificationParams(*feature),
+            std::make_unique<IphSession>(*feature, tracker_));
+      }
     }
   }
 }
