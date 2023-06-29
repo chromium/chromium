@@ -982,6 +982,10 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     return GetFieldValue(GetElementById(field_id));
   }
 
+  content::EvalJsResult GetFieldCheckedById(const std::string& field_id) {
+    return GetFieldChecked(GetElementById(field_id), GetWebContents());
+  }
+
   content::EvalJsResult GetFieldValue(ElementExpr e) {
     return GetFieldValue(e, GetWebContents());
   }
@@ -990,6 +994,13 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
       const ElementExpr& e,
       content::ToRenderFrameHost execution_target) {
     std::string script = base::StringPrintf("%s.value", e->c_str());
+    return content::EvalJs(execution_target, script);
+  }
+
+  content::EvalJsResult GetFieldChecked(
+      const ElementExpr& e,
+      content::ToRenderFrameHost execution_target) {
+    std::string script = base::StringPrintf("%s.checked", e->c_str());
     return content::EvalJs(execution_target, script);
   }
 
@@ -3593,103 +3604,96 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   EXPECT_EQ("", GetFieldValueById("cc-csc"));
 }
 
+void DoDynamicChangingFormFill_SelectUpdated(
+    AutofillInteractiveTestDynamicForm* test,
+    net::EmbeddedTestServer* test_server,
+    bool should_test_selectmenu,
+    bool should_test_async_update) {
+  test->CreateTestProfile();
+  GURL url = test_server->GetURL(
+      "a.com",
+      base::StringPrintf(
+          ("/autofill/dynamic_form_select_or_selectmenu_options_change.html"
+           "?is_selectmenu=%s&is_async=%s"),
+          should_test_selectmenu ? "true" : "false",
+          should_test_async_update ? "true" : "false"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(test->browser(), url));
+
+  // Check that the test page correctly parsed the 'is_selectmenu' GET parameter
+  // by checking type of the inserted field.
+  auto has_n_controls_of_type = [](const std::string& control_type,
+                                   size_t expected_number,
+                                   const FormStructure& form) {
+    size_t num_found = 0u;
+    for (const std::unique_ptr<AutofillField>& field : form.fields()) {
+      if (field->form_control_type == control_type) {
+        ++num_found;
+      }
+    }
+    return num_found == expected_number;
+  };
+  ASSERT_TRUE(WaitForMatchingForm(
+      test->GetBrowserAutofillManager(),
+      should_test_selectmenu
+          ? base::BindRepeating(has_n_controls_of_type, "selectmenu", 1)
+          : base::BindRepeating(has_n_controls_of_type, "select-one", 2)));
+
+  ValueWaiter refill = test->ListenForRefill("state");
+  // Trigger first fill.
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), test));
+  // Wait till the first onchange event fired on the 'state' field after the
+  // <option>s in the 'state' field have been updated.
+  test->AdvanceClock(
+      AutofillInteractiveTestDynamicForm::kLessThanLimitBeforeRefill);
+  ASSERT_TRUE(std::move(refill).Wait());
+
+  // Check that the page correctly parsed the 'is_async' GET parameter.
+  ASSERT_EQ(should_test_async_update, test->GetFieldCheckedById("is_async"));
+
+  // Make sure the new form was filled correctly.
+  EXPECT_EQ(kDefaultAddressValues.first_name,
+            test->GetFieldValueById("firstname"));
+  EXPECT_EQ(kDefaultAddressValues.address1,
+            test->GetFieldValueById("address1"));
+  EXPECT_EQ(kDefaultAddressValues.state_short,
+            test->GetFieldValueById("state"));
+  EXPECT_EQ(kDefaultAddressValues.city, test->GetFieldValueById("city"));
+}
+
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SelectUpdated) {
-  CreateTestProfile();
-  GURL url = embedded_test_server()->GetURL(
-      "a.com", "/autofill/dynamic_form_select_options_change.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  ValueWaiter refill = ListenForRefill("firstname");
-  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  AdvanceClock(kLessThanLimitBeforeRefill);
-  ASSERT_TRUE(std::move(refill).Wait());
-
-  // Make sure the new form was filled correctly.
-  EXPECT_EQ(kDefaultAddressValues.first_name, GetFieldValueById("firstname"));
-  EXPECT_EQ(kDefaultAddressValues.address1, GetFieldValueById("address1"));
-  EXPECT_EQ(kDefaultAddressValues.state_short, GetFieldValueById("state"));
-  EXPECT_EQ(kDefaultAddressValues.city, GetFieldValueById("city"));
-  EXPECT_EQ(kDefaultAddressValues.company, GetFieldValueById("company"));
-  EXPECT_EQ(kDefaultAddressValues.email, GetFieldValueById("email"));
-  EXPECT_EQ(kDefaultAddressValues.phone, GetFieldValueById("phone"));
+  DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
+                                          /*should_test_selectmenu=*/false,
+                                          /*should_test_async_update=*/false);
 }
 
 // Test that we can Autofill dynamically changing selectmenus that have options
 // added and removed.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SelectMenuUpdated) {
-  CreateTestProfile();
-  GURL url = embedded_test_server()->GetURL(
-      "a.com", "/autofill/dynamic_form_selectmenu_options_change.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  ValueWaiter refill = ListenForRefill("state");
-  // Trigger first fill.
-  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  // Wait till the first onchange event fired on the 'state' field after the
-  // <option>s in the 'state' <select> have been updated.
-  AdvanceClock(kLessThanLimitBeforeRefill);
-  ASSERT_TRUE(std::move(refill).Wait());
-
-  // Make sure the new form was filled correctly.
-  EXPECT_EQ(kDefaultAddressValues.first_name, GetFieldValueById("firstname"));
-  EXPECT_EQ(kDefaultAddressValues.address1, GetFieldValueById("address1"));
-  EXPECT_EQ(kDefaultAddressValues.state_short, GetFieldValueById("state"));
-  EXPECT_EQ(kDefaultAddressValues.city, GetFieldValueById("city"));
+  DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
+                                          /*should_test_selectmenu=*/true,
+                                          /*should_test_async_update=*/false);
 }
 
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed, when the updating occurs asynchronously.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SelectUpdatedAsync) {
-  CreateTestProfile();
-  GURL url = embedded_test_server()->GetURL(
-      "a.com", "/autofill/dynamic_form_select_options_change_async.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  ValueWaiter refill = ListenForRefill("state");
-  // Trigger first fill.
-  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  // Wait till the first onchange event fired on the 'state' field after the
-  // <option>s in the 'state' <select> have been updated.
-  AdvanceClock(kLessThanLimitBeforeRefill);
-  ASSERT_TRUE(std::move(refill).Wait());
-
-  // Make sure the new form was re-filled correctly.
-  EXPECT_EQ(kDefaultAddressValues.first_name, GetFieldValueById("firstname"));
-  EXPECT_EQ(kDefaultAddressValues.address1, GetFieldValueById("address1"));
-  EXPECT_EQ(kDefaultAddressValues.state_short, GetFieldValueById("state"));
-  EXPECT_EQ(kDefaultAddressValues.city, GetFieldValueById("city"));
-  EXPECT_EQ(kDefaultAddressValues.company, GetFieldValueById("company"));
-  EXPECT_EQ(kDefaultAddressValues.email, GetFieldValueById("email"));
-  EXPECT_EQ(kDefaultAddressValues.phone, GetFieldValueById("phone"));
+  DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
+                                          /*should_test_selectmenu=*/false,
+                                          /*should_test_async_update=*/true);
 }
 
 // Test that we can Autofill dynamically changing selectmenus that have options
 // added and removed, when the updating occurs asynchronously.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SelectMenuUpdatedAsync) {
-  CreateTestProfile();
-  GURL url = embedded_test_server()->GetURL(
-      "a.com", "/autofill/dynamic_form_selectmenu_options_change_async.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  ValueWaiter refill = ListenForRefill("state");
-  // Trigger first fill.
-  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  // Wait till the first onchange event fired on the 'state' field after the
-  // <option>s in the 'state' <select> have been updated.
-  AdvanceClock(kLessThanLimitBeforeRefill);
-  ASSERT_TRUE(std::move(refill).Wait());
-
-  // Make sure the new form was filled correctly.
-  EXPECT_EQ(kDefaultAddressValues.first_name, GetFieldValueById("firstname"));
-  EXPECT_EQ(kDefaultAddressValues.address1, GetFieldValueById("address1"));
-  EXPECT_EQ(kDefaultAddressValues.state_short, GetFieldValueById("state"));
-  EXPECT_EQ(kDefaultAddressValues.city, GetFieldValueById("city"));
+  DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
+                                          /*should_test_selectmenu=*/true,
+                                          /*should_test_async_update=*/true);
 }
 
 // Test that we can Autofill dynamically changing selects that have options
