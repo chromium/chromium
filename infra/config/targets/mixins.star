@@ -659,15 +659,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "linux-bionic",
-    swarming = targets.swarming(
-        dimensions = {
-            "os": "Ubuntu-18.04",
-        },
-    ),
-)
-
-targets.mixin(
     name = "linux-focal",
     swarming = targets.swarming(
         dimensions = {
