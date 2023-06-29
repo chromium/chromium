@@ -2872,6 +2872,9 @@ Connect your device to power.
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_CELLULAR_TYPE_LTE_PLUS" desc="The sub label text used when a cellular connection is using the LTE Advanced connectivity type.">
         LTE+
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_CELLULAR_TYPE_FIVE_G" desc="The sub label text used when a cellular connection is using the 5G connectivity type.">
+        5G
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_SIGNAL_WEAK_SUBLABEL" desc="The sub label text used when WiFi signal strength is weak (among weak, medium, and strong.) [CHAR_LIMIT=14]">
         Weak
       </message>
