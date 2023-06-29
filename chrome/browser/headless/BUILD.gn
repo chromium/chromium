@@ -12,6 +12,8 @@ source_set("headless") {
     "headless_mode_util.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//chrome/common:non_code_constants",
@@ -32,6 +34,8 @@ source_set("metrics") {
     "headless_mode_metrics.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":headless",
     "//base",
@@ -45,6 +49,8 @@ source_set("command_processor") {
     "headless_command_processor.cc",
     "headless_command_processor.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     ":headless",

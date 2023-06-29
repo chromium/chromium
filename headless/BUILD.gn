@@ -296,6 +296,7 @@ static_library("backend_cdp_bindings") {
   sources = get_target_outputs(":protocol_sources")
   visibility = [ ":headless_non_renderer" ]
   configs += [
+    "//build/config/compiler:wexit_time_destructors",
     ":headless_defines_config",
     ":inside_headless_component",
   ]
@@ -366,6 +367,7 @@ component("headless_non_renderer") {
     "public/util/user_agent.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   if (is_apple) {
     configs += [ "//build/config/compiler:enable_arc" ]
   }
@@ -866,7 +868,10 @@ if (is_win) {
       deps += [ "//components/headless/command_handler" ]
     }
 
-    configs += [ ":headless_defines_config" ]
+    configs += [
+      ":headless_defines_config",
+      "//build/config/compiler:wexit_time_destructors",
+    ]
   }
 }
 
@@ -954,7 +959,10 @@ static_library("headless_shell_lib") {
     deps += [ "//components/crash/core/app" ]
   }
 
-  configs += [ ":headless_defines_config" ]
+  configs += [
+    ":headless_defines_config",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 }
 
 executable("headless_shell") {
@@ -984,5 +992,8 @@ executable("headless_shell") {
     deps += [ "//sandbox/mac:seatbelt" ]
   }
 
-  configs += [ ":headless_defines_config" ]
+  configs += [
+    ":headless_defines_config",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 }

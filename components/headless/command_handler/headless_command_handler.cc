@@ -6,11 +6,13 @@
 
 #include <cstdint>
 #include <iostream>
-#include <map>
+#include <string>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -19,6 +21,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -53,8 +56,8 @@ const char kHeadlessCommandHtml[] = "headless_command.html";
 const char kHeadlessCommandJs[] = "headless_command.js";
 
 HeadlessCommandHandler::DoneCallback& GetGlobalDoneCallback() {
-  static HeadlessCommandHandler::DoneCallback done_callback;
-  return done_callback;
+  static base::NoDestructor<HeadlessCommandHandler::DoneCallback> done_callback;
+  return *done_callback;
 }
 
 void EnsureHeadlessCommandResources() {
@@ -155,15 +158,16 @@ bool GetCommandDictAndOutputPaths(base::Value::Dict* commands,
     base::FilePath::StringType extension =
         base::ToLowerASCII(path.FinalExtension());
 
-    static const std::map<const base::FilePath::StringType, const char*>
-        kImageFileTypes{
+    static constexpr auto kImageFileTypes =
+        base::MakeFixedFlatMapSorted<base::FilePath::StringPieceType,
+                                     const char*>({
             {FILE_PATH_LITERAL(".jpeg"), "jpeg"},
             {FILE_PATH_LITERAL(".jpg"), "jpeg"},
             {FILE_PATH_LITERAL(".png"), "png"},
             {FILE_PATH_LITERAL(".webp"), "webp"},
-        };
+        });
 
-    auto it = kImageFileTypes.find(extension);
+    auto* it = kImageFileTypes.find(extension);
     if (it == kImageFileTypes.cend()) {
       LOG(ERROR) << "Unsupported screenshot image file type: "
                  << path.FinalExtension();
