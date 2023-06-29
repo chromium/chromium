@@ -797,7 +797,6 @@ crbug.com/1218157 [ chromeos chromeos-board-kevin no-passthrough ] conformance/o
 crbug.com/1218157 [ chromeos chromeos-board-kevin no-passthrough ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
 crbug.com/1218607 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/1219024 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
-crbug.com/1219024 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/rendering/rasterizer-discard-and-implicit-clear.html [ Failure ]
 crbug.com/1446328 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/textures/canvas/tex-2d-srgb8_alpha8-rgba-unsigned_byte.html [ Failure ]
 crbug.com/1213198 [ chromeos chromeos-board-kevin no-passthrough ] WebglExtension_WEBGL_draw_instanced_base_vertex_base_instance [ Failure ]
 crbug.com/1213198 [ chromeos chromeos-board-kevin no-passthrough ] WebglExtension_WEBGL_multi_draw_instanced_base_vertex_base_instance [ Failure ]
