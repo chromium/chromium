@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '../../assert.js';
+import {assert, assertEnumVariant} from '../../assert.js';
 import * as barcodeChip from '../../barcode_chip.js';
 import {CameraManager, CameraUI} from '../../device/index.js';
 import * as dom from '../../dom.js';
@@ -11,7 +11,6 @@ import {BarcodeScanner} from '../../models/barcode.js';
 import {ChromeHelper} from '../../mojo/chrome_helper.js';
 import * as state from '../../state.js';
 import {Mode, PreviewVideo} from '../../type.js';
-import {assertEnumVariant} from '../../util.js';
 
 import {DocumentCornerOverlay} from './document_corner_overlay.js';
 

@@ -10,7 +10,12 @@ import {
 import {
   getDefaultWindowSize,
 } from './app_window.js';
-import {assert, assertInstanceof} from './assert.js';
+import {
+  assert,
+  assertEnumVariant,
+  assertInstanceof,
+  checkEnumVariant,
+} from './assert.js';
 import * as customEffect from './custom_effect.js';
 import {DEPLOYED_VERSION} from './deployed_version.js';
 import {CameraManager} from './device/index.js';
@@ -198,7 +203,7 @@ export class App {
       function getKey(element: HTMLInputElement) {
         return element.dataset['key'] === undefined ?
             null :
-            util.assertEnumVariant(LocalStorageKey, element.dataset['key']);
+            assertEnumVariant(LocalStorageKey, element.dataset['key']);
       }
       const stateKey = element.dataset['state'] === undefined ?
           null :
@@ -484,9 +489,9 @@ function parseSearchParams(): {
   const url = new URL(window.location.href);
   const params = url.searchParams;
 
-  const facing = util.checkEnumVariant(Facing, params.get('facing'));
+  const facing = checkEnumVariant(Facing, params.get('facing'));
 
-  const mode = util.checkEnumVariant(Mode, params.get('mode'));
+  const mode = checkEnumVariant(Mode, params.get('mode'));
 
   const intent = (() => {
     if (params.get('intentId') === null) {

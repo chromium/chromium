@@ -5,6 +5,7 @@
 import * as animate from '../animation.js';
 import {
   assert,
+  assertEnumVariant,
   assertInstanceof,
   assertNotReached,
 } from '../assert.js';
@@ -245,7 +246,7 @@ export class Camera extends View implements CameraViewUI {
         for (const el of items) {
           const radio = dom.getFrom(el, 'input[type=radio]', HTMLInputElement);
           const supported = supportedModes.includes(
-              util.assertEnumVariant(Mode, radio.dataset['mode']));
+              assertEnumVariant(Mode, radio.dataset['mode']));
           el.classList.toggle('hide', !supported);
           if (supported) {
             if (first === null) {
@@ -293,7 +294,7 @@ export class Camera extends View implements CameraViewUI {
       });
       el.addEventListener('change', async () => {
         if (el.checked) {
-          const mode = util.assertEnumVariant(Mode, el.dataset['mode']);
+          const mode = assertEnumVariant(Mode, el.dataset['mode']);
           this.updateModeUI(mode);
           this.updateShutterLabel(mode);
           state.set(PerfEvent.MODE_SWITCHING, true);
@@ -336,7 +337,7 @@ export class Camera extends View implements CameraViewUI {
    * Gets current facing after |initialize()|.
    */
   protected getFacing(): Facing {
-    return util.assertEnumVariant(Facing, this.facing);
+    return assertEnumVariant(Facing, this.facing);
   }
 
   private updateModeUI(mode: Mode) {

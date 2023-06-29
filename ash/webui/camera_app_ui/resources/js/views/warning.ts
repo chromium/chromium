@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '../assert.js';
+import {assert, assertI18nString} from '../assert.js';
 import * as dom from '../dom.js';
 import {I18nString} from '../i18n_string.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import {ViewName} from '../type.js';
-import {assertI18nString} from '../util.js';
 
 import {EnterOptions, LeaveCondition, View} from './view.js';
 

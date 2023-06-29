@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import * as animation from './animation.js';
-import {assertExists, assertNotReached} from './assert.js';
+import {assertEnumVariant, assertExists, assertNotReached} from './assert.js';
 import * as dom from './dom.js';
 import {I18nString} from './i18n_string.js';
 import {SvgWrapper} from './lit/svg_wrapper.js';
@@ -150,7 +150,7 @@ function getOffsetProperties(
 
   function getPositionProperty(key: string) {
     const property = assertExists(style.get(key)).toString();
-    return util.assertEnumVariant(PositionProperty, property);
+    return assertEnumVariant(PositionProperty, property);
   }
 
   for (const dir of ['x', 'y']) {
@@ -239,8 +239,8 @@ class NewFeatureToast extends Toast {
     const template = util.instantiateTemplate('#new-feature-toast-template');
     const toast = dom.getFrom(template, '#new-feature-toast', HTMLDivElement);
 
-    const i18nId = util.assertEnumVariant(
-        I18nString, anchor.getAttribute('i18n-new-feature'));
+    const i18nId =
+        assertEnumVariant(I18nString, anchor.getAttribute('i18n-new-feature'));
     const textElement =
         dom.getFrom(template, '.custom-toast-text', HTMLSpanElement);
     const text = loadTimeData.getI18nMessage(i18nId);

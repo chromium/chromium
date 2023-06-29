@@ -6,9 +6,9 @@ import {
   assertBoolean,
   assertInstanceof,
   assertString,
+  checkEnumVariant,
 } from '../assert.js';
 import {LocalStorageKey} from '../type.js';
-import {checkEnumVariant} from '../util.js';
 
 /**
  * @return The value in storage or |defaultValue| if not found.

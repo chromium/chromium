@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertExists, assertInstanceof} from '../assert.js';
+import {
+  assert,
+  assertEnumVariant,
+  assertExists,
+  assertInstanceof,
+} from '../assert.js';
 import {TIME_LAPSE_INITIAL_SPEED} from '../device/mode/video.js';
 import * as dom from '../dom.js';
 import * as localStorage from '../models/local_storage.js';
@@ -14,7 +19,7 @@ import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as state from '../state.js';
 import {Facing, Mode, Resolution} from '../type.js';
-import {assertEnumVariant, FpsObserver, sleep} from '../util.js';
+import {FpsObserver, sleep} from '../util.js';
 import {windowController} from '../window_controller.js';
 
 import {
