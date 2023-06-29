@@ -283,7 +283,30 @@ see the [Testing](#testing) section.
 
 #### `NetworkConfigurationHandler`
 
-TODO: Discuss the `NetworkConfigurationHandler` class.
+The
+[`NetworkConfigurationHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_configuration_handler.h;drc=5e476d249f1b36460280115db38fdc37b1c37128)
+class is used to create and configure networks on ChromeOS. This class
+interacts with the platforms layer by making calls to the
+[`Shill APIs`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/shill/;drc=5e476d249f1b36460280115db38fdc37b1c37128)
+to perform a variety of tasks related to shill
+[`services and profiles`](https://chromium.googlesource.com/chromium/src/+/HEAD/chromeos/ash/components/network/README.md#shill)
+which include methods to:
+
+* Get, set, and clear
+[`shill properties`](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/cros_system_api/dbus/shill/dbus-constants.h;drc=b8143cf1dfd24842890fcd831c4f5d909bef4fc4)
+tied to a shill service. Note that when setting properties, existing properties
+are not cleared, and removals must be done explicitly.
+* Create a shill service and associate it to a shill profile
+* Remove or change the association between a shill service and shill profile(s)
+  
+Further, the `NetworkConfigurationHandler` class also provides an observer
+interface,
+[` NetworkConfigurationObserver`](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:chromeos/ash/components/network/network_configuration_observer.h;drc=b8143cf1dfd24842890fcd831c4f5d909bef4fc4;)
+, that can be used to be notified when the properties of shill service(s)
+change.
+
+In unit tests, the `NetworkConfigurationHandler` can be initialized for testing
+purposes.
 
 #### `ShillServiceClient`
 
@@ -434,9 +457,5 @@ succeed. The steps for preparing an eSIM network are:
 5. Uninhibit cellular scans
 6. Wait until the associated [`NetworkState`](#Network-State) becomes connectable
 7. Wait until Shill automatically connects if the SIM slot is switched
-
-## Configuring Networks
-
-TODO: Discuss network\_configuration\_handler.h and friends.
 
 TODO: Finish README
