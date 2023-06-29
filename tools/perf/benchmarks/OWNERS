@@ -1,4 +1,1 @@
 file://infra/config/groups/perf/OWNERS
-
-per-file power_mobile.py=eseckler@chromium.org
-per-file power_mobile.py=khokhlov@google.com

@@ -478,7 +478,6 @@ benchmarks/media.py
 benchmarks/memory.py
 benchmarks/octane.py
 benchmarks/power.py
-benchmarks/power_mobile.py
 benchmarks/press.py
 benchmarks/rasterize_and_record_micro.py
 benchmarks/rendering.py

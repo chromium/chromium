@@ -224,10 +224,7 @@ def _GetBenchmarkConfig(benchmark_name, abridged=False):
 
 OFFICIAL_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig(b.Name()) for b in OFFICIAL_BENCHMARKS])
-# power.mobile requires special hardware.
-# only run blink_perf.sanitizer-api on linux-perf.
 OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
-    'power.mobile',
     'blink_perf.sanitizer-api',
     'jetstream2-minormc',
     'octane-minormc',
@@ -489,7 +486,6 @@ _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
         'v8.browsing_mobile-future',
     ])
 _ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS = PerfSuite([
-    _GetBenchmarkConfig('power.mobile'),
     _GetBenchmarkConfig('system_health.scroll_jank_mobile')
 ])
 _ANDROID_PIXEL6_BENCHMARK_CONFIGS = PerfSuite(_OFFICIAL_EXCEPT_DISPLAY_LOCKING)

@@ -1,25 +1,5 @@
 [
     {
-        "duration": "52.0",
-        "name": "power.mobile/browse:media:flickr_infinite_scroll:2019"
-    },
-    {
-        "duration": "53.0",
-        "name": "power.mobile/browse:media:tiktok_infinite_scroll:2021"
-    },
-    {
-        "duration": "8.0",
-        "name": "power.mobile/browse:social:pinterest_infinite_scroll:2021"
-    },
-    {
-        "duration": "76.0",
-        "name": "power.mobile/browse:social:tumblr_infinite_scroll:2018"
-    },
-    {
-        "duration": "8.0",
-        "name": "power.mobile/browse:tech:discourse_infinite_scroll:2018"
-    },
-    {
         "duration": "110.0",
         "name": "system_health.scroll_jank_mobile/browse:media:flickr_infinite_scroll:2019"
     },

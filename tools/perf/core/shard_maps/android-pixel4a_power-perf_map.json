@@ -1,28 +1,35 @@
 {
     "0": {
         "benchmarks": {
-            "power.mobile": {
+            "system_health.scroll_jank_mobile": {
+                "end": 2,
                 "abridged": false
             }
         }
     },
     "1": {
         "benchmarks": {
-            "power.mobile": {
+            "system_health.scroll_jank_mobile": {
+                "begin": 2,
+                "end": 3,
                 "abridged": false
             }
         }
     },
     "2": {
         "benchmarks": {
-            "power.mobile": {
+            "system_health.scroll_jank_mobile": {
+                "begin": 3,
+                "end": 4,
                 "abridged": false
             }
         }
     },
     "3": {
         "benchmarks": {
-            "power.mobile": {
+            "system_health.scroll_jank_mobile": {
+                "begin": 4,
+                "end": 5,
                 "abridged": false
             }
         }
@@ -30,10 +37,8 @@
     "4": {
         "benchmarks": {
             "system_health.scroll_jank_mobile": {
-                "end": 2,
-                "abridged": false
-            },
-            "power.mobile": {
+                "begin": 5,
+                "end": 6,
                 "abridged": false
             }
         }
@@ -41,11 +46,8 @@
     "5": {
         "benchmarks": {
             "system_health.scroll_jank_mobile": {
-                "begin": 2,
-                "end": 3,
-                "abridged": false
-            },
-            "power.mobile": {
+                "begin": 6,
+                "end": 7,
                 "abridged": false
             }
         }
@@ -53,79 +55,43 @@
     "6": {
         "benchmarks": {
             "system_health.scroll_jank_mobile": {
-                "begin": 3,
-                "end": 4,
-                "abridged": false
-            },
-            "power.mobile": {
-                "abridged": false
-            }
-        }
-    },
-    "7": {
-        "benchmarks": {
-            "system_health.scroll_jank_mobile": {
-                "begin": 4,
-                "end": 5,
-                "abridged": false
-            },
-            "power.mobile": {
-                "abridged": false
-            }
-        }
-    },
-    "8": {
-        "benchmarks": {
-            "system_health.scroll_jank_mobile": {
-                "begin": 5,
-                "end": 6,
-                "abridged": false
-            },
-            "power.mobile": {
-                "abridged": false
-            }
-        }
-    },
-    "9": {
-        "benchmarks": {
-            "system_health.scroll_jank_mobile": {
-                "begin": 6,
-                "end": 7,
-                "abridged": false
-            },
-            "power.mobile": {
-                "abridged": false
-            }
-        }
-    },
-    "10": {
-        "benchmarks": {
-            "system_health.scroll_jank_mobile": {
                 "begin": 7,
                 "abridged": false
             }
         }
     },
+    "7": {
+        "benchmarks": {}
+    },
+    "8": {
+        "benchmarks": {}
+    },
+    "9": {
+        "benchmarks": {}
+    },
+    "10": {
+        "benchmarks": {}
+    },
     "11": {
         "benchmarks": {}
     },
     "extra_infos": {
-        "num_stories": 60,
+        "num_stories": 10,
         "predicted_min_shard_time": 0,
-        "predicted_min_shard_index": 11,
-        "predicted_max_shard_time": 337.0,
-        "predicted_max_shard_index": 5,
-        "shard #0": 197.0,
-        "shard #1": 197.0,
-        "shard #2": 197.0,
-        "shard #3": 197.0,
-        "shard #4": 307.0,
-        "shard #5": 337.0,
-        "shard #6": 252.0,
-        "shard #7": 265.0,
-        "shard #8": 280.0,
-        "shard #9": 266.0,
-        "shard #10": 100.0,
+        "predicted_min_shard_index": 7,
+        "predicted_max_shard_time": 140.0,
+        "predicted_max_shard_index": 1,
+        "shard #0": 110.0,
+        "shard #1": 140.0,
+        "shard #2": 55.0,
+        "shard #3": 68.0,
+        "shard #4": 83.0,
+        "shard #5": 69.0,
+        "shard #6": 100.0,
+        "shard #7": 0,
+        "shard #8": 0,
+        "shard #9": 0,
+        "shard #10": 0,
         "shard #11": 0
     }
 }
