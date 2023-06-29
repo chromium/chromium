@@ -619,12 +619,12 @@ BOOL ShouldDismissKeyboardOnScroll() {
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   NSUInteger row = indexPath.row;
   NSUInteger section = indexPath.section;
-  DCHECK_LT(section, self.currentResult.count);
-  DCHECK_LT(row, self.currentResult[indexPath.section].suggestions.count);
 
-  // Crash reports tell us that `section` and `row` are sometimes indexed past
-  // the end of the results array. In those cases, just ignore the request and
-  // return early. See crbug.com/1378590.
+  // In rare cases when the device is slow, user might be able to tap a
+  // suggestion row twice before the event is being delivered. In this case, on
+  // the second touch, the popup will already be cleared, but the table view
+  // will still dispatch a didSelectRowAtIndexPath event for a non-existent
+  // index path. Ignore these double touches.
   if (section >= self.currentResult.count ||
       row >= self.currentResult[indexPath.section].suggestions.count)
     return;
