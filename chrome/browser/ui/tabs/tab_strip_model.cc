@@ -56,6 +56,10 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -83,6 +87,7 @@ using content::WebContents;
 
 namespace {
 
+bool g_bypass_is_tab_closable_for_testing = false;
 TabGroupModelFactory* factory_instance = nullptr;
 
 class RenderWidgetHostVisibilityTracker;
@@ -121,7 +126,7 @@ bool ShouldForgetOpenersForTransition(ui::PageTransition transition) {
                                       ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 }
 
-// Intalls RenderWidgetVisibilityTracker when the active tab has changed.
+// Installs RenderWidgetVisibilityTracker when the active tab has changed.
 std::unique_ptr<RenderWidgetHostVisibilityTracker>
 InstallRenderWigetVisibilityTracker(const TabStripSelectionChange& selection) {
   if (!selection.active_tab_changed())
@@ -714,10 +719,10 @@ void TabStripModel::CloseAllTabsInGroup(const tab_groups::TabGroupId& group) {
   CloseTabs(closing_tabs, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }
 
-bool TabStripModel::CloseWebContentsAt(int index, uint32_t close_types) {
+void TabStripModel::CloseWebContentsAt(int index, uint32_t close_types) {
   CHECK(ContainsIndex(index));
   WebContents* contents = GetWebContentsAt(index);
-  return CloseTabs(base::span<WebContents* const>(&contents, 1u), close_types);
+  CloseTabs(base::span<WebContents* const>(&contents, 1u), close_types);
 }
 
 bool TabStripModel::TabsAreLoading() const {
@@ -827,7 +832,13 @@ bool TabStripModel::IsTabBlocked(int index) const {
 }
 
 bool TabStripModel::IsTabClosable(int index) const {
-  return !web_app::IsPinnedHomeTab(this, index) || count() == 1;
+  return g_bypass_is_tab_closable_for_testing ||
+         (PolicyAllowsTabClosing(GetWebContentsAt(index)) &&
+          (!web_app::IsPinnedHomeTab(this, index) || count() == 1));
+}
+
+bool TabStripModel::IsTabClosable(const content::WebContents* contents) const {
+  return IsTabClosable(GetIndexOfWebContents(contents));
 }
 
 absl::optional<tab_groups::TabGroupId> TabStripModel::GetTabGroupForTab(
@@ -1662,6 +1673,12 @@ bool TabStripModel::ContextMenuCommandToBrowserCommand(int cmd_id,
   return true;
 }
 
+// static
+void TabStripModel::SetBypassIsTabClosableCheckForTesting(
+    bool bypass_is_tab_closable) {
+  g_bypass_is_tab_closable_for_testing = bypass_is_tab_closable;
+}
+
 int TabStripModel::GetIndexOfNextWebContentsOpenedBy(const WebContents* opener,
                                                      int start_index) const {
   DCHECK(opener);
@@ -1861,21 +1878,29 @@ int TabStripModel::InsertWebContentsAtImpl(
   return index;
 }
 
-bool TabStripModel::CloseTabs(base::span<content::WebContents* const> items,
+void TabStripModel::CloseTabs(base::span<content::WebContents* const> items,
                               uint32_t close_types) {
-  if (items.empty())
-    return true;
+  std::vector<content::WebContents*> filtered_items;
+  base::ranges::copy_if(items, std::back_inserter(filtered_items),
+                        [this](content::WebContents* const contents) {
+                          return IsTabClosable(contents);
+                        });
 
-  const bool closing_all = static_cast<int>(items.size()) == count();
+  if (filtered_items.empty()) {
+    return;
+  }
+
+  const bool closing_all = static_cast<int>(filtered_items.size()) == count();
   base::WeakPtr<TabStripModel> ref = weak_factory_.GetWeakPtr();
   if (closing_all) {
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.WillCloseAllTabs(this);
+    }
   }
 
   DetachNotifications notifications(GetActiveWebContents(), selection_model_);
   const bool closed_all =
-      CloseWebContentses(items, close_types, &notifications);
+      CloseWebContentses(filtered_items, close_types, &notifications);
 
   // When unload handler is triggered for all items, we should wait for the
   // result.
@@ -1883,7 +1908,7 @@ bool TabStripModel::CloseTabs(base::span<content::WebContents* const> items,
     SendDetachWebContentsNotifications(&notifications);
 
   if (!ref)
-    return closed_all;
+    return;
   if (closing_all) {
     // CloseAllTabsStopped is sent with reason kCloseAllCompleted if
     // closed_all; otherwise kCloseAllCanceled is sent.
@@ -1892,8 +1917,6 @@ bool TabStripModel::CloseTabs(base::span<content::WebContents* const> items,
           this, closed_all ? TabStripModelObserver::kCloseAllCompleted
                            : TabStripModelObserver::kCloseAllCanceled);
   }
-
-  return closed_all;
 }
 
 bool TabStripModel::CloseWebContentses(
@@ -2613,6 +2636,24 @@ void TabStripModel::OnActiveTabChanged(
        old_opener != new_contents)) {
     ForgetAllOpeners();
   }
+}
+
+bool TabStripModel::PolicyAllowsTabClosing(
+    content::WebContents* contents) const {
+  if (!contents) {
+    return true;
+  }
+
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebContents(contents);
+  // Can be null if there is no tab helper or app id.
+  const web_app::AppId* app_id = web_app::WebAppTabHelper::GetAppId(contents);
+  if (!app_id) {
+    return true;
+  }
+
+  return !delegate()->IsForWebApp() ||
+         !provider->policy_manager().IsPreventCloseEnabled(*app_id);
 }
 
 int TabStripModel::DetermineInsertionIndex(ui::PageTransition transition,

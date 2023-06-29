@@ -978,8 +978,10 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   // PermissionRequestManager for the WebContents and uses that reference in its
   // destructor, it has to be destroyed before the tab.
   prompt_factory_.reset();
-  ASSERT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
-      prompt_contents_index, TabCloseTypes::CLOSE_USER_GESTURE));
+  int previous_tab_count = browser()->tab_strip_model()->count();
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      prompt_contents_index, TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_EQ(previous_tab_count - 1, browser()->tab_strip_model()->count());
   base::RunLoop().RunUntilIdle();
 
   VerifyResultState(

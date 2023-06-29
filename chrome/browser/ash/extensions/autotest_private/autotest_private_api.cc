@@ -149,6 +149,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/bruschetta/bruschetta_installer_view.h"
 #include "chrome/browser/ui/views/crostini/crostini_uninstaller_view.h"
@@ -2538,6 +2539,7 @@ ExtensionFunction::ResponseAction AutotestPrivateCloseAppFunction::Run() {
   if (!controller) {
     return RespondNow(Error("Controller not available"));
   }
+  TabStripModel::SetBypassIsTabClosableCheckForTesting(true);
   controller->Close(ash::ShelfID(params->app_id));
   return RespondNow(NoArguments());
 }
