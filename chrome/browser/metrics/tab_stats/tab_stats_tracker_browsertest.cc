@@ -383,7 +383,13 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EXPECT_EQ(0U, count_observer.window_count());
 }
 
-IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, TabSwitch) {
+// TODO(crbug.com/1459406): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TabSwitch DISABLED_TabSwitch
+#else
+#define MAYBE_TabSwitch TabSwitch
+#endif
+IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, MAYBE_TabSwitch) {
   MockTabStatsObserver mock_observer;
   TestTabStatsObserver count_observer;
   tab_stats_tracker_->AddObserverAndSetInitialState(&count_observer);
