@@ -6681,6 +6681,9 @@
           "linux_symbols",
           "symupload",
         ],
+        'os_type': 'chromeos',
+      },
+      'chromeos-trogdor-chrome-skylab-tests-fyi': {
         'test_suites': {
           'skylab_tests': 'chromeos_trogdor_skylab_tests',
         },

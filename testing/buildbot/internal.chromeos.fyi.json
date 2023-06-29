@@ -1234,7 +1234,9 @@
       "chrome",
       "linux_symbols",
       "symupload"
-    ],
+    ]
+  },
+  "chromeos-trogdor-chrome-skylab-tests-fyi": {
     "skylab_tests": [
       {
         "autotest_name": "tast.chrome-from-tls",
