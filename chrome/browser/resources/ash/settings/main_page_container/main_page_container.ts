@@ -34,7 +34,6 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../os_settings_page/settings_idle_load.js';
 import '../os_about_page/eol_offer_section.js';
 import '../os_settings_icons.html.js';
-import './main_page_container_styles.css.js';
 import './page_displayer.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
