@@ -217,6 +217,16 @@ BASE_DECLARE_FEATURE(kIPHAutofillVirtualCardSuggestionFeature);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_DECLARE_FEATURE(kIPHGoogleOneOfferNotificationFeature);
 BASE_DECLARE_FEATURE(kIPHLauncherSearchHelpUiFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphTimerBasedOneFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphTimerBasedTwoFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphTimerBasedThreeFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphTimerBasedFourFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphTimerBasedFiveFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphTimerBasedSixFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphTimerBasedSevenFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphTimerBasedEightFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphTimerBasedNineFeature);
+BASE_DECLARE_FEATURE(kIPHScalableIphTimerBasedTenFeature);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

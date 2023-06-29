@@ -341,6 +341,26 @@ DEFINE_VARIATION_PARAM(kIPHGoogleOneOfferNotificationFeature,
                        "IPH_GoogleOneOfferNotification");
 DEFINE_VARIATION_PARAM(kIPHLauncherSearchHelpUiFeature,
                        "IPH_LauncherSearchHelpUi");
+DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedOneFeature,
+                       "IPH_ScalableIphTimerBasedOne");
+DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedTwoFeature,
+                       "IPH_ScalableIphTimerBasedTwo");
+DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedThreeFeature,
+                       "IPH_ScalableIphTimerBasedThree");
+DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedFourFeature,
+                       "IPH_ScalableIphTimerBasedFour");
+DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedFiveFeature,
+                       "IPH_ScalableIphTimerBasedFive");
+DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedSixFeature,
+                       "IPH_ScalableIphTimerBasedSix");
+DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedSevenFeature,
+                       "IPH_ScalableIphTimerBasedSeven");
+DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedEightFeature,
+                       "IPH_ScalableIphTimerBasedEight");
+DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedNineFeature,
+                       "IPH_ScalableIphTimerBasedNine");
+DEFINE_VARIATION_PARAM(kIPHScalableIphTimerBasedTenFeature,
+                       "IPH_ScalableIphTimerBasedTen");
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -522,12 +542,21 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         VARIATION_ENTRY(kIPHGoogleOneOfferNotificationFeature),
         VARIATION_ENTRY(kIPHLauncherSearchHelpUiFeature),
+        VARIATION_ENTRY(kIPHScalableIphTimerBasedOneFeature),
+        VARIATION_ENTRY(kIPHScalableIphTimerBasedTwoFeature),
+        VARIATION_ENTRY(kIPHScalableIphTimerBasedThreeFeature),
+        VARIATION_ENTRY(kIPHScalableIphTimerBasedFourFeature),
+        VARIATION_ENTRY(kIPHScalableIphTimerBasedFiveFeature),
+        VARIATION_ENTRY(kIPHScalableIphTimerBasedSixFeature),
+        VARIATION_ENTRY(kIPHScalableIphTimerBasedSevenFeature),
+        VARIATION_ENTRY(kIPHScalableIphTimerBasedEightFeature),
+        VARIATION_ENTRY(kIPHScalableIphTimerBasedNineFeature),
+        VARIATION_ENTRY(kIPHScalableIphTimerBasedTenFeature),
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
         VARIATION_ENTRY(kIPHiOSPasswordPromoDesktopFeature),
 #endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 };
 
 #undef DEFINE_VARIATION_PARAM

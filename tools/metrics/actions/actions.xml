@@ -38394,6 +38394,26 @@ should be able to be added at any place in this file.
   <suffix name="RequestDesktopSiteOptIn"
       label="For the RequestDesktopSiteOptIn feature."/>
   <suffix name="RestoreTabsOnFRE" label="For the RestoreTabsOnFRE feature."/>
+  <suffix name="ScalableIphTimerBasedEight"
+      label="For a variant of Scalable Iph feature."/>
+  <suffix name="ScalableIphTimerBasedFive"
+      label="For a variant of Scalable Iph feature."/>
+  <suffix name="ScalableIphTimerBasedFour"
+      label="For a variant of Scalable Iph feature."/>
+  <suffix name="ScalableIphTimerBasedNine"
+      label="For a variant of Scalable Iph feature."/>
+  <suffix name="ScalableIphTimerBasedOne"
+      label="For a variant of Scalable Iph feature."/>
+  <suffix name="ScalableIphTimerBasedSeven"
+      label="For a variant of Scalable Iph feature."/>
+  <suffix name="ScalableIphTimerBasedSix"
+      label="For a variant of Scalable Iph feature."/>
+  <suffix name="ScalableIphTimerBasedTen"
+      label="For a variant of Scalable Iph feature."/>
+  <suffix name="ScalableIphTimerBasedThree"
+      label="For a variant of Scalable Iph feature."/>
+  <suffix name="ScalableIphTimerBasedTwo"
+      label="For a variant of Scalable Iph feature."/>
   <suffix name="SharedHighlightingBuilder"
       label="For SharedHighlightingBuilder feature."/>
   <suffix name="SharedHighlightingReceiver"

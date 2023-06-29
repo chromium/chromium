@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
+#include "components/feature_engagement/public/feature_constants.h"
 
 namespace scalable_iph {
 
@@ -41,7 +42,20 @@ const std::map<ScalableIph::Event, std::string>& GetEventNamesMap() {
 // conditions of all events listed in this list when it receives an `Event`.
 const std::vector<const base::Feature*>& GetFeatureListConstant() {
   static const base::NoDestructor<std::vector<const base::Feature*>>
-      feature_list({});
+      feature_list({
+          // This must be sorted from One to Ten. A config expects that IPHs are
+          // evaluated in this priority.
+          &feature_engagement::kIPHScalableIphTimerBasedOneFeature,
+          &feature_engagement::kIPHScalableIphTimerBasedTwoFeature,
+          &feature_engagement::kIPHScalableIphTimerBasedThreeFeature,
+          &feature_engagement::kIPHScalableIphTimerBasedFourFeature,
+          &feature_engagement::kIPHScalableIphTimerBasedFiveFeature,
+          &feature_engagement::kIPHScalableIphTimerBasedSixFeature,
+          &feature_engagement::kIPHScalableIphTimerBasedSevenFeature,
+          &feature_engagement::kIPHScalableIphTimerBasedEightFeature,
+          &feature_engagement::kIPHScalableIphTimerBasedNineFeature,
+          &feature_engagement::kIPHScalableIphTimerBasedTenFeature,
+      });
   return *feature_list;
 }
 

@@ -193,12 +193,21 @@ const base::Feature* const kAllFeatures[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     &kIPHGoogleOneOfferNotificationFeature,
     &kIPHLauncherSearchHelpUiFeature,
+    &kIPHScalableIphTimerBasedOneFeature,
+    &kIPHScalableIphTimerBasedTwoFeature,
+    &kIPHScalableIphTimerBasedThreeFeature,
+    &kIPHScalableIphTimerBasedFourFeature,
+    &kIPHScalableIphTimerBasedFiveFeature,
+    &kIPHScalableIphTimerBasedSixFeature,
+    &kIPHScalableIphTimerBasedSevenFeature,
+    &kIPHScalableIphTimerBasedEightFeature,
+    &kIPHScalableIphTimerBasedNineFeature,
+    &kIPHScalableIphTimerBasedTenFeature,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     &kIPHiOSPasswordPromoDesktopFeature,
 #endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 };
 }  // namespace
 

@@ -529,6 +529,36 @@ BASE_FEATURE(kIPHGoogleOneOfferNotificationFeature,
 BASE_FEATURE(kIPHLauncherSearchHelpUiFeature,
              "IPH_LauncherSearchHelpUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphTimerBasedOneFeature,
+             "IPH_ScalableIphTimerBasedOne",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphTimerBasedTwoFeature,
+             "IPH_ScalableIphTimerBasedTwo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphTimerBasedThreeFeature,
+             "IPH_ScalableIphTimerBasedThree",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphTimerBasedFourFeature,
+             "IPH_ScalableIphTimerBasedFour",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphTimerBasedFiveFeature,
+             "IPH_ScalableIphTimerBasedFive",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphTimerBasedSixFeature,
+             "IPH_ScalableIphTimerBasedSix",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphTimerBasedSevenFeature,
+             "IPH_ScalableIphTimerBasedSeven",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphTimerBasedEightFeature,
+             "IPH_ScalableIphTimerBasedEight",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphTimerBasedNineFeature,
+             "IPH_ScalableIphTimerBasedNine",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHScalableIphTimerBasedTenFeature,
+             "IPH_ScalableIphTimerBasedTen",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
