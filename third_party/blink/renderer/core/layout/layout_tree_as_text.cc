@@ -562,14 +562,6 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
   if (embedded && embedded->IsThrottledFrameView())
     should_dump = false;
 
-#if DCHECK_IS_ON()
-  if (!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled() &&
-      layer->NeedsPositionUpdate()) {
-    WriteIndent(ts, indent);
-    ts << " NEEDS POSITION UPDATE\n";
-  }
-#endif
-
   bool should_dump_children = !layer_object.ChildLayoutBlockedByDisplayLock();
 
   const auto& neg_list = ChildLayers(layer, kNegativeZOrderChildren);

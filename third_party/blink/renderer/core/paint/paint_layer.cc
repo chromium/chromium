@@ -128,7 +128,6 @@ struct SameSizeAsPaintLayer : GarbageCollected<PaintLayer>, DisplayItemClient {
   bool is_destroyed;
 #endif
   Member<void*> members[9];
-  PhysicalOffset offset;
   LayoutUnit layout_units[2];
   std::unique_ptr<void*> pointer;
 };
@@ -174,11 +173,6 @@ PaintLayer::PaintLayer(LayoutBoxModelObject* layout_object)
       needs_descendant_dependent_flags_update_(true),
       needs_visual_overflow_recalc_(true),
       has_visible_self_painting_descendant_(false),
-#if DCHECK_IS_ON()
-      // The root layer (LayoutView) does not need position update at start
-      // because its Location() is always 0.
-      needs_position_update_(!IsRootLayer()),
-#endif
       has3d_transformed_descendant_(false),
       self_needs_repaint_(false),
       descendant_needs_repaint_(false),
@@ -302,13 +296,7 @@ void PaintLayer::UpdateLayerPositionsAfterLayout() {
 }
 
 void PaintLayer::UpdateLayerPositionRecursive() {
-  UpdateLayerPosition();
-
-  if (GetLayoutObject().UpdateStickyPositionConstraints()) {
-    // Sticky position constraints and ancestor overflow scroller affect
-    // the sticky layer position, so we need to update it again here.
-    UpdateLayerPosition();
-  }
+  GetLayoutObject().UpdateStickyPositionConstraints();
 
   // Display-locked elements always have a PaintLayer, meaning that the
   // PaintLayer traversal won't skip locked elements. Thus, we don't have to do
@@ -562,35 +550,6 @@ void PaintLayer::Update3DTransformedDescendantStatus() {
       break;
     }
   }
-}
-
-void PaintLayer::UpdateLayerPosition() {
-  if (RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
-    return;
-  }
-  PhysicalOffset local_point;
-  if (LayoutBox* box = GetLayoutBox()) {
-    local_point += box->PhysicalLocation();
-  }
-
-  if (!GetLayoutObject().IsOutOfFlowPositioned() &&
-      !GetLayoutObject().IsColumnSpanAll()) {
-    // We must adjust our position by walking up the layout tree looking for the
-    // nearest enclosing object with a layer.
-    LayoutObject* curr = GetLayoutObject().Container();
-    while (curr && !curr->HasLayer()) {
-      if (curr->IsBox()) {
-        local_point += To<LayoutBox>(curr)->PhysicalLocation();
-      }
-      curr = curr->Container();
-    }
-  }
-
-  location_without_position_offset_ = local_point;
-
-#if DCHECK_IS_ON()
-  needs_position_update_ = false;
-#endif
 }
 
 void PaintLayer::UpdateScrollingAfterLayout() {
@@ -879,79 +838,6 @@ void PaintLayer::InsertOnlyThisLayerAfterStyleChange() {
             parent_->EnclosingSelfPaintingLayer())
       MergeNeedsPaintPhaseFlagsFrom(*enclosing_self_painting_layer);
   }
-}
-
-// Returns the layer reached on the walk up towards the ancestor.
-static inline const PaintLayer* AccumulateOffsetTowardsAncestor(
-    const PaintLayer* layer,
-    const PaintLayer* ancestor_layer,
-    PhysicalOffset& location) {
-  DCHECK(ancestor_layer != layer);
-
-  const LayoutBoxModelObject& layout_object = layer->GetLayoutObject();
-
-  if (layout_object.IsFixedPositioned() &&
-      (!ancestor_layer || ancestor_layer == layout_object.View()->Layer())) {
-    // If the fixed layer's container is the root, just add in the offset of the
-    // view. We can obtain this by calling localToAbsolute() on the LayoutView.
-    location +=
-        layout_object.LocalToAbsolutePoint(PhysicalOffset(), kIgnoreTransforms);
-    return ancestor_layer;
-  }
-
-  bool found_ancestor_first = false;
-  PaintLayer* containing_layer =
-      ancestor_layer
-          ? layer->ContainingLayer(ancestor_layer, &found_ancestor_first)
-          : layer->ContainingLayer(ancestor_layer, nullptr);
-
-  if (found_ancestor_first) {
-    // Found ancestorLayer before the containing layer, so compute offset of
-    // both relative to the container and subtract.
-    PhysicalOffset this_coords;
-    layer->ConvertToLayerCoords(containing_layer, this_coords);
-
-    PhysicalOffset ancestor_coords;
-    ancestor_layer->ConvertToLayerCoords(containing_layer, ancestor_coords);
-
-    location += (this_coords - ancestor_coords);
-    return ancestor_layer;
-  }
-
-  if (!containing_layer)
-    return nullptr;
-
-  location += layer->LocationWithoutPositionOffset();
-  if (layer->GetLayoutObject().IsStickyPositioned()) {
-    location += layer->GetLayoutObject().StickyPositionOffset();
-  } else if (layer->GetLayoutObject().IsBox() &&
-             layer->GetLayoutBox()->HasAnchorScrollTranslation()) {
-    location += layer->GetLayoutBox()->AnchorScrollTranslationOffset();
-  }
-  location -=
-      PhysicalOffset(containing_layer->PixelSnappedScrolledContentOffset());
-
-  return containing_layer;
-}
-
-void PaintLayer::ConvertToLayerCoords(const PaintLayer* ancestor_layer,
-                                      PhysicalOffset& location) const {
-  DCHECK(!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled());
-  if (ancestor_layer == this)
-    return;
-
-  const PaintLayer* curr_layer = this;
-  while (curr_layer && curr_layer != ancestor_layer)
-    curr_layer =
-        AccumulateOffsetTowardsAncestor(curr_layer, ancestor_layer, location);
-}
-
-const PhysicalOffset& PaintLayer::LocationWithoutPositionOffset() const {
-  DCHECK(!RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled());
-#if DCHECK_IS_ON()
-  DCHECK(!needs_position_update_);
-#endif
-  return location_without_position_offset_;
 }
 
 void PaintLayer::DidUpdateScrollsOverflow() {
@@ -2009,13 +1895,8 @@ bool PaintLayer::HitTestClippedOutByClipPath(
   DCHECK(GetLayoutObject().HasClipPath());
   DCHECK(IsSelfPaintingLayer());
 
-  PhysicalOffset origin;
-  if (RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
-    origin = GetLayoutObject().LocalToAncestorPoint(
-        origin, &root_layer.GetLayoutObject());
-  } else {
-    ConvertToLayerCoords(&root_layer, origin);
-  }
+  PhysicalOffset origin = GetLayoutObject().LocalToAncestorPoint(
+      PhysicalOffset(), &root_layer.GetLayoutObject());
 
   gfx::PointF point(hit_test_location.Point() - origin);
   gfx::RectF reference_box =
@@ -2104,13 +1985,8 @@ void PaintLayer::ExpandRectForSelfPaintingDescendants(
           child_layer->Transform()->MapRect(gfx::RectF(added_rect)));
     }
 
-    PhysicalOffset delta;
-    if (RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
-      delta = child_layer->GetLayoutObject().LocalToAncestorPoint(
-          delta, &GetLayoutObject(), kIgnoreTransforms);
-    } else {
-      child_layer->ConvertToLayerCoords(this, delta);
-    }
+    PhysicalOffset delta = child_layer->GetLayoutObject().LocalToAncestorPoint(
+        PhysicalOffset(), &GetLayoutObject(), kIgnoreTransforms);
     added_rect.Move(delta);
 
     result.Unite(added_rect);

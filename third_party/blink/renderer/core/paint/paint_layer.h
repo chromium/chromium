@@ -213,24 +213,12 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return curr;
   }
 
-  // The physical offset from this PaintLayer to its ContainingLayer.
-  // Does not include any scroll offset of the ContainingLayer. Also does not
-  // include offsets for positioned elements.
-  //
-  // Do not use this function.  We're going to remove this.
-  const PhysicalOffset& LocationWithoutPositionOffset() const;
-
   // This is the scroll offset that's actually used to display to the screen.
   // It should only be used in paint/compositing type use cases (includes hit
   // testing, intersection observer). Most other cases should use the unsnapped
   // offset from LayoutBox (for layout) or the source offset from the
   // ScrollableArea.
   gfx::Vector2d PixelSnappedScrolledContentOffset() const;
-
-#if DCHECK_IS_ON()
-  // Do not use this function.  We're going to remove this.
-  bool NeedsPositionUpdate() const { return needs_position_update_; }
-#endif
 
   bool IsRootLayer() const { return is_root_layer_; }
 
@@ -263,10 +251,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // |ancestor| and |skippedAncestor| should be nullptr, or none of them should.
   PaintLayer* ContainingLayer(const PaintLayer* ancestor = nullptr,
                               bool* skipped_ancestor = nullptr) const;
-
-  // Do not use this function.  We're going to remove this.
-  void ConvertToLayerCoords(const PaintLayer* ancestor_layer,
-                            PhysicalOffset&) const;
 
   // The hitTest() method looks for mouse events by walking layers that
   // intersect the point from front to back.
@@ -549,7 +533,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   PhysicalRect LocalBoundingBox() const;
 
   void UpdateLayerPositionRecursive();
-  void UpdateLayerPosition();
 
   void SetNextSibling(PaintLayer* next) { next_ = next; }
   void SetPreviousSibling(PaintLayer* prev) { previous_ = prev; }
@@ -705,11 +688,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   unsigned has_visible_self_painting_descendant_ : 1;
 
-#if DCHECK_IS_ON()
-  // TODO(crbug.com/1432839): Remove this.
-  unsigned needs_position_update_ : 1;
-#endif
-
   // Set on a stacking context layer that has 3D descendants anywhere
   // in a preserves3D hierarchy. Hint to do 3D-aware hit testing.
   unsigned has3d_transformed_descendant_ : 1;
@@ -772,11 +750,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   Member<PaintLayerScrollableArea> scrollable_area_;
   Member<PaintLayerStackingNode> stacking_node_;
   Member<PaintLayerResourceInfo> resource_info_;
-
-  // Our (x,y) coordinates are in our containing layer's coordinate space,
-  // excluding positioning offset and scroll.
-  // TODO(crbug.com/1432839): Remove this.
-  PhysicalOffset location_without_position_offset_;
 
   // Cached normal flow values for absolute positioned elements with static
   // left/top values.
