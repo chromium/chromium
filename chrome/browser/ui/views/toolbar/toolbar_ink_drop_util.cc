@@ -123,9 +123,8 @@ void ConfigureToolbarInkdropForRefresh2023(
         const float hover_alpha = SkColorGetA(hover_color);
 
         auto ink_drop_highlight = std::make_unique<views::InkDropHighlight>(
-            host->size(), host->height() / 2,
-            gfx::PointF(host->GetLocalBounds().CenterPoint()),
-            SkColorSetA(hover_color, SK_AlphaOPAQUE));
+            gfx::SizeF(host->size()), SkColorSetA(hover_color, SK_AlphaOPAQUE));
+
         ink_drop_highlight->set_visible_opacity(hover_alpha / SK_AlphaOPAQUE);
         return ink_drop_highlight;
       },
