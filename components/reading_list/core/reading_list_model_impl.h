@@ -86,6 +86,7 @@ class ReadingListModelImpl : public ReadingListModel {
                                      base::Time distilation_time) override;
   void AddObserver(ReadingListModelObserver* observer) override;
   void RemoveObserver(ReadingListModelObserver* observer) override;
+  void RecordCountMetricsOnUMAUpload() const override;
 
   // Add |entry| to the model, which must not exist before, and notify the sync
   // bridge if |source| is not ADDED_VIA_SYNC.
@@ -141,6 +142,19 @@ class ReadingListModelImpl : public ReadingListModel {
   ReadingListSyncBridge* GetSyncBridgeForTest();
 
  private:
+  // An enum class to add storage state as a suffix to metrics.
+  enum class StorageStateForUma {
+    // Account storage.
+    kAccount,
+    // Local storage that is not being synced at the time the metric is
+    // recorded.
+    kLocalOnly,
+    // Local storage that is being synced at the time the metric is recorded.
+    kSyncEnabled,
+  };
+  StorageStateForUma GetStorageStateForUma() const;
+  std::string GetStorageStateSuffixForUma() const;
+
   ReadingListModelImpl(
       std::unique_ptr<ReadingListModelStorage> storage_layer,
       syncer::StorageType sync_storage_type,
@@ -169,6 +183,8 @@ class ReadingListModelImpl : public ReadingListModel {
   // Update the 3 counts above considering addition/removal of |entry|.
   void UpdateEntryStateCountersOnEntryRemoval(const ReadingListEntry& entry);
   void UpdateEntryStateCountersOnEntryInsertion(const ReadingListEntry& entry);
+
+  void RecordCountMetrics(const std::string& event_suffix) const;
 
   const std::unique_ptr<ReadingListModelStorage> storage_layer_;
   const raw_ptr<base::Clock> clock_;

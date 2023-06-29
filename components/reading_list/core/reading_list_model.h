@@ -160,6 +160,8 @@ class ReadingListModel : public KeyedService {
   virtual void AddObserver(ReadingListModelObserver* observer) = 0;
   virtual void RemoveObserver(ReadingListModelObserver* observer) = 0;
 
+  virtual void RecordCountMetricsOnUMAUpload() const = 0;
+
   // Helper class that is used to scope batch updates.
   class ScopedReadingListBatchUpdate {
    public:

@@ -51,11 +51,8 @@ void DesktopPlatformFeaturesMetricsProvider::ProvideCurrentSessionData(
   for (Profile* profile : profiles) {
     ReadingListModel* model =
         ReadingListModelFactory::GetForBrowserContext(profile);
-    if (model && model->loaded()) {
-      UMA_HISTOGRAM_COUNTS_1000("ReadingList.Unread.Count.OnUMAUpload",
-                                model->unread_size());
-      UMA_HISTOGRAM_COUNTS_1000("ReadingList.Read.Count.OnUMAUpload",
-                                model->size() - model->unread_size());
+    if (model) {
+      model->RecordCountMetricsOnUMAUpload();
     }
   }
 }

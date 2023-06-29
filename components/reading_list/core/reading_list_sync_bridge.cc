@@ -80,6 +80,14 @@ void ReadingListSyncBridge::DidRemoveEntry(
   change_processor()->Delete(entry.URL().spec(), metadata_change_list);
 }
 
+bool ReadingListSyncBridge::IsTrackingMetadata() const {
+  return change_processor()->IsTrackingMetadata();
+}
+
+syncer::StorageType ReadingListSyncBridge::GetStorageType() const {
+  return storage_type_;
+}
+
 std::unique_ptr<syncer::MetadataChangeList>
 ReadingListSyncBridge::CreateMetadataChangeList() {
   return std::make_unique<syncer::InMemoryMetadataChangeList>();

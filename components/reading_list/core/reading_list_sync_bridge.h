@@ -52,6 +52,17 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
   void DidRemoveEntry(const ReadingListEntry& entry,
                       syncer::MetadataChangeList* metadata_change_list);
 
+  // Exposes whether the underlying ModelTypeChangeProcessor is tracking
+  // metadata. This means sync is enabled and the initial download of data is
+  // completed, which implies that the relevant ReadingListModel already
+  // reflects remote data. Note however that this doesn't mean reading list
+  // entries are actively sync-ing at the moment, for example sync could be
+  // paused due to an auth error.
+  bool IsTrackingMetadata() const;
+
+  // Returns the StorageType, as passed to the constructor.
+  syncer::StorageType GetStorageType() const;
+
   // Creates an object used to communicate changes in the sync metadata to the
   // model type store.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()

@@ -495,6 +495,11 @@ void DualReadingListModel::RemoveObserver(ReadingListModelObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void DualReadingListModel::RecordCountMetricsOnUMAUpload() const {
+  local_or_syncable_model_->RecordCountMetricsOnUMAUpload();
+  account_model_->RecordCountMetricsOnUMAUpload();
+}
+
 void DualReadingListModel::ReadingListModelBeganBatchUpdates(
     const ReadingListModel* model) {
   DCHECK(!suppress_observer_notifications_);

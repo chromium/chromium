@@ -10254,21 +10254,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ReadingList.{ReadStatus}.Count.{Variation}" units="count"
-    expires_after="2022-11-20">
+<histogram name="ReadingList.{ReadStatus}.Count.{RecordedAt}.{StorageState}"
+    units="count" expires_after="2024-06-20">
   <owner>corising@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <owner>mmrashad@google.com</owner>
+  <owner>treib@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
-    The number of {ReadStatus} items in the reading list. Recorded {Variation}.
+    The number of {ReadStatus} items in the reading list {StorageState}.
+    Recorded {RecordedAt}.
   </summary>
   <token key="ReadStatus">
     <variant name="Read" summary="read"/>
     <variant name="Unread" summary="unread"/>
   </token>
-  <token key="Variation">
+  <token key="RecordedAt">
     <variant name="OnModelLoaded"
         summary="when the reading list model is loaded"/>
     <variant name="OnUMAUpload" summary="every UMA upload"/>
+  </token>
+  <token key="StorageState">
+    <variant name="AccountStorage" summary="in account storage"/>
+    <variant name="LocalStorage" summary="in local storage"/>
+    <variant name="LocalStorageSyncing"
+        summary="in local storage which is being synced"/>
   </token>
 </histogram>
 
