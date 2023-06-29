@@ -1340,6 +1340,10 @@ bool AppMenuModel::IsCommandIdAlerted(int command_id) const {
     return alert_item_ == AlertMenuItem::kPerformance;
   }
 
+  if (command_id == IDC_VIEW_PASSWORDS) {
+    return alert_item_ == AlertMenuItem::kPasswordManager;
+  }
+
   return false;
 }
 
