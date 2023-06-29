@@ -36,6 +36,7 @@ class PriceTrackingView : public commerce::SubscriptionsObserver,
 
  private:
   friend class PriceTrackingViewTest;
+  friend class PriceTrackingViewTestBase;
 
   std::u16string GetToggleAccessibleName();
   void OnToggleButtonPressed(const GURL& url);

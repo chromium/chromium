@@ -107,8 +107,9 @@
       Get email alerts if the price drops on any site
     </message>
     <message name="IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION_EMAIL_OFF" desc="The description text for the dialog that is shown when a user clicks the bookmark star icon on a product web page. We use this text only if the email notification is currently turned off by the user. It describes what will happen when price tracking is initiated.">
-      Track prices across multiple sites
+      View price drops in the side panel
     </message>
+
 
     <message name="IDS_BOOKMARKS_MANAGER_TRACKED_PRODUCTS" desc="Text shown for a product-specific bookmarks folder in the bookmarks manager. User can click this item to view their tracked product.">
       Tracked products

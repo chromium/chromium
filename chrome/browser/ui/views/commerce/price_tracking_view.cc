@@ -120,11 +120,26 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
                                           : views::style::STYLE_PRIMARY));
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label->SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
+
   // Body label
   int body_string_id = IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION;
-  if (profile_ && commerce::IsEmailDisabledByUser(profile_->GetPrefs())) {
+
+  // If "track by default" is enabled, the email consent comes after enabling
+  // price tracking for the first time, so it doesn't need to be included in the
+  // "email disabled" state. If we're not in the experiment, only show the
+  // "email disabled" message if it is explicitly disabled (it's turned on
+  // implicitly on when the first item is tracked).
+  bool email_pref_set_by_user =
+      commerce::IsEmailNotificationPrefSetByUser(profile_->GetPrefs());
+  bool email_pref_value =
+      commerce::GetEmailNotificationPrefValue(profile_->GetPrefs());
+
+  if ((base::FeatureList::IsEnabled(commerce::kShoppingListTrackByDefault) &&
+       !email_pref_set_by_user) ||
+      (email_pref_set_by_user && !email_pref_value)) {
     body_string_id = IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION_EMAIL_OFF;
   }
+
   body_label_ = text_container->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(body_string_id), label_context,
       views::style::STYLE_SECONDARY));

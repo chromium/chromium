@@ -414,16 +414,14 @@ void MaybeEnableEmailNotifications(PrefService* pref_service) {
   }
 }
 
-bool IsEmailDisabledByUser(PrefService* pref_service) {
-  if (pref_service) {
-    const PrefService::Preference* email_pref =
-        pref_service->FindPreference(kPriceEmailNotificationsEnabled);
-    if (email_pref && !email_pref->IsDefaultValue() &&
-        !email_pref->GetValue()->GetBool()) {
-      return true;
-    }
-  }
-  return false;
+bool GetEmailNotificationPrefValue(PrefService* pref_service) {
+  return pref_service &&
+         pref_service->GetBoolean(kPriceEmailNotificationsEnabled);
+}
+
+bool IsEmailNotificationPrefSetByUser(PrefService* pref_service) {
+  return pref_service &&
+         pref_service->HasPrefPath(kPriceEmailNotificationsEnabled);
 }
 
 CommerceSubscription BuildUserSubscriptionForClusterId(uint64_t cluster_id) {
