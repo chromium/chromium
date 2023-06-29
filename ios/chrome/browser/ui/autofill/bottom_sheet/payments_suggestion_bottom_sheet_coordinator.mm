@@ -56,6 +56,7 @@
   self.viewController =
       [[PaymentsSuggestionBottomSheetViewController alloc] init];
   self.mediator.consumer = self.viewController;
+  self.viewController.delegate = self.mediator;
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
                                       completion:nil];

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
 
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_delegate.h"
+
 #import <Foundation/Foundation.h>
 
 namespace autofill {
@@ -17,7 +19,8 @@ class WebStateList;
 // This mediator fetches a list suggestions to display in the bottom sheet.
 // It also manages filling the form when a suggestion is selected, as well
 // as showing the keyboard if requested when the bottom sheet is dismissed.
-@interface PaymentsSuggestionBottomSheetMediator : NSObject
+@interface PaymentsSuggestionBottomSheetMediator
+    : NSObject <PaymentsSuggestionBottomSheetDelegate>
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                  personalDataManager:

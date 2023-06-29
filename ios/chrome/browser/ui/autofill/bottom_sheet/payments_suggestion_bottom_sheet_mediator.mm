@@ -5,13 +5,23 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
+#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
+#import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_data.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -111,6 +121,45 @@
   }
 
   [consumer setCreditCardData:creditCardData];
+}
+
+#pragma mark - PaymentsSuggestionBottomSheetDelegate
+
+- (void)didSelectCreditCard:(const autofill::CreditCard*)creditCard {
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    return;
+  }
+
+  CHECK(creditCard);
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
+
+  FormSuggestionTabHelper* tabHelper =
+      FormSuggestionTabHelper::FromWebState(activeWebState);
+  DCHECK(tabHelper);
+
+  id<FormInputSuggestionsProvider> suggestionsProvider =
+      tabHelper->GetAccessoryViewProvider();
+  DCHECK(suggestionsProvider);
+
+  // Create a form suggestion containing the selected credit card's backend id
+  // so that the suggestion provider can properly fill the form.
+  FormSuggestion* suggestion = [FormSuggestion
+             suggestionWithValue:nil
+              displayDescription:nil
+                            icon:nil
+                     popupItemId:autofill::PopupItemId::kCreditCardEntry
+               backendIdentifier:base::SysUTF8ToNSString(creditCard->guid())
+                  requiresReauth:NO
+      acceptanceA11yAnnouncement:
+          base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
+
+  [suggestionsProvider didSelectSuggestion:suggestion];
+}
+
+- (void)disableBottomSheet {
+  // TODO(crbug.com/1450214): Add code to disable the bottom sheet
 }
 
 #pragma mark - WebStateListObserving
