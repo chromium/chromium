@@ -253,7 +253,11 @@
             $i18n{helpSectionTitle}
           </div>
           <div class="secondary">
-            $i18n{helpSectionDescription}
+            <localized-link id="helpLink" class="secondary"
+                localized-string="$i18n{helpSectionDescription}"
+                link-url="$i18n{printingCUPSPrintLearnMoreUrl}"
+                on-link-clicked="onHelpLinkClicked_">
+            </localized-link>
           </div>
         </div>
       </div>

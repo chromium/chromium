@@ -3178,7 +3178,7 @@ Press an assigned switch or key to remove assignment.
     Don’t see your printer?
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_HELP_SECTION_DESCRIPTION" desc="In CUPS printing settings subpage, this description helps users when trying to connect to a local printer.">
-    Make sure your printer is connected to the same Wi-Fi network as your Chromebook or use a USB cable. Learn more about compatibility.
+    Make sure your printer is connected to the same Wi-Fi network as your Chromebook or use a USB cable. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more about compatibility<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_SHOW_MORE" desc="Text for the button to show more printers when there are more printers than currently displayed to the user.">
     Show more

@@ -161,8 +161,9 @@ suite('CupsPrinterUITests', () => {
         isVisible(page.shadowRoot.querySelector('#collapsibleSection')));
   });
 
-  // Verify clicking the add printer manually button is recorded to metrics.
-  test('RecordUserActionMetric', async () => {
+  // Verify performing various actions on the Printer settings page records to
+  // metrics.
+  test('RecordUserActionMetrics', async () => {
     const fakeMetricsPrivate = new FakeMetricsPrivate();
     chrome.metricsPrivate = fakeMetricsPrivate;
 
@@ -177,6 +178,7 @@ suite('CupsPrinterUITests', () => {
     page.canAddPrinter = true;
 
     await flushTasks();
+    // Click the Add Printer button.
     page.shadowRoot.querySelector('.add-manual-printer-icon').click();
     assertEquals(
         1,

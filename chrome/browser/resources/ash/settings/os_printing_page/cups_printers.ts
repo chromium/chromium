@@ -541,7 +541,7 @@ export class SettingsCupsPrintersElement extends
     return loadTimeData.getStringF(printerLabel, this.enterprisePrinterCount_);
   }
 
-  private toggleClicked_() {
+  private toggleClicked_(): void {
     assert(this.isPrinterSettingsRevampEnabled_);
     this.nearbyPrintersExpanded_ = !this.nearbyPrintersExpanded_;
 
@@ -556,6 +556,10 @@ export class SettingsCupsPrintersElement extends
 
   private getIconDirection_(): string {
     return this.nearbyPrintersExpanded_ ? 'cr:expand-less' : 'cr:expand-more';
+  }
+
+  private onHelpLinkClicked_(): void {
+    recordPrinterSettingsUserAction(PrinterSettingsUserAction.CLICK_HELP_LINK);
   }
 }
 
