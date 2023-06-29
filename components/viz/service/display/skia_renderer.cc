@@ -2850,7 +2850,8 @@ void SkiaRenderer::ScheduleOverlays() {
       // If non-backed solid color overlays aren't supported (e.g. Lacros on
       // Linux) then we need to create buffers to send over Wayland.
       if (!output_surface_->capabilities()
-               .supports_non_backed_solid_color_overlays) {
+               .supports_non_backed_solid_color_overlays &&
+          !output_surface_->capabilities().supports_single_pixel_buffer) {
         overlay.mailbox = GetImageMailboxForColor(*overlay.color);
         // This can now be treated as a regular overlay with a mailbox backing.
         overlay.is_solid_color = false;
@@ -3976,7 +3977,8 @@ void SkiaRenderer::MaybeScheduleBackgroundImage(
 void SkiaRenderer::MaybeDecrementSolidColorBuffers(
     std::vector<OverlayLock>& finished_locks) {
   if (output_surface_->capabilities()
-          .supports_non_backed_solid_color_overlays) {
+          .supports_non_backed_solid_color_overlays ||
+      output_surface_->capabilities().supports_single_pixel_buffer) {
     return;
   }
   for (auto& lock : finished_locks) {

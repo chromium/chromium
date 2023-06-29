@@ -35,6 +35,7 @@
 #include "ui/ozone/platform/wayland/host/org_kde_kwin_idle.h"
 #include "ui/ozone/platform/wayland/host/overlay_prioritizer.h"
 #include "ui/ozone/platform/wayland/host/proxy/wayland_proxy_impl.h"
+#include "ui/ozone/platform/wayland/host/single_pixel_buffer.h"
 #include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
@@ -142,6 +143,8 @@ bool WaylandConnection::Initialize() {
                               &OrgKdeKwinIdle::Instantiate);
   RegisterGlobalObjectFactory(OverlayPrioritizer::kInterfaceName,
                               &OverlayPrioritizer::Instantiate);
+  RegisterGlobalObjectFactory(SinglePixelBuffer::kInterfaceName,
+                              &SinglePixelBuffer::Instantiate);
   RegisterGlobalObjectFactory(SurfaceAugmenter::kInterfaceName,
                               &SurfaceAugmenter::Instantiate);
   RegisterGlobalObjectFactory(WaylandZAuraOutputManager::kInterfaceName,

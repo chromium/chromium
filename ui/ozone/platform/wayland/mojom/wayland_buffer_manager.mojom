@@ -71,6 +71,15 @@ interface WaylandBufferManagerHost {
                          skia.mojom.SkColor4f color,
                          uint32 buffer_id);
 
+  // Creates a browser side single pixel wl_buffer that is cleared to a given
+  // |color| on the Wayland compositor side without any performance penalties
+  // compared to creation of dmabuf/shm backed buffers cleared to a certain
+  // color. |color| is a requested color. And |buffer_id| is a unique id for
+  // the buffer, which is used to identify imported wl_buffers on the browser
+  // process side and map them with the buffer objects on the gpu process side.
+  CreateSinglePixelBuffer(skia.mojom.SkColor4f color,
+                          uint32 buffer_id);
+
   // These two methods are independent from the type of rendering.
   //
   // Destroys a wl_buffer created by WaylandConnection based on the |buffer_id|.
@@ -116,7 +125,8 @@ interface WaylandBufferManagerGpu {
              bool supports_viewporter,
              bool supports_acquire_fence,
              bool supports_overlays,
-             uint32 supported_surface_augmentor_version);
+             uint32 supported_surface_augmentor_version,
+             bool supports_single_pixel_buffer);
 
   // Signals about swap completion and presentation.
   OnSubmission(gfx.mojom.AcceleratedWidget widget,

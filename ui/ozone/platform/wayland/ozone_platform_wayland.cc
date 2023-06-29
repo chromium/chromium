@@ -348,6 +348,9 @@ class OzonePlatformWayland : public OzonePlatform,
           connection_->ShouldUseOverlayDelegation() &&
           connection_->buffer_manager_host()
               ->SupportsNonBackedSolidColorBuffers();
+      properties.supports_single_pixel_buffer =
+          ui::IsWaylandOverlayDelegationEnabled() &&
+          connection_->buffer_manager_host()->SupportsSinglePixelBuffer();
       // Primary planes can be transluscent due to underlay strategy. As a
       // result Wayland server draws contents occluded by an accelerated widget.
       // To prevent this, an opaque background image is stacked below the
@@ -379,6 +382,9 @@ class OzonePlatformWayland : public OzonePlatform,
       properties.supports_non_backed_solid_color_buffers =
           buffer_manager_->supports_overlays() &&
           buffer_manager_->supports_non_backed_solid_color_buffers();
+      properties.supports_single_pixel_buffer =
+          ui::IsWaylandOverlayDelegationEnabled() &&
+          buffer_manager_->supports_single_pixel_buffer();
       // See the comment above.
       properties.needs_background_image =
           buffer_manager_->supports_overlays() &&

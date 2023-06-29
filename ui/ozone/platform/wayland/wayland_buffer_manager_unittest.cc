@@ -135,7 +135,8 @@ class WaylandBufferManagerTest : public WaylandTest {
                                     /*supports_viewporter=*/true,
                                     /*supports_acquire_fence=*/false,
                                     /*supports_overlays=*/true,
-                                    kAugmentedSurfaceNotSupportedVersion);
+                                    kAugmentedSurfaceNotSupportedVersion,
+                                    /*supports_single_pixel_buffer=*/true);
     surface_id_ = window_->root_surface()->get_surface_id();
   }
 
@@ -213,7 +214,8 @@ class WaylandBufferManagerTest : public WaylandTest {
                     /*supports_viewporter=*/true,
                     /*supports_acquire_fence=*/false,
                     /*supports_overlays=*/true,
-                    kAugmentedSurfaceNotSupportedVersion);
+                    kAugmentedSurfaceNotSupportedVersion,
+                    /*supports_single_pixel_buffer=*/true);
               }));
     }
   }
@@ -2511,7 +2513,8 @@ TEST_P(WaylandBufferManagerTest,
                                   /*supports_viewporter=*/true,
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
-                                  kAugmentedSurfaceNotSupportedVersion);
+                                  kAugmentedSurfaceNotSupportedVersion,
+                                  /*supports_single_pixel_buffer=*/true);
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     EXPECT_CALL(*server->zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(1);
@@ -2630,7 +2633,8 @@ TEST_P(WaylandBufferManagerTest, HidesSubsurfacesOnChannelDestroyed) {
                                   /*supports_viewporter=*/true,
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
-                                  kAugmentedSurfaceNotSupportedVersion);
+                                  kAugmentedSurfaceNotSupportedVersion,
+                                  /*supports_single_pixel_buffer=*/true);
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     // Now, create only one buffer and attach that to the root surface. The
@@ -2969,7 +2973,8 @@ TEST_P(WaylandBufferManagerTest, ExecutesTasksAfterInitialization) {
                                   /*supports_viewporter=*/true,
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
-                                  kAugmentedSurfaceNotSupportedVersion);
+                                  kAugmentedSurfaceNotSupportedVersion,
+                                  /*supports_single_pixel_buffer=*/true);
 
   base::RunLoop().RunUntilIdle();
 

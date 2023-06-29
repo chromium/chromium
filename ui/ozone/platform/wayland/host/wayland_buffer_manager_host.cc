@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
@@ -21,6 +22,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing_dmabuf.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing_shm.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_backing_single_pixel.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing_solid_color.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
@@ -100,6 +102,10 @@ bool WaylandBufferManagerHost::SupportsNonBackedSolidColorBuffers() const {
 
 bool WaylandBufferManagerHost::SupportsOverlays() const {
   return connection_->ShouldUseOverlayDelegation();
+}
+
+bool WaylandBufferManagerHost::SupportsSinglePixelBuffer() const {
+  return !!connection_->single_pixel_buffer();
 }
 
 uint32_t WaylandBufferManagerHost::GetSurfaceAugmentorVersion() const {
@@ -216,6 +222,46 @@ void WaylandBufferManagerHost::CreateSolidColorBuffer(const gfx::Size& size,
   auto result = buffer_backings_.emplace(
       buffer_id, std::make_unique<WaylandBufferBackingSolidColor>(
                      connection_, color, size, buffer_id));
+
+  if (!result.second) {
+    error_message_ = base::StrCat(
+        {"A buffer with id= ", NumberToString(buffer_id), " already exists"});
+    TerminateGpuProcess();
+    return;
+  }
+
+  auto* backing = result.first->second.get();
+  backing->EnsureBufferHandle();
+}
+
+void WaylandBufferManagerHost::CreateSinglePixelBuffer(const SkColor4f& color,
+                                                       uint32_t buffer_id) {
+  DCHECK(base::CurrentUIThread::IsSet());
+  DCHECK(error_message_.empty());
+  TRACE_EVENT1("wayland", "WaylandBufferManagerHost::CreateSinglePixelBuffer",
+               "Buffer id", buffer_id);
+
+  const gfx::Size size = gfx::Size(1, 1);
+
+  // Validate data and create a buffer associated with the |buffer_id|.
+  if (!ValidateDataFromGpu(size, buffer_id)) {
+    TerminateGpuProcess();
+    return;
+  }
+
+  // OzonePlatform::PlatformInitProperties has a control variable that tells
+  // viz to create a backing single pixel buffers if the protocol is not
+  // available. But in order to avoid a missusage of that variable and this
+  // method (malformed requests), explicitly terminate the gpu.
+  if (!connection_->single_pixel_buffer()) {
+    error_message_ = "Single pixel buffer protocol is not available.";
+    TerminateGpuProcess();
+    return;
+  }
+
+  auto result = buffer_backings_.emplace(
+      buffer_id, std::make_unique<WaylandBufferBackingSinglePixel>(
+                     connection_, color, buffer_id));
 
   if (!result.second) {
     error_message_ = base::StrCat(
