@@ -44,6 +44,15 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
     virtual bool HandleKeyboardEvent(
         content::WebContents* source,
         const content::NativeWebKeyboardEvent& event);
+    virtual bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                                   const content::ContextMenuParams& params);
+    virtual void RequestMediaAccessPermission(
+        content::WebContents* web_contents,
+        const content::MediaStreamRequest& request,
+        content::MediaResponseCallback callback) {}
+    virtual content::WebContents* OpenURLFromTab(
+        content::WebContents* source,
+        const content::OpenURLParams& params);
   };
 
   BubbleContentsWrapper(const GURL& webui_url,
@@ -67,6 +76,13 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
   std::unique_ptr<content::EyeDropper> OpenEyeDropper(
       content::RenderFrameHost* frame,
       content::EyeDropperListener* listener) override;
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params) override;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
