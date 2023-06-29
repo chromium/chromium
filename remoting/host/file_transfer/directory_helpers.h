@@ -16,6 +16,8 @@ namespace remoting {
 // called.
 protocol::FileTransferResult<base::FilePath> GetFileUploadDirectory();
 
+void SetFileUploadDirectoryForTesting(base::FilePath dir);
+
 }  // namespace remoting
 
 #endif  // REMOTING_HOST_FILE_TRANSFER_DIRECTORY_HELPERS_H_

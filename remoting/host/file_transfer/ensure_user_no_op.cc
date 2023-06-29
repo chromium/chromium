@@ -10,4 +10,8 @@ protocol::FileTransferResult<absl::monostate> EnsureUserContext() {
   return kSuccessTag;
 }
 
+void DisableUserContextCheckForTesting() {
+  // Nothing to do here since user checking is already a no-op.
+}
+
 }  // namespace remoting

@@ -11,6 +11,8 @@
 #include "base/path_service.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
+#include "remoting/host/file_transfer/directory_helpers.h"
+#include "remoting/host/file_transfer/ensure_user.h"
 #include "remoting/host/file_transfer/fake_file_chooser.h"
 #include "remoting/host/file_transfer/test_byte_vector_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,7 +83,10 @@ LocalFileOperationsTest::LocalFileOperationsTest()
       file_operations_(std::make_unique<LocalFileOperations>(
           task_environment_.GetMainThreadTaskRunner())) {}
 
-void LocalFileOperationsTest::SetUp() {}
+void LocalFileOperationsTest::SetUp() {
+  DisableUserContextCheckForTesting();
+  SetFileUploadDirectoryForTesting(TestDir());
+}
 
 void LocalFileOperationsTest::TearDown() {}
 
