@@ -121,7 +121,7 @@ export async function initMetrics(): Promise<void> {
   const isTestImage = loadTimeData.getIsTestImage();
   const gaHelper = await getGaHelper();
 
-  async function initGa() {
+  function initGa() {
     const baseDimensions = new Map([
       [GaMetricDimension.BOARD, board],
       [GaMetricDimension.IS_TEST_IMAGE, boolToIntString(isTestImage)],
@@ -140,7 +140,7 @@ export async function initMetrics(): Promise<void> {
         Comlink.proxy(setClientId));
   }
 
-  async function initGa4() {
+  function initGa4() {
     const baseParams = {
       [Ga4MetricDimension.BOARD]: board,
       [Ga4MetricDimension.IS_TEST_IMAGE]: boolToIntString(isTestImage),
