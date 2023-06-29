@@ -22,6 +22,28 @@
 
 namespace blink {
 
+const NGLayoutResult& NGBoxFragmentBuilder::LayoutResultForPropagation(
+    const NGLayoutResult& layout_result) const {
+  if (layout_result.Status() != NGLayoutResult::kSuccess) {
+    return layout_result;
+  }
+  const auto& fragment = layout_result.PhysicalFragment();
+  if (fragment.IsBox()) {
+    return layout_result;
+  }
+
+  const NGPhysicalLineBoxFragment* line =
+      DynamicTo<NGPhysicalLineBoxFragment>(&fragment);
+  if (!line || !line->IsBlockInInline() || !items_builder_) {
+    return layout_result;
+  }
+
+  const NGLogicalLineItems& line_items =
+      items_builder_->LogicalLineItems(*line);
+  DCHECK(line_items.BlockInInlineLayoutResult());
+  return *line_items.BlockInInlineLayoutResult();
+}
+
 void NGBoxFragmentBuilder::AddBreakBeforeChild(
     NGLayoutInputNode child,
     absl::optional<NGBreakAppeal> appeal,

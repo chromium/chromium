@@ -2066,8 +2066,16 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
           has_processed_first_child_ ||
           (!container_builder_.IsPushedByFloats() &&
            (layout_result->IsPushedByFloats() || is_line_box_pushed_by_floats));
+
+      // If this is a line with a block-in-inline, use the result for the
+      // block-in-inline instead of that for the line. That's where we find the
+      // relevant info for block fragmentation considerations, including the
+      // block break token, if any.
+      const NGLayoutResult& layout_result_to_use =
+          container_builder_.LayoutResultForPropagation(*layout_result);
+
       NGBreakStatus break_status = BreakBeforeChildIfNeeded(
-          child, *layout_result, previous_inflow_position,
+          child, layout_result_to_use, previous_inflow_position,
           line_box_bfc_block_offset.value_or(*child_bfc_block_offset),
           has_container_separation);
       if (break_status == NGBreakStatus::kBrokeBefore)
