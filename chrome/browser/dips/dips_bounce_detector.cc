@@ -354,7 +354,7 @@ void DIPSWebContentsObserver::ReportRedirectorsWithoutInteraction(
   }
 
   dips_service_->storage()
-      ->AsyncCall(&DIPSStorage::FilterSitesWithoutInteraction)
+      ->AsyncCall(&DIPSStorage::FilterSitesWithoutInteractionOrWaa)
       .WithArgs(sites)
       .Then(issue_reporting_callback_);
 }
@@ -376,7 +376,9 @@ void DIPSWebContentsObserver::RecordEvent(DIPSRecordedEvent event,
       return;
     }
     case DIPSRecordedEvent::kWebAuthnAssertion: {
-      // TODO(crbug.com/1446678): Record this events in a dedicated db column.
+      dips_service_->storage()
+          ->AsyncCall(&DIPSStorage::RecordWebAuthnAssertion)
+          .WithArgs(url, time, dips_service_->GetCookieMode());
       return;
     }
   }

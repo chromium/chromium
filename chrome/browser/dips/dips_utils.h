@@ -145,13 +145,16 @@ struct StateValue {
   TimestampRange user_interaction_times;
   TimestampRange stateful_bounce_times;
   TimestampRange bounce_times;
+  TimestampRange web_authn_assertion_times;
 };
 
 inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
   return std::tie(lhs.site_storage_times, lhs.user_interaction_times,
-                  lhs.stateful_bounce_times, lhs.bounce_times) ==
+                  lhs.stateful_bounce_times, lhs.bounce_times,
+                  lhs.web_authn_assertion_times) ==
          std::tie(rhs.site_storage_times, rhs.user_interaction_times,
-                  rhs.stateful_bounce_times, rhs.bounce_times);
+                  rhs.stateful_bounce_times, rhs.bounce_times,
+                  rhs.web_authn_assertion_times);
 }
 
 enum class DIPSTriggeringAction { kNone, kStorage, kBounce, kStatefulBounce };

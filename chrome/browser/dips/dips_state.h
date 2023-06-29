@@ -62,11 +62,15 @@ class DIPSState {
     return state_.stateful_bounce_times;
   }
   TimestampRange bounce_times() const { return state_.bounce_times; }
+  TimestampRange web_authn_assertion_times() const {
+    return state_.web_authn_assertion_times;
+  }
 
   void update_site_storage_time(base::Time time);
   void update_user_interaction_time(base::Time time);
   void update_stateful_bounce_time(base::Time time);
   void update_bounce_time(base::Time time);
+  void update_web_authn_assertion_time(base::Time time);
   StateValue ToStateValue() const { return state_; }
 
  private:

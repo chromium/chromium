@@ -32,12 +32,15 @@ const base::FeatureParam<base::TimeDelta> kGracePeriod{
 const base::FeatureParam<base::TimeDelta> kTimerDelay{&kFeature, "timer_delay",
                                                       base::Hours(1)};
 
-// Set how long DIPS maintains an interaction for a site.
+// Sets how long DIPS maintains interactions and Web Authn Assertions (WAA) for
+// a site.
 //
-// If a site in the DIPS  database has an interaction within the grace period a
-// DIPS-triggering action, then that action and all ensuing actions are
-// protected from DIPS clearing until the interaction "expires" as set by this
-// param.
+// If a site in the DIPS database has an interaction or WAA within the grace
+// period a DIPS-triggering action, then that action and all ensuing actions are
+// protected from DIPS clearing until the interaction and WAA "expire" as set
+// by this param.
+// NOTE: Updating this param name (to reflect WAA) is deemed unnecessary as far
+// as readability is concerned.
 const base::FeatureParam<base::TimeDelta> kInteractionTtl{
     &kFeature, "interaction_ttl", base::Days(45)};
 

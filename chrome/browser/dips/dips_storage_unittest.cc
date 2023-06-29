@@ -293,29 +293,35 @@ TEST_F(DIPSStorageTest, NewURL) {
   EXPECT_FALSE(state.was_loaded());
   EXPECT_FALSE(state.site_storage_times().has_value());
   EXPECT_FALSE(state.user_interaction_times().has_value());
+  EXPECT_FALSE(state.web_authn_assertion_times().has_value());
 }
 
 TEST_F(DIPSStorageTest, SetValues) {
   GURL url("https://example.com");
   auto time1 = base::Time::FromDoubleT(1);
   auto time2 = base::Time::FromDoubleT(2);
+  auto time3 = base::Time::FromDoubleT(3);
 
   {
     DIPSState state = storage_.Read(url);
     state.update_site_storage_time(time1);
     state.update_user_interaction_time(time2);
+    state.update_web_authn_assertion_time(time3);
 
     // Before flushing `state`, reads for the same URL won't include its
     // changes.
     DIPSState state2 = storage_.Read(url);
     EXPECT_FALSE(state2.site_storage_times().has_value());
     EXPECT_FALSE(state2.user_interaction_times().has_value());
+    EXPECT_FALSE(state2.web_authn_assertion_times().has_value());
   }
 
   DIPSState state = storage_.Read(url);
   EXPECT_TRUE(state.was_loaded());
   EXPECT_EQ(state.site_storage_times()->first, absl::make_optional(time1));
   EXPECT_EQ(state.user_interaction_times()->first, absl::make_optional(time2));
+  EXPECT_EQ(state.web_authn_assertion_times()->first,
+            absl::make_optional(time3));
 }
 
 TEST_F(DIPSStorageTest, SameSiteSameState) {

@@ -39,7 +39,7 @@ class DIPSStorage {
   // Delete all DB rows for |sites|.
   void RemoveRows(const std::vector<std::string>& sites);
   // Delete all DB rows for |sites| without eligible user interactions.
-  void RemoveRowsWithoutInteraction(const std::set<std::string>& sites);
+  void RemoveRowsWithoutInteractionOrWaa(const std::set<std::string>& sites);
 
   // DIPS Helper Method Impls --------------------------------------------------
 
@@ -47,14 +47,18 @@ class DIPSStorage {
   void RecordStorage(const GURL& url, base::Time time, DIPSCookieMode mode);
   // Record that the user interacted on |url|.
   void RecordInteraction(const GURL& url, base::Time time, DIPSCookieMode mode);
+  void RecordWebAuthnAssertion(const GURL& url,
+                               base::Time time,
+                               DIPSCookieMode mode);
   // Record that |url| redirected the user and whether it was |stateful|,
   // meaning that |url| wrote to storage while redirecting.
   void RecordBounce(const GURL& url, base::Time time, bool stateful);
 
   // Storage querying Methods --------------------------------------------------
 
-  // Returns the subset of sites in |sites| WITHOUT user interaction recorded.
-  std::set<std::string> FilterSitesWithoutInteraction(
+  // Returns the subset of sites in |sites| WITHOUT user interaction or
+  // successful web authn assertion recorded.
+  std::set<std::string> FilterSitesWithoutInteractionOrWaa(
       std::set<std::string> sites) const;
 
   // Returns all sites that did a bounce that aren't protected from DIPS.
