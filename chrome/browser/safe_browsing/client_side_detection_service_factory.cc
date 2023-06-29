@@ -43,9 +43,6 @@ ClientSideDetectionServiceFactory::ClientSideDetectionServiceFactory()
           "ClientSideDetectionService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
               // ChromeOS creates various profiles (login, lock screen...) that
               // do not display web content and thus do not need the
               // client side phishing detection
@@ -72,6 +69,15 @@ KeyedService* ClientSideDetectionServiceFactory::BuildServiceInstanceFor(
   return new ClientSideDetectionService(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile),
       opt_guide, background_task_runner);
+}
+
+bool ClientSideDetectionServiceFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return true;
+}
+
+bool ClientSideDetectionServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
 }
 
 }  // namespace safe_browsing

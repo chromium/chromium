@@ -352,6 +352,7 @@
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
+#include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #include "chrome/browser/safe_browsing/hash_realtime_service_factory.h"
@@ -960,6 +961,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   safe_browsing::AdvancedProtectionStatusManagerFactory::GetInstance();
   safe_browsing::ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetInstance();
+  safe_browsing::ClientSideDetectionServiceFactory::GetInstance();
   safe_browsing::CloudBinaryUploadServiceFactory::GetInstance();
   safe_browsing::ExtensionTelemetryServiceFactory::GetInstance();
   safe_browsing::HashRealTimeServiceFactory::GetInstance();
