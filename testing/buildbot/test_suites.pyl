@@ -6918,12 +6918,12 @@
     'chromeos_brya_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'variants': [
-          'CROS_BRYA_RELEASE_LKGM',
+          'CROS_BRYA_RELEASE_ASH_LKGM',
         ]
       },
       'chromeos_chrome_criticalstaging_tast_tests': {
         'variants': [
-          'CROS_BRYA_RELEASE_LKGM',
+          'CROS_BRYA_RELEASE_ASH_LKGM',
         ]
       },
     },
@@ -6931,7 +6931,7 @@
     'chromeos_jacuzzi_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'variants': [
-          'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM',
+          'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM',
         ]
       },
     },
@@ -6939,7 +6939,7 @@
     'chromeos_kevin_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'variants': [
-          'CROS_KEVIN_RELEASE_CHROME_FROM_TLS_LKGM',
+          'CROS_KEVIN_RELEASE_CHROME_FROM_TLS_ASH_LKGM',
         ]
       },
     },
@@ -6947,7 +6947,7 @@
     'chromeos_octopus_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'variants': [
-          'CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM',
+          'CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS_ASH_LKGM',
         ]
       },
     },
@@ -6955,7 +6955,7 @@
     'chromeos_trogdor_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'variants': [
-          'CROS_TROGDOR_RELEASE_LKGM',
+          'CROS_TROGDOR_RELEASE_ASH_LKGM',
         ]
       },
     },
@@ -6963,7 +6963,7 @@
     'chromeos_volteer_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'variants': [
-          'CROS_VOLTEER_RELEASE_LKGM',
+          'CROS_VOLTEER_RELEASE_ASH_LKGM',
         ]
       },
     },
