@@ -122,6 +122,13 @@ void HistoryQuickProvider::DoAutocomplete() {
 
   add_matches(matches);
 
+  // If ML scoring is enabled, mark all "extra" matches as `culled_by_provider`.
+  // If ML scoring is disabled, this is effectively a no-op as the matches will
+  // already be resized in the above call to `HistoryItemsForTerms()`.
+  ResizeMatches(
+      max_matches,
+      OmniboxFieldTrial::IsMlUrlScoringIncreaseNumCandidatesEnabled());
+
   // Add suggestions from the user's highly visited domains bypassing
   // `provider_max_matches_`.
 

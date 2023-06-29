@@ -201,7 +201,16 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
     std::partial_sort(
         scored_items.begin(), scored_items.begin() + first_pass_size,
         scored_items.end(), ScoredHistoryMatch::MatchScoreGreater);
-    scored_items.resize(first_pass_size);
+
+    // When ML scoring w/increased candidates is enabled, all candidates outside
+    // of some light filtering should be passed to the controller to be
+    // re-scored. Do not discard matches by resizing. These will have a zero
+    // relevance score, so it's ok to not sort anything past `first_pass_size`.
+    bool skip_resize =
+        OmniboxFieldTrial::IsMlUrlScoringIncreaseNumCandidatesEnabled();
+    if (!skip_resize) {
+      scored_items.resize(first_pass_size);
+    }
 
     // Filter unique matches to maximize the use of the `max_matches` capacity.
     // It's possible this'll still end up with duplicates as having unique
@@ -213,8 +222,9 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
       seen_history_ids.insert(scored_item_id);
       return duplicate;
     });
-    if (scored_items.size() > max_matches)
+    if (!skip_resize && scored_items.size() > max_matches) {
       scored_items.resize(max_matches);
+    }
 
   } else {
     std::sort(scored_items.begin(), scored_items.end(),
