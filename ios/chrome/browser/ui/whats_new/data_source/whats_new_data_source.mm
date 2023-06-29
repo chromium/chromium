@@ -48,7 +48,6 @@ NSString* const kDictionaryHeroBannerImageKey = @"HeroBannerImageName";
 NSString* const kDictionaryIconImageKey = @"IconImageName";
 NSString* const kDictionaryBackgroundColorKey = @"IconBackgroundColor";
 NSString* const kDictionaryInstructionsKey = @"InstructionSteps";
-NSString* const kDictionaryHasPrimaryActionKey = @"HasPrimaryAction";
 NSString* const kDictionaryPrimaryActionKey = @"PrimaryActionTitle";
 NSString* const kDictionaryLearnMoreURLKey = @"LearnMoreUrlString";
 
@@ -203,8 +202,10 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
             : GenerateImage(false, hero_banner_image, false);
 
     // Load the entry banner image.
+    NSString* banner_image = entry[kDictionaryBannerImageKey];
     whats_new_item.bannerImage =
-        GenerateImage(false, entry[kDictionaryBannerImageKey], false);
+        [banner_image length] == 0 ? nil
+                                   : GenerateImage(false, banner_image, false);
   }
 
   // Load the entry icon.
@@ -232,10 +233,6 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
   } else {
     whats_new_item.instructionSteps = instructions;
   }
-
-  // Load the entry primary action bool.
-  whats_new_item.hasPrimaryAction =
-      [entry[kDictionaryHasPrimaryActionKey] boolValue];
 
   // Load the entry primary action title.
   NSNumber* primary_action_title =

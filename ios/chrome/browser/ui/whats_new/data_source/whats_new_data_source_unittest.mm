@@ -62,7 +62,6 @@ TEST_F(WhatsNewDataSourceTest, TestConstructionOfWhatsNewItem) {
   EXPECT_TRUE([item.instructionSteps[1]
       isEqualToString:l10n_util::GetNSString(
                           IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_STEP_2)]);
-  EXPECT_EQ(item.hasPrimaryAction, false);
   EXPECT_EQ(item.primaryActionTitle, nil);
 }
 
@@ -102,7 +101,6 @@ TEST_F(WhatsNewDataSourceTest, TestFeatureEntries) {
   EXPECT_TRUE([item.instructionSteps[1]
       isEqualToString:l10n_util::GetNSString(
                           IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_STEP_2)]);
-  EXPECT_EQ(item.hasPrimaryAction, false);
   EXPECT_EQ(item.primaryActionTitle, nil);
 }
 
@@ -128,7 +126,6 @@ TEST_F(WhatsNewDataSourceTest, TestChromeTipEntries) {
   EXPECT_TRUE([item.instructionSteps[1]
       isEqualToString:l10n_util::GetNSString(
                           IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_2)]);
-  EXPECT_EQ(item.hasPrimaryAction, true);
   EXPECT_TRUE([item.primaryActionTitle
       isEqualToString:
           l10n_util::GetNSString(
@@ -179,7 +176,6 @@ TEST_F(WhatsNewDataSourceTest, TestConstructionOfWhatsNewItemM116) {
       isEqualToString:
           l10n_util::GetNSString(
               IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_STEP_3)]);
-  EXPECT_EQ(item.hasPrimaryAction, true);
   EXPECT_TRUE([item.primaryActionTitle
       isEqualToString:l10n_util::GetNSString(
                           IDS_IOS_WHATS_NEW_GOT_TO_SETTINGS_BUTTON_TITLE)]);

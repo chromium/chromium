@@ -24,10 +24,8 @@ class GURL;
                       subtitle:(NSString*)subtitle
             primaryActionTitle:(NSString*)primaryAction
               instructionSteps:(NSArray<NSString*>*)instructionSteps
-              hasPrimaryAction:(BOOL)hasPrimaryAction
                           type:(WhatsNewType)type
                   learnMoreURL:(const GURL&)learnMoreURL
-            hasLearnMoreAction:(BOOL)hasLearnMoreAction
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

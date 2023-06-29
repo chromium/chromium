@@ -66,10 +66,8 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 @property(nonatomic, copy) NSString* subtitleText;
 @property(nonatomic, copy) NSString* primaryActionString;
 @property(nonatomic, copy) NSArray<NSString*>* instructionSteps;
-@property(nonatomic, assign) BOOL hasPrimaryAction;
 @property(nonatomic, assign) WhatsNewType type;
 @property(nonatomic, assign) GURL learnMoreURL;
-@property(nonatomic, assign) BOOL hasLearnMoreAction;
 
 // The navigation bar at the top of the view.
 @property(nonatomic, strong) UINavigationBar* navigationBar;
@@ -83,10 +81,8 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
                       subtitle:(NSString*)subtitle
             primaryActionTitle:(NSString*)primaryAction
               instructionSteps:(NSArray<NSString*>*)instructionSteps
-              hasPrimaryAction:(BOOL)hasPrimaryAction
                           type:(WhatsNewType)type
-                  learnMoreURL:(const GURL&)learnMoreURL
-            hasLearnMoreAction:(BOOL)hasLearnMoreAction {
+                  learnMoreURL:(const GURL&)learnMoreURL {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _bannerImage = image;
@@ -94,10 +90,8 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
     _subtitleText = subtitle;
     _primaryActionString = primaryAction;
     _instructionSteps = instructionSteps;
-    _hasPrimaryAction = hasPrimaryAction;
     _type = type;
     _learnMoreURL = learnMoreURL;
-    _hasLearnMoreAction = hasLearnMoreAction;
   }
   return self;
 }
@@ -132,10 +126,10 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
   actionStackView.alignment = UIStackViewAlignmentFill;
   actionStackView.axis = UILayoutConstraintAxisVertical;
   actionStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  if (self.hasPrimaryAction) {
+  if (self.primaryActionString) {
     [actionStackView addArrangedSubview:self.primaryActionButton];
   }
-  if (self.hasLearnMoreAction) {
+  if (self.learnMoreURL.is_valid()) {
     [actionStackView addArrangedSubview:self.learnMoreActionButton];
   }
 

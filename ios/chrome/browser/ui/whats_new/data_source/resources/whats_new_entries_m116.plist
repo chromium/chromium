@@ -34,8 +34,6 @@
             <string>IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_STEP_2</string>
             <string>IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_STEP_3</string>
             </array>
-            <key>HasPrimaryAction</key>
-            <true/>
             <key>PrimaryActionTitle</key>
             <string>IDS_IOS_WHATS_NEW_GOT_TO_SETTINGS_BUTTON_TITLE</string>
             <key>LearnMoreUrlString</key>
@@ -69,8 +67,6 @@
             <string>IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_STEP_2</string>
             <string>IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_STEP_3</string>
             </array>
-            <key>HasPrimaryAction</key>
-            <true/>
             <key>PrimaryActionTitle</key>
             <string>IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_BUTTON_TITLE</string>
             <key>LearnMoreUrlString</key>
@@ -126,10 +122,6 @@
             <string>IDS_IOS_WHATS_NEW_CALENDAR_STEP_2</string>
             <string>IDS_IOS_WHATS_NEW_CALENDAR_STEP_3</string>
             </array>
-            <key>HasPrimaryAction</key>
-            <false/>
-            <key>PrimaryActionTitle</key>
-            <string></string>
             <key>LearnMoreUrlString</key>
             <string>https://support.google.com/chrome?p=ios_calendar_event</string>
         </dict>
@@ -163,10 +155,6 @@
             <string>IDS_IOS_WHATS_NEW_MINI_MAPS_STEP_2</string>
             <string>IDS_IOS_WHATS_NEW_MINI_MAPS_STEP_3</string>
             </array>
-            <key>HasPrimaryAction</key>
-            <false/>
-            <key>PrimaryActionTitle</key>
-            <string></string>
             <key>LearnMoreUrlString</key>
             <string>https://support.google.com/chrome/?p=ios_mini_maps</string>
         </dict>
@@ -209,10 +197,6 @@
             <string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_STEP_2</string>
             <string>IDS_IOS_WHATS_NEW_CHROME_ACTIONS_STEP_3</string>
             </array>
-            <key>HasPrimaryAction</key>
-            <false/>
-            <key>PrimaryActionTitle</key>
-            <string></string>
             <key>LearnMoreUrlString</key>
             <string>https://support.google.com/chrome/?p=ios_chrome_actions</string>
         </dict>

@@ -29,10 +29,6 @@
             <string>IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_STEP_2</string>
             <string>IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_STEP_3</string>
             </array>
-            <key>HasPrimaryAction</key>
-            <false/>
-            <key>PrimaryActionTitle</key>
-            <string></string>
             <key>LearnMoreUrlString</key>
             <string>https://support.google.com/chrome/?p=bling_use_tabs</string>
         </dict>
@@ -43,8 +39,6 @@
             <string>IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_TITLE</string>
             <key>Subtitle</key>
             <string>IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_SUBTITLE</string>
-            <key>HeroBannerImageName</key>
-            <string></string>
             <key>BannerImageName</key>
             <string>new_overflow_menu_banner</string>
             <key>IconImageName</key>
@@ -60,12 +54,6 @@
             <string>IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_STEP_1</string>
             <string>IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_STEP_2</string>
             </array>
-            <key>HasPrimaryAction</key>
-            <false/>
-            <key>PrimaryActionTitle</key>
-            <string></string>
-            <key>LearnMoreUrlString</key>
-            <string></string>
         </dict>
         <dict>
             <key>Type</key>
@@ -74,8 +62,6 @@
             <string>IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_TITLE</string>
             <key>Subtitle</key>
             <string>IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_SUBTITLE</string>
-            <key>HeroBannerImageName</key>
-            <string></string>
             <key>BannerImageName</key>
             <string>shared_highlighting_banner</string>
             <key>IconImageName</key>
@@ -92,10 +78,6 @@
             <string>IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_STEP_2</string>
             <string>IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_STEP_3</string>
             </array>
-            <key>HasPrimaryAction</key>
-            <false/>
-            <key>PrimaryActionTitle</key>
-            <string></string>
             <key>LearnMoreUrlString</key>
             <string>https://support.google.com/chrome/?p=bling_share_highlight</string>
         </dict>
@@ -106,8 +88,6 @@
             <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_TITLE</string>
             <key>Subtitle</key>
             <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_SUBTITLE</string>
-            <key>HeroBannerImageName</key>
-            <string></string>
             <key>BannerImageName</key>
             <string>add_passwords_manually_banner</string>
             <key>IconImageName</key>
@@ -124,8 +104,6 @@
             <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_STEP_2</string>
             <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_STEP_3</string>
             </array>
-            <key>HasPrimaryAction</key>
-            <true/>
             <key>PrimaryActionTitle</key>
             <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_BUTTON_TITLE</string>
             <key>LearnMoreUrlString</key>
@@ -159,8 +137,6 @@
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_2</string>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_3</string>
             </array>
-            <key>HasPrimaryAction</key>
-            <true/>
             <key>PrimaryActionTitle</key>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_BUTTON_TITLE</string>
             <key>LearnMoreUrlString</key>
@@ -190,8 +166,6 @@
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_1</string>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_2</string>
             </array>
-            <key>HasPrimaryAction</key>
-            <true/>
             <key>PrimaryActionTitle</key>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_BUTTON_TITLE</string>
             <key>LearnMoreUrlString</key>
@@ -222,10 +196,6 @@
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_STEP_2</string>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_STEP_3</string>
             </array>
-            <key>HasPrimaryAction</key>
-            <false/>
-            <key>PrimaryActionTitle</key>
-            <string></string>
             <key>LearnMoreUrlString</key>
             <string>https://support.google.com/chrome/?p=bling_autofill</string>
         </dict>

@@ -48,8 +48,6 @@ class GURL;
 @property(nonatomic, copy) UIColor* backgroundColor;
 // What's New entry instruction steps.
 @property(nonatomic, copy) NSArray<NSString*>* instructionSteps;
-// Whether the What's New entry has a pimiary action button.
-@property(nonatomic, assign) BOOL hasPrimaryAction;
 // Title of the pimiary action button if the What's New entry has one.
 @property(nonatomic, copy) NSString* primaryActionTitle;
 // What's New entry URL to learn more about the feature or chrome tip.

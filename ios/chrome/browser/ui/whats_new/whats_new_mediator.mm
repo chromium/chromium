@@ -78,7 +78,14 @@
       // Handles actions that open Passwords in iOS Settings.
       ios::provider::PasswordsInOtherAppsOpensSettings();
       break;
-    default:
+    case WhatsNewType::kSearchTabs:
+    case WhatsNewType::kNewOverflowMenu:
+    case WhatsNewType::kSharedHighlighting:
+    case WhatsNewType::kAutofill:
+    case WhatsNewType::kCalendarEvent:
+    case WhatsNewType::kMiniMaps:
+    case WhatsNewType::kChromeActions:
+    case WhatsNewType::kError:
       NOTREACHED();
       break;
   };
