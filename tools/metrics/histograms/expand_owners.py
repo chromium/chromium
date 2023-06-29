@@ -10,6 +10,7 @@ import os
 import subprocess
 import sys
 import re
+import xml_utils
 
 _EMAIL_PATTERN = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
 _OWNERS = 'OWNERS'
@@ -368,7 +369,7 @@ def ExpandHistogramsOWNERS(histograms):
     Error: Raised if the OWNERS file with the given path does not exist.
   """
   email_pattern = re.compile(_EMAIL_PATTERN)
-  iter_matches = extract_histograms.IterElementsWithTag
+  iter_matches = xml_utils.IterElementsWithTag
 
   for histogram in iter_matches(histograms, 'histogram'):
     owners = [owner for owner in iter_matches(histogram, 'owner', 1)]
@@ -380,9 +381,9 @@ def ExpandHistogramsOWNERS(histograms):
         if email_pattern.match(owner.childNodes[0].data)])
 
     # component is a DOM Element with a single child, which is a DOM Text Node.
-    components_with_dom_elements = set([
-      extract_histograms.NormalizeString(component.childNodes[0].data)
-      for component in iter_matches(histogram, 'component', 1)])
+    components_with_dom_elements = set(
+        xml_utils.NormalizeString(component.childNodes[0].data)
+        for component in iter_matches(histogram, 'component', 1))
 
     for index, owner in enumerate(owners):
       owner_text = owner.childNodes[0].data.strip()

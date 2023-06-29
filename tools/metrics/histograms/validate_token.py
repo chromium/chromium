@@ -9,7 +9,7 @@ import os
 import sys
 import xml.dom.minidom
 
-import extract_histograms
+import xml_utils
 
 
 def ValidateTokenInFile(xml_path: str) -> bool:
@@ -26,13 +26,13 @@ def ValidateTokenInFile(xml_path: str) -> bool:
   tree: xml.dom.minidom.Document = xml.dom.minidom.parse(xml_path)
   variants: list[str] = []
 
-  for node in extract_histograms.IterElementsWithTag(tree, 'variants', 3):
+  for node in xml_utils.IterElementsWithTag(tree, 'variants', 3):
     variants_name: str = node.getAttribute('name')
     variants.append(variants_name)
 
-  for histogram in extract_histograms.IterElementsWithTag(tree, 'histogram', 3):
+  for histogram in xml_utils.IterElementsWithTag(tree, 'histogram', 3):
     erroneous_tokens: list[str] = []
-    for node in extract_histograms.IterElementsWithTag(histogram, 'token', 1):
+    for node in xml_utils.IterElementsWithTag(histogram, 'token', 1):
       if node.hasAttribute('variants'):
         if node.getAttribute('variants') not in variants:
           erroneous_tokens.append(node.getAttribute('key'))

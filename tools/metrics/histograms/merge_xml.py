@@ -11,10 +11,10 @@ import sys
 import xml.dom.minidom
 
 import expand_owners
-import extract_histograms
 import histogram_configuration_model
 import histogram_paths
 import populate_enums
+import xml_utils
 
 
 def GetElementsByTagName(trees, tag, depth=2):
@@ -28,7 +28,7 @@ def GetElementsByTagName(trees, tag, depth=2):
   Returns:
     A list of DOM nodes with the specified tag.
   """
-  iterator = extract_histograms.IterElementsWithTag
+  iterator = xml_utils.IterElementsWithTag
   return list(e for t in trees for e in iterator(t, tag, depth))
 
 
@@ -203,7 +203,7 @@ def _AddComponentFromMetadataFile(tree, filename):
   if component:
     histograms = tree.getElementsByTagName('histograms')
     if histograms:
-      iter_matches = extract_histograms.IterElementsWithTag
+      iter_matches = xml_utils.IterElementsWithTag
       for histogram in iter_matches(histograms[0], 'histogram'):
         expand_owners.AddHistogramComponent(histogram, component)
   return tree
