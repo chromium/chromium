@@ -213,7 +213,7 @@ public class PageInfoViewTest {
         Tab tab = activity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             new ChromePageInfo(activity.getModalDialogManagerSupplier(), null,
-                    PageInfoController.OpenedFromSource.TOOLBAR, null, null)
+                    PageInfoController.OpenedFromSource.TOOLBAR, null, null, null)
                     .show(tab, ChromePageInfoHighlight.forPermission(highlightedPermission));
         });
         onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
@@ -701,7 +701,7 @@ public class PageInfoViewTest {
                     new ChromePageInfoControllerDelegate(activity, tab.getWebContents(),
                             activity::getModalDialogManager,
                             new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab), null, null,
-                            ChromePageInfoHighlight.noHighlight()) {
+                            ChromePageInfoHighlight.noHighlight(), null) {
                         @Override
                         public boolean isShowingPaintPreviewPage() {
                             return true;

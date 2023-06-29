@@ -156,7 +156,7 @@ public class CustomTabToolbarUnitTest {
         mToolbar.initialize(mToolbarDataProvider, mTabController, mMenuButtonCoordinator,
                 mHistoryDelegate, mPartnerHomepageEnabledSupplier, mOfflineDownloader);
         mLocationBar = (CustomTabLocationBar) mToolbar.createLocationBar(mLocationBarModel,
-                mActionModeCallback, () -> null, () -> null, mControlsVisibleDelegate);
+                mActionModeCallback, () -> null, () -> null, mControlsVisibleDelegate, null);
         mUrlBar = mToolbar.findViewById(R.id.url_bar);
         mTitleBar = mToolbar.findViewById(R.id.title_bar);
         mLocationBar.setAnimDelegateForTesting(mAnimationDelegate);

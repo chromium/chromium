@@ -155,7 +155,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
                         new OfflinePageUtils.WebContentsOfflinePageLoadUrlDelegate(mWebContents),
                         /*storeInfoActionHandlerSupplier=*/null,
                         /*ephemeralTabCoordinatorSupplier=*/null,
-                        ChromePageInfoHighlight.noHighlight()),
+                        ChromePageInfoHighlight.noHighlight(), null),
                 ChromePageInfoHighlight.noHighlight());
     }
 }

@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -283,16 +284,18 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
      * @param controlsVisibilityDelegate {@link BrowserStateBrowserControlsVisibilityDelegate} to
      *         show / hide the browser control. Used to ensure toolbar is shown for a certain
      *         duration.
+     * @param tabCreator {@link TabCreator} to handle a new tab creation.
      * @return The LocationBar implementation for this CustomTabToolbar.
      */
     public LocationBar createLocationBar(LocationBarModel locationBarModel,
             ActionMode.Callback actionModeCallback,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-            BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate) {
+            BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate,
+            TabCreator tabCreator) {
         mLocationBarModel = locationBarModel;
         mLocationBar.init(locationBarModel, modalDialogManagerSupplier,
-                ephemeralTabCoordinatorSupplier, actionModeCallback);
+                ephemeralTabCoordinatorSupplier, tabCreator, actionModeCallback);
         mBrowserControlsVisibilityDelegate = controlsVisibilityDelegate;
         return mLocationBar;
     }
@@ -838,6 +841,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
         private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
         private UrlBarCoordinator mUrlCoordinator;
+        private TabCreator mTabCreator;
 
         private TextView mUrlBar;
         private TextView mTitleBar;
@@ -985,7 +989,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         public void init(LocationBarDataProvider locationBarDataProvider,
                 Supplier<ModalDialogManager> modalDialogManagerSupplier,
                 Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-                ActionMode.Callback actionModeCallback) {
+                TabCreator tabCreator, ActionMode.Callback actionModeCallback) {
             mLocationBarDataProvider = locationBarDataProvider;
             mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
             mLocationBarDataProvider.addObserver(this);
@@ -998,6 +1002,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     this, new NoOpkeyboardVisibilityDelegate(),
                     locationBarDataProvider.isIncognito(),
                     ChromePureJavaExceptionReporter::reportJavaException);
+            mTabCreator = tabCreator;
             updateColors();
             updateSecurityIcon();
             updateProgressBarColors();
@@ -1086,7 +1091,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 new ChromePageInfo(mModalDialogManagerSupplier,
                         TrustedCdn.getContentPublisher(getToolbarDataProvider().getTab()),
                         OpenedFromSource.TOOLBAR, /*storeInfoActionHandlerSupplier=*/null,
-                        mEphemeralTabCoordinatorSupplier)
+                        mEphemeralTabCoordinatorSupplier, mTabCreator)
                         .show(currentTab, ChromePageInfoHighlight.noHighlight());
             });
         }

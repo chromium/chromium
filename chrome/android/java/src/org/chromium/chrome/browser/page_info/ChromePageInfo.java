@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.WebContents;
@@ -30,6 +31,7 @@ public class ChromePageInfo {
     private final @OpenedFromSource int mSource;
     private final @Nullable Supplier<StoreInfoActionHandler> mStoreInfoActionHandlerSupplier;
     private final @Nullable Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    private final @Nullable TabCreator mTabCreator;
 
     /**
      * @param modalDialogManagerSupplier Supplier of modal dialog manager.
@@ -37,16 +39,19 @@ public class ChromePageInfo {
      * @param source the source that triggered the popup.
      * @param storeInfoActionHandlerSupplier Supplier of {@link StoreInfoActionHandler}.
      * @param ephemeralTabCoordinatorSupplier Supplier of {@link EphemeralTabCoordinator}.
+     * @param tabCreator {@link TabCreator} to handle a new tab creation.
      */
     public ChromePageInfo(@NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable String publisher, @OpenedFromSource int source,
             @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier,
-            @Nullable Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier) {
+            @Nullable Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            @Nullable TabCreator tabCreator) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mPublisher = publisher;
         mSource = source;
         mStoreInfoActionHandlerSupplier = storeInfoActionHandlerSupplier;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
+        mTabCreator = tabCreator;
     }
 
     /**
@@ -64,7 +69,7 @@ public class ChromePageInfo {
                         mModalDialogManagerSupplier,
                         new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab),
                         mStoreInfoActionHandlerSupplier, mEphemeralTabCoordinatorSupplier,
-                        pageInfoHighlight),
+                        pageInfoHighlight, mTabCreator),
                 pageInfoHighlight);
     }
 }

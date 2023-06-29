@@ -287,6 +287,22 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     }
 
     /**
+     * @return The current url that this Ephemeral tab is displaying.
+     */
+    @VisibleForTesting
+    public GURL getUrlForTesting() {
+        return mUrl;
+    }
+
+    /**
+     * @return The current full page url that this Ephemeral tab is displaying.
+     */
+    @VisibleForTesting
+    public GURL getFullPageUrlForTesting() {
+        return mFullPageUrl;
+    }
+
+    /**
      * Close the ephemeral tab.
      */
     public void close() {

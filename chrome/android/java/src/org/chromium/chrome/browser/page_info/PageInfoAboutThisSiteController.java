@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTa
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.page_info.PageInfoAction;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
@@ -51,8 +51,8 @@ public class PageInfoAboutThisSiteController {
     private final PageInfoControllerDelegate mDelegate;
     private final WebContents mWebContents;
     private @Nullable SiteInfo mSiteInfo;
-
     private EphemeralTabObserver mEphemeralTabObserver;
+    private final TabCreator mTabCreator;
 
     static boolean isFeatureEnabled() {
         return PageInfoAboutThisSiteControllerJni.get().isFeatureEnabled();
@@ -60,12 +60,14 @@ public class PageInfoAboutThisSiteController {
 
     public PageInfoAboutThisSiteController(PageInfoMainController mainController,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-            PageInfoRowView rowView, PageInfoControllerDelegate delegate, WebContents webContents) {
+            PageInfoRowView rowView, PageInfoControllerDelegate delegate, WebContents webContents,
+            TabCreator tabCreator) {
         mMainController = mainController;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mRowView = rowView;
         mDelegate = delegate;
         mWebContents = webContents;
+        mTabCreator = tabCreator;
         setupRow();
     }
 
@@ -137,9 +139,8 @@ public class PageInfoAboutThisSiteController {
     }
 
     private void openInNewTab(String url) {
-        new TabDelegate(/*incognito=*/false)
-                .createNewTab(new LoadUrlParams(url, PageTransition.LINK), TabLaunchType.FROM_LINK,
-                        TabUtils.fromWebContents(mWebContents));
+        mTabCreator.createNewTab(new LoadUrlParams(url, PageTransition.LINK),
+                TabLaunchType.FROM_LINK, TabUtils.fromWebContents(mWebContents));
     }
 
     private void setupRow() {

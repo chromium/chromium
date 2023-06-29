@@ -77,7 +77,7 @@ public class PageInfoViewDarkModeTest {
         Tab tab = activity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             new ChromePageInfo(activity.getModalDialogManagerSupplier(), null,
-                    OpenedFromSource.TOOLBAR, null, null)
+                    OpenedFromSource.TOOLBAR, null, null, null)
                     .show(tab, ChromePageInfoHighlight.noHighlight());
         });
         onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));

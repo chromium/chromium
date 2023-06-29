@@ -245,7 +245,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             String publisher = TrustedCdn.getContentPublisher(tab);
             new ChromePageInfo(getModalDialogManagerSupplier(), publisher, OpenedFromSource.MENU,
                     mRootUiCoordinator.getMerchantTrustSignalsCoordinatorSupplier()::get,
-                    mRootUiCoordinator.getEphemeralTabCoordinatorSupplier())
+                    mRootUiCoordinator.getEphemeralTabCoordinatorSupplier(),
+                    getTabCreator(getCurrentTabModel().isIncognito()))
                     .show(tab, ChromePageInfoHighlight.noHighlight());
             return true;
         } else if (id == R.id.page_insights_id) {
