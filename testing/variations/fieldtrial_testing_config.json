@@ -7125,7 +7125,7 @@
             ]
         }
     ],
-    "IOSFeedSyncPromoFastFollows": [
+    "IOSFeedSyncPromo": [
         {
             "platforms": [
                 "ios"
@@ -7134,7 +7134,7 @@
                 {
                     "name": "Launched_Vertical_6Impressions",
                     "params": {
-                        "DiscoverFeedTopSyncPromoStyle": "3",
+                        "DiscoverFeedTopSyncPromoStyle": "2",
                         "autodismissImpressions": "6"
                     },
                     "enable_features": [
