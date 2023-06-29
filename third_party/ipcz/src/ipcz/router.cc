@@ -262,9 +262,8 @@ bool Router::AcceptInboundParcel(const OperationContext& context,
         // Only notify traps if the new parcel is actually available for
         // reading, which may not be the case if some preceding parcels have yet
         // to be received.
-        traps_.NotifyNewLocalParcel(
-            context, status_flags_, inbound_parcels_.GetNumAvailableElements(),
-            inbound_parcels_.GetTotalAvailableElementSize(), dispatcher);
+        traps_.NotifyNewLocalParcel(context, status_flags_, inbound_parcels_,
+                                    dispatcher);
       }
     }
   }
@@ -319,7 +318,8 @@ bool Router::AcceptRouteClosureFrom(const OperationContext& context,
           status_flags_ |=
               IPCZ_PORTAL_STATUS_PEER_CLOSED | IPCZ_PORTAL_STATUS_DEAD;
         }
-        traps_.NotifyPeerClosed(context, status_flags_, dispatcher);
+        traps_.NotifyPeerClosed(context, status_flags_, inbound_parcels_,
+                                dispatcher);
       }
     } else if (link_type.is_peripheral_inward()) {
       if (!outbound_parcels_.SetFinalSequenceLength(sequence_length)) {
@@ -373,7 +373,8 @@ bool Router::AcceptRouteDisconnectedFrom(const OperationContext& context,
         status_flags_ |=
             IPCZ_PORTAL_STATUS_PEER_CLOSED | IPCZ_PORTAL_STATUS_DEAD;
       }
-      traps_.NotifyPeerClosed(context, status_flags_, dispatcher);
+      traps_.NotifyPeerClosed(context, status_flags_, inbound_parcels_,
+                              dispatcher);
     }
   }
 
@@ -557,9 +558,8 @@ IpczResult Router::Get(IpczGetFlags flags,
     if (inbound_parcels_.IsSequenceFullyConsumed()) {
       status_flags_ |= IPCZ_PORTAL_STATUS_PEER_CLOSED | IPCZ_PORTAL_STATUS_DEAD;
     }
-    traps_.NotifyLocalParcelConsumed(
-        context, status_flags_, inbound_parcels_.GetNumAvailableElements(),
-        inbound_parcels_.GetTotalAvailableElementSize(), dispatcher);
+    traps_.NotifyLocalParcelConsumed(context, status_flags_, inbound_parcels_,
+                                     dispatcher);
   }
 
   if (parcel) {
@@ -679,9 +679,7 @@ IpczResult Router::Trap(const IpczTrapConditions& conditions,
                         IpczPortalStatus* status) {
   absl::MutexLock lock(&mutex_);
   return traps_.Add(conditions, handler, context, status_flags_,
-                    inbound_parcels_.GetNumAvailableElements(),
-                    inbound_parcels_.GetTotalAvailableElementSize(),
-                    satisfied_condition_flags, status);
+                    inbound_parcels_, satisfied_condition_flags, status);
 }
 
 IpczResult Router::MergeRoute(const Ref<Router>& other) {
@@ -1512,7 +1510,8 @@ void Router::Flush(const OperationContext& context, FlushBehavior behavior) {
       // the peer is actually closed and there are no more inbound parcels in
       // flight towards us.
       status_flags_ |= IPCZ_PORTAL_STATUS_PEER_CLOSED;
-      traps_.NotifyPeerClosed(context, status_flags_, dispatcher);
+      traps_.NotifyPeerClosed(context, status_flags_, inbound_parcels_,
+                              dispatcher);
     }
 
     // If we're dropping the last of our decaying links, our outward link may
@@ -2170,9 +2169,8 @@ void Router::DiscardNextInboundParcel(const OperationContext& context,
   if (inbound_parcels_.IsSequenceFullyConsumed()) {
     status_flags_ |= IPCZ_PORTAL_STATUS_PEER_CLOSED | IPCZ_PORTAL_STATUS_DEAD;
   }
-  traps_.NotifyLocalParcelConsumed(
-      context, status_flags_, inbound_parcels_.GetNumAvailableElements(),
-      inbound_parcels_.GetTotalAvailableElementSize(), dispatcher);
+  traps_.NotifyLocalParcelConsumed(context, status_flags_, inbound_parcels_,
+                                   dispatcher);
 }
 
 }  // namespace ipcz

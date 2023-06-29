@@ -9,6 +9,7 @@
 
 #include "ipcz/ipcz.h"
 #include "ipcz/operation_context.h"
+#include "ipcz/parcel_queue.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace ipcz {
@@ -36,8 +37,7 @@ class TrapSet {
                  IpczTrapEventHandler handler,
                  uintptr_t context,
                  IpczPortalStatusFlags status_flags,
-                 size_t num_local_parcels,
-                 size_t num_local_bytes,
+                 ParcelQueue& inbound_parcel_queue,
                  IpczTrapConditionFlags* satisfied_condition_flags,
                  IpczPortalStatus* status);
 
@@ -47,8 +47,7 @@ class TrapSet {
   // and `num_local_bytes` convey the new status of the portal.
   void NotifyNewLocalParcel(const OperationContext& context,
                             IpczPortalStatusFlags status_flags,
-                            size_t num_local_parcels,
-                            size_t num_local_bytes,
+                            ParcelQueue& inbound_parcel_queue,
                             TrapEventDispatcher& dispatcher);
 
   // Notifies the TrapSet that a local parcel has been consumed from its portal.
@@ -57,8 +56,7 @@ class TrapSet {
   // and `num_local_bytes` convey the new status of the portal.
   void NotifyLocalParcelConsumed(const OperationContext& context,
                                  IpczPortalStatusFlags status_flags,
-                                 size_t num_local_parcels,
-                                 size_t num_local_bytes,
+                                 ParcelQueue& inbound_parcel_queue,
                                  TrapEventDispatcher& dispatcher);
 
   // Notifies the TrapSet that its portal's peer has been closed. Any trap
@@ -67,6 +65,7 @@ class TrapSet {
   // status of the portal.
   void NotifyPeerClosed(const OperationContext& context,
                         IpczPortalStatusFlags status_flags,
+                        ParcelQueue& inbound_parcel_queue,
                         TrapEventDispatcher& dispatcher);
 
   // Immediately removes all traps from the set. Every trap present appends an
@@ -107,21 +106,19 @@ class TrapSet {
   // a trap watching the given `conditions`, given the most recent state change.
   IpczTrapConditionFlags GetSatisfiedConditionsForUpdate(
       const IpczTrapConditions& conditions,
+      IpczPortalStatusFlags status_flags,
+      ParcelQueue& inbound_parcel_queue,
       UpdateReason reason);
 
   // Helper used by Notify* methods to carry out common update work.
   void UpdatePortalStatus(const OperationContext& context,
                           IpczPortalStatusFlags status_flags,
-                          size_t num_local_parcels,
-                          size_t num_local_bytes,
+                          ParcelQueue& inbound_parcel_queue,
                           UpdateReason reason,
                           TrapEventDispatcher& dispatcher);
 
   using TrapList = std::vector<Trap>;
   TrapList traps_;
-  IpczPortalStatusFlags status_flags_ = IPCZ_NO_FLAGS;
-  uint32_t num_local_parcels_ = 0;
-  uint32_t num_local_bytes_ = 0;
 };
 
 }  // namespace ipcz
