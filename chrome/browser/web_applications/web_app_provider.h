@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_from_command_line.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -34,6 +33,7 @@ class PrefRegistrySyncable;
 namespace web_app {
 
 class AbstractWebAppDatabaseFactory;
+class IsolatedWebAppCommandLineInstallManager;
 class ManifestUpdateManager;
 class OsIntegrationManager;
 class PreinstalledWebAppManager;
