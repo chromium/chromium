@@ -92,8 +92,7 @@ void BringUpKeyboard() {
 
 // Dismisses the keyboard, if it exist.
 void DismissKeyboard() {
-  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:grey_tap()];
+  [EarlGrey dismissKeyboardWithError:nil];
   ConditionBlock keyboardDismissed = ^{
     return ![EarlGrey isKeyboardShownWithError:nil];
   };
