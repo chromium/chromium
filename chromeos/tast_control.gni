@@ -394,8 +394,4 @@ tast_disabled_tests_from_lacros_all = [
 
   # https://crbug.com/1446233
   "tast.arc.IntentForward.lacros_vm",
-
-  # https://crbug.com/1458897
-  "cryptohome.UssMigrationPasswordPin",
-  "cryptohome.USSMigrationPinAfterPasswordMigration",
 ]
