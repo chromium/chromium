@@ -433,7 +433,7 @@ void ShippingAddressEditorViewController::UpdateEditorFields() {
   if (chosen_country_index_ < countries_.size())
     chosen_country_code = countries_[chosen_country_index_].first;
 
-  std::vector<std::vector<autofill::ExtendedAddressUiComponent>> components;
+  std::vector<std::vector<autofill::AutofillAddressUIComponent>> components;
   autofill::GetAddressComponents(
       chosen_country_code, state()->GetApplicationLocale(),
       /*include_literals=*/false, &components, &language_code_);
@@ -445,30 +445,27 @@ void ShippingAddressEditorViewController::UpdateEditorFields() {
       EditorField::LengthHint::HINT_SHORT, /*required=*/true,
       EditorField::ControlType::COMBOBOX);
 
-  for (const std::vector<autofill::ExtendedAddressUiComponent>& line :
+  for (const std::vector<autofill::AutofillAddressUIComponent>& line :
        components) {
-    for (const autofill::ExtendedAddressUiComponent& component : line) {
+    for (const autofill::AutofillAddressUIComponent& component : line) {
       EditorField::LengthHint length_hint =
           component.length_hint ==
-                  i18n::addressinput::AddressUiComponent::HINT_LONG
+                  autofill::AutofillAddressUIComponent::HINT_LONG
               ? EditorField::LengthHint::HINT_LONG
               : EditorField::LengthHint::HINT_SHORT;
 
-      autofill::ServerFieldType server_field_type =
-          autofill::i18n::TypeForField(component.field);
-
       EditorField::ControlType control_type =
           EditorField::ControlType::TEXTFIELD;
-      if (server_field_type == autofill::ADDRESS_HOME_COUNTRY ||
-          (server_field_type == autofill::ADDRESS_HOME_STATE &&
+      if (component.field == autofill::ADDRESS_HOME_COUNTRY ||
+          (component.field == autofill::ADDRESS_HOME_STATE &&
            !failed_to_load_region_data_)) {
         control_type = EditorField::ControlType::COMBOBOX;
       }
       editor_fields_.emplace_back(
-          server_field_type, base::UTF8ToUTF16(component.name), length_hint,
-          autofill::i18n::IsFieldRequired(server_field_type,
+          component.field, base::UTF8ToUTF16(component.name), length_hint,
+          autofill::i18n::IsFieldRequired(component.field,
                                           chosen_country_code) ||
-              server_field_type == autofill::NAME_FULL,
+              component.field == autofill::NAME_FULL,
           control_type);
     }
   }

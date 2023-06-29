@@ -762,10 +762,8 @@ std::u16string AutofillProfile::ConstructInferredLabel(
 
   std::vector<ServerFieldType> remaining_fields;
   for (size_t i = 0; i < included_fields_size && num_fields_to_use > 0; ++i) {
-    ::i18n::addressinput::AddressField address_field;
-    if (!i18n::FieldForType(included_fields[i], &address_field) ||
-        !country.IsAddressFieldSettingAccessible(address_field) ||
-        address_field == ::i18n::addressinput::COUNTRY) {
+    if (!country.IsAddressFieldSettingAccessible(included_fields[i]) ||
+        included_fields[i] == ADDRESS_HOME_COUNTRY) {
       remaining_fields.push_back(included_fields[i]);
       continue;
     }
@@ -1117,7 +1115,7 @@ ServerFieldTypeSet AutofillProfile::FindInaccessibleProfileValues() const {
         AddressField::SORTING_CODE}) {
     ServerFieldType server_field_type = i18n::TypeForField(field_type);
     if (HasRawInfo(server_field_type) &&
-        !country.IsAddressFieldSettingAccessible(field_type)) {
+        !country.IsAddressFieldSettingAccessible(server_field_type)) {
       inaccessible_fields.insert(server_field_type);
     }
   }
