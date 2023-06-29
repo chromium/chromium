@@ -23,7 +23,7 @@ from test_helpers import (execute_command, read_JSON_message,
 async def test_realm_realmCreated(websocket, context_id, html):
     url = html()
 
-    await subscribe(websocket, "script.realmCreated")
+    await subscribe(websocket, ["script.realmCreated"])
 
     await send_JSON_command(
         websocket, {
@@ -51,7 +51,7 @@ async def test_realm_realmCreated(websocket, context_id, html):
 @pytest.mark.asyncio
 async def test_realm_realmCreated_sandbox(websocket, context_id):
 
-    await subscribe(websocket, "script.realmCreated")
+    await subscribe(websocket, ["script.realmCreated"])
 
     await send_JSON_command(
         websocket, {
@@ -83,7 +83,7 @@ async def test_realm_realmCreated_sandbox(websocket, context_id):
 @pytest.mark.asyncio
 async def test_realm_realmDestroyed(websocket, context_id):
 
-    await subscribe(websocket, "script.realmDestroyed")
+    await subscribe(websocket, ["script.realmDestroyed"])
 
     await send_JSON_command(websocket, {
         "method": "browsingContext.close",
@@ -105,7 +105,7 @@ async def test_realm_realmDestroyed(websocket, context_id):
 @pytest.mark.asyncio
 async def test_realm_realmDestroyed_sandbox(websocket, context_id):
 
-    await subscribe(websocket, "script.realmDestroyed")
+    await subscribe(websocket, ["script.realmDestroyed"])
 
     await execute_command(
         websocket, {

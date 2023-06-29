@@ -24,7 +24,7 @@ from test_helpers import (ANY_TIMESTAMP, read_JSON_message, send_JSON_command,
 @pytest.mark.asyncio
 async def test_log_subscribeToAllLogEvents_logEventReceived(
         websocket, context_id):
-    await subscribe(websocket, "log")
+    await subscribe(websocket, ["log"])
 
     await send_JSON_command(
         websocket, {
@@ -44,7 +44,7 @@ async def test_log_subscribeToAllLogEvents_logEventReceived(
 @pytest.mark.asyncio
 async def test_log_subscribeToLogEntryAddedEvents_logEventReceived(
         websocket, context_id):
-    await subscribe(websocket, "log.entryAdded")
+    await subscribe(websocket, ["log.entryAdded"])
 
     await send_JSON_command(
         websocket, {
@@ -63,7 +63,7 @@ async def test_log_subscribeToLogEntryAddedEvents_logEventReceived(
 
 @pytest.mark.asyncio
 async def test_consoleLog_textAndArgs(websocket, context_id):
-    await subscribe(websocket, "log.entryAdded")
+    await subscribe(websocket, ["log.entryAdded"])
 
     await send_JSON_command(
         websocket, {
@@ -182,7 +182,7 @@ async def test_consoleLog_textAndArgs(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_consoleInfo_levelAndMethodAreCorrect(websocket, context_id):
-    await subscribe(websocket, "log.entryAdded")
+    await subscribe(websocket, ["log.entryAdded"])
 
     await send_JSON_command(
         websocket, {
@@ -206,7 +206,7 @@ async def test_consoleInfo_levelAndMethodAreCorrect(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_consoleDebug_levelAndMethodAreCorrect(websocket, context_id):
-    await subscribe(websocket, "log.entryAdded")
+    await subscribe(websocket, ["log.entryAdded"])
 
     await send_JSON_command(
         websocket, {
@@ -230,7 +230,7 @@ async def test_consoleDebug_levelAndMethodAreCorrect(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_consoleWarn_levelAndMethodAreCorrect(websocket, context_id):
-    await subscribe(websocket, "log.entryAdded")
+    await subscribe(websocket, ["log.entryAdded"])
 
     await send_JSON_command(
         websocket, {
@@ -254,7 +254,7 @@ async def test_consoleWarn_levelAndMethodAreCorrect(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_consoleError_levelAndMethodAreCorrect(websocket, context_id):
-    await subscribe(websocket, "log.entryAdded")
+    await subscribe(websocket, ["log.entryAdded"])
 
     await send_JSON_command(
         websocket, {
@@ -278,7 +278,7 @@ async def test_consoleError_levelAndMethodAreCorrect(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
-    await subscribe(websocket, "log.entryAdded")
+    await subscribe(websocket, ["log.entryAdded"])
     format_string = "format specifier, string: %s, integer: %d, " \
                     "negative: %i, float: %f, %o, %O, %c EOL"
     string_arg = "'SOME_STRING'"
@@ -321,7 +321,7 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
 @pytest.mark.asyncio
 async def test_exceptionThrown_logEntryAddedEventEmitted(
         websocket, context_id, html):
-    await subscribe(websocket, "log.entryAdded")
+    await subscribe(websocket, ["log.entryAdded"])
 
     await send_JSON_command(
         websocket, {
@@ -408,7 +408,7 @@ async def test_buffer_bufferedEventsReturned(websocket, context_id):
 async def test_runtimeException_emitted(websocket, context_id):
     error_message = "SOME_ERROR_MESSAGE"
 
-    await subscribe(websocket, "log.entryAdded")
+    await subscribe(websocket, ["log.entryAdded"])
 
     # Throw JS page error and get expected error message text.
     command_id = await send_JSON_command(

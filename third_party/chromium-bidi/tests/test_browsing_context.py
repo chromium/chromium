@@ -23,7 +23,7 @@ from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
 @pytest.mark.asyncio
 async def test_browsingContext_subscribeToAllBrowsingContextEvents_eventReceived(
         websocket):
-    await subscribe(websocket, "browsingContext")
+    await subscribe(websocket, ["browsingContext"])
 
     await send_JSON_command(websocket, {
         "method": "browsingContext.create",

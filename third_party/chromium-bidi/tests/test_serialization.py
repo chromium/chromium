@@ -30,7 +30,7 @@ def _strip_handle(obj):
 # Testing serialization.
 async def assert_serialization(websocket, context_id, js_str_object,
                                expected_serialized_object):
-    await subscribe(websocket, "log.entryAdded")
+    await subscribe(websocket, ["log.entryAdded"])
 
     command_id = await send_JSON_command(
         websocket, {
@@ -89,7 +89,7 @@ async def assert_callFunction_deserialization_serialization(
     if expected_serialized_object is None:
         expected_serialized_object = serialized_object
 
-    await subscribe(websocket, "log.entryAdded")
+    await subscribe(websocket, ["log.entryAdded"])
 
     command_id = await send_JSON_command(
         websocket, {
@@ -770,7 +770,7 @@ async def test_deserialization_handleAndValue(websocket, context_id):
      })])
 async def test_channel_complexTypes(test_input, expected, websocket,
                                     context_id):
-    await subscribe(websocket, "script.message")
+    await subscribe(websocket, ["script.message"])
 
     await execute_command(
         websocket,

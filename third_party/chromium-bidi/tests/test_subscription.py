@@ -100,7 +100,7 @@ async def test_subscribeWithContext_subscribesToEventsInGivenContext(
 @pytest.mark.asyncio
 async def test_subscribeWithContext_subscribesToEventsInNestedContext(
         websocket, context_id, html_iframe_same_origin, url_same_origin):
-    await subscribe(websocket, "browsingContext.contextCreated")
+    await subscribe(websocket, ["browsingContext.contextCreated"])
 
     # Navigate to some page.
     await send_JSON_command(
@@ -129,7 +129,7 @@ async def test_subscribeWithContext_subscribesToEventsInNestedContext(
 @pytest.mark.asyncio
 async def test_subscribeToNestedContext_subscribesToTopLevelContext(
         websocket, context_id, iframe_id):
-    await subscribe(websocket, "log.entryAdded", iframe_id)
+    await subscribe(websocket, ["log.entryAdded"], [iframe_id])
 
     await send_JSON_command(
         websocket, {
@@ -154,7 +154,7 @@ async def test_subscribeToNestedContext_subscribesToTopLevelContext(
 @pytest.mark.asyncio
 async def test_subscribeToNestedContextAndUnsubscribeFromTopLevelContext_unsubscribedFromTopLevelContext(
         websocket, context_id, iframe_id):
-    await subscribe(websocket, "log.entryAdded", iframe_id)
+    await subscribe(websocket, ["log.entryAdded"], [iframe_id])
     await execute_command(
         websocket, {
             "method": "session.unsubscribe",
@@ -202,7 +202,7 @@ async def test_subscribeToNestedContextAndUnsubscribeFromTopLevelContext_unsubsc
 @pytest.mark.asyncio
 async def test_subscribeToTopLevelContextAndUnsubscribeFromNestedContext_unsubscribedFromTopLevelContext(
         websocket, context_id, iframe_id):
-    await subscribe(websocket, "log.entryAdded", context_id)
+    await subscribe(websocket, ["log.entryAdded"], [context_id])
     await execute_command(
         websocket, {
             "method": "session.unsubscribe",
@@ -358,14 +358,14 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
     channel_3 = "000_THIRD_SUBSCRIBED_CHANNEL"
     channel_4 = "555_FOURTH_SUBSCRIBED_CHANNEL"
 
-    await subscribe(websocket, "log.entryAdded", None, empty_channel)
-    await subscribe(websocket, "log.entryAdded", None, channel_2)
-    await subscribe(websocket, "log.entryAdded", context_id, channel_3)
-    await subscribe(websocket, "log.entryAdded", context_id, channel_4)
+    await subscribe(websocket, ["log.entryAdded"], None, empty_channel)
+    await subscribe(websocket, ["log.entryAdded"], None, channel_2)
+    await subscribe(websocket, ["log.entryAdded"], [context_id], channel_3)
+    await subscribe(websocket, ["log.entryAdded"], [context_id], channel_4)
     # Re-subscribe with specific BrowsingContext.
-    await subscribe(websocket, "log.entryAdded", context_id, channel_3)
+    await subscribe(websocket, ["log.entryAdded"], [context_id], channel_3)
     # Re-subscribe.
-    await subscribe(websocket, "log.entryAdded", None, channel_2)
+    await subscribe(websocket, ["log.entryAdded"], None, channel_2)
 
     await execute_command(
         websocket, {
@@ -500,7 +500,7 @@ async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreRet
 
 @pytest.mark.asyncio
 async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
-    await subscribe(websocket, "log.entryAdded", iframe_id)
+    await subscribe(websocket, ["log.entryAdded"], [iframe_id])
 
     with pytest.raises(Exception) as exception_info:
         await execute_command(

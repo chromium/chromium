@@ -22,7 +22,7 @@ from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
 @pytest.mark.asyncio
 async def test_network_before_request_sent_event_emitted(
         websocket, context_id):
-    await subscribe(websocket, "network.beforeRequestSent", context_id)
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     await send_JSON_command(
         websocket, {
@@ -63,7 +63,7 @@ async def test_network_before_request_sent_event_emitted(
 @pytest.mark.asyncio
 async def test_network_global_subscription_enabled_in_new_context(
         websocket, create_context):
-    await subscribe(websocket, "network.beforeRequestSent")
+    await subscribe(websocket, ["network.beforeRequestSent"])
 
     new_context_id = await create_context()
     await send_JSON_command(
@@ -89,11 +89,11 @@ async def test_network_global_subscription_enabled_in_new_context(
 @pytest.mark.asyncio
 async def test_network_specific_context_subscription_does_not_enable_cdp_network_globally(
         websocket, context_id, create_context):
-    await subscribe(websocket, "network.beforeRequestSent", context_id)
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     new_context_id = await create_context()
 
-    await subscribe(websocket, "cdp.Network.requestWillBeSent")
+    await subscribe(websocket, ["cdp.Network.requestWillBeSent"])
 
     command_id = await send_JSON_command(
         websocket, {
@@ -142,7 +142,7 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
             }
         })
 
-    await subscribe(websocket, "network.beforeRequestSent", context_id)
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     await send_JSON_command(
         websocket, {
@@ -192,7 +192,7 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
 @pytest.mark.asyncio
 async def test_network_network_response_completed_event_emitted(
         websocket, context_id):
-    await subscribe(websocket, "network.responseCompleted", context_id)
+    await subscribe(websocket, ["network.responseCompleted"], [context_id])
 
     await send_JSON_command(
         websocket, {
@@ -249,7 +249,7 @@ async def test_network_network_response_completed_event_emitted(
 async def test_network_bad_ssl(websocket, context_id):
     BAD_SSL_URL = "https://expired.badssl.com/"
 
-    await subscribe(websocket, "network.fetchError", context_id)
+    await subscribe(websocket, ["network.fetchError"], [context_id])
 
     await send_JSON_command(
         websocket, {
@@ -287,7 +287,7 @@ async def test_network_bad_ssl(websocket, context_id):
 @pytest.mark.asyncio
 async def test_network_before_request_sent_event_with_data_url_emitted(
         websocket, context_id):
-    await subscribe(websocket, "network.beforeRequestSent", context_id)
+    await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
     await send_JSON_command(
         websocket, {

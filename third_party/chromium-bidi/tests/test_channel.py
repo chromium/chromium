@@ -21,7 +21,7 @@ from test_helpers import (ANY_SHARED_ID, execute_command, read_JSON_message,
 
 @pytest.mark.asyncio
 async def test_channel_twoMessageEvents(websocket, context_id):
-    await subscribe(websocket, "script.message")
+    await subscribe(websocket, ["script.message"])
 
     await execute_command(
         websocket,
@@ -85,7 +85,7 @@ async def test_channel_twoMessageEvents(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_channel_beforeAndAfterExecutionFinished(websocket, context_id):
-    await subscribe(websocket, "script.message")
+    await subscribe(websocket, ["script.message"])
 
     command_id = await send_JSON_command(
         websocket,
@@ -153,7 +153,7 @@ async def test_channel_beforeAndAfterExecutionFinished(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_channel_and_another_channel(websocket, context_id):
-    await subscribe(websocket, "script.message")
+    await subscribe(websocket, ["script.message"])
 
     await send_JSON_command(
         websocket,
@@ -336,7 +336,7 @@ async def test_channel_and_another_channel(websocket, context_id):
 async def test_channel_serialization_options(websocket, context_id,
                                              serialization_options,
                                              expected_result):
-    await subscribe(websocket, "script.message")
+    await subscribe(websocket, ["script.message"])
 
     await send_JSON_command(
         websocket,

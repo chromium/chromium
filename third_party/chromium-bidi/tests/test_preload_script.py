@@ -80,7 +80,7 @@ async def test_preloadScript_add_setGlobalVariable(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_preloadScript_add_logging(websocket, context_id, html):
-    await subscribe(websocket, "log.entryAdded")
+    await subscribe(websocket, ["log.entryAdded"])
 
     result = await execute_command(
         websocket, {
@@ -223,7 +223,7 @@ async def test_preloadScript_add_sameScript_multipleTimes_addedToSameContext(
 async def test_preloadScript_add_loadedInNewIframes(websocket, context_id,
                                                     url_all_origins, html,
                                                     read_sorted_messages):
-    await subscribe(websocket, "log.entryAdded")
+    await subscribe(websocket, ["log.entryAdded"])
 
     await execute_command(
         websocket, {
@@ -296,7 +296,7 @@ async def test_preloadScript_add_loadedInNewIframes(websocket, context_id,
 @pytest.mark.asyncio
 async def test_preloadScript_add_loadedInNewIframes_withChildScript(
         websocket, context_id, html):
-    await subscribe(websocket, "log.entryAdded")
+    await subscribe(websocket, ["log.entryAdded"])
 
     await execute_command(
         websocket, {
@@ -525,7 +525,7 @@ async def test_preloadScript_addGlobally_loadedInMultipleContexts_withIframes(
     assert result["result"] == {"type": "string", "value": 'bar'}
 
     # Needed to make sure the iFrame loaded.
-    await subscribe(websocket, "browsingContext.load")
+    await subscribe(websocket, ["browsingContext.load"])
 
     # Create a new iframe within the same context.
     command_id = await send_JSON_command(
@@ -652,7 +652,7 @@ async def test_preloadScript_remove_addAndRemoveIsNoop_secondRemoval_fails(
 @pytest.mark.asyncio
 async def test_preloadScript_channel_navigate(websocket, context_id, html,
                                               read_sorted_messages):
-    await subscribe(websocket, "script.message")
+    await subscribe(websocket, ["script.message"])
 
     result = await execute_command(
         websocket, {
@@ -709,7 +709,7 @@ async def test_preloadScript_channel_navigate(websocket, context_id, html,
 @pytest.mark.asyncio
 async def test_preloadScript_channel_newContext(websocket, context_id, html,
                                                 read_sorted_messages):
-    await subscribe(websocket, "script.message")
+    await subscribe(websocket, ["script.message"])
 
     result = await execute_command(
         websocket, {
