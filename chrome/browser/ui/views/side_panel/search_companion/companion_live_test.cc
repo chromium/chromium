@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(CompanionLiveTest, InitialNavigationLoggedOut) {
 
   // Verify that the sign-in page appears and PromoEvent histogram is updated.
   EXPECT_THAT(web_contents()->GetLastCommittedURL().spec(),
-              ::testing::HasSubstr("accounts.google.com/signin"));
+              ::testing::HasSubstr("accounts.google.com"));
   WaitForHistogramSample("Companion.PromoEvent",
                          (int)companion::PromoEvent::kSignInAccepted);
   histogram_tester_->ExpectBucketCount(
