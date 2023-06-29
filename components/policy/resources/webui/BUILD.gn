@@ -8,14 +8,11 @@ build_webui("build") {
   grd_prefix = "policy"
 
   static_files = [
+    "logs/policy_logs.html",
     "policy.html",
     "policy.css",
     "test/policy_test.html",
   ]
-
-  if (is_android || is_ios) {
-    static_files += [ "logs/policy_logs.html" ]
-  }
 
   # Files holding a Custom element definition AND have an equivalent .html file.
   web_component_files = [
@@ -29,15 +26,11 @@ build_webui("build") {
   ]
 
   non_web_component_files = [
-    "policy_base.ts",
+    "logs/types.ts",
+    "logs/policy_logs.ts",
     "policy.ts",
+    "policy_base.ts",
   ]
-  if (is_android || is_ios) {
-    non_web_component_files += [
-      "logs/types.ts",
-      "logs/policy_logs.ts",
-    ]
-  }
 
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
