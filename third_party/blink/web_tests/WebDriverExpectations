@@ -766,3 +766,12 @@ crbug.com/1414111 [ Linux ] external/wpt/webdriver/tests/classic/forward/forward
 crbug.com/1414111 [ Linux ] external/wpt/webdriver/tests/classic/refresh/refresh.py>>test_dismissed_beforeunload [ Failure ]
 crbug.com/1414111 [ Linux ] external/wpt/webdriver/tests/classic/refresh/refresh.py>>test_history_pushstate [ Failure ]
 crbug.com/1414111 [ Linux ] external/wpt/webdriver/tests/classic/refresh/refresh.py>>test_refresh_switches_to_parent_browsing_context [ Failure ]
+
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/execute_script/arguments.py>>test_detached_shadow_root_reference[child_context] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/execute_async_script/arguments.py>>test_stale_element_reference[child_context] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/pointer_mouse.py>>test_stale_element_reference[top_context] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/execute_script/objects.py>>test_object [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/find_elements_from_element/find.py>>test_stale_element_reference[child_context] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/pointer_touch.py>>test_stale_element_reference[top_context] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/pointer_pen.py>>test_stale_element_reference[top_context] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/find_element_from_element/find.py>>test_null_parameter_value [ Failure ]
