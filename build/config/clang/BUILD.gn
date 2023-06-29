@@ -89,6 +89,13 @@ config("find_bad_constructs") {
         "-plugin-arg-find-bad-constructs",
         "-Xclang",
         "raw-ptr-exclude-path=um/winnt.h",
+
+        # TODO(crbug.com/1459145): Remove this once we exclude this
+        # in our clang plugin.
+        "-Xclang",
+        "-plugin-arg-find-bad-constructs",
+        "-Xclang",
+        "raw-ptr-exclude-path=chromeos/assistant/internal/",
       ]
     }
   }
