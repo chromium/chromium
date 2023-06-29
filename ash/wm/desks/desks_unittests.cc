@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "build/build_config.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
@@ -7584,7 +7585,13 @@ TEST_P(DesksTest, RemoveDeskWhileDragging) {
 }
 
 // Regression test for the asan failure at https://crbug.com/1274641.
-TEST_P(DesksTest, DragMiniViewWhileRemoving) {
+// TODO(crbug.com/1459376): Re-enable this test
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_DragMiniViewWhileRemoving DISABLED_DragMiniViewWhileRemoving
+#else
+#define MAYBE_DragMiniViewWhileRemoving DragMiniViewWhileRemoving
+#endif
+TEST_P(DesksTest, MAYBE_DragMiniViewWhileRemoving) {
   NewDesk();
   NewDesk();
 
