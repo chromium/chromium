@@ -115,6 +115,10 @@
             eventSenderKeys = "Tab";
           } else if (charCode == 0xE050) {
             eventSenderKeys = "ShiftRight";
+          } else if (charCode == 0xE010) {
+            eventSenderKeys = "End";
+          } else if (charCode == 0xE011) {
+            eventSenderKeys = "Home";
           } else if (charCode == 0xE012) {
             eventSenderKeys = "ArrowLeft";
           } else if (charCode == 0xE013) {
