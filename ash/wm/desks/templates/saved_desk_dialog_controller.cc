@@ -378,7 +378,7 @@ void SavedDeskDialogController::CreateDialogWidget(
   if (chromeos::features::IsJellyEnabled()) {
     views::Widget::InitParams params;
     params.type = views::Widget::InitParams::Type::TYPE_WINDOW_FRAMELESS;
-    params.parent = root_window;
+    params.context = root_window;
     params.delegate = dialog.release();
 
     dialog_widget_ = new views::Widget();
