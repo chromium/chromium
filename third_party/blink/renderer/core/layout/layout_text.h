@@ -400,14 +400,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   void CollectLineBoxRects(const PhysicalRectCollector&,
                            ClippingOption option = kNoClipping) const;
 
-  // Make length() private so that callers that have a LayoutText*
-  // will use the more efficient textLength() instead, while
-  // callers with a LayoutObject* can continue to use length().
-  unsigned length() const final {
-    NOT_DESTROYED();
-    return TextLength();
-  }
-
   // See the class comment as to why we shouldn't call this function directly.
   void Paint(const PaintInfo&) const final {
     NOT_DESTROYED();

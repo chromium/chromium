@@ -2728,11 +2728,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return LayoutSize();
   }
 
-  virtual unsigned length() const {
-    NOT_DESTROYED();
-    return 1;
-  }
-
   bool IsFloatingOrOutOfFlowPositioned() const {
     NOT_DESTROYED();
     return (IsFloating() || IsOutOfFlowPositioned());
