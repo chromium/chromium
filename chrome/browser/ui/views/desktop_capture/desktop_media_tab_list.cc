@@ -228,18 +228,18 @@ DesktopMediaTabList::DesktopMediaTabList(DesktopMediaListController* controller,
   view_observer_ = std::make_unique<TabListViewObserver>(
       controller_, selection_changed_callback);
 
-  auto list = std::make_unique<views::TableView>(
+  auto table = std::make_unique<views::TableView>(
       model_.get(), std::vector<ui::TableColumn>(1), views::ICON_AND_TEXT,
       true);
-  list->set_observer(view_observer_.get());
-  list->GetViewAccessibility().OverrideName(accessible_name);
-  list_ = list.get();
+  table->set_observer(view_observer_.get());
+  table->GetViewAccessibility().OverrideName(accessible_name);
+  table_ = table.get();
 
-  AddChildView(BuildUI(std::move(list)));
+  AddChildView(BuildUI(std::move(table)));
 }
 
 std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
-    std::unique_ptr<views::TableView> list) {
+    std::unique_ptr<views::TableView> table) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto preview_wrapper = std::make_unique<views::View>();
   preview_wrapper->SetPreferredSize(desktopcapture::kPreviewSize);
@@ -277,7 +277,7 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
   std::unique_ptr<views::View> full_panel = std::make_unique<views::View>();
 
   scroll_view_ =
-      full_panel->AddChildView(CreateScrollViewWithTable(std::move(list)));
+      full_panel->AddChildView(CreateScrollViewWithTable(std::move(table)));
   scroll_view_->SetPreferredSize(gfx::Size(kListWidth, 0));
   full_panel->AddChildView(std::move(preview_sidebar));
 
@@ -301,13 +301,13 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
 
 DesktopMediaTabList::~DesktopMediaTabList() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  list_->SetModel(nullptr);
+  table_->SetModel(nullptr);
 }
 
 gfx::Size DesktopMediaTabList::CalculatePreferredSize() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // The picker should have a fixed height of 10 rows.
-  return gfx::Size(0, list_->GetRowHeight() * 10);
+  return gfx::Size(0, table_->GetRowHeight() * 10);
 }
 
 int DesktopMediaTabList::GetHeightForWidth(int width) const {
@@ -325,9 +325,9 @@ void DesktopMediaTabList::OnThemeChanged() {
 
   const ui::ColorProvider* const color_provider = GetColorProvider();
   if (features::IsChromeRefresh2023()) {
-    list_->SetBorder(nullptr);
+    table_->SetBorder(nullptr);
   } else {
-    list_->SetBorder(views::CreateSolidBorder(
+    table_->SetBorder(views::CreateSolidBorder(
         /*thickness=*/1,
         color_provider->GetColor(kColorDesktopMediaTabListBorder)));
   }
@@ -356,7 +356,7 @@ void DesktopMediaTabList::OnThemeChanged() {
 
 absl::optional<content::DesktopMediaID> DesktopMediaTabList::GetSelection() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  absl::optional<size_t> row = list_->GetFirstSelectedRow();
+  absl::optional<size_t> row = table_->GetFirstSelectedRow();
   if (!row.has_value())
     return absl::nullopt;
   return controller_->GetSource(row.value()).id;
@@ -371,7 +371,7 @@ DesktopMediaTabList::GetSourceListListener() {
 void DesktopMediaTabList::ClearSelection() {
   // Changing the selection in the list will ensure that all appropriate change
   // events are fired.
-  list_->Select(absl::nullopt);
+  table_->Select(absl::nullopt);
 }
 
 void DesktopMediaTabList::ClearPreview() {
@@ -385,7 +385,7 @@ void DesktopMediaTabList::ClearPreview() {
 void DesktopMediaTabList::OnSelectionChanged() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  absl::optional<size_t> row = list_->GetFirstSelectedRow();
+  absl::optional<size_t> row = table_->GetFirstSelectedRow();
   if (!row.has_value()) {
     ClearPreview();
     controller_->SetPreviewedSource(absl::nullopt);
@@ -421,7 +421,7 @@ void DesktopMediaTabList::ClearPreviewImageIfUnchanged(
 
 void DesktopMediaTabList::OnPreviewUpdated(size_t index) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (index != list_->GetFirstSelectedRow()) {
+  if (index != table_->GetFirstSelectedRow()) {
     return;
   }
 
