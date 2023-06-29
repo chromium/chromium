@@ -162,6 +162,7 @@ const char kChromeUIPasswordManagerSettingsURL[] =
 const char kChromeUIPerformanceSettingsURL[] = "chrome://settings/performance";
 const char kChromeUIPolicyHost[] = "policy";
 const char kChromeUIPolicyURL[] = "chrome://policy/";
+const char kChromeUIPolicyTestURL[] = "chrome://policy/test";
 const char kChromeUIPredictorsHost[] = "predictors";
 const char kChromeUIPrefsInternalsHost[] = "prefs-internals";
 const char kChromeUIPrefsInternalsURL[] = "chrome://prefs-internals";
