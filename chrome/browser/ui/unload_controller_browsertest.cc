@@ -10,6 +10,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/prevent_close_test_base.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -45,9 +46,9 @@ constexpr bool kShouldPreventClose = false;
 
 }  // namespace
 
-using TabStripModelPreventCloseTest = PreventCloseTestBase;
+using UnloadControllerPreventCloseTest = PreventCloseTestBase;
 
-IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
+IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
                        PreventCloseEnforedByPolicy) {
   InstallPWA(GURL(kCalculatorAppUrl), web_app::kCalculatorAppId);
   SetWebAppSettings(kPreventCloseEnabledForCalculator);
@@ -56,25 +57,16 @@ IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
       LaunchPWA(web_app::kCalculatorAppId, /*launch_in_window=*/true);
   ASSERT_TRUE(browser);
 
-  TabStripModel* const tab_strip_model = browser->tab_strip_model();
-  EXPECT_EQ(1, tab_strip_model->count());
-  EXPECT_EQ(!kShouldPreventClose, tab_strip_model->IsTabClosable(
-                                      tab_strip_model->GetActiveWebContents()));
-
-  tab_strip_model->CloseAllTabs();
-  EXPECT_EQ(kShouldPreventClose ? 1 : 0, tab_strip_model->count());
+  UnloadController unload_controller(browser);
+  EXPECT_NE(kShouldPreventClose, unload_controller.ShouldCloseWindow());
 
   if (kShouldPreventClose) {
     ClearWebAppSettings();
-    EXPECT_TRUE(tab_strip_model->IsTabClosable(
-        tab_strip_model->GetActiveWebContents()));
-
-    tab_strip_model->CloseAllTabs();
-    EXPECT_EQ(0, tab_strip_model->count());
+    EXPECT_EQ(true, unload_controller.ShouldCloseWindow());
   }
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
+IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
                        PreventCloseEnforedByPolicyTabbedAppShallBeClosable) {
   InstallPWA(GURL(kCalculatorAppUrl), web_app::kCalculatorAppId);
   SetWebAppSettings(kPreventCloseEnabledForCalculator);
@@ -83,11 +75,6 @@ IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
       LaunchPWA(web_app::kCalculatorAppId, /*launch_in_window=*/false);
   ASSERT_TRUE(browser);
 
-  TabStripModel* const tab_strip_model = browser->tab_strip_model();
-  EXPECT_NE(0, tab_strip_model->count());
-  EXPECT_TRUE(
-      tab_strip_model->IsTabClosable(tab_strip_model->GetActiveWebContents()));
-
-  tab_strip_model->CloseAllTabs();
-  EXPECT_EQ(0, tab_strip_model->count());
+  UnloadController unload_controller(browser);
+  EXPECT_TRUE(unload_controller.ShouldCloseWindow());
 }
