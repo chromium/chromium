@@ -1487,7 +1487,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
                       ui::mojom::ModifierKey::kCapsLock);
 
   SetupKeyboard("Internal Keyboard");
-  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Press Search.
   EXPECT_EQ(
@@ -1498,7 +1498,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
       GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
                                 ui::DomKey::META, kNoScanCode));
-  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Search.
   EXPECT_EQ(
@@ -1508,7 +1508,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
       GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_NONE,
                                 ui::DomKey::META, kNoScanCode));
-  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Press Search.
   EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
@@ -1519,7 +1519,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
                                       ui::VKEY_LWIN, ui::DomCode::META_LEFT,
                                       ui::EF_COMMAND_DOWN | ui::EF_CAPS_LOCK_ON,
                                       ui::DomKey::META, kNoScanCode));
-  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Search.
   EXPECT_EQ(
@@ -1529,7 +1529,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
       GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_NONE,
                                 ui::DomKey::META, kNoScanCode));
-  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Do the same on external Chrome OS keyboard.
   SetupKeyboard("External Chrome Keyboard", kKbdTopRowLayout1Tag,
@@ -1544,7 +1544,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
       GetRewrittenEventAsString(rewriter(), ui::ET_KEY_PRESSED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN,
                                 ui::DomKey::META, kNoScanCode));
-  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Search.
   EXPECT_EQ(
@@ -1554,7 +1554,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
       GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_NONE,
                                 ui::DomKey::META, kNoScanCode));
-  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Press Search.
   EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
@@ -1565,7 +1565,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
                                       ui::VKEY_LWIN, ui::DomCode::META_LEFT,
                                       ui::EF_COMMAND_DOWN | ui::EF_CAPS_LOCK_ON,
                                       ui::DomKey::META, kNoScanCode));
-  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Search.
   EXPECT_EQ(
@@ -1575,7 +1575,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
       GetRewrittenEventAsString(rewriter(), ui::ET_KEY_RELEASED, ui::VKEY_LWIN,
                                 ui::DomCode::META_LEFT, ui::EF_NONE,
                                 ui::DomKey::META, kNoScanCode));
-  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Try external keyboard with Caps Lock.
   SetupKeyboard("External Generic Keyboard", kKbdTopRowLayoutUnspecified,
@@ -1590,7 +1590,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
                                       ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                       ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
                                       ui::DomKey::CAPS_LOCK, kNoScanCode));
-  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Caps Lock.
   EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
@@ -1600,7 +1600,7 @@ TEST_F(EventRewriterTest, TestRewriteModifiersRemapToCapsLock) {
                                       ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                       ui::EF_NONE, ui::DomKey::CAPS_LOCK,
                                       kNoScanCode));
-  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 }
 
 TEST_F(EventRewriterTest, TestRewriteCapsLock) {
@@ -1608,7 +1608,7 @@ TEST_F(EventRewriterTest, TestRewriteCapsLock) {
 
   SetupKeyboard("External Generic Keyboard", kKbdTopRowLayoutUnspecified,
                 ui::INPUT_DEVICE_UNKNOWN);
-  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // On Chrome OS, CapsLock is mapped to CapsLock with Mod3Mask.
   EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
@@ -1619,7 +1619,7 @@ TEST_F(EventRewriterTest, TestRewriteCapsLock) {
                                       ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                       ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK,
                                       kNoScanCode));
-  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
                                       ui::DomCode::CAPS_LOCK, ui::EF_NONE,
@@ -1628,7 +1628,7 @@ TEST_F(EventRewriterTest, TestRewriteCapsLock) {
                                       ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                       ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK,
                                       kNoScanCode));
-  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Remap Caps Lock to Control.
   IntegerPrefMember caps_lock;
@@ -1647,7 +1647,7 @@ TEST_F(EventRewriterTest, TestRewriteCapsLock) {
                                       ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                       ui::EF_CAPS_LOCK_ON | ui::EF_MOD3_DOWN,
                                       ui::DomKey::CAPS_LOCK, kNoScanCode));
-  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Release Caps Lock.
   EXPECT_EQ(
@@ -1658,7 +1658,7 @@ TEST_F(EventRewriterTest, TestRewriteCapsLock) {
                                 ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                 ui::EF_CAPS_LOCK_ON, ui::DomKey::CAPS_LOCK,
                                 kNoScanCode));
-  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 }
 
 TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
@@ -1666,7 +1666,7 @@ TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
 
   SetupKeyboard("External Generic Keyboard", kKbdTopRowLayoutUnspecified,
                 ui::INPUT_DEVICE_UNKNOWN);
-  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Turn on CapsLock.
   EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_PRESSED, ui::VKEY_CAPITAL,
@@ -1678,7 +1678,7 @@ TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
                                       ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK,
                                       kNoScanCode));
 
-  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   EXPECT_EQ(GetExpectedResultAsString(ui::ET_KEY_RELEASED, ui::VKEY_CAPITAL,
                                       ui::DomCode::CAPS_LOCK, ui::EF_NONE,
@@ -1687,7 +1687,7 @@ TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
                                       ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                       ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK,
                                       kNoScanCode));
-  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Remap CapsLock to Search.
   IntegerPrefMember search;
@@ -1705,7 +1705,7 @@ TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
                                       ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                       ui::EF_CAPS_LOCK_ON,
                                       ui::DomKey::CAPS_LOCK, kNoScanCode));
-  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   EXPECT_EQ(GetExpectedResultAsString(
                 ui::ET_KEY_RELEASED, ui::VKEY_LWIN, ui::DomCode::META_LEFT,
@@ -1714,7 +1714,7 @@ TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
                                       ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                       ui::EF_CAPS_LOCK_ON,
                                       ui::DomKey::CAPS_LOCK, kNoScanCode));
-  EXPECT_TRUE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   // Remap CapsLock key back to CapsLock.
   IntegerPrefMember capslock;
@@ -1732,7 +1732,7 @@ TEST_F(EventRewriterTest, TestRewriteExternalCapsLockWithDifferentScenarios) {
                                       ui::VKEY_CAPITAL, ui::DomCode::CAPS_LOCK,
                                       ui::EF_MOD3_DOWN, ui::DomKey::CAPS_LOCK,
                                       kNoScanCode));
-  EXPECT_FALSE(fake_ime_keyboard_.caps_lock_is_enabled_);
+  EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 }
 
 TEST_F(EventRewriterTest, TestRewriteCapsLockToControl) {

@@ -124,7 +124,7 @@ ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
     input_method::ImeKeyboard* keyboard = manager->GetImeKeyboard();
     if (keyboard && event->type() == ui::ET_KEY_PRESSED &&
         event->key_code() != ui::VKEY_CAPITAL &&
-        keyboard->CapsLockIsEnabled() != event->IsCapsLockOn()) {
+        keyboard->IsCapsLockEnabled() != event->IsCapsLockOn()) {
       // Synchronize the keyboard state with event's state if they do not
       // match. Do not synchronize for Caps Lock key because it is already
       // handled in event rewriter.

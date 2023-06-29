@@ -1103,7 +1103,7 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
     // we risk removing the CapsLock modifier and accidentally disabling
     // CapsLocks.
     if (incoming.key_code == VKEY_CAPITAL &&
-        !ime_keyboard_->CapsLockIsEnabled()) {
+        !ime_keyboard_->IsCapsLockEnabled()) {
       // We remove the CapsLock modifier here because we do not want to
       // turn on the Capslock modifier when the key has been remapped.
       incoming.flags &= ~EF_CAPS_LOCK_ON;
@@ -1160,7 +1160,7 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
   // AcceleratorController, so that the event is visible to apps (see
   // crbug.com/775743).
   if (key_event.type() == ET_KEY_PRESSED && state->key_code == VKEY_CAPITAL) {
-    ime_keyboard_->SetCapsLockEnabled(!ime_keyboard_->CapsLockIsEnabled());
+    ime_keyboard_->SetCapsLockEnabled(!ime_keyboard_->IsCapsLockEnabled());
   }
   return exact_event;
 }
