@@ -454,23 +454,6 @@ void CopyPasswordDetailWithID(int detail_id) {
         password_manager::features::kPasswordsGrouping);
   }
 
-  if ([self isRunningTest:@selector
-            (testAccountStorageSwitchHiddenIfSignedInAndFlagDisabled)]) {
-    config.features_disabled.push_back(
-        password_manager::features::kEnablePasswordsAccountStorage);
-  }
-  if ([self isRunningTest:@selector
-            (testAccountStorageSwitchShownIfSignedInAndFlagEnabled)] ||
-      [self
-          isRunningTest:@selector
-          (testAccountStorageSwitchDisabledIfBlockedByPolicyAndFlagEnabled)] ||
-      [self isRunningTest:@selector(testMovePasswordToAccount)] ||
-      [self isRunningTest:@selector
-            (testMovePasswordToAccountWithOnlyIncognitoTabOpen)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kEnablePasswordsAccountStorage);
-  }
-
   if ([self notesEnabled]) {
     config.features_enabled.push_back(syncer::kPasswordNotesWithBackup);
   } else {
@@ -3128,20 +3111,7 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 }
 
-- (void)testAccountStorageSwitchHiddenIfSignedInAndFlagDisabled {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
-
-  OpenPasswordManager();
-  OpenSettingsSubmenu();
-
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kPasswordSettingsAccountStorageSwitchTableViewId)]
-      assertWithMatcher:grey_nil()];
-}
-
-- (void)testAccountStorageSwitchShownIfSignedInAndFlagEnabled {
+- (void)testAccountStorageSwitchShownIfSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
 
@@ -3172,7 +3142,7 @@ void CopyPasswordDetailWithID(int detail_id) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-- (void)testAccountStorageSwitchDisabledIfBlockedByPolicyAndFlagEnabled {
+- (void)testAccountStorageSwitchDisabledIfBlockedByPolicy {
   policy_test_utils::SetPolicy(std::string("[\"passwords\"]"),
                                policy::key::kSyncTypesListDisabled);
 

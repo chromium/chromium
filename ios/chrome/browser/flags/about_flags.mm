@@ -1300,12 +1300,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableRefineDataSourceReloadReportingDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableRefineDataSourceReloadReporting)},
-    {"enable-passwords-account-storage",
-     flag_descriptions::kEnablePasswordsAccountStorageName,
-     flag_descriptions::kEnablePasswordsAccountStorageDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kEnablePasswordsAccountStorage)},
     {"enable-default-following-feed-sort-type",
      flag_descriptions::kFollowingFeedDefaultSortTypeName,
      flag_descriptions::kFollowingFeedDefaultSortTypeDescription,

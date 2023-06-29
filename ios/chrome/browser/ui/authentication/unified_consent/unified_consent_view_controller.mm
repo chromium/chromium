@@ -183,14 +183,10 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   [container addSubview:self.identityButtonControl];
 
   // Sync title and subtitle.
-  int stringId = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_TITLE;
-  if (!self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType) {
-    stringId =
-        base::FeatureList::IsEnabled(
-            password_manager::features::kEnablePasswordsAccountStorage)
-            ? IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE_WITHOUT_PASSWORDS
-            : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE;
-  }
+  int stringId =
+      self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType
+          ? IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_TITLE
+          : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE_WITHOUT_PASSWORDS;
   UILabel* syncTitleLabel =
       [self addLabelWithStringId:stringId
                        fontStyle:UIFontTextStyleSubheadline

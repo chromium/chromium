@@ -98,11 +98,6 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 class PasswordDetailsMediatorTest : public PlatformTest {
  protected:
   PasswordDetailsMediatorTest() {
-    // kEnablePasswordsAccountStorage needs to be enabled to create an account
-    // password store that is not null.
-    feature_list.InitAndEnableFeature(
-        password_manager::features::kEnablePasswordsAccountStorage);
-
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         IOSChromePasswordStoreFactory::GetInstance(),

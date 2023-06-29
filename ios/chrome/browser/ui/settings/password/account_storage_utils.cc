@@ -37,8 +37,10 @@ bool ShouldShowLocalOnlyIcon(const CredentialUIEntry& credential,
           syncer::SyncService::DisableReason::DISABLE_REASON_NOT_SIGNED_IN)) {
     return false;
   }
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kEnablePasswordsAccountStorage);
+
+  CHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kEnablePasswordsAccountStorage));
+  return true;
 }
 
 bool ShouldShowLocalOnlyIconForGroup(const AffiliatedGroup& affiliated_group,
