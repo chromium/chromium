@@ -34,6 +34,11 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (getIntent().getData() == null) {
+            finish();
+            return;
+        }
+
         String urlToLaunchSettingsFor = getIntent().getData().toString();
         boolean isWebApk = getIntent().getBooleanExtra(WebApkConstants.EXTRA_IS_WEBAPK, false);
         launchSettings(urlToLaunchSettingsFor, isWebApk);
