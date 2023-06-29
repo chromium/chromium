@@ -709,15 +709,11 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
 // Original track becomes unblocked for cropping after clone is GCed 1/3.
 // TODO(crbug.com/1353349)  Re-enable for macOS and ChromeOS after flakes are
 // resolved.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CanCropOriginalTrackAfterCloneIsGarbageCollected \
-  DISABLED_CanCropOriginalTrackAfterCloneIsGarbageCollected
-#else
-#define MAYBE_CanCropOriginalTrackAfterCloneIsGarbageCollected \
-  CanCropOriginalTrackAfterCloneIsGarbageCollected
-#endif
-IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
-                       MAYBE_CanCropOriginalTrackAfterCloneIsGarbageCollected) {
+// TODO(crbug.com/1459313): Also flakes on linux-bfcache-rel, so turning the
+// test off entirely.
+IN_PROC_BROWSER_TEST_F(
+    RegionCaptureClonesBrowserTest,
+    DISABLED_CanCropOriginalTrackAfterCloneIsGarbageCollected) {
   ManualSetUp();
 
   ASSERT_TRUE(CloneTrack());
