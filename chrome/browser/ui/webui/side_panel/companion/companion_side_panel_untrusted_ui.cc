@@ -93,6 +93,15 @@ void CompanionSidePanelUntrustedUI::RequestMediaAccessPermission(
 
 void CompanionSidePanelUntrustedUI::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  // We only care about error pages returning from two frames, the main WebUI
+  // frame and the companion iframe. Ignore navigations from any other subframe
+  // that could be nested within the companion.
+  auto* parent_frame = navigation_handle->GetParentFrame();
+  if (!navigation_handle->IsInPrimaryMainFrame() && parent_frame &&
+      !parent_frame->IsInPrimaryMainFrame()) {
+    return;
+  }
+
   if (navigation_handle->IsErrorPage() && companion_page_handler_) {
     companion_page_handler_->OnNavigationError();
   }
