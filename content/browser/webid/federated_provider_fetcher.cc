@@ -133,8 +133,7 @@ void FederatedProviderFetcher::OnWellKnownFetched(
     }
   }
 
-  if (urls.size() > kMaxProvidersInWellKnownFile &&
-      !IsFedCmWithoutWellKnownEnforcementEnabled()) {
+  if (urls.size() > kMaxProvidersInWellKnownFile) {
     OnError(fetch_result, FederatedAuthRequestResult::kErrorWellKnownTooBig,
             TokenStatus::kWellKnownTooBig,
             /*additional_console_error_message=*/absl::nullopt);
@@ -159,7 +158,7 @@ void FederatedProviderFetcher::OnWellKnownFetched(
   bool provider_url_is_valid =
       (urls.count(fetch_result.identity_provider_config_url) != 0);
 
-  if (!provider_url_is_valid) {
+  if (!provider_url_is_valid && !IsFedCmWithoutWellKnownEnforcementEnabled()) {
     OnError(fetch_result,
             FederatedAuthRequestResult::kErrorConfigNotInWellKnown,
             TokenStatus::kConfigNotInWellKnown,

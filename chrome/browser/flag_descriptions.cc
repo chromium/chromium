@@ -1627,7 +1627,7 @@ const char kFedCmWithoutThirdPartyCookiesDescription[] =
 const char kFedCmWithoutWellKnownEnforcementName[] =
     "FedCmWithoutWellKnownEnforcement";
 const char kFedCmWithoutWellKnownEnforcementDescription[] =
-    "Allows multiple provider urls in IdP's .well-known file.";
+    "Supports configURL that's not in the IdP's .well-known file.";
 
 const char kFedCmIdpSigninStatusName[] = "FedCmIdpSigninStatus";
 const char kFedCmIdpSigninStatusDescription[] =

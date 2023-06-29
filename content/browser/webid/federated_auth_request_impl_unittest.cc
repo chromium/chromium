@@ -1290,9 +1290,9 @@ TEST_F(FederatedAuthRequestImplTest, WellKnownEnforcementBypassed) {
   list.InitAndEnableFeature(features::kFedCmWithoutWellKnownEnforcement);
 
   MockConfiguration config = kConfigurationValid;
+  // The provider is not in the provider_list from the well-known.
   config.idp_info[kProviderUrlFull].well_known = {
-      {kProviderUrlFull, kProviderTwoUrlFull},
-      {ParseStatus::kSuccess, net::HTTP_OK}};
+      {kProviderTwoUrlFull}, {ParseStatus::kSuccess, net::HTTP_OK}};
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, config);
   EXPECT_TRUE(DidFetchWellKnownAndConfig());
   EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
