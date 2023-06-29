@@ -18,6 +18,10 @@ namespace content {
 // navigation network responses in a kHigh priority queue.
 BASE_DECLARE_FEATURE(kBeforeUnloadBrowserResponseQueue);
 
+// When enabled, the Clear-Site-Data HTTP Response header supports clearing the
+// client hints cache. When disabled, this header cannot clear the cache.
+BASE_DECLARE_FEATURE(kClearSiteDataClientHintsSupport);
+
 // When enabled, RenderFrameHostManager::CommitPending will also update the
 // visibility of all child views, not just that of the main frame.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kNavigationUpdatesChildViewsVisibility);

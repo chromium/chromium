@@ -4,6 +4,7 @@
 
 #include "content/public/browser/clear_site_data_utils.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -11,10 +12,12 @@
 #include "base/scoped_observation.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browsing_data/browsing_data_remover_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -69,7 +72,8 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
     DCHECK(!callback_);
   }
 
-  void RunAndDestroySelfWhenDone() {
+  void RunAndDestroySelfWhenDone(
+      ClientHintsControllerDelegate* client_hints_controller_delegate) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     // Cookies and channel IDs are scoped to
     // a) eTLD+1 of |origin|'s host if |origin|'s host is a registrable domain
@@ -150,6 +154,16 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
           std::move(origin_filter_builder), this);
     }
 
+    // We clear client hints for both cookie and cache clears.
+    if (client_hints_controller_delegate &&
+        base::FeatureList::IsEnabled(kClearSiteDataClientHintsSupport) &&
+        (clear_cookies_ || clear_cache_)) {
+      client_hints_controller_delegate->PersistClientHints(
+          origin_,
+          /*parent_rfh=*/nullptr,
+          /*client_hints=*/{});
+    }
+
     DCHECK_GT(pending_task_count_, 0);
   }
 
@@ -211,7 +225,8 @@ void ClearSiteData(
                        avoid_closing_connections, cookie_partition_key,
                        storage_key, partitioned_state_allowed_only,
                        std::move(callback)))
-      ->RunAndDestroySelfWhenDone();
+      ->RunAndDestroySelfWhenDone(
+          browser_context->GetClientHintsControllerDelegate());
 }
 
 }  // namespace content

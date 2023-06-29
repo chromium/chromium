@@ -2123,5 +2123,15 @@
     ],
     "args": ["--enable-features=ProduceCompileHints"],
     "expires": "never"
+  },
+  {
+    "prefix": "clear-site-data-client-hints-support",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/client-hints/clear-site-data"
+    ],
+    "args": ["--enable-features=ClearSiteDataClientHintsSupport"],
+    "expires": "Jun 28, 2024",
+    "owners": ["arichiv@chromium.org"]
   }
 ]
