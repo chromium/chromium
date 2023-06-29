@@ -88,7 +88,7 @@ message ServiceWorkerRegistrationData {
               kOptional = 1;
               kZeroOrMore = 2;
               kOneOrMore = 3;
-            };
+            }
             // Represents a fixed string part of a URLPattern as described in:
             // https://wicg.github.io/urlpattern/#part-type-fixed-text
             message FixedPattern {
@@ -115,9 +115,52 @@ message ServiceWorkerRegistrationData {
           }
           repeated Part pathname = 1;
         }
+        message Request {
+          optional string method = 1;
+          // RequestMode in services/network/public/mojom/fetch_api.mojom
+          enum Mode {
+            kSameOriginMode = 0;
+            kNoCorsMode = 1;
+            kCorsMode = 2;
+            kCorsWithForcedPreflightMode = 3;
+            kNavigateMode = 4;
+          }
+          optional Mode mode = 2;
+          // RequestDestination in services/network/public/mojom/fetch_api.mojom
+          enum Destination {
+            kEmptyDestination = 0;
+            kAudioDestination = 1;
+            kAudioWorkletDestination = 2;
+            kDocumentDestination = 3;
+            kEmbedDestination = 4;
+            kFontDestination = 5;
+            kFrameDestination = 6;
+            kIframeDestination = 7;
+            kImageDestination = 8;
+            kManifestDestination = 9;
+            kObjectDestination = 10;
+            kPaintWorkletDestination = 11;
+            kReportDestination = 12;
+            kScriptDestination = 13;
+            kServiceWorkerDestination = 14;
+            kSharedWorkerDestination = 15;
+            kStyleDestination = 16;
+            kTrackDestination = 17;
+            kVideoDestination = 18;
+            kWebBundleDestination = 19;
+            kWorkerDestination = 20;
+            kXsltDestination = 21;
+            kFencedframeDestination = 22;
+            kWebIdentityDestination = 23;
+            kDictionaryDestination = 24;
+          }
+          optional Destination destination = 3;
+        }
         oneof condition {
           // Used for representing URLPattern.
           URLPattern url_pattern = 1;
+          // Used for representing Request.
+          Request request = 2;
         }
       }
       message Source {

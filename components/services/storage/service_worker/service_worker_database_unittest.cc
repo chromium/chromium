@@ -20,6 +20,7 @@
 #include "components/services/storage/service_worker/service_worker_database.pb.h"
 #include "net/base/features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -3615,16 +3616,38 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
   {
     blink::ServiceWorkerRouterRules router_rules;
     blink::ServiceWorkerRouterRule rule;
-    blink::ServiceWorkerRouterCondition condition;
-    condition.type =
-        blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
-    blink::SafeUrlPattern url_pattern;
-    url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
-                                      "/test_data",
-                                      liburlpattern::Modifier::kNone);
-    condition.url_pattern = std::move(url_pattern);
-    rule.conditions.push_back(condition);
-    rule.conditions.push_back(condition);
+    {
+      blink::ServiceWorkerRouterCondition condition;
+      condition.type =
+          blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
+      blink::SafeUrlPattern url_pattern;
+      url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
+                                        "/test_data",
+                                        liburlpattern::Modifier::kNone);
+      condition.url_pattern = std::move(url_pattern);
+      rule.conditions.push_back(condition);
+    }
+    {
+      // test with full data.
+      blink::ServiceWorkerRouterCondition condition;
+      condition.type =
+          blink::ServiceWorkerRouterCondition::ConditionType::kRequest;
+      blink::ServiceWorkerRouterRequestCondition request;
+      request.method = "GET";
+      request.mode = network::mojom::RequestMode::kNavigate;
+      request.destination = network::mojom::RequestDestination::kDocument;
+      condition.request = request;
+      rule.conditions.push_back(condition);
+    }
+    {
+      // test with empty data.
+      blink::ServiceWorkerRouterCondition condition;
+      condition.type =
+          blink::ServiceWorkerRouterCondition::ConditionType::kRequest;
+      blink::ServiceWorkerRouterRequestCondition request;
+      condition.request = request;
+      rule.conditions.push_back(condition);
+    }
 
     blink::ServiceWorkerRouterSource source;
     source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;

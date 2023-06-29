@@ -6,6 +6,22 @@
 
 namespace mojo {
 
+bool StructTraits<blink::mojom::ServiceWorkerRouterRequestConditionDataView,
+                  blink::ServiceWorkerRouterRequestCondition>::
+    Read(blink::mojom::ServiceWorkerRouterRequestConditionDataView data,
+         blink::ServiceWorkerRouterRequestCondition* out) {
+  if (!data.ReadMethod(&out->method)) {
+    return false;
+  }
+  if (data.has_mode()) {
+    out->mode = data.mode();
+  }
+  if (data.has_destination()) {
+    out->destination = data.destination();
+  }
+  return true;
+}
+
 blink::mojom::ServiceWorkerRouterConditionDataView::Tag
 UnionTraits<blink::mojom::ServiceWorkerRouterConditionDataView,
             blink::ServiceWorkerRouterCondition>::
@@ -13,6 +29,8 @@ UnionTraits<blink::mojom::ServiceWorkerRouterConditionDataView,
   switch (data.type) {
     case blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern:
       return blink::mojom::ServiceWorkerRouterCondition::Tag::kUrlPattern;
+    case blink::ServiceWorkerRouterCondition::ConditionType::kRequest:
+      return blink::mojom::ServiceWorkerRouterCondition::Tag::kRequest;
   }
 }
 
@@ -25,6 +43,12 @@ bool UnionTraits<blink::mojom::ServiceWorkerRouterConditionDataView,
       out->type =
           blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
       if (!data.ReadUrlPattern(&out->url_pattern)) {
+        return false;
+      }
+      return true;
+    case blink::mojom::ServiceWorkerRouterCondition::Tag::kRequest:
+      out->type = blink::ServiceWorkerRouterCondition::ConditionType::kRequest;
+      if (!data.ReadRequest(&out->request)) {
         return false;
       }
       return true;

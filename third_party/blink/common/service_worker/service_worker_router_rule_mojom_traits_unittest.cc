@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule_mojom_traits.h"
 
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/liburlpattern/parse.h"
 #include "third_party/liburlpattern/pattern.h"
@@ -40,6 +41,25 @@ TEST(ServiceWorkerRouterRulesTest, SimpleRoundTrip) {
       ASSERT_TRUE(parse_result.ok());
       url_pattern.pathname = parse_result.value().PartList();
       condition.url_pattern = url_pattern;
+      rule.conditions.push_back(condition);
+    }
+    {
+      blink::ServiceWorkerRouterCondition condition;
+      condition.type =
+          blink::ServiceWorkerRouterCondition::ConditionType::kRequest;
+      blink::ServiceWorkerRouterRequestCondition request;
+      request.method = "GET";
+      request.mode = network::mojom::RequestMode::kNavigate;
+      request.destination = network::mojom::RequestDestination::kDocument;
+      condition.request = request;
+      rule.conditions.push_back(condition);
+    }
+    {
+      blink::ServiceWorkerRouterCondition condition;
+      condition.type =
+          blink::ServiceWorkerRouterCondition::ConditionType::kRequest;
+      blink::ServiceWorkerRouterRequestCondition request;
+      condition.request = request;
       rule.conditions.push_back(condition);
     }
     {

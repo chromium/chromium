@@ -4,7 +4,35 @@
 
 module blink.mojom;
 
+import "services/network/public/mojom/fetch_api.mojom";
 import "third_party/blink/public/mojom/safe_url_pattern.mojom";
+
+// This represents a request condition to match.
+// See:
+// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
+struct ServiceWorkerRouterRequestCondition {
+  // The request method.
+  // See: https://fetch.spec.whatwg.org/#concept-request-method
+  string? method;
+
+  // RequestMode
+  // See: https://fetch.spec.whatwg.org/#concept-request-mode
+  // If it is not set, ServiceWorkerRouterEvaluator won't use it as condition.
+  // TODO(http://crbug.com/657632): implement this with optional enum.
+  // Since the code is used on Android, we need Java variant, which currently
+  // does not support an optional enum.
+  bool has_mode = false;
+  network.mojom.RequestMode mode;
+
+  // RequestDestination
+  // See: https://fetch.spec.whatwg.org/#concept-request-destination
+  // If it is not set, ServiceWorkerRouterEvaluator won't use it as condition.
+  // TODO(http://crbug.com/657632): implement this with optional enum.
+  // Since the code is used on Android, we need Java variant, which currently
+  // does not support an optional enum.
+  bool has_destination = false;
+  network.mojom.RequestDestination destination;
+};
 
 // This represents a condition of the router rule.
 // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
@@ -12,6 +40,7 @@ import "third_party/blink/public/mojom/safe_url_pattern.mojom";
 union ServiceWorkerRouterCondition {
   // URLPattern to be used for matching.
   SafeUrlPattern url_pattern;
+  ServiceWorkerRouterRequestCondition request;
 };
 
 // This is used for specifying the source is network.

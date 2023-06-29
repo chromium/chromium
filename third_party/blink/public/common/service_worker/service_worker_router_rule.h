@@ -11,7 +11,27 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 
+namespace network::mojom {
+
+enum class RequestMode : int32_t;
+enum class RequestDestination : int32_t;
+
+}  // namespace network::mojom
+
 namespace blink {
+
+struct ServiceWorkerRouterRequestCondition {
+  // https://fetch.spec.whatwg.org/#concept-request-method
+  // Technically, it can be an arbitrary string, but Chromium would set
+  // k*Method in net/http/http_request_headers.h
+  absl::optional<std::string> method;
+  // RequestMode in services/network/public/mojom/fetch_api.mojom
+  absl::optional<network::mojom::RequestMode> mode;
+  // RequestDestination in services/network/public/mojom/fetch_api.mojom
+  absl::optional<network::mojom::RequestDestination> destination;
+
+  bool operator==(const ServiceWorkerRouterRequestCondition& other) const;
+};
 
 // TODO(crbug.com/1371756): implement other conditions in the proposal.
 // TODO(crbug.com/1456599): migrate to absl::variant if possible.
@@ -20,12 +40,18 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterCondition {
   enum class ConditionType {
     // URLPattern is used as a condition.
     kUrlPattern,
+    // Request condition.
+    kRequest,
   };
   ConditionType type;
 
   // URLPattern to be used for matching.
   // This field is valid if `type` is `kUrlPattern`.
   absl::optional<SafeUrlPattern> url_pattern;
+
+  // Request to be used for matching.
+  // This field is valid if `type` is `kRequest`.
+  absl::optional<ServiceWorkerRouterRequestCondition> request;
 
   bool operator==(const ServiceWorkerRouterCondition& other) const;
 };

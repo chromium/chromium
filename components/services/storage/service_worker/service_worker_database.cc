@@ -2032,6 +2032,171 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
 
             break;
           }
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+              kRequest: {
+            condition.type =
+                blink::ServiceWorkerRouterCondition::ConditionType::kRequest;
+            blink::ServiceWorkerRouterRequestCondition request;
+            if (c.request().has_method()) {
+              request.method = c.request().method();
+            }
+            if (c.request().has_mode()) {
+              switch (c.request().mode()) {
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kSameOriginMode:
+                  request.mode = network::mojom::RequestMode::kSameOrigin;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kNoCorsMode:
+                  request.mode = network::mojom::RequestMode::kNoCors;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kCorsMode:
+                  request.mode = network::mojom::RequestMode::kCors;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kCorsWithForcedPreflightMode:
+                  request.mode =
+                      network::mojom::RequestMode::kCorsWithForcedPreflight;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kNavigateMode:
+                  request.mode = network::mojom::RequestMode::kNavigate;
+                  break;
+              }
+            }
+            if (c.request().has_destination()) {
+              switch (c.request().destination()) {
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kEmptyDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kEmpty;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kAudioDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kAudio;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kAudioWorkletDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kAudioWorklet;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kDocumentDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kDocument;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kEmbedDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kEmbed;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kFontDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kFont;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kFrameDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kFrame;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kIframeDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kIframe;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kImageDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kImage;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kManifestDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kManifest;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kObjectDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kObject;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kPaintWorkletDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kPaintWorklet;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kReportDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kReport;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kScriptDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kScript;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kServiceWorkerDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kServiceWorker;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kSharedWorkerDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kSharedWorker;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kStyleDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kStyle;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kTrackDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kTrack;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kVideoDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kVideo;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kWebBundleDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kWebBundle;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kWorkerDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kWorker;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kXsltDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kXslt;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kFencedframeDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kFencedframe;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kWebIdentityDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kWebIdentity;
+                  break;
+                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                    Condition::Request::kDictionaryDestination:
+                  request.destination =
+                      network::mojom::RequestDestination::kDictionary;
+                  break;
+              }
+            }
+            condition.request = request;
+            break;
+          }
         }
         router_rule.conditions.emplace_back(condition);
       }
@@ -2310,6 +2475,171 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
                   part->set_suffix(p.suffix);
                   break;
                 }
+              }
+            }
+            break;
+          }
+          case blink::ServiceWorkerRouterCondition::ConditionType::kRequest: {
+            ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+                Request* request = condition->mutable_request();
+            if (c.request->method) {
+              request->set_method(*c.request->method);
+            }
+            if (c.request->mode) {
+              switch (*c.request->mode) {
+                case network::mojom::RequestMode::kSameOrigin:
+                  request->set_mode(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kSameOriginMode);
+                  break;
+                case network::mojom::RequestMode::kNoCors:
+                  request->set_mode(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kNoCorsMode);
+                  break;
+                case network::mojom::RequestMode::kCors:
+                  request->set_mode(ServiceWorkerRegistrationData::RouterRules::
+                                        RuleV1::Condition::Request::kCorsMode);
+                  break;
+                case network::mojom::RequestMode::kCorsWithForcedPreflight:
+                  request->set_mode(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kCorsWithForcedPreflightMode);
+                  break;
+                case network::mojom::RequestMode::kNavigate:
+                  request->set_mode(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kNavigateMode);
+                  break;
+              }
+            }
+            if (c.request->destination) {
+              switch (*c.request->destination) {
+                case network::mojom::RequestDestination::kEmpty:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kEmptyDestination);
+                  break;
+                case network::mojom::RequestDestination::kAudio:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kAudioDestination);
+                  break;
+                case network::mojom::RequestDestination::kAudioWorklet:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kAudioWorkletDestination);
+                  break;
+                case network::mojom::RequestDestination::kDocument:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kDocumentDestination);
+                  break;
+                case network::mojom::RequestDestination::kEmbed:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kEmbedDestination);
+                  break;
+                case network::mojom::RequestDestination::kFont:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kFontDestination);
+                  break;
+                case network::mojom::RequestDestination::kFrame:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kFrameDestination);
+                  break;
+                case network::mojom::RequestDestination::kIframe:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kIframeDestination);
+                  break;
+                case network::mojom::RequestDestination::kImage:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kImageDestination);
+                  break;
+                case network::mojom::RequestDestination::kManifest:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kManifestDestination);
+                  break;
+                case network::mojom::RequestDestination::kObject:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kObjectDestination);
+                  break;
+                case network::mojom::RequestDestination::kPaintWorklet:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kPaintWorkletDestination);
+                  break;
+                case network::mojom::RequestDestination::kReport:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kReportDestination);
+                  break;
+                case network::mojom::RequestDestination::kScript:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kScriptDestination);
+                  break;
+                case network::mojom::RequestDestination::kServiceWorker:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kServiceWorkerDestination);
+                  break;
+                case network::mojom::RequestDestination::kSharedWorker:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kSharedWorkerDestination);
+                  break;
+                case network::mojom::RequestDestination::kStyle:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kStyleDestination);
+                  break;
+                case network::mojom::RequestDestination::kTrack:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kTrackDestination);
+                  break;
+                case network::mojom::RequestDestination::kVideo:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kVideoDestination);
+                  break;
+                case network::mojom::RequestDestination::kWebBundle:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kWebBundleDestination);
+                  break;
+                case network::mojom::RequestDestination::kWorker:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kWorkerDestination);
+                  break;
+                case network::mojom::RequestDestination::kXslt:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kXsltDestination);
+                  break;
+                case network::mojom::RequestDestination::kFencedframe:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kFencedframeDestination);
+                  break;
+                case network::mojom::RequestDestination::kWebIdentity:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kWebIdentityDestination);
+                  break;
+                case network::mojom::RequestDestination::kDictionary:
+                  request->set_destination(
+                      ServiceWorkerRegistrationData::RouterRules::RuleV1::
+                          Condition::Request::kDictionaryDestination);
+                  break;
               }
             }
             break;
