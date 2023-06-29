@@ -900,8 +900,7 @@ void ChromeShelfController::DoShowAppInfoFlow(Profile* profile,
 void ChromeShelfController::OnAppInstalled(
     content::BrowserContext* browser_context,
     const std::string& app_id) {
-  if (IsAppPinned(app_id) &&
-      ShelfControllerHelper::IsAppHiddenFromShelf(profile(), app_id)) {
+  if (IsAppPinned(app_id) && IsAppHiddenFromShelf(profile(), app_id)) {
     ScopedPinSyncDisabler scoped_pin_sync_disabler = GetScopedPinSyncDisabler();
     UnpinShelfItemInternal(ash::ShelfID(app_id));
   }
@@ -1278,8 +1277,9 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
   for (const auto& pref_shelf_id : pinned_apps) {
     const std::string app_id = pref_shelf_id.app_id;
     // Do not show apps in the shelf if they are explicitly forbidden.
-    if (ShelfControllerHelper::IsAppHiddenFromShelf(profile(), app_id))
+    if (IsAppHiddenFromShelf(profile(), app_id)) {
       continue;
+    }
 
     // Update apps icon if applicable.
     OnAppUpdated(profile(), app_id, /*reload_icon=*/true);

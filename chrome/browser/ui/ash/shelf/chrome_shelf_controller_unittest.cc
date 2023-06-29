@@ -84,6 +84,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/camera_system_web_app_info.h"
+#include "chrome/browser/ash/system_web_apps/apps/os_flags_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
@@ -5509,6 +5510,22 @@ TEST_F(ChromeShelfControllerTest, DoNotShowInShelf) {
 
   InitShelfController();
   EXPECT_EQ("Chrome, App2", GetPinnedAppStatus());
+  EXPECT_FALSE(IsAppPinEditable(apps::AppType::kChromeApp, extension1_->id(),
+                                profile()));
+}
+
+TEST_F(ChromeShelfControllerTest, OsFlagsNotShowInShelfNotPinnable) {
+  auto delegate = std::make_unique<OsFlagsSystemWebAppDelegate>(profile());
+  ash::SystemWebAppType app_type = delegate->GetType();
+  InstallSystemWebApp(std::move(delegate));
+  InitShelfController();
+
+  absl::optional<web_app::AppId> app_id =
+      ash::SystemWebAppManager::GetForTest(profile())->GetAppIdForSystemApp(
+          app_type);
+  ASSERT_TRUE(app_id);
+  EXPECT_EQ("Chrome", GetPinnedAppStatus());
+  EXPECT_FALSE(IsAppPinEditable(apps::AppType::kSystemWeb, *app_id, profile()));
 }
 
 TEST_F(ChromeShelfControllerWithArcTest, ReplacePinnedItem) {
@@ -5858,23 +5875,31 @@ TEST_F(ChromeShelfControllerTest, AppsHiddenFromShelfDontGetPinnedByPolicy) {
 TEST_F(ChromeShelfControllerTest, AppHiddenFromShelfNotPinnedOnInstall) {
   AddExtension(extension1_.get());
   InitShelfController();
-  PinAppWithIDToShelf(extension1_->id());
+  const std::string app_id = extension1_->id();
+  const apps::AppType app_type =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->AppRegistryCache()
+          .GetAppType(app_id);
+  PinAppWithIDToShelf(app_id);
   EXPECT_EQ(2, model_->item_count());
-  EXPECT_TRUE(model_->IsAppPinned(extension1_->id()));
-  EXPECT_EQ(1, model_->ItemIndexByAppID(extension1_->id()));
+  EXPECT_TRUE(model_->IsAppPinned(app_id));
+  EXPECT_EQ(1, model_->ItemIndexByAppID(app_id));
+  EXPECT_TRUE(IsAppPinEditable(app_type, app_id, profile()));
 
   // Block the extension so it gets removed from shelf.
-  UpdateAppRegistryCache(profile(), extension1_->id(), /*block=*/true,
+  UpdateAppRegistryCache(profile(), app_id, /*block=*/true,
                          /*pause=*/false,
                          /*show_in_shelf=*/false);
-  EXPECT_FALSE(model_->IsAppPinned(extension1_->id()));
+  EXPECT_FALSE(model_->IsAppPinned(app_id));
 
   // Unblock the extension, but mark it as not shown in shelf - verify it
   // doesn't get pinned/added to shelf.
-  UpdateAppRegistryCache(profile(), extension1_->id(), /*block=*/false,
+  UpdateAppRegistryCache(profile(), app_id, /*block=*/false,
                          /*pause=*/false,
                          /*show_in_shelf=*/false);
-  EXPECT_FALSE(model_->IsAppPinned(extension1_->id()));
+
+  EXPECT_FALSE(model_->IsAppPinned(app_id));
+  EXPECT_FALSE(IsAppPinEditable(app_type, app_id, profile()));
 
   // Allow the app to be shown in shelf, and verify it gets pinned again.
   UpdateAppRegistryCache(profile(), extension1_->id(), /*block=*/false,
@@ -5883,6 +5908,7 @@ TEST_F(ChromeShelfControllerTest, AppHiddenFromShelfNotPinnedOnInstall) {
   EXPECT_TRUE(model_->IsAppPinned(extension1_->id()));
   EXPECT_TRUE(model_->AllowedToSetAppPinState(extension1_->id(), false));
   EXPECT_EQ(1, model_->ItemIndexByAppID(extension1_->id()));
+  EXPECT_TRUE(IsAppPinEditable(app_type, app_id, profile()));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

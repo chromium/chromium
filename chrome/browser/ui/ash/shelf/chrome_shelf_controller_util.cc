@@ -93,9 +93,27 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   return AppListControllerDelegate::PIN_EDITABLE;
 }
 
+bool IsAppHiddenFromShelf(Profile* profile, const std::string& app_id) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return false;
+  }
+
+  bool hidden = false;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&hidden](const apps::AppUpdate& update) {
+        hidden = !update.ShowInShelf().value_or(true);
+      });
+
+  return hidden;
+}
 bool IsAppPinEditable(apps::AppType app_type,
                       const std::string& app_id,
                       Profile* profile) {
+  if (IsAppHiddenFromShelf(profile, app_id)) {
+    return false;
+  }
+
   switch (app_type) {
     case apps::AppType::kArc: {
       const arc::ArcAppShelfId& arc_shelf_id =
