@@ -579,7 +579,7 @@ let instance: App|null = null;
 
   metrics.initMetrics();
   if (appWindow !== null) {
-    metrics.setMetricsEnabled(false);
+    metrics.setGaEnabled(false);
   }
 
   // Setup listener for performance events.

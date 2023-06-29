@@ -4,7 +4,7 @@
 
 import {assert, assertExists} from './assert.js';
 import * as Comlink from './lib/comlink.js';
-import {GAHelper} from './untrusted_ga_helper.js';
+import {GaHelper} from './untrusted_ga_helper.js';
 import {VideoProcessorHelper} from './untrusted_video_processor_helper.js';
 import {WaitableEvent} from './waitable_event.js';
 
@@ -56,25 +56,25 @@ export async function injectUntrustedJSModule<T>(
   return untrustedRemote as unknown as Comlink.Remote<T>;
 }
 
-let gaHelper: Promise<Comlink.Remote<GAHelper>>|null = null;
+let gaHelper: Promise<Comlink.Remote<GaHelper>>|null = null;
 let videoProcessorHelper: Promise<Comlink.Remote<VideoProcessorHelper>>|null =
     null;
 
 /**
- * Gets the singleton GAHelper instance that is located in an untrusted iframe.
+ * Gets the singleton GaHelper instance that is located in an untrusted iframe.
  */
-export function getGAHelper(): Promise<Comlink.Remote<GAHelper>> {
+export function getGaHelper(): Promise<Comlink.Remote<GaHelper>> {
   return assertExists(gaHelper);
 }
 
 /**
- * Sets the singleton GAHelper instance. This should only be called on
+ * Sets the singleton GaHelper instance. This should only be called on
  * initialize by init.ts.
  */
-export function setGAHelper(newGAHelper: Promise<Comlink.Remote<GAHelper>>):
+export function setGaHelper(newGaHelper: Promise<Comlink.Remote<GaHelper>>):
     void {
   assert(gaHelper === null, 'gaHelper should only be initialize once on init');
-  gaHelper = newGAHelper;
+  gaHelper = newGaHelper;
 }
 
 /**

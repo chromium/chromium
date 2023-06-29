@@ -15,7 +15,7 @@ import {TestBridge} from './test_bridge.js';
 import {
   createUntrustedIframe,
   injectUntrustedJSModule,
-  setGAHelper,
+  setGaHelper,
   setVideoProcessorHelper,
 } from './untrusted_scripts.js';
 
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await appWindow.waitUntilReadyOnTastSide();
   }
 
-  setGAHelper(
+  setGaHelper(
       injectUntrustedJSModule(gaHelperIFrame, '/js/untrusted_ga_helper.js'));
   setVideoProcessorHelper(injectUntrustedJSModule(
       videoProcessorHelperIFrame, '/js/untrusted_video_processor_helper.js'));
