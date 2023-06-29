@@ -696,6 +696,7 @@ crbug.com/1370460 [ Mac ] external/wpt/svg/text/reftests/xml-lang-attribute.svg 
 crbug.com/492187 external/wpt/css/CSS2/backgrounds/background-intrinsic-004.xht [ Failure ]
 crbug.com/492187 external/wpt/css/CSS2/backgrounds/background-intrinsic-006.xht [ Failure ]
 
+crbug.com/599095 svg/custom/zoomed-background-alignment.html [ Failure ]
 
 # No emoji flag symbols available in the Windows system emoji font.
 
