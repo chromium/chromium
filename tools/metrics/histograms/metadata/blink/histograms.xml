@@ -886,6 +886,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.DecodedImage.WebPDensity.KiBWeighted2"
+    units="0.01 bits per pixel" expires_after="2023-11-30">
+  <owner>wtc@google.com</owner>
+  <owner>jzern@google.com</owner>
+  <owner>src/third_party/blink/renderer/platform/image-decoders/OWNERS</owner>
+  <summary>
+    The compressed image size in KiB per image density measured in 0.01 bits per
+    pixel. This is logged once per image load after the whole image is loaded
+    and only for WebP still images with at least 100 pixels on the smallest
+    dimension (width or height). The reported count for a sample represents the
+    image size rounded to the nearest KiB.
+  </summary>
+</histogram>
+
 <histogram name="Blink.DecodedImage.WebPFileFormat" enum="WebPFileFormat"
     expires_after="2023-11-12">
   <owner>mcasas@chromium.org</owner>

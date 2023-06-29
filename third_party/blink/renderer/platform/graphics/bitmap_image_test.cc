@@ -847,6 +847,8 @@ TEST_F(BitmapHistogramTest, DecodedImageDensityKiBWeighted) {
     LoadImage("animated-10color.gif");       // 100x100 but GIF is not reported.
     histogram_tester.ExpectTotalCount(
         "Blink.DecodedImage.JpegDensity.KiBWeighted", 0);
+    histogram_tester.ExpectTotalCount(
+        "Blink.DecodedImage.WebPDensity.KiBWeighted2", 0);
 #if BUILDFLAG(ENABLE_AV1_DECODER)
     histogram_tester.ExpectTotalCount(
         "Blink.DecodedImage.AvifDensity.KiBWeighted2", 0);
@@ -862,6 +864,11 @@ TEST_F(BitmapHistogramTest, DecodedImageDensityKiBWeighted) {
   ExpectImageRecordsSample("blue-wheel-srgb-color-profile.jpg",
                            "Blink.DecodedImage.JpegDensity.KiBWeighted", 578,
                            72);
+
+  // 800x800, 19436 bytes --> 0.24, 19 KiB
+  ExpectImageRecordsSample("webp-color-profile-lossy.webp",
+                           "Blink.DecodedImage.WebPDensity.KiBWeighted2", 24,
+                           19);
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   // 840x1120, 18769 bytes --> 0.16, 18 KiB
