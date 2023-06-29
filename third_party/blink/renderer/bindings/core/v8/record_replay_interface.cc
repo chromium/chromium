@@ -286,7 +286,7 @@ function messageCallback(message) {
       }
     }
   } catch (e) {
-    log(`[RuntimeError] Message callback exception: ${e?.stack || e}`);
+    warning(`JS Message callback exception: ${e?.stack || e}`);
 
     return JSON.stringify({
       is_error: true,
@@ -493,7 +493,7 @@ function Target_getCurrentNetworkRequestEvent() {
     const obj = JSON.parse(getCurrentNetworkRequestEvent());
     return { data: obj };
   } catch (e) {
-    log(`[RuntimeError] getCurrentNetworkRequestEvent exception: ${e}`);
+    warning(`JS Target.getCurrentNetworkRequestEvent exception: ${e}`);
   }
 }
 
@@ -502,7 +502,7 @@ function Target_getCurrentNetworkStreamData(params) {
   if (data) {
     return { data };
   } else {
-    log(`[RuntimeError] getCurrentNetworkStreamData returned no data.`);
+    warning(`JS Target.getCurrentNetworkStreamData returned no data.`);
   }
 }
 
@@ -788,7 +788,7 @@ function clearPauseDataCallback() {
       objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP,
     });
   } catch (e) {
-    log(`[RuntimeError] clearPauseDataCallback exception: ${e}`);
+    warning(`JS clearPauseDataCallback exception: ${e}`);
   }
 }
 
@@ -1183,7 +1183,7 @@ ProtocolObjectPreview.prototype = {
       return;
     }
 
-    const rrpValue = evalPropRrp(this.raw, propKey);
+    const rrpValue = evalPropRrpNotNull(this.raw, propKey);
     if (rrpValue) {
       this.setGetterValue(propKey, rrpValue, force);
     }
@@ -1473,9 +1473,18 @@ function previewBlinkRule(rule) {
   };
 }
 
-function previewArray() {
-  // simply invoke the native getter
-  this.addGetterValue('length', this.cdpObj, /* force */ true);
+function previewArray(cdpProperties) {
+  // TODO: [RUN-2223] Find out why Array.length does not always return a value.
+  // this.addGetterValue('length', this.cdpObj, /* force */ true);
+
+  // Workaround: Get length from CDP description.
+  const desc = this.cdpObj.description || "";
+  const lengthStr = desc.match(/\d+/)?.[0];
+  if (!lengthStr) {
+    warning(`[RUN-2223] JS previewArray - could not extract length from CDP description: ${JSON_stringify(this.cdpObj)}`);
+  }
+  const length = parseInt(lengthStr || "0");
+  this.setGetterValue("length", createRrpValueRaw(length));
 }
 
 function previewTypedArray() {
@@ -1621,13 +1630,20 @@ const CustomPreviewers = {
 /**
  * Get given prop from given object and get its value.
  * Return RRP wrapper.
+ * Since we only use this for a small set of well defined
+ * props, we emit a warning if the result is undefined or null.
  */
-function evalPropRrp(owner, propKey) {
+function evalPropRrpNotNull(owner, propKey) {
   try {
     const plainValue = owner[propKey];
+    if (plainValue === undefined || plainValue === null) {
+      // [RUN-2223] This should not happen.
+      const e = new Error("");
+      warning(`[RUN-2223] JS evalPropRrpNotNull got ${plainValue} when evaluating ${propKey} on ${typeof owner}, stack=${e.stack}`);
+    }
     return createRrpValueRaw(plainValue);
   } catch (err) {
-    log(`[RuntimeError] prop evaluation exception - calling ${propKey.toString()} on object: ${err.stack}`);
+    warning(`JS evalPropRrpNotNull exception - calling ${propKey?.toString?.()} on ${typeof owner} - ${err?.stack || err}`);
     return null;
   }
 }
@@ -3726,8 +3742,8 @@ v8::MaybeLocal<v8::Value> convertCborToJSTempl(v8::Isolate* isolate,
         return jsonObj.ToLocalChecked();
       }
     } else {
-      recordreplay::Print("[RuntimeError] Failed to deserialize: %s",
-                          errorMessage.c_str());
+      recordreplay::Warning("convertCborToJSTempl - Failed to deserialize: %s",
+                            errorMessage.c_str());
     }
   }
   v8::MaybeLocal<v8::Value> defaultVal;
@@ -3899,7 +3915,7 @@ getObjectByCdpId(v8::Isolate* isolate,
   v8::Local<v8::Value> unwrapped;
   if (!getInspectorSession()->unwrapObject(&error, cdpIdV8, &unwrapped, &context,
                                        nullptr)) {
-    recordreplay::Print("[RuntimError] could not lookup cdpId: %s",
+    recordreplay::Warning("getObjectByCdpId - Failed to look up cdpId: %s",
                         ToCoreString(error->string()).Ascii().c_str());
     return false;
   }
@@ -4470,8 +4486,8 @@ static bool checkCDPResponse(const char* label,
                              const protocol::Response& response,
                              const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (!response.IsSuccess()) {
-    recordreplay::Print(
-        "[RuntimeError] CDP call \"%s\" failed (Code: %d): %s",
+    recordreplay::Warning(
+        "CDP %s failed (Code: %d): %s",
         label,
         response.Code(),
         response.Message().c_str());
@@ -4533,8 +4549,8 @@ static void fromJsGetBoxModel(
       domAgent->getBoxModel(nodeId, backend_node_id, object_id, &boxModel);
 
   if (!response.IsSuccess()) {
-    recordreplay::Print(
-        "[RuntimeError] InspectorDOMAgent.getBoxModel failed (nodeId: %d, Code: "
+    recordreplay::Warning(
+        "CDP InspectorDOMAgent.getBoxModel failed (nodeId: %d, Code: "
         "%d): %s",
         nodeId, response.Code(), response.Message().c_str());
   } else {
@@ -4576,8 +4592,8 @@ static void fromJsGetMatchedStylesForNode(
   // WIP: will fix everything up and clean up when done w/ RUN-981
 
   if (!response.IsSuccess()) {
-    recordreplay::Print(
-        "[RuntimeError] CSS.getMatchedStylesForNode failed (nodeId: %d, Code: "
+    recordreplay::Warning(
+        "CDP CSS.getMatchedStylesForNode failed (nodeId: %d, Code: "
         "%d): %s",
         nodeId, response.Code(), response.Message().c_str());
     args.GetReturnValue().SetNull();
@@ -4688,7 +4704,7 @@ static void fromJsCollectEventListeners(const v8::FunctionCallbackInfo<v8::Value
 
   v8::Local<v8::Array> result = v8::Array::New(isolate);
   if (!node) {
-    recordreplay::Print("[RuntimeError] fromJsCollectEventListeners invalid argument is not blink Node");
+    recordreplay::Warning("JS fromJsCollectEventListeners invalid argument is not blink Node");
   } else {
     auto report_for_all_contexts = true;
     V8EventListenerInfoList eventListenerInfos;
