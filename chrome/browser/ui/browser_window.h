@@ -413,8 +413,11 @@ class BrowserWindow : public ui::BaseWindow {
   virtual void ShowBookmarkBubble(const GURL& url, bool already_bookmarked) = 0;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Maybe shows the IOS Password Promo Bubble.
-  virtual void MaybeShowIOSPasswordPromoBubble() = 0;
+  // Checks if the user is eligible for the iOS Password Promo Bubble. If they
+  // are, make a final eligibility check with a call to the segmentation
+  // platform with `MaybeShowIOSPasswordPromoBubble` passed as callback. That
+  // method may create/show a bubble to the user.
+  virtual void VerifyUserEligibilityIOSPasswordPromoBubble() = 0;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Shows the Screenshot bubble.
