@@ -5149,14 +5149,14 @@
             ]
         }
     ],
-    "EnableBookmarksAccountStorage": [
+    "EnableBookmarksAccountStorageIOS": [
         {
             "platforms": [
                 "ios"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20230629",
                     "enable_features": [
                         "EnableBookmarksAccountStorage"
                     ]
@@ -11468,7 +11468,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20230629",
                     "enable_features": [
                         "ReadingListEnableDualReadingListModel",
                         "ReadingListEnableSyncTransportModeUponSignIn"
