@@ -1341,7 +1341,6 @@ def build_perf_builder(**kwargs):
     kwargs.setdefault("reclient_instance", reclient.instance.DEFAULT_UNTRUSTED)
     kwargs.setdefault("reclient_jobs", reclient.jobs.HIGH_JOBS_FOR_CQ)
     kwargs.setdefault("use_clang_coverage", True)
-    kwargs.setdefault("siso_configs", ["remote_all"])
 
     return ci.builder(
         service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
@@ -1351,6 +1350,7 @@ def build_perf_builder(**kwargs):
         siso_enable_cloud_profiler = True,
         siso_enable_cloud_trace = True,
         siso_project = siso.project.DEFAULT_UNTRUSTED,
+        siso_configs = ["remote_all", "rewrapper_to_reproxy"],
         notifies = ["chrome-build-perf"],
         **kwargs
     )
@@ -1525,8 +1525,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "lnxss",
     ),
-    # TODO(b/273407069): enable reproxy mode by default.
-    siso_configs = ["remote_all", "rewrapper_to_reproxy"],
 )
 
 build_perf_builder(
