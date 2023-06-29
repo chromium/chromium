@@ -178,6 +178,9 @@
 
     // browser_process_read_access indicates the runtime feature state should be
     // readable in the browserprocess via RuntimeFeatureStateReadContext.
+    // TODO(crbug.com/1377000): this feature does not support origin trial
+    // tokens provided in HTTP headers. Any tokens provided via HTTP header will
+    // be dropped.
     browser_process_read_access: {
       default: false,
       value_type: "bool",
@@ -185,6 +188,9 @@
 
     // browser_process_read_write_access indicates the runtime feature state
     // should be writable in the browserprocess via RuntimeFeatureStateContext.
+    // TODO(crbug.com/1377000): this feature does not support origin trial
+    // tokens provided in HTTP headers. Any tokens provided via HTTP header will
+    // be dropped.
     browser_process_read_write_access: {
       default: false,
       value_type: "bool",
