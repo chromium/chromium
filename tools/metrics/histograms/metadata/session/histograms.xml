@@ -803,6 +803,40 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Session.TotalDurationMax1Day.{MsbbState}" units="ms"
+    expires_after="2024-06-15">
+  <owner>mastiz@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    The amount of active browsing time that was spent with &quot;Make Searches
+    and Browsing Better&quot; {MsbbState}.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their history sync
+    status changes. These end-points are when the metric is emitted. For details
+    on how &quot;stopped interacting with the browser&quot; is decided, see the
+    description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+  </summary>
+  <token key="MsbbState">
+    <variant name="WithMsbb" summary="enabled"/>
+    <variant name="WithoutMsbb" summary="NOT enabled"/>
+  </token>
+</histogram>
+
 <histogram name="Session.WebState.CustomWebViewSerializedSize" units="KB"
     expires_after="2023-12-10">
   <owner>justincohen@chromium.org</owner>
