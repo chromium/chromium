@@ -15,12 +15,6 @@
 
 namespace ash {
 
-namespace {
-
-constexpr SkColor kTestDefaultColor = SK_ColorYELLOW;
-
-}  // namespace
-
 class ColorUtilTest : public AshTestBase {
  public:
   ColorUtilTest() = default;
@@ -43,17 +37,6 @@ class ColorUtilTest : public AshTestBase {
   std::unique_ptr<WallpaperControllerTestApi> wallpaper_controller_test_api_;
 };
 
-TEST_F(ColorUtilTest, DefaultsToDefaultColor) {
-  test_api()->SetCalculatedColors({/*prominent_colors=*/{},
-                                   /*k_mean_color=*/kInvalidWallpaperColor,
-                                   /*celebi_color=*/kInvalidWallpaperColor});
-  for (const bool use_dark_color : {true, false}) {
-    EXPECT_SKCOLOR_EQ(
-        kTestDefaultColor,
-        ColorUtil::GetBackgroundThemedColor(kTestDefaultColor, use_dark_color));
-  }
-}
-
 TEST_F(ColorUtilTest, MixesWithWhiteInLightMode) {
   // Tuple of k_mean_color, expected output color after masking with white.
   std::vector<std::tuple<SkColor, SkColor>> cases = {
@@ -62,9 +45,7 @@ TEST_F(ColorUtilTest, MixesWithWhiteInLightMode) {
       {SK_ColorMAGENTA, SkColorSetARGB(0xFF, 0xFF, 0xE6, 0xFF)},
   };
   for (const auto& [k_mean_color, expected_color] : cases) {
-    test_api()->SetCalculatedColors({{}, k_mean_color, kInvalidWallpaperColor});
-    SkColor result_color =
-        ColorUtil::GetBackgroundThemedColor(kTestDefaultColor, false);
+    SkColor result_color = ColorUtil::AdjustKMeansColor(k_mean_color, false);
     EXPECT_SKCOLOR_EQ(expected_color, result_color);
   }
 }
@@ -93,9 +74,7 @@ TEST_F(ColorUtilTest, ClampsMaxLightnessInLightMode) {
       },
   };
   for (const auto& [k_mean_color, expected_color] : cases) {
-    test_api()->SetCalculatedColors({{}, k_mean_color, kInvalidWallpaperColor});
-    SkColor result_color =
-        ColorUtil::GetBackgroundThemedColor(kTestDefaultColor, false);
+    SkColor result_color = ColorUtil::AdjustKMeansColor(k_mean_color, false);
     EXPECT_SKCOLOR_EQ(expected_color, result_color);
   }
 }
@@ -108,9 +87,7 @@ TEST_F(ColorUtilTest, MixesWithBlackInDarkMode) {
       {SK_ColorMAGENTA, SkColorSetARGB(0xFF, 0x5A, 0x00, 0x5A)},
   };
   for (const auto& [k_mean_color, expected_color] : cases) {
-    test_api()->SetCalculatedColors({{}, k_mean_color, kInvalidWallpaperColor});
-    SkColor result_color =
-        ColorUtil::GetBackgroundThemedColor(kTestDefaultColor, true);
+    SkColor result_color = ColorUtil::AdjustKMeansColor(k_mean_color, true);
     EXPECT_SKCOLOR_EQ(expected_color, result_color);
   }
 }
@@ -139,10 +116,7 @@ TEST_F(ColorUtilTest, ClampsMaxDarknessInDarkMode) {
       },
   };
   for (const auto& [k_mean_color, expected_color] : cases) {
-    test_api()->SetCalculatedColors(
-        {{}, k_mean_color, /*celebi_color=*/kInvalidWallpaperColor});
-    SkColor result_color =
-        ColorUtil::GetBackgroundThemedColor(kTestDefaultColor, true);
+    SkColor result_color = ColorUtil::AdjustKMeansColor(k_mean_color, true);
     EXPECT_SKCOLOR_EQ(expected_color, result_color);
   }
 }

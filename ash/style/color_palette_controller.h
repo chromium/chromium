@@ -117,6 +117,9 @@ class ASH_EXPORT ColorPaletteController : public SessionObserver,
                               const AccountId& account_id,
                               base::OnceClosure on_complete) = 0;
 
+  virtual SkColor GetUserWallpaperColorOrDefault(
+      SkColor default_color) const = 0;
+
   // Overrides the wallpaper color with a scheme based on the provided
   // `seed_color`. This will override whatever might be sampled from the
   // wallpaper. `on_complete` is called after the change has been applied to the

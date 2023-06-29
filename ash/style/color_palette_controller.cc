@@ -53,14 +53,6 @@ using ColorMode = ui::ColorProviderKey::ColorMode;
 
 const SkColor kDefaultWallpaperColor = gfx::kGoogleBlue400;
 
-// Returns the wallpaper colors for pre-Jelly.  Called for both dark and light.
-SkColor GetWallpaperColor(bool is_dark_mode_enabled) {
-  const SkColor default_color =
-      is_dark_mode_enabled ? gfx::kGoogleGrey900 : SK_ColorWHITE;
-  return ColorUtil::GetBackgroundThemedColor(default_color,
-                                             is_dark_mode_enabled);
-}
-
 PrefService* GetUserPrefService(const AccountId& account_id) {
   if (!account_id.is_valid()) {
     CHECK_IS_TEST();
@@ -393,12 +385,45 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
             base::Unretained(this)));
   }
 
- private:
-  absl::optional<SkColor> CurrentWallpaperColor(bool dark) const {
-    if (!chromeos::features::IsJellyEnabled()) {
-      return GetWallpaperColor(dark);
+  SkColor GetUserWallpaperColorOrDefault(SkColor default_color) const override {
+    const bool dark_mode = dark_light_mode_controller_->IsDarkModeEnabled();
+    const auto wallpaper_color = GetUserWallpaperColor();
+    if (!wallpaper_color.has_value()) {
+      DVLOG(1) << "Failed to get wallpaper color";
+      return default_color;
     }
 
+    if (chromeos::features::IsJellyEnabled()) {
+      return wallpaper_color.value();
+    }
+
+    return ColorUtil::AdjustKMeansColor(wallpaper_color.value(), dark_mode);
+  }
+
+ private:
+  // Gets a color extracted from the user's wallpaper.
+  // TODO(b/289106519): Combine this function with |CurrentWallpaperColor|.
+  absl::optional<SkColor> GetUserWallpaperColor() const {
+    const auto& calculated_colors = wallpaper_controller_->calculated_colors();
+    if (!calculated_colors) {
+      return {};
+    }
+    if (!chromeos::features::IsJellyEnabled()) {
+      // Always use k mean color. Mixing with black/white
+      // will handle adapting it to dark or light mode.
+      return wallpaper_controller_->GetKMeanColor();
+    }
+
+    return calculated_colors->celebi_color;
+  }
+
+  // Gets the user's current wallpaper color.
+  // TODO(b/289106519): Combine this function with |GetUserWallpaperColor|.
+  absl::optional<SkColor> CurrentWallpaperColor(bool dark) const {
+    if (!chromeos::features::IsJellyEnabled()) {
+      const SkColor default_color = dark ? gfx::kGoogleGrey900 : SK_ColorWHITE;
+      return GetUserWallpaperColorOrDefault(default_color);
+    }
     const absl::optional<WallpaperCalculatedColors>& calculated_colors =
         wallpaper_controller_->calculated_colors();
     if (!calculated_colors) {
