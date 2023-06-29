@@ -17,10 +17,12 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/permissions/features.h"
+#include "extensions/common/api/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using extensions::api::types::ChromeSettingScope;
 using ::testing::Mock;
 
 namespace extensions {
@@ -129,7 +131,7 @@ TEST_F(ContentSettingsStoreTest, RegisterUnregister) {
   EXPECT_CALL(observer, OnContentSettingChanged(ext_id, false));
   store()->SetExtensionContentSetting(
       ext_id, pattern, pattern, ContentSettingsType::COOKIES,
-      CONTENT_SETTING_ALLOW, kExtensionPrefsScopeRegular);
+      CONTENT_SETTING_ALLOW, ChromeSettingScope::kRegular);
   Mock::VerifyAndClear(&observer);
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
@@ -142,7 +144,7 @@ TEST_F(ContentSettingsStoreTest, RegisterUnregister) {
   EXPECT_CALL(observer, OnContentSettingChanged(ext_id_2, false));
   store()->SetExtensionContentSetting(
       ext_id_2, pattern, pattern, ContentSettingsType::COOKIES,
-      CONTENT_SETTING_BLOCK, kExtensionPrefsScopeRegular);
+      CONTENT_SETTING_BLOCK, ChromeSettingScope::kRegular);
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             GetContentSettingFromStore(store(), url, url,
@@ -182,7 +184,7 @@ TEST_F(ContentSettingsStoreTest, GetAllSettings) {
       ContentSettingsPattern::FromURL(GURL("http://www.youtube.com"));
   store()->SetExtensionContentSetting(
       ext_id, pattern, pattern, ContentSettingsType::COOKIES,
-      CONTENT_SETTING_ALLOW, kExtensionPrefsScopeRegular);
+      CONTENT_SETTING_ALLOW, ChromeSettingScope::kRegular);
 
   rules = GetSettingsForOneTypeFromStore(store(), ContentSettingsType::COOKIES,
                                          incognito);
@@ -197,7 +199,7 @@ TEST_F(ContentSettingsStoreTest, GetAllSettings) {
       ContentSettingsPattern::FromURL(GURL("http://www.example.com"));
   store()->SetExtensionContentSetting(
       ext_id_2, pattern_2, pattern_2, ContentSettingsType::COOKIES,
-      CONTENT_SETTING_BLOCK, kExtensionPrefsScopeRegular);
+      CONTENT_SETTING_BLOCK, ChromeSettingScope::kRegular);
 
   rules = GetSettingsForOneTypeFromStore(store(), ContentSettingsType::COOKIES,
                                          incognito);
@@ -279,7 +281,7 @@ TEST_F(ContentSettingsStoreTest, SetFromList) {
   pref_list.Append(std::move(dict_value));
 
   store()->SetExtensionContentSettingFromList(ext_id, pref_list,
-                                              kExtensionPrefsScopeRegular);
+                                              ChromeSettingScope::kRegular);
   Mock::VerifyAndClear(&observer);
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
@@ -331,7 +333,7 @@ TEST_F(ContentSettingsStoreTest, RemoveEmbedded) {
   pref_list.Append(std::move(dict_value));
 
   store()->SetExtensionContentSettingFromList(ext_id, pref_list,
-                                              kExtensionPrefsScopeRegular);
+                                              ChromeSettingScope::kRegular);
 
   // The embedded geolocation pattern should be removed but cookies kept.
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
@@ -391,14 +393,13 @@ TEST_F(ContentSettingsStoreTest, SetExtensionContentSettingFromList) {
   list.Append(invalid_setting1.Clone());
   list.Append(invalid_setting2.Clone());
   list.Append(invalid_setting3.Clone());
-  store()->SetExtensionContentSettingFromList(
-      extension, list, ExtensionPrefsScope::kExtensionPrefsScopeRegular);
+  store()->SetExtensionContentSettingFromList(extension, list,
+                                              ChromeSettingScope::kRegular);
 
   base::Value::List expected;
   expected.Append(valid_setting.Clone());
-  EXPECT_EQ(expected,
-            store()->GetSettingsForExtension(
-                extension, ExtensionPrefsScope::kExtensionPrefsScopeRegular));
+  EXPECT_EQ(expected, store()->GetSettingsForExtension(
+                          extension, ChromeSettingScope::kRegular));
 }
 
 }  // namespace extensions

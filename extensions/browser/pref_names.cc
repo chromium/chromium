@@ -6,23 +6,28 @@
 
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "extensions/common/api/types.h"
 
 namespace extensions {
 namespace pref_names {
 
-bool ScopeToPrefName(ExtensionPrefsScope scope, std::string* result) {
+using extensions::api::types::ChromeSettingScope;
+
+bool ScopeToPrefName(ChromeSettingScope scope, std::string* result) {
   switch (scope) {
-    case kExtensionPrefsScopeRegular:
+    case ChromeSettingScope::kRegular:
       *result = kPrefPreferences;
       return true;
-    case kExtensionPrefsScopeRegularOnly:
+    case ChromeSettingScope::kRegularOnly:
       *result = kPrefRegularOnlyPreferences;
       return true;
-    case kExtensionPrefsScopeIncognitoPersistent:
+    case ChromeSettingScope::kIncognitoPersistent:
       *result = kPrefIncognitoPreferences;
       return true;
-    case kExtensionPrefsScopeIncognitoSessionOnly:
+    case ChromeSettingScope::kIncognitoSessionOnly:
       return false;
+    case ChromeSettingScope::kNone:
+      break;
   }
   NOTREACHED();
   return false;

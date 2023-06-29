@@ -362,7 +362,6 @@ source_set("browser_sources") {
     "extension_prefs_helper_factory.cc",
     "extension_prefs_helper_factory.h",
     "extension_prefs_observer.h",
-    "extension_prefs_scope.h",
     "extension_protocols.cc",
     "extension_protocols.h",
     "extension_registrar.cc",

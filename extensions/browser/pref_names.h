@@ -8,7 +8,7 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "extensions/browser/extension_prefs_scope.h"
+#include "extensions/common/api/types.h"
 
 // Preference keys which are needed by both the ExtensionPrefs and by external
 // clients, such as APIs.
@@ -19,7 +19,8 @@ namespace pref_names {
 // If the given |scope| is persisted, return true and populate |result| with the
 // appropriate property (i.e. one of kPref*) within a kExtensions dictionary. If
 // |scope| is not persisted, return false, and leave |result| unchanged.
-bool ScopeToPrefName(ExtensionPrefsScope scope, std::string* result);
+bool ScopeToPrefName(extensions::api::types::ChromeSettingScope scope,
+                     std::string* result);
 
 // Browser-level preferences ---------------------------------------------------
 

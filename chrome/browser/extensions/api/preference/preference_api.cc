@@ -41,6 +41,7 @@
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/common/api/types.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_id.h"
@@ -60,6 +61,8 @@ using extensions::mojom::APIPermissionID;
 namespace extensions {
 
 namespace {
+
+using extensions::api::types::ChromeSettingScope;
 
 constexpr char kConversionErrorMessage[] =
     "Internal error: Stored value for preference '*' cannot be converted "
@@ -188,27 +191,9 @@ class PrivacySandboxTransformer : public PrefTransformerInterface {
   }
 };
 
-constexpr char kIncognitoPersistent[] = "incognito_persistent";
-constexpr char kIncognitoSessionOnly[] = "incognito_session_only";
-constexpr char kRegular[] = "regular";
-constexpr char kRegularOnly[] = "regular_only";
-
-// TODO(crbug.com/1366445): Consider using the ChromeSettingScope
-// enum instead of ExtensionPrefsScope. That way, we could remove
-// this function and the preceding string constants.
-bool StringToScope(const std::string& s, ExtensionPrefsScope* scope) {
-  if (s == kRegular) {
-    *scope = kExtensionPrefsScopeRegular;
-  } else if (s == kRegularOnly) {
-    *scope = kExtensionPrefsScopeRegularOnly;
-  } else if (s == kIncognitoPersistent) {
-    *scope = kExtensionPrefsScopeIncognitoPersistent;
-  } else if (s == kIncognitoSessionOnly) {
-    *scope = kExtensionPrefsScopeIncognitoSessionOnly;
-  } else {
-    return false;
-  }
-  return true;
+bool StringToScope(const std::string& s, ChromeSettingScope& scope) {
+  scope = extensions::api::types::ParseChromeSettingScope(s);
+  return scope != ChromeSettingScope::kNone;
 }
 
 }  // namespace
@@ -527,19 +512,19 @@ void PreferenceAPI::OnContentSettingChanged(const std::string& extension_id,
     ExtensionPrefs::Get(profile_)->UpdateExtensionPref(
         extension_id, pref_names::kPrefIncognitoContentSettings,
         base::Value(content_settings_store()->GetSettingsForExtension(
-            extension_id, kExtensionPrefsScopeIncognitoPersistent)));
+            extension_id, ChromeSettingScope::kIncognitoPersistent)));
   } else {
     ExtensionPrefs::Get(profile_)->UpdateExtensionPref(
         extension_id, pref_names::kPrefContentSettings,
         base::Value(content_settings_store()->GetSettingsForExtension(
-            extension_id, kExtensionPrefsScopeRegular)));
+            extension_id, ChromeSettingScope::kRegular)));
   }
 }
 
 void PreferenceAPI::ClearIncognitoSessionOnlyContentSettings() {
   for (const auto& id : ExtensionPrefs::Get(profile_)->GetExtensions()) {
     content_settings_store()->ClearContentSettingsForExtension(
-        id, kExtensionPrefsScopeIncognitoSessionOnly);
+        id, ChromeSettingScope::kIncognitoSessionOnly);
   }
 }
 
@@ -753,15 +738,14 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
   const base::Value* value = details.Find(kValue);
   EXTENSION_FUNCTION_VALIDATE(value);
 
-  ExtensionPrefsScope scope = kExtensionPrefsScopeRegular;
+  ChromeSettingScope scope = ChromeSettingScope::kRegular;
   if (const std::string* scope_str = details.FindString(kScopeKey)) {
-    EXTENSION_FUNCTION_VALIDATE(StringToScope(*scope_str, &scope));
+    EXTENSION_FUNCTION_VALIDATE(StringToScope(*scope_str, scope));
   }
 
   // Check incognito scope.
-  bool incognito =
-      (scope == kExtensionPrefsScopeIncognitoPersistent ||
-       scope == kExtensionPrefsScopeIncognitoSessionOnly);
+  bool incognito = scope == ChromeSettingScope::kIncognitoPersistent ||
+                   scope == ChromeSettingScope::kIncognitoSessionOnly;
   if (incognito) {
     // Regular profiles can't access incognito unless
     // include_incognito_information is true.
@@ -779,7 +763,7 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (scope == kExtensionPrefsScopeIncognitoSessionOnly &&
+  if (scope == ChromeSettingScope::kIncognitoSessionOnly &&
       !profile->HasPrimaryOTRProfile()) {
     return RespondNow(Error(extension_misc::kIncognitoSessionOnlyErrorMessage));
   }
@@ -932,15 +916,14 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
   std::string pref_key = args()[0].GetString();
   const base::Value::Dict& details = args()[1].GetDict();
 
-  ExtensionPrefsScope scope = kExtensionPrefsScopeRegular;
+  ChromeSettingScope scope = ChromeSettingScope::kRegular;
   if (const std::string* scope_str = details.FindString(kScopeKey)) {
-    EXTENSION_FUNCTION_VALIDATE(StringToScope(*scope_str, &scope));
+    EXTENSION_FUNCTION_VALIDATE(StringToScope(*scope_str, scope));
   }
 
   // Check incognito scope.
-  bool incognito =
-      (scope == kExtensionPrefsScopeIncognitoPersistent ||
-       scope == kExtensionPrefsScopeIncognitoSessionOnly);
+  bool incognito = scope == ChromeSettingScope::kIncognitoPersistent ||
+                   scope == ChromeSettingScope::kIncognitoSessionOnly;
   if (incognito) {
     // We don't check incognito permissions here, as an extension should be
     // always allowed to clear its own settings.

@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "extensions/browser/extension_prefs_scope.h"
+#include "extensions/common/api/types.h"
 
 class ExtensionPrefValueMap;
 
@@ -26,6 +26,8 @@ class ExtensionPrefs;
 
 class ExtensionPrefsHelper : public KeyedService {
  public:
+  using ChromeSettingScope = extensions::api::types::ChromeSettingScope;
+
   ExtensionPrefsHelper(ExtensionPrefs* prefs, ExtensionPrefValueMap* value_map);
 
   ExtensionPrefsHelper(const ExtensionPrefsHelper&) = delete;
@@ -43,13 +45,13 @@ class ExtensionPrefsHelper : public KeyedService {
   // Set a new extension-controlled preference value.
   void SetExtensionControlledPref(const std::string& extension_id,
                                   const std::string& pref_key,
-                                  ExtensionPrefsScope scope,
+                                  ChromeSettingScope scope,
                                   base::Value value);
 
   // Remove an extension-controlled preference value.
   void RemoveExtensionControlledPref(const std::string& extension_id,
                                      const std::string& pref_key,
-                                     ExtensionPrefsScope scope);
+                                     ChromeSettingScope scope);
 
   // Returns true if currently no extension with higher precedence controls the
   // preference.

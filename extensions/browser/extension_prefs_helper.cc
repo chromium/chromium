@@ -10,6 +10,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_helper_factory.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/common/api/types.h"
 
 namespace extensions {
 
@@ -29,7 +30,7 @@ ExtensionPrefsHelper::~ExtensionPrefsHelper() = default;
 void ExtensionPrefsHelper::SetExtensionControlledPref(
     const std::string& extension_id,
     const std::string& pref_key,
-    ExtensionPrefsScope scope,
+    ChromeSettingScope scope,
     base::Value value) {
 #ifndef NDEBUG
   const PrefService::Preference* pref =
@@ -56,7 +57,7 @@ void ExtensionPrefsHelper::SetExtensionControlledPref(
 void ExtensionPrefsHelper::RemoveExtensionControlledPref(
     const std::string& extension_id,
     const std::string& pref_key,
-    ExtensionPrefsScope scope) {
+    ChromeSettingScope scope) {
   DCHECK(prefs_->pref_service()->FindPreference(pref_key))
       << "Extension controlled preference key " << pref_key
       << " not registered.";

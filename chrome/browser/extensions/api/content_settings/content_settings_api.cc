@@ -32,8 +32,8 @@
 #include "extensions/browser/api/content_settings/content_settings_helpers.h"
 #include "extensions/browser/api/content_settings/content_settings_service.h"
 #include "extensions/browser/api/content_settings/content_settings_store.h"
-#include "extensions/browser/extension_prefs_scope.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/common/api/extension_types.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 
@@ -45,6 +45,8 @@ namespace Set = extensions::api::content_settings::ContentSetting::Set;
 namespace pref_helpers = extensions::preference_helpers;
 
 namespace {
+
+using extensions::api::types::ChromeSettingScope;
 
 bool RemoveContentType(base::Value::List& args,
                        ContentSettingsType* content_type) {
@@ -88,11 +90,11 @@ ContentSettingsContentSettingClearFunction::Run() {
     return RespondNow(Error(kUnknownErrorDoNotUse));
   }
 
-  ExtensionPrefsScope scope = kExtensionPrefsScopeRegular;
+  ChromeSettingScope scope = ChromeSettingScope::kRegular;
   bool incognito = false;
   if (params->details.scope ==
       api::content_settings::Scope::kIncognitoSessionOnly) {
-    scope = kExtensionPrefsScopeIncognitoSessionOnly;
+    scope = ChromeSettingScope::kIncognitoSessionOnly;
     incognito = true;
   }
 
@@ -283,11 +285,11 @@ ContentSettingsContentSettingSetFunction::Run() {
     return RespondNow(Error(kUnsupportedEmbeddedException));
   }
 
-  ExtensionPrefsScope scope = kExtensionPrefsScopeRegular;
+  ChromeSettingScope scope = ChromeSettingScope::kRegular;
   bool incognito = false;
   if (params->details.scope ==
       api::content_settings::Scope::kIncognitoSessionOnly) {
-    scope = kExtensionPrefsScopeIncognitoSessionOnly;
+    scope = ChromeSettingScope::kIncognitoSessionOnly;
     incognito = true;
   }
 
@@ -306,7 +308,7 @@ ContentSettingsContentSettingSetFunction::Run() {
       return RespondNow(Error(kIncognitoContextError));
   }
 
-  if (scope == kExtensionPrefsScopeIncognitoSessionOnly &&
+  if (scope == ChromeSettingScope::kIncognitoSessionOnly &&
       !Profile::FromBrowserContext(browser_context())->HasPrimaryOTRProfile()) {
     return RespondNow(Error(extension_misc::kIncognitoSessionOnlyErrorMessage));
   }

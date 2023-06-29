@@ -6,8 +6,10 @@
 
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
-#include "extensions/browser/extension_prefs_scope.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/common/api/types.h"
+
+using extensions::api::types::ChromeSettingScope;
 
 namespace extensions {
 
@@ -46,14 +48,14 @@ void ContentSettingsService::OnExtensionPrefsLoaded(
       prefs->ReadPrefAsList(extension_id, pref_names::kPrefContentSettings);
   if (content_settings) {
     content_settings_store_->SetExtensionContentSettingFromList(
-        extension_id, *content_settings, kExtensionPrefsScopeRegular);
+        extension_id, *content_settings, ChromeSettingScope::kRegular);
   }
   content_settings = prefs->ReadPrefAsList(
       extension_id, pref_names::kPrefIncognitoContentSettings);
   if (content_settings) {
     content_settings_store_->SetExtensionContentSettingFromList(
         extension_id, *content_settings,
-        kExtensionPrefsScopeIncognitoPersistent);
+        ChromeSettingScope::kIncognitoPersistent);
   }
 }
 
