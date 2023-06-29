@@ -103,7 +103,7 @@ public class BackPressManager implements Destroyable {
      * @return True if ActivityTabProvider should replace ChromeTabActivity#getActivityTab
      */
     public static boolean shouldUseActivityTabProvider() {
-        return ChromeFeatureList.sBackGestureActivityTabProvider.isEnabled();
+        return isEnabled() || ChromeFeatureList.sBackGestureActivityTabProvider.isEnabled();
     }
 
     /**

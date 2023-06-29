@@ -2329,6 +2329,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public boolean handleBackPressed() {
+        // Back press event should be handled through the back press handler.
+        assert !BackPressManager.isEnabled() : "Incorrect way of handling back press.";
         if (!mUIWithNativeInitialized) {
             RecordUserAction.record("SystemBackBeforeUINativeInitialized");
             return false;
