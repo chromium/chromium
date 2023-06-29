@@ -634,6 +634,8 @@ absl::optional<WakeUp> TaskQueueImpl::GetNextDesiredWakeUp() {
   if (main_thread_only().delayed_incoming_queue.empty() || !IsQueueEnabled())
     return absl::nullopt;
 
+  const auto& top_task = main_thread_only().delayed_incoming_queue.top();
+
   // High resolution is needed if the queue contains high resolution tasks and
   // has a priority index <= kNormalPriority (precise execution time is
   // unnecessary for a low priority queue).
@@ -641,8 +643,11 @@ absl::optional<WakeUp> TaskQueueImpl::GetNextDesiredWakeUp() {
                                         GetQueuePriority() <= DefaultPriority()
                                     ? WakeUpResolution::kHigh
                                     : WakeUpResolution::kLow;
-
-  const auto& top_task = main_thread_only().delayed_incoming_queue.top();
+  subtle::DelayPolicy delay_policy = top_task.delay_policy;
+  if (GetQueuePriority() > DefaultPriority() &&
+      delay_policy == subtle::DelayPolicy::kPrecise) {
+    delay_policy = subtle::DelayPolicy::kFlexibleNoSooner;
+  }
   return WakeUp{top_task.delayed_run_time, top_task.leeway, resolution,
                 top_task.delay_policy};
 }
