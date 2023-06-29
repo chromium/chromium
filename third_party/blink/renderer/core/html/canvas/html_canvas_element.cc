@@ -660,7 +660,7 @@ void HTMLCanvasElement::PostFinalizeFrame(
     const gfx::Rect int_dirty = gfx::ToEnclosingRect(dirty_rect_);
     const SkIRect damage_rect = SkIRect::MakeXYWH(
         int_dirty.x(), int_dirty.y(), int_dirty.width(), int_dirty.height());
-    const bool needs_vertical_flip = !RenderingContext()->IsOriginTopLeft();
+    const bool needs_vertical_flip = !canvas_resource->IsOriginTopLeft();
     frame_dispatcher_->DispatchFrame(std::move(canvas_resource), start_time,
                                      damage_rect, needs_vertical_flip,
                                      IsOpaque());

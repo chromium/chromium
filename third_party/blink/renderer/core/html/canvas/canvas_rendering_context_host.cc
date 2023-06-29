@@ -157,6 +157,10 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   const SkImageInfo resource_info =
       SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
                         GetRenderingContextSkColorInfo());
+  // Use top left origin for shared image CanvasResourceProviders since those
+  // can be used for rendering with Skia, and Skia's Graphite backend doesn't
+  // support bottom left origin SkSurfaces.
+  constexpr bool kIsSharedImageOriginTopLeft = true;
   // Do not initialize the CRP using Skia. The CRP can have bottom left origin
   // in which case Skia Graphite won't be able to render into it, and WebGL is
   // responsible for clearing the CRP when it renders anyway and we have clear
@@ -190,7 +194,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
       provider = CanvasResourceProvider::CreateSharedImageProvider(
           resource_info, FilterQuality(), kShouldInitialize,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-          RenderingContext()->IsOriginTopLeft(), shared_image_usage_flags);
+          kIsSharedImageOriginTopLeft, shared_image_usage_flags);
     }
   } else if (SharedGpuContext::IsGpuCompositingEnabled()) {
     // If there is no LawLatency mode, and GPU is enabled, will try a GPU
@@ -203,7 +207,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
     provider = CanvasResourceProvider::CreateSharedImageProvider(
         resource_info, FilterQuality(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-        RenderingContext()->IsOriginTopLeft(), shared_image_usage_flags);
+        kIsSharedImageOriginTopLeft, shared_image_usage_flags);
   }
 
   // If either of the other modes failed and / or it was not possible to do, we
