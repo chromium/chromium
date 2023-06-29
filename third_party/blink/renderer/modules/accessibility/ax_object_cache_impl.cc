@@ -2310,6 +2310,7 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
     if (parent) {
       UpdateTableRoleWithCleanLayout(parent);
     }
+    TableCellRoleMaybeChanged(node);
   }
 }
 
@@ -2528,6 +2529,8 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
 
   if (optional_node)
     relation_cache_->UpdateRelatedTree(optional_node, obj);
+
+  TableCellRoleMaybeChanged(optional_node);
 }
 
 void AXObjectCacheImpl::UpdateTreeIfNeededOnce() {
@@ -3361,9 +3364,30 @@ void AXObjectCacheImpl::SectionOrRegionRoleMaybeChanged(Element* element) {
   HandleRoleMaybeChangedWithCleanLayout(element);
 }
 
+void AXObjectCacheImpl::TableCellRoleMaybeChanged(Node* node) {
+  if (!node) {
+    return;
+  }
+  // The role for a table cell depends in complex ways on multiple of its
+  // siblings (see DecideRoleFromSiblings). Rather than attempt to reproduce
+  // that logic here for invalidation, just recompute the role of all siblings
+  // when new table cells are added.
+  if (auto* cell = DynamicTo<HTMLTableCellElement>(node)) {
+    for (auto* prev = LayoutTreeBuilderTraversal::PreviousSibling(*cell); prev;
+         prev = LayoutTreeBuilderTraversal::PreviousSibling(*prev)) {
+      HandleRoleMaybeChangedWithCleanLayout(prev);
+    }
+    HandleRoleMaybeChangedWithCleanLayout(cell);
+    for (auto* next = LayoutTreeBuilderTraversal::NextSibling(*cell); next;
+         next = LayoutTreeBuilderTraversal::PreviousSibling(*next)) {
+      HandleRoleMaybeChangedWithCleanLayout(next);
+    }
+  }
+}
+
 void AXObjectCacheImpl::HandleRoleMaybeChangedWithCleanLayout(Node* node) {
-  // If role would stay the same, do nothing.
   if (AXObject* obj = GetOrCreate(node)) {
+    // If role would stay the same, do nothing.
     if (obj->RoleValue() == obj->DetermineAccessibilityRole()) {
       return;
     }

@@ -1,0 +1,27 @@
+<!doctype HTML>
+<!--
+@WAIT-FOR:Done
+-->
+<div tabindex="0" id="status" aria-label="Working"></div>
+<table border=1>
+  <tr>
+    <th>Text</th>
+  </tr>
+  <tr id=target>
+    <th id="shouldberowheader1">Should be a row header</th>
+  </tr>
+  <tr>
+    <th id="shouldberowheader2">Should also be a row header</th>
+    <td id=target2></td>
+  </tr>
+</table>
+</html>
+<script>
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+        let td = document.createElement("td");
+        td.innerText = "text";
+        target.appendChild(td);
+        target2.innerText = "text2";
+        document.getElementById('status').setAttribute('aria-label', 'Done');
+    }));
+</script>

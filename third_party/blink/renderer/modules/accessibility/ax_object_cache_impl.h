@@ -348,6 +348,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void HandleActiveDescendantChangedWithCleanLayout(Node*);
   void SectionOrRegionRoleMaybeChanged(Element* element);
+  void TableCellRoleMaybeChanged(Node* node);
   void HandleRoleMaybeChangedWithCleanLayout(Node*);
   void HandleRoleChangeWithCleanLayout(Node*);
   void HandleAriaHiddenChangedWithCleanLayout(Node*);

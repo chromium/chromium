@@ -4451,6 +4451,8 @@ data/accessibility/html/table-headers-empty-first-cell.html
 data/accessibility/html/table-headers-on-all-sides-expected-blink.txt
 data/accessibility/html/table-headers-on-all-sides-expected-fuchsia.txt
 data/accessibility/html/table-headers-on-all-sides.html
+data/accessibility/html/table-headers-row-role-dynamic-expected-blink.txt
+data/accessibility/html/table-headers-row-role-dynamic.html
 data/accessibility/html/table-layout-expected-android-external.txt
 data/accessibility/html/table-layout-expected-android.txt
 data/accessibility/html/table-layout-expected-auralinux.txt
