@@ -80,7 +80,7 @@ const std::u16string AutofillProgressDialogControllerImpl::GetTitle() {
           IDS_AUTOFILL_FIDO_AUTHENTICATION_PROMPT_TITLE);
     case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_V2);
+          IDS_AUTOFILL_CARD_UNMASK_PROGRESS_DIALOG_TITLE);
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
       return std::u16string();
