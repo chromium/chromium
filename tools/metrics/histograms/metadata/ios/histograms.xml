@@ -604,6 +604,9 @@ chromium-metrics-reviews@google.com.
     <variant name="Dismiss"/>
   </token>
   <token key="PromoStat">
+    <variant name="ActiveDayCount"
+        summary="Represents number days user has been active within last
+                 valid period"/>
     <variant name="ChromeColdStartCount"
         summary="Represents number of time Chrome cold starts"/>
     <variant name="ChromeOpenIndirectlyCount"

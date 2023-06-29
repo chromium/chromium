@@ -358,4 +358,54 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_ChromeOpen) {
     EXPECT_EQ(2, promo_stats.chromeIndirectStartCount);
   }
 }
+
+// Test `CalculatePromoStatistics` for active day count metrics.
+TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_ActiveDayCount) {
+  feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
+                                 {});
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.activeDayCount);
+  }
+
+  // Adding timestamps that are older than 14 days should not change the promo
+  // stats.
+  NSDate* moreThan14DaysAgo = [[NSDate alloc]
+      initWithTimeIntervalSinceNow:-kMoreThan14Days.InSecondsF()];
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchColdStart,
+                             @[ moreThan14DaysAgo ]);
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchWarmStart,
+                             @[ moreThan14DaysAgo ]);
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchIndirectStart,
+                             @[ moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(0, promo_stats.activeDayCount);
+  }
+
+  // Adding timestamps that are between 7 - 14 days should be counted.
+  NSDate* moreThan7DaysAgo = [[NSDate alloc]
+      initWithTimeIntervalSinceNow:-kMoreThan7Days.InSecondsF()];
+
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchColdStart,
+                             @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchWarmStart,
+                             @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
+  SetObjectIntoStorageForKey(kAllTimestampsAppLaunchIndirectStart,
+                             @[ moreThan7DaysAgo, moreThan14DaysAgo ]);
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(1, promo_stats.activeDayCount);
+  }
+
+  // Addint current timestamp should be counted.
+  LogBrowserLaunched(true);
+  LogBrowserLaunched(false);
+  LogBrowserIndirectlylaunched();
+
+  {
+    PromoStatistics* promo_stats = CalculatePromoStatistics();
+    EXPECT_EQ(2, promo_stats.activeDayCount);
+  }
+}
 }  // namespace

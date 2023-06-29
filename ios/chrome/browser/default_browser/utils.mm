@@ -253,6 +253,32 @@ NSString* StorageKeyForDefaultPromoType(DefaultPromoType type) {
 }
 
 // Loads from NSUserDefaults the time of the non-expired events for the
+// given key into the given container.
+void LoadActiveDatesForKey(NSString* key,
+                           base::TimeDelta delay,
+                           std::set<base::Time>& dates_set) {
+  NSArray* dates = GetObjectFromStorageForKey<NSArray>(key);
+  if (!dates) {
+    return;
+  }
+
+  const base::Time now = base::Time::Now();
+  for (NSObject* object : dates) {
+    NSDate* date = base::mac::ObjCCast<NSDate>(object);
+    if (!date) {
+      continue;
+    }
+
+    const base::Time time = base::Time::FromNSDate(date);
+    if (now - time > delay) {
+      continue;
+    }
+
+    dates_set.insert(time.LocalMidnight());
+  }
+}
+
+// Loads from NSUserDefaults the time of the non-expired events for the
 // given key.
 std::vector<base::Time> LoadActiveTimestampsForKey(NSString* key,
                                                    base::TimeDelta delay) {
@@ -387,6 +413,20 @@ int NumDaysSincePromoInteraction() {
   }
 
   return components.day;
+}
+
+// Returns number of days in past `kTriggerCriteriaExperimentStatExpiration`
+// days when user opened chrome.
+int NumActiveDays() {
+  std::set<base::Time> active_dates;
+
+  LoadActiveDatesForKey(kAllTimestampsAppLaunchColdStart,
+                        kTriggerCriteriaExperimentStatExpiration, active_dates);
+  LoadActiveDatesForKey(kAllTimestampsAppLaunchWarmStart,
+                        kTriggerCriteriaExperimentStatExpiration, active_dates);
+  LoadActiveDatesForKey(kAllTimestampsAppLaunchIndirectStart,
+                        kTriggerCriteriaExperimentStatExpiration, active_dates);
+  return active_dates.size();
 }
 
 }  // namespace
@@ -859,6 +899,7 @@ void CleanupStorageForTriggerExperiment() {
   [defaults removeObjectForKey:kAllTimestampsAppLaunchWarmStart];
   [defaults removeObjectForKey:kAllTimestampsAppLaunchIndirectStart];
 }
+
 void RecordPromoStatsToUMAForActionString(PromoStatistics* promo_stats,
                                           const std::string& action_str) {
   if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
@@ -901,6 +942,7 @@ PromoStatistics* CalculatePromoStatistics() {
   promo_stats.chromeIndirectStartCount = NumRecordedEventForKeyLessThanDelay(
       kAllTimestampsAppLaunchIndirectStart,
       kTriggerCriteriaExperimentStatExpiration);
+  promo_stats.activeDayCount = NumActiveDays();
 
   return promo_stats;
 }

@@ -23,8 +23,10 @@
 // Number of indirect starts in the last
 // `kTriggerCriteriaExperimentStatExpiration` days.
 @property(nonatomic, assign) int chromeIndirectStartCount;
+// Number of active days in the last 14 days.
+@property(nonatomic, assign) int activeDayCount;
 
-// TODO:
+// TODO(crbug.com/1456438): Implement rest of the metrics:
 // OmniboxClipboardUseCount
 // PasswordManagerUseCount
 // BookmarkUseCount
