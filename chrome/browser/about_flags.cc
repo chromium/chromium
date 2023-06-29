@@ -1446,19 +1446,6 @@ const FeatureEntry::FeatureVariation kJourneysLabelsVariations[] = {
      std::size(kJourneysLabelsWithSearchVisitEntitiesParams), nullptr},
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kLocalWebApprovalsPreferLocalParams[] = {
-    {"preferred_button", "local"}};
-const FeatureEntry::FeatureParam kLocalWebApprovalsPreferRemoteParams[] = {
-    {"preferred_button", "remote"}};
-const FeatureEntry::FeatureVariation kLocalWebApprovalsVariations[] = {
-    {"Prefer Local", kLocalWebApprovalsPreferLocalParams,
-     std::size(kLocalWebApprovalsPreferLocalParams), nullptr},
-    {"Prefer Remote", kLocalWebApprovalsPreferRemoteParams,
-     std::size(kLocalWebApprovalsPreferRemoteParams), nullptr},
-};
-#endif
-
 const FeatureEntry::FeatureParam kChromeRefresh2023Level1[] = {{"level", "1"}};
 
 // "Enabled" is equivalent to "Enabled with Omnibox", therefore we don't need to
@@ -7625,14 +7612,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kPrivacyIndicators)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
-    {"enable-local-web-approvals", flag_descriptions::kLocalWebApprovalsName,
-     flag_descriptions::kLocalWebApprovalsDescription, kOsCrOS | kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(supervised_user::kLocalWebApprovals,
-                                    kLocalWebApprovalsVariations,
-                                    "LocalWebApprovals")},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     {"enable-proto-api-for-classify-url",
      flag_descriptions::kEnableProtoApiForClassifyUrlName,
@@ -7650,11 +7629,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    {"enable-web-filter-interstitial-refresh",
-     flag_descriptions::kWebFilterInterstitialRefreshName,
-     flag_descriptions::kWebFilterInterstitialRefreshDescription,
-     kOsCrOS | kOsAndroid,
-     FEATURE_VALUE_TYPE(supervised_user::kWebFilterInterstitialRefresh)},
 
     {"enable-family-link-supervision",
      flag_descriptions::kEnableSupervisionOnDesktopName,

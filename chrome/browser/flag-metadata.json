@@ -2955,14 +2955,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-local-web-approvals",
-    "owners": [
-      "ljjlee@google.com",
-      "chrome-kids-eng@google.com"
-    ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "enable-lock-screen-notification",
     "owners": [ "newcomer" ],
     "expiry_milestone": 80
@@ -3707,14 +3699,6 @@
     "name": "enable-web-bluetooth-new-permissions-backend",
     "owners": [ "web-bluetooth@google.com" ],
     "expiry_milestone": 120
-  },
-  {
-    "name": "enable-web-filter-interstitial-refresh",
-    "owners": [
-      "ljjlee@google.com",
-      "chrome-kids-eng@google.com"
-    ],
-    "expiry_milestone": 116
   },
   {
     "name": "enable-web-hid-on-extension-service-worker",

@@ -140,7 +140,6 @@ class SupervisedUserNavigationObserver
   void GoBack() override;
   void RequestUrlAccessRemote(RequestUrlAccessRemoteCallback callback) override;
   void RequestUrlAccessLocal(RequestUrlAccessLocalCallback callback) override;
-  void Feedback() override;
 
   // When a remote URL approval request is successfully created, this method is
   // called asynchronously.

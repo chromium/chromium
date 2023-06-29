@@ -86,7 +86,6 @@ class SupervisedUserInterstitial {
   void GoBack();
   void RequestUrlAccessRemote(base::OnceCallback<void(bool)> callback);
   void RequestUrlAccessLocal(base::OnceCallback<void(bool)> callback);
-  void ShowFeedback();
 
   // Getter methods.
   const GURL& url() const { return url_; }
@@ -99,8 +98,8 @@ class SupervisedUserInterstitial {
       std::unique_ptr<WebContentHandler> web_content_handler,
       SupervisedUserService& supervised_user_service,
       const GURL& url,
-      const std::u16string& supervised_user_name,
-      FilteringBehaviorReason reason);
+      const std::u16string& supervised_user_name);
+
   void OutputRequestPermissionSourceMetric();
 
   const raw_ref<SupervisedUserService> supervised_user_service_;
@@ -110,7 +109,6 @@ class SupervisedUserInterstitial {
   // The last committed url for this frame.
   GURL url_;
   std::u16string supervised_user_name_;
-  FilteringBehaviorReason reason_;
 };
 }  // namespace supervised_user
 

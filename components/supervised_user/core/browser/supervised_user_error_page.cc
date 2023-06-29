@@ -28,10 +28,6 @@ namespace {
 static const int kAvatarSize1x = 36;
 static const int kAvatarSize2x = 72;
 
-bool ReasonIsAutomatic(FilteringBehaviorReason reason) {
-  return reason == FilteringBehaviorReason::ASYNC_CHECKER;
-}
-
 std::string BuildAvatarImageUrl(const std::string& url, int size) {
   GURL gurl(url);
   if (!gurl.is_valid())
@@ -94,12 +90,8 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
   strings.Set("secondCustodianEmail", second_custodian_email);
   strings.Set("alreadySentRemoteRequest", already_sent_remote_request);
   strings.Set("isMainFrame", is_main_frame);
-  bool web_filter_interstitial_refresh_enabled =
-      supervised_user::IsWebFilterInterstitialRefreshEnabled();
   bool local_web_approvals_enabled =
       supervised_user::IsLocalWebApprovalsEnabled();
-  strings.Set("isWebFilterInterstitialRefreshEnabled",
-              web_filter_interstitial_refresh_enabled);
   strings.Set("isLocalWebApprovalsEnabled", local_web_approvals_enabled);
   strings.Set("isLocalWebApprovalsPreferred",
               supervised_user::IsLocalWebApprovalThePreferredButton());
@@ -108,8 +100,6 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
               l10n_util::GetStringUTF8(IDS_PARENT_BLOCKED_SITE_BANNER_TITLE));
   strings.Set("bannerMessage",
               l10n_util::GetStringUTF8(IDS_PARENT_BLOCKED_SITE_BANNER_MESSAGE));
-
-  bool is_automatically_blocked = ReasonIsAutomatic(reason);
 
   std::string block_header;
   std::string block_message;
@@ -120,9 +110,7 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
     block_header =
         l10n_util::GetStringUTF8(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER);
     block_message =
-        l10n_util::GetStringUTF8(web_filter_interstitial_refresh_enabled
-                                     ? IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2
-                                     : IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE);
+        l10n_util::GetStringUTF8(IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2);
   } else {
     block_header = l10n_util::GetStringUTF8(
         IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED);
@@ -135,21 +123,10 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
               l10n_util::GetStringUTF8(IDS_SUPERVISED_USER_BLOCK_HEADER));
   strings.Set("siteBlockHeader",
               l10n_util::GetStringUTF8(IDS_GENERIC_SITE_BLOCK_HEADER));
-
-  strings.Set("showFeedbackLink", is_automatically_blocked);
-  strings.Set("feedbackLink",
-              l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_SEND_FEEDBACK));
-  if (web_filter_interstitial_refresh_enabled) {
-    strings.Set("remoteApprovalsButton",
-                l10n_util::GetStringUTF8(
-                    IDS_BLOCK_INTERSTITIAL_ASK_IN_A_MESSAGE_BUTTON));
-    strings.Set("backButton", l10n_util::GetStringUTF8(IDS_REQUEST_SENT_OK));
-  } else {
-    strings.Set(
-        "remoteApprovalsButton",
-        l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_REQUEST_ACCESS_BUTTON));
-    strings.Set("backButton", l10n_util::GetStringUTF8(IDS_BACK_BUTTON));
-  }
+  strings.Set(
+      "remoteApprovalsButton",
+      l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_ASK_IN_A_MESSAGE_BUTTON));
+  strings.Set("backButton", l10n_util::GetStringUTF8(IDS_REQUEST_SENT_OK));
 
   strings.Set(
       "localApprovalsButton",
@@ -164,37 +141,24 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
   std::string request_sent_message;
   std::string request_failed_message;
   std::string request_sent_description;
-  if (web_filter_interstitial_refresh_enabled) {
-    request_sent_message = l10n_util::GetStringUTF8(
-        IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_MESSAGE);
-    request_sent_description = l10n_util::GetStringUTF8(
-        second_custodian.empty()
-            ? IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_SINGLE_PARENT
-            : IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_MULTI_PARENT);
-    request_failed_message = l10n_util::GetStringUTF8(
-        second_custodian.empty()
-            ? IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_SINGLE_PARENT
-            : IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_MULTI_PARENT);
-  } else if (second_custodian.empty()) {
-    request_sent_message = l10n_util::GetStringUTF8(
-        IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_SINGLE_PARENT);
-    request_failed_message = l10n_util::GetStringUTF8(
-        IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_SINGLE_PARENT);
-  } else {
-    request_sent_message = l10n_util::GetStringUTF8(
-        IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_MULTI_PARENT);
-    request_failed_message = l10n_util::GetStringUTF8(
-        IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_MULTI_PARENT);
-  }
+  request_sent_message = l10n_util::GetStringUTF8(
+      IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_MESSAGE);
+  request_sent_description = l10n_util::GetStringUTF8(
+      second_custodian.empty()
+          ? IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_SINGLE_PARENT
+          : IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_MULTI_PARENT);
+  request_failed_message = l10n_util::GetStringUTF8(
+      second_custodian.empty()
+          ? IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_SINGLE_PARENT
+          : IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_MULTI_PARENT);
+
   strings.Set("requestSentMessage", std::move(request_sent_message));
   strings.Set("requestSentDescription", std::move(request_sent_description));
   strings.Set("requestFailedMessage", std::move(request_failed_message));
   webui::SetLoadTimeDataDefaults(app_locale, &strings);
   std::string html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          web_filter_interstitial_refresh_enabled
-              ? IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_V2_HTML
-              : IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_HTML);
+          IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_V2_HTML);
   webui::AppendWebUiCssTextDefaults(&html);
   std::string error_html = webui::GetI18nTemplateHtml(html, strings);
   return error_html;

@@ -180,8 +180,6 @@ extern const char kUseClientGmbInterfaceName[];
 extern const char kUseClientGmbInterfaceDescription[];
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-extern const char kWebFilterInterstitialRefreshName[];
-extern const char kWebFilterInterstitialRefreshDescription[];
 
 extern const char kEnableSupervisionOnDesktopName[];
 extern const char kEnableSupervisionOnDesktopDescription[];
@@ -4090,11 +4088,6 @@ extern const char kFollowingFeedSidepanelName[];
 extern const char kFollowingFeedSidepanelDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
-extern const char kLocalWebApprovalsName[];
-extern const char kLocalWebApprovalsDescription[];
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 extern const char kEnableProtoApiForClassifyUrlName[];

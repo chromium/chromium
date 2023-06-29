@@ -42,12 +42,6 @@
     Paused
   </message>
 
-  <!-- Supervised User Block Interstitial data -->
-   <message name="IDS_BLOCK_INTERSTITIAL_DEFAULT_FEEDBACK_TEXT" desc="The default text for feedback about a blocked site.">
-    <ph name="REASON">$1<ex>It may have mature content.</ex></ph>
-    I don't think this site should be blocked!
-  </message>
-
   <!-- Multi-profile -->
   <message name="IDS_PROFILES_MENU_NAME" desc="The name of menu for profiles (Mac and linux) and name for the launcher menu section (Mac).">
     Profiles

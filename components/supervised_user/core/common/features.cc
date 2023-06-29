@@ -13,21 +13,8 @@
 
 namespace supervised_user {
 
-// Enables refreshed version of the website filter interstitial that is shown to
-// Family Link users when they navigate to the blocked website.
-// This feature is a prerequisite for `kLocalWebApproval` feature.
-//
-// TODO(b/276428131): clean up this feature once local approvals on Android is
-// fully launched.
-BASE_FEATURE(kWebFilterInterstitialRefresh,
-             "WebFilterInterstitialRefresh",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables local parent approvals for the blocked website on the Family Link
 // user's device.
-// This feature requires a refreshed layout and `kWebFilterInterstitialRefresh`
-// to be enabled.
-//
 // The feature includes one experiment parameter: "preferred_button", which
 // determines which button is displayed as the preferred option in the
 // interstitial UI (i.e. dark blue button).
@@ -68,12 +55,6 @@ BASE_FEATURE(kUpdateSupervisedUserFactoryCreation,
              "UpdateSupervisedUserFactoryCreation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-bool IsWebFilterInterstitialRefreshEnabled() {
-  CHECK(base::FeatureList::IsEnabled(kWebFilterInterstitialRefresh) ||
-        !base::FeatureList::IsEnabled(kLocalWebApprovals));
-  return base::FeatureList::IsEnabled(kWebFilterInterstitialRefresh);
-}
-
 bool IsGoogleBrandedBuild() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return true;
@@ -88,12 +69,10 @@ bool IsLocalWebApprovalsEnabled() {
   // components, and de-release the intended usage of
   // WebsiteParentApproval::IsLocalApprovalSupported for Andoird.
 #if BUILDFLAG(IS_ANDROID)
-  return IsWebFilterInterstitialRefreshEnabled() &&
-         base::FeatureList::IsEnabled(kLocalWebApprovals) &&
+  return base::FeatureList::IsEnabled(kLocalWebApprovals) &&
          IsGoogleBrandedBuild();
 #else
-  return IsWebFilterInterstitialRefreshEnabled() &&
-         base::FeatureList::IsEnabled(kLocalWebApprovals);
+  return base::FeatureList::IsEnabled(kLocalWebApprovals);
 #endif
 }
 

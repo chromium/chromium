@@ -27,13 +27,11 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.superviseduser.FilteringBehavior;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -56,8 +54,6 @@ import java.util.concurrent.TimeoutException;
                 + "The code under tests involes setting static methods and features, "
                 + "which must remain unchanged for the duration of the test.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures(
-        {ChromeFeatureList.LOCAL_WEB_APPROVALS, ChromeFeatureList.WEB_FILTER_INTERSTITIAL_REFRESH})
 public class WebsiteParentApprovalNativesTest {
     // TODO(b/243916194): Expand the test coverage beyond the completion callback, up to the page
     // refresh.

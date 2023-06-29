@@ -408,8 +408,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
 class SupervisedUserIframeFilterTest
     : public SupervisedUserNavigationThrottleTest,
       public testing::WithParamInterface<
-          std::tuple</* web_filter_interstitial_refresh_enabled */ bool,
-                     /* local_web_approvals_enabled */ bool,
+          std::tuple</* local_web_approvals_enabled */ bool,
                      /* local_web_approvals_preferred */ bool>> {
  protected:
   SupervisedUserIframeFilterTest() { InitFeatures(); }
@@ -429,7 +428,6 @@ class SupervisedUserIframeFilterTest
   void SendCommandToFrame(const std::string& command_name, int frame_id);
   void WaitForNavigationFinished(int frame_id, const GURL& url);
   void InitFeatures();
-  bool IsWebFilterInterstitialRefreshEnabled() const;
   bool IsLocalWebApprovalsEnabled() const;
   bool IsLocalWebApprovalsPreferred() const;
 
@@ -597,19 +595,10 @@ bool SupervisedUserIframeFilterTest::RunCommandAndGetBooleanFromFrame(
 void SupervisedUserIframeFilterTest::InitFeatures() {
   std::vector<base::test::FeatureRefAndParams> enabled_features_and_params;
   std::vector<base::test::FeatureRef> disabled_features;
-  if (IsWebFilterInterstitialRefreshEnabled()) {
-    enabled_features_and_params.emplace_back(
-        supervised_user::kWebFilterInterstitialRefresh,
-        base::FieldTrialParams());
-  } else {
-    disabled_features.push_back(supervised_user::kWebFilterInterstitialRefresh);
-  }
   if (IsLocalWebApprovalsEnabled()) {
     base::FieldTrialParams params;
     params["preferred_button"] =
-        IsLocalWebApprovalsPreferred()
-            ? supervised_user::kLocalWebApprovalsPreferredButtonLocal
-            : supervised_user::kLocalWebApprovalsPreferredButtonRemote;
+        supervised_user::kLocalWebApprovalsPreferredButtonLocal;
     enabled_features_and_params.emplace_back(
         supervised_user::kLocalWebApprovals, params);
   } else {
@@ -619,36 +608,23 @@ void SupervisedUserIframeFilterTest::InitFeatures() {
       enabled_features_and_params, disabled_features);
 }
 
-bool SupervisedUserIframeFilterTest::IsWebFilterInterstitialRefreshEnabled()
-    const {
+bool SupervisedUserIframeFilterTest::IsLocalWebApprovalsEnabled() const {
   return std::get<0>(GetParam());
 }
 
-bool SupervisedUserIframeFilterTest::IsLocalWebApprovalsEnabled() const {
+bool SupervisedUserIframeFilterTest::IsLocalWebApprovalsPreferred() const {
   return std::get<1>(GetParam());
 }
 
-bool SupervisedUserIframeFilterTest::IsLocalWebApprovalsPreferred() const {
-  return std::get<2>(GetParam());
-}
-
-// Only test the valid configurations of the two flags. LocalWebApprovals will
-// not be enabled without the WebFilterInterstitialRefresh flag.
 INSTANTIATE_TEST_SUITE_P(
     LocalWebApprovalsEnabled,
     SupervisedUserIframeFilterTest,
     testing::Values(
-        std::make_tuple(/* web_filter_interstitial_refresh_enabled */ true,
-                        /* local_web_approvals_enabled */ true,
+        std::make_tuple(/* local_web_approvals_enabled */ true,
                         /* local_web_approvals_preferred */ true),
-        std::make_tuple(/* web_filter_interstitial_refresh_enabled */ true,
-                        /* local_web_approvals_enabled */ true,
+        std::make_tuple(/* local_web_approvals_enabled */ true,
                         /* local_web_approvals_preferred */ false),
-        std::make_tuple(/* web_filter_interstitial_refresh_enabled */ true,
-                        /* local_web_approvals_enabled */ false,
-                        /* local_web_approvals_preferred */ false),
-        std::make_tuple(/* web_filter_interstitial_refresh_enabled */ false,
-                        /* local_web_approvals_enabled */ false,
+        std::make_tuple(/* local_web_approvals_enabled */ false,
                         /* local_web_approvals_preferred */ false)));
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, BlockSubFrame) {
@@ -929,23 +905,15 @@ void SupervisedUserNarrowWidthIframeFilterTest::SetUp() {
   SupervisedUserIframeFilterTest::SetUp();
 }
 
-// Only test the valid configurations of the two flags. LocalWebApprovals will
-// not be enabled without the WebFilterInterstitialRefresh flag.
 INSTANTIATE_TEST_SUITE_P(
     LocalWebApprovalsEnabledNarrowWidth,
     SupervisedUserNarrowWidthIframeFilterTest,
     testing::Values(
-        std::make_tuple(/* web_filter_interstitial_refresh_enabled */ true,
-                        /* local_web_approvals_enabled */ true,
+        std::make_tuple(/* local_web_approvals_enabled */ true,
                         /* local_web_approvals_preferred */ true),
-        std::make_tuple(/* web_filter_interstitial_refresh_enabled */ true,
-                        /* local_web_approvals_enabled */ true,
+        std::make_tuple(/* local_web_approvals_enabled */ true,
                         /* local_web_approvals_preferred */ false),
-        std::make_tuple(/* web_filter_interstitial_refresh_enabled */ true,
-                        /* local_web_approvals_enabled */ false,
-                        /* local_web_approvals_preferred */ false),
-        std::make_tuple(/* web_filter_interstitial_refresh_enabled */ false,
-                        /* local_web_approvals_enabled */ false,
+        std::make_tuple(/* local_web_approvals_enabled */ false,
                         /* local_web_approvals_preferred */ false)));
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserNarrowWidthIframeFilterTest,
@@ -1023,11 +991,9 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     ChromeOSLocalWebApprovalsTest,
     testing::Values(
-        std::make_tuple(/* web_filter_interstitial_refresh_enabled */ true,
-                        /* local_web_approvals_enabled */ true,
+        std::make_tuple(/* local_web_approvals_enabled */ true,
                         /* local_web_approvals_preferred */ true),
-        std::make_tuple(/* web_filter_interstitial_refresh_enabled */ true,
-                        /* local_web_approvals_enabled */ true,
+        std::make_tuple(/* local_web_approvals_enabled */ true,
                         /* local_web_approvals_preferred */ false)));
 
 IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,

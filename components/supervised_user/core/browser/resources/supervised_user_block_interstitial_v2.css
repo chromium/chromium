@@ -2,9 +2,6 @@
    Use of this source code is governed by a BSD-style license that can be
    found in the LICENSE file. */
 
-/* This is the stylesheet for the interstitial when the
-   "WebFilterInterstitialRefresh" flag is enabled. */
-
 .banner {
   align-items: center;
   box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);

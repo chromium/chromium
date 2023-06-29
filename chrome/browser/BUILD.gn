@@ -3442,8 +3442,6 @@ static_library("browser") {
       sources += [
         "supervised_user/android/website_parent_approval.cc",
         "supervised_user/android/website_parent_approval.h",
-        "supervised_user/child_accounts/child_account_feedback_reporter_android.cc",
-        "supervised_user/child_accounts/child_account_feedback_reporter_android.h",
         "supervised_user/child_accounts/child_account_service_android.cc",
         "supervised_user/child_accounts/child_account_service_android.h",
       ]
@@ -7585,7 +7583,6 @@ static_library("browser") {
       "//components/supervised_user/core/browser:fetcher",
       "//components/supervised_user/core/browser:list_family_members_service",
       "//components/supervised_user/core/browser:supervised_user_preferences",
-      "//components/supervised_user/core/browser/proto",
       "//components/supervised_user/core/common",
     ]
   }

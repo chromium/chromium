@@ -406,14 +406,6 @@ void SupervisedUserNavigationObserver::RequestUrlAccessLocal(
   interstitial->RequestUrlAccessLocal(std::move(callback));
 }
 
-void SupervisedUserNavigationObserver::Feedback() {
-  auto* render_frame_host = receivers_.GetCurrentTargetFrame();
-  int id = render_frame_host->GetFrameTreeNodeId();
-
-  if (base::Contains(supervised_user_interstitials_, id))
-    supervised_user_interstitials_[id]->ShowFeedback();
-}
-
 void SupervisedUserNavigationObserver::RequestCreated(
     RequestUrlAccessRemoteCallback callback,
     const std::string& host,

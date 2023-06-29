@@ -261,10 +261,6 @@ const char kTextBasedAudioDescriptionDescription[] =
     "will speak the audio descriptions aloud as the video plays.";
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-const char kWebFilterInterstitialRefreshName[] =
-    "Web filter interstitial refresh.";
-const char kWebFilterInterstitialRefreshDescription[] =
-    "Enable web filter interstitial refresh for Family Link users.";
 
 const char kEnableSupervisionOnDesktopName[] =
     "Enable parental supervision infrastructure";
@@ -7049,13 +7045,6 @@ const char kFollowingFeedSidepanelDescription[] =
     "Enables the following feed in the sidepanel.";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
-const char kLocalWebApprovalsName[] = "Local web approvals";
-const char kLocalWebApprovalsDescription[] =
-    "Enable local web approvals for Family Link users. Web filter interstitial "
-    "refresh needs to also be enabled.";
-#endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 const char kEnableProtoApiForClassifyUrlName[] =

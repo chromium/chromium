@@ -65668,7 +65668,6 @@ from previous Chrome versions.
   <int value="946688335" label="OmniboxSpareRenderer:disabled"/>
   <int value="946998724" label="SiteIsolationForGuests:enabled"/>
   <int value="947323794" label="BruschettaAlphaMigrate:disabled"/>
-  <int value="948085015" label="WebFilterInterstitialRefresh:disabled"/>
   <int value="948351976" label="WallpaperWebUI:disabled"/>
   <int value="948521531" label="StylusHandwriting:disabled"/>
   <int value="948682684" label="BorealisDGPU:disabled"/>
@@ -67535,7 +67534,6 @@ from previous Chrome versions.
   <int value="1903206193" label="NewWindowAppMenu:disabled"/>
   <int value="1903444879" label="VirtualKeyboardApi:disabled"/>
   <int value="1905465678" label="ContextualSearchSingleActions:enabled"/>
-  <int value="1906901281" label="WebFilterInterstitialRefresh:enabled"/>
   <int value="1906942630" label="enable-easy-unlock"/>
   <int value="1907273605" label="NtpZeroSuggest:disabled"/>
   <int value="1909117215" label="animated-image-resume"/>
