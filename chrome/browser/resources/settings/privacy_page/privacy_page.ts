@@ -211,12 +211,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
           }
 
           if (routes.COOKIES) {
-            map.set(
-                `${routes.COOKIES.path}_${routes.PRIVACY.path}`,
-                '#cookiesLinkRow');
-            map.set(
-                `${routes.COOKIES.path}_${routes.BASIC.path}`,
-                '#cookiesLinkRow');
+            const selector =
+                loadTimeData.getBoolean('isPrivacySandboxSettings4') ?
+                '#thirdPartyCookiesLinkRow' :
+                '#cookiesLinkRow';
+            map.set(`${routes.COOKIES.path}_${routes.PRIVACY.path}`, selector);
+            map.set(`${routes.COOKIES.path}_${routes.BASIC.path}`, selector);
           }
 
           if (routes.SITE_SETTINGS) {
