@@ -63,18 +63,25 @@ void AddBubbleBodyText(
       HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
 }
 
-void AddSiteToExceptionsListButton(
-    ui::DialogModel::Builder* dialog_model_builder,
-    HighEfficiencyBubbleDelegate* bubble_delegate,
-    const bool is_enabled) {
+void AddCancelButton(ui::DialogModel::Builder* dialog_model_builder,
+                     HighEfficiencyBubbleDelegate* bubble_delegate,
+                     const bool is_site_excluded) {
+  int button_string_id;
+  base::OnceClosure callback;
+  if (is_site_excluded) {
+    button_string_id = IDS_HIGH_EFFICIENCY_DIALOG_BODY_LINK_TEXT;
+    callback = base::BindOnce(&HighEfficiencyBubbleDelegate::OnSettingsClicked,
+                              base::Unretained(bubble_delegate));
+  } else {
+    button_string_id = IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST;
+    callback = base::BindOnce(
+        &HighEfficiencyBubbleDelegate::OnAddSiteToExceptionsListClicked,
+        base::Unretained(bubble_delegate));
+  }
   dialog_model_builder->AddCancelButton(
-      base::BindOnce(
-          &HighEfficiencyBubbleDelegate::OnAddSiteToExceptionsListClicked,
-          base::Unretained(bubble_delegate)),
+      std::move(callback),
       ui::DialogModelButton::Params()
-          .SetLabel(l10n_util::GetStringUTF16(
-              IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST))
-          .SetEnabled(is_enabled)
+          .SetLabel(l10n_util::GetStringUTF16(button_string_id))
           .SetId(HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton));
 }
 }  // namespace
@@ -165,10 +172,9 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kDiscardExceptionsImprovements) &&
       !is_guest && !profile->IsIncognitoProfile()) {
-    const bool is_enabled = !high_efficiency::IsSiteInExceptionsList(
+    const bool is_site_excluded = high_efficiency::IsSiteInExceptionsList(
         profile->GetPrefs(), web_contents->GetURL().host());
-    AddSiteToExceptionsListButton(&dialog_model_builder, bubble_delegate,
-                                  is_enabled);
+    AddCancelButton(&dialog_model_builder, bubble_delegate, is_site_excluded);
   }
 
   auto dialog_model = dialog_model_builder.Build();

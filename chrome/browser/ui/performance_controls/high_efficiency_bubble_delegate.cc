@@ -24,7 +24,6 @@ HighEfficiencyBubbleDelegate::HighEfficiencyBubbleDelegate(
 void HighEfficiencyBubbleDelegate::OnSettingsClicked() {
   chrome::ShowSettingsSubPage(browser_, chrome::kPerformanceSubPage);
   close_action_ = HighEfficiencyBubbleActionType::kOpenSettings;
-  dialog_model()->host()->Close();
 }
 
 void HighEfficiencyBubbleDelegate::OnAddSiteToExceptionsListClicked() {
