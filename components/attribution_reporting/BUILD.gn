@@ -53,6 +53,8 @@ component("attribution_reporting") {
     "trigger_registration.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     ":mojom",
     ":source_type_mojom",
@@ -72,6 +74,8 @@ component("is_origin_suitable") {
     "is_origin_suitable.cc",
     "is_origin_suitable.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//services/network/public/cpp",
@@ -292,6 +296,8 @@ component("registration_mojom_traits") {
     "registration_mojom_traits.cc",
     "registration_mojom_traits.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   defines = [ "IS_ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS_IMPL" ]
 
