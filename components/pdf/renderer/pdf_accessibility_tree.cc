@@ -1812,8 +1812,15 @@ void PdfAccessibilityTree::UnserializeNodes() {
   render_accessibility->SetPluginTreeSource(this);
   nodes_.clear();
 
-  base::UmaHistogramBoolean("Accessibility.PDF.HasAccessibleText",
-                            did_get_a_text_run_);
+  if (!did_unserialize_nodes_once_) {
+    // If the user turns on PDF OCR after opening a PDF, its PDF a11y tree gets
+    // created again. `did_unserialize_nodes_once_` helps to determine whether
+    // it's first time to create a PDF a11y tree. When a PDF is opened, the UMA
+    // metric, "Accessibility.PDF.HasAccessibleText", needs be recorded once.
+    did_unserialize_nodes_once_ = true;
+    base::UmaHistogramBoolean("Accessibility.PDF.HasAccessibleText",
+                              did_get_a_text_run_);
+  }
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
