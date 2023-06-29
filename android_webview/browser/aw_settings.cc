@@ -21,6 +21,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/supports_user_data.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/viz/common/features.h"
@@ -220,12 +221,17 @@ void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
 
     // If the override user-agent is not empty and contains the default
     // user-agent, then we propagate the default user-agent client hints.
-    if (base::FeatureList::IsEnabled(blink::features::kUserAgentClientHint) &&
+    const bool propagate_uach_metadata =
+        base::FeatureList::IsEnabled(blink::features::kUserAgentClientHint) &&
         !ua_string_override.empty() &&
-        ua_string_override.find(ua_default) != std::string::npos) {
+        ua_string_override.find(ua_default) != std::string::npos;
+    if (propagate_uach_metadata) {
       override_ua_with_metadata.ua_metadata_override =
           AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand();
     }
+    base::UmaHistogramBoolean(
+        "Android.WebView.UserAgentClientHintsMetadata.Available",
+        propagate_uach_metadata);
 
     // Set overridden user-agent and default client hints metadata if applied.
     web_contents()->SetUserAgentOverride(override_ua_with_metadata, true);
