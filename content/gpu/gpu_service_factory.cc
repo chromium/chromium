@@ -59,8 +59,14 @@ void GpuServiceFactory::RunMediaService(
   // freezing, hence "user blocking".
   scoped_refptr<base::SequencedTaskRunner> task_runner = task_runner_;
   // Only D3D11 device supports multi-treaded use.
-  if (gpu_info_.gl_implementation_parts.angle ==
-          gl::ANGLEImplementation::kD3D11 &&
+  bool dedicated_thread_allowed =
+#if BUILDFLAG(IS_WIN)
+      gpu_info_.gl_implementation_parts.angle ==
+      gl::ANGLEImplementation::kD3D11;
+#else
+      true;
+#endif
+  if (dedicated_thread_allowed &&
       base::FeatureList::IsEnabled(media::kDedicatedMediaServiceThread)) {
     if (base::FeatureList::IsEnabled(
             media::kUseSequencedTaskRunnerForMediaService)) {
@@ -78,9 +84,7 @@ void GpuServiceFactory::RunMediaService(
         FROM_HERE,
         base::BindOnce(
             [](base::WeakPtr<media::MediaGpuChannelManager> manager) {
-              if (!manager) {
-                return;
-              }
+              CHECK(manager);
               auto* channel_manager = manager->channel_manager();
               if (!channel_manager) {
                 return;
