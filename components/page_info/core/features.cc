@@ -18,7 +18,7 @@ BASE_FEATURE(kPageInfoStoreInfo,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPageInfoAboutThisSiteImprovedBottomSheet,
              "PageInfoAboutThisSiteImprovedBottomSheet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 const char* default_langs[]{"en", "pt", "fr", "it", "nl", "de", "es"};
