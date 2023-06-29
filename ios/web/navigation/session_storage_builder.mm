@@ -11,12 +11,12 @@
 #import "components/sessions/core/session_id.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_item_impl.h"
-#import "ios/web/navigation/navigation_item_storage_builder.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
-#import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/session/proto/navigation.pb.h"
 #import "ios/web/public/session/proto/session.pb.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_client.h"
@@ -42,59 +42,41 @@ CRWSessionStorage* SessionStorageBuilder::BuildStorage(
   session_storage.stableIdentifier = web_state.GetStableIdentifier();
   session_storage.uniqueIdentifier = web_state.GetUniqueIdentifier();
   session_storage.hasOpener = web_state.HasOpener();
-  session_storage.lastCommittedItemIndex =
-      navigation_manager.GetLastCommittedItemIndex();
-  if (session_storage.lastCommittedItemIndex == -1) {
-    // This can happen when a session is saved during restoration. Instead,
-    // default to GetItemCount() - 1.
-    session_storage.lastCommittedItemIndex =
-        navigation_manager.GetItemCount() - 1;
-  }
-
-  NSMutableArray<CRWNavigationItemStorage*>* item_storages =
-      [[NSMutableArray alloc] init];
-  const size_t original_index = session_storage.lastCommittedItemIndex;
-  const size_t navigation_items =
-      static_cast<size_t>(navigation_manager.GetItemCount());
-
-  // Drop URLs larger than a certain threshold.
-  for (size_t index = 0; index < navigation_items; ++index) {
-    const NavigationItemImpl* item =
-        navigation_manager.GetNavigationItemImplAtIndex(index);
-    if (item->ShouldSkipSerialization()) {
-      if (index <= original_index) {
-        session_storage.lastCommittedItemIndex--;
-      }
-      continue;
-    }
-
-    [item_storages addObject:NavigationItemStorageBuilder::BuildStorage(*item)];
-  }
-
-  int loc = 0;
-  int len = 0;
-  session_storage.lastCommittedItemIndex = wk_navigation_util::GetSafeItemRange(
-      session_storage.lastCommittedItemIndex, item_storages.count, &loc, &len);
-
-  DCHECK_LT(session_storage.lastCommittedItemIndex,
-            static_cast<NSInteger>(len));
-  session_storage.itemStorages =
-      [item_storages subarrayWithRange:NSMakeRange(loc, len)];
-
-  // Serialize the SessionCertificatePolicyCacheImpl to proto represention
-  // then create a CRWSessionCertificatePolicyCacheStorage* wrapping it to
-  // allow serialization using NSCoding protocol.
-  web::proto::CertificatesCacheStorage storage;
-  session_certificate_policy_cache.SerializeToProto(storage);
-  session_storage.certPolicyCacheStorage =
-      [[CRWSessionCertificatePolicyCacheStorage alloc] initWithProto:storage];
+  session_storage.userAgentType = web_state.GetUserAgentForSessionRestoration();
 
   const SerializableUserDataManager* user_data_manager =
       SerializableUserDataManager::FromWebState(&web_state);
   if (user_data_manager) {
     session_storage.userData = user_data_manager->GetUserDataForSession();
   }
-  session_storage.userAgentType = web_state.GetUserAgentForSessionRestoration();
+
+  // Serialize the NavigationManagerImpl to proto representation then
+  // fill CRWSessionStorage `lastCommittedItemIndex` and `itemStorages`
+  // to allow serialization using NSCoding protocol.
+  {
+    proto::NavigationStorage storage;
+    navigation_manager.SerializeToProto(storage);
+
+    NSMutableArray<CRWNavigationItemStorage*>* items = [NSMutableArray array];
+    for (const proto::NavigationItemStorage& item_storage : storage.items()) {
+      [items addObject:[[CRWNavigationItemStorage alloc]
+                           initWithProto:item_storage]];
+    }
+
+    session_storage.itemStorages = items;
+    session_storage.lastCommittedItemIndex =
+        storage.last_committed_item_index();
+  }
+
+  // Serialize the SessionCertificatePolicyCacheImpl to proto represention
+  // then create a CRWSessionCertificatePolicyCacheStorage* wrapping it to
+  // allow serialization using NSCoding protocol.
+  {
+    proto::CertificatesCacheStorage storage;
+    session_certificate_policy_cache.SerializeToProto(storage);
+    session_storage.certPolicyCacheStorage =
+        [[CRWSessionCertificatePolicyCacheStorage alloc] initWithProto:storage];
+  }
 
   return session_storage;
 }
@@ -108,36 +90,38 @@ void SessionStorageBuilder::ExtractSessionState(
   DCHECK_EQ(&web_state, navigation_manager.GetWebState());
 
   web_state.SetHasOpener(session_storage.hasOpener);
-  NSArray<CRWNavigationItemStorage*>* item_storages =
-      session_storage.itemStorages;
+  web_state.SetUserAgent(session_storage.userAgentType);
 
-  std::vector<std::unique_ptr<NavigationItem>> items(item_storages.count);
-  for (size_t index = 0; index < item_storages.count; ++index) {
-    std::unique_ptr<NavigationItemImpl> item_impl =
-        NavigationItemStorageBuilder::BuildNavigationItemImpl(
-            item_storages[index]);
+  SerializableUserDataManager::FromWebState(&web_state)
+      ->SetUserDataFromSession(session_storage.userData);
 
-    navigation_manager.RewriteItemURLIfNecessary(item_impl.get());
-    items[index] = std::move(item_impl);
+  // Restore the NavigationManagerImpl by extracting the `itemStorages` and
+  // `lastCommittedItemIndex` creating a proto representation and using the
+  // corresponding method of NavigationManagerImpl.
+  {
+    proto::NavigationStorage storage;
+    storage.set_last_committed_item_index(
+        session_storage.lastCommittedItemIndex);
+
+    for (CRWNavigationItemStorage* item in session_storage.itemStorages) {
+      [item serializeToProto:*storage.add_items()];
+    }
+
+    navigation_manager.RestoreFromProto(storage);
   }
-  navigation_manager.Restore(session_storage.lastCommittedItemIndex,
-                             std::move(items));
 
   // Restore the SessionCertificatePolicyCacheImpl by converting the
   // CRWSessionCertificatePolicyCacheStorage* to a proto represention
   // and using the corresponding constructor.
-  web::proto::CertificatesCacheStorage storage;
-  [session_storage.certPolicyCacheStorage serializeToProto:storage];
-  auto cert_policy_cache =
-      std::make_unique<SessionCertificatePolicyCacheImpl>(
-          web_state.GetBrowserState(), storage);
-  web_state.SetSessionCertificatePolicyCacheImpl(
-      std::move(cert_policy_cache));
-
-  SerializableUserDataManager::FromWebState(&web_state)
-      ->SetUserDataFromSession(session_storage.userData);
-  UserAgentType user_agent_type = session_storage.userAgentType;
-  web_state.SetUserAgent(user_agent_type);
+  {
+    proto::CertificatesCacheStorage storage;
+    [session_storage.certPolicyCacheStorage serializeToProto:storage];
+    auto cert_policy_cache =
+        std::make_unique<SessionCertificatePolicyCacheImpl>(
+            web_state.GetBrowserState(), storage);
+    web_state.SetSessionCertificatePolicyCacheImpl(
+        std::move(cert_policy_cache));
+  }
 }
 
 }  // namespace web
