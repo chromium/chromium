@@ -81,6 +81,13 @@ bool IsValidSources(
           return false;
         }
         break;
+      case blink::ServiceWorkerRouterSource::SourceType::kFetchEvent:
+        if (!s.fetch_event_source) {
+          RecordSetupError(
+              ServiceWorkerRouterEvaluatorErrorEnums::kInvalidSource);
+          return false;
+        }
+        break;
     }
   }
   return true;
@@ -182,6 +189,9 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
         case blink::ServiceWorkerRouterSource::SourceType::kRace:
           // TODO(crbug.com/1371756): we may need to update the name per target.
           source.Append("race-network-and-fetch-handler");
+          break;
+        case blink::ServiceWorkerRouterSource::SourceType::kFetchEvent:
+          source.Append("fetch-event");
           break;
       }
     }

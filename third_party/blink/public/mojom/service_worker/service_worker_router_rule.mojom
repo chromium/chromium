@@ -28,12 +28,19 @@ struct ServiceWorkerRouterNetworkSource {
 struct ServiceWorkerRouterRaceSource {
 };
 
+// This is used for explicitly running the fetch event listeners.
+// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// TODO(crbug.com/1371756): implement fields in the full picture.
+struct ServiceWorkerRouterFetchEventSource {
+};
+
 // This represents a source of the router rule.
 // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
 // TODO(crbug.com/1371756): implement other sources in the full picture.
 union ServiceWorkerRouterSource {
   ServiceWorkerRouterNetworkSource network_source;
   ServiceWorkerRouterRaceSource race_source;
+  ServiceWorkerRouterFetchEventSource fetch_event_source;
 };
 
 // This represents a ServiceWorker static routing API's router rule.

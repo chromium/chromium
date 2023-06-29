@@ -29,6 +29,8 @@ bool ServiceWorkerRouterSource::operator==(
       return network_source == other.network_source;
     case SourceType::kRace:
       return race_source == other.race_source;
+    case SourceType::kFetchEvent:
+      return fetch_event_source == other.fetch_event_source;
   }
 }
 

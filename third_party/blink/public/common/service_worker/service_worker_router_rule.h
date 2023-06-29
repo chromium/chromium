@@ -45,6 +45,13 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterRaceSource {
   }
 };
 
+// Fetch handler source structure.
+struct BLINK_COMMON_EXPORT ServiceWorkerRouterFetchEventSource {
+  bool operator==(const ServiceWorkerRouterFetchEventSource& other) const {
+    return true;
+  }
+};
+
 // This represents a source of the router rule.
 // TODO(crbug.com/1371756): implement other sources in the proposal.
 struct BLINK_COMMON_EXPORT ServiceWorkerRouterSource {
@@ -56,13 +63,16 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterSource {
     kNetwork = 0,
     // Race network and fetch handler.
     kRace = 1,
+    // Fetch Event is used as a source.
+    kFetchEvent = 2,
 
-    kMaxValue = kRace,
+    kMaxValue = kFetchEvent,
   };
   SourceType type;
 
   absl::optional<ServiceWorkerRouterNetworkSource> network_source;
   absl::optional<ServiceWorkerRouterRaceSource> race_source;
+  absl::optional<ServiceWorkerRouterFetchEventSource> fetch_event_source;
 
   bool operator==(const ServiceWorkerRouterSource& other) const;
 };

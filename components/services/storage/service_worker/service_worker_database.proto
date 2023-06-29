@@ -123,9 +123,11 @@ message ServiceWorkerRegistrationData {
       message Source {
         message NetworkSource {}
         message RaceSource {}
+        message FetchEventSource {}
         oneof source {
           NetworkSource network_source = 1;
           RaceSource race_source = 2;
+          FetchEventSource fetch_event_source = 3;
         }
       }
       repeated Condition condition = 1;

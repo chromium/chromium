@@ -224,7 +224,11 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   scoped_refptr<ServiceWorkerContextWrapper> context = core->wrapper();
   DCHECK(context);
 
-  bool force_race_network_request = false;
+  enum RaceNetworkRequestMode {
+    kDefault,
+    kForced,
+    kSkipped
+  } race_network_request_mode = kDefault;
   // Check if registered static route rules match the request.
   if (active_worker->router_evaluator()) {
     CHECK(active_worker->router_evaluator()->IsValid());
@@ -266,7 +270,10 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                   std::move(fallback_callback_), active_worker));
           return;
         case blink::ServiceWorkerRouterSource::SourceType::kRace:
-          force_race_network_request = true;
+          race_network_request_mode = kForced;
+          break;
+        case blink::ServiceWorkerRouterSource::SourceType::kFetchEvent:
+          race_network_request_mode = kSkipped;
           break;
       }
     }
@@ -287,11 +294,12 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   if (container_host_->IsContainerForWindowClient()) {
     // The RaceNetworkRequest mode doesn't support Navigation Preload. If
     // RaceNetworkRequest is triggered, Navigation Preload never happens.
-    if (force_race_network_request) {
+    if (race_network_request_mode == kForced) {
       if (StartRaceNetworkRequest(context, active_worker)) {
         dispatched_preload_type_ = DispatchedPreloadType::kRaceNetworkRequest;
       }
-    } else if (MaybeStartRaceNetworkRequest(context, active_worker)) {
+    } else if (race_network_request_mode != kSkipped &&
+               MaybeStartRaceNetworkRequest(context, active_worker)) {
       dispatched_preload_type_ = DispatchedPreloadType::kRaceNetworkRequest;
     } else if (fetch_dispatcher_->MaybeStartNavigationPreload(
                    resource_request_, context, frame_tree_node_id_)) {

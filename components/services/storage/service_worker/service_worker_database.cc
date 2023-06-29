@@ -2052,6 +2052,12 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
             source.type = blink::ServiceWorkerRouterSource::SourceType::kRace;
             source.race_source.emplace();
             break;
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
+              kFetchEventSource:
+            source.type =
+                blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
+            source.fetch_event_source.emplace();
+            break;
         }
         router_rule.sources.emplace_back(source);
       }
@@ -2319,6 +2325,9 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
             break;
           case blink::ServiceWorkerRouterSource::SourceType::kRace:
             source->mutable_race_source();
+            break;
+          case blink::ServiceWorkerRouterSource::SourceType::kFetchEvent:
+            source->mutable_fetch_event_source();
             break;
         }
       }

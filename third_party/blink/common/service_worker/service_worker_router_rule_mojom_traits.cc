@@ -42,6 +42,8 @@ UnionTraits<blink::mojom::ServiceWorkerRouterSourceDataView,
       return blink::mojom::ServiceWorkerRouterSource::Tag::kNetworkSource;
     case blink::ServiceWorkerRouterSource::SourceType::kRace:
       return blink::mojom::ServiceWorkerRouterSource::Tag::kRaceSource;
+    case blink::ServiceWorkerRouterSource::SourceType::kFetchEvent:
+      return blink::mojom::ServiceWorkerRouterSource::Tag::kFetchEventSource;
   }
 }
 
@@ -57,6 +59,10 @@ bool UnionTraits<blink::mojom::ServiceWorkerRouterSourceDataView,
     case blink::mojom::ServiceWorkerRouterSource::Tag::kRaceSource:
       out->type = blink::ServiceWorkerRouterSource::SourceType::kRace;
       out->race_source.emplace();
+      return true;
+    case blink::mojom::ServiceWorkerRouterSource::Tag::kFetchEventSource:
+      out->type = blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
+      out->fetch_event_source.emplace();
       return true;
   }
   return false;

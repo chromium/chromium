@@ -3683,13 +3683,16 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
 
     blink::ServiceWorkerRouterSource source;
     source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
-    source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+    source.network_source.emplace();
     rule.sources.push_back(source);
     blink::ServiceWorkerRouterSource source2;
     source2.type = blink::ServiceWorkerRouterSource::SourceType::kRace;
     source2.race_source.emplace();
-    rule.sources.emplace_back(source2);
     rule.sources.push_back(source2);
+    blink::ServiceWorkerRouterSource source3;
+    source3.type = blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
+    source3.fetch_event_source.emplace();
+    rule.sources.push_back(source3);
     router_rules.rules.emplace_back(rule);
 
     store_and_restore(router_rules);
