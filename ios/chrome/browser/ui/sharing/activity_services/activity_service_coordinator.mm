@@ -266,9 +266,7 @@ constexpr CGFloat kAppIconPointSize = 80;
 
   id extraItem = nil;
   if (@available(iOS 16.4, *)) {
-    if (ShouldAddToHomeScreen(self.incognito)) {
-      extraItem = webState->GetActivityItem();
-    }
+    extraItem = webState->GetActivityItem();
   }
   [self shareItems:items activities:activities extraItem:extraItem];
 }
@@ -345,9 +343,7 @@ constexpr CGFloat kAppIconPointSize = 80;
       [self.mediator applicationActivitiesForDataItems:@[ URLData ]];
   id extraItem = nil;
   if (@available(iOS 16.4, *)) {
-    if (ShouldAddToHomeScreen(self.incognito)) {
-      extraItem = webState->GetActivityItem();
-    }
+    extraItem = webState->GetActivityItem();
   }
   [self shareItems:items activities:activities extraItem:extraItem];
 }

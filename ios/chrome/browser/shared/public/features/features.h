@@ -156,15 +156,6 @@ BASE_DECLARE_FEATURE(kConsistencyNewAccountInterface);
 // Whether the flag for consistency new-account interface is enabled.
 bool IsConsistencyNewAccountInterfaceEnabled();
 
-// Feature flag to enable add to home screen in share menu.
-BASE_DECLARE_FEATURE(kAddToHomeScreen);
-
-// Param to disable the feature in incognito.
-extern const char kAddToHomeScreenDisableIncognitoParam[];
-
-// Helper function to check the feature add to home screen.
-bool ShouldAddToHomeScreen(bool in_incognito);
-
 // Feature flag to enable the new layout of the NTP omnibox.
 BASE_DECLARE_FEATURE(kNewNTPOmniboxLayout);
 

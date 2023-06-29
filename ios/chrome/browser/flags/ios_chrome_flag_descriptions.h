@@ -13,11 +13,6 @@
 
 namespace flag_descriptions {
 
-// Title and description for the flag to enable add to home screen button in
-// share menu.
-extern const char kAddToHomeScreenName[];
-extern const char kAddToHomeScreenDescription[];
-
 // Title and description for the flag to enable the App Store Rating promo.
 extern const char kAppStoreRatingName[];
 extern const char kAppStoreRatingDescription[];

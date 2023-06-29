@@ -205,24 +205,6 @@ bool IsConsistencyNewAccountInterfaceEnabled() {
   return base::FeatureList::IsEnabled(kConsistencyNewAccountInterface);
 }
 
-BASE_FEATURE(kAddToHomeScreen,
-             "AddToHomeScreen",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const char kAddToHomeScreenDisableIncognitoParam[] =
-    "AddToHomeScreenDisableIncognitoParam";
-
-bool ShouldAddToHomeScreen(bool in_incognito) {
-  if (!base::FeatureList::IsEnabled(kAddToHomeScreen)) {
-    return false;
-  }
-  if (!in_incognito) {
-    return true;
-  }
-  return !base::GetFieldTrialParamByFeatureAsBool(
-      kAddToHomeScreen, kAddToHomeScreenDisableIncognitoParam, true);
-}
-
 BASE_FEATURE(kNewNTPOmniboxLayout,
              "kNewNTPOmniboxLayout",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -11,11 +11,6 @@
 
 namespace flag_descriptions {
 
-const char kAddToHomeScreenName[] = "Add to home screen";
-const char kAddToHomeScreenDescription[] =
-    "Allows to add a bookmark on the device home screen when sharing from a "
-    "web view.";
-
 const char kAppStoreRatingName[] = "Enable the App Store Rating promo.";
 const char kAppStoreRatingDescription[] =
     "When enabled, App Store Rating promo will be presented to eligible "

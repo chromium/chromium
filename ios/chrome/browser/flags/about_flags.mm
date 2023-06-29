@@ -670,12 +670,6 @@ const FeatureEntry::FeatureVariation kIOSEditMenuPartialTranslateVariations[] =
      {"Enable on incognito", kIOSEditMenuPartialTranslateWithIncognito,
       std::size(kIOSEditMenuPartialTranslateWithIncognito), nullptr}};
 
-const FeatureEntry::FeatureParam kAddToHomeScreenDisableIncognito[] = {
-    {kAddToHomeScreenDisableIncognitoParam, "true"}};
-const FeatureEntry::FeatureVariation kAddToHomeScreenVariations[] = {
-    {"Disable on incognito", kAddToHomeScreenDisableIncognito,
-     std::size(kAddToHomeScreenDisableIncognito), nullptr}};
-
 const FeatureEntry::FeatureParam kBringYourOwnTabsIOSBottomMessage[] = {
     {kBringYourOwnTabsIOSParam, "true"}};
 const FeatureEntry::FeatureVariation kBringYourOwnTabsIOSVariations[] = {
@@ -1428,11 +1422,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kConsistencyNewAccountInterfaceName,
      flag_descriptions::kConsistencyNewAccountInterfaceDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kConsistencyNewAccountInterface)},
-    {"add-to-home-screen", flag_descriptions::kAddToHomeScreenName,
-     flag_descriptions::kAddToHomeScreenDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kAddToHomeScreen,
-                                    kAddToHomeScreenVariations,
-                                    "IOSEditMenuPartialTranslate")},
     {"policy-logs-page-ios", flag_descriptions::kPolicyLogsPageIOSName,
      flag_descriptions::kPolicyLogsPageIOSDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(policy::features::kPolicyLogsPageIOS)},
