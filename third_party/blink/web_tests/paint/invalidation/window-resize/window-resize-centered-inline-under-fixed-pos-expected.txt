@@ -12,7 +12,7 @@
       "contentsOpaque": true,
       "backgroundColor": "#D3D3D3",
       "invalidations": [
-        [0, 0, 600, 250]
+        [0, 125, 6, 30]
       ]
     }
   ]
@@ -29,10 +29,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
       "bounds": [400, 250],
       "contentsOpaque": true,
-      "backgroundColor": "#D3D3D3",
-      "invalidations": [
-        [0, 0, 400, 250]
-      ]
+      "backgroundColor": "#D3D3D3"
     }
   ]
 }
@@ -53,7 +50,8 @@
       "contentsOpaque": true,
       "backgroundColor": "#D3D3D3",
       "invalidations": [
-        [0, 0, 400, 600]
+        [0, 250, 400, 350],
+        [0, 125, 6, 30]
       ]
     }
   ]
@@ -75,7 +73,7 @@
       "contentsOpaque": true,
       "backgroundColor": "#D3D3D3",
       "invalidations": [
-        [0, 0, 800, 600]
+        [400, 0, 400, 600]
       ]
     }
   ]

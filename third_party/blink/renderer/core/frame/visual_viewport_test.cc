@@ -1025,16 +1025,11 @@ TEST_P(VisualViewportTest, TestWebViewResizeCausesViewportConstrainedLayout) {
   RegisterMockedHttpURLLoad("pinch-viewport-fixed-pos.html");
   NavigateTo(base_url_ + "pinch-viewport-fixed-pos.html");
 
-  LayoutObject* navbar = GetFrame()
-                             ->GetDocument()
-                             ->getElementById(AtomicString("navbar"))
-                             ->GetLayoutObject();
-
-  EXPECT_FALSE(navbar->NeedsLayout());
+  LayoutObject* layout_view = GetFrame()->GetDocument()->GetLayoutView();
+  EXPECT_FALSE(layout_view->NeedsLayout());
 
   GetFrame()->View()->Resize(gfx::Size(500, 200));
-
-  EXPECT_TRUE(navbar->NeedsLayout());
+  EXPECT_TRUE(layout_view->NeedsLayout());
 }
 
 class VisualViewportMockWebFrameClient

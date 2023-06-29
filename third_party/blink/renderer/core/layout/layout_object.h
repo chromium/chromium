@@ -2000,6 +2000,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   void SetChildNeedsLayout(MarkingBehavior = kMarkContainerChain);
   void SetNeedsPositionedMovementLayout();
+  void SetNeedsSimplifiedLayout();
   void SetIntrinsicLogicalWidthsDirty(MarkingBehavior = kMarkContainerChain);
   void ClearIntrinsicLogicalWidthsDirty();
 
@@ -4533,6 +4534,17 @@ inline void LayoutObject::SetNeedsPositionedMovementLayout() {
 #endif
   if (!already_needed_layout)
     MarkContainerChainForLayout();
+}
+
+inline void LayoutObject::SetNeedsSimplifiedLayout() {
+  bool already_needed_layout = NeedsSimplifiedNormalFlowLayout();
+  SetNeedsSimplifiedNormalFlowLayout(true);
+#if DCHECK_IS_ON()
+  DCHECK(!IsSetNeedsLayoutForbidden());
+#endif
+  if (!already_needed_layout) {
+    MarkContainerChainForLayout();
+  }
 }
 
 // TODO(1229581): Get rid of this.

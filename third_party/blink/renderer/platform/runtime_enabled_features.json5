@@ -2069,6 +2069,10 @@
       status: "stable",
     },
     {
+      name: "LayoutNewFixedPositionInvalidation",
+      status: "stable",
+    },
+    {
       name: "LayoutNewTextAreaScrollbar",
       status: "stable",
     },

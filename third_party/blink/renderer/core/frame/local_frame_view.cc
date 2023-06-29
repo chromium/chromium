@@ -1262,6 +1262,27 @@ void LocalFrameView::ViewportSizeChanged(bool width_changed,
 
 void LocalFrameView::MarkFixedPositionObjectsForLayout(bool width_changed,
                                                        bool height_changed) {
+  if (RuntimeEnabledFeatures::LayoutNewFixedPositionInvalidationEnabled()) {
+    auto* layout_view = GetLayoutView();
+    if (!layout_view || layout_view->NeedsLayout()) {
+      return;
+    }
+
+    for (const auto& fragment : layout_view->PhysicalFragments()) {
+      if (!fragment.HasOutOfFlowFragmentChild()) {
+        continue;
+      }
+      for (const auto& fragment_child : fragment.Children()) {
+        if (fragment_child->IsFixedPositioned()) {
+          layout_view->SetNeedsSimplifiedLayout();
+          return;
+        }
+      }
+    }
+
+    return;
+  }
+
   if (!HasFixedPositionObjects() || !(width_changed || height_changed))
     return;
 
