@@ -681,6 +681,9 @@ class BrowserView : public BrowserWindow,
   bool ShouldDescendIntoChildForEventHandling(
       gfx::NativeView child,
       const gfx::Point& location) override;
+  bool RotatePaneFocusFromView(views::View* focused_view,
+                               bool forward,
+                               bool enable_wrapping) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

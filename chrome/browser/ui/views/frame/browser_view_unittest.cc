@@ -30,7 +30,10 @@
 #include "content/public/test/web_contents_tester.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/gfx/scrollbar_size.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/webview/webview.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -414,6 +417,36 @@ TEST_F(BrowserViewTest, TitleAudioIndicators) {
             std::u16string::npos);
 }
 #endif
+
+TEST_F(BrowserViewTest, RotatePaneFocusFromView) {
+  auto dialog_model = ui::DialogModel::Builder()
+                          .SetTitle(u"test")
+                          .SetIsAlertDialog()
+                          .AddOkButton(base::DoNothing())
+                          .Build();
+  auto* anchor = browser_view()->toolbar_button_provider()->GetAppMenuButton();
+
+  auto bubble = std::make_unique<views::BubbleDialogModelHost>(
+      std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);
+  auto* bubble_ptr = bubble.get();
+  auto* widget = views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
+  widget->Show();
+
+  // OK button cannot be retrieved until CreateBubble has been called.
+  auto* ok_button = bubble_ptr->GetOkButton();
+
+  auto* focus_manager = widget->GetFocusManager();
+  focus_manager->SetKeyboardAccessible(true);
+
+  // Initial rotation should return a "rotated" result.
+  EXPECT_TRUE(browser_view()->RotatePaneFocusFromView(nullptr, true, true));
+  EXPECT_EQ(ok_button, focus_manager->GetStoredFocusView());
+
+  // Next rotation should not return a "rotated" result and should not change
+  // the focus.
+  EXPECT_FALSE(browser_view()->RotatePaneFocusFromView(nullptr, true, false));
+  EXPECT_EQ(ok_button, focus_manager->GetStoredFocusView());
+}
 
 class BrowserViewHostedAppTest : public TestWithBrowserView {
  public:
