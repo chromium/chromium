@@ -40,6 +40,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
+namespace signin::test {
+
 namespace {
 const std::string kExpsUrl("https://labs.google.com/search/experiments/");
 const std::string kFailureUrl("https://labs.google.com/search/error");
@@ -47,8 +49,6 @@ const std::string kGoogleUrl("https://www.google.com/");
 const std::string kLensUrl("https://lens.google.com/companion");
 const std::string kNpsUrl("https://nps.gov/articles/route-66-overview.htm");
 }  // namespace
-
-namespace signin::test {
 
 // Live tests for Companion.
 // These tests can be run with:
@@ -68,7 +68,7 @@ class CompanionLiveTest : public signin::test::LiveTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    // Whitelists hosts.
+    // Allowlists hosts.
     host_resolver()->AllowDirectLookup("*.nps.gov");
 
     LiveTest::SetUpInProcessBrowserTestFixture();
@@ -223,7 +223,7 @@ class CompanionLiveTest : public signin::test::LiveTest {
     }
   }
 
-  void ConfirmFeaturesShown(std::vector<std::string> features,
+  void ConfirmFeaturesShown(const std::vector<std::string>& features,
                             int bucket_count) {
     // For each feature, ensure the Companion.|feature|.Shown histogram
     // populates to |bucket_count|.
@@ -238,7 +238,7 @@ class CompanionLiveTest : public signin::test::LiveTest {
     }
   }
 
-  void ConfirmFeaturesClicked(std::vector<std::string> features,
+  void ConfirmFeaturesClicked(const std::vector<std::string>& features,
                               int bucket_count) {
     // For each feature, ensure the Companion.|feature|.Clicked histogram
     // populates to |bucket_count|.
