@@ -119,14 +119,13 @@ void TabPickupBrowserAgent::ForeignSessionsChanged() {
   auto const synced_sessions =
       std::make_unique<synced_sessions::SyncedSessions>(session_sync_service_);
   if (synced_sessions->GetSessionCount()) {
-    // Get the last synced tab.
-    const synced_sessions::DistantSession* session =
-        synced_sessions->GetSession(0);
+    // Get the last synced session.
+    session_ = synced_sessions->GetSession(0);
 
     // Check that the last synced tab is yougner than the tab pickup time
     // threshold.
     const base::TimeDelta modified_time =
-        base::Time::Now() - session->modified_time;
+        base::Time::Now() - session_->modified_time;
     if (modified_time < TabPickupTimeThreshold()) {
       SetupInfoBarDelegate();
     }
@@ -137,8 +136,7 @@ void TabPickupBrowserAgent::SetupInfoBarDelegate() {
   DCHECK(IsTabPickupEnabled());
   infobar_in_progress_ = true;
 
-  delegate_ =
-      std::make_unique<TabPickupInfobarDelegate>(browser_->GetBrowserState());
+  delegate_ = std::make_unique<TabPickupInfobarDelegate>(browser_, session_);
   delegate_->FetchFavIconImage(^{
     // Once the favicon image is fetched, display the infobar.
     ShowInfoBar();

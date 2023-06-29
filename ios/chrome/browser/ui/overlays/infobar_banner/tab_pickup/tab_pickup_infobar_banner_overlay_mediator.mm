@@ -59,7 +59,9 @@ const CGFloat kFaviconPointSize = 24.0f;
 #pragma mark - InfobarOverlayRequestMediator
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
-  // TODO(crbug.com/1457175): Implement this.
+  self.tabPickupDelegate->OpenDistantTab();
+
+  [self dismissOverlay];
 }
 
 @end

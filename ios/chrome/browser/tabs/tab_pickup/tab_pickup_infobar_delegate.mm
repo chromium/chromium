@@ -5,11 +5,10 @@
 #import "ios/chrome/browser/tabs/tab_pickup/tab_pickup_infobar_delegate.h"
 
 #import "components/infobars/core/infobar_delegate.h"
-#import "components/sync_sessions/session_sync_service.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/sync/session_sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/distant_tab.h"
 #import "ios/chrome/browser/synced_sessions/synced_sessions.h"
@@ -22,21 +21,18 @@
 #endif
 
 TabPickupInfobarDelegate::TabPickupInfobarDelegate(
-    ChromeBrowserState* browser_state)
-    : browser_state_(browser_state) {
+    Browser* browser,
+    const synced_sessions::DistantSession* session)
+    : session_(session), browser_(browser) {
   DCHECK(IsTabPickupEnabled());
 
-  favicon_loader_ =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(browser_state_);
+  favicon_loader_ = IOSChromeFaviconLoaderFactory::GetForBrowserState(
+      browser_->GetBrowserState());
 
-  synced_sessions_ = std::make_unique<synced_sessions::SyncedSessions>(
-      SessionSyncServiceFactory::GetForBrowserState(browser_state_));
-  synced_sessions::DistantSession const* session =
-      synced_sessions_->GetSession(0);
-  const synced_sessions::DistantTab* tab = session->tabs.front().get();
+  const synced_sessions::DistantTab* tab = session_->tabs.front().get();
 
-  session_name_ = session->name;
-  synced_time_ = session->modified_time;
+  session_name_ = session_->name;
+  synced_time_ = session_->modified_time;
   tab_url_ = tab->virtual_url;
 }
 
@@ -54,6 +50,10 @@ void TabPickupInfobarDelegate::FetchFavIconImage(
           block_handler();
         }
       });
+}
+
+void TabPickupInfobarDelegate::OpenDistantTab() {
+  // TODO(crbug.com/1457175): Implement this.
 }
 
 #pragma mark - ConfirmInfoBarDelegate methods

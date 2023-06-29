@@ -23,6 +23,10 @@ namespace sync_sessions {
 class SessionSyncService;
 }
 
+namespace synced_sessions {
+struct DistantSession;
+}
+
 namespace web {
 class WebState;
 }
@@ -90,6 +94,8 @@ class TabPickupBrowserAgent : public BrowserObserver,
   raw_ptr<web::WebState> active_web_state_ = nullptr;
   // The infobar's delegate.
   std::unique_ptr<TabPickupInfobarDelegate> delegate_;
+  // The distant session used to display the infobar.
+  raw_ptr<const synced_sessions::DistantSession> session_;
   // The currently displayed infobar.
   raw_ptr<infobars::InfoBar> infobar_ = nullptr;
   // KeyedService responsible session sync.

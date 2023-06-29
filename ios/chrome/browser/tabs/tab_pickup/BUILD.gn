@@ -34,6 +34,7 @@ source_set("infobar_delegate") {
     "//components/infobars/core",
     "//components/sync_sessions",
     "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/sync",
