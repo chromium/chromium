@@ -26,7 +26,7 @@ class View;
 
 namespace web_app {
 
-// A free-floating dialog that presents the user with two choice (allow and
+// A free-floating dialog that presents the user with two choices (allow and
 // deny), along with an option for persistence, wrt a particular web app. This
 // dialog is shown before Chrome launches an app window for protocol handler or
 // file handler launches.
