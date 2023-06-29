@@ -1789,9 +1789,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.PlayAutoInstallRequest.State{ArcUserTypes}"
-    enum="ArcPlayAutoInstallRequestState" expires_after="2023-08-01">
+    enum="ArcPlayAutoInstallRequestState" expires_after="2024-07-01">
   <owner>jhorwich@google.com</owner>
   <owner>khmel@google.com</owner>
+  <owner>arc-core@google.com</owner>
   <summary>
     State of PlayAutoInstall flow after the request. {ArcUserTypes}
   </summary>
@@ -1801,9 +1802,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.PlayAutoInstallRequest.TimeDelta{ArcUserTypes}" units="ms"
-    expires_after="2023-08-01">
+    expires_after="2024-07-01">
   <owner>jhorwich@google.com</owner>
   <owner>khmel@google.com</owner>
+  <owner>arc-core@google.com</owner>
   <summary>
     Elapsed time from the when the PlayAutoInstall request was issued and
     completed. {ArcUserTypes}
