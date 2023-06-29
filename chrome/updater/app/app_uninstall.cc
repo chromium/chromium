@@ -51,43 +51,43 @@ std::vector<base::FilePath> GetVersionExecutablePaths(UpdaterScope scope) {
     return {};
   }
   std::vector<base::FilePath> version_executable_paths;
-  base::FileEnumerator file_enumerator(*updater_folder_path, false,
-                                       base::FileEnumerator::DIRECTORIES);
-  for (base::FilePath version_folder_path = file_enumerator.Next();
-       !version_folder_path.empty();
-       version_folder_path = file_enumerator.Next()) {
-    // Skip the current version.
-    if (version_folder_path == GetVersionedInstallDirectory(scope)) {
-      VLOG(1) << __func__
-              << " : skipping the current version: " << version_folder_path;
-      continue;
-    }
+  base::FileEnumerator(*updater_folder_path, false,
+                       base::FileEnumerator::DIRECTORIES)
+      .ForEach([&scope, &version_executable_paths](
+                   const base::FilePath& version_folder_path) {
+        // Skip the current version.
+        if (version_folder_path == GetVersionedInstallDirectory(scope)) {
+          VLOG(1) << __func__
+                  << " : skipping the current version: " << version_folder_path;
+          return;
+        }
 
 #if BUILDFLAG(IS_WIN)
-    const base::Version folder_version(
-        base::WideToASCII(version_folder_path.BaseName().value()));
+        const base::Version folder_version(
+            base::WideToASCII(version_folder_path.BaseName().value()));
 #else
-    const base::Version folder_version(version_folder_path.BaseName().value());
+        const base::Version folder_version(
+            version_folder_path.BaseName().value());
 #endif  // BUILDFLAG(IS_WIN)
 
-    // Skip if the folder is not named as a valid version. All updater version
-    // directories are named as valid versions.
-    if (!folder_version.IsValid()) {
-      continue;
-    }
+        // Skip if the folder is not named as a valid version. All updater
+        // version directories are named as valid versions.
+        if (!folder_version.IsValid()) {
+          return;
+        }
 
-    const base::FilePath version_executable_path =
-        version_folder_path.Append(GetExecutableRelativePath());
+        const base::FilePath version_executable_path =
+            version_folder_path.Append(GetExecutableRelativePath());
 
-    if (base::PathExists(version_executable_path)) {
-      version_executable_paths.push_back(version_executable_path);
-      VLOG(1) << __func__ << " : added to version_executable_paths: "
-              << version_executable_path;
-    } else {
-      VLOG(1) << __func__
-              << " : File does not exist: " << version_executable_path;
-    }
-  }
+        if (base::PathExists(version_executable_path)) {
+          version_executable_paths.push_back(version_executable_path);
+          VLOG(1) << __func__ << " : added to version_executable_paths: "
+                  << version_executable_path;
+        } else {
+          VLOG(1) << __func__
+                  << " : File does not exist: " << version_executable_path;
+        }
+      });
 
   return version_executable_paths;
 }

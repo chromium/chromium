@@ -260,11 +260,9 @@ void ExitTestMode(UpdaterScope scope) {
 }
 
 int CountDirectoryFiles(const base::FilePath& dir) {
-  base::FileEnumerator it(dir, false, base::FileEnumerator::FILES);
   int res = 0;
-  for (base::FilePath name = it.Next(); !name.empty(); name = it.Next()) {
-    ++res;
-  }
+  base::FileEnumerator(dir, false, base::FileEnumerator::FILES)
+      .ForEach([&res](const base::FilePath& /*name*/) { ++res; });
   return res;
 }
 
@@ -390,16 +388,16 @@ void ExpectNoCrashes(UpdaterScope scope) {
   dest_dir = dest_dir.AppendASCII(GetTestName());
   EXPECT_TRUE(base::CreateDirectory(dest_dir));
 
-  base::FileEnumerator it(*database_path, true, base::FileEnumerator::FILES,
-                          FILE_PATH_LITERAL("*.dmp"),
-                          base::FileEnumerator::FolderSearchPolicy::ALL);
   int count = 0;
-  for (base::FilePath name = it.Next(); !name.empty(); name = it.Next()) {
-    VLOG(0) << __func__ << "Copying " << name << " to: " << dest_dir;
-    EXPECT_TRUE(base::CopyFile(name, dest_dir.Append(name.BaseName())));
+  base::FileEnumerator(*database_path, true, base::FileEnumerator::FILES,
+                       FILE_PATH_LITERAL("*.dmp"),
+                       base::FileEnumerator::FolderSearchPolicy::ALL)
+      .ForEach([&count, &dest_dir](const base::FilePath& name) {
+        VLOG(0) << __func__ << "Copying " << name << " to: " << dest_dir;
+        EXPECT_TRUE(base::CopyFile(name, dest_dir.Append(name.BaseName())));
 
-    ++count;
-  }
+        ++count;
+      });
 
   EXPECT_EQ(count, 0) << ": " << count << " crashes found";
 }

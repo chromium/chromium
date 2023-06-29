@@ -29,7 +29,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -527,17 +526,17 @@ void ExpectOnlyMockUpdater(const base::FilePath& mock_updater_path) {
   ASSERT_TRUE(base::PathExists(mock_updater_path));
   int count_mock_updater_path = 0;
 
-  ForEachItemInPath(
+  base::FileEnumerator(
       mock_updater_path.DirName(), false,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES,
-      base::BindLambdaForTesting([&mock_updater_path, &count_mock_updater_path](
-                                     const base::FilePath& item) {
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES)
+      .ForEach([&mock_updater_path,
+                &count_mock_updater_path](const base::FilePath& item) {
         if (item == mock_updater_path) {
           ++count_mock_updater_path;
         } else {
           ADD_FAILURE() << "Unexpected file/directory found: " << item;
         }
-      }));
+      });
 
   EXPECT_EQ(count_mock_updater_path, 1);
 }

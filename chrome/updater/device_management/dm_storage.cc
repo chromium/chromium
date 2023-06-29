@@ -46,21 +46,18 @@ constexpr char kPolicyFileName[] = "PolicyFetchResponse";
 bool DeleteObsoletePolicies(const base::FilePath& cache_root,
                             const std::set<std::string>& policy_types_base64) {
   bool result = true;
-  base::FileEnumerator cached_files(cache_root,
-                                    /* recursive */ false,
-                                    base::FileEnumerator::DIRECTORIES,
-                                    FILE_PATH_LITERAL("*"));
-  for (base::FilePath file = cached_files.Next(); !file.empty();
-       file = cached_files.Next()) {
-    const std::string file_base_name = file.BaseName().MaybeAsASCII();
-    if (policy_types_base64.count(file_base_name)) {
-      continue;
-    }
+  base::FileEnumerator(cache_root,
+                       /* recursive */ false, base::FileEnumerator::DIRECTORIES,
+                       FILE_PATH_LITERAL("*"))
+      .ForEach([&policy_types_base64, &result](const base::FilePath& file) {
+        if (policy_types_base64.count(file.BaseName().MaybeAsASCII())) {
+          return;
+        }
 
-    if (!base::DeletePathRecursively(file)) {
-      result = false;
-    }
-  }
+        if (!base::DeletePathRecursively(file)) {
+          result = false;
+        }
+      });
 
   return result;
 }

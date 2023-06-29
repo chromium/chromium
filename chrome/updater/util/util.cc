@@ -6,7 +6,6 @@
 
 #include <cctype>
 #include <string>
-#include <utility>
 #include <vector>
 
 #if BUILDFLAG(IS_WIN)
@@ -355,41 +354,24 @@ void InitializeThreadPool(const char* name) {
   base::ThreadPoolInstance::Get()->Start(init_params);
 }
 
-void ForEachItemInPath(
-    const base::FilePath& path,
-    bool recursive,
-    int file_type,
-    base::RepeatingCallback<void(const base::FilePath&)> callback) {
-  if (path.empty()) {
-    return;
-  }
-  base::FileEnumerator it(path, recursive, file_type);
-  for (base::FilePath name = it.Next(); !name.empty(); name = it.Next()) {
-    callback.Run(name);
-  }
-}
-
 bool DeleteExcept(const absl::optional<base::FilePath>& except) {
   if (!except) {
     return false;
   }
 
   bool delete_success = true;
-  ForEachItemInPath(
+  base::FileEnumerator(
       except->DirName(), false,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES,
-      base::BindRepeating(
-          [](const base::FilePath& except, bool& delete_success,
-             const base::FilePath& item) {
-            if (item != except) {
-              VLOG(2) << __func__ << ": Deleting: " << item;
-              if (!base::DeletePathRecursively(item)) {
-                LOG(ERROR) << __func__ << ": Failed to delete: " << item;
-                delete_success = false;
-              }
-            }
-          },
-          *except, std::ref(delete_success)));
+      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES)
+      .ForEach([&except, &delete_success](const base::FilePath& item) {
+        if (item != *except) {
+          VLOG(2) << __func__ << ": Deleting: " << item;
+          if (!base::DeletePathRecursively(item)) {
+            LOG(ERROR) << __func__ << ": Failed to delete: " << item;
+            delete_success = false;
+          }
+        }
+      });
 
   return delete_success;
 }

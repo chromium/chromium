@@ -48,9 +48,9 @@ std::vector<base::FilePath> GetSetupFiles(const base::FilePath& source_dir) {
       source_dir, false, base::FileEnumerator::FileType::FILES,
       FILE_PATH_LITERAL("*"), base::FileEnumerator::FolderSearchPolicy::ALL,
       base::FileEnumerator::ErrorPolicy::STOP_ENUMERATION);
-  for (base::FilePath file = it.Next(); !file.empty(); file = it.Next()) {
+  it.ForEach([&result](const base::FilePath& file) {
     result.push_back(file.BaseName());
-  }
+  });
   if (it.GetError() != base::File::Error::FILE_OK) {
     VLOG(2) << __func__ << " could not enumerate files : " << it.GetError();
     return {};

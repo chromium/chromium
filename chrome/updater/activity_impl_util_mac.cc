@@ -24,16 +24,15 @@ std::vector<base::FilePath> GetHomeDirPaths(UpdaterScope scope) {
       return {path};
     }
     case UpdaterScope::kSystem: {
-      base::FileEnumerator enumerator(
-          base::FilePath(FILE_PATH_LITERAL("/Users")), /*recursive=*/false,
-          base::FileEnumerator::DIRECTORIES);
       std::vector<base::FilePath> home_dir_paths;
-      for (base::FilePath name = enumerator.Next(); !name.empty();
-           name = enumerator.Next()) {
-        if (base::PathIsWritable(name)) {
-          home_dir_paths.push_back(name);
-        }
-      }
+      base::FileEnumerator(base::FilePath(FILE_PATH_LITERAL("/Users")),
+                           /*recursive=*/false,
+                           base::FileEnumerator::DIRECTORIES)
+          .ForEach([&home_dir_paths](const base::FilePath& name) {
+            if (base::PathIsWritable(name)) {
+              home_dir_paths.push_back(name);
+            }
+          });
       return home_dir_paths;
     }
   }

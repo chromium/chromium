@@ -314,14 +314,13 @@ void CheckInstallation(UpdaterScope scope,
                       })))
       << base::JoinString(
              [&path]() {
-               base::FileEnumerator it(*path, true,
-                                       base::FileEnumerator::FILES |
-                                           base::FileEnumerator::DIRECTORIES);
                std::vector<base::FilePath::StringType> files;
-               for (base::FilePath name = it.Next(); !name.empty();
-                    name = it.Next()) {
-                 files.push_back(name.value());
-               }
+               base::FileEnumerator(*path, true,
+                                    base::FileEnumerator::FILES |
+                                        base::FileEnumerator::DIRECTORIES)
+                   .ForEach([&files](const base::FilePath& name) {
+                     files.push_back(name.value());
+                   });
 
                return files;
              }(),

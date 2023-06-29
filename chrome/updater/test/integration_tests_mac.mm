@@ -147,12 +147,11 @@ void ExpectClean(UpdaterScope scope) {
     int count = CountDirectoryFiles(*path);
     EXPECT_LE(count, 1) << base::JoinString(
         [](const base::FilePath& dir) {
-          base::FileEnumerator it(dir, false, base::FileEnumerator::FILES);
           std::vector<base::FilePath::StringType> files;
-          for (base::FilePath name = it.Next(); !name.empty();
-               name = it.Next()) {
-            files.push_back(name.value());
-          }
+          base::FileEnumerator(dir, false, base::FileEnumerator::FILES)
+              .ForEach([&files](const base::FilePath& name) {
+                files.push_back(name.value());
+              });
 
           return files;
         }(*path),

@@ -1311,13 +1311,13 @@ TEST_F(IntegrationTest, CrashUsageStatsEnabled) {
   absl::optional<base::FilePath> database_path(
       GetCrashDatabasePath(GetTestScope()));
   if (database_path && base::PathExists(*database_path)) {
-    base::FileEnumerator it(*database_path, true, base::FileEnumerator::FILES,
-                            FILE_PATH_LITERAL("*.dmp"),
-                            base::FileEnumerator::FolderSearchPolicy::ALL);
-    for (base::FilePath name = it.Next(); !name.empty(); name = it.Next()) {
-      VLOG(0) << "Deleting file at: " << name;
-      EXPECT_TRUE(base::DeleteFile(name));
-    }
+    base::FileEnumerator(*database_path, true, base::FileEnumerator::FILES,
+                         FILE_PATH_LITERAL("*.dmp"),
+                         base::FileEnumerator::FolderSearchPolicy::ALL)
+        .ForEach([](const base::FilePath& name) {
+          VLOG(0) << "Deleting file at: " << name;
+          EXPECT_TRUE(base::DeleteFile(name));
+        });
   }
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 #endif
