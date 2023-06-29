@@ -2002,6 +2002,21 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_SHOW_DETAILS" desc="The password bottom sheet's long press menu item to open the password details page, which displays more information, like username, password and associated website.">
         Show Details
       </message>
+      <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_CONTINUE" desc="The action button to use the selected credit card to fill the payment fields on the webpage.">
+        Continue
+      </message>
+      <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_MANAGE_PAYMENT_METHODS" desc="The payment bottom sheet's long press menu item to open all payment methods view.">
+        Manage Payment Methods
+      </message>
+      <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_SHOW_DETAILS" desc="The payment bottom sheet's long press menu item to open the credit card details view.">
+        Show Details
+      </message>
+      <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_SUBTITLE" desc="Subtitle of the payment bottom sheet. [iOS only]">
+        Autofill Payment Info
+      </message>
+      <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD" desc="The action button to dismiss the payment bottom sheet and revert to using the keyboard to fill in payment fields on the webpage.">
+        Use Keyboard
+      </message>
       <message name="IDS_IOS_POST_RESTORE_DEFAULT_BROWSER_PRIMARY_ACTION" desc="The text for the primary action button of the post restore default browser promo.">
         Make Default in Settings…
       </message>
