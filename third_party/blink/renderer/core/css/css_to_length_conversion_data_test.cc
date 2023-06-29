@@ -106,6 +106,7 @@ TEST_F(CSSToLengthConversionDataTest, Normal) {
   EXPECT_FLOAT_EQ(36.0f, Convert(data, "calc(1em + 1ex)"));
   EXPECT_FLOAT_EQ(100.0f, Convert(data, "1lh"));
   EXPECT_FLOAT_EQ(50.0f, Convert(data, "1rlh"));
+  EXPECT_FLOAT_EQ(16.0f, Convert(data, "1cap"));
 }
 
 TEST_F(CSSToLengthConversionDataTest, Zoomed) {
@@ -122,6 +123,7 @@ TEST_F(CSSToLengthConversionDataTest, Zoomed) {
   EXPECT_FLOAT_EQ(72.0f, Convert(data, "calc(1em + 1ex)"));
   EXPECT_FLOAT_EQ(200.0f, Convert(data, "1lh"));
   EXPECT_FLOAT_EQ(100.0f, Convert(data, "1rlh"));
+  EXPECT_FLOAT_EQ(32.0f, Convert(data, "1cap"));
 }
 
 TEST_F(CSSToLengthConversionDataTest, AdjustedZoom) {
@@ -138,6 +140,7 @@ TEST_F(CSSToLengthConversionDataTest, AdjustedZoom) {
   EXPECT_FLOAT_EQ(72.0f, Convert(data, "calc(1em + 1ex)"));
   EXPECT_FLOAT_EQ(200.0f, Convert(data, "1lh"));
   EXPECT_FLOAT_EQ(100.0f, Convert(data, "1rlh"));
+  EXPECT_FLOAT_EQ(32.0f, Convert(data, "1cap"));
 }
 
 TEST_F(CSSToLengthConversionDataTest, DifferentZoom) {
@@ -156,6 +159,7 @@ TEST_F(CSSToLengthConversionDataTest, DifferentZoom) {
   EXPECT_FLOAT_EQ(72.0f, Convert(data, "calc(1em + 1ex)"));
   EXPECT_FLOAT_EQ(200.0f, Convert(data, "1lh"));
   EXPECT_FLOAT_EQ(100.0f, Convert(data, "1rlh"));
+  EXPECT_FLOAT_EQ(32.0f, Convert(data, "1cap"));
 }
 
 TEST_F(CSSToLengthConversionDataTest, Unzoomed) {
@@ -172,6 +176,7 @@ TEST_F(CSSToLengthConversionDataTest, Unzoomed) {
   EXPECT_FLOAT_EQ(36.0f, Convert(data, "calc(1em + 1ex)"));
   EXPECT_FLOAT_EQ(100.0f, Convert(data, "1lh"));
   EXPECT_FLOAT_EQ(50.0f, Convert(data, "1rlh"));
+  EXPECT_FLOAT_EQ(16.0f, Convert(data, "1cap"));
 }
 
 TEST_F(CSSToLengthConversionDataTest, StyleLessContainerUnitConversion) {
@@ -202,6 +207,7 @@ TEST_F(CSSToLengthConversionDataTest, Flags) {
   Flags rex = rem | glyph;
   Flags rch = rem | glyph;
   Flags ric = rem | glyph;
+  Flags cap = glyph;
   Flags lh = static_cast<Flags>(Flag::kLineHeightRelative);
   Flags rlh = glyph | rem | lh;
   Flags sv = static_cast<Flags>(Flag::kStaticViewport);
@@ -211,6 +217,7 @@ TEST_F(CSSToLengthConversionDataTest, Flags) {
   EXPECT_EQ(0u, ConversionFlags("1px"));
 
   EXPECT_EQ(em, ConversionFlags("1em"));
+  EXPECT_EQ(cap, ConversionFlags("1cap"));
 
   EXPECT_EQ(rem, ConversionFlags("1rem"));
   EXPECT_EQ(rex, ConversionFlags("1rex"));

@@ -2604,7 +2604,6 @@ crbug.com/1350027 [ Mac ] external/wpt/css/css-values/ic-unit-002.html [ Failure
 crbug.com/1350027 [ Mac ] external/wpt/css/css-values/ic-unit-003.html [ Failure ]
 crbug.com/1350027 [ Mac ] external/wpt/css/css-values/ic-unit-009.html [ Failure ]
 crbug.com/1350027 [ Mac ] external/wpt/css/css-values/ic-unit-010.html [ Failure ]
-crbug.com/1201220 external/wpt/css/css-values/cap-unit-001.html [ Failure ]
 
 crbug.com/1069300 external/wpt/css/css-pseudo/active-selection-063.html [ Failure ]
 crbug.com/1108711 external/wpt/css/css-pseudo/active-selection-057.html [ Failure ]

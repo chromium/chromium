@@ -35,6 +35,7 @@ class CORE_EXPORT CSSNumericLiteralValue : public CSSPrimitiveValue {
       case UnitType::kChs:
       case UnitType::kIcs:
       case UnitType::kLhs:
+      case UnitType::kCaps:
       case UnitType::kRexs:
       case UnitType::kRchs:
       case UnitType::kRics:

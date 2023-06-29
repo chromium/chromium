@@ -649,6 +649,7 @@ unsigned MediaQueryExpValue::GetUnitFlags() const {
   if (length_type_flags.test(CSSPrimitiveValue::kUnitTypeFontSize) ||
       length_type_flags.test(CSSPrimitiveValue::kUnitTypeFontXSize) ||
       length_type_flags.test(CSSPrimitiveValue::kUnitTypeZeroCharacterWidth) ||
+      length_type_flags.test(CSSPrimitiveValue::kUnitTypeFontCapitalHeight) ||
       length_type_flags.test(
           CSSPrimitiveValue::kUnitTypeIdeographicFullWidth) ||
       length_type_flags.test(CSSPrimitiveValue::kUnitTypeLineHeight)) {

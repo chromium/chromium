@@ -218,6 +218,7 @@ String CSSNumericLiteralValue::CustomCSSText() const {
     case UnitType::kRics:
     case UnitType::kChs:
     case UnitType::kIcs:
+    case UnitType::kCaps:
     case UnitType::kLhs:
     case UnitType::kRlhs:
     case UnitType::kPixels:

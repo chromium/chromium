@@ -249,6 +249,15 @@ float MediaValues::CalculateIcSize(LocalFrame* frame) {
       .Ic(/* zoom */ 1.0f);
 }
 
+float MediaValues::CalculateCapSize(LocalFrame* frame) {
+  DCHECK(frame);
+  DCHECK(frame->GetDocument());
+  const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
+  DCHECK(style);
+  return CSSToLengthConversionData::FontSizes(style->GetFontSizeStyle(), style)
+      .Cap(/* zoom */ 1.0f);
+}
+
 float MediaValues::CalculateLineHeight(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetDocument());

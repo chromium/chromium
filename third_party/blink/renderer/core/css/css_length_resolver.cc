@@ -291,6 +291,9 @@ double CSSLengthResolver::ZoomedComputedPixels(
     case CSSPrimitiveValue::UnitType::kRlhs:
       return value * RootLineHeight(Zoom());
 
+    case CSSPrimitiveValue::UnitType::kCaps:
+      return value * CapFontSize(Zoom());
+
     default:
       NOTREACHED();
       return 0;

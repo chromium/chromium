@@ -77,6 +77,10 @@ float CSSContainerValues::RootLineHeight(float zoom) const {
   return line_height_size_.Rlh(zoom);
 }
 
+float CSSContainerValues::CapFontSize(float zoom) const {
+  return font_sizes_.Cap(zoom);
+}
+
 double CSSContainerValues::ContainerWidth() const {
   return container_sizes_.Width().value_or(SmallViewportWidth());
 }
