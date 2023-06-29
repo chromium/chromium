@@ -1,0 +1,5 @@
+# Validate this file: https://api.codecov.io/validate
+
+# disable comments, as they are noisy
+# docs: https://docs.codecov.com/docs/pull-request-comments#disable-comment
+comment: false
