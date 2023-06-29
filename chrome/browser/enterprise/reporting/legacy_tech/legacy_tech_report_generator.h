@@ -28,6 +28,7 @@ class LegacyTechReportGenerator {
                    const std::string& filename,
                    uint64_t line,
                    uint64_t column);
+    LegacyTechData(const LegacyTechData& other);
     ~LegacyTechData();
     std::string type;
     base::Time timestamp;

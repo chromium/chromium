@@ -22,6 +22,9 @@ LegacyTechReportGenerator::LegacyTechData::LegacyTechData(
       filename(filename),
       line(line),
       column(column) {}
+
+LegacyTechReportGenerator::LegacyTechData::LegacyTechData(
+    const LegacyTechData& other) = default;
 LegacyTechReportGenerator::LegacyTechData::~LegacyTechData() = default;
 
 LegacyTechReportGenerator::LegacyTechReportGenerator() = default;
