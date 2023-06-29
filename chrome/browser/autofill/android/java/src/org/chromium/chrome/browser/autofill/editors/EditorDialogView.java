@@ -50,6 +50,9 @@ import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.ListModel;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +85,9 @@ public class EditorDialogView
     private final Handler mHandler;
     private final int mHalfRowMargin;
     private final List<FieldView> mFieldViews;
+    // TODO(crbug.com/1435314): substitute this with SimpleRecyclerViewMCP.
+    private final List<PropertyModelChangeProcessor<PropertyModel, TextFieldView, PropertyKey>>
+            mTextFieldMCPs;
     private final List<EditText> mEditableTextFields;
     private final List<Spinner> mDropdownFields;
 
@@ -124,6 +130,7 @@ public class EditorDialogView
         mHalfRowMargin = activity.getResources().getDimensionPixelSize(
                 R.dimen.editor_dialog_section_large_spacing);
         mFieldViews = new ArrayList<>();
+        mTextFieldMCPs = new ArrayList<>();
         mEditableTextFields = new ArrayList<>();
         mDropdownFields = new ArrayList<>();
 
@@ -232,7 +239,11 @@ public class EditorDialogView
     public void findAndScrollToInvalidField() {
         // Iterate over all the fields to update what errors are displayed, which is necessary
         // to to clear existing errors on any newly valid fields.
-        mFieldViews.forEach(view -> view.updateDisplayedError());
+        mFieldViews.forEach(view -> {
+            if (view instanceof DropdownFieldView) {
+                ((DropdownFieldView) view).updateDisplayedError();
+            }
+        });
 
         // Make sure that focus is on an invalid field.
         @Nullable
@@ -401,6 +412,8 @@ public class EditorDialogView
         removeTextChangedListeners();
         mContentView.removeAllViews();
         mFieldViews.clear();
+        mTextFieldMCPs.forEach(PropertyModelChangeProcessor::destroy);
+        mTextFieldMCPs.clear();
         mEditableTextFields.clear();
         mDropdownFields.clear();
 
@@ -498,6 +511,8 @@ public class EditorDialogView
             }
             case TEXT_INPUT: {
                 TextFieldView inputLayout = new TextFieldView(mActivity, fieldItem.model);
+                mTextFieldMCPs.add(PropertyModelChangeProcessor.create(
+                        fieldItem.model, inputLayout, EditorDialogViewBinder::bindTextFieldView));
                 mFieldViews.add(inputLayout);
                 mEditableTextFields.add(inputLayout.getEditText());
                 childView = inputLayout;
@@ -520,13 +535,6 @@ public class EditorDialogView
         // Temporarily hide the content to avoid blink before animation starts.
         mContainerView.setVisibility(View.INVISIBLE);
         show();
-    }
-
-    /** Rereads the values in the model to update the UI. */
-    public void update() {
-        for (int i = 0; i < mFieldViews.size(); i++) {
-            mFieldViews.get(i).update();
-        }
     }
 
     @Override

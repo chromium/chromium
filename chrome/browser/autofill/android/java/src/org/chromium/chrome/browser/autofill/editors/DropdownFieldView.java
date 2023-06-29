@@ -191,7 +191,9 @@ class DropdownFieldView implements FieldView {
         return mFieldModel.get(IS_REQUIRED);
     }
 
-    @Override
+    /**
+     * Updates the error display.
+     */
     public void updateDisplayedError() {
         View view = mDropdown.getSelectedView();
         if (view == null || !(view instanceof TextView)) {
@@ -229,17 +231,6 @@ class DropdownFieldView implements FieldView {
         ViewGroup parent = (ViewGroup) mDropdown.getParent();
         if (parent != null) parent.requestChildFocus(mDropdown, mDropdown);
         mDropdown.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
-    }
-
-    @Override
-    public void update() {
-        // If no value is selected, we'll  select the hint, which is the first item on the dropdown
-        // adapter.
-        mSelectedIndex = TextUtils.isEmpty(mFieldModel.get(VALUE))
-                ? 0
-                : mAdapter.getPosition(getDropdownValueByKey(mFieldModel, mFieldModel.get(VALUE)));
-        assert mSelectedIndex >= 0;
-        mDropdown.setSelection(mSelectedIndex);
     }
 
     private static List<String> getDropdownValues(List<DropdownKeyValue> dropdownKeyValues) {

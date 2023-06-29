@@ -15,7 +15,15 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDIT
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FOOTER_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FORM_VALID;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_SUGGESTIONS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -64,6 +72,26 @@ public class EditorDialogViewBinder {
             }
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
+        }
+    }
+
+    static void bindTextFieldView(PropertyModel model, TextFieldView view, PropertyKey key) {
+        if (key == LABEL || key == IS_REQUIRED) {
+            view.setLabel(model.get(LABEL), model.get(IS_REQUIRED));
+        } else if (key == VALIDATOR) {
+            view.setValidator(model.get(VALIDATOR));
+        } else if (key == ERROR_MESSAGE) {
+            view.setErrorMessage(model.get(ERROR_MESSAGE));
+        } else if (key == VALUE) {
+            view.setValue(model.get(VALUE));
+        } else if (key == TEXT_INPUT_TYPE) {
+            view.setTextInputType(model.get(TEXT_INPUT_TYPE));
+        } else if (key == TEXT_SUGGESTIONS) {
+            view.setTextSuggestions(model.get(TEXT_SUGGESTIONS));
+        } else if (key == TEXT_FORMATTER) {
+            view.setTextFormatter(model.get(TEXT_FORMATTER));
+        } else {
+            assert false : "Unhandled update to property:" + key;
         }
     }
 }
