@@ -23,7 +23,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/browser_ui/util/android/url_constants.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
@@ -80,6 +79,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "components/browser_ui/util/android/url_constants.h"
 #include "components/resources/android/theme_resources.h"
 #endif
 
