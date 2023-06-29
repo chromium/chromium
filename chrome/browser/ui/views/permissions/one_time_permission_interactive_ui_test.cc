@@ -237,13 +237,13 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
 
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
 
-  raw_ptr<Browser, DanglingUntriaged> current_browser_ = nullptr;
+  raw_ptr<Browser, DanglingAcrossTasks> current_browser_ = nullptr;
 
   base::HistogramTester histograms_;
 
  private:
   // The render frame host where JS calls will be executed.
-  raw_ptr<content::RenderFrameHost, DanglingUntriaged> render_frame_host_ =
+  raw_ptr<content::RenderFrameHost, DanglingAcrossTasks> render_frame_host_ =
       nullptr;
 
   base::test::ScopedFeatureList feature_list_;

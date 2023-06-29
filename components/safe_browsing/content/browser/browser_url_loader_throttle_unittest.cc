@@ -399,7 +399,7 @@ class SBBrowserUrlLoaderThrottleTest : public ::testing::Test {
   std::unique_ptr<BrowserURLLoaderThrottle> throttle_;
   // Owned by |throttle_|. May be deleted before the test completes. Prefer
   // setting it up at the start of the test.
-  raw_ptr<MockSafeBrowsingUrlChecker, DanglingUntriaged> url_checker_;
+  raw_ptr<MockSafeBrowsingUrlChecker, DanglingAcrossTasks> url_checker_;
   std::unique_ptr<MockRealTimeUrlLookupService> url_lookup_service_ =
       std::make_unique<MockRealTimeUrlLookupService>();
   scoped_refptr<MockUrlCheckerDelegate> url_checker_delegate_;

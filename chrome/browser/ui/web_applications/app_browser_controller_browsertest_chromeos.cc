@@ -167,8 +167,8 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
         ->GetVisibleURL();
   }
 
-  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
-  raw_ptr<Browser, DanglingUntriaged> app_browser_ = nullptr;
+  raw_ptr<Profile, DanglingAcrossTasks> profile_ = nullptr;
+  raw_ptr<Browser, DanglingAcrossTasks> app_browser_ = nullptr;
   GURL tabbed_app_url_;
 
  private:

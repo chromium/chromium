@@ -133,7 +133,7 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   std::unique_ptr<base::RunLoop> loop_runner_;
   base::RepeatingClosure loop_runner_quit_closure_;
   int event_target_id_ = 0;
-  raw_ptr<BrowserAccessibilityManager, DanglingUntriaged>
+  raw_ptr<BrowserAccessibilityManager, DanglingAcrossTasks>
       event_browser_accessibility_manager_ = nullptr;
   bool notification_received_ = false;
 

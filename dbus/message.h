@@ -372,7 +372,7 @@ class CHROME_DBUS_EXPORT MessageWriter {
   // Helper function used to implement AppendVariantOfByte() etc.
   void AppendVariantOfBasic(int dbus_type, const void* value);
 
-  raw_ptr<Message, DanglingUntriaged> message_;
+  raw_ptr<Message, DanglingAcrossTasks> message_;
   DBusMessageIter raw_message_iter_;
   bool container_is_open_;
 };
@@ -514,7 +514,7 @@ class CHROME_DBUS_EXPORT MessageReader {
   // Helper function used to implement PopVariantOfByte() etc.
   bool PopVariantOfBasic(int dbus_type, void* value);
 
-  raw_ptr<Message, DanglingUntriaged> message_;
+  raw_ptr<Message, DanglingAcrossTasks> message_;
   DBusMessageIter raw_message_iter_;
 };
 

@@ -323,7 +323,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
   base::MockCallback<base::RepeatingCallback<void(gfx::NativeWindow, Profile*)>>
       show_pwd_migration_warning_callback_;
 #endif
-  raw_ptr<NiceMock<TestAutofillPopupController>, DanglingUntriaged>
+  raw_ptr<NiceMock<TestAutofillPopupController>, DanglingAcrossTasks>
       autofill_popup_controller_ = nullptr;
 };
 

@@ -90,7 +90,8 @@ class SSLClientCertificateSelectorTest : public InProcessBrowserTest {
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_;
   scoped_refptr<StrictMock<SSLClientAuthRequestorMock>> auth_requestor_;
   // The selector will be deleted when a cert is selected or the tab is closed.
-  raw_ptr<SSLClientCertificateSelector, DanglingUntriaged> selector_ = nullptr;
+  raw_ptr<SSLClientCertificateSelector, DanglingAcrossTasks> selector_ =
+      nullptr;
 };
 
 class SSLClientCertificateSelectorMultiTabTest
@@ -166,8 +167,8 @@ class SSLClientCertificateSelectorMultiTabTest
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_2_;
   scoped_refptr<StrictMock<SSLClientAuthRequestorMock>> auth_requestor_1_;
   scoped_refptr<StrictMock<SSLClientAuthRequestorMock>> auth_requestor_2_;
-  raw_ptr<SSLClientCertificateSelector, DanglingUntriaged> selector_1_;
-  raw_ptr<SSLClientCertificateSelector, DanglingUntriaged> selector_2_;
+  raw_ptr<SSLClientCertificateSelector, DanglingAcrossTasks> selector_1_;
+  raw_ptr<SSLClientCertificateSelector, DanglingAcrossTasks> selector_2_;
 };
 
 class SSLClientCertificateSelectorMultiProfileTest
@@ -224,10 +225,10 @@ class SSLClientCertificateSelectorMultiProfileTest
   }
 
  protected:
-  raw_ptr<Browser, DanglingUntriaged> browser_1_;
+  raw_ptr<Browser, DanglingAcrossTasks> browser_1_;
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_1_;
   scoped_refptr<StrictMock<SSLClientAuthRequestorMock> > auth_requestor_1_;
-  raw_ptr<SSLClientCertificateSelector, DanglingUntriaged> selector_1_;
+  raw_ptr<SSLClientCertificateSelector, DanglingAcrossTasks> selector_1_;
 };
 
 IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorTest, SelectNone) {

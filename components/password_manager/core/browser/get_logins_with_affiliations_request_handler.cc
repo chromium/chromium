@@ -97,7 +97,7 @@ class GetLoginsHelper : public base::RefCounted<GetLoginsHelper> {
   // The group realms for 'requested_digest_'.
   base::flat_set<std::string> group_;
 
-  raw_ptr<PasswordStoreBackend, FlakyDanglingUntriaged> backend_;
+  raw_ptr<PasswordStoreBackend, DanglingAcrossTasks> backend_;
 };
 
 void GetLoginsHelper::Init(AffiliatedMatchHelper* affiliated_match_helper,

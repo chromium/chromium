@@ -309,7 +309,7 @@ class PaymentRequestBrowserTestBase
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   // Weak, owned by the PaymentRequest object.
-  raw_ptr<TestChromePaymentRequestDelegate, DanglingUntriaged> delegate_ =
+  raw_ptr<TestChromePaymentRequestDelegate, DanglingAcrossTasks> delegate_ =
       nullptr;
   syncer::TestSyncService sync_service_;
   sync_preferences::TestingPrefServiceSyncable prefs_;

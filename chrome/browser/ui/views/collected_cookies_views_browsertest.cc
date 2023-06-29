@@ -99,7 +99,7 @@ class CollectedCookiesViewsTest : public InProcessBrowserTest {
   }
 
  private:
-  raw_ptr<CollectedCookiesViews, DanglingUntriaged> cookies_dialog_ = nullptr;
+  raw_ptr<CollectedCookiesViews, DanglingAcrossTasks> cookies_dialog_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 };
 

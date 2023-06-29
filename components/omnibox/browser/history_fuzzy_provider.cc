@@ -449,7 +449,7 @@ class LoadSignificantUrls : public history::HistoryDBTask {
 
  private:
   Node node_;
-  raw_ptr<base::WaitableEvent, DanglingUntriaged> wait_event_;
+  raw_ptr<base::WaitableEvent, DanglingAcrossTasks> wait_event_;
   Callback callback_;
 };
 

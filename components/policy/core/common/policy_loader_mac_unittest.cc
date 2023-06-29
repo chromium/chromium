@@ -61,7 +61,7 @@ class TestHarness : public PolicyProviderTestHarness {
   static PolicyProviderTestHarness* Create();
 
  private:
-  raw_ptr<MockPreferences, DanglingUntriaged> prefs_;
+  raw_ptr<MockPreferences, DanglingAcrossTasks> prefs_;
 };
 
 TestHarness::TestHarness()
@@ -161,7 +161,7 @@ class PolicyLoaderMacTest : public PolicyTestBase {
     PolicyTestBase::TearDown();
   }
 
-  raw_ptr<MockPreferences, DanglingUntriaged> prefs_;
+  raw_ptr<MockPreferences, DanglingAcrossTasks> prefs_;
   std::unique_ptr<AsyncPolicyProvider> provider_;
 };
 

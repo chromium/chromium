@@ -181,7 +181,8 @@ class DocumentPictureInPictureWindowControllerBrowserTest
   };
 
  private:
-  raw_ptr<content::DocumentPictureInPictureWindowController, DanglingUntriaged>
+  raw_ptr<content::DocumentPictureInPictureWindowController,
+          DanglingAcrossTasks>
       pip_window_controller_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

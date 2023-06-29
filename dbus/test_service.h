@@ -224,8 +224,8 @@ class TestService : public base::Thread {
   bool has_ownership_;
 
   scoped_refptr<Bus> bus_;
-  raw_ptr<ExportedObject, DanglingUntriaged> exported_object_;
-  raw_ptr<ExportedObject, DanglingUntriaged> exported_object_manager_;
+  raw_ptr<ExportedObject, DanglingAcrossTasks> exported_object_;
+  raw_ptr<ExportedObject, DanglingAcrossTasks> exported_object_manager_;
 };
 
 }  // namespace dbus

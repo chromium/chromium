@@ -92,7 +92,7 @@ class ContentSettingsPref {
   ContentSettingsType content_type_;
 
   // Weak; owned by the Profile and reset in ShutdownOnUIThread.
-  raw_ptr<PrefService, DanglingUntriaged> prefs_;
+  raw_ptr<PrefService, DanglingAcrossTasks> prefs_;
 
   // Owned by the PrefProvider.
   raw_ptr<PrefChangeRegistrar, DanglingUntriaged> registrar_;

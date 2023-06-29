@@ -57,8 +57,8 @@ class FakeDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
       override;
 
  private:
-  raw_ptr<FakeDesktopMediaPicker, DanglingUntriaged> picker_;
-  raw_ptr<TestFlags, DanglingUntriaged | AllowPtrArithmetic> test_flags_;
+  raw_ptr<FakeDesktopMediaPicker, DanglingAcrossTasks> picker_;
+  raw_ptr<TestFlags, DanglingAcrossTasks | AllowPtrArithmetic> test_flags_;
   int tests_count_;
   int current_test_;
   bool is_web_contents_excluded_ = false;

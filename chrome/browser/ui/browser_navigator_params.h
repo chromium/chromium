@@ -148,7 +148,7 @@ struct NavigateParams {
 
   // Input parameter.
   // Only used by Singleton tabs. Causes a tab-switch in addition to navigation.
-  raw_ptr<content::WebContents, DanglingUntriaged> switch_to_singleton_tab =
+  raw_ptr<content::WebContents, DanglingAcrossTasks> switch_to_singleton_tab =
       nullptr;
 
   // Output parameter.
@@ -172,7 +172,7 @@ struct NavigateParams {
   //       Navigate(). However, if the originating page is from a different
   //       profile (e.g. an OFF_THE_RECORD page originating from a non-OTR
   //       window), then |source_contents| is reset to NULL.
-  raw_ptr<content::WebContents, DanglingUntriaged> source_contents = nullptr;
+  raw_ptr<content::WebContents, DanglingAcrossTasks> source_contents = nullptr;
 
   // The disposition requested by the navigation source. Default is
   // CURRENT_TAB. What follows is a set of coercions that happen to this value
@@ -262,7 +262,7 @@ struct NavigateParams {
   //       Navigate(), the caller is responsible for showing it so that its
   //       window can assume responsibility for the Browser's lifetime (Browser
   //       objects are deleted when the user closes a visible browser window).
-  raw_ptr<Browser, DanglingUntriaged> browser = nullptr;
+  raw_ptr<Browser, DanglingAcrossTasks> browser = nullptr;
 
   // The group the caller would like the tab to be added to.
   absl::optional<tab_groups::TabGroupId> group;

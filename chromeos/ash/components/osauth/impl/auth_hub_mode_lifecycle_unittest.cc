@@ -114,7 +114,7 @@ class AuthHubModeLifecycleTest : public ::testing::Test {
   StrictMock<MockModeLifecycleOwner> owner_;
   AuthHubModeLifecycle lifecycle_{&owner_};
   base::flat_map<AshAuthFactor,
-                 base::raw_ptr<MockAuthFactorEngine, DanglingUntriaged>>
+                 base::raw_ptr<MockAuthFactorEngine, DanglingAcrossTasks>>
       engines_;
   base::flat_map<AshAuthFactor, AuthFactorEngine::CommonInitCallback>
       init_callbacks_;

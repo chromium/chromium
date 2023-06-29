@@ -570,7 +570,7 @@ class BASE_EXPORT TaskQueueImpl {
   }
 
   QueueName name_;
-  const raw_ptr<SequenceManagerImpl, DanglingUntriaged> sequence_manager_;
+  const raw_ptr<SequenceManagerImpl, DanglingAcrossTasks> sequence_manager_;
 
   const scoped_refptr<const AssociatedThreadId> associated_thread_;
 

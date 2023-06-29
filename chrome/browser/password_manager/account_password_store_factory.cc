@@ -73,7 +73,7 @@ class UnsyncedCredentialsDeletionNotifierImpl
   base::WeakPtr<UnsyncedCredentialsDeletionNotifier> GetWeakPtr() override;
 
  private:
-  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  const raw_ptr<Profile, DanglingAcrossTasks> profile_;
   base::WeakPtrFactory<UnsyncedCredentialsDeletionNotifier> weak_ptr_factory_{
       this};
 };

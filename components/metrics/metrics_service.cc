@@ -192,7 +192,7 @@ class IndependentFlattener : public base::HistogramFlattener {
   }
 
  private:
-  const raw_ptr<MetricsLog, DanglingUntriaged> log_;
+  const raw_ptr<MetricsLog, DanglingAcrossTasks> log_;
 };
 
 // Used to mark histogram samples as reported so that they are not included in

@@ -540,12 +540,12 @@ class WebBluetoothTest : public InProcessBrowserTest {
       global_values_;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   TestContentBrowserClient browser_client_;
-  raw_ptr<content::ContentBrowserClient, DanglingUntriaged>
+  raw_ptr<content::ContentBrowserClient, DanglingAcrossTasks>
       old_browser_client_ = nullptr;
-  raw_ptr<FakeBluetoothGattCharacteristic, DanglingUntriaged> characteristic_ =
-      nullptr;
+  raw_ptr<FakeBluetoothGattCharacteristic, DanglingAcrossTasks>
+      characteristic_ = nullptr;
 
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
+  raw_ptr<content::WebContents, DanglingAcrossTasks> web_contents_ = nullptr;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 
   // Web Bluetooth needs HTTPS to work (a secure context). Moreover,

@@ -429,7 +429,7 @@ class GetLocalChangesRequest
   friend class base::RefCountedThreadSafe<GetLocalChangesRequest>;
   ~GetLocalChangesRequest() override;
 
-  raw_ptr<CancelationSignal, DanglingUntriaged> cancelation_signal_;
+  raw_ptr<CancelationSignal, DanglingAcrossTasks> cancelation_signal_;
   base::WaitableEvent response_accepted_;
   CommitRequestDataList response_;
 };

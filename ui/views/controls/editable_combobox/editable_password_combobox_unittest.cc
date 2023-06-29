@@ -71,8 +71,8 @@ class EditablePasswordComboboxTest : public ViewsTestBase {
   }
 
  private:
-  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
-  raw_ptr<EditablePasswordCombobox, DanglingUntriaged> combobox_ = nullptr;
+  raw_ptr<Widget, DanglingAcrossTasks> widget_ = nullptr;
+  raw_ptr<EditablePasswordCombobox, DanglingAcrossTasks> combobox_ = nullptr;
   base::MockCallback<Button::PressedCallback::Callback> eye_callback_;
 
   // Used for simulating eye button clicks.

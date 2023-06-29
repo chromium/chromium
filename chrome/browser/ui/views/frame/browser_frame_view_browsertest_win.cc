@@ -180,10 +180,10 @@ class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
   }
 
   absl::optional<SkColor> theme_color_ = SK_ColorBLUE;
-  raw_ptr<Browser, DanglingUntriaged> app_browser_ = nullptr;
-  raw_ptr<BrowserView, DanglingUntriaged> browser_view_ = nullptr;
-  raw_ptr<BrowserFrameViewWin, DanglingUntriaged> frame_view_ = nullptr;
-  raw_ptr<WebAppFrameToolbarView, DanglingUntriaged> web_app_frame_toolbar_ =
+  raw_ptr<Browser, DanglingAcrossTasks> app_browser_ = nullptr;
+  raw_ptr<BrowserView, DanglingAcrossTasks> browser_view_ = nullptr;
+  raw_ptr<BrowserFrameViewWin, DanglingAcrossTasks> frame_view_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView, DanglingAcrossTasks> web_app_frame_toolbar_ =
       nullptr;
 };
 
@@ -327,8 +327,8 @@ class WebAppBrowserFrameViewWinWindowControlsOverlayTest
     std::ignore = title_watcher.WaitAndGetTitle();
   }
 
-  raw_ptr<BrowserView, DanglingUntriaged> browser_view_ = nullptr;
-  raw_ptr<BrowserFrameViewWin, DanglingUntriaged> frame_view_ = nullptr;
+  raw_ptr<BrowserView, DanglingAcrossTasks> browser_view_ = nullptr;
+  raw_ptr<BrowserFrameViewWin, DanglingAcrossTasks> frame_view_ = nullptr;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 
  private:

@@ -71,7 +71,7 @@ class ZeroSuggestPrefetchTabHelperBrowserTest : public InProcessBrowserTest {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<testing::NiceMock<MockAutocompleteController>, DanglingUntriaged>
+  raw_ptr<testing::NiceMock<MockAutocompleteController>, DanglingAcrossTasks>
       controller_;
 };
 

@@ -67,7 +67,7 @@ class FileDescriptorWatcher::Controller::Watcher
 
   // WaitableEvent to signal to ensure that the Watcher is always destroyed
   // before the Controller.
-  const raw_ref<base::WaitableEvent, DanglingUntriaged> on_destroyed_;
+  const raw_ref<base::WaitableEvent, DanglingAcrossTasks> on_destroyed_;
 
   // Whether this Watcher is notified when |fd_| becomes readable or writable
   // without blocking.

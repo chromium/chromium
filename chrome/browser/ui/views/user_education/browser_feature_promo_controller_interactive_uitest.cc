@@ -37,8 +37,8 @@ class BrowserFeaturePromoControllerUiTest : public InProcessBrowserTest {
   }
 
  protected:
-  raw_ptr<BrowserView, DanglingUntriaged> browser_view_ = nullptr;
-  raw_ptr<BrowserFeaturePromoController, DanglingUntriaged> controller_ =
+  raw_ptr<BrowserView, DanglingAcrossTasks> browser_view_ = nullptr;
+  raw_ptr<BrowserFeaturePromoController, DanglingAcrossTasks> controller_ =
       nullptr;
 };
 

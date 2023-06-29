@@ -172,8 +172,8 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
   }
 
  protected:
-  raw_ptr<WebContents, DanglingUntriaged> captured_tab_ = nullptr;
-  raw_ptr<WebContents, DanglingUntriaged> capturing_tab_ = nullptr;
+  raw_ptr<WebContents, DanglingAcrossTasks> captured_tab_ = nullptr;
+  raw_ptr<WebContents, DanglingAcrossTasks> capturing_tab_ = nullptr;
 };
 
 // Flaky on Win bots and on linux release bots http://crbug.com/1264744

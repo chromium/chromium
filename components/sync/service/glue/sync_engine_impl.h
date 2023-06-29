@@ -205,8 +205,8 @@ class SyncEngineImpl : public SyncEngine,
 
   // The host which we serve (and are owned by). Set in Initialize() and nulled
   // out in StopSyncingForShutdown().
-  // DanglingUntriaged because it is assigned a DanglingUntriaged pointer.
-  raw_ptr<SyncEngineHost, DanglingUntriaged> host_ = nullptr;
+  // DanglingAcrossTasks because it is assigned a DanglingAcrossTasks pointer.
+  raw_ptr<SyncEngineHost, DanglingAcrossTasks> host_ = nullptr;
 
   raw_ptr<invalidation::InvalidationService> invalidator_ = nullptr;
   bool invalidation_handler_registered_ = false;

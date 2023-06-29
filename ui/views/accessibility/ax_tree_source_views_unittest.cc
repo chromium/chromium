@@ -75,11 +75,11 @@ class AXTreeSourceViewsTest : public ViewsTestBase {
   }
 
   UniqueWidgetPtr widget_;
-  raw_ptr<Label, DanglingUntriaged> label1_ =
+  raw_ptr<Label, DanglingAcrossTasks> label1_ =
       nullptr;  // Owned by views hierarchy.
-  raw_ptr<Label, DanglingUntriaged> label2_ =
+  raw_ptr<Label, DanglingAcrossTasks> label2_ =
       nullptr;  // Owned by views hierarchy.
-  raw_ptr<Textfield, DanglingUntriaged> textfield_ =
+  raw_ptr<Textfield, DanglingAcrossTasks> textfield_ =
       nullptr;  // Owned by views hierarchy.
 };
 

@@ -528,7 +528,7 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
                 DisableDanglingPtrDetection>
       outer_;
 
-  const raw_ptr<WorkerThread, DanglingUntriaged> worker_;
+  const raw_ptr<WorkerThread, DanglingAcrossTasks> worker_;
   const SingleThreadTaskRunnerThreadMode thread_mode_;
   const scoped_refptr<Sequence> sequence_;
 };

@@ -340,10 +340,10 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
         views::Widget::ClosedReason::kUnspecified);
   }
 
-  raw_ptr<Widget, DanglingUntriaged> textfield_widget_ = nullptr;
-  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<Widget, DanglingAcrossTasks> textfield_widget_ = nullptr;
+  raw_ptr<Widget, DanglingAcrossTasks> widget_ = nullptr;
 
-  raw_ptr<Textfield, DanglingUntriaged> textfield_ = nullptr;
+  raw_ptr<Textfield, DanglingAcrossTasks> textfield_ = nullptr;
   std::unique_ptr<TextfieldTestApi> textfield_test_api_;
   std::unique_ptr<ViewsTouchEditingControllerFactory> views_tsc_factory_;
   std::unique_ptr<aura::test::TestCursorClient> test_cursor_client_;

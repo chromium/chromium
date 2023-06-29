@@ -124,7 +124,7 @@ class AuthHubTestBase : public ::testing::Test {
 
   base::raw_ptr<MockAuthFactorEngineFactory> engine_factory_ = nullptr;
   base::raw_ptr<MockAuthFactorEngine> engine_ = nullptr;
-  base::raw_ptr<AuthFactorEngine::FactorEngineObserver, DanglingUntriaged>
+  base::raw_ptr<AuthFactorEngine::FactorEngineObserver, DanglingAcrossTasks>
       engine_observer_ = nullptr;
   absl::optional<AuthFactorEngine::UsageAllowed> engine_usage_;
 };
@@ -190,7 +190,7 @@ class AuthHubTestVector : public AuthHubTestBase {
 
   AccountId account_;
   AuthAttemptVector attempt_;
-  base::raw_ptr<AuthHubConnector, DanglingUntriaged> connector_ = nullptr;
+  base::raw_ptr<AuthHubConnector, DanglingAcrossTasks> connector_ = nullptr;
   StrictMock<MockAuthAttemptConsumer> attempt_consumer_;
   StrictMock<MockAuthFactorStatusConsumer> status_consumer_;
   FactorsStatusMap factors_state_;

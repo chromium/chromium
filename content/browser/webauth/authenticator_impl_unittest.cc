@@ -6967,7 +6967,7 @@ class BlockingDelegateContentBrowserClient : public ContentBrowserClient {
 
  private:
   TestWebAuthenticationDelegate web_authentication_delegate_;
-  raw_ptr<BlockingAuthenticatorRequestDelegate, DanglingUntriaged> delegate_ =
+  raw_ptr<BlockingAuthenticatorRequestDelegate, DanglingAcrossTasks> delegate_ =
       nullptr;
 };
 

@@ -561,9 +561,9 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
 
   // Mojo implementation fakes for the renderer-side service workers. Their
   // lifetime is bound to the Mojo connection.
-  raw_ptr<FakeEmbeddedWorkerInstanceClient, DanglingUntriaged>
+  raw_ptr<FakeEmbeddedWorkerInstanceClient, DanglingAcrossTasks>
       version_1_client_ = nullptr;
-  raw_ptr<FakeServiceWorker, DanglingUntriaged> version_1_service_worker_ =
+  raw_ptr<FakeServiceWorker, DanglingAcrossTasks> version_1_service_worker_ =
       nullptr;
   raw_ptr<FakeEmbeddedWorkerInstanceClient> version_2_client_ = nullptr;
   raw_ptr<FakeServiceWorker> version_2_service_worker_ = nullptr;

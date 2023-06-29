@@ -84,11 +84,11 @@ class WebAppFrameToolbarTestHelper {
   }
 
  private:
-  raw_ptr<Browser, DanglingUntriaged> app_browser_ = nullptr;
-  raw_ptr<BrowserView, DanglingUntriaged> browser_view_ = nullptr;
-  raw_ptr<BrowserNonClientFrameView, DanglingUntriaged> frame_view_ = nullptr;
-  raw_ptr<views::View, DanglingUntriaged> root_view_ = nullptr;
-  raw_ptr<WebAppFrameToolbarView, DanglingUntriaged> web_app_frame_toolbar_ =
+  raw_ptr<Browser, DanglingAcrossTasks> app_browser_ = nullptr;
+  raw_ptr<BrowserView, DanglingAcrossTasks> browser_view_ = nullptr;
+  raw_ptr<BrowserNonClientFrameView, DanglingAcrossTasks> frame_view_ = nullptr;
+  raw_ptr<views::View, DanglingAcrossTasks> root_view_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView, DanglingAcrossTasks> web_app_frame_toolbar_ =
       nullptr;
 
   GURL LoadTestPageWithDataAndGetURL(

@@ -66,8 +66,8 @@ class MediaRouterDialogControllerViewsTest : public InProcessBrowserTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  raw_ptr<WebContents, DanglingUntriaged> initiator_;
-  raw_ptr<MediaRouterDialogControllerViews, DanglingUntriaged>
+  raw_ptr<WebContents, DanglingAcrossTasks> initiator_;
+  raw_ptr<MediaRouterDialogControllerViews, DanglingAcrossTasks>
       dialog_controller_;
 };
 

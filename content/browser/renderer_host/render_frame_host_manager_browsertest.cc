@@ -153,7 +153,7 @@ class RenderFrameHostDestructionObserver : public WebContentsObserver {
  private:
   scoped_refptr<MessageLoopRunner> message_loop_runner_;
   bool deleted_;
-  raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_;
+  raw_ptr<RenderFrameHost, DanglingAcrossTasks> render_frame_host_;
 };
 
 // A NavigationThrottle implementation that blocks all outgoing navigation

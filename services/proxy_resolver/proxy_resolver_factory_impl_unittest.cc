@@ -64,7 +64,7 @@ enum Event {
 class TestProxyResolverFactory : public ProxyResolverV8TracingFactory {
  public:
   struct PendingRequest {
-    raw_ptr<std::unique_ptr<ProxyResolverV8Tracing>, DanglingUntriaged>
+    raw_ptr<std::unique_ptr<ProxyResolverV8Tracing>, DanglingAcrossTasks>
         resolver;
     net::CompletionOnceCallback callback;
   };

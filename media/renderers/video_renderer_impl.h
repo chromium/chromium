@@ -225,7 +225,7 @@ class MEDIA_EXPORT VideoRendererImpl
   // might deadlock. Do not call Start() or Stop() on the sink directly, use
   // StartSink() and StopSink() to ensure background rendering is started.  Only
   // access these values on |task_runner_|.
-  const raw_ptr<VideoRendererSink, DanglingUntriaged> sink_;
+  const raw_ptr<VideoRendererSink, DanglingAcrossTasks> sink_;
   bool sink_started_;
 
   // Stores the last decoder config that was passed to

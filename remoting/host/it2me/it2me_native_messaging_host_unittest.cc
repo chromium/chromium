@@ -254,7 +254,7 @@ class It2MeNativeMessagingHostTest : public testing::Test {
   }
 
   // Raw pointer to host factory (owned by It2MeNativeMessagingHost).
-  raw_ptr<MockIt2MeHostFactory, DanglingUntriaged> factory_raw_ptr_ = nullptr;
+  raw_ptr<MockIt2MeHostFactory, DanglingAcrossTasks> factory_raw_ptr_ = nullptr;
 
  private:
   void StartHost();
@@ -280,7 +280,7 @@ class It2MeNativeMessagingHostTest : public testing::Test {
 
   // Retain a raw pointer to |policy_loader_| in order to control the policy
   // contents.
-  raw_ptr<policy::FakeAsyncPolicyLoader, DanglingUntriaged> policy_loader_ =
+  raw_ptr<policy::FakeAsyncPolicyLoader, DanglingAcrossTasks> policy_loader_ =
       nullptr;
 
   // Task runner of the host thread.

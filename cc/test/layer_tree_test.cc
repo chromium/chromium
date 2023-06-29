@@ -674,7 +674,7 @@ class LayerTreeTestLayerTreeFrameSinkClient
 
  private:
   raw_ptr<TestHooks> hooks_;
-  raw_ptr<TaskRunnerProvider, DanglingUntriaged> task_runner_provider_;
+  raw_ptr<TaskRunnerProvider, DanglingAcrossTasks> task_runner_provider_;
 };
 
 LayerTreeTest::LayerTreeTest(viz::RendererType renderer_type)

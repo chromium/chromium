@@ -82,7 +82,7 @@ struct FulfillForPlane {
   explicit FulfillForPlane(ImageContextImpl* context, int plane_index = 0)
       : context_(context), plane_index_(plane_index) {}
 
-  const raw_ptr<ImageContextImpl, DanglingUntriaged> context_ = nullptr;
+  const raw_ptr<ImageContextImpl, DanglingAcrossTasks> context_ = nullptr;
   const int plane_index_ = 0;
 };
 

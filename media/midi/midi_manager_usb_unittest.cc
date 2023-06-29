@@ -223,9 +223,9 @@ class MidiManagerFactoryForTesting : public midi::MidiService::ManagerFactory {
   }
 
  private:
-  raw_ptr<TestUsbMidiDeviceFactory, DanglingUntriaged> device_factory_ =
+  raw_ptr<TestUsbMidiDeviceFactory, DanglingAcrossTasks> device_factory_ =
       nullptr;
-  raw_ptr<MidiManagerUsbForTesting, DanglingUntriaged> manager_ = nullptr;
+  raw_ptr<MidiManagerUsbForTesting, DanglingAcrossTasks> manager_ = nullptr;
 };
 
 class MidiManagerUsbTest : public ::testing::Test {

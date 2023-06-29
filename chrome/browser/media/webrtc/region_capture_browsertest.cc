@@ -242,8 +242,8 @@ struct TabInfo {
     return CreateNewElement(frame, "div", id);
   }
 
-  raw_ptr<Browser, DanglingUntriaged> browser;
-  raw_ptr<WebContents, DanglingUntriaged> web_contents;
+  raw_ptr<Browser, DanglingAcrossTasks> browser;
+  raw_ptr<WebContents, DanglingAcrossTasks> web_contents;
   int tab_strip_index;
 };
 

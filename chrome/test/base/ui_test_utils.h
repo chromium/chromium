@@ -273,7 +273,7 @@ class AllBrowserTabAddedWaiter : public TabStripModelObserver,
   base::RunLoop run_loop_;
 
   // The last tab that was added.
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
+  raw_ptr<content::WebContents, DanglingAcrossTasks> web_contents_ = nullptr;
 };
 
 // Enumerates all history contents on the backend thread. Returns them in
@@ -313,7 +313,7 @@ class BrowserChangeObserver : public BrowserListObserver {
   void OnBrowserRemoved(Browser* browser) override;
 
  private:
-  raw_ptr<Browser, DanglingUntriaged> browser_;
+  raw_ptr<Browser, DanglingAcrossTasks> browser_;
   ChangeType type_;
   base::RunLoop run_loop_;
 };

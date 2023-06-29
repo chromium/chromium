@@ -152,7 +152,7 @@ class ExtensionFunctionDispatcher {
 
   void RemoveWorkerCallbacksForProcess(int render_process_id);
 
-  raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
+  raw_ptr<content::BrowserContext, DanglingAcrossTasks> browser_context_;
 
   raw_ptr<Delegate, DanglingAcrossTasks> delegate_;
 

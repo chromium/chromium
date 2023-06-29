@@ -231,7 +231,8 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   // interactive_ui_tests:
   // WebAuthnDevtoolsAutofillIntegrationTest.SelectAccountWithAllowCredentials
   // https://ci.chromium.org/ui/p/chromium/builders/try/mac-rel/1357012/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Ainteractive_ui_tests%2FWebAuthnDevtoolsAutofillIntegrationTest.SelectAccountWithAllowCredentials+VHash%3A81d118f1ad0b63a6
-  raw_ptr<device::FidoDiscoveryFactory, FlakyDanglingUntriaged>
+  raw_ptr<device::FidoDiscoveryFactory,
+          FlakyDanglingUntriaged | DanglingAcrossTasks>
       discovery_factory_testing_override_ = nullptr;
   blink::mojom::Authenticator::MakeCredentialCallback
       make_credential_response_callback_;

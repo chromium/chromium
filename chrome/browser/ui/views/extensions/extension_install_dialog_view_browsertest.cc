@@ -95,8 +95,8 @@ class ExtensionInstallDialogViewTestBase
   content::WebContents* web_contents() { return web_contents_; }
 
  private:
-  raw_ptr<const extensions::Extension, DanglingUntriaged> extension_;
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  raw_ptr<const extensions::Extension, DanglingAcrossTasks> extension_;
+  raw_ptr<content::WebContents, DanglingAcrossTasks> web_contents_;
 };
 
 ExtensionInstallDialogViewTestBase::ExtensionInstallDialogViewTestBase()

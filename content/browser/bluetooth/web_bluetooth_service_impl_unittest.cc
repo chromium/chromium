@@ -369,7 +369,7 @@ class TestBluetoothDelegate : public BluetoothDelegate {
       FramePermissionObserver* observer) override {}
 
  private:
-  raw_ptr<FakeBluetoothScanningPrompt, DanglingUntriaged> prompt_ = nullptr;
+  raw_ptr<FakeBluetoothScanningPrompt, DanglingAcrossTasks> prompt_ = nullptr;
 };
 
 class TestContentBrowserClient : public ContentBrowserClient {

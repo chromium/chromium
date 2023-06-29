@@ -94,7 +94,7 @@ class NotificationDisplayServiceTester {
   void OnProfileShutdown();
 
   raw_ptr<Profile> profile_;
-  raw_ptr<StubNotificationDisplayService, DanglingUntriaged> display_service_;
+  raw_ptr<StubNotificationDisplayService, DanglingAcrossTasks> display_service_;
   base::CallbackListSubscription profile_shutdown_subscription_;
 };
 

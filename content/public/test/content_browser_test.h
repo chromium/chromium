@@ -68,7 +68,7 @@ class ContentBrowserTest : public BrowserTestBase {
   base::FilePath GetTestDataFilePath();
 
  private:
-  raw_ptr<Shell, DanglingUntriaged> shell_ = nullptr;
+  raw_ptr<Shell, DanglingAcrossTasks> shell_ = nullptr;
 
 #if BUILDFLAG(IS_MAC)
   // On Mac, without the following autorelease pool, code which is directly

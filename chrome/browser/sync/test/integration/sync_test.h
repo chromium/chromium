@@ -398,7 +398,7 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // The default profile, created before our actual testing |profiles_|. This is
   // needed in a workaround for https://crbug.com/801569, see comments in the
   // .cc file.
-  raw_ptr<Profile, DanglingUntriaged> previous_profile_;
+  raw_ptr<Profile, DanglingAcrossTasks> previous_profile_;
 
   // Number of sync clients that will be created by a test.
   int num_clients_;
@@ -408,7 +408,7 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // directory. Profiles are owned by the ProfileManager.
   // TODO(crbug.com/1349349): store |profiles_|, |browsers_| and |clients_| in
   // one structure.
-  std::vector<raw_ptr<Profile, DanglingUntriaged>> profiles_;
+  std::vector<raw_ptr<Profile, DanglingAcrossTasks>> profiles_;
 
   // List of temporary directories that need to be deleted when the test is
   // completed, used for two-client tests with external server.
@@ -419,7 +419,7 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // instance is created for each sync profile. Browser object lifetime is
   // managed by BrowserList, so we don't use a std::vector<std::unique_ptr<>>
   // here.
-  std::vector<raw_ptr<Browser, DanglingUntriaged>> browsers_;
+  std::vector<raw_ptr<Browser, DanglingAcrossTasks>> browsers_;
 
   class ClosedBrowserObserver;
   std::unique_ptr<ClosedBrowserObserver> browser_list_observer_;
@@ -442,8 +442,8 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
 
   // Used to deliver invalidations to different profiles within
   // FakeSyncServerInvalidationSender.
-  std::map<raw_ptr<Profile, DanglingUntriaged>,
-           raw_ptr<FakeSyncGCMDriver, DanglingUntriaged>>
+  std::map<raw_ptr<Profile, DanglingAcrossTasks>,
+           raw_ptr<FakeSyncGCMDriver, DanglingAcrossTasks>>
       profile_to_fake_gcm_driver_;
 
   base::CallbackListSubscription create_services_subscription_;
@@ -452,7 +452,7 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // We don't need a corresponding verifier sync client because the contents
   // of the verifier profile are strictly local, and are not meant to be
   // synced.
-  raw_ptr<Profile, DanglingUntriaged> verifier_;
+  raw_ptr<Profile, DanglingAcrossTasks> verifier_;
 
   // Indicates whether to use a new user data dir.
   // Only used for external server tests with two clients.

@@ -70,7 +70,7 @@ class DIPSState {
   StateValue ToStateValue() const { return state_; }
 
  private:
-  raw_ptr<DIPSStorage, DanglingUntriaged> storage_;
+  raw_ptr<DIPSStorage, DanglingAcrossTasks> storage_;
   std::string site_;
   bool was_loaded_;
   DirtyBit dirty_;

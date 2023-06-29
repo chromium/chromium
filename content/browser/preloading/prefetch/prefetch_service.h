@@ -294,7 +294,7 @@ class CONTENT_EXPORT PrefetchService {
 
   void DumpPrefetchesForDebug() const;
 
-  raw_ptr<BrowserContext, DanglingUntriaged> browser_context_;
+  raw_ptr<BrowserContext, DanglingAcrossTasks> browser_context_;
 
   // Delegate provided by embedder that controls specific behavior of |this|.
   // May be nullptr if embedder doesn't provide a delegate.

@@ -137,7 +137,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   DesktopMediaList::Type GetSelectedSourceListType() const;
   bool IsAudioSharingApprovedByUser() const;
 
-  const raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  const raw_ptr<content::WebContents, DanglingAcrossTasks> web_contents_;
   const bool is_get_display_media_call_;
   const std::u16string app_name_;
   const bool audio_requested_;

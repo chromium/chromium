@@ -1321,7 +1321,7 @@ class WebContentsAddedObserver {
 
   base::CallbackListSubscription creation_subscription_;
 
-  raw_ptr<WebContents, DanglingUntriaged> web_contents_ = nullptr;
+  raw_ptr<WebContents, DanglingAcrossTasks> web_contents_ = nullptr;
   base::OnceClosure quit_closure_;
 };
 
@@ -1861,7 +1861,7 @@ class NavigationHandleCommitObserver : public content::WebContentsObserver {
 class WebContentsConsoleObserver : public WebContentsObserver {
  public:
   struct Message {
-    raw_ptr<RenderFrameHost, DanglingUntriaged> source_frame;
+    raw_ptr<RenderFrameHost, DanglingAcrossTasks> source_frame;
     blink::mojom::ConsoleMessageLevel log_level;
     std::u16string message;
     int32_t line_no;

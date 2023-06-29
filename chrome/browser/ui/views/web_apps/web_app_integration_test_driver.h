@@ -509,9 +509,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   // can often call another action).
   int executing_action_level_ = 0;
 
-  raw_ptr<Profile, DanglingUntriaged> active_profile_ = nullptr;
+  raw_ptr<Profile, DanglingAcrossTasks> active_profile_ = nullptr;
   AppId active_app_id_;
-  raw_ptr<Browser, DanglingUntriaged> app_browser_ = nullptr;
+  raw_ptr<Browser, DanglingAcrossTasks> app_browser_ = nullptr;
 
   bool in_tear_down_ = false;
   bool is_performing_manifest_update_ = false;

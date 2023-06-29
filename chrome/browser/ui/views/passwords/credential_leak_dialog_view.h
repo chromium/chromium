@@ -43,7 +43,7 @@ class CredentialLeakDialogView : public views::DialogDelegateView,
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION CredentialLeakDialogController* controller_ = nullptr;
-  const raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ =
+  const raw_ptr<content::WebContents, DanglingAcrossTasks> web_contents_ =
       nullptr;
 };
 

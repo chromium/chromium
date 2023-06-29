@@ -172,7 +172,7 @@ class CdmServiceTest : public testing::Test {
         &CdmServiceTest::CdmConnectionClosed, base::Unretained(this)));
   }
   std::unique_ptr<CdmService> service_;
-  raw_ptr<MockCdmServiceClient, DanglingUntriaged> mock_cdm_service_client_ =
+  raw_ptr<MockCdmServiceClient, DanglingAcrossTasks> mock_cdm_service_client_ =
       nullptr;
 };
 

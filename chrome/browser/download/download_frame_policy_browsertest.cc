@@ -277,7 +277,8 @@ class DownloadFramePolicyBrowserTest
   std::unique_ptr<content::DownloadTestObserver> download_observer_;
   std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>
       web_feature_waiter_;
-  raw_ptr<content::RenderFrameHost, DanglingUntriaged> subframe_rfh_ = nullptr;
+  raw_ptr<content::RenderFrameHost, DanglingAcrossTasks> subframe_rfh_ =
+      nullptr;
   size_t expected_num_downloads_ = 0;
 };
 

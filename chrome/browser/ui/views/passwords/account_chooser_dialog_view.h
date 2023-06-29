@@ -49,8 +49,8 @@ class AccountChooserDialogView : public views::BubbleDialogDelegateView,
   void CredentialsItemPressed(const password_manager::PasswordForm* form);
 
   // A weak pointer to the controller.
-  raw_ptr<CredentialManagerDialogController, DanglingUntriaged> controller_;
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+  raw_ptr<CredentialManagerDialogController, DanglingAcrossTasks> controller_;
+  raw_ptr<content::WebContents, DanglingAcrossTasks> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_ACCOUNT_CHOOSER_DIALOG_VIEW_H_

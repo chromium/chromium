@@ -415,8 +415,8 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
   // See comment above class description for what this does.
   virtual bool CreateBigMenu() { return false; }
 
-  raw_ptr<BookmarkModel, DanglingUntriaged> model_ = nullptr;
-  raw_ptr<BookmarkBarView, DanglingUntriaged> bb_view_ = nullptr;
+  raw_ptr<BookmarkModel, DanglingAcrossTasks> model_ = nullptr;
+  raw_ptr<BookmarkBarView, DanglingAcrossTasks> bb_view_ = nullptr;
   TestingPageNavigator navigator_;
   TestingBookmarkNavigationWrapper wrapper_;
 
@@ -1070,7 +1070,7 @@ class BookmarkBarViewTest9 : public BookmarkBarViewEventTestBase {
   }
 
   int start_y_;
-  raw_ptr<views::MenuItemView, DanglingUntriaged> first_menu_;
+  raw_ptr<views::MenuItemView, DanglingAcrossTasks> first_menu_;
 };
 
 #if BUILDFLAG(IS_LINUX)  // TODO(crbug.com/1216392): Flakily times out on Linux.

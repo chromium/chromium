@@ -75,7 +75,7 @@ class NetErrorTabHelperTest : public InProcessBrowserTest {
   }
 
  private:
-  raw_ptr<chrome_browser_net::NetErrorTabHelper, DanglingUntriaged>
+  raw_ptr<chrome_browser_net::NetErrorTabHelper, DanglingAcrossTasks>
       tab_helper_ = nullptr;
 };
 

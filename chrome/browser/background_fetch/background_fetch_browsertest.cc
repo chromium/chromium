@@ -235,7 +235,7 @@ class OfflineContentProviderObserver final
 
   ItemsAddedCallback items_added_callback_;
   FinishedProcessingItemCallback finished_processing_item_callback_;
-  raw_ptr<BackgroundFetchDelegateImpl, DanglingUntriaged> delegate_ = nullptr;
+  raw_ptr<BackgroundFetchDelegateImpl, DanglingAcrossTasks> delegate_ = nullptr;
   bool pause_ = false;
   bool resume_ = false;
 
@@ -473,8 +473,8 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
  protected:
-  raw_ptr<BackgroundFetchDelegateImpl, DanglingUntriaged> delegate_ = nullptr;
-  raw_ptr<download::BackgroundDownloadService, DanglingUntriaged>
+  raw_ptr<BackgroundFetchDelegateImpl, DanglingAcrossTasks> delegate_ = nullptr;
+  raw_ptr<download::BackgroundDownloadService, DanglingAcrossTasks>
       download_service_ = nullptr;
   base::OnceClosure click_event_closure_;
 
@@ -504,7 +504,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
-  raw_ptr<Browser, DanglingUntriaged> active_browser_ = nullptr;
+  raw_ptr<Browser, DanglingAcrossTasks> active_browser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, DownloadService_Acceptance) {

@@ -259,7 +259,7 @@ class ResourceBundle::BitmapImageSource : public gfx::ImageSkiaSource {
   }
 
  private:
-  raw_ptr<ResourceBundle, DanglingUntriaged> rb_;
+  raw_ptr<ResourceBundle, DanglingAcrossTasks> rb_;
 
   const int resource_id_;
 };

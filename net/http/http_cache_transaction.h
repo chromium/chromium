@@ -678,7 +678,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // WriteResponseInfoToEntry() resets this to absl::nullopt.
   std::unique_ptr<HttpResponseInfo> updated_prefetch_response_;
 
-  raw_ptr<const HttpResponseInfo, DanglingUntriaged> new_response_ = nullptr;
+  raw_ptr<const HttpResponseInfo, DanglingAcrossTasks> new_response_ = nullptr;
   std::string cache_key_;
   Mode mode_ = NONE;
   bool reading_ = false;          // We are already reading. Never reverts to

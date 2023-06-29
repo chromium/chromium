@@ -399,7 +399,7 @@ class DesktopNativeWidgetAuraWithNoDelegateTest
     ViewsTestBase::TearDown();
   }
 
-  raw_ptr<TestDesktopNativeWidgetAura, DanglingUntriaged>
+  raw_ptr<TestDesktopNativeWidgetAura, DanglingAcrossTasks>
       desktop_native_widget_;
 };
 
@@ -608,8 +608,8 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
 
  private:
   views::Widget widget_;
-  raw_ptr<views::Widget, DanglingUntriaged> top_level_widget_ = nullptr;
-  raw_ptr<aura::Window, DanglingUntriaged> owned_window_ = nullptr;
+  raw_ptr<views::Widget, DanglingAcrossTasks> top_level_widget_ = nullptr;
+  raw_ptr<aura::Window, DanglingAcrossTasks> owned_window_ = nullptr;
   bool owner_destroyed_ = false;
   bool owned_window_destroyed_ = false;
   aura::test::TestWindowDelegate child_window_delegate_;

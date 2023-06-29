@@ -607,7 +607,7 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
   scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks_;
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
-  raw_ptr<IndexedDBTransaction, DanglingUntriaged> transaction_ = nullptr;
+  raw_ptr<IndexedDBTransaction, DanglingAcrossTasks> transaction_ = nullptr;
   PartitionedLockManager lock_manager_;
   bool error_called_ = false;
 

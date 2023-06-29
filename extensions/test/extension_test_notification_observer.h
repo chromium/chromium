@@ -94,7 +94,7 @@ class ExtensionTestNotificationObserver {
   // Quits the message loop if |condition_| is met.
   void MaybeQuit();
 
-  raw_ptr<content::BrowserContext, DanglingUntriaged> context_;
+  raw_ptr<content::BrowserContext, DanglingAcrossTasks> context_;
 
  private:
   // The condition for which we are waiting. This should be checked in any

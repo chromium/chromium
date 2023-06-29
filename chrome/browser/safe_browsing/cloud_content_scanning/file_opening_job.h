@@ -25,7 +25,7 @@ class FileOpeningJob {
     ~FileOpeningTask();
 
     // Non-owning pointer to the request corresponding to the file to open.
-    raw_ptr<safe_browsing::FileAnalysisRequest, DanglingUntriaged> request =
+    raw_ptr<safe_browsing::FileAnalysisRequest, DanglingAcrossTasks> request =
         nullptr;
 
     // Indicates if this task has been taken and is owned by a thread.

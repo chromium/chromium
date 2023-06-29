@@ -104,8 +104,8 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
   void OnAllLogsFetched(const FeedbackParams& params,
                         scoped_refptr<feedback::FeedbackData> feedback_data);
 
-  raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
-  raw_ptr<FeedbackPrivateDelegate, DanglingUntriaged> delegate_;
+  raw_ptr<content::BrowserContext, DanglingAcrossTasks> browser_context_;
+  raw_ptr<FeedbackPrivateDelegate, DanglingAcrossTasks> delegate_;
 };
 
 }  // namespace extensions

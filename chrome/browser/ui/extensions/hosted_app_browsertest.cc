@@ -327,7 +327,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
 
   std::string app_id_;
-  raw_ptr<Browser, DanglingUntriaged> app_browser_;
+  raw_ptr<Browser, DanglingAcrossTasks> app_browser_;
 
   AppType app_type() const { return app_type_; }
 

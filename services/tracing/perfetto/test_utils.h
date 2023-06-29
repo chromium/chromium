@@ -59,7 +59,7 @@ class TestDataSource : public PerfettoTracedProcess::DataSourceBase {
   TestDataSource(const std::string& data_source_name, size_t send_packet_count);
 
   size_t send_packet_count_;
-  raw_ptr<tracing::PerfettoProducer, DanglingUntriaged> producer_ = nullptr;
+  raw_ptr<tracing::PerfettoProducer, DanglingAcrossTasks> producer_ = nullptr;
   perfetto::DataSourceConfig config_;
   base::OnceClosure start_tracing_callback_ = base::OnceClosure();
 };
@@ -77,7 +77,7 @@ class MockProducerClient : public ProducerClient {
     MockProducerClient* operator*() { return client_; }
 
    private:
-    const raw_ptr<MockProducerClient, DanglingUntriaged> client_;
+    const raw_ptr<MockProducerClient, DanglingAcrossTasks> client_;
   };
 
   ~MockProducerClient() override;

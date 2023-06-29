@@ -366,7 +366,7 @@ class DidFinishRunningAllTilesTask : public TileTask {
 
  private:
   raw_ptr<base::SequencedTaskRunner> task_runner_;
-  raw_ptr<RasterQueryQueue, DanglingUntriaged> pending_raster_queries_;
+  raw_ptr<RasterQueryQueue, DanglingAcrossTasks> pending_raster_queries_;
   CompletionCb completion_cb_;
 };
 

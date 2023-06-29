@@ -115,7 +115,7 @@ struct VIEWS_EXPORT ViewHierarchyChangedDetails {
 
   bool is_add = false;
   // New parent if |is_add| is true, old parent if |is_add| is false.
-  raw_ptr<View, DanglingUntriaged> parent = nullptr;
+  raw_ptr<View, DanglingAcrossTasks> parent = nullptr;
   // The view being added or removed.
   raw_ptr<View> child = nullptr;
   // If this is a move (reparent), meaning AddChildViewAt() is invoked with an
@@ -126,7 +126,7 @@ struct VIEWS_EXPORT ViewHierarchyChangedDetails {
   // being removed.
   // For the add part of move, |move_view| is the old parent of the View being
   // added.
-  raw_ptr<View, DanglingUntriaged> move_view = nullptr;
+  raw_ptr<View, DanglingAcrossTasks> move_view = nullptr;
 };
 
 using PropertyChangedCallback = ui::metadata::PropertyChangedCallback;
@@ -2191,7 +2191,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Tree operations -----------------------------------------------------------
 
   // This view's parent.
-  raw_ptr<View, DanglingUntriaged> parent_ = nullptr;
+  raw_ptr<View, DanglingAcrossTasks> parent_ = nullptr;
 
   // This view's children.
   Views children_;
@@ -2281,7 +2281,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // A native theme for this view and its descendants. Typically null, in which
   // case the native theme is drawn from the parent view (eventually the
   // widget).
-  raw_ptr<ui::NativeTheme, DanglingUntriaged> native_theme_ = nullptr;
+  raw_ptr<ui::NativeTheme, DanglingAcrossTasks> native_theme_ = nullptr;
 
   // RTL painting --------------------------------------------------------------
 
@@ -2318,7 +2318,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Accelerators --------------------------------------------------------------
 
   // Focus manager accelerators registered on.
-  raw_ptr<FocusManager, DanglingUntriaged> accelerator_focus_manager_ = nullptr;
+  raw_ptr<FocusManager, DanglingAcrossTasks> accelerator_focus_manager_ =
+      nullptr;
 
   // The list of accelerators. List elements in the range
   // [0, registered_accelerator_count_) are already registered to FocusManager,
@@ -2329,10 +2330,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Focus ---------------------------------------------------------------------
 
   // Next view to be focused when the Tab key is pressed.
-  raw_ptr<View, DanglingUntriaged> next_focusable_view_ = nullptr;
+  raw_ptr<View, DanglingAcrossTasks> next_focusable_view_ = nullptr;
 
   // Next view to be focused when the Shift-Tab key combination is pressed.
-  raw_ptr<View, DanglingUntriaged> previous_focusable_view_ = nullptr;
+  raw_ptr<View, DanglingAcrossTasks> previous_focusable_view_ = nullptr;
 
   // The focus behavior of the view in regular and accessibility mode.
   FocusBehavior focus_behavior_ = FocusBehavior::NEVER;
@@ -2349,7 +2350,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Drag and drop -------------------------------------------------------------
 
-  raw_ptr<DragController, DanglingUntriaged> drag_controller_ = nullptr;
+  raw_ptr<DragController, DanglingAcrossTasks> drag_controller_ = nullptr;
 
   // Input  --------------------------------------------------------------------
 

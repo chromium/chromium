@@ -46,7 +46,7 @@ class TestBeginFrameSource : public viz::BeginFrameSource {
   viz::BeginFrameObserver* GetBeginFrameObserver() const;
 
  private:
-  raw_ptr<viz::BeginFrameObserver, DanglingUntriaged> observer_;
+  raw_ptr<viz::BeginFrameObserver, DanglingAcrossTasks> observer_;
 };
 
 viz::BeginFrameArgs CreateValidBeginFrameArgsForTesting();
