@@ -75,8 +75,8 @@ struct TestContextAndFrame {
                                UserModeDebugging user_mode_debugging,
                                std::string url) {
     // Create a Context, a Frame and navigate it to |url|.
-    auto directory =
-        base::OpenDirectoryHandle(base::FilePath(base::kServiceDirectoryPath));
+    auto directory = base::OpenDirectoryHandle(
+        base::FilePath(base::kServiceDirectoryPath), {});
     if (!directory.is_valid())
       return;
 

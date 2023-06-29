@@ -40,7 +40,6 @@
 #include "components/fuchsia_component_support/mock_realm.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "services/network/public/cpp/network_switches.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -604,8 +603,8 @@ TEST_F(ContextProviderImplTest, WithProfileDir) {
 
   // Pass a handle data dir to the context.
   fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
-  create_params.set_data_directory(
-      base::OpenDirectoryHandle(profile_temp_dir.GetPath()));
+  create_params.set_data_directory(base::OpenDirectoryHandle(
+      profile_temp_dir.GetPath(), {.readable = true, .writable = true}));
 
   fuchsia::web::ContextPtr context;
   const std::string instance_name = CreateAndWaitForInstance(
@@ -648,7 +647,8 @@ TEST_F(ContextProviderImplTest, FailsDataDirectoryIsFile) {
                                              &temp_file_path));
 
   fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
-  create_params.set_data_directory(base::OpenDirectoryHandle(temp_file_path));
+  create_params.set_data_directory(
+      base::OpenDirectoryHandle(temp_file_path, {}));
 
   fidl::InterfacePtr<fuchsia::web::Context> context;
   context_provider().Create(std::move(create_params), context.NewRequest());
@@ -714,8 +714,8 @@ TEST_F(ContextProviderImplTest, WithDataQuotaBytes) {
   ExpectChildInstance(binder_request, context_request);
 
   fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
-  create_params.set_data_directory(
-      base::OpenDirectoryHandle(profile_temp_dir.GetPath()));
+  create_params.set_data_directory(base::OpenDirectoryHandle(
+      profile_temp_dir.GetPath(), {.readable = true}));
   create_params.set_data_quota_bytes(kTestQuotaBytes);
 
   fuchsia::web::ContextPtr context;
@@ -741,8 +741,8 @@ TEST_F(ContextProviderImplTest, WithCdmDataQuotaBytes) {
   ExpectChildInstance(binder_request, context_request);
 
   fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
-  create_params.set_cdm_data_directory(
-      base::OpenDirectoryHandle(profile_temp_dir.GetPath()));
+  create_params.set_cdm_data_directory(base::OpenDirectoryHandle(
+      profile_temp_dir.GetPath(), {.readable = true}));
   create_params.set_features(fuchsia::web::ContextFeatureFlags::HEADLESS |
                              fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM);
   create_params.set_cdm_data_quota_bytes(kTestQuotaBytes);

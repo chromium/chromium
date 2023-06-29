@@ -13,7 +13,6 @@
 #include <unordered_set>
 #include <utility>
 
-#include "base/at_exit.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
@@ -27,14 +26,11 @@
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -44,13 +40,10 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringize_macros.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_job.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/gtest_util.h"
 #include "base/test/gtest_xml_util.h"
@@ -65,7 +58,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libxml/chromium/libxml_utils.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -80,6 +72,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/string_util_win.h"
+#include "base/strings/utf_string_conversions.h"
 
 #include <windows.h>
 
@@ -498,12 +491,20 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
 
   // Transfer handles to the new directories as /data and /cache in the child
   // process' namespace.
-  new_options.paths_to_transfer.push_back(
-      {kDataPath,
-       base::OpenDirectoryHandle(test_data_dir).TakeChannel().release()});
-  new_options.paths_to_transfer.push_back(
-      {kCachePath,
-       base::OpenDirectoryHandle(test_cache_dir).TakeChannel().release()});
+  new_options.paths_to_transfer.push_back({
+      kDataPath,
+      base::OpenDirectoryHandle(test_data_dir,
+                                {.readable = true, .writable = true})
+          .TakeChannel()
+          .release(),
+  });
+  new_options.paths_to_transfer.push_back({
+      kCachePath,
+      base::OpenDirectoryHandle(test_cache_dir,
+                                {.readable = true, .writable = true})
+          .TakeChannel()
+          .release(),
+  });
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -717,10 +718,8 @@ ChildProcessResults DoLaunchChildTestProcess(
   if (redirect_stdio) {
     int output_file_fd = fileno(output_file.get());
     CHECK_LE(0, output_file_fd);
-    options.fds_to_remap.push_back(
-        std::make_pair(output_file_fd, STDOUT_FILENO));
-    options.fds_to_remap.push_back(
-        std::make_pair(output_file_fd, STDERR_FILENO));
+    options.fds_to_remap.emplace_back(output_file_fd, STDOUT_FILENO);
+    options.fds_to_remap.emplace_back(output_file_fd, STDERR_FILENO);
   }
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -998,7 +997,7 @@ class TestLauncher::TestInfo {
  public:
   TestInfo() = default;
   TestInfo(const TestInfo& other) = default;
-  TestInfo(const TestIdentifier& test_id);
+  explicit TestInfo(const TestIdentifier& test_id);
   ~TestInfo() = default;
 
   // Returns test name excluding DISABLE_ prefix.

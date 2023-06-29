@@ -118,7 +118,8 @@ void SetDataParamsForMainContext(fuchsia::web::CreateContextParams* params) {
     LOG(ERROR) << "Failed to create profile directory: " << error_code;
     base::Process::TerminateCurrentProcessImmediately(1);
   }
-  params->set_data_directory(base::OpenDirectoryHandle(profile_path));
+  params->set_data_directory(
+      base::OpenDirectoryHandle(profile_path, {.readable = true}));
   if (!params->data_directory()) {
     LOG(ERROR) << "Unable to open data to transfer";
     base::Process::TerminateCurrentProcessImmediately(1);
@@ -149,7 +150,8 @@ void SetCdmParamsForMainContext(fuchsia::web::CreateContextParams* params) {
     LOG(ERROR) << "Failed to create cache directory: " << error_code;
     base::Process::TerminateCurrentProcessImmediately(1);
   }
-  params->set_cdm_data_directory(base::OpenDirectoryHandle(cdm_data_path));
+  params->set_cdm_data_directory(
+      base::OpenDirectoryHandle(cdm_data_path, {.readable = true}));
   if (!params->cdm_data_directory()) {
     LOG(ERROR) << "Unable to open cdm_data to transfer";
     base::Process::TerminateCurrentProcessImmediately(1);

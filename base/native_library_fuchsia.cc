@@ -15,16 +15,12 @@
 #include <zircon/syscalls.h>
 
 #include "base/base_paths.h"
-#include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/fuchsia/fuchsia_logging.h"
-#include "base/notreached.h"
+#include "base/files/scoped_file.h"
+#include "base/logging.h"
 #include "base/path_service.h"
-#include "base/posix/safe_strerror.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base_paths.h"
 
@@ -62,22 +58,24 @@ NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
   // TODO(crbug.com/1018538): Teach base::File about FLAG_WIN_EXECUTE on
   // Fuchsia, and then use it here instead of using fdio_open_fd() directly.
   base::ScopedFD fd;
-  zx_status_t status = fdio_open_fd(
-      computed_path.value().c_str(),
-      static_cast<uint32_t>(fuchsia::io::OpenFlags::RIGHT_READABLE |
-                            fuchsia::io::OpenFlags::RIGHT_EXECUTABLE),
-      base::ScopedFD::Receiver(fd).get());
-  if (status != ZX_OK) {
+  if (zx_status_t status = fdio_open_fd(
+          computed_path.value().c_str(),
+          static_cast<uint32_t>(fuchsia::io::OpenFlags::RIGHT_READABLE |
+                                fuchsia::io::OpenFlags::RIGHT_EXECUTABLE),
+          base::ScopedFD::Receiver(fd).get());
+      status != ZX_OK) {
     if (error) {
-      error->message =
-          base::StringPrintf("fdio_open_fd: %s", zx_status_get_string(status));
+      error->message = base::StringPrintf("fdio_open_fd(%s): %s",
+                                          computed_path.value().c_str(),
+                                          zx_status_get_string(status));
     }
     return nullptr;
   }
 
   zx::vmo vmo;
-  status = fdio_get_vmo_exec(fd.get(), vmo.reset_and_get_address());
-  if (status != ZX_OK) {
+  if (zx_status_t status =
+          fdio_get_vmo_exec(fd.get(), vmo.reset_and_get_address());
+      status != ZX_OK) {
     if (error) {
       error->message = base::StringPrintf("fdio_get_vmo_exec: %s",
                                           zx_status_get_string(status));

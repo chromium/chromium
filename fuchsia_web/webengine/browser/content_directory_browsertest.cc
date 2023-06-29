@@ -7,9 +7,6 @@
 #include <lib/vfs/cpp/pseudo_dir.h>
 #include <lib/vfs/cpp/vmo_file.h>
 
-#include "base/strings/string_piece.h"
-#include "fuchsia_web/webengine/test/web_engine_browser_test.h"
-
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -23,7 +20,7 @@
 #include "fuchsia_web/common/test/frame_test_util.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 #include "fuchsia_web/webengine/browser/content_directory_loader_factory.h"
-#include "fuchsia_web/webengine/switches.h"
+#include "fuchsia_web/webengine/test/web_engine_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_util.h"
 
@@ -112,11 +109,14 @@ class ContentDirectoryTest : public WebEngineBrowserTest {
         base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path));
 
     testdata_content_directory_ = std::make_unique<ScopedBindContentDirectory>(
-        "testdata", base::OpenDirectoryHandle(pkg_path.AppendASCII(
-                        "fuchsia_web/webengine/test/data")));
+        "testdata", base::OpenDirectoryHandle(
+                        pkg_path.AppendASCII("fuchsia_web/webengine/test/data"),
+                        {.readable = true}));
     alternate_content_directory_ = std::make_unique<ScopedBindContentDirectory>(
-        "alternate", base::OpenDirectoryHandle(pkg_path.AppendASCII(
-                         "fuchsia_web/webengine/test/data")));
+        "alternate",
+        base::OpenDirectoryHandle(
+            pkg_path.AppendASCII("fuchsia_web/webengine/test/data"),
+            {.readable = true}));
 
     WebEngineBrowserTest::SetUpOnMainThread();
   }

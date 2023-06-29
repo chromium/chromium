@@ -11,9 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/fuchsia/process_context.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 
@@ -25,7 +23,8 @@ fuchsia::web::ContentDirectoryProvider CreateTestDataDirectoryProvider() {
   base::FilePath pkg_path;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path));
   provider.set_directory(base::OpenDirectoryHandle(
-      pkg_path.AppendASCII("fuchsia_web/webengine/test/data")));
+      pkg_path.AppendASCII("fuchsia_web/webengine/test/data"),
+      {.readable = true}));
   return provider;
 }
 
@@ -34,12 +33,14 @@ fuchsia::web::ContentDirectoryProvider CreateTestDataDirectoryProvider() {
 WebEngineIntegrationTestBase::WebEngineIntegrationTestBase()
     : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
       filtered_service_directory_(std::make_shared<sys::ServiceDirectory>(
-          base::OpenDirectoryHandle(base::FilePath("/svc")))) {
+          base::OpenDirectoryHandle(base::FilePath(base::kServiceDirectoryPath),
+                                    {}))) {
   // Push all services from /svc to the filtered service directory.
   // Calling stat() in /svc is problematic; see https://fxbug.dev/100207. Tell
   // the enumerator not to recurse, to return both files and directories, and
   // to report only the names of entries.
-  base::FileEnumerator file_enum(base::FilePath("/svc"), /*recursive=*/false,
+  base::FileEnumerator file_enum(base::FilePath(base::kServiceDirectoryPath),
+                                 /*recursive=*/false,
                                  base::FileEnumerator::NAMES_ONLY);
   for (auto file = file_enum.Next(); !file.empty(); file = file_enum.Next()) {
     zx_status_t status =

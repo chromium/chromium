@@ -16,9 +16,9 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/sys_byteorder.h"
 
 namespace {
@@ -87,7 +87,7 @@ void CastResolver::Resolve(CastResolver::ResolveRequest& request,
               fuchsia_component_decl::Use::WithDirectory({{
                   .source = Ref::WithParent({}),
                   .source_name = "svc",
-                  .target_path = "/svc",
+                  .target_path = base::kServiceDirectoryPath,
                   .rights = fuchsia_io::kRwStarDir,
                   .dependency_type =
                       fuchsia_component_decl::DependencyType::kStrong,

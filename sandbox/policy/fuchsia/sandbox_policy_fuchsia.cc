@@ -30,7 +30,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/base_paths.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
@@ -44,11 +43,9 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
-#include "base/process/process.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "printing/buildflags/buildflags.h"
-#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 
 namespace sandbox {
@@ -243,8 +240,8 @@ SandboxPolicyFuchsia::~SandboxPolicyFuchsia() = default;
 void SandboxPolicyFuchsia::UpdateLaunchOptionsForSandbox(
     base::LaunchOptions* options) {
   // Always clone stderr to get logs output.
-  options->fds_to_remap.push_back(std::make_pair(STDERR_FILENO, STDERR_FILENO));
-  options->fds_to_remap.push_back(std::make_pair(STDOUT_FILENO, STDOUT_FILENO));
+  options->fds_to_remap.emplace_back(STDERR_FILENO, STDERR_FILENO);
+  options->fds_to_remap.emplace_back(STDOUT_FILENO, STDOUT_FILENO);
 
   if (type_ == sandbox::mojom::Sandbox::kNoSandbox) {
     options->spawn_flags = FDIO_SPAWN_CLONE_NAMESPACE | FDIO_SPAWN_CLONE_JOB;
@@ -254,15 +251,19 @@ void SandboxPolicyFuchsia::UpdateLaunchOptionsForSandbox(
 
   // Map /pkg (read-only files deployed from the package) into the child's
   // namespace.
-  options->paths_to_clone.push_back(
-      base::FilePath(base::kPackageRootDirectoryPath));
+  options->paths_to_clone.push_back({
+      base::FilePath(base::kPackageRootDirectoryPath),
+      {.readable = true, .executable = true},
+  });
 
   // If /config/data/tzdata/icu/ exists then it contains up-to-date timezone
   // data which should be provided to all sub-processes, for consistency.
   const auto kIcuTimezoneDataPath = base::FilePath("/config/data/tzdata/icu");
   static bool icu_timezone_data_exists = base::PathExists(kIcuTimezoneDataPath);
-  if (icu_timezone_data_exists)
-    options->paths_to_clone.push_back(kIcuTimezoneDataPath);
+  if (icu_timezone_data_exists) {
+    options->paths_to_clone.push_back(
+        {kIcuTimezoneDataPath, {.readable = true}});
+  }
 
   // Clear environmental variables to better isolate the child from
   // this process.
@@ -275,8 +276,10 @@ void SandboxPolicyFuchsia::UpdateLaunchOptionsForSandbox(
   const SandboxConfig* config = GetConfigForSandboxType(type_);
   CHECK(config);
 
-  if (config->features & kProvideSslConfig)
-    options->paths_to_clone.push_back(base::FilePath("/config/ssl"));
+  if (config->features & kProvideSslConfig) {
+    options->paths_to_clone.push_back(
+        {base::FilePath("/config/ssl"), {.readable = true}});
+  }
 
   if (config->features & kProvideVulkanResources) {
     static const char* const kPathsToCloneForVulkan[] = {
@@ -290,7 +293,7 @@ void SandboxPolicyFuchsia::UpdateLaunchOptionsForSandbox(
       // Vulkan paths aren't needed with newer Fuchsia versions, so they may not
       // be available.
       if (base::PathExists(path)) {
-        options->paths_to_clone.push_back(path);
+        options->paths_to_clone.push_back({path, {}});
       }
     }
   }
@@ -299,7 +302,7 @@ void SandboxPolicyFuchsia::UpdateLaunchOptionsForSandbox(
   // |service_directory_client_| handle for it to mount at "/svc".
   if (service_directory_client_) {
     options->paths_to_transfer.push_back(base::PathToTransfer{
-        base::FilePath("/svc"),
+        base::FilePath(base::kServiceDirectoryPath),
         service_directory_client_.TakeChannel().release()});
   }
 

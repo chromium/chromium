@@ -11,30 +11,23 @@
 #include <tuple>
 
 #include "base/command_line.h"
-#include "base/debug/alias.h"
 #include "base/debug/stack_trace.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
-#include "base/process/memory.h"
 #include "base/process/process.h"
-#include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/simple_thread.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,10 +74,7 @@
 #include <zircon/syscalls.h>
 #include "base/files/scoped_temp_dir.h"
 #include "base/fuchsia/file_utils.h"
-#include "base/fuchsia/filtered_service_directory.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/fuchsia/process_context.h"
-#include "base/test/bind.h"
 #endif
 
 namespace base {
@@ -257,11 +247,12 @@ TEST_F(ProcessUtilTest, DISABLED_DuplicateTransferAndClonePaths_Fail) {
 
   // Attach the tempdir to "data", but also try to duplicate the existing "data"
   // directory.
-  options.paths_to_clone.push_back(FilePath(kPersistedDataDirectoryPath));
-  options.paths_to_clone.push_back(FilePath("/tmp"));
-  options.paths_to_transfer.push_back(
-      {FilePath(kPersistedDataDirectoryPath),
-       OpenDirectoryHandle(tmpdir.GetPath()).TakeChannel().release()});
+  options.paths_to_clone.push_back({FilePath(kPersistedDataDirectoryPath), {}});
+  options.paths_to_clone.push_back({FilePath("/tmp"), {}});
+  options.paths_to_transfer.push_back({
+      FilePath(kPersistedDataDirectoryPath),
+      OpenDirectoryHandle(tmpdir.GetPath(), {}).TakeChannel().release(),
+  });
 
   // Verify that the process fails to launch.
   Process process(SpawnChildWithOptions("ShouldNotBeLaunched", options));
@@ -282,11 +273,12 @@ TEST_F(ProcessUtilTest, DISABLED_OverlappingPaths_Fail) {
 
   // Attach the tempdir to "data", but also try to duplicate the existing "data"
   // directory.
-  options.paths_to_clone.push_back(FilePath(kPersistedDataDirectoryPath));
-  options.paths_to_clone.push_back(FilePath("/tmp"));
-  options.paths_to_transfer.push_back(
-      {FilePath(kPersistedDataDirectoryPath).Append("staged"),
-       OpenDirectoryHandle(tmpdir.GetPath()).TakeChannel().release()});
+  options.paths_to_clone.push_back({FilePath(kPersistedDataDirectoryPath), {}});
+  options.paths_to_clone.push_back({FilePath("/tmp"), {}});
+  options.paths_to_transfer.push_back({
+      FilePath(kPersistedDataDirectoryPath).Append("staged"),
+      OpenDirectoryHandle(tmpdir.GetPath(), {}).TakeChannel().release(),
+  });
 
   // Verify that the process fails to launch.
   Process process(SpawnChildWithOptions("ShouldNotBeLaunched", options));
@@ -316,11 +308,11 @@ TEST_F(ProcessUtilTest, TransferHandleToPath) {
 
   // Mount the tempdir to "/foo".
   zx::channel tmp_channel =
-      OpenDirectoryHandle(new_tmpdir.GetPath()).TakeChannel();
+      OpenDirectoryHandle(new_tmpdir.GetPath(), {}).TakeChannel();
 
   ASSERT_TRUE(tmp_channel.is_valid());
   LaunchOptions options;
-  options.paths_to_clone.push_back(FilePath("/tmp"));
+  options.paths_to_clone.push_back({FilePath("/tmp"), {.readable = true}});
   options.paths_to_transfer.push_back(
       {FilePath("/foo"), tmp_channel.release()});
   options.spawn_flags = FDIO_SPAWN_CLONE_STDIO;
@@ -372,7 +364,7 @@ TEST_F(ProcessUtilTest, CloneTmp) {
   remove(signal_file.c_str());
 
   LaunchOptions options;
-  options.paths_to_clone.push_back(FilePath("/tmp"));
+  options.paths_to_clone.push_back({FilePath("/tmp"), {.readable = true}});
   options.spawn_flags = FDIO_SPAWN_CLONE_STDIO;
 
   Process process(SpawnChildWithOptions("CheckOnlyTmpExists", options));
@@ -392,7 +384,7 @@ MULTIPROCESS_TEST_MAIN(NeverCalled) {
 
 TEST_F(ProcessUtilTest, TransferInvalidHandleFails) {
   LaunchOptions options;
-  options.paths_to_clone.push_back(FilePath("/tmp"));
+  options.paths_to_clone.push_back({FilePath("/tmp"), {}});
   options.paths_to_transfer.push_back({FilePath("/foo"), ZX_HANDLE_INVALID});
   options.spawn_flags = FDIO_SPAWN_CLONE_STDIO;
 
@@ -406,8 +398,8 @@ TEST_F(ProcessUtilTest, CloneInvalidDirFails) {
   remove(signal_file.c_str());
 
   LaunchOptions options;
-  options.paths_to_clone.push_back(FilePath("/tmp"));
-  options.paths_to_clone.push_back(FilePath("/definitely_not_a_dir"));
+  options.paths_to_clone.push_back({FilePath("/tmp"), {}});
+  options.paths_to_clone.push_back({FilePath("/definitely_not_a_dir"), {}});
   options.spawn_flags = FDIO_SPAWN_CLONE_STDIO;
 
   Process process(SpawnChildWithOptions("NeverCalled", options));
@@ -423,9 +415,9 @@ TEST_F(ProcessUtilTest, CloneAlternateDir) {
   remove(signal_file.c_str());
 
   LaunchOptions options;
-  options.paths_to_clone.push_back(FilePath("/data"));
+  options.paths_to_clone.push_back({FilePath("/data"), {}});
   // The DIR_TEMP path is used by GetSignalFilePath().
-  options.paths_to_clone.push_back(FilePath("/tmp"));
+  options.paths_to_clone.push_back({FilePath("/tmp"), {.readable = true}});
   options.spawn_flags = FDIO_SPAWN_CLONE_STDIO;
 
   Process process(SpawnChildWithOptions("CheckOnlyDataExists", options));
@@ -471,8 +463,8 @@ TEST_F(ProcessUtilTest, HandlesToTransferClosedOnBadPathToMapFailure) {
   LaunchOptions options;
   options.handles_to_transfer.push_back({0, handles[0].get()});
   options.spawn_flags = options.spawn_flags & ~FDIO_SPAWN_CLONE_NAMESPACE;
-  options.paths_to_clone.emplace_back(
-      "💩magical_path_that_will_never_exist_ever");
+  options.paths_to_clone.push_back(
+      {FilePath("💩magical_path_that_will_never_exist_ever"), {}});
 
   // LaunchProces should fail to open() the path_to_map, and fail before
   // fdio_spawn().

@@ -20,7 +20,6 @@
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "components/fuchsia_component_support/mock_realm.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace fuchsia_component_support {
