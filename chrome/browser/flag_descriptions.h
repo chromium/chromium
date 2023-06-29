@@ -2262,6 +2262,9 @@ extern const char kFeedHeaderStickToTopDescription[];
 extern const char kFeedLoadingPlaceholderName[];
 extern const char kFeedLoadingPlaceholderDescription[];
 
+extern const char kFeedSignedOutViewDemotionName[];
+extern const char kFeedSignedOutViewDemotionDescription[];
+
 extern const char kFeedStampName[];
 extern const char kFeedStampDescription[];
 

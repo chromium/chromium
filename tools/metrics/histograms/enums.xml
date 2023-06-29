@@ -61094,6 +61094,7 @@ from previous Chrome versions.
   <int value="-1431563697" label="WebPaymentsMethodSectionOrderV2:enabled"/>
   <int value="-1430411329" label="SidePanelCompanion:enabled"/>
   <int value="-1430090822" label="EnableSharedImageForWebview:disabled"/>
+  <int value="-1429211493" label="FeedSignedOutViewDemotion:enabled"/>
   <int value="-1428822216" label="TabSelectionEditorV2:disabled"/>
   <int value="-1428589407" label="WebRTCPipeWireCapturer:disabled"/>
   <int value="-1426911497" label="CCTIncognitoAvailableToThirdParty:enabled"/>
@@ -65596,6 +65597,7 @@ from previous Chrome versions.
   <int value="898311758" label="ReaderMode:disabled"/>
   <int value="898719518" label="VSyncDecoding:disabled"/>
   <int value="899347105" label="NearbySharingWifiLan:enabled"/>
+  <int value="899532174" label="FeedSignedOutViewDemotion:disabled"/>
   <int value="900614020" label="ContentSuggestionsShowSummary:disabled"/>
   <int value="902209599" label="ShelfHotseat:enabled"/>
   <int value="902442795" label="time-before-discard-in-minutes"/>

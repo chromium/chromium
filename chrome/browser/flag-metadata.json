@@ -4178,6 +4178,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "feed-signed-out-view-demotion",
+    "owners": ["//components/feed/OWNERS", "harringtond@chromium.org"],
+    "expiry_milestone": 122
+  },
+  {
     "name": "feed-v2-hearts",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 115

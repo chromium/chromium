@@ -3898,6 +3898,10 @@ const char kFeedLoadingPlaceholderDescription[] =
     "Enables a placeholder UI in "
     "the feed instead of the loading spinner at first load.";
 
+const char kFeedSignedOutViewDemotionName[] = "Feed signed-out view demotion";
+const char kFeedSignedOutViewDemotionDescription[] =
+    "Enables signed-out view demotion for the Discover Feed.";
+
 const char kFeedStampName[] = "StAMP cards in the feed";
 const char kFeedStampDescription[] = "Enables StAMP cards in the feed.";
 
