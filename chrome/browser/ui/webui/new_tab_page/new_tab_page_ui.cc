@@ -232,6 +232,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean(
       "historyClustersModuleEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule));
+  source->AddBoolean(
+      "historyClustersSuggestionChipHeaderEnabled",
+      base::FeatureList::IsEnabled(
+          ntp_features::kNtpHistoryClustersModuleSuggestionChipHeader));
   source->AddBoolean("historyClustersModuleLoadEnabled",
                      base::FeatureList::IsEnabled(
                          ntp_features::kNtpHistoryClustersModuleLoad) &&

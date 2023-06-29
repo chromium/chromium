@@ -4655,6 +4655,11 @@ const char kNtpHistoryClustersModuleName[] = "NTP Journeys Module";
 const char kNtpHistoryClustersModuleDescription[] =
     "Shows the Journeys module on the New Tab Page.";
 
+const char kNtpHistoryClustersModuleSuggestionChipHeaderName[] =
+    "NTP Journeys Module Suggestion Chip Header ";
+const char kNtpHistoryClustersModuleSuggestionChipHeaderDescription[] =
+    "Shows the historical suggestion chip in the header if enabled.";
+
 const char kNtpHistoryClustersModuleUseModelRankingName[] =
     "NTP Journeys Module Model Ranking";
 const char kNtpHistoryClustersModuleUseModelRankingDescription[] =

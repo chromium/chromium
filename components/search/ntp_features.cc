@@ -285,6 +285,11 @@ BASE_FEATURE(kNtpModulesHeaderIcon,
              "NtpModulesHeaderIcon",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled a suggestion chip will show in the header for Quests V2.
+BASE_FEATURE(kNtpHistoryClustersModuleSuggestionChipHeader,
+             "NtpHistoryClustersModuleSuggestionChipHeader",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, ChromeCart tile will show in the History clusters module when
 // available.
 BASE_FEATURE(kNtpChromeCartInHistoryClusterModule,

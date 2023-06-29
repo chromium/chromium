@@ -64681,6 +64681,8 @@ from previous Chrome versions.
   <int value="406986868" label="CCTRetainingStateInMemory:disabled"/>
   <int value="407698827" label="HindiInscriptLayout:enabled"/>
   <int value="408190863" label="OmniboxDisableInstantExtendedLimit:disabled"/>
+  <int value="408469366"
+      label="NtpHistoryClustersModuleSuggestionChipHeader:disabled"/>
   <int value="409566604" label="IntentPickerPWAPersistence:enabled"/>
   <int value="409622437" label="disable-buffer-bw-compression"/>
   <int value="409978710" label="GetAllScreensMedia:disabled"/>
@@ -64839,6 +64841,8 @@ from previous Chrome versions.
   <int value="497137719" label="OmniboxVoiceSearchAlwaysVisible:disabled"/>
   <int value="497150691" label="AssistEmojiEnhanced:disabled"/>
   <int value="498150771" label="ContextualPageActions:disabled"/>
+  <int value="499517390"
+      label="NtpHistoryClustersModuleSuggestionChipHeader:enabled"/>
   <int value="499549982" label="PrintManagementJelly:enabled"/>
   <int value="499932714" label="RunTasksByBatches:enabled"/>
   <int value="500177932" label="ArcSmartTextSelection:disabled"/>

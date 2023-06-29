@@ -6552,6 +6552,14 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpHistoryClustersModuleVariations,
                                     "DesktopNtpModules")},
 
+    {"ntp-journeys-module-suggestion-chip-header",
+     flag_descriptions::kNtpHistoryClustersModuleSuggestionChipHeaderName,
+     flag_descriptions::
+         kNtpHistoryClustersModuleSuggestionChipHeaderDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         ntp_features::kNtpHistoryClustersModuleSuggestionChipHeader)},
+
     {"ntp-journeys-module-model-ranking",
      flag_descriptions::kNtpHistoryClustersModuleUseModelRankingName,
      flag_descriptions::kNtpHistoryClustersModuleUseModelRankingDescription,
