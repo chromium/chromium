@@ -47,6 +47,8 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   // policy::PolicyValueAndStatusAggregator::Observer implementation.
   void OnPolicyValueAndStatusChanged() override;
 
+  void AddInfobarForActiveLocalTestPolicies();
+
  protected:
   // ui::SelectFileDialog::Listener implementation.
   void FileSelected(const base::FilePath& path,

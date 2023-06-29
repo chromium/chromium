@@ -771,6 +771,9 @@ Additional details:
   <message name="IDS_POLICY_SELECT_LEVEL" desc="Text for the default option in the policy level dropdown menu.">
     Select policy level
   </message>
+  <message name="IDS_LOCAL_TEST_POLICIES_ENABLED" desc="Text for banner warning user of test policies being applied">
+    Test policies have been applied. Review and reset them at chrome://policy/test. Admin policies will not be applied.
+  </message>
 
   <!-- Strings for Disabled chrome://.* screen -->
   <message name="IDS_CHROME_URLS_DISABLED_PAGE_HEADER" desc="A heading for the user when the application is blocked.">

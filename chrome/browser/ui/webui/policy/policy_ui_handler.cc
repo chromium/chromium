@@ -31,6 +31,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/policy_ui_utils.h"
 #include "chrome/browser/policy/policy_value_and_status_aggregator.h"
@@ -47,6 +48,8 @@
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar_delegate.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/browser/webui/json_generation.h"
@@ -215,6 +218,16 @@ void PolicyUIHandler::FileSelected(const base::FilePath& path,
 void PolicyUIHandler::FileSelectionCanceled(void* params) {
   DCHECK(export_policies_select_file_dialog_);
   export_policies_select_file_dialog_ = nullptr;
+}
+
+void PolicyUIHandler::AddInfobarForActiveLocalTestPolicies() {
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+
+  CreateSimpleAlertInfoBar(
+      infobars::ContentInfoBarManager::FromWebContents(web_contents),
+      infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR, nullptr,
+      l10n_util::GetStringUTF16(IDS_LOCAL_TEST_POLICIES_ENABLED),
+      /*auto_expire=*/false, /*should_animate=*/false);
 }
 
 void PolicyUIHandler::HandleExportPoliciesJson(const base::Value::List& args) {
