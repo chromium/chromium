@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_NOTIFICATIONS_MULTI_CAPTURE_NOTIFICATION_H_
-#define CHROME_BROWSER_ASH_NOTIFICATIONS_MULTI_CAPTURE_NOTIFICATION_H_
+#ifndef CHROME_BROWSER_ASH_NOTIFICATIONS_MULTI_CAPTURE_NOTIFICATIONS_H_
+#define CHROME_BROWSER_ASH_NOTIFICATIONS_MULTI_CAPTURE_NOTIFICATIONS_H_
 
 #include <map>
 #include <memory>
@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 
 namespace url {
 class Origin;
@@ -25,7 +26,8 @@ namespace ash {
 // automatic multi captures being started. On managed devices, administrators
 // can enforce automatic capturing by using the getAllScreensMedia API.
 // Users are notified to make sure their privacy is respected.
-class MultiCaptureNotification : public MultiCaptureServiceClient::Observer {
+class MultiCaptureNotifications : public MultiCaptureServiceClient::Observer,
+                                  public LoginState::Observer {
  public:
   struct NotificationMetadata {
     NotificationMetadata(std::string id, base::TimeTicks time_created);
@@ -46,18 +48,22 @@ class MultiCaptureNotification : public MultiCaptureServiceClient::Observer {
     std::unique_ptr<base::OneShotTimer> closing_timer;
   };
 
-  MultiCaptureNotification();
+  MultiCaptureNotifications();
 
-  MultiCaptureNotification(const MultiCaptureNotification&) = delete;
-  MultiCaptureNotification& operator=(const MultiCaptureNotification&) = delete;
+  MultiCaptureNotifications(const MultiCaptureNotifications&) = delete;
+  MultiCaptureNotifications& operator=(const MultiCaptureNotifications&) =
+      delete;
 
-  ~MultiCaptureNotification() override;
+  ~MultiCaptureNotifications() override;
 
   // MultiCaptureServiceClient::Observer:
   void MultiCaptureStarted(const std::string& label,
                            const url::Origin& origin) override;
   void MultiCaptureStopped(const std::string& label) override;
   void MultiCaptureServiceClientDestroyed() override;
+
+  // LoginState::Observer:
+  void LoggedInStateChanged() override;
 
  private:
   // Maps the multi capture label (as received in `MultiCaptureStarted` and
@@ -67,8 +73,12 @@ class MultiCaptureNotification : public MultiCaptureServiceClient::Observer {
   base::ScopedObservation<MultiCaptureServiceClient,
                           MultiCaptureServiceClient::Observer>
       multi_capture_service_client_observation_{this};
-  base::WeakPtrFactory<MultiCaptureNotification> weak_factory_{this};
+  base::ScopedObservation<LoginState, LoginState::Observer>
+      login_state_observation_{this};
+  base::WeakPtrFactory<MultiCaptureNotifications> weak_factory_{this};
 };
+
+void SetIsMultiCaptureAllowedForTesting(bool is_multi_capture_allowed);
 
 }  // namespace ash
 

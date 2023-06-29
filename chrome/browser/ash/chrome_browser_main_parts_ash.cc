@@ -130,8 +130,7 @@
 #include "chrome/browser/ash/notifications/debugd_notification_handler.h"
 #include "chrome/browser/ash/notifications/gnubby_notification.h"
 #include "chrome/browser/ash/notifications/low_disk_notification.h"
-#include "chrome/browser/ash/notifications/multi_capture_login_notification.h"
-#include "chrome/browser/ash/notifications/multi_capture_notification.h"
+#include "chrome/browser/ash/notifications/multi_capture_notifications.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
@@ -1033,8 +1032,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // Needs to be initialized after crosapi_manager_.
   metrics::structured::ChromeStructuredMetricsRecorder::Get()->Initialize();
 
-  multi_capture_login_notification_ =
-      std::make_unique<MultiCaptureLoginNotification>();
+  multi_capture_notifications_ = std::make_unique<MultiCaptureNotifications>();
 
   if (immediate_login) {
     const user_manager::CryptohomeId cryptohome_id(
@@ -1420,8 +1418,6 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
     zram_writeback_controller_->Start();
   }
 
-  multi_capture_notification_ = std::make_unique<MultiCaptureNotification>();
-
   if (features::IsVideoConferenceEnabled()) {
     video_conference_manager_client_ =
         std::make_unique<video_conference::VideoConferenceManagerClientImpl>();
@@ -1640,8 +1636,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   lacros_availability_policy_observer_.reset();
   lacros_data_backward_migration_mode_policy_observer_.reset();
 
-  multi_capture_notification_.reset();
-  multi_capture_login_notification_.reset();
+  multi_capture_notifications_.reset();
 
   // vc_app_service_client_ has to be destructed before PostMainMessageLoopRun.
   vc_app_service_client_.reset();
