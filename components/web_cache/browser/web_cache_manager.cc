@@ -359,6 +359,10 @@ void WebCacheManager::ClearRendererCache(
   for (; iter != renderers.end(); ++iter) {
     content::RenderProcessHost* host =
         content::RenderProcessHost::FromID(*iter);
+    recordreplay::Assert(
+        "[RUN-1975-2264] WebCacheManager::ClearRendererCache %d %d %d %d/%zu",
+        *iter, !!host, (int)occasion,
+        std::distance(renderers.begin(), iter), renderers.size());
     if (host) {
       // Find the mojo::Remote<WebCache> by renderer process id.
       auto it = web_cache_services_.find(*iter);
